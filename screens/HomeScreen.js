@@ -69,9 +69,13 @@ class HomeScreen extends Component {
 
     const {mobile} = this.props.account
     
-    if(mobile){
-      this._getNotiList(mobile)
-    }
+    //로그인 되면 삭제
+    this.props.action.noti.getNotiList('01000000008')
+
+    //로그인이 안되서 임시로 주석처리
+    // if(mobile){
+    //   this.props.action.noti.getNotiList(mobile)
+    // }
 
     this.props.navigation.setParams({
       Noti: this._navigate('Noti'),
@@ -91,16 +95,6 @@ class HomeScreen extends Component {
     }).catch(err => {
       console.log('failed to load promotion list')
     })
-
-  }
-
-  _getNotiList(mobile) {
-    this.props.action.noti.getNotiList(mobile).then(resp => {
-      if ( resp.result == 0 && resp.objects.length > 0) {
-        console.log('get noti', resp)
-      }
-      else AppAlert.error(err.message)
-    })
   }
 
   componentWillUnmount() {
@@ -119,7 +113,11 @@ class HomeScreen extends Component {
 
       if ( ! _.isEmpty(mobile) && ! loggedIn) {
         this._login(mobile, pin, iccid)
-      } 
+      }
+    
+      if (prevProps.account.loggedIn != loggedIn) {
+        loggedIn ? this.props.action.noti.getNotiList(mobile) : this.props.action.noti.init()
+      }
     }
   }
 
