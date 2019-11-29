@@ -1,14 +1,13 @@
 import api from './api'
 import _ from 'underscore'
-//var RCTNetworking = require('RCTNetworking')
+const RCTNetworking = require('react-native/Libraries/Network/RCTNetworking')
 import Constants from "expo-constants";
 
+
 function clearCookies () {
-    /*
-  RCTNetworking.clearCookies((cleared) => {
-    console.log('Cookies cleared, had cookies=' + cleared.toString())
-  })
-  */
+    RCTNetworking.clearCookies((cleared) => {
+        console.log('Cookies cleared, had cookies=' + cleared.toString())
+    })
 }
 
 class UserAPI {
