@@ -36,10 +36,7 @@ class CustomerProfileScreen extends Component {
 
   componentDidMount() {
 
-    // console.log(this.props.order)
-    // console.log(this.props.account)
-    // this.props.action.order.getCustomerProfile(this.props.account.userId, this.props.account)
-    // console.log(this.props.order)
+    this.props.action.order.getCustomerProfile(this.props.account.userId, this.props.account)
   }
 
   _onChecked(){
@@ -56,9 +53,9 @@ class CustomerProfileScreen extends Component {
       return (
         <View style={styles.cardSize}>
           <View style={{marginTop:19}}>
-            <View style={[styles.profileTitle, {justifyContent: 'space-between'}]}>
+            <View style={styles.profileTitle}>
             <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text style={styles.profileTitleText}>{item.organization}</Text>
+              <Text style={styles.profileTitleText}>{item.alias}</Text>
               {/* <Text style={styles.profileTitleText}>{item.alias}</Text> */}
               
                 <View style={{flexDirection: 'row'}}>
@@ -80,7 +77,7 @@ class CustomerProfileScreen extends Component {
               <AddressCard textStyle={styles.addrCardText}
                            mobileStyle={[styles.addrCardText, styles.colorWarmGrey]}
                            style={styles.addrCard}
-                           mobile={item.recipientNumber}
+                           //mobile={item.field_recipient_number}
                            profile={item}/>
               {/* <View style={{justifyContent: 'flex-end', paddingRight: 20}}> */}
                 <View style={{flexDirection: 'column', justifyContent: 'flex-end'}}>
@@ -109,7 +106,7 @@ class CustomerProfileScreen extends Component {
           <AppButton title={i18n.t('add')} 
                     textStyle={appStyles.confirmText}
                     //disabled={_.isEmpty(selected)}
-                    onPress={()=>this.navigation.navigate('FindAddress')}
+                    onPress={()=>this.props.navigation.navigate('AddProfile')}
                     style={[appStyles.confirm, {marginTop: 20}]}/>
         </SafeAreaView>
       </ScrollView>
@@ -146,7 +143,8 @@ const styles = StyleSheet.create({
   profileTitle: {
     marginBottom: 6, 
     flex: 1, 
-    flexDirection: 'row'
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   },
   profileTitleText: {
     // alignItems: 'flex-start',

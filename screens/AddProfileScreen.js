@@ -19,6 +19,7 @@ import AppButton from '../components/AppButton';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import RNPickerSelect from 'react-native-picker-select';
 import Triangle from '../components/Triangle';
+import findEngAddress from '../utils/findEngAddress'
 
 class AddProfileScreen extends Component {
   static navigationOptions = (navigation) => ({
@@ -34,6 +35,9 @@ class AddProfileScreen extends Component {
         alias: undefined,
         recipient: undefined,
         recipient_num: undefined,
+        province: undefined,
+        city: undefined,
+        organization: undefined,
         zipNo: undefined,
         addr1: undefined,
         addr2: undefined,
@@ -46,32 +50,67 @@ class AddProfileScreen extends Component {
     this._onSubmit = this._onSubmit.bind(this)
   }
 
-  componentDidMount() {
-    // this.props.action.order.getCustomerProfile(this.props.account.userId, this.props.account)
-    // console.log(this.props.order)
-  }
-  componentWillReceiveProps(nextProps) {
+  // componentDidMount() {
+  //   // this.props.action.order.getCustomerProfile(this.props.account.userId, this.props.account)
+  //   // console.log(this.props.order)
+  // }
+/*
+  shouldComponentUpdate(nextProps) {
     console.log('nextProps', nextProps)
-    this.setState({
-      profile: {
-        ... this.state.profile,
-        addr1: nextProps.order.addr.roadAddrPart1,
-        addr2: nextProps.order.addr.roadAddrPart2,
-        zipNo: nextProps.order.addr.zipNo,
-      }
-    })
+    console.log(this.props)
+    const str = nextProps.order.addr.siNm + ' ' + nextProps.order.addr.sggNm
+    const addr = nextProps.order.addr.roadAddr
+    console.log('update - addr1', str)
+    console.log('replace',
+        nextProps.order.addr.roadAddr.replace(nextProps.order.addr.siNm, '').replace(nextProps.order.addr.sggNm, '')
+    )
+    // console.log('replace ',
+    // this.props.order.addr.roadAddr.replace(this.props.order.addr.siNm,'').replace(this.props.order.addr.sggNm,''))
+    if (this.props.order.addr.roadAddr != nextProps.order.addr.roadAddr) {
+        this.setState({
+            profile: {
+                ...this.state.profile,
+                addr1: nextProps.order.addr.roadAddrPart1,
+                addr2: nextProps.order.addr.roadAddrPart2,
+                zipNo: nextProps.order.addr.zipNo
+            }
+        })
+        return true;
+    }
+    return false;
+  }
+  */
+  componentDidUpdate(prevProps) {
+    if(this.props.order.addr.roadAddr != prevProps.order.addr.roadAddr){
+      console.log('prevProps', prevProps)
+      console.log(this.props)
+      const province_num = this.props.order.addr.admCd.substring(0,2)
+      const city_num = this.props.order.addr.admCd.substring(2,5)
+
+      this.setState({
+          profile: {
+            ... this.state.profile,
+            addr1: this.props.order.addr.roadAddrPart1,
+            addr2: this.props.order.addr.roadAddrPart2,
+            zipNo: this.props.order.addr.zipNo,
+            province: findEngAddress.city[province_num].province,
+            city: findEngAddress.city[province_num][city_num]
+        }
+      })
+    }
   }
 
   _onSubmit() {
     console.log('this props', this.props)
     console.log('this state', this.state)
-    // this.props.action.order.addCustomerProfile(this.state.profile, this.props.account)
-    // this.props.navigation.navigate('PymMethod')
+    this.props.action.order.addCustomerProfile(this.state.profile, this.props.order.profile ,this.props.account)
+    this.props.navigation.navigate('PymMethod')
   }
   _onChangeText = (key) => (value) => {
 
     const item = key.substring(key.indexOf('.') + 1)
     const idx = key.indexOf('.')
+    const val = item == 'recipient_num'? (this.state.prefix+value) : value
 
     if (idx == -1) {
       this.setState({
@@ -81,7 +120,7 @@ class AddProfileScreen extends Component {
       this.setState({
         profile: {
           ... this.state.profile,
-          [item]: value
+          [item]: val
         }
       })
     }
@@ -93,6 +132,8 @@ class AddProfileScreen extends Component {
     console.log('Profile props', this.props)
     console.log('addr1', this.props.order.addr.roadAddrPart1)
     console.log('addr2', this.props.order.addr.roadAddrPart2)
+    
+    const str = this.props.order.addr.siNm + ' ' + this.props.order.addr.sggNm
     const { prefix } = this.state
 
     return (
@@ -100,23 +141,22 @@ class AddProfileScreen extends Component {
         resetScrollToCoords={{ x: 0, y: 0 }}
         extraScrollHeight={60}
         innerRef={ref => { this.scroll = ref; }}>
-
         <SafeAreaView style={styles.container}>
           <View style={{ flex: 1 }}>
             <View style={{ margin: 20 }}>
               <View style={styles.textRow}>
-                <Text style={styles.textTitle}>배송지명</Text>
+                <Text style={styles.textTitle}>{i18n.t('addr:addrAlias')}</Text>
                 <TextInput style={styles.textBox}
                   onChangeText={this._onChangeText('profile.alias')} />
               </View>
               <View style={styles.textRow}>
-                <Text style={styles.textTitle}>수령인</Text>
+                <Text style={styles.textTitle}>{i18n.t('addr:recipient')}</Text>
                 <TextInput style={[styles.textBox, { paddingLeft: 20 }]}
-                  placeholder={i18n.t('purchase:noAddrName')}
+                  placeholder={i18n.t('addr:enterWithin50')}
                   onChangeText={this._onChangeText('profile.recipient')} />
               </View>
               <View style={styles.textRow}>
-                <Text style={styles.textTitle}>연락처</Text>
+                <Text style={styles.textTitle}>{i18n.t('addr:recipientNumber')}</Text>
                 <View style={[styles.container, this.props.style]}>
                   <View style={styles.pickerWrapper}>
                     <RNPickerSelect style={{
@@ -142,29 +182,29 @@ class AddProfileScreen extends Component {
                   onChangeText={this._onChangeText('profile.recipient_num')} />
               </View>
               <View style={[styles.textRow, { marginBottom: 10 }]}>
-                <Text style={styles.textTitle}>배송지</Text>
+                <Text style={styles.textTitle}>{i18n.t('addr:address')}</Text>
                 <TextInput style={[styles.textBox, { width: '61%' }]}
-                  onPress={() => this.props.navigation.navigate('FindAddress')}
-                  value={this.props.order.addr.roadAddrPart1} />
-                <AppButton title={i18n.t('purchase:address')}
-                  style={{ backgroundColor: colors.warmGrey, borderRadius: 3, width: '18%', height: 36, marginLeft: 10 }}
-                  onPress={() => this.props.navigation.navigate('FindAddress')} />
+                           onPress={() => this.props.navigation.navigate('FindAddress')}
+                           value={_.isEmpty(this.props.order.addr) ?  null : str} />
+                <AppButton title={i18n.t('addr:search')}
+                           style={style=styles.findButton}
+                           onPress={() => this.props.navigation.navigate('FindAddress')} />
               </View>
-              <View style={[styles.textRow, { marginBottom: 10, justifyContent: 'flex-end' }]}>
+              <View style={styles.findTextRow}>
                 <TextInput style={styles.textBox}
-                  value={this.props.order.addr.roadAddrPart2} />
+                           value={_.isEmpty(this.props.order.addr) ? null : this.props.order.addr.roadAddr.replace(str,'')} />
+                
               </View>
-              <View style={[styles.textRow, { marginBottom: 10, justifyContent: 'flex-end' }]}>
+              <View style={styles.findTextRow}>
                 <TextInput style={styles.textBox}
-                  onChangeText={this._onChangeText('profile.detailAddr')} />
+                           onChangeText={this._onChangeText('profile.detailAddr')} />
               </View>
             </View>
-
             <AppButton title={i18n.t('save')}
-              textStyle={appStyles.confirmText}
-              //disabled={_.isEmpty(selected)}
-              onPress={this._onSubmit}
-              style={appStyles.confirm} />
+                       textStyle={appStyles.confirmText}
+                       //disabled={_.isEmpty(selected)}
+                       onPress={this._onSubmit}
+                       style={appStyles.confirm} />
 
           </View>
         </SafeAreaView>
@@ -187,6 +227,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 20
+  },
+  findTextRow: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20, // textRow    
+    marginBottom: 10,
+    justifyContent: 'flex-end'
+  },
+  findButton: {
+    backgroundColor: colors.warmGrey, 
+    borderRadius: 3, 
+    width: '18%', 
+    height: 36, 
+    marginLeft: 10
   },
   textBox: {
     width: '82%',
