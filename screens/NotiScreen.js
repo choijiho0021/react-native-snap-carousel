@@ -16,7 +16,6 @@ import utils from '../utils/utils';
 import _ from 'underscore'
 import * as notiActions from '../redux/modules/noti'
 import * as accountActions from '../redux/modules/account'
-// import Icon from 'react-native-vector-icons/Ionicons';
 import AppBackButton from '../components/AppBackButton';
 
 class NotiScreen extends Component {

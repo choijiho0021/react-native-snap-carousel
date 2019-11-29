@@ -258,6 +258,7 @@ class RegisterMobileScreen extends Component {
             onChangeText={this._onChangeText('pin')}
             onPress={this._onPress('pin')}
             value={pin}
+            inputStyle={styles.inputText}
             titleStyle={styles.smsButtonText}
             titleDisableColor={colors.white}
             completed={authorized}  />
@@ -364,6 +365,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
     flex:1,
     justifyContent: "flex-start",
+  },
+  inputText: {
+    ... appStyles.normal16Text,
+    color: colors.black
   },
   smsButtonText: {
     ... appStyles.normal14Text,

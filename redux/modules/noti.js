@@ -34,4 +34,8 @@ export default handleActions({
       return state
     }
   }),
+
+  ... pender({
+    type: READ_NOTI,
+  })
 }, initialState)

@@ -67,16 +67,6 @@ class HomeScreen extends Component {
 
   async componentDidMount() {
 
-    const {mobile} = this.props.account
-    
-    //로그인 되면 삭제
-    this.props.action.noti.getNotiList('01000000008')
-
-    //로그인이 안되서 임시로 주석처리
-    // if(mobile){
-    //   this.props.action.noti.getNotiList(mobile)
-    // }
-
     this.props.navigation.setParams({
       Noti: this._navigate('Noti'),
       Contact: this._navigate('Contact')
@@ -139,6 +129,7 @@ class HomeScreen extends Component {
 
     this.props.action.account.logInAndGetUserId( mobile, pin)
     this.props.action.sim.getSimCardList()
+    this.props.action.noti.getNotiList(mobile)
 
     if ( iccid) this.props.action.account.getAccount( iccid)
   }
@@ -184,19 +175,17 @@ class HomeScreen extends Component {
       phone = mobile ? utils.toPhoneNumber(mobile) : 'unknown'
 
     return (
-      <View style={styles.userInfo}>
+      <TouchableOpacity style={styles.userInfo} onPress={this._navigate('RegisterSim')}>
         <AppUserPic url={userPictureUrl} icon="imgPeople" style={styles.userPicture}/>
-        <TouchableOpacity onPress={this._navigate('RegisterSim')} style={styles.row}>
-          <View style={{marginLeft:20, justifyContent:'space-around', flex:1}}>
-            {
-              loggedIn ? [ <Text key="mobile" style={appStyles.mobileNo}>{phone}</Text>,
-                <AppPrice key="price" price={balance} />
-              ]: <Text key="reg" style={appStyles.bold12Text}>{i18n.t('reg:guide')}</Text>
-            }
-          </View>
-          <AppIcon style={{alignSelf:'center'}} name="iconArrowRight"/>
-        </TouchableOpacity>
-      </View>
+        <View style={{marginLeft:20, justifyContent:'space-around', flex:1}}>
+          {
+            loggedIn ? [ <Text key="mobile" style={appStyles.mobileNo}>{phone}</Text>,
+              <AppPrice key="price" price={balance} />
+            ]: <Text key="reg" style={appStyles.normal14Text}>{i18n.t('reg:guide')}</Text>
+          }
+        </View>
+        <AppIcon style={{alignSelf:'center'}} name="iconArrowRight"/>
+      </TouchableOpacity>
     )
   }
 

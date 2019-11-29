@@ -1,12 +1,5 @@
-import {
-    Alert
-} from 'react-native'
 import api from './api'
-import i18n from '../i18n';
 import _ from 'underscore'
-import utils from '../utils'
-
-
 
 class NotiAPI {
     re = {

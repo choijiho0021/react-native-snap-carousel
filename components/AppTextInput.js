@@ -8,8 +8,8 @@ import { colors } from '../constants/Colors';
 export default function AppTextInput(props) {
   return (
     <View style={[styles.container, props.style]}>
-      <View style={[styles.inputWrapper, props.inputStyle, props.completed ? { borderColor: colors.black } : {}]}>
-        <TextInput {... props} style={appStyles.textInput} disabled={ props.disabled || props.completed }/>
+      <View style={[styles.inputWrapper, props.completed ? { borderColor: colors.black } : {}]}>
+        <TextInput {... props} style={[props.inputStyle, {paddingTop:9}]} disabled={ props.disabled || props.completed }/>
       </View>
       <AppButton disabled={props.disabled} 
         onPress={props.onPress}
@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     justifyContent: "flex-end",
+    alignItems: 'flex-end'
   },
 });
 

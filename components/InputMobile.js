@@ -77,11 +77,12 @@ class InputMobile extends Component {
         <View style={[styles.container, this.props.style]}>
           <View style={styles.pickerWrapper}>
             <RNPickerSelect style={{
-              placeholder: {},
+              ... pickerSelectStyles,
               iconContainer: {
                 bottom: 5,
                 right: 10,
               },}}
+              placeholder={{}}
               onValueChange={this._onChangeText("prefix")}
               items={["010", "011", "017", "018", "019"].map(item => ({
                 label: item, value: item
@@ -111,6 +112,7 @@ class InputMobile extends Component {
               }
               disabled={disable}
               completed={completed}
+              inputStyle={styles.input}
               titleStyle={styles.text}
               value={utils.toPhoneNumber(mobile)}/> 
           </View>
@@ -142,20 +144,39 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     marginRight: 10,
   },
-  placeholder: {
-    fontSize: 14,
-    fontWeight: "500",
-    fontStyle: "normal",
-    letterSpacing: 0.17,
-    lineHeight: 19,
+  input: {
+    ... appStyles.normal16Text,
     color: colors.black
   },
   text: {
-    ... appStyles.normal12Text,
+    ... appStyles.normal14Text,
     color: "#ffffff",
     lineHeight: 19,
     letterSpacing: 0.17,
-  }
+  },
+})
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    // paddingVertical: 12,
+    // paddingHorizontal: 10,
+    // borderWidth: 1,
+    // borderColor: 'gray',
+    // borderRadius: 4,
+    // color: 'black',
+    // paddingRight: 30, // to ensure the text is never behind the icon
+  },
+  inputAndroid: {
+    fontSize: 16,
+    // paddingHorizontal: 10,
+    // paddingVertical: 8,
+    // borderWidth: 0.5,
+    // borderColor: 'purple',
+    // borderRadius: 8,
+    // color: 'black',
+    // paddingRight: 30, // to ensure the text is never behind the icon
+  },
 });
 
 
