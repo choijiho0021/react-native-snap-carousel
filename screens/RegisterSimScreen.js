@@ -5,7 +5,7 @@ import {
   Text,
   TextInput,
   SafeAreaView,
-  KeyboardAvoidingView
+  TouchableOpacity
 } from 'react-native';
 import {connect} from 'react-redux'
 
@@ -24,7 +24,7 @@ import { colors } from '../constants/Colors';
 import { appStyles } from '../constants/Styles';
 import utils from '../utils/utils';
 import userApi from '../utils/api/userApi';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 class RegisterSimScreen extends Component {
   static navigationOptions = (navigation) => ({
@@ -40,7 +40,8 @@ class RegisterSimScreen extends Component {
       loggedIn: false,
       querying: false,
       iccid: undefined,
-      actCode: undefined
+      actCode: undefined,
+      focusInputIccid: false
     }
 
     this._onSubmit = this._onSubmit.bind(this)
@@ -119,13 +120,16 @@ class RegisterSimScreen extends Component {
   }
 
   render() {
-    const {scan, iccid, actCode, querying} = this.state
+    const {scan, iccid, actCode, querying, focusInputIccid} = this.state
     const disabled = _.isEmpty(iccid) || iccid.replace(/[ -]/g, '').length < 20 ||
       _.isEmpty(actCode) || actCode.length < 4
 
     return (
-      <KeyboardAvoidingView
-        contentContainerStyle={styles.container}>
+      <KeyboardAwareScrollView
+        resetScrollToCoords={{ x: 0, y: 0 }}
+        contentContainerStyle={styles.container}
+        extraScrollHeight={50}
+        scrollEnabled={false}>
 
         <SafeAreaView style={styles.container}>
           <AppActivityIndicator visible={querying}/>
@@ -133,17 +137,21 @@ class RegisterSimScreen extends Component {
             <ScanSim scan={scan} onScan={this._onScan}/>
           </View>
           <Text style={styles.title}>{i18n.t('mysim:title')}</Text>
-          <View style={styles.iccidBox}>
+          <TouchableOpacity onPress={() => this.inputIccid.focus()} 
+            activeOpacity={1.0}
+            style={styles.iccidBox}>
             <Text style={styles.iccid}>ICCID</Text>
             <TextInput style={styles.input}
+              ref={ref => this.inputIccid = ref}
               onChangeText={this._onChangeText('iccid')}
               keyboardType="numeric"
-              returnKeyType='next'
+              returnKeyType='done'
               enablesReturnKeyAutomatically={true}
               maxLength={29}
               clearTextOnFocus={true}
+              focus={focusInputIccid}
               value={utils.toICCID(iccid, ' - ')} />
-          </View>
+          </TouchableOpacity>
           <AppButton iconName="iconCamera" 
             style={styles.scanButton}
             title={i18n.t('reg:scan')} titleStyle={styles.scanTitle}
@@ -163,7 +171,7 @@ class RegisterSimScreen extends Component {
             title={i18n.t('reg:confirm')} titleStyle={appStyles.confirmText}
             onPress={this._onSubmit} disabled={disabled}/>
         </SafeAreaView>
-      </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
     );
   }
 }
