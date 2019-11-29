@@ -12,7 +12,6 @@ import {connect} from 'react-redux'
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import * as accountActions from '../redux/modules/account'
-import * as notiActions from '../redux/modules/noti'
 import userApi from '../utils/api/userApi';
 import _ from 'underscore'
 import AppActivityIndicator from '../components/AppActivityIndicator';
@@ -187,14 +186,6 @@ class RegisterMobileScreen extends Component {
           console.log('sms confirmation failed', err)
           this.setState({
             authorized: false
-          })
-        })
-        .finally(() => {
-          this.props.action.noti.getNotiList(mobile).then(resp => {
-            if ( resp.result == 0 && resp.objects.length > 0) {
-              console.log('get noti', resp)
-            }
-            else AppAlert.error(err.message)
           })
         })
     }
@@ -383,7 +374,6 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => ({
   account: state.account.toJS(),
-  noti : state.noti.toJS(),
   pending: state.pender.pending[accountActions.LOGIN] || false,
   loginSuccess: state.pender.success[accountActions.LOGIN],
   loginFailure: state.pender.failure[accountActions.LOGIN],
@@ -392,8 +382,7 @@ const mapStateToProps = (state) => ({
 export default connect(mapStateToProps, 
   (dispatch) => ({
     action: {
-      account : bindActionCreators(accountActions, dispatch),
-      noti: bindActionCreators(notiActions, dispatch)
+      account : bindActionCreators(accountActions, dispatch)
     }
   })
 )(RegisterMobileScreen)
