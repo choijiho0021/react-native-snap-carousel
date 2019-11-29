@@ -24,6 +24,7 @@ import { bindActionCreators } from 'redux'
 // import Icon from 'react-native-vector-icons/Ionicons';
 // import { Card } from "react-native-elements";
 import AppButton from '../components/AppButton'
+import AppIcon from '../components/AppIcon';
 import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';
 import { SafeAreaView } from 'react-navigation'
@@ -179,18 +180,11 @@ class CountryScreen extends Component {
     return (
       <SafeAreaView style={styles.container}>
         <Image style={styles.box} source={{uri:api.httpImageUrl(imageUrl)}}/>
-        {/* <View style={styles.descBox} >
-          {desc.map((elm,idx )=> 
-          <View key={"prodDesc" + idx} style={styles.rowDirection}>
-            <Text key={"descKey" + idx} style={[styles.descKey]}>{elm.key}</Text>
-            <Text key={"descValue" + idx}  style={[styles.descValue]}>{elm.value}</Text>
-          </View>
-          )}
-        </View> */}
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('ViewDetail',{body:prodData[0].body})}>
+        
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {key:'noti', text:prodData[0].body})}>
           <View style={styles.detail}>
             <Text style={appStyles.normal14Text}>{"상세보기"}</Text>
-            <AppIcon style={{marginRight:20}} name="ios-arrow-forward" size={10} />
+            <AppIcon style={{marginRight:20}} name="iconArrowRight" size={10} />
           </View>
         </TouchableOpacity>
 
@@ -306,8 +300,7 @@ const styles = StyleSheet.create({
     alignItems:'center',
     paddingLeft:20,
     justifyContent:'space-between',
-    flexDirection: "row",
-    justifyContent: "flex-start"
+    flexDirection: "row"
   },
   divider : {
     height: 10,

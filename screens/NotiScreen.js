@@ -11,6 +11,8 @@ import i18n from '../utils/i18n'
 import {connect} from 'react-redux'
 import {appStyles} from '../constants/Styles'
 import { colors } from '../constants/Colors';
+import AppIcon from '../components/AppIcon';
+import utils from '../utils/utils';
 import _ from 'underscore'
 import * as notiActions from '../redux/modules/noti'
 import * as accountActions from '../redux/modules/account'
@@ -19,7 +21,7 @@ import AppBackButton from '../components/AppBackButton';
 
 class NotiScreen extends Component {
   static navigationOptions = (navigation) => ({
-    headerLeft: AppBackButton({navigation, title:i18n.t('noti')})
+    headerLeft: AppBackButton({navigation, title:i18n.t('set:noti')})
   })
 
   constructor(props) {
@@ -33,22 +35,24 @@ class NotiScreen extends Component {
     }
   }
 
-  _onPress = (uuid) => () => {
+  _onPress = (uuid,body) => () => {
     this.props.action.noti.readNoti(uuid, this.props.auth )
+    //todo:notitype에 따라서 이동하는 경로가 바뀌어야 함
+    this.props.navigation.navigate('SimpleText', {key:'noti', text:body})
   }
 
   _renderItem = ({item}) => {
       return (
-        <TouchableOpacity onPress={this._onPress(item.uuid)}>
+        <TouchableOpacity onPress={this._onPress(item.uuid,item.body)}>
           <View key={item.uuid} style={styles.notibox}>
             <View key='notitext' style={styles.notiText} >
               <Text key='created' style={styles.created}>{item.created}</Text>
               <Text key='title' style={styles.title}>{item.title}</Text>
-              <Text key='body' style={styles.body} numberOfLines={3} ellipsizeMode={'tail'} >{item.body}
+              <Text key='body' style={styles.body} numberOfLines={3} ellipsizeMode={'tail'} >{utils.htmlToString(item.body)}
               </Text>
             </View>
             <View key='iconview' style={styles.Icon}>
-              <AppIcon key='icon' name="ios-arrow-forward" size={10} />
+              <AppIcon key='icon' name="iconArrowRight" size={10} />
             </View>
           </View>
         </TouchableOpacity>
