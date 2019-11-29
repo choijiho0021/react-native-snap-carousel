@@ -32,27 +32,32 @@ class SimpleTextScreen extends Component {
 
   componentDidMount() {
     const key = this.props.navigation.getParam('key')
+    const body = this.props.navigation.getParam('text')
 
-    this.setState({
-      querying: true
-    })
-
-    pageApi.getPageByCategory(key).then(resp => { 
-      if ( resp.result == 0 && resp.objects.length > 0) {
-        this.setState({
-          body: resp.objects[0].body
-        })
-      }
-      else throw Error('Failed to get contract')
-    }).catch( err => {
-      console.log('failed', err)
-      AppAlert.error(i18n.t('set:fail'))
-    }).finally(_ => {
+    if(body){
+      this.setState({body:body})
+    }
+    else{
       this.setState({
-        querying: false
+        querying: true
       })
-
-    })
+  
+      pageApi.getPageByCategory(key).then(resp => { 
+        if ( resp.result == 0 && resp.objects.length > 0) {
+          this.setState({
+            body: resp.objects[0].body
+          })
+        }
+        else throw Error('Failed to get contract')
+      }).catch( err => {
+        console.log('failed', err)
+        AppAlert.error(i18n.t('set:fail'))
+      }).finally(_ => {
+        this.setState({
+          querying: false
+        })
+      })
+    }
   }
 
   render() {
