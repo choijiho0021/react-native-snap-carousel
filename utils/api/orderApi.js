@@ -46,7 +46,10 @@ class OrderAPI {
     }
 
     toCustomerProfile = (data) => {
+        console.log('data!!', data)
 
+        console.log('jsonapi empty, ', _.isEmpty(data.jsonapi))
+        console.log('data.data empty, ', _.isEmpty(data.data))
         // JSON API로 데이터를 조회한 경우 
         if ( ! _.isEmpty(data.jsonapi) && ! _.isEmpty(data.data)) {
             const obj = _.isArray(data.data) ? data.data : [data.data]
@@ -63,9 +66,8 @@ class OrderAPI {
                     organization,
                     given_name,
                     family_name,
-                    recipient,
-                    recipientNumber,
                 } = item.attributes.address
+                console.log('get customer profile recipient', item.attributes.field_recipient_number)
 
                 return {
                     //langcode: 'ko',
@@ -75,11 +77,12 @@ class OrderAPI {
                     zipCode: postal_code,
                     addressLine1: address_line1,
                     addressLine2: address_line2,
+                    organization: organization,
                     givenName: given_name,
                     familyName: family_name,
-                    alias: organization,
-                    recipient: recipient,
-                    recipientNumber : recipientNumber,
+                    alias: item.attributes.field_alias,
+                    recipient: item.attributes.field_recipient,
+                    recipientNumber : item.attributes.field_recipient_number,
                     uuid: item.id,
 
                 }
@@ -109,10 +112,11 @@ class OrderAPI {
         }, this.toCustomerProfile)
     }
 
-    addCustomerProfile = (profile, {token}) => {
+    addCustomerProfile = (profile, item,{token}) => {
         if ( _.isEmpty(profile) || _.isEmpty(token) ) return api.reject( api.INVALID_ARGUMENT)
 
         console.log('addCustomerProfile profile', profile)
+        console.log('addCustomerProfile token', token)
         // console.log('addCustomerProfile profile', profile[0].familyName)
         
         const url = api.httpUrl(api.path.jsonapi.profile)
@@ -124,17 +128,19 @@ class OrderAPI {
                     address: {
                         langcode: "ko",
                         country_code: "KR",
-                        administrative_area: "Seoul",   // 경기도 
-                        locality: "Gangnam-gu",          // 성남시
+                        administrative_area: profile.province,   // 경기도 
+                        locality: profile.city,                  // 성남시
                         postal_code: profile.zipNo,
                         address_line1: profile.addr1,
                         address_line2: profile.addr2 || ' ' || profile.detailAddr,
-                        organization: profile.alias,
-                        given_name: 'choi',//profile[0].givenName,
-                        family_name: 'soojeong', //profile[0].familyName,
-                        recipient: profile.recipient,
-                        recipientNumber : profile.recipient_num,
-                    }
+                        organization: item[0].organization,
+                        given_name: item[0].givenName, //'choi',//profile[0].givenName,
+                        family_name: item[0].familyName, //'soojeong', //profile[0].familyName,
+                    },
+                    field_recipient : profile.recipient,
+                    field_recipient_number : profile.recipient_num,
+                    field_alias : profile.alias
+
                 }
             }
         }
