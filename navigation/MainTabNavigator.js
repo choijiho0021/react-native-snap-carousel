@@ -34,7 +34,6 @@ import FindAddressScreen from '../screens/FindAddressScreen';
 import CustomerProfileScreen from '../screens/CustomerProfileScreen';
 import AddProfileScreen from '../screens/AddProfileScreen';
 import BoardMsgRespScreen from '../screens/BoardMsgRespScreen';
-import ViewDetailScreen from '../screens/ViewDetailScreen';
 import SimpleTextScreen from '../screens/SimpleTextScreen';
 import FaqScreen from '../screens/FaqScreen';
 
@@ -51,6 +50,7 @@ const HomeStack = createStackNavigator(
     RegisterMobile: RegisterMobileScreen,
     NewSim: NewSimScreen,
     Noti: NotiScreen,
+    SimpleText: SimpleTextScreen,
     Contact: ContactScreen,
     ContactBoard: ContactBoardScreen,
     BoardMsgResp: BoardMsgRespScreen,
@@ -82,7 +82,7 @@ const StoreStack = createStackNavigator(
     Country: CountryScreen,
     Product: ProductScreen,
     NewSim: NewSimScreen,
-    ViewDetail: ViewDetailScreen
+    SimpleText: SimpleTextScreen,
   },
   config
 );

@@ -112,7 +112,8 @@ const en = {
   'acc:changeEmail': 'Input new email',
 
   "set:info" : "My SIM Info",
-  "set:noti" : "Notice",
+  "set:noti" : "Noti",
+  "set:notice" : "Notice",
   "set:contract" : "User Guide",
   "set:privacy" : "Privacy",
   "set:version" : "Version",
@@ -337,7 +338,8 @@ const ko = {
   'acc:changeEmail': '이메일 변경',
 
   "set:info" : "내 SIM 정보",
-  "set:noti" : "공지 사항",
+  "set:noti" : "알림",
+  "set:notice" : "공지 사항",
   "set:contract" : "이용 안내",
   "set:privacy" : "개인 정보 처리 방침",
   "set:version" : "버전 정보",
