@@ -13,6 +13,7 @@ class PageAPI {
             // jsonapi result
             const obj = _.isArray(data.data) ? data.data : [data.data]
             return api.success(obj.map(item => ({
+                key: item.id,
                 uuid: item.id,
                 title: item.attributes.title,
                 body: item.attributes.body.processed,

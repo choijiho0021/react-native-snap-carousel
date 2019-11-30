@@ -36,6 +36,7 @@ import AddProfileScreen from '../screens/AddProfileScreen';
 import BoardMsgRespScreen from '../screens/BoardMsgRespScreen';
 import SimpleTextScreen from '../screens/SimpleTextScreen';
 import FaqScreen from '../screens/FaqScreen';
+import GuideScreen from '../screens/GuideScreen';
 
 const config = Platform.select({
   web: { headerMode: 'screen' },
@@ -59,7 +60,8 @@ const HomeStack = createStackNavigator(
     FindAddress: FindAddressScreen,
     CustomerProfile: CustomerProfileScreen,
     AddProfile: AddProfileScreen,
-    Faq: FaqScreen
+    Faq: FaqScreen,
+    Guide: GuideScreen
   },
   config
 );

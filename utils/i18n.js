@@ -79,7 +79,8 @@ const en = {
   'reg:wrongActCode' : 'Activation code does not match',
   'reg:success' : 'Your SIM is registered',
   'reg:fail' : 'Failed to register SIM',
-  'reg:guide' : 'Please register SIM Card',
+  'reg:guide' : 'Please, purchase and register SIM Card',
+  'reg:card' : 'Please, register SIM Card',
   'reg:address': "Register Address",
   'reg:authNoti': 'Auth code sent',
   'reg:scan': 'Scan card',
@@ -230,7 +231,11 @@ const en = {
   "pym:kakao": "Kakao Pay",
   "pym:payco": "Payco",
 
-  "err:login" : "Please login first"
+  "err:login" : "Please login first",
+
+  "guide:title": "Guide",
+  "guide:buy": "Please, purchase Rokebi USIM, firstly.",
+  "guide:tip": "Tip",
 };
 
 const ko = {
@@ -313,6 +318,7 @@ const ko = {
   'reg:success' : '등록이 완료되었습니다',
   'reg:fail' : '시스템 사정으로 등록에 실패했습니다.',
   'reg:guide' : '카드 구매 후 등록해 주세요',
+  'reg:card' : '카드를 등록해 주세요',
   'reg:address': '주소 등록하기',
   'reg:authNoti': '인증 번호를 보냈습니다',
   'reg:scan': '카드 스캔',
@@ -469,7 +475,11 @@ const ko = {
   "pym:kakao": "카카오 페이",
   "pym:payco": "페이코",
   "pym:syrup": "시럽",
-  "err:login" : "로그인 후 이용해 주세요"
+  "err:login" : "로그인 후 이용해 주세요",
+
+  "guide:title": "사용 가이드",
+  "guide:buy": "먼저 로깨비 유심을 구매해 주세요.\n다양한 채널로 구매 가능합니다.",
+  "guide:tip": "Special 꿀팁",
 
 
   //address

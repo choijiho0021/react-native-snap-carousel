@@ -171,7 +171,7 @@ class HomeScreen extends Component {
   }
 
   _userInfo() {
-    const { mobile, loggedIn, balance, userPictureUrl } = this.props.account,
+    const { mobile, loggedIn, iccid, balance = 0, userPictureUrl } = this.props.account,
       phone = mobile ? utils.toPhoneNumber(mobile) : 'unknown'
 
     return (
@@ -179,9 +179,12 @@ class HomeScreen extends Component {
         <AppUserPic url={userPictureUrl} icon="imgPeople" style={styles.userPicture}/>
         <View style={{marginLeft:20, justifyContent:'space-around', flex:1}}>
           {
-            loggedIn ? [ <Text key="mobile" style={appStyles.mobileNo}>{phone}</Text>,
-              <AppPrice key="price" price={balance} />
-            ]: <Text key="reg" style={appStyles.normal14Text}>{i18n.t('reg:guide')}</Text>
+            loggedIn ? [
+              <Text key="mobile" style={appStyles.mobileNo}>{phone}</Text>,
+              iccid ? <AppPrice key="price" price={balance} /> :
+                <Text key="sim" style={appStyles.normal14Text}>{i18n.t('reg:card')}</Text>
+            ] : 
+            <Text key="reg" style={appStyles.normal14Text}>{i18n.t('reg:guide')}</Text>
           }
         </View>
         <AppIcon style={{alignSelf:'center'}} name="iconArrowRight"/>
@@ -222,13 +225,13 @@ class HomeScreen extends Component {
       <View style={styles.guide}>
         <AppIcon name="imgGuid1"/>
         <Text style={[appStyles.normal14Text, {marginLeft:10, flex:1}]}>{i18n.t('home:guide')}</Text> 
-        <View style={styles.roundBox}>
+        <TouchableOpacity style={styles.roundBox} onPress={this._navigate('Guide')}>
           <Text style={styles.checkGuide}>{i18n.t('home:checkGuide')}</Text> 
           <View style={{flexDirection:'row'}}>
             <View style={styles.rightArrow1} />
             <View style={styles.rightArrow2} />
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
     )
   }
