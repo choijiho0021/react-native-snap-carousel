@@ -64,7 +64,9 @@ class InputMobile extends Component {
   _onPress() {
     const {prefix, mobile} = this.state
 
-    if ( this.props.onPress) this.props.onPress( (prefix + mobile).replace(/-/g, ''))
+    if ( typeof this.props.onPress === 'function') {
+      this.props.onPress( (prefix + mobile).replace(/-/g, ''))
+    }
   }
 
   render() {

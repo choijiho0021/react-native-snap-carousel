@@ -5,11 +5,15 @@ import AppButton from './AppButton';
 import { appStyles } from '../constants/Styles'
 import { colors } from '../constants/Colors';
 
-export default function AppTextInput(props) {
+const AppTextInput = React.forwardRef((props, ref) => {
   return (
     <View style={[styles.container, props.style]}>
       <View style={[styles.inputWrapper, props.completed ? { borderColor: colors.black } : {}]}>
-        <TextInput {... props} style={[props.inputStyle, {paddingTop:9}]} disabled={ props.disabled || props.completed }/>
+        <TextInput {... props} 
+          ref={ref}
+          autoFocus={true}
+          style={[props.inputStyle, {paddingTop:9}]} 
+          disabled={ props.disabled || props.completed }/>
       </View>
       <AppButton disabled={props.disabled} 
         onPress={props.onPress}
@@ -21,7 +25,7 @@ export default function AppTextInput(props) {
         disableColor={props.titleDisableColor}/>
     </View>
     )
-}
+})
 
 const styles = StyleSheet.create({
   inputWrapper : {
@@ -37,3 +41,5 @@ const styles = StyleSheet.create({
   },
 });
 
+
+export default AppTextInput

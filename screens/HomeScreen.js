@@ -29,6 +29,7 @@ import AppUserPic from '../components/AppUserPic';
 import withBadge from '../components/withBadge';
 import AppPrice from '../components/AppPrice';
 import pushNoti from '../utils/pushNoti'
+import { initialMode } from 'react-native-dark-mode'
 
 const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti, 
   {badgeStyle:{left:5,bottom:10}},
@@ -52,6 +53,7 @@ class HomeScreen extends Component {
     super(props)
 
     this.state = {
+      darkMode: initialMode,
       activeSlide: 0,
       promotions: []
     }
@@ -232,9 +234,11 @@ class HomeScreen extends Component {
   }
 
   render() {
+    const { darkMode } = this.state
+
     return (
       <View style={styles.container}>
-        <StatusBar barStyle="dark-content" />
+        <StatusBar barStyle={darkMode ? "dark-content" : 'light-content'} />
         <AppActivityIndicator visible={this.props.loginPending}/>
         <View style={styles.carousel}>
           <Carousel

@@ -47,7 +47,6 @@ class RegisterMobileScreen extends Component {
         "1": false,
         "2": false,
       }),
-      autoLogin: false,
       newUser: false
     }
 
@@ -79,6 +78,9 @@ class RegisterMobileScreen extends Component {
     this._onSubmit = this._onSubmit.bind(this)
     this._onCancel = this._onCancel.bind(this)
     this._renderItem = this._renderItem.bind(this)
+    this._focusAuthInput = this._focusAuthInput.bind(this)
+
+    this.authInputRef = React.createRef()
   } 
 
 
@@ -118,6 +120,10 @@ class RegisterMobileScreen extends Component {
     this.props.onSubmit()
   }
 
+  _focusAuthInput() {
+    if ( this.authInputRef.current) this.authInputRef.current.focus()
+  }
+
   _onChangeText = (key) => (value) => {
     const val = {
       [key]: value
@@ -128,6 +134,8 @@ class RegisterMobileScreen extends Component {
         pin: undefined,
         authorized: undefined
       })
+
+      this._focusAuthInput()
 
       userApi.sendSms({ user: value })
         .then( resp => {
@@ -145,9 +153,8 @@ class RegisterMobileScreen extends Component {
           console.log('send sms failed', err)
           AppAlert.error(i18n.t('reg:failedToSendSms'))
         })
-    }
-
-    if (key == 'pin') {
+    } 
+    else if (key == 'pin') {
       const { mobile, authNoti } = this.state
 
       if ( mobile && authNoti && _.size(value) === 6 ) {
@@ -190,16 +197,6 @@ class RegisterMobileScreen extends Component {
         })
     }
 
-    if ( key == 'autoLogin' ) {
-      const { autoLogin } = this.state
-
-      this.setState({
-        autoLogin: !autoLogin
-      })
-
-      return;
-    }
-
     const { confirm } = this.state
 
     this.setState({
@@ -234,7 +231,7 @@ class RegisterMobileScreen extends Component {
   }
 
   render() {
-    const { mobile, authorized, disable, pin, confirm, autoLogin, authNoti, newUser } = this.state
+    const { mobile, authorized, disable, pin, confirm, authNoti, newUser } = this.state
     const disableButton = ! authorized || ( newUser && !(confirm.get("0") && confirm.get("1")) )
 
     return (
@@ -249,6 +246,7 @@ class RegisterMobileScreen extends Component {
         {
           authNoti && <AppTextInput 
             style={{marginTop:30, paddingHorizontal:20}}
+            ref={this.authInputRef}
             placeholder={i18n.t('mobile:auth')}
             keyboardType="numeric"
             enablesReturnKeyAutomatically={true}
@@ -282,17 +280,6 @@ class RegisterMobileScreen extends Component {
               <InputEmail style={{marginTop:38, paddingHorizontal:20}}
                 onRef={ref => this.email = ref}/>
               
-              {
-                /*
-                <AppRadioButton
-                  style={{marginTop:31, paddingHorizontal:20}}
-                  title={i18n.t('mobile:autoLogin')}
-                  onPress={this._onPress('autoLogin')}
-                  checked={autoLogin}
-                  />
-                */
-              }
-
               <View style={styles.divider}/>
 
               <View style={{paddingHorizontal:20, flex:1}}>
