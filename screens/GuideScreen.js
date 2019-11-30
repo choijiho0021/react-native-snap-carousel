@@ -3,35 +3,23 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
   FlatList,
   Image
 } from 'react-native';
-import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
-import AppButton from '../components/AppButton'
-import utils from '../utils/utils';
-import LabelText from '../components/LabelText';
 import { colors } from '../constants/Colors';
-import AppIcon from '../components/AppIcon';
 import * as orderActions from '../redux/modules/order'
 import * as accountActions from '../redux/modules/account'
-import moment from 'moment'
-import AppActivityIndicator from '../components/AppActivityIndicator'
-import Constants from 'expo-constants'
-import AppAlert from '../components/AppAlert';
 import _ from 'underscore'
-import AppUserPic from '../components/AppUserPic';
-import AppModal from '../components/AppModal';
 import AppBackButton from '../components/AppBackButton';
 import pageApi from '../utils/api/pageApi';
 import AppFlatListItem from '../components/AppFlatListItem';
 
 
 class GuideScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
+  static navigationOptions = (navigation) => ({
     headerLeft: AppBackButton({ navigation, title: i18n.t('guide:title') }),
   })
 
