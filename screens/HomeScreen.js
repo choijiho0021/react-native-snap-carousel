@@ -6,6 +6,7 @@ import {
   Image,
   Platform,
   TouchableOpacity,
+  StatusBar,
 } from 'react-native';
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
@@ -14,7 +15,6 @@ import {appStyles} from '../constants/Styles'
 import * as simActions from '../redux/modules/sim'
 import * as accountActions from '../redux/modules/account'
 import * as notiActions from '../redux/modules/noti'
-import userApi from '../utils/api/userApi';
 import _ from 'underscore'
 import utils from '../utils/utils';
 import AppActivityIndicator from '../components/AppActivityIndicator'
@@ -23,7 +23,6 @@ import Carousel, {Pagination} from 'react-native-snap-carousel';
 import { sliderWidth, itemWidth } from '../constants/SliderEntry.style'
 import api from '../utils/api/api';
 import promotionApi from '../utils/api/promotionApi';
-import notiApi from '../utils/api/notiApi';
 import { colors } from '../constants/Colors';
 import AppIcon from '../components/AppIcon';
 import AppUserPic from '../components/AppUserPic';
@@ -31,24 +30,23 @@ import withBadge from '../components/withBadge';
 import AppPrice from '../components/AppPrice';
 import pushNoti from '../utils/pushNoti'
 
-class HomeScreen extends Component {
-  static navigationOptions = ({navigation}) => {
-    const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti, {badgeStyle:{left:5,bottom:10},onPress:navigation.getParam('Noti')}, 
-      (state) => ({notReadNoti: state.noti.toJS().notiList.filter(elm=> elm.isRead == 'F').length }))(AppButton)
+const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti, 
+  {badgeStyle:{left:5,bottom:10}},
+  (state) => ({notReadNoti: state.noti.get('notiList').filter(elm=> elm.isRead == 'F').length }))(AppButton)
 
-    return {
-      headerLeft: (
-        <Text style={styles.title}>{i18n.t('appTitle')}</Text>
-      ),
-      headerRight: (
-        [
-          <AppButton key="cnter" style={styles.btnCnter} onPress={navigation.getParam('Contact')} iconName="btnCnter" />,
-          //BadgeAppButton을 사용했을 때 위치가 변동됨 수정이 필요함
-          <BadgeAppButton key="alarm" style={styles.btnAlarm} onPress={navigation.getParam('Noti')} iconName="btnAlarm" />
-        ]
-      ),
-    }
-  }
+class HomeScreen extends Component {
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: (
+      <Text style={styles.title}>{i18n.t('appTitle')}</Text>
+    ),
+    headerRight: (
+      [
+        <AppButton key="cnter" style={styles.btnCnter} onPress={navigation.getParam('Contact')} iconName="btnCnter" />,
+        //BadgeAppButton을 사용했을 때 위치가 변동됨 수정이 필요함
+        <BadgeAppButton key="alarm" style={styles.btnAlarm} onPress={navigation.getParam('Noti')} iconName="btnAlarm" />
+      ]
+    ),
+  })
 
   constructor(props) {
     super(props)
@@ -236,6 +234,7 @@ class HomeScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <StatusBar barStyle="dark-content" />
         <AppActivityIndicator visible={this.props.loginPending}/>
         <View style={styles.carousel}>
           <Carousel
@@ -352,7 +351,7 @@ const styles = StyleSheet.create({
     paddingVertical: 23
   },
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     justifyContent: 'space-between',
     flex: 1
   },

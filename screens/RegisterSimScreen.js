@@ -154,7 +154,8 @@ class RegisterSimScreen extends Component {
           </TouchableOpacity>
           <AppButton iconName="iconCamera" 
             style={styles.scanButton}
-            title={i18n.t('reg:scan')} titleStyle={styles.scanTitle}
+            title={i18n.t(scan ? 'reg:scanOff' : 'reg:scan')} titleStyle={styles.scanTitle}
+            onPress={() => this._onCamera(!scan)}
             direction="row"/>
           <View style={styles.actCodeBox}>
             <Text style={styles.actCodeTitle}>{i18n.t('reg:actCode')}</Text>
@@ -191,7 +192,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.lightGrey,
     paddingHorizontal: 30,
-    textAlign: 'center'
+    textAlign: 'center',
+    color: colors.black
   },
   actCodeBox: {
     flexDirection: 'row',

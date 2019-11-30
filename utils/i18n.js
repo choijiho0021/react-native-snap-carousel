@@ -83,6 +83,7 @@ const en = {
   'reg:address': "Register Address",
   'reg:authNoti': 'Auth code sent',
   'reg:scan': 'Scan card',
+  'reg:scanOff': 'Scan off',
   'reg:confirm': 'Confirm',
   'reg:failedToSendSms': 'Failed to send sms',
 
@@ -315,6 +316,7 @@ const ko = {
   'reg:address': '주소 등록하기',
   'reg:authNoti': '인증 번호를 보냈습니다',
   'reg:scan': '카드 스캔',
+  'reg:scanOff': '스캔 중단',
   'reg:confirm': '등록',
   'reg:failedToSendSms': 'SMS 인증번호 발송 실패',
 
