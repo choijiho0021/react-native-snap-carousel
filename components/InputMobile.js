@@ -114,7 +114,6 @@ class InputMobile extends Component {
               }
               disabled={disable}
               completed={completed}
-              inputStyle={styles.input}
               titleStyle={styles.text}
               value={utils.toPhoneNumber(mobile)}/> 
           </View>
@@ -145,10 +144,6 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingVertical: 8,
     marginRight: 10,
-  },
-  input: {
-    ... appStyles.normal16Text,
-    color: colors.black
   },
   text: {
     ... appStyles.normal14Text,

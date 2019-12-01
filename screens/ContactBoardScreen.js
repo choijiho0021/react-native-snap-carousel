@@ -9,9 +9,11 @@ import {
 import i18n from '../utils/i18n'
 import _ from 'underscore'
 import AppBackButton from '../components/AppBackButton';
-import { TabView, SceneMap } from 'react-native-tab-view';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import BoardMsgAdd from '../components/BoardMsgAdd';
 import BoardMsgList from '../components/BoardMsgList';
+import {colors} from '../constants/Colors'
+import { appStyles } from '../constants/Styles';
 
 class ContactBoardScreen extends Component {
   static navigationOptions = (navigation) => ({
@@ -34,12 +36,11 @@ class ContactBoardScreen extends Component {
   } 
 
   _onPress = (key) => {
-    console.log('goto screen', key)
     this.props.navigation.navigate('BoardMsgResp', {key})
   }
 
 
-  renderScene = ({ route, jumpTo }) => {
+  _renderScene = ({ route, jumpTo }) => {
     switch (route.key) {
       case 'new':
         return <BoardMsgAdd jumpTo={jumpTo} navigation={this.props.navigation}/>
@@ -49,14 +50,25 @@ class ContactBoardScreen extends Component {
   };
 
 
+  _renderTabBar = (props) => {
+    return <TabBar
+      {...props}
+      tabStyle={{backgroundColor:colors.white}}
+      indicatorStyle={{borderBottomColor:colors.clearBlue, borderBottomWidth:2}}
+      style={{paddingBottom:2, backgroundColor:colors.white}}
+      labelStyle={appStyles.normal16Text}
+    />
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <TabView style={styles.container} 
           navigationState={this.state}
-          renderScene={this.renderScene}
+          renderScene={this._renderScene}
           onIndexChange={index => this.setState({ index})}
           initialLayout={{ width: Dimensions.get('window').width }}
+          renderTabBar={this._renderTabBar}
         />
       </View>
     )

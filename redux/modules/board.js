@@ -4,7 +4,7 @@ import { pender } from 'redux-pender'
 import boardApi from '../../utils/api/boardApi';
 import _ from 'underscore'
 
-const POST_ISSUE =   'rokebi/board/POST_ISSUE'
+export const POST_ISSUE =   'rokebi/board/POST_ISSUE'
 const NO_MORE_ISSUES =   'rokebi/board/NO_MORE_ISSUES'
 export const GET_ISSUE_LIST =   'rokebi/board/GET_ISSUE_LIST'
 export const GET_ISSUE_RESP =   'rokebi/board/GET_ISSUE_RESP'

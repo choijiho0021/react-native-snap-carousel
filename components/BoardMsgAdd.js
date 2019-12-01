@@ -21,6 +21,7 @@ import validationUtil from '../utils/validationUtil';
 import { bindActionCreators } from 'redux'
 import AppTextInput from './AppTextInput';
 import { colors } from '../constants/Colors';
+import { SafeAreaView } from 'react-navigation';
 
 class BoardMsgAdd extends Component {
   static navigationOptions = {
@@ -129,7 +130,7 @@ class BoardMsgAdd extends Component {
   }
 
   render() {
-    const { disable, mobile, title, msg, errors = {}, checkMobile} = this.state
+    const { disable, mobile, title, msg, errors = {} } = this.state
     // errors object의 모든 value 값들이 undefined인지 확인한다.
     const hasError = Object.values(errors).findIndex(val => ! _.isEmpty(val)) >= 0
 
@@ -137,10 +138,10 @@ class BoardMsgAdd extends Component {
       <KeyboardAwareScrollView 
         resetScrollToCoords={{ x: 0, y: 0 }}
         contentContainerStyle={styles.modalInner}
-        extraScrollHeight={60}
+        extraScrollHeight={80}
         innerRef={ref => { this.scroll = ref; }}>
 
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
           <Text style={styles.label}>{i18n.t('board:contact')}</Text>
           <TextInput style={styles.button}
             placeholder={i18n.t('board:noMobile')}
@@ -169,6 +170,7 @@ class BoardMsgAdd extends Component {
 
             <TextInput style={[styles.inputBox, {height:208}]}
               placeholder={i18n.t('content')}
+              returnKeyType='done'
               multiline={true}
               numberOfLines={8}
               enablesReturnKeyAutomatically={true}
@@ -180,13 +182,17 @@ class BoardMsgAdd extends Component {
               autoCorrect={false}
               onContentSizeChange={this._scrolll}
               value={msg} />
+
+            <AppTextInput style={styles.attach} 
+              inputStyle={styles.attachInput}
+              title={i18n.t('board:attach')}/>
           </View>
 
-          <AppButton style={[appStyles.confirm, {marginTop:30}]} 
+          <AppButton style={styles.confirm}
             title={i18n.t('board:new')} 
             disabled={hasError}
             onPress={this._onSubmit}/>
-        </View>
+        </SafeAreaView>
 
         <AppActivityIndicator visible={this.state.querying} />
       </KeyboardAwareScrollView>
@@ -195,6 +201,24 @@ class BoardMsgAdd extends Component {
 }
 
 const styles = StyleSheet.create({
+  attachInput: {
+    height: 36,
+    borderRadius: 3,
+    backgroundColor: colors.white,
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+    paddingHorizontal: 10,
+  },
+  attach: {
+    marginTop: 30, 
+    marginHorizontal: 20
+  },
+  confirm: {
+    ... appStyles.normal18Text,
+    ... appStyles.confirm,
+    marginTop: 30
+  },
   inputBox: {
     ... appStyles.normal14Text,
     marginTop: 30,
@@ -238,15 +262,14 @@ const styles = StyleSheet.create({
   },
 
   modalInner: {
-    justifyContent: 'flex-start'
+    justifyContent: 'space-between'
   }
 });
 
 const mapStateToProps = (state) => ({
   account: state.account.toJS(),
   auth: accountActions.auth(state.account),
-  pending: state.pender.pending[boardActions.GET_ISSUE_LIST],
-  success: state.pender.pending[boardActions.GET_ISSUE_LIST]
+  success: state.pender.pending[boardActions.POST_ISSUE]
 })
 
 export default connect(mapStateToProps,

@@ -8,11 +8,11 @@ import { colors } from '../constants/Colors';
 const AppTextInput = React.forwardRef((props, ref) => {
   return (
     <View style={[styles.container, props.style]}>
-      <View style={[styles.inputWrapper, props.completed ? { borderColor: colors.black } : {}]}>
+      <View style={[props.inputStyle || styles.inputWrapper, props.completed ? { borderColor: colors.black } : {}, {flex:1, marginRight:20}]}>
         <TextInput {... props} 
           ref={ref}
-          autoFocus={true}
-          style={[props.inputStyle, {paddingTop:9}]} 
+          autoFocus={props.autoFocus}
+          style={styles.input}
           disabled={ props.disabled || props.completed }/>
       </View>
       <AppButton disabled={props.disabled} 
@@ -28,11 +28,17 @@ const AppTextInput = React.forwardRef((props, ref) => {
 })
 
 const styles = StyleSheet.create({
+  input: {
+    ... appStyles.normal16Text,
+    color: colors.black
+  },
   inputWrapper : {
-    ... appStyles.borderUnderscore,
     flex: 1,
     marginRight: 10,
-    paddingLeft: 10
+    paddingHorizontal: 10,
+    paddingBottom: 5,
+    borderBottomColor: colors.warmGrey,
+    borderBottomWidth: 1
   },
   container: {
     flexDirection: "row",
