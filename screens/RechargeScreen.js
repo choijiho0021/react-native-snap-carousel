@@ -104,7 +104,7 @@ class RechargeScreen extends Component {
             <Text style={styles.iccidTitle}>ICCID</Text>
             <View style={styles.iccidRow}>
             {
-              seg.map((s,i) => <Text key={i} style={styles.iccid}>{s}</Text>)
+              seg.map((s,i) => [<Text key={i} style={styles.iccid}>{s}</Text>, i < 3 ? <Text key={i+"-"}>-</Text> : null])
             }
             </View>
             <LabelText label={i18n.t('sim:remainingBalance')} 
@@ -123,18 +123,23 @@ class RechargeScreen extends Component {
           titleStyle={appStyles.confirmText}
           disabled={_.isEmpty(selected)}
           onPress={this._onSubmit}
-          style={appStyles.confirm}/>
+          style={styles.confirm}/>
       </SafeAreaView>
     )
   }
 }
 
 const styles = StyleSheet.create({
+  confirm: {
+    ... appStyles.confirm,
+    marginTop: 40
+  },
   container: {
     flex: 1,
   },
   upper: {
-    flex:1
+    flex:1,
+    justifyContent: 'space-evenly'
   },
   card: {
     height: 168,
@@ -153,7 +158,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   iccid: {
-    ... appStyles.normal16Text,
+    ... appStyles.roboto16Text,
     color: colors.black,
   },
   iccidBox: {

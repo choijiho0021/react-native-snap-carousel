@@ -174,6 +174,15 @@ export const appStyles = StyleSheet.create({
         letterSpacing: -0.03,
         color: colors.black
     },
+    roboto16Text: {
+        fontFamily: "Roboto-Regular",
+        fontSize: 16,
+        fontWeight: "normal",
+        fontStyle: "normal",
+        lineHeight: 19,
+        letterSpacing: 0.22,
+        color: colors.black
+    },
     normal16Text: {
 //        fontFamily: "AppleSDGothicNeo",
         fontSize: 16,
@@ -199,7 +208,7 @@ export const appStyles = StyleSheet.create({
         color: colors.black
     },
     price: {
-//        fontFamily: "Roboto",
+        fontFamily: "Roboto-Bold",
         fontSize: 22,
         fontWeight: "bold",
         fontStyle: "normal",
