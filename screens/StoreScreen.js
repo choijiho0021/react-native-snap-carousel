@@ -41,8 +41,6 @@ class CountryItem extends Component {
   render() {
     const {item} = this.props
 
-    console.log('render item', item)
-
     return (
       <View key={item.key} style={styles.productList}>
         {item.data.map(elm => (

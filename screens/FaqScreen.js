@@ -9,23 +9,34 @@ import {
 import i18n from '../utils/i18n'
 import _ from 'underscore'
 import AppBackButton from '../components/AppBackButton';
-import { TabView, SceneMap } from 'react-native-tab-view';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import pageApi from '../utils/api/pageApi';
 import { colors } from '../constants/Colors';
 import { appStyles } from '../constants/Styles';
 import AppFlatListItem from '../components/AppFlatListItem';
 
-const renderItem = ({item}) => (
-  <AppFlatListItem key={item.key} item={item} />
-)
 
-const FaqList = (data) => () => {
-  return (
-    <View style={styles.container}>
-      <FlatList renderItem={renderItem} data={data} />
-    </View>
-  )
+class FaqList extends Component {
+  constructor(props) {
+    super(props)
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return nextProps.data != this.props.data
+  }
+
+  _renderItem({item}) {
+    return (<AppFlatListItem key={item.key} item={item} />)
+  }
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <FlatList renderItem={this._renderItem} data={this.props.data} />
+      </View>
+    )
+  }
 }
 
 class FaqScreen extends Component {
@@ -54,6 +65,7 @@ class FaqScreen extends Component {
     this._onPress = this._onPress.bind(this)
     this._onIndexChange = this._onIndexChange.bind(this)
     this._refreshData = this._refreshData.bind(this)
+    this._renderScene = this._renderScene.bind(this)
   } 
 
   componentDidMount() {
@@ -100,23 +112,31 @@ class FaqScreen extends Component {
     })
   }
 
+  _renderScene = ({ route, jumpTo }) => {
+    return <FaqList data={this.state[route.key]} jumpTp={jumpTo} />
+  }
+
+  _renderTabBar = (props) => {
+    return <TabBar
+      {...props}
+      tabStyle={{backgroundColor:colors.whiteTwo}}
+      activeColor={colors.clearBlue}
+      inactiveColor={colors.warmGrey}
+      pressColor={colors.white}
+    />
+  }
 
   render() {
-    const { general, payment, lost, refund, querying} = this.state
 
     return (
       <View style={styles.container}>
-        <AppActivityIndicator visible={querying} />
+        <AppActivityIndicator visible={this.state.querying} />
         <TabView style={styles.container} 
           navigationState={this.state}
-          renderScene={SceneMap({
-            'general' : FaqList( general),
-            'payment' : FaqList( payment),
-            'lost' : FaqList( lost),
-            'refund' : FaqList( refund),
-          })}
+          renderScene={this._renderScene}
           onIndexChange={this._onIndexChange}
           initialLayout={{ width: Dimensions.get('window').width }}
+          renderTabBar={this._renderTabBar}
         />
       </View>
     )
@@ -148,6 +168,9 @@ const styles = StyleSheet.create({
   },
   button: {
     paddingHorizontal: 20
+  },
+  tabBarLabel: {
+    ... appStyles.normal14Text
   }
 });
 
