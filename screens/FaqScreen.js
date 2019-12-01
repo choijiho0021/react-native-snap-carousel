@@ -1,11 +1,9 @@
-import React, {useState, Component} from 'react';
+import React, {Component} from 'react';
 import {
   StyleSheet,
   View,
   Dimensions,
-  Text,
   FlatList,
-  TouchableOpacity
 } from 'react-native';
 
 import i18n from '../utils/i18n'
@@ -14,38 +12,18 @@ import AppBackButton from '../components/AppBackButton';
 import { TabView, SceneMap } from 'react-native-tab-view';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import pageApi from '../utils/api/pageApi';
-import utils from '../utils/utils';
-import AppIcon from '../components/AppIcon';
 import { colors } from '../constants/Colors';
 import { appStyles } from '../constants/Styles';
+import AppFlatListItem from '../components/AppFlatListItem';
 
-const renderItem = (checked, setChecked) => ({item}) => (
-  <TouchableOpacity onPress={() => setChecked({
-    ... checked,
-    [item.uuid] : ! checked[item.uuid] 
-  })} >
-    <View>
-      <View style={styles.row}>
-        <Text style={styles.title}>{item.title}</Text>
-        <AppIcon style={styles.button} name={checked[item.uuid] ? "iconArrowUp" : "iconArrowDown"} />
-      </View>
-      {
-        checked[item.uuid] && <Text style={styles.body}>{utils.htmlToString(item.body)}</Text>
-      }
-    </View>
-  </TouchableOpacity>
+const renderItem = ({item}) => (
+  <AppFlatListItem key={item.key} item={item} />
 )
-    //<Text>{utils.htmlToString(item.body)}</Text>
 
 const FaqList = (data) => () => {
-  const [ checked, setChecked] = useState({})
-
   return (
     <View style={styles.container}>
-      <FlatList renderItem={renderItem(checked, setChecked)} 
-        extraData={checked}
-        data={data} 
-        keyExtractor={item => item.uuid}/>
+      <FlatList renderItem={renderItem} data={data} />
     </View>
   )
 }
