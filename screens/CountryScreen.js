@@ -66,7 +66,6 @@ class CountryScreen extends Component {
   }
 
   componentDidMount() {
-
     // const key = this.props.navigation.getParam('key')
     
     this.props.action.cart.cartFetch()
@@ -84,7 +83,7 @@ class CountryScreen extends Component {
     this.setState({
       prodData: prodList.filter(item => item.ccode == prod.ccode).map(item => ({
         ... item,
-        key: item.uuid,
+        key: item.uuid
       }))
     })
   }
@@ -170,7 +169,7 @@ class CountryScreen extends Component {
 
   render() {
     const { idx, prodList, startDate, name} = this.props.product,
-      { showDateModal, data, desc, prodData} = this.state,
+      { showDateModal, data, desc, prodData, title} = this.state,
       imageUrl = prodList.length > idx >= 0 ? prodList[idx].imageUrl : ''
       
     console.log('HTTPIMGURL', {uri:api.httpImageUrl(imageUrl)})
@@ -179,7 +178,7 @@ class CountryScreen extends Component {
       <SafeAreaView style={styles.container}>
         <Image style={styles.box} source={{uri:api.httpImageUrl(imageUrl)}}/>
         {/* todo title 보내주도록 변경 필요 */}
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {title:'noti', text:prodData[0].body})}>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {title:this.props.navigation.getParam('title'), text:prodData[0].body})}>
           <View style={styles.detail}>
             <Text style={appStyles.normal14Text}>{"상세보기"}</Text>
             <AppIcon style={{marginRight:20}} name="iconArrowRight" size={10} />
