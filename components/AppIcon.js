@@ -11,6 +11,7 @@ const images = {
   btnMypage : [ require( tabbarPath + 'btnMypage.png'), require( tabbarPath + 'btnMypageSel.png')],
   btnSetup : [ require( tabbarPath + 'btnSetup.png'), require( tabbarPath + 'btnSetupSel.png')],
   btnCheck2 : [ require( mainPath + 'btnCheck2.png'), require( mainPath + 'btnCheck2Sel.png')],
+  btnArrowRight2Blue : [ require( mainPath + 'btnArrowRight2Blue.png')],
   iconArrowRight : [ require( mainPath + 'iconArrowRight.png')],
   iconArrowUp : [ require( mainPath + 'iconArrowUp.png')],
   iconArrowDown : [ require( mainPath + 'iconArrowDown.png')],

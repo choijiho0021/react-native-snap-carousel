@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { createStackNavigator } from 'react-navigation-stack';
 import {createBottomTabNavigator } from 'react-navigation-tabs';
 
@@ -37,6 +37,7 @@ import BoardMsgRespScreen from '../screens/BoardMsgRespScreen';
 import SimpleTextScreen from '../screens/SimpleTextScreen';
 import FaqScreen from '../screens/FaqScreen';
 import GuideScreen from '../screens/GuideScreen';
+import { colors } from '../constants/Colors';
 
 const config = Platform.select({
   web: { headerMode: 'screen' },
@@ -71,7 +72,7 @@ HomeStack.navigationOptions = ({navigation}) => {
     tabBarVisible: navigation.state.index == 0,
     tabBarLabel: i18n.t('home'),
     tabBarIcon: ({ focused }) => (
-      <AppIcon focused={focused} name="btnHome" />
+      <AppIcon focused={focused} name="btnHome" style={styles.tabBarIcon}/>
     ),
   }
 };
@@ -94,7 +95,7 @@ StoreStack.navigationOptions =  ({navigation}) => {
     tabBarVisible: navigation.state.index == 0,
     tabBarLabel: i18n.t('store'),
     tabBarIcon: ({ focused }) => (
-      <AppIcon focused={focused} name="btnStore" />
+      <AppIcon focused={focused} name="btnStore" style={styles.tabBarIcon}/>
     ),
   }
 };
@@ -113,7 +114,7 @@ const SettingsStack = createStackNavigator(
 SettingsStack.navigationOptions = {
   tabBarLabel: i18n.t('setting'),
   tabBarIcon: ({ focused }) => (
-    <AppIcon focused={focused} name="btnSetup" />
+    <AppIcon focused={focused} name="btnSetup" style={styles.tabBarIcon}/>
   ),
 };
 
@@ -128,7 +129,7 @@ const MyPageStack = createStackNavigator(
 MyPageStack.navigationOptions = {
   tabBarLabel: i18n.t('mypage'),
   tabBarIcon: ({ focused }) => (
-    <AppIcon focused={focused} name="btnMypage" />
+    <AppIcon focused={focused} name="btnMypage" style={styles.tabBarIcon}/>
   ),
 };
 
@@ -159,7 +160,7 @@ const BadgedIcon = withBadge(({cartItems}) => cartItems, {left:20},
 CartStack.navigationOptions = {
   tabBarLabel: i18n.t('cart'),
   tabBarIcon: ({ focused }) => (
-    <BadgedIcon focused={focused} name="btnCart" />
+    <BadgedIcon focused={focused} name="btnCart" style={styles.tabBarIcon}/>
   ),
 };
 
@@ -171,8 +172,18 @@ const tabNavigator = createBottomTabNavigator({
   CartStack,
   MyPageStack,
   SettingsStack,
+}, {
+  tabBarOptions: {
+    inactiveTintColor: colors.black
+  }
 });
 
 tabNavigator.path = '';
 
+const styles = StyleSheet.create({
+  tabBarIcon: {
+    marginTop: 5
+  }
+})
+ 
 export default tabNavigator;

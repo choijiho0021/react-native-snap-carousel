@@ -7,6 +7,7 @@ import {
   Platform,
   TouchableOpacity,
   StatusBar,
+  Dimensions,
 } from 'react-native';
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
@@ -143,6 +144,8 @@ class HomeScreen extends Component {
           activeDotIndex={activeSlide}
           containerStyle={{paddingVertical:5}}
           dotStyle={styles.dot}
+          inactiveDotOpacity={1}
+          inactiveDotScale={1}
           inactiveDotStyle={styles.inactiveDot}
         />
       </View>
@@ -156,7 +159,7 @@ class HomeScreen extends Component {
           <Text style={styles.text}>{item.title}</Text>
         </View> :
         <Image source={{uri:api.httpImageUrl(item.imageUrl)}} style={styles.slide}/>
-    );
+    )
   }
   
   _navigate = (key) => () => {
@@ -227,10 +230,7 @@ class HomeScreen extends Component {
         <Text style={[appStyles.normal14Text, {marginLeft:10, flex:1}]}>{i18n.t('home:guide')}</Text> 
         <TouchableOpacity style={styles.roundBox} onPress={this._navigate('Guide')}>
           <Text style={styles.checkGuide}>{i18n.t('home:checkGuide')}</Text> 
-          <View style={{flexDirection:'row'}}>
-            <View style={styles.rightArrow1} />
-            <View style={styles.rightArrow2} />
-          </View>
+          <AppIcon name="btnArrowRight2Blue" style={{marginLeft:14}}/>
         </TouchableOpacity>
       </View>
     )
@@ -238,6 +238,7 @@ class HomeScreen extends Component {
 
   render() {
     const { darkMode } = this.state
+    console.log('carousel', sliderWidth, itemWidth, Dimensions.get('window'))
 
     return (
       <View style={styles.container}>
@@ -249,10 +250,11 @@ class HomeScreen extends Component {
             renderItem={this._renderItem}
             autoplay={true}
             loop={true}
+            decelerationRate={true}
             lockScrollWhileSnapping={true}
             onSnapToItem={(index) => this.setState({ activeSlide: index }) }
             sliderWidth={sliderWidth}
-            itemWidth={itemWidth} />
+            itemWidth={sliderWidth} />
           { this._pagination() }
         </View>
         {
@@ -317,14 +319,15 @@ const styles = StyleSheet.create({
     height: 84,
     backgroundColor: "#f5f5f5",
     flexDirection: "row",
-    alignItems: 'center'
+    alignItems: 'center',
   },
   menu: {
     marginHorizontal: 20,
     marginTop: 30,
     flexDirection: "row",
     justifyContent: 'space-around',
-    alignItems:'center'
+    alignItems:'center',
+    flex:1
   },
   menuBox: {
     height: 70,
@@ -359,31 +362,30 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: colors.white,
-    justifyContent: 'space-between',
     flex: 1
   },
   slide: {
-    height: 160,
+    height: 180,
+    marginLeft: 20,
   },
   overlay: {
     backgroundColor:'rgba(0,0,0,0.3)',
-    height: 160,
+    height: 180,
+    marginLeft: 20,
   },
   carousel: {
-    alignItems: 'center'
+    alignItems: 'flex-end',
   },
   dot: {
     width: 20,
     height: 6,
     borderRadius: 3.5,
-    marginLeft: 5,
     backgroundColor: colors.clearBlue
   },
   inactiveDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    marginLeft: 5,
     backgroundColor: colors.lightGrey
   },
   pagination: {
