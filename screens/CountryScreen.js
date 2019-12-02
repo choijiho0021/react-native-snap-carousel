@@ -32,18 +32,15 @@ import AppPrice from '../components/AppPrice';
 import withBadge from '../components/withBadge'
 import AppAlert from '../components/AppAlert';
 
-const BadgeAppButton = withBadge(({cartItems}) => cartItems, {badgeStyle:{left:5,bottom:5}}, 
+const BadgeAppButton = withBadge(({cartItems}) => cartItems, {badgeStyle:{right:5,top:10}}, 
   (state) => ({cartItems: (state.cart.get('orderItems') || []).reduce((acc,cur) => acc + cur.qty, 0)}))(AppButton)
 
 class CountryScreen extends Component {
   static navigationOptions = (navigation) => ({
     //todo 해당 국가 이름으로 변경해야함 
-    headerLeft: AppBackButton({navigation, title:i18n.t('product')}),
+    headerLeft: AppBackButton({navigation, title:navigation.navigation.getParam('title')}),
     headerRight: (
-      //touch 영역을 위해서 추가 - 나중에 삭제하도록 함
-      <TouchableOpacity onPress={navigation.navigation.getParam('Cart')}>
         <BadgeAppButton key="cart" style={styles.btnCartIcon} onPress={navigation.navigation.getParam('Cart')}iconName="btnCart" />
-      </TouchableOpacity>
     )
   })
 

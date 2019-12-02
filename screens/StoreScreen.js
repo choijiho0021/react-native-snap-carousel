@@ -228,8 +228,10 @@ class StoreScreen extends Component {
   }
  
   _onPressItem = (key) => {
+    const {allData} = this.state
+
     this.props.action.product.selectCountry({uuid: key})
-    this.props.navigation.navigate('Country')
+    this.props.navigation.navigate('Country',{title:allData.filter(elm => elm.uuid == key)[0].cntry})
   }
 
   /*
