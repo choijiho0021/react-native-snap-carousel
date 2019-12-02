@@ -134,7 +134,9 @@ class PymMethodScreen extends Component {
         value.map((v,idx) => <AppButton 
           key={idx+""} 
           title={v.title} 
-          style={[styles.button, (v.key == selected) ? {borderColor:colors.clearBlue} : {}]} 
+          style={styles.button}
+          checked={v.key == selected}
+          checkedColor={colors.clearBlue}
           onPress={this._onPress(v.key)}
           titleStyle={styles.buttonText}/>)
       }
@@ -146,8 +148,8 @@ class PymMethodScreen extends Component {
   _renderItem({item}) {
     return (
       <View style={styles.row}>
-        <Text style={styles.normalText14}>{item.title}</Text>
-        <Text style={styles.normalText16}>{utils.price(item.amount)}</Text>
+        <Text key="title" style={styles.normalText14}>{item.title}</Text>
+        <Text key="amount" style={styles.normalText16}>{utils.price(item.amount)}</Text>
       </View>
     )
   }
@@ -171,52 +173,52 @@ class PymMethodScreen extends Component {
     )
   }
 
-_address(){
-  return (
-    <View>
-      {
-        // 주소
-        this.props.order.profile.length > 0 &&
-        <View>
-          <Text style={styles.title}>{i18n.t('pym:delivery')}</Text>
-          <View style={styles.profileTitle}>
-            <Text style={styles.profileTitleText}>{this.props.order.profile[0].organization}</Text>
-            <View style={{flex: 1, alignItems: 'flex-end'}}>
-              <AppButton title={i18n.t('change')} 
-                        textStyle={styles.chgButtonText}
-                        style={[styles.chgButton]}
-                        onPress={() => this.props.navigation.navigate('CustomerProfile')}/>
+  _address(){
+    return (
+      <View>
+        {
+          // 주소
+          this.props.order.profile.length > 0 &&
+          <View>
+            <Text style={styles.title}>{i18n.t('pym:delivery')}</Text>
+            <View style={styles.profileTitle}>
+              <Text style={styles.profileTitleText}>{this.props.order.profile[0].organization}</Text>
+              <View style={{flex: 1, alignItems: 'flex-end'}}>
+                <AppButton title={i18n.t('change')} 
+                          textStyle={styles.chgButtonText}
+                          style={[styles.chgButton]}
+                          onPress={() => this.props.navigation.navigate('CustomerProfile')}/>
+              </View>
             </View>
+            <AddressCard 
+              textStyle={styles.addrCardText}
+              mobileStyle={[styles.addrCardText, styles.colorWarmGrey]}
+              style={styles.addrCard}
+              profile={this.props.order.profile[0]}
+              mobile={this.props.account.mobile}/>
           </View>
-          <AddressCard 
-          textStyle={styles.addrCardText}
-          mobileStyle={[styles.addrCardText, styles.colorWarmGrey]}
-          style={styles.addrCard}
-          profile={this.props.order.profile[0]}
-          mobile={this.props.account.mobile}/>
-        </View>
-      }
+        }
 
-      <View style={styles.divider}/>
+        <View style={styles.divider}/>
 
-      {
-        // 주소 등록 
-        // == 0
-        this.props.order.profile.length > 0 &&
-        <View>
-          <Text style={styles.title}>{i18n.t('pym:delivery')}</Text>
-          <View style={{flex:1}}>
-            <AppButton title={i18n.t('reg:address')} 
-              textStyle={appStyles.confirmText}
-              style={[appStyles.confirm, styles.addrBtn]}
-              onPress={() => this.props.navigation.navigate('AddProfile')}/>
+        {
+          // 주소 등록 
+          // == 0
+          this.props.order.profile.length > 0 &&
+          <View>
+            <Text style={styles.title}>{i18n.t('pym:delivery')}</Text>
+            <View style={{flex:1}}>
+              <AppButton title={i18n.t('reg:address')} 
+                textStyle={appStyles.confirmText}
+                style={[appStyles.confirm, styles.addrBtn]}
+                onPress={() => this.props.navigation.navigate('AddProfile')}/>
+            </View>
+            <View style={styles.divider}/>
           </View>
-          <View style={styles.divider}/>
-        </View>
-      }
-    </View>
-  )
-}
+        }
+      </View>
+    )
+  }
 
   render() {
     const { data, selected, buyProduct, mode } = this.state

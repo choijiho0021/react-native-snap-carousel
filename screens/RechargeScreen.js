@@ -28,7 +28,7 @@ class RechargeScreen extends Component {
     super(props)
 
     this.state = {
-      selected: 5000
+      selected: "5000"
     }
 
     this._onSubmit = this._onSubmit.bind(this)
