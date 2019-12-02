@@ -32,11 +32,12 @@ import AppPrice from '../components/AppPrice';
 import withBadge from '../components/withBadge'
 import AppAlert from '../components/AppAlert';
 
-const BadgeAppButton = withBadge(({cartItems}) => cartItems, {left:5,top:5}, 
+const BadgeAppButton = withBadge(({cartItems}) => cartItems, {badgeStyle:{left:5,bottom:5}}, 
   (state) => ({cartItems: (state.cart.get('orderItems') || []).reduce((acc,cur) => acc + cur.qty, 0)}))(AppButton)
 
 class CountryScreen extends Component {
   static navigationOptions = (navigation) => ({
+    //todo 해당 국가 이름으로 변경해야함 
     headerLeft: AppBackButton({navigation, title:i18n.t('product')}),
     headerRight: (
       //touch 영역을 위해서 추가 - 나중에 삭제하도록 함
@@ -180,8 +181,8 @@ class CountryScreen extends Component {
     return (
       <SafeAreaView style={styles.container}>
         <Image style={styles.box} source={{uri:api.httpImageUrl(imageUrl)}}/>
-        
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {key:'noti', text:prodData[0].body})}>
+        {/* todo title 보내주도록 변경 필요 */}
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {title:'noti', text:prodData[0].body})}>
           <View style={styles.detail}>
             <Text style={appStyles.normal14Text}>{"상세보기"}</Text>
             <AppIcon style={{marginRight:20}} name="iconArrowRight" size={10} />
@@ -207,7 +208,7 @@ class CountryScreen extends Component {
             onPress={this.onPressBtn('buy')}/>
         </View>
 
-        <DateModal visible={showDateModal} onPress={this.onPressDate}/>
+        {/* <DateModal visible={showDateModal} onPress={this.onPressDate}/> */}
       </SafeAreaView>
     )
   }

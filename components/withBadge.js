@@ -8,7 +8,9 @@ const styles = StyleSheet.create({
     borderRadius: 9,
     height: 18,
     minWidth: 0,
-    width: 18
+    paddingLeft:5,
+    paddingRight:5
+    // width: 18
   },
   badgeContainer: {
     position: "absolute"
