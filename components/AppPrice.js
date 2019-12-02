@@ -7,8 +7,7 @@ import i18n from '../utils/i18n'
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    alignItems: 'flex-end'
-    // alignItems: 'baseline'
+    alignItems: 'baseline'
   },
   price : {
     ... appStyles.price,

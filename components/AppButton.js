@@ -31,18 +31,32 @@ const styles = StyleSheet.create({
   }
 })
 
-export default function AppButton({style, disabled=false, size, title, iconName, uri, onPress, titleStyle, checked, disableColor, disableBackgroundColor, direction}) {
+export default function AppButton({style, disabled=false, size, title, iconName, uri, 
+  onPress, titleStyle, checked, disableColor, disableBackgroundColor, direction, checkedColor}) {
   const align = direction == 'row' ? { flexDirection: 'row', justifyContent: 'flex-start' } : { justifyContent: 'center' }
 
   return (
-    <TouchableOpacity style={[style || styles.button, disabled ? {backgroundColor: disableBackgroundColor || colors.warmGrey} : {}]} disabled={disabled} onPress={onPress}>
+    <TouchableOpacity 
+      style={[style || styles.button, 
+        disabled && {backgroundColor: disableBackgroundColor || colors.warmGrey},
+        checked && {borderColor: checkedColor || colors.clearBlue}
+      ]} 
+      disabled={disabled} 
+      onPress={onPress}>
+
       <View style={[styles.container, align]}>
         {
           uri ? <Image source={{uri:api.httpImageUrl(uri)}}/> :
           iconName &&  <AppIcon name={iconName} size={size} checked={checked}/> 
         }
         {
-          title && <Text style={[titleStyle || styles.text, disabled ? {color:disableColor || colors.white} : {}]}>{ title || i18n.t('select')}</Text>
+          title && <Text 
+            style={[titleStyle || styles.text, 
+              disabled && {color:disableColor || colors.white},
+              checked && {color:checkedColor || colors.clearBlue}
+            ]}>
+            { title || i18n.t('select')}
+          </Text>
         }
       </View>
     </TouchableOpacity>

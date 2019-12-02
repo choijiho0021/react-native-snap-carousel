@@ -3,7 +3,6 @@ import {
   StyleSheet,
   Text,
   View,
-  Alert
 } from 'react-native';
 import {connect} from 'react-redux'
 
@@ -29,7 +28,7 @@ class RechargeScreen extends Component {
     super(props)
 
     this.state = {
-      selected: undefined
+      selected: 5000
     }
 
     this._onSubmit = this._onSubmit.bind(this)
@@ -81,8 +80,10 @@ class RechargeScreen extends Component {
         value.map(v => <AppButton 
           key={v+""} 
           title={utils.numberToCommaString(v)} 
-          style={[styles.button, (v == selected) ? {borderColor:colors.clearBlue} : {}]} 
+          style={styles.button}
           onPress={this._onPress(v+"")}
+          checked={v == selected}
+          checkedColor={colors.clearBlue}
           titleStyle={styles.buttonText}/>)
       }
       </View>

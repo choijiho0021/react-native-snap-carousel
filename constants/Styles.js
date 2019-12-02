@@ -200,7 +200,7 @@ export const appStyles = StyleSheet.create({
         color: colors.black
     },
     mobileNo: {
-//        fontFamily: "AppleSDGothicNeo",
+        fontFamily: "Roboto-Regular",
         fontSize: 16,
         fontWeight: "normal",
         fontStyle: "normal",

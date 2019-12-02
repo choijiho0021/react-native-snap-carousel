@@ -48,6 +48,9 @@ class RegisterSimScreen extends Component {
     this._onCamera = this._onCamera.bind(this)
     this._onScan = this._onScan.bind(this)
     this._updateIccid = this._updateIccid.bind(this)
+
+    this.inputIccid = React.createRef()
+    this.defaultIccid = "12345123451234512345"
   }
 
   _updateIccid(iccid) {
@@ -136,13 +139,17 @@ class RegisterSimScreen extends Component {
           <View style={styles.card}>
             <ScanSim scan={scan} onScan={this._onScan}/>
           </View>
+
+          { // ICCID 입력  
+          }
           <Text style={styles.title}>{i18n.t('mysim:title')}</Text>
-          <TouchableOpacity onPress={() => this.inputIccid.focus()} 
+          <TouchableOpacity onPress={() => this.inputIccid.current.focus()} 
             activeOpacity={1.0}
             style={styles.iccidBox}>
             <Text style={styles.iccid}>ICCID</Text>
             <TextInput style={styles.input}
-              ref={ref => this.inputIccid = ref}
+              ref={this.inputIccid}
+              placeholder={utils.toICCID(this.defaultIccid, ' - ')}
               onChangeText={this._onChangeText('iccid')}
               keyboardType="numeric"
               returnKeyType='done'
@@ -152,11 +159,13 @@ class RegisterSimScreen extends Component {
               focus={focusInputIccid}
               value={utils.toICCID(iccid, ' - ')} />
           </TouchableOpacity>
+
           <AppButton iconName="iconCamera" 
             style={styles.scanButton}
             title={i18n.t(scan ? 'reg:scanOff' : 'reg:scan')} titleStyle={styles.scanTitle}
             onPress={() => this._onCamera(!scan)}
             direction="row"/>
+
           <View style={styles.actCodeBox}>
             <View style={styles.actCode}>
               <Text style={styles.actCodeTitle}>{i18n.t('reg:actCode')}</Text>
@@ -164,12 +173,14 @@ class RegisterSimScreen extends Component {
                 onChangeText={this._onChangeText('actCode')}
                 keyboardType="numeric"
                 returnKeyType='done'
+                placeholder="1234"
                 enablesReturnKeyAutomatically={true}
                 maxLength={4}
                 clearTextOnFocus={true}
                 value={actCode} />
             </View>
           </View>
+
           <AppButton style={appStyles.confirm} 
             title={i18n.t('reg:confirm')} titleStyle={appStyles.confirmText}
             onPress={this._onSubmit} disabled={disabled}/>
@@ -214,11 +225,11 @@ const styles = StyleSheet.create({
   scanButton: {
     marginTop: 10,
     height: 20,
-    marginHorizontal: 20,
+    marginHorizontal: 30,
     justifyContent: 'flex-start'
   },
   input: {
-    ... appStyles.normal16Text,
+    ... appStyles.roboto16Text,
     marginTop: 12,
     textAlign : 'center'
   },

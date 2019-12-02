@@ -225,7 +225,7 @@ _address(){
     console.log('PROPS',this.props) // cart에서 cart 목록과 sim 목록 받음.
 
     console.log('props',this.props.cart.orderItems)
-    const sim = this.props.cart.orderItems.filter(item => item.prod.type == 'sim_card')
+    const sim = (this.props.cart.orderItems || []).filter(item => item.prod.type == 'sim_card')
 
     console.log('sim', sim )
     console.log('order',this.props.order.familyName)
