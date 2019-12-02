@@ -43,9 +43,9 @@ class CountryItem extends Component {
 
     return (
       <View key={item.key} style={styles.productList}>
-        {item.data.map(elm => (
+        {item.data.map((elm,idx) => (
             // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
-          elm ? <View key={elm.ccode} style={styles.product}>
+          elm ? <View key={elm.ccode} style={{flex:1, marginLeft:idx == 1 ? 14 : 0}}>
             <TouchableOpacity onPress={() => this.props.onPress && this.props.onPress(elm.uuid)}>
               <Image key={"img"} source={{uri:api.httpImageUrl(elm.imageUrl)}} style={styles.image}/>
               <Text key={"cntry"} style={[appStyles.bold14Text,styles.text,{marginBottom:5}]}>{elm.cntry}</Text>
@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
     textAlign: "left",
   },
   image: {
-    width: 160,
+    width: '100%',
     height: 110,
     resizeMode: 'cover',
     marginVertical:10
@@ -397,12 +397,8 @@ const styles = StyleSheet.create({
     marginTop:20,
     marginHorizontal:20
   },
-  product : {
-    width: 160
-  },
   productList : {
-    flexDirection: 'row', 
-    justifyContent: 'space-around',
+    flexDirection: 'row',
     marginTop:20,
     marginHorizontal:20
   },
