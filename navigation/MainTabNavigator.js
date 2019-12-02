@@ -41,7 +41,13 @@ import { colors } from '../constants/Colors';
 
 const config = Platform.select({
   web: { headerMode: 'screen' },
-  default: {},
+  default: {
+    defaultNavigationOptions: {
+      headerStyle: {
+        height: 56
+      },
+    },
+  },
 });
 
 const HomeStack = createStackNavigator(
@@ -174,7 +180,10 @@ const tabNavigator = createBottomTabNavigator({
   SettingsStack,
 }, {
   tabBarOptions: {
-    inactiveTintColor: colors.black
+    inactiveTintColor: colors.black,
+    style: {
+      height: 56
+    }
   }
 });
 

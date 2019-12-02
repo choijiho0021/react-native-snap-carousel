@@ -238,7 +238,6 @@ class HomeScreen extends Component {
 
   render() {
     const { darkMode } = this.state
-    console.log('carousel', sliderWidth, itemWidth, Dimensions.get('window'))
 
     return (
       <View style={styles.container}>

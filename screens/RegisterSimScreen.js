@@ -158,15 +158,17 @@ class RegisterSimScreen extends Component {
             onPress={() => this._onCamera(!scan)}
             direction="row"/>
           <View style={styles.actCodeBox}>
-            <Text style={styles.actCodeTitle}>{i18n.t('reg:actCode')}</Text>
-            <TextInput style={styles.actCodeInput}
-              onChangeText={this._onChangeText('actCode')}
-              keyboardType="numeric"
-              returnKeyType='done'
-              enablesReturnKeyAutomatically={true}
-              maxLength={4}
-              clearTextOnFocus={true}
-              value={actCode} />
+            <View style={styles.actCode}>
+              <Text style={styles.actCodeTitle}>{i18n.t('reg:actCode')}</Text>
+              <TextInput style={styles.actCodeInput}
+                onChangeText={this._onChangeText('actCode')}
+                keyboardType="numeric"
+                returnKeyType='done'
+                enablesReturnKeyAutomatically={true}
+                maxLength={4}
+                clearTextOnFocus={true}
+                value={actCode} />
+            </View>
           </View>
           <AppButton style={appStyles.confirm} 
             title={i18n.t('reg:confirm')} titleStyle={appStyles.confirmText}
@@ -193,14 +195,17 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey,
     paddingHorizontal: 30,
     textAlign: 'center',
-    color: colors.black
+    color: colors.black,
+    marginLeft: 40,
   },
   actCodeBox: {
+    marginTop: 50,
+    marginHorizontal: 35,
+    flex: 1,
+  },
+  actCode: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 50,
-    marginHorizontal: 15,
-    flex: 1
   },
   scanTitle: {
     ... appStyles.normal14Text,
