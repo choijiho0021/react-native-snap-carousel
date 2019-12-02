@@ -12,6 +12,8 @@ import org.unimodules.core.interfaces.SingletonModule;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.facebook.react.shell.MainReactPackage;
+import com.reactnativecommunity.webview.RNCWebViewPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
@@ -34,19 +36,23 @@ public class MainApplication extends Application implements ReactApplication {
 
         @Override
         protected List<ReactPackage> getPackages() {
-          @SuppressWarnings("UnnecessaryLocalVariable")
-          List<ReactPackage> packages = new PackageList(this).getPackages();
+            return Arrays.<ReactPackage>asList(
+                new MainReactPackage(),
+                new RNCWebViewPackage(),
+                    new ModuleRegistryAdapter(mModuleRegistryProvider)
+            );
+//          List<ReactPackage> packages = new PackageList(this).getPackages();
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
 
 
             // Add unimodules
-            List<ReactPackage> unimodules = Arrays.<ReactPackage>asList(
-                    new ModuleRegistryAdapter(mModuleRegistryProvider)
-            );
-            packages.addAll(unimodules);
-
-            return packages;
+//            List<ReactPackage> unimodules = Arrays.<ReactPackage>asList(
+//                    new ModuleRegistryAdapter(mModuleRegistryProvider)
+//            );
+//            packages.addAll(unimodules);
+//
+//            return packages;
         }
 
         @Override
