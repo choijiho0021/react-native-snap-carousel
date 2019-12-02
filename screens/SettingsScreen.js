@@ -45,13 +45,13 @@ class SettingsScreen extends Component {
     this._logout = this._logout.bind(this)
   }
 
-  _onPress = (key, route) => () => {
+  _onPress = (key, title, route) => () => {
     if ( key == 'logout') {
       this._showModal(true)
     }
 
     if ( route) {
-      this.props.navigation.navigate(route, {key})
+      this.props.navigation.navigate(route, {key,title})
     }
   }
 
@@ -75,7 +75,7 @@ class SettingsScreen extends Component {
 
   _renderItem = ({item}) => {
     return (
-      <TouchableOpacity onPress={this._onPress(item.key, item.route)}>
+      <TouchableOpacity onPress={this._onPress(item.key, item.value, item.route)}>
         <View style={styles.row}>
           <Text style={styles.itemTitle}>{item.value}</Text>
           <AppIcon style={{alignSelf:'center'}} name="iconArrowRight"/>

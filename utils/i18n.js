@@ -233,6 +233,7 @@ const en = {
   "pym:payco": "Payco",
 
   "err:login" : "Please login first",
+  "err:body"  : "There is no body to show",
 
   "guide:title": "Guide",
   "guide:buy": "Please, purchase Rokebi USIM, firstly.",
@@ -478,6 +479,7 @@ const ko = {
   "pym:payco": "페이코",
   "pym:syrup": "시럽",
   "err:login" : "로그인 후 이용해 주세요",
+  "err:body"  : "본문이 없습니다",
 
   "guide:title": "사용 가이드",
   "guide:buy": "먼저 로깨비 유심을 구매해 주세요.\n다양한 채널로 구매 가능합니다.",

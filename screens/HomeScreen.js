@@ -105,10 +105,10 @@ class HomeScreen extends Component {
       if ( ! _.isEmpty(mobile) && ! loggedIn) {
         this._login(mobile, pin, iccid)
       }
+    }
     
-      if (prevProps.account.loggedIn != loggedIn) {
-        loggedIn ? this.props.action.noti.getNotiList(mobile) : this.props.action.noti.init()
-      }
+    if (prevProps.account.loggedIn != loggedIn) {
+      loggedIn ? this.props.action.noti.getNotiList(mobile) : this.props.action.noti.init()
     }
   }
 

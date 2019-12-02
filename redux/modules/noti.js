@@ -14,9 +14,25 @@ export const readNoti = createAction(READ_NOTI, notiAPI.read)
 export const updateNoti = createAction(UPDATE_NOTI, notiAPI.update)
 export const init = createAction(INIT)
 
+export const notiReadAndGet = (uuid,mobile,auth) => {
+  return (dispatch,getState) => {
+    return dispatch(readNoti(uuid,auth)).then(
+      resp => {
+        if (resp.result == 0 && resp.objects.length > 0) {
+          return dispatch(getNotiList(mobile))
+        }
+        throw new Error('Failed to read Noti and Get notiList')
+      },
+      err => {
+        throw err
+      })
+  }
+}
+
 const initialState = Map({
   notiList: []
 })
+
 
 export default handleActions({
 
@@ -34,8 +50,4 @@ export default handleActions({
       return state
     }
   }),
-
-  ... pender({
-    type: READ_NOTI,
-  })
 }, initialState)

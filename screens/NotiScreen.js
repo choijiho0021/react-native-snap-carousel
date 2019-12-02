@@ -34,15 +34,15 @@ class NotiScreen extends Component {
     }
   }
 
-  _onPress = (uuid,body) => () => {
-    this.props.action.noti.readNoti(uuid, this.props.auth )
+  _onPress = (uuid, bodyTitle, body) => () => {
+    this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
     //todo:notitype에 따라서 이동하는 경로가 바뀌어야 함
-    this.props.navigation.navigate('SimpleText', {key:'noti', text:body})
+    this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:bodyTitle, text:body})
   }
 
   _renderItem = ({item}) => {
       return (
-        <TouchableOpacity onPress={this._onPress(item.uuid,item.body)}>
+        <TouchableOpacity onPress={this._onPress(item.uuid, item.title, item.body)}>
           <View key={item.uuid} style={styles.notibox}>
             <View key='notitext' style={styles.notiText} >
               <Text key='created' style={styles.created}>{item.created}</Text>
