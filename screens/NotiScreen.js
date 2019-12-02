@@ -35,7 +35,7 @@ class NotiScreen extends Component {
   }
 
   _onPress = (uuid,body) => () => {
-    this.props.action.noti.readNoti(uuid, this.props.auth )
+    this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
     //todo:notitype에 따라서 이동하는 경로가 바뀌어야 함
     this.props.navigation.navigate('SimpleText', {key:'noti', text:body})
   }
