@@ -38,7 +38,6 @@ class RegisterMobileScreen extends Component {
     this.state = {
       querying: false,
       pin: undefined,
-      disable: true,
       mobile: undefined,
       authorized: undefined,
       authNoti: false,
@@ -125,11 +124,15 @@ class RegisterMobileScreen extends Component {
   }
 
   _onChangeText = (key) => (value) => {
+    const { authorized } = this.state
+
     const val = {
       [key]: value
     }
 
     if (key == 'mobile') {
+      if ( authorized ) return;
+
       this.setState({ 
         pin: undefined,
         authorized: undefined
@@ -154,23 +157,16 @@ class RegisterMobileScreen extends Component {
           AppAlert.error(i18n.t('reg:failedToSendSms'))
         })
     } 
-    else if (key == 'pin') {
-      const { mobile, authNoti } = this.state
-
-      if ( mobile && authNoti && _.size(value) === 6 ) {
-        this.setState({
-          disable: false
-        })
-      }
-    }
 
     this.setState(val)
   }
 
   _onPress = (key) => () => {
     if ( key == 'pin') {
-      const { mobile, pin} = this.state
+      const { mobile, pin, authorized } = this.state
       // PIN이 맞는지 먼저 확인한다. 
+
+      if ( authorized ) return;
 
       return userApi.confirmSmsCode({ user: mobile, pass: pin })
         .then( resp => {
@@ -232,34 +228,38 @@ class RegisterMobileScreen extends Component {
 
   render() {
     const { mobile, authorized, disable, pin, confirm, authNoti, newUser } = this.state
-    const disableButton = ! authorized || ( newUser && !(confirm.get("0") && confirm.get("1")) )
+    const disableButton = ! authorized || ( newUser && !(confirm.get("0") && confirm.get("1")) ),
+      disablePin = ! mobile || ! authNoti || authorized,
+      clickablePin = mobile && authNoti && _.size(pin) === 6
 
     return (
       <SafeAreaView style={styles.container}>
         <Text style={styles.title}>{i18n.t('mobile:title')}</Text>
 
-        <InputMobile style={{marginTop:20, paddingHorizontal:20}}
+
+        <InputMobile style={{marginTop:30, paddingHorizontal:20}}
           onPress={this._onChangeText('mobile')}
-          authNoti={authNoti && typeof authorized == 'undefined'}
-          completed={authNoti} />
+          authNoti={authNoti }
+          disabled={authNoti &&  authorized}/>
 
         {
-          authNoti && <AppTextInput 
-            style={{marginTop:30, paddingHorizontal:20}}
+          <AppTextInput 
+            style={{marginTop:26, paddingHorizontal:20}}
             ref={this.authInputRef}
             placeholder={i18n.t('mobile:auth')}
             keyboardType="numeric"
             enablesReturnKeyAutomatically={true}
             maxLength={6}
             clearTextOnFocus={true}
-            disabled={disable}
+            disabled={ disablePin }
+            clickable={ clickablePin }
             autoFocus={true}
             onChangeText={this._onChangeText('pin')}
             onPress={this._onPress('pin')}
             value={pin}
             titleStyle={styles.smsButtonText}
             titleDisableColor={colors.white}
-            completed={authorized}  />
+            inputStyle={styles.inputStyle} />
         }
 
         {
@@ -357,6 +357,11 @@ const styles = StyleSheet.create({
     ... appStyles.normal14Text,
     textAlign: "center",
     color: colors.white,
+  },
+  inputStyle: {
+    flex: 1,
+    marginRight: 10,
+    paddingBottom: 9,
   }
 });
 
