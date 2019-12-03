@@ -249,7 +249,6 @@ class HomeScreen extends Component {
             renderItem={this._renderItem}
             autoplay={true}
             loop={true}
-            decelerationRate={true}
             lockScrollWhileSnapping={true}
             onSnapToItem={(index) => this.setState({ activeSlide: index }) }
             sliderWidth={sliderWidth}
