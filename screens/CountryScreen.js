@@ -73,12 +73,15 @@ class CountryScreen extends Component {
       if ( idx >= 0 && idx < prodList.length) {
         console.log('prod', prodList[idx])
       }
+    
+    const prodData = prodList.filter(item => item.ccode == prod.ccode).map(item => ({
+      ... item,
+      key: item.uuid
+    }))
 
     this.setState({
-      prodData: prodList.filter(item => item.ccode == prod.ccode).map(item => ({
-        ... item,
-        key: item.uuid
-      }))
+      prodData: prodData,
+      selected: [prodData[0]]
     })
   }
 
