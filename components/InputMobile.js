@@ -15,7 +15,7 @@ class InputMobile extends Component {
     super(props)
 
     this.state = {
-      prefix: "010",
+      //prefix: "010",
       mobile: "",
       errors: undefined
     }
@@ -62,21 +62,23 @@ class InputMobile extends Component {
   }
 
   _onPress() {
-    const {prefix, mobile} = this.state
+    const {mobile} = this.state
 
     if ( typeof this.props.onPress === 'function') {
-      this.props.onPress( (prefix + mobile).replace(/-/g, ''))
+      this.props.onPress( mobile.replace(/-/g, ''))
     }
   }
 
   render() {
-    const {prefix, mobile} = this.state
-    const {authNoti, completed} = this.props
-    const disable = ! _.isEmpty(this._error('mobile'))
+    const {mobile} = this.state
+    const {authNoti, disabled} = this.props
+
+    const clickable = _.isEmpty(this._error('mobile'))
 
     return (
       <View>
         <View style={[styles.container, this.props.style]}>
+          {/*
           <View style={styles.pickerWrapper}>
             <RNPickerSelect style={{
               ... pickerSelectStyles,
@@ -95,6 +97,7 @@ class InputMobile extends Component {
               }}
             />
           </View>
+          */}
 
           <View style={{flex:1}}>
             <AppTextInput 
@@ -102,24 +105,25 @@ class InputMobile extends Component {
               keyboardType="numeric"
               // returnKeyType='done'
               enablesReturnKeyAutomatically={true}
-              maxLength={9}
+              maxLength={13}
               blurOnSubmit={false}
               onChangeText={this._onChangeText('mobile')}
               error={this._error('mobile')}
               onPress={this._onPress}
               title={ 
-                authNoti || completed ? 
+                authNoti ? 
                   i18n.t('mobile:resendAuth') :
                   i18n.t('mobile:sendAuth')
               }
-              disabled={disable}
-              completed={completed}
+              disabled={disabled}
+              clickable={clickable}
               titleStyle={styles.text}
+              inputStyle={styles.inputStyle}
               value={utils.toPhoneNumber(mobile)}/> 
           </View>
         </View>
         {
-          authNoti && <Text style={styles.helpText}>{i18n.t('reg:authNoti')}</Text>
+          authNoti && ! disabled && <Text style={styles.helpText}>{i18n.t('reg:authNoti')}</Text>
         }
       </View>
     )
@@ -127,6 +131,10 @@ class InputMobile extends Component {
 }
 
 const styles = StyleSheet.create({
+  button: {
+    width: 90,
+    height: 40
+  },
   helpText: {
     ... appStyles.normal14Text,
     color: colors.clearBlue,
@@ -146,11 +154,16 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   text: {
-    ... appStyles.normal14Text,
+    ... appStyles.normal12Text,
     color: "#ffffff",
     lineHeight: 19,
-    letterSpacing: 0.17,
+    letterSpacing: 0.15,
   },
+  inputStyle: {
+    flex: 1,
+    marginRight: 10,
+    paddingBottom: 9,
+  }
 })
 
 const pickerSelectStyles = StyleSheet.create({
