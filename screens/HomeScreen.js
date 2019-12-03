@@ -4,10 +4,8 @@ import {
   View,
   Text,
   Image,
-  Platform,
   TouchableOpacity,
   StatusBar,
-  Dimensions,
 } from 'react-native';
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
@@ -21,7 +19,7 @@ import utils from '../utils/utils';
 import AppActivityIndicator from '../components/AppActivityIndicator'
 import AppButton from '../components/AppButton';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
-import { sliderWidth, itemWidth } from '../constants/SliderEntry.style'
+import { sliderWidth, windowHeight } from '../constants/SliderEntry.style'
 import api from '../utils/api/api';
 import promotionApi from '../utils/api/promotionApi';
 import { colors } from '../constants/Colors';
@@ -64,6 +62,17 @@ class HomeScreen extends Component {
     this._navigate = this._navigate.bind(this)
     this._userInfo = this._userInfo.bind(this)
     this._notification = this._notification.bind(this)
+    // windowHeight
+    // iphone 8 - 667
+    // iphone 11 pro max - 896
+    console.log('window height', windowHeight)
+    // this.imageHeight = Math.max( 160, 160+87) windowHeight - 100)
+    this.imageHeight = Math.max( 160, 160 + (windowHeight - 750))
+    /*
+    87
+    114
+    201
+    */
   }
 
   async componentDidMount() {
@@ -152,11 +161,13 @@ class HomeScreen extends Component {
 
   _renderItem ({item}) {
     return (
-      _.isEmpty(item.imageUrl) ?
-        <View style={styles.overlay}>
-          <Text style={styles.text}>{item.title}</Text>
-        </View> :
-        <Image source={{uri:api.httpImageUrl(item.imageUrl)}} style={styles.slide}/>
+      <View style={styles.overlay}>
+      {
+        _.isEmpty(item.imageUrl) ?
+          <Text style={styles.text}>{item.title}</Text> :
+          <Image source={{uri:api.httpImageUrl(item.imageUrl)}} style={[styles.overlay, {height:this.imageHeight}]}/>
+      }
+      </View> 
     )
   }
   
@@ -323,7 +334,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: 'space-around',
     alignItems:'center',
-    flex:1
+    flex: 1
   },
   menuBox: {
     height: 70,
@@ -360,13 +371,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     flex: 1
   },
-  slide: {
-    height: 180,
-    marginLeft: 20,
-  },
   overlay: {
     backgroundColor:'rgba(0,0,0,0.3)',
-    height: 180,
     marginLeft: 20,
   },
   carousel: {
