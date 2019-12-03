@@ -113,10 +113,8 @@ class HomeScreen extends Component {
   }
 
   _notification(type, data) {
-    console.log('notification', type, data)
     switch(type) {
       case 'register' :
-        console.log('device token', data)
         this.props.action.account.updateAccount({
           deviceToken: data
         })
