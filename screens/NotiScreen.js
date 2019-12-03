@@ -82,7 +82,8 @@ const styles = StyleSheet.create({
     height: 98,
     marginBottom: 30,
     marginHorizontal:20,
-    marginVertical:15,
+    marginTop:21,
+    marginBottom:9,
     alignItems:'center',
     justifyContent:'space-between',
     flexDirection: "row"

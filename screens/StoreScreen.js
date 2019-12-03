@@ -23,6 +23,7 @@ import { bindActionCreators } from 'redux'
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import { colors } from '../constants/Colors';
 import AppBackButton from '../components/AppBackButton';
+import AppButton from '../components/AppButton';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import AppIcon from '../components/AppIcon';
 
@@ -54,7 +55,7 @@ class CountryItem extends Component {
               <Text key={"days"} style={[appStyles.normal14Text,{color:colors.clearBlue},styles.text]}>{`${i18n.t('won')}/${i18n.t('day')}`}</Text>
               </Text>
             </TouchableOpacity> 
-          </View> : <View key="unknown" style={styles.product}/>
+          </View> : <View key="unknown" style={{flex:1}}/>
         ))}
       </View>
     )
@@ -119,10 +120,6 @@ class StoreScreen extends Component {
         { key: 'europe', title: i18n.t('store:europe'), category:'유럽' },
         { key: 'usaAu', title: i18n.t('store:usa/au'), category:'미주/호주' },
         { key: 'multi', title: i18n.t('store:multi'), category:'복수 국가' },
-
-        // { key: productApi.category.middle, title: i18n.t('store:middle'),category:'중동' },
-        // { key: productApi.category.america, title: i18n.t('store:america'),category:'아메리카' },
-        // { key: productApi.category.africa, title: i18n.t('store:africa'),category:'아프리카' },
       ],
       allData:[],
       asia: [],
@@ -314,9 +311,10 @@ class StoreScreen extends Component {
             onChangeText={this._onChangeText('country')}
             // error={this._error('email')}
             value={country} /> 
-          <TouchableOpacity onPress={this._search} style={{justifyContent:'flex-end'}}>
+            <AppButton key="search" style={{justifyContent:'flex-end'}} onPress={this._search} iconName="btnSearchOff" />
+          {/* <TouchableOpacity onPress={this._search} style={{justifyContent:'flex-end'}}>
             <AppIcon name="search" size={16}/>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         {/* } */}
         <TabView 
