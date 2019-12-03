@@ -55,14 +55,8 @@ class CountryScreen extends Component {
         {key: "apn"},
         {key: "name"},
         {key: "startDate"},
-      ],
-      showDateModal: false,
-      desc: [{key:"상품 유효기간", value:"구매 후 3년"},
-              {key:"서비스 사용기간", value:"2020. 01 ~ 2022. 10", color:"blue"},
-              {key:"상품정의", value:"완전 무제한, 무제한, 종량제"}]
+      ]
     }
-
-    this.onPressDate = this.onPressDate.bind(this)
   }
 
   componentDidMount() {
@@ -159,25 +153,17 @@ class CountryScreen extends Component {
     )
   }
 
-  onPressDate = (date) => {
-    this.props.action.product.setDate({date})
-    this.setState({
-      showDateModal: false
-    })
-  }
-
-
   render() {
     const { idx, prodList, startDate, name} = this.props.product,
-      { showDateModal, data, desc, prodData, title} = this.state,
+      { prodData, title} = this.state,
       imageUrl = prodList.length > idx >= 0 ? prodList[idx].imageUrl : ''
       
     console.log('HTTPIMGURL', {uri:api.httpImageUrl(imageUrl)})
 
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <Image style={styles.box} source={{uri:api.httpImageUrl(imageUrl)}}/>
-        {/* todo title 보내주도록 변경 필요 */}
+
         <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {title:this.props.navigation.getParam('title'), text:prodData[0].body})}>
           <View style={styles.detail}>
             <Text style={appStyles.normal14Text}>{"상세보기"}</Text>
@@ -204,7 +190,6 @@ class CountryScreen extends Component {
             onPress={this.onPressBtn('buy')}/>
         </View>
 
-        {/* <DateModal visible={showDateModal} onPress={this.onPressDate}/> */}
       </SafeAreaView>
     )
   }
