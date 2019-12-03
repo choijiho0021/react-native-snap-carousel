@@ -13,6 +13,7 @@ import pageApi from '../utils/api/pageApi';
 import AppAlert from '../components/AppAlert';
 import { colors } from '../constants/Colors';
 import { appStyles } from '../constants/Styles';
+import { ScrollView } from 'react-native-gesture-handler';
 import utils from '../utils/utils';
 
 class SimpleTextScreen extends Component {
@@ -68,11 +69,13 @@ class SimpleTextScreen extends Component {
     const {querying, body, bodyTitle} = this.state
 
     return (
-      <View style={styles.container}>
-        <AppActivityIndicator visible={querying} />
-        { bodyTitle ? <Text style={styles.bodyTitle}>{bodyTitle +'\n\n'}</Text> : null}
-        <Text style={styles.text}>{utils.htmlToString(body)}</Text>
-      </View>
+      <ScrollView style={styles.scrollContainer}>
+        <View style={styles.container}>
+          <AppActivityIndicator visible={querying} />
+          { bodyTitle ? <Text style={styles.bodyTitle}>{bodyTitle +'\n\n'}</Text> : null}
+          <Text style={styles.text}>{utils.htmlToString(body)}</Text>
+        </View>
+      </ScrollView>
     )
   }
 }
@@ -82,7 +85,9 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems:'stretch',
     paddingTop: 40,
-    paddingHorizontal: 20,
+    paddingHorizontal: 20
+  },
+  scrollContainer: {
     backgroundColor: colors.whiteTwo
   },
   text: {
