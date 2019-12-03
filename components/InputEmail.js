@@ -57,12 +57,11 @@ class InputEmail extends Component {
 
   render() {
     const {domain, email, domainIdx} = this.state
-    const _styles = styles()
 
     return (
-      <View style={[_styles.container, this.props.style]}>
-        <View style={[styles(email).textInputWrapper]}>
-          <TextInput style={[styles(email).textInput]} 
+      <View style={[styles.container, this.props.style]}>
+        <View style={[styles.textInputWrapper, email? {} : styles.emptyInput]}>
+          <TextInput style={[styles.textInput, email? {} : styles.emptyInput]} 
             placeholder={i18n.t('reg:email')}
             returnKeyType='next'
             enablesReturnKeyAutomatically={true}
@@ -71,10 +70,10 @@ class InputEmail extends Component {
             value={email} /> 
         </View>
 
-        <Text style={[appStyles.normal12Text, styles(email).textInput]}>@</Text>
+        <Text style={[appStyles.normal12Text, styles.textInput, email? {} : styles.emptyInput]}>@</Text>
 
-        <View style={[styles(domain).textInputWrapper, {flex:1, marginLeft:10}]}>
-          <TextInput style={[styles(domain).textInput]} 
+        <View style={[styles.textInputWrapper, domain? {} : styles.emptyInput, {flex:1, marginLeft:10}]}>
+          <TextInput style={[styles.textInput, domain? {} : styles.emptyInput]} 
             returnKeyType='next'
             enablesReturnKeyAutomatically={true}
             clearTextOnFocus={true}
@@ -83,16 +82,11 @@ class InputEmail extends Component {
             value={domain} /> 
         </View>
 
-        <View style={styles( domainIdx !== DIRECT_INPUT ).pickerWrapper}>
+        <View style={[styles.pickerWrapper, domainIdx === DIRECT_INPUT ? styles.emptyInput : {}]}>
           <RNPickerSelect style={{
-            placeholder: _styles.placeholder,
-            inputIOS: {
-              color: domainIdx === DIRECT_INPUT ? colors.warmGrey : colors.black,
-              borderColor: domainIdx === DIRECT_INPUT ? colors.warmGrey : colors.black,
-            },
-            inputAndroid: {
-              color: domainIdx === DIRECT_INPUT ? colors.warmGrey : colors.black,
-            },
+            placeholder: styles.placeholder,
+            inputIOS: domainIdx === DIRECT_INPUT ? styles.directInput : styles.noDirectInput,
+            inputAndroid: domainIdx === DIRECT_INPUT ? styles.directInput : styles.noDirectInput,
             iconContainer: {
               bottom: 5,
               right: 10,
@@ -109,9 +103,20 @@ class InputEmail extends Component {
   }
 }
 
-const styles = (isNonEmpty = true) => StyleSheet.create({
+const styles = StyleSheet.create({
+  noDirectInput: {
+    color: colors.black
+  },
+  directInput: {
+    color: colors.warmGrey
+  }, 
+  emptyInput: {
+    borderBottomColor: colors.lightGrey,
+    borderColor: colors.lightGrey,
+    color: colors.lightGrey
+  },
   textInputWrapper: {
-    borderBottomColor: isNonEmpty ? colors.black : colors.lightGrey,
+    borderBottomColor: colors.black,
     borderBottomWidth: 1,
     width: 106,
     marginRight: 10,
@@ -119,7 +124,7 @@ const styles = (isNonEmpty = true) => StyleSheet.create({
   },
   textInput: {
     paddingTop: 9,
-    color: isNonEmpty ? colors.black : colors.lightGrey,
+    color: colors.black,
   },
   container: {
     flexDirection: "row",
@@ -131,7 +136,7 @@ const styles = (isNonEmpty = true) => StyleSheet.create({
     width: 96,
     paddingLeft: 10,
     paddingVertical: 8,
-    borderColor: isNonEmpty ? colors.black : colors.lightGrey
+    borderColor: colors.black
   },
   placeholder: {
     ... appStyles.normal14Text
