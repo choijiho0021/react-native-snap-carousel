@@ -4,7 +4,8 @@ import {
   View,
   FlatList,
   TouchableOpacity,
-  Text
+  Text,
+  Linking
 } from 'react-native';
 
 import {appStyles} from "../constants/Styles"
@@ -36,8 +37,14 @@ class ContactScreen extends Component {
   } 
 
   _onPress = (key, route) => () => {
-    if (route) {
-      this.props.navigation.navigate(route)
+    switch(key) {
+      case 'call' :
+        Linking.openURL(`tel:114`)
+        break
+      default:
+        if (route) {
+          return this.props.navigation.navigate(route)
+        }
     }
   }
 
