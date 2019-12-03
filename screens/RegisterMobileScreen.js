@@ -259,7 +259,7 @@ class RegisterMobileScreen extends Component {
             value={pin}
             titleStyle={styles.smsButtonText}
             titleDisableColor={colors.white}
-            inputStyle={styles.inputStyle} />
+            inputStyle={[styles.inputStyle, pin ? {} : styles.emptyInput ]} />
         }
 
         {
@@ -362,6 +362,9 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 10,
     paddingBottom: 9,
+  },
+  emptyInput: {
+    borderBottomColor: colors.lightGrey
   }
 });
 
