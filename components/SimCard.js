@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.lightGrey,    
   },  
   checker: {
-    marginHorizontal: 20
+    marginRight: 20
   },
   slide: {
     width: 90,
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   },
   desc: {
     marginLeft: 30,
-    marginRight: 20,
+    marginRight: 0,
     flex: 1
   },
   itemTitle: {
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   },
   touch: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 });
 

@@ -17,7 +17,9 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
   },
   price: {
-    marginHorizontal: 20
+    marginHorizontal: 20,
+    borderTopWidth: 1,
+    borderTopColor: colors.black
   },
   summary: {
     height: 36

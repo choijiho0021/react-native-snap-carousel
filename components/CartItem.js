@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20
   },
   checker: {
-    marginHorizontal: 20
+    marginRight: 20
   },
   slide: {
     width: 90,
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   },
   desc: {
     marginLeft: 30,
-    marginRight: 20,
+    marginRight: 0,
     flex: 1
   },
   itemTitle: {
