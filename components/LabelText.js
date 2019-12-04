@@ -7,10 +7,12 @@ import {
 import {appStyles} from '../constants/Styles'
 import utils from '../utils/utils';
 import i18n from '../utils/i18n';
+import { colors } from '../constants/Colors';
 
 const styles = StyleSheet.create({
   label: {
-    ... appStyles.normal12Text,
+    ... appStyles.normal14Text,
+    color: colors.warmGrey
   },
   container: {
     alignItems: 'baseline',

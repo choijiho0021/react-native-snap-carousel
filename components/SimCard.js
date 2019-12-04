@@ -18,11 +18,17 @@ import InputNumber from './InputNumber';
 const styles = StyleSheet.create({
   container: {
     height: 148,
-    borderBottomWidth: 0.5,
-    borderBottomColor: colors.lightGrey,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.lightGrey,        
     flexDirection: 'row',
     alignItems: 'center',
+    marginHorizontal: 20
   },
+  divider: {
+    width: 335,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.lightGrey,    
+  },  
   checker: {
     marginHorizontal: 20
   },
@@ -36,7 +42,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   itemTitle: {
-    ... appStyles.bold14Text,
+    ... appStyles.bold16Text,
     color: colors.black
   },
   itemPrice: {
@@ -57,7 +63,7 @@ const styles = StyleSheet.create({
   touch: {
     flexDirection: 'row',
     alignItems: 'center'
-  }
+  },
 });
 
 export default function SimCard({name, price, balance, image, qty, onChange, onChecked, checked}) {
@@ -83,6 +89,7 @@ export default function SimCard({name, price, balance, image, qty, onChange, onC
           format="price"
           value={balance} />
       </View>
+      {/* <View style={styles.divider,{flex:1, flexDirection:'flex-end'}}/> */}
     </View>
   )
 }

@@ -20,8 +20,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.clearBlue,
   },
   text: {
-    ... appStyles.normal14Text,
-    color: "#ffffff",
+    ... appStyles.normal18Text,
+    color: colors.white,
     textAlign: "center",
     margin: 5,
   },

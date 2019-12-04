@@ -128,8 +128,7 @@ class FindAddressScreen extends Component {
               onChangeText={this._onChangeText('addr')}
               onEndEditing={this._findAddr()}
               renderAccessory={this._search}
-              value={addr} 
-              style={{borderBottomColor: colors.black}}/>
+              value={addr} />
             {/* <AppIcon name='btnSearchOff'/> */}
           </View>
           <View style={styles.divider}/>
@@ -171,10 +170,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around'
   },
   textFieldBox: {
-    width:335, 
     height: 46, 
     marginHorizontal: 20, 
-    marginBottom: 20
+    marginBottom: 20,
   },
   searchEx: {
     ... appStyles.normal14Text,
@@ -188,7 +186,7 @@ const styles = StyleSheet.create({
     fontSize: 16, 
     lineHeight: 30,
     fontWeight: 'bold', 
-    color: colors.black
+    color: colors.black,
   }
 });
 
