@@ -44,7 +44,9 @@ const config = Platform.select({
   default: {
     defaultNavigationOptions: {
       headerStyle: {
-        height: 56
+        height: 56,
+        shadowColor: 'transparent',
+        borderBottomWidth: 0 
       },
     },
   },
@@ -182,7 +184,7 @@ const tabNavigator = createBottomTabNavigator({
   tabBarOptions: {
     inactiveTintColor: colors.black,
     style: {
-      height: 56
+      height: 56,
     }
   }
 });

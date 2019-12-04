@@ -108,7 +108,7 @@ class MyPageScreen extends Component {
       <View style={{marginTop:20}}>
         <View >
           <AppUserPic url={userPictureUrl} icon="imgPeopleL" style={styles.userPicture} onPress={this._changePhoto} />
-          <AppIcon name="imgPeoplePlus" style={{bottom:20, right:-29}}/>
+          <AppIcon name="imgPeoplePlus" style={{bottom:20, right:-29, alignSelf:'center'}}/>
         </View>
 
         <LabelText key='iccid' 
