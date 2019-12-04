@@ -232,7 +232,7 @@ class HomeScreen extends Component {
         <Text style={[appStyles.normal14Text, {marginLeft:10, flex:1}]}>{i18n.t('home:guide')}</Text> 
         <TouchableOpacity style={styles.roundBox} onPress={this._navigate('Guide')}>
           <Text style={styles.checkGuide}>{i18n.t('home:checkGuide')}</Text> 
-          <AppIcon name="btnArrowRight2Blue" style={{marginLeft:14}}/>
+          <AppIcon name="btnArrowRight2Blue" style={{marginLeft:14, alignSelf:'center'}}/>
         </TouchableOpacity>
       </View>
     )

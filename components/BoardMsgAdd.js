@@ -4,7 +4,9 @@ import {
   View,
   Text,
   findNodeHandle,
-  TextInput
+  TextInput,
+  TouchableOpacity,
+  Image
 } from 'react-native';
 import {connect} from 'react-redux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -19,9 +21,26 @@ import AppActivityIndicator from './AppActivityIndicator';
 import AppButton from './AppButton';
 import validationUtil from '../utils/validationUtil';
 import { bindActionCreators } from 'redux'
-import AppTextInput from './AppTextInput';
 import { colors } from '../constants/Colors';
 import { SafeAreaView } from 'react-navigation';
+import Constants from 'expo-constants'
+import AppAlert from './AppAlert';
+import {List} from 'immutable'
+import { sliderWidth } from '../constants/SliderEntry.style'
+import AppIcon from './AppIcon';
+
+let ImagePicker 
+if (Constants.appOwnership === 'expo') {
+  ImagePicker = {
+    openPicker : function() {
+      return Promise.resolve(undefined)
+    }
+  }
+}
+else {
+  ImagePicker = require('react-native-image-crop-picker').default
+}
+
 
 class BoardMsgAdd extends Component {
   static navigationOptions = {
@@ -54,7 +73,8 @@ class BoardMsgAdd extends Component {
       disable: false,
       checkMobile: false,
       checkEmail: false,
-      errors: undefined
+      errors: undefined,
+      attachment: List()
     }
 
     this._onSubmit = this._onSubmit.bind(this)
@@ -62,6 +82,14 @@ class BoardMsgAdd extends Component {
     this._validate = this._validate.bind(this)
     this._error = this._error.bind(this)
     this._scrolll = this._scrolll.bind(this)
+    this._addAttachment = this._addAttachment.bind(this)
+    this._rmAttachment = this._rmAttachment.bind(this)
+
+    const size = (sliderWidth - 20*2 - 33*2)/3
+    this.attachSize = {
+      width: size,
+      height: size
+    }
   } 
 
   componentDidMount() {
@@ -128,20 +156,49 @@ class BoardMsgAdd extends Component {
   _scrolll = (event) => {
     this.scroll.props.scrollToFocusedInput(findNodeHandle(event.target));
   }
+  
+  _addAttachment() {
+    ImagePicker && ImagePicker.openPicker({
+      width: 76,
+      height: 76,
+      includeBase64: true,
+      writeTempFile: false,
+      mediaType: 'photo',
+      forceJpb: true,
+      cropperChooseText: i18n.t('select'),
+      cropperCancelText: i18n.t('cancel'),
+    }).then(image => {
+      this.setState({
+        attachment: this.state.attachment.push(image)
+      })
+    }).catch(err => {
+      console.log('failed to select', err)
+    })
+  }
+
+  _rmAttachment(idx) {
+    this.setState({
+      attachment: this.state.attachment.delete(idx)
+    })
+  }
+
 
   render() {
-    const { disable, mobile, title, msg, errors = {} } = this.state
+    const { disable, mobile, title, msg, errors = {}, attachment } = this.state
     // errors object의 모든 value 값들이 undefined인지 확인한다.
     const hasError = Object.values(errors).findIndex(val => ! _.isEmpty(val)) >= 0
+    attachment.forEach(image => console.log( `data:${image.mime};base64,${image.data}`))
 
     return (
-      <KeyboardAwareScrollView 
-        resetScrollToCoords={{ x: 0, y: 0 }}
-        contentContainerStyle={styles.modalInner}
-        extraScrollHeight={80}
-        innerRef={ref => { this.scroll = ref; }}>
+      <SafeAreaView style={styles.container}>
+        <AppActivityIndicator visible={this.state.querying} />
 
-        <SafeAreaView style={styles.container}>
+        <KeyboardAwareScrollView 
+          resetScrollToCoords={{ x: 0, y: 0 }}
+          contentContainerStyle={styles.modalInner}
+          extraScrollHeight={80}
+          innerRef={ref => { this.scroll = ref; }}>
+
           <Text style={styles.label}>{i18n.t('board:contact')}</Text>
           <TextInput style={styles.button}
             placeholder={i18n.t('board:noMobile')}
@@ -156,7 +213,7 @@ class BoardMsgAdd extends Component {
           <Text style={styles.noti}>{i18n.t('board:noti')}</Text>
 
           <View style={{flex:1}}>
-            <TextInput style={styles.inputBox}
+            <TextInput style={[styles.inputBox, title && {borderColor: colors.black}]}
               placeholder={i18n.t('title')}
               returnKeyType='next'
               enablesReturnKeyAutomatically={true}
@@ -168,9 +225,8 @@ class BoardMsgAdd extends Component {
               autoCorrect={false}
               value={title} /> 
 
-            <TextInput style={[styles.inputBox, {height:208}]}
+            <TextInput style={[styles.inputBox, {height:208}, msg && {borderColor: colors.black}]}
               placeholder={i18n.t('content')}
-              returnKeyType='done'
               multiline={true}
               numberOfLines={8}
               enablesReturnKeyAutomatically={true}
@@ -183,36 +239,63 @@ class BoardMsgAdd extends Component {
               onContentSizeChange={this._scrolll}
               value={msg} />
 
-            <AppTextInput style={styles.attach} 
-              inputStyle={styles.attachInput}
-              title={i18n.t('board:attach')}/>
+            <Text style={styles.attachTitle}>{i18n.t('board:attach')}</Text>
+            <View style={styles.attachBox}>
+              {
+                attachment.map((image,idx) => (
+                  <TouchableOpacity key={image.filename} 
+                    style={[styles.attach, this.attachSize, idx < 2 && {marginRight:33}]} 
+                    onPress={() => this._rmAttachment(idx)}>
+                    <Image style={this.attachSize} source={{uri:`data:${image.mime};base64,${image.data}`}} />
+                    <AppIcon name="btnBoxCancel" style={styles.attachCancel}/>
+                  </TouchableOpacity>
+                ))
+              }
+              {
+                attachment.size < 3 && <TouchableOpacity key="add" 
+                  style={[styles.attach, this.attachSize, styles.plusButton]} onPress={this._addAttachment}>
+                    <AppIcon name="btnPhotoPlus"/>
+                  </TouchableOpacity>
+              }
+            </View>
           </View>
+        </KeyboardAwareScrollView>
 
-          <AppButton style={styles.confirm}
-            title={i18n.t('board:new')} 
-            disabled={hasError}
-            onPress={this._onSubmit}/>
-        </SafeAreaView>
-
-        <AppActivityIndicator visible={this.state.querying} />
-      </KeyboardAwareScrollView>
+        <AppButton style={styles.confirm}
+          title={i18n.t('board:new')} 
+          disabled={hasError}
+          onPress={this._onSubmit}/>
+      </SafeAreaView>
     )
   }
 }
 
 const styles = StyleSheet.create({
-  attachInput: {
-    height: 36,
+  plusButton: {
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  attachCancel: {
+    position: 'absolute',
+    right: 0, 
+    top: 0
+  },
+  attachBox: {
+    marginHorizontal: 20,
+    flexDirection: 'row',
+  },
+  attachTitle: {
+    ... appStyles.normal14Text,
+    marginTop: 30,
+    marginBottom: 10,
+    marginHorizontal: 20
+  },
+  attach: {
     borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: "solid",
     borderWidth: 1,
     borderColor: colors.lightGrey,
-    paddingHorizontal: 10,
-  },
-  attach: {
-    marginTop: 30, 
-    marginHorizontal: 20
   },
   confirm: {
     ... appStyles.normal18Text,
@@ -229,7 +312,7 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderWidth: 1,
     borderColor: colors.lightGrey,
-    color: colors.greyish,
+    color: colors.black,
     paddingHorizontal: 10,
   },
   noti: {
@@ -256,7 +339,7 @@ const styles = StyleSheet.create({
     height: 40,
     marginTop: 10,
     marginHorizontal: 20,
-    color: colors.greyish,
+    color: colors.black,
     borderBottomColor: colors.warmGrey,
     borderBottomWidth: 1
   },

@@ -29,10 +29,24 @@ class NotiScreen extends Component {
 
   componentDidMount() {
     const {mobile} = this.props.account
+    const {notiList} = this.props.noti
+
     if(mobile){
       this.props.action.noti.getNotiList(mobile)
     }
+
+    // if(! _.isEmpty(notiList)){
+    //   const notiListWithColor = notiList.map(elm => ({...elm, backgroundColor: elm.isRead == "F" ? "#f7f8f9" : colors.white}))
+    //   this.setState(notiListWithColor)
+    // }
   }
+
+  // componentDidUpdate(prevProps){
+  //   if(prevProps.noti.notiList != this.props.noti.notiList){
+  //     const notiListWithColor = this.props.notiList.map(elm => ({...elm, backgroundColor: elm.isRead == "F" ? "#f7f8f9" : colors.white}))
+  //     this.setState(notiListWithColor)
+  //   }
+  // }
 
   _onPress = (uuid, bodyTitle, body) => () => {
     this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
@@ -40,13 +54,16 @@ class NotiScreen extends Component {
     this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:bodyTitle, text:body})
   }
 
-  _renderItem = ({item}) => {
+  _renderItem = ({item,index}) => {
       return (
         <TouchableOpacity onPress={this._onPress(item.uuid, item.title, item.body)}>
-          <View key={item.uuid} style={styles.notibox}>
+          <View key={item.uuid} style={[styles.notibox,{backgroundColor:item.isRead == "F" ? "#f7f8f9" : colors.white}]}>
             <View key='notitext' style={styles.notiText} >
               <Text key='created' style={styles.created}>{item.created}</Text>
-              <Text key='title' style={styles.title}>{item.title}</Text>
+              <View style={styles.title}>
+                {index == 0 ? <Text key='titleHead' style={styles.titleHead}>●</Text> : null }
+                <Text key='titleText' style={styles.titleText}>{item.title}</Text>
+              </View>
               <Text key='body' style={styles.body} numberOfLines={3} ellipsizeMode={'tail'} >{utils.htmlToString(item.body)}
               </Text>
             </View>
@@ -66,7 +83,6 @@ class NotiScreen extends Component {
         <FlatList 
           data={notiList} 
           renderItem={this._renderItem }
-          // keyExtractor={(_,idx) => idx + ''}
           />
       </View>
     );
@@ -78,23 +94,44 @@ const styles = StyleSheet.create({
     ... appStyles.container,
     alignItems: 'stretch'
   },
-  notibox:{
-    height: 98,
-    marginBottom: 30,
-    marginHorizontal:20,
-    marginVertical:15,
-    alignItems:'center',
-    justifyContent:'space-between',
-    flexDirection: "row"
+  // notibox(color) {
+  //   ({
+  //     height: 98,
+  //     marginTop:7,
+  //     paddingLeft:18,
+  //     paddingRight:20,
+  //     alignItems:'center',
+  //     justifyContent:'space-between',
+  //     flexDirection: "row",
+  //     backgroundColor: color || colors.white
+  //   })
+  // },
+  notibox : {
+      height: 98,
+      marginTop:7,
+      paddingLeft:18,
+      paddingRight:20,
+      alignItems:'center',
+      justifyContent:'space-between',
+      flexDirection: "row"
   },
   created: {
     ... appStyles.normal12Text,
     textAlign:'left'
   },
   title:{
-    ... appStyles.normal16Text,
     marginBottom:11,
-    marginTop:5
+    marginTop:5,
+    flexDirection: "row",
+    alignItems:"center"
+  },
+  titleText:{
+    ... appStyles.normal16Text
+  },
+  titleHead:{
+    fontSize: 8,
+    color:colors.tomato,
+    marginRight:6
   },
   renderItem : {
     height: 98,
