@@ -60,7 +60,7 @@ export const registerMobile = (uuid, mobile) => {
           }
 
           const deviceToken = account.get('deviceToken')
-          if ( ! _.isEmpty(deviceToken) && resp.objects[0].deviceToken != deviceToken ) {
+          if ( ! _.isEmpty(deviceToken) ) {
             accountAttr.field_device_token = deviceToken
           }
 

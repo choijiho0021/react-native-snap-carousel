@@ -28,6 +28,9 @@ build/
 .gradle
 local.properties
 *.iml
+android/app/src/main/res/*
+android/app/src/main/assets/*
+android/app/src/main/java/com/rokebi/generated/*
 
 # node.js
 #
@@ -60,3 +63,4 @@ buck-out/
 /ios/Pods/
 
 *.swp
+ios/Podfile.lock

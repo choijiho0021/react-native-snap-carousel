@@ -38,5 +38,20 @@ target 'Rokebi' do
   use_native_modules!
 	use_unimodules!
 
+
+
+
+  pod 'react-native-webview', :path => '../node_modules/react-native-webview'
+
+  pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
+
+  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
+
+  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
+
+  pod 'ReactNativeDarkMode', :path => '../node_modules/react-native-dark-mode'
+
+  pod 'react-native-video', :path => '../node_modules/react-native-video'
+
 end
 
