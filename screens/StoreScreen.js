@@ -25,7 +25,6 @@ import { colors } from '../constants/Colors';
 import AppBackButton from '../components/AppBackButton';
 import AppButton from '../components/AppButton';
 import AppActivityIndicator from '../components/AppActivityIndicator';
-import AppIcon from '../components/AppIcon';
 
 class CountryItem extends Component {
   constructor(props) {
@@ -36,7 +35,8 @@ class CountryItem extends Component {
     // ccode 목록이 달라지면, 다시 그린다. 
     const oldData = this.props.item.data,
       newData = nextProps.item.data
-    return newData.findIndex((elm,idx) => _.isEmpty(oldData[idx]) || elm.ccode != oldData[idx].ccode) >= 0
+
+    return newData.findIndex((elm,idx) => _.isEmpty(oldData[idx]) || elm == undefined  ? true : elm.ccode != oldData[idx].ccode) >= 0
   }
 
   render() {
@@ -74,7 +74,8 @@ class StoreList extends Component {
   }
 
   _renderItem = ({item}) => {
-    return _.isEmpty(item) ? null : <CountryItem onPress={this.props.onPress} item={item}/>
+    console.log("rendeer item",item)
+    return _.isEmpty(item) ? {ccode:'nodata'} : <CountryItem onPress={this.props.onPress} item={item}/>
   }
 
   render() {
@@ -90,7 +91,7 @@ class StoreList extends Component {
           windowSize={6}
           // ListHeaderComponent={this._renderHeader}
           // refreshing={refreshing}
-          //onScroll={this._onScroll}
+          // onScroll={this._onScroll}
           // extraData={index}
           // onRefresh={() => this._refresh(true)}
         />
@@ -99,11 +100,27 @@ class StoreList extends Component {
   }
 }
 
-
 class StoreScreen extends Component {
-  static navigationOptions = (navigation) => ({
-    headerLeft: AppBackButton({navigation, title:i18n.t('store')})
-  })
+  static navigationOptions = (navigation) => {
+    const {params = {}} = navigation.navigation.state
+
+    return {
+      headerTitle : <View style={styles.headerTitle}>
+        {AppBackButton({navigation, title:i18n.t('store')})}
+        <TextInput 
+            style={styles.searchText}
+            placeholder={i18n.t('store:search')}
+            returnKeyType='search'
+            enablesReturnKeyAutomatically={true}
+            onSubmitEditing={params.search}
+            // clearTextOnFocus={true}
+            clearButtonMode='always'
+            onChangeText={(value) => params.onChangeText(value)}
+            value={params.country} />
+            <AppButton style = {styles.showSearchBar} onPress={params.search} iconName="btnSearchOff" />
+      </View>
+    }
+}
 
   constructor(props) {
     super(props)
@@ -111,10 +128,9 @@ class StoreScreen extends Component {
     this.state = {
       querying: false,
       refreshing: false,
-      showSearchBar: false,
       search: undefined,
       index: 0,
-      country:undefined,
+      country:"",
       routes: [
         { key: 'asia', title: i18n.t('store:asia'), category:'아시아'},
         { key: 'europe', title: i18n.t('store:europe'), category:'유럽' },
@@ -130,17 +146,19 @@ class StoreScreen extends Component {
 
     this._refresh = this._refresh.bind(this)
     this._onChange = this._onChange.bind(this)
-    this._onScroll = this._onScroll.bind(this)
     this._navigateToNewSim = this._navigateToNewSim.bind(this)
     this._onIndexChange = this._onIndexChange.bind(this)
     this._onPressItem = this._onPressItem.bind(this)
+    this._search = this._search.bind(this)
 
     this.offset = 0
   }
 
   componentDidMount() {
     this.props.navigation.setParams({
-      NewSim: this._navigateToNewSim
+      NewSim: this._navigateToNewSim,
+      onChangeText : this._onChangeText('country'),
+      search : this._search
     })
     this._refresh()
   }
@@ -159,8 +177,7 @@ class StoreScreen extends Component {
 
     if ( refreshing) {
       this.setState({
-        refreshing : true,
-        showSearchBar: true
+        refreshing : true
       })
     }
 
@@ -243,20 +260,23 @@ class StoreScreen extends Component {
   )
   */
 
+  /*
   _onScroll = (event) => {
     const currentOffset = event.nativeEvent.contentOffset.y
 
-    if ( this.state.showSearchBar == false && currentOffset < -20) {
-      this.setState({
-        showSearchBar : true
-      })
-    }
+    console.log("offset",currentOffset)
+    // if ( this.state.showSearchBar == false && currentOffset < -20) {
+    //   this.setState({
+    //     showSearchBar : true
+    //   })
+    // }
     if ( this.state.showSearchBar && currentOffset > 20) {
       this.setState({
         showSearchBar : false
       })
     }
   }
+  */
 
   _onChangeText = (key) => (value) => {
     this.setState({
@@ -264,10 +284,11 @@ class StoreScreen extends Component {
     })
   }
 
-  _search = () => {
+  _search() {
     const {country, index, allData} = this.state
     const key = Object.keys(productApi.category)[index]
 
+    console.log("key",key)
     this.setState({
       [key]: this.filterByCategory(allData, productApi.category[key], country)
     })
@@ -299,35 +320,17 @@ class StoreScreen extends Component {
       //AppTextInput
       <View style={appStyles.container}>
         <AppActivityIndicator visible={querying} />
-        {/* {showSearchBar ?  */}
-        <View style={styles.searchBox}>
-          <TextInput 
-            style={styles.textInput} 
-            placeholder={i18n.t('store:search')}
-            returnKeyType='search'
-            enablesReturnKeyAutomatically={true}
-            onSubmitEditing={this._search}
-            clearTextOnFocus={true}
-            onChangeText={this._onChangeText('country')}
-            // error={this._error('email')}
-            value={country} /> 
-            <AppButton key="search" style={{justifyContent:'flex-end'}} onPress={this._search} iconName="btnSearchOff" />
-          {/* <TouchableOpacity onPress={this._search} style={{justifyContent:'flex-end'}}>
-            <AppIcon name="search" size={16}/>
-          </TouchableOpacity> */}
-        </View>
-        {/* } */}
         <TabView 
           style={styles.container} 
           navigationState={this.state}
           renderScene={this.renderScene}
           onIndexChange={this._onIndexChange}
-          initialLayout={{ width: Dimensions.get('window').width }}
+          initialLayout={{ width: Dimensions.get('window').width, height:10 }}
           titleStyle={appStyles.normal14Text}
           renderTabBar={props => (
             <TabBar
               {...props}
-              tabStyle={{backgroundColor:colors.whiteTwo}}
+              tabStyle={styles.tabStyle}
               activeColor={colors.clearBlue}
               inactiveColor={colors.warmGrey}
               labelStyle={styles.tabBarLabel}
@@ -407,6 +410,26 @@ const styles = StyleSheet.create({
       fontWeight: "500",
       fontStyle: "normal",
       letterSpacing: 0.17
+  },
+  searchButton:{
+    justifyContent:'flex-end'
+  },
+  showSearchBar : {
+    marginRight:30,
+    backgroundColor:colors.white,
+    justifyContent:"flex-end"
+  },
+  searchText : {
+    flex:1,
+    marginLeft:40,
+    marginRight:10
+  },
+  headerTitle : {
+    flexDirection: 'row',
+   flex : 1
+  },
+  tabStyle: {
+    backgroundColor:colors.whiteTwo
   }
 });
 
