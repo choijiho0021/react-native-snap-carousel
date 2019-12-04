@@ -160,21 +160,21 @@ class BoardAPI {
 
         const url = `${api.httpUrl(api.path.uploadFile, '')}/node/contact_board/field_images?_format=hal_json`
 
-        const post = images.map( image => {
+        const posts = images.map( image => {
             const headers = api.headers({
                 "X-CSRF-Token": token,
                 "Content-Disposition":`file;filename="${user}_contact.${image.mime.replace('image/', '')}"`
             }, 'octet-stream') 
 
-            return api.callHttp(url, {
+            return () => api.callHttp(url, {
                 method: 'POST',
                 headers,
                 body: Buffer.from( image.data, 'base64')
             }, this.toFile)
         })
 
-        console.log('post', post)
-        return Promise.all(post)
+        return posts.reduce((p, post) => 
+            p.then( result => post().then(Array.prototype.concat.bind(result))), Promise.resolve([]))
     }
 
 }

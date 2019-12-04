@@ -30,7 +30,7 @@ class BoardMsg extends Component {
 
   render() {
     const {title, created, status, statusCode, uuid} = this.props.item
-    const date = moment(created).format('YYYY-MM-DD hh:mm:ss')
+    const date = moment(created).format('YYYY-MM-DD hh:mm:ss a')
 
     return (
       <TouchableOpacity onPress={() => this.props.onPress(uuid)}>

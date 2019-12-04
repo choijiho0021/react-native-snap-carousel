@@ -4,7 +4,6 @@ import {
   StyleSheet,
   View,
   Text,
-  TextInput
 } from 'react-native';
 
 import i18n from '../utils/i18n'
@@ -58,14 +57,16 @@ class BoardMsgRespScreen extends Component {
         <View style={{flex:1}}>
           <Text style={styles.inputBox}>{issue.title}</Text>
           <Text style={[styles.inputBox, {height:208}]}>{issue.msg}</Text>
-          <View style={styles.resp}>
-            <AppIcon name="btnReply" />
-            <View style={{marginLeft:10}}>
-              <Text style={{marginBottom:10}}>{i18n.t('board:resp')}</Text>
-              <Text>{resp.title}</Text>
-              <Text>{resp.body}</Text>
+          {
+            ! _.isEmpty(resp) && <View style={styles.resp}>
+              <AppIcon name="btnReply" />
+              <View style={{marginLeft:10}}>
+                <Text style={{marginBottom:10}}>{i18n.t('board:resp')}</Text>
+                <Text>{resp.title}</Text>
+                <Text>{resp.body}</Text>
+              </View>
             </View>
-          </View>
+          }
         </View>
 
         <AppActivityIndicator visible={this.props.pending} />
