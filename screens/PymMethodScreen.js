@@ -2,23 +2,21 @@ import React, {Component} from 'react';
 import {
   StyleSheet,
   Text,
-  View,
-  FlatList
+  View
 } from 'react-native';
 import {connect} from 'react-redux'
-import {appStyles} from "../constants/Styles"
-import i18n from '../utils/i18n'
+import { bindActionCreators } from 'redux'
 import * as accountActions from '../redux/modules/account'
 import * as orderActions from '../redux/modules/order'
 import * as cartActions from '../redux/modules/cart'
 import utils from '../utils/utils';
-import { bindActionCreators } from 'redux'
+import {appStyles} from "../constants/Styles"
+import i18n from '../utils/i18n'
+import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import _ from 'underscore'
 import { SafeAreaView } from 'react-navigation';
-import AppBackButton from '../components/AppBackButton';
-import LabelText from '../components/LabelText';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import orderApi from '../utils/api/orderApi';
 import AddressCard from '../components/AddressCard'
@@ -29,7 +27,6 @@ class PymMethodScreen extends Component {
   static navigationOptions = (navigation) => ({
     headerLeft: AppBackButton({navigation, title:i18n.t('payment')}),
   })
-
 
   constructor(props) {
     super(props)
@@ -83,6 +80,7 @@ class PymMethodScreen extends Component {
 
   //
   componentDidMount() {
+    // console.log('현재경로, ', this.props.navigation.state)
     
     const pymReq = this.props.navigation.getParam('pymReq')
     const mode = this.props.navigation.getParam('mode')
@@ -97,17 +95,6 @@ class PymMethodScreen extends Component {
     }
     this.props.action.order.getCustomerProfile(this.props.account.userId, this.props.auth)
   }
-
-  // componentDidUpdate() {
-
-  //   console.log('component update!', this.props.cart)
-  //   if(_.isEmpty(this.props.cart.orderItems)){
-  //     console.log('update!!!')
-  //     console.log('update pymreq', this.props.navigation.getParam('pymReq'))
-  //     this.props.navigation.replace('PaymentResult')
-  //   }
-    
-  // }
 
   _onSubmit() {
     const { selected} = this.state
@@ -129,7 +116,7 @@ class PymMethodScreen extends Component {
     };
 
     this.props.action.cart.makePayment( this.props.cart.orderId, this.props.auth)
-    this.props.navigation.navigate('PaymentResult', {params: params, pymReq:this.props.navigation.getParam('pymReq')})
+    this.props.navigation.navigate('PaymentResult', {params: params, pymReq:this.props.navigation.getParam('pymReq'), cartItems:this.props.cart})
   
   }
 
@@ -158,16 +145,6 @@ class PymMethodScreen extends Component {
       </View>
     )
   }
-
-
-  // _renderItem({item}) {
-  //   return (
-  //     <View style={styles.row}>
-  //       <Text key="title" style={styles.normalText14}>{item.title}</Text>
-  //       <Text key="amount" style={styles.normalText16}>{utils.price(item.amount)}</Text>
-  //     </View>
-  //   )
-  // }
 
   // _renderItemCart({item}) {
   //   const {mode} = this.state
@@ -253,29 +230,8 @@ class PymMethodScreen extends Component {
         innerRef={ref => { this.scroll = ref; }}>
 
         <SafeAreaView style={styles.container}>
-          {/* <Text style={[styles.title, styles.mrgBottom0]}>{i18n.t('pym:title')}</Text>
-          <View style={styles.productPriceInfo}>
-          {
-            this.props.cart.orderItems.map(item =>
-                this._renderItemCart({item})
-              )
-          }
-          </View>
-          <View style={styles.PriceInfo}>
-          {
-            this.props.navigation.getParam('pymReq').map(item =>
-                this._renderItem({item})
-              ) 
-          }
-          </View>
-          <View style={[styles.row, styles.total, styles.brdrBottom0]}>
-            <Text style={[appStyles.normal14Text]}>{i18n.t('cart:totalCost')} </Text>
-            <Text style={[appStyles.normal16Text, styles.colorClearBlue, styles.fontWeightNormal]}>{utils.numberToCommaString(total)+ ' ' + i18n.t('won')}</Text>
-          </View> */}
           <PaymentItemInfo cart={this.props.cart.orderItems}
-                           pymReq={this.props.navigation.getParam('pymReq')}/>
-          {/* <View style={styles.divider}/> */}
-         
+                           pymReq={this.props.navigation.getParam('pymReq')}/>         
           {
             sim.length > 0 && this._address()
           }
