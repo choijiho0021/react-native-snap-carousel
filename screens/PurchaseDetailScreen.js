@@ -2,13 +2,10 @@ import React, {Component} from 'react';
 import {
   StyleSheet,
   Text,
-  FlatList,
   View,
 } from 'react-native';
-import {connect} from 'react-redux'
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
-import AppButton from '../components/AppButton'
 import utils from '../utils/utils';
 import moment from 'moment'
 import AppBackButton from '../components/AppBackButton';
@@ -67,6 +64,7 @@ class PurchaseDetailScreen extends Component {
               key={idx+""} style={styles.item}
               label={item.title} labelStyle={styles.label}
               format="price"
+              valueStyle={appStyles.roboto16Text}
               value={item.price}/>
             )
         }
@@ -89,7 +87,8 @@ const styles = StyleSheet.create({
   date: {
     ... appStyles.normal14Text,
     marginTop: 40,
-    marginLeft: 20
+    marginLeft: 20,
+    color: colors.warmGrey
   },
   price: {
     flexDirection: 'row',

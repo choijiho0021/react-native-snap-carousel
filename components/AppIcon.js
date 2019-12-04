@@ -26,6 +26,7 @@ const images = {
   imgPeoplePlus : [ require( mainPath + 'imgPeoplePlus.png')],
   btnCancel: [ require( mainPath + 'btnCancel.png')],
   iconCamera: [ require( mainPath + 'iconCamera.png')],
+  iconCameraCancel: [ require( mainPath + 'iconCameraCancel.png')],
   btnReply: [ require( mainPath + 'btnReply.png')],
   btnAlarm: [ require( headerPath + 'btnAlarm.png')],
   btnCnter: [ require( headerPath + 'btnCnter.png')],

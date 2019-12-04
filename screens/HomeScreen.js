@@ -65,14 +65,7 @@ class HomeScreen extends Component {
     // windowHeight
     // iphone 8 - 667
     // iphone 11 pro max - 896
-    console.log('window height', windowHeight)
-    // this.imageHeight = Math.max( 160, 160+87) windowHeight - 100)
     this.imageHeight = Math.max( 160, 160 + (windowHeight - 750))
-    /*
-    87
-    114
-    201
-    */
   }
 
   async componentDidMount() {
