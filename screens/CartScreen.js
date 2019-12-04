@@ -167,17 +167,17 @@ class CartScreen extends Component {
     const { querying, qty, checked, data} = this.state,
       total = this._calculate(data, checked, qty)
 
-
     return (
       <SafeAreaView style={styles.container}>
         <AppActivityIndicator visible={querying} />
-        <FlatList data={data.filter(item => qty[item.key] >= 0)}
-          renderItem={this._renderItem} 
-          extraData={[qty, checked]} /> 
-        <ChargeSummary totalCnt={total.cnt} totalPrice={total.price}/>
-        <AppButton style={styles.btnBuy} title={i18n.t('cart:purchase')} 
-          titleStyle={styles.btnBuyText}
-          onPress={this._onPurchase}/>
+          <View style={{flex:1, flexDirection: 'column'}}>
+            <FlatList data={data.filter(item => qty[item.key] >= 0)}
+              renderItem={this._renderItem} 
+              extraData={[qty, checked]}
+              ListFooterComponent={ <ChargeSummary totalCnt={total.cnt} totalPrice={total.price}/>} />
+            <AppButton style={styles.btnBuy} title={i18n.t('cart:purchase')} 
+                       onPress={this._onPurchase}/>
+          </View>
       </SafeAreaView>
     )
   }
@@ -194,6 +194,7 @@ const styles = StyleSheet.create({
     alignItems: "stretch"
   },
   btnBuy: {
+    justifyContent:'flex-end',
     height: 52,
     backgroundColor: colors.clearBlue
   },

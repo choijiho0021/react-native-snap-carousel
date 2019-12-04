@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.lightGrey,
     flexDirection: 'row',
     alignItems: 'center',
+    marginHorizontal: 20
   },
   checker: {
     marginHorizontal: 20
@@ -36,11 +37,12 @@ const styles = StyleSheet.create({
     flex: 1
   },
   itemTitle: {
-    ... appStyles.bold14Text,
+    ... appStyles.bold16Text,
     color: colors.black
   },
   itemPrice: {
-    ... appStyles.normal12Text,
+    ... appStyles.normal14Text,
+    color: colors.warmGrey
   },
   input: {
     marginTop: 10,

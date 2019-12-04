@@ -60,9 +60,8 @@ class InputEmail extends Component {
 
     return (
       <View style={[styles.container, this.props.style]}>
-        <View style={[styles.textInputWrapper,
-          email ? styles.completedTextInputWrapper : {}]}>
-          <TextInput style={styles.textInput} 
+        <View style={[styles.textInputWrapper, email? {} : styles.emptyInput]}>
+          <TextInput style={[styles.textInput, email? {} : styles.emptyInput]} 
             placeholder={i18n.t('reg:email')}
             returnKeyType='next'
             enablesReturnKeyAutomatically={true}
@@ -71,11 +70,10 @@ class InputEmail extends Component {
             value={email} /> 
         </View>
 
-        <Text style={[appStyles.normal12Text, styles.textInput]}>@</Text>
+        <Text style={[appStyles.normal12Text, styles.textInput, email? {} : styles.emptyInput]}>@</Text>
 
-        <View style={[styles.textInputWrapper, {flex:1, marginLeft:10},
-          domain ? styles.completedTextInputWrapper : {}]}>
-          <TextInput style={styles.textInput} 
+        <View style={[styles.textInputWrapper, domain? {} : styles.emptyInput, {flex:1, marginLeft:10}]}>
+          <TextInput style={[styles.textInput, domain? {} : styles.emptyInput]} 
             returnKeyType='next'
             enablesReturnKeyAutomatically={true}
             clearTextOnFocus={true}
@@ -84,15 +82,11 @@ class InputEmail extends Component {
             value={domain} /> 
         </View>
 
-        <View style={styles.pickerWrapper}>
+        <View style={[styles.pickerWrapper, domainIdx === DIRECT_INPUT ? styles.emptyInput : {}]}>
           <RNPickerSelect style={{
             placeholder: styles.placeholder,
-            inputIOS: {
-              color: domainIdx === DIRECT_INPUT ? colors.warmGrey : colors.black,
-            },
-            inputAndroid: {
-              color: domainIdx === DIRECT_INPUT ? colors.warmGrey : colors.black,
-            },
+            inputIOS: domainIdx === DIRECT_INPUT ? styles.directInput : styles.noDirectInput,
+            inputAndroid: domainIdx === DIRECT_INPUT ? styles.directInput : styles.noDirectInput,
             iconContainer: {
               bottom: 5,
               right: 10,
@@ -110,19 +104,27 @@ class InputEmail extends Component {
 }
 
 const styles = StyleSheet.create({
-  textInputWrapper: {
+  noDirectInput: {
+    color: colors.black
+  },
+  directInput: {
+    color: colors.warmGrey
+  }, 
+  emptyInput: {
     borderBottomColor: colors.lightGrey,
+    borderColor: colors.lightGrey,
+    color: colors.lightGrey
+  },
+  textInputWrapper: {
+    borderBottomColor: colors.black,
     borderBottomWidth: 1,
     width: 106,
     marginRight: 10,
     paddingLeft: 10
   },
-  completedTextInputWrapper: {
-    borderBottomColor: colors.black,
-  },
   textInput: {
     paddingTop: 9,
-    color: "#777777"
+    color: colors.black,
   },
   container: {
     flexDirection: "row",
@@ -134,6 +136,7 @@ const styles = StyleSheet.create({
     width: 96,
     paddingLeft: 10,
     paddingVertical: 8,
+    borderColor: colors.black
   },
   placeholder: {
     ... appStyles.normal14Text

@@ -105,7 +105,7 @@ class MyPageScreen extends Component {
     } 
 
     return (
-      <View style={{marginTop:20, marginBottom:30}}>
+      <View style={{marginTop:20}}>
         <View >
           <AppUserPic url={userPictureUrl} icon="imgPeopleL" style={styles.userPicture} onPress={this._changePhoto} />
           <AppIcon name="imgPeoplePlus" style={{bottom:20, right:-29}}/>
@@ -126,7 +126,7 @@ class MyPageScreen extends Component {
           label={i18n.t('acc:mobile')} labelStyle={styles.label} 
           value={ utils.toPhoneNumber(mobile)} valueStyle={styles.value} />
 
-        <View style={{borderBottomWidth:1, marginHorizontal:20}} />
+        <View style={styles.dividerSmall} />
 
         <TouchableOpacity onPress={() => this._showEmailModal(true)}>
           <View style={styles.row}>
@@ -170,8 +170,6 @@ class MyPageScreen extends Component {
   }
 
   _renderItem({item}) {
-    if (item.orderId == 'info') return this._info()
-
     const label = `${item.orderItems[0].title}  ${item.orderItems.length > 1 ? i18n.t('his:etcCnt').replace('%%', item.orderItems.length) : ''}`
     return (
       <TouchableOpacity onPress={this._onPressDetail(item.orderId)}>
@@ -185,19 +183,23 @@ class MyPageScreen extends Component {
     )
   }
 
+  _empty() {
+    return (
+      <Text style={styles.nolist}>{i18n.t('his:noPurchase')}</Text>
+    )
+  }
+
   render() {
     const { showEmailModal} = this.state
-    const orders = [{
-      orderId: 'info'
-    }].concat(this.props.order.orders)
+    const { orders } = this.props.order
 
     return (
       <View style={styles.container}>
-        {
-          orders && orders.length > 0 ?
-            <FlatList data={orders} renderItem={this._renderItem} keyExtractor={item => item.orderId}/> :
-            <Text style={styles.nolist}>{i18n.t('his:noPurchase')}</Text>
-        }
+        <FlatList data={orders} 
+          ListHeaderComponent={this._info}
+          ListEmptyComponent={this._empty}
+          renderItem={this._renderItem} 
+          keyExtractor={item => item.orderId}/> 
         <AppActivityIndicator visible={this.props.pending}/>
         <AppModal title={i18n.t('acc:changeEmail')} 
           mode="edit"
@@ -237,7 +239,8 @@ const styles = StyleSheet.create({
     color: colors.warmGrey
   },
   value: {
-    ... appStyles.normal16Texta,
+    ... appStyles.roboto16Text,
+    lineHeight: 40,
     marginRight: 20,
     color: colors.black
   },
@@ -245,6 +248,12 @@ const styles = StyleSheet.create({
     height: 36,
     alignItems: 'center',
     flex: 1
+  },
+  dividerSmall: {
+    borderBottomWidth:1, 
+    marginHorizontal:20,
+    marginVertical: 18,
+    borderBottomColor: colors.lightGrey
   },
   divider: {
     height: 10,
@@ -264,7 +273,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
   buttonTitle: {
-    ... appStyles.normal14Text,
+    ... appStyles.normal16Text,
     textAlign: 'center'
   },
   order: {

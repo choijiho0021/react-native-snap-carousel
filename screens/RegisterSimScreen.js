@@ -149,18 +149,18 @@ class RegisterSimScreen extends Component {
             <Text style={styles.iccid}>ICCID</Text>
             <TextInput style={styles.input}
               ref={this.inputIccid}
-              placeholder={utils.toICCID(this.defaultIccid, ' - ')}
+              placeholder={utils.toICCID(this.defaultIccid, '  -  ')}
               onChangeText={this._onChangeText('iccid')}
               keyboardType="numeric"
               returnKeyType='done'
               enablesReturnKeyAutomatically={true}
-              maxLength={29}
+              maxLength={35}
               clearTextOnFocus={true}
               focus={focusInputIccid}
-              value={utils.toICCID(iccid, ' - ')} />
+              value={utils.toICCID(iccid, '  -  ')} />
           </TouchableOpacity>
 
-          <AppButton iconName="iconCamera" 
+          <AppButton iconName={scan ? "iconCameraCancel" : "iconCamera"}
             style={styles.scanButton}
             title={i18n.t(scan ? 'reg:scanOff' : 'reg:scan')} titleStyle={styles.scanTitle}
             onPress={() => this._onCamera(!scan)}
@@ -194,7 +194,8 @@ const styles = StyleSheet.create({
   actCodeTitle: {
     ... appStyles.bold12Text,
     flex: 1,
-    textAlign: 'center'
+    textAlign: 'center',
+    color: colors.black
   },
   actCodeInput: {
     flex: 1,

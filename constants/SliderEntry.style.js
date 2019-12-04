@@ -13,6 +13,7 @@ const slideHeight = viewportHeight * 0.36;
 const slideWidth = wp(75);
 const itemHorizontalMargin = wp(2);
 
+export const windowHeight = viewportHeight;
 export const sliderWidth = viewportWidth;
 export const itemWidth = slideWidth + itemHorizontalMargin * 2;
 

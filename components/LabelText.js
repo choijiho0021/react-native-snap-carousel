@@ -7,10 +7,12 @@ import {
 import {appStyles} from '../constants/Styles'
 import utils from '../utils/utils';
 import i18n from '../utils/i18n';
+import { colors } from '../constants/Colors';
 
 const styles = StyleSheet.create({
   label: {
-    ... appStyles.normal12Text,
+    ... appStyles.normal14Text,
+    color: colors.warmGrey
   },
   container: {
     alignItems: 'baseline',
@@ -20,11 +22,8 @@ const styles = StyleSheet.create({
   value: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'baseline'
-  },
-  price: {
-    ... appStyles.price,
-    flex: 1,
+    alignItems: 'baseline',
+    justifyContent: 'flex-end'
   },
   singleValue: {
     flex: 1,
@@ -40,8 +39,8 @@ export default function LabelText({label, value, style, format, color, labelStyl
       {
         ( format == 'price') ?
           <View style={styles.value}>
-            <Text style={[styles.price, {color}]}>{utils.numberToCommaString(value)}</Text>
-            <Text style={appStyles.normal12Text}>{' ' + i18n.t('won')}</Text>
+            <Text style={[valueStyle|| appStyles.price, {color}]}>{utils.numberToCommaString(value)}</Text>
+            <Text style={appStyles.normal14Text}>{' ' + i18n.t('won')}</Text>
           </View>
           : <Text style={valueStyle || styles.singleValue}>{value}</Text>
       }

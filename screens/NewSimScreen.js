@@ -22,10 +22,20 @@ import { appStyles } from '../constants/Styles';
 import { colors } from '../constants/Colors';
 import ChargeSummary from '../components/ChargeSummary';
 import { SafeAreaView} from 'react-navigation'
+import withBadge from '../components/withBadge';
+
+const BadgeAppButton = withBadge(({cartItems}) => cartItems, {badgeStyle:{right:5,top:10}}, 
+  (state) => ({cartItems: (state.cart.get('orderItems') || []).reduce((acc,cur) => acc + cur.qty, 0)}))(AppButton)
 
 class NewSimScreen extends Component {
   static navigationOptions = (navigation) => ({
     headerLeft: AppBackButton({navigation, title:i18n.t('sim:purchase')}),
+    headerRight: (
+      <BadgeAppButton key="cart" 
+                      style={styles.btnCartIcon} 
+                      onPress={()=>this.props.navigation.navigate('Cart')}
+                      iconName="btnCart" />
+  )
   })
 
   constructor(props) {
@@ -151,15 +161,16 @@ class NewSimScreen extends Component {
     return (
       <SafeAreaView style={styles.container}>
         <AppActivityIndicator visible={querying}/>
-        <FlatList data={simCardList} renderItem={this._renderItem} extraData={[checked, simQty]}/>
-        <ChargeSummary totalCnt={total.cnt} totalPrice={total.price}/>
+        <FlatList data={simCardList} 
+                  renderItem={this._renderItem} 
+                  extraData={[checked, simQty]}
+                  ListFooterComponent={<ChargeSummary totalCnt={total.cnt} totalPrice={total.price}/>}/>
         <View style={styles.buttonBox}>
           <AppButton style={styles.btnCart} title={i18n.t('cart:toCart')} 
             titleStyle={styles.btnCartText}
             onPress={this._onPress}/>
           <AppButton style={styles.btnBuy} title={i18n.t('cart:buy')} 
-            titleStyle={styles.btnBuyText}
-            onPress={this._onPress}/>
+                     onPress={this._onPress}/>
         </View>
       </SafeAreaView>
     );
@@ -190,11 +201,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: colors.black
   },
-  btnBuyText: {
-    ... appStyles.normal16Text,
-    textAlign: "center",
-    color: "#ffffff"
-  }
+  btnCartIcon : {
+    marginRight:22,
+    alignSelf:'center'
+  },
 });
 
 const mapStateToProps = (state) => ({

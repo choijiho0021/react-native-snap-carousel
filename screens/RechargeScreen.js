@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Text,
   View,
+  TouchableOpacity
 } from 'react-native';
 import {connect} from 'react-redux'
 
@@ -77,14 +78,23 @@ class RechargeScreen extends Component {
     return (
       <View key={value[0]+ ""} style={styles.row}>
       {
-        value.map(v => <AppButton 
-          key={v+""} 
-          title={utils.numberToCommaString(v)} 
-          style={styles.button}
-          onPress={this._onPress(v+"")}
-          checked={v == selected}
-          checkedColor={colors.clearBlue}
-          titleStyle={styles.buttonText}/>)
+        value.map(v => {
+          const checked = v == selected
+          return (
+            <TouchableOpacity key={v+""} onPress={this._onPress(v+"")} 
+              style={[styles.button, checked && {borderColor: colors.clearBlue}]}>
+              <View style={styles.buttonBox}>
+                <Text style={[styles.buttonText, checked && {color:colors.clearBlue}]}>{utils.numberToCommaString(v)}</Text>
+                <Text style={[appStyles.normal14Text, checked && {color:colors.clearBlue}]}> {i18n.t('won')} </Text>
+              </View>
+            </TouchableOpacity>)
+        })
+
+      //     style={styles.button}
+      //     checked={v == selected}
+      //     checkedColor={colors.clearBlue}
+      //     titleStyle={styles.buttonText}/>)
+      // 
       }
       </View>
     )
@@ -131,6 +141,11 @@ class RechargeScreen extends Component {
 }
 
 const styles = StyleSheet.create({
+  buttonBox: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems:'baseline'
+  },
   confirm: {
     ... appStyles.confirm,
     marginTop: 40
@@ -140,7 +155,7 @@ const styles = StyleSheet.create({
   },
   upper: {
     flex:1,
-    justifyContent: 'space-evenly'
+    justifyContent: 'center'
   },
   card: {
     height: 168,
@@ -185,7 +200,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderStyle: "solid",
     borderWidth: 1,
-    borderColor: colors.warmGrey
+    borderColor: colors.warmGrey,
+    justifyContent: 'center'
   },
   buttonText: {
     ... appStyles.price,

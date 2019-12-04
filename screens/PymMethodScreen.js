@@ -22,6 +22,8 @@ import LabelText from '../components/LabelText';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import orderApi from '../utils/api/orderApi';
 import AddressCard from '../components/AddressCard'
+import PaymentItemInfo from '../components/PaymentItemInfo';
+import PaymentResultScreen from '../screens/PaymentResultScreen';
 
 class PymMethodScreen extends Component {
   static navigationOptions = (navigation) => ({
@@ -43,7 +45,7 @@ class PymMethodScreen extends Component {
     this._onPress = this._onPress.bind(this)
     this._button = this._button.bind(this)
     this._address = this._address.bind(this)
-    this._renderItemCart =  this._renderItemCart.bind(this)
+    // this._renderItemCart =  this._renderItemCart.bind(this)
 
     this.method = [
       [
@@ -79,6 +81,7 @@ class PymMethodScreen extends Component {
     ]
   }
 
+  //
   componentDidMount() {
     
     const pymReq = this.props.navigation.getParam('pymReq')
@@ -94,6 +97,17 @@ class PymMethodScreen extends Component {
     }
     this.props.action.order.getCustomerProfile(this.props.account.userId, this.props.auth)
   }
+
+  // componentDidUpdate() {
+
+  //   console.log('component update!', this.props.cart)
+  //   if(_.isEmpty(this.props.cart.orderItems)){
+  //     console.log('update!!!')
+  //     console.log('update pymreq', this.props.navigation.getParam('pymReq'))
+  //     this.props.navigation.replace('PaymentResult')
+  //   }
+    
+  // }
 
   _onSubmit() {
     const { selected} = this.state
@@ -111,10 +125,11 @@ class PymMethodScreen extends Component {
       buyer_email: email,
       escrow: false,
       app_scheme: 'esim',
+      mode: 'test'
     };
 
     this.props.action.cart.makePayment( this.props.cart.orderId, this.props.auth)
-    this.props.navigation.replace('Payment', {pymReq: params})
+    this.props.navigation.navigate('PaymentResult', {params: params, pymReq:this.props.navigation.getParam('pymReq')})
   
   }
 
@@ -145,33 +160,33 @@ class PymMethodScreen extends Component {
   }
 
 
-  _renderItem({item}) {
-    return (
-      <View style={styles.row}>
-        <Text key="title" style={styles.normalText14}>{item.title}</Text>
-        <Text key="amount" style={styles.normalText16}>{utils.price(item.amount)}</Text>
-      </View>
-    )
-  }
+  // _renderItem({item}) {
+  //   return (
+  //     <View style={styles.row}>
+  //       <Text key="title" style={styles.normalText14}>{item.title}</Text>
+  //       <Text key="amount" style={styles.normalText16}>{utils.price(item.amount)}</Text>
+  //     </View>
+  //   )
+  // }
 
-  _renderItemCart({item}) {
-    const {mode} = this.state
+  // _renderItemCart({item}) {
+  //   const {mode} = this.state
 
-    if(mode == 'buy'){
-      return (
-        <View style={styles.row}>
-          <Text style={styles.productPriceTitle}>{item.name+' x 1'+i18n.t('qty')}</Text>
-          <Text style={styles.normalText16}>{utils.price(item.price)}</Text>
-        </View>
-      )
-    }
-    return (
-      <View style={styles.row}>
-        <Text style={styles.productPriceTitle}>{item.title+' x '+item.qty+i18n.t('qty')}</Text>
-        <Text style={styles.normalText16}>{utils.price(item.totalPrice)}</Text>
-      </View>
-    )
-  }
+  //   if(mode == 'buy'){
+  //     return (
+  //       <View style={styles.row}>
+  //         <Text style={styles.productPriceTitle}>{item.name+' x 1'+i18n.t('qty')}</Text>
+  //         <Text style={styles.normalText16}>{utils.price(item.price)}</Text>
+  //       </View>
+  //     )
+  //   }
+  //   return (
+  //     <View style={styles.row}>
+  //       <Text style={styles.productPriceTitle}>{item.title+' x '+item.qty+i18n.t('qty')}</Text>
+  //       <Text style={styles.normalText16}>{utils.price(item.totalPrice)}</Text>
+  //     </View>
+  //   )
+  // }
 
   _address(){
     return (
@@ -185,7 +200,7 @@ class PymMethodScreen extends Component {
               <Text style={styles.profileTitleText}>{this.props.order.profile[0].organization}</Text>
               <View style={{flex: 1, alignItems: 'flex-end'}}>
                 <AppButton title={i18n.t('change')} 
-                          textStyle={styles.chgButtonText}
+                          titleStyle={styles.chgButtonText}
                           style={[styles.chgButton]}
                           onPress={() => this.props.navigation.navigate('CustomerProfile')}/>
               </View>
@@ -230,7 +245,6 @@ class PymMethodScreen extends Component {
     const sim = (this.props.cart.orderItems || []).filter(item => item.prod.type == 'sim_card')
 
     console.log('sim', sim )
-    console.log('order',this.props.order.familyName)
 
     return (
       <KeyboardAwareScrollView 
@@ -239,21 +253,29 @@ class PymMethodScreen extends Component {
         innerRef={ref => { this.scroll = ref; }}>
 
         <SafeAreaView style={styles.container}>
-          <Text style={[styles.title, styles.mrgBottom0]}>{i18n.t('pym:title')}</Text>
+          {/* <Text style={[styles.title, styles.mrgBottom0]}>{i18n.t('pym:title')}</Text>
           <View style={styles.productPriceInfo}>
-            <FlatList data={mode && mode == 'buy' ? buyProduct : this.props.cart.orderItems} 
-              keyExtractor={item => item.uuid}
-              renderItem={this._renderItemCart} />
+          {
+            this.props.cart.orderItems.map(item =>
+                this._renderItemCart({item})
+              )
+          }
           </View>
           <View style={styles.PriceInfo}>
-            <FlatList data={data} renderItem={this._renderItem} />
+          {
+            this.props.navigation.getParam('pymReq').map(item =>
+                this._renderItem({item})
+              ) 
+          }
           </View>
           <View style={[styles.row, styles.total, styles.brdrBottom0]}>
             <Text style={[appStyles.normal14Text]}>{i18n.t('cart:totalCost')} </Text>
             <Text style={[appStyles.normal16Text, styles.colorClearBlue, styles.fontWeightNormal]}>{utils.numberToCommaString(total)+ ' ' + i18n.t('won')}</Text>
-          </View>
-          <View style={styles.divider}/>
-          
+          </View> */}
+          <PaymentItemInfo cart={this.props.cart.orderItems}
+                           pymReq={this.props.navigation.getParam('pymReq')}/>
+          {/* <View style={styles.divider}/> */}
+         
           {
             sim.length > 0 && this._address()
           }
@@ -265,10 +287,11 @@ class PymMethodScreen extends Component {
             }
           </View>
           <AppButton title={i18n.t('payment')} 
-            textStyle={appStyles.confirmText}
-            //disabled={_.isEmpty(selected)}
-            onPress={this._onSubmit}
-            style={appStyles.confirm}/>
+                      textStyle={appStyles.confirmText}
+                      //disabled={_.isEmpty(selected)}
+                      onPress={this._onSubmit}
+                      style={appStyles.confirm}/> 
+                
         </SafeAreaView>
       </KeyboardAwareScrollView>      
             
@@ -279,6 +302,8 @@ class PymMethodScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: "flex-start",
+    alignItems: 'stretch'
   },
   title: {
     ... appStyles.bold18Text,
