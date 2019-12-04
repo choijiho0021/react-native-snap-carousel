@@ -29,9 +29,12 @@ class CustomerProfileScreen extends Component {
     super(props)
 
     this.state = {
-      checked: {}
+      checked: {},
+      querying: undefined, 
     }    
     this._onChecked = this._onChecked.bind(this)
+    this._deleteProfile = this._deleteProfile.bind(this)
+
   }
 
   componentDidMount() {
@@ -44,6 +47,38 @@ class CustomerProfileScreen extends Component {
     
   }
 
+  _deleteProfile() {
+    console.log('account!!!!!', this.props)
+    const { userId, auth } = this.props.account
+
+    // this.setState({
+    //   querying: true
+    // })
+
+    console.log('user Id', userId)
+    console.log('auth', auth)
+
+    // console.log('key item', item)
+
+    // orderApi.delCustomerProfile(key, auth).then( resp => {
+    //   if ( resp.result == 0) {
+    //     // reload data
+    //     orderApi.getCustomerProfile( userId, auth).then( 
+    //       AppAlert.confirm('삭제를 완료하였습니다.')
+    //     )
+    //   }
+    //   else {
+    //     AppAlert.error( i18n.t('purchase:failedToDelete'))
+    //   }
+    // }).catch(_ => {
+    //   AppAlert.error( i18n.t('purchase:failedToDelete'))
+    // }).finally(() => {
+    //   this.setState({
+    //     querying: false
+    //   })
+    // })
+  }
+
   _renderItem = ({item}) => {
     
     console.log('item', item)
@@ -54,20 +89,20 @@ class CustomerProfileScreen extends Component {
         <View style={styles.cardSize}>
           <View style={{marginTop:19}}>
             <View style={styles.profileTitle}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text style={styles.profileTitleText}>{item.alias}</Text>
-              {/* <Text style={styles.profileTitleText}>{item.alias}</Text> */}
-              
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '100%'}}>
+                <Text style={styles.profileTitleText}>{item.alias}</Text>                            
                 <View style={{flexDirection: 'row'}}>
-                  <AppButton title={i18n.t('modify')} 
-                            textStyle={styles.chgButtonText}
-                            style={{backgroundColor: colors.warmGrey}}
+                <AppButton title={i18n.t('modify')}
+                            //  style={styles.buttonBorder} 
+                            style={{backgroundColor: colors.white}}
+                            titleStyle={styles.chgButtonText}
                             onPress={() => this.props.navigation.navigate('CustomerProfile')}/>
-                  {/* <View style={{width: 1, height: 20, backgroundColor: colors.lightGrey}}></View>                              */}
-                  <AppButton title={i18n.t('delete')} 
-                            textStyle={styles.chgButtonText}
-                            style={{backgroundColor: colors.warmGrey}}
-                            onPress={() => this.props.navigation.navigate('CustomerProfile')}/>
+                  <View style={styles.buttonBorder}></View>                      
+                      <AppButton title={i18n.t('delete')} 
+                            style={{backgroundColor: colors.white}}
+                            titleStyle={[styles.chgButtonText, {paddingRight: 20}]}
+                            onPress={this._deleteProfile}/>
+
                 </View>     
                   {/* <Text style={{alignItems: 'flex-end'}}>{i18n.t('modify')}</Text> */}
                   {/* <Text style={{alignItems: 'flex-end', flex: 1}}>{i18n.t('delete')}</Text> */}
@@ -79,14 +114,12 @@ class CustomerProfileScreen extends Component {
                            style={styles.addrCard}
                            //mobile={item.field_recipient_number}
                            profile={item}/>
-              {/* <View style={{justifyContent: 'flex-end', paddingRight: 20}}> */}
-                <View style={{flexDirection: 'column', justifyContent: 'flex-end'}}>
-                  <View style={{height: 56, justifyContent: 'center', width: 62}}
-                        onPress={()=>this._onChecked}>
-                    <AppIcon name="btnCheck" checked={()=>_onChecked}/>
-                  </View>
+              <View style={{flexDirection: 'column', justifyContent: 'flex-end'}}>
+                <View style={{height: 56, justifyContent: 'center', width: 62}}>
+                      {/* onPress={()=>this._onPress}> */}
+                  <AppIcon name="btnCheck" checked={0}/>
                 </View>
-              {/* </View>                                                   */}
+              </View>  
             </View>
           </View>
         </View> 
@@ -102,12 +135,12 @@ class CustomerProfileScreen extends Component {
         <SafeAreaView style={styles.container}>
           <FlatList data={this.props.order.profile} 
                     keyExtractor={item => item.uuid}
-                    renderItem={this._renderItem} />
-          <AppButton title={i18n.t('add')} 
-                    textStyle={appStyles.confirmText}
-                    //disabled={_.isEmpty(selected)}
-                    onPress={()=>this.props.navigation.navigate('AddProfile')}
-                    style={[appStyles.confirm, {marginTop: 20}]}/>
+                    renderItem={this._renderItem} 
+                    ListFooterComponent={<AppButton title={i18n.t('add')} 
+                                                    textStyle={appStyles.confirmText}
+                                                    //disabled={_.isEmpty(selected)}
+                                                    onPress={()=>this.props.navigation.navigate('AddProfile')}
+                                                    style={[appStyles.confirm, {marginTop: 20}]}/>} />
         </SafeAreaView>
       </ScrollView>
     )
@@ -157,14 +190,16 @@ const styles = StyleSheet.create({
     fontSize: 12, 
     lineHeight: 19, 
     fontWeight: 'normal', 
-    color: colors.black
+    color: colors.warmGrey,
+    paddingHorizontal: 15,
   },
-  chgButton: {
-    width: 50, 
-    height: 36, 
-    borderRadius: 3, 
-    backgroundColor: colors.warmGrey, 
-    marginHorizontal: 20
+  buttonBorder: {
+    width: 1,
+    height: 20,
+    backgroundColor: colors.lightGrey,
+  },
+  colorWarmGrey: {
+    color: colors.warmGrey
   }
 });
 

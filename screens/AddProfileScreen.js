@@ -187,7 +187,8 @@ class AddProfileScreen extends Component {
                            onPress={() => this.props.navigation.navigate('FindAddress')}
                            value={_.isEmpty(this.props.order.addr) ?  null : str} />
                 <AppButton title={i18n.t('addr:search')}
-                           style={style=styles.findButton}
+                           style={styles.findButton}
+                           titleStyle={styles.findBtnText}
                            onPress={() => this.props.navigation.navigate('FindAddress')} />
               </View>
               <View style={styles.findTextRow}>
@@ -216,7 +217,7 @@ class AddProfileScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     ...appStyles.container,
-    alignItems: 'stretch'
+    alignItems: 'stretch',
   },
   placeHolder: {
     ...appStyles.normal14Text,
@@ -243,6 +244,15 @@ const styles = StyleSheet.create({
     height: 36, 
     marginLeft: 10
   },
+  findBtnText:{
+    fontSize: 12,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    lineHeight: 12,
+    letterSpacing: 0.15,
+    color: colors.white
+
+  },
   textBox: {
     width: '82%',
     height: 36,
@@ -259,41 +269,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: '18%'
   },
-  addrCard: {
-    marginLeft: 20,
-    marginTop: 7,
-    width: '65%'
-  },
-  addrCardText: {
-    ...appStyles.normal14Text,
-    color: colors.black,
-    lineHeight: 24
-  },
-  profileTitle: {
-    marginBottom: 6,
-    flex: 1,
-    flexDirection: 'row'
-  },
-  profileTitleText: {
-    // alignItems: 'flex-start',
-    height: 19,
-    marginHorizontal: 20,
-    fontSize: 16,
-    fontWeight: 'bold'
-  },
-  chgButtonText: {
-    fontSize: 12,
-    lineHeight: 19,
-    fontWeight: 'normal',
-    color: colors.black
-  },
-  chgButton: {
-    width: 50,
-    height: 36,
-    borderRadius: 3,
-    backgroundColor: colors.warmGrey,
-    marginHorizontal: 20
-  },
   pickerWrapper: {
     ...appStyles.borderWrapper,
     width: 76, //28%
@@ -301,6 +276,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     marginRight: 10,
   },
+  // saveButton: {
+  //   ... appStyles.confirm,
+  //   justifyContent: 'flex-end'
+  // }
   // placeholder: {
   //   ... appStyles.normal12Text,
   //   color: colors.black

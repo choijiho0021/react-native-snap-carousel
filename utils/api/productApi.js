@@ -10,9 +10,10 @@ class ProductAPI {
 
     category = {
         "asia"   : "64",
+        "europe" : "69",
         "usaAu" : "65",
-        "multi" : "67",
-        "europe" : "69"
+        "multi" : "67"
+        
         }
 
     toProduct = (data) => {
