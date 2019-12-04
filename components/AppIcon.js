@@ -38,7 +38,7 @@ const images = {
 export default function AppIcon({name, focused, style, checked}) {
   const source = images[name]
   if (source) return ( 
-    <View style={[style, {alignSelf:'center'}]}>
+    <View style={style}>
       <Image source={(focused || checked) && source.length > 1 ? source[1] : source[0]}/>
     </View>
   )

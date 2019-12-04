@@ -100,7 +100,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderStyle: "solid",
     borderWidth: 1,
-    borderColor: colors.black
+    borderColor: colors.black,
+    alignContent: 'flex-start'
   }
 });
 
