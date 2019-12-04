@@ -365,7 +365,6 @@ const styles = StyleSheet.create({
     flex: 1
   },
   overlay: {
-    backgroundColor:'rgba(0,0,0,0.3)',
     marginLeft: 20,
   },
   carousel: {

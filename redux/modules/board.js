@@ -23,7 +23,6 @@ export const getNextIssueList = () => {
       next = board.get('next'),
       pending = pender.pending[GET_ISSUE_LIST]
 
-    console.log('next', next)
     if ( next && ! pending) return dispatch(getIssueList({token}, next))
     return dispatch({type: NO_MORE_ISSUES})
   }
@@ -94,5 +93,9 @@ export default handleActions({
 
   ... pender({
     type: POST_ATTACH,
+  }),
+
+  ... pender({
+    type: POST_ISSUE
   })
 }, initialState)

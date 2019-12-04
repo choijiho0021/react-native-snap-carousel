@@ -65,7 +65,6 @@ class BoardMsgAdd extends Component {
     super(props)
 
     this.state = {
-      querying: false,
       name: undefined,
       mobile: undefined,
       email: undefined,
@@ -195,7 +194,7 @@ class BoardMsgAdd extends Component {
 
     return (
       <SafeAreaView style={styles.container}>
-        <AppActivityIndicator visible={this.state.querying} />
+        <AppActivityIndicator visible={this.props.pending} />
 
         <KeyboardAwareScrollView 
           resetScrollToCoords={{ x: 0, y: 0 }}
@@ -369,7 +368,9 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => ({
   account: state.account.toJS(),
   auth: accountActions.auth(state.account),
-  success: state.pender.pending[boardActions.POST_ISSUE]
+  success: state.pender.success[boardActions.POST_ISSUE],
+  pending: state.pender.pending[boardActions.POST_ISSUE] || 
+    state.pender.pending[boardActions.POST_ATTACH] || false
 })
 
 export default connect(mapStateToProps,
