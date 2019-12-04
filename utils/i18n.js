@@ -455,7 +455,7 @@ const ko = {
   "board:agree" : "수신 동의",
   "board:resp" : "답변",
   "board:contact" : "연락처",
-  "board:attach" : "첨부 파일",
+  "board:attach" : "사진 첨부",
   "board:noti" : "- 문의내역 확인 시 작성한 연락처 정보 입력이 필요합니다.\n- 문의한 내용의 답변유무를 알림 혹은 카카오톡 알림톡으로 발송해 드립니다.",
 
   "cart:totalCnt" : "총 상품 수",

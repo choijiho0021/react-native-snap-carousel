@@ -27,6 +27,8 @@ const images = {
   btnCancel: [ require( mainPath + 'btnCancel.png')],
   iconCamera: [ require( mainPath + 'iconCamera.png')],
   iconCameraCancel: [ require( mainPath + 'iconCameraCancel.png')],
+  btnBoxCancel: [ require( mainPath + 'btnBoxCancel.png')],
+  btnPhotoPlus: [ require( mainPath + 'btnPhotoPlus.png')],
   btnReply: [ require( mainPath + 'btnReply.png')],
   btnAlarm: [ require( headerPath + 'btnAlarm.png')],
   btnCnter: [ require( headerPath + 'btnCnter.png')],
