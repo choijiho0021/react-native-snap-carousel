@@ -22,7 +22,6 @@ import _ from 'underscore'
 import { bindActionCreators } from 'redux'
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import { colors } from '../constants/Colors';
-import AppBackButton from '../components/AppBackButton';
 import AppButton from '../components/AppButton';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 
@@ -106,7 +105,7 @@ class StoreScreen extends Component {
 
     return {
       headerTitle : <View style={styles.headerTitle}>
-        {AppBackButton({navigation, title:i18n.t('store')})}
+        <Text style={[appStyles.subTitle, {marginLeft:16}]}>{i18n.t('store')}</Text>
         <TextInput 
             style={styles.searchText}
             placeholder={i18n.t('store:search')}
@@ -117,7 +116,7 @@ class StoreScreen extends Component {
             clearButtonMode='always'
             onChangeText={(value) => params.onChangeText(value)}
             value={params.country} />
-            <AppButton style = {styles.showSearchBar} onPress={params.search} iconName="btnSearchOff" />
+        <AppButton style = {styles.showSearchBar} onPress={params.search} iconName="btnSearchOff" />
       </View>
     }
 }
@@ -426,7 +425,7 @@ const styles = StyleSheet.create({
   },
   headerTitle : {
     flexDirection: 'row',
-   flex : 1
+    flex : 1
   },
   tabStyle: {
     backgroundColor:colors.whiteTwo
