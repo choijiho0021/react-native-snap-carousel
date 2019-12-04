@@ -1,6 +1,7 @@
 import api from './api'
 import _ from 'underscore'
 import i18n from '../i18n'
+import {Buffer} from 'buffer'
 
 
 class BoardAPI {
@@ -22,6 +23,7 @@ class BoardAPI {
             const obj = _.isArray(data.data) ? data.data : [data.data]
 
             return api.success(obj.map(item => ({
+                key: item.id,
                 uuid: item.id,
                 title: item.attributes.title || '',
                 msg: item.attributes.body && item.attributes.body.value,
@@ -61,7 +63,19 @@ class BoardAPI {
         return api.failure(api.NOT_FOUND, data.message)
     }
 
-    post = ({title,msg,mobile}, {token}) => {
+    toFile = (data) => {
+        if ( ! _.isEmpty(data._links)) {
+            return api.success(
+                [{
+                    fid: data.fid[0].value,
+                    uuid: data.uuid[0].value
+                }]
+            )
+        }
+        return api.failure(api.NOT_FOUND)
+    }
+
+    post = ({title,msg,mobile}, images, {token}) => {
         if (_.isEmpty(title) || _.isEmpty(msg) || _.isEmpty(token))
             return api.reject( api.INVALID_ARGUMENT, 'empty title or body')
 
@@ -74,9 +88,28 @@ class BoardAPI {
                     title: {value: title},
                     body: {value: msg},
                     field_mobile: {value:mobile},
+                },
+            }
+        }
+
+        if ( images && images.length > 0) {
+            body.data.relationships = {
+                field_images: {
+                    data: images.map(item => 
+                        ({
+                            type: "file--file",
+                            id: item.uuid,
+                            meta: {
+                                width: item.width,
+                                height: item.height
+                            }
+                        })
+                    )
                 }
             }
         }
+
+        console.log('post body', body)
 
         return api.callHttp(url, {
             method: 'POST',
@@ -119,6 +152,29 @@ class BoardAPI {
             headers
         }, this.toComment)
 
+    }
+
+
+    uploadAttachment = ( images, {user, token}) => {
+        if ( _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
+
+        const url = `${api.httpUrl(api.path.uploadFile, '')}/node/contact_board/field_images?_format=hal_json`
+
+        const post = images.map( image => {
+            const headers = api.headers({
+                "X-CSRF-Token": token,
+                "Content-Disposition":`file;filename="${user}_contact.${image.mime.replace('image/', '')}"`
+            }, 'octet-stream') 
+
+            return api.callHttp(url, {
+                method: 'POST',
+                headers,
+                body: Buffer.from( image.data, 'base64')
+            }, this.toFile)
+        })
+
+        console.log('post', post)
+        return Promise.all(post)
     }
 
 }

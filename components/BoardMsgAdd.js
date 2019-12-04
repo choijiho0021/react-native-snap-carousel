@@ -6,7 +6,8 @@ import {
   findNodeHandle,
   TextInput,
   TouchableOpacity,
-  Image
+  Image,
+  InputAccessoryView
 } from 'react-native';
 import {connect} from 'react-redux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -85,6 +86,8 @@ class BoardMsgAdd extends Component {
     this._addAttachment = this._addAttachment.bind(this)
     this._rmAttachment = this._rmAttachment.bind(this)
 
+    this._keybd = React.createRef()
+
     const size = (sliderWidth - 20*2 - 33*2)/3
     this.attachSize = {
       width: size,
@@ -127,12 +130,12 @@ class BoardMsgAdd extends Component {
   }
 
   _onSubmit = () => {
-    const { title, msg, mobile} = this.state
+    const { title, msg, mobile, attachment} = this.state
     const issue = {
       title, msg, mobile,
     }
 
-    this.props.action.board.postAndGetList(issue)
+    this.props.action.board.postAndGetList(issue, attachment.toJS())
   }
 
   _onCancel = () => {
@@ -159,8 +162,9 @@ class BoardMsgAdd extends Component {
   
   _addAttachment() {
     ImagePicker && ImagePicker.openPicker({
-      width: 76,
-      height: 76,
+      width: 750,
+      height: 1334,   // iphone 8 size
+      cropping: true,
       includeBase64: true,
       writeTempFile: false,
       mediaType: 'photo',
@@ -185,9 +189,9 @@ class BoardMsgAdd extends Component {
 
   render() {
     const { disable, mobile, title, msg, errors = {}, attachment } = this.state
+    const inputAccessoryViewID = "doneKbd"
     // errors object의 모든 value 값들이 undefined인지 확인한다.
     const hasError = Object.values(errors).findIndex(val => ! _.isEmpty(val)) >= 0
-    attachment.forEach(image => console.log( `data:${image.mime};base64,${image.data}`))
 
     return (
       <SafeAreaView style={styles.container}>
@@ -226,9 +230,11 @@ class BoardMsgAdd extends Component {
               value={title} /> 
 
             <TextInput style={[styles.inputBox, {height:208}, msg && {borderColor: colors.black}]}
+              ref={this._keybd}
               placeholder={i18n.t('content')}
               multiline={true}
               numberOfLines={8}
+              inputAccessoryViewID={inputAccessoryViewID}
               enablesReturnKeyAutomatically={true}
               clearTextOnFocus={false}
               disabled={disable}
@@ -261,6 +267,11 @@ class BoardMsgAdd extends Component {
           </View>
         </KeyboardAwareScrollView>
 
+        <InputAccessoryView nativeID={inputAccessoryViewID}>
+          <AppButton style={styles.inputAccessory} title={i18n.t('done')} 
+            onPress={() => this._keybd.current.blur()}/>
+        </InputAccessoryView>
+
         <AppButton style={styles.confirm}
           title={i18n.t('board:new')} 
           disabled={hasError}
@@ -271,6 +282,12 @@ class BoardMsgAdd extends Component {
 }
 
 const styles = StyleSheet.create({
+  inputAccessory: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    backgroundColor: colors.lightGrey,
+    padding: 5
+  },
   plusButton: {
     alignItems: 'center',
     justifyContent: 'center'

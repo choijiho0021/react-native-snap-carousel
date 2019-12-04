@@ -3,13 +3,16 @@ import { Map } from 'immutable';
 import { pender } from 'redux-pender'
 import boardApi from '../../utils/api/boardApi';
 import _ from 'underscore'
+import {auth} from './account'
 
 export const POST_ISSUE =   'rokebi/board/POST_ISSUE'
+export const POST_ATTACH =   'rokebi/board/POST_ATTACH'
 const NO_MORE_ISSUES =   'rokebi/board/NO_MORE_ISSUES'
 export const GET_ISSUE_LIST =   'rokebi/board/GET_ISSUE_LIST'
 export const GET_ISSUE_RESP =   'rokebi/board/GET_ISSUE_RESP'
 
 export const postIssue = createAction(POST_ISSUE, boardApi.post)
+export const postAttach = createAction(GET_ISSUE_RESP, boardApi.uploadAttachment)
 export const getIssueList = createAction(GET_ISSUE_LIST, boardApi.getHistory)
 export const getIssueResp = createAction(GET_ISSUE_RESP, boardApi.getComments)
 
@@ -26,21 +29,26 @@ export const getNextIssueList = () => {
   }
 }
 
-export const postAndGetList = (issue) => {
+export const postAndGetList = (issue, attachment) => {
   return (dispatch,getState) => {
     const { account } = getState(),
-      token = account.get('token')
+      authObj = auth(account)
 
-    return dispatch(postIssue(issue, {token})).then(
-      resp => {
-        if (resp.result == 0 && resp.objects.length > 0) {
-          return dispatch(getIssueList( {token}))
-        }
-        console.log('Failed to upload picture', resp)
-      },
-      err => {
-        console.log('Failed to upload picture', err)
-      })
+    return dispatch(postAttach(attachment, authObj)).then( 
+      rsp => {
+        const attach = rsp ? rsp.map(item => item.objects[0]) : []
+        return dispatch(postIssue(issue, attach, authObj)).then(
+          resp => {
+            if (resp.result == 0 && resp.objects.length > 0) {
+              return dispatch(getIssueList( authObj))
+            }
+            console.log('Failed to upload picture', resp)
+          },
+          err => {
+            console.log('Failed to upload picture', err)
+          })
+      }
+    )
   }
 }
 
@@ -82,5 +90,9 @@ export default handleActions({
       }
       return state
     }
+  }),
+
+  ... pender({
+    type: POST_ATTACH,
   })
 }, initialState)

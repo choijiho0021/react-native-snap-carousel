@@ -19,6 +19,33 @@ import * as boardActions from '../redux/modules/board'
 import * as accountActions from '../redux/modules/account'
 import AppActivityIndicator from './AppActivityIndicator';
 
+class BoardMsg extends Component {
+  constructor(props) {
+    super(props)
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return this.props.item.uuid != nextProps.item.uuid
+  }
+
+  render() {
+    const {title, created, status, statusCode, uuid} = this.props.item
+    const date = moment(created).format('YYYY-MM-DD hh:mm:ss')
+
+    return (
+      <TouchableOpacity onPress={() => this.props.onPress(uuid)}>
+        <View style={styles.list} key="info">
+          <View style={{flex:1}}>
+            <Text key="title" style={styles.title}>{title || ''}</Text>
+            <Text key="date" style={styles.date}>{date}</Text>
+          </View>
+          <Text key="status" style={[styles.status, statusCode == 'C' ? colors.clearBlue : colors.warmGrey]}>{status}</Text>
+        </View>
+      </TouchableOpacity>
+    )
+  }
+}
+
 
 class BoardMsgList extends Component {
   static navigationOptions = {
@@ -124,20 +151,7 @@ class BoardMsgList extends Component {
   }
   */
   _renderItem({item}) {
-    const {title, created, status, statusCode, uuid} = item
-    const date = moment(created).format('YYYY-MM-DD hh:mm:ss')
-
-    return (
-      <TouchableOpacity onPress={() => this.props.onPress(uuid)}>
-        <View style={styles.list} key="info">
-          <View style={{flex:1}}>
-            <Text key="title" style={styles.title}>{title || ''}</Text>
-            <Text key="date" style={styles.date}>{date}</Text>
-          </View>
-          <Text key="status" style={[styles.status, statusCode == 'C' ? colors.clearBlue : colors.warmGrey]}>{status}</Text>
-        </View>
-      </TouchableOpacity>
-    )
+    return (<BoardMsg onPress={() => this.props.onPress(item.uuid)} item={item} />)
   }
 
   _onEndReached() {
@@ -151,8 +165,7 @@ class BoardMsgList extends Component {
         <FlatList data={this.props.board.list} 
           onEndReached={this._onEndReached}
           onEndReachedThreshold={0.5}
-          renderItem={this._renderItem} 
-          keyExtractor={(_,idx) => idx + ''}/>
+          renderItem={this._renderItem} />
         <AppActivityIndicator visible={this.props.pending}/>
       </View>
     )
