@@ -154,7 +154,7 @@ class HeaderTitle extends Component {
           <AppButton style = {styles.showSearchBar} onPress={() => this._searching(false)} title={i18n.t('cancel')} titleStyle={styles.titleStyle} />
         </View> : <View style={styles.headerTitle}>
             <Text style={styles.title}>{i18n.t('store')}</Text>
-            <AppButton style = {styles.showSearchBar} onPress={() => this._searching(true)} iconName="btnSearchOff" />
+            <AppButton style = {styles.showSearchBar} onPress={() => this._searching(true)} iconName="btnSearchTop" />
           </View>
           }
           
@@ -394,6 +394,7 @@ class StoreScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
+    marginTop:15,
     flex:1
   },
   title: {
