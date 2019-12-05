@@ -64,6 +64,7 @@ const en = {
   'store:multi' : 'Multiple countries',
   'store:europe' : "Europe",
 
+  'country:detail' : "Detail",
   'view:detail' : 'Detail Info',
 
   'reg:actCode' : 'Activation Code',
@@ -305,6 +306,8 @@ const ko = {
   'store:europe' : "유럽",
   'store:usa/au' : "미주/호주",
 
+  'country:detail' : "상세보기",
+
   'view:detail' : '상세보기',
 
   'reg:actCode' : 'Activation Code',
@@ -488,7 +491,6 @@ const ko = {
   "guide:title": "사용 가이드",
   "guide:buy": "먼저 로깨비 유심을 구매해 주세요.\n다양한 채널로 구매 가능합니다.",
   "guide:tip": "Special 꿀팁",
-
 
   //address
   /*

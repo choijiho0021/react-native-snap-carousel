@@ -169,7 +169,7 @@ class CountryScreen extends Component {
 
         <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {title:this.props.navigation.getParam('title'), text:prodData[0].body})}>
           <View style={styles.detail}>
-            <Text style={appStyles.normal14Text}>{"상세보기"}</Text>
+            <Text style={appStyles.normal14Text}>{i18n.t('country:detail')}</Text>
             <AppIcon style={{marginRight:20}} name="iconArrowRight" size={10} />
           </View>
         </TouchableOpacity>
