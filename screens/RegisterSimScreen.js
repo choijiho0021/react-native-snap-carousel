@@ -5,7 +5,7 @@ import {
   Text,
   TextInput,
   SafeAreaView,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 import {connect} from 'react-redux'
 
@@ -136,9 +136,9 @@ class RegisterSimScreen extends Component {
 
         <SafeAreaView style={styles.container}>
           <AppActivityIndicator visible={querying}/>
-          <View style={styles.card}>
+          <TouchableOpacity style={styles.card} onPress={() => this._onCamera(!scan)}>
             <ScanSim scan={scan} onScan={this._onScan}/>
-          </View>
+          </TouchableOpacity>
 
           { // ICCID 입력  
           }
