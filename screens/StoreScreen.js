@@ -50,8 +50,8 @@ class CountryItem extends Component {
               <Image key={"img"} source={{uri:api.httpImageUrl(elm.imageUrl)}} style={styles.image}/>
               <Text key={"cntry"} style={[appStyles.bold14Text,{marginBottom:5}]}>{elm.cntry}</Text>
               <Text key={"from"} style={styles.from}>{i18n.t('from')}</Text>
-              <Text key={"price"} style={[appStyles.price,{color:colors.clearBlue},styles.text]}>{utils.numberToCommaString(elm.price)}
-              <Text key={"days"} style={[appStyles.normal14Text,{color:colors.clearBlue},styles.text]}>{`${i18n.t('won')}/${i18n.t('day')}`}</Text>
+              <Text key={"price"} style={[appStyles.price,styles.text]}>{utils.numberToCommaString(elm.price)}
+              <Text key={"days"} style={[appStyles.normal14Text,styles.text]}>{`${i18n.t('won')}/${i18n.t('day')}`}</Text>
               </Text>
             </TouchableOpacity> 
           </View> : <View key="unknown" style={{flex:1}}/>
@@ -367,7 +367,7 @@ class StoreScreen extends Component {
 
     return (
       //AppTextInput
-      <View style={appStyles.container}>
+      <View style={[appStyles.container,{marginTop:15}]}>
         <AppActivityIndicator visible={querying} />
         <TabView 
           style={styles.container} 
@@ -394,7 +394,6 @@ class StoreScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    marginTop:15,
     flex:1
   },
   title: {
@@ -411,6 +410,7 @@ const styles = StyleSheet.create({
   },
   text: {
     textAlign: "left",
+    color:colors.clearBlue
   },
   image: {
     width: '100%',
