@@ -1,13 +1,17 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   StyleSheet,
   Text,
   View,
+  Image,
 } from 'react-native';
 import * as Permissions from 'expo-permissions';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import i18n from '../utils/i18n';
+import { appStyles } from '../constants/Styles';
+import { colors } from '../constants/Colors';
 
-class ScanSim extends Component {
+class ScanSim extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
@@ -45,13 +49,19 @@ class ScanSim extends Component {
     const { hasCameraPermission, cameraOn, flashOn, scanned } = this.state;
 
     if ( ! cameraOn || hasCameraPermission === null ) {
-      return <View style={styles.box}/>
+      return (
+        <View style={styles.box}>
+          <Image style={{position:'absolute'}} source={require('../assets/images/main/imgCard.png')}/>
+          <Text style={styles.boxTitle}>{i18n.t('reg:card')}</Text>
+        </View>
+        )
     } 
     
     if (hasCameraPermission === false) {
       return (
         <View style={styles.box}>
-          <Text>No access to camera</Text>;
+          <Image style={{position:'absolute'}} source={require('../assets/images/main/imgCard.png')}/>
+          <Text style={styles.boxTitle}>{i18n.t('reg:noPerm')}</Text>
         </View>
       )
     } 
@@ -81,10 +91,14 @@ class ScanSim extends Component {
 
 
 const styles = StyleSheet.create({
+  boxTitle: {
+    ... appStyles.normal16Text,
+    color: colors.clearBlue,
+  },
   box: {
     flex: 1,
-    backgroundColor: 'skyblue',
-    borderRadius: 8
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   camera: {
     flex:1
