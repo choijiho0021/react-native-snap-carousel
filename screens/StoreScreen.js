@@ -73,14 +73,11 @@ class StoreList extends Component {
   }
 
   _renderItem = ({item}) => {
-    console.log("rendeer item",item)
     return _.isEmpty(item) ? {ccode:'nodata'} : <CountryItem onPress={this.props.onPress} item={item}/>
   }
 
   render() {
     const {data} = this.props
-
-    console.log('render store list')
 
     return (
       <View style={appStyles.container} >
@@ -99,25 +96,79 @@ class StoreList extends Component {
   }
 }
 
+class HeaderTitle extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      searching : false
+    }
+
+  }
+
+  // shouldComponentUpdate(nextProps){
+  // }
+
+  _searching(searching = true) {
+    const {search} = this.props
+
+    if(!searching) {
+      search('all')
+    }
+
+    this.setState({
+      searching:searching
+    })
+  }
+ 
+  
+  onFocus(isFocus) {
+    this.textInput.setNativeProps({
+      style: { borderColor: isFocus ? colors.black : colors.lightGrey}
+    })
+  }
+
+  render() {
+    const {searching} = this.state
+    const {search, onChangeText} = this.props
+
+    return (
+      <View style={styles.headerTitle}>
+        {searching ? 
+        <View style={styles.headerTitle}>
+          <View style={styles.searchBox}>
+            <TextInput 
+              ref={input => { this.textInput = input}}
+              onBlur={ () => this.onFocus(false) }
+              onFocus={ () => this.onFocus(true) }
+              style={styles.searchText}
+              placeholder={i18n.t('store:search')}
+              returnKeyType='search'
+              clearTextOnFocus={true}
+              enablesReturnKeyAutomatically={true}
+              onSubmitEditing={() => search()}
+              onChangeText={(value) => onChangeText(value)}
+              />
+            <AppButton style = {styles.showSearchBar} onPress={() => search()} iconName="btnSearchOff" />
+          </View>
+          <AppButton style = {styles.showSearchBar} onPress={() => this._searching(false)} title={i18n.t('cancel')} titleStyle={styles.titleStyle} />
+        </View> : <View style={styles.headerTitle}>
+            <Text style={styles.title}>{i18n.t('store')}</Text>
+            <AppButton style = {styles.showSearchBar} onPress={() => this._searching(true)} iconName="btnSearchOff" />
+          </View>
+          }
+          
+      </View> 
+    )
+  }
+}
+
 class StoreScreen extends Component {
   static navigationOptions = (navigation) => {
     const {params = {}} = navigation.navigation.state
 
     return {
-      headerTitle : <View style={styles.headerTitle}>
-        <Text style={[appStyles.subTitle, {marginLeft:16}]}>{i18n.t('store')}</Text>
-        <TextInput 
-            style={styles.searchText}
-            placeholder={i18n.t('store:search')}
-            returnKeyType='search'
-            enablesReturnKeyAutomatically={true}
-            onSubmitEditing={params.search}
-            // clearTextOnFocus={true}
-            clearButtonMode='always'
-            onChangeText={(value) => params.onChangeText(value)}
-            value={params.country} />
-        <AppButton style = {styles.showSearchBar} onPress={params.search} iconName="btnSearchOff" />
-      </View>
+      headerTitle : <HeaderTitle search={params.search} onChangeText={params.onChangeText} params={params}/>
     }
 }
 
@@ -148,7 +199,6 @@ class StoreScreen extends Component {
     this._navigateToNewSim = this._navigateToNewSim.bind(this)
     this._onIndexChange = this._onIndexChange.bind(this)
     this._onPressItem = this._onPressItem.bind(this)
-    this._search = this._search.bind(this)
 
     this.offset = 0
   }
@@ -157,7 +207,7 @@ class StoreScreen extends Component {
     this.props.navigation.setParams({
       NewSim: this._navigateToNewSim,
       onChangeText : this._onChangeText('country'),
-      search : this._search
+      search : this._search()
     })
     this._refresh()
   }
@@ -283,13 +333,13 @@ class StoreScreen extends Component {
     })
   }
 
-  _search() {
+  _search = () => (searchWord) => {
     const {country, index, allData} = this.state
     const key = Object.keys(productApi.category)[index]
 
-    console.log("key",key)
+    console.log("country",country)
     this.setState({
-      [key]: this.filterByCategory(allData, productApi.category[key], country)
+      [key]: this.filterByCategory(allData, productApi.category[key], searchWord == 'all' ? '' : country)
     })
   }
 
@@ -346,6 +396,10 @@ const styles = StyleSheet.create({
     width: "100%",
     flex:1
   },
+  title: {
+    ... appStyles.title,
+    marginLeft: 20,
+  },
   overlay: {
     backgroundColor:'rgba(0,0,0,0.5)',
     height: 80,
@@ -387,16 +441,6 @@ const styles = StyleSheet.create({
     marginHorizontal:40,
     flex:1
   },
-  searchBox : {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderColor: "#aaaaaa",
-    paddingBottom: 10,
-    alignItems:'baseline',
-    marginBottom:32,
-    marginTop:20,
-    marginHorizontal:20
-  },
   productList : {
     flexDirection: 'row',
     marginTop:20,
@@ -414,17 +458,34 @@ const styles = StyleSheet.create({
     justifyContent:'flex-end'
   },
   showSearchBar : {
-    marginRight:30,
-    backgroundColor:colors.white,
+    marginRight:20,
     justifyContent:"flex-end"
   },
-  searchText : {
+  titleStyle: {
+    ... appStyles.headerTitle
+  },
+  searchBox : {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignContent:"center",
     flex:1,
-    marginLeft:40,
-    marginRight:10
+    marginHorizontal:20,
+    height: 40,
+    borderRadius: 3,
+    backgroundColor: colors.white,
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderColor: colors.lightGrey
+  },
+  searchText : {
+    ... appStyles.normal14Text,
+    marginLeft:20,
+    flex:1
   },
   headerTitle : {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignContent:"center",
     flex : 1
   },
   tabStyle: {
