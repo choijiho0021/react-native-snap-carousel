@@ -48,8 +48,8 @@ class CountryItem extends Component {
           elm ? <View key={elm.ccode} style={{flex:1, marginLeft:idx == 1 ? 14 : 0}}>
             <TouchableOpacity onPress={() => this.props.onPress && this.props.onPress(elm.uuid)}>
               <Image key={"img"} source={{uri:api.httpImageUrl(elm.imageUrl)}} style={styles.image}/>
-              <Text key={"cntry"} style={[appStyles.bold14Text,styles.text,{marginBottom:5}]}>{elm.cntry}</Text>
-              <Text key={"from"} style={[appStyles.normal14Text,styles.text]}>{i18n.t('from')}</Text>
+              <Text key={"cntry"} style={[appStyles.bold14Text,{marginBottom:5}]}>{elm.cntry}</Text>
+              <Text key={"from"} style={styles.from}>{i18n.t('from')}</Text>
               <Text key={"price"} style={[appStyles.price,{color:colors.clearBlue},styles.text]}>{utils.numberToCommaString(elm.price)}
               <Text key={"days"} style={[appStyles.normal14Text,{color:colors.clearBlue},styles.text]}>{`${i18n.t('won')}/${i18n.t('day')}`}</Text>
               </Text>
@@ -416,7 +416,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 110,
     resizeMode: 'cover',
-    marginVertical:10
+    marginVertical:10,
+    borderRadius:10
   },
   divider: {
     height: 1,
@@ -490,7 +491,15 @@ const styles = StyleSheet.create({
     flex : 1
   },
   tabStyle: {
-    backgroundColor:colors.whiteTwo
+    backgroundColor:colors.whiteTwo,
+    alignItems:"flex-start",
+    paddingLeft:20
+  },
+  from: {
+    ... appStyles.normal14Text,
+    textAlign: "left",
+    color:colors.warmGrey,
+    marginBottom:1
   }
 });
 
