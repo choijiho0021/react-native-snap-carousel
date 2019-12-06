@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     borderWidth: 1
   },
   btnCartText: {
-    ... appStyles.normal16Text,
+    ... appStyles.normal18Text,
     textAlign: "center",
     color: colors.black
   },
@@ -258,6 +258,11 @@ const styles = StyleSheet.create({
     width: "50%",
     height: 52,
     backgroundColor: colors.clearBlue
+  },
+  btnBuyText: {
+    ... appStyles.normal18Text,
+    textAlign: "center",
+    color: colors.white
   },
   card : {
     height: 71,
