@@ -26,6 +26,11 @@ const withBadge = (value, options = {}, stateToProps=() => ({})) => WrappedCompo
   class extends React.Component {
 
     shouldComponentUpdate(nextProps, nextState){
+
+      if(nextProps.onPress != this.props.onPress){
+        return true
+      }
+
       if(typeof value === "function"){
         return value(this.props) != value(nextProps)
       }
