@@ -241,6 +241,8 @@ const en = {
   "guide:title": "Guide",
   "guide:buy": "Please, purchase Rokebi USIM, firstly.",
   "guide:tip": "Tip",
+
+  "noti:empty" : "There is no notification"
 };
 
 const ko = {
@@ -491,6 +493,8 @@ const ko = {
   "guide:title": "사용 가이드",
   "guide:buy": "먼저 로깨비 유심을 구매해 주세요.\n다양한 채널로 구매 가능합니다.",
   "guide:tip": "Special 꿀팁",
+
+  "noti:empty" : "알림이 없습니다"
 
   //address
   /*
