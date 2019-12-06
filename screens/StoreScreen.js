@@ -106,8 +106,9 @@ class HeaderTitle extends Component {
 
   }
 
-  // shouldComponentUpdate(nextProps){
-  // }
+  shouldComponentUpdate(nextProps,nextState){
+    return nextState.searching != this.state.searching
+  }
 
   _searching(searching = true) {
     const {search} = this.props
@@ -122,9 +123,15 @@ class HeaderTitle extends Component {
   }
  
   
-  onFocus(isFocus) {
-    this.textInput.setNativeProps({
-      style: { borderColor: isFocus ? colors.black : colors.lightGrey}
+  onFocus() {
+    this.searchBox.setNativeProps({
+      style: { borderColor: colors.black}
+    })
+  }
+
+  onBlur() {
+    this.searchBox.setNativeProps({
+      style: { borderColor: colors.lightGrey}
     })
   }
 
@@ -136,15 +143,15 @@ class HeaderTitle extends Component {
       <View style={styles.headerTitle}>
         {searching ? 
         <View style={styles.headerTitle}>
-          <View style={styles.searchBox}>
+          <View ref={searchBox => { this.searchBox = searchBox}} style={styles.searchBox}>
             <TextInput 
               ref={input => { this.textInput = input}}
-              onBlur={ () => this.onFocus(false) }
-              onFocus={ () => this.onFocus(true) }
+              onBlur={ () => this.onBlur() }
+              onFocus={ () => this.onFocus() }
               style={styles.searchText}
               placeholder={i18n.t('store:search')}
               returnKeyType='search'
-              clearTextOnFocus={true}
+              // clearTextOnFocus={true}
               enablesReturnKeyAutomatically={true}
               onSubmitEditing={() => search()}
               onChangeText={(value) => onChangeText(value)}
