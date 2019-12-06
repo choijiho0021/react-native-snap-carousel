@@ -158,7 +158,7 @@ class CountryScreen extends Component {
 
   render() {
     const { idx, prodList, startDate, name} = this.props.product,
-      { prodData, title} = this.state,
+      { prodData, selected} = this.state,
       imageUrl = prodList.length > idx >= 0 ? prodList[idx].imageUrl : ''
       
     console.log('HTTPIMGURL', {uri:api.httpImageUrl(imageUrl)})
@@ -167,7 +167,7 @@ class CountryScreen extends Component {
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <Image style={styles.box} source={{uri:api.httpImageUrl(imageUrl)}}/>
 
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {title:this.props.navigation.getParam('title'), text:prodData[0].body})}>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {title:this.props.navigation.getParam('title'), text:selected.body})}>
           <View style={styles.detail}>
             <Text style={appStyles.normal14Text}>{i18n.t('country:detail')}</Text>
             <AppIcon style={{marginRight:20}} name="iconArrowRight" size={10} />

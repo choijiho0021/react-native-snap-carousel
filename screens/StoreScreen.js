@@ -344,7 +344,6 @@ class StoreScreen extends Component {
     const {country, index, allData} = this.state
     const key = Object.keys(productApi.category)[index]
 
-    console.log("country",country)
     this.setState({
       [key]: this.filterByCategory(allData, productApi.category[key], searchWord == 'all' ? '' : country)
     })
