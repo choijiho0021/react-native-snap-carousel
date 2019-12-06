@@ -32,6 +32,7 @@ const images = {
   btnReply: [ require( mainPath + 'btnReply.png')],
   btnAlarm: [ require( headerPath + 'btnAlarm.png')],
   btnCnter: [ require( headerPath + 'btnCnter.png')],
+  btnSearchTop: [ require( headerPath + 'btnSearchTop.png')],
   btnCheck : [ require( mainPath + 'btnCheckNon.png'), require( mainPath + 'btnCheckSel.png')],
 }
 

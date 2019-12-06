@@ -75,6 +75,10 @@ class NotiScreen extends Component {
       )
   }
 
+  renderEmptyContainer () {
+    return (<Text style={styles.emptyPage}>{i18n.t('noti:empty')}</Text>)
+  }
+
   render() {
     const {notiList} = this.props.noti
 
@@ -83,6 +87,7 @@ class NotiScreen extends Component {
         <FlatList 
           data={notiList} 
           renderItem={this._renderItem }
+          ListEmptyComponent={this.renderEmptyContainer()}
           />
       </View>
     );
@@ -156,7 +161,11 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     alignItems:'flex-end',
     height:98
-  }
+  },
+  emptyPage: {
+    marginTop: 60,
+    textAlign: 'center'
+  },
 });
 
 const mapStateToProps = (state) => ({
