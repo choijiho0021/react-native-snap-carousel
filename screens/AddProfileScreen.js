@@ -20,6 +20,8 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import RNPickerSelect from 'react-native-picker-select';
 import Triangle from '../components/Triangle';
 import findEngAddress from '../utils/findEngAddress'
+import AppIcon from '../components/AppIcon';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 class AddProfileScreen extends Component {
   static navigationOptions = (navigation) => ({
@@ -41,45 +43,55 @@ class AddProfileScreen extends Component {
         zipNo: undefined,
         addr1: undefined,
         addr2: undefined,
-        detailAddr: undefined
+        detailAddr: undefined,
+        isBasicAddr: undefined,
       },
       errors: undefined
     }
 
     this._onChangeText = this._onChangeText.bind(this)
     this._onSubmit = this._onSubmit.bind(this)
+    this._onChecked = this._onChecked.bind(this)
   }
 
-  // componentDidMount() {
-  //   // this.props.action.order.getCustomerProfile(this.props.account.userId, this.props.account)
-  //   // console.log(this.props.order)
-  // }
-/*
-  shouldComponentUpdate(nextProps) {
-    console.log('nextProps', nextProps)
-    console.log(this.props)
-    const str = nextProps.order.addr.siNm + ' ' + nextProps.order.addr.sggNm
-    const addr = nextProps.order.addr.roadAddr
-    console.log('update - addr1', str)
-    console.log('replace',
-        nextProps.order.addr.roadAddr.replace(nextProps.order.addr.siNm, '').replace(nextProps.order.addr.sggNm, '')
-    )
-    // console.log('replace ',
-    // this.props.order.addr.roadAddr.replace(this.props.order.addr.siNm,'').replace(this.props.order.addr.sggNm,''))
-    if (this.props.order.addr.roadAddr != nextProps.order.addr.roadAddr) {
-        this.setState({
-            profile: {
-                ...this.state.profile,
-                addr1: nextProps.order.addr.roadAddrPart1,
-                addr2: nextProps.order.addr.roadAddrPart2,
-                zipNo: nextProps.order.addr.zipNo
-            }
-        })
-        return true;
-    }
-    return false;
+  componentDidMount() {
+    
+    // if(!_.isEmpty(this.props.navigation.getParam('update'))){
+      // const param = this.props.navigation.getParam('update') 
+      const param = !_.isEmpty(this.props.navigation.getParam('update')) ?
+              this.props.navigation.getParam('update') : this.props.order.profile.filter(item => item.isBasicAddr == true)
+
+      console.log('mount profile', param)
+      
+      this.setState({
+        prefix: "010",
+        profile: {
+          ... this.state.profile,
+          uuid: param.uuid || undefined,
+          alias: param.alias || undefined,
+          recipient: param.recipient,
+          recipient_num: param.recipientNumber,
+          province: param.province,
+          city: param.city,
+          organization: param.organization,
+          zipNo: param.zipCode,
+          addr1: param.addressLine1,
+          addr2: param.addressLine2,
+          detailAddr: undefined,
+          isBasicAddr: param.isBasicAddr,
+        },
+      })
+    // }
+
+    // console.log(this.props)
+    // const param = this.props.navigation.getParam('profile')
+    // console.log('get param', param)
+    // console.log(this.props)
+
+    // this.props.action.order.getCustomerProfile(this.props.account.userId, this.props.account)
+    // console.log(this.props.order)
   }
-  */
+
   componentDidUpdate(prevProps) {
     if(this.props.order.addr.roadAddr != prevProps.order.addr.roadAddr){
       console.log('prevProps', prevProps)
@@ -100,12 +112,33 @@ class AddProfileScreen extends Component {
     }
   }
 
+
+
   _onSubmit() {
     console.log('this props', this.props)
     console.log('this state', this.state)
-    this.props.action.order.addCustomerProfile(this.state.profile, this.props.order.profile ,this.props.account)
-    this.props.navigation.navigate('PymMethod')
+    if(_.isEmpty(this.props.navigation.getParam('update'))){
+      console.log('submit add')
+      this.props.action.order.addCustomerProfile(this.state.profile, this.props.order.profile ,this.props.account)
+    }else{
+      console.log('submit update')
+      this.props.action.order.updateCustomerProfile(this.state.profile, this.props.account)
+    }
+    this.props.navigation.goBack()
+    // this.props.navigation.state.params.refresh({ update: true})
   }
+
+  _onChecked() {
+    const {profile} = this.state
+    this.setState({
+      profile: {
+        ... this.state.profile,
+        isBasicAddr: ! profile.isBasicAddr
+      }
+    })
+    console.log('profile basic addr, ',profile)
+  }
+
   _onChangeText = (key) => (value) => {
 
     const item = key.substring(key.indexOf('.') + 1)
@@ -134,7 +167,11 @@ class AddProfileScreen extends Component {
     console.log('addr2', this.props.order.addr.roadAddrPart2)
     
     const str = this.props.order.addr.siNm + ' ' + this.props.order.addr.sggNm
-    const { prefix } = this.state
+    const { prefix, profile } = this.state
+
+    // const param = !_.isEmpty(this.props.navigation.getParam('profile')) ?
+    //                 this.props.navigation.getParam('profile') : this.props.order.profile.filter(item => item.isBasicAddr == true)
+    // console.log('get param', param)
 
     return (
       <KeyboardAwareScrollView
@@ -142,18 +179,21 @@ class AddProfileScreen extends Component {
         extraScrollHeight={60}
         innerRef={ref => { this.scroll = ref; }}>
         <SafeAreaView style={styles.container}>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1}}>
             <View style={{ margin: 20 }}>
               <View style={styles.textRow}>
                 <Text style={styles.textTitle}>{i18n.t('addr:addrAlias')}</Text>
                 <TextInput style={styles.textBox}
-                  onChangeText={this._onChangeText('profile.alias')} />
+                           placeholder={profile.alias}
+                           placeholderTextColor='#2c2c2c'
+                           onChangeText={this._onChangeText('profile.alias')} />
               </View>
               <View style={styles.textRow}>
                 <Text style={styles.textTitle}>{i18n.t('addr:recipient')}</Text>
                 <TextInput style={[styles.textBox, { paddingLeft: 20 }]}
-                  placeholder={i18n.t('addr:enterWithin50')}
-                  onChangeText={this._onChangeText('profile.recipient')} />
+                           value={profile.recipient}
+                           placeholder={i18n.t('addr:enterWithin50')}
+                           onChangeText={this._onChangeText('profile.recipient')} />
               </View>
               <View style={styles.textRow}>
                 <Text style={styles.textTitle}>{i18n.t('addr:recipientNumber')}</Text>
@@ -163,8 +203,7 @@ class AddProfileScreen extends Component {
                       placeholder: styles.placeholder,
                       iconContainer: {
                         top: 4,
-                        right: 10,
-                      },
+                        right: 10,}
                     }}
                       onValueChange={this._onChangeText("prefix")}
                       items={["010", "011", "017", "018", "019"].map(item => ({
@@ -179,33 +218,44 @@ class AddProfileScreen extends Component {
                   </View>
                 </View>
                 <TextInput style={[styles.textBox, { width: '56%' }]}
-                  onChangeText={this._onChangeText('profile.recipient_num')} />
+                           onChangeText={this._onChangeText('profile.recipient_num')}
+                           value={profile.recipient_num} />
               </View>
               <View style={[styles.textRow, { marginBottom: 10 }]}>
                 <Text style={styles.textTitle}>{i18n.t('addr:address')}</Text>
-                <TextInput style={[styles.textBox, { width: '61%' }]}
-                           onPress={() => this.props.navigation.navigate('FindAddress')}
-                           value={_.isEmpty(this.props.order.addr) ?  null : str} />
+                <Text style={[styles.textBox, { width: '61%' }]}
+                      onPress={() => this.props.navigation.navigate('FindAddress')}
+                      value={_.isEmpty(this.props.order.addr) ?  null : str}/>
                 <AppButton title={i18n.t('addr:search')}
                            style={styles.findButton}
                            titleStyle={styles.findBtnText}
                            onPress={() => this.props.navigation.navigate('FindAddress')} />
               </View>
               <View style={styles.findTextRow}>
-                <TextInput style={styles.textBox}
-                           value={_.isEmpty(this.props.order.addr) ? null : this.props.order.addr.roadAddr.replace(str,'')} />
-                
+                <Text style={styles.textBox}
+                      value={_.isEmpty(this.props.order.addr) ? null : this.props.order.addr.roadAddr.replace(str,'')}
+                      onPress={() => this.props.navigation.navigate('FindAddress')} />
               </View>
+
               <View style={styles.findTextRow}>
                 <TextInput style={styles.textBox}
                            onChangeText={this._onChangeText('profile.detailAddr')} />
               </View>
+              <TouchableOpacity style={{flex:1, width: '82%', flexDirection: 'row', alignSelf: 'flex-end',marginTop: 20}}
+                    onPress={this._onChecked}>
+                <AppIcon name="btnCheck2"
+                         checked={this.state.profile.isBasicAddr || false}/>
+                <Text style={styles.basicProfile}>기본배송지로 선택</Text>
+              </TouchableOpacity>
             </View>
-            <AppButton title={i18n.t('save')}
-                       textStyle={appStyles.confirmText}
-                       //disabled={_.isEmpty(selected)}
-                       onPress={this._onSubmit}
-                       style={appStyles.confirm} />
+
+            {/* <View style={{justifyContent: 'flex-end'}}> */}
+              <AppButton style={[appStyles.confirm]} 
+                         title={i18n.t('save')}
+                         textStyle={appStyles.confirmText}
+                         //disabled={_.isEmpty(selected)}
+                         onPress={this._onSubmit} />
+            {/* </View>            */}
 
           </View>
         </SafeAreaView>
@@ -233,7 +283,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20, // textRow    
+    // marginBottom: 20, // textRow    
     marginBottom: 10,
     justifyContent: 'flex-end'
   },
@@ -260,7 +310,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderStyle: "solid",
     borderWidth: 1,
-    borderColor: colors.lightGrey
+    borderColor: colors.lightGrey,
+    paddingLeft: 20
   },
   textTitle: {
     ...appStyles.normal14Text,
@@ -276,6 +327,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     marginRight: 10,
   },
+  basicProfile: {
+    ... appStyles.normal12Text,
+    color: colors.warmGrey,
+    marginLeft: 10
+  }
   // saveButton: {
   //   ... appStyles.confirm,
   //   justifyContent: 'flex-end'
@@ -291,7 +347,6 @@ const mapStateToProps = (state) => ({
   order: state.order.toJS(),
 })
 
-// export default CustomerProfileScreen
 export default connect(mapStateToProps,
   (dispatch) => ({
     action: {

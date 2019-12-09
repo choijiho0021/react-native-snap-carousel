@@ -6,18 +6,20 @@ import orderApi from '../../utils/api/orderApi'
 const  UPDATE_ADDRESS = 'rokebi/order/UPDATE_ADDRESS'
 const  ADD_DELIVERY_ADDRESS_LIST = 'rokebi/order/ADD_DELIVERY_ADDRESS_LIST'
 const  SELECT_ADDRESS = 'rokebi/order/SELECT_ADDRESS'
-const  UPDATE_CUSTOMER_PROFILE = 'UPDATE_CUSTOMER_PROFILE'
+const  UPDATE_PROFILE_ADDRESS = 'rokebi/order/UPDATE_PROFILE_ADDRESS'
 const  GET_CUSTOMER_PROFILE = 'rokebi/order/GET_CUSTOMER_PROFILE'
 const  ADD_CUSTOMER_PROFILE = 'rokebi/order/ADD_CUSTOMER_PROFILE'
+const  UPDATE_CUSTOMER_PROFILE = 'rokebi/order/UPDATE_CUSTOMER_PROFILE'
 export const  GET_ORDERS = 'rokebi/order/GET_ORDERS'
 
   // add address list
 export const addDeliveryAddressList = createAction(ADD_DELIVERY_ADDRESS_LIST)
 export const updateAddress = createAction(UPDATE_ADDRESS)
 export const selectAddress = createAction(SELECT_ADDRESS) 
-export const updateCustomerProfile = createAction(UPDATE_CUSTOMER_PROFILE)
+export const updateProfileAddress = createAction(UPDATE_PROFILE_ADDRESS)
 export const getCustomerProfile = createAction(GET_CUSTOMER_PROFILE, orderApi.getCustomerProfile)
 export const addCustomerProfile = createAction(ADD_CUSTOMER_PROFILE, orderApi.addCustomerProfile)
+export const updateCustomerProfile = createAction(UPDATE_CUSTOMER_PROFILE, orderApi.updateCustomerProfile)
 export const getOrders = createAction(GET_ORDERS, orderApi.getOrders)
 
 const initialState = Map({
@@ -34,6 +36,7 @@ export default handleActions({
       .set('selectedAddrIdx', 0)
   },
 
+  // redux에만 저장.
   [UPDATE_ADDRESS]: (state, action) => {
     return state.update('addrList', list => list.map( item => {
       const payload = action.payload
@@ -54,8 +57,8 @@ export default handleActions({
     return state.set( 'selectedAddrIdx', state.get('addrList').findIndex(item => item.uuid == action.uuid))
   },
 
-  [UPDATE_CUSTOMER_PROFILE]: (state, action) => {
-    console.log('update customer profile!! action', action)
+  [UPDATE_PROFILE_ADDRESS]: (state, action) => {
+    console.log('update profile address!! action', action)
     return state.set('addr', action.payload)
   },
 
@@ -93,6 +96,33 @@ export default handleActions({
       }
       return state
     }
-  })  
+  }),
+
+  ... pender({
+    type: UPDATE_CUSTOMER_PROFILE,
+    onSuccess: (state, action) => {
+      const {result, objects} = action.payload
+      console.log('UPDATE CUSTOMER PROFILE', objects)
+      if (result == 0 && objects.length > 0) {
+        return state.set('profile', objects)
+      }
+      return state
+    }
+  }),    
+
+  // notiReadAndGet = (uuid,mobile,auth) => {
+  //   return (dispatch,getState) => {
+  //     return dispatch(readNoti(uuid,auth)).then(
+  //       resp => {
+  //         if (resp.result == 0 && resp.objects.length > 0) {
+  //           return dispatch(getNotiList(mobile))
+  //         }
+  //         throw new Error('Failed to read Noti and Get notiList')
+  //       },
+  //       err => {
+  //         throw err
+  //       })
+  //   }
+  // },  
 
 }, initialState)

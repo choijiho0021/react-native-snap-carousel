@@ -84,7 +84,7 @@ class OrderAPI {
                     recipient: item.attributes.field_recipient,
                     recipientNumber : item.attributes.field_recipient_number,
                     uuid: item.id,
-
+                    isBasicAddr: item.attributes.field_basic_address,  
                 }
             
             })
@@ -112,7 +112,7 @@ class OrderAPI {
         }, this.toCustomerProfile)
     }
 
-    addCustomerProfile = (profile, item,{token}) => {
+    addCustomerProfile = (profile, item, {token}) => {
         if ( _.isEmpty(profile) || _.isEmpty(token) ) return api.reject( api.INVALID_ARGUMENT)
 
         console.log('addCustomerProfile profile', profile)
@@ -139,8 +139,8 @@ class OrderAPI {
                     },
                     field_recipient : profile.recipient,
                     field_recipient_number : profile.recipient_num,
-                    field_alias : profile.alias
-
+                    field_alias : profile.alias,
+                    field_basic_address : profile.isBasicAddr,
                 }
             }
         }
@@ -152,6 +152,64 @@ class OrderAPI {
             headers,
             body: JSON.stringify(body)
         }, this.toCustomerProfile)
+    }
+
+    updateCustomerProfile = ( profile, {userId, token}) => {
+        if ( _.isEmpty(profile) || _.isEmpty(token) ) return api.reject(api.INVALID_ARGUMENT)
+
+        console.log('updateCustomerProfile ID', userId)
+        console.log('updateCustomerProfile profile', profile)
+        console.log('updateCustomerProfile token', token)
+        const url = `${api.httpUrl(api.path.jsonapi.profile)}/${profile.uuid}`
+        const headers = api.withToken(token, 'vnd.api+json', {
+            'Accept': 'application/vnd.api+json'
+        })
+        const body = {
+            data : {
+                type: 'profile--customer',
+                id: profile.uuid,
+                attributes: {
+                    address: {
+                        langcode: "ko",
+                        country_code: "KR",
+                        administrative_area: profile.province,   // 경기도 
+                        locality: profile.city,                  // 성남시
+                        postal_code: profile.zipNo,
+                        address_line1: profile.addr1,
+                        address_line2: profile.addr2 || ' ' || profile.detailAddr,
+                        organization: profile.organization || profile.alias,
+                        given_name: profile.givenName || profile.recipient.substring(0,1), //'choi',//profile[0].givenName,
+                        family_name: profile.familyName|| profile.recipient.substring(1), //'soojeong', //profile[0].familyName,
+                    },
+                    field_recipient : profile.recipient,
+                    field_recipient_number : profile.recipient_num,
+                    field_alias : profile.alias,
+                    field_basic_address : profile.isBasicAddr,
+                }
+            }
+        }
+
+        return api.callHttp(url, {
+            method: 'PATCH',
+            headers,
+            body: JSON.stringify(body)
+        }, this.toCustomerProfile)
+    }
+
+    delCustomerProfile = (uuid, {token}) => {
+        if ( _.isEmpty(uuid) || _.isEmpty(token) ) return api.reject( api.INVALID_ARGUMENT)
+
+        console.log('delCustomerProfile!!!', uuid)
+        const url = `${api.httpUrl(api.path.jsonapi.profile)}/${uuid}`
+        const headers = api.withToken(token, 'vnd.api+json')
+
+        return api.callHttp(url, {
+            method: 'delete',
+            headers,
+        }, (resp) => ({
+            result: resp.status == '204' ? 0 : api.FAILED
+        }), false)
+
     }
 
     addDeliveryAddress = (addr, {user, pass}) => {
