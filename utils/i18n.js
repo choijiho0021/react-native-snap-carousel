@@ -151,7 +151,9 @@ const en = {
   "cfm:contract": "Confirm contract terms",
   "cfm:mandatory": "(Mandatory)",
   "cfm:personalInfo": "Cofirm collecting personal info",
-  "cfm:marketing": "Confirm marketing (Optional)",
+  "cfm:marketing": "Confirm marketing",
+  "cfm:optional": "(Optional)",
+  "cfm:accept": "Accept",
 
   "purchase:address" : "Delivery Address",
   "purchase:addrName" : "Alias",
@@ -397,7 +399,9 @@ const ko = {
   "cfm:contract": "이용 약관 동의",
   "cfm:mandatory": " (필수)",
   "cfm:personalInfo": "개인정보 수집목적 및 이용동의",
-  "cfm:marketing": "맞춤안내 및 마케팅 정보 수신동의 (선택)",
+  "cfm:marketing": "맞춤안내 및 마케팅 정보 수신동의",
+  "cfm:optional": " (선택)",
+  "cfm:accept": "동의",
 
   "purchase:address" : "배송 주소",
   "purchase:addrName" : "주소 별칭",
