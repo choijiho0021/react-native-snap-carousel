@@ -56,6 +56,10 @@ class RegisterMobileScreen extends Component {
           {color: colors.warmGrey, text:i18n.t('cfm:contract')}, 
           {color: colors.clearBlue, text: i18n.t('cfm:mandatory')}
         ],
+        navi: { 
+          route: 'SimpleText', 
+          param: { key: 'Contract', title: i18n.t('cfm:contract'), mode: 'confirm' } 
+        }
       },
       {
         key: "1",
@@ -63,12 +67,21 @@ class RegisterMobileScreen extends Component {
           {color: colors.warmGrey, text:i18n.t('cfm:personalInfo')}, 
           {color: colors.clearBlue, text: i18n.t('cfm:mandatory')}
         ],
+        navi: { 
+          route: 'SimpleText', 
+          param: { key: 'Privacy', title: i18n.t('cfm:personalInfo'), mode: 'confirm' } 
+        }
       },
       {
         key: "2",
         list: [ 
           {color: colors.warmGrey, text:i18n.t('cfm:marketing')}, 
-        ]
+          {color: colors.warmGrey, text: i18n.t('cfm:optional')}
+        ],
+        navi: { 
+          route: 'SimpleText', 
+          param: { key: 'Privacy', title: i18n.t('cfm:marketing'), mode: 'confirm' } 
+        }
       }
     ]
 
@@ -200,6 +213,17 @@ class RegisterMobileScreen extends Component {
     })
   }
 
+  _onMove = (key, route, param ) => () => {
+    const { confirm } = this.state
+
+    if ( confirm.get(key) ) {
+      this._onPress(key)()
+    }
+    else {
+      this.props.navigation.navigate(route, { ...param, onOk: this._onPress(key) })
+    }
+  }
+
   _signIn = ({ mobile, pin }) => {
     this.props.action.account.logInAndGetUserId( mobile, pin)
 
@@ -210,7 +234,11 @@ class RegisterMobileScreen extends Component {
     const confirmed = this.state.confirm.get(item.key)
 
     return (
-      <TouchableOpacity onPress={this._onPress(item.key)}>
+      <TouchableOpacity onPress={
+          item.navi && (item.navi || {}).route ?  
+          this._onMove(item.key, item.navi.route, item.navi.param) : 
+          this._onPress(item.key)
+        }>
         <View style={styles.confirmList}>
           <AppIcon style={{marginRight:10}} name="btnCheck2" checked={confirmed}/>
           <View style={{flexDirection:"row", flex:1}}>
@@ -259,7 +287,8 @@ class RegisterMobileScreen extends Component {
             value={pin}
             titleStyle={styles.smsButtonText}
             titleDisableColor={colors.white}
-            inputStyle={[styles.inputStyle, pin ? {} : styles.emptyInput ]} />
+            inputStyle={[styles.inputStyle, pin ? {} : styles.emptyInput ]}
+            textContentType="oneTimeCode" />
         }
 
         {
@@ -313,7 +342,7 @@ const styles = StyleSheet.create({
     ... appStyles.normal14Text,
     color: colors.clearBlue,
     marginTop: 13,
-    marginLeft: 20,
+    marginLeft: 30,
   },
   title: {
     ... appStyles.h1,

@@ -42,9 +42,19 @@ class CustomerProfileScreen extends Component {
     this.props.action.order.getCustomerProfile(this.props.account.userId, this.props.account)
   }
 
-  _onChecked(){
-    console.log('cust state', this.state)
+  // _onChecked(){
+  //   console.log('cust state', this.state)
     
+  // }
+
+  _onChecked(uuid) {
+    const { checked} = this.state
+    this.setState({
+      checked: {
+        ... checked,
+        [uuid]: ! checked[uuid]
+      }
+    })
   }
 
   _deleteProfile() {
@@ -102,10 +112,7 @@ class CustomerProfileScreen extends Component {
                             style={{backgroundColor: colors.white}}
                             titleStyle={[styles.chgButtonText, {paddingRight: 20}]}
                             onPress={this._deleteProfile}/>
-
                 </View>     
-                  {/* <Text style={{alignItems: 'flex-end'}}>{i18n.t('modify')}</Text> */}
-                  {/* <Text style={{alignItems: 'flex-end', flex: 1}}>{i18n.t('delete')}</Text> */}
               </View>
             </View>
             <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -114,10 +121,11 @@ class CustomerProfileScreen extends Component {
                            style={styles.addrCard}
                            //mobile={item.field_recipient_number}
                            profile={item}/>
-              <View style={{flexDirection: 'column', justifyContent: 'flex-end'}}>
-                <View style={{height: 56, justifyContent: 'center', width: 62}}>
-                      {/* onPress={()=>this._onPress}> */}
-                  <AppIcon name="btnCheck" checked={0}/>
+              <View style={{flexDirection: 'column', justifyContent: 'flex-end', padding:20}}>
+                <View style={{height: 56, justifyContent:'flex-end', alignItems: 'flex-end', width: 62}}
+                      onPress={()=>this._onChecked(item.prod.uuid)}>
+                  <AppIcon name="btnCheck" />
+                  {/* // checked={this.state.checked[item.prod.uuid] || false}/> */}
                 </View>
               </View>  
             </View>
