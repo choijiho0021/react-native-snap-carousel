@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     ... appStyles.normal14Text,
     color: colors.clearBlue,
     marginTop: 13,
-    marginLeft: 20,
+    marginLeft: 30,
   },
   container: {
     flexDirection: "row",
