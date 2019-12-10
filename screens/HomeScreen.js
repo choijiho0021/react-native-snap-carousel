@@ -220,6 +220,7 @@ class HomeScreen extends Component {
         <AppButton iconName="imgCard3"
           style={styles.menuBox}
           title={i18n.t('store')}
+          onPress={this._navigate('Cart')}
           titleStyle={styles.menuText} />
       </View>
     )
