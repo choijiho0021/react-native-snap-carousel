@@ -75,8 +75,9 @@ class BoardAPI {
         return api.failure(api.NOT_FOUND)
     }
 
-    post = ({title,msg,mobile}, images, {token}) => {
-        if (_.isEmpty(title) || _.isEmpty(msg) || _.isEmpty(token))
+    // anonymous user 도 post 할 수 있으므로, token 값을 확인하지 않는다. 
+    post = ({title,msg,mobile,pin}, images, {token}) => {
+        if (_.isEmpty(title) || _.isEmpty(msg) )
             return api.reject( api.INVALID_ARGUMENT, 'empty title or body')
 
         const url = `${api.httpUrl(api.path.jsonapi.board)}`
@@ -87,7 +88,8 @@ class BoardAPI {
                 attributes: {
                     title: {value: title},
                     body: {value: msg},
-                    field_mobile: {value:mobile},
+                    field_mobile: {value:mobile.replace(/-/g, '')},
+                    field_pin: {value:pin}
                 },
             }
         }
@@ -108,8 +110,6 @@ class BoardAPI {
                 }
             }
         }
-
-        console.log('post body', body)
 
         return api.callHttp(url, {
             method: 'POST',
@@ -156,15 +156,16 @@ class BoardAPI {
 
 
     uploadAttachment = ( images, {user, token}) => {
-        if ( _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
+        if ( ! _.isArray(images) || images.length == 0) return Promise.resolve([])
 
         const url = `${api.httpUrl(api.path.uploadFile, '')}/node/contact_board/field_images?_format=hal_json`
 
         const posts = images.map( image => {
             const headers = api.headers({
-                "X-CSRF-Token": token,
                 "Content-Disposition":`file;filename="${user}_contact.${image.mime.replace('image/', '')}"`
             }, 'octet-stream') 
+
+            if ( token) headers["X-CSRF-Token"] = token
 
             return () => api.callHttp(url, {
                 method: 'POST',

@@ -36,15 +36,16 @@ export const postAndGetList = (issue, attachment) => {
     return dispatch(postAttach(attachment, authObj)).then( 
       rsp => {
         const attach = rsp ? rsp.map(item => item.objects[0]) : []
+        console.log('Failed to upload picture', rsp)
         return dispatch(postIssue(issue, attach, authObj)).then(
           resp => {
             if (resp.result == 0 && resp.objects.length > 0) {
               return dispatch(getIssueList( authObj))
             }
-            console.log('Failed to upload picture', resp)
+            console.log('Failed to post issue', resp)
           },
           err => {
-            console.log('Failed to upload picture', err)
+            console.log('Failed to post issue', err)
           })
       }
     )

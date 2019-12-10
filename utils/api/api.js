@@ -111,11 +111,12 @@ class Api {
     }
 
     withToken( token, contentType = 'hal+json', header = {}) {
-        const hdr ={
-            "X-CSRF-Token": token,
+        const hdr = {
             "Content-Type": `application/${contentType}`,
             ... header
         }
+
+        if ( token) hdr["X-CSRF-Token"] = token
 
         return new Headers(hdr)
     }
