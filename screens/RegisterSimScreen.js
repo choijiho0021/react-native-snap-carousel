@@ -67,7 +67,6 @@ class RegisterSimScreen extends Component {
     const {iccid, actCode} = this.state
 
     accountApi.validateActCode(iccid, actCode).then( resp => {
-      console.log('valid act code', resp)
 
       if ( resp.result == 0) {
         // activation code is valid
@@ -140,8 +139,6 @@ class RegisterSimScreen extends Component {
             <ScanSim scan={scan} onScan={this._onScan}/>
           </TouchableOpacity>
 
-          { // ICCID 입력  
-          }
           <Text style={styles.title}>{i18n.t('mysim:title')}</Text>
           <TouchableOpacity onPress={() => this.inputIccid.current.focus()} 
             activeOpacity={1.0}
@@ -157,6 +154,7 @@ class RegisterSimScreen extends Component {
               maxLength={35}
               clearTextOnFocus={true}
               focus={focusInputIccid}
+              onFocus={() => this.setState({iccid: ''})}
               value={utils.toICCID(iccid, '  -  ')} />
           </TouchableOpacity>
 
@@ -177,6 +175,7 @@ class RegisterSimScreen extends Component {
                 enablesReturnKeyAutomatically={true}
                 maxLength={4}
                 clearTextOnFocus={true}
+                onFocus={() => this.setState({actCode: ''})}
                 value={actCode} />
             </View>
           </View>
