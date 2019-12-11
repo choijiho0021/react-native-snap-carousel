@@ -217,6 +217,10 @@ const en = {
   "board:contact" : "Contact",
   "board:attach" : "Attachment",
   "board:noti" : "- Input notice",
+  "board:pass" : "PIN",
+  "board:inputPass" : "Input PIN",
+  "board:mylist" : "My Issue List",
+  "board:pinMismatch" : "PIN mismatch",
 
   "cart:totalCnt" : "Total count",
   "cart:totalPrice" : "Total price",
@@ -470,6 +474,10 @@ const ko = {
   "board:contact" : "연락처",
   "board:attach" : "사진 첨부",
   "board:noti" : "- 문의내역 확인 시 작성한 연락처 정보 입력이 필요합니다.\n- 문의한 내용의 답변유무를 알림 혹은 카카오톡 알림톡으로 발송해 드립니다.",
+  "board:pass" : "비밀 번호",
+  "board:inputPass" : "비밀 번호를 입력하세요",
+  "board:mylist" : "나의 문의 내역",
+  "board:pinMismatch" : "비밀 번호가 일치하지 않습니다",
 
   "cart:totalCnt" : "총 상품 수",
   "cart:totalPrice" : "총 상품 금액",

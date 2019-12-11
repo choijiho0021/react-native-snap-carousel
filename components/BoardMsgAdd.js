@@ -74,6 +74,8 @@ class BoardMsgAdd extends Component {
       checkMobile: false,
       checkEmail: false,
       errors: undefined,
+      extraHeight: 80,
+      pin: undefined,
       attachment: List()
     }
 
@@ -129,9 +131,9 @@ class BoardMsgAdd extends Component {
   }
 
   _onSubmit = () => {
-    const { title, msg, mobile, attachment} = this.state
+    const { title, msg, mobile, attachment, pin} = this.state
     const issue = {
-      title, msg, mobile,
+      title, msg, mobile, pin
     }
 
     this.props.action.board.postAndGetList(issue, attachment.toJS())
@@ -186,11 +188,31 @@ class BoardMsgAdd extends Component {
   }
 
 
+  _renderPass() {
+    return (
+      <View style={styles.passwordBox}>
+        <Text style={[appStyles.normal14Text, {color:colors.tomato, marginRight:5}]}>*</Text>
+        <Text style={appStyles.normal14Text}>{i18n.t('board:pass')}</Text>
+        <TextInput style={styles.passwordInput}
+          placeholder={i18n.t('board:inputPass')}
+          keyboardType="numeric"
+          returnKeyType='done'
+          enablesReturnKeyAutomatically={true}
+          maxLength={4}
+          secureTextEntry={true}
+          onChangeText={this._onChangeText('pin')} 
+          onFocus={() => this.setState({extraHeight: 20})}
+          /> 
+      </View>
+    )
+  }
+
   render() {
-    const { disable, mobile, title, msg, errors = {}, attachment } = this.state
+    const { disable, mobile, title, msg, extraHeight, pin, errors = {}, attachment } = this.state
     const inputAccessoryViewID = "doneKbd"
     // errors object의 모든 value 값들이 undefined인지 확인한다.
-    const hasError = Object.values(errors).findIndex(val => ! _.isEmpty(val)) >= 0
+    const hasError = Object.values(errors).findIndex(val => ! _.isEmpty(val)) >= 0 ||
+      (! this.props.isLoggedIn && _.isEmpty(pin))
 
     return (
       <SafeAreaView style={styles.container}>
@@ -199,17 +221,19 @@ class BoardMsgAdd extends Component {
         <KeyboardAwareScrollView 
           resetScrollToCoords={{ x: 0, y: 0 }}
           contentContainerStyle={styles.modalInner}
-          extraScrollHeight={80}
+          extraScrollHeight={extraHeight}
           innerRef={ref => { this.scroll = ref; }}>
 
           <Text style={styles.label}>{i18n.t('board:contact')}</Text>
           <TextInput style={styles.button}
             placeholder={i18n.t('board:noMobile')}
+            keyboardType='numeric'
             returnKeyType='next'
             enablesReturnKeyAutomatically={true}
             maxLength={13}
             disabled={disable}
             onChangeText={this._onChangeText('mobile')}
+            onFocus={() => this.setState({extraHeight: 20})}
             error={this._error('mobile')}
             defaultValue={utils.toPhoneNumber(mobile)} /> 
 
@@ -223,6 +247,7 @@ class BoardMsgAdd extends Component {
               clearTextOnFocus={false}
               disabled={disable}
               onChangeText={this._onChangeText('title')}
+              onFocus={() => this.setState({extraHeight: 20})}
               error={this._error('title')}
               autoCapitalize='none'
               autoCorrect={false}
@@ -238,11 +263,16 @@ class BoardMsgAdd extends Component {
               clearTextOnFocus={false}
               disabled={disable}
               onChangeText={this._onChangeText('msg')}
+              onFocus={() => this.setState({extraHeight: 80})}
               error={this._error('msg')}
               autoCapitalize='none'
               autoCorrect={false}
               onContentSizeChange={this._scrolll}
               value={msg} />
+
+            {
+              (! this.props.isLoggedIn) && this._renderPass()
+            }
 
             <Text style={styles.attachTitle}>{i18n.t('board:attach')}</Text>
             <View style={styles.attachBox}>
@@ -263,6 +293,7 @@ class BoardMsgAdd extends Component {
                   </TouchableOpacity>
               }
             </View>
+
           </View>
         </KeyboardAwareScrollView>
 
@@ -281,6 +312,18 @@ class BoardMsgAdd extends Component {
 }
 
 const styles = StyleSheet.create({
+  passwordInput: {
+    borderBottomColor: colors.warmGrey,
+    borderBottomWidth: 1,
+    marginLeft: 15, 
+    paddingBottom: 10,
+    flex: 1
+  },
+  passwordBox: {
+    flexDirection: 'row',
+    marginTop: 30,
+    marginHorizontal: 20
+  },
   inputAccessory: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
@@ -368,6 +411,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => ({
   account: state.account.toJS(),
   auth: accountActions.auth(state.account),
+  isLoggedIn: state.account.get('isLoggedIn') || false,
   success: state.pender.success[boardActions.POST_ISSUE],
   pending: state.pender.pending[boardActions.POST_ISSUE] || 
     state.pender.pending[boardActions.POST_ATTACH] || false

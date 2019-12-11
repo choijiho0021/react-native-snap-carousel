@@ -16,6 +16,7 @@ import { appStyles } from '../constants/Styles';
 import { colors } from '../constants/Colors';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import AppIcon from '../components/AppIcon';
+import utils from '../utils/utils';
 
 
 class BoardMsgRespScreen extends Component {
@@ -56,7 +57,7 @@ class BoardMsgRespScreen extends Component {
       <View style={styles.container}>
         <View style={{flex:1}}>
           <Text style={styles.inputBox}>{issue.title}</Text>
-          <Text style={[styles.inputBox, {height:208}]}>{issue.msg}</Text>
+          <Text style={[styles.inputBox, {height:208}]}>{utils.htmlToString(issue.msg)}</Text>
           {
             ! _.isEmpty(resp) && <View style={styles.resp}>
               <AppIcon name="btnReply" />

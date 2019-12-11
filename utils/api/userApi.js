@@ -96,7 +96,9 @@ class UserAPI {
             return new Promise.resolve(token)
         }
 
-        const url = api.httpUrl(api.path.token)
+        clearCookies()
+
+        const url = api.httpUrl(api.path.token, '')
         return api.callHttpGet(url)
     }
 

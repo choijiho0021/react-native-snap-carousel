@@ -13,17 +13,18 @@ export const GET_ISSUE_RESP =   'rokebi/board/GET_ISSUE_RESP'
 
 export const postIssue = createAction(POST_ISSUE, boardApi.post)
 export const postAttach = createAction(GET_ISSUE_RESP, boardApi.uploadAttachment)
-export const getIssueList = createAction(GET_ISSUE_LIST, boardApi.getHistory)
+export const getIssueList = createAction(GET_ISSUE_LIST, boardApi.getIssueList)
 export const getIssueResp = createAction(GET_ISSUE_RESP, boardApi.getComments)
 
-export const getNextIssueList = () => {
+export const getNextIssueList = (uid) => {
   return (dispatch,getState) => {
     const { account, board, pender } = getState(),
+      uid = account.get('uid'),
       token = account.get('token'),
       next = board.get('next'),
       pending = pender.pending[GET_ISSUE_LIST]
 
-    if ( next && ! pending) return dispatch(getIssueList({token}, next))
+    if ( next && ! pending) return dispatch(getIssueList(uid, {token}, next))
     return dispatch({type: NO_MORE_ISSUES})
   }
 }
@@ -31,20 +32,22 @@ export const getNextIssueList = () => {
 export const postAndGetList = (issue, attachment) => {
   return (dispatch,getState) => {
     const { account } = getState(),
+      uid = account.get('uid'),
       authObj = auth(account)
 
     return dispatch(postAttach(attachment, authObj)).then( 
       rsp => {
         const attach = rsp ? rsp.map(item => item.objects[0]) : []
+        console.log('Failed to upload picture', rsp)
         return dispatch(postIssue(issue, attach, authObj)).then(
           resp => {
             if (resp.result == 0 && resp.objects.length > 0) {
-              return dispatch(getIssueList( authObj))
+              return dispatch(getIssueList( uid, authObj))
             }
-            console.log('Failed to upload picture', resp)
+            console.log('Failed to post issue', resp)
           },
           err => {
-            console.log('Failed to upload picture', err)
+            console.log('Failed to post issue', err)
           })
       }
     )

@@ -85,7 +85,7 @@ class RegisterMobileScreen extends Component {
       }
     ]
 
-    this.email = undefined
+    this.email = React.createRef()
 
     this._onSubmit = this._onSubmit.bind(this)
     this._onCancel = this._onCancel.bind(this)
@@ -104,7 +104,7 @@ class RegisterMobileScreen extends Component {
 
   _onSubmit = () => {
 
-    const {email, domain} = this.email.state,
+    const {email, domain} = this.email.current.state,
       { pin, mobile } = this.state
 
     const error = validationUtil.validate('email', `${email}@${domain}`)
@@ -264,7 +264,6 @@ class RegisterMobileScreen extends Component {
       <SafeAreaView style={styles.container}>
         <Text style={styles.title}>{i18n.t('mobile:title')}</Text>
 
-
         <InputMobile style={{marginTop:30, paddingHorizontal:20}}
           onPress={this._onChangeText('mobile')}
           authNoti={authNoti }
@@ -306,8 +305,7 @@ class RegisterMobileScreen extends Component {
 
             <View style={{flex:1}}>
 
-              <InputEmail style={{marginTop:38, paddingHorizontal:20}}
-                onRef={ref => this.email = ref}/>
+              <InputEmail style={{marginTop:38, paddingHorizontal:20}} ref={this.email}/>
               
               <View style={styles.divider}/>
 
