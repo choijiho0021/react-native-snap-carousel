@@ -407,9 +407,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   btnAlarm: {
-    marginLeft: 16,
-    marginRight: 20,
-    bottom:10
+    width: 40, 
+    height: 40,
+    marginRight: 10,
   },
   btnCnter: {
     marginHorizontal: 18
