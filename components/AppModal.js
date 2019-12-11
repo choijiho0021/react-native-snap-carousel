@@ -147,12 +147,12 @@ const styles = StyleSheet.create({
     marginTop: 30,
     borderBottomColor: colors.black,
     borderBottomWidth: 1,
-    paddingVertical: 12,
     alignItems: 'center'
   },
   textInput: {
     ... appStyles.normal16Text,
     flex: 1,
+    paddingVertical: 12,
   },
   title: {
     ... appStyles.normal18Text,

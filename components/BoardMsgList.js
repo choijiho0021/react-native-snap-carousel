@@ -19,8 +19,8 @@ import * as boardActions from '../redux/modules/board'
 import * as accountActions from '../redux/modules/account'
 import AppActivityIndicator from './AppActivityIndicator';
 import utils from '../utils/utils';
-import AppIcon from './AppIcon';
 import AppModal from './AppModal';
+import AppButton from './AppButton';
 
 class BoardMsg extends Component {
   constructor(props) {
@@ -181,11 +181,11 @@ class BoardMsgList extends Component {
   */
 
   _onSubmit() {
-    const { data, mobile } = this.state,
+    const { mobile } = this.state,
       number = mobile.replace(/-/g, '')
 
     this.setState({
-      data: data.filter(item => item.mobile == number)
+      data: this.props.board.list.filter(item => item.mobile.startsWith(number))
     })
   }
 
@@ -245,7 +245,9 @@ class BoardMsgList extends Component {
             value={utils.toPhoneNumber(mobile)}
             onSubmitEditing={this._onSubmit}
             onChangeText={this._onChangeValue('mobile')} /> 
-          <AppIcon name="btnSearchOn" style={styles.button}/>
+          <AppButton iconName="btnSearchOn" 
+            onPress={this._onSubmit}
+            style={styles.button}/>
         </View>
 
         <View style={styles.divider}/>
