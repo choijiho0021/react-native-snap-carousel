@@ -210,7 +210,8 @@ class UserAPI {
     getByFilter = (filter, {token}) => {
         if ( _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
 
-        const url = `${api.httpUrl(api.path.jsonapi.user)}${filter}&include=user_picture`
+        const url = `${api.httpUrl(api.path.jsonapi.user)}${filter}&include=user_picture` +
+            `&fields[user--user]=name&fields[file--file]=uri`
         const headers = api.withToken(token, 'vnd.api+json')
 
         return api.callHttp(url, {
