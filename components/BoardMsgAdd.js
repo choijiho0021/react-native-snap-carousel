@@ -227,6 +227,7 @@ class BoardMsgAdd extends Component {
           <Text style={styles.label}>{i18n.t('board:contact')}</Text>
           <TextInput style={styles.button}
             placeholder={i18n.t('board:noMobile')}
+            keyboardType='numeric'
             returnKeyType='next'
             enablesReturnKeyAutomatically={true}
             maxLength={13}

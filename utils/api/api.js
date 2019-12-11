@@ -51,6 +51,7 @@ class Api {
         payment: 'commerce/payment',
         order: 'json/orders',
         uploadFile: 'file/upload',
+        board: 'json/contactboard',
 
         rokApi: {
             auth: {
@@ -112,11 +113,10 @@ class Api {
 
     withToken( token, contentType = 'hal+json', header = {}) {
         const hdr = {
+            "X-CSRF-Token": token,
             "Content-Type": `application/${contentType}`,
             ... header
         }
-
-        if ( token) hdr["X-CSRF-Token"] = token
 
         return new Headers(hdr)
     }

@@ -23,7 +23,8 @@ const AppTextInput = React.forwardRef((props, ref) => {
         direction={props.direction}
         style={props.buttonStyle}
         checked={props.checked}
-        titleStyle={props.titleStyle} title={props.title || i18n.t('ok')}
+        titleStyle={props.titleStyle} 
+        title={props.title || i18n.t('ok')}
         disableColor={props.titleDisableColor}/>
     </View>
     )
