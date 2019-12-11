@@ -4,6 +4,9 @@ import {
   StyleSheet,
   View,
   Text,
+  ScrollView,
+  SafeAreaView,
+  Image
 } from 'react-native';
 
 import i18n from '../utils/i18n'
@@ -17,7 +20,8 @@ import { colors } from '../constants/Colors';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import AppIcon from '../components/AppIcon';
 import utils from '../utils/utils';
-
+import api from '../utils/api/api';
+import { attachmentSize } from '../constants/SliderEntry.style'
 
 class BoardMsgRespScreen extends Component {
   static navigationOptions = (navigation) => ({
@@ -47,6 +51,16 @@ class BoardMsgRespScreen extends Component {
     }
   }
 
+  _renderAttachment(images) {
+    return (
+      <View style={styles.attachBox}>
+      {
+        images && images.map(uri => <Image key={uri} source={{uri}} style={styles.attach}/> )
+      }
+      </View>
+    )
+  }
+
   render() {
     const {idx} = this.state,
       {list = [], comment = []} = this.props.board,
@@ -54,37 +68,59 @@ class BoardMsgRespScreen extends Component {
       resp = comment[0] || {}
 
     return (
-      <View style={styles.container}>
-        <View style={{flex:1}}>
-          <Text style={styles.inputBox}>{issue.title}</Text>
-          <Text style={[styles.inputBox, {height:208}]}>{utils.htmlToString(issue.msg)}</Text>
-          {
-            ! _.isEmpty(resp) && <View style={styles.resp}>
-              <AppIcon name="btnReply" />
-              <View style={{marginLeft:10}}>
-                <Text style={{marginBottom:10}}>{i18n.t('board:resp')}</Text>
-                <Text>{resp.title}</Text>
-                <Text>{resp.body}</Text>
+      <SafeAreaView style={styles.container}>
+        <ScrollView style={styles.container}>
+          <View style={{flex:1}}>
+            <Text style={[styles.inputBox, {marginTop:30}]}>{issue.title}</Text>
+            <Text style={[styles.inputBox, {marginTop:15, paddingBottom:72}]}>{utils.htmlToString(issue.msg)}</Text>
+            {
+              issue.images && this._renderAttachment(issue.images)
+            }
+            {
+              ! _.isEmpty(resp) && <View style={styles.resp}>
+                <AppIcon name="btnReply" style={{justifyContent:'flex-start'}}/>
+                <View style={{marginLeft:10}}>
+                  <Text style={styles.replyTitle}>{i18n.t('board:resp')}</Text>
+                  <Text style={styles.reply}>{resp.title + "\n"}</Text>
+                  <Text style={styles.reply}>{resp.body}</Text>
+                </View>
               </View>
-            </View>
-          }
-        </View>
+            }
+          </View>
 
-        <AppActivityIndicator visible={this.props.pending} />
-      </View>
+          <AppActivityIndicator visible={this.props.pending} />
+        </ScrollView>
+      </SafeAreaView>
     )
   }
 }
 
 const styles = StyleSheet.create({
+  attachBox: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+    marginHorizontal: 20
+  },
+  attach: {
+    width: attachmentSize,
+    height: attachmentSize,
+  },
+  reply: {
+    ... appStyles.normal14Text,
+    color: colors.black
+  },
+  replyTitle: {
+    ... appStyles.normal12Text,
+    marginBottom: 10,
+    color: colors.warmGrey,
+  },
   container: {
     flex: 1
   },
   inputBox: {
     ... appStyles.normal14Text,
-    marginTop: 30,
     marginHorizontal: 20,
-    height: 50,
     borderRadius: 3,
     backgroundColor: colors.whiteTwo,
     borderStyle: "solid",
@@ -103,7 +139,7 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderWidth: 1,
     borderColor: colors.black,
-    alignContent: 'flex-start'
+    justifyContent: 'flex-start'
   }
 });
 

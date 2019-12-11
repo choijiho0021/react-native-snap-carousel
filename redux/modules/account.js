@@ -182,6 +182,7 @@ export default handleActions({
         const obj = objects[0]
         return state.set('token', obj.csrf_token)
           .set('mobile', obj.current_user.name)
+          .set('uid', obj.current_user.uid)
           .set('pin', obj.pass)
           .set('loggedIn', true)
       }

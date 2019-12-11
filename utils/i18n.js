@@ -220,6 +220,7 @@ const en = {
   "board:pass" : "PIN",
   "board:inputPass" : "Input PIN",
   "board:mylist" : "My Issue List",
+  "board:nolist" : "No Issues",
   "board:pinMismatch" : "PIN mismatch",
 
   "cart:totalCnt" : "Total count",
@@ -477,6 +478,7 @@ const ko = {
   "board:pass" : "비밀 번호",
   "board:inputPass" : "비밀 번호를 입력하세요",
   "board:mylist" : "나의 문의 내역",
+  "board:nolist" : "문의 내역이 없습니다",
   "board:pinMismatch" : "비밀 번호가 일치하지 않습니다",
 
   "cart:totalCnt" : "총 상품 수",

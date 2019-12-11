@@ -6,7 +6,8 @@ import {
   Text,
   FlatList,
   TextInput,
-  TouchableOpacity
+  TouchableOpacity,
+  SafeAreaView
 } from 'react-native';
 import { bindActionCreators } from 'redux'
 
@@ -21,6 +22,7 @@ import AppActivityIndicator from './AppActivityIndicator';
 import utils from '../utils/utils';
 import AppModal from './AppModal';
 import AppButton from './AppButton';
+import AppIcon from './AppIcon';
 
 class BoardMsg extends Component {
   constructor(props) {
@@ -73,18 +75,11 @@ class BoardMsgList extends Component {
     this._onSubmitPin = this._onSubmitPin.bind(this)
     this._onPress = this._onPress.bind(this)
     this._onValidate = this._onValidate.bind(this)
+    this._init = this._init.bind(this)
   } 
 
   componentDidMount() {
-    const { uid, auth} = this.props
-    this.props.action.board.getIssueList( uid, auth)
-
-    const { mobile} = this.props.account,
-      number = utils.toPhoneNumber(mobile)
-
-    this.setState({
-      mobile: number,
-    })
+    this._init()
   }
 
   componentDidUpdate(prevProps) {
@@ -93,8 +88,22 @@ class BoardMsgList extends Component {
         data: this.props.board.list
       })
     }
+
+    if ( this.props.uid != prevProps.uid) {
+      this._init()
+    }
   }
 
+  _init() {
+    const { uid, auth} = this.props
+    this.props.action.board.getIssueList( uid, auth)
+
+    const { mobile} = this.props.account,
+      number = utils.toPhoneNumber(mobile)
+    this.setState({
+      mobile: number,
+    })
+  }
 
   /*
   _getIssueList() {
@@ -185,7 +194,7 @@ class BoardMsgList extends Component {
       number = mobile.replace(/-/g, '')
 
     this.setState({
-      data: this.props.board.list.filter(item => item.mobile.startsWith(number))
+      data: this.props.board.list.filter(item => item.mobile.includes(number))
     })
   }
 
@@ -196,10 +205,17 @@ class BoardMsgList extends Component {
   }
 
   _onPress = (uuid) => () => {
-    this.setState({
-      showModal: true,
-      selected: uuid
-    })
+    if ( this.props.uid == 0) {
+      // anonymous인 경우에는 비밀 번호를 입력받아서 일치하면 보여준다.
+      this.setState({
+        showModal: true,
+        selected: uuid
+      })
+    }
+    else {
+      // login 한 경우에는 곧바로 응답 결과를 보여준다.
+      this.props.onPress(uuid)
+    }
   }
 
   // 응답 메시지 화면으로 이동한다.
@@ -214,7 +230,7 @@ class BoardMsgList extends Component {
   // 입력된 PIN이 일치하는지 확인한다. 
   _onValidate(value) {
     const item = this.state.data.find(item => item.uuid == this.state.selected)
-    console.log('validate', item, value, this.state.selected)
+
     // PIN match
     if ( item && item.pin == value) return undefined
     return i18n.t('board:pinMismatch')
@@ -235,25 +251,40 @@ class BoardMsgList extends Component {
 
     return (
       <View>
-        <Text style={styles.label}>{i18n.t('board:contact')}</Text>
-        <View style={styles.inputBox}>
-          <TextInput style={styles.inputMobile} 
-            placeholder={i18n.t('board:noMobile')}
-            keyboardType='numeric'
-            returnKeyType='done'
-            maxLength={13}
-            value={utils.toPhoneNumber(mobile)}
-            onSubmitEditing={this._onSubmit}
-            onChangeText={this._onChangeValue('mobile')} /> 
-          <AppButton iconName="btnSearchOn" 
-            onPress={this._onSubmit}
-            style={styles.button}/>
-        </View>
+        {
+          this.props.uid == 0 && <View>
+            <Text style={styles.label}>{i18n.t('board:contact')}</Text>
+            <View style={styles.inputBox}>
 
-        <View style={styles.divider}/>
+              <TextInput style={styles.inputMobile} 
+                placeholder={i18n.t('board:noMobile')}
+                keyboardType='numeric'
+                returnKeyType='done'
+                maxLength={13}
+                value={mobile}
+                onSubmitEditing={this._onSubmit}
+                onChangeText={this._onChangeValue('mobile')} /> 
+
+              <AppButton iconName="btnSearchOn" 
+                onPress={this._onSubmit}
+                style={styles.button}/>
+            </View>
+
+          <View style={styles.divider}/>
+          </View>
+        }
 
         <Text style={styles.mylist}>{i18n.t('board:mylist')}</Text>
 
+      </View>
+    )
+  }
+
+  _empty() {
+    return (
+      <View style={{alignItems:'center'}}>
+        <AppIcon style={styles.mark} name="imgMark"/>
+        <Text style={styles.noList}>{i18n.t('board:nolist')}</Text>
       </View>
     )
   }
@@ -262,13 +293,15 @@ class BoardMsgList extends Component {
     const {mobile, data, showModal} = this.state
 
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <FlatList data={data} 
           ListHeaderComponent={this._header}
+          ListEmptyComponent={this._empty}
           onEndReached={this._onEndReached}
           onEndReachedThreshold={0.5}
           extraData={mobile}
           renderItem={this._renderItem} />
+
         <AppActivityIndicator visible={this.props.pending}/>
         <AppModal visible={showModal}
           title={i18n.t('board:inputPass')}
@@ -277,12 +310,20 @@ class BoardMsgList extends Component {
           onCancelClose={() => this._onChangeValue('showModal')(false)}
           validate={this._onValidate}
         />
-      </View>
+      </SafeAreaView>
     )
   }
 }
 
 const styles = StyleSheet.create({
+  noList: {
+    ... appStyles.normal14Text,
+    color: colors.warmGrey,
+    marginTop: 27,
+  },
+  mark: {
+    marginTop: 80
+  },
   mylist: {
     ... appStyles.bold18Text,
     marginTop: 30,

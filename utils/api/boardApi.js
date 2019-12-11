@@ -15,17 +15,23 @@ class BoardAPI {
 
     toBoard = (data) => {
         if ( _.isArray(data)) {
-            return api.success(data.map(item => ({
-                key: item.uuid[0].value,
-                uuid: item.uuid[0].value,
-                title: item.title[0].value || '',
-                msg: item.body[0].processed,
-                created: item.created[0].value,
-                mobile: item.field_mobile[0].value || '',
-                pin: item.field_pin[0].value,
-                statusCode: item.field_issue_status[0].value,
-                status: this.statusToString(item.field_issue_status[0].value),
-            })))
+            return api.success(data.map(item => {
+                const key = Object.keys(item._embedded).find(key => key.endsWith('field_images'))
+                const images = key ? item._embedded[key].map(i => i._links.self.href): []
+
+                return {
+                    key: item.uuid && item.uuid[0].value,
+                    uuid: item.uuid && item.uuid[0].value,
+                    title: item.title && item.title[0].value || '',
+                    msg: item.body && item.body[0].processed,
+                    created: item.created && item.created[0].value,
+                    mobile: item.field_mobile && item.field_mobile[0].value || '',
+                    pin: item.field_pin && item.field_pin[0].value || '',
+                    statusCode: item.field_issue_status && item.field_issue_status[0].value || 'O',
+                    status: this.statusToString(item.field_issue_status && item.field_issue_status[0].value || 'O'),
+                    images
+                }
+            }))
         }
 
         if ( ! _.isEmpty(data.jsonapi)) {
