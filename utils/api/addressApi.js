@@ -23,14 +23,14 @@ class AddressAPI {
         if ( _.isEmpty(key)) return api.reject( api.INVALID_ARGUMENT, key)
 
         const query = {
-                currentPage:page,
-                countPerPage: 10, 
-                keyword:key.replace(this.re, '').replace(this.keywords, ''),
-                confmKey: API_KEY, 
-                resultType: 'json'
-            },
-            url = `${api.addrApiUrl()}?${api.queryString(query)}`
-        
+            currentPage:page,
+            countPerPage: 10, 
+            keyword:key.replace(this.re, '').replace(this.keywords, ''),
+            confmKey: API_KEY, 
+            resultType: 'json'
+        },
+        url = `${api.addrApiUrl()}?${api.queryString(query)}`
+    
         return api.callHttpGet(url, this.toAddress)
         // return new Promise.resolve( this.toAddress(JSON.parse(SAMPLE)))
     }
