@@ -52,8 +52,6 @@ class NewSimScreen extends Component {
   }
 
   componentDidMount() {
-    this.props.action.cart.cartFetch()
-
     this.setState({
       querying: true
     })

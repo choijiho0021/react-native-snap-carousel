@@ -14,6 +14,7 @@ import {appStyles} from '../constants/Styles'
 import * as simActions from '../redux/modules/sim'
 import * as accountActions from '../redux/modules/account'
 import * as notiActions from '../redux/modules/noti'
+import * as cartActions from '../redux/modules/cart'
 import _ from 'underscore'
 import utils from '../utils/utils';
 import AppActivityIndicator from '../components/AppActivityIndicator'
@@ -41,9 +42,14 @@ class HomeScreen extends Component {
     ),
     headerRight: (
       [
-        <AppButton key="cnter" style={styles.btnCnter} onPress={navigation.getParam('Contact')} iconName="btnCnter" />,
+        <AppButton key="cnter" style={styles.btnCnter} 
+          onPress={() => navigation.navigate('Contact')} 
+          iconName="btnCnter" />,
+
         //BadgeAppButton을 사용했을 때 위치가 변동됨 수정이 필요함
-        <BadgeAppButton key="alarm" style={styles.btnAlarm} onPress={navigation.getParam('Noti')} iconName="btnAlarm" />
+        <BadgeAppButton key="alarm" style={styles.btnAlarm} 
+          onPress={() => navigation.navigate('Noti')} 
+          iconName="btnAlarm" />
       ]
     ),
   })
@@ -58,10 +64,12 @@ class HomeScreen extends Component {
     }
 
     this._login = this._login.bind(this)
+    this._init = this._init.bind(this)
     this._renderItem = this._renderItem.bind(this)
     this._navigate = this._navigate.bind(this)
     this._userInfo = this._userInfo.bind(this)
     this._notification = this._notification.bind(this)
+
     // windowHeight
     // iphone 8 - 667
     // iphone 11 pro max - 896
@@ -69,11 +77,6 @@ class HomeScreen extends Component {
   }
 
   async componentDidMount() {
-
-    this.props.navigation.setParams({
-      Noti: this._navigate('Noti'),
-      Contact: this._navigate('Contact')
-    })
 
     // config push notification
     pushNoti.add(this._notification)
@@ -86,8 +89,10 @@ class HomeScreen extends Component {
         })
       }
     }).catch(err => {
-      console.log('failed to load promotion list')
+      console.log('failed to load promotion list', err)
     })
+
+    this._init()
   }
 
   componentWillUnmount() {
@@ -110,7 +115,19 @@ class HomeScreen extends Component {
     }
     
     if (prevProps.account.loggedIn != loggedIn) {
-      loggedIn ? this.props.action.noti.getNotiList(mobile) : this.props.action.noti.init()
+      this._init()
+    }
+  }
+
+  _init() {
+    const {mobile, loggedIn} = this.props.account
+
+    if ( loggedIn ) {
+      this.props.action.noti.getNotiList(mobile)
+      this.props.action.cart.cartFetch()
+    }
+    else {
+      this.props.action.noti.init()
     }
   }
 
@@ -438,6 +455,7 @@ export default connect(mapStateToProps,
       sim: bindActionCreators(simActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
       noti: bindActionCreators(notiActions, dispatch),
+      cart: bindActionCreators(cartActions, dispatch),
     }
   })
 )(HomeScreen)

@@ -19,6 +19,7 @@ import CartItem from '../components/CartItem';
 import ChargeSummary from '../components/ChargeSummary';
 import { SafeAreaView } from 'react-navigation'
 import utils from '../utils/utils';
+import {Map} from 'immutable'
 
 class CartScreen extends Component {
   static navigationOptions = {
@@ -32,61 +33,62 @@ class CartScreen extends Component {
 
     this.state = {
       data: [],
-      checked: {},
+      checked: new Map(),
       querying: false,
-      qty: {},
-      dlvCost: 0,
-      totalCost: 0
+      qty: new Map(),
+      total: { cnt:0, price:0}
     }
 
     this._onPurchase = this._onPurchase.bind(this)
     this._onChangeQty = this._onChangeQty.bind(this)
+    this._calculate = this._calculate.bind(this)
+    this._init = this._init.bind(this)
   }
 
   componentDidMount() {
-    this.props.action.cart.cartFetch()
+    this._init()
   }
 
   componentDidUpdate(prevProps) {
-    const { cart, pendingAdd, pendingRemove, pendingUpdate } = this.props
+    const { cart, pending } = this.props
 
-    if ( cart && cart != prevProps.cart && cart.orderItems && ! pendingAdd && ! pendingUpdate && ! pendingRemove) {
-      const data = cart.orderItems.map(item => ({
-          ... item, 
-          key: item.prod.uuid
-        }))
-
-      this.setState({
-        qty: cart.orderItems.reduce((acc,cur) => ({
-          ... acc,
-          [cur.prod.uuid] : cur.qty
-        }), {}),
-        checked: cart.orderItems.reduce((acc,cur) => ({
-          ... acc,
-          [cur.prod.uuid] : true
-        }), {}),
-        data : data
-      })
+    if ( cart && cart != prevProps.cart && cart.orderItems && ! pending ) {
+      this._init()
     }
+  }
 
+  _init() {
+    const { cart} = this.props
+
+    this.setState({
+      qty: new Map(cart.orderItems.reduce((acc,cur) => ({
+        ... acc,
+        [cur.prod.uuid] : cur.qty
+      }), {})),
+      checked: new Map(cart.orderItems.reduce((acc,cur) => ({
+        ... acc,
+        [cur.prod.uuid] : true
+      }), {})),
+      data : cart.orderItems,
+      total: cart.orderItems.reduce((acc,cur) => ({
+        cnt: acc.cnt+ cur.qty, 
+        price: acc.price + cur.qty * cur.price
+      }), {cnt: 0, price:0})
+    })
   }
 
   _onChangeQty(uuid, cnt) {
+    const qty = this.state.qty.set(uuid, cnt),
+      checked = this.state.checked.set(uuid, true) 
+
     this.setState({
-      qty : {
-        ... this.state.qty,
-        [uuid]: cnt
-      },
-      checked: {
-        ... this.state.checked,
-        [uuid]: true
-      }
+      qty, checked,
+      total: this._calculate( checked, qty)
     })
   }
 
   _onPurchase() {
-    const { cart } = this.props
-    const { data, checked, qty} = this.state
+    const { data, qty, checked, total} = this.state
     const {loggedIn} = this.props.account
 
     if(!loggedIn){
@@ -97,40 +99,47 @@ class CartScreen extends Component {
     }
     else {
       // remove items from cart
+      /*
       cart.orderItems.forEach(item => {
-        if ( qty[item.prod.uuid] && item.qty != qty[item.prod.uuid]) {
+        const itemQty = qty.get(item.prod.uuid)
+        if ( item.qty != itemQty) {
           console.log('qty changed', item)
 
-          if ( qty[item.prod.uuid] < 0) this.props.action.cart.cartRemove( cart.orderId, item.orderItemId)
-          else this.props.action.cart.cartUpdate( cart.orderId, item.orderItemId, qty[item.prod.uuid])
+          if ( itemQty < 0) this.props.action.cart.cartRemove( cart.orderId, item.orderItemId)
+          else this.props.action.cart.cartUpdate( cart.orderId, item.orderItemId, itemQty)
         }
       })
+      */
 
-      const total = this._calculate(data, checked, qty)
       const pymReq = [
-      {
-        key: 'total',
-        title: i18n.t('sim:rechargeAmt'),
-        amount: total.price
-      },      
-      {
-        key: 'dlvCost',
-        title: i18n.t('cart:dlvCost'),
-        amount: utils.dlvCost(total.price)
-      }
-    ]
+        {
+          key: 'total',
+          title: i18n.t('sim:rechargeAmt'),
+          amount: total.price
+        },      
+        {
+          key: 'dlvCost',
+          title: i18n.t('cart:dlvCost'),
+          amount: utils.dlvCost(total.price)
+        }
+      ]
 
-    this.props.navigation.navigate('PymMethod', {pymReq})
+      const purchaseItems = data.map(item => ({
+        ... item, 
+        qty: checked.get(item.key) && qty.get(item.key)
+      })).filter(item => item.qty > 0)
+
+      console.log('cart', pymReq, purchaseItems, data, qty.toJS())
+
+      this.props.navigation.navigate('PymMethod', {pymReq, purchaseItems})
     }
   }
 
   _onChecked(uuid) {
-    const { checked} = this.state
+    const checked = this.state.checked.update( uuid, value => ! value)
     this.setState({
-      checked: {
-        ... checked,
-        [uuid]: ! checked[uuid]
-      }
+      checked,
+      total: this._calculate( checked, this.state.qty)
     })
   }
 
@@ -139,22 +148,21 @@ class CartScreen extends Component {
     const prod = ( item.prod.type == 'sim_card') ?
       this.props.sim.simList.find(sim => sim.uuid == item.prod.uuid) : undefined
 
-    return <CartItem checked={this.state.checked[item.prod.uuid] || false}
-      onChange={(value) => this._onChangeQty(item.prod.uuid, value)} 
-      onDelete={() => this._onChangeQty(item.prod.uuid, -1)}
-      onChecked={() => this._onChecked(item.prod.uuid)}
+    return <CartItem checked={this.state.checked.get(item.key) || false}
+      onChange={(value) => this._onChangeQty(item.key, value)} 
+      onDelete={() => this._onChangeQty(item.key, -1)}
+      onChecked={() => this._onChecked(item.key)}
       name={item.title}
       price={item.price}
       image={prod && prod.image}
-      qty={qty[item.prod.uuid]} />
+      qty={qty.get(item.prod.uuid)} />
 
   }
 
-  _calculate( data, checked, qty) {
-
-    return data.filter(item => checked[item.key])
+  _calculate( checked, qty) {
+    return this.state.data.filter(item => checked.get(item.key))
       .map(item => ({
-        qty: Math.max( qty[item.key], 0), 
+        qty: Math.max( qty.get(item.key), 0), 
         price: item.price
       })).reduce((acc,cur) => ({
         cnt: acc.cnt+ cur.qty, 
@@ -164,20 +172,17 @@ class CartScreen extends Component {
 
 
   render() {
-    const { querying, qty, checked, data} = this.state,
-      total = this._calculate(data, checked, qty)
+    const { querying, qty, checked, data, total} = this.state
 
     return (
       <SafeAreaView style={styles.container}>
         <AppActivityIndicator visible={querying} />
-          <View style={{flex:1, flexDirection: 'column'}}>
-            <FlatList data={data.filter(item => qty[item.key] >= 0)}
-              renderItem={this._renderItem} 
-              extraData={[qty, checked]}
-              ListFooterComponent={ <ChargeSummary totalCnt={total.cnt} totalPrice={total.price}/>} />
-            <AppButton style={styles.btnBuy} title={i18n.t('cart:purchase')} 
-                       onPress={this._onPurchase}/>
-          </View>
+        <FlatList data={data.filter(item => qty.get(item.key) >= 0)}
+          renderItem={this._renderItem} 
+          extraData={[qty, checked]}
+          ListFooterComponent={ <ChargeSummary totalCnt={total.cnt} totalPrice={total.price}/>} />
+        <AppButton style={styles.btnBuy} title={i18n.t('cart:purchase')} 
+                    onPress={this._onPurchase}/>
       </SafeAreaView>
     )
   }
@@ -224,9 +229,9 @@ const mapStateToProps = (state) => ({
   sim: state.sim.toJS(),
   cart: state.cart.toJS(),
   account : state.account.toJS(),
-  pendingAdd: state.pender.pending[cartActions.CART_ADD] || false,
-  pendingUpdate: state.pender.pending[cartActions.CART_UPDATE] || false,
-  pendingRemove: state.pender.pending[cartActions.CART_REMOVE] || false,
+  pending: state.pender.pending[cartActions.CART_ADD] || 
+    state.pender.pending[cartActions.CART_UPDATE] || 
+    state.pender.pending[cartActions.CART_REMOVE] || false,
 })
 
 export default connect(mapStateToProps, 

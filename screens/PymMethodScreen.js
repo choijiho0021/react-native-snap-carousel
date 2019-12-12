@@ -32,7 +32,8 @@ class PymMethodScreen extends Component {
     super(props)
 
     this.state = {
-      data: undefined,
+      pymReq: [],
+      purchaseItems: [],
       // profile: undefined,
       selected: undefined,
       showModal: false
@@ -85,12 +86,14 @@ class PymMethodScreen extends Component {
     const pymReq = this.props.navigation.getParam('pymReq')
     const mode = this.props.navigation.getParam('mode')
     const buyProduct = this.props.navigation.getParam('buyProduct')
+    const purchaseItems = this.props.navigation.getParam('purchaseItems')
 
     if ( pymReq ) {
       this.setState({
-        data: pymReq,
+        pymReq,
         mode,
-        buyProduct
+        buyProduct,
+        purchaseItems
       })
     }
     this.props.action.order.getCustomerProfile(this.props.account.userId, this.props.auth)
@@ -213,8 +216,7 @@ class PymMethodScreen extends Component {
   }
 
   render() {
-    const { data, selected, buyProduct, mode } = this.state
-    const total = data ? data.reduce((acc,cur) => acc + cur.amount, 0) : 0
+    const { pymReq, purchaseItems} = this.state
     
     console.log('PROPS',this.props) // cart에서 cart 목록과 sim 목록 받음.
 
@@ -224,14 +226,14 @@ class PymMethodScreen extends Component {
     console.log('sim', sim )
 
     return (
-      <KeyboardAwareScrollView 
-        resetScrollToCoords={{ x: 0, y: 0 }}
-        extraScrollHeight={60}
-        innerRef={ref => { this.scroll = ref; }}>
+      <SafeAreaView style={styles.container}>
+        <KeyboardAwareScrollView 
+          resetScrollToCoords={{ x: 0, y: 0 }}
+          extraScrollHeight={60}
+          innerRef={ref => { this.scroll = ref; }}>
 
-        <SafeAreaView style={styles.container}>
-          <PaymentItemInfo cart={this.props.cart.orderItems}
-                           pymReq={this.props.navigation.getParam('pymReq')}/>         
+          <PaymentItemInfo cart={purchaseItems} pymReq={pymReq}/>         
+
           {
             sim.length > 0 && this._address()
           }
@@ -248,8 +250,8 @@ class PymMethodScreen extends Component {
                       onPress={this._onSubmit}
                       style={appStyles.confirm}/> 
                 
-        </SafeAreaView>
-      </KeyboardAwareScrollView>      
+        </KeyboardAwareScrollView>      
+      </SafeAreaView>
             
     )
   }

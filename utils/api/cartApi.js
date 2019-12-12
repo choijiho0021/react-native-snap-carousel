@@ -13,19 +13,20 @@ class CartAPI {
                     orderId: item.order_id,
                     totalPrice: item.total_price && utils.stringToNumber( item.total_price.number),
                     orderItems: item.order_items && item.order_items.filter(o => _.isObject(o))
-                    .map( o => ({
-                        orderItemId: o.order_item_id,
-                        uuid: o.uuid, 
-                        prod: o.purchased_entity && {
-                            variationId: o.purchased_entity.variation_id,
-                            uuid: o.purchased_entity.uuid,
-                            type: o.purchased_entity.type,
-                        },
-                        title: o.title,
-                        qty: utils.stringToNumber( o.quantity),
-                        price: o.unit_price && utils.stringToNumber( o.unit_price.number),
-                        totalPrice: o.total_price && utils.stringToNumber( o.total_price.number)
-                    }))
+                        .map( o => ({
+                            orderItemId: o.order_item_id,
+                            uuid: o.uuid, 
+                            key: o.purchased_entity && o.purchased_entity.uuid,
+                            prod: o.purchased_entity && {
+                                variationId: o.purchased_entity.variation_id,
+                                uuid: o.purchased_entity.uuid,
+                                type: o.purchased_entity.type,
+                            },
+                            title: o.title,
+                            qty: utils.stringToNumber( o.quantity),
+                            price: o.unit_price && utils.stringToNumber( o.unit_price.number),
+                            totalPrice: o.total_price && utils.stringToNumber( o.total_price.number)
+                        }))
                 }))
             )
         }
@@ -85,7 +86,7 @@ class CartAPI {
 
     /*
        *   $data = [
-   *     'gateway' => 'paypal_test', // required. Commerce Payment Gateway name.
+   *     'gateway' => 'paypal_test', // required. Commerce Payment Gateway name .
    *     'type' => 'paypal_ec', // required. Commerce Payment Type name.
    *     'details' => [], // optional. Payment details associated with the payment.
    *     'capture' => FALSE, // optional. Defines if the payment has to be finalized.
@@ -93,7 +94,7 @@ class CartAPI {
    * */
     makePayment = (orderId, {token}) => {
         const url = `${api.httpUrl(api.path.payment, '')}/create/${orderId}?_format=json`
-        const headers = api.headers({ "X-CSRF-Token": token }, 'json')
+        const headers = api.withToken( token, 'json')
         const body = {
             gateway: 'iamport',
             type: 'paypal',

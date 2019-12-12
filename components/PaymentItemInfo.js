@@ -96,24 +96,21 @@ export default function PaymentItemInfo({cart, pymReq}) {
       <Text style={[styles.title, styles.mrgBottom0]}>{i18n.t('pym:title')}</Text>
       <View style={styles.productPriceInfo}>        
       {
-        ! _.isEmpty(cart)?
-          cart.map(item =>
-          <View style={styles.row} keyExtractor={item => item.orderId,item.title}>
+        ! _.isEmpty(cart) && cart.map(item =>
+          <View style={styles.row} key={item.key}>
             <Text key={item.title} style={styles.productPriceTitle}>{item.title+' x '+item.qty+i18n.t('qty')}</Text>
             <Text key={item.title,item.amount}style={styles.normalText16}>{utils.price(item.totalPrice)}</Text>
-            </View>)
-        : null        
+          </View>)
       }
       </View> 
       
       <View style={styles.PriceInfo}>
       {
         pymReq.map(item =>                      
-          <View style={styles.row} keyExtractor={item => item.title}>
-          <Text key="title" style={styles.normalText14}>{item.title}</Text>
-          <Text key="amount" style={styles.normalText16}>{utils.price(item.amount)}</Text>
-        </View>
-          ) 
+          <View style={styles.row} key={item.title}>
+            <Text key="title" style={styles.normalText14}>{item.title}</Text>
+            <Text key="amount" style={styles.normalText16}>{utils.price(item.amount)}</Text>
+          </View>) 
       }
       </View>
       <View style={[styles.row, styles.total, styles.brdrBottom0]}>
