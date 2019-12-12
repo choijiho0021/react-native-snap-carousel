@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   FlatList,
-  Text
 } from 'react-native';
 import {connect} from 'react-redux'
 import {Map} from 'immutable'
@@ -24,16 +23,16 @@ import { appStyles } from '../constants/Styles';
 import { colors } from '../constants/Colors';
 import ChargeSummary from '../components/ChargeSummary';
 import { SafeAreaView} from 'react-navigation'
+import withBadge from '../components/withBadge';
 import AppCartButton from '../components/AppCartButton';
+
+// const AppCartButton = withBadge(({cartItems}) => cartItems, {badgeStyle:{right:-5,top:5}}, 
+//   (state) => ({cartItems: (state.cart.get('orderItems') || []).reduce((acc,cur) => acc + cur.qty, 0)}))(AppButton)
 
 class NewSimScreen extends Component {
   static navigationOptions = (navigation) => ({
     headerLeft: AppBackButton({navigation, title:i18n.t('sim:purchase')}),
-    headerRight: (
-      <AppCartButton key="cart" 
-        style={styles.btnCartIcon} 
-        onPress={() => navigation.navigation.navigate('Cart')}
-        iconName="btnCart" />)
+    headerRight: (<AppCartButton style={styles.btnCartIcon} onPress={() => navigation.navigation.navigate('Cart')} />)
     })
 
   constructor(props) {

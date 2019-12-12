@@ -33,9 +33,7 @@ class CountryScreen extends Component {
     //todo 해당 국가 이름으로 변경해야함 
     headerLeft: AppBackButton({navigation, title:navigation.navigation.getParam('title')}),
     headerRight: (
-      <AppCartButton key="cart" style={styles.btnCartIcon} 
-        onPress={() => navigation.navigation.navigate('Cart')}
-        iconName="btnCart" />
+      <AppCartButton style={styles.btnCartIcon} onPress={() => navigation.navigation.navigate('Cart')} />
     )
   })
 

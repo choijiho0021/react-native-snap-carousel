@@ -6,7 +6,6 @@ class CartAPI {
     toCart = (data) => {
         const list = _.isArray(data) ? data : _.isObject(data) ? [data] : undefined
         if ( list && list.length > 0) {
-            console.log('resp', list)
 
             return api.success(
                 list.map(item => ({
