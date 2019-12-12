@@ -15,6 +15,7 @@ import i18n from '../utils/i18n'
 import * as productActions from '../redux/modules/product'
 import * as cartActions from '../redux/modules/cart'
 import * as accountActions from '../redux/modules/account'
+import productApi from '../utils/api/productApi';
 import api from '../utils/api/api';
 import { bindActionCreators } from 'redux'
 // import Icon from 'react-native-vector-icons/Ionicons';
@@ -33,7 +34,8 @@ class CountryScreen extends Component {
     //todo 해당 국가 이름으로 변경해야함 
     headerLeft: AppBackButton({navigation, title:navigation.navigation.getParam('title')}),
     headerRight: (
-      <AppCartButton key="cart" style={styles.btnCartIcon} 
+      <AppCartButton key="cart" style={styles.btnCartIcon}
+        badgeProps = {{left:100}}
         onPress={() => navigation.navigation.navigate('Cart')}
         iconName="btnCart" />
     )
@@ -66,7 +68,7 @@ class CountryScreen extends Component {
         console.log('prod', prodList[idx])
       }
     
-    const prodData = prodList.filter(item => item.ccode == prod.ccode).map(item => ({
+    const prodData = prodList.filter(item => prod.categoryId[0] == productApi.category.multi ? item.uuid == prod.uuid : item.ccode == prod.ccode).map(item => ({
       ... item,
       key: item.uuid
     }))

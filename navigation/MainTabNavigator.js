@@ -33,6 +33,7 @@ import PymMethodScreen from '../screens/PymMethodScreen';
 import FindAddressScreen from '../screens/FindAddressScreen';
 import CustomerProfileScreen from '../screens/CustomerProfileScreen';
 import AddProfileScreen from '../screens/AddProfileScreen';
+import StoreSearchScreen from '../screens/StoreSearchScreen';
 import BoardMsgRespScreen from '../screens/BoardMsgRespScreen';
 import SimpleTextScreen from '../screens/SimpleTextScreen';
 import FaqScreen from '../screens/FaqScreen';
@@ -90,6 +91,7 @@ HomeStack.path = '';
 const StoreStack = createStackNavigator(
   {
     Store: StoreScreen,
+    StoreSearch: StoreSearchScreen,
     Country: CountryScreen,
     Product: ProductScreen,
     NewSim: NewSimScreen,

@@ -41,6 +41,7 @@ class CountryItem extends Component {
   render() {
     const {item} = this.props
 
+    console.log("item",item)
     return (
       <View key={item.key} style={styles.productList}>
         {item.data.map((elm,idx) => (
@@ -48,7 +49,7 @@ class CountryItem extends Component {
           elm ? <View key={elm.ccode} style={{flex:1, marginLeft:idx == 1 ? 14 : 0}}>
             <TouchableOpacity onPress={() => this.props.onPress && this.props.onPress(elm.uuid)}>
               <Image key={"img"} source={{uri:api.httpImageUrl(elm.imageUrl)}} style={styles.image}/>
-              <Text key={"cntry"} style={[appStyles.bold14Text,{marginBottom:5}]}>{elm.cntry}</Text>
+              <Text key={"cntry"} style={[appStyles.bold14Text,{marginBottom:5}]}>{elm.cntry.size > 1 ? elm.name : elm.cntry}</Text>
               <Text key={"from"} style={styles.from}>{i18n.t('from')}</Text>
               <Text key={"price"} style={[appStyles.price,styles.text]}>{utils.numberToCommaString(elm.price)}
               <Text key={"days"} style={[appStyles.normal14Text,styles.text]}>{`${i18n.t('won')}/${i18n.t('day')}`}</Text>
@@ -175,7 +176,10 @@ class StoreScreen extends Component {
     const {params = {}} = navigation.navigation.state
 
     return {
-      headerTitle : <HeaderTitle search={params.search} onChangeText={params.onChangeText} params={params}/>
+      headerLeft: (<Text style={styles.title}>{i18n.t('store')}</Text>),
+      headerRight: (
+          <AppButton key="search" style={styles.showSearchBar} onPress={navigation.navigation.getParam('StoreSearch')} iconName="btnSearchTop" />)
+      // headerTitle : <HeaderTitle search={params.search} onChangeText={params.onChangeText} params={params}/>
     }
 }
 
@@ -203,7 +207,7 @@ class StoreScreen extends Component {
 
     this._refresh = this._refresh.bind(this)
     this._onChange = this._onChange.bind(this)
-    this._navigateToNewSim = this._navigateToNewSim.bind(this)
+    this._navigateToStoreSearch = this._navigateToStoreSearch.bind(this)
     this._onIndexChange = this._onIndexChange.bind(this)
     this._onPressItem = this._onPressItem.bind(this)
 
@@ -212,15 +216,15 @@ class StoreScreen extends Component {
 
   componentDidMount() {
     this.props.navigation.setParams({
-      NewSim: this._navigateToNewSim,
+      StoreSearch: this._navigateToStoreSearch,
       onChangeText : this._onChangeText('country'),
       search : this._search()
     })
     this._refresh()
   }
 
-  _navigateToNewSim() {
-    this.props.navigation.navigate('NewSim')
+  _navigateToStoreSearch() {
+    this.props.navigation.navigate('StoreSearch')
   }
 
   _onChange = (search) => {
@@ -247,25 +251,48 @@ class StoreScreen extends Component {
       if ( resp.result == 0) {
         this.props.action.product.updProdList({prodList: resp.objects})
 
-        const list = resp.objects.reduce((acc,item) => {
-          item.key = item.uuid
-          item.cntry = country.getName(item.ccode)
 
-          const idx = acc.findIndex(elm => elm.ccode == item.ccode)
-          if ( idx < 0) {
+        // const tempList = resp.objects.reduce((acc,item) => {
+        //   item.key = item.uuid
+        //   item.cntry = country.getName(item.ccode)
+
+        //   const idx = acc.findIndex(elm => elm.key == item.uuid)
+
+        //   if(idx >= 0) {
+        //     acc[idx].ccode += ',' + item.ccode
+        //     acc[idx].cntry += ',' + item.cntry
+        //     return acc
+        //   }
+        //   return acc.concat([item])
+        // }, [])
+
+        const { asia, europe, usaAu, multi } = productApi.category
+        const list = resp.objects.reduce((acc,item) => {
+          
+
+          item.key = item.uuid
+          item.cntry = new Set([country.getName(item.ccode)])
+
+          const idxCcode = acc.findIndex(elm => item.categoryId == multi ? elm.uuid == item.uuid : elm.ccode == item.ccode)
+          if ( idxCcode < 0) {
             // new item, insert it
             return acc.concat( [item])
           }
-          else if ( acc[idx].price > item.price) {
+
+          else if ( acc[idxCcode].price > item.price) {
             // cheaper
-            acc.splice( idx, 1, item)
+            acc.splice( idxCcode, 1, item)
             return acc
           }
-
+          else if ( idxCcode >= 0 && item.categoryId == multi) {
+            acc[idxCcode].cntry = acc[idxCcode].cntry.add(country.getName(item.ccode))
+            acc[idxCcode].ccode = 'multi'
+          }
+          
           return acc
         }, [])
   
-        const { asia, europe, usaAu, multi } = productApi.category
+        
         this.setState({
           allData: list,
           asia: this.filterByCategory(list, asia, ''),
@@ -292,16 +319,15 @@ class StoreScreen extends Component {
   filterByCategory( list, key, searchword) {
     return list.filter(elm => 
       elm.categoryId.findIndex(idx => idx == key) >= 0 &&
-      (_.isEmpty(searchword) ? true : elm.cntry.match(searchword))) 
+      (_.isEmpty(searchword) ? true : !_.isUndefined(elm.cntry.find(item => item.match(searchword))))) 
       .map((elm,idx,arr) => ({key:elm.ccode, data:[elm,arr[idx+1]] }))
       .filter((elm,idx) => idx % 2 == 0)
   }
  
   _onPressItem = (key) => {
-    const {allData} = this.state
-
+    const country = this.state.allData.filter(elm => elm.uuid == key)[0]
     this.props.action.product.selectCountry({uuid: key})
-    this.props.navigation.navigate('Country',{title:allData.filter(elm => elm.uuid == key)[0].cntry})
+    this.props.navigation.navigate('Country',{title:country.categoryId == productApi.category.multi ? country.name : country.cntry})
   }
 
   /*
@@ -349,8 +375,9 @@ class StoreScreen extends Component {
     })
   }
 
-  renderScene = ({ route, jumpTo }) => {
-    return <StoreList data={this.state[route.key]} jumpTp={jumpTo} onPress={this._onPressItem}/>
+  renderScene = (props) => {
+    console.log("props",props)
+    return <StoreList data={this.state[props.route.key]} jumpTp={props.jumpTo} onPress={this._onPressItem}/>
   }
 
   _onIndexChange(index) {
@@ -467,7 +494,8 @@ const styles = StyleSheet.create({
   },
   showSearchBar : {
     marginRight:20,
-    justifyContent:"flex-end"
+    justifyContent:"flex-end",
+    backgroundColor:colors.white
   },
   titleStyle: {
     ... appStyles.headerTitle
