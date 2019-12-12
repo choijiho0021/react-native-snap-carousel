@@ -14,7 +14,7 @@ import { bindActionCreators } from 'redux'
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import _ from 'underscore'
-import moment from 'moment'
+import moment from 'moment-with-locales-es6'
 import { colors } from '../constants/Colors';
 import * as boardActions from '../redux/modules/board'
 import * as accountActions from '../redux/modules/account'
@@ -23,6 +23,8 @@ import utils from '../utils/utils';
 import AppModal from './AppModal';
 import AppButton from './AppButton';
 import AppIcon from './AppIcon';
+
+moment.locale(i18n.locale)
 
 class BoardMsg extends Component {
   constructor(props) {
@@ -35,7 +37,7 @@ class BoardMsg extends Component {
 
   render() {
     const {title, created, status, statusCode, uuid, mobile} = this.props.item,
-      date = moment(created).format('YYYY-MM-DD hh:mm:ss a'),
+      date = moment(created).format('LLL'),
       titleOrMobile = this.props.uid ? title : (mobile.substr(0,3) + "-****-" + mobile.substr(7))
 
     return (
@@ -45,7 +47,7 @@ class BoardMsg extends Component {
             <Text key="title" style={styles.title}>{titleOrMobile || ''}</Text>
             <Text key="date" style={styles.date}>{date}</Text>
           </View>
-          <Text key="status" style={[styles.status, statusCode == 'C' ? colors.clearBlue : colors.warmGrey]}>{status}</Text>
+          <Text key="status" style={[styles.status, {color: statusCode == 'C' ? colors.clearBlue : colors.warmGrey}]}>{status}</Text>
         </View>
       </TouchableOpacity>
     )
