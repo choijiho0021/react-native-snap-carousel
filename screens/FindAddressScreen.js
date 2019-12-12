@@ -61,6 +61,7 @@ class FindAddressScreen extends Component {
   _findAddr = (page=1) => () => {
     const { addr } = this.state
 
+    console.log('find addr의 addr', addr)
     addressApi.find(addr, page).then( resp => {
 
       console.log('find addr', addr, resp)
@@ -80,7 +81,7 @@ class FindAddressScreen extends Component {
     console.log('this.props!', this.props)
     
     //리덕스 저장
-    this.props.OrderActions.updateCustomerProfile(addr)
+    this.props.OrderActions.updateProfileAddress(addr)
 
     console.log('addr redux 저장', this.props)
 
@@ -141,7 +142,7 @@ class FindAddressScreen extends Component {
               <Text style={styles.searchEx}>{i18n.t('purchase:areaBuilding')}</Text>
             </View>     
           }
-          <FlatList data={data} renderItem={this._renderItem} keyExtractor={(_, idx) => idx + ''}/>
+          <FlatList data={data} renderItem={this._renderItem} key={(_, idx) => idx}/>
         </View>
       </View>
     )

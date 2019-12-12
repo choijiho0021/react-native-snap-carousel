@@ -220,6 +220,7 @@ class HomeScreen extends Component {
         <AppButton iconName="imgCard3"
           style={styles.menuBox}
           title={i18n.t('store')}
+          onPress={this._navigate('Cart')}
           titleStyle={styles.menuText} />
       </View>
     )
@@ -406,9 +407,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   btnAlarm: {
-    marginLeft: 16,
-    marginRight: 20,
-    bottom:10
+    width: 40, 
+    height: 40,
+    marginRight: 10,
   },
   btnCnter: {
     marginHorizontal: 18

@@ -91,6 +91,7 @@ class InputEmail extends Component {
               bottom: 5,
               right: 10,
             },}}
+            placeholder={{}}
             onValueChange={this._onChangeText("domainIdx")}
             items={domains}
             value={domainIdx}

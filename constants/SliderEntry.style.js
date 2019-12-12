@@ -15,6 +15,7 @@ const itemHorizontalMargin = wp(2);
 
 export const windowHeight = viewportHeight;
 export const sliderWidth = viewportWidth;
+export const attachmentSize = (sliderWidth - 20*2 - 33*2)/3
 export const itemWidth = slideWidth + itemHorizontalMargin * 2;
 
 const entryBorderRadius = 8;

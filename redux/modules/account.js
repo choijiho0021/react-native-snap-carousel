@@ -17,7 +17,9 @@ const ACTIVATE_ACCOUNT =   'rokebi/account/ACTIVATE_ACCOUNT'
 export const LOGIN =   'rokebi/account/LOGIN'
 const UPLOAD_PICTURE =   'rokebi/account/UPLOAD_PICTURE'
 const CHANGE_PICTURE =   'rokebi/account/CHANGE_PICTURE'
+const GET_TOKEN = 'rokebi/account/GET_TOKEN'
 
+export const getToken = createAction(GET_TOKEN, userApi.getToken)
 export const updateAccount = createAction(UPDATE_ACCOUNT)
 export const clearAccount = createAction(CLEAR_ACCOUNT)
 export const signUp = createAction(SIGN_UP)
@@ -180,6 +182,7 @@ export default handleActions({
         const obj = objects[0]
         return state.set('token', obj.csrf_token)
           .set('mobile', obj.current_user.name)
+          .set('uid', obj.current_user.uid)
           .set('pin', obj.pass)
           .set('loggedIn', true)
       }
@@ -237,6 +240,13 @@ export default handleActions({
         return state.set('userPictureUrl', objects[0].userPictureUrl)
       }
       return state
+    }
+  }),
+
+  ... pender({
+    type: GET_TOKEN,
+    onSuccess: (state, action) => {
+      return state.set('token', action.payload)
     }
   })
 }, initialState)

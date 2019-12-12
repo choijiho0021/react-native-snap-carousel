@@ -15,7 +15,23 @@ class BoardAPI {
 
     toBoard = (data) => {
         if ( _.isArray(data)) {
-            return api.success(data)
+            return api.success(data.map(item => {
+                const key = Object.keys(item._embedded).find(key => key.endsWith('field_images'))
+                const images = key ? item._embedded[key].map(i => i._links.self.href): []
+
+                return {
+                    key: item.uuid && item.uuid[0].value,
+                    uuid: item.uuid && item.uuid[0].value,
+                    title: item.title && item.title[0].value || '',
+                    msg: item.body && item.body[0].processed,
+                    created: item.created && item.created[0].value,
+                    mobile: item.field_mobile && item.field_mobile[0].value || '',
+                    pin: item.field_pin && item.field_pin[0].value || '',
+                    statusCode: item.field_issue_status && item.field_issue_status[0].value || 'O',
+                    status: this.statusToString(item.field_issue_status && item.field_issue_status[0].value || 'O'),
+                    images
+                }
+            }))
         }
 
         if ( ! _.isEmpty(data.jsonapi)) {
@@ -29,8 +45,7 @@ class BoardAPI {
                 msg: item.attributes.body && item.attributes.body.value,
                 created: item.attributes.created,
                 mobile: item.attributes.field_mobile || '',
-                userName: item.attributes.field_user_name || '',
-                email: item.attributes.field_email || '',
+                pin: item.attributes.field_pin,
                 statusCode: item.attributes.field_issue_status,
                 status: this.statusToString(item.attributes.field_issue_status),
             })), data.links)
@@ -75,7 +90,8 @@ class BoardAPI {
         return api.failure(api.NOT_FOUND)
     }
 
-    post = ({title,msg,mobile}, images, {token}) => {
+    // anonymous user 도 post 할 수 있으므로, token 값을 확인하지 않는다. 
+    post = ({title,msg,mobile,pin}, images, {token}) => {
         if (_.isEmpty(title) || _.isEmpty(msg) || _.isEmpty(token))
             return api.reject( api.INVALID_ARGUMENT, 'empty title or body')
 
@@ -87,7 +103,8 @@ class BoardAPI {
                 attributes: {
                     title: {value: title},
                     body: {value: msg},
-                    field_mobile: {value:mobile},
+                    field_mobile: {value:mobile.replace(/-/g, '')},
+                    field_pin: {value:pin}
                 },
             }
         }
@@ -109,8 +126,6 @@ class BoardAPI {
             }
         }
 
-        console.log('post body', body)
-
         return api.callHttp(url, {
             method: 'POST',
             headers,
@@ -130,10 +145,22 @@ class BoardAPI {
         }, this.toBoard)
     }
 
+    /* JSON API를 사용해서 구현했으나, uid에 의한 filtering이 안되서 제거함 
     getHistory = ({token}, link) => {
         const url = link || `${api.httpUrl(api.path.jsonapi.board)}?` +
-            `fields[node--contact_board]=field_user_name,created,field_mobile,title,body,field_issue_status&` +
+            `fields[node--contact_board]=field_user_name,created,field_mobile,title,body,field_issue_status,field_pin&` +
             `sort=-created&page[limit]=${this.PAGE_SIZE}`
+        const headers = api.withToken(token, 'vnd.api+json')
+
+        return api.callHttp(url, {
+            method: 'GET',
+            headers
+        }, this.toBoard)
+    }
+    */
+
+    getIssueList = ( uid = "0", {token}, link) => {
+        const url = link || `${api.httpUrl(api.path.board)}/${uid}?_format=hal_json`
         const headers = api.withToken(token, 'vnd.api+json')
 
         return api.callHttp(url, {
@@ -156,15 +183,14 @@ class BoardAPI {
 
 
     uploadAttachment = ( images, {user, token}) => {
-        if ( _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
+        if ( ! _.isArray(images) || images.length == 0) return Promise.resolve([])
 
         const url = `${api.httpUrl(api.path.uploadFile, '')}/node/contact_board/field_images?_format=hal_json`
 
         const posts = images.map( image => {
-            const headers = api.headers({
-                "X-CSRF-Token": token,
+            const headers = api.withToken( token, 'octet-stream', {
                 "Content-Disposition":`file;filename="${user}_contact.${image.mime.replace('image/', '')}"`
-            }, 'octet-stream') 
+            })
 
             return () => api.callHttp(url, {
                 method: 'POST',

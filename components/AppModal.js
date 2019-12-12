@@ -18,10 +18,12 @@ class AppModal extends Component {
     super(props)
 
     this.state = {
-      value: props.default
+      value: props.default,
+      error: undefined
     }
 
     this._onChangeText = this._onChangeText.bind(this)
+    this._onSubmit = this._onSubmit.bind(this)
   }
 
   componentDidUpdate(prevProps) {
@@ -44,6 +46,24 @@ class AppModal extends Component {
     })
   }
 
+  _onSubmit() {
+    const { value } = this.state
+    const validated = this.props.validate && this.props.validate(value)
+
+    if ( _.isUndefined(validated)) {
+      this.setState({
+        showModal: false
+      })
+
+      this.props.onOkClose(value)
+    }
+    else {
+      this.setState({
+        error: validated
+      })
+    }
+  }
+
   render() {
     const { value, error } = this.state
     const { title } = this.props
@@ -61,14 +81,17 @@ class AppModal extends Component {
 
             {
               this.props.mode == 'edit' && <View style={styles.inputBox}>
-                <TextInput style={styles.textInput} 
-                  returnKeyType='done'
-                  enablesReturnKeyAutomatically={true}
-                  onChangeText={this._onChangeText('value')}
-                  value={value} /> 
+                  <TextInput style={styles.textInput} 
+                    returnKeyType='done'
+                    enablesReturnKeyAutomatically={true}
+                    onChangeText={this._onChangeText('value')}
+                    value={value} /> 
 
-                <AppButton style={styles.cancelButton} iconName="btnCancel" onPress={() => this._onChangeText('value')('')}/>
-              </View>
+                  <AppButton style={styles.cancelButton} iconName="btnCancel" onPress={() => this._onChangeText('value')('')}/>
+                </View>
+            }
+            {
+              this.props.mode == 'edit' && ! _.isUndefined(error) && <Text style={styles.error}>{error}</Text>
             }
 
             <View style={styles.row}>
@@ -79,7 +102,7 @@ class AppModal extends Component {
 
               <AppButton style={styles.button} 
                 disabled={! _.isEmpty(error)}
-                onPress={this.props.onOkClose}
+                onPress={this._onSubmit}
                 title={i18n.t('ok')} 
                 titleStyle={{... styles.buttonTitle, color: _.isEmpty(error) ? colors.clearBlue : colors.warmGrey}}/>
             </View>
@@ -91,6 +114,12 @@ class AppModal extends Component {
 }
 
 const styles = StyleSheet.create({
+  error: {
+    ... appStyles.normal14Text,
+    color: colors.tomato,
+    marginHorizontal: 30,
+    marginTop: 10
+  },
   cancelButton: {
     width: 20,
     height: 20,
@@ -118,12 +147,12 @@ const styles = StyleSheet.create({
     marginTop: 30,
     borderBottomColor: colors.black,
     borderBottomWidth: 1,
-    paddingVertical: 12,
     alignItems: 'center'
   },
   textInput: {
     ... appStyles.normal16Text,
     flex: 1,
+    paddingVertical: 12,
   },
   title: {
     ... appStyles.normal18Text,

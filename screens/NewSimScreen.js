@@ -6,6 +6,7 @@ import {
   Text
 } from 'react-native';
 import {connect} from 'react-redux'
+import {Map} from 'immutable'
 
 import i18n from '../utils/i18n'
 import _ from 'underscore'
@@ -13,6 +14,7 @@ import AppActivityIndicator from '../components/AppActivityIndicator'
 import AppButton from '../components/AppButton';
 import * as simActions from '../redux/modules/sim'
 import * as accountActions from '../redux/modules/account'
+import * as cartActions from '../redux/modules/cart'
 import SimCard from '../components/SimCard'
 import { bindActionCreators } from 'redux'
 import AppBackButton from '../components/AppBackButton';
@@ -22,21 +24,17 @@ import { appStyles } from '../constants/Styles';
 import { colors } from '../constants/Colors';
 import ChargeSummary from '../components/ChargeSummary';
 import { SafeAreaView} from 'react-navigation'
-import withBadge from '../components/withBadge';
-
-const BadgeAppButton = withBadge(({cartItems}) => cartItems, {badgeStyle:{right:5,top:10}}, 
-  (state) => ({cartItems: (state.cart.get('orderItems') || []).reduce((acc,cur) => acc + cur.qty, 0)}))(AppButton)
+import AppCartButton from '../components/AppCartButton';
 
 class NewSimScreen extends Component {
   static navigationOptions = (navigation) => ({
     headerLeft: AppBackButton({navigation, title:i18n.t('sim:purchase')}),
     headerRight: (
-      <BadgeAppButton key="cart" 
-                      style={styles.btnCartIcon} 
-                      onPress={()=>this.props.navigation.navigate('Cart')}
-                      iconName="btnCart" />
-  )
-  })
+      <AppCartButton key="cart" 
+        style={styles.btnCartIcon} 
+        onPress={() => navigation.navigation.navigate('Cart')}
+        iconName="btnCart" />)
+    })
 
   constructor(props) {
     super(props)
@@ -44,15 +42,19 @@ class NewSimScreen extends Component {
     this.state = {
       simCardList: [],
       querying: false,
-      checked: {},
-      simQty: {}
+      total: { cnt:0, price:0},
+      checked: new Map(),
+      simQty: new Map()
     }
 
     this._onChangeQty = this._onChangeQty.bind(this)
     this._onPress = this._onPress.bind(this)
+    this._getTotal = this._getTotal.bind(this)
   }
 
   componentDidMount() {
+    this.props.action.cart.cartFetch()
+
     this.setState({
       querying: true
     })
@@ -66,10 +68,10 @@ class NewSimScreen extends Component {
     
         this.setState({
           simCardList: list,
-          simQty: list.reduce((acc,cur) => ({
+          simQty: new Map( list.reduce((acc,cur) => ({
             ... acc, 
             [cur.uuid]: 0
-          }), {}) 
+          }), {})) 
         })
 
         this.props.action.sim.updateSimCardList({simList:list})
@@ -84,22 +86,20 @@ class NewSimScreen extends Component {
   }
 
   _onChangeQty(key, qty) {
+    const simQty = this.state.simQty.set(key, qty),
+      checked = this.state.checked.set(key, true)
 
+      console.log('change', key, qty, simQty.toJS())
     // update qty
     this.setState({
-      simQty: {
-        ... this.state.simQty,
-        [key]: qty
-      },
-      checked: {
-        ... this.state.checked,
-        [key]: true
-      }
+      checked, simQty,
+      total: this._getTotal(checked, simQty)
     })
   }
 
   _onPress() {
     const {loggedIn} = this.props.account
+    const {checked, simQty} = this.state
 
     if(!loggedIn){
       // AppAlert.confirm(i18n.t('error'),i18n.t('err:login'), {
@@ -109,26 +109,24 @@ class NewSimScreen extends Component {
     }
     else{
       // insert to cart
-      this.state.simCardList.forEach(item => {
-        if ( item.qty > 0) {
-          this.props.action.sim.addSimToCart({
-            uuid : item.uuid,
-            qty : item.qty
-          })
-        }
-      })
+      const simList = this.state.simCardList.map(item => ({
+        variationId : item.variationId,
+        qty: checked.get(item.uuid) && simQty.get(item.uuid),
+      })).filter( item => item.qty > 0)
+
+      console.log('SIM list', simList)
+
+      this.props.action.cart.cartAddAndGet( simList)
     }
     
   }
 
   _onChecked(key) {
-    const { checked } = this.state
+    const checked = this.state.checked.update(key, value => ! value)
 
     this.setState({
-      checked: {
-        ... checked,
-        [key]: ! checked[key]
-      }
+      checked,
+      total: this._getTotal( checked, this.state.simQty)
     })
   }
 
@@ -137,26 +135,30 @@ class NewSimScreen extends Component {
 
     return (
       <SimCard onChange={value => this._onChangeQty(item.key, value)} 
-        checked={this.state.checked[item.key] || false}
+        checked={this.state.checked.get(item.key) || false}
         onChecked={() => this._onChecked(item.key)}
-        qty={simQty[item.uuid]}
+        qty={simQty.get(item.uuid)}
         {... item} />
     )
   }
 
+  _getTotal(checked, simQty) {
+    const { simCardList} = this.state
 
-  render() {
-    const { querying, simCardList, checked, simQty} = this.state
-    const total = simCardList.filter(item => checked[item.key] || false)
+    return simCardList.filter(item => checked.get(item.key) || false)
       .map(item => ({
-        qty: simQty[item.key] || 0, 
-        checked: checked[item.key] || false, 
+        qty: simQty.get(item.key) || 0, 
+        checked: checked.get(item.key) || false, 
         price: item.price
       })).reduce((acc,cur) => ({
         cnt: acc.cnt+ cur.qty, 
         price: acc.price + cur.qty * cur.price
       }), {cnt: 0, price:0})
+  }
 
+
+  render() {
+    const { querying, simCardList, checked, simQty, total} = this.state
 
     return (
       <SafeAreaView style={styles.container}>
@@ -202,8 +204,9 @@ const styles = StyleSheet.create({
     color: colors.black
   },
   btnCartIcon : {
-    marginRight:22,
-    alignSelf:'center'
+    width:40,
+    height:40,
+    marginRight: 10
   },
 });
 
@@ -216,7 +219,8 @@ export default connect(mapStateToProps,
   (dispatch) => ({
     action:{
       sim : bindActionCreators( simActions, dispatch),
-      account: bindActionCreators(accountActions, dispatch)
+      cart : bindActionCreators( cartActions, dispatch),
+      account: bindActionCreators(accountActions, dispatch),
     }
   })
 )(NewSimScreen)

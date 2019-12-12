@@ -21,6 +21,7 @@ const images = {
   imgCard3 : [ require( mainPath + 'imgCard3.png')],
   imgGuid1 : [ require( mainPath + 'imgGuid1.png')],
   iconTrash : [ require( mainPath + 'iconTrash.png')],
+  btnSearchOn : [ require( mainPath + 'btnSearchOn.png')],
   btnSearchOff : [ require( mainPath + 'btnSearchOff.png')],
   imgPeopleL : [ require( mainPath + 'imgPeopleL.png')],
   imgPeoplePlus : [ require( mainPath + 'imgPeoplePlus.png')],
@@ -29,6 +30,7 @@ const images = {
   iconCameraCancel: [ require( mainPath + 'iconCameraCancel.png')],
   btnBoxCancel: [ require( mainPath + 'btnBoxCancel.png')],
   btnPhotoPlus: [ require( mainPath + 'btnPhotoPlus.png')],
+  imgMark: [ require( mainPath + 'imgMark.png')],
   btnReply: [ require( mainPath + 'btnReply.png')],
   btnAlarm: [ require( headerPath + 'btnAlarm.png')],
   btnCnter: [ require( headerPath + 'btnCnter.png')],
@@ -39,7 +41,7 @@ const images = {
 export default function AppIcon({name, focused, style, checked}) {
   const source = images[name]
   if (source) return ( 
-    <View style={style}>
+    <View style={style || {justifyContent:'center', alignItems:'center'}}>
       <Image source={(focused || checked) && source.length > 1 ? source[1] : source[0]}/>
     </View>
   )

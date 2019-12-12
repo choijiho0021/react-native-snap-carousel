@@ -24,6 +24,7 @@ import AppAlert from '../components/AppAlert';
 import _ from 'underscore'
 import AppUserPic from '../components/AppUserPic';
 import AppModal from '../components/AppModal';
+import * as Permissions from 'expo-permissions';
 
 let ImagePicker 
 if (Constants.appOwnership === 'expo') {
@@ -48,6 +49,7 @@ class MyPageScreen extends Component {
     super(props)
     this.state = {
       mode: 'purchase',
+      hasCameraRollPermission: null,
       showEmailModal: false
     }
 
@@ -57,8 +59,12 @@ class MyPageScreen extends Component {
     this._showEmailModal = this._showEmailModal.bind(this)
   }
 
-  componentDidMount() {
-    this.props.action.order.getOrders(this.props.auth)
+  async componentDidMount() {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
+
+    this.setState({ hasCameraRollPermission: status === 'granted' })
+
+    if ( this.props.uid) this.props.action.order.getOrders(this.props.auth)
   }
 
   _onPress = (key) => () => {
@@ -78,24 +84,25 @@ class MyPageScreen extends Component {
   }
 
   _changePhoto() {
-    ImagePicker && ImagePicker.openPicker({
-      width: 76,
-      height: 76,
-      cropping: true,
-      cropperCircleOverlay: true,
-      includeBase64: true,
-      writeTempFile: false,
-      mediaType: 'photo',
-      forceJpb: true,
-      cropperChooseText: i18n.t('select'),
-      cropperCancelText: i18n.t('cancel'),
-    }).then(image => {
-      console.log( 'image', image);
-      image && this.props.action.account.uploadAndChangePicture(image)
-    }).catch(err => {
-      console.log('failed to upload', err)
-      AppAlert.error(err)
-    })
+    if ( this.state.hasCameraRollPermission ) {
+      ImagePicker && ImagePicker.openPicker({
+        width: 76,
+        height: 76,
+        cropping: true,
+        cropperCircleOverlay: true,
+        includeBase64: true,
+        writeTempFile: false,
+        mediaType: 'photo',
+        forceJpb: true,
+        cropperChooseText: i18n.t('select'),
+        cropperCancelText: i18n.t('cancel'),
+      }).then(image => {
+        console.log( 'image', image);
+        image && this.props.action.account.uploadAndChangePicture(image)
+      }).catch(err => {
+        console.log('failed to upload', err)
+      })
+    }
   }
 
   _info() {
@@ -107,7 +114,9 @@ class MyPageScreen extends Component {
     return (
       <View style={{marginTop:20}}>
         <View >
-          <AppUserPic url={userPictureUrl} icon="imgPeopleL" style={styles.userPicture} onPress={this._changePhoto} />
+          <AppUserPic url={userPictureUrl} icon="imgPeopleL" 
+            style={styles.userPicture} 
+            onPress={this.props.uid && this._changePhoto} />
           <AppIcon name="imgPeoplePlus" style={{bottom:20, right:-29, alignSelf:'center'}}/>
         </View>
 
@@ -128,7 +137,7 @@ class MyPageScreen extends Component {
 
         <View style={styles.dividerSmall} />
 
-        <TouchableOpacity onPress={() => this._showEmailModal(true)}>
+        <TouchableOpacity onPress={() => this.props.uid && this._showEmailModal(true)}>
           <View style={styles.row}>
             <LabelText key='email' 
               style={styles.box}
@@ -138,7 +147,7 @@ class MyPageScreen extends Component {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => this._showEmailModal(true)}>
+        <TouchableOpacity onPress={() => this.props.uid && this.props.navigation.navigate('Recharge')}>
           <View style={styles.row}>
             <LabelText key='balance' 
               style={styles.box}
@@ -302,6 +311,7 @@ const mapStateToProps = state => ({
   account: state.account.toJS(),
   order: state.order.toJS(),
   auth: accountActions.auth( state.account),
+  uid: state.account.get('uid'),
   pending: state.pender.pending[orderActions.GET_ORDERS] || 
     state.pender.pending[accountActions.UPLOAD_PICTURE] || false,
 })

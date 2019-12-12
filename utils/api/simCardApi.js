@@ -11,6 +11,7 @@ class SimCardAPI {
         if ( _.isArray(data)) {
             return api.success( data.map(item => ({
                 uuid : item.uuid,
+                variationId: item.variations && item.variations[0],
 //                    nid: item.nid[0].value,
                 name: item.title,
 //                    created: item.created[0].value,

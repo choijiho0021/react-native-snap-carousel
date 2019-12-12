@@ -51,7 +51,8 @@ export default function App(props) {
       setShowSplash(false)
     }, 3000)
 
-    login()
+    // showSplash == true 인 경우에만 1번 로그인 한다.
+    if (showSplash) login()
 
     return (
       <Provider store={store}>
@@ -76,12 +77,17 @@ async function login() {
 
     console.log('load', mobile, pin, iccid)
 
-    if ( mobile && pin && iccid ) {
-      store.dispatch(accountActions.updateAccount({
-        iccid, mobile, pin,
-      }))
+    if ( mobile && pin ) {
       store.dispatch(accountActions.logInAndGetUserId( mobile, pin))
-      store.dispatch(accountActions.getAccount( iccid))
+      if ( iccid ) {
+        store.dispatch(accountActions.updateAccount({
+          iccid, mobile, pin,
+        }))
+        store.dispatch(accountActions.getAccount( iccid))
+      }
+    }
+    else {
+      store.dispatch(accountActions.getToken())
     }
 }
 

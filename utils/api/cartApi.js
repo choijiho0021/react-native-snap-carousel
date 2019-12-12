@@ -43,14 +43,14 @@ class CartAPI {
         }, this.toCart)
     }
 
-    add = ({variationId, qty}) => {
+    add = (prodList) => {
         const url = `${api.httpUrl(api.path.cart, '')}/add?_format=json`
         const headers = api.headers({}, 'json')
-        const body = [{
+        const body = prodList.map(item => ({
             purchased_entity_type: 'commerce_product_variation',
-            purchased_entity_id: variationId,
-            quantity: qty
-        }]
+            purchased_entity_id: item.variationId,
+            quantity: item.qty
+        }))
 
         return api.callHttp(url, {
             method: 'post',

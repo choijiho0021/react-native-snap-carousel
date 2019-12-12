@@ -23,15 +23,15 @@ export const cartRemove = createAction(CART_REMOVE, cartApi.remove)
 export const cartUpdate = createAction(CART_UPDATE, cartApi.update) 
 export const makePayment = createAction(MAKE_PAYMENT, cartApi.makePayment) 
 
-export const cartAddAndGet = (addProduct) => {
+export const cartAddAndGet = (prodList) => {
   return (dispatch,getState) => {
     const { account } = getState()
-    return dispatch(cartAdd(addProduct)).then(
+    return dispatch(cartAdd(prodList)).then(
       resp => {
         if (resp.result == 0 && resp.objects.length > 0) {
           return dispatch(cartFetch())
         }
-        throw new Error('Failed to upload picture')
+        throw new Error('Failed to add products')
       },
       err => {
         throw err

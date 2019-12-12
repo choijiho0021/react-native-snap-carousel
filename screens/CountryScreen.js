@@ -12,10 +12,6 @@ import {connect} from 'react-redux'
 import {appStyles} from "../constants/Styles"
 // import Button from 'react-native-button';
 import i18n from '../utils/i18n'
-import utils from '../utils/utils';
-import country from '../utils/country'
-import FlatListIcon from '../components/FlatListIcon';
-import DateModal from '../components/DateModal';
 import * as productActions from '../redux/modules/product'
 import * as cartActions from '../redux/modules/cart'
 import * as accountActions from '../redux/modules/account'
@@ -29,18 +25,17 @@ import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';
 import { SafeAreaView } from 'react-navigation'
 import AppPrice from '../components/AppPrice';
-import withBadge from '../components/withBadge'
 import AppAlert from '../components/AppAlert';
-
-const BadgeAppButton = withBadge(({cartItems}) => cartItems, {badgeStyle:{right:5,top:10}}, 
-  (state) => ({cartItems: (state.cart.get('orderItems') || []).reduce((acc,cur) => acc + cur.qty, 0)}))(AppButton)
+import AppCartButton from '../components/AppCartButton';
 
 class CountryScreen extends Component {
   static navigationOptions = (navigation) => ({
     //todo 해당 국가 이름으로 변경해야함 
     headerLeft: AppBackButton({navigation, title:navigation.navigation.getParam('title')}),
     headerRight: (
-        <BadgeAppButton key="cart" style={styles.btnCartIcon} onPress={navigation.navigation.getParam('Cart')}iconName="btnCart" />
+      <AppCartButton key="cart" style={styles.btnCartIcon} 
+        onPress={() => navigation.navigation.navigate('Cart')}
+        iconName="btnCart" />
     )
   })
 
@@ -63,9 +58,6 @@ class CountryScreen extends Component {
     // const key = this.props.navigation.getParam('key')
     
     this.props.action.cart.cartFetch()
-    this.props.navigation.setParams({
-      Cart: () => this.props.navigation.navigate('Cart')
-    })
 
     const {idx, prodList} = this.props.product,
       prod = prodList[idx]
@@ -115,10 +107,10 @@ class CountryScreen extends Component {
   
         switch (key) {
           case 'cart':
-            this.props.action.cart.cartAddAndGet( productActions.prodInfo(addProduct))
+            this.props.action.cart.cartAddAndGet( [ productActions.prodInfo(addProduct) ])
             break
           case 'buy':
-            const pymReq = [
+            var pymReq = [
               {
                 key: 'total',
                 title: i18n.t('price'),
