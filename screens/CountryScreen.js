@@ -148,9 +148,9 @@ class CountryScreen extends Component {
   }
 
   render() {
-    const { idx, prodList, startDate, name} = this.props.product,
-      { prodData, selected} = this.state,
-      imageUrl = prodList.length > idx >= 0 ? prodList[idx].imageUrl : ''
+    const { idx, prodList, startDate, name} = this.props.product
+    const { prodData, selected} = this.state
+    const imageUrl = prodList.length > idx >= 0 ? prodList[idx].imageUrl == '' ? prodList[idx].subImageUrl : prodList[idx].imageUrl : ''
       
     console.log('HTTPIMGURL', {uri:api.httpImageUrl(imageUrl)})
 

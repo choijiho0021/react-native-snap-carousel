@@ -41,14 +41,13 @@ class CountryItem extends Component {
   render() {
     const {item} = this.props
 
-    console.log("item",item)
     return (
       <View key={item.key} style={styles.productList}>
         {item.data.map((elm,idx) => (
             // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
           elm ? <View key={elm.ccode} style={{flex:1, marginLeft:idx == 1 ? 14 : 0}}>
             <TouchableOpacity onPress={() => this.props.onPress && this.props.onPress(elm.uuid)}>
-              <Image key={"img"} source={{uri:api.httpImageUrl(elm.imageUrl)}} style={styles.image}/>
+              <Image key={"img"} source={{uri:api.httpImageUrl(elm.imageUrl == '' ? elm.subImageUrl : elm.imageUrl)}} style={styles.image}/>
               <Text key={"cntry"} style={[appStyles.bold14Text,{marginBottom:5}]}>{elm.cntry.size > 1 ? elm.name : elm.cntry}</Text>
               <Text key={"from"} style={styles.from}>{i18n.t('from')}</Text>
               <Text key={"price"} style={[appStyles.price,styles.text]}>{utils.numberToCommaString(elm.price)}
