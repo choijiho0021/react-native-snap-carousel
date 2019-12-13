@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
 import { View, Text, StyleSheet } from 'react-native'
+import {connect} from 'react-redux'
+import { bindActionCreators } from 'redux'
+import * as cartActions from '../redux/modules/cart'
 
 import Constants from 'expo-constants'
 
@@ -40,6 +43,7 @@ class PaymentScreen extends Component{
   }
 
   _callback( response) {
+    this.props.action.cart.pymResult(response)
     this.props.navigation.replace('PaymentResult', {pymResult:response})
   }
 
@@ -77,5 +81,11 @@ const styles = StyleSheet.create({
     borderWidth: 1
   },
 })
- 
-export default PaymentScreen
+
+export default connect(undefined, 
+  (dispatch) => ({
+    action: {
+      cart : bindActionCreators(cartActions, dispatch),
+    }
+  })
+)(PaymentScreen)

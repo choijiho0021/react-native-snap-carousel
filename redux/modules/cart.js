@@ -3,7 +3,6 @@ import { Map } from 'immutable';
 import { pender } from 'redux-pender'
 import cartApi from '../../utils/api/cartApi'
 import api from '../../utils/api/api';
-import i18n from '../../utils/i18n';
 
 
 const SET_CART_TOKEN = 'rokebi/cart/SET_CART_TOKEN'
@@ -13,6 +12,7 @@ const CART_FETCH = 'rokebi/cart/CART_FETCH'
 const MAKE_PAYMENT = 'rokebi/cart/MAKE_PAYMENT'
 const MAKE_ORDER = 'rokebi/cart/MAKE_ORDER'
 const PURCHASE = 'rokebi/cart/PURCHASE'
+const PYM_RESULT = 'rokebi/cart/PYM_RESULT'
 export const CART_ADD = 'rokebi/cart/CART_ADD'
 export const CART_REMOVE = 'rokebi/cart/CART_REMOVE'
 export const CART_UPDATE = 'rokebi/cart/CART_UPDATE'
@@ -29,6 +29,7 @@ export const cartUpdate = createAction(CART_UPDATE, cartApi.update)
 export const purchase = createAction(PURCHASE)
 export const makePayment = createAction(MAKE_PAYMENT, cartApi.makePayment) 
 export const makeOrder = createAction(MAKE_ORDER, cartApi.makeOrder) 
+export const pymResult = createAction(PYM_RESULT)
 
 export const order = (items) => {
   return (dispatch,getState) => {
@@ -79,7 +80,8 @@ const initialState = Map({
   orderItems: [],
   uuid: undefined,
   purchaseItems: [],
-  pymReq: undefined
+  pymReq: undefined,
+  pymResult: undefined
 })
 
 export default handleActions({
@@ -91,6 +93,15 @@ export default handleActions({
     // purchaseItems에는 key, qty, price, title 정보 필요
     return state.set('purchaseItems', purchaseItems)
       .set('pymReq', pymReq)
+  },
+
+  // 결제 결과를 저장한다.
+  [PYM_RESULT]: (state,action) => {
+    const purchaseItems = state.get('purchaseItems')
+
+    // orderItems에서 purchaseItem에 포함된 상품은 모두 제거한다. 
+    return state.set('pymResult', action.payload)
+      .update('orderItems', value => value.filter(item => purchaseItems.findIndex(p => p.key == item.key) < 0))
   },
 
   ... pender({

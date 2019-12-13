@@ -206,7 +206,7 @@ class PymMethodScreen extends Component {
     const { selected } = this.state
     const { purchaseItems, pymReq } = this.props.cart
     
-    const simIncluded = (this.props.cart.orderItems || []).findIndex(item => item.prod.type == 'sim_card') >= 0
+    const simIncluded = (this.props.cart.orderItems || []).findIndex(item => item.prod && item.prod.type == 'sim_card') >= 0
 
     return (
       <KeyboardAwareScrollView 

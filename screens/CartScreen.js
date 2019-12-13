@@ -60,28 +60,25 @@ class CartScreen extends Component {
   }
 
   _init() {
-    const { cart} = this.props
+    const { orderItems } = this.props.cart
+    const qty = new Map(orderItems.reduce((acc,cur) => ({
+        ... acc,
+        [cur.key] : cur.qty
+      }), {})),
+      checked = new Map(orderItems.reduce((acc,cur) => ({
+        ... acc,
+        [cur.key] : true
+      }), {})),
+      total = orderItems.reduce((acc,cur) => ({
+        cnt: acc.cnt+ cur.qty, 
+        price: acc.price + cur.qty * cur.price
+      }), {cnt: 0, price:0})
 
-    if ( ! _.isEmpty(cart.orderItems)) {
-      const qty = new Map(cart.orderItems.reduce((acc,cur) => ({
-          ... acc,
-          [cur.prod.uuid] : cur.qty
-        }), {})),
-        checked = new Map(cart.orderItems.reduce((acc,cur) => ({
-          ... acc,
-          [cur.prod.uuid] : true
-        }), {})),
-        total = cart.orderItems.reduce((acc,cur) => ({
-          cnt: acc.cnt+ cur.qty, 
-          price: acc.price + cur.qty * cur.price
-        }), {cnt: 0, price:0})
-
-      this.setState({
-        qty, checked, total,
-        data : cart.orderItems,
-        dlvCost : this._dlvCost(checked, qty, total, cart.orderItems)
-      })
-    }
+    this.setState({
+      qty, checked, total,
+      data : orderItems,
+      dlvCost : this._dlvCost(checked, qty, total, orderItems)
+    })
   }
 
   _dlvCost( checked, qty, total, data) {
@@ -160,7 +157,7 @@ class CartScreen extends Component {
   _renderItem = ({item}) => {
     const { qty } = this.state
     const prod = ( item.prod.type == 'sim_card') ?
-      this.props.sim.simList.find(sim => sim.uuid == item.prod.uuid) : undefined
+      this.props.sim.simList.find(sim => sim.uuid == item.key) : undefined
 
     return <CartItem checked={this.state.checked.get(item.key) || false}
       onChange={(value) => this._onChangeQty(item.key, value)} 
@@ -169,7 +166,7 @@ class CartScreen extends Component {
       name={item.title}
       price={item.price}
       image={prod && prod.image}
-      qty={qty.get(item.prod.uuid)} />
+      qty={qty.get(item.key)} />
 
   }
 

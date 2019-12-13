@@ -241,6 +241,8 @@ const en = {
   "pym:syrup": "Syrup",
   "pym:kakao": "Kakao Pay",
   "pym:payco": "Payco",
+  "pym:success": "결제에 성공하였습니다",
+  "pym:fail": "결제에 실패하였습니다",
 
   "err:login" : "Please login first",
   "err:body"  : "There is no body to show",
@@ -505,6 +507,9 @@ const ko = {
   "pym:kakao": "카카오 페이",
   "pym:payco": "페이코",
   "pym:syrup": "시럽",
+  "pym:success": "결제에 성공하였습니다",
+  "pym:fail": "결제에 실패하였습니다",
+
   "err:login" : "로그인 후 이용해 주세요",
   "err:body"  : "본문이 없습니다",
 

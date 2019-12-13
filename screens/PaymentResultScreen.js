@@ -35,7 +35,7 @@ class PaymentResultScreen extends Component {
     super(props)
 
     this.state = {
-      result : undefined
+      result : {}
     }
 
     this._init = this._init.bind(this)
@@ -51,25 +51,21 @@ class PaymentResultScreen extends Component {
     })
   }
 
-  render(){
-    const { result } = this.state
+  render() {
     const { pymReq, purchaseItems} = this.props.cart
-
-    // const { imp_success, success, imp_uid, merchant_uid, error_msg } = response;
+    const { imp_success, success} = this.state.result
 
     // [WARNING: 이해를 돕기 위한 것일 뿐, imp_success 또는 success 파라미터로 결제 성공 여부를 장담할 수 없습니다.]
     // 아임포트 서버로 결제내역 조회(GET /payments/${imp_uid})를 통해 그 응답(status)에 따라 결제 성공 여부를 판단하세요.
     
-    // const isSuccess = !(imp_success === 'false' || imp_success === false || success === 'false' || success === false);
+    const isSuccess = !(imp_success === 'false' || imp_success === false || success === 'false' || success === false);
 
     return (
       <SafeAreaView style={styles.container}>
-        <PaymentItemInfo cart={purchaseItems}
-                        pymReq={pymReq}/>     
+        <PaymentItemInfo cart={purchaseItems} pymReq={pymReq}/>     
 
         <View style={styles.result}>
-          {/* <Text>{`결제에 ${isSuccess ? '성공' : '실패'}하였습니다`}</Text> */}
-          <Text style={{alignSelf: 'center'}}>결제가 완료되었습니다.</Text>
+          <Text style={{alignSelf: 'center'}}>{i18n.t( isSuccess ? 'pym:success' : 'pym:fail')}</Text>
         </View>
       </SafeAreaView>
     )
