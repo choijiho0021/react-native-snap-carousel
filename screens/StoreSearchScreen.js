@@ -242,20 +242,37 @@ class StoreSearchScreen extends Component {
     if(!allData) { return null }
 
     const searchResult = allData.filter(elm => 
-      [...elm.cntry].join(',').match(searchWord)).map(elm => 
-        {return {name:elm.name, country:elm.cntry, categoryId: elm.categoryId, uuid:elm.uuid}})
+      elm.categoryId != productApi.category.multi && [...elm.cntry].join(',').match(searchWord)).map(elm => 
+        {return {name:elm.name, country:elm.cntry, uuid:elm.uuid}})
 
     return (
     <View style={styles.width100}>
       {searchResult.map((elm,idx) => 
         <TouchableOpacity key={elm.uuid} onPress={() => this._onPressItem(elm.uuid)}>
           <View key={idx+''} style={styles.autoList}>
-            <Text key="text">{elm.categoryId == productApi.category.multi ? elm.name : elm.country.values().next().value}</Text>
+            <Text key="text">{elm.country.values().next().value}</Text>
           </View>
         </TouchableOpacity>
       )}
     </View>
     )
+
+    // 복수국가 이름 검색 추가
+    // const searchResult = allData.filter(elm => 
+    //   [...elm.cntry].join(',').match(searchWord)).map(elm => 
+    //     {return {name:elm.name, country:elm.cntry, categoryId: elm.categoryId, uuid:elm.uuid}})
+
+    // return (
+    // <View style={styles.width100}>
+    //   {searchResult.map((elm,idx) => 
+    //     <TouchableOpacity key={elm.uuid} onPress={() => this._onPressItem(elm.uuid)}>
+    //       <View key={idx+''} style={styles.autoList}>
+    //         <Text key="text">{elm.categoryId == productApi.category.multi ? elm.name : elm.country.values().next().value}</Text>
+    //       </View>
+    //     </TouchableOpacity>
+    //   )}
+    // </View>
+    // )
   }
 
 
