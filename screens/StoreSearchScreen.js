@@ -52,7 +52,6 @@ class HeaderTitle extends Component {
 
   _searching(searching = true) {
     const {search} = this.props
-
   }
  
   _onChangeText = (key) => (value) => {
@@ -74,9 +73,18 @@ class HeaderTitle extends Component {
   //   })
   // }
 
-  search(searchWord) {
+  async search(searchWord) {
+    const old_searchHist = await utils.retrieveData("searchHist")
+
+    //중복 제거 후 최대 7개까지 저장한다.
+    //저장 형식 : ex) 대만,중국,일본 
+    const new_searchHist = _.isNull(old_searchHist) ? searchWord : Array.from(new Set([searchWord].concat(old_searchHist.split(',')))).slice(0,7).join(',')
+
+    utils.storeData("searchHist", new_searchHist)
+
     this.setState({searchWord:searchWord})
   }
+
   render() {
     const {searching, searchWord} = this.state
     const {search, navigation} = this.props
@@ -99,11 +107,11 @@ class HeaderTitle extends Component {
             returnKeyType='search'
             enablesReturnKeyAutomatically={true}
             clearButtonMode = 'always'
-            // onSubmitEditing={() => search()}
+            onSubmitEditing={() => this.search(searchWord)}
             onChangeText={this._onChangeText('searchWord')}
             value={searchWord}
             />
-          <AppButton style = {styles.showSearchBar} onPress={() => this.search('abc')} iconName="btnSearchOff" />
+          <AppButton style = {styles.showSearchBar} onPress={() => this.search(searchWord)} iconName="btnSearchOff" />
         </View>
         <View style={styles.titleBottom}/>
       </View>
@@ -128,7 +136,7 @@ class StoreSearchScreen extends Component {
       querying: false,
       searching : false,
       searchWord : '',
-      searchList : ["대만","아시아"],
+      searchList : [],
       recommendCountry : ["인도네시아","스페인","아일랜드","네덜란다"]
     }
     this.existSearchword = this.existSearchword.bind(this)
@@ -138,6 +146,7 @@ class StoreSearchScreen extends Component {
     const allData = this.props.navigation.getParam('allData')
 
     this.setState({allData})
+    this.getSearchHist()
 
     this.props.navigation.setParams({
       value : this.state.value,
@@ -145,11 +154,22 @@ class StoreSearchScreen extends Component {
     })
   }
 
+  async getSearchHist() {
+    const searchHist = await utils.retrieveData("searchHist")
+    //searchHist 저장 형식 : ex) 대만,중국,일본 
+    const searchList = _.isNull(searchHist) ? [] : searchHist.split(',').slice(0,7)
+    this.setState({searchList:searchList})
+  }
+
   componentDidUpdate(prevProps, prevState) {
     if ( this.state.value && this.state.value != prevState.value) {
       this.props.navigation.setParams({
         value : this.state.value
       })
+    }
+
+    if(this.state.searching != prevState.searching){
+      this.getSearchHist()
     }
   }
   
@@ -196,8 +216,8 @@ class StoreSearchScreen extends Component {
   renderRecommend() {
     const { recommendCountry} = this.state
     
-    const recommendCountryList = recommendCountry.map((elm, idx, arr) => ({key : elm, data:[elm, arr[idx+1], arr[idx+2]]})).filter((elm, idx)=>idx % 3 == 0 )
-    console.log("recommendCountryList",recommendCountryList)
+    const recommendCountryList = recommendCountry.map((elm, idx, arr) => 
+      ({key : elm, data:[elm, arr[idx+1], arr[idx+2]]})).filter((elm, idx) => idx % 3 == 0 )
 
     return (
       <View style={styles.width100}>
@@ -205,13 +225,14 @@ class StoreSearchScreen extends Component {
       <View style={styles.recommendHeader}>
         <Text style={styles.searchListHeaderText}>{i18n.t('search:recommend')}</Text>
       </View>
-      {recommendCountryList.map(elm => 
-        <View key={elm.key} style={styles.recommendRow}>
-          {elm.data.map((elm2,idx) => 
-            elm2 ? <View key={idx+''} style={styles.recommebdItem}>
-              <Text style={styles.recommendText}>{elm2}</Text>
-              </View> : <View key={idx+''}style={styles.recommebdEmpty}/>)}
-        </View>)}
+      {recommendCountryList.map((elm,idx )=> 
+          <View key={elm.key} style={styles.recommendRow}>
+            {elm.data.map((elm2,idx) => 
+              elm2 ? <TouchableOpacity key={elm2} style={styles.recommebdItem}onPress={() => this.changeValue(elm2)}>
+                      <Text style={styles.recommendText}>{elm2}</Text>
+                </TouchableOpacity> : <View key={idx+''}style={styles.recommebdEmpty}/>)}
+          </View>
+        )}
     </View>
     )
   }
@@ -220,10 +241,12 @@ class StoreSearchScreen extends Component {
     const {allData, searchWord = ''} = this.state
     if(!allData) { return null }
 
-    const searchResult = allData.filter(elm => [...elm.cntry].join(',').match(searchWord)).map(elm => {return {name:elm.name, country:elm.cntry, categoryId: elm.categoryId, uuid:elm.uuid}})
+    const searchResult = allData.filter(elm => 
+      [...elm.cntry].join(',').match(searchWord)).map(elm => 
+        {return {name:elm.name, country:elm.cntry, categoryId: elm.categoryId, uuid:elm.uuid}})
 
     return (
-    <View>
+    <View style={styles.width100}>
       {searchResult.map((elm,idx) => 
         <TouchableOpacity key={elm.uuid} onPress={() => this._onPressItem(elm.uuid)}>
           <View key={idx+''} style={styles.autoList}>
