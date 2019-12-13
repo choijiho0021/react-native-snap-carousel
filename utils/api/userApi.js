@@ -211,7 +211,7 @@ class UserAPI {
         if ( _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.jsonapi.user)}${filter}&include=user_picture` +
-            `&fields[user--user]=name&fields[file--file]=uri`
+            `&fields[user--user]=name,mail&fields[file--file]=uri`
         const headers = api.withToken(token, 'vnd.api+json')
 
         return api.callHttp(url, {

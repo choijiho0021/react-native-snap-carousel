@@ -86,7 +86,7 @@ class CountryScreen extends Component {
     this.setState({selected})
   }
 
-  onPressBtn = (key) => () => {
+  _onPressBtn = (key) => () => {
     const {selected} = this.state
     const {loggedIn} = this.props.account
 
@@ -97,14 +97,22 @@ class CountryScreen extends Component {
       this.props.navigation.navigate('RegisterMobile')
     }
     else {
+
       if(selected){
-        const addProduct = {prodList:this.props.product.prodList, uuid:selected[0].uuid}
+        const prod = this.props.product.prodList.find(item => item.uuid == selected[0].uuid),
+          addProduct = prod ? { 
+            title: prod.name, 
+            variationId: prod.variationId, 
+            price:prod.price, 
+            qty:1,
+            key: prod.uuid
+          } : {}
   
         switch (key) {
           case 'cart':
-            this.props.action.cart.cartAddAndGet( [ productActions.prodInfo(addProduct) ])
+            this.props.action.cart.cartAddAndGet( [ addProduct ])
             break
-          case 'buy':
+          case 'purchase':
             var pymReq = [
               {
                 key: 'total',
@@ -112,7 +120,9 @@ class CountryScreen extends Component {
                 amount: selected[0].price
               }
             ]
-            this.props.navigation.navigate('PymMethod',{pymReq,mode:'buy',buyProduct:selected})
+            // 구매 품목을 갱신한다. 
+            this.props.action.cart.purchase({ purchaseItems: [ addProduct ], pymReq})
+            this.props.navigation.navigate('PymMethod')
             break
         }
       }
@@ -174,10 +184,10 @@ class CountryScreen extends Component {
         <View style={styles.buttonBox}>
           <AppButton style={styles.btnCart} title={i18n.t('cart:toCart')} 
             titleStyle={styles.btnCartText}
-            onPress={this.onPressBtn('cart')}/>
+            onPress={this._onPressBtn('cart')}/>
           <AppButton style={styles.btnBuy} title={i18n.t('cart:buy')} 
             titleStyle={styles.btnBuyText}
-            onPress={this.onPressBtn('buy')}/>
+            onPress={this._onPressBtn('purchase')}/>
         </View>
 
       </SafeAreaView>
@@ -234,7 +244,7 @@ const styles = StyleSheet.create({
     height: 52,
     backgroundColor: "#ffffff",
     borderColor: colors.lightGrey,
-    borderWidth: 1
+    borderTopWidth: 1
   },
   btnCartText: {
     ... appStyles.normal18Text,

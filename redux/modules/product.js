@@ -17,15 +17,6 @@ export const insProdToCart = createAction(INS_TO_CART)
 export const delProdFromCart = createAction(DEL_FROM_CART)
 export const chgProdQty = createAction(CHG_PROD_QTY)
 
-export const prodInfo = ({uuid, prodList}) => {
-  const idx = prodList && prodList.findIndex(item => item.uuid == uuid)
-  return (idx >= 0) ? {
-    variationId: prodList[idx].variationId,
-    qty: 1
-  } : {}
-}
-
-
 const initialState = Map({
     name: undefined,    // selected product name
     startDate: undefined,
