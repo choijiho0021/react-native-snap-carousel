@@ -9,6 +9,7 @@ import {
   Dimensions,
   Image,
   TextInput,
+  TouchableWithoutFeedback
 } from 'react-native';
 import {connect} from 'react-redux'
 import {appStyles} from "../constants/Styles"
@@ -38,7 +39,7 @@ class HeaderTitle extends Component {
   }
 
   shouldComponentUpdate(nextProps,nextState){
-    return (nextState.searchWord != this.state.searchWord || this.props.value != nextProps.value )
+    return (nextState.searchWord != this.state.searchWord || this.props.value != nextProps.value || this.props.navigation != nextProps.navigation )
   }
 
   componentDidUpdate(prevProps) {
@@ -58,6 +59,7 @@ class HeaderTitle extends Component {
     this.setState({
       [key] : value
     })
+    this.props.existSearchword(value);
   }
   
   // onFocus() {
@@ -82,7 +84,11 @@ class HeaderTitle extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.headerTitle}>
-          {/* {AppBackButton({navigation, title:''})} */}
+          <TouchableWithoutFeedback onPress={() => navigation.navigation.goBack()}>
+            <View style={styles.backButton}>
+              <Image style={{marginLeft: 5}} source={require('../assets/images/header/btnBack.png')} />
+            </View>
+          </TouchableWithoutFeedback>
           <TextInput 
             // ref={input => { this.textInput = input}}
             // onBlur={ () => this.onBlur() }
@@ -111,7 +117,7 @@ class StoreSearchScreen extends Component {
 
     return {
       headerLeft: null,
-      headerTitle : <HeaderTitle value={params.value}/>
+      headerTitle : <HeaderTitle existSearchword={params.existSearchword} value={params.value} navigation={navigation}/>
     }
 }
 
@@ -120,14 +126,22 @@ class StoreSearchScreen extends Component {
 
     this.state = {
       querying: false,
+      searching : false,
+      searchWord : '',
       searchList : ["대만","아시아"],
       recommendCountry : ["인도네시아","스페인","아일랜드","네덜란다"]
     }
+    this.existSearchword = this.existSearchword.bind(this)
   }
 
   componentDidMount() {
+    const allData = this.props.navigation.getParam('allData')
+
+    this.setState({allData})
+
     this.props.navigation.setParams({
-      value : this.state.value
+      value : this.state.value,
+      existSearchword: this.existSearchword
     })
   }
 
@@ -139,8 +153,21 @@ class StoreSearchScreen extends Component {
     }
   }
   
+  existSearchword(value) {
+    const searching = value == "" ? false : true
+    this.setState({searching : searching, searchWord : value})
+  }
+
   changeValue(value) {
-    this.setState({value : value})
+    this.setState({value : value, searching : true, searchWord:value})
+  }
+
+  _onPressItem (key) {
+    const country = this.state.allData.filter(elm => elm.uuid == key)[0]
+
+    console.log("key",key)
+    this.props.action.product.selectCountry({uuid: key})
+    this.props.navigation.navigate('Country',{title:country.categoryId == productApi.category.multi ? country.name : country.cntry})
   }
 
   renderSearchWord() {
@@ -155,10 +182,10 @@ class StoreSearchScreen extends Component {
         {_.isEmpty(searchList) ? <View style={styles.noList}> 
           {/* i18로 변경해야함 */}
           <Text style={styles.searchListText}> {i18n.t('search:err')} </Text>
-        </View> : searchList.map(elm => (
-          <TouchableOpacity onPress={() => this.changeValue(elm)}>
-            <View style={styles.searchList}>
-              <Text style={styles.searchListText}>{elm}</Text>
+        </View> : searchList.map((elm,idx) => (
+          <TouchableOpacity key={idx+''} onPress={() => this.changeValue(elm)}>
+            <View key={elm} style={styles.searchList}>
+              <Text key={"Text"} style={styles.searchListText}>{elm}</Text>
             </View>
           </TouchableOpacity>
         ))}
@@ -179,36 +206,45 @@ class StoreSearchScreen extends Component {
         <Text style={styles.searchListHeaderText}>{i18n.t('search:recommend')}</Text>
       </View>
       {recommendCountryList.map(elm => 
-        <View style={styles.recommendRow}>
-          {elm.data.map(elm2 => 
-            elm2 ? <View style={styles.recommebdItem}>
+        <View key={elm.key} style={styles.recommendRow}>
+          {elm.data.map((elm2,idx) => 
+            elm2 ? <View key={idx+''} style={styles.recommebdItem}>
               <Text style={styles.recommendText}>{elm2}</Text>
-              </View> : <View style={styles.recommebdEmpty}/>)}
+              </View> : <View key={idx+''}style={styles.recommebdEmpty}/>)}
         </View>)}
     </View>
     )
   }
 
   renderSearching() {
-    const {searchWord} = this.state
+    const {allData, searchWord = ''} = this.state
+    if(!allData) { return null }
 
-    return (<View>
-      {searchWord == "" ? 
-      <Text>abcd</Text> : <Text>eeeee</Text>}
-      <Text>asdfasdf</Text>
-    </View>)
+    const searchResult = allData.filter(elm => [...elm.cntry].join(',').match(searchWord)).map(elm => {return {name:elm.name, country:elm.cntry, categoryId: elm.categoryId, uuid:elm.uuid}})
+
+    return (
+    <View>
+      {searchResult.map((elm,idx) => 
+        <TouchableOpacity key={elm.uuid} onPress={() => this._onPressItem(elm.uuid)}>
+          <View key={idx+''} style={styles.autoList}>
+            <Text key="text">{elm.categoryId == productApi.category.multi ? elm.name : elm.country}</Text>
+          </View>
+        </TouchableOpacity>
+      )}
+    </View>
+    )
   }
 
 
   render() {
-    const {querying,searchWord} = this.state
+    const {querying,searching} = this.state
 
     return (
       <View style={[appStyles.container,{marginTop:15}]}>
         <AppActivityIndicator visible={querying} />
-        {this.renderSearchWord()}
-        {this.renderRecommend()}
-        {this.renderSearching()}
+        {searching ? null : this.renderSearchWord()}
+        {searching ? null : this.renderRecommend()}
+        {searching ? this.renderSearching() : null}
       </View>
     )
   }
@@ -313,6 +349,14 @@ const styles = StyleSheet.create({
     marginTop:30,
     marginBottom:25,
     alignItems: "center"
+  },
+  autoList : {
+    marginVertical:23,
+    marginLeft :60
+  },
+  backButton : {
+    alignItems:"center",
+    justifyContent:"center"
   }
 });
 

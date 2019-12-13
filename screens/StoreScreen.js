@@ -41,11 +41,12 @@ class CountryItem extends Component {
   render() {
     const {item} = this.props
 
+    console.log("item",item)
     return (
       <View key={item.key} style={styles.productList}>
         {item.data.map((elm,idx) => (
             // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
-          elm ? <View key={elm.ccode} style={{flex:1, marginLeft:idx == 1 ? 14 : 0}}>
+          elm ? <View key={elm.ccode + idx} style={{flex:1, marginLeft:idx == 1 ? 14 : 0}}>
             <TouchableOpacity onPress={() => this.props.onPress && this.props.onPress(elm.uuid)}>
               <Image key={"img"} source={{uri:api.httpImageUrl(elm.imageUrl == '' ? elm.subImageUrl : elm.imageUrl)}} style={styles.image}/>
               <Text key={"cntry"} style={[appStyles.bold14Text,{marginBottom:5}]}>{elm.cntry.size > 1 ? elm.name : elm.cntry}</Text>
@@ -96,79 +97,79 @@ class StoreList extends Component {
   }
 }
 
-class HeaderTitle extends Component {
-  constructor(props) {
-    super(props)
+// class HeaderTitle extends Component {
+//   constructor(props) {
+//     super(props)
 
-    this.state = {
-      searching : false
-    }
+//     this.state = {
+//       searching : false
+//     }
 
-  }
+//   }
 
-  shouldComponentUpdate(nextProps,nextState){
-    return nextState.searching != this.state.searching
-  }
+//   shouldComponentUpdate(nextProps,nextState){
+//     return nextState.searching != this.state.searching
+//   }
 
-  _searching(searching = true) {
-    const {search} = this.props
+//   _searching(searching = true) {
+//     const {search} = this.props
 
-    if(!searching) {
-      search('all')
-    }
+//     if(!searching) {
+//       search('all')
+//     }
 
-    this.setState({
-      searching:searching
-    })
-  }
+//     this.setState({
+//       searching:searching
+//     })
+//   }
  
   
-  onFocus() {
-    this.searchBox.setNativeProps({
-      style: { borderColor: colors.black}
-    })
-  }
+//   onFocus() {
+//     this.searchBox.setNativeProps({
+//       style: { borderColor: colors.black}
+//     })
+//   }
 
-  onBlur() {
-    this.searchBox.setNativeProps({
-      style: { borderColor: colors.lightGrey}
-    })
-  }
+//   onBlur() {
+//     this.searchBox.setNativeProps({
+//       style: { borderColor: colors.lightGrey}
+//     })
+//   }
 
-  render() {
-    const {searching} = this.state
-    const {search, onChangeText} = this.props
+//   render() {
+//     const {searching} = this.state
+//     const {search, onChangeText} = this.props
 
-    return (
-      <View style={styles.headerTitle}>
-        {searching ? 
-        <View style={styles.headerTitle}>
-          <View ref={searchBox => { this.searchBox = searchBox}} style={styles.searchBox}>
-            <TextInput 
-              ref={input => { this.textInput = input}}
-              onBlur={ () => this.onBlur() }
-              onFocus={ () => this.onFocus() }
-              style={styles.searchText}
-              placeholder={i18n.t('store:search')}
-              returnKeyType='search'
-              // clearTextOnFocus={true}
-              enablesReturnKeyAutomatically={true}
-              onSubmitEditing={() => search()}
-              onChangeText={(value) => onChangeText(value)}
-              />
-            <AppButton style = {styles.showSearchBar} onPress={() => search()} iconName="btnSearchOff" />
-          </View>
-          <AppButton style = {styles.showSearchBar} onPress={() => this._searching(false)} title={i18n.t('cancel')} titleStyle={styles.titleStyle} />
-        </View> : <View style={styles.headerTitle}>
-            <Text style={styles.title}>{i18n.t('store')}</Text>
-            <AppButton style = {styles.showSearchBar} onPress={() => this._searching(true)} iconName="btnSearchTop" />
-          </View>
-          }
+//     return (
+//       <View style={styles.headerTitle}>
+//         {searching ? 
+//         <View style={styles.headerTitle}>
+//           <View ref={searchBox => { this.searchBox = searchBox}} style={styles.searchBox}>
+//             <TextInput 
+//               ref={input => { this.textInput = input}}
+//               onBlur={ () => this.onBlur() }
+//               onFocus={ () => this.onFocus() }
+//               style={styles.searchText}
+//               placeholder={i18n.t('store:search')}
+//               returnKeyType='search'
+//               // clearTextOnFocus={true}
+//               enablesReturnKeyAutomatically={true}
+//               onSubmitEditing={() => search()}
+//               onChangeText={(value) => onChangeText(value)}
+//               />
+//             <AppButton style = {styles.showSearchBar} onPress={() => search()} iconName="btnSearchOff" />
+//           </View>
+//           <AppButton style = {styles.showSearchBar} onPress={() => this._searching(false)} title={i18n.t('cancel')} titleStyle={styles.titleStyle} />
+//         </View> : <View style={styles.headerTitle}>
+//             <Text style={styles.title}>{i18n.t('store')}</Text>
+//             <AppButton style = {styles.showSearchBar} onPress={() => this._searching(true)} iconName="btnSearchTop" />
+//           </View>
+//           }
           
-      </View> 
-    )
-  }
-}
+//       </View> 
+//     )
+//   }
+// }
 
 class StoreScreen extends Component {
   static navigationOptions = (navigation) => {
@@ -223,7 +224,8 @@ class StoreScreen extends Component {
   }
 
   _navigateToStoreSearch() {
-    this.props.navigation.navigate('StoreSearch')
+    const {allData} = this.state
+    this.props.navigation.navigate('StoreSearch',{allData})
   }
 
   _onChange = (search) => {
@@ -269,7 +271,7 @@ class StoreScreen extends Component {
         const list = resp.objects.reduce((acc,item) => {
           
 
-          item.key = item.uuid
+          item.key = item.uuid 
           item.cntry = new Set([country.getName(item.ccode)])
 
           const idxCcode = acc.findIndex(elm => item.categoryId == multi ? elm.uuid == item.uuid : elm.ccode == item.ccode)
