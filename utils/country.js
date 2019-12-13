@@ -1,3 +1,4 @@
+//동의어 추가 ':'
 const countryList = 
 `GH,가나,Ghana
 GA,가봉,Gabon
@@ -27,7 +28,7 @@ NZ,뉴질랜드,New Zealand
 NU,니우에,Niue
 NE,니제르,Niger
 NI,니카라과,Nicaragua
-KR,대한민국,South Korea
+KR,대한민국:한국,South Korea
 DK,덴마크,Denmark
 DO,도미니카 공화국,Dominican Republic
 DM,도미니카 연방,Dominica
@@ -171,7 +172,7 @@ IR,이란,Iran
 IL,이스라엘,Israel
 EG,이집트,Egypt
 IT,이탈리아,Italy
-IN,인도,India
+IN,인도:인디아,India
 ID,인도네시아,Indonesia
 JP,일본,Japan
 JM,자메이카,Jamaica
@@ -254,7 +255,7 @@ class Country {
     this.ccode = {}
     list.split('\n').forEach(line => {
       const seg = line.split(',')
-      this.ccode[seg[0].toLowerCase()] = { 'ko' : seg[1], 'en' : seg[2]}
+      this.ccode[seg[0].toLowerCase()] = { 'ko' : seg[1].split(':'), 'en' : seg[2].split(':')}
     })
   }
 
@@ -264,7 +265,7 @@ class Country {
     }).filter(item => item != '').join('+')
   }
 
-  getName(code, lang='ko') {
+  getName(code = '', lang='ko') {
     const cc = code.toLowerCase()
     return ( this.ccode.hasOwnProperty(cc)) ? this.ccode[cc][lang] : 'N/A'
   }

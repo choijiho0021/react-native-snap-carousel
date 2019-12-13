@@ -52,8 +52,6 @@ class NewSimScreen extends Component {
   }
 
   componentDidMount() {
-    this.props.action.cart.cartFetch()
-
     this.setState({
       querying: true
     })
@@ -96,7 +94,7 @@ class NewSimScreen extends Component {
     })
   }
 
-  _onPress() {
+  _onPress = (mode) => () => {
     const {loggedIn} = this.props.account
     const {checked, simQty} = this.state
 
@@ -110,12 +108,14 @@ class NewSimScreen extends Component {
       // insert to cart
       const simList = this.state.simCardList.map(item => ({
         variationId : item.variationId,
+        sku: item.sku,
         qty: checked.get(item.uuid) && simQty.get(item.uuid),
       })).filter( item => item.qty > 0)
 
       console.log('SIM list', simList)
 
-      this.props.action.cart.cartAddAndGet( simList)
+      if ( mode == 'purchase') this.props.action.cart.order( simList)
+      else this.props.action.cart.cartAddAndGet( simList)
     }
     
   }
@@ -169,9 +169,8 @@ class NewSimScreen extends Component {
         <View style={styles.buttonBox}>
           <AppButton style={styles.btnCart} title={i18n.t('cart:toCart')} 
             titleStyle={styles.btnCartText}
-            onPress={this._onPress}/>
-          <AppButton style={styles.btnBuy} title={i18n.t('cart:buy')} 
-                     onPress={this._onPress}/>
+            onPress={this._onPress('cart')}/>
+          <AppButton style={styles.btnBuy} title={i18n.t('cart:buy')} onPress={this._onPress('purchase')}/>
         </View>
       </SafeAreaView>
     );
@@ -195,7 +194,7 @@ const styles = StyleSheet.create({
     height: 52,
     backgroundColor: "#ffffff",
     borderColor: colors.lightGrey,
-    borderWidth: 1
+    borderTopWidth: 1
   },
   btnCartText: {
     ... appStyles.normal16Text,

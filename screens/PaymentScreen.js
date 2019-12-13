@@ -27,9 +27,6 @@ class PaymentScreen extends Component{
 
   componentDidMount() {
     const params = this.props.navigation.getParam('params')
-    const pymReq = this.props.navigation.getParam('pymReq')
-    const cart = this.props.navigation.getParam('cartItems')
-    console.log('component mount cart', cart)
 
     if (params.mode == 'test' || Constants.appOwnership === 'expo') {
       const {impId} = getEnvVars()
@@ -38,29 +35,24 @@ class PaymentScreen extends Component{
         merchant_uid: params.merchant_uid
       }
 
-      this._callback(response, pymReq, cart)
+      this._callback(response)
     }
   }
 
-  _callback( response, pymReq, cart) {
-    // this.props.navigation.setParams( {pymResult:response})     // 결제 종료 후 콜백
-    this.props.navigation.replace('PaymentResult', {pymResult:response, pymReq:pymReq, cartItems:cart})
+  _callback( response) {
+    this.props.navigation.replace('PaymentResult', {pymResult:response})
   }
 
   render() {
     const {impId} = getEnvVars()
     const params = this.props.navigation.getParam('params')
-    const pymReq = this.props.navigation.getParam('pymReq')
-    const cart = this.props.navigation.getParam('cartItems')
-    console.log('payment', params)
-    console.log('payment req', pymReq)
 
     return (
       <View style={styles.container}>
         <IMP.Payment
           userCode={impId}
           data={params}             // 결제 데이터
-          callback={response => this._callback(response, pymReq, cart)}
+          callback={response => this._callback(response)}
           style={styles.webview}
         />
       </View>

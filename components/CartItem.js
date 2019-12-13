@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PureComponent} from 'react';
 import {
   StyleSheet,
   Text,
@@ -70,31 +70,35 @@ const styles = StyleSheet.create({
   }
 });
 
-export default function CartItem({name, price, image, qty, onChange, onChecked, checked, onDelete}) {
+class CartItem extends React.PureComponent {
 
-  return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={onChecked} style={styles.touch}>
-        <View style={styles.checker}>
-          <AppIcon name="btnCheck" checked={checked}/>
-        </View>
+  render() {
+    const {name, price, image, qty, onChange, onChecked, checked, onDelete} = this.props
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity onPress={onChecked} style={styles.touch}>
+          <View style={styles.checker}>
+            <AppIcon name="btnCheck" checked={checked}/>
+          </View>
 
-        <Image source={{uri:api.httpImageUrl(image)}} style={styles.slide}/>
-      </TouchableOpacity>
+          <Image source={{uri:api.httpImageUrl(image)}} style={styles.slide}/>
+        </TouchableOpacity>
 
-      <View style={styles.desc}>
-        <Text style={styles.itemTitle}>{name}</Text>
-        <View style={styles.input}>
-          <Text style={styles.itemPrice}>{utils.price(price)}</Text>
-          <InputNumber value={qty} onChange={onChange} />
-        </View>
-        <View style={[styles.input, {marginTop:20}]}>
-          <Text style={appStyles.price}>{utils.numberToCommaString(price * qty)}</Text>
-          <Text style={[appStyles.normal14Text, {flex:1}]}>{i18n.t('won')}</Text>
-          <AppButton style={styles.delete} iconName="iconTrash" onPress={onDelete}/>
+        <View style={styles.desc}>
+          <Text style={styles.itemTitle}>{name}</Text>
+          <View style={styles.input}>
+            <Text style={styles.itemPrice}>{utils.price(price)}</Text>
+            <InputNumber value={qty} onChange={onChange} />
+          </View>
+          <View style={[styles.input, {marginTop:20}]}>
+            <Text style={appStyles.price}>{utils.numberToCommaString(price * qty)}</Text>
+            <Text style={[appStyles.normal14Text, {flex:1}]}>{i18n.t('won')}</Text>
+            <AppButton style={styles.delete} iconName="iconTrash" onPress={onDelete}/>
+          </View>
         </View>
       </View>
-    </View>
-  )
+    )
+  }
 }
 
+export default CartItem

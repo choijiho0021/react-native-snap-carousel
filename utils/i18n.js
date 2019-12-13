@@ -250,7 +250,11 @@ const en = {
   "guide:buy": "Please, purchase Rokebi USIM, firstly.",
   "guide:tip": "Tip",
 
-  "noti:empty" : "There is no notification"
+  "noti:empty" : "There is no notification",
+
+  "search:list" : "Search List",
+  "search:err" : "There is no search list",
+  "search:recommend" : "recommendation"
 };
 
 const ko = {
@@ -510,7 +514,11 @@ const ko = {
   "guide:buy": "먼저 로깨비 유심을 구매해 주세요.\n다양한 채널로 구매 가능합니다.",
   "guide:tip": "Special 꿀팁",
 
-  "noti:empty" : "알림이 없습니다"
+  "noti:empty" : "알림이 없습니다",
+
+  "search:list" : "최근 검색",
+  "search:err" : "최근 검색이 없습니다",
+  "search:recommend" : "인기 국가"
 
   //address
   /*

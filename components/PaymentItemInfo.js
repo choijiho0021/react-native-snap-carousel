@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { PureComponent } from 'react';
 import {
   StyleSheet,
   Text,
@@ -58,7 +57,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.lightGrey, 
     borderBottomWidth: 1
   },
-  PriceInfo: {
+  priceInfo: {
     height:72, 
     marginVertical: 11, 
     marginHorizontal: 20
@@ -85,43 +84,43 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function PaymentItemInfo({cart, pymReq}) {
+class PaymentItemInfo extends PureComponent {
 
-  console.log('cart', cart)
-  console.log('pymReq', pymReq)
-  const total = pymReq ? pymReq.reduce((acc,cur) => acc + cur.amount, 0) : 0
-  const keyPrefix = 'PaymentItem'
-  
-  return (
-    <View>
-      <Text style={[styles.title, styles.mrgBottom0]}>{i18n.t('pym:title')}</Text>
-      <View style={styles.productPriceInfo}>        
-      {
-        ! _.isEmpty(cart)?
-          cart.map((item, key) =>
-          <View style={styles.row} key={key+ item.orderId +'.'+item.title}>
-            <Text key={keyPrefix+key+item.title} style={styles.productPriceTitle}>{item.title+' x '+item.qty+i18n.t('qty')}</Text>
-            <Text key={keyPrefix+key+item.title+item.amount}style={styles.normalText16}>{utils.price(item.totalPrice)}</Text>
-          </View>)
-        : null        
-      }
-      </View> 
-      
-      <View style={styles.PriceInfo}>
-      {
-        pymReq.map((item, key) =>                      
-          <View style={styles.row} key={keyPrefix+key}>
-          <Text key={keyPrefix+item.title} style={styles.normalText14}>{item.title}</Text>
-          <Text key={keyPrefix+item.amount} style={styles.normalText16}>{utils.price(item.amount)}</Text>
+  render() {
+    const { pymReq, cart } = this.props
+
+    const total = pymReq ? pymReq.reduce((acc,cur) => acc + cur.amount, 0) : 0
+
+    return (
+      <View>
+        <Text style={[styles.title, styles.mrgBottom0]}>{i18n.t('pym:title')}</Text>
+        <View style={styles.productPriceInfo}>        
+        {
+          ! _.isEmpty(cart) && cart.map(item =>
+            <View style={styles.row} key={item.key}>
+              <Text key="title" style={styles.productPriceTitle}>{item.title+' x '+item.qty+i18n.t('qty')}</Text>
+              <Text key="price" style={styles.normalText16}>{utils.price(item.price * item.qty)}</Text>
+            </View>)
+        }
+        </View> 
+        
+        <View style={styles.priceInfo}>
+        {
+          pymReq.map(item =>                      
+            <View style={styles.row} key={item.title}>
+              <Text key="title" style={styles.normalText14}>{item.title}</Text>
+              <Text key="amount" style={styles.normalText16}>{utils.price(item.amount)}</Text>
+            </View>) 
+        }
         </View>
-          ) 
-      }
+        <View style={[styles.row, styles.total, styles.brdrBottom0]}>
+          <Text style={[styles.normalText14]}>{i18n.t('cart:totalCost')} </Text>
+          <Text style={[appStyles.normal16Text, styles.colorClearBlue, styles.fontWeightNormal]}>{utils.numberToCommaString(total)+ ' ' + i18n.t('won')}</Text>
+        </View>
+        <View style={styles.divider}/>
       </View>
-      <View style={[styles.row, styles.total, styles.brdrBottom0]}>
-        <Text style={[styles.normalText14]}>{i18n.t('cart:totalCost')} </Text>
-        <Text style={[appStyles.normal16Text, styles.colorClearBlue, styles.fontWeightNormal]}>{utils.numberToCommaString(total)+ ' ' + i18n.t('won')}</Text>
-      </View>
-      <View style={styles.divider}/>
-    </View>
-  )
+    )
+  }
 }
+
+export default PaymentItemInfo

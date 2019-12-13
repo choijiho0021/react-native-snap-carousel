@@ -48,10 +48,14 @@ class Api {
         resetPw: 'esim_api/user/pw',
         simCard: 'json/smc/list',
         cart: 'cart',
-        payment: 'commerce/payment',
         order: 'json/orders',
         uploadFile: 'file/upload',
         board: 'json/contactboard',
+
+        commerce: {
+            payment: 'commerce/payment',
+            order: 'commerce/order',
+        },
 
         rokApi: {
             auth: {

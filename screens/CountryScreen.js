@@ -15,6 +15,7 @@ import i18n from '../utils/i18n'
 import * as productActions from '../redux/modules/product'
 import * as cartActions from '../redux/modules/cart'
 import * as accountActions from '../redux/modules/account'
+import productApi from '../utils/api/productApi';
 import api from '../utils/api/api';
 import { bindActionCreators } from 'redux'
 // import Icon from 'react-native-vector-icons/Ionicons';
@@ -53,10 +54,6 @@ class CountryScreen extends Component {
   }
 
   componentDidMount() {
-    // const key = this.props.navigation.getParam('key')
-    
-    this.props.action.cart.cartFetch()
-
     const {idx, prodList} = this.props.product,
       prod = prodList[idx]
 
@@ -64,7 +61,7 @@ class CountryScreen extends Component {
         console.log('prod', prodList[idx])
       }
     
-    const prodData = prodList.filter(item => item.ccode == prod.ccode).map(item => ({
+    const prodData = prodList.filter(item => prod.categoryId[0] == productApi.category.multi ? item.uuid == prod.uuid : item.ccode == prod.ccode).map(item => ({
       ... item,
       key: item.uuid
     }))
@@ -89,7 +86,7 @@ class CountryScreen extends Component {
     this.setState({selected})
   }
 
-  onPressBtn = (key) => () => {
+  _onPressBtn = (key) => () => {
     const {selected} = this.state
     const {loggedIn} = this.props.account
 
@@ -100,14 +97,22 @@ class CountryScreen extends Component {
       this.props.navigation.navigate('RegisterMobile')
     }
     else {
+
       if(selected){
-        const addProduct = {prodList:this.props.product.prodList, uuid:selected[0].uuid}
+        const prod = this.props.product.prodList.find(item => item.uuid == selected[0].uuid),
+          addProduct = prod ? { 
+            title: prod.name, 
+            variationId: prod.variationId, 
+            price:prod.price, 
+            qty:1,
+            key: prod.uuid
+          } : {}
   
         switch (key) {
           case 'cart':
-            this.props.action.cart.cartAddAndGet( [ productActions.prodInfo(addProduct) ])
+            this.props.action.cart.cartAddAndGet( [ addProduct ])
             break
-          case 'buy':
+          case 'purchase':
             var pymReq = [
               {
                 key: 'total',
@@ -115,7 +120,9 @@ class CountryScreen extends Component {
                 amount: selected[0].price
               }
             ]
-            this.props.navigation.navigate('PymMethod',{pymReq,mode:'buy',buyProduct:selected})
+            // 구매 품목을 갱신한다. 
+            this.props.action.cart.purchase({ purchaseItems: [ addProduct ], pymReq})
+            this.props.navigation.navigate('PymMethod')
             break
         }
       }
@@ -147,9 +154,9 @@ class CountryScreen extends Component {
   }
 
   render() {
-    const { idx, prodList, startDate, name} = this.props.product,
-      { prodData, title} = this.state,
-      imageUrl = prodList.length > idx >= 0 ? prodList[idx].imageUrl : ''
+    const { idx, prodList, startDate, name} = this.props.product
+    const { prodData, selected} = this.state
+    const imageUrl = prodList.length > idx >= 0 ? prodList[idx].imageUrl == '' ? prodList[idx].subImageUrl : prodList[idx].imageUrl : ''
       
     console.log('HTTPIMGURL', {uri:api.httpImageUrl(imageUrl)})
 
@@ -157,7 +164,7 @@ class CountryScreen extends Component {
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <Image style={styles.box} source={{uri:api.httpImageUrl(imageUrl)}}/>
 
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {title:this.props.navigation.getParam('title'), text:prodData[0].body})}>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {title:this.props.navigation.getParam('title'), text:selected.body})}>
           <View style={styles.detail}>
             <Text style={appStyles.normal14Text}>{i18n.t('country:detail')}</Text>
             <AppIcon style={{marginRight:20}} name="iconArrowRight" size={10} />
@@ -177,10 +184,10 @@ class CountryScreen extends Component {
         <View style={styles.buttonBox}>
           <AppButton style={styles.btnCart} title={i18n.t('cart:toCart')} 
             titleStyle={styles.btnCartText}
-            onPress={this.onPressBtn('cart')}/>
+            onPress={this._onPressBtn('cart')}/>
           <AppButton style={styles.btnBuy} title={i18n.t('cart:buy')} 
             titleStyle={styles.btnBuyText}
-            onPress={this.onPressBtn('buy')}/>
+            onPress={this._onPressBtn('purchase')}/>
         </View>
 
       </SafeAreaView>
@@ -237,7 +244,7 @@ const styles = StyleSheet.create({
     height: 52,
     backgroundColor: "#ffffff",
     borderColor: colors.lightGrey,
-    borderWidth: 1
+    borderTopWidth: 1
   },
   btnCartText: {
     ... appStyles.normal18Text,

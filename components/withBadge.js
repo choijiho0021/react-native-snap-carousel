@@ -25,6 +25,20 @@ const withBadge = (value, options = {}, stateToProps=() => ({})) => WrappedCompo
   return connect(stateToProps)(
   class extends React.Component {
 
+    /*
+    shouldComponentUpdate(nextProps, nextState){
+
+      if(nextProps.onPress != this.props.onPress){
+        return true
+      }
+
+      if(typeof value === "function"){
+        return value(this.props) != value(nextProps)
+      }
+      return false
+    }
+    */
+
     render() {
       const { top = -4, right = -4, left = 0, bottom = 0, ...badgeProps } = options;
       const badgeValue = typeof value === "function" ? value(this.props) : value;
