@@ -61,10 +61,7 @@ class FindAddressScreen extends Component {
   _findAddr = (page=1) => () => {
     const { addr } = this.state
 
-    console.log('find addr의 addr', addr)
     addressApi.find(addr, page).then( resp => {
-
-      console.log('find addr', addr, resp)
       this.setState({
         links: resp.links,
         data : resp.objects
@@ -76,18 +73,11 @@ class FindAddressScreen extends Component {
   _onPress = (addr) => () => {
     
     console.log('주소 클릭', addr)
-    console.log(this.props.account)
-    console.log(this.props.auth)
-    console.log('this.props!', this.props)
     
     //리덕스 저장
     this.props.OrderActions.updateProfileAddress(addr)
+    this.props.navigation.goBack()
 
-    console.log('addr redux 저장', this.props)
-
-    this.props.navigation.navigate('AddProfile')
-    // this.props.OrderActions.addCustomerProfile(addr, this.props.order.profile, this.props.account)
-    // this.props.navigation.navigate('PymMethod')
   }
 
   _renderPagination() {
@@ -95,7 +85,7 @@ class FindAddressScreen extends Component {
       {totalCount = 0, countPerPage =1, currentPage=1} = _.isArray(links) && links.length > 0 ? links[0] : {},
       totalPage = Math.ceil( Number(totalCount) / Number(countPerPage))
     return (
-      <View style={styles.pagination}>
+      <View style={styles.pagination} >
         <Text>{i18n.t('addr:totalCnt').replace('%%', totalCount)}</Text>
         <Icon name="ios-arrow-back" size={24} onPress={this._findAddr( Math.max( 1, Number(currentPage) -1))}/>
         <Text>{`${currentPage} / ${totalPage}`}</Text>
@@ -123,6 +113,7 @@ class FindAddressScreen extends Component {
         <View style={styles.modal}>
           <View style={[styles.textFieldBox, {borderBottomColor: colors.black}]}>
             <TextField containerStyle={styles.field}
+              style={{fontSize:14}}
               label={i18n.t('purchase:findAddr')}
               returnKeyType='done'
               enablesReturnKeyAutomatically={true}
@@ -130,7 +121,7 @@ class FindAddressScreen extends Component {
               onEndEditing={this._findAddr()}
               renderAccessory={this._search}
               value={addr} />
-            {/* <AppIcon name='btnSearchOff'/> */}
+            <AppButton style = {styles.showSearchBar} onPress={() => search()} iconName="btnSearchOff" />
           </View>
           <View style={styles.divider}/>
           { addr ? 
@@ -142,7 +133,7 @@ class FindAddressScreen extends Component {
               <Text style={styles.searchEx}>{i18n.t('purchase:areaBuilding')}</Text>
             </View>     
           }
-          <FlatList data={data} renderItem={this._renderItem} key={(_, idx) => idx}/>
+          <FlatList data={data} renderItem={this._renderItem} keyExtractor={(_, idx) => 'key'+idx}/>
         </View>
       </View>
     )
@@ -151,9 +142,10 @@ class FindAddressScreen extends Component {
 
 const styles = StyleSheet.create({
   field: {
-    marginHorizontal: 3,
-    padding: 5,
-    width: "100%",
+    // marginHorizontal: 20,
+    // padding: 5,
+    // width: "100%",
+    height: 46,
   },
   modal: {
       flex: 1,
@@ -171,9 +163,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around'
   },
   textFieldBox: {
-    height: 46, 
+    // height: 46, 
     marginHorizontal: 20, 
-    marginBottom: 20,
+    // marginBottom: 20,
+    // borderBottomWidth: 1,
   },
   searchEx: {
     ... appStyles.normal14Text,
@@ -188,6 +181,13 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     fontWeight: 'bold', 
     color: colors.black,
+  },
+  showSearchBar : {
+    marginRight:20,
+    paddingBottom: 16,
+    alignSelf: 'flex-end',
+    width: 15,
+    height: 16
   }
 });
 

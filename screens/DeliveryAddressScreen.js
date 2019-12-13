@@ -53,16 +53,16 @@ class DeliveryScreen extends Component {
   }
 
   _deleteAddress(key) {
-    const { userId, auth } = this.props.account
+    const { userId, token } = this.props.account
 
     this.setState({
       querying: true
     })
 
-    orderApi.delDeliveryAddress(key, auth).then( resp => {
+    orderApi.delDeliveryAddress(key, token).then( resp => {
       if ( resp.result == 0) {
         // reload data
-        orderApi.getCustomerProfile( userId, auth).then( resp => {
+        orderApi.getCustomerProfile( {userId, token}).then( resp => {
           this.props.addDeliveryAddressList(resp.objects)
         })
       }

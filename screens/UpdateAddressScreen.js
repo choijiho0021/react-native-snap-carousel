@@ -131,15 +131,15 @@ class UpdateAddressScreen extends Component {
       jibunAddr,
       roadAddr
     }
-    const {userId, auth} = this.props.account
+    const {userId, token} = this.props.account
 
-    const update = _.isEmpty(uuid) ? orderApi.addDeliveryAddress( addr, auth) : 
-      orderApi.chgDeliveryAddress( uuid, addr, auth)
+    const update = _.isEmpty(uuid) ? orderApi.addDeliveryAddress( addr, token) : 
+      orderApi.chgDeliveryAddress( uuid, addr, token)
 
     update.then(resp => {
       if ( resp.result == 0) {
         // reload data
-        orderApi.getCustomerProfile( userId, auth).then(resp => {
+        orderApi.getCustomerProfile( userId, token).then(resp => {
           this.props.addDeliveryAddressList(resp.objects)
         })
       }

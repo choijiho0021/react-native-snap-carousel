@@ -19,6 +19,7 @@ import CartItem from '../components/CartItem';
 import ChargeSummary from '../components/ChargeSummary';
 import { SafeAreaView } from 'react-navigation'
 import utils from '../utils/utils';
+import AppAlert from '../components/AppAlert';
 
 class CartScreen extends Component {
   static navigationOptions = {
@@ -30,11 +31,20 @@ class CartScreen extends Component {
   constructor(props) {
     super(props)
 
+    const {cart} = this.props
     this.state = {
-      data: [],
-      checked: {},
+      data: [],      
+      // qty: cart.orderItems.reduce((acc,cur) => ({
+      //   ... acc,
+      //   [cur.prod.uuid] : cur.qty
+      // }), {}),
+      // checked: cart.orderItems.reduce((acc,cur) => ({
+      //   ... acc,
+      //   [cur.prod.uuid] : true
+      // }), {}),
+      qty:{},
+      checked:{},
       querying: false,
-      qty: {},
       dlvCost: 0,
       totalCost: 0
     }
@@ -55,6 +65,7 @@ class CartScreen extends Component {
           ... item, 
           key: item.prod.uuid
         }))
+        console.log('update data', data)
 
       this.setState({
         qty: cart.orderItems.reduce((acc,cur) => ({
@@ -72,6 +83,8 @@ class CartScreen extends Component {
   }
 
   _onChangeQty(uuid, cnt) {
+    // const data = this.state.data.filter(item => item.prod.uuid = uuid).map(item => item.qty = cnt)
+    // console.log('qty data', data)
     this.setState({
       qty : {
         ... this.state.qty,
@@ -79,11 +92,37 @@ class CartScreen extends Component {
       },
       checked: {
         ... this.state.checked,
-        [uuid]: true
-      }
+        [uuid]: cnt > 0 ? true : false
+      },
     })
   }
 
+  // _onDelete(orderId, item){
+
+  //   this.props.action.cart.cartRemove(orderId, item.orderItemId).then( resp => {
+  //     if(resp.result == 0){
+  //       this.setState({
+  //         qty : {
+  //           ... this.state.qty,
+  //           [item.prod.uuid]: -1,
+  //         }
+  //       })
+  //     }else {
+  //       // AppAlert.error( i18n.t('purchase:failedToDelete'))
+  //     }
+  //   }).catch(_ => {
+  //     // AppAlert.error( i18n.t('purchase:failedToDelete'))
+  //   }).finally(() => {
+
+  //   })
+
+  //   console.log('ondelete orderId', orderId)
+  //   console.log('ondelete orderId', item.prod.uuid)
+  //   console.log(this.state)
+  //   console.log(this.props)
+  //   // this.props.action.cart.cartRemove(orderId, item.orderItemId)
+  // }
+  
   _onPurchase() {
     const { cart } = this.props
     const { data, checked, qty} = this.state
@@ -101,6 +140,7 @@ class CartScreen extends Component {
         if ( qty[item.prod.uuid] && item.qty != qty[item.prod.uuid]) {
           console.log('qty changed', item)
 
+          console.log(cart.orderId, item.orderItemId)
           if ( qty[item.prod.uuid] < 0) this.props.action.cart.cartRemove( cart.orderId, item.orderItemId)
           else this.props.action.cart.cartUpdate( cart.orderId, item.orderItemId, qty[item.prod.uuid])
         }
@@ -120,7 +160,7 @@ class CartScreen extends Component {
       }
     ]
 
-    this.props.navigation.navigate('PymMethod', {pymReq})
+    this.props.navigation.navigate('PymMethod', {pymReq, cartItem:data.filter(item => checked[item.key]==true)})
     }
   }
 
@@ -137,11 +177,12 @@ class CartScreen extends Component {
   _renderItem = ({item}) => {
     const { qty } = this.state
     const prod = ( item.prod.type == 'sim_card') ?
-      this.props.sim.simList.find(sim => sim.uuid == item.prod.uuid) : undefined
+    this.props.sim.simList.find(sim => sim.uuid == item.prod.uuid) : undefined
 
     return <CartItem checked={this.state.checked[item.prod.uuid] || false}
       onChange={(value) => this._onChangeQty(item.prod.uuid, value)} 
-      onDelete={() => this._onChangeQty(item.prod.uuid, -1)}
+      onDelete={() => this._onChangeQty(item.prod.uuid, -1)} 
+      // onDelete={() => this._onDelete(this.props.cart.orderId, item)}
       onChecked={() => this._onChecked(item.prod.uuid)}
       name={item.title}
       price={item.price}
@@ -152,7 +193,7 @@ class CartScreen extends Component {
 
   _calculate( data, checked, qty) {
 
-    return data.filter(item => checked[item.key])
+    return data.filter(item => checked[item.key]==true)
       .map(item => ({
         qty: Math.max( qty[item.key], 0), 
         price: item.price
@@ -175,8 +216,11 @@ class CartScreen extends Component {
               renderItem={this._renderItem} 
               extraData={[qty, checked]}
               ListFooterComponent={ <ChargeSummary totalCnt={total.cnt} totalPrice={total.price}/>} />
-            <AppButton style={styles.btnBuy} title={i18n.t('cart:purchase')} 
-                       onPress={this._onPurchase}/>
+            <AppButton style={styles.btnBuy} 
+                       title={i18n.t('cart:purchase')} 
+                       disabled={total.price > 0 ? false : true}
+                       onPress={this._onPurchase}/> 
+                       {/* onPress={()=>this.props.navigation.dismiss()}/> */}
           </View>
       </SafeAreaView>
     )

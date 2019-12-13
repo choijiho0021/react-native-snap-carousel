@@ -17,11 +17,11 @@ import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import _ from 'underscore'
 import { SafeAreaView } from 'react-navigation';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import orderApi from '../utils/api/orderApi';
 import AddressCard from '../components/AddressCard'
 import PaymentItemInfo from '../components/PaymentItemInfo';
 import PaymentResultScreen from '../screens/PaymentResultScreen';
+import { ScrollView } from 'react-native-gesture-handler';
 
 class PymMethodScreen extends Component {
   static navigationOptions = (navigation) => ({
@@ -33,7 +33,6 @@ class PymMethodScreen extends Component {
 
     this.state = {
       data: undefined,
-      // profile: undefined,
       selected: undefined,
       showModal: false
     }
@@ -42,7 +41,6 @@ class PymMethodScreen extends Component {
     this._onPress = this._onPress.bind(this)
     this._button = this._button.bind(this)
     this._address = this._address.bind(this)
-    // this._renderItemCart =  this._renderItemCart.bind(this)
 
     this.method = [
       [
@@ -80,8 +78,6 @@ class PymMethodScreen extends Component {
 
   //
   componentDidMount() {
-    // console.log('현재경로, ', this.props.navigation.state)
-    
     const pymReq = this.props.navigation.getParam('pymReq')
     const mode = this.props.navigation.getParam('mode')
     const buyProduct = this.props.navigation.getParam('buyProduct')
@@ -93,7 +89,12 @@ class PymMethodScreen extends Component {
         buyProduct
       })
     }
-    this.props.action.order.getCustomerProfile(this.props.account.userId, this.props.auth)
+    
+    this.props.action.order.getCustomerProfile(this.props.account)
+  }
+
+  componentDidUpdate(){
+    console.log('pym method screen update!')
   }
 
   _onSubmit() {
@@ -174,7 +175,7 @@ class PymMethodScreen extends Component {
           <View>
             <Text style={styles.title}>{i18n.t('pym:delivery')}</Text>
             <View style={styles.profileTitle}>
-              <Text style={styles.profileTitleText}>{this.props.order.profile[0].organization}</Text>
+              <Text style={styles.profileTitleText}>{item.alias}</Text>
               <View style={{flex: 1, alignItems: 'flex-end'}}>
                 <AppButton title={i18n.t('change')} 
                           titleStyle={styles.chgButtonText}
@@ -186,7 +187,7 @@ class PymMethodScreen extends Component {
               textStyle={styles.addrCardText}
               mobileStyle={[styles.addrCardText, styles.colorWarmGrey]}
               style={styles.addrCard}
-              profile={this.props.order.profile[0]}
+              profile={item}
               mobile={this.props.account.mobile}/>
           </View>
         }
@@ -196,7 +197,7 @@ class PymMethodScreen extends Component {
         {
           // 주소 등록 
           // == 0
-          this.props.order.profile.length > 0 &&
+          this.props.order.profile.length >= 0 &&
           <View>
             <Text style={styles.title}>{i18n.t('pym:delivery')}</Text>
             <View style={{flex:1}}>
@@ -224,13 +225,9 @@ class PymMethodScreen extends Component {
     console.log('sim', sim )
 
     return (
-      <KeyboardAwareScrollView 
-        resetScrollToCoords={{ x: 0, y: 0 }}
-        extraScrollHeight={60}
-        innerRef={ref => { this.scroll = ref; }}>
-
-        <SafeAreaView style={styles.container}>
-          <PaymentItemInfo cart={this.props.cart.orderItems}
+      <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
+        <ScrollView>
+          <PaymentItemInfo cart={this.props.navigation.getParam('cartItem')}
                            pymReq={this.props.navigation.getParam('pymReq')}/>         
           {
             sim.length > 0 && this._address()
@@ -242,14 +239,23 @@ class PymMethodScreen extends Component {
               this.method.map((v,idx) => this._button(idx+"", v))
             }
           </View>
-          <AppButton title={i18n.t('payment')} 
+          {/* <AppButton title={i18n.t('payment')} 
                       textStyle={appStyles.confirmText}
                       //disabled={_.isEmpty(selected)}
+                      key={i18n.t('payment')}
                       onPress={this._onSubmit}
-                      style={appStyles.confirm}/> 
+                      style={appStyles.confirm}/>  */}
                 
+      </ScrollView>
+      <AppButton title={i18n.t('payment')} 
+                      textStyle={appStyles.confirmText}
+                      //disabled={_.isEmpty(selected)}
+                      key={i18n.t('payment')}
+                      onPress={this._onSubmit}
+                      style={[appStyles.confirm,
+                      {position:'absolute', bottom:0, left:0, right:0}]}/> 
+
         </SafeAreaView>
-      </KeyboardAwareScrollView>      
             
     )
   }

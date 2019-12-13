@@ -90,28 +90,29 @@ export default function PaymentItemInfo({cart, pymReq}) {
   console.log('cart', cart)
   console.log('pymReq', pymReq)
   const total = pymReq ? pymReq.reduce((acc,cur) => acc + cur.amount, 0) : 0
-
+  const keyPrefix = 'PaymentItem'
+  
   return (
     <View>
       <Text style={[styles.title, styles.mrgBottom0]}>{i18n.t('pym:title')}</Text>
       <View style={styles.productPriceInfo}>        
       {
         ! _.isEmpty(cart)?
-          cart.map(item =>
-          <View style={styles.row} keyExtractor={item => item.orderId,item.title}>
-            <Text key={item.title} style={styles.productPriceTitle}>{item.title+' x '+item.qty+i18n.t('qty')}</Text>
-            <Text key={item.title,item.amount}style={styles.normalText16}>{utils.price(item.totalPrice)}</Text>
-            </View>)
+          cart.map((item, key) =>
+          <View style={styles.row} key={key+ item.orderId +'.'+item.title}>
+            <Text key={keyPrefix+key+item.title} style={styles.productPriceTitle}>{item.title+' x '+item.qty+i18n.t('qty')}</Text>
+            <Text key={keyPrefix+key+item.title+item.amount}style={styles.normalText16}>{utils.price(item.totalPrice)}</Text>
+          </View>)
         : null        
       }
       </View> 
       
       <View style={styles.PriceInfo}>
       {
-        pymReq.map(item =>                      
-          <View style={styles.row} keyExtractor={item => item.title}>
-          <Text key="title" style={styles.normalText14}>{item.title}</Text>
-          <Text key="amount" style={styles.normalText16}>{utils.price(item.amount)}</Text>
+        pymReq.map((item, key) =>                      
+          <View style={styles.row} key={keyPrefix+key}>
+          <Text key={keyPrefix+item.title} style={styles.normalText14}>{item.title}</Text>
+          <Text key={keyPrefix+item.amount} style={styles.normalText16}>{utils.price(item.amount)}</Text>
         </View>
           ) 
       }

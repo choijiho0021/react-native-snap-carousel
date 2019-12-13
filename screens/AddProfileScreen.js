@@ -32,19 +32,21 @@ class AddProfileScreen extends Component {
     super(props)
 
     this.state = {
+      update: undefined,
       prefix: "010",
+      disabled: false,
       profile: {
         alias: undefined,
         recipient: undefined,
-        recipient_num: undefined,
+        recipientNumber: undefined,
         province: undefined,
         city: undefined,
         organization: undefined,
-        zipNo: undefined,
-        addr1: undefined,
-        addr2: undefined,
+        zipCode: undefined,
+        addressLine1: undefined,
+        addressLine2: undefined,
         detailAddr: undefined,
-        isBasicAddr: undefined,
+        isBasicAddr: false,
       },
       errors: undefined
     }
@@ -52,80 +54,71 @@ class AddProfileScreen extends Component {
     this._onChangeText = this._onChangeText.bind(this)
     this._onSubmit = this._onSubmit.bind(this)
     this._onChecked = this._onChecked.bind(this)
+    this._findAddress = this._findAddress.bind(this)
   }
 
   componentDidMount() {
     
-    // if(!_.isEmpty(this.props.navigation.getParam('update'))){
-      // const param = this.props.navigation.getParam('update') 
-      const param = !_.isEmpty(this.props.navigation.getParam('update')) ?
-              this.props.navigation.getParam('update') : this.props.order.profile.filter(item => item.isBasicAddr == true)
+    const update = this.props.navigation.getParam('update') 
+    const profile = update || this.props.order.profile.find(item => item.isBasicAddr == true)
 
-      console.log('mount profile', param)
-      
+    console.log('mount profile', profile)
+    
+    this.setState({
+      update,
+      prefix: "010",
+    })
+
+    if (profile) {
       this.setState({
-        prefix: "010",
-        profile: {
-          ... this.state.profile,
-          uuid: param.uuid || undefined,
-          alias: param.alias || undefined,
-          recipient: param.recipient,
-          recipient_num: param.recipientNumber,
-          province: param.province,
-          city: param.city,
-          organization: param.organization,
-          zipNo: param.zipCode,
-          addr1: param.addressLine1,
-          addr2: param.addressLine2,
-          detailAddr: undefined,
-          isBasicAddr: param.isBasicAddr,
-        },
+        disabled: true,
+        profile,
       })
-    // }
+    }
 
-    // console.log(this.props)
-    // const param = this.props.navigation.getParam('profile')
-    // console.log('get param', param)
-    // console.log(this.props)
-
-    // this.props.action.order.getCustomerProfile(this.props.account.userId, this.props.account)
-    // console.log(this.props.order)
   }
 
   componentDidUpdate(prevProps) {
-    if(this.props.order.addr.roadAddr != prevProps.order.addr.roadAddr){
-      console.log('prevProps', prevProps)
-      console.log(this.props)
-      const province_num = this.props.order.addr.admCd.substring(0,2)
-      const city_num = this.props.order.addr.admCd.substring(2,5)
+    const addr = this.props.order.addr
 
-      this.setState({
-          profile: {
-            ... this.state.profile,
-            addr1: this.props.order.addr.roadAddrPart1,
-            addr2: this.props.order.addr.roadAddrPart2,
-            zipNo: this.props.order.addr.zipNo,
-            province: findEngAddress.city[province_num].province,
-            city: findEngAddress.city[province_num][city_num]
-        }
-      })
+    // 다른 정보 변경 & 주소 검색을 한 경우
+    if(addr != prevProps.order.addr){
+      
+      if(!_.isEmpty(addr)){
+        const {admCd} = addr
+        const provinceNumber = admCd.substring(0,2)
+        const cityNumber = admCd.substring(2,5)
+        
+        this.setState({
+            profile: {
+              ... this.state.profile,
+              addressLine1: addr.roadAddrPart1,
+              addressLine2: addr.roadAddrPart2,
+              zipCode: addr.zipNo,
+              province: findEngAddress.city[provinceNumber] && findEngAddress.city[provinceNumber].province,
+              city: findEngAddress.city[provinceNumber][cityNumber]
+          }
+        })
+      }
+
     }
   }
 
 
 
   _onSubmit() {
-    console.log('this props', this.props)
-    console.log('this state', this.state)
-    if(_.isEmpty(this.props.navigation.getParam('update'))){
-      console.log('submit add')
-      this.props.action.order.addCustomerProfile(this.state.profile, this.props.order.profile ,this.props.account)
+    const {order} = this.props.action
+
+    const defaultProfile = this.props.order.profile.find(item => item.isBasicAddr)
+
+    if(_.isEmpty(this.state.update)){
+      // profile 신규 추가
+      order.addCustomerProfile(this.state.profile, defaultProfile ,this.props.account)
     }else{
-      console.log('submit update')
-      this.props.action.order.updateCustomerProfile(this.state.profile, this.props.account)
+      // profile update
+      order.updateCustomerProfile(this.state.profile, this.props.account)
     }
     this.props.navigation.goBack()
-    // this.props.navigation.state.params.refresh({ update: true})
   }
 
   _onChecked() {
@@ -136,130 +129,140 @@ class AddProfileScreen extends Component {
         isBasicAddr: ! profile.isBasicAddr
       }
     })
-    console.log('profile basic addr, ',profile)
   }
 
-  _onChangeText = (key) => (value) => {
+  _onChangeText = (key = '') => (value) => {
 
     const item = key.substring(key.indexOf('.') + 1)
     const idx = key.indexOf('.')
-    const val = item == 'recipient_num'? (this.state.prefix+value) : value
 
     if (idx == -1) {
       this.setState({
-        [key]: value
+        [key]: value,
+        disabled: _.isEmpty(value) ? true : false
       })
-    } else {
+    }else {
       this.setState({
         profile: {
           ... this.state.profile,
-          [item]: val
+          [item]: value
         }
       })
     }
 
+
+  }
+
+  _findAddress() {
+    this.props.navigation.navigate('FindAddress')
   }
 
   render() {
-    console.log('Profile state', this.state)
-    console.log('Profile props', this.props)
-    console.log('addr1', this.props.order.addr.roadAddrPart1)
-    console.log('addr2', this.props.order.addr.roadAddrPart2)
-    
-    const str = this.props.order.addr.siNm + ' ' + this.props.order.addr.sggNm
+
     const { prefix, profile } = this.state
+    let isAddrEmpty = false
+    
+    // for (let [key, value] of Object.entries(profile)) {
+    //   // console.log(`객체 값찾긔~~${key}: ${value}`);
+    //   if(_.isEmpty(value)){
+         
+    //     // 기본배송지 선택 -> 필수값 X
+    //     if( key == 'isBasicAddr'){ 
+    //       continue 
+    //     }
+    //     // 필수값이 비어있을 경우
+    //     console.log('empty value', key)
+    //     console.log('empty value', value)
+    //     isAddrEmpty = true
+    //     break 
+    //   }
+    // }
 
-    // const param = !_.isEmpty(this.props.navigation.getParam('profile')) ?
-    //                 this.props.navigation.getParam('profile') : this.props.order.profile.filter(item => item.isBasicAddr == true)
-    // console.log('get param', param)
-
+    console.log('isAddrEmpty', isAddrEmpty)
+  
     return (
-      <KeyboardAwareScrollView
-        resetScrollToCoords={{ x: 0, y: 0 }}
-        extraScrollHeight={60}
-        innerRef={ref => { this.scroll = ref; }}>
-        <SafeAreaView style={styles.container}>
-          <View style={{ flex: 1}}>
-            <View style={{ margin: 20 }}>
-              <View style={styles.textRow}>
-                <Text style={styles.textTitle}>{i18n.t('addr:addrAlias')}</Text>
-                <TextInput style={styles.textBox}
-                           placeholder={profile.alias}
-                           placeholderTextColor='#2c2c2c'
-                           onChangeText={this._onChangeText('profile.alias')} />
-              </View>
-              <View style={styles.textRow}>
-                <Text style={styles.textTitle}>{i18n.t('addr:recipient')}</Text>
-                <TextInput style={[styles.textBox, { paddingLeft: 20 }]}
-                           value={profile.recipient}
-                           placeholder={i18n.t('addr:enterWithin50')}
-                           onChangeText={this._onChangeText('profile.recipient')} />
-              </View>
-              <View style={styles.textRow}>
-                <Text style={styles.textTitle}>{i18n.t('addr:recipientNumber')}</Text>
-                <View style={[styles.container, this.props.style]}>
-                  <View style={styles.pickerWrapper}>
-                    <RNPickerSelect style={{
-                      placeholder: styles.placeholder,
-                      iconContainer: {
-                        top: 4,
-                        right: 10,}
-                    }}
-                      onValueChange={this._onChangeText("prefix")}
-                      items={["010", "011", "017", "018", "019"].map(item => ({
-                        label: item,
-                        value: item
-                      }))}
-                      value={prefix}
-                      Icon={() => {
-                        return (<Triangle width={8} />)
-                      }}
-                    />
-                  </View>
+      <SafeAreaView style={styles.container}>
+        <KeyboardAwareScrollView
+          resetScrollToCoords={{ x: 0, y: 0 }}
+          extraScrollHeight={60}
+          innerRef={ref => { this.scroll = ref; }}>
+            <View style={{ flex: 1, justifyContent: 'flex-start', flexDirection: 'row'}}>
+              <View style={{ margin: 20 }}>
+                <View style={styles.textRow}>
+                  <Text style={styles.textTitle}>{i18n.t('addr:addrAlias')}</Text>
+                  <TextInput style={styles.textBox}
+                            placeholder={profile.alias}
+                            placeholderTextColor='#2c2c2c'
+                            onChangeText={this._onChangeText('profile.alias')} />
                 </View>
-                <TextInput style={[styles.textBox, { width: '56%' }]}
-                           onChangeText={this._onChangeText('profile.recipient_num')}
-                           value={profile.recipient_num} />
-              </View>
-              <View style={[styles.textRow, { marginBottom: 10 }]}>
-                <Text style={styles.textTitle}>{i18n.t('addr:address')}</Text>
-                <Text style={[styles.textBox, { width: '61%' }]}
-                      onPress={() => this.props.navigation.navigate('FindAddress')}
-                      value={_.isEmpty(this.props.order.addr) ?  null : str}/>
-                <AppButton title={i18n.t('addr:search')}
-                           style={styles.findButton}
-                           titleStyle={styles.findBtnText}
-                           onPress={() => this.props.navigation.navigate('FindAddress')} />
-              </View>
-              <View style={styles.findTextRow}>
-                <Text style={styles.textBox}
-                      value={_.isEmpty(this.props.order.addr) ? null : this.props.order.addr.roadAddr.replace(str,'')}
-                      onPress={() => this.props.navigation.navigate('FindAddress')} />
-              </View>
+                <View style={styles.textRow}>
+                  <Text style={styles.textTitle}>{i18n.t('addr:recipient')}</Text>
+                  <TextInput style={styles.textBox}
+                            value={profile.recipient}
+                            placeholder={i18n.t('addr:enterWithin50')}
+                            onChangeText={this._onChangeText('profile.recipient')} />
+                </View>
+                <View style={styles.textRow}>
+                  <Text style={styles.textTitle}>{i18n.t('addr:recipientNumber')}</Text>
+                  <View style={[styles.container, this.props.style]}>
+                    <View style={styles.pickerWrapper}>
+                      <RNPickerSelect style={{
+                        placeholder: styles.placeholder,
+                        iconContainer: {
+                          top: 4,
+                          right: 10,}
+                      }}
+                        onValueChange={this._onChangeText("prefix")}
+                        items={["010", "011", "017", "018", "019"].map(item => ({
+                          label: item,
+                          value: item
+                        }))}
+                        value={prefix}
+                        Icon={() => {
+                          return (<Triangle width={8} />)
+                        }}
+                      />
+                    </View>
+                  </View>
+                  <TextInput style={[styles.textBox, { width: '56%' }]}
+                            onChangeText={this._onChangeText('profile.recipientNumber')}
+                            value={profile.recipientNumber} />
+                </View>
+                <View style={[styles.textRow, { marginBottom: 10 }]}>
+                  <Text style={styles.textTitle}>{i18n.t('addr:address')}</Text>
+                  <Text style={[styles.textBox, { width: '61%' }]}
+                        onPress={this._findAddress}>{profile.addressLine1}</Text>
+                  <AppButton title={i18n.t('addr:search')}
+                            style={styles.findButton}
+                            titleStyle={styles.findBtnText}
+                            onPress={this._findAddress} />
+                </View>
+                <View style={styles.findTextRow}>
+                  <Text style={styles.textBox}
+                        onPress={this._findAddress} >{profile.addressLine2}</Text>
+                </View>
 
-              <View style={styles.findTextRow}>
-                <TextInput style={styles.textBox}
-                           onChangeText={this._onChangeText('profile.detailAddr')} />
+                <View style={styles.findTextRow}>
+                  <TextInput style={styles.textBox}
+                            value={profile.detailAddr}
+                            onChangeText={this._onChangeText('profile.detailAddr')} />
+                </View>
+                <TouchableOpacity style={{flex:1, width: '82%', flexDirection: 'row', alignSelf: 'flex-end',marginTop: 20}}
+                                  onPress={this._onChecked}>
+                  <AppIcon name="btnCheck2"
+                          checked={this.state.profile.isBasicAddr || false}/>
+                  <Text style={styles.basicProfile}>{i18n.t('addr:basicAddress')}</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity style={{flex:1, width: '82%', flexDirection: 'row', alignSelf: 'flex-end',marginTop: 20}}
-                    onPress={this._onChecked}>
-                <AppIcon name="btnCheck2"
-                         checked={this.state.profile.isBasicAddr || false}/>
-                <Text style={styles.basicProfile}>기본배송지로 선택</Text>
-              </TouchableOpacity>
             </View>
+        </KeyboardAwareScrollView>
+        <AppButton style={[appStyles.confirm, {position:'absolute', right:0, bottom:0, left:0}]} 
+                    title={i18n.t('save')}
+                    textStyle={appStyles.confirmText}
+                    disabled={isAddrEmpty}
+                    onPress={this._onSubmit} />
 
-            {/* <View style={{justifyContent: 'flex-end'}}> */}
-              <AppButton style={[appStyles.confirm]} 
-                         title={i18n.t('save')}
-                         textStyle={appStyles.confirmText}
-                         //disabled={_.isEmpty(selected)}
-                         onPress={this._onSubmit} />
-            {/* </View>            */}
-
-          </View>
-        </SafeAreaView>
-      </KeyboardAwareScrollView>
+      </SafeAreaView>
     )
   }
 }
@@ -276,14 +279,12 @@ const styles = StyleSheet.create({
   textRow: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     marginBottom: 20
   },
   findTextRow: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    // marginBottom: 20, // textRow    
     marginBottom: 10,
     justifyContent: 'flex-end'
   },
@@ -311,7 +312,7 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderWidth: 1,
     borderColor: colors.lightGrey,
-    paddingLeft: 20
+    padding: 10,
   },
   textTitle: {
     ...appStyles.normal14Text,
@@ -332,14 +333,6 @@ const styles = StyleSheet.create({
     color: colors.warmGrey,
     marginLeft: 10
   }
-  // saveButton: {
-  //   ... appStyles.confirm,
-  //   justifyContent: 'flex-end'
-  // }
-  // placeholder: {
-  //   ... appStyles.normal12Text,
-  //   color: colors.black
-  // },
 });
 
 const mapStateToProps = (state) => ({

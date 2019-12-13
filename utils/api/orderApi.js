@@ -46,10 +46,6 @@ class OrderAPI {
     }
 
     toCustomerProfile = (data) => {
-        console.log('data!!', data)
-
-        console.log('jsonapi empty, ', _.isEmpty(data.jsonapi))
-        console.log('data.data empty, ', _.isEmpty(data.data))
         // JSON API로 데이터를 조회한 경우 
         if ( ! _.isEmpty(data.jsonapi) && ! _.isEmpty(data.data)) {
             const obj = _.isArray(data.data) ? data.data : [data.data]
@@ -67,7 +63,6 @@ class OrderAPI {
                     given_name,
                     family_name,
                 } = item.attributes.address
-                console.log('get customer profile recipient', item.attributes.field_recipient_number)
 
                 return {
                     //langcode: 'ko',
@@ -83,8 +78,8 @@ class OrderAPI {
                     alias: item.attributes.field_alias,
                     recipient: item.attributes.field_recipient,
                     recipientNumber : item.attributes.field_recipient_number,
+                    isBasicAddr: item.attributes.is_default,
                     uuid: item.id,
-                    isBasicAddr: item.attributes.field_basic_address,  
                 }
             
             })
@@ -95,15 +90,10 @@ class OrderAPI {
         return api.failure(api.NOT_FOUND)        
     }
 
-    getCustomerProfile = (userId, {token}) => {
-
-        console.log('token', token)
-        console.log('userId', userId)
-
+    getCustomerProfile = ({userId, token}) => {
         if ( _.isEmpty(token) || _.isEmpty(userId)) return api.reject( api.INVALID_ARGUMENT)
         
         const url = `${api.httpUrl(api.path.jsonapi.profile)}`
-        //const url = `${api.httpUrl(api.path.jsonapi.user)}/${userId}/customer_profiles`
         const headers = api.withToken(token, 'vnd.api+json')
 
         return api.callHttp(url, {
@@ -112,12 +102,8 @@ class OrderAPI {
         }, this.toCustomerProfile)
     }
 
-    addCustomerProfile = (profile, item, {token}) => {
+    addCustomerProfile = (profile, defaultProfile, {token}) => {
         if ( _.isEmpty(profile) || _.isEmpty(token) ) return api.reject( api.INVALID_ARGUMENT)
-
-        console.log('addCustomerProfile profile', profile)
-        console.log('addCustomerProfile token', token)
-        // console.log('addCustomerProfile profile', profile[0].familyName)
         
         const url = api.httpUrl(api.path.jsonapi.profile)
         const headers = api.withToken(token, 'vnd.api+json')
@@ -130,17 +116,18 @@ class OrderAPI {
                         country_code: "KR",
                         administrative_area: profile.province,   // 경기도 
                         locality: profile.city,                  // 성남시
-                        postal_code: profile.zipNo,
-                        address_line1: profile.addr1,
-                        address_line2: profile.addr2 || ' ' || profile.detailAddr,
-                        organization: item[0].organization,
-                        given_name: item[0].givenName, //'choi',//profile[0].givenName,
-                        family_name: item[0].familyName, //'soojeong', //profile[0].familyName,
+                        postal_code: profile.zipCode,
+                        address_line1: profile.addressLine1,
+                        address_line2: profile.addressLine2 || ' ' || profile.detailAddr,
+                        organization: defaultProfile.organization,
+                        given_name: defaultProfile.givenName, 
+                        family_name: defaultProfile.familyName, 
                     },
                     field_recipient : profile.recipient,
-                    field_recipient_number : profile.recipient_num,
+                    field_recipient_number : profile.recipientNumber,
                     field_alias : profile.alias,
                     field_basic_address : profile.isBasicAddr,
+                    is_default: profile.isBasicAddr,
                 }
             }
         }
@@ -156,10 +143,6 @@ class OrderAPI {
 
     updateCustomerProfile = ( profile, {userId, token}) => {
         if ( _.isEmpty(profile) || _.isEmpty(token) ) return api.reject(api.INVALID_ARGUMENT)
-
-        console.log('updateCustomerProfile ID', userId)
-        console.log('updateCustomerProfile profile', profile)
-        console.log('updateCustomerProfile token', token)
         const url = `${api.httpUrl(api.path.jsonapi.profile)}/${profile.uuid}`
         const headers = api.withToken(token, 'vnd.api+json', {
             'Accept': 'application/vnd.api+json'
@@ -174,17 +157,18 @@ class OrderAPI {
                         country_code: "KR",
                         administrative_area: profile.province,   // 경기도 
                         locality: profile.city,                  // 성남시
-                        postal_code: profile.zipNo,
-                        address_line1: profile.addr1,
-                        address_line2: profile.addr2 || ' ' || profile.detailAddr,
+                        postal_code: profile.zipCode,
+                        address_line1: profile.addressLine1,
+                        address_line2: profile.addressLine2 || ' ' || profile.detailAddr,
                         organization: profile.organization || profile.alias,
                         given_name: profile.givenName || profile.recipient.substring(0,1), //'choi',//profile[0].givenName,
                         family_name: profile.familyName|| profile.recipient.substring(1), //'soojeong', //profile[0].familyName,
                     },
                     field_recipient : profile.recipient,
-                    field_recipient_number : profile.recipient_num,
+                    field_recipient_number : profile.recipientNumber,
                     field_alias : profile.alias,
                     field_basic_address : profile.isBasicAddr,
+                    is_default: profile.isBasicAddr
                 }
             }
         }
@@ -196,10 +180,10 @@ class OrderAPI {
         }, this.toCustomerProfile)
     }
 
+    // profile uuid
     delCustomerProfile = (uuid, {token}) => {
         if ( _.isEmpty(uuid) || _.isEmpty(token) ) return api.reject( api.INVALID_ARGUMENT)
 
-        console.log('delCustomerProfile!!!', uuid)
         const url = `${api.httpUrl(api.path.jsonapi.profile)}/${uuid}`
         const headers = api.withToken(token, 'vnd.api+json')
 
