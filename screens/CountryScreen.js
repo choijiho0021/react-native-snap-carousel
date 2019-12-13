@@ -15,6 +15,7 @@ import i18n from '../utils/i18n'
 import * as productActions from '../redux/modules/product'
 import * as cartActions from '../redux/modules/cart'
 import * as accountActions from '../redux/modules/account'
+import productApi from '../utils/api/productApi';
 import api from '../utils/api/api';
 import { bindActionCreators } from 'redux'
 // import Icon from 'react-native-vector-icons/Ionicons';
@@ -60,7 +61,7 @@ class CountryScreen extends Component {
         console.log('prod', prodList[idx])
       }
     
-    const prodData = prodList.filter(item => item.ccode == prod.ccode).map(item => ({
+    const prodData = prodList.filter(item => prod.categoryId[0] == productApi.category.multi ? item.uuid == prod.uuid : item.ccode == prod.ccode).map(item => ({
       ... item,
       key: item.uuid
     }))
@@ -153,9 +154,9 @@ class CountryScreen extends Component {
   }
 
   render() {
-    const { idx, prodList, startDate, name} = this.props.product,
-      { prodData, title} = this.state,
-      imageUrl = prodList.length > idx >= 0 ? prodList[idx].imageUrl : ''
+    const { idx, prodList, startDate, name} = this.props.product
+    const { prodData, selected} = this.state
+    const imageUrl = prodList.length > idx >= 0 ? prodList[idx].imageUrl == '' ? prodList[idx].subImageUrl : prodList[idx].imageUrl : ''
       
     console.log('HTTPIMGURL', {uri:api.httpImageUrl(imageUrl)})
 
@@ -163,7 +164,7 @@ class CountryScreen extends Component {
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <Image style={styles.box} source={{uri:api.httpImageUrl(imageUrl)}}/>
 
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {title:this.props.navigation.getParam('title'), text:prodData[0].body})}>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {title:this.props.navigation.getParam('title'), text:selected.body})}>
           <View style={styles.detail}>
             <Text style={appStyles.normal14Text}>{i18n.t('country:detail')}</Text>
             <AppIcon style={{marginRight:20}} name="iconArrowRight" size={10} />

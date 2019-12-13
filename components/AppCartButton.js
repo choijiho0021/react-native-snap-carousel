@@ -10,7 +10,7 @@ import { Badge } from 'react-native-elements';
 class AppCartButton extends Component {
   render() {
     const {cartItems, iconName, style, onPress} = this.props
-    const top = -4, right = -4, left = 0, bottom = 0
+    const top = -8, right = -4, left = 0, bottom = 0
     const hidden = ! cartItems 
 
     return (

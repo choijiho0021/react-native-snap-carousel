@@ -264,7 +264,7 @@ class Country {
     }).filter(item => item != '').join('+')
   }
 
-  getName(code, lang='ko') {
+  getName(code = '', lang='ko') {
     const cc = code.toLowerCase()
     return ( this.ccode.hasOwnProperty(cc)) ? this.ccode[cc][lang] : 'N/A'
   }
