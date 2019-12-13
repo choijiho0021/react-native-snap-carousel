@@ -42,7 +42,7 @@ export default function AppButton({style, disabled=false, size, title, iconName,
         checked && {borderColor: checkedColor || colors.clearBlue}
       ]} 
       disabled={disabled} 
-      onPress={() => {console.log('pressed'); onPress()}}>
+      onPress={onPress}>
 
       <View style={[styles.container, align]}>
         {

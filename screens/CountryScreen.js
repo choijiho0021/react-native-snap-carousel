@@ -54,10 +54,6 @@ class CountryScreen extends Component {
   }
 
   componentDidMount() {
-    // const key = this.props.navigation.getParam('key')
-    
-    this.props.action.cart.cartFetch()
-
     const {idx, prodList} = this.props.product,
       prod = prodList[idx]
 
