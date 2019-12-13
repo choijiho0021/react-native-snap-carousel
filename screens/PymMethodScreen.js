@@ -33,6 +33,7 @@ class PymMethodScreen extends Component {
 
     this.state = {
       data: undefined,
+      // profile: undefined,
       selected: undefined,
       showModal: false
     }
@@ -78,7 +79,6 @@ class PymMethodScreen extends Component {
 
   //
   componentDidMount() {
-
     const pymReq = this.props.navigation.getParam('pymReq')
     const mode = this.props.navigation.getParam('mode')
     const buyProduct = this.props.navigation.getParam('buyProduct')
@@ -90,7 +90,7 @@ class PymMethodScreen extends Component {
         buyProduct
       })
     }
-    
+  
     this.props.action.order.getCustomerProfile(this.props.account.userId, this.props.auth)
   }
 
@@ -219,9 +219,11 @@ class PymMethodScreen extends Component {
     const simIncluded = (this.props.cart.orderItems || []).findIndex(item => item.prod.type == 'sim_card') >= 0
 
     return (
+
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <ScrollView>
           <PaymentItemInfo cart={purchaseItems} pymReq={pymReq}/>              
+
           {
             simIncluded && this._address()
           }
