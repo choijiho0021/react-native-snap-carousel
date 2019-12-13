@@ -25,6 +25,7 @@ import ChargeSummary from '../components/ChargeSummary';
 import { SafeAreaView} from 'react-navigation'
 import withBadge from '../components/withBadge';
 import AppCartButton from '../components/AppCartButton';
+import utils from '../utils/utils';
 
 // const AppCartButton = withBadge(({cartItems}) => cartItems, {badgeStyle:{right:-5,top:5}}, 
 //   (state) => ({cartItems: (state.cart.get('orderItems') || []).reduce((acc,cur) => acc + cur.qty, 0)}))(AppButton)
@@ -106,14 +107,19 @@ class NewSimScreen extends Component {
     }
     else{
       // insert to cart
-      const simList = this.state.simCardList.map(item => ({
-        variationId : item.variationId,
-        sku: item.sku,
-        qty: checked.get(item.uuid) && simQty.get(item.uuid),
-      })).filter( item => item.qty > 0)
+      const simList = this.state.simCardList.filter(item => checked.get(item.uuid) && simQty.get(item.uuid) > 0)
+        .map(item => ({
+          title: item.name,
+          key: item.uuid,
+          variationId : item.variationId,
+          sku: item.sku,
+          price: item.price,
+          qty: simQty.get(item.uuid),
+        }))
 
       if ( mode == 'purchase') {
         this.props.action.cart.purchase({ purchaseItems:simList, dlvCost:true})
+        this.props.navigation.navigate('PymMethod')
       }
       else this.props.action.cart.cartAddAndGet( simList)
     }
@@ -165,7 +171,7 @@ class NewSimScreen extends Component {
         <FlatList data={simCardList} 
                   renderItem={this._renderItem} 
                   extraData={[checked, simQty]}
-                  ListFooterComponent={<ChargeSummary totalCnt={total.cnt} totalPrice={total.price}/>}/>
+                  ListFooterComponent={<ChargeSummary totalCnt={total.cnt} totalPrice={total.price} dlvCost={utils.dlvCost(total.price)}/>}/>
         <View style={styles.buttonBox}>
           <AppButton style={styles.btnCart} title={i18n.t('cart:toCart')} 
             titleStyle={styles.btnCartText}

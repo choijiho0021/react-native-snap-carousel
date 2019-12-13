@@ -24,7 +24,7 @@ class Utils {
     }
 
     dlvCost = (totalPrice) => {
-        return (totalPrice >= 10000) ? 0 : (totalPrice > 0) ? 3000 : 0
+        return (30000 > totalPrice && totalPrice > 0) ? 3000 : 0
     }
 
     // 숫자만 입력 받기
