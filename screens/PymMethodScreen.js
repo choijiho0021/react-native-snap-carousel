@@ -16,11 +16,8 @@ import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import _ from 'underscore'
 import { SafeAreaView } from 'react-navigation';
-import orderApi from '../utils/api/orderApi';
 import AddressCard from '../components/AddressCard'
-import PaymentResultScreen from '../screens/PaymentResultScreen';
 import { ScrollView } from 'react-native-gesture-handler';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import PaymentItemInfo from '../components/PaymentItemInfo';
 
 class PymMethodScreen extends Component {
@@ -79,19 +76,7 @@ class PymMethodScreen extends Component {
 
   //
   componentDidMount() {
-    const pymReq = this.props.navigation.getParam('pymReq')
-    const mode = this.props.navigation.getParam('mode')
-    const buyProduct = this.props.navigation.getParam('buyProduct')
-
-    if ( pymReq ) {
-      this.setState({
-        data: pymReq,
-        mode,
-        buyProduct
-      })
-    }
-  
-    this.props.action.order.getCustomerProfile(this.props.account.userId, this.props.auth)
+    this.props.action.order.getCustomerProfile(this.props.auth)
   }
 
   _onSubmit() {
@@ -165,7 +150,7 @@ class PymMethodScreen extends Component {
   // }
 
   _address(){
-    // const item = this.props.order.profile.find(item =>item.isBasicAddr)
+    const item = this.props.order.profile.find(item =>item.isBasicAddr)
     return (
       <View>
         {
@@ -234,16 +219,11 @@ class PymMethodScreen extends Component {
               this.method.map((v,idx) => this._button(idx+"", v))
             }
           </View>
-          {/* <AppButton title={i18n.t('payment')} 
+        </ScrollView>
+
+        <AppButton title={i18n.t('payment')} 
                       textStyle={appStyles.confirmText}
                       disabled={_.isEmpty(selected)}
-                      onPress={this._onSubmit}
-                      style={appStyles.confirm}/>  */}
-                
-      </ScrollView>
-      <AppButton title={i18n.t('payment')} 
-                      textStyle={appStyles.confirmText}
-                      //disabled={_.isEmpty(selected)}
                       key={i18n.t('payment')}
                       onPress={this._onSubmit}
                       style={[appStyles.confirm,

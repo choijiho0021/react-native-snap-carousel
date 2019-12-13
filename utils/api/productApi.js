@@ -21,6 +21,7 @@ class ProductAPI {
             return {
                 result: 0,
                 objects: data.map(item => ({
+                    key: item.uuid,
                     uuid: item.uuid,
                     name: item.title,
                     price: utils.stringToNumber(item.price),
@@ -35,7 +36,8 @@ class ProductAPI {
                     days: item.field_days,
                     variationId: item.variations && item.variations[0],
                     field_description : item.field_description,
-                    body : item.body
+                    body : item.body,
+                    sku: item.sku
                 }))
             }
         }

@@ -43,7 +43,7 @@ class PaymentScreen extends Component{
   }
 
   _callback( response) {
-    this.props.action.cart.pymResult(response)
+    this.props.action.cart.payNorder(response)
     this.props.navigation.replace('PaymentResult', {pymResult:response})
   }
 

@@ -112,9 +112,9 @@ class NewSimScreen extends Component {
         qty: checked.get(item.uuid) && simQty.get(item.uuid),
       })).filter( item => item.qty > 0)
 
-      console.log('SIM list', simList)
-
-      if ( mode == 'purchase') this.props.action.cart.order( simList)
+      if ( mode == 'purchase') {
+        this.props.action.cart.purchase({ purchaseItems:simList, dlvCost:true})
+      }
       else this.props.action.cart.cartAddAndGet( simList)
     }
     

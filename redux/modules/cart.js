@@ -3,6 +3,8 @@ import { Map } from 'immutable';
 import { pender } from 'redux-pender'
 import cartApi from '../../utils/api/cartApi'
 import api from '../../utils/api/api';
+import i18n from '../../utils/i18n';
+import utils from '../../utils/utils';
 
 
 const SET_CART_TOKEN = 'rokebi/cart/SET_CART_TOKEN'
@@ -30,6 +32,22 @@ export const purchase = createAction(PURCHASE)
 export const makePayment = createAction(MAKE_PAYMENT, cartApi.makePayment) 
 export const makeOrder = createAction(MAKE_ORDER, cartApi.makeOrder) 
 export const pymResult = createAction(PYM_RESULT)
+
+export const payNorder = (result) => {
+  return (dispatch,getState) => {
+    const { account, cart } = getState(),
+      auth = {
+        token: account.get('token'),
+        mail: account.get('email'),
+        user: account.get('mobile')
+      }
+
+    // update payment result
+    dispatch(pymResult(result))
+
+    return dispatch(makeOrder(cart.get('purchaseItems'), auth))
+  }
+}
 
 export const order = (items) => {
   return (dispatch,getState) => {
@@ -88,7 +106,21 @@ export default handleActions({
 
   // 구매할 품목을 저장한다. 
   [PURCHASE]: (state,action) => {
-    const { purchaseItems, pymReq} = action.payload
+    const {purchaseItems, dlvCost = false} = action.payload,
+      total = (purchaseItems || []).reduce((sum, acc) => sum + acc.price * acc.qty, 0),
+      pymReq = [
+        {
+          key: 'total',
+          title: i18n.t('price'),
+          amount: total
+        }
+      ]
+
+    if ( dlvCost ) pymReq.push({
+      key: 'dlvCost',
+      title: i18n.t('cart:dlvCost'),
+      amount: utils.dlvCost(total)
+    })
 
     // purchaseItems에는 key, qty, price, title 정보 필요
     return state.set('purchaseItems', purchaseItems)

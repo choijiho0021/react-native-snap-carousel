@@ -105,7 +105,8 @@ class CountryScreen extends Component {
             variationId: prod.variationId, 
             price:prod.price, 
             qty:1,
-            key: prod.uuid
+            key: prod.uuid,
+            sku: prod.sku
           } : {}
   
         switch (key) {
@@ -113,15 +114,8 @@ class CountryScreen extends Component {
             this.props.action.cart.cartAddAndGet( [ addProduct ])
             break
           case 'purchase':
-            var pymReq = [
-              {
-                key: 'total',
-                title: i18n.t('price'),
-                amount: selected[0].price
-              }
-            ]
             // 구매 품목을 갱신한다. 
-            this.props.action.cart.purchase({ purchaseItems: [ addProduct ], pymReq})
+            this.props.action.cart.purchase({ purchaseItems: [ addProduct ]})
             this.props.navigation.navigate('PymMethod')
             break
         }
@@ -156,10 +150,8 @@ class CountryScreen extends Component {
   render() {
     const { idx, prodList, startDate, name} = this.props.product
     const { prodData, selected} = this.state
-    const imageUrl = prodList.length > idx >= 0 ? prodList[idx].imageUrl == '' ? prodList[idx].subImageUrl : prodList[idx].imageUrl : ''
+    const imageUrl = (prodList.length > idx >= 0) ? (prodList[idx].imageUrl == '' ? prodList[idx].subImageUrl : prodList[idx].imageUrl) : ''
       
-    console.log('HTTPIMGURL', {uri:api.httpImageUrl(imageUrl)})
-
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <Image style={styles.box} source={{uri:api.httpImageUrl(imageUrl)}}/>

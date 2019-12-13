@@ -42,7 +42,6 @@ class CountryItem extends Component {
   render() {
     const {item} = this.props
 
-    console.log("item",item)
     return (
       <View key={item.key} style={styles.productList}>
         {item.data.map((elm,idx) => (
@@ -379,7 +378,6 @@ class StoreScreen extends Component {
   }
 
   renderScene = (props) => {
-    console.log("props",props)
     return <StoreList data={this.state[props.route.key]} jumpTp={props.jumpTo} onPress={this._onPressItem}/>
   }
 

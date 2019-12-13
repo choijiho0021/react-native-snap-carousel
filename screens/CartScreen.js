@@ -38,7 +38,6 @@ class CartScreen extends Component {
       querying: false,
       qty: undefined,
       total: {cnt:0, price:0},
-      dlvCost: undefined
     }
 
     this._onPurchase = this._onPurchase.bind(this)
@@ -77,12 +76,11 @@ class CartScreen extends Component {
     this.setState({
       qty, checked, total,
       data : orderItems,
-      dlvCost : this._dlvCost(checked, qty, total, orderItems)
     })
   }
 
   _dlvCost( checked, qty, total, data) {
-    return data.findIndex(item => item.prod.type == 'sim_card' && checked.get(item.key) && qty.get(item.key) > 0) >= 0 ? 
+    return data.findIndex(item => item.prod && item.prod.type == 'sim_card' && checked.get(item.key) && qty.get(item.key) > 0) >= 0 ? 
       utils.dlvCost(total.price) : 0
   }
 
@@ -93,13 +91,13 @@ class CartScreen extends Component {
 
     this.setState({
       qty, checked, total,
-      dlvCost: this._dlvCost( checked, qty, total, this.state.data)
     })
   }
 
   _onPurchase() {
-    const { data, qty, checked, total, dlvCost} = this.state
-    const {loggedIn} = this.props.account
+    const { data, qty, checked, total } = this.state,
+      dlvCost = this._dlvCost( checked, qty, total, data),
+      {loggedIn} = this.props.account
 
     if(!loggedIn){
       // AppAlert.confirm(i18n.t('error'),i18n.t('err:login'), {
@@ -119,7 +117,6 @@ class CartScreen extends Component {
           else this.props.action.cart.cartUpdate( cart.orderId, item.orderItemId, itemQty)
         }
       })
-      */
 
       const pymReq = [
         {
@@ -133,13 +130,14 @@ class CartScreen extends Component {
           amount: dlvCost
         }
       ]
+      */
 
       const purchaseItems = data.map(item => ({
         ... item,
         qty: checked.get(item.key) && qty.get(item.key)
       })).filter(item => item.qty > 0)
 
-      this.props.action.cart.purchase({purchaseItems, pymReq})
+      this.props.action.cart.purchase({purchaseItems, dlvCost: dlvCost > 0})
       this.props.navigation.navigate('PymMethod')
     }
   }
@@ -150,13 +148,12 @@ class CartScreen extends Component {
 
     this.setState({
       checked, total,
-      dlvCost: this._dlvCost(checked, this.state.qty, total, this.state.data)
     })
   }
 
   _renderItem = ({item}) => {
     const { qty } = this.state
-    const prod = ( item.prod.type == 'sim_card') ?
+    const prod = (item.prod && item.prod.type == 'sim_card') ?
       this.props.sim.simList.find(sim => sim.uuid == item.key) : undefined
 
     return <CartItem checked={this.state.checked.get(item.key) || false}
@@ -183,8 +180,9 @@ class CartScreen extends Component {
 
 
   render() {
-    const { querying, qty, checked, data, total, dlvCost} = this.state,
-      list = data.filter(item => qty.get(item.key) >= 0)
+    const { querying, qty, checked, data, total} = this.state,
+      list = data.filter(item => qty.get(item.key) >= 0),
+      dlvCost = this._dlvCost( checked, qty, total, data)
 
     return (
       <SafeAreaView style={styles.container}>

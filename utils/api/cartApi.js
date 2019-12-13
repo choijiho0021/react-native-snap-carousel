@@ -169,11 +169,18 @@ class CartAPI {
         const url = `${api.httpUrl(api.path.commerce.order, '')}/create?_format=json`
         const headers = api.withToken( token, 'json')
         const body = {
-            order_items: items,
+            order: {
+                order_items: items.map(item => ({
+                    quantity: item.qty,
+                    purchased_entity : {
+                        sku : item.sku
+                    }
+                })),
+            },
             user: {
                 mail,
                 name: mobile
-            }
+            },
         }
 
         return api.callHttp(url, {

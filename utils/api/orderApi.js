@@ -50,7 +50,6 @@ class OrderAPI {
         if ( ! _.isEmpty(data.jsonapi) && ! _.isEmpty(data.data)) {
             const obj = _.isArray(data.data) ? data.data : [data.data]
 
-            console.log('tocust', obj)
             const objects = obj.map(item => {
                 const {
                     country_code,
@@ -83,15 +82,13 @@ class OrderAPI {
                 }
             
             })
-            console.log('obj',obj)
-            // console.log('account list', objects)
             return api.success(objects)
         }
         return api.failure(api.NOT_FOUND)        
     }
 
-    getCustomerProfile = ({userId, token}) => {
-        if ( _.isEmpty(token) || _.isEmpty(userId)) return api.reject( api.INVALID_ARGUMENT)
+    getCustomerProfile = ({token}) => {
+        if ( _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
         
         const url = `${api.httpUrl(api.path.jsonapi.profile)}`
         const headers = api.withToken(token, 'vnd.api+json')
