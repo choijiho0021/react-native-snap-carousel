@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import {
   StyleSheet,
   View,
@@ -26,28 +26,31 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function ChargeSummary({totalCnt, totalPrice}) {
-  const dlvCost = utils.dlvCost(totalPrice)
+class ChargeSummary extends PureComponent {
+  render() {
+    const {totalCnt, totalPrice, dlvCost} = this.props
 
-  return (
-    <View style={styles.price}>
-      <LabelText label={i18n.t('cart:dlvCostNotice')} style={{marginVertical:17}}/>
+    return (
+      <View style={styles.price}>
+        <LabelText label={i18n.t('cart:dlvCostNotice')} style={{marginVertical:17}}/>
 
-      <LabelText label={i18n.t('cart:totalCnt')} style={styles.summary}
-        value={i18n.t('cart:totalCntX').replace('%%', totalCnt)}/>
+        <LabelText label={i18n.t('cart:totalCnt')} style={styles.summary}
+          value={i18n.t('cart:totalCntX').replace('%%', totalCnt)}/>
 
-      <LabelText label={i18n.t('cart:totalPrice')} style={styles.summary}
-        format="price"
-        value={totalPrice}/>
-        
-      <LabelText label={i18n.t('cart:dlvCost')} style={styles.summary}
-        format="price"
-        value={dlvCost} />
+        <LabelText label={i18n.t('cart:totalPrice')} style={styles.summary}
+          format="price"
+          value={totalPrice}/>
+          
+        <LabelText label={i18n.t('cart:dlvCost')} style={styles.summary}
+          format="price"
+          value={dlvCost} />
 
-      <LabelText label={i18n.t('cart:totalCost')} style={styles.summary}
-        format="price" color={colors.clearBlue}
-        value={totalPrice + dlvCost}/>
-    </View>
-  )
+        <LabelText label={i18n.t('cart:totalCost')} style={styles.summary}
+          format="price" color={colors.clearBlue}
+          value={totalPrice + dlvCost}/>
+      </View>
+    )
+  }
 }
 
+export default ChargeSummary

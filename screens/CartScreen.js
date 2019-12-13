@@ -174,15 +174,17 @@ class CartScreen extends Component {
 
 
   render() {
-    const { querying, qty, checked, data, total} = this.state
+    const { querying, qty, checked, data, total} = this.state,
+      list = data.filter(item => qty.get(item.key) >= 0),
+      dlvCost = list.findIndex(item => item.prod.type == 'sim_card') >= 0 ? utils.dlvCost(total.price) : 0
 
     return (
       <SafeAreaView style={styles.container}>
         <AppActivityIndicator visible={querying} />
-        <FlatList data={data.filter(item => qty.get(item.key) >= 0)}
+        <FlatList data={list}
           renderItem={this._renderItem} 
           extraData={[qty, checked]}
-          ListFooterComponent={ <ChargeSummary totalCnt={total.cnt} totalPrice={total.price}/>} />
+          ListFooterComponent={ <ChargeSummary totalCnt={total.cnt} totalPrice={total.price} dlvCost={dlvCost}/>} />
         <AppButton style={styles.btnBuy} title={i18n.t('cart:purchase')} 
                     onPress={this._onPurchase}/>
       </SafeAreaView>
