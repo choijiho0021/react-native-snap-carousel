@@ -132,8 +132,8 @@ class CartScreen extends Component {
         qty: checked.get(item.key) && qty.get(item.key)
       })).filter(item => item.qty > 0)
 
-      this.props.action.cart.purchase(purchaseItems)
-      this.props.navigation.navigate('PymMethod', {pymReq})
+      this.props.action.cart.purchase({purchaseItems, pymReq})
+      this.props.navigation.navigate('PymMethod')
     }
   }
 

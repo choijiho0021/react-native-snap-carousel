@@ -9,7 +9,6 @@ import { bindActionCreators } from 'redux'
 import * as accountActions from '../redux/modules/account'
 import * as orderActions from '../redux/modules/order'
 import * as cartActions from '../redux/modules/cart'
-import utils from '../utils/utils';
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import AppBackButton from '../components/AppBackButton';
@@ -18,10 +17,8 @@ import AppButton from '../components/AppButton';
 import _ from 'underscore'
 import { SafeAreaView } from 'react-navigation';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import orderApi from '../utils/api/orderApi';
 import AddressCard from '../components/AddressCard'
 import PaymentItemInfo from '../components/PaymentItemInfo';
-import PaymentResultScreen from '../screens/PaymentResultScreen';
 
 class PymMethodScreen extends Component {
   static navigationOptions = (navigation) => ({
@@ -32,7 +29,6 @@ class PymMethodScreen extends Component {
     super(props)
 
     this.state = {
-      pymReq: [],
       // profile: undefined,
       selected: undefined,
       showModal: false
@@ -82,15 +78,10 @@ class PymMethodScreen extends Component {
   componentDidMount() {
     // console.log('현재경로, ', this.props.navigation.state)
     
-    const pymReq = this.props.navigation.getParam('pymReq')
-    const mode = this.props.navigation.getParam('mode')
+    this.setState({
+      mode : this.props.navigation.getParam('mode')
+    })
 
-    if ( pymReq ) {
-      this.setState({
-        pymReq,
-        mode,
-      })
-    }
     this.props.action.order.getCustomerProfile(this.props.account.userId, this.props.auth)
   }
 
@@ -99,13 +90,15 @@ class PymMethodScreen extends Component {
     if ( ! selected ) return
 
     const { mobile, email} = this.props.account
+    const { pymReq } = this.props.cart,
+      total = pymReq.reduce((sum,cur) => sum + cur.amount, 0)
 
     const params = {
       pg : selected,
 //      pay_method: 'card',
       merchant_uid: `mid_${new Date().getTime()}`,
       name:'esim',
-      amount: '100',
+      amount: total,
       buyer_tel: mobile,
       buyer_email: email,
       escrow: false,
@@ -113,9 +106,8 @@ class PymMethodScreen extends Component {
       mode: 'test'
     };
 
-    this.props.action.cart.makePayment( this.props.cart.orderId, this.props.auth)
-    this.props.navigation.navigate('PaymentResult', {params: params, pymReq:this.props.navigation.getParam('pymReq'), cartItems:this.props.cart})
-  
+    // this.props.action.cart.makePayment( this.props.cart.orderId, this.props.auth)
+    this.props.navigation.navigate('Payment', {params: params})
   }
 
   _onPress = (key) => () => {
@@ -211,15 +203,10 @@ class PymMethodScreen extends Component {
   }
 
   render() {
-    const { pymReq } = this.state
-    const { purchaseItems } = this.props.cart
+    const { selected } = this.state
+    const { purchaseItems, pymReq } = this.props.cart
     
-    console.log('PROPS',this.props) // cart에서 cart 목록과 sim 목록 받음.
-
-    console.log('props',this.props.cart.orderItems)
-    const sim = (this.props.cart.orderItems || []).filter(item => item.prod.type == 'sim_card')
-
-    console.log('sim', sim )
+    const simIncluded = (this.props.cart.orderItems || []).findIndex(item => item.prod.type == 'sim_card') >= 0
 
     return (
       <KeyboardAwareScrollView 
@@ -232,7 +219,7 @@ class PymMethodScreen extends Component {
           <PaymentItemInfo cart={purchaseItems} pymReq={pymReq}/>         
 
           {
-            sim.length > 0 && this._address()
+            simIncluded && this._address()
           }
 
           <Text style={[styles.title, styles.mrgBottom5]}>{i18n.t('pym:method')}</Text>
@@ -243,7 +230,7 @@ class PymMethodScreen extends Component {
           </View>
           <AppButton title={i18n.t('payment')} 
                       textStyle={appStyles.confirmText}
-                      //disabled={_.isEmpty(selected)}
+                      disabled={_.isEmpty(selected)}
                       onPress={this._onSubmit}
                       style={appStyles.confirm}/> 
                 

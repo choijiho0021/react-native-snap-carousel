@@ -121,8 +121,8 @@ class CountryScreen extends Component {
               }
             ]
             // 구매 품목을 갱신한다. 
-            this.props.action.cart.purchase([ addProduct ])
-            this.props.navigation.navigate('PymMethod',{pymReq})
+            this.props.action.cart.purchase({ purchaseItems: [ addProduct ], pymReq})
+            this.props.navigation.navigate('PymMethod')
             break
         }
       }

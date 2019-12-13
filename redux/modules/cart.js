@@ -3,6 +3,7 @@ import { Map } from 'immutable';
 import { pender } from 'redux-pender'
 import cartApi from '../../utils/api/cartApi'
 import api from '../../utils/api/api';
+import i18n from '../../utils/i18n';
 
 
 const SET_CART_TOKEN = 'rokebi/cart/SET_CART_TOKEN'
@@ -73,19 +74,23 @@ const onFailure = (state, action) => {
 }
 
 const initialState = Map({
-  result:0,
-  orderId:undefined,
-  orderItems:[],
-  uuid:undefined,
-  purchaseItems:[]
+  result: 0,
+  orderId: undefined,
+  orderItems: [],
+  uuid: undefined,
+  purchaseItems: [],
+  pymReq: undefined
 })
 
 export default handleActions({
 
   // 구매할 품목을 저장한다. 
   [PURCHASE]: (state,action) => {
+    const { purchaseItems, pymReq} = action.payload
+
     // purchaseItems에는 key, qty, price, title 정보 필요
-    return state.set('purchaseItems', action.payload)
+    return state.set('purchaseItems', purchaseItems)
+      .set('pymReq', pymReq)
   },
 
   ... pender({

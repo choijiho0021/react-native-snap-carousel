@@ -3,8 +3,11 @@ import {
   View, 
   Text,
   StyleSheet
-} 
-from 'react-native';
+} from 'react-native';
+import {connect} from 'react-redux'
+import { bindActionCreators } from 'redux'
+import * as cartActions from '../redux/modules/cart'
+
 import PaymentItemInfo from '../components/PaymentItemInfo';
 import SafeAreaView from 'react-native-safe-area-view';
 import AppBackButton from '../components/AppBackButton';
@@ -16,7 +19,12 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: 'stretch'
   },
-});
+  result: {
+    flex: 1,
+    justifyContent: 'center'
+  }
+})
+
 class PaymentResultScreen extends Component {
 
   static navigationOptions = (navigation) => ({
@@ -25,15 +33,27 @@ class PaymentResultScreen extends Component {
 
   constructor(props){
     super(props)
+
+    this.state = {
+      result : undefined
+    }
+
+    this._init = this._init.bind(this)
+  }
+
+  componentDidMount() {
+    this._init()
+  }
+
+  _init() {
+    this.setState({
+      result: this.props.navigation.getParam('pymResult')
+    })
   }
 
   render(){
-    const response = this.props.navigation.getParam('pymResult');
-    const req = this.props.navigation.getParam('pymResult');
-    const cart = this.props.navigation.getParam('cartItems');
-    console.log('payment response', response)
-    console.log('payment req', req)
-    console.log('cart,', cart)
+    const { result } = this.state
+    const { pymReq, purchaseItems} = this.props.cart
 
     // const { imp_success, success, imp_uid, merchant_uid, error_msg } = response;
 
@@ -44,16 +64,27 @@ class PaymentResultScreen extends Component {
 
     return (
       <SafeAreaView style={styles.container}>
-      <PaymentItemInfo cart={cart.orderItems}
-                       pymReq={this.props.navigation.getParam('pymReq')}/>     
-      <View style={{flex:1}}>
-      <View style={{flex:1, flexDirection: 'column', justifyContent: 'center', alignItems: 'stretch'}}>
-        {/* <Text>{`결제에 ${isSuccess ? '성공' : '실패'}하였습니다`}</Text> */}
-        <Text style={{alignSelf: 'center'}}>결제가 완료되었습니다.</Text>
-      </View>
-      </View>
+        <PaymentItemInfo cart={purchaseItems}
+                        pymReq={pymReq}/>     
+
+        <View style={styles.result}>
+          {/* <Text>{`결제에 ${isSuccess ? '성공' : '실패'}하였습니다`}</Text> */}
+          <Text style={{alignSelf: 'center'}}>결제가 완료되었습니다.</Text>
+        </View>
       </SafeAreaView>
     )
   }
 }
-export default PaymentResultScreen
+
+const mapStateToProps = (state) => ({
+  account: state.account.toJS(),
+  cart: state.cart.toJS(),
+})
+
+export default connect(mapStateToProps, 
+  (dispatch) => ({
+    action: {
+      cart : bindActionCreators(cartActions, dispatch),
+    }
+  })
+)(PaymentResultScreen)

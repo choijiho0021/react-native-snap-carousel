@@ -9,9 +9,8 @@ import {connect} from 'react-redux'
 
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
-import * as accountActions from '../redux/modules/account'
+import * as cartActions from '../redux/modules/cart'
 import utils from '../utils/utils';
-import paymentApi from '../utils/api/paymentApi';
 import { bindActionCreators } from 'redux'
 import { colors } from '../constants/Colors';
 import LabelText from '../components/LabelText';
@@ -46,7 +45,9 @@ class RechargeScreen extends Component {
         amount: utils.stringToNumber( this.state.selected)
       }
     ]
-    this.props.navigation.replace('PymMethod', {pymReq})
+
+    this.props.action.cart.purchase({pymReq})
+    this.props.navigation.replace('PymMethod')
     /*
     const { auth} = this.props.account,
       rch = { amount : this.state.selected }
@@ -216,6 +217,8 @@ const mapStateToProps = (state) => ({
 
 export default connect(mapStateToProps, 
   (dispatch) => ({
-    AccountActions : bindActionCreators(accountActions, dispatch)
+    action : {
+      cart : bindActionCreators(cartActions, dispatch)
+    }
   })
 )(RechargeScreen)

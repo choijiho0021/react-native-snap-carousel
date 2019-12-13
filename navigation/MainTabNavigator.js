@@ -65,8 +65,6 @@ const HomeStack = createStackNavigator(
     Contact: ContactScreen,
     ContactBoard: ContactBoardScreen,
     BoardMsgResp: BoardMsgRespScreen,
-    Payment: PaymentScreen,
-    PymMethod: PymMethodScreen,
     FindAddress: FindAddressScreen,
     CustomerProfile: CustomerProfileScreen,
     AddProfile: AddProfileScreen,
