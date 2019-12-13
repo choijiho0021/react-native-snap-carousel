@@ -98,8 +98,8 @@ export default function PaymentItemInfo({cart, pymReq}) {
       {
         ! _.isEmpty(cart) && cart.map(item =>
           <View style={styles.row} key={item.key}>
-            <Text key={item.title} style={styles.productPriceTitle}>{item.title+' x '+item.qty+i18n.t('qty')}</Text>
-            <Text key={item.title,item.amount}style={styles.normalText16}>{utils.price(item.totalPrice)}</Text>
+            <Text key="title" style={styles.productPriceTitle}>{item.title+' x '+item.qty+i18n.t('qty')}</Text>
+            <Text key="price" style={styles.normalText16}>{utils.price(item.price * item.qty)}</Text>
           </View>)
       }
       </View> 

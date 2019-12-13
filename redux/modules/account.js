@@ -202,6 +202,7 @@ export default handleActions({
       const {result, objects} = action.payload
       if (result == 0 && objects.length > 0) {
         return state.set('userId', objects[0].id)
+          .set('email', objects[0].mail)
           .set('userPictureUrl', objects[0].userPictureUrl)
       }
       return state

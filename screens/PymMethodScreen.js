@@ -33,7 +33,6 @@ class PymMethodScreen extends Component {
 
     this.state = {
       pymReq: [],
-      purchaseItems: [],
       // profile: undefined,
       selected: undefined,
       showModal: false
@@ -85,15 +84,11 @@ class PymMethodScreen extends Component {
     
     const pymReq = this.props.navigation.getParam('pymReq')
     const mode = this.props.navigation.getParam('mode')
-    const buyProduct = this.props.navigation.getParam('buyProduct')
-    const purchaseItems = this.props.navigation.getParam('purchaseItems')
 
     if ( pymReq ) {
       this.setState({
         pymReq,
         mode,
-        buyProduct,
-        purchaseItems
       })
     }
     this.props.action.order.getCustomerProfile(this.props.account.userId, this.props.auth)
@@ -216,7 +211,8 @@ class PymMethodScreen extends Component {
   }
 
   render() {
-    const { pymReq, purchaseItems} = this.state
+    const { pymReq } = this.state
+    const { purchaseItems } = this.props.cart
     
     console.log('PROPS',this.props) // cart에서 cart 목록과 sim 목록 받음.
 
@@ -226,11 +222,12 @@ class PymMethodScreen extends Component {
     console.log('sim', sim )
 
     return (
-      <SafeAreaView style={styles.container}>
-        <KeyboardAwareScrollView 
-          resetScrollToCoords={{ x: 0, y: 0 }}
-          extraScrollHeight={60}
-          innerRef={ref => { this.scroll = ref; }}>
+      <KeyboardAwareScrollView 
+        contentContainerStyle={styles.container}
+        resetScrollToCoords={{ x: 0, y: 0 }}
+        extraScrollHeight={60}
+        innerRef={ref => { this.scroll = ref; }}>
+        <SafeAreaView style={styles.container}> 
 
           <PaymentItemInfo cart={purchaseItems} pymReq={pymReq}/>         
 
@@ -250,8 +247,8 @@ class PymMethodScreen extends Component {
                       onPress={this._onSubmit}
                       style={appStyles.confirm}/> 
                 
-        </KeyboardAwareScrollView>      
-      </SafeAreaView>
+        </SafeAreaView>
+      </KeyboardAwareScrollView>      
             
     )
   }

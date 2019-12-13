@@ -20,6 +20,7 @@ import ChargeSummary from '../components/ChargeSummary';
 import { SafeAreaView } from 'react-navigation'
 import utils from '../utils/utils';
 import {Map} from 'immutable'
+import _ from 'underscore'
 
 class CartScreen extends Component {
   static navigationOptions = {
@@ -60,21 +61,23 @@ class CartScreen extends Component {
   _init() {
     const { cart} = this.props
 
-    this.setState({
-      qty: new Map(cart.orderItems.reduce((acc,cur) => ({
-        ... acc,
-        [cur.prod.uuid] : cur.qty
-      }), {})),
-      checked: new Map(cart.orderItems.reduce((acc,cur) => ({
-        ... acc,
-        [cur.prod.uuid] : true
-      }), {})),
-      data : cart.orderItems,
-      total: cart.orderItems.reduce((acc,cur) => ({
-        cnt: acc.cnt+ cur.qty, 
-        price: acc.price + cur.qty * cur.price
-      }), {cnt: 0, price:0})
-    })
+    if ( ! _.isEmpty(cart.orderItems)) {
+      this.setState({
+        qty: new Map(cart.orderItems.reduce((acc,cur) => ({
+          ... acc,
+          [cur.prod.uuid] : cur.qty
+        }), {})),
+        checked: new Map(cart.orderItems.reduce((acc,cur) => ({
+          ... acc,
+          [cur.prod.uuid] : true
+        }), {})),
+        data : cart.orderItems,
+        total: cart.orderItems.reduce((acc,cur) => ({
+          cnt: acc.cnt+ cur.qty, 
+          price: acc.price + cur.qty * cur.price
+        }), {cnt: 0, price:0})
+      })
+    }
   }
 
   _onChangeQty(uuid, cnt) {
@@ -125,13 +128,12 @@ class CartScreen extends Component {
       ]
 
       const purchaseItems = data.map(item => ({
-        ... item, 
+        ... item,
         qty: checked.get(item.key) && qty.get(item.key)
       })).filter(item => item.qty > 0)
 
-      console.log('cart', pymReq, purchaseItems, data, qty.toJS())
-
-      this.props.navigation.navigate('PymMethod', {pymReq, purchaseItems})
+      this.props.action.cart.purchase(purchaseItems)
+      this.props.navigation.navigate('PymMethod', {pymReq})
     }
   }
 

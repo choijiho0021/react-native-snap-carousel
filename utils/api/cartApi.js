@@ -21,6 +21,7 @@ class CartAPI {
                                 variationId: o.purchased_entity.variation_id,
                                 uuid: o.purchased_entity.uuid,
                                 type: o.purchased_entity.type,
+                                sku: o.purchased_entity.sku,
                             },
                             title: o.title,
                             qty: utils.stringToNumber( o.quantity),
@@ -93,7 +94,7 @@ class CartAPI {
    *   ];
    * */
     makePayment = (orderId, {token}) => {
-        const url = `${api.httpUrl(api.path.payment, '')}/create/${orderId}?_format=json`
+        const url = `${api.httpUrl(api.path.commerce.payment, '')}/create/${orderId}?_format=json`
         const headers = api.withToken( token, 'json')
         const body = {
             gateway: 'iamport',
@@ -106,6 +107,81 @@ class CartAPI {
             headers,
             body: JSON.stringify(body)
         }, this.toCart)
+    }
+
+    /*
+    *
+        * @RestResource(
+    *   id = "commerce_decoupled_checkout_order_create",
+    *   label = @Translation("Commerce Order create"),
+    *   uri_paths = {
+    *     "create" = "/commerce/order/create"
+    *   }
+    * )
+   *    'order' => [
+   *      'type' => 'default', // optional. Order bundle name. Defaults to "default".
+   *      'email' => 'customer@example.com', // optional. Defaults to user email.
+   *      'store' => 1, // optional. Store ID. Defaults to the default store in the system.
+   *      'field_name' => 'value', // optional. Any additional order field value.
+   *      'order_items' => [ // optional.
+   *        [
+   *          'type' => 'default', // optional. Order item bundle name. Defaults to "default".
+   *          'title' => '', // optional, defaults to referenced purchasable entity label.
+   *          'quantity' => 1, // optional. Defaults to 1.
+   *          'unit_price' => [ // optional. Only if need to override product price. Defaults to purchased_entity price * quantity.
+   *            'number' => 5, // required if unit_price is defined.
+   *            'currency_code' => // required if unit_price is defined.
+   *          ],
+   *          'purchased_entity' => [ // required if order_items is defined.
+   *            'sku' => 'PRODUCT_SKU', // required. Product variation SKU.
+   *          ],
+   *          'field_name' => 'value', // optional. Any additional order item field value.
+   *        ],
+   *      ],
+   *    ],
+   *    // User profile associated with the order.
+   *    'profile' => [
+   *      'type' => 'customer', // optional. Profile bundle name. Defaults to "customer".
+   *      'status' => FALSE, // optional. Activates profile after creation. Defaults to FALSE.
+   *      'field_name' => 'value', // optional. Any additional profile field value.
+   *    ],
+   *    // A user account associated with the transaction.
+   *    // Creates a new user if didn't not exist, or uses existing one.
+   *    // In the second case fields WILL NOT be updated.
+   *    'user' => [
+   *      'mail' => 'user@example.com', // required.
+   *      'name' => 'Kate',  // optional. User account name. Defaults to email value.
+   *      'status' => FALSE, // optional. Actives user account after creation. Defaults to FALSE.
+   *      'field_name' => 'value', // optional. Any additional user field value.
+   *    ],
+   *    // If you want to process the payment alongside with order submission,
+   *    // then fill in the details of this field. Otherwise you can skip it
+   *    // and use other REST endpoints to handle payments separately.
+   *    'payment' => [
+   *      'gateway' => 'paypal_test', // required. Commerce Payment Gateway name.
+   *      'type' => 'paypal_ec', // required. Commerce Payment Type name.
+   *      'details' => [], // optional. Payment details associated with the payment.
+   *    ],
+   *  ];
+   */
+
+    makeOrder = (items, {mobile, mail, token}) => {
+        const url = `${api.httpUrl(api.path.commerce.order, '')}/create?_format=json`
+        const headers = api.withToken( token, 'json')
+        const body = {
+            order_items: items,
+            user: {
+                mail,
+                name: mobile
+            }
+        }
+
+        return api.callHttp(url, {
+            method: 'post',
+            headers,
+            body: JSON.stringify(body)
+        }, this.toCart)
+ 
     }
 }
 
