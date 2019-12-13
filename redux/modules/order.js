@@ -2,6 +2,7 @@ import { createAction, handleActions } from 'redux-actions';
 import { pender } from 'redux-pender'
 import { Map, List } from 'immutable';
 import orderApi from '../../utils/api/orderApi'
+import findEngAddress from '../../utils/findEngAddress';
 
 const  UPDATE_ADDRESS = 'rokebi/order/UPDATE_ADDRESS'
 const  ADD_DELIVERY_ADDRESS_LIST = 'rokebi/order/ADD_DELIVERY_ADDRESS_LIST'
@@ -10,6 +11,7 @@ const  UPDATE_PROFILE_ADDRESS = 'rokebi/order/UPDATE_PROFILE_ADDRESS'
 const  GET_CUSTOMER_PROFILE = 'rokebi/order/GET_CUSTOMER_PROFILE'
 const  ADD_CUSTOMER_PROFILE = 'rokebi/order/ADD_CUSTOMER_PROFILE'
 const  UPDATE_CUSTOMER_PROFILE = 'rokebi/order/UPDATE_CUSTOMER_PROFILE'
+const  DELETE_CUSTOMER_PROFILE = 'rokebi/order/DELETE_CUSTOMER_PROFILE'
 export const  GET_ORDERS = 'rokebi/order/GET_ORDERS'
 
   // add address list
@@ -20,6 +22,7 @@ export const updateProfileAddress = createAction(UPDATE_PROFILE_ADDRESS)
 export const getCustomerProfile = createAction(GET_CUSTOMER_PROFILE, orderApi.getCustomerProfile)
 export const addCustomerProfile = createAction(ADD_CUSTOMER_PROFILE, orderApi.addCustomerProfile)
 export const updateCustomerProfile = createAction(UPDATE_CUSTOMER_PROFILE, orderApi.updateCustomerProfile)
+export const delCustomerProfile = createAction(DELETE_CUSTOMER_PROFILE, orderApi.delCustomerProfile)
 export const getOrders = createAction(GET_ORDERS, orderApi.getOrders)
 
 const initialState = Map({
@@ -29,6 +32,23 @@ const initialState = Map({
     profile: [],
     addr: {}
 })
+
+export const profileDelAndGet = (uuid ,account) => {
+  return (dispatch,getState) => {
+    
+    return dispatch(delCustomerProfile(uuid ,account)).then(
+      resp => {
+        if (resp.result == 0 ) {
+          return dispatch(getCustomerProfile(account))
+        }
+        throw new Error('Failed to delete Profile')
+      },
+      err => {
+        throw err
+      })
+  }
+}
+
 
 export default handleActions({
   [ADD_DELIVERY_ADDRESS_LIST]: (state, action) => {
@@ -59,7 +79,10 @@ export default handleActions({
 
   [UPDATE_PROFILE_ADDRESS]: (state, action) => {
     console.log('update profile address!! action', action)
-    return state.set('addr', action.payload)
+    return state.set('addr', {
+      ... action.payload,
+      // provinceCd : findEngAddress.city[provinceNumber]
+    })
   },
 
   ... pender({
@@ -78,9 +101,10 @@ export default handleActions({
     type: GET_CUSTOMER_PROFILE,
     onSuccess: (state, action) => {
       const {result, objects} = action.payload
-      console.log('CUSTOMER PROFILE', objects)
+      
       if (result == 0 && objects.length > 0) {
-        return state.set('profile', objects)
+        return state.set('profile', 
+          objects.filter(item => item.isBasicAddr).concat(objects.filter(item => !item.isBasicAddr)))
       }
       return state
     }
@@ -90,9 +114,10 @@ export default handleActions({
     type: ADD_CUSTOMER_PROFILE,
     onSuccess: (state, action) => {
       const {result, objects} = action.payload
-      console.log('ADD CUSTOMER PROFILE!!', objects)
+
       if (result == 0 && objects.length > 0) {
-        return state.set('profile', objects)
+        return state.update('profile', 
+          value => objects[0].isBasicAddr ? objects.concat(value) : value.concat(objects))  
       }
       return state
     }
@@ -102,27 +127,31 @@ export default handleActions({
     type: UPDATE_CUSTOMER_PROFILE,
     onSuccess: (state, action) => {
       const {result, objects} = action.payload
-      console.log('UPDATE CUSTOMER PROFILE', objects)
+
       if (result == 0 && objects.length > 0) {
-        return state.set('profile', objects)
+        console.log('pender update', objects)
+        const profile = state.get('profile')
+        const idx = profile.findIndex(item => item.uuid == objects[0].uuid)
+        profile[idx] = objects[0]
+
+        return state.update('profile', 
+          value => value.filter(item => item.isBasicAddr).concat(value.filter(item => !item.isBasicAddr)))
       }
       return state
     }
   }),    
 
-  // notiReadAndGet = (uuid,mobile,auth) => {
-  //   return (dispatch,getState) => {
-  //     return dispatch(readNoti(uuid,auth)).then(
-  //       resp => {
-  //         if (resp.result == 0 && resp.objects.length > 0) {
-  //           return dispatch(getNotiList(mobile))
-  //         }
-  //         throw new Error('Failed to read Noti and Get notiList')
-  //       },
-  //       err => {
-  //         throw err
-  //       })
+  // ... pender({
+  //   type: DELETE_CUSTOMER_PROFILE,
+  //   onSuccess: (state, action) => {
+  //     const {result, objects} = action.payload
+
+  //     if (result == 0) {
+  //       return state.update('profile', 
+  //         value => value.filter(item => item.uuid != objects[0].uuid))
+  //     }
+  //     return state
   //   }
-  // },  
+  // }),  
 
 }, initialState)

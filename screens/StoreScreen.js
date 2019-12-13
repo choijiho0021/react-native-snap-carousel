@@ -24,6 +24,7 @@ import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import AppActivityIndicator from '../components/AppActivityIndicator';
+import { set } from 'immutable';
 
 class CountryItem extends Component {
   constructor(props) {
@@ -49,7 +50,8 @@ class CountryItem extends Component {
           elm ? <View key={elm.ccode + idx} style={{flex:1, marginLeft:idx == 1 ? 14 : 0}}>
             <TouchableOpacity onPress={() => this.props.onPress && this.props.onPress(elm.uuid)}>
               <Image key={"img"} source={{uri:api.httpImageUrl(elm.imageUrl == '' ? elm.subImageUrl : elm.imageUrl)}} style={styles.image}/>
-              <Text key={"cntry"} style={[appStyles.bold14Text,{marginBottom:5}]}>{elm.cntry.size > 1 ? elm.name : elm.cntry}</Text>
+              {/* cntry가 Set이므로 첫번째 값을 가져오기 위해서 values().next().value를 사용함 */}
+              <Text key={"cntry"} style={[appStyles.bold14Text,{marginBottom:5}]}>{elm.categoryId == productApi.category.multi ? elm.name : elm.cntry.values().next().value}</Text>
               <Text key={"from"} style={styles.from}>{i18n.t('from')}</Text>
               <Text key={"price"} style={[appStyles.price,styles.text]}>{utils.numberToCommaString(elm.price)}
               <Text key={"days"} style={[appStyles.normal14Text,styles.text]}>{`${i18n.t('won')}/${i18n.t('day')}`}</Text>
@@ -272,7 +274,7 @@ class StoreScreen extends Component {
           
 
           item.key = item.uuid 
-          item.cntry = new Set([country.getName(item.ccode)])
+          item.cntry = new Set(country.getName(item.ccode))
 
           const idxCcode = acc.findIndex(elm => item.categoryId == multi ? elm.uuid == item.uuid : elm.ccode == item.ccode)
           if ( idxCcode < 0) {
@@ -328,7 +330,7 @@ class StoreScreen extends Component {
   _onPressItem = (key) => {
     const country = this.state.allData.filter(elm => elm.uuid == key)[0]
     this.props.action.product.selectCountry({uuid: key})
-    this.props.navigation.navigate('Country',{title:country.categoryId == productApi.category.multi ? country.name : country.cntry})
+    this.props.navigation.navigate('Country',{title:country.categoryId == productApi.category.multi ? country.name : country.cntry.values().next().value})
   }
 
   /*

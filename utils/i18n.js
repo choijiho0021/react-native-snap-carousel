@@ -177,6 +177,7 @@ const en = {
   'addr:recipient' : 'Recipient',
   'addr:recipientNumber' : 'Phone Number',
   'addr:address' : 'Address',
+  'addr:basicAddress' : 'Default Address',
   'addr:enterWithin50' : 'Input the recipient',
 
   "his:detail" : "Details >",
@@ -441,6 +442,7 @@ const ko = {
   'addr:recipient' : '수령인',
   'addr:recipientNumber' : '연락처',
   'addr:address' : '배송지',
+  'addr:basicAddress' : '기본배송지로 선택',
   'addr:enterWithin50' : '50자 이내로 입력하세요',
 
   "his:detail" : "상세 내역",

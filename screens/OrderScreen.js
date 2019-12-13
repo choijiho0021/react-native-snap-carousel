@@ -46,14 +46,14 @@ class OrderScreen extends Component {
   }
 
   componentDidMount() {
-    const { userId, auth } = this.props.account
+    const { userId, token } = this.props.account
 
     if ( ! _.isEmpty(userId)) {
       this.setState({
         querying: api.API_STATUS_TRYING
       })
       // read delivery address
-      orderApi.getCustomerProfile(userId, auth).then(resp => {
+      orderApi.getCustomerProfile({userId, token}).then(resp => {
         if ( resp.result == 0) {
           console.log('addr', resp.objects)
           this.props.addDeliveryAddressList(resp.objects)
@@ -120,7 +120,7 @@ class OrderScreen extends Component {
   _renderAddress(addr) {
     if (this.state.querying != api.API_STATUS_DONE) return null
 
-    // SIM ㅋㅏ드가 없으면 배송 주소는 표시하지 않는다. 
+    // SIM 카드가 없으면 배송 주소는 표시하지 않는다. 
     const {sim} = this.props
     if ( ! sim || sim.cart.length == 0) return null
 
