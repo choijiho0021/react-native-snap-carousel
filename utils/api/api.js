@@ -154,7 +154,7 @@ class Api {
             console.log('result url:', url, response.status)
             if ( response.ok) {
                 if ( _.isFunction(callback)) {
-                    if ( isJson) {
+                    if ( response.status != 204 && isJson) {
                         return response.json().then(json => {
                             console.log('response:', JSON.stringify(json))
                             return callback(json)

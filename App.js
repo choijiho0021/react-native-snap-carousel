@@ -16,12 +16,13 @@ import Video from 'react-native-video'
 import userApi from './utils/api/userApi';
 import utils from './utils/utils';
 import * as accountActions from './redux/modules/account'
+import * as productActions from './redux/modules/product'
 
 const logger = createLogger()
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(reducer, composeEnhancers(
-  //applyMiddleware( logger, ReduxThunk, penderMiddleware())
-  applyMiddleware( ReduxThunk, penderMiddleware())
+  applyMiddleware( logger, ReduxThunk, penderMiddleware())
+  //applyMiddleware( ReduxThunk, penderMiddleware())
   ))
 
 let SplashScreen = undefined
@@ -32,6 +33,9 @@ if ( Constants.appOwnership !== 'expo') {
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
   const [showSplash, setShowSplash] = useState(true)
+
+  // load product list
+  store.dispatch(productActions.getProdList())
 
   //아래 코드는 expo doc 참고후 사용 해야함. 아직은 experimental이라고 되어 있음 
   //StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);

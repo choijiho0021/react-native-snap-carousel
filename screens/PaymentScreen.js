@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native'
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as cartActions from '../redux/modules/cart'
+import Video from 'react-native-video'
 
 import Constants from 'expo-constants'
 
@@ -21,6 +22,9 @@ else {
 }
 
 class PaymentScreen extends Component{
+  static navigationOptions = {
+    header: null,
+  }
 
   constructor(props) {
     super(props)
@@ -55,6 +59,7 @@ class PaymentScreen extends Component{
       <View style={styles.container}>
         <IMP.Payment
           userCode={impId}
+          loading={<Video source={require('../assets/images/loading_1.mp4')} style={styles.backgroundVideo} />} 
           data={params}             // 결제 데이터
           callback={response => this._callback(response)}
           style={styles.webview}
@@ -80,6 +85,13 @@ const styles = StyleSheet.create({
     width:"100%",
     borderWidth: 1
   },
+  backgroundVideo: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  }
 })
 
 export default connect(undefined, 

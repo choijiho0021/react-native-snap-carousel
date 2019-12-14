@@ -105,36 +105,12 @@ class CartScreen extends Component {
       this.props.navigation.navigate('RegisterMobile')
     }
     else {
-      // remove items from cart
-      /*
-      cart.orderItems.forEach(item => {
-        const itemQty = qty.get(item.prod.uuid)
-        if ( item.qty != itemQty) {
-          console.log('qty changed', item)
-
-          if ( itemQty < 0) this.props.action.cart.cartRemove( cart.orderId, item.orderItemId)
-          else this.props.action.cart.cartUpdate( cart.orderId, item.orderItemId, itemQty)
-        }
-      })
-
-      const pymReq = [
-        {
-          key: 'total',
-          title: i18n.t('sim:rechargeAmt'),
-          amount: total.price
-        },      
-        {
-          key: 'dlvCost',
-          title: i18n.t('cart:dlvCost'),
-          amount: dlvCost
-        }
-      ]
-      */
-
-      const purchaseItems = data.map(item => ({
-        ... item,
-        qty: checked.get(item.key) && qty.get(item.key)
-      })).filter(item => item.qty > 0)
+      const purchaseItems = data.filter(item => checked.get(item.key) && qty.get(item.key) > 0)
+        .map(item => ({
+          ... item,
+          sku: item.prod.sku,
+          qty: qty.get(item.key)
+        }))
 
       this.props.action.cart.purchase({purchaseItems, dlvCost: dlvCost > 0})
       this.props.navigation.navigate('PymMethod')

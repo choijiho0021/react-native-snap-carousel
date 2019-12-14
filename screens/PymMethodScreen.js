@@ -198,10 +198,9 @@ class PymMethodScreen extends Component {
   }
 
   render() {
-    const { selected } = this.state
-    const { purchaseItems, pymReq } = this.props.cart
-    
-    const simIncluded = (this.props.cart.orderItems || []).findIndex(item => item.prod && item.prod.type == 'sim_card') >= 0
+    const { selected } = this.state,
+      { purchaseItems = [], pymReq } = this.props.cart,
+      simIncluded = purchaseItems.findIndex(item => item.prod && item.prod.type == 'sim_card') >= 0
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>

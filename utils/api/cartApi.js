@@ -67,8 +67,10 @@ class CartAPI {
         return api.callHttp(url, {
             method: 'delete',
             headers,
-        }, this.toCart)
- 
+        }, (response) => {
+            if ( response.status == 204) return api.success([])
+            return api.failure( api.NOT_FOUND)
+        })
     }
 
     update = (orderId, orderItemId, qty) => {
@@ -187,7 +189,9 @@ class CartAPI {
             method: 'post',
             headers,
             body: JSON.stringify(body)
-        }, this.toCart)
+        }, () => {
+            return api.success([])
+        })
  
     }
 }

@@ -16,6 +16,7 @@ const MAKE_ORDER = 'rokebi/cart/MAKE_ORDER'
 const PURCHASE = 'rokebi/cart/PURCHASE'
 const PYM_RESULT = 'rokebi/cart/PYM_RESULT'
 const SET_LAST_TAB = 'rokebi/cart/SET_LAST_TAB'
+const EMPTY = 'rokebi/cart/EMPTY'
 
 export const CART_ADD = 'rokebi/cart/CART_ADD'
 export const CART_REMOVE = 'rokebi/cart/CART_REMOVE'
@@ -34,6 +35,7 @@ export const purchase = createAction(PURCHASE)
 export const makePayment = createAction(MAKE_PAYMENT, cartApi.makePayment) 
 export const makeOrder = createAction(MAKE_ORDER, cartApi.makeOrder) 
 export const pymResult = createAction(PYM_RESULT)
+export const empty = createAction(EMPTY)
 
 export const setLastTab = createAction(SET_LAST_TAB)
 
@@ -49,20 +51,20 @@ export const payNorder = (result) => {
     // update payment result
     dispatch(pymResult(result))
 
-    return dispatch(makeOrder(cart.get('purchaseItems'), auth))
-  }
-}
+    // remove ordered items from the cart
+    const orderId = cart.get('orderId'),
+      orderItems = cart.get('orderItems'),
+      purchaseItems = cart.get('purchaseItems')
 
-export const order = (items) => {
-  return (dispatch,getState) => {
-    const { account } = getState(),
-      auth = {
-        token: account.get('token'),
-        mail: account.get('email'),
-        user: account.get('mobile')
+    purchaseItems.forEach(item => {
+      if ( orderItems.findIndex(o => o.orderItemId == item.orderItemId) >= 0) {
+        // remove ordered item
+        dispatch( cartRemove( orderId, item.orderItemId))
       }
+    })
 
-    return dispatch(makeOrder(items, auth))
+    // make order in the server
+    return dispatch(makeOrder( purchaseItems, auth))
   }
 }
 
@@ -112,6 +114,11 @@ export default handleActions({
   // set last tab
   [SET_LAST_TAB]: (state,action) => {
     return state.set('lastTab', action.payload)
+  },
+
+  // empty cart
+  [EMPTY]: (state,action) => {
+    return state.set('purchaseItems', [])
   },
 
   // 구매할 품목을 저장한다. 

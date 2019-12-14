@@ -35,7 +35,9 @@ class PaymentResultScreen extends Component {
     super(props)
 
     this.state = {
-      result : {}
+      result : {},
+      purchaseItems: [],
+      pymReq: []
     }
 
     this._init = this._init.bind(this)
@@ -46,13 +48,20 @@ class PaymentResultScreen extends Component {
   }
 
   _init() {
+    const { pymReq, purchaseItems} = this.props.cart
+
     this.setState({
-      result: this.props.navigation.getParam('pymResult')
+      result: this.props.navigation.getParam('pymResult'),
+      purchaseItems,
+      pymReq
     })
+
+    console.log('empty cart', purchaseItems, pymReq)
+    this.props.action.cart.empty()
   }
 
   render() {
-    const { pymReq, purchaseItems} = this.props.cart
+    const { pymReq, purchaseItems} = this.state
     const { imp_success, success} = this.state.result
 
     // [WARNING: 이해를 돕기 위한 것일 뿐, imp_success 또는 success 파라미터로 결제 성공 여부를 장담할 수 없습니다.]
