@@ -24,8 +24,8 @@ import api from '../utils/api/api';
 import { attachmentSize } from '../constants/SliderEntry.style'
 
 class BoardMsgRespScreen extends Component {
-  static navigationOptions = (navigation) => ({
-    headerLeft: AppBackButton({navigation, title:i18n.t('board:title')}),
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('board:title')} />
   })
 
   constructor(props) {

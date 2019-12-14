@@ -16,8 +16,8 @@ import {colors} from '../constants/Colors'
 import { appStyles } from '../constants/Styles';
 
 class ContactBoardScreen extends Component {
-  static navigationOptions = (navigation) => ({
-    headerLeft: AppBackButton({navigation, title:i18n.t('board:title')}),
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('board:title')} />
   })
 
   constructor(props) {

@@ -21,8 +21,8 @@ import AppButton from '../components/AppButton';
 import AppIcon from '../components/AppIcon';
 
 class CustomerProfileScreen extends Component {
-  static navigationOptions = (navigation) => ({
-    headerLeft: AppBackButton({navigation, title:i18n.t('pym:delivery')}),
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('pym:delivery')} />
   })
 
   constructor(props) {

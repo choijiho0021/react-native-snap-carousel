@@ -21,13 +21,12 @@ import { SafeAreaView } from 'react-navigation'
 import utils from '../utils/utils';
 import {Map} from 'immutable'
 import _ from 'underscore'
+import AppBackButton from '../components/AppBackButton';
 
 class CartScreen extends Component {
-  static navigationOptions = {
-    headerLeft: (
-      <Text style={[appStyles.title, {marginLeft:22}]}>{i18n.t('cart')}</Text>
-    ),
-  }
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('cart')} back="lastTab"/>
+  })
 
   constructor(props) {
     super(props)

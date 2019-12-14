@@ -19,9 +19,8 @@ import utils from '../utils/utils';
 import AppButton from '../components/AppButton';
 
 class SimpleTextScreen extends Component {
-  static navigationOptions = (navigation) => ({
-    headerLeft: AppBackButton({navigation, title:navigation.navigation.getParam('title')}),
-    tabBarVisible: false,
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: <AppBackButton navigation={navigation} title={navigation.getParam('title')} />,
   })
 
   constructor(props) {

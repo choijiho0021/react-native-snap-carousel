@@ -27,8 +27,8 @@ const styles = StyleSheet.create({
 
 class PaymentResultScreen extends Component {
 
-  static navigationOptions = (navigation) => ({
-    headerLeft: AppBackButton({navigation, title:i18n.t('home'), reset: true}),
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('home')} back="top" />
   })
 
   constructor(props){

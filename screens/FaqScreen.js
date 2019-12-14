@@ -40,8 +40,8 @@ class FaqList extends Component {
 }
 
 class FaqScreen extends Component {
-  static navigationOptions = (navigation) => ({
-    headerLeft: AppBackButton({navigation, title:i18n.t('contact:faq')}),
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('contact:faq')} />
   })
 
   constructor(props) {

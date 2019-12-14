@@ -2,6 +2,9 @@ import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { createStackNavigator } from 'react-navigation-stack';
 import {createBottomTabNavigator } from 'react-navigation-tabs';
+import {connect} from 'react-redux'
+import * as cartActions from '../redux/modules/cart'
+import { bindActionCreators } from 'redux'
 
 import AppIcon from '../components/AppIcon';
 import HomeScreen from '../screens/HomeScreen';
@@ -20,9 +23,6 @@ import withBadge from '../components/withBadge'
 import NewSimScreen from '../screens/NewSimScreen';
 import MyPageScreen from '../screens/MyPageScreen';
 import NotiScreen from '../screens/NotiScreen';
-import DeliveryAddressScreen from '../screens/DeliveryAddressScreen';
-import OrderScreen from '../screens/OrderScreen';
-import UpdateAddressScreen from '../screens/UpdateAddressScreen';
 import PaymentScreen from '../screens/PaymentScreen';
 import PaymentResultScreen from '../screens/PaymentResultScreen';
 import PurchaseDetailScreen from '../screens/PurchaseDetailScreen';
@@ -53,6 +53,7 @@ const config = Platform.select({
   },
 });
 
+
 const HomeStack = createStackNavigator(
   {
     Home: HomeScreen,
@@ -74,15 +75,13 @@ const HomeStack = createStackNavigator(
   config
 );
 
-HomeStack.navigationOptions = ({navigation}) => {
-  return {
-    tabBarVisible: navigation.state.index == 0,
-    tabBarLabel: i18n.t('home'),
-    tabBarIcon: ({ focused }) => (
-      <AppIcon focused={focused} name="btnHome" style={styles.tabBarIcon}/>
-    ),
-  }
-};
+HomeStack.navigationOptions = ({navigation}) => ({
+  tabBarVisible: navigation.state.index == 0,
+  tabBarLabel: i18n.t('home'),
+  tabBarIcon: ({ focused }) => (
+    <AppIcon focused={focused} name="btnHome" style={styles.tabBarIcon}/>
+  ),
+})
 
 HomeStack.path = '';
 
@@ -95,18 +94,16 @@ const StoreStack = createStackNavigator(
     NewSim: NewSimScreen,
     SimpleText: SimpleTextScreen,
   },
-  config
+  config, 
 );
 
-StoreStack.navigationOptions =  ({navigation}) => {
-  return {
-    tabBarVisible: navigation.state.index == 0,
-    tabBarLabel: i18n.t('store'),
-    tabBarIcon: ({ focused }) => (
-      <AppIcon focused={focused} name="btnStore" style={styles.tabBarIcon}/>
-    ),
-  }
-};
+StoreStack.navigationOptions =  ({navigation}) => ({
+  tabBarVisible: navigation.state.index == 0,
+  tabBarLabel: i18n.t('store'),
+  tabBarIcon: ({ focused }) => (
+    <AppIcon focused={focused} name="btnStore" style={styles.tabBarIcon}/>
+  ),
+})
 
 StoreStack.path = '';
 
@@ -146,9 +143,6 @@ MyPageStack.path = '';
 const CartStack = createStackNavigator(
   {
     Cart: CartScreen,
-    Order: OrderScreen,
-    DeliveryAddress: DeliveryAddressScreen,
-    UpdateAddress: UpdateAddressScreen,
     Payment: PaymentScreen,
     PymMethod: PymMethodScreen,
     FindAddress: FindAddressScreen,
@@ -165,16 +159,19 @@ const BadgedIcon = withBadge(({cartItems}) => cartItems, {badgeStyle : {left:10}
   (state) => ({
     cartItems: (state.cart.get('orderItems') || []).reduce((acc,cur) => acc + cur.qty, 0)
   }))(AppIcon)
+
 CartStack.navigationOptions = {
+  tabBarVisible: false,
   tabBarLabel: i18n.t('cart'),
   tabBarIcon: ({ focused }) => (
     <BadgedIcon focused={focused} name="btnCart" style={styles.tabBarIcon}/>
   ),
-};
+}
 
 CartStack.path = '';
 
-const tabNavigator = createBottomTabNavigator({
+
+const TabNavigator = createBottomTabNavigator({
   HomeStack,
   StoreStack,
   CartStack,
@@ -186,10 +183,11 @@ const tabNavigator = createBottomTabNavigator({
     style: {
       height: 56,
     }
-  }
+  },
+  safeAreaInset: {top: 'never', bottom:"always"},
 });
 
-tabNavigator.path = '';
+TabNavigator.path = '';
 
 const styles = StyleSheet.create({
   tabBarIcon: {
@@ -197,4 +195,30 @@ const styles = StyleSheet.create({
   }
 })
  
-export default tabNavigator;
+class AppTabNavigator extends React.Component {
+  static router = TabNavigator.router
+
+  componentDidUpdate(prevProps) {
+    if ( prevProps.navigation.state != this.props.navigation.state) {
+      console.log( 'tab updated', this.props.navigation.state)
+      const {navigation} = prevProps,
+        lastTab = navigation.state.routes[navigation.state.index].routeName
+
+      this.props.action.cart.setLastTab(lastTab)
+    }
+  }
+
+  render() {
+    const { navigation } = this.props
+
+    return <TabNavigator navigation={navigation} />
+  }
+}
+
+export default connect(undefined,
+  (dispatch) => ({
+    action:{
+      cart: bindActionCreators(cartActions, dispatch),
+    }
+  })
+)(AppTabNavigator)

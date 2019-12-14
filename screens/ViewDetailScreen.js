@@ -21,8 +21,8 @@ import { ScrollView } from 'react-native-gesture-handler';
 import AppBackButton from '../components/AppBackButton';
 
 class ViewDetailScreen extends Component {
-  static navigationOptions = (navigation) => ({
-    headerLeft: AppBackButton({navigation, title:i18n.t('view:detail')})
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('view:detail')}/>
   })
 
   constructor(props) {

@@ -19,7 +19,6 @@ const initialState = Map({
   iccid: undefined,
   simPartner: undefined,
   simList: List(),
-  cart: List(),
 })
 
 export default handleActions({

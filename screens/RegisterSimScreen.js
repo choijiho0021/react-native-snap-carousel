@@ -27,8 +27,8 @@ import userApi from '../utils/api/userApi';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 class RegisterSimScreen extends Component {
-  static navigationOptions = (navigation) => ({
-    headerLeft: AppBackButton({navigation, title:i18n.t('sim:reg')}),
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('sim:reg')} />
   })
 
   constructor(props) {

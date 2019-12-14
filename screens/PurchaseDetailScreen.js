@@ -13,8 +13,8 @@ import { colors } from '../constants/Colors';
 import LabelText from '../components/LabelText';
 
 class PurchaseDetailScreen extends Component {
-  static navigationOptions = (navigation) => ({
-    headerLeft: AppBackButton({navigation, title:i18n.t('his:detail')}),
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('his:detail')} />
   })
 
   constructor(props) {

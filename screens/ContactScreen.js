@@ -17,8 +17,8 @@ import AppIcon from '../components/AppIcon';
 
 
 class ContactScreen extends Component {
-  static navigationOptions = (navigation) => ({
-    headerLeft: AppBackButton({navigation, title:i18n.t('contact:title')}),
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('contact:title')} />
   })
 
 

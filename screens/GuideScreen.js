@@ -19,8 +19,8 @@ import AppFlatListItem from '../components/AppFlatListItem';
 
 
 class GuideScreen extends Component {
-  static navigationOptions = (navigation) => ({
-    headerLeft: AppBackButton({ navigation, title: i18n.t('guide:title') }),
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('guide:title') } />
   })
 
   constructor(props) {

@@ -30,11 +30,11 @@ import AppAlert from '../components/AppAlert';
 import AppCartButton from '../components/AppCartButton';
 
 class CountryScreen extends Component {
-  static navigationOptions = (navigation) => ({
+  static navigationOptions = ({navigation}) => ({
     //todo 해당 국가 이름으로 변경해야함 
-    headerLeft: AppBackButton({navigation, title:navigation.navigation.getParam('title')}),
+    headerLeft: <AppBackButton navigation={navigation} title={navigation.getParam('title')} />,
     headerRight: (
-      <AppCartButton style={styles.btnCartIcon} onPress={() => navigation.navigation.navigate('Cart')} />
+      <AppCartButton style={styles.btnCartIcon} onPress={() => navigation.navigate('Cart')} />
     )
   })
 

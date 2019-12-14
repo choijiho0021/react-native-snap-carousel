@@ -22,14 +22,10 @@ import _ from 'underscore'
 import {colors} from '../constants/Colors'
 import { appStyles } from '../constants/Styles';
 import AppBackButton from '../components/AppBackButton';
-import UpdateAddressScreen from '../screens/UpdateAddressScreen';
-import { SafeAreaView} from 'react-navigation'
-import AppIcon from '../components/AppIcon';
 
 class FindAddressScreen extends Component {
-  static navigationOptions = (navigation) => ({
-    headerLeft: AppBackButton({navigation, title:i18n.t('purchase:address')}),
-    tabBarVisible: true,
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('purchase:address')} />
   })
 
   constructor(props) {

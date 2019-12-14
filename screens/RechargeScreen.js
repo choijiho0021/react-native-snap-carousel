@@ -20,8 +20,8 @@ import { SafeAreaView } from 'react-navigation';
 import AppBackButton from '../components/AppBackButton';
 
 class RechargeScreen extends Component {
-  static navigationOptions = (navigation) => ({
-    headerLeft: AppBackButton({navigation, title:i18n.t('recharge')}),
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('recharge')} />
   })
 
   constructor(props) {

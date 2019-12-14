@@ -17,9 +17,8 @@ import LabelText from '../components/LabelText';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 
 class MySimScreen extends Component {
-  static navigationOptions = (navigation) => ({
-    headerLeft: AppBackButton({navigation, title:i18n.t('acc:mysim')}),
-    tabBarVisible: false,
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('acc:mysim')} />,
   })
 
   constructor(props) {

@@ -28,8 +28,8 @@ import { Map } from 'immutable'
 import validationUtil from '../utils/validationUtil';
 
 class RegisterMobileScreen extends Component {
-  static navigationOptions = (navigation) => ({
-    headerLeft: AppBackButton({navigation, title:i18n.t('mobile:header')}),
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('mobile:header')} />
   })
 
   constructor(props) {

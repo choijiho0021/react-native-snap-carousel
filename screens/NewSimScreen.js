@@ -31,9 +31,9 @@ import utils from '../utils/utils';
 //   (state) => ({cartItems: (state.cart.get('orderItems') || []).reduce((acc,cur) => acc + cur.qty, 0)}))(AppButton)
 
 class NewSimScreen extends Component {
-  static navigationOptions = (navigation) => ({
-    headerLeft: AppBackButton({navigation, title:i18n.t('sim:purchase')}),
-    headerRight: (<AppCartButton style={styles.btnCartIcon} onPress={() => navigation.navigation.navigate('Cart')} />)
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('sim:purchase')} />,
+    headerRight: <AppCartButton style={styles.btnCartIcon} onPress={() => navigation.navigate('Cart')} />
     })
 
   constructor(props) {

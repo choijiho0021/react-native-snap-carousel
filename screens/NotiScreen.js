@@ -19,8 +19,8 @@ import * as accountActions from '../redux/modules/account'
 import AppBackButton from '../components/AppBackButton';
 
 class NotiScreen extends Component {
-  static navigationOptions = (navigation) => ({
-    headerLeft: AppBackButton({navigation, title:i18n.t('set:noti')})
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('set:noti')} />
   })
 
   constructor(props) {

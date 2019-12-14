@@ -15,6 +15,8 @@ const MAKE_PAYMENT = 'rokebi/cart/MAKE_PAYMENT'
 const MAKE_ORDER = 'rokebi/cart/MAKE_ORDER'
 const PURCHASE = 'rokebi/cart/PURCHASE'
 const PYM_RESULT = 'rokebi/cart/PYM_RESULT'
+const SET_LAST_TAB = 'rokebi/cart/SET_LAST_TAB'
+
 export const CART_ADD = 'rokebi/cart/CART_ADD'
 export const CART_REMOVE = 'rokebi/cart/CART_REMOVE'
 export const CART_UPDATE = 'rokebi/cart/CART_UPDATE'
@@ -32,6 +34,8 @@ export const purchase = createAction(PURCHASE)
 export const makePayment = createAction(MAKE_PAYMENT, cartApi.makePayment) 
 export const makeOrder = createAction(MAKE_ORDER, cartApi.makeOrder) 
 export const pymResult = createAction(PYM_RESULT)
+
+export const setLastTab = createAction(SET_LAST_TAB)
 
 export const payNorder = (result) => {
   return (dispatch,getState) => {
@@ -99,10 +103,16 @@ const initialState = Map({
   uuid: undefined,
   purchaseItems: [],
   pymReq: undefined,
-  pymResult: undefined
+  pymResult: undefined,
+  lastTab: 'HomeStack'
 })
 
 export default handleActions({
+
+  // set last tab
+  [SET_LAST_TAB]: (state,action) => {
+    return state.set('lastTab', action.payload)
+  },
 
   // 구매할 품목을 저장한다. 
   [PURCHASE]: (state,action) => {
