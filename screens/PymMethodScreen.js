@@ -184,7 +184,7 @@ class PymMethodScreen extends Component {
           this.props.order.profile.length >= 0 &&
           <View>
             <Text style={styles.title}>{i18n.t('pym:delivery')}</Text>
-            <View style={{flex:1}}>
+            <View>
               <AppButton title={i18n.t('reg:address')} 
                 textStyle={appStyles.confirmText}
                 style={[appStyles.confirm, styles.addrBtn]}
@@ -204,7 +204,6 @@ class PymMethodScreen extends Component {
     const simIncluded = (this.props.cart.orderItems || []).findIndex(item => item.prod && item.prod.type == 'sim_card') >= 0
 
     return (
-
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <ScrollView>
           <PaymentItemInfo cart={purchaseItems} pymReq={pymReq}/>              
@@ -214,7 +213,7 @@ class PymMethodScreen extends Component {
           }
 
           <Text style={[styles.title, styles.mrgBottom5]}>{i18n.t('pym:method')}</Text>
-          <View style={[styles.mrgBottom33, {flex: 1}]}>
+          <View style={styles.mrgBottom33}>
             {
               this.method.map((v,idx) => this._button(idx+"", v))
             }
@@ -226,8 +225,7 @@ class PymMethodScreen extends Component {
                       disabled={_.isEmpty(selected)}
                       key={i18n.t('payment')}
                       onPress={this._onSubmit}
-                      style={[appStyles.confirm,
-                      {position:'absolute', bottom:0, left:0, right:0}]}/> 
+                      style={appStyles.confirm} />
 
       </SafeAreaView>
             

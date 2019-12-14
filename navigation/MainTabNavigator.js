@@ -66,11 +66,16 @@ const HomeStack = createStackNavigator(
     Contact: ContactScreen,
     ContactBoard: ContactBoardScreen,
     BoardMsgResp: BoardMsgRespScreen,
+    Faq: FaqScreen,
+    Guide: GuideScreen,
+
+    // SIM card 바로 구매와 관련된 화면
+    Payment: PaymentScreen,
+    PymMethod: PymMethodScreen,
     FindAddress: FindAddressScreen,
+    PaymentResult : PaymentResultScreen,
     CustomerProfile: CustomerProfileScreen,
     AddProfile: AddProfileScreen,
-    Faq: FaqScreen,
-    Guide: GuideScreen
   },
   config
 );
@@ -93,6 +98,11 @@ const StoreStack = createStackNavigator(
     Product: ProductScreen,
     NewSim: NewSimScreen,
     SimpleText: SimpleTextScreen,
+
+    // Roaming Product 바로 구매와 관련된 화면
+    Payment: PaymentScreen,
+    PymMethod: PymMethodScreen,
+    PaymentResult : PaymentResultScreen,
   },
   config, 
 );
@@ -126,7 +136,13 @@ SettingsStack.navigationOptions = {
 const MyPageStack = createStackNavigator(
   {
     MyPage: MyPageScreen,
-    PurchaseDetail: PurchaseDetailScreen
+    PurchaseDetail: PurchaseDetailScreen,
+
+    // 충전 관련 화면
+    Recharge: RechargeScreen,
+    Payment: PaymentScreen,
+    PymMethod: PymMethodScreen,
+    PaymentResult : PaymentResultScreen,
   },
   config
 );
@@ -184,7 +200,7 @@ const TabNavigator = createBottomTabNavigator({
       height: 56,
     }
   },
-  safeAreaInset: {top: 'never', bottom:"always"},
+  // safeAreaInset: {top: 'never', bottom:"always"},
 });
 
 TabNavigator.path = '';

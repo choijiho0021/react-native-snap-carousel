@@ -163,7 +163,8 @@ class NewSimScreen extends Component {
 
 
   render() {
-    const { querying, simCardList, checked, simQty, total} = this.state
+    const { querying, simCardList, checked, simQty, total} = this.state,
+      selected = simCardList.findIndex(item => checked.get(item.key) && simQty.get(item.key) > 0) >= 0
 
     return (
       <SafeAreaView style={styles.container}>
@@ -173,10 +174,14 @@ class NewSimScreen extends Component {
                   extraData={[checked, simQty]}
                   ListFooterComponent={<ChargeSummary totalCnt={total.cnt} totalPrice={total.price} dlvCost={utils.dlvCost(total.price)}/>}/>
         <View style={styles.buttonBox}>
+
           <AppButton style={styles.btnCart} title={i18n.t('cart:toCart')} 
             titleStyle={styles.btnCartText}
             onPress={this._onPress('cart')}/>
-          <AppButton style={styles.btnBuy} title={i18n.t('cart:buy')} onPress={this._onPress('purchase')}/>
+
+          <AppButton style={styles.btnBuy} title={i18n.t('cart:buy')} 
+            disabled={! selected}
+            onPress={this._onPress('purchase')}/>
         </View>
       </SafeAreaView>
     );
