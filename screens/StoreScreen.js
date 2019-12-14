@@ -5,10 +5,8 @@ import {
   FlatList,
   View,
   TouchableOpacity,
-  Alert,
   Dimensions,
   Image,
-  TextInput,
 } from 'react-native';
 import {connect} from 'react-redux'
 import {appStyles} from "../constants/Styles"
@@ -20,11 +18,10 @@ import api from '../utils/api/api'
 import country from '../utils/country'
 import _ from 'underscore'
 import { bindActionCreators } from 'redux'
-import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
+import { TabView, TabBar } from 'react-native-tab-view';
 import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import AppActivityIndicator from '../components/AppActivityIndicator';
-import { set } from 'immutable';
 
 class CountryItem extends Component {
   constructor(props) {
@@ -173,23 +170,20 @@ class StoreList extends Component {
 // }
 
 class StoreScreen extends Component {
-  static navigationOptions = (navigation) => {
-    const {params = {}} = navigation.navigation.state
-
-    return {
-      headerLeft: (<Text style={styles.title}>{i18n.t('store')}</Text>),
-      headerRight: (
-          <AppButton key="search" style={styles.showSearchBar} onPress={navigation.navigation.getParam('StoreSearch')} iconName="btnSearchTop" />)
-      // headerTitle : <HeaderTitle search={params.search} onChangeText={params.onChangeText} params={params}/>
-    }
-}
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: <Text style={styles.title}>{i18n.t('store')}</Text>,
+    headerRight: <AppButton key="search" 
+      style={styles.showSearchBar} 
+      onPress={navigation.getParam('StoreSearch')} 
+      iconName="btnSearchTop" />
+    // headerTitle : <HeaderTitle search={params.search} onChangeText={params.onChangeText} params={params}/>
+  })
 
   constructor(props) {
     super(props)
 
     this.state = {
       querying: false,
-      refreshing: false,
       search: undefined,
       index: 0,
       country:"",
@@ -235,86 +229,37 @@ class StoreScreen extends Component {
     })
   }
 
-  _refresh(category, ccode, refreshing = false) {
+  _refresh() {
+    const { asia, europe, usaAu, multi } = productApi.category,
+      {prodList} = this.props.product,
+      list = prodList.reduce((acc,item) => {
+        item.key = item.uuid 
+        item.cntry = new Set(country.getName(item.ccode))
 
-    if ( refreshing) {
-      this.setState({
-        refreshing : true
-      })
-    }
-
-    this.setState({
-      querying: true
-    })
-
-    productApi.getProductByCntry('all', 'all').then( resp => {
-      console.log('prod by cntry', resp)
-
-      if ( resp.result == 0) {
-        this.props.action.product.updProdList({prodList: resp.objects})
-
-
-        // const tempList = resp.objects.reduce((acc,item) => {
-        //   item.key = item.uuid
-        //   item.cntry = country.getName(item.ccode)
-
-        //   const idx = acc.findIndex(elm => elm.key == item.uuid)
-
-        //   if(idx >= 0) {
-        //     acc[idx].ccode += ',' + item.ccode
-        //     acc[idx].cntry += ',' + item.cntry
-        //     return acc
-        //   }
-        //   return acc.concat([item])
-        // }, [])
-
-        const { asia, europe, usaAu, multi } = productApi.category
-        const list = resp.objects.reduce((acc,item) => {
-          
-
-          item.key = item.uuid 
-          item.cntry = new Set(country.getName(item.ccode))
-
-          const idxCcode = acc.findIndex(elm => item.categoryId == multi ? elm.uuid == item.uuid : elm.ccode == item.ccode)
-          if ( idxCcode < 0) {
-            // new item, insert it
-            return acc.concat( [item])
-          }
-
-          else if ( acc[idxCcode].price > item.price) {
-            // cheaper
-            acc.splice( idxCcode, 1, item)
-            return acc
-          }
-          else if ( idxCcode >= 0 && item.categoryId == multi) {
-            acc[idxCcode].cntry = acc[idxCcode].cntry.add(country.getName(item.ccode))
-            acc[idxCcode].ccode = 'multi'
-          }
-          
+        const idxCcode = acc.findIndex(elm => item.categoryId == multi ? elm.uuid == item.uuid : elm.ccode == item.ccode)
+        if ( idxCcode < 0) {
+          // new item, insert it
+          return acc.concat( [item])
+        }
+        else if ( acc[idxCcode].price > item.price) {
+          // cheaper
+          acc.splice( idxCcode, 1, item)
           return acc
-        }, [])
-  
+        }
+        else if ( idxCcode >= 0 && item.categoryId == multi) {
+          acc[idxCcode].cntry = acc[idxCcode].cntry.add(country.getName(item.ccode))
+          acc[idxCcode].ccode = 'multi'
+        }
         
-        this.setState({
-          allData: list,
-          asia: this.filterByCategory(list, asia, ''),
-          europe: this.filterByCategory(list, europe, ''),
-          usaAu: this.filterByCategory(list, usaAu, ''),
-          multi: this.filterByCategory(list, multi, ''),
-        })
-      }
-    }).catch(err => {
-      console.log('failed to get product list', err)
-      Alert.alert( i18n.t('error'), err.message, [ {text: 'OK'} ])
-    }).finally(() => {
-      if ( refreshing) {
-        this.setState({
-          refreshing: false
-        })
-      }
-      this.setState({
-        querying: false
-      })
+        return acc
+      }, [])
+    
+    this.setState({
+      allData: list,
+      asia: this.filterByCategory(list, asia, ''),
+      europe: this.filterByCategory(list, europe, ''),
+      usaAu: this.filterByCategory(list, usaAu, ''),
+      multi: this.filterByCategory(list, multi, ''),
     })
   }
 

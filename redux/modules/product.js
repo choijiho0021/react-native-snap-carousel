@@ -1,21 +1,19 @@
 import { createAction, handleActions } from 'redux-actions';
 import { Map, List } from 'immutable';
+import { pender } from 'redux-pender/lib/utils';
+import productApi from '../../utils/api/productApi'
 
 const  ADD_PRODUCT=        "rokebi/product/ADD_PRODUCT"
 const  SET_DATE=           "rokebi/product/SET_DATE"
 const  SEL_CNTRY=          "rokebi/product/SEL_CNTRY"
 const  UPD_PROD_LSIT=      "rokebi/product/UPD_PROD_LIST"
-// const  INS_TO_CART=        "rokebi/product/INS_TO_CART"
-// const  DEL_FROM_CART=      "rokebi/product/DEL_FROM_CART"
-// const  CHG_PROD_QTY=       "rokebi/product/CHG_PROD_QTY"
+const  GET_PROD_LIST=      "rokebi/product/GET_PROD_LIST"
 
 export const addProduct = createAction(ADD_PRODUCT)
 export const setDate = createAction(SET_DATE)
 export const selectCountry = createAction(SEL_CNTRY)
 export const updProdList = createAction(UPD_PROD_LSIT)
-// export const insProdToCart = createAction(INS_TO_CART)
-// export const delProdFromCart = createAction(DEL_FROM_CART)
-// export const chgProdQty = createAction(CHG_PROD_QTY)
+export const getProdList = createAction(GET_PROD_LIST, productApi.getProductByCntry)
 
 const initialState = Map({
     name: undefined,    // selected product name
@@ -62,31 +60,16 @@ export default handleActions({
         .set('uuid', prodList[0].uuid) : state
   },
 
-  /* not used
-  [INS_TO_CART]: (state, action) => {
-    // 현재 state.uuid가 가리키는 상품을 카트에 넣는다. 
-    const uuid = state.get('uuid'),
-      newElm = {
-        uuid,
-        qty: 1,
-        startDate: state.get('startDate'),
+  ... pender({
+    type: GET_PROD_LIST,
+    onSuccess: (state,action) => {
+      const {result, objects} = action.payload
+
+      if ( result == 0 && objects.length > 0) {
+        return state.set('prodList', List(objects))
       }
-
-    let cart = state.get('cart')
-    const idx = cart.findIndex(item => item.uuid == uuid)
-    if (idx >= 0) cart = cart.delete(idx)
-    return state.set('cart', cart.push(newElm))
-  },
-
-  [DEL_FROM_CART]: (state, action) => {
-    return state.update('cart', cart => cart.filter(item => item.uuid !== action.payload.uuid))
-  },
-
-  [CHG_PROD_QTY]: (state, action) => {
-    return state.update('cart', cart => cart.map(item => item.uuid == action.payload.uuid ? 
-      { ... item, qty:action.payload.qty} : item))
-  }
-  */
-
+      return state
+    }
+  })
 
 }, initialState)
