@@ -32,7 +32,7 @@ import pushNoti from '../utils/pushNoti'
 import { initialMode } from 'react-native-dark-mode'
 
 const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti, 
-  {badgeStyle:{left:5,bottom:10}},
+  {badgeStyle:{right:-3,top:0}},
   (state) => ({notReadNoti: state.noti.get('notiList').filter(elm=> elm.isRead == 'F').length }))(AppButton)
 
 class HomeScreen extends Component {
@@ -429,6 +429,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   btnCnter: {
+    width:40,
+    height: 40,
     marginHorizontal: 18
   },
   title: {

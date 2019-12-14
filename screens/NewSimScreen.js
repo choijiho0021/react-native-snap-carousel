@@ -23,17 +23,13 @@ import { appStyles } from '../constants/Styles';
 import { colors } from '../constants/Colors';
 import ChargeSummary from '../components/ChargeSummary';
 import { SafeAreaView} from 'react-navigation'
-import withBadge from '../components/withBadge';
 import AppCartButton from '../components/AppCartButton';
 import utils from '../utils/utils';
-
-// const AppCartButton = withBadge(({cartItems}) => cartItems, {badgeStyle:{right:-5,top:5}}, 
-//   (state) => ({cartItems: (state.cart.get('orderItems') || []).reduce((acc,cur) => acc + cur.qty, 0)}))(AppButton)
 
 class NewSimScreen extends Component {
   static navigationOptions = ({navigation}) => ({
     headerLeft: <AppBackButton navigation={navigation} title={i18n.t('sim:purchase')} />,
-    headerRight: <AppCartButton style={styles.btnCartIcon} onPress={() => navigation.navigate('Cart')} />
+    headerRight: <AppCartButton onPress={() => navigation.navigate('Cart')} />
     })
 
   constructor(props) {
@@ -87,7 +83,6 @@ class NewSimScreen extends Component {
     const simQty = this.state.simQty.set(key, qty),
       checked = this.state.checked.set(key, true)
 
-      console.log('change', key, qty, simQty.toJS())
     // update qty
     this.setState({
       checked, simQty,
@@ -170,9 +165,13 @@ class NewSimScreen extends Component {
       <SafeAreaView style={styles.container}>
         <AppActivityIndicator visible={querying}/>
         <FlatList data={simCardList} 
-                  renderItem={this._renderItem} 
-                  extraData={[checked, simQty]}
-                  ListFooterComponent={<ChargeSummary totalCnt={total.cnt} totalPrice={total.price} dlvCost={utils.dlvCost(total.price)}/>}/>
+          renderItem={this._renderItem} 
+          extraData={[checked, simQty]}
+          ListFooterComponent={
+            <ChargeSummary totalCnt={total.cnt} 
+              totalPrice={total.price} 
+              dlvCost={utils.dlvCost(total.price)}/>
+            }/>
         <View style={styles.buttonBox}>
 
           <AppButton style={styles.btnCart} title={i18n.t('cart:toCart')} 

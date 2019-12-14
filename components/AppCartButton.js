@@ -10,12 +10,11 @@ import { Badge } from 'react-native-elements';
 class AppCartButton extends Component {
   render() {
     const {cartItems, iconName, style, onPress} = this.props
-    const top = -8, right = -4, left = 0, bottom = 0
     const hidden = ! cartItems 
 
     return (
-      <TouchableOpacity onPress={onPress}>
-        <AppIcon name={iconName || "btnCart"} style={[style, styles.icon]}/>
+      <TouchableOpacity onPress={onPress} style={style}>
+        <AppIcon name={iconName || "btnCart"} style={styles.icon}/>
         {!hidden && (
           <Badge
             badgeStyle={styles.badge}
@@ -23,7 +22,7 @@ class AppCartButton extends Component {
             value={cartItems}
             status="error"
             onPress={onPress}
-            containerStyle={[styles.badgeContainer, { top, right, left, bottom }]}
+            containerStyle={[styles.badgeContainer, { top:-3, right:6}]}
           />
         )}
       </TouchableOpacity>
@@ -33,7 +32,11 @@ class AppCartButton extends Component {
 
 const styles = StyleSheet.create({
   icon: {
-    justifyContent: 'center'
+    width: 40,
+    height: 40,
+    marginRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   badge: {
     borderRadius: 9,
