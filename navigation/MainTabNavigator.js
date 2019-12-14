@@ -217,7 +217,6 @@ class AppTabNavigator extends React.Component {
 
   componentDidUpdate(prevProps) {
     if ( prevProps.navigation.state != this.props.navigation.state) {
-      console.log( 'tab updated', this.props.navigation.state)
       const {navigation} = prevProps,
         lastTab = navigation.state.routes[navigation.state.index].routeName
 

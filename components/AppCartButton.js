@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { 
   StyleSheet,
   TouchableOpacity,
@@ -7,7 +7,7 @@ import {connect} from 'react-redux'
 import AppIcon from './AppIcon';
 import { Badge } from 'react-native-elements';
 
-class AppCartButton extends Component {
+class AppCartButton extends PureComponent {
   render() {
     const {cartItems, iconName, style, onPress} = this.props
     const hidden = ! cartItems 

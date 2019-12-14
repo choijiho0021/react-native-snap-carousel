@@ -8,9 +8,7 @@ import {
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
 import i18n from '../utils/i18n'
-import * as accountActions from '../redux/modules/account'
 import * as orderActions from '../redux/modules/order'
-import * as cartActions from '../redux/modules/cart'
 import { Platform } from '@unimodules/core';
 import { TextField } from 'react-native-material-textfield'
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -41,11 +39,11 @@ class FindAddressScreen extends Component {
     this._findAddr = this._findAddr.bind(this)
     this._renderItem = this._renderItem.bind(this)
   }
+
   _onChangeText = (key) => (value) => {
     this.setState({
       [key] : value
     })
-    console.log('find addr : addr', this.state.key)
   }
 
   _search() {
@@ -68,10 +66,8 @@ class FindAddressScreen extends Component {
 
   _onPress = (addr) => () => {
     
-    console.log('주소 클릭', addr)
-    
     //리덕스 저장
-    this.props.OrderActions.updateProfileAddress(addr)
+    this.props.action.order.updateProfileAddress(addr)
     this.props.navigation.goBack()
 
   }
@@ -80,6 +76,7 @@ class FindAddressScreen extends Component {
     const {links} = this.state,
       {totalCount = 0, countPerPage =1, currentPage=1} = _.isArray(links) && links.length > 0 ? links[0] : {},
       totalPage = Math.ceil( Number(totalCount) / Number(countPerPage))
+
     return (
       <View style={styles.pagination} >
         <Text>{i18n.t('addr:totalCnt').replace('%%', totalCount)}</Text>
@@ -91,7 +88,6 @@ class FindAddressScreen extends Component {
   }
 
   _renderItem({item}) {
-    
     return (
       <TouchableOpacity onPress={this._onPress(item)}>
         <Address item={item}/>
@@ -102,8 +98,6 @@ class FindAddressScreen extends Component {
   render() {
     const { addr, data } = this.state
 
-    console.log('ADDDRRR', addr)
-    console.log('data', data)
     return (
       <View style={{flex:1}}>
         <View style={styles.modal}>
@@ -117,11 +111,11 @@ class FindAddressScreen extends Component {
               onEndEditing={this._findAddr()}
               renderAccessory={this._search}
               value={addr} />
-            <AppButton style = {styles.showSearchBar} onPress={() => search()} iconName="btnSearchOff" />
+            <AppButton style = {styles.showSearchBar} onPress={() => this._findAddr()} iconName="btnSearchOff" />
           </View>
           <View style={styles.divider}/>
-          { addr ? 
-            this._renderPagination() :           
+          { 
+            addr ? this._renderPagination() :           
             <View style={styles.mrgLeft40}>
               <Text style={styles.searchEx, styles.boldText16}>{i18n.t('purchase:searchEx')}</Text>
               <Text style={styles.searchEx}>{i18n.t('purchase:roadBuildingNo')}</Text>
@@ -129,7 +123,7 @@ class FindAddressScreen extends Component {
               <Text style={styles.searchEx}>{i18n.t('purchase:areaBuilding')}</Text>
             </View>     
           }
-          <FlatList data={data} renderItem={this._renderItem} keyExtractor={(_, idx) => 'key'+idx}/>
+          <FlatList data={data} renderItem={this._renderItem} keyExtractor={item => item.bdMgtSn}/>
         </View>
       </View>
     )
@@ -188,17 +182,10 @@ const styles = StyleSheet.create({
 });
 
 // export default FindAddressScreen
-const mapStateToProps = (state) => ({
-  account: state.account.toJS(),
-  cart: state.cart.toJS(),
-  auth: accountActions.auth(state.account),
-  order: state.order.toJS()  
-})
-
-export default connect(mapStateToProps, 
+export default connect(undefined, 
   (dispatch) => ({
-    AccountActions : bindActionCreators(accountActions, dispatch),
-    CartActions : bindActionCreators(cartActions, dispatch),
-    OrderActions : bindActionCreators(orderActions, dispatch),
+    action: {
+      order : bindActionCreators(orderActions, dispatch),
+    }
   })
 )(FindAddressScreen)

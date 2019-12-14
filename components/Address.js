@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   StyleSheet,
   Text,
@@ -54,25 +54,30 @@ const styles = StyleSheet.create({
 
 
 
-export default function Address({item}) {
-  return (
-    <View style={styles.itemRow, {marginHorizontal:20,      borderBottomWidth: 1,
-      borderBottomColor: colors.lightGrey }}>
-      <View style={styles.addr}>
-        
-          <Text style={[styles.bdTitle,styles.itemRow]}>{item.bdNm}</Text>
-          <View style={styles.itemRow}>
-            <Text style={styles.addrValue}>{item.jibunAddr}</Text>
-          </View>
-          <View style={styles.itemRow}>
-            <View style={{height:20}}>
-              <Text style={styles.roadBox}>{i18n.t('addr:road')}</Text>
-            </View>  
-            <Text style={styles.addrValue}>  {item.roadAddr}</Text>
-          </View>
-           
+class Address extends PureComponent {
+  render() {
+    const {item} = this.props
+
+    return (
+      <View style={styles.itemRow, {marginHorizontal:20,      borderBottomWidth: 1,
+        borderBottomColor: colors.lightGrey }}>
+        <View style={styles.addr}>
+          
+            <Text style={[styles.bdTitle,styles.itemRow]}>{item.bdNm}</Text>
+            <View style={styles.itemRow}>
+              <Text style={styles.addrValue}>{item.jibunAddr}</Text>
+            </View>
+            <View style={styles.itemRow}>
+              <View style={{height:20}}>
+                <Text style={styles.roadBox}>{i18n.t('addr:road')}</Text>
+              </View>  
+              <Text style={styles.addrValue}>  {item.roadAddr}</Text>
+            </View>
+
+        </View>
       </View>
-    </View>
-  )
+    )
+  }
 }
 
+export default Address

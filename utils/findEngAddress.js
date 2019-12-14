@@ -339,18 +339,18 @@ class findEngAddress {
     */
     }
 
-    findCity(provinceNumber, cityNumber){
-        // findEngAddress.city.Seoul[680]
-        const province = province[provinceNumber]
-        
-        console.log('find province', province)
-        console.log('find city', this.city[province])
-        
-        city.array.forEach(element => {
-            if(element == province){
-                console.log('city!!!')
-            }
-        });
+    findCity( provinceNumber, cityNumber) {
+        const province = this.city[provinceNumber]
+        if (province) return province[cityNumber]
+
+        return ''
+    }
+
+    findProvince( provinceNumber) {
+        const province = this.city[provinceNumber]
+        if (province) return province.province
+
+        return ''
     }
     
 

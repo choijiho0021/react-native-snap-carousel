@@ -22,6 +22,7 @@ import Triangle from '../components/Triangle';
 import findEngAddress from '../utils/findEngAddress'
 import AppIcon from '../components/AppIcon';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import {Map} from 'immutable'
 
 class AddProfileScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -35,7 +36,7 @@ class AddProfileScreen extends Component {
       update: undefined,
       prefix: "010",
       disabled: false,
-      profile: {
+      profile: new Map({
         alias: undefined,
         recipient: undefined,
         recipientNumber: undefined,
@@ -47,11 +48,12 @@ class AddProfileScreen extends Component {
         addressLine2: undefined,
         detailAddr: undefined,
         isBasicAddr: false,
-      },
+      }),
       errors: undefined
     }
 
-    this._onChangeText = this._onChangeText.bind(this)
+    this._onChangeProfile = this._onChangeProfile.bind(this)
+    this._onChangeValue = this._onChangeValue.bind(this)
     this._onSubmit = this._onSubmit.bind(this)
     this._onChecked = this._onChecked.bind(this)
     this._findAddress = this._findAddress.bind(this)
@@ -62,8 +64,6 @@ class AddProfileScreen extends Component {
     const update = this.props.navigation.getParam('update') 
     const profile = update || this.props.order.profile.find(item => item.isBasicAddr == true)
 
-    console.log('mount profile', profile)
-    
     this.setState({
       update,
       prefix: "010",
@@ -72,7 +72,7 @@ class AddProfileScreen extends Component {
     if (profile) {
       this.setState({
         disabled: true,
-        profile,
+        profile : new Map(profile),
       })
     }
 
@@ -85,19 +85,16 @@ class AddProfileScreen extends Component {
     if(addr != prevProps.order.addr){
       
       if(!_.isEmpty(addr)){
-        const {admCd} = addr
+        const {admCd = ''} = addr
         const provinceNumber = admCd.substring(0,2)
         const cityNumber = admCd.substring(2,5)
         
         this.setState({
-            profile: {
-              ... this.state.profile,
-              addressLine1: addr.roadAddrPart1,
-              addressLine2: addr.roadAddrPart2,
-              zipCode: addr.zipNo,
-              province: findEngAddress.city[provinceNumber] && findEngAddress.city[provinceNumber].province,
-              city: findEngAddress.city[provinceNumber][cityNumber]
-          }
+          profile: this.state.profile.set( 'addressLine1', addr.roadAddrPart1)
+            .set('addressLine2', addr.roadAddrPart2)
+            .set('zipCode', addr.zipNo)
+            .set('province', findEngAddress.findProvince(provinceNumber))
+            .set('city', findEngAddress.findCity( provinceNumber, cityNumber))
         })
       }
 
@@ -113,10 +110,11 @@ class AddProfileScreen extends Component {
 
     if(_.isEmpty(this.state.update)){
       // profile 신규 추가
-      order.addCustomerProfile(this.state.profile, defaultProfile ,this.props.account)
-    }else{
+      order.addCustomerProfile(this.state.profile.toJS(), defaultProfile, this.props.account)
+    }
+    else{
       // profile update
-      order.updateCustomerProfile(this.state.profile, this.props.account)
+      order.updateCustomerProfile(this.state.profile.toJS(), this.props.account)
     }
     this.props.navigation.goBack()
   }
@@ -124,33 +122,21 @@ class AddProfileScreen extends Component {
   _onChecked() {
     const {profile} = this.state
     this.setState({
-      profile: {
-        ... this.state.profile,
-        isBasicAddr: ! profile.isBasicAddr
-      }
+      profile: profile.update( 'isBasicAddr', value => ! value)
     })
   }
 
-  _onChangeText = (key = '') => (value) => {
+  _onChangeValue = (key = '') => (value) => {
+    this.setState({
+      [key]: value,
+      disabled: _.isEmpty(value) ? true : false
+    })
+  }
 
-    const item = key.substring(key.indexOf('.') + 1)
-    const idx = key.indexOf('.')
-
-    if (idx == -1) {
-      this.setState({
-        [key]: value,
-        disabled: _.isEmpty(value) ? true : false
-      })
-    }else {
-      this.setState({
-        profile: {
-          ... this.state.profile,
-          [item]: value
-        }
-      })
-    }
-
-
+  _onChangeProfile = (key = '') => (value) => {
+    this.setState({
+      profile: this.state.profile.set(item, value)
+    })
   }
 
   _findAddress() {
@@ -186,21 +172,22 @@ class AddProfileScreen extends Component {
           resetScrollToCoords={{ x: 0, y: 0 }}
           extraScrollHeight={60}
           innerRef={ref => { this.scroll = ref; }}>
+
             <View style={{ flex: 1, justifyContent: 'flex-start', flexDirection: 'row'}}>
               <View style={{ margin: 20 }}>
                 <View style={styles.textRow}>
                   <Text style={styles.textTitle}>{i18n.t('addr:addrAlias')}</Text>
                   <TextInput style={styles.textBox}
-                            placeholder={profile.alias}
+                            placeholder={profile.get('alias')}
                             placeholderTextColor='#2c2c2c'
-                            onChangeText={this._onChangeText('profile.alias')} />
+                            onChangeText={this._onChangeProfile('alias')} />
                 </View>
                 <View style={styles.textRow}>
                   <Text style={styles.textTitle}>{i18n.t('addr:recipient')}</Text>
                   <TextInput style={styles.textBox}
-                            value={profile.recipient}
+                            value={profile.get('recipient')}
                             placeholder={i18n.t('addr:enterWithin50')}
-                            onChangeText={this._onChangeText('profile.recipient')} />
+                            onChangeText={this._onChangeProfile('recipient')} />
                 </View>
                 <View style={styles.textRow}>
                   <Text style={styles.textTitle}>{i18n.t('addr:recipientNumber')}</Text>
@@ -212,7 +199,8 @@ class AddProfileScreen extends Component {
                           top: 4,
                           right: 10,}
                       }}
-                        onValueChange={this._onChangeText("prefix")}
+                        placeholder={{}}
+                        onValueChange={this._onChangeValue("prefix")}
                         items={["010", "011", "017", "018", "019"].map(item => ({
                           label: item,
                           value: item
@@ -225,13 +213,13 @@ class AddProfileScreen extends Component {
                     </View>
                   </View>
                   <TextInput style={[styles.textBox, { width: '56%' }]}
-                            onChangeText={this._onChangeText('profile.recipientNumber')}
-                            value={profile.recipientNumber} />
+                            onChangeText={this._onChangeProfile('recipientNumber')}
+                            value={profile.get('recipientNumber')} />
                 </View>
                 <View style={[styles.textRow, { marginBottom: 10 }]}>
                   <Text style={styles.textTitle}>{i18n.t('addr:address')}</Text>
                   <Text style={[styles.textBox, { width: '61%' }]}
-                        onPress={this._findAddress}>{profile.addressLine1}</Text>
+                        onPress={this._findAddress}>{profile.get('addressLine1')}</Text>
                   <AppButton title={i18n.t('addr:search')}
                             style={styles.findButton}
                             titleStyle={styles.findBtnText}
@@ -239,24 +227,25 @@ class AddProfileScreen extends Component {
                 </View>
                 <View style={styles.findTextRow}>
                   <Text style={styles.textBox}
-                        onPress={this._findAddress} >{profile.addressLine2}</Text>
+                        onPress={this._findAddress} >{profile.get('addressLine2')}</Text>
                 </View>
 
                 <View style={styles.findTextRow}>
                   <TextInput style={styles.textBox}
-                            value={profile.detailAddr}
-                            onChangeText={this._onChangeText('profile.detailAddr')} />
+                            value={profile.get('detailAddr')}
+                            onChangeText={this._onChangeProfile('detailAddr')} />
                 </View>
                 <TouchableOpacity style={{flex:1, width: '82%', flexDirection: 'row', alignSelf: 'flex-end',marginTop: 20}}
                                   onPress={this._onChecked}>
                   <AppIcon name="btnCheck2"
-                          checked={this.state.profile.isBasicAddr || false}/>
+                          checked={this.state.profile.get('isBasicAddr') || false}/>
                   <Text style={styles.basicProfile}>{i18n.t('addr:basicAddress')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
         </KeyboardAwareScrollView>
-        <AppButton style={[appStyles.confirm, {position:'absolute', right:0, bottom:0, left:0}]} 
+
+        <AppButton style={appStyles.confirm}
                     title={i18n.t('save')}
                     textStyle={appStyles.confirmText}
                     disabled={isAddrEmpty}
