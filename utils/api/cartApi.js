@@ -167,7 +167,11 @@ class CartAPI {
    *  ];
    */
 
-    makeOrder = (items, {mobile, mail, token}) => {
+    makeOrder = (items, result, {user, mail, token}) => {
+
+        if (_.isEmpty(items) || _.isEmpty(result) || _.isEmpty(user) || _.isEmpty(mail) || _.isEmpty(token)) 
+            return api.reject( api.INVALID_ARGUMENT, 'empty parameter')
+
         const url = `${api.httpUrl(api.path.commerce.order, '')}/create?_format=json`
         const headers = api.withToken( token, 'json')
         const body = {
@@ -181,8 +185,15 @@ class CartAPI {
             },
             user: {
                 mail,
-                name: mobile
+                name: user
             },
+            payment: {
+                gateway: 'iamport',
+                type: 'paypal',
+                details: {
+                    merchant_uid: result.merchant_uid
+                }
+            }
         }
 
         return api.callHttp(url, {

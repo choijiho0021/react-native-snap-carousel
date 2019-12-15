@@ -64,7 +64,7 @@ export const payNorder = (result) => {
     })
 
     // make order in the server
-    return dispatch(makeOrder( purchaseItems, auth))
+    return dispatch(makeOrder( purchaseItems, result, auth))
   }
 }
 
