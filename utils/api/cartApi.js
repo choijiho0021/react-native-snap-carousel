@@ -17,10 +17,11 @@ class CartAPI {
                             orderItemId: o.order_item_id,
                             uuid: o.uuid, 
                             key: o.purchased_entity && o.purchased_entity.uuid,
+                            type: o.purchased_entity && o.purchased_entity.type,
                             prod: o.purchased_entity && {
+                                type: o.purchased_entity.type,
                                 variationId: o.purchased_entity.variation_id,
                                 uuid: o.purchased_entity.uuid,
-                                type: o.purchased_entity.type,
                                 sku: o.purchased_entity.sku,
                             },
                             title: o.title,

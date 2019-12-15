@@ -110,6 +110,7 @@ class NewSimScreen extends Component {
           sku: item.sku,
           price: item.price,
           qty: simQty.get(item.uuid),
+          type: 'sim_card'
         }))
 
       if ( mode == 'purchase') {

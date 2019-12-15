@@ -105,8 +105,7 @@ class AddProfileScreen extends Component {
 
   _onSubmit() {
     const {order} = this.props.action
-
-    const defaultProfile = this.props.order.profile.find(item => item.isBasicAddr)
+    const defaultProfile = this.props.order.profile.find(item => item.isBasicAddr) || {}
 
     if(_.isEmpty(this.state.update)){
       // profile 신규 추가
@@ -135,7 +134,7 @@ class AddProfileScreen extends Component {
 
   _onChangeProfile = (key = '') => (value) => {
     this.setState({
-      profile: this.state.profile.set(item, value)
+      profile: this.state.profile.set(key, value)
     })
   }
 

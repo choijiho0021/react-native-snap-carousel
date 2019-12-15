@@ -79,7 +79,7 @@ class CartScreen extends Component {
   }
 
   _dlvCost( checked, qty, total, data) {
-    return data.findIndex(item => item.prod && item.prod.type == 'sim_card' && checked.get(item.key) && qty.get(item.key) > 0) >= 0 ? 
+    return data.findIndex(item => item.type == 'sim_card' && checked.get(item.key) && qty.get(item.key) > 0) >= 0 ? 
       utils.dlvCost(total.price) : 0
   }
 
@@ -128,7 +128,7 @@ class CartScreen extends Component {
 
   _renderItem = ({item}) => {
     const { qty } = this.state
-    const prod = (item.prod && item.prod.type == 'sim_card') ?
+    const prod = (item.type == 'sim_card') ?
       this.props.sim.simList.find(sim => sim.uuid == item.key) : undefined
 
     return <CartItem checked={this.state.checked.get(item.key) || false}

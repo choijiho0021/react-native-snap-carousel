@@ -115,10 +115,10 @@ class OrderAPI {
                         locality: profile.city,                  // 성남시
                         postal_code: profile.zipCode,
                         address_line1: profile.addressLine1,
-                        address_line2: profile.addressLine2 || ' ' || profile.detailAddr,
+                        address_line2: profile.addressLine2 + ' ' + profile.detailAddr,
                         organization: defaultProfile.organization,
-                        given_name: defaultProfile.givenName, 
-                        family_name: defaultProfile.familyName, 
+                        given_name: defaultProfile.givenName || profile.recipient, 
+                        family_name: defaultProfile.familyName || profile.recipient, 
                     },
                     field_recipient : profile.recipient,
                     field_recipient_number : profile.recipientNumber,

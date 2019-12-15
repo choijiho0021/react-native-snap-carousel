@@ -150,7 +150,8 @@ class PymMethodScreen extends Component {
   // }
 
   _address(){
-    const item = this.props.order.profile.find(item =>item.isBasicAddr)
+    const item = this.props.order.profile.find(item =>item.isBasicAddr) || {}
+
     return (
       <View>
         {
@@ -200,7 +201,8 @@ class PymMethodScreen extends Component {
   render() {
     const { selected } = this.state,
       { purchaseItems = [], pymReq } = this.props.cart,
-      simIncluded = purchaseItems.findIndex(item => item.prod && item.prod.type == 'sim_card') >= 0
+      simIncluded = purchaseItems.findIndex(item => item.type == 'sim_card') >= 0,
+      noProfile = this.props.order.profile.length == 0
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
@@ -221,7 +223,7 @@ class PymMethodScreen extends Component {
 
         <AppButton title={i18n.t('payment')} 
                       textStyle={appStyles.confirmText}
-                      disabled={_.isEmpty(selected)}
+                      disabled={_.isEmpty(selected) || (simIncluded && noProfile)}
                       key={i18n.t('payment')}
                       onPress={this._onSubmit}
                       style={appStyles.confirm} />
