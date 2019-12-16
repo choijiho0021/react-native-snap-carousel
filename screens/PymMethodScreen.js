@@ -85,7 +85,8 @@ class PymMethodScreen extends Component {
 
     const { mobile, email} = this.props.account
     const { pymReq } = this.props.cart,
-      total = pymReq.reduce((sum,cur) => sum + cur.amount, 0)
+      total = pymReq.reduce((sum,cur) => sum + cur.amount, 0),
+      profile = this.props.order.profile.find(item =>item.isBasicAddr) || {}
 
     const params = {
       pg : selected,
@@ -97,6 +98,7 @@ class PymMethodScreen extends Component {
       buyer_email: email,
       escrow: false,
       app_scheme: 'esim',
+      profile_uuid: profile.uuid,
       mode: 'test'
     };
 
