@@ -84,7 +84,7 @@
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>
-			<key>esim2-dev2.ap-northeast-2.elasticbeanstalk.com</key>
+			<key>www.rokebi.com</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
