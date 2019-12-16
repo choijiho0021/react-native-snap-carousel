@@ -49,7 +49,7 @@ class CountryItem extends Component {
               {/* cntry가 Set이므로 첫번째 값을 가져오기 위해서 values().next().value를 사용함 */}
               <Text key={"cntry"} style={[appStyles.bold14Text,{marginBottom:5}]}>{elm.categoryId == productApi.category.multi ? elm.name : elm.cntry.values().next().value}</Text>
               <Text key={"from"} style={styles.from}>{i18n.t('from')}</Text>
-              <Text key={"price"} style={[appStyles.price,styles.text]}>{utils.numberToCommaString(elm.price)}
+              <Text key={"price"} style={[appStyles.price,styles.text]}>{utils.numberToCommaString(elm.pricePerDay)}
               <Text key={"days"} style={[appStyles.normal14Text,styles.text]}>{`${i18n.t('won')}/${i18n.t('day')}`}</Text>
               </Text>
             </TouchableOpacity> 
@@ -235,19 +235,20 @@ class StoreScreen extends Component {
       list = prodList.reduce((acc,item) => {
         item.key = item.uuid 
         item.cntry = new Set(country.getName(item.ccode))
+        item.pricePerDay = (item.price / Number(item.days)).toFixed(2)
 
         const idxCcode = acc.findIndex(elm => item.categoryId == multi ? elm.uuid == item.uuid : elm.ccode == item.ccode)
         if ( idxCcode < 0) {
           // new item, insert it
           return acc.concat( [item])
         }
-        else if ( acc[idxCcode].price > item.price) {
+        else if ( acc[idxCcode].pricePerDay > item.pricePerDay) {
           // cheaper
           acc.splice( idxCcode, 1, item)
           return acc
         }
         else if ( idxCcode >= 0 && item.categoryId == multi) {
-          acc[idxCcode].cntry = acc[idxCcode].cntry.add(country.getName(item.ccode))
+          country.getName(item.ccode).map(elm => acc[idxCcode].cntry = acc[idxCcode].cntry.add(elm))
           acc[idxCcode].ccode = 'multi'
         }
         
@@ -272,9 +273,10 @@ class StoreScreen extends Component {
   }
  
   _onPressItem = (key) => {
+    const {allData} = this.state
     const country = this.state.allData.filter(elm => elm.uuid == key)[0]
     this.props.action.product.selectCountry({uuid: key})
-    this.props.navigation.navigate('Country',{title:country.categoryId == productApi.category.multi ? country.name : country.cntry.values().next().value})
+    this.props.navigation.navigate('Country',{allData:allData,title:country.categoryId == productApi.category.multi ? country.name : country.cntry.values().next().value})
   }
 
   /*
