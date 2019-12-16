@@ -10,7 +10,7 @@ import { appStyles } from '../constants/Styles'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as accountActions from '../redux/modules/account'
-import * as orderActions from '../redux/modules/order'
+import * as profileActions from '../redux/modules/profile'
 import { SafeAreaView } from 'react-navigation'
 import _ from 'underscore'
 import AppBackButton from '../components/AppBackButton';
@@ -62,7 +62,7 @@ class AddProfileScreen extends Component {
   componentDidMount() {
     
     const update = this.props.navigation.getParam('update') 
-    const profile = update || this.props.order.profile.find(item => item.isBasicAddr == true)
+    const profile = update || this.props.profile.profile.find(item => item.isBasicAddr == true)
 
     this.setState({
       update,
@@ -79,10 +79,10 @@ class AddProfileScreen extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const addr = this.props.order.addr
+    const addr = this.props.profile.addr
 
     // 다른 정보 변경 & 주소 검색을 한 경우
-    if(addr != prevProps.order.addr){
+    if(addr != prevProps.profile.addr){
       
       if(!_.isEmpty(addr)){
         const {admCd = ''} = addr
@@ -104,16 +104,16 @@ class AddProfileScreen extends Component {
 
 
   _onSubmit() {
-    const {order} = this.props.action
-    const defaultProfile = this.props.order.profile.find(item => item.isBasicAddr) || {}
+    const {profile} = this.props.action
+    const defaultProfile = this.props.profile.profile.find(item => item.isBasicAddr) || {}
 
     if(_.isEmpty(this.state.update)){
       // profile 신규 추가
-      order.addCustomerProfile(this.state.profile.toJS(), defaultProfile, this.props.account)
+      profile.addCustomerProfile(this.state.profile.toJS(), defaultProfile, this.props.account)
     }
     else{
       // profile update
-      order.updateCustomerProfile(this.state.profile.toJS(), this.props.account)
+      profile.updateCustomerProfile(this.state.profile.toJS(), this.props.account)
     }
     this.props.navigation.goBack()
   }
@@ -325,14 +325,14 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => ({
   account: state.account.toJS(),
-  order: state.order.toJS(),
+  profile: state.profile.toJS(),
 })
 
 export default connect(mapStateToProps,
   (dispatch) => ({
     action: {
       account: bindActionCreators(accountActions, dispatch),
-      order: bindActionCreators(orderActions, dispatch),
+      profile: bindActionCreators(profileActions, dispatch),
     }
   })
 )(AddProfileScreen)

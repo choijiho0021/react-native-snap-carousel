@@ -8,7 +8,7 @@ import {
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
 import i18n from '../utils/i18n'
-import * as orderActions from '../redux/modules/order'
+import * as profileActions from '../redux/modules/profile'
 import { Platform } from '@unimodules/core';
 import { TextField } from 'react-native-material-textfield'
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -67,7 +67,7 @@ class FindAddressScreen extends Component {
   _onPress = (addr) => () => {
     
     //리덕스 저장
-    this.props.action.order.updateProfileAddress(addr)
+    this.props.action.profile.updateProfileAddress(addr)
     this.props.navigation.goBack()
 
   }
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
 export default connect(undefined, 
   (dispatch) => ({
     action: {
-      order : bindActionCreators(orderActions, dispatch),
+      profile : bindActionCreators(profileActions, dispatch),
     }
   })
 )(FindAddressScreen)
