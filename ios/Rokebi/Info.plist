@@ -34,7 +34,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>3</string>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -79,22 +79,22 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>www.juso.go.kr</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-			</dict>
-			<key>www.rokebi.com</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-			</dict>
 			<key>localhost</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>
 			<key>simrm.ap-northeast-2.elasticbeanstalk.com</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+			<key>www.juso.go.kr</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+			<key>www.rokebi.com</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
@@ -118,7 +118,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow esim to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow esim to access your device&apos;s accelerometer</string>
+	<string>Allow esim to access your device's accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Give esim periences permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>

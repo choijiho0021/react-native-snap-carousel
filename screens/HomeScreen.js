@@ -35,6 +35,19 @@ const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti,
   {badgeStyle:{right:-3,top:0}},
   (state) => ({notReadNoti: state.noti.get('notiList').filter(elm=> elm.isRead == 'F').length }))(AppButton)
 
+// windowHeight
+// iphone 8 - 375x667
+// iphone 11 pro  - 375x812, 2436×1125
+// iphone 11 pro max - 414x896, 2688×1242
+// 190 ~ 210 사이의 크기로 정리됨 
+const height = windowHeight > 810 ? {
+  userInfo : 110,
+  carousel : 210
+} : {
+  userInfo : 96,
+  carousel : 190
+}
+
 class HomeScreen extends Component {
   static navigationOptions = ({navigation}) => ({
     headerLeft: (
@@ -70,14 +83,7 @@ class HomeScreen extends Component {
     this._userInfo = this._userInfo.bind(this)
     this._notification = this._notification.bind(this)
 
-    // windowHeight
-    // iphone 8 - 375x667
-    // iphone 11 pro  - 375x812, 2436×1125
-    // iphone 11 pro max - 414x896, 2688×1242
-    // 190 ~ 210 사이의 크기로 정리됨 
-    //console.log('window height', windowHeight, sliderWidth)
-    this.imageHeight = windowHeight > 810 ? 210 : 190
-  }
+ }
 
   async componentDidMount() {
 
@@ -178,7 +184,7 @@ class HomeScreen extends Component {
       {
         _.isEmpty(item.imageUrl) ?
           <Text style={styles.text}>{item.title}</Text> :
-          <Image source={{uri:api.httpImageUrl(item.imageUrl)}} style={{height:this.imageHeight}}/>
+          <Image source={{uri:api.httpImageUrl(item.imageUrl)}} style={{height:height.carousel}}/>
       }
       </View> 
     )
@@ -362,7 +368,7 @@ const styles = StyleSheet.create({
     color: colors.black
   },
   userInfo: {
-    height: 96,
+    height: height.userInfo,
     borderRadius: 8,
     backgroundColor: colors.white,
     shadowColor: "rgba(0, 0, 0, 0.1)",
