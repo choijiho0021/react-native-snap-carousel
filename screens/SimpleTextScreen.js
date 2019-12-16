@@ -3,7 +3,8 @@ import {
   StyleSheet,
   View,
   Text,
-  Dimensions
+  Dimensions,
+  SafeAreaView
 } from 'react-native';
 
 import i18n from '../utils/i18n'
@@ -94,7 +95,7 @@ class SimpleTextScreen extends Component {
   }
 
   _isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}) => {
-    if (layoutMeasurement.height + contentOffset.y >= contentSize.height - 20) {
+    if (layoutMeasurement.height + contentOffset.y >= contentSize.height - 50 /*20 + 30*/) {
       this.setState({ markAsRead: true })
     }
   }
@@ -115,14 +116,14 @@ class SimpleTextScreen extends Component {
       disable = this.state.disable || ! this.state.markAsRead
 
     return (
-      <View style={styles.screen}>
+      <SafeAreaView style={styles.screen}>
         <ScrollView style={styles.scrollContainer}
           onScroll={({nativeEvent}) => this._isCloseToBottom(nativeEvent)}
           onContentSizeChange={(contentWidth, contentHeight) => { this._isEnableToScroll(contentWidth, contentHeight) }}>
           <View style={styles.container}>
             <AppActivityIndicator visible={querying} />
             { bodyTitle ? <Text style={styles.bodyTitle}>{bodyTitle +'\n\n'}</Text> : null}
-            <Text style={styles.text}>{utils.htmlToString(body) + '\n\n'}</Text>
+            <Text style={styles.text}>{utils.htmlToString(body) }</Text>
           </View>
         </ScrollView>
         {
@@ -140,15 +141,14 @@ class SimpleTextScreen extends Component {
               </View> :
               null
           }
-      </View>
+      </SafeAreaView>
     )
   }
 }
 
 const styles = StyleSheet.create({
   screen: {
-    position: 'relative',
-    height: '100%'
+    flex: 1
   },
   container: {
     flex: 1,
@@ -157,6 +157,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20
   },
   scrollContainer: {
+    flex: 1,
     backgroundColor: colors.whiteTwo
   },
   text: {
@@ -173,9 +174,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: colors.white,
     width: '100%',
-    height: 80,
-    position: 'absolute',
-    bottom: 0
+    height: 80
   },
   titleStyle: {
     ... appStyles.normal18Text,
