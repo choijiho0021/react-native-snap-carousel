@@ -71,9 +71,12 @@ class HomeScreen extends Component {
     this._notification = this._notification.bind(this)
 
     // windowHeight
-    // iphone 8 - 667
-    // iphone 11 pro max - 896
-    this.imageHeight = Math.max( 160, 160 + (windowHeight - 750))
+    // iphone 8 - 375x667
+    // iphone 11 pro  - 375x812, 2436×1125
+    // iphone 11 pro max - 414x896, 2688×1242
+    // 190 ~ 210 사이의 크기로 정리됨 
+    console.log('window height', windowHeight, sliderWidth)
+    this.imageHeight = windowHeight > 810 ? 210 : 190
   }
 
   async componentDidMount() {
@@ -175,7 +178,7 @@ class HomeScreen extends Component {
       {
         _.isEmpty(item.imageUrl) ?
           <Text style={styles.text}>{item.title}</Text> :
-          <Image source={{uri:api.httpImageUrl(item.imageUrl)}} style={[styles.overlay, {height:this.imageHeight}]}/>
+          <Image source={{uri:api.httpImageUrl(item.imageUrl)}} style={{height:this.imageHeight}}/>
       }
       </View> 
     )
@@ -403,7 +406,7 @@ const styles = StyleSheet.create({
   pagination: {
     alignSelf: 'flex-end',
     marginRight: 30,
-    marginTop: 19
+    marginTop: 20
   },
   cardLayer: {
     flexDirection: 'row',
