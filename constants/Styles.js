@@ -7,6 +7,7 @@ import {colors} from "./Colors"
 export const appStyles = StyleSheet.create({
     container: {
         flex: 1,
+        width:'100%',
         flexDirection: "column",
         justifyContent: "flex-start",
         alignItems: "flex-start",

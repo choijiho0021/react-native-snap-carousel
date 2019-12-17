@@ -21,159 +21,8 @@ import { bindActionCreators } from 'redux'
 import { TabView, TabBar } from 'react-native-tab-view';
 import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
+import StoreList from '../components/StoreList';
 import AppActivityIndicator from '../components/AppActivityIndicator';
-
-class CountryItem extends Component {
-  constructor(props) {
-    super(props)
-  }
-
-  shouldComponentUpdate(nextProps) {
-    // ccode 목록이 달라지면, 다시 그린다. 
-    const oldData = this.props.item.data,
-      newData = nextProps.item.data
-
-    return newData.findIndex((elm,idx) => _.isEmpty(oldData[idx]) || elm == undefined  ? true : elm.ccode != oldData[idx].ccode) >= 0
-  }
-
-  render() {
-    const {item} = this.props
-
-    return (
-      <View key={item.key} style={styles.productList}>
-        {item.data.map((elm,idx) => (
-            // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
-          elm ? <View key={elm.ccode + idx} style={{flex:1, marginLeft:idx == 1 ? 14 : 0}}>
-            <TouchableOpacity onPress={() => this.props.onPress && this.props.onPress(elm.uuid)}>
-              <Image key={"img"} source={{uri:api.httpImageUrl(elm.imageUrl == '' ? elm.subImageUrl : elm.imageUrl)}} style={styles.image}/>
-              {/* cntry가 Set이므로 첫번째 값을 가져오기 위해서 values().next().value를 사용함 */}
-              <Text key={"cntry"} style={[appStyles.bold14Text,{marginVertical:11}]}>{elm.categoryId == productApi.category.multi ? elm.name : elm.cntry.values().next().value}</Text>
-              <View style={styles.priceRow}>
-                <View style={styles.price}>
-                  <Text key={"price"} style={[appStyles.normal20Text,styles.text]}>{utils.numberToCommaString(elm.pricePerDay)}</Text> 
-                  <Text key={"days"} style={[appStyles.normal16Text,styles.text]}>{` ${i18n.t('won')}/Day`}</Text>
-                </View>
-                <View style={styles.lowPriceView}>
-                  <Text style={styles.lowPrice}>{i18n.t('lowest')}</Text>
-                </View>
-              </View>
-            </TouchableOpacity> 
-          </View> : <View key="unknown" style={{flex:1}}/>
-        ))}
-      </View>
-    )
-  }
-}
-
-class StoreList extends Component {
-  constructor(props) {
-    super(props)
-
-    this._renderItem = this._renderItem.bind(this)
-  }
-
-  shouldComponentUpdate( nextProps) {
-    return this.props.data != nextProps.data
-  }
-
-  _renderItem = ({item}) => {
-    return _.isEmpty(item) ? {ccode:'nodata'} : <CountryItem onPress={this.props.onPress} item={item}/>
-  }
-
-  render() {
-    const {data} = this.props
-
-    return (
-      <View style={appStyles.container} >
-        <FlatList style={styles.container} 
-          data={data} 
-          renderItem={this._renderItem}
-          windowSize={6}
-          // ListHeaderComponent={this._renderHeader}
-          // refreshing={refreshing}
-          // onScroll={this._onScroll}
-          // extraData={index}
-          // onRefresh={() => this._refresh(true)}
-        />
-      </View>
-    )
-  }
-}
-
-// class HeaderTitle extends Component {
-//   constructor(props) {
-//     super(props)
-
-//     this.state = {
-//       searching : false
-//     }
-
-//   }
-
-//   shouldComponentUpdate(nextProps,nextState){
-//     return nextState.searching != this.state.searching
-//   }
-
-//   _searching(searching = true) {
-//     const {search} = this.props
-
-//     if(!searching) {
-//       search('all')
-//     }
-
-//     this.setState({
-//       searching:searching
-//     })
-//   }
- 
-  
-//   onFocus() {
-//     this.searchBox.setNativeProps({
-//       style: { borderColor: colors.black}
-//     })
-//   }
-
-//   onBlur() {
-//     this.searchBox.setNativeProps({
-//       style: { borderColor: colors.lightGrey}
-//     })
-//   }
-
-//   render() {
-//     const {searching} = this.state
-//     const {search, onChangeText} = this.props
-
-//     return (
-//       <View style={styles.headerTitle}>
-//         {searching ? 
-//         <View style={styles.headerTitle}>
-//           <View ref={searchBox => { this.searchBox = searchBox}} style={styles.searchBox}>
-//             <TextInput 
-//               ref={input => { this.textInput = input}}
-//               onBlur={ () => this.onBlur() }
-//               onFocus={ () => this.onFocus() }
-//               style={styles.searchText}
-//               placeholder={i18n.t('store:search')}
-//               returnKeyType='search'
-//               // clearTextOnFocus={true}
-//               enablesReturnKeyAutomatically={true}
-//               onSubmitEditing={() => search()}
-//               onChangeText={(value) => onChangeText(value)}
-//               />
-//             <AppButton style = {styles.showSearchBar} onPress={() => search()} iconName="btnSearchOff" />
-//           </View>
-//           <AppButton style = {styles.showSearchBar} onPress={() => this._searching(false)} title={i18n.t('cancel')} titleStyle={styles.titleStyle} />
-//         </View> : <View style={styles.headerTitle}>
-//             <Text style={styles.title}>{i18n.t('store')}</Text>
-//             <AppButton style = {styles.showSearchBar} onPress={() => this._searching(true)} iconName="btnSearchTop" />
-//           </View>
-//           }
-          
-//       </View> 
-//     )
-//   }
-// }
-
 class StoreScreen extends Component {
   static navigationOptions = ({navigation}) => ({
     headerLeft: <Text style={styles.title}>{i18n.t('store')}</Text>,
@@ -181,7 +30,6 @@ class StoreScreen extends Component {
       style={styles.showSearchBar} 
       onPress={navigation.getParam('StoreSearch')} 
       iconName="btnSearchTop" />
-    // headerTitle : <HeaderTitle search={params.search} onChangeText={params.onChangeText} params={params}/>
   })
 
   constructor(props) {
@@ -241,7 +89,8 @@ class StoreScreen extends Component {
       list = prodList.reduce((acc,item) => {
         item.key = item.uuid 
         item.cntry = new Set(country.getName(item.ccode))
-        item.pricePerDay = (item.price / Number(item.days)).toFixed(0)
+        //days가 "00일" 형식으로 오기 때문에 일 제거 후 넘버타입으로 변환
+        item.pricePerDay = (item.price / Number(item.days.slice(0,-1))).toFixed(0)
 
         const idxCcode = acc.findIndex(elm => item.categoryId == multi ? elm.uuid == item.uuid : elm.ccode == item.ccode)
         if ( idxCcode < 0) {
@@ -390,53 +239,9 @@ const styles = StyleSheet.create({
     ... appStyles.title,
     marginLeft: 20,
   },
-  overlay: {
-    backgroundColor:'rgba(0,0,0,0.5)',
-    height: 80,
-  },
-  flag: {
-    paddingVertical: 20,
-    width: "10%"
-  },
-  text: {
-    textAlign: "left",
-    color:colors.clearBlue
-  },
-  image: {
-    width: '100%',
-    height: 110,
-    resizeMode: 'cover',
-    borderRadius:10
-  },
-  divider: {
-    height: 1,
-    backgroundColor: colors.black,
-    marginBottom:32,
-    marginTop:12,
-    marginHorizontal:20
-  },
   tabBar : {
     // height: 52,
     backgroundColor: colors.whiteTwo
-  },
-  textInput :{
-    height: 19,
-    // fontFamily: "AppleSDGothicNeo",
-    fontSize: 14,
-    fontWeight: "normal",
-    fontStyle: "normal",
-    lineHeight: 19,
-    letterSpacing: 0.15,
-    color: "#aaaaaa",
-    marginTop:20,
-    marginHorizontal:40,
-    flex:1
-  },
-  productList : {
-    flexDirection: 'row',
-    marginTop:20,
-    marginBottom:10,
-    marginHorizontal:20
   },
   tabBarLabel: {
       height: 17,
@@ -446,9 +251,6 @@ const styles = StyleSheet.create({
       fontStyle: "normal",
       letterSpacing: 0.17
   },
-  searchButton:{
-    justifyContent:'flex-end'
-  },
   showSearchBar : {
     marginRight:20,
     justifyContent:"flex-end",
@@ -456,24 +258,6 @@ const styles = StyleSheet.create({
   },
   titleStyle: {
     ... appStyles.headerTitle
-  },
-  searchBox : {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignContent:"center",
-    flex:1,
-    marginHorizontal:20,
-    height: 40,
-    borderRadius: 3,
-    backgroundColor: colors.white,
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderColor: colors.lightGrey
-  },
-  searchText : {
-    ... appStyles.normal14Text,
-    marginLeft:20,
-    flex:1
   },
   headerTitle : {
     flexDirection: 'row',
@@ -487,27 +271,9 @@ const styles = StyleSheet.create({
     alignItems:"flex-start",
     paddingLeft:20
   },
-  from: {
-    ... appStyles.normal14Text,
-    textAlign: "left",
-    color:colors.warmGrey,
-    marginBottom:1
-  },
   lowPrice : {
     ... appStyles.normal12Text,
     color : colors.black
-  },
-  lowPriceView : {
-    width: 41,
-    height: 22,
-    borderRadius: 1,
-    backgroundColor: colors.whiteTwo,
-    alignItems:"center"
-  },
-  priceRow : {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignContent:"center"
   },
   price : {
     flexDirection: 'row',

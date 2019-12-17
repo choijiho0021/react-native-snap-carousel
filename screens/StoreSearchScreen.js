@@ -2,11 +2,8 @@ import React, {Component} from 'react';
 import {
   StyleSheet,
   Text,
-  FlatList,
   View,
   TouchableOpacity,
-  Alert,
-  Dimensions,
   Image,
   TextInput,
   TouchableWithoutFeedback
@@ -14,18 +11,15 @@ import {
 import {connect} from 'react-redux'
 import {appStyles} from "../constants/Styles"
 import productApi from '../utils/api/productApi';
+import * as productActions from '../redux/modules/product'
 import i18n from '../utils/i18n';
 import utils from '../utils/utils';
-import * as productActions from '../redux/modules/product'
-import api from '../utils/api/api'
-import country from '../utils/country'
 import _ from 'underscore'
 import { bindActionCreators } from 'redux'
-import AppBackButton from '../components/AppBackButton';
-import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import AppActivityIndicator from '../components/AppActivityIndicator';
+import StoreList from '../components/StoreList';
 
 const MAX_HISTORY_LENGTH = 7
 class HeaderTitle extends Component {
@@ -36,7 +30,6 @@ class HeaderTitle extends Component {
       searching : false,
       searchWord : ''
     }
-
   }
 
   shouldComponentUpdate(nextProps,nextState){
@@ -50,44 +43,29 @@ class HeaderTitle extends Component {
       })
     }
   }
-
-  _searching(searching = true) {
-    const {search} = this.props
-  }
  
   _onChangeText = (key) => (value) => {
     this.setState({
       [key] : value
     })
-    this.props.existSearchword(value);
+    this.props.getSearchWord(value,false);
   }
-  
-  // onFocus() {
-  //   this.searchBox.setNativeProps({
-  //     style: { borderColor: colors.black}
-  //   })
-  // }
-
-  // onBlur() {
-  //   this.searchBox.setNativeProps({
-  //     style: { borderColor: colors.lightGrey}
-  //   })
-  // }
 
   async search(searchWord) {
     const old_searchHist = await utils.retrieveData("searchHist")
 
-    if(!searchWord.match(',')){
+    if(searchWord && !searchWord.match(',')){
       //중복 제거 후 최대 7개까지 저장한다. 저장 형식 : ex) 대만,중국,일본 
       const new_searchHist = _.isNull(old_searchHist) ? searchWord : Array.from(new Set([searchWord].concat(old_searchHist.split(',')))).slice(0,MAX_HISTORY_LENGTH).join(',')
       utils.storeData("searchHist", new_searchHist)
     }
-    this.setState({searchWord:searchWord})
+    this.setState({searching:true})
+    this.props.getSearchWord(searchWord,true);
   }
 
   render() {
-    const {searching, searchWord} = this.state
-    const {search, navigation} = this.props
+    const {searchWord} = this.state
+    const {navigation} = this.props
 
     return (
       <View style={styles.container}>
@@ -97,11 +75,7 @@ class HeaderTitle extends Component {
               <Image style={{marginLeft: 5}} source={require('../assets/images/header/btnBack.png')} />
             </View>
           </TouchableWithoutFeedback>
-          <TextInput 
-            // ref={input => { this.textInput = input}}
-            // onBlur={ () => this.onBlur() }
-            // onFocus={ () => this.onFocus() }
-            // clearTextOnFocus={true}
+          <TextInput
             style={styles.searchText}
             placeholder={i18n.t('store:search')}
             returnKeyType='search'
@@ -125,7 +99,7 @@ class StoreSearchScreen extends Component {
 
     return {
       headerLeft: null,
-      headerTitle : <HeaderTitle existSearchword={params.existSearchword} value={params.value} navigation={navigation}/>
+      headerTitle : <HeaderTitle getSearchWord={params.getSearchWord} value={params.value} navigation={navigation}/>
     }
 }
 
@@ -139,7 +113,7 @@ class StoreSearchScreen extends Component {
       searchList : [],
       recommendCountry : ["인도네시아","스페인","아일랜드","네덜란다"]
     }
-    this.existSearchword = this.existSearchword.bind(this)
+    this.getSearchWord = this.getSearchWord.bind(this)
   }
 
   componentDidMount() {
@@ -150,7 +124,7 @@ class StoreSearchScreen extends Component {
 
     this.props.navigation.setParams({
       value : this.state.value,
-      existSearchword: this.existSearchword
+      getSearchWord: this.getSearchWord
     })
   }
 
@@ -173,16 +147,15 @@ class StoreSearchScreen extends Component {
     }
   }
   
-  existSearchword(value) {
-    const searching = value == "" ? false : true
-    this.setState({searching : searching, searchWord : value})
+  getSearchWord(searchWord, searching = false) {
+    this.setState({searchWord : searchWord, searching : searching})
   }
 
   changeValue(value) {
-    this.setState({value : value, searching : true, searchWord:value})
+    this.setState({value : value, searchWord:value})
   }
 
-  _onPressItem (key) {
+  _onPressItem = (key) => {
     const country = this.state.allData.filter(elm => elm.uuid == key)[0]
 
     console.log("key",key)
@@ -200,7 +173,6 @@ class StoreSearchScreen extends Component {
           <Text style={styles.searchListHeaderText}>{i18n.t('search:list')}</Text>
         </View>
         {_.isEmpty(searchList) ? <View style={styles.noList}> 
-          {/* i18로 변경해야함 */}
           <Text style={styles.searchListText}> {i18n.t('search:err')} </Text>
         </View> : searchList.map((elm,idx) => (
           <TouchableOpacity key={idx+''} onPress={() => this.changeValue(elm)}>
@@ -213,6 +185,7 @@ class StoreSearchScreen extends Component {
     )
   }
 
+  // 인기국가
   renderRecommend() {
     const { recommendCountry} = this.state
     
@@ -221,7 +194,6 @@ class StoreSearchScreen extends Component {
 
     return (
       <View style={styles.width100}>
-      {/* 인기 국가 */}
       <View style={styles.recommendHeader}>
         <Text style={styles.searchListHeaderText}>{i18n.t('search:recommend')}</Text>
       </View>
@@ -237,6 +209,7 @@ class StoreSearchScreen extends Component {
     )
   }
 
+  //국가이름 자동완성
   renderSearching() {
     const {allData, searchWord = ''} = this.state
     if(!allData) { return null }
@@ -275,16 +248,30 @@ class StoreSearchScreen extends Component {
     // )
   }
 
+  // 국가 검색
+  renderStoreList () {
+    const {allData, searchWord = ''} = this.state
+    const list = this.filterBySearchWord(allData, searchWord)
+    console.log("list",list)
+    return <StoreList data={list} onPress={this._onPressItem}/>
+  }
+
+  filterBySearchWord( list, searchWord) {
+    return list.filter(elm => (_.isEmpty(searchWord) ? true : [...elm.cntry].join(',').match(searchWord)))
+      .map((elm,idx,arr) => ({key:elm.ccode, data:[elm,arr[idx+1]] }))
+      .filter((elm,idx) => idx % 2 == 0)
+  }
 
   render() {
-    const {querying,searching} = this.state
+    const {querying,searching,searchWord} = this.state
 
     return (
       <View style={[appStyles.container,{marginTop:15}]}>
         <AppActivityIndicator visible={querying} />
-        {searching ? null : this.renderSearchWord()}
-        {searching ? null : this.renderRecommend()}
-        {searching ? this.renderSearching() : null}
+        {!searchWord && !searching ? this.renderSearchWord() : null }
+        {!searchWord && !searching ? this.renderRecommend() : null }
+        {searchWord && !searching ? this.renderSearching() : null}
+        {searching ? this.renderStoreList() : null}
       </View>
     )
   }
@@ -337,10 +324,6 @@ const styles = StyleSheet.create({
     marginHorizontal:20,
     marginBottom:20,
     marginTop:15,
-  },
-  recommendList : {
-    marginHorizontal : 20,
-    alignContent: "space-between"
   },
   recommendRow : {
     marginLeft:20,
