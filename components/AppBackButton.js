@@ -16,8 +16,7 @@ class AppBackButton extends PureComponent {
 
     if ( back == 'top') return navigation.popToTop()
     if ( back == 'lastTab') {
-      const parent = navigation.dangerouslyGetParent()
-      if ( parent) parent.navigate(lastTab)
+      return navigation.navigate(lastTab)
     }
 
     return navigation.goBack()
