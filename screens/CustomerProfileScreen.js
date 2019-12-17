@@ -11,7 +11,7 @@ import {appStyles} from '../constants/Styles'
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as accountActions from '../redux/modules/account'
-import * as orderActions from '../redux/modules/order'
+import * as profileActions from '../redux/modules/profile'
 import { SafeAreaView } from 'react-navigation'
 import _ from 'underscore'
 import AppBackButton from '../components/AppBackButton';
@@ -39,14 +39,14 @@ class CustomerProfileScreen extends Component {
 
   componentDidMount() {
 
-    this.props.action.order.getCustomerProfile(this.props.account)
+    this.props.action.profile.getCustomerProfile(this.props.account)
 
   }
 
   componentDidUpdate(prevProp){
 
-    if(prevProp.order.profile != this.props.order.profile){
-      const profile = this.props.order.profile.find(item => item.isBasicAddr)
+    if(prevProp.profile.profile != this.props.profile.profile){
+      const profile = this.props.profile.profile.find(item => item.isBasicAddr)
       
       if(profile){
         this.setState({
@@ -67,7 +67,7 @@ class CustomerProfileScreen extends Component {
 
   _deleteProfile(uuid) {
 
-    this.props.action.order.profileDelAndGet(uuid, this.props.account)
+    this.props.action.profile.profileDelAndGet(uuid, this.props.account)
     //AppAlert.confirm(i18n.t('purchase:delAddr'))
     //AppAlert.error( i18n.t('purchase:failedToDelete'))
 
@@ -120,7 +120,7 @@ class CustomerProfileScreen extends Component {
  
     return (
       <SafeAreaView style={styles.container}>
-        <FlatList data={this.props.order.profile} 
+        <FlatList data={this.props.profile.profile} 
                   keyExtractor={item => item.uuid}
                   renderItem={this._renderItem} 
                   extraData={this.state.checked}/>
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => ({
   account: state.account.toJS(),
   auth: accountActions.auth(state.account),
-  order: state.order.toJS()
+  profile: state.profile.toJS()
 })
 
 // export default CustomerProfileScreen
@@ -210,7 +210,7 @@ export default connect(mapStateToProps,
   (dispatch) => ({
     action: {
       account : bindActionCreators(accountActions, dispatch),
-      order : bindActionCreators(orderActions, dispatch),  
+      profile : bindActionCreators(profileActions, dispatch),  
     }
   })
 )(CustomerProfileScreen)
