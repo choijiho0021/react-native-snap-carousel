@@ -75,7 +75,7 @@ class HomeScreen extends Component {
     // iphone 11 pro  - 375x812, 2436×1125
     // iphone 11 pro max - 414x896, 2688×1242
     // 190 ~ 210 사이의 크기로 정리됨 
-    console.log('window height', windowHeight, sliderWidth)
+    //console.log('window height', windowHeight, sliderWidth)
     this.imageHeight = windowHeight > 810 ? 210 : 190
   }
 

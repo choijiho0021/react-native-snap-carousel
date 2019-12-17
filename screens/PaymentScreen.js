@@ -39,7 +39,8 @@ class PaymentScreen extends Component{
       const {impId} = getEnvVars()
       const response = { imp_success: true,
         imp_uid: impId,
-        merchant_uid: params.merchant_uid
+        merchant_uid: params.merchant_uid,
+        profile_uuid: params.profile_uuid
       }
 
       this._callback(response)

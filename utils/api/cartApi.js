@@ -184,6 +184,9 @@ class CartAPI {
                     }
                 })),
             },
+            profile: {
+                uuid: result.profile_uuid       // 주문에 사용된 profile id
+            },
             user: {
                 mail,
                 name: user
@@ -192,7 +195,7 @@ class CartAPI {
                 gateway: 'iamport',
                 type: 'paypal',
                 details: {
-                    merchant_uid: result.merchant_uid
+                    merchant_uid: result.merchant_uid,
                 }
             }
         }
