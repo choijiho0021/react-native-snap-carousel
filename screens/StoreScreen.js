@@ -48,8 +48,8 @@ class CountryItem extends Component {
               <Image key={"img"} source={{uri:api.httpImageUrl(elm.imageUrl == '' ? elm.subImageUrl : elm.imageUrl)}} style={styles.image}/>
               {/* cntry가 Set이므로 첫번째 값을 가져오기 위해서 values().next().value를 사용함 */}
               <Text key={"cntry"} style={[appStyles.bold14Text,{marginVertical:11}]}>{elm.categoryId == productApi.category.multi ? elm.name : elm.cntry.values().next().value}</Text>
-              <View style={{flexDirection: 'row',justifyContent: 'space-between',alignContent:"center"}}>
-                <View style={{flexDirection: 'row',alignItems:"center"}}>
+              <View style={styles.priceRow}>
+                <View style={styles.price}>
                   <Text key={"price"} style={[appStyles.normal20Text,styles.text]}>{utils.numberToCommaString(elm.pricePerDay)}</Text> 
                   <Text key={"days"} style={[appStyles.normal16Text,styles.text]}>{` ${i18n.t('won')}/Day`}</Text>
                 </View>
@@ -196,8 +196,9 @@ class StoreScreen extends Component {
         { key: 'asia', title: i18n.t('store:asia'), category:'아시아'},
         { key: 'europe', title: i18n.t('store:europe'), category:'유럽' },
         { key: 'usaAu', title: i18n.t('store:usa/au'), category:'미주/호주' },
-        { key: 'multi', title: i18n.t('store:multi'), category:'복수 국가' },
+        { key: 'multi', title: i18n.t('store:multi'), category:'복수 국가' }
       ],
+  
       allData:[],
       asia: [],
       europe: [],
@@ -362,13 +363,16 @@ class StoreScreen extends Component {
           onIndexChange={this._onIndexChange}
           initialLayout={{ width: Dimensions.get('window').width, height:10 }}
           titleStyle={appStyles.normal14Text}
+          indicatorStyle={{ backgroundColor: 'white' }}
           renderTabBar={props => (
             <TabBar
               {...props}
               tabStyle={styles.tabStyle}
-              activeColor={colors.clearBlue}
-              inactiveColor={colors.warmGrey}
-              labelStyle={styles.tabBarLabel}
+              activeColor={colors.clearBlue} // 활성화 라벨 색
+              inactiveColor={colors.warmGrey} //비활성화 탭 라벨 색
+              style={{backgroundColor:colors.whiteTwo}} // 라벨 TEXT 선택 시 보이는 배경 색
+              labelStyle={styles.tabBarLabel} // 라벨 TEXT에 관한 스타일
+              indicatorStyle={{backgroundColor:colors.whiteTwo}} //tabbar 선택시 하단의 줄 색
             />
           )}
         />
@@ -498,6 +502,15 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 1,
     backgroundColor: colors.whiteTwo,
+    alignItems:"center"
+  },
+  priceRow : {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignContent:"center"
+  },
+  price : {
+    flexDirection: 'row',
     alignItems:"center"
   }
 });
