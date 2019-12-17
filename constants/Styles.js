@@ -208,6 +208,14 @@ export const appStyles = StyleSheet.create({
         letterSpacing: 0.25,
         color: colors.black
     },
+    normal20Text: {
+        // fontFamily: "Roboto",
+        fontSize: 20,
+        fontStyle: "normal",
+        lineHeight: 24,
+        letterSpacing: 0.19,
+        color: colors.black
+    },
     mobileNo: {
         fontFamily: "Roboto-Regular",
         fontSize: 16,

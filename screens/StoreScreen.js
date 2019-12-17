@@ -47,11 +47,16 @@ class CountryItem extends Component {
             <TouchableOpacity onPress={() => this.props.onPress && this.props.onPress(elm.uuid)}>
               <Image key={"img"} source={{uri:api.httpImageUrl(elm.imageUrl == '' ? elm.subImageUrl : elm.imageUrl)}} style={styles.image}/>
               {/* cntry가 Set이므로 첫번째 값을 가져오기 위해서 values().next().value를 사용함 */}
-              <Text key={"cntry"} style={[appStyles.bold14Text,{marginBottom:5}]}>{elm.categoryId == productApi.category.multi ? elm.name : elm.cntry.values().next().value}</Text>
-              <Text key={"from"} style={styles.from}>{i18n.t('from')}</Text>
-              <Text key={"price"} style={[appStyles.price,styles.text]}>{utils.numberToCommaString(elm.price)}
-              <Text key={"days"} style={[appStyles.normal14Text,styles.text]}>{`${i18n.t('won')}/${i18n.t('day')}`}</Text>
-              </Text>
+              <Text key={"cntry"} style={[appStyles.bold14Text,{marginVertical:11}]}>{elm.categoryId == productApi.category.multi ? elm.name : elm.cntry.values().next().value}</Text>
+              <View style={{flexDirection: 'row',justifyContent: 'space-between',alignContent:"center"}}>
+                <View style={{flexDirection: 'row',alignItems:"center"}}>
+                  <Text key={"price"} style={[appStyles.normal20Text,styles.text]}>{utils.numberToCommaString(elm.pricePerDay)}</Text> 
+                  <Text key={"days"} style={[appStyles.normal16Text,styles.text]}>{` ${i18n.t('won')}/Day`}</Text>
+                </View>
+                <View style={styles.lowPriceView}>
+                  <Text style={styles.lowPrice}>{i18n.t('lowest')}</Text>
+                </View>
+              </View>
             </TouchableOpacity> 
           </View> : <View key="unknown" style={{flex:1}}/>
         ))}
@@ -235,19 +240,20 @@ class StoreScreen extends Component {
       list = prodList.reduce((acc,item) => {
         item.key = item.uuid 
         item.cntry = new Set(country.getName(item.ccode))
+        item.pricePerDay = (item.price / Number(item.days)).toFixed(0)
 
         const idxCcode = acc.findIndex(elm => item.categoryId == multi ? elm.uuid == item.uuid : elm.ccode == item.ccode)
         if ( idxCcode < 0) {
           // new item, insert it
           return acc.concat( [item])
         }
-        else if ( acc[idxCcode].price > item.price) {
+        else if ( acc[idxCcode].pricePerDay > item.pricePerDay) {
           // cheaper
           acc.splice( idxCcode, 1, item)
           return acc
         }
         else if ( idxCcode >= 0 && item.categoryId == multi) {
-          acc[idxCcode].cntry = acc[idxCcode].cntry.add(country.getName(item.ccode))
+          country.getName(item.ccode).map(elm => acc[idxCcode].cntry = acc[idxCcode].cntry.add(elm))
           acc[idxCcode].ccode = 'multi'
         }
         
@@ -272,9 +278,10 @@ class StoreScreen extends Component {
   }
  
   _onPressItem = (key) => {
+    const {allData} = this.state
     const country = this.state.allData.filter(elm => elm.uuid == key)[0]
     this.props.action.product.selectCountry({uuid: key})
-    this.props.navigation.navigate('Country',{title:country.categoryId == productApi.category.multi ? country.name : country.cntry.values().next().value})
+    this.props.navigation.navigate('Country',{allData:allData,title:country.categoryId == productApi.category.multi ? country.name : country.cntry.values().next().value})
   }
 
   /*
@@ -346,7 +353,7 @@ class StoreScreen extends Component {
 
     return (
       //AppTextInput
-      <View style={[appStyles.container,{marginTop:15}]}>
+      <View style={appStyles.container}>
         <AppActivityIndicator visible={querying} />
         <TabView 
           style={styles.container} 
@@ -395,7 +402,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 110,
     resizeMode: 'cover',
-    marginVertical:10,
     borderRadius:10
   },
   divider: {
@@ -425,6 +431,7 @@ const styles = StyleSheet.create({
   productList : {
     flexDirection: 'row',
     marginTop:20,
+    marginBottom:10,
     marginHorizontal:20
   },
   tabBarLabel: {
@@ -472,6 +479,7 @@ const styles = StyleSheet.create({
   },
   tabStyle: {
     backgroundColor:colors.whiteTwo,
+    height:60,
     alignItems:"flex-start",
     paddingLeft:20
   },
@@ -480,6 +488,17 @@ const styles = StyleSheet.create({
     textAlign: "left",
     color:colors.warmGrey,
     marginBottom:1
+  },
+  lowPrice : {
+    ... appStyles.normal12Text,
+    color : colors.black
+  },
+  lowPriceView : {
+    width: 41,
+    height: 22,
+    borderRadius: 1,
+    backgroundColor: colors.whiteTwo,
+    alignItems:"center"
   }
 });
 

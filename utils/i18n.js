@@ -46,6 +46,7 @@ const en = {
   'price': 'price',
   'noti' : 'Notification',
   'done' : 'Done',
+  'lowest' : 'lowest',
 
   'home:guide': 'User Guide',
   'home:checkGuide': 'Check',
@@ -303,6 +304,7 @@ const ko = {
   'price': '가격',
   'noti' : '알림',
   'done' : '완료',
+  'lowest' : '최저',
 
   'home:guide': '사용가이드',
   'home:checkGuide': '확인하기',

@@ -60,8 +60,10 @@ class CountryScreen extends Component {
       if ( idx >= 0 && idx < prodList.length) {
         console.log('prod', prodList[idx])
       }
-    
-    const prodData = prodList.filter(item => prod.categoryId[0] == productApi.category.multi ? item.uuid == prod.uuid : item.ccode == prod.ccode).map(item => ({
+    const prodData = prodList.filter(item => prod.categoryId[0] == productApi.category.multi ? 
+        item.uuid == prod.uuid && item.ccode == prod.ccode 
+        : item.categoryId[0] != productApi.category.multi && item.ccode == prod.ccode)
+        .map(item => ({
       ... item,
       key: item.uuid
     }))

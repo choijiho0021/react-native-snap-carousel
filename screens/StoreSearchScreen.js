@@ -27,6 +27,7 @@ import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 
+const MAX_HISTORY_LENGTH = 7
 class HeaderTitle extends Component {
   constructor(props) {
     super(props)
@@ -76,12 +77,11 @@ class HeaderTitle extends Component {
   async search(searchWord) {
     const old_searchHist = await utils.retrieveData("searchHist")
 
-    //중복 제거 후 최대 7개까지 저장한다.
-    //저장 형식 : ex) 대만,중국,일본 
-    const new_searchHist = _.isNull(old_searchHist) ? searchWord : Array.from(new Set([searchWord].concat(old_searchHist.split(',')))).slice(0,7).join(',')
-
-    utils.storeData("searchHist", new_searchHist)
-
+    if(!searchWord.match(',')){
+      //중복 제거 후 최대 7개까지 저장한다. 저장 형식 : ex) 대만,중국,일본 
+      const new_searchHist = _.isNull(old_searchHist) ? searchWord : Array.from(new Set([searchWord].concat(old_searchHist.split(',')))).slice(0,MAX_HISTORY_LENGTH).join(',')
+      utils.storeData("searchHist", new_searchHist)
+    }
     this.setState({searchWord:searchWord})
   }
 
