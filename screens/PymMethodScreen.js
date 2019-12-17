@@ -7,7 +7,7 @@ import {
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as accountActions from '../redux/modules/account'
-import * as orderActions from '../redux/modules/order'
+import * as profileActions from '../redux/modules/profile'
 import * as cartActions from '../redux/modules/cart'
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
@@ -76,7 +76,7 @@ class PymMethodScreen extends Component {
 
   //
   componentDidMount() {
-    this.props.action.order.getCustomerProfile(this.props.auth)
+    this.props.action.profile.getCustomerProfile(this.props.auth)
   }
 
   _onSubmit() {
@@ -86,7 +86,7 @@ class PymMethodScreen extends Component {
     const { mobile, email} = this.props.account
     const { pymReq } = this.props.cart,
       total = pymReq.reduce((sum,cur) => sum + cur.amount, 0),
-      profile = this.props.order.profile.find(item =>item.isBasicAddr) || {}
+      profile = this.props.profile.profile.find(item =>item.isBasicAddr) || {}
 
     const params = {
       pg : selected,
@@ -152,13 +152,13 @@ class PymMethodScreen extends Component {
   // }
 
   _address(){
-    const item = this.props.order.profile.find(item =>item.isBasicAddr) || {}
+    const item = this.props.profile.profile.find(item =>item.isBasicAddr) || {}
 
     return (
       <View>
         {
           // 주소
-          this.props.order.profile.length > 0 &&
+          this.props.profile.profile.length > 0 &&
           <View>
             <Text style={styles.title}>{i18n.t('pym:delivery')}</Text>
             <View style={styles.profileTitle}>
@@ -184,7 +184,7 @@ class PymMethodScreen extends Component {
         {
           // 주소 등록 
           // == 0
-          this.props.order.profile.length >= 0 &&
+          this.props.profile.profile.length >= 0 &&
           <View>
             <Text style={styles.title}>{i18n.t('pym:delivery')}</Text>
             <View>
@@ -204,7 +204,7 @@ class PymMethodScreen extends Component {
     const { selected } = this.state,
       { purchaseItems = [], pymReq } = this.props.cart,
       simIncluded = purchaseItems.findIndex(item => item.type == 'sim_card') >= 0,
-      noProfile = this.props.order.profile.length == 0
+      noProfile = this.props.profile.profile.length == 0
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
@@ -382,7 +382,7 @@ const mapStateToProps = (state) => ({
   account: state.account.toJS(),
   cart: state.cart.toJS(),
   auth: accountActions.auth(state.account),
-  order: state.order.toJS()
+  profile: state.profile.toJS()
 })
 
 export default connect(mapStateToProps, 
@@ -390,7 +390,7 @@ export default connect(mapStateToProps,
     action: {
       account : bindActionCreators(accountActions, dispatch),
       cart : bindActionCreators(cartActions, dispatch),
-      order : bindActionCreators(orderActions, dispatch),  
+      profile : bindActionCreators(profileActions, dispatch),  
     }
   })
 )(PymMethodScreen)
