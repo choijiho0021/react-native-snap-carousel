@@ -26,7 +26,6 @@ import NotiScreen from '../screens/NotiScreen';
 import PaymentScreen from '../screens/PaymentScreen';
 import PaymentResultScreen from '../screens/PaymentResultScreen';
 import PurchaseDetailScreen from '../screens/PurchaseDetailScreen';
-import RegisterMobileScreen from '../screens/RegisterMobileScreen';
 import ContactScreen from '../screens/ContactScreen';
 import ContactBoardScreen from '../screens/ContactBoardScreen';
 import PymMethodScreen from '../screens/PymMethodScreen';
@@ -60,7 +59,6 @@ const HomeStack = createStackNavigator(
     Home: HomeScreen,
     Recharge: RechargeScreen,
     RegisterSim: RegisterSimScreen,
-    RegisterMobile: RegisterMobileScreen,
     NewSim: NewSimScreen,
     Noti: NotiScreen,
     SimpleText: SimpleTextScreen,

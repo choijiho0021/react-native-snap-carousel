@@ -193,7 +193,7 @@ class HomeScreen extends Component {
   _navigate = (key) => () => {
     const { mobile, iccid } = this.props.account
     if ( key == 'RegisterSim' ) {
-      if ( _.isEmpty(mobile)) key = 'RegisterMobile' 
+      if ( _.isEmpty(mobile)) key = 'Auth' 
       else if ( _.isEmpty(iccid)) key = 'RegisterSim'
       else key = 'Recharge'
     }
