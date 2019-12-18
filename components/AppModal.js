@@ -24,6 +24,7 @@ class AppModal extends Component {
 
     this._onChangeText = this._onChangeText.bind(this)
     this._onSubmit = this._onSubmit.bind(this)
+    this._renderError = this._renderError.bind(this)
   }
 
   componentDidUpdate(prevProps) {
@@ -46,9 +47,12 @@ class AppModal extends Component {
     })
   }
 
-  _onSubmit() {
+  async _onSubmit() {
     const { value } = this.state
-    const validated = this.props.validate && this.props.validate(value)
+    const validated = (this.props.validate && this.props.validate(value)) ||
+      (this.props.validateAsync && await this.props.validateAsync(value))
+
+    console.log('validated', validated)
 
     if ( _.isUndefined(validated)) {
       this.setState({
@@ -62,6 +66,23 @@ class AppModal extends Component {
         error: validated
       })
     }
+  }
+
+  _renderError() {
+    const { error } = this.state
+
+    if ( this.props.mode == 'edit' ) {
+      if ( _.isArray(error)) return (
+        <View>
+        {
+          error.map((err,idx) => <Text key={idx+""} style={styles.error}>{err}</Text>)
+        }
+        </View>
+      )
+
+      if ( ! _.isEmpty(error)) return <Text style={styles.error}>{error}</Text>
+    }
+    return null
   }
 
   render() {
@@ -91,7 +112,7 @@ class AppModal extends Component {
                 </View>
             }
             {
-              this.props.mode == 'edit' && ! _.isUndefined(error) && <Text style={styles.error}>{error}</Text>
+              this._renderError()
             }
 
             <View style={styles.row}>

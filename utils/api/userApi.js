@@ -234,11 +234,16 @@ class UserAPI {
         if ( _.isEmpty(name) || _.isEmpty(auth)) return api.reject( api.INVALID_ARGUMENT)
         return this.getByFilter(`?filter[name][value]=${name}`, auth)
     }
+
+    getByMail = (mail, auth) => {
+        if ( _.isEmpty(mail) || _.isEmpty(auth)) return api.reject( api.INVALID_ARGUMENT)
+        return this.getByFilter(`?filter[mail][value]=${mail}`, auth)
+    }
     
     update = (uuid, {token}, attr) => {
         if ( _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
 
-        const url = `${api.httpUrl(api.path.jsonapi.user)}/${uuid}`
+        const url = `${api.httpUrl(api.path.jsonapi.user, '')}/${uuid}`
         const headers = api.withToken(token, 'vnd.api+json')
         const body = {
             data: {

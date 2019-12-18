@@ -116,6 +116,7 @@ const en = {
   'acc:notfound': 'ICCID is not found',
   'acc:changeEmail': 'Input new email',
   'acc:permCamera': 'Please, grant the permission to read photos',
+  'acc:duplicatedEmail': 'Duplicated email',
 
   "set:info" : "My SIM Info",
   "set:noti" : "Noti",
@@ -379,6 +380,7 @@ const ko = {
   'acc:notfound': '등록되지 않은 ICCID 입니다.',
   'acc:changeEmail': '이메일 변경',
   'acc:permCamera': '사진 앨범 권한을 허가해 주세요',
+  'acc:duplicatedEmail': '이미 등록된 이메일 입니다',
 
   "set:info" : "내 SIM 정보",
   "set:noti" : "알림",
