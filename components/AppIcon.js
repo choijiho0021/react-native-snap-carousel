@@ -15,6 +15,8 @@ const images = {
   iconArrowRight : [ require( mainPath + 'iconArrowRight.png')],
   iconArrowUp : [ require( mainPath + 'iconArrowUp.png')],
   iconArrowDown : [ require( mainPath + 'iconArrowDown.png')],
+  iconArrowRightWhite : [ require( mainPath + 'iconArrowRightWhite.png')],
+  iconArrowLeftWhite : [ require( mainPath + 'iconArrowLeftWhite.png')],
   imgPeople : [ require( mainPath + 'imgPeople.png')],
   imgCard1 : [ require( mainPath + 'imgCard1.png')],
   imgCard2 : [ require( mainPath + 'imgCard2.png')],

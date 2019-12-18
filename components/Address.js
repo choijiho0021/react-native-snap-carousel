@@ -35,20 +35,25 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     letterSpacing: 0.23
   },
+  roadText: {
+    fontSize: 12,
+    fontWeight: "normal",
+    fontStyle: "normal",
+    color: colors.warmGrey,
+    textAlign: 'center',
+    paddingHorizontal: 9,
+    paddingVertical: 2
+  },
   roadBox: {
     width: 50,
     height: 20,
+    marginRight: 10,
     borderRadius: 2,
     backgroundColor: colors.white,
     borderStyle: "solid",
     borderWidth: 1,
     borderColor: colors.lightGrey,
-    fontSize: 12,
-    fontWeight: "normal",
-    fontStyle: "normal",
-    letterSpacing: 0.23,
-    color: colors.warmGrey,
-    textAlign: 'center'
+    alignSelf: 'center'
   }
 });
 
@@ -68,10 +73,12 @@ class Address extends PureComponent {
               <Text style={styles.addrValue}>{item.jibunAddr}</Text>
             </View>
             <View style={styles.itemRow}>
-              <View style={{height:20}}>
-                <Text style={styles.roadBox}>{i18n.t('addr:road')}</Text>
+              <View style={styles.roadBox}>
+                <Text style={styles.roadText}>{i18n.t('addr:road')}</Text>
               </View>  
-              <Text style={styles.addrValue}>  {item.roadAddr}</Text>
+              <View style = {{ maxWidth: '85%'}}>
+              <Text style={styles.addrValue, { flexDirection: 'row', flexWrap: 'wrap'}}>{item.roadAddr}</Text>
+              </View>
             </View>
 
         </View>
