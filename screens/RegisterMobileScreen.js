@@ -30,7 +30,7 @@ import InputPinInTime from '../components/InputPinInTime';
 
 class RegisterMobileScreen extends Component {
   static navigationOptions = ({navigation, state}) => ({
-    headerLeft: <AppBackButton navigation={navigation} back={'lastTab'} lastTab={'Main'} title={i18n.t('mobile:header')}/>
+    headerLeft: <AppBackButton navigation={navigation} back={'lastTab'} title={i18n.t('mobile:header')} />
   })
 
   constructor(props) {

@@ -215,10 +215,12 @@ class AppTabNavigator extends React.Component {
 
   componentDidUpdate(prevProps) {
     if ( prevProps.navigation.state != this.props.navigation.state) {
-      const {navigation} = prevProps,
+      const {navigation} = this.props,
         lastTab = navigation.state.routes[navigation.state.index].routeName
 
-      if ( lastTab != 'CartStack' && lastTab != this.props.lastTab) this.props.action.cart.setLastTab(lastTab)
+      if ( lastTab != 'CartStack' && lastTab != this.props.lastTab) {
+        this.props.action.cart.setLastTab(lastTab)
+      }
     }
   }
 
