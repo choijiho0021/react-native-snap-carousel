@@ -200,7 +200,7 @@ class StoreSearchScreen extends Component {
       {recommendCountryList.map((elm,idx )=> 
           <View key={elm.key} style={styles.recommendRow}>
             {elm.data.map((elm2,idx) => 
-              elm2 ? <TouchableOpacity key={elm2} style={styles.recommebdItem}onPress={() => this.changeValue(elm2)}>
+              elm2 ? <TouchableOpacity key={elm2} style={styles.recommebdItem} onPress={() => this.changeValue(elm2)}>
                       <Text style={styles.recommendText}>{elm2}</Text>
                 </TouchableOpacity> : <View key={idx+''}style={styles.recommebdEmpty}/>)}
           </View>
@@ -252,7 +252,10 @@ class StoreSearchScreen extends Component {
   renderStoreList () {
     const {allData, searchWord = ''} = this.state
     const list = this.filterBySearchWord(allData, searchWord)
-    console.log("list",list)
+
+    if(list.length < 1) {
+      return (<View style={styles.emptyViewPage}><Text style={styles.emptyPage}>{i18n.t('country:empty')}</Text></View>)
+    }
     return <StoreList data={list} onPress={this._onPressItem}/>
   }
 
@@ -380,6 +383,14 @@ const styles = StyleSheet.create({
   backButton : {
     alignItems:"center",
     justifyContent:"center"
+  },
+  emptyPage: {
+    marginTop: 60,
+    textAlign: 'center'
+  },
+  emptyViewPage : {
+    width:'100%',
+    alignItems: "center"
   }
 });
 
