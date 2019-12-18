@@ -90,9 +90,10 @@ class StoreScreen extends Component {
         item.key = item.uuid 
         item.cntry = new Set(country.getName(item.ccode))
         //days가 "00일" 형식으로 오기 때문에 일 제거 후 넘버타입으로 변환
-        item.pricePerDay = (item.price / Number(item.days.slice(0,-1))).toFixed(0)
+        item.pricePerDay = Math.round(item.price / Number(item.days.slice(0,-1)))
 
         const idxCcode = acc.findIndex(elm => item.categoryId == multi ? elm.uuid == item.uuid : elm.ccode == item.ccode)
+
         if ( idxCcode < 0) {
           // new item, insert it
           return acc.concat( [item])
@@ -100,13 +101,13 @@ class StoreScreen extends Component {
         else if ( acc[idxCcode].pricePerDay > item.pricePerDay) {
           // cheaper
           acc.splice( idxCcode, 1, item)
+          // console.log("acc3",acc)
           return acc
         }
         else if ( idxCcode >= 0 && item.categoryId == multi) {
           country.getName(item.ccode).map(elm => acc[idxCcode].cntry = acc[idxCcode].cntry.add(elm))
           acc[idxCcode].ccode = 'multi'
         }
-        
         return acc
       }, [])
     
