@@ -26,6 +26,7 @@ import InputEmail from '../components/InputEmail';
 import { colors } from '../constants/Colors';
 import { Map } from 'immutable'
 import validationUtil from '../utils/validationUtil';
+import InputPinInTime from '../components/InputPinInTime';
 
 class RegisterMobileScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -41,6 +42,7 @@ class RegisterMobileScreen extends Component {
       mobile: undefined,
       authorized: undefined,
       authNoti: false,
+      timeout: false,
       confirm: Map({
         "0": false,
         "1": false,
@@ -148,7 +150,8 @@ class RegisterMobileScreen extends Component {
 
       this.setState({ 
         pin: undefined,
-        authorized: undefined
+        authorized: undefined,
+        timeout: true
       })
 
       this._focusAuthInput()
@@ -157,7 +160,8 @@ class RegisterMobileScreen extends Component {
         .then( resp => {
           if (resp.result === 0) {
             this.setState({
-              authNoti: true
+              authNoti: true,
+              timeout: false
             })
           }
           else {
@@ -174,9 +178,10 @@ class RegisterMobileScreen extends Component {
     this.setState(val)
   }
 
-  _onPress = (key) => () => {
+  _onPress = (key) => (value) => {
     if ( key == 'pin') {
-      const { mobile, pin, authorized } = this.state
+      const { mobile, authorized } = this.state,
+        pin = value
       // PIN이 맞는지 먼저 확인한다. 
 
       if ( authorized ) return;
@@ -186,7 +191,8 @@ class RegisterMobileScreen extends Component {
           if (resp.result === 0) {
             this.setState({
               authorized: true,
-              newUser: _.isEmpty(resp.objects)
+              newUser: _.isEmpty(resp.objects),
+              pin
             })
 
             if ( ! _.isEmpty(resp.objects) ) {
@@ -230,6 +236,12 @@ class RegisterMobileScreen extends Component {
     this.props.navigation.replace('RegisterSim')
   }
 
+  _onTimeout = () => {
+    this.setState({
+      timeout: true
+    })
+  }
+
   _renderItem({item}) {
     const confirmed = this.state.confirm.get(item.key)
 
@@ -255,10 +267,8 @@ class RegisterMobileScreen extends Component {
   }
 
   render() {
-    const { mobile, authorized, disable, pin, confirm, authNoti, newUser } = this.state
-    const disableButton = ! authorized || ( newUser && !(confirm.get("0") && confirm.get("1")) ),
-      disablePin = ! mobile || ! authNoti || authorized,
-      clickablePin = mobile && authNoti && _.size(pin) === 6
+    const { mobile, authorized, confirm, authNoti, newUser, timeout } = this.state
+    const disableButton = ! authorized || ( newUser && !(confirm.get("0") && confirm.get("1")) )
 
     return (
       <SafeAreaView style={styles.container}>
@@ -269,35 +279,15 @@ class RegisterMobileScreen extends Component {
           authNoti={authNoti }
           disabled={authNoti &&  authorized}/>
 
-        {
-          <AppTextInput 
-            style={{marginTop:26, paddingHorizontal:20}}
-            ref={this.authInputRef}
-            placeholder={i18n.t('mobile:auth')}
-            keyboardType="numeric"
-            enablesReturnKeyAutomatically={true}
-            maxLength={6}
-            clearTextOnFocus={true}
-            disabled={ disablePin }
-            clickable={ clickablePin }
-            autoFocus={true}
-            onChangeText={this._onChangeText('pin')}
-            onPress={this._onPress('pin')}
-            value={pin}
-            titleStyle={styles.smsButtonText}
-            titleDisableColor={colors.white}
-            inputStyle={[styles.inputStyle, pin ? {} : styles.emptyInput ]}
-            textContentType="oneTimeCode" />
-        }
-
-        {
-          mobile && (typeof authorized == 'undefined' ? null : 
-            <Text style={[styles.helpText, {color: authorized ? colors.clearBlue : colors.tomato}]}>
-              {i18n.t( authorized ? 'mobile:authMatch' : 'mobile:authMismatch')}
-            </Text>
-            )
-        }
-
+        <InputPinInTime style={{marginTop:26, paddingHorizontal:20}}
+          forwardRef={this.authInputRef}
+          editable={ mobile && authNoti && ! authorized }
+          clickable={ mobile && authNoti && ! timeout }
+          authorized={ mobile ? authorized : undefined }
+          countdown={ authNoti && ! authorized && ! timeout }
+          onTimeout={ this._onTimeout }
+          onPress={this._onPress('pin')}
+          duration={180}/>
 
         <View style={{flex:1}}>
           {

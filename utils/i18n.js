@@ -146,6 +146,8 @@ const en = {
   "mobile:resendAuth": "Resend auth code",
   "mobile:authMatch": "Auth code matches",
   "mobile:authMismatch": "Auth code mismatches",
+  "mobile:timeout": "Auth code has expired. Please try again.",
+  "mobile:inputInTime": "* Please enter the auth code within 3 minutes",
 
   "email:input": "Input",
 
@@ -407,6 +409,8 @@ const ko = {
   "mobile:resendAuth": "재전송",
   "mobile:authMatch": "인증번호가 확인되었습니다",
   "mobile:authMismatch": "잘못된 인증번호 입니다",
+  "mobile:timeout": "인증번호가 만료되었습니다. 다시 시도해주세요.",
+  "mobile:inputInTime": "* 3분 이내로 인증번호(6자리)를 입력해주세요.",
 
   "email:input": "직접 입력",
 
