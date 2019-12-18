@@ -257,7 +257,7 @@ class StoreSearchScreen extends Component {
   }
 
   filterBySearchWord( list, searchWord) {
-    return list.filter(elm => (_.isEmpty(searchWord) ? true : [...elm.cntry].join(',').match(searchWord)))
+    return list.filter(elm => elm.categoryId != productApi.category.multi && (_.isEmpty(searchWord) ? true : [...elm.cntry].join(',').match(searchWord)))
       .map((elm,idx,arr) => ({key:elm.ccode, data:[elm,arr[idx+1]] }))
       .filter((elm,idx) => idx % 2 == 0)
   }
