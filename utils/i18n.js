@@ -445,7 +445,7 @@ const ko = {
   "addr:totalCnt" : "총 %% 건",
   "addr:search" : "주소검색",
   'addr:addrAlias' : '배송지명',
-  'addr:recipient' : '수령인',
+  'addr:recipient' : '받는사람',
   'addr:recipientNumber' : '연락처',
   'addr:address' : '배송지',
   'addr:basicAddress' : '기본배송지로 선택',
