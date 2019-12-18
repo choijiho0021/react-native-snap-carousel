@@ -5,6 +5,7 @@ import {
   View,
   TouchableOpacity,
   FlatList,
+  Linking,
 } from 'react-native';
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
@@ -61,8 +62,7 @@ class MyPageScreen extends Component {
 
   async componentDidMount() {
     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
-
-    this.setState({ hasCameraRollPermission: status === 'granted' })
+    this.setState({ hasCameraRollPermission: status === 'granted'})
 
     if ( this.props.uid) this.props.action.order.getOrders(this.props.auth)
   }
@@ -83,7 +83,7 @@ class MyPageScreen extends Component {
     console.log('recharge')
   }
 
-  _changePhoto() {
+  async _changePhoto() {
     if ( this.state.hasCameraRollPermission ) {
       ImagePicker && ImagePicker.openPicker({
         width: 76,
@@ -101,6 +101,11 @@ class MyPageScreen extends Component {
         image && this.props.action.account.uploadAndChangePicture(image)
       }).catch(err => {
         console.log('failed to upload', err)
+      })
+    }
+    else {
+      AppAlert.confirm( i18n.t('settings'), i18n.t('acc:permCamera'), {
+        ok: () => Linking.openURL('app-settings:')
       })
     }
   }
