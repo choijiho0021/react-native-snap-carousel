@@ -126,6 +126,7 @@ const en = {
   "set:version" : "Version",
   "set:aboutus" : "About Us",
   "set:logout" : "Log Out",
+  "set:login" : "Log In",
   "set:fail" : "Failed to connect to the server. Please try again later",
   "set:confirmLogout": "Please, confirm logout",
 
@@ -390,6 +391,7 @@ const ko = {
   "set:version" : "버전 정보",
   "set:aboutus" : "About Us",
   "set:logout" : "로그 아웃",
+  "set:login" : "로그인",
   "set:fail" : "시스템 연동에 실패했습니다. 나중에 다시 이용해 주세요",
   "set:confirmLogout": "로그아웃 하시겠습니까?",
 

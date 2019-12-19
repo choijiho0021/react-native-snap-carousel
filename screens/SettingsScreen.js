@@ -36,7 +36,7 @@ class SettingsScreen extends Component {
         { "key": "Privacy", "value": i18n.t('set:privacy'), route: 'SimpleText'},
         { "key": "version", "value": i18n.t('set:version'), route: undefined},
         { "key": "aboutus", "value": i18n.t('set:aboutus'), route: 'SimpleText'},
-        { "key": "logout", "value": i18n.t('set:logout'), route: undefined},
+        { "key": "logout", "value": i18n.t(props.loggedIn ? 'set:logout' : 'set:login'), route: undefined},
       ],
     }
 
@@ -45,12 +45,25 @@ class SettingsScreen extends Component {
     this._logout = this._logout.bind(this)
   }
 
-  _onPress = (key, title, route) => () => {
-    if ( key == 'logout') {
-      this._showModal(true)
+  componentDidUpdate(prevProps) {
+    const { loggedIn} = this.props
+    if ( loggedIn != prevProps.loggedIn) {
+      this.setState({
+        data: this.state.data.map(item => item.key == 'logout' ? {
+          ... item, 
+          value: i18n.t(loggedIn ? 'set:logout' : 'set:login')
+        } : item)
+      })
     }
 
-    if ( route) {
+  }
+
+  _onPress = (key, title, route) => () => {
+    if ( key == 'logout') {
+      if ( this.props.loggedIn) this._showModal(true)
+      else this.props.navigation.navigate('Auth')
+    }
+    else if ( route) {
       this.props.navigation.navigate(route, {key,title})
     }
   }
@@ -125,6 +138,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => ({
+  loggedIn: state.account.get('loggedIn')
 })
 
 export default connect(mapStateToProps, 
