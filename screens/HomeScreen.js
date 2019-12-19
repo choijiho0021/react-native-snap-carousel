@@ -32,6 +32,7 @@ import withBadge from '../components/withBadge';
 import AppPrice from '../components/AppPrice';
 import pushNoti from '../utils/pushNoti'
 import { initialMode } from 'react-native-dark-mode'
+import { Animated } from 'react-native';
 
 const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti, 
   {badgeStyle:{right:-3,top:0}},
@@ -44,11 +45,13 @@ const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti,
 // 190 ~ 210 사이의 크기로 정리됨 
 const size = windowHeight > 810 ? {
   userInfoHeight : 110,
+  userInfoMarginTop: 30,
   userPic: 60,
   carouselHeight : 225,
   carouselMargin : 0
 } : {
   userInfoHeight : 96,
+  userInfoMarginTop: 20,
   userPic: 50,
   carouselHeight : 190,
   carouselMargin : 20
@@ -79,7 +82,7 @@ class HomeScreen extends Component {
     this.state = {
       darkMode: initialMode,
       activeSlide: 0,
-      promotions: []
+      promotions: [],
     }
 
     this._login = this._login.bind(this)
@@ -172,17 +175,43 @@ class HomeScreen extends Component {
   }
 
   _pagination () {
-    const { promotions, activeSlide } = this.state;
+    const { promotions, activeSlide } = this.state,
+      activeDotWidth = new Animated.Value(6),
+      inactiveDotWidth = new Animated.Value(20)
+
+    Animated.parallel([
+      Animated.timing (
+        activeDotWidth, {
+          toValue : 20,
+          duration : 500,
+      }),
+      Animated.timing (
+        inactiveDotWidth, {
+          toValue : 6,
+          duration : 500,
+      }),
+    ]).start()
+
     return (
       <View style={styles.pagination}>
         <Pagination 
           dotsLength={promotions.length}
           activeDotIndex={activeSlide}
-          containerStyle={{paddingVertical:5}}
-          dotStyle={styles.dot}
-          inactiveDotOpacity={1}
-          inactiveDotScale={1}
-          inactiveDotStyle={styles.inactiveDot}
+          containerStyle={{paddingVertical:5, paddingRight:0}}
+          renderDots={ activeIndex => (
+            promotions.map((promo, i) => (
+              <View key={i+""} style={styles.dotContainer}>
+              {
+                activeIndex == i ?
+                  <Animated.View style={[styles.dot, {width:activeDotWidth, backgroundColor:colors.clearBlue}]}/> :
+                (activeIndex == (i+1)%promotions.length) ?
+                  <Animated.View style={[styles.dot, {width:inactiveDotWidth, backgroundColor:colors.lightGrey}]}/> :
+                  <View style={styles.inactiveDot}/>
+
+              }
+              </View>
+            ))
+          )}
         />
       </View>
     )
@@ -445,7 +474,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ebebeb",
     marginHorizontal: 20,
-    marginTop: 30,
+    marginTop: size.userInfoMarginTop,
     flexDirection: "row",
     paddingHorizontal: 30,
     paddingVertical: 23
@@ -464,7 +493,10 @@ const styles = StyleSheet.create({
     width: 20,
     height: 6,
     borderRadius: 3.5,
-    backgroundColor: colors.clearBlue
+    backgroundColor: colors.clearBlue,
+  },
+  dotContainer: {
+    marginLeft: 5,
   },
   inactiveDot: {
     width: 6,
