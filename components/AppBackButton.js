@@ -16,7 +16,8 @@ class AppBackButton extends PureComponent {
 
     if ( back == 'top') return navigation.popToTop()
     if ( back == 'lastTab') {
-      return navigation.navigate(lastTab)
+      const tab = (lastTab[0] == 'CartStack') ? lastTab[1] : lastTab[0]
+      return navigation.navigate(tab)
     }
 
     return navigation.goBack()
@@ -37,5 +38,5 @@ class AppBackButton extends PureComponent {
 }
 
 export default connect((state) => ({
-  lastTab: state.cart.get('lastTab')
+  lastTab: state.cart.get('lastTab').toJS()
 }))(AppBackButton)

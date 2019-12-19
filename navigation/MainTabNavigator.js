@@ -218,8 +218,8 @@ class AppTabNavigator extends React.Component {
       const {navigation} = this.props,
         lastTab = navigation.state.routes[navigation.state.index].routeName
 
-      if ( lastTab != 'CartStack' && lastTab != this.props.lastTab) {
-        this.props.action.cart.setLastTab(lastTab)
+      if ( lastTab != this.props.lastTab[0]) {
+        this.props.action.cart.pushLastTab(lastTab)
       }
     }
   }
@@ -232,7 +232,7 @@ class AppTabNavigator extends React.Component {
 }
 
 export default connect((state) => ({
-  lastTab : state.cart.get('lastTab')
+  lastTab : state.cart.get('lastTab').toJS()
 }),
   (dispatch) => ({
     action:{

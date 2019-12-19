@@ -1,5 +1,5 @@
 import { createAction, handleActions } from 'redux-actions'
-import { Map } from 'immutable';
+import { Map, List } from 'immutable';
 import { pender } from 'redux-pender'
 import cartApi from '../../utils/api/cartApi'
 import api from '../../utils/api/api';
@@ -15,7 +15,7 @@ const MAKE_PAYMENT = 'rokebi/cart/MAKE_PAYMENT'
 const MAKE_ORDER = 'rokebi/cart/MAKE_ORDER'
 const PURCHASE = 'rokebi/cart/PURCHASE'
 const PYM_RESULT = 'rokebi/cart/PYM_RESULT'
-const SET_LAST_TAB = 'rokebi/cart/SET_LAST_TAB'
+const PUSH_LAST_TAB = 'rokebi/cart/PUSH_LAST_TAB'
 const EMPTY = 'rokebi/cart/EMPTY'
 
 export const CART_ADD = 'rokebi/cart/CART_ADD'
@@ -37,7 +37,7 @@ export const makeOrder = createAction(MAKE_ORDER, cartApi.makeOrder)
 export const pymResult = createAction(PYM_RESULT)
 export const empty = createAction(EMPTY)
 
-export const setLastTab = createAction(SET_LAST_TAB)
+export const pushLastTab = createAction(PUSH_LAST_TAB)
 
 export const payNorder = (result) => {
   return (dispatch,getState) => {
@@ -106,14 +106,15 @@ const initialState = Map({
   purchaseItems: [],
   pymReq: undefined,
   pymResult: undefined,
-  lastTab: 'HomeStack'
+  lastTab: List(['HomeStack'])
 })
 
 export default handleActions({
 
   // set last tab
-  [SET_LAST_TAB]: (state,action) => {
-    return state.set('lastTab', action.payload)
+  // 2개 리스트를 유지한다. 
+  [PUSH_LAST_TAB]: (state,action) => {
+    return state.update('lastTab', value => value.unshift(action.payload).setSize(2))
   },
 
   // empty cart
