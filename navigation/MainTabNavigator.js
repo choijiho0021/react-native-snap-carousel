@@ -38,7 +38,6 @@ import SimpleTextScreen from '../screens/SimpleTextScreen';
 import FaqScreen from '../screens/FaqScreen';
 import GuideScreen from '../screens/GuideScreen';
 import { colors } from '../constants/Colors';
-import AppCartButton from '../components/AppCartButton';
 
 const config = Platform.select({
   web: { headerMode: 'screen' },

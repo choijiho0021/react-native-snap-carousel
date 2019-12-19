@@ -60,7 +60,7 @@ class SettingsScreen extends Component {
     await utils.removeData( userApi.KEY_MOBILE)
     await utils.removeData( userApi.KEY_PIN)
 
-    this.props.action.account.clearAccount(['iccid', 'mobile', 'pin', 'userPictureUrl'])
+    this.props.action.account.clearAccount()
 
     this.props.navigation.navigate('HomeStack')
 

@@ -74,10 +74,7 @@ class RegisterSimScreen extends Component {
         const uuid = resp.objects[0].uuid
 
         // redux store도 갱신한다. (actCode)
-        this.props.action.account.updateAccount({
-          iccid,
-          uuid
-        })
+        this.props.action.account.getAccount(iccid, this.props.auth)
 
         // 서버의 account에 mobile 번호를 등록한다.
         this.props.action.account.registerMobile(uuid, this.props.account.mobile)
@@ -270,7 +267,8 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => ({
-    account: state.account.toJS(),
+  account: state.account.toJS(),
+  auth: accountActions.auth(state.account)
 })
 
 export default connect(mapStateToProps, 

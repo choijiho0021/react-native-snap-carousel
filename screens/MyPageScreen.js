@@ -62,6 +62,7 @@ class MyPageScreen extends Component {
     this._showEmailModal = this._showEmailModal.bind(this)
     this._validEmail = this._validEmail.bind(this)
     this._changeEmail = this._changeEmail.bind(this)
+    this._recharge = this._recharge.bind(this)
   }
 
   async componentDidMount() {
@@ -78,6 +79,10 @@ class MyPageScreen extends Component {
   }
 
   _showEmailModal(flag) {
+    if ( flag && ! this.props.uid) {
+      return this.props.navigation.navigate('Auth')
+    }
+
     this.setState({
       showEmailModal: flag
     })
@@ -88,6 +93,10 @@ class MyPageScreen extends Component {
   }
 
   async _changePhoto() {
+    if ( ! this.props.uid) {
+      return this.props.navigation.navigate('Auth')
+    }
+
     if ( this.state.hasCameraRollPermission ) {
       ImagePicker && ImagePicker.openPicker({
         width: 76,
@@ -115,6 +124,14 @@ class MyPageScreen extends Component {
     }
   }
 
+  _recharge() {
+    if ( ! this.props.uid) {
+      return this.props.navigation.navigate('Auth')
+    }
+
+    return this.props.navigation.navigate('Recharge')
+  }
+
   _info() {
     const {iccid, mobile, balance, expDate, email, userPictureUrl} = this.props.account
     const selected = (mode) => {
@@ -126,7 +143,7 @@ class MyPageScreen extends Component {
         <View >
           <AppUserPic url={userPictureUrl} icon="imgPeopleL" 
             style={styles.userPicture} 
-            onPress={this.props.uid && this._changePhoto} />
+            onPress={this._changePhoto} />
           <AppIcon name="imgPeoplePlus" style={{bottom:20, right:-29, alignSelf:'center'}}/>
         </View>
 
@@ -147,7 +164,7 @@ class MyPageScreen extends Component {
 
         <View style={styles.dividerSmall} />
 
-        <TouchableOpacity onPress={() => this.props.uid && this._showEmailModal(true)}>
+        <TouchableOpacity onPress={() => this._showEmailModal(true)}>
           <View style={styles.row}>
             <LabelText key='email' 
               style={styles.box}
@@ -157,7 +174,7 @@ class MyPageScreen extends Component {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => this.props.uid && this.props.navigation.navigate('Recharge')}>
+        <TouchableOpacity onPress={this._recharge}>
           <View style={styles.row}>
             <LabelText key='balance' 
               style={styles.box}

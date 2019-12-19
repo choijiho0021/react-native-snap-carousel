@@ -27,7 +27,7 @@ export const clearAccount = createAction(CLEAR_ACCOUNT)
 export const signUp = createAction(SIGN_UP)
 const logIn = createAction(LOGIN, userApi.logIn)
 export const getUserId = createAction(GET_USER_ID, userApi.getByName)
-const getAccount = createAction(GET_ACCOUNT, accountApi.getAccount)
+export const getAccount = createAction(GET_ACCOUNT, accountApi.getAccount)
 export const getAccountByUUID = createAction(GET_ACCOUNT_BY_UUID, accountApi.getByUUID)
 export const activateAccount = createAction(ACTIVATE_ACCOUNT, accountApi.update)
 const uploadPicture = createAction(UPLOAD_PICTURE, accountApi.uploadPicture)
@@ -45,7 +45,6 @@ export const changeEmail = (mail) => {
         }
       }
 
-      console.log('change email', attr)
     return dispatch(changeUserEmail( account.get('userId'), authObj, attr)).then(
       resp => {
         if ( resp.result == 0) {
@@ -184,7 +183,7 @@ const initialState = Map({
     iccid: undefined,
     nid: undefined,
     pin: undefined,
-    loggedIn: undefined,
+    loggedIn: false,
     userPicture: undefined,
     userPictureUrl: undefined,
     deviceToken: undefined
@@ -200,11 +199,7 @@ export default handleActions({
   },
 
   [CLEAR_ACCOUNT]: (state, action) => {
-    action.payload.forEach(key => {
-      state = state.set(key, undefined)
-    })
-
-    return state.set('loggedIn', false)
+    return initialState
   },
 
   ... pender({
