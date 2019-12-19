@@ -29,8 +29,8 @@ import validationUtil from '../utils/validationUtil';
 import InputPinInTime from '../components/InputPinInTime';
 
 class RegisterMobileScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('mobile:header')} />
+  static navigationOptions = ({navigation, state}) => ({
+    headerLeft: <AppBackButton navigation={navigation} back={'lastTab'} title={i18n.t('mobile:header')} />
   })
 
   constructor(props) {
@@ -59,7 +59,7 @@ class RegisterMobileScreen extends Component {
           {color: colors.clearBlue, text: i18n.t('cfm:mandatory')}
         ],
         navi: { 
-          route: 'SimpleText', 
+          route: 'SimpleTextForAuth', 
           param: { key: 'Contract', title: i18n.t('cfm:contract'), mode: 'confirm' } 
         }
       },
@@ -70,7 +70,7 @@ class RegisterMobileScreen extends Component {
           {color: colors.clearBlue, text: i18n.t('cfm:mandatory')}
         ],
         navi: { 
-          route: 'SimpleText', 
+          route: 'SimpleTextForAuth', 
           param: { key: 'Privacy', title: i18n.t('cfm:personalInfo'), mode: 'confirm' } 
         }
       },
@@ -81,7 +81,7 @@ class RegisterMobileScreen extends Component {
           {color: colors.warmGrey, text: i18n.t('cfm:optional')}
         ],
         navi: { 
-          route: 'SimpleText', 
+          route: 'SimpleTextForAuth', 
           param: { key: 'Privacy', title: i18n.t('cfm:marketing'), mode: 'confirm' } 
         }
       }
@@ -100,8 +100,13 @@ class RegisterMobileScreen extends Component {
 
   componentDidUpdate(prevProps) {
     if ( this.props.account != prevProps.account) {
-      if ( this.props.account.loggedIn) this.props.navigation.navigate('RegisterSim')
+      if ( this.props.account.loggedIn) {
+        this.props.navigation.navigate('Main')
+      }
     }
+  }
+
+  componentDidMount() {
   }
 
   _onSubmit = () => {
@@ -232,8 +237,7 @@ class RegisterMobileScreen extends Component {
 
   _signIn = ({ mobile, pin }) => {
     this.props.action.account.logInAndGetUserId( mobile, pin)
-
-    this.props.navigation.replace('RegisterSim')
+    this.props.navigation.navigate('Main')
   }
 
   _onTimeout = () => {

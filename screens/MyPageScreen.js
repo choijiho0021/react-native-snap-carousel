@@ -5,6 +5,7 @@ import {
   View,
   TouchableOpacity,
   FlatList,
+  Linking,
 } from 'react-native';
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
@@ -25,6 +26,8 @@ import _ from 'underscore'
 import AppUserPic from '../components/AppUserPic';
 import AppModal from '../components/AppModal';
 import * as Permissions from 'expo-permissions';
+import validationUtil from '../utils/validationUtil';
+import userApi from '../utils/api/userApi';
 
 let ImagePicker 
 if (Constants.appOwnership === 'expo') {
@@ -57,12 +60,13 @@ class MyPageScreen extends Component {
     this._renderItem = this._renderItem.bind(this)
     this._changePhoto = this._changePhoto.bind(this)
     this._showEmailModal = this._showEmailModal.bind(this)
+    this._validEmail = this._validEmail.bind(this)
+    this._changeEmail = this._changeEmail.bind(this)
   }
 
   async componentDidMount() {
     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
-
-    this.setState({ hasCameraRollPermission: status === 'granted' })
+    this.setState({ hasCameraRollPermission: status === 'granted'})
 
     if ( this.props.uid) this.props.action.order.getOrders(this.props.auth)
   }
@@ -83,7 +87,7 @@ class MyPageScreen extends Component {
     console.log('recharge')
   }
 
-  _changePhoto() {
+  async _changePhoto() {
     if ( this.state.hasCameraRollPermission ) {
       ImagePicker && ImagePicker.openPicker({
         width: 76,
@@ -101,6 +105,12 @@ class MyPageScreen extends Component {
         image && this.props.action.account.uploadAndChangePicture(image)
       }).catch(err => {
         console.log('failed to upload', err)
+      })
+    }
+    else {
+      // 사진 앨범 조회 권한을 요청한다.
+      AppAlert.confirm( i18n.t('settings'), i18n.t('acc:permCamera'), {
+        ok: () => Linking.openURL('app-settings:')
       })
     }
   }
@@ -178,6 +188,28 @@ class MyPageScreen extends Component {
     this.props.navigation.navigate('PurchaseDetail', {detail: orders.find(item => item.orderId == orderId)})
   }
 
+  async _validEmail(value) {
+    const err = validationUtil.validate('email', value)
+    if ( ! _.isEmpty(err)) return err.email
+
+    // check duplicated email
+    const resp = await userApi.getByMail(value, this.props.auth)
+    if (resp.result == 0 && resp.objects.length > 0) {
+      // duplicated email
+      return [ i18n.t('acc:duplicatedEmail')]
+    }
+
+    return undefined
+  }
+
+  _changeEmail(mail) {
+    this.props.action.account.changeEmail(mail)
+
+    this.setState({
+      showEmailModal: false
+    })
+  }
+
   _renderItem({item}) {
     const label = `${item.orderItems[0].title}  ${item.orderItems.length > 1 ? i18n.t('his:etcCnt').replace('%%', item.orderItems.length) : ''}`
     return (
@@ -209,12 +241,15 @@ class MyPageScreen extends Component {
           ListEmptyComponent={this._empty}
           renderItem={this._renderItem} 
           keyExtractor={item => item.orderId}/> 
+
         <AppActivityIndicator visible={this.props.pending}/>
+
         <AppModal title={i18n.t('acc:changeEmail')} 
           mode="edit"
           default={this.props.account.email}
-          onOkClose={() => this._showEmailModal(false)}
+          onOkClose={this._changeEmail}
           onCancelClose={() => this._showEmailModal(false)}
+          validateAsync={this._validEmail}
           visible={showEmailModal} />
       </View>
     )
@@ -313,6 +348,7 @@ const mapStateToProps = state => ({
   auth: accountActions.auth( state.account),
   uid: state.account.get('uid'),
   pending: state.pender.pending[orderActions.GET_ORDERS] || 
+    state.pender.pending[accountActions.CHANGE_EMAIL] || 
     state.pender.pending[accountActions.UPLOAD_PICTURE] || false,
 })
 

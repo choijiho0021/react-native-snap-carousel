@@ -6,6 +6,7 @@ import accountApi from '../../utils/api/accountApi';
 import _ from 'underscore'
 import utils from '../../utils/utils';
 import moment from 'moment'
+import { create } from 'react-test-renderer';
 
 const SIGN_UP =        'rokebi/account/SIGN_UP'
 const UPDATE_ACCOUNT = 'rokebi/account/UPDATE_ACCOUNT'
@@ -18,6 +19,7 @@ export const LOGIN =   'rokebi/account/LOGIN'
 const UPLOAD_PICTURE =   'rokebi/account/UPLOAD_PICTURE'
 const CHANGE_PICTURE =   'rokebi/account/CHANGE_PICTURE'
 const GET_TOKEN = 'rokebi/account/GET_TOKEN'
+export const CHANGE_EMAIL = 'rokebi/account/CHANGE_EMAIL'
 
 export const getToken = createAction(GET_TOKEN, userApi.getToken)
 export const updateAccount = createAction(UPDATE_ACCOUNT)
@@ -30,6 +32,33 @@ export const getAccountByUUID = createAction(GET_ACCOUNT_BY_UUID, accountApi.get
 export const activateAccount = createAction(ACTIVATE_ACCOUNT, accountApi.update)
 const uploadPicture = createAction(UPLOAD_PICTURE, accountApi.uploadPicture)
 const changePicture = createAction(CHANGE_PICTURE, userApi.changePicture)
+const changeUserEmail = createAction(CHANGE_EMAIL, userApi.update)
+
+export const changeEmail = (mail) => {
+  return (dispatch, getState) => {
+    const { account } = getState(),
+      authObj = auth(account),
+      attr = {
+        mail, 
+        pass: {
+          existing: authObj.pass
+        }
+      }
+
+      console.log('change email', attr)
+    return dispatch(changeUserEmail( account.get('userId'), authObj, attr)).then(
+      resp => {
+        if ( resp.result == 0) {
+          return dispatch(updateAccount({email:mail}))
+        }
+
+      },
+      err => {
+        console.log('failed to update email', err)
+      }
+    )
+  }
+}
 
 export const logInAndGetUserId = (mobile, pin) => {
   return (dispatch) => {

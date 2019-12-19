@@ -113,7 +113,7 @@ class InputPinInTime extends Component {
 
     render() {
         const { pin, duration, timeout } = this.state,
-            { forwardRef, authorized, countdown } = this.props,
+            { forwardRef, authorized, countdown, editable } = this.props,
             clickable = this.props.clickable && _.size(pin) === 6
 
         const min = Math.floor( duration / 60 ),
@@ -130,7 +130,7 @@ class InputPinInTime extends Component {
                             enablesReturnKeyAutomatically={true}
                             maxLength={6}
                             clearTextOnFocus={true}
-                            autoFocus={true}
+                            autoFocus={ editable }
                             onChangeText={this._onChangeText('pin')}
                             value={pin}
                             style={styles.input}

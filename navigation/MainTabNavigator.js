@@ -26,7 +26,6 @@ import NotiScreen from '../screens/NotiScreen';
 import PaymentScreen from '../screens/PaymentScreen';
 import PaymentResultScreen from '../screens/PaymentResultScreen';
 import PurchaseDetailScreen from '../screens/PurchaseDetailScreen';
-import RegisterMobileScreen from '../screens/RegisterMobileScreen';
 import ContactScreen from '../screens/ContactScreen';
 import ContactBoardScreen from '../screens/ContactBoardScreen';
 import PymMethodScreen from '../screens/PymMethodScreen';
@@ -60,7 +59,6 @@ const HomeStack = createStackNavigator(
     Home: HomeScreen,
     Recharge: RechargeScreen,
     RegisterSim: RegisterSimScreen,
-    RegisterMobile: RegisterMobileScreen,
     NewSim: NewSimScreen,
     Noti: NotiScreen,
     SimpleText: SimpleTextScreen,
@@ -217,10 +215,12 @@ class AppTabNavigator extends React.Component {
 
   componentDidUpdate(prevProps) {
     if ( prevProps.navigation.state != this.props.navigation.state) {
-      const {navigation} = prevProps,
+      const {navigation} = this.props,
         lastTab = navigation.state.routes[navigation.state.index].routeName
 
-      if ( lastTab != 'CartStack' && lastTab != this.props.lastTab) this.props.action.cart.setLastTab(lastTab)
+      if ( lastTab != this.props.lastTab[0]) {
+        this.props.action.cart.pushLastTab(lastTab)
+      }
     }
   }
 
@@ -232,7 +232,7 @@ class AppTabNavigator extends React.Component {
 }
 
 export default connect((state) => ({
-  lastTab : state.cart.get('lastTab')
+  lastTab : state.cart.get('lastTab').toJS()
 }),
   (dispatch) => ({
     action:{

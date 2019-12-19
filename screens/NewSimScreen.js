@@ -98,7 +98,7 @@ class NewSimScreen extends Component {
       // AppAlert.confirm(i18n.t('error'),i18n.t('err:login'), {
       //   ok: () => this.props.navigation.navigate('Home')
       // })
-      this.props.navigation.navigate('RegisterMobile')
+      this.props.navigation.navigate('Auth')
     }
     else{
       // insert to cart
