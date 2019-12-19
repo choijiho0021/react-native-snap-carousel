@@ -311,7 +311,7 @@ const ko = {
   'noti' : '알림',
   'done' : '완료',
 
-  'home:guide': '사용가이드',
+  'home:guide': '로밍 도깨비 사용가이드 !',
   'home:checkGuide': '확인하기',
 
   'store:dest': '목적지',

@@ -40,12 +40,16 @@ const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti,
 // iphone 11 pro  - 375x812, 2436×1125
 // iphone 11 pro max - 414x896, 2688×1242
 // 190 ~ 210 사이의 크기로 정리됨 
-const height = windowHeight > 810 ? {
-  userInfo : 110,
-  carousel : 210
+const size = windowHeight > 810 ? {
+  userInfoHeight : 110,
+  userPic: 60,
+  carouselHeight : 225,
+  carouselMargin : 0
 } : {
-  userInfo : 96,
-  carousel : 190
+  userInfoHeight : 96,
+  userPic: 50,
+  carouselHeight : 190,
+  carouselMargin : 20
 }
 
 class HomeScreen extends Component {
@@ -182,7 +186,7 @@ class HomeScreen extends Component {
       {
         _.isEmpty(item.imageUrl) ?
           <Text style={styles.text}>{item.title}</Text> :
-          <Image source={{uri:api.httpImageUrl(item.imageUrl)}} style={{height:height.carousel}}/>
+          <Image source={{uri:api.httpImageUrl(item.imageUrl)}} style={{height:size.carouselHeight}}/>
       }
       </View> 
     )
@@ -253,12 +257,15 @@ class HomeScreen extends Component {
   _guide() {
     return (
       <View style={styles.guide}>
-        <AppIcon name="imgGuid1"/>
-        <Text style={[appStyles.normal14Text, {marginLeft:10, flex:1}]}>{i18n.t('home:guide')}</Text> 
-        <TouchableOpacity style={styles.roundBox} onPress={this._navigate('Guide')}>
-          <Text style={styles.checkGuide}>{i18n.t('home:checkGuide')}</Text> 
-          <AppIcon name="btnArrowRight2Blue" style={{marginLeft:14, alignSelf:'center'}}/>
+        <TouchableOpacity styel={{flex:1}} onPress={this._navigate('Guide')}>
+          <Text style={[appStyles.normal16Text, {marginLeft:30}]}>{i18n.t('home:guide')}</Text> 
+          <View style={{flexDirection:'row', marginTop:9, marginLeft:30}}>
+            <Text style={styles.checkGuide}>{i18n.t('home:checkGuide')}</Text> 
+            <AppIcon name="iconArrowRightBlue"/>
+          </View>
         </TouchableOpacity>
+        <AppButton iconName="imgDokebi" style={{marginRight:30, alignSelf:'center'}} 
+          onPress={this._navigate('Guide')}/>
       </View>
     )
   }
@@ -298,8 +305,8 @@ class HomeScreen extends Component {
 
 const styles = StyleSheet.create({
   userPicture: {
-    width: 50,
-    height: 50
+    width: size.userPic,
+    height: size.userPic
   },
   bar: {
     width: 1,
@@ -340,11 +347,12 @@ const styles = StyleSheet.create({
   },
   guide: {
     marginTop: 40,
-    paddingHorizontal: 30,
-    height: 84,
+    marginHorizontal: 20,
+    height: 100,
     backgroundColor: "#f5f5f5",
     flexDirection: "row",
     alignItems: 'center',
+    justifyContent: 'space-between'
   },
   menu: {
     marginHorizontal: 20,
@@ -352,7 +360,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: 'space-around',
     alignItems:'center',
-    flex: 1
   },
   menuBox: {
     height: 70,
@@ -366,7 +373,7 @@ const styles = StyleSheet.create({
     color: colors.black
   },
   userInfo: {
-    height: height.userInfo,
+    height: size.userInfoHeight,
     borderRadius: 8,
     backgroundColor: colors.white,
     shadowColor: "rgba(0, 0, 0, 0.1)",
@@ -390,7 +397,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   overlay: {
-    marginLeft: 20,
+    marginLeft: size.carouselMargin,
   },
   carousel: {
     alignItems: 'flex-end',
