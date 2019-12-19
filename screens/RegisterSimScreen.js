@@ -39,7 +39,7 @@ class RegisterSimScreen extends Component {
       showRegisterSimModal: false,
       loggedIn: false,
       querying: false,
-      iccid: undefined,
+      iccid: ['','','',''],
       actCode: undefined,
       focusInputIccid: false
     }
@@ -49,22 +49,29 @@ class RegisterSimScreen extends Component {
     this._onScan = this._onScan.bind(this)
     this._updateIccid = this._updateIccid.bind(this)
 
-    this.inputIccid = React.createRef()
-    this.defaultIccid = "12345123451234512345"
+    this.inputIccid = [...Array(4)].map( () =>  React.createRef() )
+    this.defaultIccid = "12345"
   }
 
   _updateIccid(iccid) {
     console.log('update ICCID', iccid)
 
+    let arr = []
+
+    for ( let i=0; i < _.size(iccid)/5 && i < 4 ;) {
+      arr.push( iccid.substring(i*5, ++i*5) )
+    }
+
     this.setState({
-      iccid
+      iccid: arr
     })
 
     this.props.action.sim.addIccid(iccid)
   }
 
   _onSubmit() {
-    const {iccid, actCode} = this.state
+    const {actCode} = this.state,
+      iccid = this.state.iccid.join('')
 
     accountApi.validateActCode(iccid, actCode).then( resp => {
 
@@ -103,7 +110,7 @@ class RegisterSimScreen extends Component {
     })
   }
 
-  _onScan({type, data}) {
+  _onScan = () => ({type, data}) => {
     this.setState({
       scan: false,
     })
@@ -111,8 +118,23 @@ class RegisterSimScreen extends Component {
     this._updateIccid(data)
   }
 
-  _onChangeText = (key) => (value) => {
-    if (key == 'iccid') value = value.replace(/[ -]/g, '')
+  _onChangeText = (key, idx) => (value) => {
+    //if (key == 'iccid') value = value.replace(/[ -]/g, '')
+
+    if (key == 'iccid') {
+      const { iccid } = this.state
+
+      this.setState({
+        iccid: iccid.map((elm,i) => i === idx ? value : elm )
+      })
+
+      if ( _.size(value) === 5 && idx < 3 ) {
+        this.inputIccid[idx+1].current.focus()
+      }
+
+      return;
+    }
+
     this.setState({
       [key]: value
     })
@@ -120,8 +142,10 @@ class RegisterSimScreen extends Component {
 
   render() {
     const {scan, iccid, actCode, querying, focusInputIccid} = this.state
-    const disabled = _.isEmpty(iccid) || iccid.replace(/[ -]/g, '').length < 20 ||
+    const disabled = _.size(iccid) !== 4 || ! iccid.every( elm => _.size(elm) === 5 ) ||
       _.isEmpty(actCode) || actCode.length < 4
+    let iccidIdx = iccid.findIndex(elm => _.size(elm) !== 5)
+    if (iccidIdx < 0) iccidIdx = 3
 
     return (
       <KeyboardAwareScrollView
@@ -137,22 +161,35 @@ class RegisterSimScreen extends Component {
           </TouchableOpacity>
 
           <Text style={styles.title}>{i18n.t('mysim:title')}</Text>
-          <TouchableOpacity onPress={() => this.inputIccid.current.focus()} 
+          <TouchableOpacity onPress={() => this.inputIccid[ iccidIdx ].current.focus() } 
             activeOpacity={1.0}
             style={styles.iccidBox}>
             <Text style={styles.iccid}>ICCID</Text>
-            <TextInput style={styles.input}
-              ref={this.inputIccid}
-              placeholder={utils.toICCID(this.defaultIccid, '  -  ')}
-              onChangeText={this._onChangeText('iccid')}
-              keyboardType="numeric"
-              returnKeyType='done'
-              enablesReturnKeyAutomatically={true}
-              maxLength={35}
-              clearTextOnFocus={true}
-              focus={focusInputIccid}
-              onFocus={() => this.setState({iccid: ''})}
-              value={utils.toICCID(iccid, '  -  ')} />
+            <View style={styles.inputBox}>
+              {
+                iccid.map(( elm, idx ) =>
+                  (<View style={styles.inputRow}>
+                    <TextInput style={styles.input}
+                      key={idx}
+                      ref={this.inputIccid[idx]}
+                      placeholder={this.defaultIccid}
+                      onChangeText={this._onChangeText('iccid', idx)}
+                      keyboardType='numeric'
+                      returnKeyType='done'
+                      enablesReturnKeyAutomatically={true}
+                      maxLength={5}
+                      value={ elm }
+                      focus={focusInputIccid}
+                      blurOnSubmit={false}
+                      onFocus={() => {}} />
+                    {
+                      idx + 1 === _.size(iccid) ? null :
+                      <Text style={[styles.delimiter, { color: _.size(elm) === 5 ? colors.black : colors.greyish } ]}>-</Text>
+                    }
+                  </View>)
+                )
+              }
+            </View>
           </TouchableOpacity>
 
           <AppButton iconName={scan ? "iconCameraCancel" : "iconCamera"}
@@ -225,10 +262,17 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
     justifyContent: 'flex-start'
   },
+  inputBox: {
+    marginTop: 13,
+    justifyContent: 'center',
+    flexDirection: 'row'
+  },
   input: {
     ... appStyles.roboto16Text,
-    marginTop: 12,
-    textAlign : 'center'
+    width: 47
+  },
+  inputRow: {
+    flexDirection: 'row'
   },
   iccidBox: {
     marginVertical: 12,
@@ -245,6 +289,10 @@ const styles = StyleSheet.create({
     ... appStyles.bold12Text,
     color: colors.clearBlue,
     marginTop: 15,
+  },
+  delimiter: {
+    marginLeft: 14,
+    marginRight: 14
   },
   container: {
     flex: 1,
