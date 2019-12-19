@@ -152,13 +152,12 @@ class StoreSearchScreen extends Component {
   }
 
   changeValue(value) {
-    this.setState({value : value, searchWord:value})
+    this.setState({value : value, searchWord:value, searching:true})
   }
 
   _onPressItem = (key) => {
     const country = this.state.allData.filter(elm => elm.uuid == key)[0]
 
-    console.log("key",key)
     this.props.action.product.selectCountry({uuid: key})
     this.props.navigation.navigate('Country',{title:country.categoryId == productApi.category.multi ? country.name : country.cntry.values().next().value})
   }
@@ -221,7 +220,7 @@ class StoreSearchScreen extends Component {
     return (
     <View style={styles.width100}>
       {searchResult.map((elm,idx) => 
-        <TouchableOpacity key={elm.uuid} onPress={() => this._onPressItem(elm.uuid)}>
+        <TouchableOpacity key={elm.uuid} onPress={() => this.changeValue(elm.country.values().next().value)}>
           <View key={idx+''} style={styles.autoList}>
             <Text key="text">{elm.country.values().next().value}</Text>
           </View>
