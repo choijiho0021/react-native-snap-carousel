@@ -33,13 +33,13 @@ class HeaderTitle extends Component {
   }
 
   shouldComponentUpdate(nextProps,nextState){
-    return (nextState.searchWord != this.state.searchWord || this.props.value != nextProps.value || this.props.navigation != nextProps.navigation )
+    return (nextState.searchWord != this.state.searchWord || this.props.searchWord != nextProps.searchWord || this.props.navigation != nextProps.navigation )
   }
 
   componentDidUpdate(prevProps) {
-    if ( this.props.value && this.props.value != prevProps.value) {
+    if ( this.props.searchWord && this.props.searchWord != prevProps.searchWord) {
       this.setState({
-        searchWord: this.props.value
+        searchWord: this.props.searchWord
       })
     }
   }
@@ -48,7 +48,7 @@ class HeaderTitle extends Component {
     this.setState({
       [key] : value
     })
-    this.props.getSearchWord(value,false);
+    this.props._search(value,false);
   }
 
   async search(searchWord) {
@@ -60,7 +60,7 @@ class HeaderTitle extends Component {
       utils.storeData("searchHist", new_searchHist)
     }
     this.setState({searching:true})
-    this.props.getSearchWord(searchWord,true);
+    this.props._search(searchWord,true);
   }
 
   render() {
@@ -99,7 +99,7 @@ class StoreSearchScreen extends Component {
 
     return {
       headerLeft: null,
-      headerTitle : <HeaderTitle getSearchWord={params.getSearchWord} value={params.value} navigation={navigation}/>
+      headerTitle : <HeaderTitle _search={params._search} searchWord={params.searchWord} navigation={navigation}/>
     }
 }
 
@@ -113,7 +113,7 @@ class StoreSearchScreen extends Component {
       searchList : [],
       recommendCountry : ["인도네시아","스페인","아일랜드","네덜란다"]
     }
-    this.getSearchWord = this.getSearchWord.bind(this)
+    this._search = this._search.bind(this)
   }
 
   componentDidMount() {
@@ -123,8 +123,8 @@ class StoreSearchScreen extends Component {
     this.getSearchHist()
 
     this.props.navigation.setParams({
-      value : this.state.value,
-      getSearchWord: this.getSearchWord
+      searchWord : this.state.searchWord,
+      _search: this._search
     })
   }
 
@@ -136,9 +136,9 @@ class StoreSearchScreen extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if ( this.state.value && this.state.value != prevState.value) {
+    if ( this.state.searchWord && this.state.searchWord != prevState.searchWord) {
       this.props.navigation.setParams({
-        value : this.state.value
+        searchWord : this.state.searchWord
       })
     }
 
@@ -147,12 +147,8 @@ class StoreSearchScreen extends Component {
     }
   }
   
-  getSearchWord(searchWord, searching = false) {
+  _search(searchWord, searching = false) {
     this.setState({searchWord : searchWord, searching : searching})
-  }
-
-  changeValue(value) {
-    this.setState({value : value, searchWord:value, searching:true})
   }
 
   _onPressItem = (key) => {
@@ -174,7 +170,7 @@ class StoreSearchScreen extends Component {
         {_.isEmpty(searchList) ? <View style={styles.noList}> 
           <Text style={styles.searchListText}> {i18n.t('search:err')} </Text>
         </View> : searchList.map((elm,idx) => (
-          <TouchableOpacity key={idx+''} onPress={() => this.changeValue(elm)}>
+          <TouchableOpacity key={idx+''} onPress={() => this._search(elm,true)}>
             <View key={elm} style={styles.searchList}>
               <Text key={"Text"} style={styles.searchListText}>{elm}</Text>
             </View>
@@ -199,7 +195,7 @@ class StoreSearchScreen extends Component {
       {recommendCountryList.map((elm,idx )=> 
           <View key={elm.key} style={styles.recommendRow}>
             {elm.data.map((elm2,idx) => 
-              elm2 ? <TouchableOpacity key={elm2} style={styles.recommebdItem} onPress={() => this.changeValue(elm2)}>
+              elm2 ? <TouchableOpacity key={elm2} style={styles.recommebdItem} onPress={() => this._search(elm2,true)}>
                       <Text style={styles.recommendText}>{elm2}</Text>
                 </TouchableOpacity> : <View key={idx+''}style={styles.recommebdEmpty}/>)}
           </View>
@@ -220,7 +216,7 @@ class StoreSearchScreen extends Component {
     return (
     <View style={styles.width100}>
       {searchResult.map((elm,idx) => 
-        <TouchableOpacity key={elm.uuid} onPress={() => this.changeValue(elm.country.values().next().value)}>
+        <TouchableOpacity key={elm.uuid} onPress={() => this._search(elm.country.values().next().value,true)}>
           <View key={idx+''} style={styles.autoList}>
             <Text key="text">{elm.country.values().next().value}</Text>
           </View>
