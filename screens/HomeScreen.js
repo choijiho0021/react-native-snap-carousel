@@ -207,7 +207,6 @@ class HomeScreen extends Component {
                 (activeIndex == (i+1)%promotions.length) ?
                   <Animated.View style={[styles.dot, {width:inactiveDotWidth, backgroundColor:colors.lightGrey}]}/> :
                   <View style={styles.inactiveDot}/>
-
               }
               </View>
             ))

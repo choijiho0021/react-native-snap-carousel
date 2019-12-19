@@ -39,7 +39,7 @@ class CountryItem extends Component {
             // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
           elm ? <View key={elm.ccode + idx} style={{flex:1, marginLeft:idx == 1 ? 14 : 0}}>
             <TouchableOpacity onPress={() => this.props.onPress && this.props.onPress(elm.uuid)}>
-              <Image key={"img"} source={{uri:api.httpImageUrl(elm.imageUrl == '' ? elm.subImageUrl : elm.imageUrl)}} style={styles.image}/>
+              <Image key={"img"} source={{uri:api.httpImageUrl(elm.imageUrl)}} style={styles.image}/>
               {/* cntry가 Set이므로 첫번째 값을 가져오기 위해서 values().next().value를 사용함 */}
               <Text key={"cntry"} style={[appStyles.bold14Text,{marginVertical:11}]}>{elm.categoryId == productApi.category.multi ? elm.name : elm.cntry.values().next().value}</Text>
               <View style={styles.priceRow}>

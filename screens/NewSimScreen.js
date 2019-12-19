@@ -36,7 +36,6 @@ class NewSimScreen extends Component {
     super(props)
 
     this.state = {
-      simCardList: [],
       querying: false,
       total: { cnt:0, price:0},
       checked: new Map(),
@@ -46,36 +45,30 @@ class NewSimScreen extends Component {
     this._onChangeQty = this._onChangeQty.bind(this)
     this._onPress = this._onPress.bind(this)
     this._getTotal = this._getTotal.bind(this)
+    this._init = this._init.bind(this)
   }
 
   componentDidMount() {
+    this._init()
+  }
+
+  componentDidUpdate(prevProps) {
+    if ( this.props.sim.simList != prevProps.sim.simList) {
+      this._init()
+    }
+  }
+
+  _init() {
+    const {simList} = this.props.sim
     this.setState({
-      querying: true
-    })
-
-    simCardApi.get().then( resp => {
-      if (resp.result == 0) {
-        const list = resp.objects.sort((a,b) => a.price - b.price).map(item => ({
-            ... item,
-            key: item.uuid,
-          }))
-    
-        this.setState({
-          simCardList: list,
-          simQty: new Map( list.reduce((acc,cur) => ({
-            ... acc, 
-            [cur.uuid]: 0
-          }), {})) 
-        })
-
-        this.props.action.sim.updateSimCardList({simList:list})
-      }
-    }).catch(err => {
-      AppAlert.error(err.message)
-    }).finally(() => {
-      this.setState({
-        querying: false
-      })
+      checked: new Map(simList.reduce((acc,cur) => ({
+        ... acc,
+        [cur.key]: false
+      }), {})),
+      simQty: new Map(simList.reduce((acc,cur) => ({
+        ... acc,
+        [cur.key]: 0
+      }), {}))
     })
   }
 
@@ -95,14 +88,11 @@ class NewSimScreen extends Component {
     const {checked, simQty} = this.state
 
     if(!loggedIn){
-      // AppAlert.confirm(i18n.t('error'),i18n.t('err:login'), {
-      //   ok: () => this.props.navigation.navigate('Home')
-      // })
       this.props.navigation.navigate('Auth')
     }
     else{
       // insert to cart
-      const simList = this.state.simCardList.filter(item => checked.get(item.uuid) && simQty.get(item.uuid) > 0)
+      const simList = this.props.sim.simList.filter(item => checked.get(item.uuid) && simQty.get(item.uuid) > 0)
         .map(item => ({
           title: item.name,
           key: item.uuid,
@@ -144,9 +134,7 @@ class NewSimScreen extends Component {
   }
 
   _getTotal(checked, simQty) {
-    const { simCardList} = this.state
-
-    return simCardList.filter(item => checked.get(item.key) || false)
+    return this.props.sim.simList.filter(item => checked.get(item.key) || false)
       .map(item => ({
         qty: simQty.get(item.key) || 0, 
         checked: checked.get(item.key) || false, 
@@ -159,13 +147,14 @@ class NewSimScreen extends Component {
 
 
   render() {
-    const { querying, simCardList, checked, simQty, total} = this.state,
-      selected = simCardList.findIndex(item => checked.get(item.key) && simQty.get(item.key) > 0) >= 0
+    const { querying, checked, simQty, total} = this.state,
+      {simList} = this.props.sim,
+      selected = simList.findIndex(item => checked.get(item.key) && simQty.get(item.key) > 0) >= 0
 
     return (
       <SafeAreaView style={styles.container}>
         <AppActivityIndicator visible={querying}/>
-        <FlatList data={simCardList} 
+        <FlatList data={simList} 
           renderItem={this._renderItem} 
           extraData={[checked, simQty]}
           ListFooterComponent={

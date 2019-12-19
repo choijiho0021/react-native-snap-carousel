@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import {
   StyleSheet,
   Text,
@@ -66,31 +66,34 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function SimCard({name, price, balance, image, qty, onChange, onChecked, checked}) {
+export default class SimCard extends PureComponent {
+  render() {
+    const {name, price, balance, imageUrl, qty, onChange, onChecked, checked} = this.props
 
-  return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={onChecked} style={styles.touch}>
-        <View style={styles.checker}>
-          <AppIcon name="btnCheck" checked={checked}/>
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity onPress={onChecked} style={styles.touch}>
+          <View style={styles.checker}>
+            <AppIcon name="btnCheck" checked={checked}/>
+          </View>
+
+          <Image source={{uri:api.httpImageUrl(imageUrl)}} style={styles.slide}/>
+        </TouchableOpacity>
+
+        <View style={styles.desc}>
+          <Text style={styles.itemTitle}>{name}</Text>
+          <Text style={styles.itemPrice}>{utils.price(price)}</Text>
+          <View style={styles.input}>
+            <InputNumber value={qty} onChange={onChange}/>
+          </View>
+          <LabelText style={styles.balance}
+            label={i18n.t('sim:rechargeAmt')}
+            format="price"
+            value={balance} />
         </View>
-
-        <Image source={{uri:api.httpImageUrl(image)}} style={styles.slide}/>
-      </TouchableOpacity>
-
-      <View style={styles.desc}>
-        <Text style={styles.itemTitle}>{name}</Text>
-        <Text style={styles.itemPrice}>{utils.price(price)}</Text>
-        <View style={styles.input}>
-          <InputNumber value={qty} onChange={onChange}/>
-        </View>
-        <LabelText style={styles.balance}
-          label={i18n.t('sim:rechargeAmt')}
-          format="price"
-          value={balance} />
+        {/* <View style={styles.divider,{flex:1, flexDirection:'flex-end'}}/> */}
       </View>
-      {/* <View style={styles.divider,{flex:1, flexDirection:'flex-end'}}/> */}
-    </View>
-  )
+    )
+  }
 }
 

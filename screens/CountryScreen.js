@@ -93,9 +93,6 @@ class CountryScreen extends Component {
     const {loggedIn} = this.props.account
 
   if(!loggedIn){
-      // AppAlert.confirm(i18n.t('error'),i18n.t('err:login'), {
-      //   ok: () => this.props.navigation.navigate('Home')
-      // })
       this.props.navigation.navigate('Auth')
     }
     else {
@@ -108,7 +105,8 @@ class CountryScreen extends Component {
             price:prod.price, 
             qty:1,
             key: prod.uuid,
-            sku: prod.sku
+            sku: prod.sku,
+            imageUrl: prod.imageUrl
           } : {}
   
         switch (key) {
@@ -152,7 +150,7 @@ class CountryScreen extends Component {
   render() {
     const { idx, prodList, startDate, name} = this.props.product
     const { prodData, selected} = this.state
-    const imageUrl = (prodList.length > idx >= 0) ? (prodList[idx].imageUrl == '' ? prodList[idx].subImageUrl : prodList[idx].imageUrl) : ''
+    const imageUrl = (prodList.length > idx >= 0) ? prodList[idx].imageUrl : ''
       
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>

@@ -99,9 +99,6 @@ class CartScreen extends Component {
       {loggedIn} = this.props.account
 
     if(!loggedIn){
-      // AppAlert.confirm(i18n.t('error'),i18n.t('err:login'), {
-      //   ok: () => this.props.navigation.navigate('Home')
-      // })
       this.props.navigation.navigate('Auth')
     }
     else {
@@ -129,7 +126,8 @@ class CartScreen extends Component {
   _renderItem = ({item}) => {
     const { qty } = this.state
     const prod = (item.type == 'sim_card') ?
-      this.props.sim.simList.find(sim => sim.uuid == item.key) : undefined
+      this.props.sim.simList.find(sim => sim.uuid == item.key) : 
+      this.props.product.prodList.find(p => p.uuid == item.key)
 
     return <CartItem checked={this.state.checked.get(item.key) || false}
       onChange={(value) => this._onChangeQty(item.key, value)} 
@@ -137,7 +135,7 @@ class CartScreen extends Component {
       onChecked={() => this._onChecked(item.key)}
       name={item.title}
       price={item.price}
-      image={prod && prod.image}
+      image={prod && prod.imageUrl}
       qty={qty.get(item.key)} />
 
   }
@@ -162,12 +160,16 @@ class CartScreen extends Component {
     return (
       <SafeAreaView style={styles.container}>
         <AppActivityIndicator visible={querying} />
+
         <FlatList data={list}
           renderItem={this._renderItem} 
           extraData={[qty, checked]}
           ListFooterComponent={ <ChargeSummary totalCnt={total.cnt} totalPrice={total.price} dlvCost={dlvCost}/>} />
+
         <AppButton style={styles.btnBuy} title={i18n.t('cart:purchase')} 
-                    onPress={this._onPurchase}/>
+          disabled={data.length == 0}
+          onPress={this._onPurchase}/>
+
       </SafeAreaView>
     )
   }
@@ -212,6 +214,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => ({
   sim: state.sim.toJS(),
+  product: state.product.toJS(),
   cart: state.cart.toJS(),
   account : state.account.toJS(),
   pending: state.pender.pending[cartActions.CART_ADD] || 

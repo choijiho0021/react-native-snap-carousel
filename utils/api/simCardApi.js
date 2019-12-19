@@ -10,6 +10,7 @@ class SimCardAPI {
     toSimCard = (data) => {
         if ( _.isArray(data)) {
             return api.success( data.map(item => ({
+                key: item.uuid,
                 uuid : item.uuid,
                 variationId: item.variations && item.variations[0],
                 sku: item.sku,
@@ -20,7 +21,7 @@ class SimCardAPI {
 //                    model: item.model[0].value,
                 balance: utils.stringToNumber( item.field_balance),
                 price: utils.stringToNumber( item.list_price__number),
-                image: item.field_images
+                imageUrl: item.field_images
             })))
         }
 

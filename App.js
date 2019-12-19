@@ -17,6 +17,7 @@ import userApi from './utils/api/userApi';
 import utils from './utils/utils';
 import * as accountActions from './redux/modules/account'
 import * as productActions from './redux/modules/product'
+import * as simActions from './redux/modules/sim'
 
 const logger = createLogger()
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -36,6 +37,7 @@ export default function App(props) {
 
   // load product list
   store.dispatch(productActions.getProdList())
+  store.dispatch(simActions.getSimCardList())
 
   //아래 코드는 expo doc 참고후 사용 해야함. 아직은 experimental이라고 되어 있음 
   //StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
