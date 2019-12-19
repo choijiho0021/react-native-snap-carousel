@@ -18,6 +18,7 @@ const images = {
   iconArrowRightWhite : [ require( mainPath + 'iconArrowRightWhite.png')],
   iconArrowRightBlue : [ require( mainPath + 'iconArrowRightBlue.png')],
   iconArrowLeftWhite : [ require( mainPath + 'iconArrowLeftWhite.png')],
+  iconNotice : [ require( mainPath + 'iconNotice.png')],
   imgPeople : [ require( mainPath + 'imgPeople.png')],
   imgCard1 : [ require( mainPath + 'imgCard1.png')],
   imgCard2 : [ require( mainPath + 'imgCard2.png')],
@@ -41,10 +42,10 @@ const images = {
   btnCheck : [ require( mainPath + 'btnCheckNon.png'), require( mainPath + 'btnCheckSel.png')],
 }
 
-export default function AppIcon({name, focused, style, checked}) {
+export default function AppIcon({name, focused, style, size, checked}) {
   const source = images[name]
   if (source) return ( 
-    <View style={style || {justifyContent:'center', alignItems:'center'}}>
+    <View style={[style || {justifyContent:'center', alignItems:'center'}, size && { width:size, heigth:size}]}>
       <Image source={(focused || checked) && source.length > 1 ? source[1] : source[0]}/>
     </View>
   )

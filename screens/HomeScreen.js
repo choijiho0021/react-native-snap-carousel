@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   StatusBar,
+  ScrollView
 } from 'react-native';
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
@@ -14,6 +15,7 @@ import {appStyles} from '../constants/Styles'
 import * as simActions from '../redux/modules/sim'
 import * as accountActions from '../redux/modules/account'
 import * as notiActions from '../redux/modules/noti'
+import * as infoActions from '../redux/modules/info'
 import * as cartActions from '../redux/modules/cart'
 import _ from 'underscore'
 import utils from '../utils/utils';
@@ -91,6 +93,8 @@ class HomeScreen extends Component {
 
   async componentDidMount() {
 
+    // 로그인 여부와 관련 없이 항상 처리할 부분
+
     // config push notification
     pushNoti.add(this._notification)
 
@@ -105,6 +109,10 @@ class HomeScreen extends Component {
       console.log('failed to load promotion list', err)
     })
 
+    // 공지 사항 가져오기 
+    this.props.action.info.getInfoList('Info')
+
+    // 로그인 여부에 따라 달라지는 부분
     this._init()
   }
 
@@ -270,11 +278,39 @@ class HomeScreen extends Component {
     )
   }
 
+  _renderInfo({item}) {
+    return (
+      <View style={styles.info}>
+        <Text style={styles.infoText}>{item.title}</Text>
+      </View>
+    )
+
+  }
+
+  _info() {
+    return (
+      <View style={{flexDirection: 'row', marginHorizontal: 20}}>
+        <AppIcon name="iconNotice" size={36} />
+        <Carousel
+          data={this.props.info.infoList}
+          renderItem={this._renderInfo}
+          autoplay={true}
+          vertical={true}
+          loop={true}
+          useScrollView={true}
+          lockScrollWhileSnapping={true}
+          sliderHeight={60}
+          itemHeight={60} />
+      </View>
+    )
+
+  }
+
   render() {
     const { darkMode } = this.state
 
     return (
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <StatusBar barStyle={darkMode ? "dark-content" : 'light-content'} />
         <AppActivityIndicator visible={this.props.loginPending}/>
         <View style={styles.carousel}>
@@ -298,12 +334,34 @@ class HomeScreen extends Component {
         {
           this._guide()
         }
-      </View>
+        <View style={styles.divider}/>
+        {
+          this._info()
+        }
+      </ScrollView>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  infoText: {
+    ... appStyles.normal14Text,
+    color: colors.black,
+    marginLeft: 8,
+  },
+  info: {
+    height: 60,
+    paddingHorizontal: 30,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center'
+  },
+  divider: {
+    marginTop: 40,
+    marginHorizontal: 20,
+    borderBottomColor: colors.lightGrey,
+    borderBottomWidth: 1
+  },
   userPicture: {
     width: size.userPic,
     height: size.userPic
@@ -374,7 +432,7 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     height: size.userInfoHeight,
-    borderRadius: 8,
+    borderRadius: 3,
     backgroundColor: colors.white,
     shadowColor: "rgba(0, 0, 0, 0.1)",
     shadowOffset: {
@@ -462,6 +520,7 @@ const mapStateToProps = (state) => ({
   account : state.account.toJS(),
   auth: accountActions.auth(state.account),
   noti : state.noti.toJS(),
+  info : state.info.toJS(),
   loginPending: state.pender.pending[accountActions.LOGIN] || false,
 })
 
@@ -472,6 +531,7 @@ export default connect(mapStateToProps,
       account: bindActionCreators(accountActions, dispatch),
       noti: bindActionCreators(notiActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
+      info: bindActionCreators(infoActions, dispatch)
     }
   })
 )(HomeScreen)

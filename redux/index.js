@@ -8,6 +8,7 @@ import order from './modules/order'
 import profile from './modules/profile'
 import cart from './modules/cart'
 import board from './modules/board'
+import info from './modules/info'
 
 export default combineReducers({
     account, 
@@ -18,5 +19,6 @@ export default combineReducers({
     cart,
     noti,
     board,
+    info,
     pender: penderReducer
 })
