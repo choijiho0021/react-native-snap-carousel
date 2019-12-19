@@ -82,13 +82,7 @@ async function login() {
     console.log('load', mobile, pin, iccid)
 
     if ( mobile && pin ) {
-      store.dispatch(accountActions.logInAndGetUserId( mobile, pin))
-      if ( iccid ) {
-        store.dispatch(accountActions.updateAccount({
-          iccid, mobile, pin,
-        }))
-        store.dispatch(accountActions.getAccount( iccid))
-      }
+      store.dispatch(accountActions.logInAndGetAccount( mobile, pin, iccid))
     }
     else {
       store.dispatch(accountActions.getToken())

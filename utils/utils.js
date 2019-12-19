@@ -48,7 +48,8 @@ class Utils {
     }
 
     price = (price) => {
-        return price ? `${this.numberToCommaString( this.stringToNumber( price))} ${i18n.t('won')}` : ''
+        const num = _.isNumber(price) ? price : _.isString(price) ? this.stringToNumber(price) : undefined
+        return _.isUndefined(num) ? '' : `${this.numberToCommaString( num)} ${i18n.t('won')}` 
     }
 
     pricePerDay = (price, days) => {

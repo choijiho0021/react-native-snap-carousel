@@ -236,7 +236,7 @@ class RegisterMobileScreen extends Component {
   }
 
   _signIn = ({ mobile, pin }) => {
-    this.props.action.account.logInAndGetUserId( mobile, pin)
+    this.props.action.account.logInAndGetAccount( mobile, pin)
     this.props.navigation.navigate('Main')
   }
 

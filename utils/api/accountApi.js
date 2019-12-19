@@ -17,7 +17,7 @@ class AccountAPI {
                     uuid: item.uuid,
                     iccid: item.field_iccid,
                     expDate: item.field_expiration_date,
-                    balance: utils.stringToNumber(item.field_balance),
+                    balance: utils.stringToNumber(item.field_balance) || 0,
                     simPartnerId: utils.stringToNumber( item.field_ref_sim_partner),
                     actDate: item.field_activation_date,
                     mobile: item.field_mobile,
@@ -85,11 +85,15 @@ class AccountAPI {
     }
 
     // ContentType Account
-    getAccount = (iccid) => {
-        if (_.isEmpty(iccid)) return api.reject( api.INVALID_ARGUMENT)
+    getAccount = (iccid, {token}) => {
+        if (_.isEmpty(iccid) || _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.account)}/${iccid}?_format=json`
-        return api.callHttpGet(url, this.toAccount)
+        const headers = api.withToken(token)
+        return api.callHttp(url, {
+            method: 'GET',
+            headers
+        }, this.toAccount)
     }
 
     validateActCode = (iccid, actCode) => {

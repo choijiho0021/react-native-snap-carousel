@@ -154,11 +154,9 @@ class HomeScreen extends Component {
 
   _login(mobile, pin, iccid) {
 
-    this.props.action.account.logInAndGetUserId( mobile, pin)
+    this.props.action.account.logInAndGetAccount( mobile, pin, iccid)
     this.props.action.sim.getSimCardList()
     this.props.action.noti.getNotiList(mobile)
-
-    if ( iccid) this.props.action.account.getAccount( iccid)
   }
 
   _pagination () {

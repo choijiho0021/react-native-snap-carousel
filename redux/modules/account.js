@@ -27,7 +27,7 @@ export const clearAccount = createAction(CLEAR_ACCOUNT)
 export const signUp = createAction(SIGN_UP)
 const logIn = createAction(LOGIN, userApi.logIn)
 export const getUserId = createAction(GET_USER_ID, userApi.getByName)
-export const getAccount = createAction(GET_ACCOUNT, accountApi.getAccount)
+const getAccount = createAction(GET_ACCOUNT, accountApi.getAccount)
 export const getAccountByUUID = createAction(GET_ACCOUNT_BY_UUID, accountApi.getByUUID)
 export const activateAccount = createAction(ACTIVATE_ACCOUNT, accountApi.update)
 const uploadPicture = createAction(UPLOAD_PICTURE, accountApi.uploadPicture)
@@ -60,7 +60,7 @@ export const changeEmail = (mail) => {
   }
 }
 
-export const logInAndGetUserId = (mobile, pin) => {
+export const logInAndGetAccount = (mobile, pin, iccid) => {
   return (dispatch) => {
     return dispatch(logIn(mobile, pin)).then(
       resp => {
@@ -69,6 +69,10 @@ export const logInAndGetUserId = (mobile, pin) => {
 
           utils.storeData( userApi.KEY_MOBILE, obj.current_user.name)
           utils.storeData( userApi.KEY_PIN, pin)
+
+          // get ICCID account info
+          if ( iccid) dispatch(getAccount(iccid, {token: obj.csrf_token}))
+
           return dispatch(getUserId( obj.current_user.name, {token: obj.csrf_token}))
         }
       },
