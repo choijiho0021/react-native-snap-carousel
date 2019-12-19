@@ -65,6 +65,8 @@ const en = {
   'store:europe' : "Europe",
 
   'country:detail' : "Detail",
+  'country:empty' : "There is no search result",
+
   'view:detail' : 'Detail Info',
 
   'reg:actCode' : 'Activation Code',
@@ -328,6 +330,7 @@ const ko = {
   'store:usa/au' : "미주/호주",
 
   'country:detail' : "상세보기",
+  'country:empty' : "상품검색 결과가 없습니다",
 
   'view:detail' : '상세보기',
 
