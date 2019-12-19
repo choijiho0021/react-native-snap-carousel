@@ -10,7 +10,7 @@ import { create } from 'react-test-renderer';
 
 const SIGN_UP =        'rokebi/account/SIGN_UP'
 const UPDATE_ACCOUNT = 'rokebi/account/UPDATE_ACCOUNT'
-const CLEAR_ACCOUNT =  'rokebi/account/CLEAR_ACCOUNT'
+const RESET =  'rokebi/account/RESET'
 const GET_USER_ID =   'rokebi/account/GET_USER_ID'
 const GET_ACCOUNT =   'rokebi/account/GET_ACCOUNT'
 const GET_ACCOUNT_BY_UUID =   'rokebi/account/GET_ACCOUNT_BY_UUID'
@@ -23,7 +23,7 @@ export const CHANGE_EMAIL = 'rokebi/account/CHANGE_EMAIL'
 
 export const getToken = createAction(GET_TOKEN, userApi.getToken)
 export const updateAccount = createAction(UPDATE_ACCOUNT)
-export const clearAccount = createAction(CLEAR_ACCOUNT)
+export const reset = createAction(RESET)
 export const signUp = createAction(SIGN_UP)
 const logIn = createAction(LOGIN, userApi.logIn)
 export const getUserId = createAction(GET_USER_ID, userApi.getByName)
@@ -198,7 +198,7 @@ export default handleActions({
     return updateAccountState(state, action.payload)
   },
 
-  [CLEAR_ACCOUNT]: (state, action) => {
+  [RESET]: (state, action) => {
     return initialState
   },
 

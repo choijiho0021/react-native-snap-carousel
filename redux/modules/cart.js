@@ -17,6 +17,7 @@ const PURCHASE = 'rokebi/cart/PURCHASE'
 const PYM_RESULT = 'rokebi/cart/PYM_RESULT'
 const PUSH_LAST_TAB = 'rokebi/cart/PUSH_LAST_TAB'
 const EMPTY = 'rokebi/cart/EMPTY'
+const RESET = 'rokebi/cart/RESET'
 
 export const CART_ADD = 'rokebi/cart/CART_ADD'
 export const CART_REMOVE = 'rokebi/cart/CART_REMOVE'
@@ -36,6 +37,7 @@ export const makePayment = createAction(MAKE_PAYMENT, cartApi.makePayment)
 export const makeOrder = createAction(MAKE_ORDER, cartApi.makeOrder) 
 export const pymResult = createAction(PYM_RESULT)
 export const empty = createAction(EMPTY)
+export const reset = createAction(RESET)
 
 export const pushLastTab = createAction(PUSH_LAST_TAB)
 
@@ -110,6 +112,10 @@ const initialState = Map({
 })
 
 export default handleActions({
+
+  [RESET]: (state,action) => {
+    return initialState
+  },
 
   // set last tab
   // 2개 리스트를 유지한다. 

@@ -11,6 +11,7 @@ import {connect} from 'react-redux'
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import * as accountActions from '../redux/modules/account'
+import * as cartActions from '../redux/modules/cart'
 import utils from '../utils/utils';
 import userApi from '../utils/api/userApi';
 import { bindActionCreators } from 'redux'
@@ -73,7 +74,8 @@ class SettingsScreen extends Component {
     await utils.removeData( userApi.KEY_MOBILE)
     await utils.removeData( userApi.KEY_PIN)
 
-    this.props.action.account.clearAccount()
+    this.props.action.account.reset()
+    this.props.action.cart.reset()
 
     this.props.navigation.navigate('HomeStack')
 
@@ -144,7 +146,8 @@ const mapStateToProps = (state) => ({
 export default connect(mapStateToProps, 
   (dispatch) => ({
     action : {
-      account : bindActionCreators(accountActions, dispatch)
+      account : bindActionCreators(accountActions, dispatch),
+      cart : bindActionCreators(cartActions, dispatch),
     }
   })
 )(SettingsScreen)
