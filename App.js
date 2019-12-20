@@ -35,10 +35,6 @@ export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
   const [showSplash, setShowSplash] = useState(true)
 
-  // load product list
-  store.dispatch(productActions.getProdList())
-  store.dispatch(simActions.getSimCardList())
-
   //아래 코드는 expo doc 참고후 사용 해야함. 아직은 experimental이라고 되어 있음 
   //StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
   if (!isLoadingComplete && !props.skipLoadingScreen) {
@@ -92,6 +88,10 @@ async function login() {
 }
 
 async function loadResourcesAsync() {
+    console.log('init')
+    // load product list
+    store.dispatch(productActions.getProdList())
+    store.dispatch(simActions.getSimCardList())
 }
 
 function handleLoadingError(error: Error) {

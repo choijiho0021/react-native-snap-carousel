@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
 import {
   StyleSheet,
-  Text,
-  View,
   FlatList
 } from 'react-native';
 import {connect} from 'react-redux'
@@ -12,7 +10,6 @@ import i18n from '../utils/i18n'
 import * as cartActions from '../redux/modules/cart'
 import * as accountActions from '../redux/modules/account'
 import AppButton from '../components/AppButton'
-import AppActivityIndicator from '../components/AppActivityIndicator'
 import { bindActionCreators } from 'redux'
 import { colors } from '../constants/Colors';
 import CartItem from '../components/CartItem';
@@ -33,9 +30,8 @@ class CartScreen extends Component {
 
     this.state = {
       data: [],
-      checked: undefined,
-      querying: false,
-      qty: undefined,
+      checked: new Map(),
+      qty: new Map(),
       total: {cnt:0, price:0},
     }
 
@@ -59,22 +55,21 @@ class CartScreen extends Component {
 
   _init() {
     const { orderItems } = this.props.cart
-    const qty = new Map(orderItems.reduce((acc,cur) => ({
-        ... acc,
-        [cur.key] : cur.qty
-      }), {})),
-      checked = new Map(orderItems.reduce((acc,cur) => ({
-        ... acc,
-        [cur.key] : true
-      }), {})),
-      total = orderItems.reduce((acc,cur) => ({
-        cnt: acc.cnt+ cur.qty, 
-        price: acc.price + cur.qty * cur.price
-      }), {cnt: 0, price:0})
+    let {qty, checked} = this.state
+    const total = this._calculate( checked, qty)
 
     this.setState({
-      qty, checked, total,
+      total,
       data : orderItems,
+    })
+
+    orderItems.forEach(item => {
+      qty = qty.update(item.key, value => value || item.qty)
+      checked = checked.update(item.key, value => value || true)
+    })
+
+    this.setState({
+      qty, checked
     })
   }
 
@@ -115,21 +110,23 @@ class CartScreen extends Component {
   }
 
   _onChecked(uuid) {
-    const checked = this.state.checked.update( uuid, value => ! value),
-      total = this._calculate( checked, this.state.qty)
+    const {checked, qty} = this.state,
+      checkedUpdated = checked.update( uuid, value => ! value),
+      total = this._calculate( checked, qty)
 
     this.setState({
-      checked, total,
+      total,
+      checked : checkedUpdated, 
     })
   }
 
   _renderItem = ({item}) => {
-    const { qty } = this.state
+    const { qty, checked } = this.state
     const prod = (item.type == 'sim_card') ?
       this.props.sim.simList.find(sim => sim.uuid == item.key) : 
       this.props.product.prodList.find(p => p.uuid == item.key)
 
-    return <CartItem checked={this.state.checked.get(item.key) || false}
+    return <CartItem checked={checked.get(item.key) || false}
       onChange={(value) => this._onChangeQty(item.key, value)} 
       onDelete={() => this._onChangeQty(item.key, -1)}
       onChecked={() => this._onChecked(item.key)}
@@ -141,7 +138,11 @@ class CartScreen extends Component {
   }
 
   _calculate( checked, qty) {
-    return this.state.data.filter(item => checked.get(item.key))
+    // 초기 기동시에는 checked = new Map() 으로 선언되어 있어서
+    // checked.get() == undefined를 반환할 수 있다. 
+    // 따라서, checked.get() 값이 false인 경우(사용자가 명확히 uncheck 한 경우)에만 계산에서 제외한다. 
+
+    return this.state.data.filter(item => checked.get(item.key) !== false)
       .map(item => ({
         qty: Math.max( qty.get(item.key), 0), 
         price: item.price
@@ -153,13 +154,12 @@ class CartScreen extends Component {
 
 
   render() {
-    const { querying, qty, checked, data, total} = this.state,
+    const { qty, checked, data, total} = this.state,
       list = data.filter(item => qty.get(item.key) >= 0),
       dlvCost = this._dlvCost( checked, qty, total, data)
 
     return (
       <SafeAreaView style={styles.container}>
-        <AppActivityIndicator visible={querying} />
 
         <FlatList data={list}
           renderItem={this._renderItem} 
