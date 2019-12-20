@@ -91,7 +91,7 @@ class AppModal extends Component {
 
     return (
       <Modal animationType="fade"
-        transparent="false"
+        transparent={false}
         visible={this.props.visible} >
 
         <View style={appStyles.modal}>
