@@ -64,22 +64,17 @@ export const payNorder = (result) => {
     const orderId = cart.get('orderId'),
       orderItems = cart.get('orderItems'),
       purchaseItems = cart.get('purchaseItems'),
-      rch = purchaseItems.find(item => item.key == 'rch'),
-      orderable = purchaseItems.filter(item => item.key != 'rch')
+      rch = purchaseItems.find(item => item.key == 'rch')
 
     // cart에서 item 삭제 
-    orderable.forEach(item => {
-      if ( orderItems.findIndex(o => o.orderItemId == item.orderItemId) >= 0) {
+    orderItems.forEach(item => {
+      if ( purchaseItems.findIndex(o => o.orderItemId == item.orderItemId) >= 0) {
         // remove ordered item
         dispatch( cartRemove( orderId, item.orderItemId))
       }
     })
 
-    // make order in the server
-    // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음 
-    if ( orderable.length > 0) return dispatch(makeOrder( orderable, result, auth))
-
-    if ( rch) return dispatch(rechargeAccount({
+    if ( rch) dispatch(rechargeAccount({
       amount: rch.price, 
       iccid,
       iccidId: account.get('uuid')
@@ -93,7 +88,9 @@ export const payNorder = (result) => {
         throw err
       })
 
-    throw new Error('Invalid purchase items')
+    // make order in the server
+    // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음 
+    return dispatch(makeOrder( purchaseItems, result, auth))
   }
 }
 

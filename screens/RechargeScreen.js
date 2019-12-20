@@ -29,8 +29,9 @@ class RechargeScreen extends Component {
   constructor(props) {
     super(props)
 
+    // recharge 상품의 SKU는 'rch-{amount}' 형식을 갖는다. 
     this.state = {
-      selected: "5000"
+      selected: "rch-5000"
     }
 
     this._onSubmit = this._onSubmit.bind(this)
@@ -40,32 +41,19 @@ class RechargeScreen extends Component {
 
   _onSubmit() {
 
-    const purchaseItems = [
+    const {selected} = this.state,
+      purchaseItems = [
       {
         key: 'rch',
         title: i18n.t('sim:rechargeAmt'),
-        price: utils.stringToNumber( this.state.selected)
+        price: utils.stringToNumber( selected),
+        qty: 1,
+        sku: selected
       }
     ]
 
     this.props.action.cart.purchase({purchaseItems})
     this.props.navigation.replace('PymMethod')
-    /*
-    const { auth} = this.props.account,
-      rch = { amount : this.state.selected }
-
-    // recharge
-    paymentApi.recharge( rch, auth).then( resp => {
-      if ( resp.result == 0) {
-        console.log('recharge successful')
-      }
-
-    }).catch(err => {
-      Alert.alert( i18n.t('error'), err.message, [ {text: 'OK'} ]);
-    })
-
-    this.props.navigation.goBack()
-    */
   }
 
   _onPress = (key) => () => {
@@ -82,9 +70,10 @@ class RechargeScreen extends Component {
       <View key={value[0]+ ""} style={styles.row}>
       {
         value.map(v => {
-          const checked = v == selected
+          const key = `rch-${v}`,
+            checked = key == selected
           return (
-            <TouchableOpacity key={v+""} onPress={this._onPress(v+"")} 
+            <TouchableOpacity key={key} onPress={this._onPress(key)} 
               style={[styles.button, checked && {borderColor: colors.clearBlue}]}>
               <View style={styles.buttonBox}>
                 <Text style={[styles.buttonText, checked && {color:colors.clearBlue}]}>{utils.numberToCommaString(v)}</Text>
