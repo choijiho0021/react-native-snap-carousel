@@ -44,8 +44,8 @@ class Api {
         userByEmail: 'json/user/email',
         featured: 'json/featured/list',
 
-        recharge: 'esim_api/rch',
-        resetPw: 'esim_api/user/pw',
+        recharge: 'rokebi/rch',
+        resetPw: 'rokebi/user/pw',
         simCard: 'json/smc/list',
         cart: 'cart',
         order: 'json/orders',

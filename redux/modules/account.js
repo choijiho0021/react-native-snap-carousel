@@ -6,7 +6,6 @@ import accountApi from '../../utils/api/accountApi';
 import _ from 'underscore'
 import utils from '../../utils/utils';
 import moment from 'moment'
-import { create } from 'react-test-renderer';
 
 const SIGN_UP =        'rokebi/account/SIGN_UP'
 const UPDATE_ACCOUNT = 'rokebi/account/UPDATE_ACCOUNT'
