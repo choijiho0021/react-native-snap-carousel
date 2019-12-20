@@ -57,7 +57,6 @@ class AddProfileScreen extends Component {
     this._onChangeValue = this._onChangeValue.bind(this)
     this._onSubmit = this._onSubmit.bind(this)
     this._onChecked = this._onChecked.bind(this)
-    this._validCheck = this._validCheck.bind(this)
     this._findAddress = this._findAddress.bind(this)
   }
 
