@@ -257,24 +257,11 @@ const styles = StyleSheet.create({
     justifyContent:"flex-end",
     backgroundColor:colors.white
   },
-  titleStyle: {
-    ... appStyles.headerTitle
-  },
-  headerTitle : {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignContent:"center",
-    flex : 1
-  },
   tabStyle: {
     backgroundColor:colors.whiteTwo,
     height:60,
     alignItems:"flex-start",
     paddingLeft:20
-  },
-  lowPrice : {
-    ... appStyles.normal12Text,
-    color : colors.black
   },
   price : {
     flexDirection: 'row',
