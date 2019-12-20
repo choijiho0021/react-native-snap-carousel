@@ -112,14 +112,14 @@ class RegisterMobileScreen extends Component {
   _onSubmit = () => {
 
     const {email, domain} = this.email.current.state,
-      { pin, mobile } = this.state
+      { pin, mobile, confirm } = this.state
 
     const error = validationUtil.validate('email', `${email}@${domain}`)
     if ( ! _.isEmpty(error)) {
       return AppAlert.error(error.email[0])
     }
 
-    userApi.signUp({ user: mobile, pass: pin, email: `${email}@${domain}`})
+    userApi.signUp({ user: mobile, pass: pin, email: `${email}@${domain}`, mktgOptIn: confirm.get('2')})
       .then( resp => {
         if (resp.result === 0 && ! _.isEmpty(resp.objects) ) {
           this._signIn({ mobile, pin })

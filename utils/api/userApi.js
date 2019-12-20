@@ -1,8 +1,6 @@
 import api from './api'
 import _ from 'underscore'
 const RCTNetworking = require('react-native/Libraries/Network/RCTNetworking')
-import Constants from "expo-constants";
-
 
 function clearCookies () {
     RCTNetworking.clearCookies((cleared) => {
@@ -343,8 +341,7 @@ class UserAPI {
             headers = api.basicAuth(undefined, undefined, 'json'),
             body = {
                 mobile: user,
-                pin: pass,
-                devUid: Constants.installationId
+                pin: pass
             }
 
         return api.callHttp(url, {
@@ -361,7 +358,7 @@ class UserAPI {
         })
     }
 
-    signUp = ({ user, pass, email }) => {
+    signUp = ({ user, pass, email, mktgOptIn }) => {
         if ( _.isEmpty(user) || _.isEmpty(pass) ) return api.reject( api.INVALID_ARGUMENT)
 
         const url = `${api.rokHttpUrl(api.path.rokApi.user.create)}`,
@@ -369,8 +366,8 @@ class UserAPI {
         body = {
             mobile: user,
             pin: pass,
-            devUid: Constants.installationId,
-            email
+            email,
+            mktgOptIn
         }
 
         return api.callHttp(url, {
