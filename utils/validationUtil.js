@@ -57,6 +57,62 @@ class ValidationUtil {
                 message: i18n.t('purchase:invalidAddrName')
             }
         },
+        // profile
+        alias: {
+            // presence: true,
+            presence: {
+                message: i18n.t('addr:noAlias')
+            },
+            length: {
+                minimum: 2,
+                message: i18n.t('purchase:invalidAddrName')
+            }
+        },
+        recipient: {
+            presence: {
+                message: i18n.t('addr:noRecipient')
+            },
+            length: {
+                minimum: 2,
+                message: i18n.t('purchase:invalidAddrName')
+            }
+        },
+        recipientNumber: {
+            presence: {
+                message: i18n.t('addr:noTelepehone')
+            },
+            length: {
+                minimum: 7,
+                message: i18n.t('purchase:invalidAddrName')
+            }
+        },
+        addressLine1: {
+            presence: {
+                message: i18n.t('addr:noAddress')
+            },
+            length: {
+                minimum: 2,
+                message: i18n.t('purchase:invalidAddrName')
+            }
+        },
+        addressLine2: {
+            presence: {
+                message: i18n.t('addr:noAddress')
+            },
+            length: {
+                minimum: 2,
+                message: i18n.t('purchase:invalidAddrName')
+            }
+        },
+        detailAddr: {
+            presence: {
+                message: i18n.t('addr:noDetails')
+            },
+            length: {
+                minimum: 2,
+                message: i18n.t('purchase:invalidAddrName')
+            }
+        },              
     }
 
     /*

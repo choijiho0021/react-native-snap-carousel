@@ -52,6 +52,99 @@ class findEngAddress {
             "200": "Yeongdo-gu",
             "110": "Jung-gu",
             "350": "Haeundae-gu"},
+
+        "27":{    
+            // 대구 : 27, 8개
+                province:"Daegu",
+                "20": "Nam-gu",
+                "29": "Dalseo-gu",
+                "71": "Dalseong-gun",
+                "14": "Dong-gu",
+                "23": "Buk-gu",
+                "17": "Seo-gu",
+                "26": "Suseong-gu",
+                "11": "Jung-gu"},     
+        "28":{
+            // 인천
+            province: "Incheon",
+            "71": "Ganghwa-gun",
+            "245": "Gyeyang-gu", // 3자리
+            //"남구": "Nam-gu",
+            "20": "Namdong-gu",
+            "14": "Dong-gu",
+            "177": "Michuhol-gu", // 3자리
+            "237": "Bupyeong-gu", // 3자리
+            "26": "Seo-gu",
+            "185": "Yeonsu-gu", // 3자리
+            "72": "Ongjin-gun",
+            "11": "Jung-gu"},         
+        "29":{
+            // 광주
+            province: "Gwangju",
+            "20": "Gwangsan-gu",
+            "155": "Nam-gu", // 3
+            "11": "Dong-gu",
+            "17": "Buk-gu",
+            "14": "Seo-gu",            
+            },
+        "30":{
+            // 대전
+            province: "Daejeon",
+            "23": "Daedeok-gu",
+            "11": "Dong-gu",
+            "17": "Seo-gu",
+            "20": "Yuseong-gu",
+            "14": "Jung-gu",            
+            },      
+        "31":{
+            // 울산
+            province: "Ulsan",
+            "14": "Nam-gu",
+            "17": "Dong-gu",
+            "20": "Buk-gu",
+            "71": "Ulju-gun",
+            "11": "Jung-gu",            
+            },      
+        "42":{
+            // 강원도 : 42, 18개
+            province: "Gangwon-do",
+            "15": "Gangneung-si",
+            "82": "Goseong-gun",
+            "17": "Donghae-si",
+            "23": "Samcheok-si",
+            "21": "Sokcho-si",
+            "80": "Yanggu-gun",
+            "83": "Yangyang-gun",
+            "75": "Yeongwol-gun",
+            "13": "Wonju-si",
+            "81": "Inje-gun",
+            "77": "Jeongseon-gun",
+            "78": "Cheorwon-gun",
+            "11": "Chuncheon-si",
+            "19": "Taebaek-si",
+            "76": "Pyeongchang-gun",
+            "72": "Hongcheon-gun",
+            "79": "Hwacheon-gun",
+            "73": "Hoengseong-gun",           
+            },  
+        "31":{
+            province: "Ulsan",
+            "14": "Nam-gu",
+            "17": "Dong-gu",
+            "20": "Buk-gu",
+            "71": "Ulju-gun",
+            "11": "Jung-gu",            
+            },  
+        "31":{
+            province: "Ulsan",
+            "14": "Nam-gu",
+            "17": "Dong-gu",
+            "20": "Buk-gu",
+            "71": "Ulju-gun",
+            "11": "Jung-gu",            
+            },                                                                                 
+
+        }
 /*
     // 대구 : 27, 8개
     Daegu:{
@@ -337,7 +430,7 @@ class findEngAddress {
     "": "Chungcheongnam-do",
     "": "Chungcheongbuk-do"
     */
-    }
+    
 
     findCity( provinceNumber, cityNumber) {
         const province = this.city[provinceNumber]

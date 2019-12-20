@@ -30,6 +30,24 @@ class AddProfileScreen extends Component {
     headerLeft: <AppBackButton navigation={navigation} title={i18n.t('purchase:address')}/>
   })
 
+  static validation = {
+    title: {
+      presence: {
+        message: i18n.t('board:noTitle')
+      }
+    },
+    msg: {
+      presence: {
+        message: i18n.t('board:noMsg')
+      }
+    },
+    alias: {
+      presence: {
+        message: i18n.t('board:noMsg')
+      }      
+    }
+  }
+
   constructor(props) {
     super(props)
 
@@ -50,7 +68,7 @@ class AddProfileScreen extends Component {
         detailAddr: undefined,
         isBasicAddr: false,
       }),
-      errors: undefined
+      errors: {}
     }
 
     this._onChangeProfile = this._onChangeProfile.bind(this)
@@ -58,6 +76,8 @@ class AddProfileScreen extends Component {
     this._onSubmit = this._onSubmit.bind(this)
     this._onChecked = this._onChecked.bind(this)
     this._findAddress = this._findAddress.bind(this)
+    this._validate = this._validate.bind(this)
+    this._warning = this._warning.bind(this)
   }
 
   componentDidMount() {
@@ -141,27 +161,63 @@ _onSubmit() {
   }
 
   _onChangeProfile = (key = '') => (value) => {
+
     this.setState({
       profile: this.state.profile.set(key, value)
     })
-    if(_.isEmpty(value)){
-      this.setState({
-        disabled: true
-      })
-    }
+
     this._validate(key, value)
   }
 
+  _validate = (key, value) => {
+
+    const {errors} = this.state,
+    valid = validationUtil.validate(key, value)
+
+    errors[key] = _.isEmpty(valid) ? undefined : valid[key]
+
+    if(_.isEmpty(errors)){
+      this.setState({
+        disabled: false
+      })
+    }else{
+      this.setState({
+        disabled: true
+      })      
+    }
+
+    this.setState({
+      errors
+    })
+
+    // console.log('validate', this.state.errors[key])
+
+    // const { profile} = this.state
+    // const val = {
+    //   profile,
+    //   [key]: value
+    // }
+
+    // const errors = validationUtil.validateAll( val)
+    // this.setState({
+    //   errors
+    // })
+
+  }
 
   _findAddress() {
     this.props.navigation.navigate('FindAddress')
   }
 
+  _warning(key){
+    return (<Text style={{ fontSize:12, width:'82%', height: 20,
+                  color:colors.tomato, flex:1, alignSelf: 'flex-end'}}>{this.state.errors[key] ? this.state.errors[key] : null}</Text> )    
+  }
+
   render() {
 
     const { prefix, profile } = this.state
-    const basicAddr = this.props.profile.profile.find(item=> item.isBasicAddr)
-    let isAddrEmpty = false
+    // const basicAddr = this.props.profile.profile.find(item=> item.isBasicAddr)
     
     // for (let [key, value] of Object.entries(profile)) {
     //   console.log(`객체 값!${key}: ${value}`);
@@ -179,7 +235,7 @@ _onSubmit() {
     //   }
     // }
 
-    console.log('isAddrEmpty', isAddrEmpty)
+    console.log('isAddrEmpty', this.state)
   
     return (
       <SafeAreaView style={styles.container}>
@@ -195,12 +251,12 @@ _onSubmit() {
                   <TextInput style={styles.textBox}
                             placeholder={profile.get('alias')}
                             placeholderTextColor={colors.black}
-                            onChangeText={this._onChangeProfile('alias')}
-                            // onBlur={item=>this._validCheck(item)}
-                            />
-                            
-                  {/* <Text style={{color:colors.clearBlue, fontSize:5, borderColor: colors.clearBlue, borderwidth: 2}}>정확히!입력하세요</Text>                             */}
+                            onChangeText={this._onChangeProfile('alias')}/>
                 </View>
+                { 
+                  this._warning('alias')
+                }             
+
                 <View style={styles.textRow}>
                   <Text style={styles.textTitle}>{i18n.t('addr:recipient')}</Text>
                   <TextInput style={styles.textBox}
@@ -208,6 +264,9 @@ _onSubmit() {
                             placeholder={i18n.t('addr:enterWithin50')}
                             onChangeText={this._onChangeProfile('recipient')} />
                 </View>
+                { 
+                  this._warning('recipient')
+                }                 
                 <View style={styles.textRow}>
                   <Text style={styles.textTitle}>{i18n.t('addr:recipientNumber')}</Text>
                   <View style={[styles.container, this.props.style]}>
@@ -238,6 +297,9 @@ _onSubmit() {
                             value={profile.get('recipientNumber')} 
                             placeholder={i18n.t('addr:noHyphen')}/>
                 </View>
+                { 
+                  this._warning('recipientNumber')
+                }    
                 <View style={[styles.textRow, { marginBottom: 10 }]}>
                   <Text style={styles.textTitle}>{i18n.t('addr:address')}</Text>
                   <Text style={[styles.textBox, { width: '61%' }]}
@@ -258,6 +320,9 @@ _onSubmit() {
                             onChangeText={this._onChangeProfile('detailAddr')} 
                             placeholder={i18n.t('addr:details')}/>
                 </View>
+                { 
+                  this._warning('detailAddr')
+                }                  
                 <TouchableOpacity style={styles.checkBasicProfile}
                                   onPress={this._onChecked}>
                   <AppIcon name="btnCheck2"
@@ -267,11 +332,10 @@ _onSubmit() {
               </View>
             </View>
         </KeyboardAwareScrollView>
-
         <AppButton style={appStyles.confirm}
                     title={i18n.t('save')}
                     textStyle={appStyles.confirmText}
-                    // disabled={isAddrEmpty}
+                    // disabled={this.state.disabled}
                     onPress={this._onSubmit} />
 
       </SafeAreaView>
@@ -291,7 +355,7 @@ const styles = StyleSheet.create({
   textRow: {
     flex: 1,
     flexDirection: 'row',
-    marginBottom: 20
+    // marginBottom: 20
   },
   findTextRow: {
     flex: 1,
@@ -350,7 +414,7 @@ const styles = StyleSheet.create({
     width: '82%', 
     flexDirection: 'row', 
     alignSelf: 'flex-end',
-    marginTop: 20
+    // marginTop: 20
   }
 });
 
