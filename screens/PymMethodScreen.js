@@ -132,25 +132,6 @@ class PymMethodScreen extends Component {
     )
   }
 
-  // _renderItemCart({item}) {
-  //   const {mode} = this.state
-
-  //   if(mode == 'buy'){
-  //     return (
-  //       <View style={styles.row}>
-  //         <Text style={styles.productPriceTitle}>{item.name+' x 1'+i18n.t('qty')}</Text>
-  //         <Text style={styles.normalText16}>{utils.price(item.price)}</Text>
-  //       </View>
-  //     )
-  //   }
-  //   return (
-  //     <View style={styles.row}>
-  //       <Text style={styles.productPriceTitle}>{item.title+' x '+item.qty+i18n.t('qty')}</Text>
-  //       <Text style={styles.normalText16}>{utils.price(item.totalPrice)}</Text>
-  //     </View>
-  //   )
-  // }
-
   _address(){
 
     const selectedAddr = this.props.profile.selectedAddr || undefined

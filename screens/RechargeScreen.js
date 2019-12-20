@@ -40,15 +40,15 @@ class RechargeScreen extends Component {
 
   _onSubmit() {
 
-    const pymReq = [
+    const purchaseItems = [
       {
         key: 'rch',
         title: i18n.t('sim:rechargeAmt'),
-        amount: utils.stringToNumber( this.state.selected)
+        price: utils.stringToNumber( this.state.selected)
       }
     ]
 
-    this.props.action.cart.purchase({pymReq})
+    this.props.action.cart.purchase({purchaseItems})
     this.props.navigation.replace('PymMethod')
     /*
     const { auth} = this.props.account,

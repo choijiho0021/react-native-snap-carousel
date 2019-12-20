@@ -88,7 +88,6 @@ class PaymentItemInfo extends PureComponent {
 
   render() {
     const { pymReq, cart } = this.props
-
     const total = pymReq ? pymReq.reduce((acc,cur) => acc + cur.amount, 0) : 0
 
     return (
@@ -96,11 +95,14 @@ class PaymentItemInfo extends PureComponent {
         <Text style={[styles.title, styles.mrgBottom0]}>{i18n.t('pym:title')}</Text>
         <View style={styles.productPriceInfo}>        
         {
-          ! _.isEmpty(cart) && cart.map(item =>
-            <View style={styles.row} key={item.key}>
-              <Text key="title" style={styles.productPriceTitle}>{item.title+' x '+item.qty+i18n.t('qty')}</Text>
-              <Text key="price" style={styles.normalText16}>{utils.price(item.price * item.qty)}</Text>
-            </View>)
+          cart.map(item => {
+            const [qty, price] = _.isUndefined(item.qty) ? ['', item.price] : [` x ${item.qty}${i18n.t('qty')}`, item.price * item.qty]
+            return (
+              <View style={styles.row} key={item.key}>
+                <Text key="title" style={styles.productPriceTitle}>{item.title + qty}</Text>
+                <Text key="price" style={styles.normalText16}>{utils.price(price)}</Text>
+              </View>)
+          })
         }
         </View> 
         

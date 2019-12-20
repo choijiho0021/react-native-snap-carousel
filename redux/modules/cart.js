@@ -131,7 +131,7 @@ export default handleActions({
   // 구매할 품목을 저장한다. 
   [PURCHASE]: (state,action) => {
     const {purchaseItems, dlvCost = false} = action.payload,
-      total = (purchaseItems || []).reduce((sum, acc) => sum + acc.price * acc.qty, 0),
+      total = (purchaseItems || []).reduce((sum, acc) => sum + acc.price * (acc.qty || 1), 0),
       pymReq = [
         {
           key: 'total',
