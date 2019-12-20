@@ -168,9 +168,8 @@ class RegisterSimScreen extends Component {
             <View style={styles.inputBox}>
               {
                 iccid.map(( elm, idx ) =>
-                  (<View style={styles.inputRow}>
+                  (<View style={styles.inputRow} key={idx}>
                     <TextInput style={styles.input}
-                      key={idx}
                       ref={this.inputIccid[idx]}
                       placeholder={this.defaultIccid}
                       onChangeText={this._onChangeText('iccid', idx)}
