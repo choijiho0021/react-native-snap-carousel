@@ -41,10 +41,10 @@ class CountryItem extends Component {
             <TouchableOpacity onPress={() => this.props.onPress && this.props.onPress(elm.uuid)}>
               <Image key={"img"} source={{uri:api.httpImageUrl(elm.imageUrl)}} style={styles.image}/>
               {/* cntry가 Set이므로 첫번째 값을 가져오기 위해서 values().next().value를 사용함 */}
-              <Text key={"cntry"} style={[appStyles.bold14Text,{marginVertical:11}]}>{elm.categoryId == productApi.category.multi ? elm.name : elm.cntry.values().next().value}</Text>
+              <Text key={"cntry"} style={styles.cntry}>{elm.categoryId == productApi.category.multi ? elm.name : elm.cntry.values().next().value}</Text>
               <View style={styles.priceRow}>
                 <View style={styles.price}>
-                  <Text key={"price"} style={[appStyles.normal20Text,styles.text]}>{utils.numberToCommaString(elm.pricePerDay)}</Text> 
+                  <Text key={"price"} style={styles.priceNumber}>{utils.numberToCommaString(elm.pricePerDay)}</Text> 
                   <Text key={"days"} style={[appStyles.normal16Text,styles.text]}>{` ${i18n.t('won')}/Day`}</Text>
                 </View>
                 <View style={styles.lowPriceView}>
@@ -124,7 +124,8 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 1,
     backgroundColor: colors.whiteTwo,
-    alignItems:"center"
+    alignItems:"center",
+    justifyContent:"center"
   },
   priceRow : {
     flexDirection: 'row',
@@ -134,6 +135,21 @@ const styles = StyleSheet.create({
   price : {
     flexDirection: 'row',
     alignItems:"center"
+  },
+  priceNumber : {
+      // fontFamily: "Roboto-Regular",
+      fontSize: 20,
+      fontWeight: "bold",
+      fontStyle: "normal",
+      lineHeight: 24,
+      letterSpacing: 0.19,
+      color: colors.clearBlue,
+      textAlign: "left"
+  },
+  cntry : {
+    ... appStyles.bold14Text,
+    marginTop:11,
+    marginBottom:9
   }
 });
 
