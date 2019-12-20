@@ -112,14 +112,14 @@ class RegisterMobileScreen extends Component {
   _onSubmit = () => {
 
     const {email, domain} = this.email.current.state,
-      { pin, mobile } = this.state
+      { pin, mobile, confirm } = this.state
 
     const error = validationUtil.validate('email', `${email}@${domain}`)
     if ( ! _.isEmpty(error)) {
       return AppAlert.error(error.email[0])
     }
 
-    userApi.signUp({ user: mobile, pass: pin, email: `${email}@${domain}`})
+    userApi.signUp({ user: mobile, pass: pin, email: `${email}@${domain}`, mktgOptIn: confirm.get('2')})
       .then( resp => {
         if (resp.result === 0 && ! _.isEmpty(resp.objects) ) {
           this._signIn({ mobile, pin })
@@ -281,12 +281,13 @@ class RegisterMobileScreen extends Component {
         <InputMobile style={{marginTop:30, paddingHorizontal:20}}
           onPress={this._onChangeText('mobile')}
           authNoti={authNoti }
-          disabled={authNoti &&  authorized}/>
+          disabled={authNoti &&  authorized}
+          timeout={ timeout }/>
 
         <InputPinInTime style={{marginTop:26, paddingHorizontal:20}}
           forwardRef={this.authInputRef}
           editable={ mobile && authNoti && ! authorized }
-          clickable={ mobile && authNoti && ! timeout }
+          clickable={ mobile && authNoti && ! timeout && ! authorized }
           authorized={ mobile ? authorized : undefined }
           countdown={ authNoti && ! authorized && ! timeout }
           onTimeout={ this._onTimeout }
