@@ -7,6 +7,8 @@ import api from '../../utils/api/api';
 import i18n from '../../utils/i18n';
 import utils from '../../utils/utils';
 
+import {getAccount} from './account'
+
 
 const SET_CART_TOKEN = 'rokebi/cart/SET_CART_TOKEN'
 const CART_FLYOUT_CLOSE = 'rokebi/cart/CART_FLYOUT_CLOSE'
@@ -47,8 +49,10 @@ export const pushLastTab = createAction(PUSH_LAST_TAB)
 export const payNorder = (result) => {
   return (dispatch,getState) => {
     const { account, cart } = getState(),
+      token = account.get('token'),
+      iccid = account.get('iccid'),
       auth = {
-        token: account.get('token'),
+        token,
         mail: account.get('email'),
         user: account.get('mobile'),
       }
@@ -77,9 +81,17 @@ export const payNorder = (result) => {
 
     if ( rch) return dispatch(rechargeAccount({
       amount: rch.price, 
-      iccid: account.get('iccid'),
+      iccid,
       iccidId: account.get('uuid')
-    }, auth))
+    }, auth)).then(
+      resp => { 
+        if ( resp.result == 0 && resp.objects.length > 0) {
+          return dispatch(getAccount(iccid, {token}))
+        }
+      }, 
+      err => {
+        throw err
+      })
 
     throw new Error('Invalid purchase items')
   }
