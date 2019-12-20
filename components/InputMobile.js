@@ -71,9 +71,9 @@ class InputMobile extends Component {
 
   render() {
     const {mobile} = this.state
-    const {authNoti, disabled} = this.props
+    const {authNoti, disabled, timeout} = this.props
 
-    const clickable = _.isEmpty(this._error('mobile'))
+    const clickable = _.isEmpty(this._error('mobile')) && (! authNoti || timeout )
 
     return (
       <View>

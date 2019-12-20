@@ -281,7 +281,8 @@ class RegisterMobileScreen extends Component {
         <InputMobile style={{marginTop:30, paddingHorizontal:20}}
           onPress={this._onChangeText('mobile')}
           authNoti={authNoti }
-          disabled={authNoti &&  authorized}/>
+          disabled={authNoti &&  authorized}
+          timeout={ timeout }/>
 
         <InputPinInTime style={{marginTop:26, paddingHorizontal:20}}
           forwardRef={this.authInputRef}
