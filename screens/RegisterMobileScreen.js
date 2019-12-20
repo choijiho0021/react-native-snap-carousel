@@ -287,7 +287,7 @@ class RegisterMobileScreen extends Component {
         <InputPinInTime style={{marginTop:26, paddingHorizontal:20}}
           forwardRef={this.authInputRef}
           editable={ mobile && authNoti && ! authorized }
-          clickable={ mobile && authNoti && ! timeout }
+          clickable={ mobile && authNoti && ! timeout && ! authorized }
           authorized={ mobile ? authorized : undefined }
           countdown={ authNoti && ! authorized && ! timeout }
           onTimeout={ this._onTimeout }

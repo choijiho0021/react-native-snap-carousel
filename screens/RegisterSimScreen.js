@@ -6,6 +6,7 @@ import {
   TextInput,
   SafeAreaView,
   TouchableOpacity,
+  Keyboard
 } from 'react-native';
 import {connect} from 'react-redux'
 
@@ -130,6 +131,11 @@ class RegisterSimScreen extends Component {
 
       if ( _.size(value) === 5 && idx < 3 ) {
         this.inputIccid[idx+1].current.focus()
+      }
+      else {
+        if ( iccid.map((elm,i) => i === idx ? value : elm ).every(elm => _.size(elm) === 5) && idx === 3 ) {
+          Keyboard.dismiss()
+        }
       }
 
       return;
