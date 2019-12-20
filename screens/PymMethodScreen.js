@@ -86,7 +86,7 @@ class PymMethodScreen extends Component {
     const { mobile, email} = this.props.account
     const { pymReq } = this.props.cart,
       total = pymReq.reduce((sum,cur) => sum + cur.amount, 0),
-      profile = this.props.profile.profile.find(item =>item.isBasicAddr) || {}
+      profile = this.props.profile.profile.find(item =>item.uuid == isBasicAddr) || {}
 
     const params = {
       pg : selected,
@@ -152,34 +152,38 @@ class PymMethodScreen extends Component {
   // }
 
   _address(){
-    const item = this.props.profile.profile.find(item =>item.isBasicAddr) || {}
+
+    const selectedAddr = this.props.profile.selectedAddr || undefined
+    const profile = this.props.profile.profile
+    const item = profile.find(item =>item.uuid==selectedAddr) || profile.find(item =>item.isBasicAddr) || {}
 
     return (
       <View>
         {
           // 주소
-          this.props.profile.profile.length > 0 &&
+          this.props.profile.profile.length > 0 && 
           <View>
             <Text style={styles.title}>{i18n.t('pym:delivery')}</Text>
-            <View style={styles.profileTitle}>
-              <Text style={styles.profileTitleText}>{item.alias}</Text>
-              <View style={{flex: 1, alignItems: 'flex-end'}}>
-                <AppButton title={i18n.t('change')} 
-                          titleStyle={styles.chgButtonText}
-                          style={[styles.chgButton]}
-                          onPress={() => this.props.navigation.navigate('CustomerProfile')}/>
-              </View>
-            </View>
-            <AddressCard 
-              textStyle={styles.addrCardText}
-              mobileStyle={[styles.addrCardText, styles.colorWarmGrey]}
-              style={styles.addrCard}
-              profile={item}
-              mobile={this.props.account.mobile}/>
+              <View>
+                <View style={styles.profileTitle}>
+                  <Text style={styles.profileTitleText}>{item.alias}</Text>
+                  <View style={{flex: 1, alignItems: 'flex-end'}}>
+                    <AppButton title={i18n.t('change')} 
+                              titleStyle={styles.chgButtonText}
+                              style={[styles.chgButton]}
+                              onPress={() => this.props.navigation.navigate('CustomerProfile')}/>
+                  </View>
+                </View>
+                <AddressCard 
+                  textStyle={styles.addrCardText}
+                  mobileStyle={[styles.addrCardText, styles.colorWarmGrey]}
+                  style={styles.addrCard}
+                  profile={item}
+                  mobile={this.props.account.mobile}/>
+              </View>  
+            <View style={styles.divider}/>            
           </View>
         }
-
-        <View style={styles.divider}/>
 
         {
           // 주소 등록 

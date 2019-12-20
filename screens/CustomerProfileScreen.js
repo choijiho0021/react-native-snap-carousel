@@ -19,6 +19,7 @@ import AddressCard from '../components/AddressCard';
 import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import AppIcon from '../components/AppIcon';
+import AppActivityIndicator from '../components/AppActivityIndicator';
 
 class CustomerProfileScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -29,33 +30,46 @@ class CustomerProfileScreen extends Component {
     super(props)
 
     this.state = {
-      checked: undefined
+      checked: undefined,
+      profile: undefined,
     }    
 
     this._onChecked = this._onChecked.bind(this)
     this._deleteProfile = this._deleteProfile.bind(this)
+    // this._afterChangeBasicAddr = this._afterChangeBasicAddr.bind(this)
 
   }
 
   componentDidMount() {
 
     this.props.action.profile.getCustomerProfile(this.props.account)
-
-  }
-
-  componentDidUpdate(prevProp){
-
-    if(prevProp.profile.profile != this.props.profile.profile){
-      const profile = this.props.profile.profile.find(item => item.isBasicAddr)
-      
-      if(profile){
-        this.setState({
-          checked: profile.uuid
-        })
-      }
+    console.log('@@comdimo',this.props.profile.selectedAddr)
+    console.log('@@comdimo',this.props.profile.profile.find(item => item.isBasicAddr))
+    if(this.props.profile.selectedAddr){
+      this.setState({
+        checked: this.props.profile.selectedAddr
+      })
+    }else{
+      this.setState({
+        checked: this.props.profile.profile.find(item => item.isBasicAddr).uuid
+      })
     }
-    
+
   }
+
+  // componentDidUpdate(prevProp){
+
+  //   if(prevProp.profile.profile != this.props.profile.profile){
+  //     const profile = this.props.profile.profile.find(item => item.isBasicAddr)
+      
+  //     if(profile){
+  //       this.setState({
+  //         checked: profile.uuid
+  //       })
+  //     }
+  //   }
+    
+  // }
 
   _onChecked(uuid) {
 
@@ -63,20 +77,43 @@ class CustomerProfileScreen extends Component {
       checked: uuid
     })
 
+    // profile.updateCustomerProfile(this.state.profile.toJS(), this.props.account)
+    this.props.action.profile.selectedAddr(uuid)
+    this.props.navigation.goBack()
+
   }
+
+  // _afterChangeBasicAddr(aa){
+  //   console.log('change basic', this.state.profile)
+  //   this.props.action.profile.updateCustomerProfile(this.state.profile, this.props.account)
+  // }
 
   _deleteProfile(uuid) {
 
     this.props.action.profile.profileDelAndGet(uuid, this.props.account)
+
+    // const isBasicAddrDeleted = this.props.profile.profile && this.props.profile.profile.find(item => item.uuid == uuid).isBasicAddr 
+
+    // //(profile, defaultProfile, {token})
+    // if(isBasicAddrDeleted){
+    //   this.setState({
+    //     profile:{
+    //       ... this.props.profile.profile.filter(item => item.uuid != uuid)[0],
+    //       isBasicAddr: true
+    //     }
+    //   })
+    //   this._afterChangeBasicAddr()
+    // }
+
     //AppAlert.confirm(i18n.t('purchase:delAddr'))
     //AppAlert.error( i18n.t('purchase:failedToDelete'))
-
   }
 
   _renderItem = ({item}) => {
   
+    // props profile
     const {checked} = this.state
-    console.log('checked', checked)
+    console.log('checked', checked)    
     console.log('item', item)
       return (
         <View style={[styles.cardSize, checked == item.uuid && styles.checkedBorder]}>
@@ -120,18 +157,16 @@ class CustomerProfileScreen extends Component {
  
     return (
       <SafeAreaView style={styles.container}>
+        <AppActivityIndicator visible={this.props.pending} />
         <FlatList data={this.props.profile.profile} 
                   keyExtractor={item => item.uuid}
                   renderItem={this._renderItem} 
+                  // ListEmptyComponent
                   extraData={this.state.checked}/>
         <AppButton title={i18n.t('add')} 
                   textStyle={appStyles.confirmText}
                   onPress={()=>this.props.navigation.navigate('AddProfile')}
-                  style={appStyles.confirm}/>                  
-                  {/* ListFooterComponent={<AppButton title={i18n.t('add')} 
-                                                  textStyle={appStyles.confirmText}
-                                                  onPress={()=>this.props.navigation.navigate('AddProfile')}
-                                                  style={[appStyles.confirm, {marginTop: 20}]}/>} /> */}
+                  style={[appStyles.confirm, {marginTop:20}]}/>                  
       </SafeAreaView>
     )
   }
@@ -202,7 +237,9 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => ({
   account: state.account.toJS(),
   auth: accountActions.auth(state.account),
-  profile: state.profile.toJS()
+  profile: state.profile.toJS(),
+  pending: state.pender.pending[profileActions.ADD_CUSTOMER_PROFILE] || 
+    state.pender.pending[profileActions.GET_CUSTOMER_PROFILE] || false
 })
 
 // export default CustomerProfileScreen

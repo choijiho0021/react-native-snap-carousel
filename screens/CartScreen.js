@@ -165,11 +165,9 @@ class CartScreen extends Component {
           renderItem={this._renderItem} 
           extraData={[qty, checked]}
           ListFooterComponent={ <ChargeSummary totalCnt={total.cnt} totalPrice={total.price} dlvCost={dlvCost}/>} />
-
         <AppButton style={styles.btnBuy} title={i18n.t('cart:purchase')} 
-          disabled={data.length == 0}
+          disabled={total.price == 0}
           onPress={this._onPurchase}/>
-
       </SafeAreaView>
     )
   }

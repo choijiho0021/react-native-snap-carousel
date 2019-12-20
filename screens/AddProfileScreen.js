@@ -23,6 +23,7 @@ import findEngAddress from '../utils/findEngAddress'
 import AppIcon from '../components/AppIcon';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import {Map} from 'immutable'
+import validationUtil from '../utils/validationUtil';
 
 class AddProfileScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -62,7 +63,7 @@ class AddProfileScreen extends Component {
   componentDidMount() {
     
     const update = this.props.navigation.getParam('update') 
-    const profile = update || this.props.profile.profile.find(item => item.isBasicAddr == true)
+    const profile = update || this.props.profile.profile.find(item => item.isBasicAddr)
 
     this.setState({
       update,
@@ -95,40 +96,47 @@ class AddProfileScreen extends Component {
             .set('zipCode', addr.zipNo)
             .set('province', findEngAddress.findProvince(provinceNumber))
             .set('city', findEngAddress.findCity( provinceNumber, cityNumber))
+            .set('isBasicAddr', this.props.profile.profile.isBasicAddr)
         })
       }
 
     }
   }
 
-
-
-  _onSubmit() {
-    const {profile} = this.props.action
-    const defaultProfile = this.props.profile.profile.find(item => item.isBasicAddr) || {}
-
-    if(_.isEmpty(this.state.update)){
-      // profile 신규 추가
-      profile.addCustomerProfile(this.state.profile.toJS(), defaultProfile, this.props.account)
-    }
-    else{
-      // profile update
-      profile.updateCustomerProfile(this.state.profile.toJS(), this.props.account)
-    }
-    this.props.navigation.goBack()
+_onSubmit() {
+  const {profile} = this.props.action
+  const defaultProfile = this.props.profile.profile.find(item => item.isBasicAddr) || {}
+  
+  // 기본배송지 설정된 것이 없는 경우 신규 기본 배송지 설정
+  if(_.isEmpty(defaultProfile)){
+    this.setState({
+      profile : this.state.profile.set('isBasicAddr', true)
+    }) 
   }
+
+  if(_.isEmpty(this.state.update)){
+    // profile 신규 추가
+    profile.profileAddAndGet(this.state.profile.toJS(), defaultProfile, this.props.account)
+  }
+  else{
+    // profile update
+    profile.updateCustomerProfile(this.state.profile.toJS(), this.props.account)
+  }
+  this.props.navigation.goBack()
+}
 
   _onChecked() {
     const {profile} = this.state
     this.setState({
       profile: profile.update( 'isBasicAddr', value => ! value)
     })
+
   }
 
   _onChangeValue = (key = '') => (value) => {
     this.setState({
       [key]: value,
-      disabled: _.isEmpty(value) ? true : false
+      // disabled: _.isEmpty(value) ? true : false
     })
   }
 
@@ -136,7 +144,14 @@ class AddProfileScreen extends Component {
     this.setState({
       profile: this.state.profile.set(key, value)
     })
+    if(_.isEmpty(value)){
+      this.setState({
+        disabled: true
+      })
+    }
+    this._validate(key, value)
   }
+
 
   _findAddress() {
     this.props.navigation.navigate('FindAddress')
@@ -145,10 +160,11 @@ class AddProfileScreen extends Component {
   render() {
 
     const { prefix, profile } = this.state
+    const basicAddr = this.props.profile.profile.find(item=> item.isBasicAddr)
     let isAddrEmpty = false
     
     // for (let [key, value] of Object.entries(profile)) {
-    //   // console.log(`객체 값찾긔~~${key}: ${value}`);
+    //   console.log(`객체 값!${key}: ${value}`);
     //   if(_.isEmpty(value)){
          
     //     // 기본배송지 선택 -> 필수값 X
@@ -178,8 +194,12 @@ class AddProfileScreen extends Component {
                   <Text style={styles.textTitle}>{i18n.t('addr:addrAlias')}</Text>
                   <TextInput style={styles.textBox}
                             placeholder={profile.get('alias')}
-                            placeholderTextColor='#2c2c2c'
-                            onChangeText={this._onChangeProfile('alias')} />
+                            placeholderTextColor={colors.black}
+                            onChangeText={this._onChangeProfile('alias')}
+                            // onBlur={item=>this._validCheck(item)}
+                            />
+                            
+                  {/* <Text style={{color:colors.clearBlue, fontSize:5, borderColor: colors.clearBlue, borderwidth: 2}}>정확히!입력하세요</Text>                             */}
                 </View>
                 <View style={styles.textRow}>
                   <Text style={styles.textTitle}>{i18n.t('addr:recipient')}</Text>
@@ -206,14 +226,17 @@ class AddProfileScreen extends Component {
                         }))}
                         value={prefix}
                         Icon={() => {
-                          return (<Triangle width={8} />)
+                          return (<Triangle width={8} height={6} />)
                         }}
                       />
                     </View>
                   </View>
                   <TextInput style={[styles.textBox, { width: '56%' }]}
                             onChangeText={this._onChangeProfile('recipientNumber')}
-                            value={profile.get('recipientNumber')} />
+                            maxLength={8}
+                            keyboardType='numeric'
+                            value={profile.get('recipientNumber')} 
+                            placeholder={i18n.t('addr:noHyphen')}/>
                 </View>
                 <View style={[styles.textRow, { marginBottom: 10 }]}>
                   <Text style={styles.textTitle}>{i18n.t('addr:address')}</Text>
@@ -232,9 +255,10 @@ class AddProfileScreen extends Component {
                 <View style={styles.findTextRow}>
                   <TextInput style={styles.textBox}
                             value={profile.get('detailAddr')}
-                            onChangeText={this._onChangeProfile('detailAddr')} />
+                            onChangeText={this._onChangeProfile('detailAddr')} 
+                            placeholder={i18n.t('addr:details')}/>
                 </View>
-                <TouchableOpacity style={{flex:1, width: '82%', flexDirection: 'row', alignSelf: 'flex-end',marginTop: 20}}
+                <TouchableOpacity style={styles.checkBasicProfile}
                                   onPress={this._onChecked}>
                   <AppIcon name="btnCheck2"
                           checked={this.state.profile.get('isBasicAddr') || false}/>
@@ -247,7 +271,7 @@ class AddProfileScreen extends Component {
         <AppButton style={appStyles.confirm}
                     title={i18n.t('save')}
                     textStyle={appStyles.confirmText}
-                    disabled={isAddrEmpty}
+                    // disabled={isAddrEmpty}
                     onPress={this._onSubmit} />
 
       </SafeAreaView>
@@ -277,7 +301,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end'
   },
   findButton: {
-    backgroundColor: colors.warmGrey, 
+    backgroundColor: colors.clearBlue, 
     borderRadius: 3, 
     width: '18%', 
     height: 36, 
@@ -320,6 +344,13 @@ const styles = StyleSheet.create({
     ... appStyles.normal12Text,
     color: colors.warmGrey,
     marginLeft: 10
+  },
+  checkBasicProfile: {
+    flex:1, 
+    width: '82%', 
+    flexDirection: 'row', 
+    alignSelf: 'flex-end',
+    marginTop: 20
   }
 });
 

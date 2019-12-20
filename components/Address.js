@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
   },
   addrValue: {
     ... appStyles.normal14Text,
+    color: colors.warmGrey,
     lineHeight: 24,
     letterSpacing: 0.23
   },
@@ -64,8 +65,7 @@ class Address extends PureComponent {
     const {item} = this.props
 
     return (
-      <View style={styles.itemRow, {marginHorizontal:20,      borderBottomWidth: 1,
-        borderBottomColor: colors.lightGrey }}>
+      <View style={styles.itemRow}>
         <View style={styles.addr}>
           
             <Text style={[styles.bdTitle,styles.itemRow]}>{item.bdNm}</Text>
@@ -77,7 +77,7 @@ class Address extends PureComponent {
                 <Text style={styles.roadText}>{i18n.t('addr:road')}</Text>
               </View>  
               <View style = {{ maxWidth: '85%'}}>
-              <Text style={styles.addrValue, { flexDirection: 'row', flexWrap: 'wrap'}}>{item.roadAddr}</Text>
+              <Text style={[styles.addrValue, { flexDirection: 'row', flexWrap: 'wrap'}]}>{item.roadAddr}</Text>
               </View>
             </View>
 
