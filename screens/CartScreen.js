@@ -112,7 +112,7 @@ class CartScreen extends Component {
   _onChecked(uuid) {
     const {checked, qty} = this.state,
       checkedUpdated = checked.update( uuid, value => ! value),
-      total = this._calculate( checked, qty)
+      total = this._calculate( checkedUpdated, qty)
 
     this.setState({
       total,
