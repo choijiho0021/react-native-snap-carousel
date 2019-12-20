@@ -74,7 +74,7 @@ class NewSimScreen extends Component {
 
   _onChangeQty(key, qty) {
     const simQty = this.state.simQty.set(key, qty),
-      checked = this.state.checked.set(key, true)
+      checked = this.state.checked.set(key, qty > 0)
 
     // update qty
     this.setState({
@@ -103,11 +103,13 @@ class NewSimScreen extends Component {
           type: 'sim_card'
         }))
 
-      if ( mode == 'purchase') {
-        this.props.action.cart.purchase({ purchaseItems:simList, dlvCost:true})
-        this.props.navigation.navigate('PymMethod')
+      if ( simList.length > 0) {
+        if ( mode == 'purchase') {
+          this.props.action.cart.purchase({ purchaseItems:simList, dlvCost:true})
+          this.props.navigation.navigate('PymMethod')
+        }
+        else this.props.action.cart.cartAddAndGet( simList)
       }
-      else this.props.action.cart.cartAddAndGet( simList)
     }
     
   }
@@ -162,8 +164,8 @@ class NewSimScreen extends Component {
               totalPrice={total.price} 
               dlvCost={utils.dlvCost(total.price)}/>
             }/>
-        <View style={styles.buttonBox}>
 
+        <View style={styles.buttonBox}>
           <AppButton style={styles.btnCart} title={i18n.t('cart:toCart')} 
             titleStyle={styles.btnCartText}
             onPress={this._onPress('cart')}/>
