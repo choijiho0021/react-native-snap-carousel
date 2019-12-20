@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {
   StyleSheet,
+  View,
+  Text,
   FlatList
 } from 'react-native';
 import {connect} from 'react-redux'
@@ -165,15 +167,28 @@ class CartScreen extends Component {
           renderItem={this._renderItem} 
           extraData={[qty, checked]}
           ListFooterComponent={ <ChargeSummary totalCnt={total.cnt} totalPrice={total.price} dlvCost={dlvCost}/>} />
-        <AppButton style={styles.btnBuy} title={i18n.t('cart:purchase')} 
-          disabled={total.price == 0}
-          onPress={this._onPurchase}/>
+
+        <View style={styles.buttonBox}>
+          <View style={styles.sumBox}>
+            <Text style={[styles.btnBuyText, {color:colors.black}]}>{i18n.t('sum') + ': '}</Text>
+            <Text style={appStyles.roboto16Text}>{utils.numberToCommaString(total.price)}</Text>
+            <Text style={[styles.btnBuyText, {color:colors.black}]}>{i18n.t('won')}</Text>
+          </View>
+          <AppButton style={styles.btnBuy} title={i18n.t('cart:purchase') + `(${total.cnt})`} 
+            disabled={total.price == 0}
+            onPress={this._onPurchase}/>
+        </View>
       </SafeAreaView>
     )
   }
 }
 
 const styles = StyleSheet.create({
+  sumBox : {
+    flexDirection:'row', 
+    justifyContent:'center',
+    marginHorizontal: 30
+  },
   sectionTitle: {
     ... appStyles.subTitle,
     padding: 20,
@@ -184,8 +199,7 @@ const styles = StyleSheet.create({
     alignItems: "stretch"
   },
   btnBuy: {
-    justifyContent:'flex-end',
-    height: 52,
+    flex: 1,
     backgroundColor: colors.clearBlue
   },
   btnBuyText: {
@@ -198,10 +212,12 @@ const styles = StyleSheet.create({
     width: "10%"
   },
   buttonBox: {
-    flex: 1,
     flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%"
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    height: 52,
+    borderTopColor: colors.lightGrey,
+    borderTopWidth: 1
   },
   button: {
     ... appStyles.button,
