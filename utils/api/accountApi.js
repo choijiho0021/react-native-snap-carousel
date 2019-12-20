@@ -21,7 +21,9 @@ class AccountAPI {
                     simPartnerId: utils.stringToNumber( item.field_ref_sim_partner),
                     actDate: item.field_activation_date,
                     mobile: item.field_mobile,
-                    deviceToken: item.field_device_token
+                    deviceToken: item.field_device_token,
+                    simCardName: item.sim_card_name,
+                    simCardImage: item.sim_card_image
                 }))
             )
         }

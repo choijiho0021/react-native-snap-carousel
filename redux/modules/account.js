@@ -148,7 +148,7 @@ export const auth = (state) => ({
 })
 
 const updateAccountState = (state, payload) => {
-    const {expDate, balance, simPartnerId, actDate, userId,
+    const {expDate, balance, simPartnerId, actDate, userId, simCardImage, simCardName,
       iccid, uuid, nid, uid, mobile, pin, email, token, deviceToken} = payload
 
     if ( ! _.isEmpty(expDate)) state = state.set('expDate', expDate)
@@ -165,6 +165,8 @@ const updateAccountState = (state, payload) => {
     if ( ! _.isEmpty(email)) state = state.set('email', email)
     if ( ! _.isEmpty(token)) state = state.set('token', token)
     if ( ! _.isEmpty(deviceToken)) state = state.set('deviceToken', deviceToken)
+    if ( ! _.isEmpty(simCardName)) state = state.set('simCardName', simCardName)
+    if ( ! _.isEmpty(simCardImage)) state = state.set('simCardImage', simCardImage)
 
     return state
 }
@@ -186,7 +188,9 @@ const initialState = Map({
     loggedIn: false,
     userPicture: undefined,
     userPictureUrl: undefined,
-    deviceToken: undefined
+    deviceToken: undefined,
+    simCardName: undefined,
+    simCardImage: undefined
 })
 
 export default handleActions({

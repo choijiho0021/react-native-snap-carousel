@@ -453,7 +453,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   menuText: {
-    ... appStyles.normal14Text,
+    ... appStyles.normal15Text,
     marginTop: 8,
     textAlign: 'center',
     color: colors.black

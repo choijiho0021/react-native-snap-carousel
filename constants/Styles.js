@@ -166,6 +166,14 @@ export const appStyles = StyleSheet.create({
         letterSpacing: -0.03,
         color: colors.black
     },
+    normal15Text: {
+//        fontFamily: "AppleSDGothicNeo",
+        fontSize: 15,
+        fontWeight: "normal",
+        fontStyle: "normal",
+        letterSpacing: -0.03,
+        color: colors.black
+    },
     bold14Text: {
 //        fontFamily: "AppleSDGothicNeo",
         fontSize: 14,

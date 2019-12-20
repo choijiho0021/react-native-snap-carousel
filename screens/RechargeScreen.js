@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Text,
   View,
+  Image,
   TouchableOpacity
 } from 'react-native';
 import {connect} from 'react-redux'
@@ -18,6 +19,7 @@ import AppButton from '../components/AppButton';
 import _ from 'underscore'
 import { SafeAreaView } from 'react-navigation';
 import AppBackButton from '../components/AppBackButton';
+import api from '../utils/api/api';
 
 class RechargeScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -86,23 +88,17 @@ class RechargeScreen extends Component {
               style={[styles.button, checked && {borderColor: colors.clearBlue}]}>
               <View style={styles.buttonBox}>
                 <Text style={[styles.buttonText, checked && {color:colors.clearBlue}]}>{utils.numberToCommaString(v)}</Text>
-                <Text style={[appStyles.normal14Text, checked && {color:colors.clearBlue}]}> {i18n.t('won')} </Text>
+                <Text style={[appStyles.normal14Text, checked && {color:colors.clearBlue}]}>{i18n.t('won')}</Text>
               </View>
             </TouchableOpacity>)
         })
-
-      //     style={styles.button}
-      //     checked={v == selected}
-      //     checkedColor={colors.clearBlue}
-      //     titleStyle={styles.buttonText}/>)
-      // 
       }
       </View>
     )
   }
 
   render() {
-    const {iccid = "", balance} = this.props.account
+    const {iccid = "", balance, simCardImage} = this.props.account
     const { selected } = this.state
     const seg = [0, 5, 10, 15].map(v => iccid.substring(v, v+5))
     const amount = [[5000, 10000], [15000, 20000], [25000, 30000]]
@@ -110,8 +106,8 @@ class RechargeScreen extends Component {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.upper}>
-          <View style={styles.card}>
-          </View>
+          <Image style={styles.card} source={{uri:api.httpImageUrl(simCardImage)}}
+            resizeMode='contain'/> 
           <View style={styles.iccidBox}>
             <Text style={styles.iccidTitle}>ICCID</Text>
             <View style={styles.iccidRow}>
@@ -162,7 +158,7 @@ const styles = StyleSheet.create({
     height: 168,
     borderWidth: 1,
     borderColor: colors.lightGrey,
-    marginHorizontal: 20,
+    marginHorizontal: 47,
     marginTop: 20
   },
   iccidTitle: {
@@ -179,7 +175,7 @@ const styles = StyleSheet.create({
     color: colors.black,
   },
   iccidBox: {
-    marginHorizontal: 68,
+    marginHorizontal: 47,
     marginTop: 15
   },
   divider: {
