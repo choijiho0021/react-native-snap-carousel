@@ -103,6 +103,7 @@ const en = {
   'mysim:name': 'Provider',
   'mysim:mccmnc': 'MCC/MNC',
   'mysim:operator': 'Network Operator',
+  'mysim:permCamera': 'Please, grant the permission to use CAMERA',
 
   'acc:title': 'My Page',
   'acc:subTitle': 'Purchase & Recharge History',
@@ -377,6 +378,7 @@ const ko = {
   'mysim:name': '공급자 이름',
   'mysim:mccmnc': 'MCC/MNC',
   'mysim:operator': '네트워크 사업자 이름',
+  'mysim:permCamera': '카메라 권한을 허가해 주세요',
 
   'acc:title': '마이 페이지',
   'acc:subTitle': '구매 및 사용 이력',
