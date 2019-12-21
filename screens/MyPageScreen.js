@@ -28,7 +28,6 @@ import AppModal from '../components/AppModal';
 import * as Permissions from 'expo-permissions';
 import validationUtil from '../utils/validationUtil';
 import userApi from '../utils/api/userApi';
-import { useIsFocused } from '@react-navigation/native';
 
 let ImagePicker 
 if (Constants.appOwnership === 'expo') {
