@@ -70,7 +70,7 @@ class HomeScreen extends Component {
 
         //BadgeAppButton을 사용했을 때 위치가 변동됨 수정이 필요함
         <BadgeAppButton key="alarm" style={styles.btnAlarm} 
-          onPress={() => navigation.navigate('Noti')} 
+          onPress={() => navigation.navigate('Noti', {mode:'noti'})} 
           iconName="btnAlarm" />
       ]
     ),

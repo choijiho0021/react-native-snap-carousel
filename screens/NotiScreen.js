@@ -17,39 +17,35 @@ import _ from 'underscore'
 import * as notiActions from '../redux/modules/noti'
 import * as accountActions from '../redux/modules/account'
 import AppBackButton from '../components/AppBackButton';
+import moment from 'moment-with-locales-es6'
 
 class NotiScreen extends Component {
   static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('set:noti')} />
+    headerLeft: <AppBackButton navigation={navigation} title={navigation.getParam('title') || i18n.t('set:noti')} />
   })
 
   constructor(props) {
     super(props)
+
+    this.state = {
+      list : undefined
+    }
   }
 
   componentDidMount() {
-    const {mobile} = this.props.account
-    const {notiList} = this.props.noti
-
-    if(mobile){
-      this.props.action.noti.getNotiList(mobile)
+    const mode = this.props.navigation.getParam('mode')
+    // navigation param으로 notiList를 받은 경우 처리 - 공지 사항
+    const list = ( mode == 'info') ? this.props.navigation.getParam('info') : this.props.noti.notiList
+    if ( list) {
+      this.setState({list})
     }
-
-    // if(! _.isEmpty(notiList)){
-    //   const notiListWithColor = notiList.map(elm => ({...elm, backgroundColor: elm.isRead == "F" ? "#f7f8f9" : colors.white}))
-    //   this.setState(notiListWithColor)
-    // }
   }
 
-  // componentDidUpdate(prevProps){
-  //   if(prevProps.noti.notiList != this.props.noti.notiList){
-  //     const notiListWithColor = this.props.notiList.map(elm => ({...elm, backgroundColor: elm.isRead == "F" ? "#f7f8f9" : colors.white}))
-  //     this.setState(notiListWithColor)
-  //   }
-  // }
-
   _onPress = (uuid, bodyTitle, body) => () => {
-    this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
+    if ( this.state.mode == 'noti' && uuid) {
+      this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
+    }
+
     //todo:notitype에 따라서 이동하는 경로가 바뀌어야 함
     this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:bodyTitle, text:body})
   }
@@ -59,7 +55,7 @@ class NotiScreen extends Component {
         <TouchableOpacity onPress={this._onPress(item.uuid, item.title, item.body)}>
           <View key={item.uuid} style={[styles.notibox,{backgroundColor:item.isRead == "F" ? "#f7f8f9" : colors.white}]}>
             <View key='notitext' style={styles.notiText} >
-              <Text key='created' style={styles.created}>{item.created}</Text>
+              <Text key='created' style={styles.created}>{moment(item.created).format('LLL')}</Text>
               <View style={styles.title}>
                 {index == 0 ? <Text key='titleHead' style={styles.titleHead}>●</Text> : null }
                 <Text key='titleText' style={styles.titleText}>{item.title}</Text>
@@ -80,12 +76,12 @@ class NotiScreen extends Component {
   }
 
   render() {
-    const {notiList} = this.props.noti
+    const {list} = this.state
 
     return (
       <View key={"container"} style={styles.container}>
         <FlatList 
-          data={notiList} 
+          data={list} 
           renderItem={this._renderItem }
           ListEmptyComponent={this.renderEmptyContainer()}
           />
@@ -141,7 +137,6 @@ const styles = StyleSheet.create({
   renderItem : {
     height: 98,
     alignItems:'center',
-    justifyContent:'space-between',
     flexDirection: "row",
     justifyContent: "flex-start"
   },
@@ -171,7 +166,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => ({
   account : state.account.toJS(),
   auth: accountActions.auth(state.account),
-  noti : state.noti.toJS()
+  noti: state.noti.toJS()
 })
 
 export default connect(mapStateToProps, 
