@@ -46,6 +46,8 @@ const en = {
   'noti' : 'Notification',
   'done' : 'Done',
   'lowest' : 'lowest',
+  'min' : 'minutes',
+  'sec' : 'seconds',
 
   'home:guide': 'User Guide',
   'home:checkGuide': 'Check',
@@ -286,7 +288,6 @@ const ko = {
   'won': '원',
   'recharge': '충전',
   'day': '일',
-  'lowest': '최저',
   'scanned': '스캔 완료 : ',
   'cart': '카트',
   'purchase': '구매',
@@ -316,6 +317,9 @@ const ko = {
   'price': '가격',
   'noti' : '알림',
   'done' : '완료',
+  'lowest': '최저',
+  'min' : '분',
+  'sec' : '초',
 
   'home:guide': '로밍 도깨비 사용가이드 !',
   'home:checkGuide': '확인하기',
