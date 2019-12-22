@@ -66,20 +66,24 @@ class BoardMsgAdd extends Component {
   constructor(props) {
     super(props)
 
-    this.state = {
+    this.initialState = {
       name: undefined,
-      mobile: undefined,
+      mobile: '',
       email: undefined,
       title: undefined,
       msg: undefined,
       disable: false,
       checkMobile: false,
       checkEmail: false,
-      errors: undefined,
-      extraHeight: 80,
+      errors: {},
       pin: undefined,
+      attachment: List(),
+    }
+ 
+    this.state = {
+      ... this.initialState,
+      extraHeight: 80,
       hasCameraRollPermission: null,
-      attachment: List()
     }
 
     this._onSubmit = this._onSubmit.bind(this)
@@ -137,6 +141,13 @@ class BoardMsgAdd extends Component {
     const issue = {
       title, msg, mobile, pin
     }
+
+    // reset data
+    setTimeout (() => {
+      this.setState({
+        ... this.initialState
+      })
+    }, 1000)
 
     this.props.action.board.postAndGetList(issue, attachment.toJS())
   }
@@ -266,7 +277,7 @@ class BoardMsgAdd extends Component {
   }
 
   render() {
-    const { disable, mobile, title, msg, extraHeight, pin, errors = {} } = this.state
+    const { disable, title, msg, extraHeight, pin, errors = {} } = this.state
     const inputAccessoryViewID = "doneKbd"
     // errors object의 모든 value 값들이 undefined인지 확인한다.
     const hasError = Object.values(errors).findIndex(val => ! _.isEmpty(val)) >= 0 ||
