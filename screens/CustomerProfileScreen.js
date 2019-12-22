@@ -43,9 +43,7 @@ class CustomerProfileScreen extends Component {
   componentDidMount() {
 
     this.props.action.profile.getCustomerProfile(this.props.account)
-    console.log('@@comdimo',this.props.profile.selectedAddr)
-    console.log('@@comdimo',this.props.profile.profile.find(item => item.isBasicAddr))
-    if(this.props.profile.selectedAddr){
+    if(!_.isUndefined(this.props.profile.selectedAddr)){
       this.setState({
         checked: this.props.profile.selectedAddr
       })
@@ -57,19 +55,24 @@ class CustomerProfileScreen extends Component {
 
   }
 
-  // componentDidUpdate(prevProp){
+  componentDidUpdate(prevProps){
+    console.log('prevProps', prevProps)
+    console.log('this props', this.props)
 
-  //   if(prevProp.profile.profile != this.props.profile.profile){
-  //     const profile = this.props.profile.profile.find(item => item.isBasicAddr)
-      
-  //     if(profile){
-  //       this.setState({
-  //         checked: profile.uuid
-  //       })
-  //     }
-  //   }
+    if(_.isUndefined(this.props.profile.selectedAddr)) {
+      if(prevProps.profile.profile != this.props.profile.profile){
+        console.log('profile update', this.props.profile)
+        const profile = this.props.profile.profile.find(item => item.isBasicAddr)
+        
+        if(profile){
+          this.setState({
+            checked: profile.uuid
+          })
+        }
+      }
+    }
     
-  // }
+  }
 
   _onChecked(uuid) {
 
@@ -83,27 +86,9 @@ class CustomerProfileScreen extends Component {
 
   }
 
-  // _afterChangeBasicAddr(aa){
-  //   console.log('change basic', this.state.profile)
-  //   this.props.action.profile.updateCustomerProfile(this.state.profile, this.props.account)
-  // }
-
   _deleteProfile(uuid) {
 
     this.props.action.profile.profileDelAndGet(uuid, this.props.account)
-
-    // const isBasicAddrDeleted = this.props.profile.profile && this.props.profile.profile.find(item => item.uuid == uuid).isBasicAddr 
-
-    // //(profile, defaultProfile, {token})
-    // if(isBasicAddrDeleted){
-    //   this.setState({
-    //     profile:{
-    //       ... this.props.profile.profile.filter(item => item.uuid != uuid)[0],
-    //       isBasicAddr: true
-    //     }
-    //   })
-    //   this._afterChangeBasicAddr()
-    // }
 
     //AppAlert.confirm(i18n.t('purchase:delAddr'))
     //AppAlert.error( i18n.t('purchase:failedToDelete'))
@@ -113,8 +98,8 @@ class CustomerProfileScreen extends Component {
   
     // props profile
     const {checked} = this.state
-    console.log('checked', checked)    
     console.log('item', item)
+    console.log('SELECTEDADDR', this.props.selectedAddr)
       return (
         <View style={[styles.cardSize, checked == item.uuid && styles.checkedBorder]}>
           <View style={{marginTop:19}}>

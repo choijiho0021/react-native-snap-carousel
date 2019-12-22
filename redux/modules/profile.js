@@ -116,10 +116,9 @@ export default handleActions({
     onSuccess: (state, action) => {
       const {result, objects} = action.payload
 
-      console.log('@@@@@ pender')
       if (result == 0 && objects.length > 0) {
         return state.update('profile', 
-          value => objects.concat(value).sort(_sortProfile))  
+          value => objects.concat(value.sort(_sortProfile)))  
       }
       return state
     }
@@ -132,12 +131,17 @@ export default handleActions({
 
       if (result == 0 && objects.length > 0) {
         console.log('pender update', objects)
+
         const profile = state.get('profile')
         const idx = profile.findIndex(item => item.uuid == objects[0].uuid)
         profile[idx] = objects[0]
-
+        const prevIdx = profile.findIndex(item => item.uuid != objects[0].uuid && item.isBasicAddr)
+        if(objects[0].isBasicAddr && (prevIdx>=0)){
+          profile[prevIdx] = {... profile[prevIdx], isBasicAddr:false}
+        }
         return state.update('profile', 
-          value => value.filter(item => item.isBasicAddr).concat(value.filter(item => !item.isBasicAddr)))
+          value => value.sort(_sortProfile))
+        
       }
       return state
     }
