@@ -2,9 +2,12 @@ import { createAction, handleActions } from 'redux-actions'
 import { Map, List } from 'immutable';
 import { pender } from 'redux-pender'
 import cartApi from '../../utils/api/cartApi'
+import rechargeApi from '../../utils/api/rechargeApi'
 import api from '../../utils/api/api';
 import i18n from '../../utils/i18n';
 import utils from '../../utils/utils';
+
+import {getAccount} from './account'
 
 
 const SET_CART_TOKEN = 'rokebi/cart/SET_CART_TOKEN'
@@ -18,6 +21,7 @@ const PYM_RESULT = 'rokebi/cart/PYM_RESULT'
 const PUSH_LAST_TAB = 'rokebi/cart/PUSH_LAST_TAB'
 const EMPTY = 'rokebi/cart/EMPTY'
 const RESET = 'rokebi/cart/RESET'
+const RECHARGE_ACCOUNT = 'rokebi/cart/RECHARGE_ACCOUNT'
 
 export const CART_ADD = 'rokebi/cart/CART_ADD'
 export const CART_REMOVE = 'rokebi/cart/CART_REMOVE'
@@ -38,16 +42,19 @@ export const makeOrder = createAction(MAKE_ORDER, cartApi.makeOrder)
 export const pymResult = createAction(PYM_RESULT)
 export const empty = createAction(EMPTY)
 export const reset = createAction(RESET)
+export const rechargeAccount = createAction(RECHARGE_ACCOUNT, rechargeApi.add)
 
 export const pushLastTab = createAction(PUSH_LAST_TAB)
 
 export const payNorder = (result) => {
   return (dispatch,getState) => {
     const { account, cart } = getState(),
+      token = account.get('token'),
+      iccid = account.get('iccid'),
       auth = {
-        token: account.get('token'),
+        token,
         mail: account.get('email'),
-        user: account.get('mobile')
+        user: account.get('mobile'),
       }
 
     // update payment result
@@ -56,16 +63,33 @@ export const payNorder = (result) => {
     // remove ordered items from the cart
     const orderId = cart.get('orderId'),
       orderItems = cart.get('orderItems'),
-      purchaseItems = cart.get('purchaseItems')
+      purchaseItems = cart.get('purchaseItems'),
+      rch = purchaseItems.find(item => item.key == 'rch')
 
-    purchaseItems.forEach(item => {
-      if ( orderItems.findIndex(o => o.orderItemId == item.orderItemId) >= 0) {
+    // cart에서 item 삭제 
+    orderItems.forEach(item => {
+      if ( purchaseItems.findIndex(o => o.orderItemId == item.orderItemId) >= 0) {
         // remove ordered item
         dispatch( cartRemove( orderId, item.orderItemId))
       }
     })
 
+    if ( rch) dispatch(rechargeAccount({
+      amount: rch.price, 
+      iccid,
+      iccidId: account.get('uuid')
+    }, auth)).then(
+      resp => { 
+        if ( resp.result == 0 && resp.objects.length > 0) {
+          return dispatch(getAccount(iccid, {token}))
+        }
+      }, 
+      err => {
+        throw err
+      })
+
     // make order in the server
+    // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음 
     return dispatch(makeOrder( purchaseItems, result, auth))
   }
 }
@@ -193,6 +217,10 @@ export default handleActions({
   ... pender({
     type: MAKE_ORDER,
     onSuccess
+  }),
+
+  ... pender({
+    type: RECHARGE_ACCOUNT,
   })
 
 }, initialState)

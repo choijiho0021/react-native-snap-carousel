@@ -4,12 +4,14 @@ import {
   Text,
   View,
   Image,
+  Linking,
 } from 'react-native';
 import * as Permissions from 'expo-permissions';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import i18n from '../utils/i18n';
 import { appStyles } from '../constants/Styles';
 import { colors } from '../constants/Colors';
+import AppAlert from './AppAlert';
 
 class ScanSim extends PureComponent {
   constructor(props) {
@@ -58,6 +60,11 @@ class ScanSim extends PureComponent {
     } 
     
     if (hasCameraPermission === false) {
+      // 사진 앨범 조회 권한을 요청한다.
+      AppAlert.confirm( i18n.t('settings'), i18n.t('acc:permCamera'), {
+        ok: () => Linking.openURL('app-settings:')
+      })
+
       return (
         <View style={styles.box}>
           <Image style={{position:'absolute'}} source={require('../assets/images/main/imgCard.png')}/>

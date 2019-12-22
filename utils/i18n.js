@@ -46,6 +46,8 @@ const en = {
   'noti' : 'Notification',
   'done' : 'Done',
   'lowest' : 'lowest',
+  'min' : 'minutes',
+  'sec' : 'seconds',
 
   'home:guide': 'User Guide',
   'home:checkGuide': 'Check',
@@ -101,6 +103,7 @@ const en = {
   'mysim:name': 'Provider',
   'mysim:mccmnc': 'MCC/MNC',
   'mysim:operator': 'Network Operator',
+  'mysim:permCamera': 'Please, grant the permission to use CAMERA',
 
   'acc:title': 'My Page',
   'acc:subTitle': 'Purchase & Recharge History',
@@ -286,7 +289,6 @@ const ko = {
   'won': '원',
   'recharge': '충전',
   'day': '일',
-  'lowest': '최저',
   'scanned': '스캔 완료 : ',
   'cart': '카트',
   'purchase': '구매',
@@ -316,6 +318,9 @@ const ko = {
   'price': '가격',
   'noti' : '알림',
   'done' : '완료',
+  'lowest': '최저',
+  'min' : '분',
+  'sec' : '초',
 
   'home:guide': '로밍 도깨비 사용가이드 !',
   'home:checkGuide': '확인하기',
@@ -373,6 +378,7 @@ const ko = {
   'mysim:name': '공급자 이름',
   'mysim:mccmnc': 'MCC/MNC',
   'mysim:operator': '네트워크 사업자 이름',
+  'mysim:permCamera': '카메라 권한을 허가해 주세요',
 
   'acc:title': '마이 페이지',
   'acc:subTitle': '구매 및 사용 이력',

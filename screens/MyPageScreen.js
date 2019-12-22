@@ -88,10 +88,6 @@ class MyPageScreen extends Component {
     })
   }
 
-  _recharge() {
-    console.log('recharge')
-  }
-
   async _changePhoto() {
     if ( ! this.props.uid) {
       return this.props.navigation.navigate('Auth')

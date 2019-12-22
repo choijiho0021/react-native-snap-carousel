@@ -7,6 +7,8 @@ import {
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as cartActions from '../redux/modules/cart'
+import * as orderActions from '../redux/modules/order'
+import * as accountActions from '../redux/modules/account'
 
 import PaymentItemInfo from '../components/PaymentItemInfo';
 import SafeAreaView from 'react-native-safe-area-view';
@@ -56,7 +58,10 @@ class PaymentResultScreen extends Component {
       pymReq
     })
 
-    console.log('empty cart', purchaseItems, pymReq)
+    // 구매 이력을 다시 읽어 온다.
+    this.props.action.order.getOrders(this.props.auth)
+
+    // 카트를 비운다.
     this.props.action.cart.empty()
   }
 
@@ -84,12 +89,14 @@ class PaymentResultScreen extends Component {
 const mapStateToProps = (state) => ({
   account: state.account.toJS(),
   cart: state.cart.toJS(),
+  auth: accountActions.auth(state.account)
 })
 
 export default connect(mapStateToProps, 
   (dispatch) => ({
     action: {
       cart : bindActionCreators(cartActions, dispatch),
+      order: bindActionCreators(orderActions, dispatch),
     }
   })
 )(PaymentResultScreen)

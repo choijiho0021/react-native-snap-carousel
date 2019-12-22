@@ -17,6 +17,7 @@ class PageAPI {
                 uuid: item.id,
                 title: item.attributes.title,
                 body: item.attributes.body.processed,
+                created: item.attributes.created,
             })))
         }
 

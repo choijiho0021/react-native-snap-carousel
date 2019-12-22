@@ -7,7 +7,8 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
-  InputAccessoryView
+  InputAccessoryView,
+  Linking
 } from 'react-native';
 import {connect} from 'react-redux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -27,7 +28,9 @@ import { SafeAreaView } from 'react-navigation';
 import Constants from 'expo-constants'
 import {List} from 'immutable'
 import { attachmentSize } from '../constants/SliderEntry.style'
+import AppAlert from './AppAlert'
 import AppIcon from './AppIcon';
+import * as Permissions from 'expo-permissions';
 
 let ImagePicker 
 if (Constants.appOwnership === 'expo') {
@@ -75,6 +78,7 @@ class BoardMsgAdd extends Component {
       errors: undefined,
       extraHeight: 80,
       pin: undefined,
+      hasCameraRollPermission: null,
       attachment: List()
     }
 
@@ -92,11 +96,13 @@ class BoardMsgAdd extends Component {
 
   } 
 
-  componentDidMount() {
-    const { mobile, email} = this.props.account,
+  async componentDidMount() {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL),
+      {mobile, email} = this.props.account,
       number = utils.toPhoneNumber(mobile)
 
     this.setState({
+      hasCameraRollPermission: status === 'granted',
       mobile: number,
       email
     })
@@ -158,23 +164,31 @@ class BoardMsgAdd extends Component {
   }
   
   _addAttachment() {
-    ImagePicker && ImagePicker.openPicker({
-      width: 750,
-      height: 1334,   // iphone 8 size
-      cropping: true,
-      includeBase64: true,
-      writeTempFile: false,
-      mediaType: 'photo',
-      forceJpb: true,
-      cropperChooseText: i18n.t('select'),
-      cropperCancelText: i18n.t('cancel'),
-    }).then(image => {
-      this.setState({
-        attachment: this.state.attachment.push(image)
+    if ( this.state.hasCameraRollPermission ) {
+      ImagePicker && ImagePicker.openPicker({
+        width: 750,
+        height: 1334,   // iphone 8 size
+        cropping: true,
+        includeBase64: true,
+        writeTempFile: false,
+        mediaType: 'photo',
+        forceJpb: true,
+        cropperChooseText: i18n.t('select'),
+        cropperCancelText: i18n.t('cancel'),
+      }).then(image => {
+        this.setState({
+          attachment: this.state.attachment.push(image)
+        })
+      }).catch(err => {
+        console.log('failed to select', err)
       })
-    }).catch(err => {
-      console.log('failed to select', err)
-    })
+    }
+    else {
+      // 사진 앨범 조회 권한을 요청한다.
+      AppAlert.confirm( i18n.t('settings'), i18n.t('acc:permCamera'), {
+        ok: () => Linking.openURL('app-settings:')
+      })
+    }
   }
 
   _rmAttachment(idx) {

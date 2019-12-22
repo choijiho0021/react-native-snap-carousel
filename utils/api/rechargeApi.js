@@ -64,7 +64,7 @@ class RechargAPI {
         if ( _.isEmpty(userId) || _.isEmpty(user) || _.isEmpty(pass)) 
             return api.reject( api.INVALID_ARGUMENT, `test: userId:${userId} ${user}`)
 
-        const url = link || `${api.httpUrl(api.path.jsonapi.recharge)}?fields[node--recharge]=field_amount,created&` +
+        const url = link || `${api.httpUrl(api.path.jsonapi.recharge, '')}?fields[node--recharge]=field_amount,created&` +
             `sort=-created&page[limit]=${this.PAGE_SIZE}&filter[uid.id][value]=${userId}`
         const headers = api.basicAuth(user, pass, 'vnd.api+json')
         return api.callHttp(url, {
@@ -76,7 +76,7 @@ class RechargAPI {
     get = (uuid, {user, pass}) => {
         if ( _.isEmpty(uuid) || _.isEmpty(user) || _.isEmpty(pass)) return api.reject( api.INVALID_ARGUMENT, `test: amount`)
 
-        const url = `${api.httpUrl(api.path.recharge)}/${uuid}?_format=hal_json`
+        const url = `${api.httpUrl(api.path.recharge, '')}/${uuid}?_format=hal_json`
         const headers = api.basicAuth(user, pass, 'hal+json')
         return api.callHttp(url, {
             method: 'GET',
@@ -84,16 +84,16 @@ class RechargAPI {
         }, this.toRecharge)
     }
 
-    add = ({amount}, {user,pass}) => {
-        if ( ! _.isNumber(amount) || _.isEmpty(user) || _.isEmpty(pass)) return api.reject( api.INVALID_ARGUMENT, `test: amount`)
+    add = ({iccid, iccidId, amount}, {token}) => {
+        if ( ! _.isNumber(amount) || _.isEmpty(iccid) || _.isEmpty(iccidId) || _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
 
-        const url = `${api.httpUrl(api.path.recharge)}?_format=hal_json`
-        const headers = api.basicAuth(user, pass, 'hal+json') 
+        const url = `${api.httpUrl(api.path.recharge, '')}?_format=hal_json`
+        const headers = api.withToken(token, 'hal+json') 
         const body = {
             type : {target_id: 'recharge'},
-            title:{value: 'test'},
+            title: {value: 'recharge:' + amount},
             field_amount:{value: amount},
-            field_account:{value: user}
+            field_account:{value: iccid},
         }
 
         return api.callHttp(url, {

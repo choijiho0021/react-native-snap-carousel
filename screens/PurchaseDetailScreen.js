@@ -7,7 +7,7 @@ import {
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import utils from '../utils/utils';
-import moment from 'moment'
+import moment from 'moment-with-locales-es6'
 import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';
 import LabelText from '../components/LabelText';
@@ -23,8 +23,9 @@ class PurchaseDetailScreen extends Component {
   }
 
   componentDidMount() {
+    moment.locale(i18n.locale)
+
     const detail = this.props.navigation.getParam('detail')
-    console.log('detail', detail)
     this.setState(detail)
   }
 
@@ -40,18 +41,9 @@ class PurchaseDetailScreen extends Component {
   render() {
     const {orderId, orderDate, totalPrice, orderItems} = this.state || {}
 
-    /*
-    const data = [
-      {key: 'nid', title:i18n.t('his:purchaseId'), value: nid},
-      {key: 'purchaseDate', title:i18n.t('his:purchaseDate'), value: moment(created).format('YYYY-MM-DD HH:mm:ss')},
-      {key: 'detail', title:i18n.t('his:purchaseList'), value: list},
-      {key: 'pymAmount', title:i18n.t('his:pymAmount'), value: amount + directPayment},
-    ]
-    */
-
     return (
       <View style={styles.container}>
-        <Text style={styles.date}>{moment(orderDate).format('YYYY-MM-DD hh:mm:ss')}</Text>
+        <Text style={styles.date}>{moment(orderDate).format('LLL')}</Text>
         <View style={styles.price}>
           <Text style={appStyles.normal14Text}>{i18n.t('total') +' '}</Text>
           <Text style={appStyles.price}>{utils.numberToCommaString(totalPrice)}</Text>

@@ -126,7 +126,7 @@ class InputPinInTime extends Component {
                         <TextInput {... this.props}
                             placeholder={i18n.t('mobile:auth')}
                             ref={forwardRef}
-                            keyboardTtpe="numeric"
+                            keyboardType="numeric"
                             enablesReturnKeyAutomatically={true}
                             maxLength={6}
                             clearTextOnFocus={true}
@@ -138,7 +138,7 @@ class InputPinInTime extends Component {
                         
                         {
                             countdown ?
-                            <Text style={styles.timer}> {min}분 {sec.toString().padStart(2, '0')}초 </Text> :
+                            <Text style={styles.timer}> {min > 0 ? (min + i18n.t('min')) : ''} {sec.toString().padStart(2, '0')}{i18n.t('sec')} </Text> :
                             null
                         }
 
@@ -216,7 +216,8 @@ const styles = StyleSheet.create({
     }, 
     input: {
         ... appStyles.normal16Text,
-        color: colors.black
+        color: colors.black,
+        flex: 1
     },
 
 })

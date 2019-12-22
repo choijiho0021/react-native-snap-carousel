@@ -88,7 +88,7 @@ class AccountAPI {
 
     // ContentType Account
     getAccount = (iccid, {token}) => {
-        if (_.isEmpty(iccid) || _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
+        if (_.isEmpty(iccid) || _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT, `iccid:${iccid}, token:${token}`)
 
         const url = `${api.httpUrl(api.path.account)}/${iccid}?_format=json`
         const headers = api.withToken(token)
