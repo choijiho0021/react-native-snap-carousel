@@ -98,7 +98,6 @@ class ProfileAPI {
                     field_recipient_number : profile.recipientNumber,
                     field_alias : profile.alias,
                     field_detail_address : profile.detailAddr,
-                    field_selected_address : profile.isBasicAddr,
                     is_default: profile.isBasicAddr
                 }
             }

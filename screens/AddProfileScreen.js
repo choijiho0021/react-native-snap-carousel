@@ -79,23 +79,31 @@ class AddProfileScreen extends Component {
         disabled: true,
         profile : new Map(profile),
       })
+
+      this._validate('alias', update.alias)
+      this._validate('recipient', update.recipient)
+      this._validate('recipientNumber', update.recipientNumber)
+      this._validate('detailAddr', update.detailAddr)
+      this._validate('addressLine1', update.addressLine1)
     }
 
-    if(_.isUndefined(this.state.profile.get('addressLine1'))){
+    // 신규 배송지 추가시
+    if(!update && _.isUndefined(this.state.profile.get('addressLine1'))){
       this._validate("addressLine1", '')  
-      this._validate("addressLine2", '')  
     }
   }
 
   componentDidUpdate(prevProps) {
     const addr = this.props.profile.addr
+    console.log('@@@addr', addr)
+    console.log('empty?', _.isEmpty(addr.sggNm))
 
     // 주소 검색을 한 경우
     if(addr != prevProps.profile.addr){
       
       if(!_.isEmpty(addr)){
         const {admCd = ''} = addr
-        const provinceNumber = admCd.substring(0,2)
+        const provinceNumber = !_.isEmpty(addr.sggNm) ? admCd.substring(0,2) : admCd.substring(0,5)
         const cityNumber = admCd.substring(2,5)
         
         this.setState({
@@ -103,11 +111,10 @@ class AddProfileScreen extends Component {
             .set('addressLine2', addr.roadAddrPart2)
             .set('zipCode', addr.zipNo)
             .set('province', findEngAddress.findProvince(provinceNumber))
-            .set('city', findEngAddress.findCity( provinceNumber, cityNumber))
+            .set('city', findEngAddress.findCity(provinceNumber, cityNumber))
         })
 
       this._validate("addressLine1", addr.roadAddrPart1)  
-      this._validate("addressLine2", addr.roadAddrPart2)  
 
       }
 
@@ -155,10 +162,6 @@ _onSubmit() {
 
   _validate = (key, value) => {
 
-    // error 계속 저장
-    // 마지막 확인시 error length == (채워져야 하는 항목 수)일 경우, 
-    // error에 value 가 모두 비워졌는지 확인
-    // 비워졌을 경우 disabled false 로 변경
     const {errors} = this.state,
     valid = validationUtil.validate(key, value)
 
@@ -168,7 +171,7 @@ _onSubmit() {
       errors
     })
 
-    if(Object.keys(this.state.errors).length >= 6){
+    if(Object.keys(this.state.errors).length >= 5){
       const error = Object.keys(this.state.errors).find(key => !_.isUndefined(errors[key]))
 
       if(_.isUndefined(error)){
@@ -198,7 +201,6 @@ _onSubmit() {
     const { prefix, profile } = this.state
 
     console.log('length', Object.keys(this.state.errors).length)
-
     console.log('detail', this.state.errors.detailAddr)
     
     return (
