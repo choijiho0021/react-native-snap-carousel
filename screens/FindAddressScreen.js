@@ -20,6 +20,8 @@ import _ from 'underscore'
 import {colors} from '../constants/Colors'
 import { appStyles } from '../constants/Styles';
 import AppBackButton from '../components/AppBackButton';
+import AppIcon from '../components/AppIcon';
+import { SafeAreaView } from 'react-navigation';
 
 class FindAddressScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -44,6 +46,11 @@ class FindAddressScreen extends Component {
     this.setState({
       [key] : value
     })
+    if(_.isEmpty(value)){
+      this.setState({
+        data: []
+      })
+    }
   }
 
   _search() {
@@ -55,12 +62,13 @@ class FindAddressScreen extends Component {
   _findAddr = (page=1) => () => {
     const { addr } = this.state
 
+    console.log('@@addr', addr)
     addressApi.find(addr, page).then( resp => {
+      console.log('@@data',resp.objects)
       this.setState({
         links: resp.links,
         data : resp.objects
       })
-
     })
   }
 
@@ -79,17 +87,20 @@ class FindAddressScreen extends Component {
 
     return (
       <View style={styles.pagination} >
-        <Text>{i18n.t('addr:totalCnt').replace('%%', totalCount)}</Text>
-        <Icon name="ios-arrow-back" size={24} onPress={this._findAddr( Math.max( 1, Number(currentPage) -1))}/>
-        <Text>{`${currentPage} / ${totalPage}`}</Text>
-        <Icon name="ios-arrow-forward" size={24} onPress={this._findAddr( Math.min(totalPage, Number(currentPage) +1))}/>
+        <TouchableOpacity style={styles.paginationBox} onPress={this._findAddr( Math.max( 1, Number(currentPage) -1))}>
+          <AppIcon name="iconArrowLeftWhite" style={styles.paginationButton}/>
+        </TouchableOpacity>        
+        <Text style={styles.paginationText}>{`${currentPage} / ${totalPage}`}</Text>
+        <TouchableOpacity style={styles.paginationBox} onPress={this._findAddr( Math.min(totalPage, Number(currentPage) +1))}>
+          <AppIcon name="iconArrowRightWhite" style={styles.paginationButton}/>
+        </TouchableOpacity>
       </View>
     )
   }
 
   _renderItem({item}) {
     return (
-      <TouchableOpacity onPress={this._onPress(item)}>
+      <TouchableOpacity style={styles.dataCard} onPress={this._onPress(item)}>
         <Address item={item}/>
       </TouchableOpacity>
     )
@@ -99,38 +110,47 @@ class FindAddressScreen extends Component {
     const { addr, data } = this.state
 
     return (
-      <View style={{flex:1}}>
-        <View style={styles.modal}>
-          <View style={[styles.textFieldBox, {borderBottomColor: colors.black}]}>
-            <TextField containerStyle={styles.field}
-              style={{fontSize:14}}
-              label={i18n.t('purchase:findAddr')}
-              returnKeyType='done'
-              enablesReturnKeyAutomatically={true}
-              onChangeText={this._onChangeText('addr')}
-              onEndEditing={this._findAddr()}
-              renderAccessory={this._search}
-              value={addr} />
-            <AppButton style = {styles.showSearchBar} onPress={() => this._findAddr()} iconName="btnSearchOff" />
+      <SafeAreaView style={styles.container}>
+        <View style={{flex:1,justifyContent: 'space-between'}}>
+          <View style={styles.modal}>
+            <View style={[styles.textFieldBox, {borderBottomColor: colors.black}]}>
+              <TextField containerStyle={styles.field}
+                style={{fontSize:14}}
+                label={i18n.t('purchase:findAddr')}
+                returnKeyType='done'
+                enablesReturnKeyAutomatically={true}
+                onChangeText={this._onChangeText('addr')}
+                onEndEditing={this._findAddr()}
+                renderAccessory={this._search}
+                value={addr} />
+              <AppButton style = {styles.showSearchBar} onPress={this._findAddr()} iconName="btnSearchOff" />
+            </View>
+            <View style={styles.divider}/>
+            { 
+              (addr&&data) ? 
+                (<FlatList data={data} renderItem={this._renderItem} keyExtractor={item => item.bdMgtSn} scroll/> ) :
+                <View style={styles.mrgLeft40Top20}>
+                  <Text style={styles.searchEx, styles.boldText16}>{i18n.t('purchase:searchEx')}</Text>
+                  <Text style={styles.searchEx}>{i18n.t('purchase:roadBuildingNo')}</Text>
+                  <Text style={styles.searchEx}>{i18n.t('purchase:areaBunji')}</Text>
+                  <Text style={styles.searchEx}>{i18n.t('purchase:areaBuilding')}</Text>
+                </View>     
+            }
+            {
+              !_.isEmpty(data) && this._renderPagination()
+            }
           </View>
-          <View style={styles.divider}/>
-          { 
-            addr ? this._renderPagination() :           
-            <View style={styles.mrgLeft40}>
-              <Text style={styles.searchEx, styles.boldText16}>{i18n.t('purchase:searchEx')}</Text>
-              <Text style={styles.searchEx}>{i18n.t('purchase:roadBuildingNo')}</Text>
-              <Text style={styles.searchEx}>{i18n.t('purchase:areaBunji')}</Text>
-              <Text style={styles.searchEx}>{i18n.t('purchase:areaBuilding')}</Text>
-            </View>     
-          }
-          <FlatList data={data} renderItem={this._renderItem} keyExtractor={item => item.bdMgtSn}/>
         </View>
-      </View>
+      </SafeAreaView>
     )
   }
 }
 
 const styles = StyleSheet.create({
+  container: {
+    ...appStyles.container,
+    alignItems: 'stretch',
+  },  
   field: {
     // marginHorizontal: 20,
     // padding: 5,
@@ -144,13 +164,17 @@ const styles = StyleSheet.create({
   },
   divider: {
     marginHorizontal: 0,
-    marginVertical: 20,
+    marginTop: 20,
     height: 10,
     backgroundColor: colors.whiteTwo
   },  
   pagination: {
     flexDirection: 'row',
-    justifyContent: 'space-around'
+    justifyContent: 'space-between',
+    // position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0
   },
   textFieldBox: {
     // height: 46, 
@@ -163,8 +187,9 @@ const styles = StyleSheet.create({
     letterSpacing: 0.15,
     lineHeight: 30
   },
-  mrgLeft40: {
-    marginLeft: 40
+  mrgLeft40Top20: {
+    marginLeft: 40,
+    marginTop: 20
   },
   boldText16: {
     fontSize: 16, 
@@ -178,6 +203,32 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     width: 15,
     height: 16
+  },
+  paginationBox: {
+    width:44, 
+    height:44, 
+    flexDirection:'row',
+    backgroundColor: colors.clearBlue, 
+  },
+  paginationButton: {
+    width:'100%', 
+    height:10, 
+    alignSelf:'center', 
+    justifyContent: 'center', 
+    flexDirection:'row'
+  },
+  paginationText: {
+    height:19, 
+    fontSize:14, 
+    fontWeight: 'bold', 
+    alignSelf: 'center'
+  },
+  dataCard: {
+    flex:1, 
+    flexDirection:'row', 
+    borderBottomColor:colors.lightGrey, 
+    borderBottomWidth: 1, 
+    marginHorizontal:20
   }
 });
 
