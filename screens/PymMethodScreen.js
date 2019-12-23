@@ -148,6 +148,12 @@ class PymMethodScreen extends Component {
               <View>
                 <View style={styles.profileTitle}>
                   <Text style={styles.profileTitleText}>{item.alias}</Text>
+                  { 
+                    item.isBasicAddr &&
+                    <View style={styles.basicAddrBox}>
+                      <Text style={styles.basicAddr}>{i18n.t('addr:basicAddr')}</Text>
+                    </View>
+                  }
                   <View style={{flex: 1, alignItems: 'flex-end'}}>
                     <AppButton title={i18n.t('change')} 
                               titleStyle={styles.chgButtonText}
@@ -349,9 +355,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   chgButtonText: {
-    fontSize: 12, 
-    lineHeight: 19, 
-    fontWeight: 'normal', 
+    ... appStyles.normal12Text,    
     color: colors.white
   },
   chgButton: {
@@ -360,6 +364,25 @@ const styles = StyleSheet.create({
     borderRadius: 3, 
     backgroundColor: colors.warmGrey, 
     marginHorizontal: 20
+  },
+  basicAddr: {
+    ... appStyles.normal12Text,
+    width: 52,
+    height: 12,
+    lineHeight: 12,
+    color: colors.clearBlue,
+    alignSelf: 'center',
+  },
+  basicAddrBox: {
+    width: 68,
+    height: 22,
+    borderRadius: 10,
+    backgroundColor: colors.white,
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderColor: colors.clearBlue,
+    justifyContent: 'center',
+    alignSelf: 'center',
   }
 });
 

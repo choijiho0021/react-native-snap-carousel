@@ -105,8 +105,16 @@ class CustomerProfileScreen extends Component {
           <View style={{marginTop:19}}>
             <View style={styles.profileTitle}>
               <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '100%'}}>
-                <Text style={[styles.profileTitleText, 
-                            checked == item.uuid && styles.checkedColor]}>{item.alias}</Text>                            
+                <View style={{flexDirection: 'row', alignSelf:'flex-start'}}>
+                  <Text style={[styles.profileTitleText, 
+                              checked == item.uuid && styles.checkedColor]}>{item.alias}</Text>    
+                  { 
+                    item.isBasicAddr &&
+                    <View style={styles.basicAddrBox}>
+                      <Text style={styles.basicAddr}>{i18n.t('addr:basicAddr')}</Text>
+                    </View>
+                  }     
+                </View>                                               
                 <View style={{flexDirection: 'row'}}>
                   <AppButton title={i18n.t('modify')}
                             style={{backgroundColor: colors.white}}
@@ -216,6 +224,25 @@ const styles = StyleSheet.create({
   },
   checkedColor: {
     color: colors.clearBlue
+  },
+  basicAddr: {
+    ... appStyles.normal12Text,
+    width: 52,
+    height: 12,
+    lineHeight: 12,
+    color: colors.clearBlue,
+    alignSelf: 'center',
+  },
+  basicAddrBox: {
+    width: 68,
+    height: 22,
+    borderRadius: 10,
+    backgroundColor: colors.white,
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderColor: colors.clearBlue,
+    justifyContent: 'center',
+    alignSelf: 'center',
   }
 });
 
