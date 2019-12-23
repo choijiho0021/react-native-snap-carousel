@@ -168,7 +168,7 @@ class CartAPI {
    *  ];
    */
 
-    makeOrder = (items, result, {user, mail, token}) => {
+    makeOrder = (items, result, {user, mail, token, iccid}) => {
 
         if (_.isEmpty(items) || _.isEmpty(result) || _.isEmpty(user) || _.isEmpty(mail) || _.isEmpty(token)) 
             return api.reject( api.INVALID_ARGUMENT, 'empty parameter')
@@ -176,6 +176,7 @@ class CartAPI {
         const url = `${api.httpUrl(api.path.commerce.order, '')}/create?_format=json`
         const headers = api.withToken( token, 'json')
         const body = {
+            iccid,
             order: {
                 order_items: items.map(item => ({
                     quantity: item.qty,

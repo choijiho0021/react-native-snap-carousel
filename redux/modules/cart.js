@@ -55,6 +55,7 @@ export const payNorder = (result) => {
         token,
         mail: account.get('email'),
         user: account.get('mobile'),
+        iccid: account.get('iccid')
       }
 
     // update payment result
