@@ -30,23 +30,6 @@ class AddProfileScreen extends Component {
     headerLeft: <AppBackButton navigation={navigation} title={i18n.t('purchase:address')}/>
   })
 
-  static validation = {
-    title: {
-      presence: {
-        message: i18n.t('board:noTitle')
-      }
-    },
-    msg: {
-      presence: {
-        message: i18n.t('board:noMsg')
-      }
-    },
-    alias: {
-      presence: {
-        message: i18n.t('board:noMsg')
-      }      
-    }
-  }
 
   constructor(props) {
     super(props)
@@ -54,7 +37,7 @@ class AddProfileScreen extends Component {
     this.state = {
       update: undefined,
       prefix: "010",
-      disabled: false,
+      disabled: true,
       profile: new Map({
         alias: undefined,
         recipient: undefined,
@@ -98,6 +81,10 @@ class AddProfileScreen extends Component {
       })
     }
 
+    if(_.isUndefined(this.state.profile.get('addressLine1'))){
+      this._validate("addressLine1", '')  
+      this._validate("addressLine2", '')  
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -118,6 +105,10 @@ class AddProfileScreen extends Component {
             .set('province', findEngAddress.findProvince(provinceNumber))
             .set('city', findEngAddress.findCity( provinceNumber, cityNumber))
         })
+
+      this._validate("addressLine1", addr.roadAddrPart1)  
+      this._validate("addressLine2", addr.roadAddrPart2)  
+
       }
 
     }
@@ -164,47 +155,32 @@ _onSubmit() {
 
   _validate = (key, value) => {
 
+    // error 계속 저장
+    // 마지막 확인시 error length == (채워져야 하는 항목 수)일 경우, 
+    // error에 value 가 모두 비워졌는지 확인
+    // 비워졌을 경우 disabled false 로 변경
     const {errors} = this.state,
     valid = validationUtil.validate(key, value)
 
     errors[key] = _.isEmpty(valid) ? undefined : valid[key]
 
-    if(_.isEmpty(errors)){
-      this.setState({
-        disabled: false
-      })
-    }else{
-      this.setState({
-        disabled: true
-      })      
-    }
-
     this.setState({
       errors
     })
-console.log(errors)
-console.log('errorrrr', _.isEmpty(Object.keys(this.state.errors).values))
-console.log('이거!!!', this.state.errors[key])
 
-    const result = Object.keys(this.state.errors).forEach(key => this.state.errors[key])
-    console.log('result', result)
-    
-    // if(!_.isEmpty(this.state.profile) && _.isEmpty(this.state.errors)){
-    //   thi
-    // }
+    if(Object.keys(this.state.errors).length >= 6){
+      const error = Object.keys(this.state.errors).find(key => !_.isUndefined(errors[key]))
 
-    // console.log('validate', this.state.errors[key])
-
-    // const { profile} = this.state
-    // const val = {
-    //   profile,
-    //   [key]: value
-    // }
-
-    // const errors = validationUtil.validateAll( val)
-    // this.setState({
-    //   errors
-    // })
+      if(_.isUndefined(error)){
+        this.setState({
+          disabled: false
+        })
+      }else{
+        this.setState({
+          disabled: true
+        })
+      }
+    }
 
   }
 
@@ -213,35 +189,18 @@ console.log('이거!!!', this.state.errors[key])
   }
 
   _warning(key){
-    return (<Text style={{ fontSize:12, width:'82%', height: 20,
-                  color:colors.tomato, flex:1, alignSelf: 'flex-end'}}>{this.state.errors[key] ? this.state.errors[key] : null}</Text> )    
+    return (<Text style={{ fontSize:12, width:'82%', height: 20, color:colors.tomato
+                          , flex:1, alignSelf: 'flex-end'}}>{this.state.errors[key] ? this.state.errors[key] : null}</Text> )    
   }
 
   render() {
 
     const { prefix, profile } = this.state
-    // const basicAddr = this.props.profile.profile.find(item=> item.isBasicAddr)
-    
-    // for (let [key, value] of Object.entries(profile)) {
-    //   console.log(`객체 값!${key}: ${value}`);
-    //   if(_.isEmpty(value)){
-         
-    //     // 기본배송지 선택 -> 필수값 X
-    //     if( key == 'isBasicAddr'){ 
-    //       continue 
-    //     }
-    //     // 필수값이 비어있을 경우
-    //     console.log('empty value', key)
-    //     console.log('empty value', value)
-    //     isAddrEmpty = true
-    //     break 
-    //   }
-    // }
 
-    console.log('isAddrEmpty', this.state)
-    console.log('props', this.props.profile.profile)
     console.log('length', Object.keys(this.state.errors).length)
-    console.log('profile', this.state.profile)
+
+    console.log('detail', this.state.errors.detailAddr)
+    
     return (
       <SafeAreaView style={styles.container}>
         <KeyboardAwareScrollView
@@ -295,7 +254,7 @@ console.log('이거!!!', this.state.errors[key])
                       />
                     </View>
                   </View>
-                  <TextInput style={[styles.textBox, { width: '56%' }]}
+                  <TextInput style={[styles.textBox, { width: '60%' }]} // 56%
                             onChangeText={this._onChangeProfile('recipientNumber')}
                             maxLength={8}
                             keyboardType='numeric'
@@ -319,20 +278,22 @@ console.log('이거!!!', this.state.errors[key])
                         onPress={this._findAddress} >{profile.get('addressLine2')}</Text>
                 </View>
 
-                <View style={styles.findTextRow}>
+                <View style={[styles.findTextRow, {marginBottom:0}]}>
                   <TextInput style={styles.textBox}
                             value={profile.get('detailAddr')}
                             onChangeText={this._onChangeProfile('detailAddr')} 
                             placeholder={i18n.t('addr:details')}/>
                 </View>
                 { 
-                  this._warning('detailAddr')
-                }                  
+                // 상세주소를 입력했는데 주소검색은 하지 않은 경우,
+                  !_.isEmpty(this.state.errors.detailAddr) && _.isUndefined(this.state.profile.get('addressLine1')) ? this._warning('addressLine1') : this._warning('detailAddr')
+                }    
+
                 <TouchableOpacity style={styles.checkBasicProfile}
                                   onPress={this._onChecked}>
                   <AppIcon name="btnCheck2"
                           checked={this.state.profile.get('isBasicAddr')}/>
-                  <Text style={styles.basicProfile}>{i18n.t('addr:basicAddress')}</Text>
+                  <Text style={styles.basicProfile}>{i18n.t('addr:selectBasicAddr')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -340,7 +301,7 @@ console.log('이거!!!', this.state.errors[key])
         <AppButton style={appStyles.confirm}
                     title={i18n.t('save')}
                     textStyle={appStyles.confirmText}
-                    // disabled={this.state.disabled}
+                    disabled={this.state.disabled}
                     onPress={this._onSubmit} />
 
       </SafeAreaView>
@@ -419,7 +380,7 @@ const styles = StyleSheet.create({
     width: '82%', 
     flexDirection: 'row', 
     alignSelf: 'flex-end',
-    // marginTop: 20
+    marginTop: 10
   }
 });
 

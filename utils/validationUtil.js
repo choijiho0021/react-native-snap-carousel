@@ -65,7 +65,7 @@ class ValidationUtil {
             },
             length: {
                 minimum: 2,
-                message: i18n.t('purchase:invalidAddrName')
+                message: i18n.t('addr:invalidAlias')
             }
         },
         recipient: {
@@ -74,17 +74,17 @@ class ValidationUtil {
             },
             length: {
                 minimum: 2,
-                message: i18n.t('purchase:invalidAddrName')
+                message: i18n.t('addr:invalidRecipient')
             }
         },
         recipientNumber: {
             presence: {
-                message: i18n.t('addr:noTelepehone')
+                message: i18n.t('addr:noTelephone')
             },
             length: {
                 minimum: 7,
-                message: i18n.t('purchase:invalidAddrName')
-            }
+                message: i18n.t('addr:invalidTelephone')
+            },        
         },
         addressLine1: {
             presence: {
@@ -92,7 +92,7 @@ class ValidationUtil {
             },
             length: {
                 minimum: 2,
-                message: i18n.t('purchase:invalidAddrName')
+                message: i18n.t('addr:invalidAddress')
             }
         },
         addressLine2: {
@@ -101,7 +101,7 @@ class ValidationUtil {
             },
             length: {
                 minimum: 2,
-                message: i18n.t('purchase:invalidAddrName')
+                message: i18n.t('addr:invalidAddress')
             }
         },
         detailAddr: {
@@ -110,7 +110,7 @@ class ValidationUtil {
             },
             length: {
                 minimum: 2,
-                message: i18n.t('purchase:invalidAddrName')
+                message: i18n.t('addr:invalidDetails')
             }
         },              
     }
