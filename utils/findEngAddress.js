@@ -68,21 +68,21 @@ class findEngAddress {
                 // 인천 : 28, 10개
                 province: "Incheon",
                 "710": "Ganghwa-gun",
-                "245": "Gyeyang-gu", // 3자리
+                "245": "Gyeyang-gu", 
                 //"남구": "Nam-gu",
                 "200": "Namdong-gu",
                 "140": "Dong-gu",
-                "177": "Michuhol-gu", // 3자리
-                "237": "Bupyeong-gu", // 3자리
+                "177": "Michuhol-gu", 
+                "237": "Bupyeong-gu", 
                 "260": "Seo-gu",
-                "185": "Yeonsu-gu", // 3자리
+                "185": "Yeonsu-gu", 
                 "720": "Ongjin-gun",
                 "110": "Jung-gu"},         
         "29":{
                 // 광주 : 29, 5개
                 province: "Gwangju",
                 "200": "Gwangsan-gu",
-                "155": "Nam-gu", // 3
+                "155": "Nam-gu", 
                 "110": "Dong-gu",
                 "170": "Buk-gu",
                 "140": "Seo-gu",            
@@ -108,8 +108,60 @@ class findEngAddress {
         "36110":{
                 // 세종특별자치시 : "36110": "Sejong",
                 province: "Sejong-si",
+                // "110": ""
             },              
-            // 경기도 
+        "41":{
+                // 경기도 : 41 , 42개(주석 포함 48개)
+                province: "Gyeonggi-do",
+                "820": "Gapyeong-gun",
+                //"": "Goyang-si",      // 고양시 (코드없음)
+                "281": "Goyang-si",     // 고양시 덕양구 이름변경필요
+                "285": "Goyang-si",     // 고양시 일산동구
+                "287": "Goyang-si",     // 고양시 일산서구
+                "290": "Gwacheon-si",
+                "210": "Gwangmyeong-si",
+                "610": "Gwangju-si",
+                "310": "Guri-si",
+                "410": "Gunpo-si",
+                "570": "Gimpo-si",
+                "360": "Namyangju-si",
+                "250": "Dongducheon-si",
+                "190": "Bucheon-si",
+                //"": "Seongnam-si",    // 코드 없음
+                "135": "Seongnam-si",   // 성남시 분당구 이름변경필요
+                "131": "Seongnam-si",   // 성남시 수정구
+                "133": "Seongnam-si",   // 성남시 중원구
+                //"": "Suwon-si",       // 코드 없음
+                "113": "Suwon-si",	    // 수원시 권선구 이름변경필요
+                "117": "Suwon-si",	    // 수원시 영통구
+                "111": "Suwon-si",	    // 수원시 장안구
+                "115": "Suwon-si",	    // 수원시 팔달구
+                "390": "Siheung-si",
+                // "": "Ansan-si",      // 코드 없음
+                "273": "Ansan-si",      // 안산시 단원구 이름변경필요
+                "271": "Ansan-si",      // 안산시 상록구
+                "550": "Anseong-si",
+                // "": "Anyang-si",
+                "173": "Anyang-si",     // 안양시 동안구 이름변경필요
+                "171": "Anyang-si",     // 안양시 만안구
+                "630": "Yangju-si",
+                "830": "Yangpyeong-gun",
+                "670": "Yeoju-si",
+                "800": "Yeoncheon-gun",
+                "370": "Osan-si",
+                // "용인시": "Yongin-si",
+                "463": "Yongin-si",     // 용인시 기흥구 이름변경필요
+                "465": "Yongin-si",     // 용인시 수지구
+                "461": "Yongin-si",     // 용인시 처인구
+                "430": "Uiwang-si",
+                "150": "Uijeongbu-si",
+                "500": "Icheon-si",
+                "480": "Paju-si",
+                "220": "Pyeongtaek-si",
+                "650": "Pocheon-si",
+                "450": "Hanam-si",
+                "590": "Hwaseong-si",                
+            },             
         "42":{
                 // 강원도 : 42, 18개
                 province: "Gangwon-do",
@@ -304,76 +356,6 @@ class findEngAddress {
     "장안구": "Jangan-gu",
 	"팔달구": "Paldal-gu",
 
-	// 경기도 : 41 , 48개
-	"82": "Gapyeong-gun",
-	//"": "Goyang-si", // 고양시 (코드없음)
-	"281": "Goyang-si", // 고양시 덕양구 이름변경필요
-	"285": "Goyang-si", // 고양시 일산동구
-	"287": "Goyang-si", // 고양시 일산서구
-    "29": "Gwacheon-si",
-    "21": "Gwangmyeong-si",
-    "61": "Gwangju-si",
-    "31": "Guri-si",
-    "41": "Gunpo-si",
-    "57": "Gimpo-si",
-    "36": "Namyangju-si",
-    "25": "Dongducheon-si",
-    "19": "Bucheon-si",
-	//"": "Seongnam-si", // 코드 없음
-	"135": "Seongnam-si", // 성남시 분당구 이름변경필요
-	"131": "Seongnam-si", // 성남시 수정구
-	"133": "Seongnam-si", // 성남시 중원구
-	//"": "Suwon-si", // 코드 없음
-    "113": "Suwon-si",	// 수원시 권선구 이름변경필요
-	"117": "Suwon-si",	// 수원시 영통구
-	"111": "Suwon-si",	// 수원시 장안구
-	"115": "Suwon-si",	// 수원시 팔달구
-    "39": "Siheung-si",
-	// "": "Ansan-si", // 코드 없음
-	"273": "Ansan-si", // 안산시 단원구 이름변경필요
-	"271": "Ansan-si", // 안산시 상록구
-    "55": "Anseong-si",
-	// "": "Anyang-si",
-	"173": "Anyang-si", // 안양시 동안구 이름변경필요
-	"171": "Anyang-si", // 안양시 만안구
-    "63": "Yangju-si",
-    "83": "Yangpyeong-gun",
-    "67": "Yeoju-si",
-    "80": "Yeoncheon-gun",
-    "37": "Osan-si",
-	// "용인시": "Yongin-si",
-	"463": "Yongin-si", // 용인시 기흥구 이름변경필요
-	"465": "Yongin-si", // 용인시 수지구
-	"461": "Yongin-si", // 용인시 처인구
-    "43": "Uiwang-si",
-	"15": "Uijeongbu-si",
-    "50": "Icheon-si",
-    "48": "Paju-si",
-    "22": "Pyeongtaek-si",
-    "65": "Pocheon-si",
-    "45": "Hanam-si",
-	"59": "Hwaseong-si",
-
-
-    "": "Gangwon-do",
-
-    "": "Gyeongsangnam-do",
-    "": "Gyeongsangbuk-do",
-    "11": "Seoul",
-	"26": "Busan",
-	"27": "Daegu",
-	"28": "Incheon",
-	"29": "Gwangju",
-	"30": "Daejeon",
-    "31": "Ulsan",
-    "36110": "Sejong", //
-	"41": "Gyeonggi-do",
-
-    "": "Jeollanam-do",
-    "": "Jeollabuk-do",
-    "50": "Jeju-do",
-    "": "Chungcheongnam-do",
-    "": "Chungcheongbuk-do"
     */
     
 
