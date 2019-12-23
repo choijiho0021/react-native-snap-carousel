@@ -76,6 +76,7 @@ class ProfileAPI {
         api.withToken(token, 'vnd.api+json', {
             'Accept': 'application/vnd.api+json'
         }):api.withToken(token, 'vnd.api+json')
+
         const body = {
             data : {
                 type: 'profile--customer',

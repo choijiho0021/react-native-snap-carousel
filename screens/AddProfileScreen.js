@@ -66,7 +66,8 @@ class AddProfileScreen extends Component {
         addressLine1: undefined,
         addressLine2: undefined,
         detailAddr: undefined,
-        isBasicAddr: false,
+        isBasicAddr: true,
+        uuid:undefined,
       }),
       errors: {}
     }
@@ -83,7 +84,7 @@ class AddProfileScreen extends Component {
   componentDidMount() {
     
     const update = this.props.navigation.getParam('update') 
-    const profile = update || this.props.profile.profile.find(item => item.isBasicAddr)
+    const profile = update
 
     this.setState({
       update,
@@ -102,7 +103,7 @@ class AddProfileScreen extends Component {
   componentDidUpdate(prevProps) {
     const addr = this.props.profile.addr
 
-    // 다른 정보 변경 & 주소 검색을 한 경우
+    // 주소 검색을 한 경우
     if(addr != prevProps.profile.addr){
       
       if(!_.isEmpty(addr)){
@@ -116,7 +117,6 @@ class AddProfileScreen extends Component {
             .set('zipCode', addr.zipNo)
             .set('province', findEngAddress.findProvince(provinceNumber))
             .set('city', findEngAddress.findCity( provinceNumber, cityNumber))
-            .set('isBasicAddr', this.props.profile.profile.isBasicAddr)
         })
       }
 
@@ -126,13 +126,6 @@ class AddProfileScreen extends Component {
 _onSubmit() {
   const {profile} = this.props.action
   const defaultProfile = this.props.profile.profile.find(item => item.isBasicAddr) || {}
-  
-  // 기본배송지 설정된 것이 없는 경우 신규 기본 배송지 설정
-  if(_.isEmpty(defaultProfile)){
-    this.setState({
-      profile : this.state.profile.set('isBasicAddr', true)
-    }) 
-  }
 
   if(_.isEmpty(this.state.update)){
     // profile 신규 추가
@@ -189,6 +182,16 @@ _onSubmit() {
     this.setState({
       errors
     })
+console.log(errors)
+console.log('errorrrr', _.isEmpty(Object.keys(this.state.errors).values))
+console.log('이거!!!', this.state.errors[key])
+
+    const result = Object.keys(this.state.errors).forEach(key => this.state.errors[key])
+    console.log('result', result)
+    
+    // if(!_.isEmpty(this.state.profile) && _.isEmpty(this.state.errors)){
+    //   thi
+    // }
 
     // console.log('validate', this.state.errors[key])
 
@@ -236,7 +239,9 @@ _onSubmit() {
     // }
 
     console.log('isAddrEmpty', this.state)
-  
+    console.log('props', this.props.profile.profile)
+    console.log('length', Object.keys(this.state.errors).length)
+    console.log('profile', this.state.profile)
     return (
       <SafeAreaView style={styles.container}>
         <KeyboardAwareScrollView
@@ -326,7 +331,7 @@ _onSubmit() {
                 <TouchableOpacity style={styles.checkBasicProfile}
                                   onPress={this._onChecked}>
                   <AppIcon name="btnCheck2"
-                          checked={this.state.profile.get('isBasicAddr') || false}/>
+                          checked={this.state.profile.get('isBasicAddr')}/>
                   <Text style={styles.basicProfile}>{i18n.t('addr:basicAddress')}</Text>
                 </TouchableOpacity>
               </View>
