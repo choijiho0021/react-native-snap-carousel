@@ -106,9 +106,34 @@ class findEngAddress {
                 "110": "Jung-gu",            
             },     
         "36110":{
-                // 세종특별자치시 : "36110": "Sejong",
-                province: "Sejong-si",
-                // "110": ""
+                // 세종특별자치시 : 36110, 24개
+                province: "Sejong",
+                "105": "Garam",     // 가람동
+                "112": "Goun",     // 고운동
+                "340": "Geumnam-myeon",     // 금남면 
+                "107": "Naseong",        // 나성동
+                "109": "Dajeong",     // 다정동
+                "104": "Daepyeong",     // 대평동
+                "114": "Dodam",     // 도담동
+                "101": "Bangok",     // 반곡동
+                "103": "Boram",     // 보람동
+                "330": "Bugang",     // 부강면
+                "108": "Saerom",     // 새롬동
+                "102": "Sodam",     // 소담동
+                "390": "Sojeong",     // 소정면
+                "113": "Arum",     // 아름동
+                "110": "Ujin",     // 어진동
+                "310": "Yeongi-myeon",     // 연기면
+                "320": "Yeondong-myeon",     // 연동면
+                "360": "Yeonseo-myeon",     // 연서면
+                "350": "Janggun-myeon",     // 장군면
+                "380": "Jeondong-myeon",     // 전동면
+                "370": "Jeonui-myeon",     // 전의면
+                "250": "Jochiwon-eup",     // 조치원읍
+                "111": "Jongchon",     // 종촌동
+                "106": "Hansol",     // 한솔동
+
+
             },              
         "41":{
                 // 경기도 : 41 , 42개(주석 포함 48개)

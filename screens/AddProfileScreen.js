@@ -104,7 +104,7 @@ class AddProfileScreen extends Component {
       if(!_.isEmpty(addr)){
         const {admCd = ''} = addr
         const provinceNumber = !_.isEmpty(addr.sggNm) ? admCd.substring(0,2) : admCd.substring(0,5)
-        const cityNumber = admCd.substring(2,5)
+        const cityNumber = !_.isEmpty(addr.sggNm) ? admCd.substring(2,5) : admCd.substring(5, 8)
         
         this.setState({
           profile: this.state.profile.set( 'addressLine1', addr.roadAddrPart1)

@@ -36,7 +36,6 @@ class CustomerProfileScreen extends Component {
 
     this._onChecked = this._onChecked.bind(this)
     this._deleteProfile = this._deleteProfile.bind(this)
-    // this._afterChangeBasicAddr = this._afterChangeBasicAddr.bind(this)
 
   }
 
@@ -251,7 +250,9 @@ const mapStateToProps = (state) => ({
   auth: accountActions.auth(state.account),
   profile: state.profile.toJS(),
   pending: state.pender.pending[profileActions.ADD_CUSTOMER_PROFILE] || 
-    state.pender.pending[profileActions.GET_CUSTOMER_PROFILE] || false
+  state.pender.pending[profileActions.UPDATE_CUSTOMER_PROFILE] ||   
+  state.pender.pending[profileActions.GET_CUSTOMER_PROFILE] || 
+    state.pender.pending[profileActions.DELETE_CUSTOMER_PROFILE] ||false
 })
 
 // export default CustomerProfileScreen
