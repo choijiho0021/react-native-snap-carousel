@@ -209,38 +209,39 @@ class StoreSearchScreen extends Component {
     const {allData, searchWord = ''} = this.state
     if(!allData) { return null }
 
+    // 복수국가 검색제외
+    // const searchResult = allData.filter(elm => 
+    //   elm.categoryId != productApi.category.multi && [...elm.cntry].join(',').match(searchWord)).map(elm => 
+    //     {return {name:elm.name, country:elm.cntry, uuid:elm.uuid}})
+
+    // return (
+    // <View style={styles.width100}>
+    //   {searchResult.map((elm,idx) => 
+    //     <TouchableOpacity key={elm.uuid} onPress={() => this._search(elm.country.values().next().value,true)}>
+    //       <View key={idx+''} style={styles.autoList}>
+    //         <Text key="text">{elm.country.values().next().value}</Text>
+    //       </View>
+    //     </TouchableOpacity>
+    //   )}
+    // </View>
+    // )
+
+    // 복수국가 이름 검색 추가
     const searchResult = allData.filter(elm => 
-      elm.categoryId != productApi.category.multi && [...elm.cntry].join(',').match(searchWord)).map(elm => 
-        {return {name:elm.name, country:elm.cntry, uuid:elm.uuid}})
+      [...elm.cntry].join(',').match(searchWord)).map(elm => 
+        {return {name:elm.name, country:elm.cntry, categoryId: elm.categoryId, uuid:elm.uuid}})
 
     return (
     <View style={styles.width100}>
       {searchResult.map((elm,idx) => 
         <TouchableOpacity key={elm.uuid} onPress={() => this._search(elm.country.values().next().value,true)}>
           <View key={idx+''} style={styles.autoList}>
-            <Text key="text">{elm.country.values().next().value}</Text>
+            <Text key="text">{elm.categoryId == productApi.category.multi ? elm.name : elm.country.values().next().value}</Text>
           </View>
         </TouchableOpacity>
       )}
     </View>
     )
-
-    // 복수국가 이름 검색 추가
-    // const searchResult = allData.filter(elm => 
-    //   [...elm.cntry].join(',').match(searchWord)).map(elm => 
-    //     {return {name:elm.name, country:elm.cntry, categoryId: elm.categoryId, uuid:elm.uuid}})
-
-    // return (
-    // <View style={styles.width100}>
-    //   {searchResult.map((elm,idx) => 
-    //     <TouchableOpacity key={elm.uuid} onPress={() => this._onPressItem(elm.uuid)}>
-    //       <View key={idx+''} style={styles.autoList}>
-    //         <Text key="text">{elm.categoryId == productApi.category.multi ? elm.name : elm.country.values().next().value}</Text>
-    //       </View>
-    //     </TouchableOpacity>
-    //   )}
-    // </View>
-    // )
   }
 
   // 국가 검색
@@ -255,7 +256,7 @@ class StoreSearchScreen extends Component {
   }
 
   filterBySearchWord( list, searchWord) {
-    return list.filter(elm => elm.categoryId != productApi.category.multi && (_.isEmpty(searchWord) ? true : [...elm.cntry].join(',').match(searchWord)))
+    return list.filter(elm => (_.isEmpty(searchWord) ? true : [...elm.cntry].join(',').match(searchWord)))
       .map((elm,idx,arr) => ({key:elm.ccode, data:[elm,arr[idx+1]] }))
       .filter((elm,idx) => idx % 2 == 0)
   }
