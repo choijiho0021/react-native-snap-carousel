@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { View, Image } from 'react-native'
 
 const tabbarPath = '../assets/images/tabbar/'
@@ -42,12 +42,16 @@ const images = {
   btnCheck : [ require( mainPath + 'btnCheckNon.png'), require( mainPath + 'btnCheckSel.png')],
 }
 
-export default function AppIcon({name, focused, style, size, checked}) {
-  const source = images[name]
-  if (source) return ( 
-    <View style={[style || {justifyContent:'center', alignItems:'center'}, size && { width:size, heigth:size}]}>
-      <Image source={(focused || checked) && source.length > 1 ? source[1] : source[0]}/>
-    </View>
-  )
-  return null
+export default class AppIcon extends PureComponent {
+
+  render() {
+    const {name, focused, style, size, checked} = this.props
+    const source = images[name]
+
+    return source ? ( 
+      <View style={[style || {justifyContent:'center', alignItems:'center'}, size && { width:size, heigth:size}]}>
+        <Image source={(focused || checked) && source.length > 1 ? source[1] : source[0]}/>
+      </View>
+    ) : null
+  }
 }
