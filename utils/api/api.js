@@ -142,19 +142,27 @@ class Api {
         return this.callHttp( url, { method: 'GET'}, callback)
     }
 
-    callHttp(url, param, callback, isJson = true) {
+    callHttp(url, param, callback, option = { isJson:true, abortController:undefined}) {
         const config = {
             ... param,
             credentials: 'same-origin' 
             //mode: 'no-cors',
         }
+
+        if ( option.abortController) config.signal = option.abortController.signal
+        if ( typeof option.isJson === 'undefined') option.isJson = true
+
         console.log('call HTTP', url, config)
 
         return fetch(url, config).then(response => {
             console.log('result url:', url, response.status)
+            if ( option.abortController && option.abortController.signal.aborted) {
+                return this.failure(this.FAILED, '499', 'cancelled')
+            }
+
             if ( response.ok) {
                 if ( _.isFunction(callback)) {
-                    if ( response.status != 204 && isJson) {
+                    if ( response.status != 204 && option.isJson) {
                         return response.json().then(json => {
                             console.log('response:', JSON.stringify(json))
                             return callback(json)
@@ -167,12 +175,14 @@ class Api {
                 }
                 return response.text()
             }
-            if ( isJson) {
+            if ( option.isJson) {
                 response.json().then(json => {
                     console.log('response:', JSON.stringify(json))
                 })
             }
             return this.failure(this.FAILED, response.status, response.statusText)
+        }).catch(err => {
+            console.log('API failed', err)
         })
     }
 

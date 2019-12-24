@@ -74,7 +74,7 @@ class CartAPI {
         })
     }
 
-    update = (orderId, orderItemId, qty) => {
+    updateQty = ({orderId, orderItemId, qty, abortController}) => {
         const url = `${api.httpUrl(api.path.cart, '')}/${orderId}/items?_format=json`
         const headers = api.headers({}, 'json')
         const body = {
@@ -85,7 +85,7 @@ class CartAPI {
             method: 'patch',
             headers,
             body: JSON.stringify(body)
-        }, this.toCart)
+        }, this.toCart, {abortController})
     }
 
     /*

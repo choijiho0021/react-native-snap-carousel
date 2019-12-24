@@ -127,7 +127,7 @@ class ProfileAPI {
             headers,
         }, (resp) => ({
             result: resp.status == '204' ? 0 : api.FAILED
-        }), false)
+        }), {isJson: false})
 
     }
 

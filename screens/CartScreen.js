@@ -88,6 +88,26 @@ class CartScreen extends Component {
     this.setState({
       qty, checked, total,
     })
+
+    const orderItem = this.props.cart.orderItems.find(item => item.key == uuid)
+    if ( orderItem) {
+      if ( this.cancelUpdate) {
+        this.cancelUpdate()
+        this.cancelUpdate = null
+      }
+
+      const cartUpdateQty = this.props.action.cart.cartUpdateQty({
+        orderId: this.props.cart.orderId, 
+        orderItemId: orderItem.orderItemId, 
+        qty: cnt, 
+        abortController: new AbortController()
+      })
+
+      this.cancelUpdate = cartUpdateQty.cancel
+      cartUpdateQty.catch( err => {
+        console.log('cancel2', err)
+      })
+    }
   }
 
   _onPurchase() {
