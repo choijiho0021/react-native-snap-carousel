@@ -88,7 +88,6 @@ async function login() {
 }
 
 async function loadResourcesAsync() {
-    console.log('init')
     // load product list
     store.dispatch(productActions.getProdList())
     store.dispatch(simActions.getSimCardList())

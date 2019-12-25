@@ -68,7 +68,7 @@ class CartScreen extends Component {
 
     orderItems.forEach(item => {
       qty = qty.update(item.key, value => value || item.qty)
-      checked = checked.update(item.key, value => value || true)
+      checked = checked.update(item.key, value => (typeof value === 'undefined') ? true : value)
     })
 
     this.setState({
@@ -89,8 +89,6 @@ class CartScreen extends Component {
     this.setState({
       qty, checked, total,
     })
-
-    console.log('change qty', total, checked.toJS(), qty.toJS())
 
     if ( orderItemId) {
       if ( this.cancelUpdate) {
@@ -134,13 +132,11 @@ class CartScreen extends Component {
   }
 
   _onChecked(key) {
-    const {checked, qty} = this.state,
-      checkedUpdated = checked.update( key, value => ! value),
-      total = this._calculate( checkedUpdated, qty)
+    const checked = this.state.checked.update( key, value => ! value),
+      total = this._calculate( checked, this.state.qty)
 
     this.setState({
-      total,
-      checked : checkedUpdated, 
+      total, checked
     })
   }
 
@@ -149,8 +145,6 @@ class CartScreen extends Component {
       checked = this.state.checked.remove( key),
       qty = this.state.qty.remove(key),
       total = this._calculate( checked, qty, data)
-
-    console.log('remove item', data, key, total, checked.toJS(), qty.toJS())
 
     this.setState({
       data, total, checked, qty
@@ -190,8 +184,7 @@ class CartScreen extends Component {
       .map(item => ({
         qty: Math.max(0, qty.get(item.key)),
         price: item.price
-      }))
-      .reduce((acc,cur) => ({
+      })).reduce((acc,cur) => ({
         cnt: acc.cnt+ cur.qty, 
         price: acc.price + cur.qty * cur.price
       }), {cnt: 0, price:0})
