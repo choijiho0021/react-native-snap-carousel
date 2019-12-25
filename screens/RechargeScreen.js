@@ -71,13 +71,15 @@ class RechargeScreen extends Component {
       {
         value.map(v => {
           const key = `rch-${v}`,
-            checked = key == selected
+            checked = key == selected,
+            color = checked ? colors.clearBlue : colors.warmGrey
+
           return (
             <TouchableOpacity key={key} onPress={this._onPress(key)} 
-              style={[styles.button, checked && {borderColor: colors.clearBlue}]}>
+              style={[styles.button, {borderColor: checked ? colors.clearBlue : colors.lightGrey}]}>
               <View style={styles.buttonBox}>
-                <Text style={[styles.buttonText, checked && {color:colors.clearBlue}]}>{utils.numberToCommaString(v)}</Text>
-                <Text style={[appStyles.normal14Text, checked && {color:colors.clearBlue}]}>{i18n.t('won')}</Text>
+                <Text style={[styles.buttonText, {color}]}>{utils.numberToCommaString(v)}</Text>
+                <Text style={[appStyles.normal14Text, {color}]}>{i18n.t('won')}</Text>
               </View>
             </TouchableOpacity>)
         })

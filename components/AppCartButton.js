@@ -22,7 +22,7 @@ class AppCartButton extends PureComponent {
             value={cartItems}
             status="error"
             onPress={onPress}
-            containerStyle={[styles.badgeContainer, { top:-3, right:6}]}
+            containerStyle={[styles.badgeContainer, { top:4, right:10}]}
           />
         )}
       </TouchableOpacity>

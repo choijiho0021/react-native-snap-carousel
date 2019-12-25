@@ -17,8 +17,6 @@ import * as cartActions from '../redux/modules/cart'
 import SimCard from '../components/SimCard'
 import { bindActionCreators } from 'redux'
 import AppBackButton from '../components/AppBackButton';
-import simCardApi from '../utils/api/simCardApi';
-import AppAlert from '../components/AppAlert';
 import { appStyles } from '../constants/Styles';
 import { colors } from '../constants/Colors';
 import ChargeSummary from '../components/ChargeSummary';
