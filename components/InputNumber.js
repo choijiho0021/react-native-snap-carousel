@@ -45,27 +45,30 @@ const styles = StyleSheet.create({
     borderRightWidth: 1,
   },
   disabled: {
-    backgroundColor: '#D8D8D8'
+    color: colors.lightGrey
   },
 });
 
 export default class InputNumber extends PureComponent {
 
   render() {
-    const { value, onChange, minValue=1, maxValue=9} = this.props
+    const { value, onChange, minValue=1, maxValue=9} = this.props,
+      min = value <= minValue, 
+      max = value >= maxValue
+
     return (
       <View style={styles.container}>
-        <TouchableOpacity onPress={() => value > minValue && onChange(value-1)} disabled={value == minValue} >
-          <View style={[styles.box, value == minValue && styles.disabled]}>
-            <Icon name="minus"/>
+        <TouchableOpacity onPress={() => onChange(value-1)} disabled={min} >
+          <View style={styles.box}>
+            <Icon name="minus" style={min && styles.disabled}/>
           </View> 
         </TouchableOpacity>
         <View style={styles.boxCenter}>
           <Text style={styles.text}>{value}</Text>
         </View>
-        <TouchableOpacity onPress={() => value < maxValue && onChange(value+1)} disabled={value == maxValue}>
-          <View style={[styles.box, value == maxValue && styles.disabled]}>
-            <Icon name="plus"/>
+        <TouchableOpacity onPress={() => onChange(value+1)} disabled={max}>
+          <View style={styles.box}>
+            <Icon name="plus" style={max && styles.disabled}/>
           </View>
         </TouchableOpacity>
       </View>
