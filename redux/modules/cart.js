@@ -203,7 +203,13 @@ export default handleActions({
 
   ... pender({
     type: CART_REMOVE,
-    onSuccess
+    onSuccess: (state, action) => {
+      const {result, objects} = action.payload
+      if (result == 0 && objects.length > 0 && objects[0].orderId == state.get('orderId')) {
+        return state.update('orderItems', items => items.filter(item => item.orderItemId != objects[0].orderItemId))
+      }
+      return state
+    }
   }),
 
   ... pender({

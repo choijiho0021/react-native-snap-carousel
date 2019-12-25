@@ -61,7 +61,7 @@ class CartAPI {
         }, this.toCart)
     }
 
-    remove = (orderId, orderItemId) => {
+    remove = ({orderId, orderItemId}) => {
         const url = `${api.httpUrl(api.path.cart, '')}/${orderId}/items/${orderItemId}?_format=json`
         const headers = api.headers({}, 'json')
 
@@ -69,7 +69,10 @@ class CartAPI {
             method: 'delete',
             headers,
         }, (response) => {
-            if ( response.status == 204) return api.success([])
+            if ( response.status == 204) return api.success([{
+                orderId,
+                orderItemId
+            }])
             return api.failure( api.NOT_FOUND)
         })
     }
