@@ -121,7 +121,7 @@ class NewSimScreen extends Component {
     })
   }
 
-  _renderItem = ({item}) => {
+  _renderItem = ({item, index}) => {
     const { simQty} = this.state
 
     return (
@@ -129,6 +129,7 @@ class NewSimScreen extends Component {
         checked={this.state.checked.get(item.key) || false}
         onChecked={() => this._onChecked(item.key)}
         qty={simQty.get(item.uuid)}
+        last={index == this.props.sim.simList.length -1}
         {... item} />
     )
   }

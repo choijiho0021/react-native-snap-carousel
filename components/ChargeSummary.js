@@ -6,7 +6,6 @@ import {
 import { colors } from '../constants/Colors';
 import i18n from '../utils/i18n'
 import LabelText from './LabelText';
-import utils from '../utils/utils';
 
 const styles = StyleSheet.create({
   container: {

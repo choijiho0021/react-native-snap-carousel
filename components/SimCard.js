@@ -18,8 +18,6 @@ import InputNumber from './InputNumber';
 const styles = StyleSheet.create({
   container: {
     height: 148,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.lightGrey,        
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: 20
@@ -68,10 +66,14 @@ const styles = StyleSheet.create({
 
 export default class SimCard extends PureComponent {
   render() {
-    const {name, price, balance, imageUrl, qty, onChange, onChecked, checked} = this.props
+    const {name, price, balance, imageUrl, qty, onChange, onChecked, checked, last} = this.props
 
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, 
+        ! last && {
+          borderBottomWidth: 1,
+          borderBottomColor: colors.lightGrey,        
+        }]}>
         <TouchableOpacity onPress={onChecked} style={styles.touch}>
           <View style={styles.checker}>
             <AppIcon name="btnCheck" checked={checked}/>
