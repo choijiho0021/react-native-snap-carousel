@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import {
   StyleSheet,
   Text,
@@ -49,30 +49,27 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function InputNumber({value, onChange, minValue=0, maxValue=9}) {
+export default class InputNumber extends PureComponent {
 
-  return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={() => value > minValue && onChange(value-1)} >
-        {
-          value == minValue ?
-          <View style={[styles.box, styles.disabled]}>
+  render() {
+    const { value, onChange, minValue=1, maxValue=9} = this.props
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity onPress={() => value > minValue && onChange(value-1)} disabled={value == minValue} >
+          <View style={[styles.box, value == minValue && styles.disabled]}>
             <Icon name="minus"/>
           </View> 
-        : <View style={styles.box}>
-            <Icon name="minus"/>
-          </View>
-        }
-      </TouchableOpacity>
-      <View style={styles.boxCenter}>
-        <Text style={styles.text}>{value}</Text>
-      </View>
-      <TouchableOpacity onPress={() => value < maxValue && onChange(value+1)} >
-        <View style={styles.box}>
-          <Icon name="plus"/>
+        </TouchableOpacity>
+        <View style={styles.boxCenter}>
+          <Text style={styles.text}>{value}</Text>
         </View>
-      </TouchableOpacity>
-    </View>
-  )
+        <TouchableOpacity onPress={() => value < maxValue && onChange(value+1)} disabled={value == maxValue}>
+          <View style={[styles.box, value == maxValue && styles.disabled]}>
+            <Icon name="plus"/>
+          </View>
+        </TouchableOpacity>
+      </View>
+    )
+  }
 }
 
