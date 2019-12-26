@@ -28,6 +28,7 @@ import AppModal from '../components/AppModal';
 import * as Permissions from 'expo-permissions';
 import validationUtil from '../utils/validationUtil';
 import userApi from '../utils/api/userApi';
+import LabelTextTouchable from '../components/LabelTextTouchable';
 
 let ImagePicker 
 if (Constants.appOwnership === 'expo') {
@@ -70,6 +71,13 @@ class MyPageScreen extends Component {
     this.setState({ hasCameraRollPermission: status === 'granted'})
 
     if ( this.props.uid) this.props.action.order.getOrders(this.props.auth)
+  }
+
+  componentDidUpdate(prevProps) {
+    if ( this.props.uid && this.props.uid != prevProps.uid) {
+      // reload order history
+      this.props.action.order.getOrders(this.props.auth)
+    }
   }
 
   _onPress = (key) => () => {
@@ -129,10 +137,10 @@ class MyPageScreen extends Component {
   }
 
   _info() {
-    const {iccid, mobile, balance, expDate, email, userPictureUrl} = this.props.account
-    const selected = (mode, disableColor = colors.lightGrey) => {
-      return (mode == this.state.mode) ? colors.clearBlue : disableColor
-    } 
+    const { account: {iccid, mobile, balance, expDate, email, userPictureUrl, loggedIn}} = this.props,
+      selected = (mode, disableColor = colors.lightGrey) => {
+        return (mode == this.state.mode) ? colors.clearBlue : disableColor
+      } 
 
     return (
       <View style={{marginTop:20}}>
@@ -143,15 +151,20 @@ class MyPageScreen extends Component {
           <AppIcon name="imgPeoplePlus" style={{bottom:20, right:-29, alignSelf:'center'}}/>
         </View>
 
-        <LabelText key='iccid' 
+        <LabelTextTouchable key='iccid' 
           style={styles.box}
           label={'ICCID'} labelStyle={styles.label} 
-          value={utils.toICCID(iccid)} valueStyle={styles.value}/>
+          value={iccid ? utils.toICCID(iccid) : i18n.t('reg:card')} valueStyle={styles.value}
+          disabled={loggedIn && ! _.isEmpty(iccid)}
+          onPress={() => this.props.navigation.navigate(loggedIn ? 'RegisterSim' : 'Auth')}
+          arrow={_.isEmpty(iccid) && 'iconArrowRight'} />
 
-        <LabelText key='expDate' 
-          style={styles.box}
-          label={i18n.t('acc:expDate')} labelStyle={styles.label} 
-          value={ expDate} valueStyle={styles.value}/>
+        {
+          iccid && <LabelText key='expDate' 
+            style={styles.box}
+            label={i18n.t('acc:expDate')} labelStyle={styles.label} 
+            value={expDate} valueStyle={styles.value}/>
+        }
 
         <LabelText key='mobile' 
           style={styles.box}
@@ -160,25 +173,22 @@ class MyPageScreen extends Component {
 
         <View style={styles.dividerSmall} />
 
-        <TouchableOpacity onPress={() => this._showEmailModal(true)}>
-          <View style={styles.row}>
-            <LabelText key='email' 
-              style={styles.box}
-              label={i18n.t('reg:email')} labelStyle={styles.label} 
-              value={ email} valueStyle={styles.value} />
-            <AppIcon style={{alignSelf:'center'}} name="iconArrowRight"/>
-          </View>
-        </TouchableOpacity>
+        <LabelTextTouchable key='email' 
+          style={styles.box}
+          label={i18n.t('reg:email')} labelStyle={styles.label} 
+          value={ email} valueStyle={styles.value} 
+          onPress={() => this._showEmailModal(true)}
+          arrow='iconArrowRight' />
 
-        <TouchableOpacity onPress={this._recharge}>
-          <View style={styles.row}>
-            <LabelText key='balance' 
+        {
+          iccid &&
+            <LabelTextTouchable key='balance' 
               style={styles.box}
               label={i18n.t('acc:balance')} labelStyle={styles.label} 
-              value={ utils.price(balance)} valueStyle={[styles.value, {color:colors.clearBlue}]} />
-            <AppIcon style={{alignSelf:'center'}} name="iconArrowRight"/>
-          </View>
-        </TouchableOpacity>
+              value={ utils.price(balance)} valueStyle={[styles.value, {color:colors.clearBlue}]} 
+              onPress={this._recharge}
+              arrow='iconArrowRight' />
+        }
 
         <View style={styles.divider} />
 
@@ -298,13 +308,13 @@ const styles = StyleSheet.create({
   value: {
     ... appStyles.roboto16Text,
     lineHeight: 40,
-    marginRight: 20,
     color: colors.black
   },
   box: {
     height: 36,
     alignItems: 'center',
-    flex: 1
+    flex: 1,
+    marginRight: 20,
   },
   dividerSmall: {
     borderBottomWidth:1, 

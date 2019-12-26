@@ -12,8 +12,7 @@ import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import * as accountActions from '../redux/modules/account'
 import * as cartActions from '../redux/modules/cart'
-import utils from '../utils/utils';
-import userApi from '../utils/api/userApi';
+import * as orderActions from '../redux/modules/order'
 import { bindActionCreators } from 'redux'
 import AppIcon from '../components/AppIcon';
 import { colors } from '../constants/Colors';
@@ -69,8 +68,10 @@ class SettingsScreen extends Component {
     }
   }
 
-  async _logout() {
+  _logout() {
 
+    this.props.action.cart.reset()
+    this.props.action.order.reset()
     this.props.action.account.logout()
 
     this.props.navigation.navigate('HomeStack')
@@ -144,6 +145,7 @@ export default connect(mapStateToProps,
     action : {
       account : bindActionCreators(accountActions, dispatch),
       cart : bindActionCreators(cartActions, dispatch),
+      order : bindActionCreators(orderActions, dispatch),
     }
   })
 )(SettingsScreen)

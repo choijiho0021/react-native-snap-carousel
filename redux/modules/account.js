@@ -6,7 +6,6 @@ import accountApi from '../../utils/api/accountApi';
 import _ from 'underscore'
 import utils from '../../utils/utils';
 import moment from 'moment'
-import {reset as resetCart} from './cart'
 import { batch } from 'react-redux';
 
 const SIGN_UP =        'rokebi/account/SIGN_UP'
@@ -42,7 +41,6 @@ export const logout = () => {
     utils.removeData( userApi.KEY_PIN)
 
     batch(() => {
-      dispatch(resetCart())
       dispatch(resetAccount())
       // reset 한 후에 token을 다시 읽어 온다.
       dispatch(getToken())
