@@ -70,12 +70,8 @@ class SettingsScreen extends Component {
   }
 
   async _logout() {
-    await utils.removeData( userApi.KEY_ICCID)
-    await utils.removeData( userApi.KEY_MOBILE)
-    await utils.removeData( userApi.KEY_PIN)
 
-    this.props.action.account.reset()
-    this.props.action.cart.reset()
+    this.props.action.account.logout()
 
     this.props.navigation.navigate('HomeStack')
 

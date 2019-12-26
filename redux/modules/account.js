@@ -6,10 +6,12 @@ import accountApi from '../../utils/api/accountApi';
 import _ from 'underscore'
 import utils from '../../utils/utils';
 import moment from 'moment'
+import {reset as resetCart} from './cart'
+import { batch } from 'react-redux';
 
 const SIGN_UP =        'rokebi/account/SIGN_UP'
 const UPDATE_ACCOUNT = 'rokebi/account/UPDATE_ACCOUNT'
-const RESET =  'rokebi/account/RESET'
+const RESET_ACCOUNT =  'rokebi/account/RESET_ACCOUNT'
 const GET_USER_ID =   'rokebi/account/GET_USER_ID'
 const GET_ACCOUNT =   'rokebi/account/GET_ACCOUNT'
 const GET_ACCOUNT_BY_UUID =   'rokebi/account/GET_ACCOUNT_BY_UUID'
@@ -22,7 +24,7 @@ export const CHANGE_EMAIL = 'rokebi/account/CHANGE_EMAIL'
 
 export const getToken = createAction(GET_TOKEN, userApi.getToken)
 export const updateAccount = createAction(UPDATE_ACCOUNT)
-export const reset = createAction(RESET)
+const resetAccount = createAction(RESET_ACCOUNT)
 export const signUp = createAction(SIGN_UP)
 const logIn = createAction(LOGIN, userApi.logIn)
 export const getUserId = createAction(GET_USER_ID, userApi.getByName)
@@ -32,6 +34,21 @@ export const activateAccount = createAction(ACTIVATE_ACCOUNT, accountApi.update)
 const uploadPicture = createAction(UPLOAD_PICTURE, accountApi.uploadPicture)
 const changePicture = createAction(CHANGE_PICTURE, userApi.changePicture)
 const changeUserEmail = createAction(CHANGE_EMAIL, userApi.update)
+
+export const logout = () => {
+  return (dispatch) => {
+    utils.removeData( userApi.KEY_ICCID)
+    utils.removeData( userApi.KEY_MOBILE)
+    utils.removeData( userApi.KEY_PIN)
+
+    batch(() => {
+      dispatch(resetCart())
+      dispatch(resetAccount())
+      // reset 한 후에 token을 다시 읽어 온다.
+      dispatch(getToken())
+    })
+  }
+}
 
 export const changeEmail = (mail) => {
   return (dispatch, getState) => {
@@ -201,7 +218,7 @@ export default handleActions({
     return updateAccountState(state, action.payload)
   },
 
-  [RESET]: (state, action) => {
+  [RESET_ACCOUNT]: (state, action) => {
     return initialState
   },
 
