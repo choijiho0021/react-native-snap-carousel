@@ -108,30 +108,30 @@ class findEngAddress {
         "36110":{
                 // 세종특별자치시 : 36110, 24개
                 province: "Sejong",
-                "105": "Garam",     // 가람동
-                "112": "Goun",     // 고운동
-                "340": "Geumnam-myeon",     // 금남면 
-                "107": "Naseong",        // 나성동
-                "109": "Dajeong",     // 다정동
-                "104": "Daepyeong",     // 대평동
-                "114": "Dodam",     // 도담동
-                "101": "Bangok",     // 반곡동
-                "103": "Boram",     // 보람동
-                "330": "Bugang",     // 부강면
-                "108": "Saerom",     // 새롬동
-                "102": "Sodam",     // 소담동
-                "390": "Sojeong",     // 소정면
-                "113": "Arum",     // 아름동
-                "110": "Ujin",     // 어진동
-                "310": "Yeongi-myeon",     // 연기면
-                "320": "Yeondong-myeon",     // 연동면
-                "360": "Yeonseo-myeon",     // 연서면
-                "350": "Janggun-myeon",     // 장군면
-                "380": "Jeondong-myeon",     // 전동면
-                "370": "Jeonui-myeon",     // 전의면
-                "250": "Jochiwon-eup",     // 조치원읍
-                "111": "Jongchon",     // 종촌동
-                "106": "Hansol",     // 한솔동
+                "105": "Garam-dong",            // 가람동 x
+                "112": "Goun-dong",             // 고운동
+                "340": "Geumnam-myeon",         // 금남면  
+                "107": "Naseong-dong",          // 나성동 x
+                "109": "Dajeong-dong",          // 다정동 x
+                "104": "Daepyeong-dong",        // 대평동
+                "114": "Dodam-dong",            // 도담동
+                "101": "Bangok-dong",           // 반곡동 x 
+                "103": "Boram-dong",            // 보람동
+                "330": "Bugang-myeon",          // 부강면
+                "108": "Saerom-dong",           // 새롬동
+                "102": "Sodam-dong",            // 소담동
+                "390": "Sojeong-myeon",         // 소정면
+                "113": "Areum-dong",            // 아름동
+                "110": "Ujin-dong",             // 어진동 x
+                "310": "Yeongi-myeon",          // 연기면  
+                "320": "Yeondong-myeon",        // 연동면  
+                "360": "Yeonseo-myeon",         // 연서면  
+                "350": "Janggun-myeon",         // 장군면  
+                "380": "Jeondong-myeon",        // 전동면  
+                "370": "Jeonui-myeon",          // 전의면  
+                "250": "Jochiwon-eup",          // 조치원읍
+                "111": "Jongchon-dong",         // 종촌동
+                "106": "Hansol-dong",           // 한솔동
 
 
             },              
@@ -139,10 +139,10 @@ class findEngAddress {
                 // 경기도 : 41 , 42개(주석 포함 48개)
                 province: "Gyeonggi-do",
                 "820": "Gapyeong-gun",
-                //"": "Goyang-si",      // 고양시 (코드없음)
-                "281": "Goyang-si",     // 고양시 덕양구 이름변경필요
-                "285": "Goyang-si",     // 고양시 일산동구
-                "287": "Goyang-si",     // 고양시 일산서구
+                //"": "Goyang-si",              // 고양시 (코드없음)
+                "281": "Goyang-si",             // 고양시 덕양구 이름변경필요
+                "285": "Goyang-si",             // 고양시 일산동구
+                "287": "Goyang-si",             // 고양시 일산서구
                 "290": "Gwacheon-si",
                 "210": "Gwangmyeong-si",
                 "610": "Gwangju-si",
@@ -152,32 +152,32 @@ class findEngAddress {
                 "360": "Namyangju-si",
                 "250": "Dongducheon-si",
                 "190": "Bucheon-si",
-                //"": "Seongnam-si",    // 코드 없음
-                "135": "Seongnam-si",   // 성남시 분당구 이름변경필요
-                "131": "Seongnam-si",   // 성남시 수정구
-                "133": "Seongnam-si",   // 성남시 중원구
-                //"": "Suwon-si",       // 코드 없음
-                "113": "Suwon-si",	    // 수원시 권선구 이름변경필요
-                "117": "Suwon-si",	    // 수원시 영통구
-                "111": "Suwon-si",	    // 수원시 장안구
-                "115": "Suwon-si",	    // 수원시 팔달구
+                //"": "Seongnam-si",            // 코드 없음
+                "135": "Seongnam-si",           // 성남시 분당구 이름변경필요
+                "131": "Seongnam-si",           // 성남시 수정구
+                "133": "Seongnam-si",           // 성남시 중원구
+                //"": "Suwon-si",               // 코드 없음
+                "113": "Suwon-si",	            // 수원시 권선구 이름변경필요
+                "117": "Suwon-si",	            // 수원시 영통구
+                "111": "Suwon-si",	            // 수원시 장안구
+                "115": "Suwon-si",	            // 수원시 팔달구
                 "390": "Siheung-si",
-                // "": "Ansan-si",      // 코드 없음
-                "273": "Ansan-si",      // 안산시 단원구 이름변경필요
-                "271": "Ansan-si",      // 안산시 상록구
+                // "": "Ansan-si",              // 코드 없음
+                "273": "Ansan-si",              // 안산시 단원구 이름변경필요
+                "271": "Ansan-si",              // 안산시 상록구
                 "550": "Anseong-si",
                 // "": "Anyang-si",
-                "173": "Anyang-si",     // 안양시 동안구 이름변경필요
-                "171": "Anyang-si",     // 안양시 만안구
-                "630": "Yangju-si",
+                "173": "Anyang-si",             // 안양시 동안구 이름변경필요
+                "171": "Anyang-si",             // 안양시 만안구
+                "630": "Yangju-si", 
                 "830": "Yangpyeong-gun",
                 "670": "Yeoju-si",
                 "800": "Yeoncheon-gun",
                 "370": "Osan-si",
                 // "용인시": "Yongin-si",
-                "463": "Yongin-si",     // 용인시 기흥구 이름변경필요
-                "465": "Yongin-si",     // 용인시 수지구
-                "461": "Yongin-si",     // 용인시 처인구
+                "463": "Yongin-si",             // 용인시 기흥구 이름변경필요
+                "465": "Yongin-si",             // 용인시 수지구
+                "461": "Yongin-si",             // 용인시 처인구
                 "430": "Uiwang-si",
                 "150": "Uijeongbu-si",
                 "500": "Icheon-si",
@@ -221,11 +221,11 @@ class findEngAddress {
                 "150": "Jecheon-si",
                 "745": "Jeungpyeong-gun",
                 "750": "Jincheon-gun",
-                // "청주시": "Cheongju-si", // 코드 검색 불가
-                "111": "Sangdang-gu",   // 청주시 상당구
-                "112": "Seowon-gu",     // 청주시 서원구
-                "114": "Cheongwon-gu",  // 청주시 청원구
-                "113": "Heungdeok-gu",  // 청주시 흥덕구
+                // "청주시": "Cheongju-si",       // 코드 검색 불가
+                "111": "Sangdang-gu",           // 청주시 상당구
+                "112": "Seowon-gu",             // 청주시 서원구
+                "114": "Cheongwon-gu",          // 청주시 청원구
+                "113": "Heungdeok-gu",          // 청주시 흥덕구
                 "130": "Chungju-si",           
             },  
         "44":{
@@ -242,9 +242,9 @@ class findEngAddress {
                 "770": "Seocheon-gun",
                 "290": "Asan-si",
                 "810": "Yesan-gun",
-                //"천안시": "Cheonan-si", // 코드 검색 불가 (결과없음)
-                "131": "Dongnam-gu",    // 천안시 동남구
-                "133": "Seobuk-gu",	    // 천안시 서북구
+                //"천안시": "Cheonan-si",         // 코드 검색 불가 (결과없음)
+                "131": "Dongnam-gu",            // 천안시 동남구
+                "133": "Seobuk-gu",	            // 천안시 서북구
                 "790": "Cheongyang-gun",
                 "825": "Taean-gun",
                 "800": "Hongseong-gun",                  
@@ -263,9 +263,9 @@ class findEngAddress {
                 "140": "Iksan-si",
                 "750": "Imsil-gun",
                 "740": "Jangsu-gun",
-                //"전주시": "Jeonju-si", // 코드검색불가
-                "113": "Deokjin-gu",    // 전주시 덕진구
-                "111": "Wansan-gu",     // 전주시 완산구
+                //"전주시": "Jeonju-si",          // 코드검색불가
+                "113": "Deokjin-gu",            // 전주시 덕진구
+                "111": "Wansan-gu",             // 전주시 완산구
                 "180": "Jeongeup-si",
                 "720": "Jinan-gun",             
             },                                                                                             
@@ -321,8 +321,8 @@ class findEngAddress {
                 "750": "Cheongsong-gun",
                 "850": "Chilgok-gun",
                 "110": "Pohang-si",
-                "111": "Nam-gu",    // 포항시 남구
-                "113": "Buk-gu",    // 포항시 북구    
+                "111": "Nam-gu",                // 포항시 남구
+                "113": "Buk-gu",                // 포항시 북구    
             },  
         "48":{
                 // 경상남도 : 48, 22개(창원시 포함 23개)
@@ -339,12 +339,12 @@ class findEngAddress {
                 "720": "Uiryeong-gun",
                 "170": "Jinju-si",
                 "740": "Changnyeong-gun",
-                // "창원시": "Changwon-si",      // 코드 검색 불가
-                "125": "Masanhappo-gu",    // 창원시 마산합포구
-                "127": "Masanhoewon-gu",   // 창원시 마산회원구
-                "123": "Seongsan-gu",      // 창원시 성산구
-                "121": "Uichang-gu",       // 창원시 의창구
-                "129": "Jinhae-gu",        // 창원시 진해구
+                // "창원시": "Changwon-si",       // 코드 검색 불가
+                "125": "Masanhappo-gu",         // 창원시 마산합포구
+                "127": "Masanhoewon-gu",        // 창원시 마산회원구
+                "123": "Seongsan-gu",           // 창원시 성산구
+                "121": "Uichang-gu",            // 창원시 의창구
+                "129": "Jinhae-gu",             // 창원시 진해구
                 "220": "Tongyeong-si",
                 "850": "Hadong-gun",
                 "730": "Haman-gun",
