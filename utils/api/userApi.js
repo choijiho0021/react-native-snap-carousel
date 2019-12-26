@@ -273,7 +273,7 @@ class UserAPI {
             headers,
         }, (resp) => ({
             result: resp.status == '204' ? 0 : api.FAILED
-        }), false)
+        }), {isJson: false})
     }
 
     changePicture = ( userId, userPicture, {user, pass, token}) => {

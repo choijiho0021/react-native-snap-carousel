@@ -170,7 +170,7 @@ const CartStack = createStackNavigator(
 
 // redux store에서 cart에 추가된 상품 개수를 읽어서 배지에 표시한다.
 //
-const BadgedIcon = withBadge(({cartItems}) => cartItems, {badgeStyle : {left:10}}, 
+const BadgedIcon = withBadge(({cartItems}) => cartItems, {badgeStyle : {top:4, left:8}}, 
   (state) => ({
     cartItems: (state.cart.get('orderItems') || []).reduce((acc,cur) => acc + cur.qty, 0)
   }))(AppIcon)

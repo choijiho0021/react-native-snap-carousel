@@ -130,8 +130,8 @@ class MyPageScreen extends Component {
 
   _info() {
     const {iccid, mobile, balance, expDate, email, userPictureUrl} = this.props.account
-    const selected = (mode) => {
-      return (mode == this.state.mode) ? colors.clearBlue : colors.lightGrey
+    const selected = (mode, disableColor = colors.lightGrey) => {
+      return (mode == this.state.mode) ? colors.clearBlue : disableColor
     } 
 
     return (
@@ -186,10 +186,10 @@ class MyPageScreen extends Component {
 
         <View style={styles.buttonRow}>
           <AppButton style={[styles.button, {borderColor:selected('purchase')}]}
-            titleStyle={[styles.buttonTitle, {color:selected('purchase')}]}
+            titleStyle={[styles.buttonTitle, {color:selected('purchase', colors.warmGrey)}]}
             onPress={this._onPress('purchase')} title={i18n.t('acc:purchaseHistory')}/>
           <AppButton style={[styles.button, {borderColor:selected('usage')}]} 
-            titleStyle={[styles.buttonTitle, {color:selected('usage')}]} 
+            titleStyle={[styles.buttonTitle, {color:selected('usage', colors.warmGrey)}]} 
             onPress={this._onPress('usage')} title={i18n.t('acc:usageHistory')}/>
         </View>
       </View>

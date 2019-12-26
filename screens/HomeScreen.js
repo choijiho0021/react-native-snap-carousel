@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   StyleSheet,
   View,
@@ -56,6 +56,22 @@ const size = windowHeight > 810 ? {
   carouselHeight : 190,
   carouselMargin : 20
 }
+
+class PromotionImage extends PureComponent {
+
+  render() {
+  const {item} = this.props
+    return (
+      <View style={styles.overlay}>
+      {
+        _.isEmpty(item.imageUrl) ?
+          <Text style={styles.text}>{item.title}</Text> :
+          <Image source={{uri:api.httpImageUrl(item.imageUrl)}} style={{height:size.carouselHeight}} resizeMode='contain'/>
+      }
+      </View> 
+    )
+  }
+} 
 
 class HomeScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -216,18 +232,7 @@ class HomeScreen extends Component {
     )
   }
 
-  _renderItem ({item}) {
-    return (
-      <View style={styles.overlay}>
-      {
-        _.isEmpty(item.imageUrl) ?
-          <Text style={styles.text}>{item.title}</Text> :
-          <Image source={{uri:api.httpImageUrl(item.imageUrl)}} style={{height:size.carouselHeight}}/>
-      }
-      </View> 
-    )
-  }
-  
+ 
   _navigate = (key) => () => {
     const { mobile, iccid } = this.props.account
     if ( key == 'RegisterSim' ) {
@@ -300,7 +305,7 @@ class HomeScreen extends Component {
             <AppIcon name="iconArrowRightBlue"/>
           </View>
         </TouchableOpacity>
-        <AppButton iconName="imgDokebi" style={{marginRight:30, alignSelf:'center'}} 
+        <AppButton iconName="imgDokebi" style={{marginRight:30}} iconStyle={{height:'100%', justifyContent:'flex-end'}}
           onPress={this._navigate('Guide')}/>
       </View>
     )
@@ -331,7 +336,10 @@ class HomeScreen extends Component {
           itemHeight={60} />
       </View>
     )
+  }
 
+  _renderItem({item}) {
+    return (<PromotionImage item={item} />)
   }
 
   render() {
@@ -379,7 +387,6 @@ const styles = StyleSheet.create({
   },
   info: {
     height: 60,
-    paddingHorizontal: 30,
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center'

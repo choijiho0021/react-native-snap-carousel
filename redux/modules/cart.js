@@ -34,7 +34,7 @@ export const cartFlyoutClose = createAction(CART_FLYOUT_CLOSE);
 export const cartFetch = createAction(CART_FETCH, cartApi.get) 
 export const cartAdd = createAction(CART_ADD, cartApi.add) 
 export const cartRemove = createAction(CART_REMOVE, cartApi.remove) 
-export const cartUpdate = createAction(CART_UPDATE, cartApi.update) 
+export const cartUpdateQty = createAction(CART_UPDATE, cartApi.updateQty, (... args) => ({abortController:args.abortController})) 
 
 export const purchase = createAction(PURCHASE)
 export const makePayment = createAction(MAKE_PAYMENT, cartApi.makePayment) 
@@ -122,6 +122,7 @@ const onSuccess = (state, action) => {
 }
 
 const onFailure = (state, action) => {
+  console.log('failed')
   return state.set('result', api.API_FAILED)
 }
 
@@ -202,13 +203,29 @@ export default handleActions({
 
   ... pender({
     type: CART_REMOVE,
-    onSuccess
+    onSuccess: (state, action) => {
+      const {result, objects} = action.payload
+      if (result == 0 && objects.length > 0 && objects[0].orderId == state.get('orderId')) {
+        return state.update('orderItems', items => items.filter(item => item.orderItemId != objects[0].orderItemId))
+      }
+      return state
+    }
   }),
 
   ... pender({
     type: CART_UPDATE,
-    onSuccess
+    onSuccess,
+    onCancel: (state, action) => {
+      console.log('cancel update', state.toJS())
+      return state
+    }
   }),
+
+  [CART_UPDATE + '_CANCEL']: (state,action) => {
+    if ( action.meta.abortController) action.meta.abortController.abort()
+    console.log('cancel update req', state.toJS(), action)
+    return state
+  },
 
   ... pender({
     type: MAKE_PAYMENT,

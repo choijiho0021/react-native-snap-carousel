@@ -17,8 +17,6 @@ import * as cartActions from '../redux/modules/cart'
 import SimCard from '../components/SimCard'
 import { bindActionCreators } from 'redux'
 import AppBackButton from '../components/AppBackButton';
-import simCardApi from '../utils/api/simCardApi';
-import AppAlert from '../components/AppAlert';
 import { appStyles } from '../constants/Styles';
 import { colors } from '../constants/Colors';
 import ChargeSummary from '../components/ChargeSummary';
@@ -123,7 +121,7 @@ class NewSimScreen extends Component {
     })
   }
 
-  _renderItem = ({item}) => {
+  _renderItem = ({item, index}) => {
     const { simQty} = this.state
 
     return (
@@ -131,6 +129,7 @@ class NewSimScreen extends Component {
         checked={this.state.checked.get(item.key) || false}
         onChecked={() => this._onChecked(item.key)}
         qty={simQty.get(item.uuid)}
+        last={index == this.props.sim.simList.length -1}
         {... item} />
     )
   }

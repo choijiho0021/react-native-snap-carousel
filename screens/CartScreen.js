@@ -39,6 +39,7 @@ class CartScreen extends Component {
 
     this._onPurchase = this._onPurchase.bind(this)
     this._onChangeQty = this._onChangeQty.bind(this)
+    this._removeItem = this._removeItem.bind(this)
     this._calculate = this._calculate.bind(this)
     this._init = this._init.bind(this)
   }
@@ -67,7 +68,7 @@ class CartScreen extends Component {
 
     orderItems.forEach(item => {
       qty = qty.update(item.key, value => value || item.qty)
-      checked = checked.update(item.key, value => value || true)
+      checked = checked.update(item.key, value => (typeof value === 'undefined') ? true : value)
     })
 
     this.setState({
@@ -80,14 +81,33 @@ class CartScreen extends Component {
       utils.dlvCost(total.price) : 0
   }
 
-  _onChangeQty(uuid, cnt) {
-    const qty = this.state.qty.set(uuid, cnt),
-      checked = this.state.checked.set(uuid, true),
+  _onChangeQty(key, orderItemId, cnt) {
+    const qty = this.state.qty.set(key, cnt),
+      checked = this.state.checked.set(key, true),
       total = this._calculate( checked, qty)
 
     this.setState({
       qty, checked, total,
     })
+
+    if ( orderItemId) {
+      if ( this.cancelUpdate) {
+        this.cancelUpdate()
+        this.cancelUpdate = null
+      }
+
+      const cartUpdateQty = this.props.action.cart.cartUpdateQty({
+        orderId: this.props.cart.orderId, 
+        orderItemId,
+        qty: cnt, 
+        abortController: new AbortController()
+      })
+
+      this.cancelUpdate = cartUpdateQty.cancel
+      cartUpdateQty.catch( err => {
+        console.log('cancel2', err)
+      })
+    }
   }
 
   _onPurchase() {
@@ -111,15 +131,31 @@ class CartScreen extends Component {
     }
   }
 
-  _onChecked(uuid) {
-    const {checked, qty} = this.state,
-      checkedUpdated = checked.update( uuid, value => ! value),
-      total = this._calculate( checkedUpdated, qty)
+  _onChecked(key) {
+    const checked = this.state.checked.update( key, value => ! value),
+      total = this._calculate( checked, this.state.qty)
 
     this.setState({
-      total,
-      checked : checkedUpdated, 
+      total, checked
     })
+  }
+
+  _removeItem(key, orderItemId) {
+    const data = this.state.data.filter(item => item.orderItemId != orderItemId),
+      checked = this.state.checked.remove( key),
+      qty = this.state.qty.remove(key),
+      total = this._calculate( checked, qty, data)
+
+    this.setState({
+      data, total, checked, qty
+    })
+
+    if ( orderItemId) {
+      this.props.action.cart.cartRemove({
+        orderId: this.props.cart.orderId, 
+        orderItemId,
+      })
+    }
   }
 
   _renderItem = ({item}) => {
@@ -129,8 +165,8 @@ class CartScreen extends Component {
       this.props.product.prodList.find(p => p.uuid == item.key)
 
     return <CartItem checked={checked.get(item.key) || false}
-      onChange={(value) => this._onChangeQty(item.key, value)} 
-      onDelete={() => this._onChangeQty(item.key, -1)}
+      onChange={(value) => this._onChangeQty(item.key, item.orderItemId, value)} 
+      onDelete={() => this._removeItem(item.key, item.orderItemId)}
       onChecked={() => this._onChecked(item.key)}
       name={item.title}
       price={item.price}
@@ -139,14 +175,14 @@ class CartScreen extends Component {
 
   }
 
-  _calculate( checked, qty) {
+  _calculate( checked, qty, data) {
     // 초기 기동시에는 checked = new Map() 으로 선언되어 있어서
     // checked.get() == undefined를 반환할 수 있다. 
     // 따라서, checked.get() 값이 false인 경우(사용자가 명확히 uncheck 한 경우)에만 계산에서 제외한다. 
 
-    return this.state.data.filter(item => checked.get(item.key) !== false)
+    return (data || this.state.data).filter(item => checked.get(item.key) !== false)
       .map(item => ({
-        qty: Math.max( qty.get(item.key), 0), 
+        qty: Math.max(0, qty.get(item.key)),
         price: item.price
       })).reduce((acc,cur) => ({
         cnt: acc.cnt+ cur.qty, 
@@ -157,13 +193,12 @@ class CartScreen extends Component {
 
   render() {
     const { qty, checked, data, total} = this.state,
-      list = data.filter(item => qty.get(item.key) >= 0),
       dlvCost = this._dlvCost( checked, qty, total, data)
 
     return (
       <SafeAreaView style={styles.container}>
 
-        <FlatList data={list}
+        <FlatList data={data}
           renderItem={this._renderItem} 
           extraData={[qty, checked]}
           ListFooterComponent={ <ChargeSummary totalCnt={total.cnt} totalPrice={total.price} dlvCost={dlvCost}/>} />
