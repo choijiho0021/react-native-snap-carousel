@@ -161,7 +161,6 @@ class CartScreen extends Component {
     const section = this._section( 
         this.state.section[0].data.filter(item => item.orderItemId != orderItemId), 
         this.state.section[1].data.filter(item => item.orderItemId != orderItemId)),
-      data = this.state.data.filter(item => item.orderItemId != orderItemId),
       checked = this.state.checked.remove( key),
       qty = this.state.qty.remove(key),
       total = this._calculate( checked, qty, section)
