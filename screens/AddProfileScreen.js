@@ -96,19 +96,21 @@ class AddProfileScreen extends Component {
   componentDidUpdate(prevProps) {
     const addr = this.props.profile.addr
     console.log('@@@addr', addr)
-    console.log('empty?', _.isEmpty(addr.sggNm))
-
+   
     // 주소 검색을 한 경우
+    // roadAddr split 활용 저장 자체를 변경?
     if(addr != prevProps.profile.addr){
-      
+
       if(!_.isEmpty(addr)){
         const {admCd = ''} = addr
         const provinceNumber = !_.isEmpty(addr.sggNm) ? admCd.substring(0,2) : admCd.substring(0,5)
         const cityNumber = !_.isEmpty(addr.sggNm) ? admCd.substring(2,5) : admCd.substring(5, 8)
-        
+        const addressLine1 = addr.siNm + ' ' + addr.sggNm
+        const addressLine2 = addr.roadAddr.split(addressLine1+' ').find(item => !_.isEmpty(item))
+
         this.setState({
-          profile: this.state.profile.set( 'addressLine1', addr.roadAddrPart1)
-            .set('addressLine2', addr.roadAddrPart2)
+          profile: this.state.profile.set( 'addressLine1', addressLine1)
+            .set('addressLine2', addressLine2)
             .set('zipCode', addr.zipNo)
             .set('province', findEngAddress.findProvince(provinceNumber))
             .set('city', findEngAddress.findCity(provinceNumber, cityNumber))
