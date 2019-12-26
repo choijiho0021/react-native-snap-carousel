@@ -140,7 +140,7 @@ class CountryScreen extends Component {
             <Text key={"desc"} style={[{marginTop:5},appStyles.normal14Text]}>({item.field_description})</Text>
           </View>
           <View key={"priceText"} style={{alignItems:"baseline"}}>
-            <AppPrice key={"price"} price={item.price} balanceStyle={styles.priceStyle} wonStyle={styles.wonStyle} />
+            <AppPrice key={"price"} price={item.price} style={styles.appPrice} balanceStyle={styles.priceStyle} wonStyle={styles.wonStyle} />
           </View>
         </View>
       </TouchableOpacity>
@@ -326,6 +326,10 @@ const styles = StyleSheet.create({
     height:52,
     justifyContent:"center",
     borderTopWidth:1
+  },
+  appPrice : {
+    flexDirection: 'row',
+    alignItems: 'flex-end'
   }
 });
 
