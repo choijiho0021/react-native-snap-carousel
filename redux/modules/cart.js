@@ -74,7 +74,7 @@ export const payNorder = (result) => {
           orderItems.forEach(item => {
             if ( purchaseItems.findIndex(o => o.orderItemId == item.orderItemId) >= 0) {
               // remove ordered item
-              dispatch( cartRemove( orderId, item.orderItemId))
+              dispatch( cartRemove({orderId, orderItemId:item.orderItemId}))
             }
           })
 
