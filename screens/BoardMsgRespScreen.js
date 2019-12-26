@@ -22,6 +22,7 @@ import AppIcon from '../components/AppIcon';
 import utils from '../utils/utils';
 import api from '../utils/api/api';
 import { attachmentSize } from '../constants/SliderEntry.style'
+import AppButton from '../components/AppButton';
 
 class BoardMsgRespScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -90,6 +91,9 @@ class BoardMsgRespScreen extends Component {
 
           <AppActivityIndicator visible={this.props.pending} />
         </ScrollView>
+
+        <AppButton style={styles.button} title={i18n.t('ok')} 
+          onPress={() => this.props.navigation.goBack()}/>
       </SafeAreaView>
     )
   }
@@ -140,7 +144,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.black,
     justifyContent: 'flex-start'
-  }
+  },
+  button: {
+    ... appStyles.normal16Text,
+    height: 52,
+    backgroundColor: colors.clearBlue,
+    textAlign: "center",
+    color: "#ffffff"
+  },
 });
 
 const mapStateToProps = (state) => ({
