@@ -3,7 +3,7 @@ import {
   StyleSheet,
   View,
   Text,
-  FlatList
+  SectionList
 } from 'react-native';
 import {connect} from 'react-redux'
 
@@ -31,7 +31,7 @@ class CartScreen extends Component {
     super(props)
 
     this.state = {
-      data: [],
+      section: this._section([], []),
       checked: new Map(),
       qty: new Map(),
       total: {cnt:0, price:0},
@@ -56,14 +56,30 @@ class CartScreen extends Component {
     }
   }
 
+  _section( simList, prodList) {
+    return [
+      {
+        title : 'sim',
+        data: simList
+      }, 
+      {
+        title : 'product',
+        data: prodList
+      } 
+    ]
+  }
+
   _init() {
     const { orderItems } = this.props.cart
     let {qty, checked} = this.state
-    const total = this._calculate( checked, qty)
+    const total = this._calculate( checked, qty),
+      list = orderItems.reduce((acc,cur) => {
+        return cur.type == 'sim_card' ? [ acc[0].concat([cur]), acc[1] ] : [ acc[0], acc[1].concat([cur])]
+      }, [[], []])
 
     this.setState({
       total,
-      data : orderItems,
+      section : this._section( list[0], list[1])
     })
 
     orderItems.forEach(item => {
@@ -76,8 +92,8 @@ class CartScreen extends Component {
     })
   }
 
-  _dlvCost( checked, qty, total, data) {
-    return data.findIndex(item => item.type == 'sim_card' && checked.get(item.key) && qty.get(item.key) > 0) >= 0 ? 
+  _dlvCost( checked, qty, total, section) {
+    return section[0].data.findIndex(item => checked.get(item.key) && qty.get(item.key) > 0) >= 0 ? 
       utils.dlvCost(total.price) : 0
   }
 
@@ -111,15 +127,16 @@ class CartScreen extends Component {
   }
 
   _onPurchase() {
-    const { data, qty, checked, total } = this.state,
-      dlvCost = this._dlvCost( checked, qty, total, data),
+    const { section, qty, checked, total } = this.state,
+      dlvCost = this._dlvCost( checked, qty, total, section),
       {loggedIn} = this.props.account
 
     if(!loggedIn){
       this.props.navigation.navigate('Auth')
     }
     else {
-      const purchaseItems = data.filter(item => checked.get(item.key) && qty.get(item.key) > 0)
+      const purchaseItems = (section[0].data.concat(section[1].data))
+        .filter(item => checked.get(item.key) && qty.get(item.key) > 0)
         .map(item => ({
           ... item,
           sku: item.prod.sku,
@@ -141,13 +158,16 @@ class CartScreen extends Component {
   }
 
   _removeItem(key, orderItemId) {
-    const data = this.state.data.filter(item => item.orderItemId != orderItemId),
+    const section = this._section( 
+        this.state.section[0].data.filter(item => item.orderItemId != orderItemId), 
+        this.state.section[1].data.filter(item => item.orderItemId != orderItemId)),
+      data = this.state.data.filter(item => item.orderItemId != orderItemId),
       checked = this.state.checked.remove( key),
       qty = this.state.qty.remove(key),
-      total = this._calculate( checked, qty, data)
+      total = this._calculate( checked, qty, section)
 
     this.setState({
-      data, total, checked, qty
+      total, checked, qty, section
     })
 
     if ( orderItemId) {
@@ -175,12 +195,13 @@ class CartScreen extends Component {
 
   }
 
-  _calculate( checked, qty, data) {
+  _calculate( checked, qty, section = this.state.section) {
     // 초기 기동시에는 checked = new Map() 으로 선언되어 있어서
     // checked.get() == undefined를 반환할 수 있다. 
     // 따라서, checked.get() 값이 false인 경우(사용자가 명확히 uncheck 한 경우)에만 계산에서 제외한다. 
 
-    return (data || this.state.data).filter(item => checked.get(item.key) !== false)
+    const list = section[0].data.concat(section[1].data)
+    return list.filter(item => checked.get(item.key) !== false)
       .map(item => ({
         qty: Math.max(0, qty.get(item.key)),
         price: item.price
@@ -192,15 +213,19 @@ class CartScreen extends Component {
 
 
   render() {
-    const { qty, checked, data, total} = this.state,
-      dlvCost = this._dlvCost( checked, qty, total, data)
+    const { qty, checked, section, total} = this.state,
+      dlvCost = this._dlvCost( checked, qty, total, section)
 
     return (
       <SafeAreaView style={styles.container}>
 
-        <FlatList data={data}
+        <SectionList 
+          sections={section}
           renderItem={this._renderItem} 
           extraData={[qty, checked]}
+          renderSectionHeader={({ section: { title } }) => (
+            <Text style={[styles.header, {marginTop: title == 'sim' ? 20 : 30}]}>{i18n.t(title)}</Text>
+          )}
           ListFooterComponent={ <ChargeSummary totalCnt={total.cnt} totalPrice={total.price} dlvCost={dlvCost}/>} />
 
         <View style={styles.buttonBox}>
@@ -219,6 +244,12 @@ class CartScreen extends Component {
 }
 
 const styles = StyleSheet.create({
+  header: {
+    ... appStyles.bold18Text,
+    color: colors.black,
+    marginTop: 30,
+    marginLeft: 20
+  },
   sumBox : {
     flexDirection:'row', 
     justifyContent:'center',

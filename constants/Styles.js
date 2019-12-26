@@ -104,7 +104,7 @@ export const appStyles = StyleSheet.create({
     subTitle: {
         height: 24,
 //        fontFamily: "AppleSDGothicNeo",
-        fontSize: 20,
+        fontSize: 24,
         fontWeight: "500",
         fontStyle: "normal",
         letterSpacing: 0.28,
