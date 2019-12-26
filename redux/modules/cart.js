@@ -52,10 +52,9 @@ export const payNorder = (result) => {
       token = account.get('token'),
       iccid = account.get('iccid'),
       auth = {
-        token,
+        token, iccid,
         mail: account.get('email'),
         user: account.get('mobile'),
-        iccid: account.get('iccid')
       }
 
     // update payment result
@@ -64,34 +63,28 @@ export const payNorder = (result) => {
     // remove ordered items from the cart
     const orderId = cart.get('orderId'),
       orderItems = cart.get('orderItems'),
-      purchaseItems = cart.get('purchaseItems'),
-      rch = purchaseItems.find(item => item.key == 'rch')
-
-    // cart에서 item 삭제 
-    orderItems.forEach(item => {
-      if ( purchaseItems.findIndex(o => o.orderItemId == item.orderItemId) >= 0) {
-        // remove ordered item
-        dispatch( cartRemove( orderId, item.orderItemId))
-      }
-    })
-
-    if ( rch) dispatch(rechargeAccount({
-      amount: rch.price, 
-      iccid,
-      iccidId: account.get('uuid')
-    }, auth)).then(
-      resp => { 
-        if ( resp.result == 0 && resp.objects.length > 0) {
-          return dispatch(getAccount(iccid, {token}))
-        }
-      }, 
-      err => {
-        throw err
-      })
+      purchaseItems = cart.get('purchaseItems')
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음 
-    return dispatch(makeOrder( purchaseItems, result, auth))
+    return dispatch(makeOrder( purchaseItems, result, auth)).then(
+      resp => {
+        if ( resp.result == 0 ) {
+          // cart에서 item 삭제 
+          orderItems.forEach(item => {
+            if ( purchaseItems.findIndex(o => o.orderItemId == item.orderItemId) >= 0) {
+              // remove ordered item
+              dispatch( cartRemove( orderId, item.orderItemId))
+            }
+          })
+
+          if (purchaseItems.findIndex(item => item.type == 'rch') >= 0) {
+            // 충전을 한 경우에는 account를 다시 읽어들인다.
+            return dispatch(getAccount(iccid, {token}))
+          }
+        }
+      }
+    )
   }
 }
 

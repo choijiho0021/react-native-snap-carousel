@@ -45,6 +45,7 @@ class RechargeScreen extends Component {
       purchaseItems = [
       {
         key: 'rch',
+        type: 'rch',
         title: i18n.t('sim:rechargeAmt'),
         price: utils.stringToNumber( selected),
         qty: 1,
