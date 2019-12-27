@@ -20,6 +20,20 @@ import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import StoreList from '../components/StoreList';
+import { sliderWidth, windowHeight } from '../constants/SliderEntry.style'
+
+// windowHeight
+// iphone 6, 7, 8 - 375 x 667 points
+// iphone 6, 7, 8 Plus - 414 x 736 points
+// iphone 11 pro - 375 x 812 points
+// iphone 11, pro max - 414 x 896 points
+const SIZE_NORMAL = 'normal'
+const SIZE_PLUS = 'plus'
+const ELSE = 'else'
+
+const size = windowHeight == 667 || windowHeight == 812 ? SIZE_NORMAL : 
+             windowHeight == 736 || windowHeight == 896 ? SIZE_PLUS : ELSE
+
 
 const MAX_HISTORY_LENGTH = 7
 class HeaderTitle extends Component {
@@ -330,8 +344,22 @@ const styles = StyleSheet.create({
     alignContent: "space-between",
     flexDirection: 'row',
   },
-  recommebdItem : {
+  recommebdItem : size == SIZE_NORMAL ? 
+  {
     height: 46,
+    borderRadius: 3,
+    backgroundColor: colors.white,
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderColor: colors.lightGray,
+    justifyContent:"center",
+    alignItems: "center",
+    marginBottom:12,
+    marginRight:12,
+    flex:1
+  } : 
+  {
+    height: 51,
     borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: "solid",
@@ -362,8 +390,12 @@ const styles = StyleSheet.create({
   searchListHeaderText : {
     ... appStyles.bold16Text,
   },
-  searchListText : {
+  searchListText : size == SIZE_NORMAL ? 
+  {
     ... appStyles.normal14Text,
+    color: colors.warmGrey
+  } : 
+  { ... appStyles.normal16Text,
     color: colors.warmGrey
   },
   noList : {
