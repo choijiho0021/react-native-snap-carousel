@@ -227,7 +227,7 @@ class StoreScreen extends Component {
       <View style={appStyles.container}>
         <AppActivityIndicator visible={querying} />
         <TabView 
-          style={styles.container} 
+          style={styles.container}
           navigationState={this.state}
           renderScene={this.renderScene}
           onIndexChange={this._onIndexChange}
@@ -240,7 +240,7 @@ class StoreScreen extends Component {
               tabStyle={styles.tabStyle}
               activeColor={colors.clearBlue} // 활성화 라벨 색
               inactiveColor={colors.warmGrey} //비활성화 탭 라벨 색
-              style={{backgroundColor:colors.whiteTwo}} // 라벨 TEXT 선택 시 보이는 배경 색
+              style={styles.tabBarStyle} // 라벨 TEXT 선택 시 보이는 배경 색
               labelStyle={styles.tabBarLabel} // 라벨 TEXT에 관한 스타일
               indicatorStyle={{backgroundColor:colors.whiteTwo}} //tabbar 선택시 하단의 줄 색
             />
@@ -254,7 +254,7 @@ class StoreScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    flex:1
+    flex:1,
   },
   title: {
     ... appStyles.title,
@@ -281,7 +281,13 @@ const styles = StyleSheet.create({
     backgroundColor:colors.whiteTwo,
     height:60,
     alignItems:"flex-start",
-    paddingLeft:20
+    paddingLeft:20,
+  },
+  tabBarStyle : {
+    backgroundColor:colors.whiteTwo,
+    shadowColor: 'transparent',
+    shadowOpacity: 0,
+    elevation: 0,
   },
   price : {
     flexDirection: 'row',
