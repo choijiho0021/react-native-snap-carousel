@@ -155,7 +155,7 @@ class Api {
         console.log('call HTTP', url, config)
 
         return fetch(url, config).then(response => {
-            console.log('result url:', url, response.status)
+            console.log('result url:', url, response.status, response.ok)
             if ( option.abortController && option.abortController.signal.aborted) {
                 return this.failure(this.FAILED, '499', 'cancelled')
             }
@@ -178,6 +178,8 @@ class Api {
             if ( option.isJson) {
                 response.json().then(json => {
                     console.log('response:', JSON.stringify(json))
+                }).catch(err => {
+                    return this.failure( this.FAILED, response.status, 'Failed to decode json:' + err.message)
                 })
             }
             return this.failure(this.FAILED, response.status, response.statusText)

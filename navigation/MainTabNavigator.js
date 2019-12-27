@@ -142,12 +142,15 @@ const MyPageStack = createStackNavigator(
     Payment: PaymentScreen,
     PymMethod: PymMethodScreen,
     PaymentResult : PaymentResultScreen,
+
+    // SIM 카드 등록 화면
+    RegisterSim: RegisterSimScreen
   },
   config
 );
 
 MyPageStack.navigationOptions = ({navigation}) => ({
-  tabBarVisible: ! ['Recharge', 'Payment', 'PymMethod', 'PaymentResult'].includes(navigation.state.routes[navigation.state.index].routeName),
+  tabBarVisible: ! ['Recharge', 'Payment', 'PymMethod', 'PaymentResult', 'RegisterSim'].includes(navigation.state.routes[navigation.state.index].routeName),
   tabBarLabel: i18n.t('mypage'),
   tabBarIcon: ({ focused }) => (
     <AppIcon focused={focused} name="btnMypage" style={styles.tabBarIcon}/>

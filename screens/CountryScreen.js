@@ -106,7 +106,8 @@ class CountryScreen extends Component {
             qty:1,
             key: prod.uuid,
             sku: prod.sku,
-            imageUrl: prod.imageUrl
+            imageUrl: prod.imageUrl,
+            type: 'product'
           } : {}
   
         switch (key) {

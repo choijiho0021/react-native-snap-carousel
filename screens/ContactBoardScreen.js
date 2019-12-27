@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import { connect } from 'react-redux';
 import {
   StyleSheet,
   View,
@@ -9,7 +8,7 @@ import {
 import i18n from '../utils/i18n'
 import _ from 'underscore'
 import AppBackButton from '../components/AppBackButton';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import { TabView, TabBar } from 'react-native-tab-view';
 import BoardMsgAdd from '../components/BoardMsgAdd';
 import BoardMsgList from '../components/BoardMsgList';
 import {colors} from '../constants/Colors'
@@ -51,13 +50,15 @@ class ContactBoardScreen extends Component {
 
 
   _renderTabBar = (props) => {
-    return <TabBar
-      {...props}
-      tabStyle={{backgroundColor:colors.white}}
-      indicatorStyle={{borderBottomColor:colors.clearBlue, borderBottomWidth:2}}
-      style={{paddingBottom:2, backgroundColor:colors.white}}
-      labelStyle={appStyles.normal16Text}
-    />
+    return (
+      <TabBar
+        {...props}
+        tabStyle={{backgroundColor:colors.white}}
+        indicatorStyle={{borderBottomColor:colors.clearBlue, borderBottomWidth:2}}
+        style={{paddingBottom:2, backgroundColor:colors.white}}
+        labelStyle={appStyles.normal16Text}
+      />
+    )
   }
 
   render() {
