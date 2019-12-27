@@ -95,6 +95,8 @@ class RegisterMobileScreen extends Component {
     this._focusAuthInput = this._focusAuthInput.bind(this)
 
     this.authInputRef = React.createRef()
+    this._isMounted = false
+    this.controller = new AbortController()
   } 
 
 
@@ -107,6 +109,12 @@ class RegisterMobileScreen extends Component {
   }
 
   componentDidMount() {
+    this._isMounted = true
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false
+    this.controller.abort()
   }
 
   _onSubmit = () => {
@@ -161,7 +169,7 @@ class RegisterMobileScreen extends Component {
 
       this._focusAuthInput()
 
-      userApi.sendSms({ user: value })
+      userApi.sendSms({ user: value, abortController: this.controller })
         .then( resp => {
           if (resp.result === 0) {
             this.setState({
@@ -191,9 +199,9 @@ class RegisterMobileScreen extends Component {
 
       if ( authorized ) return;
 
-      return userApi.confirmSmsCode({ user: mobile, pass: pin })
+      return userApi.confirmSmsCode({ user: mobile, pass: pin, abortController: this.controller })
         .then( resp => {
-          if (resp.result === 0) {
+          if (resp.result === 0 && this._isMounted) {
             this.setState({
               authorized: true,
               newUser: _.isEmpty(resp.objects),
@@ -211,6 +219,9 @@ class RegisterMobileScreen extends Component {
         })
         .catch(err => {
           console.log('sms confirmation failed', err)
+
+          if ( ! this._isMounted ) return;
+
           this.setState({
             authorized: false
           })
