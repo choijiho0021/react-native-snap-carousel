@@ -92,8 +92,8 @@ class BoardAPI {
 
     // anonymous user 도 post 할 수 있으므로, token 값을 확인하지 않는다. 
     post = ({title,msg,mobile,pin}, images, {token}) => {
-        if (_.isEmpty(title) || _.isEmpty(msg) || _.isEmpty(token))
-            return api.reject( api.INVALID_ARGUMENT, 'empty title or body')
+        if (_.isEmpty(title) || _.isEmpty(msg) || _.isEmpty(token)) 
+            return api.reject( api.INVALID_ARGUMENT, 'empty title, body or token')
 
         const url = `${api.httpUrl(api.path.jsonapi.board)}`
         const headers = api.withToken(token, 'vnd.api+json')
@@ -159,9 +159,11 @@ class BoardAPI {
     }
     */
 
-    getIssueList = ( uid = "0", {token}, link) => {
-        const url = link || `${api.httpUrl(api.path.board)}/${uid}?_format=hal_json`
+    getIssueList = ( uid = "0", {token}, page = 1) => {
+        const url = `${api.httpUrl(api.path.board)}/${uid}?_format=hal_json&page=${page}`
         const headers = api.withToken(token, 'vnd.api+json')
+
+        console.log('issue list', url)
 
         return api.callHttp(url, {
             method: 'GET',

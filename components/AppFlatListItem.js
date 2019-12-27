@@ -56,7 +56,7 @@ export default class AppFlatListItem extends Component {
 
 const styles = StyleSheet.create({
   row: {
-    height: 60,
+    paddingVertical: 20,
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 1,

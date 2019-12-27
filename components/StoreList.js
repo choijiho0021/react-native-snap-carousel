@@ -23,11 +23,15 @@ class CountryItem extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    // ccode 목록이 달라지면, 다시 그린다. 
+    
     const oldData = this.props.item.data,
       newData = nextProps.item.data
 
-    return newData.findIndex((elm,idx) => _.isEmpty(oldData[idx]) || elm == undefined  ? true : elm.ccode != oldData[idx].ccode) >= 0
+    //데이터중 바뀐게 있다면 다시 그린다
+    return JSON.stringify(oldData) !== JSON.stringify(newData)
+
+    // ccode 목록이 달라지면, 다시 그린다. 
+    // return newData.findIndex((elm,idx) => _.isEmpty(oldData[idx]) || elm == undefined  ? true : elm.ccode != oldData[idx].ccode) >= 0
   }
 
   render() {
@@ -69,7 +73,7 @@ class StoreList extends Component {
   shouldComponentUpdate( nextProps) {
     return this.props.data != nextProps.data
   }
-
+  
   _renderItem = ({item}) => {
     return _.isEmpty(item) ? {ccode:'nodata'} : <CountryItem onPress={this.props.onPress} item={item}/>
   }

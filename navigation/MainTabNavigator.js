@@ -38,6 +38,7 @@ import SimpleTextScreen from '../screens/SimpleTextScreen';
 import FaqScreen from '../screens/FaqScreen';
 import GuideScreen from '../screens/GuideScreen';
 import { colors } from '../constants/Colors';
+import UsageDetailScreen from '../screens/UsageDetailScreen';
 
 const config = Platform.select({
   web: { headerMode: 'screen' },
@@ -92,6 +93,7 @@ const StoreStack = createStackNavigator(
   {
     Store: StoreScreen,
     StoreSearch: StoreSearchScreen,
+    RegisterSim: RegisterSimScreen,
     Country: CountryScreen,
     Product: ProductScreen,
     NewSim: NewSimScreen,
@@ -135,18 +137,22 @@ const MyPageStack = createStackNavigator(
   {
     MyPage: MyPageScreen,
     PurchaseDetail: PurchaseDetailScreen,
+    UsageDetail: UsageDetailScreen,
 
     // 충전 관련 화면
     Recharge: RechargeScreen,
     Payment: PaymentScreen,
     PymMethod: PymMethodScreen,
     PaymentResult : PaymentResultScreen,
+
+    // SIM 카드 등록 화면
+    RegisterSim: RegisterSimScreen
   },
   config
 );
 
 MyPageStack.navigationOptions = ({navigation}) => ({
-  tabBarVisible: ! ['Recharge', 'Payment', 'PymMethod', 'PaymentResult'].includes(navigation.state.routes[navigation.state.index].routeName),
+  tabBarVisible: ! ['Recharge', 'Payment', 'PymMethod', 'PaymentResult', 'RegisterSim'].includes(navigation.state.routes[navigation.state.index].routeName),
   tabBarLabel: i18n.t('mypage'),
   tabBarIcon: ({ focused }) => (
     <AppIcon focused={focused} name="btnMypage" style={styles.tabBarIcon}/>

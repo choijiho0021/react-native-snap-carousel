@@ -106,7 +106,8 @@ class CountryScreen extends Component {
             qty:1,
             key: prod.uuid,
             sku: prod.sku,
-            imageUrl: prod.imageUrl
+            imageUrl: prod.imageUrl,
+            type: 'product'
           } : {}
   
         switch (key) {
@@ -118,6 +119,8 @@ class CountryScreen extends Component {
             this.props.action.cart.purchase({ purchaseItems: [ addProduct ]})
             this.props.navigation.navigate('PymMethod')
             break
+          case 'regCard':
+          this.props.navigation.navigate('RegisterSim')
         }
       }
     }
@@ -140,7 +143,7 @@ class CountryScreen extends Component {
             <Text key={"desc"} style={[{marginTop:5},appStyles.normal14Text]}>({item.field_description})</Text>
           </View>
           <View key={"priceText"} style={{alignItems:"baseline"}}>
-            <AppPrice key={"price"} price={item.price} balanceStyle={styles.priceStyle} wonStyle={styles.wonStyle} />
+            <AppPrice key={"price"} price={item.price} style={styles.appPrice} balanceStyle={styles.priceStyle} wonStyle={styles.wonStyle} />
           </View>
         </View>
       </TouchableOpacity>
@@ -149,6 +152,7 @@ class CountryScreen extends Component {
 
   render() {
     const { idx, prodList, startDate, name} = this.props.product
+    const { iccid,loggedIn } = this.props.account
     const { prodData, selected} = this.state
     const imageUrl = (prodList.length > idx >= 0) ? prodList[idx].imageUrl : ''
       
@@ -173,6 +177,7 @@ class CountryScreen extends Component {
             extraData={[name, startDate]} />
         </View>
 
+        { iccid ? 
         <View style={styles.buttonBox}>
           <AppButton style={styles.btnCart} title={i18n.t('cart:toCart')} 
             titleStyle={styles.btnCartText}
@@ -180,7 +185,15 @@ class CountryScreen extends Component {
           <AppButton style={styles.btnBuy} title={i18n.t('cart:buy')} 
             titleStyle={styles.btnBuyText}
             onPress={this._onPressBtn('purchase')}/>
+        </View> : 
+        <View style={styles.buttonBox}>
+          <AppButton style={styles.regCardView} 
+            title={loggedIn ? i18n.t('reg:card') : i18n.t('err:login')} 
+            titleStyle={styles.regCard}
+            onPress={this._onPressBtn('regCard')}/>
+          <Text style={styles.regCard}>{i18n.t('reg:card')}</Text>
         </View>
+        }
 
       </SafeAreaView>
     )
@@ -308,6 +321,23 @@ const styles = StyleSheet.create({
     // textAlign: "right",
     textAlignVertical:"bottom",
     color: colors.black
+  },
+  regCard : {
+    ... appStyles.normal18Text,
+    textAlign: "center",
+    textAlignVertical:"bottom",
+    width:'100%',
+  },
+  regCardView : {
+    width:'100%',
+    height:52,
+    justifyContent:"center",
+    borderTopWidth:1,
+    borderColor: colors.lightGrey
+  },
+  appPrice : {
+    flexDirection: 'row',
+    alignItems: 'flex-end'
   }
 });
 

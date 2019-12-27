@@ -8,6 +8,7 @@ class OrderAPI {
         if ( _.isArray(data) && data.length > 0) {
             return api.success(
                 data.map(item => ({
+                    key: item.order_number,
                     orderId: item.order_number,
                     orderDate: item.placed,
                     totalPrice: utils.stringToNumber( item.total_price__number),

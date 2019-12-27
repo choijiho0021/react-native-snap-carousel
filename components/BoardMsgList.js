@@ -67,7 +67,8 @@ class BoardMsgList extends Component {
       data : [],
       mobile: undefined,
       showModal: false,
-      selected: undefined
+      selected: undefined,
+      refreshing: false
     }
 
     this._renderItem = this._renderItem.bind(this)
@@ -78,6 +79,7 @@ class BoardMsgList extends Component {
     this._onPress = this._onPress.bind(this)
     this._onValidate = this._onValidate.bind(this)
     this._init = this._init.bind(this)
+    this._onRefresh = this._onRefresh.bind(this)
   } 
 
   componentDidMount() {
@@ -94,11 +96,16 @@ class BoardMsgList extends Component {
     if ( this.props.uid != prevProps.uid) {
       this._init()
     }
+
+    if ( ! this.props.pending && this.props.pending != prevProps.pending) {
+      this.setState({
+        refreshing: false
+      })
+    }
   }
 
   _init() {
-    const { uid, auth} = this.props
-    this.props.action.board.getIssueList( uid, auth)
+    this.props.action.board.getIssueList()
 
     const { mobile} = this.props.account,
       number = utils.toPhoneNumber(mobile)
@@ -106,90 +113,6 @@ class BoardMsgList extends Component {
       mobile: number,
     })
   }
-
-  /*
-  _getIssueList() {
-    const { link } = this.state
-    const { auth } = this.props
-
-    this.setState({
-      querying: true
-    })
-
-    boardApi.getHistory( auth, link).then(resp => {
-      const {data} = this.state
-      if ( resp.result == 0) {
-
-        const next = _.isEmpty(resp.links.next) ? undefined : resp.links.next.href
-        const list = resp.objects.filter(item => data.findIndex(org => org.uuid == item.uuid) < 0)
- 
-        this.setState({
-          querying: false,
-          data : data.concat( list).sort((a,b) => a.created < b.created ? 1 : -1),
-          next
-        })
-
-        if ( data.length + list.length < this.LIST_SIZE && next) {
-          // get more history
-          this._getIssueList( next)
-        }
-      }
-      else {
-        console.log('Failed to get message hisotyr', resp)
-        throw new Error('Failed to get message history')
-      }
-    }).catch(err => {
-      this.setState({
-        querying: false,
-      })
-
-      AppAlert.error(err.message)
-    })
-  }
-
-  _getNext() {
-    const { next } = this.state
-    if ( next) this._getIssueList(next)
-  }
-  */
-
-    /*
-    const {uuid, userName} = this.props.navigation.getParam('issue')
-    this.setState({
-      userName
-    })
-    this._getMsgList(uuid)
-    */
-
-    /*
-  _getMsgList(uuid) {
-    const { auth } = this.props.account
-
-    this.setState({
-      querying: true
-    })
-
-    boardApi.getComments( uuid, auth).then(resp => {
-      if ( resp.result == 0) {
- 
-        this.setState({
-          querying: false,
-          data : resp.objects,
-        })
-      }
-      else {
-        console.log('Failed to get message hisotyr', resp)
-        throw new Error('Failed to get message history')
-      }
-    }).catch(err => {
-      this.setState({
-        querying: false,
-      })
-
-      AppAlert.error(err.message)
-    })
-  }
-  */
 
   _onSubmit() {
     const { mobile } = this.state,
@@ -244,8 +167,14 @@ class BoardMsgList extends Component {
   }
 
   _onEndReached() {
-    console.log('on end reached')
     this.props.action.board.getNextIssueList()
+  }
+
+  _onRefresh() {
+    this.setState({
+      refreshing: true
+    })
+    this.props.action.board.getIssueList()
   }
 
   _header() {
@@ -292,7 +221,7 @@ class BoardMsgList extends Component {
   }
 
   render() {
-    const {mobile, data, showModal} = this.state
+    const {mobile, data, showModal, refreshing} = this.state
 
     return (
       <SafeAreaView style={styles.container}>
@@ -301,10 +230,12 @@ class BoardMsgList extends Component {
           ListEmptyComponent={this._empty}
           onEndReached={this._onEndReached}
           onEndReachedThreshold={0.5}
+          onRefresh={this._onRefresh}
+          refreshing={refreshing}
           extraData={mobile}
           renderItem={this._renderItem} />
 
-        <AppActivityIndicator visible={this.props.pending}/>
+        <AppActivityIndicator visible={this.props.pending && ! refreshing}/>
         <AppModal visible={showModal}
           title={i18n.t('board:inputPass')}
           mode='edit'
@@ -392,7 +323,7 @@ const mapStateToProps = (state) => ({
   account: state.account.toJS(),
   auth: accountActions.auth(state.account),
   uid: state.account.get('uid'),
-  pending: state.pender.pending[boardActions.GET_ISSUE_LIST] || false
+  pending: state.pender.pending[boardActions.FETCH_ISSUE_LIST] || false
 })
 
 export default connect(mapStateToProps,

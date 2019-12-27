@@ -84,7 +84,7 @@ class CartScreen extends Component {
     })
 
     orderItems.forEach(item => {
-      qty = qty.update(item.key, value => value || item.qty)
+      qty = qty.set(item.key, item.qty)
       checked = checked.update(item.key, value => (typeof value === 'undefined') ? true : value)
     })
 

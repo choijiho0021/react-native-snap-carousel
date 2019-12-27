@@ -22,6 +22,8 @@ import { TabView, TabBar } from 'react-native-tab-view';
 import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import StoreList from '../components/StoreList';
+import {withnavigationFocus} from 'react-navigation'
+import moment from 'moment'
 import AppActivityIndicator from '../components/AppActivityIndicator';
 class StoreScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -64,14 +66,32 @@ class StoreScreen extends Component {
   }
 
   componentDidMount() {
+    const now = moment()
+
     this.props.navigation.setParams({
       StoreSearch: this._navigateToStoreSearch,
       onChangeText : this._onChangeText('country'),
       search : this._search()
     })
+    this.setState({time: now})
     this._refresh()
   }
 
+  componentDidUpdate(prevProps, prevstate){
+    const focus = this.props.navigation.isFocused()
+    const now = moment()
+    const diff = moment.duration(now.diff(this.state.time)).asMinutes()
+
+    if(diff > 60 && focus) {
+      this.setState({time:now})
+      this.props.action.product.getProdList()
+    }
+
+    if(prevProps.product.prodList != this.props.product.prodList)
+    {
+      this._refresh()
+    }
+  }
   _navigateToStoreSearch() {
     const {allData} = this.state
     this.props.navigation.navigate('StoreSearch',{allData})
@@ -247,7 +267,7 @@ const styles = StyleSheet.create({
   tabBarLabel: {
       height: 17,
       // fontFamily: "AppleSDGothicNeo",
-      fontSize: 14,
+      fontSize: 16,
       fontWeight: "500",
       fontStyle: "normal",
       letterSpacing: 0.17
