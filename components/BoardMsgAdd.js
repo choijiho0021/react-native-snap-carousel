@@ -338,7 +338,9 @@ class BoardMsgAdd extends Component {
         </KeyboardAwareScrollView>
 
         <InputAccessoryView nativeID={inputAccessoryViewID}>
-          <AppButton style={styles.inputAccessory} title={i18n.t('done')} 
+          <AppButton style={styles.inputAccessory} 
+            title={i18n.t('done')} 
+            titleStyle={[styles.inputAccessoryText, {color: _.isEmpty(this.state.msg) ? colors.white : colors.blue}]}
             onPress={() => this._keybd.current.blur()}/>
         </InputAccessoryView>
 
@@ -364,11 +366,16 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginHorizontal: 20
   },
+  inputAccessoryText: {
+    ... appStyles.normal18Text,
+    textAlign: "center",
+    margin: 5,
+  },
   inputAccessory: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     backgroundColor: colors.lightGrey,
-    padding: 5
+    padding: 5,
   },
   plusButton: {
     alignItems: 'center',
@@ -423,7 +430,6 @@ const styles = StyleSheet.create({
   noti: {
     ... appStyles.normal12Text,
     flex: 1,
-    height: 90,
     marginTop: 20,
     paddingVertical: 15,
     paddingHorizontal: 20,
