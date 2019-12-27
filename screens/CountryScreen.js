@@ -142,8 +142,8 @@ class CountryScreen extends Component {
             <Text key={"name"} style={[appStyles.bold16Text,color]}>{item.name}</Text>
             <Text key={"desc"} style={[{marginTop:5},appStyles.normal14Text]}>({item.field_description})</Text>
           </View>
-          <View key={"priceText"} style={{alignItems:"baseline"}}>
-            <AppPrice key={"price"} price={item.price} style={styles.appPrice} balanceStyle={styles.priceStyle} wonStyle={styles.wonStyle} />
+          <View key={"priceText"} style={{alignItems:"center"}}>
+            <AppPrice key={"price"} price={item.price} balanceStyle={styles.priceStyle} wonStyle={styles.wonStyle} />
           </View>
         </View>
       </TouchableOpacity>
@@ -318,8 +318,6 @@ const styles = StyleSheet.create({
     fontStyle: "normal",
     lineHeight: 22,
     letterSpacing: 0.19,
-    // textAlign: "right",
-    textAlignVertical:"bottom",
     color: colors.black
   },
   regCard : {
@@ -334,10 +332,6 @@ const styles = StyleSheet.create({
     justifyContent:"center",
     borderTopWidth:1,
     borderColor: colors.lightGrey
-  },
-  appPrice : {
-    flexDirection: 'row',
-    alignItems: 'flex-end'
   }
 });
 

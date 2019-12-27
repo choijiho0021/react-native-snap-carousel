@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   value: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'baseline',
+    alignItems: 'center',
     justifyContent: 'flex-end'
   },
   singleValue: {
