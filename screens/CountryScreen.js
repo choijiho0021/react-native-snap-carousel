@@ -118,6 +118,8 @@ class CountryScreen extends Component {
             this.props.action.cart.purchase({ purchaseItems: [ addProduct ]})
             this.props.navigation.navigate('PymMethod')
             break
+          case 'regCard':
+          this.props.navigation.navigate('RegisterSim')
         }
       }
     }
@@ -149,7 +151,7 @@ class CountryScreen extends Component {
 
   render() {
     const { idx, prodList, startDate, name} = this.props.product
-    const { iccid } = this.props.account
+    const { iccid,loggedIn } = this.props.account
     const { prodData, selected} = this.state
     const imageUrl = (prodList.length > idx >= 0) ? prodList[idx].imageUrl : ''
       
@@ -183,7 +185,11 @@ class CountryScreen extends Component {
             titleStyle={styles.btnBuyText}
             onPress={this._onPressBtn('purchase')}/>
         </View> : 
-        <View style={styles.regCardView}>
+        <View style={styles.buttonBox}>
+          <AppButton style={styles.regCardView} 
+            title={loggedIn ? i18n.t('reg:card') : i18n.t('err:login')} 
+            titleStyle={styles.regCard}
+            onPress={this._onPressBtn('regCard')}/>
           <Text style={styles.regCard}>{i18n.t('reg:card')}</Text>
         </View>
         }
@@ -325,7 +331,8 @@ const styles = StyleSheet.create({
     width:'100%',
     height:52,
     justifyContent:"center",
-    borderTopWidth:1
+    borderTopWidth:1,
+    borderColor: colors.lightGrey
   },
   appPrice : {
     flexDirection: 'row',

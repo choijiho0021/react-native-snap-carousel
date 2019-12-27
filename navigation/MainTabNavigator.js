@@ -92,6 +92,7 @@ const StoreStack = createStackNavigator(
   {
     Store: StoreScreen,
     StoreSearch: StoreSearchScreen,
+    RegisterSim: RegisterSimScreen,
     Country: CountryScreen,
     Product: ProductScreen,
     NewSim: NewSimScreen,
