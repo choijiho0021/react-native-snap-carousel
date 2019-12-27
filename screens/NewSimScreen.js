@@ -113,10 +113,11 @@ class NewSimScreen extends Component {
   }
 
   _onChecked(key) {
-    const checked = this.state.checked.update(key, value => ! value)
+    const checked = this.state.checked.update(key, value => ! value),
+      simQty = this.state.simQty.update(key, value => value || 1)
 
     this.setState({
-      checked,
+      checked, simQty,
       total: this._getTotal( checked, this.state.simQty)
     })
   }

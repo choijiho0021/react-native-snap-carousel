@@ -256,7 +256,7 @@ class HomeScreen extends Component {
             loggedIn ? [
               <Text key="mobile" style={appStyles.mobileNo}>{phone}</Text>,
               iccid ? <AppPrice key="price" price={balance} /> :
-                <Text key="sim" style={appStyles.normal14Text}>{i18n.t('reg:card')}</Text>
+                <Text key="sim" style={[appStyles.normal14Text, {color:colors.warmGrey}]}>{i18n.t('reg:card')}</Text>
             ] : 
             <Text key="reg" style={appStyles.normal14Text}>{i18n.t('reg:guide')}</Text>
           }

@@ -22,6 +22,8 @@ import {Map} from 'immutable'
 import _ from 'underscore'
 import AppBackButton from '../components/AppBackButton';
 
+const sectionTitle = ['sim', 'product']
+
 class CartScreen extends Component {
   static navigationOptions = ({navigation}) => ({
     headerLeft: <AppBackButton navigation={navigation} title={i18n.t('cart')} back="lastTab"/>
@@ -56,17 +58,11 @@ class CartScreen extends Component {
     }
   }
 
-  _section( simList, prodList) {
-    return [
-      {
-        title : 'sim',
-        data: simList
-      }, 
-      {
-        title : 'product',
-        data: prodList
-      } 
-    ]
+  _section( ... args) {
+    return args.map((item,idx) => ({
+      title: sectionTitle[idx],
+      data: item
+    })).filter(item => item.data.length > 0)
   }
 
   _init() {
@@ -93,7 +89,8 @@ class CartScreen extends Component {
   }
 
   _dlvCost( checked, qty, total, section) {
-    return section[0].data.findIndex(item => checked.get(item.key) && qty.get(item.key) > 0) >= 0 ? 
+    const simList = section.find(item => item.title == 'sim')
+    return simList && simList.data.findIndex(item => checked.get(item.key) && qty.get(item.key) > 0) >= 0 ? 
       utils.dlvCost(total.price) : 0
   }
 
@@ -135,8 +132,7 @@ class CartScreen extends Component {
       this.props.navigation.navigate('Auth')
     }
     else {
-      const purchaseItems = (section[0].data.concat(section[1].data))
-        .filter(item => checked.get(item.key) && qty.get(item.key) > 0)
+      const purchaseItems = section.reduce((acc,cur) => acc.concat(cur.data.filter(item => checked.get(item.key) && qty.get(item.key) > 0)), [])
         .map(item => ({
           ... item,
           sku: item.prod.sku,
@@ -158,9 +154,10 @@ class CartScreen extends Component {
   }
 
   _removeItem(key, orderItemId) {
-    const section = this._section( 
-        this.state.section[0].data.filter(item => item.orderItemId != orderItemId), 
-        this.state.section[1].data.filter(item => item.orderItemId != orderItemId)),
+    const section = this.state.section.map(item => ({
+        title: item.title,
+        data: item.data.filter(i => i.orderItemId != orderItemId)
+      })),
       checked = this.state.checked.remove( key),
       qty = this.state.qty.remove(key),
       total = this._calculate( checked, qty, section)
@@ -199,8 +196,7 @@ class CartScreen extends Component {
     // checked.get() == undefined를 반환할 수 있다. 
     // 따라서, checked.get() 값이 false인 경우(사용자가 명확히 uncheck 한 경우)에만 계산에서 제외한다. 
 
-    const list = section[0].data.concat(section[1].data)
-    return list.filter(item => checked.get(item.key) !== false)
+    return section.reduce((acc,cur) => acc.concat(cur.data.filter(item => checked.get(item.key) !== false)), [])
       .map(item => ({
         qty: Math.max(0, qty.get(item.key)),
         price: item.price
@@ -222,6 +218,7 @@ class CartScreen extends Component {
           sections={section}
           renderItem={this._renderItem} 
           extraData={[qty, checked]}
+          stickySectionHeadersEnabled={false}
           renderSectionHeader={({ section: { title } }) => (
             <Text style={[styles.header, {marginTop: title == 'sim' ? 20 : 30}]}>{i18n.t(title)}</Text>
           )}
