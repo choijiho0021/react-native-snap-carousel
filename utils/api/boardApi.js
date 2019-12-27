@@ -159,9 +159,11 @@ class BoardAPI {
     }
     */
 
-    getIssueList = ( uid = "0", {token}, link) => {
-        const url = link || `${api.httpUrl(api.path.board)}/${uid}?_format=hal_json`
+    getIssueList = ( uid = "0", {token}, page = 1) => {
+        const url = `${api.httpUrl(api.path.board)}/${uid}?_format=hal_json&page=${page}`
         const headers = api.withToken(token, 'vnd.api+json')
+
+        console.log('issue list', url)
 
         return api.callHttp(url, {
             method: 'GET',

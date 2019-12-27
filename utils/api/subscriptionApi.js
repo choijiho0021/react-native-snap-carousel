@@ -1,27 +1,57 @@
 import _ from 'underscore'
 import api from './api'
+import i18n from '../i18n'
+import moment from 'moment'
 
 class SubscriptionAPI {
     PAGE_SIZE = 10
 
+    code = {
+        'A' : 'active',
+        'I' : 'inactive',
+        'E' : 'expired',
+        'U' : 'used'
+    }
+
+    toString(val) {
+        return typeof val === 'string' ? val : undefined
+    }
+
+    toStatus(code) {
+        return i18n.t('his:' + this.code[code])
+    }
+
+    compare(a,b) {
+        return a.purchaseDate.localeCompare(b.purchaseDate)
+    }
+
     toSubscription = (data) => {
         console.log('subscription', data)
         if ( _.isArray(data)) {
-            return {
-                result: 0,
-                objects: []
-            }
+            return api.success( data.map(item => ({
+                key: item.uuid,
+                uuid: item.uuid,
+                purchaseDate: this.toString(item.field_purchase_date),
+                activationDate: this.toString(item.field_subs_activation_date),
+                expireDate: this.toString(item.field_subs_expiration_date),
+                termDate: this.toString(item.field_subs_termination_date),
+                statusCd: item.field_status,
+                status: this.toStatus(item.field_status),
+                prodName: item.title,
+                prodId: item.product_uuid,
+            })))
         }
 
         if ( data.jsonapi) {
             const obj = _.isArray(data.data) ? data.data : [data.data]
 
             return api.success( obj.map(item => ({
-                type: item.type,
+                key: item.id,
                 uuid: item.id,
-                title: item.attributes.title,
-                created : item.attributes.created,
-                activationDate: item.field_activation_date,
+                purchaseDate: item.field_purchase_date,
+                activationDate: item.field_subs_activation_date,
+                expireDate: item.field_subs_expiration_date,
+                staus: item.field_status
             })), data.links)
         }
         return {
@@ -29,11 +59,11 @@ class SubscriptionAPI {
         }
     }
 
-    getSubscription = (userId, {user, pass}) => {
-        if ( _.isEmpty(user) || _.isEmpty(pass) || _.isEmpty(userId)) return api.reject( api.INVALID_ARGUMENT)
+    getSubscription = (iccid, {token}) => {
+        if ( _.isEmpty(iccid) || _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
 
-        const url = `${api.httpUrl(api.path.jsonapi.subscription)}?filter[uid.id][value]=${userId}`
-        const headers = api.basicAuth(user, pass, 'vnd.api+json')
+        const url = `${api.httpUrl(api.path.subscription)}/${iccid}?_format=hal_json`
+        const headers = api.withToken(token)
 
         return api.callHttp(url, {
             method: 'get',
@@ -42,6 +72,7 @@ class SubscriptionAPI {
     }
 
 
+    /*
     getHistory = ( userId, {user, pass}, link) => {
         if ( _.isEmpty(userId) || _.isEmpty(user) || _.isEmpty(pass)) 
             return api.reject( api.INVALID_ARGUMENT, `test: userId:${userId} ${user}`)
@@ -54,6 +85,7 @@ class SubscriptionAPI {
             headers
         }, this.toSubscription)
     }
+    */
 
 
     addSubscription = (subs, {user, pass}) => {

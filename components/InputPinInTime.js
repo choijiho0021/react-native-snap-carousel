@@ -30,6 +30,10 @@ class InputPinInTime extends Component {
         this._init(this.props)
     }
 
+    componentWillUnmount() {
+        this._pause()
+    }
+
     componentDidUpdate(prevProps) {
         if ( this.props.countdown != prevProps.countdown ) {
             if ( this.props.countdown ) {

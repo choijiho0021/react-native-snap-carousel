@@ -38,6 +38,7 @@ import SimpleTextScreen from '../screens/SimpleTextScreen';
 import FaqScreen from '../screens/FaqScreen';
 import GuideScreen from '../screens/GuideScreen';
 import { colors } from '../constants/Colors';
+import UsageDetailScreen from '../screens/UsageDetailScreen';
 
 const config = Platform.select({
   web: { headerMode: 'screen' },
@@ -136,6 +137,7 @@ const MyPageStack = createStackNavigator(
   {
     MyPage: MyPageScreen,
     PurchaseDetail: PurchaseDetailScreen,
+    UsageDetail: UsageDetailScreen,
 
     // 충전 관련 화면
     Recharge: RechargeScreen,

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   StyleSheet,
   Text,
@@ -42,6 +42,38 @@ else {
   ImagePicker = require('react-native-image-crop-picker').default
 }
 
+class OrderItem extends PureComponent {
+  render () {
+    const {item, onPress} = this.props
+    const label = `${item.orderItems[0].title}  ${item.orderItems.length > 1 ? i18n.t('his:etcCnt').replace('%%', item.orderItems.length) : ''}`
+
+    return (
+      <TouchableOpacity onPress={onPress}>
+        <View key={item.orderId} style={styles.order}>
+          <Text style={appStyles.normal14Text}>{moment(item.orderDate).format('YYYY-MM-DD')}</Text>
+          <LabelText style={styles.orderValue}
+            label={label} labelStyle={appStyles.normal16Text}
+            value={item.totalPrice} format="price" />
+        </View>
+      </TouchableOpacity>
+    )
+  }
+}
+
+class UsageItem extends PureComponent {
+  render () {
+    const {item, onPress} = this.props,
+      color = item.statusCd == 'A' ? colors.tomato : item.statusCd == 'E' ? colors.warmGrey : colors.clearBlue
+
+    return (
+      <LabelTextTouchable style={styles.usage}
+        onPress={onPress}
+        label={item.prodName} labelStyle={appStyles.normal16Text}
+        value={item.status} valueStyle={[styles.usageValue, {color}]}/>
+    )
+  }
+}
+
 class MyPageScreen extends Component {
   static navigationOptions = ({navigation}) => ({
     headerLeft: (
@@ -58,7 +90,8 @@ class MyPageScreen extends Component {
     }
 
     this._info = this._info.bind(this)
-    this._renderItem = this._renderItem.bind(this)
+    this._renderOrder = this._renderOrder.bind(this)
+    this._renderUsage = this._renderUsage.bind(this)
     this._changePhoto = this._changePhoto.bind(this)
     this._showEmailModal = this._showEmailModal.bind(this)
     this._validEmail = this._validEmail.bind(this)
@@ -84,6 +117,11 @@ class MyPageScreen extends Component {
     this.setState({
       mode: key
     })
+
+    const { account: {iccid}, auth} = this.props
+    if ( key == 'usage' && iccid) {
+      this.props.action.order.getUsage( iccid, auth)
+    }
   }
 
   _showEmailModal(flag) {
@@ -143,7 +181,7 @@ class MyPageScreen extends Component {
       } 
 
     return (
-      <View style={{marginTop:20}}>
+      <View style={{marginTop:20, marginBottom:10}}>
         <View >
           <AppUserPic url={userPictureUrl} icon="imgPeopleL" 
             style={styles.userPicture} 
@@ -206,9 +244,14 @@ class MyPageScreen extends Component {
     )
   }
 
-  _onPressDetail = (orderId) => () => {
+  _onPressOrderDetail = (orderId) => () => {
     const { orders } = this.props.order
     this.props.navigation.navigate('PurchaseDetail', {detail: orders.find(item => item.orderId == orderId)})
+  }
+
+  _onPressUsageDetail = (key) => () => {
+    const { usage } = this.props.order
+    this.props.navigation.navigate('UsageDetail', {detail: usage.find(item => item.key == key)})
   }
 
   async _validEmail(value) {
@@ -233,37 +276,32 @@ class MyPageScreen extends Component {
     })
   }
 
-  _renderItem({item}) {
-    const label = `${item.orderItems[0].title}  ${item.orderItems.length > 1 ? i18n.t('his:etcCnt').replace('%%', item.orderItems.length) : ''}`
-    return (
-      <TouchableOpacity onPress={this._onPressDetail(item.orderId)}>
-        <View key={item.orderId} style={styles.order}>
-          <Text style={appStyles.normal14Text}>{moment(item.orderDate).format('YYYY-MM-DD')}</Text>
-          <LabelText style={styles.orderValue}
-            label={label} labelStyle={appStyles.normal16Text}
-            value={item.totalPrice} format="price" />
-        </View>
-      </TouchableOpacity>
-    )
+  _renderOrder({item}) {
+    return (<OrderItem item={item} onPress={this._onPressOrderDetail(item.orderId)}/>)
+  }
+  
+  _renderUsage({item}) {
+    return (<UsageItem item={item} onPress={this._onPressUsageDetail(item.key)}/>)
   }
 
-  _empty() {
+  _empty = (mode) => () => {
+    if ( this.props.pending) return null
+
     return (
-      <Text style={styles.nolist}>{i18n.t('his:noPurchase')}</Text>
+      <Text style={styles.nolist}>{i18n.t(mode == 'purchase' ? 'his:noPurchase' : 'his:noUsage')}</Text>
     )
   }
 
   render() {
-    const { showEmailModal} = this.state
-    const { orders } = this.props.order
+    const { showEmailModal, mode} = this.state
+    const { orders, usage } = this.props.order
 
     return (
       <View style={styles.container}>
-        <FlatList data={orders} 
+        <FlatList data={mode == 'purchase' ? orders : usage} 
           ListHeaderComponent={this._info}
-          ListEmptyComponent={this._empty}
-          renderItem={this._renderItem} 
-          keyExtractor={item => item.orderId}/> 
+          ListEmptyComponent={this._empty(mode)}
+          renderItem={mode == 'purchase' ? this._renderOrder : this._renderUsage} /> 
 
         <AppActivityIndicator visible={this.props.pending}/>
 
@@ -344,7 +382,7 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   order: {
-    marginTop: 30,
+    marginVertical: 15,
     marginHorizontal: 20
   },
   orderValue: {
@@ -363,6 +401,14 @@ const styles = StyleSheet.create({
     width: 76, 
     height: 76
   },
+  usage: {
+    height: 36,
+    marginHorizontal: 20
+  },
+  usageValue: {
+    flex: 1,
+    textAlign: 'right'
+  }
 });
 
 const mapStateToProps = state => ({
@@ -371,6 +417,7 @@ const mapStateToProps = state => ({
   auth: accountActions.auth( state.account),
   uid: state.account.get('uid'),
   pending: state.pender.pending[orderActions.GET_ORDERS] || 
+    state.pender.pending[orderActions.GET_USAGE] || 
     state.pender.pending[accountActions.CHANGE_EMAIL] || 
     state.pender.pending[accountActions.UPLOAD_PICTURE] || false,
 })

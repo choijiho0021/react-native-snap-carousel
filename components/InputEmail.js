@@ -65,7 +65,6 @@ class InputEmail extends Component {
             placeholder={i18n.t('reg:email')}
             returnKeyType='next'
             enablesReturnKeyAutomatically={true}
-            clearTextOnFocus={true}
             onChangeText={this._onChangeText('email')}
             value={email} /> 
         </View>
@@ -76,7 +75,6 @@ class InputEmail extends Component {
           <TextInput style={[styles.textInput, domain? {} : styles.emptyInput]} 
             returnKeyType='next'
             enablesReturnKeyAutomatically={true}
-            clearTextOnFocus={true}
             editable={domainIdx == DIRECT_INPUT}
             onChangeText={this._onChangeText('domain')}
             value={domain} /> 
