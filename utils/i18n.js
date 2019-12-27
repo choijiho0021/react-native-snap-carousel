@@ -253,6 +253,7 @@ const en = {
   "cart:totalCntX" : "Total %% pieces",
   "cart:dlvCostNotice" : "Free Delivery condition",
   "cart:purchase" : "Purchase",
+  "cart:empty" : "Cart is Empty",
 
   "pym:title": "Payment Info",
   "pym:delivery": "Shipping Info",
@@ -487,6 +488,7 @@ const ko = {
   'addr:invalidRecipient' : '^받는 사람을 2자 이상 입력하세요',
   'addr:invalidAddress' : '^배송지 주소를 먼저 검색하세요',
   'addr:invalidDetails' : '^상세 주소를 정확히 입력하세요',
+  'addr:mandatory': '*',
   
 
   "his:detail" : "상세 내역",
@@ -542,6 +544,7 @@ const ko = {
   "cart:toCart" : "카트에 넣기",
   "cart:buy" : "바로 구매",
   "cart:purchase" : "구매하기",
+  "cart:empty" : "카트가 비어있습니다.",
 
   "pym:title": "결제 정보",
   "pym:delivery": "주문 및 배송정보",
