@@ -29,15 +29,6 @@ class PurchaseDetailScreen extends Component {
     this.setState(detail)
   }
 
-  _renderItem = ({key, title, value}) => {
-    return (
-      <View key={key} style={appStyles.itemRow}>
-        <Text style={styles.itemTitle}>{title}</Text>
-        <Text style={styles.itemValue}>{value}</Text>
-      </View>
-    )
-  }
-
   render() {
     const {orderId, orderDate, totalPrice, orderItems} = this.state || {}
 
@@ -114,48 +105,6 @@ const styles = StyleSheet.create({
     ... appStyles.normal14Text,
     color: colors.warmGrey
   },
-
-  buttonBox: {
-    flex: 2
-  },
-  button: {
-    padding: 10,
-    margin: 10,
-    height: 50,
-    width: 150,
-    fontSize: 20,
-    backgroundColor: "skyblue"
-  },
-  buttonRow: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-  itemTitle: {
-    ... appStyles.itemTitle,
-    padding: 5,
-    width: "40%",
-  },
-  itemValue: {
-    ... appStyles.itemValue,
-    padding: 5,
-    width: "60%",
-    textAlign: "right"
-  },
-  account : {
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "flex-start"
-  },
-  field: {
-    width: "100%"
-  },
-  picker: {
-    flex: 1,
-    width: "100%",
-    height: "100%"
-  }
 });
 
 export default PurchaseDetailScreen

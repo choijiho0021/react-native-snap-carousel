@@ -51,6 +51,7 @@ class Api {
         order: 'json/orders',
         uploadFile: 'file/upload',
         board: 'json/contactboard',
+        subscription: 'json/subs',
 
         commerce: {
             payment: 'commerce/payment',
