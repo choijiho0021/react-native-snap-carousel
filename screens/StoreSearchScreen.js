@@ -250,7 +250,7 @@ class StoreSearchScreen extends Component {
       {searchResult.map((elm,idx) => 
         <TouchableOpacity key={elm.uuid} onPress={() => this._search(elm.country.values().next().value,true)}>
           <View key={idx+''} style={styles.autoList}>
-            <Text key="text">{elm.categoryId == productApi.category.multi ? elm.name : elm.country.values().next().value}</Text>
+            <Text key="text" style={styles.autoText}>{elm.categoryId == productApi.category.multi ? elm.name : elm.country.values().next().value}</Text>
           </View>
         </TouchableOpacity>
       )}
@@ -407,6 +407,9 @@ const styles = StyleSheet.create({
   autoList : {
     marginVertical:23,
     marginLeft :60
+  },
+  autoText : {
+    ... appStyles.normal16Text,
   },
   backButton : {
     alignItems:"center",
