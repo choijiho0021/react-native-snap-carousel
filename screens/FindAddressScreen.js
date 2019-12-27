@@ -64,7 +64,6 @@ class FindAddressScreen extends Component {
 
     console.log('@@addr', addr)
     addressApi.find(addr, page).then( resp => {
-      console.log('@@data',resp.objects)
       this.setState({
         links: resp.links,
         data : resp.objects
@@ -84,14 +83,18 @@ class FindAddressScreen extends Component {
     const {links} = this.state,
       {totalCount = 0, countPerPage =1, currentPage=1} = _.isArray(links) && links.length > 0 ? links[0] : {},
       totalPage = Math.ceil( Number(totalCount) / Number(countPerPage))
+    const minDisabled = currentPage == 1 ? true : false
+    const maxDisabled = currentPage == totalPage ? true : false
 
     return (
       <View style={styles.pagination} >
-        <TouchableOpacity style={styles.paginationBox} onPress={this._findAddr( Math.max( 1, Number(currentPage) -1))}>
+        <TouchableOpacity style={[styles.paginationBox, minDisabled && styles.disabledButton]} 
+                          disabled={minDisabled} onPress={this._findAddr( Math.max( 1, Number(currentPage) -1))}>
           <AppIcon name="iconArrowLeftWhite" style={styles.paginationButton}/>
         </TouchableOpacity>        
         <Text style={styles.paginationText}>{`${currentPage} / ${totalPage}`}</Text>
-        <TouchableOpacity style={styles.paginationBox} onPress={this._findAddr( Math.min(totalPage, Number(currentPage) +1))}>
+        <TouchableOpacity style={[styles.paginationBox, maxDisabled && styles.disabledButton]} 
+                          disabled={maxDisabled} onPress={this._findAddr( Math.min(totalPage, Number(currentPage) +1))}>
           <AppIcon name="iconArrowRightWhite" style={styles.paginationButton}/>
         </TouchableOpacity>
       </View>
@@ -229,7 +232,11 @@ const styles = StyleSheet.create({
     borderBottomColor:colors.lightGrey, 
     borderBottomWidth: 1, 
     marginHorizontal:20
+  },
+  disabledButton: {
+    backgroundColor: colors.disabled
   }
+
 });
 
 // export default FindAddressScreen

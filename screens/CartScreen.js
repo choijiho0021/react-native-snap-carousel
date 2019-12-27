@@ -44,6 +44,7 @@ class CartScreen extends Component {
     this._removeItem = this._removeItem.bind(this)
     this._calculate = this._calculate.bind(this)
     this._init = this._init.bind(this)
+    this._isEmptyList = this._isEmptyList.bind(this)
   }
 
   componentDidMount() {
@@ -206,12 +207,19 @@ class CartScreen extends Component {
       }), {cnt: 0, price:0})
   }
 
+  _isEmptyList=(item)=>{
+    if(item.section.data.length == 0){
+      return(<View style={styles.emptyView}>
+                <Text style={styles.emptyText}>{i18n.t('cart:empty')}</Text>
+            </View>)
+    }
+  }
 
   render() {
     const { qty, checked, section, total} = this.state,
       dlvCost = this._dlvCost( checked, qty, total, section)
 
-    return (
+      return (
       <SafeAreaView style={styles.container}>
 
         <SectionList 
@@ -222,6 +230,7 @@ class CartScreen extends Component {
           renderSectionHeader={({ section: { title } }) => (
             <Text style={[styles.header, {marginTop: title == 'sim' ? 20 : 30}]}>{i18n.t(title)}</Text>
           )}
+          renderSectionFooter={(section)=>this._isEmptyList(section)}
           ListFooterComponent={ <ChargeSummary totalCnt={total.cnt} totalPrice={total.price} dlvCost={dlvCost}/>} />
 
         <View style={styles.buttonBox}>
@@ -285,6 +294,15 @@ const styles = StyleSheet.create({
     ... appStyles.button,
     width: 100,
     alignSelf: "center"
+  },
+  emptyView: {
+    flex: 1, 
+    flexDirection: 'row', 
+    justifyContent: 'center', 
+    height: 200
+  },
+  emptyText: {
+    alignSelf: 'center'
   }
 });
 

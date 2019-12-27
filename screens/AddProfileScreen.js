@@ -38,6 +38,7 @@ class AddProfileScreen extends Component {
       update: undefined,
       prefix: "010",
       disabled: true,
+      roadAddr: " ",
       profile: new Map({
         alias: undefined,
         recipient: undefined,
@@ -105,15 +106,16 @@ class AddProfileScreen extends Component {
         const {admCd = ''} = addr
         const provinceNumber = !_.isEmpty(addr.sggNm) ? admCd.substring(0,2) : admCd.substring(0,5)
         const cityNumber = !_.isEmpty(addr.sggNm) ? admCd.substring(2,5) : admCd.substring(5, 8)
-        const addressLine1 = addr.siNm + ' ' + addr.sggNm
-        const addressLine2 = addr.roadAddr.split(addressLine1+' ').find(item => !_.isEmpty(item))
+        const addressLine1 = !_.isEmpty(addr.sggNm) ? (addr.siNm + ' ' + addr.sggNm) : (addr.siNm + ' ' + addr.emdNm)
+        const addressLine2 = addr.jibunAddr.split(addressLine1+' ').find(item => !_.isEmpty(item))
 
         this.setState({
           profile: this.state.profile.set( 'addressLine1', addressLine1)
             .set('addressLine2', addressLine2)
             .set('zipCode', addr.zipNo)
             .set('province', findEngAddress.findProvince(provinceNumber))
-            .set('city', findEngAddress.findCity(provinceNumber, cityNumber))
+            .set('city', findEngAddress.findCity(provinceNumber, cityNumber)),
+          roadAddr: addr.roadAddr
         })
 
       this._validate("addressLine1", addr.roadAddrPart1)  
@@ -213,9 +215,12 @@ _onSubmit() {
           innerRef={ref => { this.scroll = ref; }}>
 
             <View style={{ flex: 1, justifyContent: 'flex-start', flexDirection: 'row'}}>
-              <View style={{ margin: 20 }}>
-                <View style={styles.textRow}>
-                  <Text style={styles.textTitle}>{i18n.t('addr:addrAlias')}</Text>
+              <View style={{ margin: 20, flex: 1 }}>
+                <View style={[styles.textRow, !_.isEmpty(profile.get('alias')) && {borderColor: colors.black}]}>
+                  <View style={styles.titleView}>
+                    <Text style={styles.titleText}>{i18n.t('addr:addrAlias')}</Text>
+                    <Text style={styles.titleRequired}>{i18n.t('addr:mandatory')}</Text>
+                  </View>
                   <TextInput style={styles.textBox}
                             placeholder={profile.get('alias')}
                             placeholderTextColor={colors.black}
@@ -226,7 +231,10 @@ _onSubmit() {
                 }             
 
                 <View style={styles.textRow}>
-                  <Text style={styles.textTitle}>{i18n.t('addr:recipient')}</Text>
+                  <View style={styles.titleView}>
+                    <Text style={styles.titleText}>{i18n.t('addr:recipient')}</Text>
+                    <Text style={styles.titleRequired}>{i18n.t('addr:mandatory')}</Text>
+                  </View>
                   <TextInput style={styles.textBox}
                             value={profile.get('recipient')}
                             placeholder={i18n.t('addr:enterWithin50')}
@@ -236,58 +244,82 @@ _onSubmit() {
                   this._warning('recipient')
                 }                 
                 <View style={styles.textRow}>
-                  <Text style={styles.textTitle}>{i18n.t('addr:recipientNumber')}</Text>
-                  <View style={[styles.container, this.props.style]}>
-                    <View style={styles.pickerWrapper}>
-                      <RNPickerSelect style={{
-                        placeholder: styles.placeholder,
-                        iconContainer: {
-                          top: 4,
-                          right: 10,}
-                      }}
-                        placeholder={{}}
-                        onValueChange={this._onChangeValue("prefix")}
-                        items={["010", "011", "017", "018", "019"].map(item => ({
-                          label: item,
-                          value: item
-                        }))}
-                        value={prefix}
-                        Icon={() => {
-                          return (<Triangle width={8} height={6} />)
-                        }}
-                      />
-                    </View>
+                  <View style={styles.titleView}>
+                    <Text style={styles.titleText}>{i18n.t('addr:recipientNumber')}</Text>
+                    <Text style={styles.titleRequired}>{i18n.t('addr:mandatory')}</Text>
                   </View>
-                  <TextInput style={[styles.textBox, { width: '60%' }]} // 56%
-                            onChangeText={this._onChangeProfile('recipientNumber')}
-                            maxLength={8}
-                            keyboardType='numeric'
-                            value={profile.get('recipientNumber')} 
-                            placeholder={i18n.t('addr:noHyphen')}/>
+                  <View style={{flexDirection: 'row', width: '82%'}}>
+                    <View
+                       style={[styles.container, this.props.style]}>
+                      <View style={styles.pickerWrapper}>
+                        <RNPickerSelect style={{
+                          placeholder: styles.placeholder,
+                          iconContainer: {
+                            top: 4,
+                            right: 10,}
+                        }}
+                          placeholder={{}}
+                          onValueChange={this._onChangeValue("prefix")}
+                          items={["010", "011", "017", "018", "019"].map(item => ({
+                            label: item,
+                            value: item
+                          }))}
+                          value={prefix}
+                          Icon={() => {
+                            return (<Triangle width={8} height={6} />)
+                          }}
+                        />
+                      </View>
+                    </View>
+                    <TextInput style={[styles.textBox, { width: '72%' }]} // 56%
+                              onChangeText={this._onChangeProfile('recipientNumber')}
+                              maxLength={8}
+                              keyboardType='numeric'
+                              value={profile.get('recipientNumber')} 
+                              placeholder={i18n.t('addr:noHyphen')}/>
+                  </View>                            
                 </View>
                 { 
                   this._warning('recipientNumber')
                 }    
                 <View style={[styles.textRow, { marginBottom: 10 }]}>
-                  <Text style={styles.textTitle}>{i18n.t('addr:address')}</Text>
-                  <Text style={[styles.textBox, { width: '61%' }]}
-                        onPress={this._findAddress}>{profile.get('addressLine1')}</Text>
-                  <AppButton title={i18n.t('addr:search')}
-                            style={styles.findButton}
-                            titleStyle={styles.findBtnText}
-                            onPress={this._findAddress} />
+                  <View style={styles.titleView}>
+                    <Text style={styles.titleText}>{i18n.t('addr:address')}</Text>
+                    <Text style={styles.titleRequired}>{i18n.t('addr:mandatory')}</Text>
+                  </View>
+                  <View style={{flexDirection: 'row', width: '82%'}}>
+                    <Text style={[styles.textBox, {width: '78.5%',justifyContent: 'flex-start'}]}
+                          onPress={this._findAddress}>{profile.get('addressLine1')}</Text>
+                    <AppButton title={i18n.t('addr:search')}
+                              style={styles.findButton}
+                              titleStyle={styles.findBtnText}
+                              onPress={this._findAddress} />
+                  </View>          
                 </View>
                 <View style={styles.findTextRow}>
                   <Text style={styles.textBox}
                         onPress={this._findAddress} >{profile.get('addressLine2')}</Text>
                 </View>
 
-                <View style={[styles.findTextRow, {marginBottom:0}]}>
+                <View style={[styles.findTextRow, {marginBottom: 13}]}>
                   <TextInput style={styles.textBox}
                             value={profile.get('detailAddr')}
                             onChangeText={this._onChangeProfile('detailAddr')} 
                             placeholder={i18n.t('addr:details')}/>
                 </View>
+                {
+                  !_.isEmpty(profile.get('addressLine1'))  && 
+                  (<View style={styles.findTextRow}>
+                    <View style={{width: '82%'}}>
+                      <View style={styles.roadBox}>
+                        <Text style={styles.roadText}>{i18n.t('addr:road')}</Text>
+                      </View>                       
+                        <Text style={styles.addrText}>{
+                        !_.isEmpty(profile.get('detailAddr')) ? 
+                        this.state.roadAddr + ' '+ profile.get('detailAddr') : this.state.roadAddr}</Text>
+                    </View> 
+                  </View>)
+                }                
                 { 
                 // 상세주소를 입력했는데 주소검색은 하지 않은 경우,
                   !_.isEmpty(this.state.errors.detailAddr) && _.isUndefined(this.state.profile.get('addressLine1')) ? this._warning('addressLine1') : this._warning('detailAddr')
@@ -330,7 +362,6 @@ const styles = StyleSheet.create({
   findTextRow: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     marginBottom: 10,
     justifyContent: 'flex-end'
   },
@@ -339,19 +370,21 @@ const styles = StyleSheet.create({
     borderRadius: 3, 
     width: '18%', 
     height: 36, 
-    marginLeft: 10
+    marginLeft: 10,
+    justifyContent: 'flex-end'
   },
   findBtnText:{
     fontSize: 12,
     fontWeight: 'normal',
     fontStyle: 'normal',
     lineHeight: 12,
-    letterSpacing: 0.15,
+    letterSpacing: 0.15, 
     color: colors.white
 
   },
   textBox: {
     width: '82%',
+    // flex: 1,
     height: 36,
     borderRadius: 3,
     backgroundColor: colors.white,
@@ -360,12 +393,19 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey,
     padding: 10,
   },
-  textTitle: {
+  titleView: {
+    flex: 1, 
+    flexDirection: 'row',
+  },
+  titleText: {
     ...appStyles.normal14Text,
     fontWeight: 'normal',
     color: colors.warmGrey,
     alignSelf: 'center',
-    width: '18%'
+  },
+  titleRequired: {
+    fontSize: 14, 
+    color: colors.tomato,
   },
   pickerWrapper: {
     ...appStyles.borderWrapper,
@@ -373,6 +413,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingVertical: 8,
     marginRight: 10,
+    justifyContent: 'flex-start'
   },
   basicProfile: {
     ... appStyles.normal12Text,
@@ -385,7 +426,32 @@ const styles = StyleSheet.create({
     flexDirection: 'row', 
     alignSelf: 'flex-end',
     marginTop: 10
-  }
+  },
+  roadBox: {
+    width: '15%',
+    height: 20,
+    borderRadius: 2,
+    backgroundColor: colors.white,
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+    flexDirection: 'row',
+    justifyContent: 'center'
+  },
+  roadText: {
+    fontSize: 12,
+    fontWeight: "normal",
+    fontStyle: "normal",
+    color: colors.warmGrey,
+    alignSelf: 'center',
+  },
+  addrText: {
+    ... appStyles.normal12Text,
+    fontSize: 12,
+    color: colors.warmGrey,
+    marginTop: 3, 
+    textAlign: 'left'
+  },
 });
 
 const mapStateToProps = (state) => ({
