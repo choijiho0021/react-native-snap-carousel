@@ -311,7 +311,7 @@ class UserAPI {
         }, this.toUser)
     }
 
-    sendSms = ({ user }) => {
+    sendSms = ({ user, abortController }) => {
         if ( _.isEmpty(user) ) return api.reject( api.INVALID_ARGUMENT)
 
         const url = `${api.rokHttpUrl(api.path.rokApi.auth.verify)}`,
@@ -331,10 +331,10 @@ class UserAPI {
             else {
                 return api.failure(api.FAILED, undefined, (data.result || {}).error);
             }
-        })
+        }, {abortController})
     }
 
-    confirmSmsCode = ({ user, pass }) => {
+    confirmSmsCode = ({ user, pass, abortController }) => {
         if ( _.isEmpty(user) || _.isEmpty(pass) ) return api.reject( api.INVALID_ARGUMENT)
 
         const url = `${api.rokHttpUrl(api.path.rokApi.auth.confirm)}`,
@@ -355,7 +355,7 @@ class UserAPI {
             else {
                 return api.failure(api.FAILED, undefined, (data.result || {}).error);
             }
-        })
+        }, {abortController})
     }
 
     signUp = ({ user, pass, email, mktgOptIn }) => {
