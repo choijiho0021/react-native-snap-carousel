@@ -16,7 +16,15 @@ import _ from 'underscore'
 import AppBackButton from '../components/AppBackButton';
 import pageApi from '../utils/api/pageApi';
 import AppFlatListItem from '../components/AppFlatListItem';
+import Carousel, {Pagination} from 'react-native-snap-carousel';
+import { sliderWidth } from '../constants/SliderEntry.style'
 
+const guideImages = {
+  step1: require('../assets/images/guide/step1/img.png'),
+  step2: require('../assets/images/guide/step2/img.png'),
+  step3: require('../assets/images/guide/step3/img.png'),
+  step4: require('../assets/images/guide/step4/img.png'),
+}
 
 class GuideScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -27,8 +35,17 @@ class GuideScreen extends Component {
     super(props)
     this.state = {
       querying: false,
-      data: []
+      data: [],
+      activeSlide: 0,
+      images: [
+        { key:'step1'},
+        { key:'step2'},
+        { key:'step3'},
+        { key:'step4'},
+      ]
     }
+
+    this._header = this._header.bind(this)
   }
 
   componentDidMount() {
@@ -56,13 +73,34 @@ class GuideScreen extends Component {
 
   }
 
+  _renderGuide({item}) {
+    return <Image style={styles.image} source={guideImages[item.key]} 
+      resizeMode='cover'/>
+  }
+
   _header() {
+    const {images, activeSlide} = this.state
+
     return(
       <View>
-        <View style={styles.box}>
-          <Text style={styles.text}>{i18n.t('guide:buy')}</Text>
-          <Image source={require('../assets/images/main/img.png')} />
-        </View>
+        <Carousel
+          data={images}
+          renderItem={this._renderGuide}
+          onSnapToItem={(index) => this.setState({activeSlide: index})}
+          autoplay={false}
+          loop={true}
+          useScrollView={true}
+          lockScrollWhileSnapping={true}
+          sliderWidth={sliderWidth}
+          itemWidth={sliderWidth} />
+
+        <Pagination dotsLength={images.length}
+          activeDotIndex={activeSlide} 
+          dotStyle={styles.dotStyle}
+          inactiveDotOpacity={0.4}
+          inactiveDotScale={1.0}
+          containerStyle={styles.pagination}/>
+
         <View style={styles.faqBox}>
           <Text style={styles.faq}>FAQ</Text>
         </View>
@@ -81,11 +119,12 @@ class GuideScreen extends Component {
   }
 
   render() {
-    const { data} = this.state
+    const { data, activeSlide} = this.state
 
     return (
       <View style={styles.container}>
         <FlatList data={data} renderItem={this._renderItem} 
+          extraData={activeSlide}
           ListHeaderComponent={this._header} />
       </View>
     )
@@ -95,6 +134,20 @@ class GuideScreen extends Component {
 
 
 const styles = StyleSheet.create({
+  pagination: {
+    position: 'absolute',
+    top: 0, 
+    right: 0,
+    paddingVertical: 20,
+    paddingRight: 20,
+    marginLeft: 7
+  },
+  dotStyle: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.white,
+  },
   tipBox: {
     height: 71,
     justifyContent: 'center',
@@ -109,11 +162,8 @@ const styles = StyleSheet.create({
     flex:1,
     alignItems: 'stretch'
   },
-  box: {
-    height: 346,
-    backgroundColor: colors.lightPeriwinkle,
-    alignItems: 'center',
-    justifyContent: 'space-between'
+  image: {
+    height: 390,
   },
   text: {
     ... appStyles.bold18Text,
