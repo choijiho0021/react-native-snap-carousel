@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
   },
   nolist: {
-    marginTop: 60,
+    marginVertical: 60,
     textAlign: 'center'
   },
   userPicture: {
