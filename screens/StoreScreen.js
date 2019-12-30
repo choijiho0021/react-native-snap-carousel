@@ -110,10 +110,11 @@ class StoreScreen extends Component {
         item.key = item.uuid 
         item.cntry = new Set(country.getName(item.ccode))
         //days가 "00일" 형식으로 오기 때문에 일 제거 후 넘버타입으로 변환
-        item.pricePerDay = Math.round(item.price / Number(item.days.slice(0,-1)))
+        item.pricePerDay = Math.round(item.price / Number(item.days.replace(/[^0-9]/g,"")))
 
         const idxCcode = acc.findIndex(elm => item.categoryId == multi ? elm.uuid == item.uuid : elm.ccode == item.ccode)
 
+        출처: https://cy-baek.tistory.com/131 [한 처음에]
         if ( idxCcode < 0) {
           // new item, insert it
           return acc.concat( [item])
