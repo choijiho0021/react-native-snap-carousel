@@ -63,6 +63,7 @@ class AddProfileScreen extends Component {
     this._findAddress = this._findAddress.bind(this)
     this._validate = this._validate.bind(this)
     this._warning = this._warning.bind(this)
+    this._changeBorder = this._changeBorder.bind(this)
   }
 
   componentDidMount() {
@@ -99,7 +100,6 @@ class AddProfileScreen extends Component {
     console.log('@@@addr', addr)
    
     // 주소 검색을 한 경우
-    // roadAddr split 활용 저장 자체를 변경?
     if(addr != prevProps.profile.addr){
 
       if(!_.isEmpty(addr)){
@@ -151,7 +151,6 @@ _onSubmit() {
   _onChangeValue = (key = '') => (value) => {
     this.setState({
       [key]: value,
-      // disabled: _.isEmpty(value) ? true : false
     })
   }
 
@@ -200,13 +199,17 @@ _onSubmit() {
                           , flex:1, alignSelf: 'flex-end'}}>{this.state.errors[key] ? this.state.errors[key] : null}</Text> )    
   }
 
+  _changeBorder(title){
+    console.log('title', title) 
+    return this.state.profile.get(title) && _.isEmpty(this.state.errors[title]) ? colors.black : colors.lightGrey
+  }
   render() {
 
-    const { prefix, profile } = this.state
+    const { prefix, profile, errors } = this.state
 
     console.log('length', Object.keys(this.state.errors).length)
     console.log('detail', this.state.errors.detailAddr)
-    
+
     return (
       <SafeAreaView style={styles.container}>
         <KeyboardAwareScrollView
@@ -216,12 +219,12 @@ _onSubmit() {
 
             <View style={{ flex: 1, justifyContent: 'flex-start', flexDirection: 'row'}}>
               <View style={{ margin: 20, flex: 1 }}>
-                <View style={[styles.textRow, !_.isEmpty(profile.get('alias')) && {borderColor: colors.black}]}>
+                <View style={styles.textRow}>
                   <View style={styles.titleView}>
                     <Text style={styles.titleText}>{i18n.t('addr:addrAlias')}</Text>
                     <Text style={styles.titleRequired}>{i18n.t('addr:mandatory')}</Text>
                   </View>
-                  <TextInput style={styles.textBox}
+                  <TextInput style={[styles.textBox, {borderColor: this._changeBorder('alias')}]}
                             placeholder={profile.get('alias')}
                             placeholderTextColor={colors.black}
                             onChangeText={this._onChangeProfile('alias')}/>
@@ -235,7 +238,7 @@ _onSubmit() {
                     <Text style={styles.titleText}>{i18n.t('addr:recipient')}</Text>
                     <Text style={styles.titleRequired}>{i18n.t('addr:mandatory')}</Text>
                   </View>
-                  <TextInput style={styles.textBox}
+                  <TextInput style={[styles.textBox, {borderColor: this._changeBorder('recipient')}]}
                             value={profile.get('recipient')}
                             placeholder={i18n.t('addr:enterWithin50')}
                             onChangeText={this._onChangeProfile('recipient')} />
@@ -249,8 +252,7 @@ _onSubmit() {
                     <Text style={styles.titleRequired}>{i18n.t('addr:mandatory')}</Text>
                   </View>
                   <View style={{flexDirection: 'row', width: '82%'}}>
-                    <View
-                       style={[styles.container, this.props.style]}>
+                    <View style={[styles.container, this.props.style]}>
                       <View style={styles.pickerWrapper}>
                         <RNPickerSelect style={{
                           placeholder: styles.placeholder,
@@ -271,7 +273,7 @@ _onSubmit() {
                         />
                       </View>
                     </View>
-                    <TextInput style={[styles.textBox, { width: '72%' }]} // 56%
+                    <TextInput style={[styles.textBox, {borderColor: this._changeBorder('recipientNumber'), width: '72%'}]}  // 56%
                               onChangeText={this._onChangeProfile('recipientNumber')}
                               maxLength={8}
                               keyboardType='numeric'
@@ -288,7 +290,7 @@ _onSubmit() {
                     <Text style={styles.titleRequired}>{i18n.t('addr:mandatory')}</Text>
                   </View>
                   <View style={{flexDirection: 'row', width: '82%'}}>
-                    <Text style={[styles.textBox, {width: '78.5%',justifyContent: 'flex-start'}]}
+                    <Text style={[styles.textBox, {borderColor: this._changeBorder('addressLine1'), width: '78.5%', paddingVertical: 10}]}
                           onPress={this._findAddress}>{profile.get('addressLine1')}</Text>
                     <AppButton title={i18n.t('addr:search')}
                               style={styles.findButton}
@@ -297,12 +299,12 @@ _onSubmit() {
                   </View>          
                 </View>
                 <View style={styles.findTextRow}>
-                  <Text style={styles.textBox}
+                  <Text style={[styles.textBox, {borderColor: this._changeBorder('addressLine2'), paddingVertical: 10}]}
                         onPress={this._findAddress} >{profile.get('addressLine2')}</Text>
                 </View>
 
                 <View style={[styles.findTextRow, {marginBottom: 13}]}>
-                  <TextInput style={styles.textBox}
+                  <TextInput style={[styles.textBox, {borderColor: this._changeBorder('detailAddr')}]}
                             value={profile.get('detailAddr')}
                             onChangeText={this._onChangeProfile('detailAddr')} 
                             placeholder={i18n.t('addr:details')}/>
@@ -391,7 +393,7 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderWidth: 1,
     borderColor: colors.lightGrey,
-    padding: 10,
+    paddingHorizontal: 10,
   },
   titleView: {
     flex: 1, 

@@ -144,7 +144,7 @@ const en = {
   "sim:rechargeAmt" : "Recharge Amount",
   "sim:cardPrice" : "SIM Price",
   "sim:deductFromBalance" : "Deduct from the Balance",
-  "sim:remainingBalance" : "Remaining Balance",
+  "sim:remainingBalance" : "Balance",
   
   "mobile:header": "Login",
   "mobile:title": "Simple Login",

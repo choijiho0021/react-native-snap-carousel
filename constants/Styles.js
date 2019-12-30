@@ -102,7 +102,7 @@ export const appStyles = StyleSheet.create({
     },
 
     subTitle: {
-        height: 24,
+        height: 25,
 //        fontFamily: "AppleSDGothicNeo",
         fontSize: 24,
         fontWeight: "500",

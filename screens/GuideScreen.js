@@ -74,8 +74,7 @@ class GuideScreen extends Component {
   }
 
   _renderGuide({item}) {
-    return <Image style={styles.image} source={guideImages[item.key]} 
-      resizeMode='cover'/>
+    return <Image style={styles.image} source={guideImages[item.key]} resizeMode='cover' />
   }
 
   _header() {
@@ -163,7 +162,9 @@ const styles = StyleSheet.create({
     alignItems: 'stretch'
   },
   image: {
+    width: sliderWidth,
     height: 390,
+    alignSelf: 'center'
   },
   text: {
     ... appStyles.bold18Text,
