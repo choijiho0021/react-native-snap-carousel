@@ -30,7 +30,7 @@ class AppBackButton extends PureComponent {
       <TouchableWithoutFeedback onPress={this._goBack} >
         <View style={{flexDirection: "row", alignItems:"flex-end"}}>
           <Image style={{marginLeft: 20}} source={require('../assets/images/header/btnBack.png')} />
-          <Text style={[appStyles.subTitle, {marginLeft:16, marginBottom: 2}]}>{title}</Text>
+          <Text style={[appStyles.subTitle, {marginLeft:16, lineHeight:30}]}>{title}</Text>
         </View>
       </TouchableWithoutFeedback>
     )
