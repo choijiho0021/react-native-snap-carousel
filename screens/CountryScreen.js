@@ -138,12 +138,12 @@ class CountryScreen extends Component {
     return (
       <TouchableOpacity onPress={this._onPress(item.uuid)}>
         <View key={"product"} style={[styles.card,borderColor]}>
-          <View key={"text"}>
+          <View key={"text"} style={{flex:1}}>
             <Text key={"name"} style={[appStyles.bold16Text,color]}>{item.name}</Text>
             <Text key={"desc"} style={[{marginTop:5},appStyles.normal14Text]}>({item.field_description})</Text>
           </View>
-          <View key={"priceText"} style={{alignItems:"baseline"}}>
-            <AppPrice key={"price"} price={item.price} style={styles.appPrice} balanceStyle={styles.priceStyle} wonStyle={styles.wonStyle} />
+          <View key={"priceText"} style={styles.appPrice}>
+            <AppPrice key={"price"} price={item.price} balanceStyle={styles.priceStyle} wonStyle={styles.wonStyle} />
           </View>
         </View>
       </TouchableOpacity>
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     marginVertical: 7,
     marginHorizontal:20,
     flexDirection:'row',
-    justifyContent:'space-between',
+    // justifyContent:'space-between',
     padding: 15,
     alignItems:'center'
   },
@@ -318,8 +318,6 @@ const styles = StyleSheet.create({
     fontStyle: "normal",
     lineHeight: 22,
     letterSpacing: 0.19,
-    // textAlign: "right",
-    textAlignVertical:"bottom",
     color: colors.black
   },
   regCard : {
@@ -336,8 +334,9 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey
   },
   appPrice : {
-    flexDirection: 'row',
-    alignItems: 'flex-end'
+    alignItems:"flex-end",
+    marginLeft:10,
+    width:80
   }
 });
 

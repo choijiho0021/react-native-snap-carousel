@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   },
   price: {
     flexDirection: 'row',
-    alignItems: 'baseline',
+    alignItems: 'center',
     marginLeft: 20,
     marginTop: 10,
   },

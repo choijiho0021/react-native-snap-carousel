@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
   buttonBox: {
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems:'baseline'
+    alignItems:'center'
   },
   confirm: {
     ... appStyles.confirm,
