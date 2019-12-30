@@ -34,7 +34,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>3</string>
+	<string>11</string>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -79,6 +79,11 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
+			<key>esim2-dev.ap-northeast-2.elasticbeanstalk.com</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
 			<key>localhost</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
@@ -101,8 +106,12 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSCalendarsUsageDescription</key>
+	<string>캘린더 접근을 허용해 주세요</string>
 	<key>NSCameraUsageDescription</key>
 	<string>카메라 접근을 허용해 주세요</string>
+	<key>NSContactsUsageDescription</key>
+	<string>연락처 접근을 허용해 주세요</string>
 	<key>NSMainNibFile</key>
 	<string>LaunchScreen</string>
 	<key>NSMicrophoneUsageDescription</key>
