@@ -17,9 +17,10 @@ import { colors } from '../constants/Colors';
 import LabelText from '../components/LabelText';
 import AppButton from '../components/AppButton';
 import _ from 'underscore'
-import { SafeAreaView } from 'react-navigation';
+import { SafeAreaView, ScrollView } from 'react-navigation';
 import AppBackButton from '../components/AppBackButton';
 import api from '../utils/api/api';
+import { windowWidth, device } from '../constants/SliderEntry.style';
 
 class RechargeScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -64,7 +65,6 @@ class RechargeScreen extends Component {
   }
 
   _rechargeButton(value) {
-
     const { selected } = this.state
 
     return (
@@ -97,7 +97,7 @@ class RechargeScreen extends Component {
 
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.upper}>
+        <ScrollView>
           <Image style={styles.card} source={{uri:api.httpImageUrl(simCardImage)}}
             resizeMode='contain'/> 
           <View style={styles.iccidBox}>
@@ -112,13 +112,14 @@ class RechargeScreen extends Component {
               value={balance} 
               format="price" color={colors.clearBlue}/>
           </View>
-        </View>
-        <View style={styles.divider}></View>
-        <View >
-          {
-            amount.map(v => this._rechargeButton(v))
-          }
-        </View>
+          <View style={styles.divider}></View>
+          <View style={{flex:1}}/>
+          <View style={{marginBottom:40}}>
+            {
+              amount.map(v => this._rechargeButton(v))
+            }
+          </View>
+        </ScrollView>
         <AppButton title={i18n.t('rch:recharge')} 
           titleStyle={appStyles.confirmText}
           disabled={_.isEmpty(selected)}
@@ -137,7 +138,6 @@ const styles = StyleSheet.create({
   },
   confirm: {
     ... appStyles.confirm,
-    marginTop: 40
   },
   container: {
     flex: 1,
@@ -183,7 +183,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   button: {
-    width: 150,
+    // iphon5s windowWidth == 320
+    width: windowWidth > device.iphone5.window.width ? 150 : 130,
     height: 48,
     borderRadius: 24,
     backgroundColor: colors.white,
