@@ -20,7 +20,7 @@ import _ from 'underscore'
 import { SafeAreaView, ScrollView } from 'react-navigation';
 import AppBackButton from '../components/AppBackButton';
 import api from '../utils/api/api';
-import { windowWidth, device } from '../constants/SliderEntry.style';
+import { isDeviceSize } from '../constants/SliderEntry.style';
 
 class RechargeScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   },
   button: {
     // iphon5s windowWidth == 320
-    width: windowWidth > device.iphone5.window.width ? 150 : 130,
+    width: isDeviceSize('small') ?  130 : 150,
     height: 48,
     borderRadius: 24,
     backgroundColor: colors.white,
