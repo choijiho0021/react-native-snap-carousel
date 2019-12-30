@@ -14,10 +14,11 @@ import api from '../utils/api/api';
 import AppIcon from './AppIcon';
 import AppButton from './AppButton';
 import InputNumber from './InputNumber';
+import { isDeviceSize } from '../constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   container: {
-    height: 148,
+    paddingVertical: 15,
     borderBottomWidth: 0.5,
     borderBottomColor: colors.lightGrey,
     flexDirection: 'row',
@@ -74,6 +75,7 @@ class CartItem extends React.PureComponent {
 
   render() {
     const {name, price, image, qty, onChange, onChecked, checked, onDelete} = this.props
+
     return (
       <View style={styles.container}>
         <TouchableOpacity onPress={onChecked} style={styles.touch}>
@@ -86,7 +88,7 @@ class CartItem extends React.PureComponent {
 
         <View style={styles.desc}>
           <Text style={styles.itemTitle}>{name}</Text>
-          <View style={styles.input}>
+          <View style={[styles.input, isDeviceSize('small') && {flexDirection:'column', alignItems:'flex-end'}]}>
             <Text style={styles.itemPrice}>{utils.price(price)}</Text>
             <InputNumber value={qty} onChange={onChange} />
           </View>

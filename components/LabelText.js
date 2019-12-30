@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: 'center',
+    flexDirection: 'row',
     justifyContent: 'space-between'
   },
   value: {
@@ -31,30 +32,11 @@ const styles = StyleSheet.create({
 });
 
 export default class LabelText extends PureComponent {
-  constructor(props) {
-    super(props)
-    this.state = {
-      flexDirection: 'row'
-    }
-
-    this._onLayout = this._onLayout.bind(this)
-  }
-
-  _onLayout(event) {
-    const {width} = event.nativeEvent.layout;
-    console.log('label text width', width, this.props.label, this.props.value)
-    if ( width < 200) {
-      this.setState({
-        flexDirection: 'column'
-      })
-    }
-  }
   render() {
     const {label, value, style, format, color, labelStyle, valueStyle} = this.props
-    const {flexDirection} = this.state
 
     return (
-      <View style={[styles.container, {flexDirection}, style]} onLayout={this._onLayout} >
+      <View style={[styles.container, style]} >
         <Text style={labelStyle || styles.label}>{label}</Text>
         {
           ( format == 'price') ?

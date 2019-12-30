@@ -14,6 +14,7 @@ import api from '../utils/api/api';
 import AppIcon from './AppIcon';
 import LabelText from './LabelText';
 import InputNumber from './InputNumber';
+import { isDeviceSize } from '../constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   container: {
@@ -88,7 +89,7 @@ export default class SimCard extends PureComponent {
           <View style={styles.input}>
             <InputNumber value={qty} onChange={onChange}/>
           </View>
-          <LabelText style={styles.balance}
+          <LabelText style={{... styles.balance, flexDirection: isDeviceSize('small') ? 'column' : 'row'}}
             label={i18n.t('sim:rechargeAmt')}
             format="price"
             value={balance} />

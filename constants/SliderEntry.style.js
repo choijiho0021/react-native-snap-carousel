@@ -1,5 +1,6 @@
 import { StyleSheet, Dimensions, Platform } from 'react-native';
 import { colors } from './Colors'
+import _ from 'underscore'
 
 const IS_IOS = Platform.OS === 'ios';
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
@@ -53,6 +54,11 @@ export const device = {
             height: 896
         }
     }
+}
+
+export const isDeviceSize = (size) => {
+    if ( _.isEmpty(device[size])) return false
+    return windowWidth <= device[size].window.width
 }
 
 const entryBorderRadius = 8;

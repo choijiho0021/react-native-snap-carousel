@@ -29,6 +29,7 @@ import * as Permissions from 'expo-permissions';
 import validationUtil from '../utils/validationUtil';
 import userApi from '../utils/api/userApi';
 import LabelTextTouchable from '../components/LabelTextTouchable';
+import { isDeviceSize } from '../constants/SliderEntry.style';
 
 let ImagePicker 
 if (Constants.appOwnership === 'expo') {
@@ -51,7 +52,7 @@ class OrderItem extends PureComponent {
       <TouchableOpacity onPress={onPress}>
         <View key={item.orderId} style={styles.order}>
           <Text style={appStyles.normal14Text}>{moment(item.orderDate).format('YYYY-MM-DD')}</Text>
-          <LabelText style={styles.orderValue}
+          <LabelText style={[styles.orderValue, isDeviceSize('small') && {flexDirection : 'column', alignItems:'space-between'}]}
             label={label} labelStyle={appStyles.normal16Text}
             value={item.totalPrice} format="price" />
         </View>
