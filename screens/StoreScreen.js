@@ -25,6 +25,8 @@ import StoreList from '../components/StoreList';
 import {withnavigationFocus} from 'react-navigation'
 import moment from 'moment'
 import AppActivityIndicator from '../components/AppActivityIndicator';
+import { isDeviceSize } from '../constants/SliderEntry.style';
+
 class StoreScreen extends Component {
   static navigationOptions = ({navigation}) => ({
     headerLeft: <Text style={styles.title}>{i18n.t('store')}</Text>,
@@ -183,7 +185,7 @@ class StoreScreen extends Component {
         showSearchBar : false
       })
     }
-  }
+  
   */
 
   _onChangeText = (key) => (value) => {
@@ -268,7 +270,7 @@ const styles = StyleSheet.create({
   tabBarLabel: {
       height: 17,
       // fontFamily: "AppleSDGothicNeo",
-      fontSize: 14,
+      fontSize: isDeviceSize('small') ? 10 : 14 ,
       fontWeight: "500",
       fontStyle: "normal",
       letterSpacing: 0.17
@@ -280,7 +282,7 @@ const styles = StyleSheet.create({
   },
   tabStyle: {
     backgroundColor:colors.whiteTwo,
-    height:60,
+    height: isDeviceSize('small') ? 40 : 60  ,
     alignItems:"flex-start",
     paddingLeft:20,
   },
