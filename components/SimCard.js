@@ -17,10 +17,10 @@ import InputNumber from './InputNumber';
 
 const styles = StyleSheet.create({
   container: {
-    height: 148,
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 20
+    marginHorizontal: 20,
+    paddingVertical: 20
   },
   divider: {
     width: 335,
