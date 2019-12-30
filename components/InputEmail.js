@@ -84,15 +84,19 @@ class InputEmail extends Component {
           <RNPickerSelect style={{
             placeholder: styles.placeholder,
             inputIOS: domainIdx === DIRECT_INPUT ? styles.directInput : styles.noDirectInput,
-            inputAndroid: domainIdx === DIRECT_INPUT ? styles.directInput : styles.noDirectInput,
+            inputAndroid: [styles.placeholder, domainIdx === DIRECT_INPUT ? styles.directInput : styles.noDirectInput],
             iconContainer: {
               bottom: 5,
               right: 10,
-            },}}
+            },
+            inputAndroidContainer: {
+              bottom: -1
+            }}}
             placeholder={{}}
             onValueChange={this._onChangeText("domainIdx")}
             items={domains}
             value={domainIdx}
+            useNativeAndroidPickerStyle={false}
             Icon={() => {return (<Triangle width={8} height={6} color={colors.warmGrey}/>)}}
           />
         </View>
@@ -110,6 +114,7 @@ const styles = StyleSheet.create({
     color: colors.warmGrey
   }, 
   emptyInput: {
+    ... appStyles.normal16Text,
     borderBottomColor: colors.lightGrey,
     borderColor: colors.lightGrey,
     color: colors.lightGrey
@@ -122,8 +127,11 @@ const styles = StyleSheet.create({
     paddingLeft: 10
   },
   textInput: {
+    ... appStyles.normal16Text,
     paddingTop: 9,
     color: colors.black,
+    paddingBottom: 7,
+    textAlignVertical: 'center'
   },
   container: {
     flexDirection: "row",
@@ -135,10 +143,12 @@ const styles = StyleSheet.create({
     width: 96,
     paddingLeft: 10,
     paddingVertical: 8,
-    borderColor: colors.black
+    borderColor: colors.black,
+    marginTop: 5
   },
   placeholder: {
-    ... appStyles.normal14Text
+    ... appStyles.normal14Text,
+    lineHeight: 19
   },
 });
 

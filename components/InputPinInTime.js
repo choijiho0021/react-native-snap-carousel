@@ -200,7 +200,9 @@ const styles = StyleSheet.create({
     },
     timer: {
         ... appStyles.normal14Text,
-        color: 'red'
+        color: 'red',
+        textAlignVertical: 'center',
+        lineHeight: 19
     },
     title: {
         ... appStyles.normal14Text,

@@ -271,7 +271,7 @@ class RegisterMobileScreen extends Component {
           <View style={{flexDirection:"row", flex:1}}>
           {
             item.list.map((elm,idx) => (
-              <Text key={idx+""} style={[appStyles.normal14Text, {color:elm.color}]}>{elm.text}</Text>
+              <Text key={idx+""} style={[styles.confirmItem, {color:elm.color}]}>{elm.text}</Text>
             ))
           }
           </View>
@@ -398,6 +398,11 @@ const styles = StyleSheet.create({
   },
   emptyInput: {
     borderBottomColor: colors.lightGrey
+  },
+  confirmItem: {
+    ...appStyles.normal14Text,
+    textAlignVertical: 'bottom',
+    lineHeight: 19
   }
 });
 
