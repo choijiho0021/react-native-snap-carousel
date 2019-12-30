@@ -14,9 +14,46 @@ const slideWidth = wp(75);
 const itemHorizontalMargin = wp(2);
 
 export const windowHeight = viewportHeight;
+export const windowWidth = viewportWidth;
 export const sliderWidth = viewportWidth;
 export const attachmentSize = (sliderWidth - 20*2 - 33*2)/3
 export const itemWidth = slideWidth + itemHorizontalMargin * 2;
+
+// windowHeight
+// iphone 8 - 375x667
+// iphone 11 pro  - 375x812, 2436×1125
+// iphone 11 pro max - 414x896, 2688×1242
+// 190 ~ 210 사이의 크기로 정리됨 
+
+export const device = {
+    small : {
+        // iphone5
+        window: {
+            width: 320
+        }
+    },
+    medium: {
+        // iphone8
+        window: {
+            width: 375,
+            height: 667
+        }
+    },
+    large : {
+        // iphone 11
+        window: {
+            width: 375,
+            height: 812
+        }
+    },
+    xlarge: {
+        // iphone 11 max
+        window: {
+            width: 414,
+            height: 896
+        }
+    }
+}
 
 const entryBorderRadius = 8;
 

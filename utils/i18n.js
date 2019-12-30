@@ -143,7 +143,7 @@ const en = {
   "sim:rechargeAmt" : "Recharge Amount",
   "sim:cardPrice" : "SIM Price",
   "sim:deductFromBalance" : "Deduct from the Balance",
-  "sim:remainingBalance" : "Remaining Balance",
+  "sim:remainingBalance" : "Balance",
   
   "mobile:header": "Login",
   "mobile:title": "Simple Login",
@@ -261,6 +261,8 @@ const en = {
   "cart:totalCost" : "Total payment",
   "cart:totalCntX" : "Total %% pieces",
   "cart:dlvCostNotice" : "Free Delivery condition",
+  "cart:toCart" : "To Cart",
+  "cart:buy" : "Purchase",
   "cart:purchase" : "Purchase",
   "cart:empty" : "Cart is Empty",
 
