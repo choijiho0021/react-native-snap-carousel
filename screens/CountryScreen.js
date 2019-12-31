@@ -28,7 +28,7 @@ import { SafeAreaView } from 'react-navigation'
 import AppPrice from '../components/AppPrice';
 import AppAlert from '../components/AppAlert';
 import AppCartButton from '../components/AppCartButton';
-
+import { windowWidth, device } from '../constants/SliderEntry.style';
 class CountryScreen extends Component {
   static navigationOptions = ({navigation}) => ({
     //todo 해당 국가 이름으로 변경해야함 
@@ -138,9 +138,9 @@ class CountryScreen extends Component {
     return (
       <TouchableOpacity onPress={this._onPress(item.uuid)}>
         <View key={"product"} style={[styles.card,borderColor]}>
-          <View key={"text"} style={{flex:1}}>
-            <Text key={"name"} style={[appStyles.bold16Text,color]}>{item.name}</Text>
-            <Text key={"desc"} style={[{marginTop:5},appStyles.normal14Text]}>({item.field_description})</Text>
+          <View key={"text"} style={styles.textView}>
+            <Text key={"name"} style={[windowWidth > device.small.window.width ? appStyles.bold16Text : appStyles.bold14Text,color]}>{item.name}</Text>
+            <Text key={"desc"} style={[{marginTop:5},windowWidth > device.small.window.width ? appStyles.normal14Text : appStyles.normal12Text]}>({item.field_description})</Text>
           </View>
           <View key={"priceText"} style={styles.appPrice}>
             <AppPrice key={"price"} price={item.price} balanceStyle={styles.priceStyle} wonStyle={styles.wonStyle} />
@@ -162,7 +162,7 @@ class CountryScreen extends Component {
 
         <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {title:this.props.navigation.getParam('title'), text:selected[0].body})}>
           <View style={styles.detail}>
-            <Text style={appStyles.normal14Text}>{i18n.t('country:detail')}</Text>
+            <Text style={windowWidth > device.small.window.width ? appStyles.normal14Text : appStyles.normal12Text}>{i18n.t('country:detail')}</Text>
             <AppIcon style={{marginRight:20}} name="iconArrowRight" size={10} />
           </View>
         </TouchableOpacity>
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
     color: colors.white
   },
   card : {
-    height: 71,
+    height: windowWidth > device.small.window.width ? 71 : 60,
     borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: "solid",
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     alignItems:'center'
   },
   detail : {
-    height: 48,
+    height: windowWidth > device.small.window.width ? 48 : 36,
     borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: "solid",
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   priceStyle : {
     height: 24,
     // fontFamily: "Roboto",
-    fontSize: 20,
+    fontSize: windowWidth > device.small.window.width ? 20 : 16,
     fontWeight: "bold",
     fontStyle: "normal",
     lineHeight: 22,
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
   wonStyle : {
     height: 24,
     // fontFamily: "Roboto",
-    fontSize: 14,
+    fontSize: windowWidth > device.small.window.width ? 14 : 12,
     fontWeight: "bold",
     fontStyle: "normal",
     lineHeight: 22,
@@ -337,6 +337,10 @@ const styles = StyleSheet.create({
     alignItems:"flex-end",
     marginLeft:10,
     width:80
+  },
+  textView : {
+    flex:1,
+    alignItems:"flex-start"
   }
 });
 

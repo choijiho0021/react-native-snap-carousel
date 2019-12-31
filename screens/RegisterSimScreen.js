@@ -154,13 +154,13 @@ class RegisterSimScreen extends Component {
     if (iccidIdx < 0) iccidIdx = 3
 
     return (
-      <KeyboardAwareScrollView
-        resetScrollToCoords={{ x: 0, y: 0 }}
-        contentContainerStyle={styles.container}
-        extraScrollHeight={50}
-        scrollEnabled={false}>
+      <SafeAreaView style={styles.container}>
+        <KeyboardAwareScrollView
+          resetScrollToCoords={{ x: 0, y: 0 }}
+          contentContainerStyle={styles.container}
+          extraScrollHeight={50}
+          scrollEnabled={false}>
 
-        <SafeAreaView style={styles.container}>
           <AppActivityIndicator visible={querying}/>
           <TouchableOpacity style={styles.card} onPress={() => this._onCamera(!scan)}>
             <ScanSim scan={scan} onScan={this._onScan}/>
@@ -210,7 +210,7 @@ class RegisterSimScreen extends Component {
                 onChangeText={this._onChangeText('actCode')}
                 keyboardType="numeric"
                 returnKeyType='done'
-                placeholder="1234"
+                placeholder='1234'
                 enablesReturnKeyAutomatically={true}
                 maxLength={4}
                 clearTextOnFocus={true}
@@ -222,8 +222,8 @@ class RegisterSimScreen extends Component {
           <AppButton style={appStyles.confirm} 
             title={i18n.t('reg:confirm')} titleStyle={appStyles.confirmText}
             onPress={this._onSubmit} disabled={disabled}/>
-        </SafeAreaView>
-      </KeyboardAwareScrollView>
+        </KeyboardAwareScrollView>
+      </SafeAreaView>
     );
   }
 }
@@ -274,10 +274,11 @@ const styles = StyleSheet.create({
   },
   input: {
     ... appStyles.roboto16Text,
-    width: 47
+    paddingHorizontal: 5,
+    paddingVertical: 0
   },
   inputRow: {
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   iccidBox: {
     marginVertical: 12,
@@ -296,8 +297,8 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   delimiter: {
-    marginLeft: 14,
-    marginRight: 14
+    marginHorizontal: 10,
+    paddingVertical: 3
   },
   container: {
     flex: 1,

@@ -102,7 +102,7 @@ export const appStyles = StyleSheet.create({
     },
 
     subTitle: {
-        height: 25,
+        lineHeight: 30,
 //        fontFamily: "AppleSDGothicNeo",
         fontSize: 24,
         fontWeight: "500",
@@ -147,7 +147,9 @@ export const appStyles = StyleSheet.create({
         lineHeight: 19,
         letterSpacing: 0.15,
         textAlign: "center",
-        color: colors.black
+        color: colors.black,
+        padding: 0,
+        margin: 0
     },
     bold12Text: {
 //        fontFamily: "AppleSDGothicNeo",
@@ -155,7 +157,9 @@ export const appStyles = StyleSheet.create({
         fontWeight: "bold",
         fontStyle: "normal",
         letterSpacing: 0.17,
-        color: colors.warmGrey
+        color: colors.warmGrey,
+        padding: 0,
+        margin: 0
     },
     normal14Text: {
 //        fontFamily: "AppleSDGothicNeo",
@@ -164,7 +168,9 @@ export const appStyles = StyleSheet.create({
         fontStyle: "normal",
         lineHeight: 16,
         letterSpacing: -0.03,
-        color: colors.black
+        color: colors.black,
+        padding: 0,
+        margin: 0
     },
     normal15Text: {
 //        fontFamily: "AppleSDGothicNeo",
@@ -172,7 +178,9 @@ export const appStyles = StyleSheet.create({
         fontWeight: "normal",
         fontStyle: "normal",
         letterSpacing: -0.03,
-        color: colors.black
+        color: colors.black,
+        padding: 0,
+        margin: 0
     },
     bold14Text: {
 //        fontFamily: "AppleSDGothicNeo",
@@ -181,7 +189,9 @@ export const appStyles = StyleSheet.create({
         fontStyle: "normal",
         lineHeight: 19,
         letterSpacing: -0.03,
-        color: colors.black
+        color: colors.black,
+        padding: 0,
+        margin: 0
     },
     roboto16Text: {
         fontFamily: "Roboto-Regular",
@@ -190,7 +200,9 @@ export const appStyles = StyleSheet.create({
         fontStyle: "normal",
         lineHeight: 19,
         letterSpacing: 0.22,
-        color: colors.black
+        color: colors.black,
+        padding: 0,
+        margin: 0
     },
     normal16Text: {
 //        fontFamily: "AppleSDGothicNeo",
@@ -198,7 +210,9 @@ export const appStyles = StyleSheet.create({
         fontWeight: "500",
         fontStyle: "normal",
         letterSpacing: 0.22,
-        color: colors.black
+        color: colors.black,
+        padding: 0,
+        margin: 0
     },
     bold16Text: {
         //        fontFamily: "AppleSDGothicNeo",
@@ -207,7 +221,9 @@ export const appStyles = StyleSheet.create({
                 fontStyle: "normal",
                 lineHeight: 19,
                 letterSpacing: -0.03,
-                color: colors.black
+                color: colors.black,
+                padding: 0,
+                margin: 0
             },    
     normal18Text: {
 //        fontFamily: "AppleSDGothicNeo",
@@ -215,7 +231,9 @@ export const appStyles = StyleSheet.create({
         fontWeight: "normal",
         fontStyle: "normal",
         letterSpacing: 0.25,
-        color: colors.black
+        color: colors.black,
+        padding: 0,
+        margin: 0
     },
     normal20Text: {
         // fontFamily: "Roboto",
@@ -223,7 +241,9 @@ export const appStyles = StyleSheet.create({
         fontStyle: "normal",
         lineHeight: 24,
         letterSpacing: 0.19,
-        color: colors.black
+        color: colors.black,
+        padding: 0,
+        margin: 0
     },
     mobileNo: {
         fontFamily: "Roboto-Regular",
@@ -249,7 +269,9 @@ export const appStyles = StyleSheet.create({
         fontWeight: "bold",
         fontStyle: "normal",
         letterSpacing: 0.25,
-        color: colors.black
+        color: colors.black,
+        padding: 0,
+        margin: 0
     },
     confirm: {
         height: 52,

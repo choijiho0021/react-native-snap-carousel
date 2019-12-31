@@ -16,7 +16,7 @@ import utils from '../utils/utils';
 import api from '../utils/api/api'
 import _ from 'underscore'
 import { colors } from '../constants/Colors';
-
+import { isDeviceSize } from '../constants/SliderEntry.style';
 class CountryItem extends Component {
   constructor(props) {
     super(props)
@@ -49,7 +49,7 @@ class CountryItem extends Component {
               <View style={styles.priceRow}>
                 <View style={styles.price}>
                   <Text key={"price"} style={styles.priceNumber}>{utils.numberToCommaString(elm.pricePerDay)}</Text> 
-                  <Text key={"days"} style={[appStyles.normal16Text,styles.text]}>{` ${i18n.t('won')}/Day`}</Text>
+                  <Text key={"days"} style={[isDeviceSize('small') ? appStyles.normal14Text : appStyles.normal16Text,styles.text]}>{` ${i18n.t('won')}/Day`}</Text>
                 </View>
                 <View style={styles.lowPriceView}>
                   <Text style={styles.lowPrice}>{i18n.t('lowest')}</Text>
@@ -121,10 +121,11 @@ const styles = StyleSheet.create({
   },
   lowPrice : {
     ... appStyles.normal12Text,
+    fontSize : isDeviceSize('small') ? 10 : 12,
     color : colors.black
   },
   lowPriceView : {
-    width: 41,
+    width: isDeviceSize('small') ? 30 : 41,
     height: 22,
     borderRadius: 1,
     backgroundColor: colors.whiteTwo,
@@ -142,7 +143,7 @@ const styles = StyleSheet.create({
   },
   priceNumber : {
       // fontFamily: "Roboto-Regular",
-      fontSize: 20,
+      fontSize: isDeviceSize('small') ? 18 : 20 ,
       fontWeight: "bold",
       fontStyle: "normal",
       lineHeight: 24,
@@ -152,8 +153,9 @@ const styles = StyleSheet.create({
   },
   cntry : {
     ... appStyles.bold14Text,
+    fontSize : isDeviceSize('small') ? 12 : 14,
     marginTop:11,
-    marginBottom:9
+    marginBottom: isDeviceSize('small') ? 4 : 9
   }
 });
 

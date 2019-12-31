@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import {
   StyleSheet,
   Text,
@@ -13,7 +13,7 @@ import AppButton from './AppButton';
 import validationUtil from '../utils/validationUtil';
 import _ from 'underscore'
 
-class AppModal extends Component {
+class AppModal extends PureComponent {
   constructor(props) {
     super(props)
 
@@ -125,6 +125,8 @@ class AppModal extends Component {
                 disabled={! _.isEmpty(error)}
                 onPress={this._onSubmit}
                 title={i18n.t('ok')} 
+                disableBackgroundColor={colors.white}
+                disableColor={colors.warmGrey}
                 titleStyle={{... styles.buttonTitle, color: _.isEmpty(error) ? colors.clearBlue : colors.warmGrey}}/>
             </View>
           </View>
@@ -153,7 +155,8 @@ const styles = StyleSheet.create({
   },
   buttonTitle: {
     ... appStyles.normal16Text,
-    textAlign: 'right'
+    textAlign: 'right',
+    width: '100%'
   },
   row: {
     marginTop: 40,
