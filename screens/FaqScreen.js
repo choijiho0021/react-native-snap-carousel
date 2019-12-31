@@ -123,6 +123,7 @@ class FaqScreen extends Component {
       activeColor={colors.clearBlue}
       inactiveColor={colors.warmGrey}
       pressColor={colors.white}
+      style={styles.tabBar}
     />
   }
 
@@ -171,6 +172,11 @@ const styles = StyleSheet.create({
   },
   tabBarLabel: {
     ... appStyles.normal14Text
+  },
+  tabBar : {
+    shadowColor: 'transparent',
+    shadowOpacity: 0,
+    elevation: 0,
   }
 });
 

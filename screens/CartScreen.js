@@ -236,7 +236,7 @@ class CartScreen extends Component {
         <View style={styles.buttonBox}>
           <View style={styles.sumBox}>
             <Text style={[styles.btnBuyText, {color:colors.black}]}>{i18n.t('sum') + ': '}</Text>
-            <Text style={appStyles.roboto16Text}>{utils.numberToCommaString(total.price)}</Text>
+            <Text style={[styles.btnBuyText, {color:colors.black}]}>{utils.numberToCommaString(total.price)}</Text>
             <Text style={[styles.btnBuyText, {color:colors.black}]}>{i18n.t('won')}</Text>
           </View>
           <AppButton style={styles.btnBuy} title={i18n.t('cart:purchase') + `(${total.cnt})`} 

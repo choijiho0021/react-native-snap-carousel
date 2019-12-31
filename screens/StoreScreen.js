@@ -25,6 +25,8 @@ import StoreList from '../components/StoreList';
 import {withnavigationFocus} from 'react-navigation'
 import moment from 'moment'
 import AppActivityIndicator from '../components/AppActivityIndicator';
+import { isDeviceSize } from '../constants/SliderEntry.style';
+
 class StoreScreen extends Component {
   static navigationOptions = ({navigation}) => ({
     headerLeft: <Text style={styles.title}>{i18n.t('store')}</Text>,
@@ -110,10 +112,11 @@ class StoreScreen extends Component {
         item.key = item.uuid 
         item.cntry = new Set(country.getName(item.ccode))
         //days가 "00일" 형식으로 오기 때문에 일 제거 후 넘버타입으로 변환
-        item.pricePerDay = Math.round(item.price / Number(item.days.slice(0,-1)))
+        item.pricePerDay = Math.round(item.price / Number(item.days.replace(/[^0-9]/g,"")))
 
         const idxCcode = acc.findIndex(elm => item.categoryId == multi ? elm.uuid == item.uuid : elm.ccode == item.ccode)
 
+        출처: https://cy-baek.tistory.com/131 [한 처음에]
         if ( idxCcode < 0) {
           // new item, insert it
           return acc.concat( [item])
@@ -182,7 +185,7 @@ class StoreScreen extends Component {
         showSearchBar : false
       })
     }
-  }
+  
   */
 
   _onChangeText = (key) => (value) => {
@@ -267,7 +270,7 @@ const styles = StyleSheet.create({
   tabBarLabel: {
       height: 17,
       // fontFamily: "AppleSDGothicNeo",
-      fontSize: 14,
+      fontSize: isDeviceSize('small') ? 10 : 14 ,
       fontWeight: "500",
       fontStyle: "normal",
       letterSpacing: 0.17
@@ -279,7 +282,7 @@ const styles = StyleSheet.create({
   },
   tabStyle: {
     backgroundColor:colors.whiteTwo,
-    height:60,
+    height: isDeviceSize('small') ? 40 : 60  ,
     alignItems:"flex-start",
     paddingLeft:20,
   },
