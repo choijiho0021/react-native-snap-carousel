@@ -1,4 +1,4 @@
-import React, {Component, PureComponent} from 'react';
+import React, {PureComponent} from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,11 +7,13 @@ import {
   Linking,
 } from 'react-native';
 import * as Permissions from 'expo-permissions';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import { RNCamera } from 'react-native-camera';
+import BarcodeMask from 'react-native-barcode-mask';
 import i18n from '../utils/i18n';
 import { appStyles } from '../constants/Styles';
 import { colors } from '../constants/Colors';
 import AppAlert from './AppAlert';
+import { isDeviceSize, windowWidth } from '../constants/SliderEntry.style';
 
 class ScanSim extends PureComponent {
   constructor(props) {
@@ -53,7 +55,7 @@ class ScanSim extends PureComponent {
     if ( ! cameraOn || hasCameraPermission === null ) {
       return (
         <View style={styles.box}>
-          <Image style={{position:'absolute'}} source={require('../assets/images/main/imgCard.png')}/>
+          <Image style={styles.image} source={require('../assets/images/main/imgCard.png')} resizeMode='contain'/>
           <Text style={styles.boxTitle}>{i18n.t('reg:card')}</Text>
         </View>
         )
@@ -67,7 +69,7 @@ class ScanSim extends PureComponent {
 
       return (
         <View style={styles.box}>
-          <Image style={{position:'absolute'}} source={require('../assets/images/main/imgCard.png')}/>
+          <Image style={styles.image} source={require('../assets/images/main/imgCard.png')} resizeMode='contain'/>
           <Text style={styles.boxTitle}>{i18n.t('reg:noPerm')}</Text>
         </View>
       )
@@ -76,19 +78,13 @@ class ScanSim extends PureComponent {
     //const flashMode = flashOn ? Camera.Constants.FlashMode.torch : Camera.Constants.FlashMode.off
 
     return (
-      <View style={styles.camera}>
-        <BarCodeScanner style={{ flex: 1 }} onBarCodeScanned={this.props.onScan} >
-        {
-          /*
-          flashMode={flashMode} 
-          <View style={styles.cameraOuter}>
-            <TouchableOpacity style={styles.flashButton} onPress={this._onPress}>
-              <Ionicons key="flash" name={flashOn ? "ios-flash-off" : "ios-flash"} size={32} />
-            </TouchableOpacity>
-          </View>
-          */
-        }
-        </BarCodeScanner>
+      <View style={styles.box}>
+        <RNCamera style={styles.image}
+          captureAudio={false}
+          type={RNCamera.Constants.Type.back}
+          onBarCodeRead={this.props.onScan} >
+          <BarcodeMask edgeColor={colors.white} width={windowWidth-60} height={180} />
+        </RNCamera>
       </View>
     )
 
@@ -98,6 +94,11 @@ class ScanSim extends PureComponent {
 
 
 const styles = StyleSheet.create({
+  image: {
+    position: 'absolute',
+    width: windowWidth - 40,
+    height: 200
+  },
   boxTitle: {
     ... appStyles.normal16Text,
     color: colors.clearBlue,
@@ -105,10 +106,9 @@ const styles = StyleSheet.create({
   box: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
-  },
-  camera: {
-    flex:1
+    alignItems: 'center',
+    overflow: 'hidden',
+    padding: 2
   },
   cameraOuter: {
     flex: 1,
