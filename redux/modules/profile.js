@@ -117,8 +117,10 @@ export default handleActions({
       const {result, objects} = action.payload
 
       if (result == 0 && objects.length > 0) {
-        return state.update('profile', 
-          value => objects.concat(value.sort(_sortProfile)))  
+
+        const profile = objects.concat(state.get('profile')).sort(_sortProfile)
+
+        return state.update('profile', profile)  
       }
       return state
     }
@@ -135,10 +137,15 @@ export default handleActions({
         const profile = state.get('profile')
         const idx = profile.findIndex(item => item.uuid == objects[0].uuid)
         profile[idx] = objects[0]
+
+        // 이전 기본배송지 profile IDX
         const prevIdx = profile.findIndex(item => item.uuid != objects[0].uuid && item.isBasicAddr)
-        if(objects[0].isBasicAddr && (prevIdx>=0)){
+
+        // 현재 배송지를 기본배송지로 update할 경우, 이전 것 false로 변경
+        if(objects[0].isBasicAddr && (prevIdx >= 0)){
           profile[prevIdx] = {... profile[prevIdx], isBasicAddr:false}
         }
+
         return state.update('profile', 
           value => value.sort(_sortProfile))
         

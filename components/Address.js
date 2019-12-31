@@ -7,6 +7,7 @@ import {
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import { colors } from '../constants/Colors';
+import { isDeviceSize } from '../constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   zip: {
@@ -14,14 +15,11 @@ const styles = StyleSheet.create({
     padding: 5
   },
   addr: {
-    // width: "90%",
-    // marginHorizontal: 20,
      marginVertical: 15,
-    //  borderBottomWidth: 1,
-    //  borderBottomColor: colors.lightGrey 
   },
   addrValue: {
     ... appStyles.normal14Text,
+    fontSize: isDeviceSize('small') ? 12 : 14,
     color: colors.warmGrey,
     lineHeight: 24,
     letterSpacing: 0.23
@@ -33,11 +31,12 @@ const styles = StyleSheet.create({
   },
   bdTitle: {
     ... appStyles.bold14Text,
+    fontSize: isDeviceSize('small') ? 12 : 14,
     lineHeight: 24,
     letterSpacing: 0.23
   },
   roadText: {
-    fontSize: 12,
+    fontSize: isDeviceSize('small') ? 10 : 12,
     fontWeight: "normal",
     fontStyle: "normal",
     color: colors.warmGrey,
@@ -46,7 +45,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2
   },
   roadBox: {
-    width: 50,
+    width: isDeviceSize('small') ? 40 : 50,
     height: 20,
     marginRight: 10,
     borderRadius: 2,
@@ -54,7 +53,8 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderWidth: 1,
     borderColor: colors.lightGrey,
-    alignSelf: 'center'
+    alignSelf: 'center',
+    justifyContent: 'center'
   }
 });
 

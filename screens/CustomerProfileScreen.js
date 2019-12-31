@@ -133,12 +133,10 @@ class CustomerProfileScreen extends Component {
                           style={styles.addrCard}
                           key={item.uuid}
                           profile={item}/>
-              <View style={{flexDirection: 'column', justifyContent: 'flex-end', padding:20}}>
-                <TouchableOpacity style={{height: 56, justifyContent:'flex-end', alignItems: 'flex-end', width: 62}}
-                                  onPress={()=>this._onChecked(item.uuid)}>
-                  <AppIcon name="btnCheck" key={item.uuid} checked={checked == item.uuid || false}/>
-                </TouchableOpacity>
-              </View>  
+              <TouchableOpacity style={{height: 56, justifyContent:'flex-end', alignSelf: 'flex-end', width: 62, padding: 20}}
+                                onPress={()=>this._onChecked(item.uuid)}>
+                <AppIcon name="btnCheck" key={item.uuid} checked={checked == item.uuid || false}/>
+              </TouchableOpacity>
             </View>
           </View>
         </View> 
