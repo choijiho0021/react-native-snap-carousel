@@ -54,6 +54,7 @@ target 'Rokebi' do
   pod 'react-native-video', :path => '../node_modules/react-native-video'
 
   pod 'react-native-camera', :path => '../node_modules/react-native-camera'
+  pod 'RNFirebase', :path => '../node_modules/react-native-firebase'
 
 end
 

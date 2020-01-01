@@ -184,6 +184,7 @@ apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
 
 dependencies {
     implementation project(':react-native-camera')
+    implementation project(':react-native-firebase')
     implementation project(':react-native-push-notification')
     implementation project(':react-native-video')
     implementation project(':react-native-dark-mode')
@@ -193,6 +194,10 @@ dependencies {
     implementation project(':react-native-webview')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation "com.google.firebase:firebase-core:16.0.8"
+    implementation "com.google.firebase:firebase-messaging:18.0.0"
+    implementation 'me.leolin:ShortcutBadger:1.1.21@aar'
+    implementation "com.google.android.gms:play-services-gcm:12.+"
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";
@@ -213,3 +218,4 @@ task copyDownloadableDepsToLibs(type: Copy) {
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+apply plugin: 'com.google.gms.google-services'
