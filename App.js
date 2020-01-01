@@ -9,7 +9,6 @@ import ReduxThunk from 'redux-thunk'
 import penderMiddleware from 'redux-pender'
 import { createLogger } from 'redux-logger'
 
-
 import MyAppLoading from './components/MyAppLoading'
 import Constants from 'expo-constants';
 import Video from 'react-native-video'
