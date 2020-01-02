@@ -12,6 +12,7 @@ import org.unimodules.core.interfaces.SingletonModule;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import org.reactnative.camera.RNCameraPackage;
 import com.brentvatne.react.ReactVideoPackage;
 import com.codemotionapps.reactnativedarkmode.DarkModePackage;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
@@ -26,6 +27,9 @@ import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
+import io.invertase.firebase.RNFirebasePackage;
+import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
+import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -44,6 +48,10 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.<ReactPackage>asList(
                 new MainReactPackage(),
+            new RNCameraPackage(),
+            new RNFirebasePackage(),
+            new RNFirebaseMessagingPackage(),
+            new RNFirebaseNotificationsPackage(),
             new ReactNativePushNotificationPackage(),
             new ReactVideoPackage(),
             new DarkModePackage(),

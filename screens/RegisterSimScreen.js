@@ -26,6 +26,7 @@ import { appStyles } from '../constants/Styles';
 import utils from '../utils/utils';
 import userApi from '../utils/api/userApi';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { isDeviceSize } from '../constants/SliderEntry.style';
 
 class RegisterSimScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -111,7 +112,7 @@ class RegisterSimScreen extends Component {
     })
   }
 
-  _onScan = () => ({type, data}) => {
+  _onScan = ({data, rawData, type}) => {
     this.setState({
       scan: false,
     })
@@ -154,45 +155,44 @@ class RegisterSimScreen extends Component {
     if (iccidIdx < 0) iccidIdx = 3
 
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={{flex:1}}>
+        <AppActivityIndicator visible={querying}/>
+
         <KeyboardAwareScrollView
           resetScrollToCoords={{ x: 0, y: 0 }}
           contentContainerStyle={styles.container}
-          extraScrollHeight={50}
-          scrollEnabled={false}>
+          extraScrollHeight={50} 
+          scrollEnabled={isDeviceSize('small')}>
 
-          <AppActivityIndicator visible={querying}/>
           <TouchableOpacity style={styles.card} onPress={() => this._onCamera(!scan)}>
             <ScanSim scan={scan} onScan={this._onScan}/>
           </TouchableOpacity>
 
           <Text style={styles.title}>{i18n.t('mysim:title')}</Text>
           <TouchableOpacity onPress={() => this.inputIccid[ iccidIdx ].current.focus() } 
-            activeOpacity={1.0}
-            style={styles.iccidBox}>
+            activeOpacity={1.0} style={styles.iccidBox}>
+
             <Text style={styles.iccid}>ICCID</Text>
             <View style={styles.inputBox}>
               {
-                iccid.map(( elm, idx ) =>
-                  (<View style={styles.inputRow} key={idx}>
-                    <TextInput style={styles.input}
-                      ref={this.inputIccid[idx]}
-                      placeholder={this.defaultIccid}
-                      onChangeText={this._onChangeText('iccid', idx)}
-                      keyboardType='numeric'
-                      returnKeyType='done'
-                      enablesReturnKeyAutomatically={true}
-                      maxLength={5}
-                      value={ elm }
-                      focus={focusInputIccid}
-                      blurOnSubmit={false}
-                      onFocus={() => {}} />
-                    {
-                      idx + 1 === _.size(iccid) ? null :
-                      <Text style={[styles.delimiter, { color: _.size(elm) === 5 ? colors.black : colors.greyish } ]}>-</Text>
-                    }
-                  </View>)
-                )
+                iccid.reduce((acc,cur) => acc.concat([cur, '-']), [])
+                  .map(( elm, idx ) =>
+                  ( elm == '-' ? 
+                      (idx + 1 === _.size(iccid)*2 ? null :
+                        <Text key={idx+""} style={[styles.delimiter, { color: _.size(elm) === 5 ? colors.black : colors.greyish } ]}>-</Text>):
+                      <TextInput style={styles.input} key={idx+""}
+                        ref={this.inputIccid[idx/2]}
+                        placeholder={this.defaultIccid}
+                        onChangeText={this._onChangeText('iccid', idx/2)}
+                        keyboardType='numeric'
+                        returnKeyType='done'
+                        enablesReturnKeyAutomatically={true}
+                        maxLength={5}
+                        value={ elm }
+                        focus={focusInputIccid}
+                        blurOnSubmit={false}
+                        onFocus={() => {}} />
+                  ))
               }
             </View>
           </TouchableOpacity>
@@ -219,10 +219,11 @@ class RegisterSimScreen extends Component {
             </View>
           </View>
 
-          <AppButton style={appStyles.confirm} 
-            title={i18n.t('reg:confirm')} titleStyle={appStyles.confirmText}
-            onPress={this._onSubmit} disabled={disabled}/>
         </KeyboardAwareScrollView>
+
+        <AppButton style={appStyles.confirm} 
+          title={i18n.t('reg:confirm')} titleStyle={appStyles.confirmText}
+          onPress={this._onSubmit} disabled={disabled}/>
       </SafeAreaView>
     );
   }
@@ -250,8 +251,8 @@ const styles = StyleSheet.create({
   },
   actCodeBox: {
     marginTop: 50,
+    marginBottom: 30,
     marginHorizontal: 35,
-    flex: 1,
   },
   actCode: {
     flexDirection: 'row',
@@ -264,18 +265,19 @@ const styles = StyleSheet.create({
   scanButton: {
     marginTop: 10,
     height: 20,
-    marginHorizontal: 30,
+    marginHorizontal: 20,
     justifyContent: 'flex-start'
   },
   inputBox: {
     marginTop: 13,
-    justifyContent: 'center',
-    flexDirection: 'row'
+    justifyContent: 'space-between',
+    flexDirection: 'row',
   },
   input: {
     ... appStyles.roboto16Text,
     paddingHorizontal: 5,
-    paddingVertical: 0
+    paddingVertical: 0,
+    width: 60
   },
   inputRow: {
     flexDirection: 'row',
@@ -283,7 +285,7 @@ const styles = StyleSheet.create({
   iccidBox: {
     marginVertical: 12,
     marginHorizontal: 20,
-    paddingHorizontal: 20,
+    paddingHorizontal: isDeviceSize('small') ? 10 : 20,
     height: 80,
     borderRadius: 3,
     backgroundColor: colors.white,
@@ -297,11 +299,9 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   delimiter: {
-    marginHorizontal: 10,
     paddingVertical: 3
   },
   container: {
-    flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'stretch',
   },
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
   title: {
     ... appStyles.normal14Text, 
     color: colors.warmGrey,
-    marginTop: 40,
+    marginTop: isDeviceSize('small') ? 20 : 40,
     marginHorizontal: 20,
   }
 });
