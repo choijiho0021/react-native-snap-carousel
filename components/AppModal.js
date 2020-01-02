@@ -87,7 +87,7 @@ class AppModal extends PureComponent {
 
   render() {
     const { value, error } = this.state
-    const { title } = this.props
+    const { title, type } = this.props
 
     return (
       <Modal animationType="fade"
@@ -116,10 +116,13 @@ class AppModal extends PureComponent {
             }
 
             <View style={styles.row}>
-              <AppButton style={styles.button} 
-                onPress={this.props.onCancelClose}
-                title={i18n.t('cancel')} 
-                titleStyle={styles.buttonTitle}/>
+              {
+                type === 'info' ? null:
+                  <AppButton style={styles.button} 
+                    onPress={this.props.onCancelClose}
+                    title={i18n.t('cancel')} 
+                    titleStyle={styles.buttonTitle}/>
+              }
 
               <AppButton style={styles.button} 
                 disabled={! _.isEmpty(error)}

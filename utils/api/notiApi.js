@@ -79,6 +79,30 @@ class NotiAPI {
 
         return this.update(uuid,attr,auth)
     }
+
+    sendAlimTalk = (mobile, abortController) => {
+        if ( _.isEmpty(mobile) ) return api.reject( api.INVALID_ARGUMENT)
+
+        const url = `${api.rokHttpUrl(api.path.rokApi.noti.alimtalk)}`,
+        headers = api.basicAuth(undefined, undefined, 'json'),
+        body = {
+            mobile,
+            tmplId: 'alimtalk_test'
+        }
+
+        return api.callHttp(url, {
+            method: 'post',
+            headers,
+            body: JSON.stringify(body)
+        }, (data = {}) => {
+            if ( _.size(data.result) > 0 && data.result.code === 0) {
+                return api.success();
+            }
+            else {
+                return api.failure(api.FAILED, undefined, (data.result || {}).error);
+            }
+        }, {abortController})
+    }
 }
 
 export default new NotiAPI()
