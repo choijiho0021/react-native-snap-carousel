@@ -3,7 +3,6 @@ import {
   StyleSheet,
   Text,
   View,
-  Modal,
 } from 'react-native';
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -14,7 +13,8 @@ import { TextField } from 'react-native-material-textfield'
 import Icon from 'react-native-vector-icons/Ionicons';
 import AppButton from '../components/AppButton';
 import addressApi from '../utils/api/addressApi';
-import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
+import { FlatList } from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native';
 import Address from '../components/Address'
 import _ from 'underscore'
 import {colors} from '../constants/Colors'
@@ -120,6 +120,7 @@ class FindAddressScreen extends Component {
               <TextField containerStyle={styles.field}
                 style={{fontSize:14}}
                 label={i18n.t('purchase:findAddr')}
+                // titleTextStyle={{lineHeight: 30}}
                 returnKeyType='done'
                 enablesReturnKeyAutomatically={true}
                 onChangeText={this._onChangeText('addr')}
@@ -131,7 +132,9 @@ class FindAddressScreen extends Component {
             <View style={styles.divider}/>
             { 
               (addr&&data) ? 
-                (<FlatList data={data} renderItem={this._renderItem} keyExtractor={item => item.bdMgtSn} scroll/> ) :
+                (<FlatList data={data} 
+                          renderItem={this._renderItem} 
+                          keyExtractor={item => item.bdMgtSn} scroll/> ) :
                 <View style={styles.mrgLeft40Top20}>
                   <Text style={styles.searchEx, styles.boldText16}>{i18n.t('purchase:searchEx')}</Text>
                   <Text style={styles.searchEx}>{i18n.t('purchase:roadBuildingNo')}</Text>

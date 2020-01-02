@@ -8,6 +8,7 @@ import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import { colors } from '../constants/Colors';
 import { isDeviceSize } from '../constants/SliderEntry.style';
+import { isAndroid } from './SearchBarAnimation/utils';
 
 const styles = StyleSheet.create({
   zip: {
@@ -21,7 +22,7 @@ const styles = StyleSheet.create({
     ... appStyles.normal14Text,
     fontSize: isDeviceSize('small') ? 12 : 14,
     color: colors.warmGrey,
-    lineHeight: 24,
+    lineHeight: isDeviceSize('small') ? 20 : 24,
     letterSpacing: 0.23
   },
   itemRow: {
@@ -40,13 +41,13 @@ const styles = StyleSheet.create({
     fontWeight: "normal",
     fontStyle: "normal",
     color: colors.warmGrey,
-    textAlign: 'center',
+    alignContent: 'center',
     paddingHorizontal: 9,
     paddingVertical: 2
   },
   roadBox: {
-    width: isDeviceSize('small') ? 40 : 50,
-    height: 20,
+    width: isAndroid() ? 55 : ( isDeviceSize('small') ? 40 : 50 ),
+    height: isAndroid() ? 25 : 20,
     marginRight: 10,
     borderRadius: 2,
     backgroundColor: colors.white,
@@ -76,7 +77,7 @@ class Address extends PureComponent {
               <View style={styles.roadBox}>
                 <Text style={styles.roadText}>{i18n.t('addr:road')}</Text>
               </View>  
-              <View style = {{ maxWidth: '85%'}}>
+              <View style = {{ maxWidth: '83%' }}>
               <Text style={[styles.addrValue, { flexDirection: 'row', flexWrap: 'wrap'}]}>{item.roadAddr}</Text>
               </View>
             </View>

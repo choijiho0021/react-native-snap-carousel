@@ -19,6 +19,8 @@ import { SafeAreaView } from 'react-navigation';
 import AddressCard from '../components/AddressCard'
 import { ScrollView } from 'react-native-gesture-handler';
 import PaymentItemInfo from '../components/PaymentItemInfo';
+import { isAndroid } from '../components/SearchBarAnimation/utils';
+import { isDeviceSize } from '../constants/SliderEntry.style';
 
 class PymMethodScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -268,8 +270,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   button: {
-    width: 160,
-    height: 48,
+    width: isDeviceSize('small') ? 130 : 160,
+    height: isDeviceSize('small') ? 40 : 48,
     borderRadius: 24,
     backgroundColor: colors.white,
     borderStyle: "solid",
@@ -368,8 +370,9 @@ const styles = StyleSheet.create({
   basicAddr: {
     ... appStyles.normal12Text,
     width: 52,
-    height: 12,
-    lineHeight: 12,
+    height: isAndroid() ? 15: 12,
+    lineHeight: isAndroid() ? 15 : 12,
+    fontSize: isAndroid() ? 11 : 12,
     color: colors.clearBlue,
     alignSelf: 'center',
   },

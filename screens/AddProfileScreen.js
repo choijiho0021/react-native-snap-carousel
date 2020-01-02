@@ -24,6 +24,8 @@ import AppIcon from '../components/AppIcon';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import {Map} from 'immutable'
 import validationUtil from '../utils/validationUtil';
+import { isDeviceSize } from '../constants/SliderEntry.style';
+import { isAndroid } from '../components/SearchBarAnimation/utils';
 
 class AddProfileScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -64,6 +66,7 @@ class AddProfileScreen extends Component {
     this._validate = this._validate.bind(this)
     this._warning = this._warning.bind(this)
     this._changeBorder = this._changeBorder.bind(this)
+    this._onFocusClear = this._onFocusClear.bind(this)
   }
 
   componentDidMount() {
@@ -142,10 +145,13 @@ _onSubmit() {
 
   _onChecked() {
     const {profile} = this.state
-    this.setState({
-      profile: profile.update( 'isBasicAddr', value => ! value)
-    })
-
+    const defaultProfile = this.props.profile.profile.find(item => item.isBasicAddr) || {}
+    
+    if(defaultProfile.uuid != profile.get('uuid')){
+        this.setState({
+          profile: profile.update( 'isBasicAddr', value => ! value)
+      })
+    }
   }
 
   _onChangeValue = (key = '') => (value) => {
@@ -161,6 +167,15 @@ _onSubmit() {
     })
 
     this._validate(key, value)
+  }
+
+  _onFocusClear(key){
+
+    this.setState({
+      profile: this.state.profile.set(key, '')
+    })
+
+    this._validate(key, '')
   }
 
   _validate = (key, value) => {
@@ -195,14 +210,14 @@ _onSubmit() {
   }
 
   _warning(key){
-    return (<Text style={{ fontSize:12, width:'82%', height: 20, color:colors.tomato
-                          , flex:1, alignSelf: 'flex-end'}}>{this.state.errors[key] ? this.state.errors[key] : null}</Text> )    
+    return (<Text style={[styles.textWidth, { fontSize:12, height: 20, color:colors.tomato
+                          , flex:1, alignSelf: 'flex-end'}]}>{this.state.errors[key] ? this.state.errors[key] : null}</Text> )    
   }
 
   _changeBorder(title){
-    console.log('title', title) 
     return this.state.profile.get(title) && _.isEmpty(this.state.errors[title]) ? colors.black : colors.lightGrey
   }
+
   render() {
 
     const { prefix, profile, errors } = this.state
@@ -225,8 +240,9 @@ _onSubmit() {
                     <Text style={styles.titleRequired}>{i18n.t('addr:mandatory')}</Text>
                   </View>
                   <TextInput style={[styles.textBox, {borderColor: this._changeBorder('alias')}]}
-                            placeholder={profile.get('alias')}
+                            value={profile.get('alias')}
                             placeholderTextColor={colors.black}
+                            onFocus={()=>this._onFocusClear('alias')}
                             onChangeText={this._onChangeProfile('alias')}/>
                 </View>
                 { 
@@ -241,6 +257,10 @@ _onSubmit() {
                   <TextInput style={[styles.textBox, {borderColor: this._changeBorder('recipient')}]}
                             value={profile.get('recipient')}
                             placeholder={i18n.t('addr:enterWithin50')}
+                            // placeholderTextColor={colors.clearBlue}
+                            // placeholderStyle={{color:colors.clearBlue}}
+                            // lineHeight={profile.get('recipient') == 0 && isAndroid() ? 0 : 14 }
+                            onFocus={()=>this._onFocusClear('recipient')}
                             onChangeText={this._onChangeProfile('recipient')} />
                 </View>
                 { 
@@ -251,14 +271,14 @@ _onSubmit() {
                     <Text style={styles.titleText}>{i18n.t('addr:recipientNumber')}</Text>
                     <Text style={styles.titleRequired}>{i18n.t('addr:mandatory')}</Text>
                   </View>
-                  <View style={{flexDirection: 'row', width: '82%'}}>
+                  <View style={[styles.textWidth, {flexDirection: 'row'}]}>
                     <View style={[styles.container, this.props.style]}>
                       <View style={styles.pickerWrapper}>
                         <RNPickerSelect style={{
                           placeholder: styles.placeholder,
                           iconContainer: {
                             top: 4,
-                            right: 10,}
+                            right: 10,},
                         }}
                           placeholder={{}}
                           onValueChange={this._onChangeValue("prefix")}
@@ -273,11 +293,12 @@ _onSubmit() {
                         />
                       </View>
                     </View>
-                    <TextInput style={[styles.textBox, {borderColor: this._changeBorder('recipientNumber'), width: '72%'}]}  // 56%
+                    <TextInput style={[styles.textBox, {borderColor: this._changeBorder('recipientNumber'), width: '65%'}]}  // 56%
                               onChangeText={this._onChangeProfile('recipientNumber')}
                               maxLength={8}
                               keyboardType='numeric'
                               value={profile.get('recipientNumber')} 
+                              onFocus={()=>this._onFocusClear('recipientNumber')}
                               placeholder={i18n.t('addr:noHyphen')}/>
                   </View>                            
                 </View>
@@ -289,8 +310,8 @@ _onSubmit() {
                     <Text style={styles.titleText}>{i18n.t('addr:address')}</Text>
                     <Text style={styles.titleRequired}>{i18n.t('addr:mandatory')}</Text>
                   </View>
-                  <View style={{flexDirection: 'row', width: '82%'}}>
-                    <Text style={[styles.textBox, {borderColor: this._changeBorder('addressLine1'), width: '78.5%', paddingVertical: 10}]}
+                  <View style={[styles.textWidth, {flexDirection: 'row'}]}>
+                    <Text style={[styles.textBox, {borderColor: this._changeBorder('addressLine1'), width: '76%', paddingVertical: 10}]}
                           onPress={this._findAddress}>{profile.get('addressLine1')}</Text>
                     <AppButton title={i18n.t('addr:search')}
                               style={styles.findButton}
@@ -299,20 +320,21 @@ _onSubmit() {
                   </View>          
                 </View>
                 <View style={styles.findTextRow}>
-                  <Text style={[styles.textBox, {borderColor: this._changeBorder('addressLine2'), paddingVertical: 10}]}
+                  <Text style={[styles.textBox, {borderColor: this._changeBorder('addressLine1'), paddingVertical: 10}]}
                         onPress={this._findAddress} >{profile.get('addressLine2')}</Text>
                 </View>
 
                 <View style={[styles.findTextRow, {marginBottom: 13}]}>
                   <TextInput style={[styles.textBox, {borderColor: this._changeBorder('detailAddr')}]}
                             value={profile.get('detailAddr')}
+                            onFocus={()=>this._onFocusClear('detailAddr')}
                             onChangeText={this._onChangeProfile('detailAddr')} 
                             placeholder={i18n.t('addr:details')}/>
                 </View>
                 {
                   !_.isEmpty(profile.get('addressLine1'))  && 
                   (<View style={styles.findTextRow}>
-                    <View style={{width: '82%'}}>
+                    <View style={styles.textWidth}>
                       <View style={styles.roadBox}>
                         <Text style={styles.roadText}>{i18n.t('addr:road')}</Text>
                       </View>                       
@@ -370,24 +392,25 @@ const styles = StyleSheet.create({
   findButton: {
     backgroundColor: colors.clearBlue, 
     borderRadius: 3, 
-    width: '18%', 
+    width: '20%', 
     height: 36, 
     marginLeft: 10,
     justifyContent: 'flex-end'
   },
   findBtnText:{
-    fontSize: 12,
+    fontSize: isDeviceSize('small') ? 10 : 12,
     fontWeight: 'normal',
     fontStyle: 'normal',
-    lineHeight: 12,
+    lineHeight: isAndroid() ? 15 : 12,
     letterSpacing: 0.15, 
     color: colors.white
 
   },
   textBox: {
-    width: '82%',
+    width: '78%',//isDeviceSize('small') ? '74%':'78%',
     // flex: 1,
     height: 36,
+    fontSize: isDeviceSize('small') || isAndroid() ? 12 : 14,
     borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: "solid",
@@ -400,7 +423,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   titleText: {
-    ...appStyles.normal14Text,
+    // ...appStyles.normal14Text,
+    fontSize: isDeviceSize('small') ? 12 : 14,
     fontWeight: 'normal',
     color: colors.warmGrey,
     alignSelf: 'center',
@@ -411,7 +435,7 @@ const styles = StyleSheet.create({
   },
   pickerWrapper: {
     ...appStyles.borderWrapper,
-    width: 76, //28%
+    width: '80%',//72, //28%
     paddingLeft: 10,
     paddingVertical: 8,
     marginRight: 10,
@@ -424,13 +448,16 @@ const styles = StyleSheet.create({
   },
   checkBasicProfile: {
     flex:1, 
-    width: '82%', 
+    width: '78%', 
     flexDirection: 'row', 
     alignSelf: 'flex-end',
     marginTop: 10
   },
+  textWidth: {
+    width: '78%'
+  },
   roadBox: {
-    width: '15%',
+    width: isDeviceSize('small') ? '17%' : '15%',
     height: 20,
     borderRadius: 2,
     backgroundColor: colors.white,
@@ -441,7 +468,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   roadText: {
-    fontSize: 12,
+    fontSize: isDeviceSize('small') ? 10 :  12,
     fontWeight: "normal",
     fontStyle: "normal",
     color: colors.warmGrey,
@@ -449,7 +476,7 @@ const styles = StyleSheet.create({
   },
   addrText: {
     ... appStyles.normal12Text,
-    fontSize: 12,
+    fontSize: isDeviceSize('small') ? 10 : 12,
     color: colors.warmGrey,
     marginTop: 3, 
     textAlign: 'left'

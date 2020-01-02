@@ -9,6 +9,7 @@ import utils from '../utils/utils';
 import i18n from '../utils/i18n';
 import { colors } from '../constants/Colors';
 import _ from 'underscore';
+import { isDeviceSize } from '../constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   // container: {
@@ -19,13 +20,13 @@ const styles = StyleSheet.create({
     ... appStyles.bold18Text,
     height: 21,
     //fontFamily: "AppleSDGothicNeo",
-    marginVertical: 20,
+    marginVertical: isDeviceSize('small') ? 10 : 20,
     marginHorizontal: 20,
     color: colors.black
   },
   row: {
     ... appStyles.itemRow,
-    height: 36,
+    height: isDeviceSize('small') ? 30 : 36,
     justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 0
@@ -51,8 +52,8 @@ const styles = StyleSheet.create({
     fontWeight: 'normal'
   },
   productPriceInfo: {
-    paddingVertical: 11,
-    marginTop: 9,
+    paddingVertical: isDeviceSize('small') ? 13 : 11,
+    marginTop: isDeviceSize('small') ? 0 : 9,
     marginHorizontal: 20, 
     borderBottomColor: colors.lightGrey, 
     borderBottomWidth: 1
@@ -69,13 +70,15 @@ const styles = StyleSheet.create({
   },
   normalText16: {
     ... appStyles.normal16Text,
-    fontWeight: 'normal'
+    fontWeight: 'normal',
+    fontSize: isDeviceSize('small') ? 14 : 16
   },
   productPriceTitle: {
     ... appStyles.normal16Text, 
     lineHeight: 36, 
     letterSpacing: 0.26,
-    fontWeight: 'normal'
+    fontWeight: 'normal',
+    fontSize: isDeviceSize('small') ? 14 : 16
   },
   divider: {
     marginTop: 30,

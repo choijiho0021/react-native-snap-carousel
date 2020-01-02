@@ -20,6 +20,7 @@ import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import AppIcon from '../components/AppIcon';
 import AppActivityIndicator from '../components/AppActivityIndicator';
+import { isAndroid } from '../components/SearchBarAnimation/utils';
 
 class CustomerProfileScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -225,8 +226,9 @@ const styles = StyleSheet.create({
   basicAddr: {
     ... appStyles.normal12Text,
     width: 52,
-    height: 12,
-    lineHeight: 12,
+    height: isAndroid() ? 15: 12,
+    lineHeight: isAndroid() ? 15 : 12,
+    fontSize: isAndroid() ? 11 : 12,
     color: colors.clearBlue,
     alignSelf: 'center',
   },
