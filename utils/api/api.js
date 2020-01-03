@@ -65,6 +65,9 @@ class Api {
             },
             user: {
                 create: 'api/v1/auth/user'
+            },
+            noti: {
+                alimtalk: 'api/v1/noti/msg/alimtalk'
             }
         }
     }

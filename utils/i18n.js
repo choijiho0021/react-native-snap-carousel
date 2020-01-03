@@ -135,6 +135,8 @@ const en = {
   "set:login" : "Log In",
   "set:fail" : "Failed to connect to the server. Please try again later",
   "set:confirmLogout": "Please, confirm logout",
+  "set:sendAlimTalk" : "The alim talk has been sent",
+  "set:failedToSendAlimTalk" : "Failed to send a alim talk. Please try again later",
 
   "rch:recharge" : "Recharge",
 
@@ -428,6 +430,8 @@ const ko = {
   "set:login" : "로그인",
   "set:fail" : "시스템 연동에 실패했습니다. 나중에 다시 이용해 주세요",
   "set:confirmLogout": "로그아웃 하시겠습니까?",
+  "set:sendAlimTalk" : "알림톡이 발송되었습니다",
+  "set:failedToSendAlimTalk" : "알림톡 발송에 실패했습니다. 나중에 다시 시도해 주세요",
 
   "rch:recharge" : "충전 하기",
 
