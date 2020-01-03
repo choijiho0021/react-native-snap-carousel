@@ -63,8 +63,7 @@ class ContactScreen extends Component {
   } 
 
   componentDidUpdate(prevProps) {
-    if ( this.props.noti.result !== 'undefined' 
-      && this.props.noti.result !== 0
+    if ( ! _.isUndefined(this.props.noti.result)
       && prevProps.noti.result !== this.props.noti.result ) {
         this._showModal(true)
     }
@@ -113,8 +112,7 @@ class ContactScreen extends Component {
 
     this._cancelKtalk = sendKtalk.cancel
     sendKtalk.catch( err => console.log("failed to send alimtalk", err))
-
-    this._showModal(true)
+    
   }
 
   render() {

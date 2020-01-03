@@ -73,7 +73,7 @@ export default handleActions({
   ... pender({
     type: SEND_ALIM_TALK,
     onSuccess: (state, action) => {
-      const {result, objects} = action.payload
+      const {result} = action.payload || {}
       if (result === 0 ) {
         return state.set('lastSent', new Date())
             .set('result', result)
