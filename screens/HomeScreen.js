@@ -34,8 +34,6 @@ import pushNoti from '../utils/pushNoti'
 import { initialMode } from 'react-native-dark-mode'
 import { Animated } from 'react-native';
 
-// import firebase from 'react-native-firebase';
-
 const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti, 
   {badgeStyle:{right:-3,top:0}},
   (state) => ({notReadNoti: state.noti.get('notiList').filter(elm=> elm.isRead == 'F').length }))(AppButton)
@@ -118,9 +116,7 @@ class HomeScreen extends Component {
 
     // config push notification
     pushNoti.add(this._notification)
-
-    // const fcmToken = await firebase.messaging().getToken();
-    // console.log("fcmToken",fcmToken)
+    
     // get promotion list
     promotionApi.getPromotion().then(resp => {
       if (resp.result == 0) {
