@@ -7,6 +7,8 @@ import _ from 'underscore'
 import utils from '../../utils/utils';
 import moment from 'moment'
 import { batch } from 'react-redux';
+import { Platform } from '@unimodules/core';
+import firebase from 'react-native-firebase';
 
 const SIGN_UP =        'rokebi/account/SIGN_UP'
 const UPDATE_ACCOUNT = 'rokebi/account/UPDATE_ACCOUNT'
@@ -74,7 +76,7 @@ export const changeEmail = (mail) => {
 }
 
 export const logInAndGetAccount = (mobile, pin, iccid) => {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     return dispatch(logIn(mobile, pin)).then(
       resp => {
         if ( resp.result == 0 && resp.objects.length > 0) {
@@ -84,7 +86,28 @@ export const logInAndGetAccount = (mobile, pin, iccid) => {
           utils.storeData( userApi.KEY_PIN, pin)
 
           // get ICCID account info
-          if ( iccid) dispatch(getAccount(iccid, {token: obj.csrf_token}))
+          if ( iccid) {
+            dispatch(getAccount(iccid, {token: obj.csrf_token})).then(
+              async (resp) => {
+                if(Platform.OS == 'android') {
+                  const {account} = getState()
+                  const accountAttr = {field_device_token : await firebase.messaging().getToken()}
+
+                  dispatch(activateAccount(resp.objects[0].uuid, accountAttr, auth(account))).then(
+                    resp => {
+                      if ( resp.result == 0 && resp.objects.length > 0) {
+                        return dispatch(updateAccount(resp.objects[0]))
+                      }
+                    },
+                    err => {
+                      console.log('failed to update device token', err)
+                    }
+                  )
+                }
+                return 
+              }
+            )
+          }
 
           return dispatch(getUserId( obj.current_user.name, {token: obj.csrf_token}))
         }
@@ -100,14 +123,14 @@ export const registerMobile = (uuid, mobile) => {
   return (dispatch, getState) => {
     const { account } = getState()
     return dispatch(getAccountByUUID(uuid)).then(
-      resp => {
+      async (resp) => {
         if ( resp.result == 0 && resp.objects.length > 0 ) {
           const accountAttr = {}
           if ( ! _.isEmpty(mobile) && resp.objects[0].mobile != mobile ) {
             accountAttr.field_mobile = mobile
           }
 
-          const deviceToken = account.get('deviceToken')
+          const deviceToken = Platform.OS == 'ios' ? account.get('deviceToken') : await firebase.messaging().getToken();
           if ( ! _.isEmpty(deviceToken) ) {
             accountAttr.field_device_token = deviceToken
           }

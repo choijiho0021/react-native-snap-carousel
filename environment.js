@@ -1,6 +1,7 @@
 import Constants from "expo-constants";
 
 const rokApiHost = "simrm.ap-northeast-2.elasticbeanstalk.com"
+//const rokApiHost = "api.rokebi.com"
 const awsHost = "www.rokebi.com"
 //const awsHost = "esim2-dev.ap-northeast-2.elasticbeanstalk.com"
 //const awsHost = "localhost:8888"
