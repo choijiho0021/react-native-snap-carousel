@@ -177,7 +177,7 @@ class PymMethodScreen extends Component {
         {
           // 주소 등록 
           // == 0
-          this.props.profile.profile.length >= 0 &&
+          this.props.profile.profile.length == 0 &&
           <View>
             <Text style={styles.title}>{i18n.t('pym:delivery')}</Text>
             <View>

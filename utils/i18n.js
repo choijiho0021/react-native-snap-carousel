@@ -258,6 +258,7 @@ const en = {
 
   "cart:totalCnt" : "Total count",
   "cart:totalPrice" : "Total price",
+  "cart:totalBalance" : "Total balance",
   "cart:dlvCost" : "Delivery cost",
   "cart:totalCost" : "Total payment",
   "cart:totalCntX" : "Total %% pieces",
@@ -558,6 +559,7 @@ const ko = {
 
   "cart:totalCnt" : "총 상품 수",
   "cart:totalPrice" : "총 상품 금액",
+  "cart:totalBalance" : "충전 잔액",
   "cart:dlvCost" : "배송비",
   "cart:totalCost" : "총 결제 금액",
   "cart:totalCntX" : "총 %% 개",

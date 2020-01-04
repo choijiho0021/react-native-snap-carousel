@@ -116,11 +116,13 @@ class FindAddressScreen extends Component {
       <SafeAreaView style={styles.container}>
         <View style={{flex:1,justifyContent: 'space-between'}}>
           <View style={styles.modal}>
-            <View style={[styles.textFieldBox, {borderBottomColor: colors.black}]}>
+            <View style={styles.textFieldBox}>
               <TextField containerStyle={styles.field}
-                style={{fontSize:14}}
+                inputContainerStyle={{paddingTop:5, height: 55}}
+                style={{fontSize:14, width:'80%'}}
                 label={i18n.t('purchase:findAddr')}
-                // titleTextStyle={{lineHeight: 30}}
+                labelOffset={{y0:2}}
+                labelTextStyle={{height:20, textAlignVertical:'bottom'}}
                 returnKeyType='done'
                 enablesReturnKeyAutomatically={true}
                 onChangeText={this._onChangeText('addr')}
@@ -158,11 +160,16 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
   },  
   field: {
-    // marginHorizontal: 20,
-    // padding: 5,
-    // width: "100%",
     height: 46,
   },
+  showSearchBar : {
+    position: 'absolute',
+    top: 27,
+    right: 10,
+    alignSelf: 'flex-end',
+    width: 15,
+    height: 16
+  },  
   modal: {
       flex: 1,
       justifyContent: "flex-start",
@@ -177,16 +184,14 @@ const styles = StyleSheet.create({
   pagination: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    // position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0
   },
   textFieldBox: {
-    // height: 46, 
+    borderBottomColor: colors.black,
     marginHorizontal: 20, 
-    // marginBottom: 20,
-    // borderBottomWidth: 1,
+    height: 50,
   },
   searchEx: {
     ... appStyles.normal14Text,
@@ -202,13 +207,6 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     fontWeight: 'bold', 
     color: colors.black,
-  },
-  showSearchBar : {
-    marginRight:20,
-    paddingBottom: 16,
-    alignSelf: 'flex-end',
-    width: 15,
-    height: 16
   },
   paginationBox: {
     width:44, 

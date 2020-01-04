@@ -42,6 +42,7 @@ class AddProfileScreen extends Component {
       disabled: true,
       roadAddr: " ",
       profile: new Map({
+        // prefix: "010",
         alias: undefined,
         recipient: undefined,
         recipientNumber: undefined,
@@ -117,7 +118,8 @@ class AddProfileScreen extends Component {
             .set('addressLine2', addressLine2)
             .set('zipCode', addr.zipNo)
             .set('province', findEngAddress.findProvince(provinceNumber))
-            .set('city', findEngAddress.findCity(provinceNumber, cityNumber)),
+            .set('city', findEngAddress.findCity(provinceNumber, cityNumber))
+            .set('detailAddr', ''),
           roadAddr: addr.roadAddr
         })
 
@@ -131,6 +133,12 @@ class AddProfileScreen extends Component {
 _onSubmit() {
   const {profile} = this.props.action
   const defaultProfile = this.props.profile.profile.find(item => item.isBasicAddr) || {}
+  // const profileToSave = {
+  //   ...this.state.profile.toJS(),
+  //   recipientNumber: this.state.profile.get('prefix')+this.state.profile.get('recipientNumber')
+  // }
+
+  // console.log('profileTO@@@', profileToSave)
 
   if(_.isEmpty(this.state.update)){
     // profile 신규 추가
@@ -224,6 +232,7 @@ _onSubmit() {
 
     console.log('length', Object.keys(this.state.errors).length)
     console.log('detail', this.state.errors.detailAddr)
+    console.log('@@@@Profile', profile.toJS())
 
     return (
       <SafeAreaView style={styles.container}>
@@ -257,9 +266,6 @@ _onSubmit() {
                   <TextInput style={[styles.textBox, {borderColor: this._changeBorder('recipient')}]}
                             value={profile.get('recipient')}
                             placeholder={i18n.t('addr:enterWithin50')}
-                            // placeholderTextColor={colors.clearBlue}
-                            // placeholderStyle={{color:colors.clearBlue}}
-                            // lineHeight={profile.get('recipient') == 0 && isAndroid() ? 0 : 14 }
                             onFocus={()=>this._onFocusClear('recipient')}
                             onChangeText={this._onChangeProfile('recipient')} />
                 </View>
@@ -275,12 +281,11 @@ _onSubmit() {
                     <View style={[styles.container, this.props.style]}>
                       <View style={styles.pickerWrapper}>
                         <RNPickerSelect style={{
-                          placeholder: styles.placeholder,
-                          iconContainer: {
-                            top: 4,
-                            right: 10,},
+                          ... pickerSelectStyles,
                         }}
+                          useNativeAndroidPickerStyle={false}
                           placeholder={{}}
+                          // onValueChange={this._onChangeProfile("prefix")}
                           onValueChange={this._onChangeValue("prefix")}
                           items={["010", "011", "017", "018", "019"].map(item => ({
                             label: item,
@@ -368,20 +373,32 @@ _onSubmit() {
     )
   }
 }
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: isDeviceSize('small') ? 12 : 14,
+    paddingVertical: 8
+  },
+  inputAndroid: {
+    height: 37,
+    fontSize: 12,
+    lineHeight: 20, 
+    color: colors.black
+  },
+  iconContainer: {
+    top: 4,
+    right: 10,
+    paddingVertical: 8
+  }
+})
 
 const styles = StyleSheet.create({
   container: {
     ...appStyles.container,
     alignItems: 'stretch',
   },
-  placeHolder: {
-    ...appStyles.normal14Text,
-    color: colors.greyish
-  },
   textRow: {
     flex: 1,
     flexDirection: 'row',
-    // marginBottom: 20
   },
   findTextRow: {
     flex: 1,
@@ -408,7 +425,6 @@ const styles = StyleSheet.create({
   },
   textBox: {
     width: '78%',//isDeviceSize('small') ? '74%':'78%',
-    // flex: 1,
     height: 36,
     fontSize: isDeviceSize('small') || isAndroid() ? 12 : 14,
     borderRadius: 3,
@@ -423,7 +439,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   titleText: {
-    // ...appStyles.normal14Text,
     fontSize: isDeviceSize('small') ? 12 : 14,
     fontWeight: 'normal',
     color: colors.warmGrey,
@@ -435,11 +450,9 @@ const styles = StyleSheet.create({
   },
   pickerWrapper: {
     ...appStyles.borderWrapper,
-    width: '80%',//72, //28%
+    width: '80%',
     paddingLeft: 10,
-    paddingVertical: 8,
-    marginRight: 10,
-    justifyContent: 'flex-start'
+    alignContent: 'center'
   },
   basicProfile: {
     ... appStyles.normal12Text,

@@ -41,9 +41,7 @@ const styles = StyleSheet.create({
     fontWeight: "normal",
     fontStyle: "normal",
     color: colors.warmGrey,
-    alignContent: 'center',
-    paddingHorizontal: 9,
-    paddingVertical: 2
+    textAlign: 'center',
   },
   roadBox: {
     width: isAndroid() ? 55 : ( isDeviceSize('small') ? 40 : 50 ),
@@ -54,7 +52,6 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderWidth: 1,
     borderColor: colors.lightGrey,
-    alignSelf: 'center',
     justifyContent: 'center'
   }
 });
