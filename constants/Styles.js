@@ -118,7 +118,7 @@ export const appStyles = StyleSheet.create({
         backgroundColor: "#ffffff",
         borderStyle: "solid",
         borderWidth: 1,
-        borderColor: "#d8d8d8"
+        borderColor: colors.black//"#d8d8d8"
     },
 
     borderUnderscore: {

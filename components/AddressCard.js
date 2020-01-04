@@ -20,7 +20,7 @@ export default function AddressCard({label, textStyle, mobileStyle, profile, sty
   return (
     <View style={[styles.container, style]}>
       <Text style={textStyle}>{name}</Text>
-      <Text style={mobileStyle}>{utils.toPhoneNumber(profile.recipientNumber)}</Text>
+      <Text style={mobileStyle}>{utils.toPhoneNumber(profile.prefix + profile.recipientNumber)}</Text>
       <Text style={textStyle}>{profile.addressLine1}</Text>
       <Text style={textStyle}>{profile.addressLine2}</Text>
       <Text style={textStyle}>{profile.detailAddr}</Text>

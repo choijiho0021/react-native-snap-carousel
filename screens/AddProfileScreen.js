@@ -38,11 +38,10 @@ class AddProfileScreen extends Component {
 
     this.state = {
       update: undefined,
-      prefix: "010",
       disabled: true,
       roadAddr: " ",
       profile: new Map({
-        // prefix: "010",
+        prefix: "010",
         alias: undefined,
         recipient: undefined,
         recipientNumber: undefined,
@@ -77,7 +76,6 @@ class AddProfileScreen extends Component {
 
     this.setState({
       update,
-      prefix: "010",
     })
 
     if (profile) {
@@ -101,7 +99,6 @@ class AddProfileScreen extends Component {
 
   componentDidUpdate(prevProps) {
     const addr = this.props.profile.addr
-    console.log('@@@addr', addr)
    
     // 주소 검색을 한 경우
     if(addr != prevProps.profile.addr){
@@ -133,20 +130,20 @@ class AddProfileScreen extends Component {
 _onSubmit() {
   const {profile} = this.props.action
   const defaultProfile = this.props.profile.profile.find(item => item.isBasicAddr) || {}
-  // const profileToSave = {
-  //   ...this.state.profile.toJS(),
-  //   recipientNumber: this.state.profile.get('prefix')+this.state.profile.get('recipientNumber')
-  // }
+  const profileJS = this.state.profile.toJS()
 
-  // console.log('profileTO@@@', profileToSave)
+  const profileToSave = {
+    ...profileJS,
+    recipientNumber: profileJS.prefix + profileJS.recipientNumber
+  }
 
   if(_.isEmpty(this.state.update)){
     // profile 신규 추가
-    profile.profileAddAndGet(this.state.profile.toJS(), defaultProfile, this.props.account)
+    profile.profileAddAndGet(profileToSave, defaultProfile, this.props.account)
   }
   else{
     // profile update
-    profile.updateCustomerProfile(this.state.profile.toJS(), this.props.account)
+    profile.updateCustomerProfile(profileToSave, this.props.account)
   }
   this.props.navigation.goBack()
 }
@@ -228,11 +225,7 @@ _onSubmit() {
 
   render() {
 
-    const { prefix, profile, errors } = this.state
-
-    console.log('length', Object.keys(this.state.errors).length)
-    console.log('detail', this.state.errors.detailAddr)
-    console.log('@@@@Profile', profile.toJS())
+    const { profile } = this.state
 
     return (
       <SafeAreaView style={styles.container}>
@@ -285,13 +278,12 @@ _onSubmit() {
                         }}
                           useNativeAndroidPickerStyle={false}
                           placeholder={{}}
-                          // onValueChange={this._onChangeProfile("prefix")}
-                          onValueChange={this._onChangeValue("prefix")}
+                          onValueChange={this._onChangeProfile("prefix")}
                           items={["010", "011", "017", "018", "019"].map(item => ({
                             label: item,
                             value: item
                           }))}
-                          value={prefix}
+                          value={profile.get('prefix')}
                           Icon={() => {
                             return (<Triangle width={8} height={6} />)
                           }}
