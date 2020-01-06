@@ -35,24 +35,28 @@ class NotiScreen extends Component {
   componentDidMount() {
     const mode = this.props.navigation.getParam('mode')
     // navigation param으로 notiList를 받은 경우 처리 - 공지 사항
-    const list = ( mode == 'info') ? this.props.navigation.getParam('info') : this.props.noti.notiList
-    if ( list) {
-      this.setState({list})
-    }
+    // const list = ( mode == 'info') ? this.props.navigation.getParam('info') : this.props.noti.notiList
+    // if ( list) {
+    //   this.setState({list})
+    // }
   }
 
-  _onPress = (uuid, bodyTitle, body) => () => {
-    if ( this.state.mode == 'noti' && uuid) {
+  _onPress = (uuid, bodyTitle, body, notiType) => () => {
+    if (uuid) {
       this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
-    }
 
-    //todo:notitype에 따라서 이동하는 경로가 바뀌어야 함
-    this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:bodyTitle, text:body})
+      switch (notiType) {
+        case 'noti':
+          this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:bodyTitle, text:body})
+        case 'reply':
+          this.props.navigation.navigate('ContactBoard')  
+      }
+    }
   }
 
   _renderItem = ({item,index}) => {
       return (
-        <TouchableOpacity onPress={this._onPress(item.uuid, item.title, item.body)}>
+        <TouchableOpacity onPress={this._onPress(item.uuid, item.title, item.body, item.notiType)}>
           <View key={item.uuid} style={[styles.notibox,{backgroundColor:item.isRead == "F" ? "#f7f8f9" : colors.white}]}>
             <View key='notitext' style={styles.notiText} >
               <Text key='created' style={styles.created}>{moment(item.created).format('LLL')}</Text>
@@ -76,12 +80,12 @@ class NotiScreen extends Component {
   }
 
   render() {
-    const {list} = this.state
+    const {notiList} = this.props.noti
 
     return (
       <View key={"container"} style={styles.container}>
         <FlatList 
-          data={list} 
+          data={notiList} 
           renderItem={this._renderItem }
           ListEmptyComponent={this.renderEmptyContainer()}
           />
