@@ -62,7 +62,8 @@ export default function App(props) {
           {
             showSplash && Constants.appOwnership !== 'expo' ?
               <Video source={require('./assets/images/rokebi_intro.mp4')}   
-                style={styles.backgroundVideo} /> :
+                style={styles.backgroundVideo} 
+                resizeMode='contain'/> :
               <AppNavigator />
           }
         </View>
