@@ -31,6 +31,7 @@ import { attachmentSize } from '../constants/SliderEntry.style'
 import AppAlert from './AppAlert'
 import AppIcon from './AppIcon';
 import * as Permissions from 'expo-permissions';
+import { Platform } from '@unimodules/core';
 
 let ImagePicker 
 if (Constants.appOwnership === 'expo') {
@@ -337,12 +338,13 @@ class BoardMsgAdd extends Component {
           </View>
         </KeyboardAwareScrollView>
 
+        {Platform.OS == 'ios' ? 
         <InputAccessoryView nativeID={inputAccessoryViewID}>
           <AppButton style={styles.inputAccessory} 
             title={i18n.t('done')} 
             titleStyle={[styles.inputAccessoryText, {color: _.isEmpty(this.state.msg) ? colors.white : colors.blue}]}
             onPress={() => this._keybd.current.blur()}/>
-        </InputAccessoryView>
+        </InputAccessoryView> : null }
 
         <AppButton style={styles.confirm}
           title={i18n.t('board:new')} 
