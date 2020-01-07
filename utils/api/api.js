@@ -190,6 +190,7 @@ class Api {
             return this.failure(this.FAILED, response.status, response.statusText)
         }).catch(err => {
             console.log('API failed', err)
+            return this.failure(this.API_FAILED, '498', 'API failed')
         })
     }
 
