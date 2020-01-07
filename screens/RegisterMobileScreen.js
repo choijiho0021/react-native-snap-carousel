@@ -17,7 +17,6 @@ import _ from 'underscore'
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import AppButton from '../components/AppButton';
 import AppBackButton from '../components/AppBackButton';
-import AppTextInput from '../components/AppTextInput';
 import AppAlert from '../components/AppAlert';
 import AppIcon from '../components/AppIcon';
 import { bindActionCreators } from 'redux'
