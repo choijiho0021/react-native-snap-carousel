@@ -35,8 +35,9 @@ const uploadPicture = createAction(UPLOAD_PICTURE, accountApi.uploadPicture)
 const changePicture = createAction(CHANGE_PICTURE, userApi.changePicture)
 const changeUserEmail = createAction(CHANGE_EMAIL, userApi.update)
 
+let firebase
 if(Platform.OS=='android'){
-  const firebase = require('react-native-firebase')
+  firebase = require('react-native-firebase')
 }
 
 export const logout = () => {
