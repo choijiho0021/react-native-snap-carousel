@@ -61,7 +61,8 @@ class Api {
         rokApi: {
             auth: {
                 verify: 'api/v1/auth/verify/sms',
-                confirm: 'api/v1/auth/verify/sms/confirm'
+                confirm: 'api/v1/auth/verify/sms/confirm',
+                email: 'api/v1/auth/verify/email/confirm'
             },
             user: {
                 create: 'api/v1/auth/user'

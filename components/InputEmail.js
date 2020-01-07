@@ -34,6 +34,8 @@ class InputEmail extends Component {
     }
 
     this._onChangeText = this._onChangeText.bind(this)
+    this._focusInput = this._focusInput.bind(this)
+    this.inputRef = React.createRef()
   }
 
   componentDidMount() {
@@ -55,6 +57,10 @@ class InputEmail extends Component {
     }
   }
 
+  _focusInput = () => {
+    if (this.inputRef.current) this.inputRef.current.focus()
+  }
+
   render() {
     const {domain, email, domainIdx} = this.state
 
@@ -66,6 +72,8 @@ class InputEmail extends Component {
             returnKeyType='next'
             enablesReturnKeyAutomatically={true}
             onChangeText={this._onChangeText('email')}
+            autoCapitalize = 'none'
+            ref={this.inputRef}
             value={email} /> 
         </View>
 
@@ -77,6 +85,7 @@ class InputEmail extends Component {
             enablesReturnKeyAutomatically={true}
             editable={domainIdx == DIRECT_INPUT}
             onChangeText={this._onChangeText('domain')}
+            autoCapitalize = 'none'
             value={domain} /> 
         </View>
 

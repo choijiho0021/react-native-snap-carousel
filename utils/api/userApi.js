@@ -383,6 +383,29 @@ class UserAPI {
             }
         })
     }
+
+    confirmEmail = ({ email, abortController }) => {
+        if ( _.isEmpty(email) ) return api.reject( api.INVALID_ARGUMENT)
+
+        const url = `${api.rokHttpUrl(api.path.rokApi.auth.email)}`,
+            headers = api.basicAuth(undefined, undefined, 'json'),
+            body = {
+                email
+            }
+
+        return api.callHttp(url, {
+            method: 'post',
+            headers,
+            body: JSON.stringify(body)
+        }, (data = {}) => {
+            if ( _.size(data.result) > 0) {
+                if (data.result.code  === 0) return api.success();
+                if (data.result.code  === -1006 ) return api.failure(api.INVALID_ARGUMENT, undefined, (data.result || {}).error)
+            }
+            
+            return api.failure(api.FAILED, undefined, (data.result || {}).error);
+        }, {abortController})
+    }
 }
 
 export default new UserAPI()

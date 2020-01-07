@@ -27,6 +27,7 @@ import { colors } from '../constants/Colors';
 import { Map } from 'immutable'
 import validationUtil from '../utils/validationUtil';
 import InputPinInTime from '../components/InputPinInTime';
+import api from '../utils/api/api';
 
 class RegisterMobileScreen extends Component {
   static navigationOptions = ({navigation, state}) => ({
@@ -48,7 +49,11 @@ class RegisterMobileScreen extends Component {
         "1": false,
         "2": false,
       }),
-      newUser: false
+      newUser: false,
+      emailValidation: {
+        isValid: false,
+        error: undefined
+      }
     }
 
     this.confirmList = [
@@ -93,6 +98,7 @@ class RegisterMobileScreen extends Component {
     this._onCancel = this._onCancel.bind(this)
     this._renderItem = this._renderItem.bind(this)
     this._focusAuthInput = this._focusAuthInput.bind(this)
+    this._focusEmailInput = this._focusEmailInput.bind(this)
 
     this.authInputRef = React.createRef()
     this._isMounted = false
@@ -117,18 +123,33 @@ class RegisterMobileScreen extends Component {
     this.controller.abort()
   }
 
-  _onSubmit = () => {
+  _onSubmit = async () => {
 
     const {email, domain} = this.email.current.state,
       { pin, mobile, confirm } = this.state
 
-    const error = validationUtil.validate('email', `${email}@${domain}`)
-    if ( ! _.isEmpty(error)) {
-      return AppAlert.error(error.email[0])
-    }
+    let error = validationUtil.validate('email', `${email}@${domain}`),
+      isValid = true
 
-    userApi.signUp({ user: mobile, pass: pin, email: `${email}@${domain}`, mktgOptIn: confirm.get('2')})
-      .then( resp => {
+    try {
+      if ( ! _.isEmpty(error) ) {
+        isValid = false
+        this.setState({ emailValidation: { isValid, error: error.email[0] } })
+      }
+      else {
+        let resp = await userApi.confirmEmail({ email: `${email}@${domain}` })
+        if ( resp.result !== 0 && resp.result !== api.INVALID_ARGUMENT ) {
+          console.log('confirm email failed', resp)
+          throw new Error('failed to confirm email')
+        }
+
+        isValid = resp.result === 0
+        this.setState({ emailValidation: { isValid, error: isValid ? undefined : i18n.t('acc:duplicatedEmail') } })
+      }
+
+      if ( isValid && this._isMounted ) {
+        const resp = userApi.signUp({ user: mobile, pass: pin, email: `${email}@${domain}`, mktgOptIn: confirm.get('2')})
+
         if (resp.result === 0 && ! _.isEmpty(resp.objects) ) {
           this._signIn({ mobile, pin })
         }
@@ -136,11 +157,12 @@ class RegisterMobileScreen extends Component {
           console.log('sign up failed', resp)
           throw new Error('failed to login')
         }
-      })
-      .catch(err => {
-        console.log('sign up failed', err)
-        AppAlert.error(i18n.t('reg:fail'))
-      })
+
+      }
+    } catch(err) {
+      console.log('sign up failed', err)
+      AppAlert.error(i18n.t('reg:fail'))
+    }
   }
 
   _onCancel = () => {
@@ -149,6 +171,10 @@ class RegisterMobileScreen extends Component {
 
   _focusAuthInput() {
     if ( this.authInputRef.current) this.authInputRef.current.focus()
+  }
+
+  _focusEmailInput() {
+    if ( this.email.current )  this.email.current._focusInput()
   }
 
   _onChangeText = (key) => (value) => {
@@ -167,8 +193,6 @@ class RegisterMobileScreen extends Component {
         timeout: true
       })
 
-      this._focusAuthInput()
-
       userApi.sendSms({ user: value, abortController: this.controller })
         .then( resp => {
           if (resp.result === 0) {
@@ -176,6 +200,8 @@ class RegisterMobileScreen extends Component {
               authNoti: true,
               timeout: false
             })
+
+            this._focusAuthInput()
           }
           else {
             console.log('send sms failed', resp)
@@ -210,6 +236,9 @@ class RegisterMobileScreen extends Component {
 
             if ( ! _.isEmpty(resp.objects) ) {
               this._signIn({mobile, pin})
+            }
+            else {
+              this._focusEmailInput()
             }
           }
           else {
@@ -282,7 +311,8 @@ class RegisterMobileScreen extends Component {
   }
 
   render() {
-    const { mobile, authorized, confirm, authNoti, newUser, timeout } = this.state
+    const { mobile, authorized, confirm, authNoti, newUser, timeout, emailValidation } = this.state,
+      { isValid, error } = emailValidation || {}
     const disableButton = ! authorized || ( newUser && !(confirm.get("0") && confirm.get("1")) )
 
     return (
@@ -312,6 +342,13 @@ class RegisterMobileScreen extends Component {
             <View style={{flex:1}}>
 
               <InputEmail style={{marginTop:38, paddingHorizontal:20}} ref={this.email}/>
+
+              {
+                  isValid ? null :
+                  <Text style={[styles.helpText, {color: colors.errorBackground}]}>
+                      {error}
+                  </Text>
+              }
               
               <View style={styles.divider}/>
 
