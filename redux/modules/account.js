@@ -8,7 +8,6 @@ import utils from '../../utils/utils';
 import moment from 'moment'
 import { batch } from 'react-redux';
 import { Platform } from '@unimodules/core';
-import firebase from 'react-native-firebase';
 
 const SIGN_UP =        'rokebi/account/SIGN_UP'
 const UPDATE_ACCOUNT = 'rokebi/account/UPDATE_ACCOUNT'
@@ -35,6 +34,10 @@ export const activateAccount = createAction(ACTIVATE_ACCOUNT, accountApi.update)
 const uploadPicture = createAction(UPLOAD_PICTURE, accountApi.uploadPicture)
 const changePicture = createAction(CHANGE_PICTURE, userApi.changePicture)
 const changeUserEmail = createAction(CHANGE_EMAIL, userApi.update)
+
+if(Platform.OS=='android'){
+  const firebase = require('react-native-firebase')
+}
 
 export const logout = () => {
   return (dispatch) => {
@@ -100,6 +103,7 @@ export const logInAndGetAccount = (mobile, pin, iccid) => {
                       }
                     },
                     err => {
+                      //에러 출력 - 1번만 --alert
                       console.log('failed to update device token', err)
                     }
                   )
@@ -109,6 +113,7 @@ export const logInAndGetAccount = (mobile, pin, iccid) => {
             )
           }
 
+          //iccid 산과없이 로그인마다 토큰 업데이트
           return dispatch(getUserId( obj.current_user.name, {token: obj.csrf_token}))
         }
       },
