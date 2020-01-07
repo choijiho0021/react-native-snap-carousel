@@ -64,7 +64,7 @@ class RegisterMobileScreen extends Component {
         ],
         navi: { 
           route: 'SimpleTextForAuth', 
-          param: { key: 'Contract', title: i18n.t('cfm:contract'), mode: 'confirm' } 
+          param: { key: 'Contract', title: i18n.t('cfm:contract') } 
         }
       },
       {
@@ -75,7 +75,7 @@ class RegisterMobileScreen extends Component {
         ],
         navi: { 
           route: 'SimpleTextForAuth', 
-          param: { key: 'Privacy', title: i18n.t('cfm:personalInfo'), mode: 'confirm' } 
+          param: { key: 'Privacy', title: i18n.t('cfm:personalInfo') } 
         }
       },
       {
@@ -86,7 +86,7 @@ class RegisterMobileScreen extends Component {
         ],
         navi: { 
           route: 'SimpleTextForAuth', 
-          param: { key: 'Privacy', title: i18n.t('cfm:marketing'), mode: 'confirm' } 
+          param: { key: 'Privacy', title: i18n.t('cfm:marketing') } 
         }
       }
     ]
@@ -266,11 +266,8 @@ class RegisterMobileScreen extends Component {
   _onMove = (key, route, param ) => () => {
     const { confirm } = this.state
 
-    if ( confirm.get(key) ) {
-      this._onPress(key)()
-    }
-    else {
-      this.props.navigation.navigate(route, { ...param, onOk: this._onPress(key) })
+    if ( ! _.isEmpty(route) ) {
+      this.props.navigation.navigate(route, param)
     }
   }
 
@@ -286,26 +283,26 @@ class RegisterMobileScreen extends Component {
   }
 
   _renderItem({item}) {
-    const confirmed = this.state.confirm.get(item.key)
+    const confirmed = this.state.confirm.get(item.key),
+      navi = item.navi || {}
 
     return (
-      <TouchableOpacity onPress={
-          item.navi && (item.navi || {}).route ?  
-          this._onMove(item.key, item.navi.route, item.navi.param) : 
-          this._onPress(item.key)
-        }>
-        <View style={styles.confirmList}>
+      <View style={styles.confirmList}>
+        <TouchableOpacity onPress={this._onPress(item.key)} activeOpacity={1} style={{paddingVertical: 13}}>
           <AppIcon style={{marginRight:10}} name="btnCheck2" checked={confirmed}/>
-          <View style={{flexDirection:"row", flex:1}}>
-          {
-            item.list.map((elm,idx) => (
-              <Text key={idx+""} style={[styles.confirmItem, {color:elm.color}]}>{elm.text}</Text>
-            ))
-          }
+        </TouchableOpacity>
+        <TouchableOpacity onPress={this._onMove(item.key, navi.route, navi.param)} activeOpacity={1}
+          style={[styles.rowStyle, {paddingVertical: 13}]}>
+          <View style={styles.rowStyle}>
+            {
+              item.list.map((elm,idx) => (
+                <Text key={idx+""} style={[styles.confirmItem, {color:elm.color}]}>{elm.text}</Text>
+              ))
+            }
           </View>
           <AppIcon style={{marginRight:10, marginTop:5}} name="iconArrowRight"/>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </View>
     )
   }
 
@@ -393,7 +390,7 @@ const styles = StyleSheet.create({
     height: 46,
     borderBottomColor: colors.ligtyGrey,
     borderBottomWidth: 0.5,
-    paddingVertical: 13,
+    //paddingVertical: 13,
   },
   confirm: {
     width: "100%",
@@ -439,6 +436,10 @@ const styles = StyleSheet.create({
     ...appStyles.normal14Text,
     textAlignVertical: 'bottom',
     lineHeight: 19
+  },
+  rowStyle: {
+    flexDirection:"row", 
+    flex:1
   }
 });
 

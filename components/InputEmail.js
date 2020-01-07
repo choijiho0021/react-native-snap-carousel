@@ -36,8 +36,10 @@ class InputEmail extends Component {
 
     this._onChangeText = this._onChangeText.bind(this)
     this._focusInput = this._focusInput.bind(this)
+    this._openPicker = this._openPicker.bind(this)
     this.emailRef = React.createRef()
     this.domainRef = React.createRef()
+    this.pickerRef = React.createRef()
   }
 
   componentDidMount() {
@@ -63,12 +65,16 @@ class InputEmail extends Component {
     if (this.emailRef.current) this.emailRef.current.focus()
   }
 
+  _openPicker = () => {
+    if ( this.pickerRef.current ) this.pickerRef.current.togglePicker()
+  }
+
   render() {
     const {domain, email, domainIdx} = this.state
 
     return (
       <View style={[styles.container, this.props.style]}>
-        <TouchableOpacity style={[styles.textInputWrapper, email? {} : styles.emptyInput]}
+        <TouchableOpacity style={[styles.textInputWrapper, email? {} : styles.emptyInput, {flex: 1}]}
           onPress={this._focusInput}
           activeOpacity={1}>
           <TextInput style={[styles.textInput, email? {} : styles.emptyInput]} 
@@ -96,7 +102,9 @@ class InputEmail extends Component {
             value={domain} /> 
         </TouchableOpacity>
 
-        <View style={[styles.pickerWrapper, domainIdx === DIRECT_INPUT ? styles.emptyInput : {}]}>
+        <TouchableOpacity style={[styles.pickerWrapper, domainIdx === DIRECT_INPUT ? styles.emptyInput : {}]}
+          onPress={this._openPicker}
+          activeOpacity={1}>
           <RNPickerSelect style={{
             placeholder: styles.placeholder,
             inputIOS: domainIdx === DIRECT_INPUT ? styles.directInput : styles.noDirectInput,
@@ -113,9 +121,10 @@ class InputEmail extends Component {
             items={domains}
             value={domainIdx}
             useNativeAndroidPickerStyle={false}
+            ref={this.pickerRef}
             Icon={() => {return (<Triangle width={8} height={6} color={colors.warmGrey}/>)}}
           />
-        </View>
+        </TouchableOpacity>
 
       </View>
       )

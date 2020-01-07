@@ -33,6 +33,9 @@ class SimpleTextScreen extends Component {
       markAsRead: false,
       disable: true
     }
+
+    this._isMounted = false
+    this.controller = new AbortController()
   }
 
   componentDidMount() {
@@ -41,17 +44,18 @@ class SimpleTextScreen extends Component {
     const bodyTitle = this.props.navigation.getParam('bodyTitle')
     const mode = this.props.navigation.getParam('mode')
 
-    if(body){
-      this.setState({body:body, bodyTitle:bodyTitle})
+    this._isMounted = true
+
+    if (mode) {
+      this.setState({ mode })
     }
-    else if (key){
-      this.setState({
-        querying: true,
-        disable: true
-      })
-  
-      pageApi.getPageByCategory(key).then(resp => { 
-        if ( resp.result == 0 && resp.objects.length > 0) {
+
+    if (body) {
+      this.setState({ body, bodyTitle })
+    }
+    else if (key) {
+      pageApi.getPageByCategory(key, this.controller).then(resp => { 
+        if ( resp.result == 0 && resp.objects.length > 0 && this._isMounted) {
           this.setState({
             body: resp.objects[0].body,
             disable: false
@@ -62,18 +66,21 @@ class SimpleTextScreen extends Component {
         console.log('failed', err)
         AppAlert.error(i18n.t('set:fail'))
       }).finally(_ => {
-        this.setState({
-          querying: false
-        })
+        if ( this._isMounted ) {
+          this.setState({
+            querying: false
+          })
+        }
       })
     }
-    else{
+    else {
       this.setState({body:i18n.t('err:body')})
     }
+  }
 
-    if (mode) {
-      this.setState({ mode })
-    }
+  componentWillUnmount() {
+    this._isMounted = false
+    this.controller.abort()
   }
 
   _onOk = async () => {

@@ -143,8 +143,8 @@ class Api {
         return new Headers(hdr)
     }
 
-    callHttpGet(url, callback) {
-        return this.callHttp( url, { method: 'GET'}, callback)
+    callHttpGet(url, callback, option = { isJson:true, abortController:undefined}) {
+        return this.callHttp( url, { method: 'GET'}, callback, option)
     }
 
     callHttp(url, param, callback, option = { isJson:true, abortController:undefined}) {
