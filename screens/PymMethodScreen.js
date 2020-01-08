@@ -196,13 +196,14 @@ class PymMethodScreen extends Component {
   render() {
     const { selected } = this.state,
       { purchaseItems = [], pymReq } = this.props.cart,
+      pymPrice = this.props.navigation.getParam('pymPrice'),
       simIncluded = purchaseItems.findIndex(item => item.type == 'sim_card') >= 0,
       noProfile = this.props.profile.profile.length == 0
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <ScrollView>
-          <PaymentItemInfo cart={purchaseItems} pymReq={pymReq}/>              
+          <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} pymPrice={pymPrice}/>              
 
           {
             simIncluded && this._address()
