@@ -59,7 +59,6 @@ class AddProfileScreen extends Component {
     }
 
     this._onChangeProfile = this._onChangeProfile.bind(this)
-    this._onChangeValue = this._onChangeValue.bind(this)
     this._onSubmit = this._onSubmit.bind(this)
     this._onChecked = this._onChecked.bind(this)
     this._findAddress = this._findAddress.bind(this)
@@ -157,12 +156,6 @@ _onSubmit() {
           profile: profile.update( 'isBasicAddr', value => ! value)
       })
     }
-  }
-
-  _onChangeValue = (key = '') => (value) => {
-    this.setState({
-      [key]: value,
-    })
   }
 
   _onChangeProfile = (key = '') => (value) => {
@@ -335,8 +328,8 @@ _onSubmit() {
                       <View style={styles.roadBox}>
                         <Text style={styles.roadText}>{i18n.t('addr:road')}</Text>
                       </View>                       
-                        <Text style={styles.addrText}>{
-                        !_.isEmpty(profile.get('detailAddr')) ? 
+                        <Text style={styles.addrText}>
+                        {!_.isEmpty(profile.get('detailAddr')) ? 
                         this.state.roadAddr + ' '+ profile.get('detailAddr') : this.state.roadAddr}</Text>
                     </View> 
                   </View>)
@@ -456,7 +449,8 @@ const styles = StyleSheet.create({
     width: '78%', 
     flexDirection: 'row', 
     alignSelf: 'flex-end',
-    marginTop: 10
+    marginVertical: 10,
+
   },
   textWidth: {
     width: '78%'

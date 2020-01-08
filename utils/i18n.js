@@ -205,6 +205,7 @@ const en = {
   'addr:invalidRecipient' : 'Input the value at least 2 characters',
   'addr:invalidAddress' : 'Search the address',
   'addr:invalidDetails' : 'Input the details of address correctly',  
+  'addr:noProfile' : '^No Address to select',
 
   "his:detail" : "Details >",
   "his:etcCnt" : "%% case",
@@ -507,6 +508,7 @@ const ko = {
   'addr:invalidRecipient' : '^받는 사람을 2자 이상 입력하세요',
   'addr:invalidAddress' : '^배송지 주소를 먼저 검색하세요',
   'addr:invalidDetails' : '^상세 주소를 정확히 입력하세요',
+  'addr:noProfile' : '^저장된 배송주소가 없습니다.',
   'addr:mandatory': '*',
   
 

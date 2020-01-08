@@ -21,6 +21,7 @@ import AppButton from '../components/AppButton';
 import AppIcon from '../components/AppIcon';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import { isAndroid } from '../components/SearchBarAnimation/utils';
+import { isDeviceSize } from '../constants/SliderEntry.style';
 
 class CustomerProfileScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -37,6 +38,7 @@ class CustomerProfileScreen extends Component {
 
     this._onChecked = this._onChecked.bind(this)
     this._deleteProfile = this._deleteProfile.bind(this)
+    this._isEmptyList = this._isEmptyList.bind(this)
 
   }
 
@@ -56,14 +58,10 @@ class CustomerProfileScreen extends Component {
   }
 
   componentDidUpdate(prevProps){
-    console.log('prevProps', prevProps)
-    console.log('this props', this.props)
 
     if(_.isUndefined(this.props.profile.selectedAddr)) {
       if(prevProps.profile.profile != this.props.profile.profile){
-        console.log('profile update', this.props.profile)
         const profile = this.props.profile.profile.find(item => item.isBasicAddr)
-        
         if(profile){
           this.setState({
             checked: profile.uuid
@@ -98,14 +96,12 @@ class CustomerProfileScreen extends Component {
   
     // props profile
     const {checked} = this.state
-    console.log('item', item)
-    console.log('SELECTEDADDR', this.props.selectedAddr)
       return (
         <View style={[styles.cardSize, checked == item.uuid && styles.checkedBorder]}>
-          <View style={{marginTop:19}}>
+          <View>
             <View style={styles.profileTitle}>
               <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '100%'}}>
-                <View style={{flexDirection: 'row', alignSelf:'flex-start'}}>
+                <View style={{flexDirection: 'row', alignSelf:'flex-start', paddingTop: 19}}>
                   <Text style={[styles.profileTitleText, 
                               checked == item.uuid && styles.checkedColor]}>{item.alias}</Text>    
                   { 
@@ -117,12 +113,12 @@ class CustomerProfileScreen extends Component {
                 </View>                                               
                 <View style={{flexDirection: 'row'}}>
                   <AppButton title={i18n.t('modify')}
-                            style={{backgroundColor: colors.white}}
+                            style={styles.updateOrDeleteBtn}
                             titleStyle={styles.chgButtonText}
                             onPress={() => this.props.navigation.navigate('AddProfile', {update:item})}/>
                   <View style={styles.buttonBorder}/>                        
                   <AppButton title={i18n.t('delete')} 
-                            style={{backgroundColor: colors.white}}
+                            style={styles.updateOrDeleteBtn}
                             titleStyle={[styles.chgButtonText, {paddingRight: 20}]}
                             onPress={()=>this._deleteProfile(item.uuid)}/>
                 </View>     
@@ -134,7 +130,7 @@ class CustomerProfileScreen extends Component {
                           style={styles.addrCard}
                           key={item.uuid}
                           profile={item}/>
-              <TouchableOpacity style={{height: 56, justifyContent:'flex-end', alignSelf: 'flex-end', width: 62, padding: 20}}
+              <TouchableOpacity style={styles.checkButton}
                                 onPress={()=>this._onChecked(item.uuid)}>
                 <AppIcon name="btnCheck" key={item.uuid} checked={checked == item.uuid || false}/>
               </TouchableOpacity>
@@ -142,6 +138,12 @@ class CustomerProfileScreen extends Component {
           </View>
         </View> 
       )
+  }
+
+  _isEmptyList(){
+    return <View style={styles.emptyView}>
+            <Text style={styles.emptyText}>{i18n.t('addr:noProfile')}</Text>
+          </View>
   }
 
   render() {
@@ -152,7 +154,7 @@ class CustomerProfileScreen extends Component {
         <FlatList data={this.props.profile.profile} 
                   keyExtractor={item => item.uuid}
                   renderItem={this._renderItem} 
-                  // ListEmptyComponent
+                  ListEmptyComponent={this._isEmptyList}
                   extraData={this.state.checked}/>
         <AppButton title={i18n.t('add')} 
                   textStyle={appStyles.confirmText}
@@ -171,7 +173,6 @@ const styles = StyleSheet.create({
   cardSize: {
     marginHorizontal: 20,
     marginTop: 20,
-    //height: 160,
     borderRadius:3,
     backgroundColor: colors.white,
     borderStyle: 'solid',
@@ -180,7 +181,6 @@ const styles = StyleSheet.create({
   },
   addrCard: {
     marginLeft: 20,
-    marginTop: 7,
     marginBottom: 17,
     width: '65%'
   },
@@ -196,7 +196,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   profileTitleText: {
-    // alignItems: 'flex-start',
     height: 19, 
     marginHorizontal: 20, 
     fontSize: 16, 
@@ -212,6 +211,7 @@ const styles = StyleSheet.create({
   buttonBorder: {
     width: 1,
     height: 20,
+    marginTop: 19,
     backgroundColor: colors.lightGrey,
   },
   colorWarmGrey: {
@@ -242,7 +242,26 @@ const styles = StyleSheet.create({
     borderColor: colors.clearBlue,
     justifyContent: 'center',
     alignSelf: 'center',
-  }
+  },
+  updateOrDeleteBtn: {
+    paddingTop: 19,
+    paddingBottom: 9
+  },
+  checkButton: {
+    width: 62, 
+    height: 56, 
+    justifyContent:'flex-end', 
+    alignSelf: 'flex-end', 
+    padding: 20
+  },
+  emptyView: {
+    flex: 1, 
+    justifyContent: 'center', 
+    height: isDeviceSize('small') ? 400 : 710,
+  },
+  emptyText: {
+    alignSelf: 'center'
+  }  
 });
 
 const mapStateToProps = (state) => ({
