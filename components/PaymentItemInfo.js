@@ -89,7 +89,8 @@ const styles = StyleSheet.create({
 class PaymentItemInfo extends PureComponent {
 
   render() {
-    const { pymReq, cart, pymPrice } = this.props
+    const { pymReq, cart, pymPrice } = this.props,
+    total =  pymPrice || (pymReq ? pymReq.reduce((acc,cur) => acc + cur.amount, 0) : 0)
 
     return (
       <View>
@@ -118,7 +119,7 @@ class PaymentItemInfo extends PureComponent {
         </View>
         <View style={[styles.row, styles.total, styles.brdrBottom0]}>
           <Text style={[styles.normalText14]}>{i18n.t('cart:totalCost')} </Text>
-          <Text style={[appStyles.normal16Text, styles.colorClearBlue, styles.fontWeightNormal]}>{utils.numberToCommaString(pymPrice)+ ' ' + i18n.t('won')}</Text>
+          <Text style={[appStyles.normal16Text, styles.colorClearBlue, styles.fontWeightNormal]}>{utils.numberToCommaString(total)+ ' ' + i18n.t('won')}</Text>
         </View>
         <View style={styles.divider}/>
       </View>

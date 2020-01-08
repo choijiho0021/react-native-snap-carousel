@@ -181,7 +181,7 @@ class PymMethodScreen extends Component {
           <View>
             <Text style={styles.title}>{i18n.t('pym:delivery')}</Text>
             <View>
-              <AppButton title={i18n.t('reg:address')} 
+              <AppButton title={i18n.t('reg:address')}
                 textStyle={appStyles.confirmText}
                 style={[appStyles.confirm, styles.addrBtn]}
                 onPress={() => this.props.navigation.navigate('AddProfile')}/>
@@ -196,7 +196,7 @@ class PymMethodScreen extends Component {
   render() {
     const { selected } = this.state,
       { purchaseItems = [], pymReq } = this.props.cart,
-      pymPrice = this.props.navigation.getParam('pymPrice'),
+      pymPrice = this.props.navigation.getParam('pymPrice') || undefined,
       simIncluded = purchaseItems.findIndex(item => item.type == 'sim_card') >= 0,
       noProfile = this.props.profile.profile.length == 0
 
