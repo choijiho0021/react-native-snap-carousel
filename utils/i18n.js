@@ -98,6 +98,7 @@ const en = {
 
   'menu:purchase' : 'Purchase',
   'menu:card' : 'Register',
+  'menu:change' : 'Change',
 
   'mysim:title': 'Please, Register MySIM ICCID',
   'mysim:accNo': 'Account No',
@@ -392,8 +393,9 @@ const ko = {
   'reg:confirm': '등록',
   'reg:failedToSendSms': 'SMS 인증번호 발송 실패',
 
-  'menu:purchase' : '카드 구매',
-  'menu:card' : '카드 등록',
+  'menu:purchase' : '유심 구매',
+  'menu:card' : '유심 등록',
+  'menu:change' : '유심 변경',
 
   'mysim:title': '도깨비 유심 ICCID를 등록해 주세요',
   'mysim:accNo': 'Account No',
