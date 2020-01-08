@@ -21,6 +21,7 @@ import utils from '../utils/utils';
 import {Map} from 'immutable'
 import _ from 'underscore'
 import AppBackButton from '../components/AppBackButton';
+import { isDeviceSize } from '../constants/SliderEntry.style';
 
 const sectionTitle = ['sim', 'product']
 
@@ -146,9 +147,6 @@ class CartScreen extends Component {
       {loggedIn, balance} = this.props.account
       totalBalance = balance + simBalance
 
-      // console.log('@@##cart', totalBalance)
-      console.log('@@##cart', pymPrice)
-
     if(!loggedIn){
       this.props.navigation.navigate('Auth')
     }
@@ -241,13 +239,10 @@ class CartScreen extends Component {
       }), {cnt: 0, price:0})
   }
 
-  _isEmptyList=(item)=>{
-    console.log('item.section', item.section.data.length)
-    if(item.section.data.length == 0){
-      return(<View style={styles.emptyView}>
+  _isEmptyList(){
+      return <View style={styles.emptyView}>
                 <Text style={styles.emptyText}>{i18n.t('cart:empty')}</Text>
-            </View>)
-    }
+            </View>
   }
 
   render() {
@@ -255,9 +250,6 @@ class CartScreen extends Component {
     const { qty, checked, section, total, simBalance} = this.state,
       dlvCost = this._dlvCost( checked, qty, total, section)
 
-    const {balance} = this.props.account
-    console.log('sstate', this.state)
-      
       return (
       <SafeAreaView style={styles.container}>
 
@@ -266,11 +258,12 @@ class CartScreen extends Component {
           renderItem={this._renderItem} 
           extraData={[qty, checked]}
           stickySectionHeadersEnabled={false}
-          renderSectionHeader={({ section: { title } }) => (
-            <Text style={[styles.header, {marginTop: title == 'sim' ? 20 : 30}]}>{i18n.t(title)}</Text>
-          )}
-          renderSectionFooter={(section)=>this._isEmptyList(section)}
-          ListFooterComponent={ <ChargeSummary totalCnt={total.cnt} totalPrice={total.price} simBalance={simBalance} balance={balance} dlvCost={dlvCost}/>} />
+          ListEmptyComponent={this._isEmptyList}
+          ListFooterComponent={ <ChargeSummary totalCnt={total.cnt} 
+                                              totalPrice={total.price} 
+                                              simBalance={simBalance} 
+                                              balance={this.props.account.balance} 
+                                              dlvCost={dlvCost}/>} />
 
         <View style={styles.buttonBox}>
           <View style={styles.sumBox}>
@@ -315,7 +308,6 @@ const styles = StyleSheet.create({
   btnBuyText: {
     ... appStyles.normal16Text,
     textAlign: "center",
-    color: "#ffffff"
   },
   delete : {
     paddingVertical: 12,
@@ -338,7 +330,7 @@ const styles = StyleSheet.create({
     flex: 1, 
     flexDirection: 'row', 
     justifyContent: 'center', 
-    height: 200
+    height: isDeviceSize('small') ? 200 : 450
   },
   emptyText: {
     alignSelf: 'center'
