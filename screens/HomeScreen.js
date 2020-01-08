@@ -180,6 +180,7 @@ class HomeScreen extends Component {
         break;
       case 'notification':
         console.log('notification', data)
+        this.props.navigation.navigate('Noti')
     }
   }
 
