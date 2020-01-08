@@ -119,7 +119,7 @@ class PaymentItemInfo extends PureComponent {
         </View>
         <View style={[styles.row, styles.total, styles.brdrBottom0]}>
           <Text style={[styles.normalText14]}>{i18n.t('cart:totalCost')} </Text>
-          <Text style={[appStyles.normal16Text, styles.colorClearBlue, styles.fontWeightNormal]}>{utils.numberToCommaString(total)+ ' ' + i18n.t('won')}</Text>
+          <Text style={[styles.normalText16, styles.colorClearBlue, styles.fontWeightNormal]}>{utils.numberToCommaString(total)+ ' ' + i18n.t('won')}</Text>
         </View>
         <View style={styles.divider}/>
       </View>

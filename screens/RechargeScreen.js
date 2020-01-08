@@ -55,7 +55,7 @@ class RechargeScreen extends Component {
     ]
 
     this.props.action.cart.purchase({purchaseItems})
-    this.props.navigation.replace('PymMethod')
+    this.props.navigation.navigate('PymMethod')
   }
 
   _onPress = (key) => () => {
