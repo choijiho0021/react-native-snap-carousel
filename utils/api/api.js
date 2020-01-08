@@ -61,7 +61,8 @@ class Api {
         rokApi: {
             auth: {
                 verify: 'api/v1/auth/verify/sms',
-                confirm: 'api/v1/auth/verify/sms/confirm'
+                confirm: 'api/v1/auth/verify/sms/confirm',
+                email: 'api/v1/auth/verify/email/confirm'
             },
             user: {
                 create: 'api/v1/auth/user'
@@ -142,8 +143,8 @@ class Api {
         return new Headers(hdr)
     }
 
-    callHttpGet(url, callback) {
-        return this.callHttp( url, { method: 'GET'}, callback)
+    callHttpGet(url, callback, option = { isJson:true, abortController:undefined}) {
+        return this.callHttp( url, { method: 'GET'}, callback, option)
     }
 
     callHttp(url, param, callback, option = { isJson:true, abortController:undefined}) {
@@ -189,6 +190,7 @@ class Api {
             return this.failure(this.FAILED, response.status, response.statusText)
         }).catch(err => {
             console.log('API failed', err)
+            return this.failure(this.API_FAILED, '498', 'API failed')
         })
     }
 

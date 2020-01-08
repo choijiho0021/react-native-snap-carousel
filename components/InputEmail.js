@@ -6,6 +6,7 @@ import { colors } from '../constants/Colors';
 import _ from 'underscore'
 import Triangle from './Triangle';
 import { appStyles } from '../constants/Styles';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const DIRECT_INPUT = 'direct'
 const domains = [
@@ -34,6 +35,11 @@ class InputEmail extends Component {
     }
 
     this._onChangeText = this._onChangeText.bind(this)
+    this._focusInput = this._focusInput.bind(this)
+    this._openPicker = this._openPicker.bind(this)
+    this.emailRef = React.createRef()
+    this.domainRef = React.createRef()
+    this.pickerRef = React.createRef()
   }
 
   componentDidMount() {
@@ -55,32 +61,50 @@ class InputEmail extends Component {
     }
   }
 
+  _focusInput = () => {
+    if (this.emailRef.current) this.emailRef.current.focus()
+  }
+
+  _openPicker = () => {
+    if ( this.pickerRef.current ) this.pickerRef.current.togglePicker()
+  }
+
   render() {
     const {domain, email, domainIdx} = this.state
 
     return (
       <View style={[styles.container, this.props.style]}>
-        <View style={[styles.textInputWrapper, email? {} : styles.emptyInput]}>
+        <TouchableOpacity style={[styles.textInputWrapper, email? {} : styles.emptyInput, {flex: 1}]}
+          onPress={this._focusInput}
+          activeOpacity={1}>
           <TextInput style={[styles.textInput, email? {} : styles.emptyInput]} 
             placeholder={i18n.t('reg:email')}
             returnKeyType='next'
             enablesReturnKeyAutomatically={true}
             onChangeText={this._onChangeText('email')}
+            autoCapitalize = 'none'
+            ref={this.emailRef}
             value={email} /> 
-        </View>
+        </TouchableOpacity>
 
         <Text style={[appStyles.normal12Text, styles.textInput, email? {} : styles.emptyInput]}>@</Text>
 
-        <View style={[styles.textInputWrapper, domain? {} : styles.emptyInput, {flex:1, marginLeft:10}]}>
+        <TouchableOpacity style={[styles.textInputWrapper, domain? {} : styles.emptyInput, {flex:1, marginLeft:10}]}
+          onPress={() => { if (this.domainRef.current) this.domainRef.current.focus() }}
+          activeOpacity={1}>
           <TextInput style={[styles.textInput, domain? {} : styles.emptyInput]} 
             returnKeyType='next'
             enablesReturnKeyAutomatically={true}
             editable={domainIdx == DIRECT_INPUT}
             onChangeText={this._onChangeText('domain')}
+            autoCapitalize = 'none'
+            ref={this.domainRef}
             value={domain} /> 
-        </View>
+        </TouchableOpacity>
 
-        <View style={[styles.pickerWrapper, domainIdx === DIRECT_INPUT ? styles.emptyInput : {}]}>
+        <TouchableOpacity style={[styles.pickerWrapper, domainIdx === DIRECT_INPUT ? styles.emptyInput : {}]}
+          onPress={this._openPicker}
+          activeOpacity={1}>
           <RNPickerSelect style={{
             placeholder: styles.placeholder,
             inputIOS: domainIdx === DIRECT_INPUT ? styles.directInput : styles.noDirectInput,
@@ -97,9 +121,10 @@ class InputEmail extends Component {
             items={domains}
             value={domainIdx}
             useNativeAndroidPickerStyle={false}
+            ref={this.pickerRef}
             Icon={() => {return (<Triangle width={8} height={6} color={colors.warmGrey}/>)}}
           />
-        </View>
+        </TouchableOpacity>
 
       </View>
       )

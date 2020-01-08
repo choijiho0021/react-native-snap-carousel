@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, TextInput, Text } from 'react-native'
+import { StyleSheet, View, TextInput, Text, TouchableOpacity } from 'react-native'
 import i18n from '../utils/i18n'
 import AppButton from './AppButton'
 import { colors } from '../constants/Colors'
@@ -24,6 +24,7 @@ class InputPinInTime extends Component {
         this._timeout = this._timeout.bind(this)
         this._onChangeText = this._onChangeText.bind(this)
         this._onPress = this._onPress.bind(this)
+        this._onClick = this._onClick.bind(this)
     }
 
     componentDidMount() {
@@ -115,6 +116,10 @@ class InputPinInTime extends Component {
         }
     }
 
+    _onClick = () => {
+        if( this.props.forwardRef && this.props.forwardRef.current ) this.props.forwardRef.current.focus()
+    }
+
     render() {
         const { pin, duration, timeout } = this.state,
             { forwardRef, authorized, countdown, editable } = this.props,
@@ -126,7 +131,9 @@ class InputPinInTime extends Component {
         return (
             <View>
                 <View style={[styles.container, this.props.style]}>
-                    <View style={[styles.inputWrapper, _.size(pin) <= 0 ? styles.emptyWrapper : {} ]}>
+                    <TouchableOpacity style={[styles.inputWrapper, _.size(pin) <= 0 ? styles.emptyWrapper : {} ]}
+                        onPress={this._onClick}
+                        activeOpacity={1}>
                         <TextInput {... this.props}
                             placeholder={i18n.t('mobile:auth')}
                             ref={forwardRef}
@@ -146,7 +153,7 @@ class InputPinInTime extends Component {
                             null
                         }
 
-                    </View>
+                    </TouchableOpacity>
                     <AppButton disabled={ ! clickable } 
                         onPress={this._onPress}
                         titleStyle={styles.title} 
@@ -192,7 +199,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         justifyContent: 'space-between',
         flex: 1,
-        marginRight: 10,
+        marginRight: 20,
         paddingBottom: 9
     },
     emptyWrapper: {
@@ -200,7 +207,7 @@ const styles = StyleSheet.create({
     },
     timer: {
         ... appStyles.normal14Text,
-        color: 'red',
+        color: colors.errorBackground,
         textAlignVertical: 'center',
         lineHeight: 19
     },
