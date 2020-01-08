@@ -234,10 +234,13 @@ class HomeScreen extends Component {
 
  
   _navigate = (key) => () => {
-    const { mobile } = this.props.account
-    if ( key == 'RegisterSim' ) {
+
+    const { mobile, iccid } = this.props.account
+
+    if ( key.indexOf('_') > 0 ) {
       if ( _.isEmpty(mobile)) key = 'Auth' 
-      else key = 'RegisterSim'
+      else if ( _.isEmpty(iccid)) key = 'RegisterSim'
+      else key = 'Recharge'
     }
 
     this.props.navigation.navigate(key)
@@ -248,7 +251,7 @@ class HomeScreen extends Component {
       phone = mobile ? utils.toPhoneNumber(mobile) : 'unknown'
 
     return (
-      <TouchableOpacity style={styles.userInfo} onPress={this._navigate('RegisterSim')}>
+      <TouchableOpacity style={styles.userInfo} onPress={this._navigate('RegisterSim_user')}>
         <AppUserPic url={userPictureUrl} icon="imgPeople" style={styles.userPicture}/>
         <View style={{marginLeft:20, justifyContent:'space-around', flex:1}}>
           {
