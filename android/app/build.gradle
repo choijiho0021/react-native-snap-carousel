@@ -183,6 +183,7 @@ android {
 apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
 
 dependencies {
+    implementation project(':iamport-react-native')
     implementation project(':react-native-camera')
     implementation project(':react-native-firebase')
     implementation project(':react-native-push-notification')

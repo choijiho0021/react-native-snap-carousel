@@ -13,6 +13,7 @@ import org.unimodules.core.interfaces.SingletonModule;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.iamport.IamportPackage;
 import org.reactnative.camera.RNCameraPackage;
 import com.brentvatne.react.ReactVideoPackage;
 import com.codemotionapps.reactnativedarkmode.DarkModePackage;
@@ -49,6 +50,7 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.<ReactPackage>asList(
                 new MainReactPackage(),
+            new IamportPackage(),
             new RNCameraPackage(),
             new RNFirebasePackage(),
             new RNFirebaseMessagingPackage(),
