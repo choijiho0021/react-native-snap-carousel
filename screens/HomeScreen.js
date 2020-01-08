@@ -234,11 +234,10 @@ class HomeScreen extends Component {
 
  
   _navigate = (key) => () => {
-    const { mobile, iccid } = this.props.account
+    const { mobile } = this.props.account
     if ( key == 'RegisterSim' ) {
       if ( _.isEmpty(mobile)) key = 'Auth' 
-      else if ( _.isEmpty(iccid)) key = 'RegisterSim'
-      else key = 'Recharge'
+      else key = 'RegisterSim'
     }
 
     this.props.navigation.navigate(key)
@@ -267,6 +266,9 @@ class HomeScreen extends Component {
   }
 
   _menu() {
+
+    const { mobile, iccid } = this.props.account
+
     return (
       <View style={styles.menu}>
         <AppButton iconName="imgCard1" 
@@ -279,10 +281,10 @@ class HomeScreen extends Component {
 
         <AppButton iconName="imgCard2"
           style={styles.menuBox}
-          title={i18n.t('menu:card')}
+          title={mobile && iccid ? i18n.t('menu:change') : i18n.t('menu:card')}
           // onPress={this._navigate('AddProfile')}
           onPress={this._navigate('RegisterSim')}
-          titleStyle={styles.menuText} />
+          titleStyle={styles.menuText} />  
 
         <View style={styles.bar}/>
 

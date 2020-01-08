@@ -37,6 +37,8 @@ class CartScreen extends Component {
       checked: new Map(),
       qty: new Map(),
       total: {cnt:0, price:0},
+      simBalance: undefined,
+      pymPrice: undefined,
     }
 
     this._onPurchase = this._onPurchase.bind(this)
@@ -45,6 +47,7 @@ class CartScreen extends Component {
     this._calculate = this._calculate.bind(this)
     this._init = this._init.bind(this)
     this._isEmptyList = this._isEmptyList.bind(this)
+    this._sim = this._sim.bind(this)
   }
 
   componentDidMount() {
@@ -68,11 +71,13 @@ class CartScreen extends Component {
 
   _init() {
     const { orderItems } = this.props.cart
-    let {qty, checked} = this.state
+    let {qty, checked, section} = this.state
     const total = this._calculate( checked, qty),
       list = orderItems.reduce((acc,cur) => {
         return cur.type == 'sim_card' ? [ acc[0].concat([cur]), acc[1] ] : [ acc[0], acc[1].concat([cur])]
       }, [[], []])
+    const { balance } = this.props.account,
+          dlvCost = this._dlvCost( checked, qty, total, section)
 
     this.setState({
       total,
@@ -87,6 +92,17 @@ class CartScreen extends Component {
     this.setState({
       qty, checked
     })
+
+    const simBalance = orderItems.filter(item => item.prod.type == 'sim_card' && checked.get(item.key) && qty.get(item.key))
+                          .map(item=> item.totalPrice).reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+    const data = total.price - simBalance,
+          dataPriceToPay = balance < data ? (simBalance + balance < data ? data - (simBalance + balance) : 0) : 0,
+          pymPrice = simBalance + dlvCost + dataPriceToPay
+                      
+    this.setState({
+      simBalance, pymPrice
+    })
+    
   }
 
   _dlvCost( checked, qty, total, section) {
@@ -101,7 +117,7 @@ class CartScreen extends Component {
       total = this._calculate( checked, qty)
 
     this.setState({
-      qty, checked, total,
+      qty, checked, total
     })
 
     if ( orderItemId) {
@@ -125,9 +141,13 @@ class CartScreen extends Component {
   }
 
   _onPurchase() {
-    const { section, qty, checked, total } = this.state,
+    const { section, qty, checked, total, simBalance, pymPrice } = this.state,
       dlvCost = this._dlvCost( checked, qty, total, section),
-      {loggedIn} = this.props.account
+      {loggedIn, balance} = this.props.account
+      totalBalance = balance + simBalance
+
+      // console.log('@@##cart', totalBalance)
+      console.log('@@##cart', pymPrice)
 
     if(!loggedIn){
       this.props.navigation.navigate('Auth')
@@ -140,18 +160,32 @@ class CartScreen extends Component {
           qty: qty.get(item.key)
         }))
 
-      this.props.action.cart.purchase({purchaseItems, dlvCost: dlvCost > 0})
-      this.props.navigation.navigate('PymMethod')
+      this.props.action.cart.purchase({purchaseItems, dlvCost: dlvCost > 0, totalBalance: totalBalance})
+      this.props.navigation.navigate('PymMethod', {pymPrice: pymPrice})
     }
   }
 
   _onChecked(key) {
-    const checked = this.state.checked.update( key, value => ! value),
-      total = this._calculate( checked, this.state.qty)
 
-    this.setState({
-      total, checked
-    })
+    const checked = this.state.checked.update( key, value => ! value),
+      { qty, section } = this.state,
+      total = this._calculate( checked, qty),
+      { balance } = this.props.account,
+      dlvCost = this._dlvCost( checked, qty, total, section),
+      simBalance = this.props.cart.orderItems.filter(item => item.prod.type == 'sim_card' && checked.get(item.key) && qty.get(item.key))
+                  .map(item=> item.totalPrice).reduce((accumulator, currentValue) => accumulator + currentValue, 0),    
+      data = total.price - simBalance,
+      dataPriceToPay = balance < data ? (simBalance + balance < data ? data - (simBalance + balance) : 0) : 0,
+      pymPrice = simBalance + dlvCost + dataPriceToPay
+                
+      this.setState({
+        total, checked, simBalance, pymPrice
+      })
+  }
+
+  _sim(){
+    return this.props.cart.orderItems.filter(item => item.prod.type == 'sim_card' && this.state.checked.get(item.key) && this.state.qty.get(item.key))
+            .map(item=> item.totalPrice).reduce((accumulator, currentValue) => accumulator + currentValue, 0)
   }
 
   _removeItem(key, orderItemId) {
@@ -208,6 +242,7 @@ class CartScreen extends Component {
   }
 
   _isEmptyList=(item)=>{
+    console.log('item.section', item.section.data.length)
     if(item.section.data.length == 0){
       return(<View style={styles.emptyView}>
                 <Text style={styles.emptyText}>{i18n.t('cart:empty')}</Text>
@@ -216,9 +251,13 @@ class CartScreen extends Component {
   }
 
   render() {
-    const { qty, checked, section, total} = this.state,
+
+    const { qty, checked, section, total, simBalance} = this.state,
       dlvCost = this._dlvCost( checked, qty, total, section)
 
+    const {balance} = this.props.account
+    console.log('sstate', this.state)
+      
       return (
       <SafeAreaView style={styles.container}>
 
@@ -231,7 +270,7 @@ class CartScreen extends Component {
             <Text style={[styles.header, {marginTop: title == 'sim' ? 20 : 30}]}>{i18n.t(title)}</Text>
           )}
           renderSectionFooter={(section)=>this._isEmptyList(section)}
-          ListFooterComponent={ <ChargeSummary totalCnt={total.cnt} totalPrice={total.price} dlvCost={dlvCost}/>} />
+          ListFooterComponent={ <ChargeSummary totalCnt={total.cnt} totalPrice={total.price} simBalance={simBalance} balance={balance} dlvCost={dlvCost}/>} />
 
         <View style={styles.buttonBox}>
           <View style={styles.sumBox}>

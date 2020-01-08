@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, TextInput } from 'react-native'
+import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native'
 import i18n from '../utils/i18n'
 import AppButton from './AppButton';
 import { appStyles } from '../constants/Styles'
@@ -9,14 +9,16 @@ import _ from 'underscore'
 const AppTextInput = React.forwardRef((props, ref) => {
   return (
     <View style={[styles.container, props.style]}>
-      <View style={[styles.inputWrapper, props.inputStyle, {flex:1, marginRight:20}]}>
+      <TouchableOpacity style={[styles.inputWrapper, props.inputStyle, {flex:1, marginRight:20}]}
+        onPress={() => { if( ref && ref.current ) ref.current.focus() }}
+        activeOpacity={1}>
         <TextInput {... props} 
           ref={ref}
           autoFocus={props.autoFocus}
           style={styles.input}
           editable={ ! props.disabled }
           selectTextOnFocus={ ! props.disabled }/>
-      </View>
+      </TouchableOpacity>
       <AppButton disabled={ (typeof props.clickable === 'boolean') ? ! props.clickable : props.disabled } 
         onPress={props.onPress}
         iconName={props.iconName}

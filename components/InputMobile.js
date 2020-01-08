@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, TextInput, Picker } from 'react-native'
+import { StyleSheet, View, Text, TextInput, Picker, TouchableOpacity } from 'react-native'
 import i18n from '../utils/i18n'
 import AppTextInput from './AppTextInput';
 import RNPickerSelect from 'react-native-picker-select';
@@ -23,6 +23,9 @@ class InputMobile extends Component {
     this._onChangeText = this._onChangeText.bind(this)
     this._validate = this._validate.bind(this)
     this._onPress = this._onPress.bind(this)
+    this._onClick = this._onClick.bind(this)
+
+    this.ref = React.createRef()
   }
 
   componentDidMount() {
@@ -69,15 +72,20 @@ class InputMobile extends Component {
     }
   }
 
+  _onClick(){
+    if (this.ref.current) this.ref.current.focus()
+  }
+
   render() {
     const {mobile} = this.state
-    const {authNoti, disabled, timeout} = this.props
+    const {authNoti, timeout} = this.props
 
     const clickable = _.isEmpty(this._error('mobile')) && (! authNoti || timeout )
+    const disabled = this.props.disabled || ( authNoti && ! timeout )
 
     return (
       <View>
-        <View style={[styles.container, this.props.style]}>
+        <View style={[styles.container, this.props.style]} >
           {/*
           <View style={styles.pickerWrapper}>
             <RNPickerSelect style={{
@@ -119,6 +127,7 @@ class InputMobile extends Component {
               clickable={clickable}
               titleStyle={styles.text}
               inputStyle={[styles.inputStyle, mobile ? {} : styles.emptyInput]}
+              ref={this.ref}
               value={utils.toPhoneNumber(mobile)}/> 
           </View>
         </View>
