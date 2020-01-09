@@ -95,7 +95,8 @@ class PymMethodScreen extends Component {
 //      pay_method: 'card',
       merchant_uid: `mid_${new Date().getTime()}`,
       name:'esim',
-      amount: total,
+      amount: total,    // 결제 금액 
+      deductFromBalance: 0, // balance 차감 금액 
       buyer_tel: mobile,
       buyer_email: email,
       escrow: false,
