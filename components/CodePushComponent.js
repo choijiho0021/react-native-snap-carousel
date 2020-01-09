@@ -120,6 +120,8 @@ class CodePushComponent extends Component {
         } catch (error) {
             Alert.alert(i18n.t('error'), i18n.t('codepush:failedToUpdate'), [ {text: 'OK'} ]);
             codePush.log(error);
+
+            this.props.action.sync.complete()
         }
     }
 
