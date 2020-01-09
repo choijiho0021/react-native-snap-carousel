@@ -72,12 +72,15 @@ const styles = StyleSheet.create({
     fontWeight: 'normal',
     fontSize: isDeviceSize('small') ? 14 : 16
   },
-  productPriceTitle: {
+  productPriceTitle: { 
     ... appStyles.normal16Text, 
     lineHeight: 36, 
     letterSpacing: 0.26,
     fontWeight: 'normal',
-    fontSize: isDeviceSize('small') ? 14 : 16
+    fontSize: isDeviceSize('small') ? 14 : 16,
+    maxWidth: '70%',
+    // flexDirection: 'row', 
+    // flexWrap: 'wrap'
   },
   divider: {
     marginTop: 30,
@@ -89,8 +92,12 @@ const styles = StyleSheet.create({
 class PaymentItemInfo extends PureComponent {
 
   render() {
-    const { pymReq, cart, pymPrice } = this.props,
-    total =  pymPrice || (pymReq ? pymReq.reduce((acc,cur) => acc + cur.amount, 0) : 0)
+    const { cart, pymReq, balance } = this.props,
+
+    // 배송비 + 결제금액
+    total = pymReq ? pymReq.filter(item => item.key != "balance").reduce((acc,cur) => acc + cur.amount, 0) : 0,
+
+    pymPrice =  cart.find(item => item.key == "rch") ? total : (total > balance ? total - balance : 0)
 
     return (
       <View>
@@ -101,7 +108,9 @@ class PaymentItemInfo extends PureComponent {
             const [qty, price] = _.isUndefined(item.qty) ? ['', item.price] : [` x ${item.qty}${i18n.t('qty')}`, item.price * item.qty]
             return (
               <View style={styles.row} key={item.key}>
+                {/* <View style={{maxWidth: '70%'}}> */}
                 <Text key="title" style={styles.productPriceTitle}>{item.title + qty}</Text>
+                {/* </View> */}
                 <Text key="price" style={styles.normalText16}>{utils.price(price)}</Text>
               </View>)
           })
@@ -119,7 +128,7 @@ class PaymentItemInfo extends PureComponent {
         </View>
         <View style={[styles.row, styles.total, styles.brdrBottom0]}>
           <Text style={[styles.normalText14]}>{i18n.t('cart:totalCost')} </Text>
-          <Text style={[styles.normalText16, styles.colorClearBlue, styles.fontWeightNormal]}>{utils.numberToCommaString(total)+ ' ' + i18n.t('won')}</Text>
+          <Text style={[styles.normalText16, styles.colorClearBlue, styles.fontWeightNormal]}>{utils.numberToCommaString(pymPrice)+ ' ' + i18n.t('won')}</Text>
         </View>
         <View style={styles.divider}/>
       </View>

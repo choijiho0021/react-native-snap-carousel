@@ -149,7 +149,7 @@ export default handleActions({
 
   // 구매할 품목을 저장한다. 
   [PURCHASE]: (state,action) => {
-    const {purchaseItems, dlvCost = false, totalBalance = 0} = action.payload,
+    const {purchaseItems, dlvCost = false, balance = 0} = action.payload,
       total = (purchaseItems || []).reduce((sum, acc) => sum + acc.price * (acc.qty || 1), 0),
       pymReq = [
         {
@@ -158,18 +158,18 @@ export default handleActions({
           amount: total
         }
       ]
+      
+      if ( balance ) pymReq.push({
+        key: 'balance',
+        title: i18n.t('acc:balance'),
+        amount: balance
+      }) 
 
-    if ( dlvCost ) pymReq.push({
-      key: 'dlvCost',
-      title: i18n.t('cart:dlvCost'),
-      amount: utils.dlvCost(total)
-    })
-
-    if (totalBalance > 0) pymReq.push({
-      key: 'totalBalance',
-      title: i18n.t('cart:totalBalance'),
-      amount: totalBalance
-    })    
+      if ( dlvCost ) pymReq.push({
+        key: 'dlvCost',
+        title: i18n.t('cart:dlvCost'),
+        amount: utils.dlvCost(total)
+      }) 
 
     // purchaseItems에는 key, qty, price, title 정보 필요
     return state.set('purchaseItems', purchaseItems)
