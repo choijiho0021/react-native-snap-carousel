@@ -9,6 +9,7 @@ import profile from './modules/profile'
 import cart from './modules/cart'
 import board from './modules/board'
 import info from './modules/info'
+import sync from './modules/sync'
 
 export default combineReducers({
     account, 
@@ -20,5 +21,6 @@ export default combineReducers({
     noti,
     board,
     info,
+    sync,
     pender: penderReducer
 })
