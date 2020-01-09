@@ -39,6 +39,7 @@ import FaqScreen from '../screens/FaqScreen';
 import GuideScreen from '../screens/GuideScreen';
 import { colors } from '../constants/Colors';
 import UsageDetailScreen from '../screens/UsageDetailScreen';
+import CodePushComponent from '../components/CodePushComponent';
 
 const config = Platform.select({
   web: { headerMode: 'screen' },
@@ -233,14 +234,17 @@ class AppTabNavigator extends React.Component {
   }
 
   render() {
-    const { navigation } = this.props
+    const { navigation, sync } = this.props
+
+    if ( ! sync.isCompleted ) return <CodePushComponent />
 
     return <TabNavigator navigation={navigation} />
   }
 }
 
 export default connect((state) => ({
-  lastTab : state.cart.get('lastTab').toJS()
+  lastTab : state.cart.get('lastTab').toJS(),
+  sync : state.sync.toJS()
 }),
   (dispatch) => ({
     action:{
