@@ -174,7 +174,8 @@ class HomeScreen extends Component {
         })
         break;
       case 'notification':
-        console.log('Notification', data)
+        console.log('notification', data)
+        this.props.navigation.navigate('Noti')
     }
   }
 
@@ -227,13 +228,15 @@ class HomeScreen extends Component {
     )
   }
 
- 
+
   _navigate = (key) => () => {
+
     const { mobile, iccid } = this.props.account
-    if ( key == 'RegisterSim' ) {
+
+    if ( key.includes('RegisterSim') ) {
       if ( _.isEmpty(mobile)) key = 'Auth' 
       else if ( _.isEmpty(iccid)) key = 'RegisterSim'
-      else key = 'Recharge'
+      else key.indexOf('_') > 0 ? key = 'Recharge' : 'RegisterSim'
     }
 
     this.props.navigation.navigate(key)
@@ -244,7 +247,7 @@ class HomeScreen extends Component {
       phone = mobile ? utils.toPhoneNumber(mobile) : 'unknown'
 
     return (
-      <TouchableOpacity style={styles.userInfo} onPress={this._navigate('RegisterSim')}>
+      <TouchableOpacity style={styles.userInfo} onPress={this._navigate('RegisterSim_user')}>
         <AppUserPic url={userPictureUrl} icon="imgPeople" style={styles.userPicture}/>
         <View style={{marginLeft:20, justifyContent:'space-around', flex:1}}>
           {
@@ -262,6 +265,9 @@ class HomeScreen extends Component {
   }
 
   _menu() {
+
+    const { mobile, iccid } = this.props.account
+
     return (
       <View style={styles.menu}>
         <AppButton iconName="imgCard1" 
@@ -274,10 +280,10 @@ class HomeScreen extends Component {
 
         <AppButton iconName="imgCard2"
           style={styles.menuBox}
-          title={i18n.t('menu:card')}
+          title={mobile && iccid ? i18n.t('menu:change') : i18n.t('menu:card')}
           // onPress={this._navigate('AddProfile')}
           onPress={this._navigate('RegisterSim')}
-          titleStyle={styles.menuText} />
+          titleStyle={styles.menuText} />  
 
         <View style={styles.bar}/>
 

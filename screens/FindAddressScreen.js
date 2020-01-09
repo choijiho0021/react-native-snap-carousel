@@ -22,6 +22,7 @@ import { appStyles } from '../constants/Styles';
 import AppBackButton from '../components/AppBackButton';
 import AppIcon from '../components/AppIcon';
 import { SafeAreaView } from 'react-navigation';
+import { isDeviceSize } from '../constants/SliderEntry.style';
 
 class FindAddressScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -129,7 +130,7 @@ class FindAddressScreen extends Component {
                 onEndEditing={this._findAddr()}
                 renderAccessory={this._search}
                 value={addr} />
-              <AppButton style = {styles.showSearchBar} onPress={this._findAddr()} iconName="btnSearchOff" />
+              <AppButton style = {styles.showSearchBar} iconStyle={styles.searchIcon} onPress={this._findAddr()} iconName="btnSearchOff" />
             </View>
             <View style={styles.divider}/>
             { 
@@ -162,14 +163,18 @@ const styles = StyleSheet.create({
   field: {
     height: 46,
   },
-  showSearchBar : {
+  showSearchBar: {
     position: 'absolute',
-    top: 27,
-    right: 10,
+    top: 10,
+    right: isDeviceSize('small') ? -10 : 0,
     alignSelf: 'flex-end',
+    width: 50,
+    height: 50,
+  },  
+  searchIcon: {
     width: 15,
     height: 16
-  },  
+  },
   modal: {
       flex: 1,
       justifyContent: "flex-start",
