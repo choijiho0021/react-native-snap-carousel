@@ -296,7 +296,23 @@ const en = {
 
   "search:list" : "Search List",
   "search:err" : "There is no search list",
-  "search:recommend" : "recommendation"
+  "search:recommend" : "recommendation",
+
+  "codepush:title" : "A new update exists",
+  "codepush:body" : "Do you want to update now?", 
+  "codepush:continue" : "Continue",
+  "codepush:mandatory" : "You must install an update to use the app.",
+  "codepush:later" : "Later", 
+  "codepush:update" : "Update", 
+  "codepush:checking" : "Checking for update.", 
+  "codepush:download" : "Downloading package.",
+  "codepush:awaiting" : "Awaiting user action.",
+  "codepush:install" : "Installing update.", 
+  "codepush:uptodate" : "App up to date.",
+  "codepush:ignore" : "Update cancelled by user.", 
+  "codepush:nextresume" : "Update installed and will be run when the app next resumes.",
+  "codepush:error" : "An unknown error occurred.",
+  "codepush:failedToUpdate" : "Failed to update"
 };
 
 const ko = {
@@ -601,8 +617,23 @@ const ko = {
 
   "search:list" : "최근 검색",
   "search:err" : "최근 검색이 없습니다",
-  "search:recommend" : "인기 국가"
+  "search:recommend" : "인기 국가",
 
+  "codepush:title" : "새로운 업데이트가 존재합니다.",
+  "codepush:body" : "지금 업데이트하시겠습니까?",
+  "codepush:continue" : "계속", 
+  "codepush:mandatory" : "업데이트를 설치해야 사용할 수 있습니다.", 
+  "codepush:later" : "나중에",
+  "codepush:update" : "업데이트", 
+  "codepush:checking" : "업데이트 확인 중", 
+  "codepush:download" : "패키지 다운로드 중",
+  "codepush:awaiting" : "사용자 작업 대기 중",
+  "codepush:install" : "업데이트 설치 중",
+  "codepush:uptodate" : "현재 최신 버전입니다",
+  "codepush:ignore" : "업데이트가 취소되었습니다",
+  "codepush:nextresume" : "업데이트 완료했습니다. 최신 버전으로 사용하려면 앱을 재기동해주세요.",
+  "codepush:error" : "알 수 없는 에러가 발생했습니다",
+  "codepush:failedToUpdate" : "업데이트 과정에 오류가 발생했습니다."
 };
 
 i18n.fallbacks = true;
