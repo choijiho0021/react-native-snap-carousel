@@ -99,7 +99,6 @@ class SettingsScreen extends Component {
   }
 
   _renderItem = ({item}) => {
-    console.log('item.key', item.key)
     return (
       <TouchableOpacity onPress={this._onPress(item.key, item.value, item.route)}>
         <View style={styles.row}>
