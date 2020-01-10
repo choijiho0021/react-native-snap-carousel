@@ -48,6 +48,8 @@ const en = {
   'lowest' : 'lowest',
   'min' : 'min',
   'sec' : 'sec',
+  'now' : 'now',
+  'latest' : 'latest',
 
   'home:guide': 'User Guide',
   'home:checkGuide': 'Check',
@@ -361,6 +363,8 @@ const ko = {
   'lowest': '최저',
   'min' : '분',
   'sec' : '초',
+  'now' : '현재',
+  'latest' : '최신',
 
   'home:guide': '로밍 도깨비 사용가이드 !',
   'home:checkGuide': '확인하기',
