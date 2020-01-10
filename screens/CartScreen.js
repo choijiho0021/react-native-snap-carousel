@@ -38,8 +38,6 @@ class CartScreen extends Component {
       checked: new Map(),
       qty: new Map(),
       total: {cnt:0, price:0},
-      simBalance: undefined,
-      pymPrice: undefined,
     }
 
     this._onPurchase = this._onPurchase.bind(this)
@@ -77,8 +75,6 @@ class CartScreen extends Component {
       list = orderItems.reduce((acc,cur) => {
         return cur.type == 'sim_card' ? [ acc[0].concat([cur]), acc[1] ] : [ acc[0], acc[1].concat([cur])]
       }, [[], []])
-    const { balance } = this.props.account,
-          dlvCost = this._dlvCost( checked, qty, total, section)
 
     this.setState({
       total,
@@ -92,16 +88,6 @@ class CartScreen extends Component {
 
     this.setState({
       qty, checked
-    })
-
-    const simBalance = orderItems.filter(item => item.prod.type == 'sim_card' && checked.get(item.key) && qty.get(item.key))
-                          .map(item=> item.totalPrice).reduce((accumulator, currentValue) => accumulator + currentValue, 0)
-    const data = total.price - simBalance,
-          dataPriceToPay = balance < data ? (simBalance + balance < data ? data - (simBalance + balance) : 0) : 0,
-          pymPrice = simBalance + dlvCost + dataPriceToPay
-                      
-    this.setState({
-      simBalance, pymPrice
     })
     
   }
@@ -142,10 +128,9 @@ class CartScreen extends Component {
   }
 
   _onPurchase() {
-    const { section, qty, checked, total, simBalance, pymPrice } = this.state,
+    const { section, qty, checked, total } = this.state,
       dlvCost = this._dlvCost( checked, qty, total, section),
       {loggedIn, balance} = this.props.account
-      totalBalance = balance + simBalance
 
     if(!loggedIn){
       this.props.navigation.navigate('Auth')
@@ -158,8 +143,8 @@ class CartScreen extends Component {
           qty: qty.get(item.key)
         }))
 
-      this.props.action.cart.purchase({purchaseItems, dlvCost: dlvCost > 0, totalBalance: totalBalance})
-      this.props.navigation.navigate('PymMethod', {pymPrice: pymPrice})
+      this.props.action.cart.purchase({purchaseItems, dlvCost: dlvCost > 0, balance}) // 다른데도 확인해서 지우기, + cart.js
+      this.props.navigation.navigate('PymMethod')
     }
   }
 
@@ -167,17 +152,10 @@ class CartScreen extends Component {
 
     const checked = this.state.checked.update( key, value => ! value),
       { qty, section } = this.state,
-      total = this._calculate( checked, qty),
-      { balance } = this.props.account,
-      dlvCost = this._dlvCost( checked, qty, total, section),
-      simBalance = this.props.cart.orderItems.filter(item => item.prod.type == 'sim_card' && checked.get(item.key) && qty.get(item.key))
-                  .map(item=> item.totalPrice).reduce((accumulator, currentValue) => accumulator + currentValue, 0),    
-      data = total.price - simBalance,
-      dataPriceToPay = balance < data ? (simBalance + balance < data ? data - (simBalance + balance) : 0) : 0,
-      pymPrice = simBalance + dlvCost + dataPriceToPay
-                
+      total = this._calculate( checked, qty)
+
       this.setState({
-        total, checked, simBalance, pymPrice
+        total, checked
       })
   }
 
@@ -247,8 +225,9 @@ class CartScreen extends Component {
 
   render() {
 
-    const { qty, checked, section, total, simBalance} = this.state,
-      dlvCost = this._dlvCost( checked, qty, total, section)
+    const { qty, checked, section, total} = this.state,
+      dlvCost = this._dlvCost( checked, qty, total, section),
+      balance = this.props.account.balance || 0
 
       return (
       <SafeAreaView style={styles.container}>
@@ -261,10 +240,8 @@ class CartScreen extends Component {
           ListEmptyComponent={this._isEmptyList}
           ListFooterComponent={ <ChargeSummary totalCnt={total.cnt} 
                                               totalPrice={total.price} 
-                                              simBalance={simBalance} 
-                                              balance={this.props.account.balance} 
+                                              balance={balance} 
                                               dlvCost={dlvCost}/>} />
-
         <View style={styles.buttonBox}>
           <View style={styles.sumBox}>
             <Text style={[styles.btnBuyText, {color:colors.black}]}>{i18n.t('sum') + ': '}</Text>

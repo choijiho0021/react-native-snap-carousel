@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Rokebi</string>
+    <string moduleConfig="true" name="CodePushDeploymentKey">9ue1F5Z0h6Dfm_En6kao_FUO-yTjn7n6A_JAr</string>
 </resources>

@@ -139,11 +139,6 @@ class HomeScreen extends Component {
     pushNoti.remove()
   }
 
-  _onRegistered(deviceToken) {
-    console.log('APN token', deviceToken)
-  }
-
-
   componentDidUpdate( prevProps) {
     const {mobile, pin, iccid, loggedIn} = this.props.account
 

@@ -92,19 +92,20 @@ class PymMethodScreen extends Component {
 
     const params = {
       pg : selected,
-//      pay_method: 'card',
+      pay_method: 'card',
       merchant_uid: `mid_${new Date().getTime()}`,
       name:'esim',
-      amount: total,
+      amount: total,    // 결제 금액 
+      deductFromBalance: 0, // balance 차감 금액 
       buyer_tel: mobile,
       buyer_email: email,
       escrow: false,
       app_scheme: 'esim',
       profile_uuid: profileId,
-      mode: 'test'
+      // mode: 'test'
     };
 
-    // this.props.action.cart.makePayment( this.props.cart.orderId, this.props.auth)
+    this.props.action.cart.makePayment( this.props.cart.orderId, this.props.auth)
     this.props.navigation.navigate('Payment', {params: params})
   }
 
@@ -196,14 +197,15 @@ class PymMethodScreen extends Component {
   render() {
     const { selected } = this.state,
       { purchaseItems = [], pymReq } = this.props.cart,
-      pymPrice = this.props.navigation.getParam('pymPrice') || undefined,
       simIncluded = purchaseItems.findIndex(item => item.type == 'sim_card') >= 0,
       noProfile = this.props.profile.profile.length == 0
+
+      console.log('@@props', this.props) 
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <ScrollView>
-          <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} pymPrice={pymPrice}/>              
+          <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance}/>              
 
           {
             simIncluded && this._address()

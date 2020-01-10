@@ -17,6 +17,7 @@ import utils from './utils/utils';
 import * as accountActions from './redux/modules/account'
 import * as productActions from './redux/modules/product'
 import * as simActions from './redux/modules/sim'
+import * as syncActions from './redux/modules/sync'
 
 const logger = createLogger()
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -78,6 +79,8 @@ async function login() {
     const pin = await utils.retrieveData( userApi.KEY_PIN)
 
     console.log('load', mobile, pin, iccid)
+
+    store.dispatch(syncActions.init())
 
     if ( mobile && pin ) {
       store.dispatch(accountActions.logInAndGetAccount( mobile, pin, iccid))

@@ -162,7 +162,6 @@ class NewSimScreen extends Component {
           ListFooterComponent={
             <ChargeSummary totalCnt={total.cnt} 
               totalPrice={total.price} 
-              simBalance={total.price}
               balance={this.props.account.balance}
               dlvCost={utils.dlvCost(total.price)}/>
             }/>

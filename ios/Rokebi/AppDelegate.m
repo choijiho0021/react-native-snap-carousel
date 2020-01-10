@@ -18,6 +18,8 @@
 #import "RNSplashScreen.h"  // here
 #import <RNCPushNotificationIOS.h>
 
+#import <CodePush/CodePush.h>
+
 @implementation AppDelegate
 
 @synthesize window = _window;
@@ -85,7 +87,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 #ifdef DEBUG
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
 #else
-  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  return [CodePush bundleURL];
 #endif
 }
 

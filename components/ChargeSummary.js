@@ -27,15 +27,11 @@ const styles = StyleSheet.create({
 
 class ChargeSummary extends PureComponent {
   render() {
-    const {totalCnt, totalPrice, simBalance, balance, dlvCost} = this.props
-    // 구매하는 데이터 금액
-    const data = totalPrice - simBalance
+    const {totalCnt, totalPrice, balance, dlvCost} = this.props,
 
-    // 지불해야하는 데이터 금액
-    const dataPriceToPay = balance < data ? (simBalance + balance < data ? data - (simBalance + balance) : 0) : 0
-    
+          amount = totalPrice + dlvCost
     // 계산해야하는 총액
-    const pymPrice = simBalance + dlvCost + dataPriceToPay
+    const pymPrice = amount > balance ? amount - balance : 0
 
     return (
       <View style={styles.price}>
@@ -54,7 +50,7 @@ class ChargeSummary extends PureComponent {
 
         <LabelText label={i18n.t('cart:totalBalance')} style={styles.summary}
           format="price"
-          value={balance + simBalance}/>          
+          value={balance}/>          
 
         <LabelText label={i18n.t('cart:totalCost')} style={styles.summary}
           format="price" color={colors.clearBlue}
