@@ -17,6 +17,7 @@ import { bindActionCreators } from 'redux'
 import AppIcon from '../components/AppIcon';
 import { colors } from '../constants/Colors';
 import AppModal from '../components/AppModal';
+import VersionCheck from 'react-native-version-check';
 
 class SettingsScreen extends Component {
   static navigationOptions = (navigation) => ({
@@ -86,10 +87,16 @@ class SettingsScreen extends Component {
   }
 
   _renderItem = ({item}) => {
+    console.log('item.key', item.key)
     return (
       <TouchableOpacity onPress={this._onPress(item.key, item.value, item.route)}>
         <View style={styles.row}>
+          <View style={{flexDirection: 'row'}}>
           <Text style={styles.itemTitle}>{item.value}</Text>
+          {
+            item.key == 'version' && <Text style={styles.itemVersion}>{VersionCheck.getCurrentVersion()}</Text>
+          }
+          </View>
           <AppIcon style={{alignSelf:'center'}} name="iconArrowRight"/>
         </View>
       </TouchableOpacity>
@@ -98,6 +105,7 @@ class SettingsScreen extends Component {
 
   render() {
     const { showModal } = this.state
+    console.log('@@@@VErsion CHECK!!', VersionCheck.getCountry())
 
     return (
       <View style={styles.container}>
@@ -134,6 +142,11 @@ const styles = StyleSheet.create({
     ... appStyles.normal16Text,
     color: colors.black
   },
+  itemVersion: {
+    ... appStyles.normal16Text,
+    color: colors.warmGrey,
+    marginLeft: 15
+  }
 });
 
 const mapStateToProps = (state) => ({
