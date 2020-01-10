@@ -4,7 +4,8 @@ import {
   Text,
   FlatList,
   View,
-  TouchableOpacity
+  TouchableOpacity,
+  Platform
 } from 'react-native';
 import {connect} from 'react-redux'
 
@@ -35,7 +36,7 @@ class SettingsScreen extends Component {
         { "key": "info", "value": i18n.t('set:info'), route: 'MySim'},
         { "key": "Contract", "value": i18n.t('set:contract'), route: 'SimpleText'},
         { "key": "Privacy", "value": i18n.t('set:privacy'), route: 'SimpleText'},
-        { "key": "version", "value": i18n.t('set:version'), route: undefined},
+        { "key": "version", "value": i18n.t('set:version'), "desc": i18n.t('now') + ' ' + VersionCheck.getCurrentVersion(), route: undefined},
         { "key": "aboutus", "value": i18n.t('set:aboutus'), route: 'SimpleText'},
         { "key": "logout", "value": i18n.t(props.loggedIn ? 'set:logout' : 'set:login'), route: undefined},
       ],
@@ -48,6 +49,7 @@ class SettingsScreen extends Component {
 
   componentDidUpdate(prevProps) {
     const { loggedIn} = this.props
+
     if ( loggedIn != prevProps.loggedIn) {
       this.setState({
         data: this.state.data.map(item => item.key == 'logout' ? {
@@ -58,6 +60,16 @@ class SettingsScreen extends Component {
     }
 
   }
+  // 최신버전 가져오는 소스코드 주석처리
+  // componentDidMount(){
+  //   VersionCheck.getLatestVersion({
+  //     provider: Platform.OS == 'ios' ? 'appStore' : 'playStore'
+  //   })
+  //   .then(latestVersion => {
+  //     this.setState({latestVersion})
+  //     console.log(latestVersion);
+  //   });
+  // }
 
   _onPress = (key, title, route) => () => {
     if ( key == 'logout') {
@@ -91,13 +103,9 @@ class SettingsScreen extends Component {
     return (
       <TouchableOpacity onPress={this._onPress(item.key, item.value, item.route)}>
         <View style={styles.row}>
-          <View style={{flexDirection: 'row'}}>
           <Text style={styles.itemTitle}>{item.value}</Text>
-          {
-            item.key == 'version' && <Text style={styles.itemVersion}>{VersionCheck.getCurrentVersion()}</Text>
-          }
-          </View>
-          <AppIcon style={{alignSelf:'center'}} name="iconArrowRight"/>
+          {item.desc ? <Text style={styles.itemDesc}>{item.desc}</Text> :
+          <AppIcon style={{alignSelf:'center'}} name="iconArrowRight"/> }
         </View>
       </TouchableOpacity>
     )
@@ -105,7 +113,6 @@ class SettingsScreen extends Component {
 
   render() {
     const { showModal } = this.state
-    console.log('@@@@VErsion CHECK!!', VersionCheck.getCountry())
 
     return (
       <View style={styles.container}>
@@ -142,10 +149,9 @@ const styles = StyleSheet.create({
     ... appStyles.normal16Text,
     color: colors.black
   },
-  itemVersion: {
-    ... appStyles.normal16Text,
-    color: colors.warmGrey,
-    marginLeft: 15
+  itemDesc: {
+    ... appStyles.normal12Text,
+    color: colors.warmGrey
   }
 });
 
