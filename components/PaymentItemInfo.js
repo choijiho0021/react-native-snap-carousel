@@ -95,7 +95,7 @@ class PaymentItemInfo extends PureComponent {
     const { cart, pymReq, balance } = this.props,
 
     // 배송비 + 결제금액
-    total = pymReq ? pymReq.filter(item => item.key != "balance").reduce((acc,cur) => acc + cur.amount, 0) : 0,
+    total = pymReq ? pymReq.reduce((acc,cur) => acc + cur.amount, 0) : 0,
 
     pymPrice =  cart.find(item => item.key == "rch") ? total : (total > balance ? total - balance : 0)
 
@@ -118,13 +118,17 @@ class PaymentItemInfo extends PureComponent {
         </View> 
         
         <View style={styles.priceInfo}>
-        {
-          pymReq.map(item =>                      
-            <View style={styles.row} key={item.title}>
-              <Text key="title" style={styles.normalText14}>{item.title}</Text>
-              <Text key="amount" style={styles.normalText16}>{utils.price(item.amount)}</Text>
-            </View>) 
-        }
+          {
+            pymReq.map(item =>                      
+              <View style={styles.row} key={item.title}>
+                <Text key="title" style={styles.normalText14}>{item.title}</Text>
+                <Text key="amount" style={styles.normalText16}>{utils.price(item.amount)}</Text>
+              </View>) 
+          }
+          <View style={styles.row} key="balance">
+            <Text key="title" style={styles.normalText14}>{i18n.t('acc:balance')}</Text>
+            <Text key="amount" style={styles.normalText16}>{utils.price(balance)}</Text>
+          </View>
         </View>
         <View style={[styles.row, styles.total, styles.brdrBottom0]}>
           <Text style={[styles.normalText14]}>{i18n.t('cart:totalCost')} </Text>

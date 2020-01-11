@@ -85,9 +85,10 @@ class PymMethodScreen extends Component {
     const { selected} = this.state
     if ( ! selected ) return
 
-    const { mobile, email} = this.props.account
+    const { mobile, email, balance = 0} = this.props.account
     const { pymReq } = this.props.cart,
       total = pymReq.reduce((sum,cur) => sum + cur.amount, 0),
+      [pymPrice, deduct_from_balance] = total > balance ? [total - balance, balance] : [0, total],
       profileId = this.props.profile.selectedAddr || (this.props.profile.profile.find(item => item.isBasicAddr) || {}).uuid
 
     const params = {
@@ -95,17 +96,16 @@ class PymMethodScreen extends Component {
       pay_method: 'card',
       merchant_uid: `mid_${new Date().getTime()}`,
       name:'esim',
-      amount: total,    // 결제 금액 
-      deductFromBalance: 0, // balance 차감 금액 
+      amount: pymPrice,    // 결제 금액 
+      deduct_from_balance, // balance 차감 금액 
       buyer_tel: mobile,
       buyer_email: email,
       escrow: false,
       app_scheme: 'esim',
       profile_uuid: profileId,
-      // mode: 'test'
+      mode: 'test'
     };
 
-    this.props.action.cart.makePayment( this.props.cart.orderId, this.props.auth)
     this.props.navigation.navigate('Payment', {params: params})
   }
 

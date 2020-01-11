@@ -37,7 +37,6 @@ export const cartRemove = createAction(CART_REMOVE, cartApi.remove)
 export const cartUpdateQty = createAction(CART_UPDATE, cartApi.updateQty, (... args) => ({abortController:args.abortController})) 
 
 export const purchase = createAction(PURCHASE)
-export const makePayment = createAction(MAKE_PAYMENT, cartApi.makePayment) 
 export const makeOrder = createAction(MAKE_ORDER, cartApi.makeOrder) 
 export const pymResult = createAction(PYM_RESULT)
 export const empty = createAction(EMPTY)
@@ -78,8 +77,9 @@ export const payNorder = (result) => {
             }
           })
 
-          if (purchaseItems.findIndex(item => item.type == 'rch') >= 0) {
+          if (purchaseItems.findIndex(item => item.type == 'rch') >= 0 || result.deduct_from_balance > 0) {
             // 충전을 한 경우에는 account를 다시 읽어들인다.
+            // balance에서 차감한 경우에도 다시 읽어들인다.
             return dispatch(getAccount(iccid, {token}))
           }
         }
@@ -149,7 +149,7 @@ export default handleActions({
 
   // 구매할 품목을 저장한다. 
   [PURCHASE]: (state,action) => {
-    const {purchaseItems, dlvCost = false, balance = 0} = action.payload,
+    const {purchaseItems, dlvCost = false} = action.payload,
       total = (purchaseItems || []).reduce((sum, acc) => sum + acc.price * (acc.qty || 1), 0),
       pymReq = [
         {
@@ -159,12 +159,6 @@ export default handleActions({
         }
       ]
       
-      if ( balance ) pymReq.push({
-        key: 'balance',
-        title: i18n.t('acc:balance'),
-        amount: balance
-      }) 
-
       if ( dlvCost ) pymReq.push({
         key: 'dlvCost',
         title: i18n.t('cart:dlvCost'),

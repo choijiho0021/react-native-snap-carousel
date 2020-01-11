@@ -28,7 +28,6 @@ const styles = StyleSheet.create({
 class ChargeSummary extends PureComponent {
   render() {
     const {totalCnt, totalPrice, balance, dlvCost} = this.props,
-
           amount = totalPrice + dlvCost
     // 계산해야하는 총액
     const pymPrice = amount > balance ? amount - balance : 0

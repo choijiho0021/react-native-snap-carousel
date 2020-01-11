@@ -99,6 +99,7 @@ class CartAPI {
    *     'capture' => FALSE, // optional. Defines if the payment has to be finalized.
    *   ];
    * */
+  /* not used
     makePayment = (orderId, {token}) => {
         const url = `${api.httpUrl(api.path.commerce.payment, '')}/create/${orderId}?_format=json`
         const headers = api.withToken( token, 'json')
@@ -114,6 +115,7 @@ class CartAPI {
             body: JSON.stringify(body)
         }, this.toCart)
     }
+    */
 
     /*
     *
@@ -205,8 +207,9 @@ class CartAPI {
                 type: 'paypal',
                 details: {
                     merchant_uid: result.merchant_uid,
-                }
-            }
+                },
+                deduct_from_balance: result.deduct_from_balance
+            },
         }
 
         return api.callHttp(url, {
