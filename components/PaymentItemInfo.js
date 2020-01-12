@@ -92,12 +92,7 @@ const styles = StyleSheet.create({
 class PaymentItemInfo extends PureComponent {
 
   render() {
-    const { cart, pymReq, balance } = this.props,
-
-    // 배송비 + 결제금액
-    total = pymReq ? pymReq.reduce((acc,cur) => acc + cur.amount, 0) : 0,
-
-    pymPrice =  cart.find(item => item.key == "rch") ? total : (total > balance ? total - balance : 0)
+    const { cart, pymReq, balance, pymPrice } = this.props
 
     return (
       <View>
