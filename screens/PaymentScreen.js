@@ -44,13 +44,13 @@ class PaymentScreen extends Component{
         deduct_from_balance: params.deduct_from_balance
       }
 
-      this._callback(response)
+      this._callback(response, params.amount)
     }
   }
 
-  _callback( response) {
-    this.props.action.cart.payNorder(response)
-    this.props.navigation.replace('PaymentResult', {pymResult:response})
+  async _callback( response, pymPrice) {
+    await this.props.action.cart.payNorder(response)
+    this.props.navigation.replace('PaymentResult', {pymResult:response, pymPrice:pymPrice})
   }
 
   render() {
