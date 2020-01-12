@@ -55,7 +55,7 @@ class RechargeScreen extends Component {
     ]
 
     this.props.action.cart.purchase({purchaseItems})
-    this.props.navigation.navigate('PymMethod')
+    this.props.navigation.navigate('PymMethod', {pymPrice: utils.stringToNumber(selected)})
   }
 
   _onPress = (key) => () => {

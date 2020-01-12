@@ -130,7 +130,11 @@ class CartScreen extends Component {
   _onPurchase() {
     const { section, qty, checked, total } = this.state,
       dlvCost = this._dlvCost( checked, qty, total, section),
-      {loggedIn, balance} = this.props.account
+      {loggedIn, balance} = this.props.account,
+      // 배송비 포함 상품 합계
+      totalPrice = total.price + dlvCost,
+      // 계산해야하는 총액
+      pymPrice = totalPrice > balance ? totalPrice - balance : 0
 
     if(!loggedIn){
       this.props.navigation.navigate('Auth')
@@ -144,7 +148,8 @@ class CartScreen extends Component {
         }))
 
       this.props.action.cart.purchase({purchaseItems, dlvCost: dlvCost > 0, balance}) // 다른데도 확인해서 지우기, + cart.js
-      this.props.navigation.navigate('PymMethod')
+      this.props.navigation.navigate('PymMethod',{pymPrice: pymPrice, total: totalPrice})
+
     }
   }
 

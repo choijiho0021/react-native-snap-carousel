@@ -34,7 +34,9 @@ class PymMethodScreen extends Component {
       data: undefined,
       // profile: undefined,
       selected: undefined,
-      showModal: false
+      showModal: false,
+      pymPrice: undefined,
+      total: undefined,
     }
 
     this._onSubmit = this._onSubmit.bind(this)
@@ -79,16 +81,33 @@ class PymMethodScreen extends Component {
   //
   componentDidMount() {
     this.props.action.profile.getCustomerProfile(this.props.auth)
+    const pymPrice = this.props.navigation.getParam('pymPrice'),
+          total = this.props.navigation.getParam('total')
+    if(!_.isUndefined(pymPrice)){
+      this.setState({
+        pymPrice: pymPrice
+      })
+    }
+    if(!_.isUndefined(total)){
+      this.setState({
+        total: total
+      })
+    } 
+
   }
 
   _onSubmit() {
-    const { selected} = this.state
+    const { selected, pymPrice, total } = this.state
+    // const { selected } = this.state
+
     if ( ! selected ) return
 
     const { mobile, email, balance = 0} = this.props.account
-    const { pymReq } = this.props.cart,
-      total = pymReq.reduce((sum,cur) => sum + cur.amount, 0),
-      [pymPrice, deduct_from_balance] = total > balance ? [total - balance, balance] : [0, total],
+    // const { pymReq } = this.props.cart,
+    //   total = pymReq.reduce((sum,cur) => sum + cur.amount, 0),
+    //   [pymPrice, deduct_from_balance] = total > balance ? [total - balance, balance] : [0, total],
+    const deduct_from_balance = pymPrice > 0 ? balance : total,
+
       profileId = this.props.profile.selectedAddr || (this.props.profile.profile.find(item => item.isBasicAddr) || {}).uuid
 
     const params = {
@@ -195,7 +214,7 @@ class PymMethodScreen extends Component {
   }
 
   render() {
-    const { selected } = this.state,
+    const { selected, pymPrice } = this.state,
       { purchaseItems = [], pymReq } = this.props.cart,
       simIncluded = purchaseItems.findIndex(item => item.type == 'sim_card') >= 0,
       noProfile = this.props.profile.profile.length == 0
@@ -205,7 +224,7 @@ class PymMethodScreen extends Component {
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <ScrollView>
-          <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance}/>              
+          <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance} pymPrice={pymPrice}/>              
 
           {
             simIncluded && this._address()
