@@ -23,7 +23,8 @@ class AccountAPI {
                     mobile: item.field_mobile,
                     deviceToken: item.field_device_token,
                     simCardName: item.sim_card_name,
-                    simCardImage: item.sim_card_image
+                    simCardImage: item.sim_card_image,
+                    userAccount: item.field_ref_user_account
                 }))
             )
         }
@@ -113,7 +114,7 @@ class AccountAPI {
     }
 
     // Update User of ContentType Account
-    update = ( uuid, attr, {token}) => {
+    update = ( uuid, attr, relation, {token}) => {
         if ( _.isEmpty(uuid) || _.isEmpty(token) || _.isEmpty(attr) ) return api.reject(api.INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.jsonapi.account)}/${uuid}`
@@ -124,10 +125,12 @@ class AccountAPI {
             data: {
                 type: 'node--account',
                 id: uuid,
-                attributes: attr
+                attributes: attr,
+                relationships: relation
             }
         }
-
+        console.log("url999",url)
+        console.log("body999",body)
         return api.callHttp(url, {
             method: 'PATCH',
             headers,

@@ -140,7 +140,7 @@ class HomeScreen extends Component {
   }
 
   componentDidUpdate( prevProps) {
-    const {mobile, pin, iccid, loggedIn} = this.props.account
+    const {mobile, pin, iccid, loggedIn, deviceToken} = this.props.account
 
     if ( mobile != prevProps.account.mobile || pin != prevProps.account.pin) {
 
@@ -148,7 +148,11 @@ class HomeScreen extends Component {
         this._login(mobile, pin, iccid)
       }
     }
-    
+    //자동로그인의 경우 device token update
+    if(prevProps.account.deviceToken != deviceToken && loggedIn){
+      this.props.action.account.changeNotiToken()
+    }
+
     if (prevProps.account.loggedIn != loggedIn) {
       this._init()
     }
@@ -180,7 +184,6 @@ class HomeScreen extends Component {
   }
 
   _login(mobile, pin, iccid) {
-
     this.props.action.account.logInAndGetAccount( mobile, pin, iccid)
     this.props.action.sim.getSimCardList()
     this.props.action.noti.getNotiList(mobile)

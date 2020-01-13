@@ -20,7 +20,7 @@ export const LOGIN =   'rokebi/account/LOGIN'
 const UPLOAD_PICTURE =   'rokebi/account/UPLOAD_PICTURE'
 const CHANGE_PICTURE =   'rokebi/account/CHANGE_PICTURE'
 const GET_TOKEN = 'rokebi/account/GET_TOKEN'
-export const CHANGE_EMAIL = 'rokebi/account/CHANGE_EMAIL'
+export const CHANGE_ATTR = 'rokebi/account/CHANGE_ATTR'
 
 export const getToken = createAction(GET_TOKEN, userApi.getToken)
 export const updateAccount = createAction(UPDATE_ACCOUNT)
@@ -33,12 +33,7 @@ export const getAccountByUUID = createAction(GET_ACCOUNT_BY_UUID, accountApi.get
 export const activateAccount = createAction(ACTIVATE_ACCOUNT, accountApi.update)
 const uploadPicture = createAction(UPLOAD_PICTURE, accountApi.uploadPicture)
 const changePicture = createAction(CHANGE_PICTURE, userApi.changePicture)
-const changeUserEmail = createAction(CHANGE_EMAIL, userApi.update)
-
-let firebase
-if(Platform.OS=='android'){
-  firebase = require('react-native-firebase')
-}
+const changeUserAttr = createAction(CHANGE_ATTR, userApi.update)
 
 export const logout = () => {
   return (dispatch) => {
@@ -65,7 +60,7 @@ export const changeEmail = (mail) => {
         }
       }
 
-    return dispatch(changeUserEmail( account.get('userId'), authObj, attr)).then(
+    return dispatch(changeUserAttr( account.get('userId'), authObj, attr)).then(
       resp => {
         if ( resp.result == 0) {
           return dispatch(updateAccount({email:mail}))
@@ -74,6 +69,31 @@ export const changeEmail = (mail) => {
       },
       err => {
         console.log('failed to update email', err)
+      }
+    )
+  }
+}
+
+export const changeNotiToken = () => {
+  return async (dispatch, getState) => {
+    const { account } = getState()
+    const fcmToken = Platform.OS == 'android' ? account.get('deviceToken') : ''
+    const deviceToken = Platform.OS == 'ios' ? account.get('deviceToken') : ''
+    
+    const authObj = auth(account),
+      attr = {
+        field_device_token: deviceToken,
+        field_fcm_token: fcmToken
+      }
+
+    return dispatch(changeUserAttr( account.get('userId'), authObj, attr)).then(
+      resp => {
+        if ( resp.result == 0) {
+          console.log('Token is updated')
+        }
+      },
+      err => {
+        console.log('failed to update noti token', err)
       }
     )
   }
@@ -91,31 +111,17 @@ export const logInAndGetAccount = (mobile, pin, iccid) => {
 
           // get ICCID account info
           if ( iccid) {
-            dispatch(getAccount(iccid, {token: obj.csrf_token})).then(
-              async (resp) => {
-                if(Platform.OS == 'android') {
-                  const {account} = getState()
-                  const accountAttr = {field_device_token : await firebase.messaging().getToken()}
-
-                  dispatch(activateAccount(resp.objects[0].uuid, accountAttr, auth(account))).then(
-                    resp => {
-                      if ( resp.result == 0 && resp.objects.length > 0) {
-                        return dispatch(updateAccount(resp.objects[0]))
-                      }
-                    },
-                    err => {
-                      //에러 출력 - 1번만 --alert
-                      console.log('failed to update device token', err)
-                    }
-                  )
-                }
-                return 
-              }
-            )
+            dispatch(getAccount(iccid, {token: obj.csrf_token})).then(resp => {
+              console.log("resp register",resp)})
           }
 
           //iccid 산과없이 로그인마다 토큰 업데이트
-          return dispatch(getUserId( obj.current_user.name, {token: obj.csrf_token}))
+          return dispatch(getUserId( obj.current_user.name, {token: obj.csrf_token})).then(
+            resp => {
+              console.log("user resp",resp)
+              dispatch(changeNotiToken())
+            }
+          )
         }
       },
       err => {
@@ -129,16 +135,13 @@ export const registerMobile = (uuid, mobile) => {
   return (dispatch, getState) => {
     const { account } = getState()
     return dispatch(getAccountByUUID(uuid)).then(
-      async (resp) => {
+      (resp) => {
         if ( resp.result == 0 && resp.objects.length > 0 ) {
           const accountAttr = {}
+          const relation = {}
+
           if ( ! _.isEmpty(mobile) && resp.objects[0].mobile != mobile ) {
             accountAttr.field_mobile = mobile
-          }
-
-          const deviceToken = Platform.OS == 'ios' ? account.get('deviceToken') : await firebase.messaging().getToken();
-          if ( ! _.isEmpty(deviceToken) ) {
-            accountAttr.field_device_token = deviceToken
           }
 
           if ( _.isEmpty(resp.objects[0].actDate)) {
@@ -146,10 +149,17 @@ export const registerMobile = (uuid, mobile) => {
             accountAttr.field_activation_date = now.format()
             accountAttr.field_expiration_date = now.add(1, 'years').format('YYYY-MM-DD')
           }
+          
+          relation.field_ref_user_account = {
+            data: {
+              type: 'user--user',
+              id  : account.get('userId')
+            }
+          }
 
-          console.log('REGISTER', accountAttr, deviceToken, resp.objects[0])
+          console.log('REGISTER', accountAttr, relation, resp.objects[0])
 
-          if ( ! _.isEmpty(accountAttr)) return dispatch(activateAccount(uuid, accountAttr, auth(account))).then(
+          if ( ! _.isEmpty(accountAttr)) return dispatch(activateAccount(uuid, accountAttr, relation, auth(account))).then(
             resp => {
               if ( resp.result == 0 && resp.objects.length > 0) {
                 return dispatch(updateAccount(resp.objects[0]))
@@ -242,6 +252,7 @@ export default handleActions({
   },
 
   [UPDATE_ACCOUNT]: (state, action) => {
+    console.log("update dddddd")
     return updateAccountState(state, action.payload)
   },
 

@@ -4,15 +4,17 @@ import _ from 'underscore'
 
 let PushNotification = undefined
 let PushNotificationIOS = undefined
+let firebase = undefined
 if ( Constants.appOwnership !== 'expo') {
   PushNotification = require("react-native-push-notification")
 
   if ( Platform.OS == 'ios') {
     PushNotificationIOS = require('@react-native-community/push-notification-ios')
   }
+  else{
+    firebase = require('react-native-firebase')
+  }
 }
-
-
 class PushNoti {
   constructor() {
     this.callback = undefined
@@ -60,34 +62,42 @@ class PushNoti {
   add( callback) {
     this.callback = callback
 
-    PushNotification && PushNotification.configure({
-      // (optional) Called when Token is generated (iOS and Android)
-      onRegister: this._onRegister,
-    
-      // (required) Called when a remote or local notification is opened or received
-      onNotification: this._onNotification,
-    
-      // ANDROID ONLY: GCM or FCM Sender ID (product_number) (optional - not required for local notifications, but is need to receive remote push notifications)
-      senderID: "709736045062",
-    
-      // IOS ONLY (optional): default: all - Permissions to register.
-      permissions: {
-        alert: true,
-        badge: true,
-        sound: true
-      },
-    
-      // Should the initial notification be popped automatically
-      // default: true
-      popInitialNotification: true,
-    
-      /**
-       * (optional) default: true
-       * - Specified if permissions (ios) and token (android and ios) will requested or not,
-       * - if not, you must call PushNotificationsHandler.requestPermissions() later
-       */
-      requestPermissions: true
-    })
+    if(Platform.OS=='ios'){
+      
+      PushNotification && PushNotification.configure({
+        // (optional) Called when Token is generated (iOS and Android)
+        onRegister: this._onRegister,
+      
+        // (required) Called when a remote or local notification is opened or received
+        onNotification: this._onNotification,
+      
+        // ANDROID ONLY: GCM or FCM Sender ID (product_number) (optional - not required for local notifications, but is need to receive remote push notifications)
+        senderID: "709736045062",
+      
+        // IOS ONLY (optional): default: all - Permissions to register.
+        permissions: {
+          alert: true,
+          badge: true,
+          sound: true
+        },
+      
+        // Should the initial notification be popped automatically
+        // default: true
+        popInitialNotification: true,
+      
+        /**
+         * (optional) default: true
+         * - Specified if permissions (ios) and token (android and ios) will requested or not,
+         * - if not, you must call PushNotificationsHandler.requestPermissions() later
+         */
+        requestPermissions: true
+      })
+    }
+    else{
+      firebase.messaging().getToken().then(
+        fcmToken => {this.callback('register',fcmToken)}
+      )
+    }
   }
 }
 
