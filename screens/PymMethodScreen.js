@@ -122,7 +122,7 @@ class PymMethodScreen extends Component {
       escrow: false,
       app_scheme: 'esim',
       profile_uuid: profileId,
-      mode: 'test'
+      // mode: 'test'
     };
 
     this.props.navigation.navigate('Payment', {params: params})
