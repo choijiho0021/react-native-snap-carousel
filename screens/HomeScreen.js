@@ -156,6 +156,10 @@ class HomeScreen extends Component {
     if (prevProps.account.loggedIn != loggedIn) {
       this._init()
     }
+
+    if ( this.props.sync.progress ) {
+      this.props.navigation.navigate('CodePush')
+    }
   }
 
   _init() {
@@ -564,6 +568,7 @@ const mapStateToProps = (state) => ({
   noti : state.noti.toJS(),
   info : state.info.toJS(),
   loginPending: state.pender.pending[accountActions.LOGIN] || false,
+  sync : state.sync.toJS()
 })
 
 export default connect(mapStateToProps, 

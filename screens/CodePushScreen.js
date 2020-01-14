@@ -16,8 +16,7 @@ import i18n from '../utils/i18n';
 import { appStyles } from '../constants/Styles';
 import { colors } from '../constants/Colors';
 
-class CodePushComponent extends Component {
-
+class CodePushScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -42,18 +41,18 @@ class CodePushComponent extends Component {
         this._isMounted = false
     }
 
+    componentDidUpdate(prevProps) {
+        if ( this.props.sync.isCompleted) {
+            this.props.navigation.navigate('Main')
+        }
+    }
+    
+
     codePushSync() {
         try {
             codePush.sync(
                 {
-                    updateDialog: {
-                        title : i18n.t('codepush:title'),
-                        optionalUpdateMessage : i18n.t('codepush:body'),
-                        mandatoryContinueButtonLabel : i18n.t('codepush:continue'),
-                        mandatoryUpdateMessage : i18n.t('codepush:mandatory'),
-                        optionalIgnoreButtonLabel : i18n.t('codepush:later'),
-                        optionalInstallButtonLabel : i18n.t('codepush:update')
-                    },
+                    updateDialog: false,
                     installMode: codePush.InstallMode.IMMEDIATE //업데이트 후 바로 재기동
                 },
                 (syncStatus) => {
@@ -74,11 +73,9 @@ class CodePushComponent extends Component {
                         case codePush.SyncStatus.INSTALLING_UPDATE:
                             syncMessage = i18n.t('codepush:install')
                             break;
-                        /*
                         case codePush.SyncStatus.UP_TO_DATE:
-                            syncMessage = i18n.t('codepush:install')
+                            syncMessage = i18n.t('codepush:uptodate')
                             break;
-                        */
                         case codePush.SyncStatus.UPDATE_IGNORED:
                             syncMessage = i18n.t('codepush:ignore')
                             break;
@@ -96,32 +93,33 @@ class CodePushComponent extends Component {
 
                     this.props.action.sync.update({ syncStatus })
 
-                    if ( this._isMounted ) {
+                    if ( this._isMounted && ! this.props.sync.isCompleted ) {
                         this.setState({ syncMessage, syncStatus })
                     }
 
                     if ( [codePush.SyncStatus.UP_TO_DATE,
                         codePush.SyncStatus.UPDATE_IGNORED,
                         codePush.SyncStatus.UPDATE_INSTALLED,
-                        codePush.SyncStatus.UNKNOWN_ERROR ].includes(syncStatus)  ) {
+                        codePush.SyncStatus.UNKNOWN_ERROR].includes(syncStatus)  ) {
+
+                            setTimeout (() => {
+                                this.props.action.sync.complete()
+                            }, 1000)
                         
-                            this.props.action.sync.complete()
                             if ( this._isMounted ) {
                                 this.setState({ progress: undefined })
                             }
                     }
                 },
                 (progress) => {
-                    if ( this._isMounted ) {
+                    if ( this._isMounted && ! this.props.sync.isCompleted ) {
                         this.setState({ progress })
                     }
                 }
             );
         } catch (error) {
-            Alert.alert(i18n.t('error'), i18n.t('codepush:failedToUpdate'), [ {text: 'OK'} ]);
+            Alert.alert(i18n.t('error'), i18n.t('codepush:failedToUpdate'), [ {text: i18n.t('ok'), onPress: () => this.props.action.sync.complete()} ]);
             codePush.log(error);
-
-            this.props.action.sync.complete()
         }
     }
 
@@ -140,6 +138,7 @@ class CodePushComponent extends Component {
             </View>
         )
     }
+
 }
 
 const styles = StyleSheet.create({
@@ -169,4 +168,4 @@ export default connect(mapStateToProps,
             sync: bindActionCreators(syncActions, dispatch),
         }
     })
-)(CodePushComponent)
+)(CodePushScreen)

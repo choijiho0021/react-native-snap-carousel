@@ -18,6 +18,8 @@ import * as accountActions from './redux/modules/account'
 import * as productActions from './redux/modules/product'
 import * as simActions from './redux/modules/sim'
 import * as syncActions from './redux/modules/sync'
+import CodePushModal from './components/CodePushModal'
+import codePush from 'react-native-code-push';
 
 const logger = createLogger()
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -31,7 +33,9 @@ if ( Constants.appOwnership !== 'expo') {
   SplashScreen = require('react-native-splash-screen').default;
 }
 
-export default function App(props) {
+const codePushOptions = { checkFrequency: codePush.CheckFrequency.MANUAL }
+
+export default codePush(codePushOptions)(function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
   const [showSplash, setShowSplash] = useState(true)
 
@@ -50,6 +54,7 @@ export default function App(props) {
     if ( SplashScreen) SplashScreen.hide()
 
     setTimeout (() => {
+      store.dispatch(syncActions.skip())
       setShowSplash(false)
     }, 3000)
 
@@ -67,11 +72,12 @@ export default function App(props) {
                 resizeMode='contain'/> :
               <AppNavigator />
           }
+          <CodePushModal />
         </View>
       </Provider>
     );
   }
-}
+})
 
 async function login() {
     const iccid = await utils.retrieveData( userApi.KEY_ICCID)
@@ -79,8 +85,6 @@ async function login() {
     const pin = await utils.retrieveData( userApi.KEY_PIN)
 
     console.log('load', mobile, pin, iccid)
-
-    store.dispatch(syncActions.init())
 
     if ( mobile && pin ) {
       store.dispatch(accountActions.logInAndGetAccount( mobile, pin, iccid))
