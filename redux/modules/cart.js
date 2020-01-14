@@ -149,7 +149,7 @@ export default handleActions({
 
   // 구매할 품목을 저장한다. 
   [PURCHASE]: (state,action) => {
-    const {purchaseItems, dlvCost = false} = action.payload,
+    const {purchaseItems, dlvCost = false, balance = 0} = action.payload,
       total = (purchaseItems || []).reduce((sum, acc) => sum + acc.price * (acc.qty || 1), 0),
       pymReq = [
         {
@@ -159,15 +159,24 @@ export default handleActions({
         }
       ]
       
-      if ( dlvCost ) pymReq.push({
-        key: 'dlvCost',
-        title: i18n.t('cart:dlvCost'),
-        amount: utils.dlvCost(total)
-      }) 
+    if ( dlvCost ) pymReq.push({
+      key: 'dlvCost',
+      title: i18n.t('cart:dlvCost'),
+      amount: utils.dlvCost(total)
+    }) 
+
+    // 배송비 포함 상품 합계
+    const totalPrice = total + dlvCost,
+    // 계산해야하는 총액
+    pymPrice = totalPrice > balance ? totalPrice - balance : 0,
+    // 잔액 차감
+    deduct = (totalPrice > balance) ? balance : totalPrice
 
     // purchaseItems에는 key, qty, price, title 정보 필요
     return state.set('purchaseItems', purchaseItems)
       .set('pymReq', pymReq)
+      .set('pymPrice', pymPrice)
+      .set('deduct', deduct)
   },
 
   // 결제 결과를 저장한다.

@@ -82,7 +82,7 @@ class NewSimScreen extends Component {
   }
 
   _onPress = (mode) => () => {
-    const {loggedIn} = this.props.account
+    const {loggedIn,balance} = this.props.account
     const {checked, simQty} = this.state
 
     if(!loggedIn){
@@ -103,7 +103,7 @@ class NewSimScreen extends Component {
 
       if ( simList.length > 0) {
         if ( mode == 'purchase') {
-          this.props.action.cart.purchase({ purchaseItems:simList, dlvCost:true})
+          this.props.action.cart.purchase({ purchaseItems:simList, dlvCost:true, balance})
           this.props.navigation.navigate('PymMethod')
         }
         else this.props.action.cart.cartAddAndGet( simList)

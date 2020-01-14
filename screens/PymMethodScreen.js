@@ -36,7 +36,8 @@ class PymMethodScreen extends Component {
       selected: undefined,
       showModal: false,
       pymPrice: undefined,
-      total: undefined,
+      deduct: undefined,
+      isRecharge: undefined,
     }
 
     this._onSubmit = this._onSubmit.bind(this)
@@ -81,32 +82,27 @@ class PymMethodScreen extends Component {
   //
   componentDidMount() {
     this.props.action.profile.getCustomerProfile(this.props.auth)
-    const pymPrice = this.props.navigation.getParam('pymPrice'),
-          total = this.props.navigation.getParam('total')
-    if(!_.isUndefined(pymPrice)){
-      this.setState({
-        pymPrice: pymPrice
-      })
-    }
-    if(!_.isUndefined(total)){
-      this.setState({
-        total: total
-      })
-    } 
+    const {pymPrice, deduct} = this.props.cart
+
+    this.setState({
+      pymPrice,
+      deduct,
+      isRecharge: this.props.cart.purchaseItems.findIndex(item => item.type == 'rch') >= 0
+    })
 
   }
 
   _onSubmit() {
-    const { selected, pymPrice, total } = this.state
+    const { selected, pymPrice, deduct } = this.state
     // const { selected } = this.state
 
     if ( ! selected ) return
 
-    const { mobile, email, balance = 0} = this.props.account
+    const { mobile, email, balance = 0} = this.props.account,
     // const { pymReq } = this.props.cart,
     //   total = pymReq.reduce((sum,cur) => sum + cur.amount, 0),
     //   [pymPrice, deduct_from_balance] = total > balance ? [total - balance, balance] : [0, total],
-    const deduct_from_balance = pymPrice > 0 ? balance : total,
+    // const deduct_from_balance = pymPrice > 0 ? balance : totalPrice,
 
       profileId = this.props.profile.selectedAddr || (this.props.profile.profile.find(item => item.isBasicAddr) || {}).uuid
 
@@ -116,13 +112,13 @@ class PymMethodScreen extends Component {
       merchant_uid: `mid_${new Date().getTime()}`,
       name:'esim',
       amount: pymPrice,    // 결제 금액 
-      deduct_from_balance, // balance 차감 금액 
+      deduct_from_balance: deduct, // balance 차감 금액 
       buyer_tel: mobile,
       buyer_email: email,
       escrow: false,
       app_scheme: 'esim',
       profile_uuid: profileId,
-      // mode: 'test'
+      mode: 'test'
     };
 
     this.props.navigation.navigate('Payment', {params: params})
@@ -214,17 +210,16 @@ class PymMethodScreen extends Component {
   }
 
   render() {
-    const { selected, pymPrice } = this.state,
+    const { selected, pymPrice, deduct, isRecharge } = this.state,
       { purchaseItems = [], pymReq } = this.props.cart,
       simIncluded = purchaseItems.findIndex(item => item.type == 'sim_card') >= 0,
       noProfile = this.props.profile.profile.length == 0
 
-      console.log('@@props', this.props) 
-
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <ScrollView>
-          <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance} pymPrice={pymPrice}/>              
+          <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance}
+                          pymPrice={pymPrice} deduct={deduct} isRecharge={isRecharge}/>              
 
           {
             simIncluded && this._address()

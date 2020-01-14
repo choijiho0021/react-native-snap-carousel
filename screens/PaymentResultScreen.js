@@ -40,7 +40,9 @@ class PaymentResultScreen extends Component {
       result : {},
       purchaseItems: [],
       pymReq: [],
-      pymPrice: undefined
+      pymPrice: undefined,
+      deduct: undefined,
+      isRecharge: undefined,
     }
 
     this._init = this._init.bind(this)
@@ -51,13 +53,16 @@ class PaymentResultScreen extends Component {
   }
 
   _init() {
-    const { pymReq, purchaseItems} = this.props.cart
+    const { pymReq, purchaseItems, pymPrice, deduct} = this.props.cart
 
     this.setState({
       result: this.props.navigation.getParam('pymResult'),
       purchaseItems,
       pymReq,
-      pymPrice: this.props.navigation.getParam('pymPrice')
+      pymPrice,
+      deduct,
+      isRecharge: this.props.cart.purchaseItems.findIndex(item => item.type == 'rch') >= 0,
+      screen: this.props.navigation.state.routeName,
     })
 
     // 구매 이력을 다시 읽어 온다.
@@ -68,7 +73,7 @@ class PaymentResultScreen extends Component {
   }
 
   render() {
-    const { pymReq, purchaseItems, pymPrice} = this.state
+    const { pymReq, purchaseItems, pymPrice, deduct, isRecharge, screen } = this.state
     const { imp_success, success} = this.state.result
 
     // [WARNING: 이해를 돕기 위한 것일 뿐, imp_success 또는 success 파라미터로 결제 성공 여부를 장담할 수 없습니다.]
@@ -78,7 +83,8 @@ class PaymentResultScreen extends Component {
 
     return (
       <SafeAreaView style={styles.container}>
-        <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance} pymPrice={pymPrice}/>     
+        <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance}
+                        pymPrice={pymPrice} deduct={deduct} isRecharge={isRecharge} screen={screen}/>     
 
         <View style={styles.result}>
           <Text style={{alignSelf: 'center'}}>{i18n.t( isSuccess ? 'pym:success' : 'pym:fail')}</Text>

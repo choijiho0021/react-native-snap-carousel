@@ -28,9 +28,12 @@ const styles = StyleSheet.create({
 class ChargeSummary extends PureComponent {
   render() {
     const {totalCnt, totalPrice, balance, dlvCost} = this.props,
-          amount = totalPrice + dlvCost
-    // 계산해야하는 총액
-    const pymPrice = amount > balance ? amount - balance : 0
+          // 상품가격 + 배송비
+          amount = totalPrice + dlvCost,
+          // 잔액 차감
+          deduct = totalCnt > 0 ? ((amount > balance) ? balance : amount) : 0,
+          // 계산해야하는 총액
+          pymPrice = amount > balance ? amount - balance : 0
 
     return (
       <View style={styles.price}>
@@ -47,9 +50,10 @@ class ChargeSummary extends PureComponent {
           format="price"
           value={dlvCost}/>
 
-        <LabelText label={i18n.t('cart:totalBalance')} style={styles.summary}
+        <LabelText label={i18n.t('cart:deductBalance')} style={styles.summary}
           format="price"
-          value={balance}/>          
+          value={balance}
+          deduct={deduct}/>          
 
         <LabelText label={i18n.t('cart:totalCost')} style={styles.summary}
           format="price" color={colors.clearBlue}

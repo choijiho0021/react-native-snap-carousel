@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
 class PaymentItemInfo extends PureComponent {
 
   render() {
-    const { cart, pymReq, balance, pymPrice } = this.props
+    const { cart, pymReq, balance, deduct, pymPrice, isRecharge, screen } = this.props
 
     return (
       <View>
@@ -112,24 +112,42 @@ class PaymentItemInfo extends PureComponent {
         }
         </View> 
         
-        <View style={styles.priceInfo}>
-          {
-            pymReq.map(item =>                      
-              <View style={styles.row} key={item.title}>
-                <Text key="title" style={styles.normalText14}>{item.title}</Text>
-                <Text key="amount" style={styles.normalText16}>{utils.price(item.amount)}</Text>
-              </View>) 
-          }
-          <View style={styles.row} key="balance">
-            <Text key="title" style={styles.normalText14}>{i18n.t('acc:balance')}</Text>
-            <Text key="amount" style={styles.normalText16}>{utils.price(balance)}</Text>
+        {
+          !isRecharge &&
+          <View style={styles.priceInfo}>
+            {
+              pymReq.map(item =>                      
+                <View style={styles.row} key={item.title}>
+                  <Text key="title" style={styles.normalText14}>{item.title}</Text>
+                  <Text key="amount" style={styles.normalText16}>{utils.price(item.amount)}</Text>
+                </View>) 
+            }
+            <View style={styles.row} key="balance">
+              <Text key="title" style={styles.normalText14}>{i18n.t('cart:deductBalance')}</Text>
+              <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+                {
+                  screen != 'PaymentResult' &&
+                  <Text key="currentBal" style={[styles.normalText14, {textAlignVertical: 'center', marginRight: 5}]}>{`(${i18n.t('cart:currentBalance')}:${utils.numberToCommaString(balance) + ' ' + i18n.t('won')}) `}</Text>
+                }
+                <Text key="amount" style={styles.normalText16}>{utils.price(deduct)}</Text>
+              </View>
+            </View>
           </View>
-        </View>
+        }
+
         <View style={[styles.row, styles.total, styles.brdrBottom0]}>
           <Text style={[styles.normalText14]}>{i18n.t('cart:totalCost')} </Text>
           <Text style={[styles.normalText16, styles.colorClearBlue, styles.fontWeightNormal]}>{utils.numberToCommaString(pymPrice)+ ' ' + i18n.t('won')}</Text>
         </View>
-        <View style={styles.divider}/>
+        {
+          screen == 'PaymentResult' &&
+          <View style={[styles.row, styles.total, {borderTopWidth: 0, backgroundColor: colors.white}]}>
+            <Text style={[styles.normalText14]}>{i18n.t('cart:afterDeductBalance')} </Text>
+            <Text style={[styles.normalText16, styles.fontWeightNormal]}>{utils.numberToCommaString(balance)+ ' ' + i18n.t('won')}</Text>
+          </View>
+        }
+        <View style={[styles.divider, screen == 'PaymentResult' && { marginTop: 0} ]}>
+        </View>
       </View>
     )
   }
