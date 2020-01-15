@@ -3,6 +3,7 @@ import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 
 import MainTabNavigator from './MainTabNavigator';
 import AuthStackNavigator from './AuthStackNavigator';
+import CodePushStack from './CodePushStackNavigator';
 
 export default createAppContainer(
   createSwitchNavigator({
@@ -10,6 +11,7 @@ export default createAppContainer(
     // Read more at https://reactnavigation.org/docs/en/auth-flow.html
     Main: MainTabNavigator,
     Auth: AuthStackNavigator,
+    CodePush: CodePushStack
   }, {
     initialRouteName: 'Main',
     backBehavior: 'history',
