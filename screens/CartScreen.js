@@ -231,7 +231,7 @@ class CartScreen extends Component {
       balance = this.props.account.balance || 0
 
       return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
 
         <SectionList 
           sections={section}

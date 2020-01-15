@@ -154,7 +154,7 @@ class NewSimScreen extends Component {
       selected = simList.findIndex(item => checked.get(item.key) && simQty.get(item.key) > 0) >= 0
 
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <AppActivityIndicator visible={querying}/>
         <FlatList data={simList} 
           renderItem={this._renderItem} 
