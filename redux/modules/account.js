@@ -139,17 +139,19 @@ export const registerMobile = (uuid, mobile) => {
         if ( resp.result == 0 && resp.objects.length > 0 ) {
           const accountAttr = {}
           const relation = {}
+          const now = moment()
 
           if ( ! _.isEmpty(mobile) && resp.objects[0].mobile != mobile ) {
             accountAttr.field_mobile = mobile
           }
 
-          if ( _.isEmpty(resp.objects[0].actDate)) {
-            const now = moment()
-            accountAttr.field_activation_date = now.format()
+          if ( _.isEmpty(resp.objects[0].expDate)) {
             accountAttr.field_expiration_date = now.add(1, 'years').format('YYYY-MM-DD')
           }
           
+          //activation code는 카드등록시 항상 update
+          accountAttr.field_activation_date = now.format()
+
           relation.field_ref_user_account = {
             data: {
               type: 'user--user',
