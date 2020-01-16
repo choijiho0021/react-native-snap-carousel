@@ -415,6 +415,7 @@ const styles = StyleSheet.create({
     width: '78%',//isDeviceSize('small') ? '74%':'78%',
     height: 36,
     fontSize: isDeviceSize('small') || isAndroid() ? 12 : 14,
+    color:colors.black,
     borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: "solid",
