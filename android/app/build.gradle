@@ -134,7 +134,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
 				vectorDrawables.useSupportLibrary = true
         versionCode 1
-        versionName "1.0"
+        versionName "1.1"
     }
     splits {
         abi {
@@ -190,6 +190,9 @@ android {
 apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
 
 dependencies {
+    implementation project(':appcenter-crashes')
+    implementation project(':appcenter-analytics')
+    implementation project(':appcenter')
     implementation project(':react-native-version-check')
     implementation project(':react-native-code-push')
     implementation project(':react-native-camera')
