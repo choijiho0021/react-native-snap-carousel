@@ -32,7 +32,6 @@ class PymMethodScreen extends Component {
 
     this.state = {
       data: undefined,
-      // profile: undefined,
       selected: undefined,
       showModal: false,
       pymPrice: undefined,
@@ -79,7 +78,6 @@ class PymMethodScreen extends Component {
     ]
   }
 
-  //
   componentDidMount() {
     this.props.action.profile.getCustomerProfile(this.props.auth)
     const {pymPrice, deduct} = this.props.cart
@@ -94,16 +92,10 @@ class PymMethodScreen extends Component {
 
   _onSubmit() {
     const { selected, pymPrice, deduct } = this.state
-    // const { selected } = this.state
+    
+    if ( (! selected) && (pymPrice !=0) ) return
 
-    if ( ! selected ) return
-
-    const { mobile, email, balance = 0} = this.props.account,
-    // const { pymReq } = this.props.cart,
-    //   total = pymReq.reduce((sum,cur) => sum + cur.amount, 0),
-    //   [pymPrice, deduct_from_balance] = total > balance ? [total - balance, balance] : [0, total],
-    // const deduct_from_balance = pymPrice > 0 ? balance : totalPrice,
-
+    const { mobile, email } = this.props.account,
       profileId = this.props.profile.selectedAddr || (this.props.profile.profile.find(item => item.isBasicAddr) || {}).uuid
 
     const params = {
@@ -111,8 +103,8 @@ class PymMethodScreen extends Component {
       pay_method: 'card',
       merchant_uid: `mid_${new Date().getTime()}`,
       name:'esim',
-      amount: pymPrice,    // 결제 금액 
-      deduct_from_balance: deduct, // balance 차감 금액 
+      amount: pymPrice,                 // 최종 결제 금액 
+      deduct_from_balance: deduct,      // balance 차감 금액 
       buyer_tel: mobile,
       buyer_email: email,
       escrow: false,
@@ -181,7 +173,7 @@ class PymMethodScreen extends Component {
                 </View>
                 <AddressCard 
                   textStyle={styles.addrCardText}
-                  mobileStyle={[styles.addrCardText, styles.colorWarmGrey]}
+                  mobileStyle={[styles.addrCardText, {color: colors.warmGrey}]}
                   style={styles.addrCard}
                   profile={item}
                   mobile={this.props.account.mobile}/>
@@ -225,17 +217,28 @@ class PymMethodScreen extends Component {
             simIncluded && this._address()
           }
 
-          <Text style={[styles.title, styles.mrgBottom5]}>{i18n.t('pym:method')}</Text>
-          <View style={styles.mrgBottom33}>
-            {
-              this.method.map((v,idx) => this._button(idx+"", v))
-            }
-          </View>
+          {
+            pymPrice !=0 ?
+              <View>
+                <Text style={[styles.title, styles.mrgBottom5]}>{i18n.t('pym:method')}</Text>
+                <View style={styles.mrgBottom33}>
+                  {
+                    this.method.map((v,idx) => this._button(idx+"", v))
+                  }
+                </View>
+              </View>  
+            :
+            <View style={{flex:1, height: '100%', flexDirection: 'column', alignItems: 'stretch'}}> 
+              <View style={styles.result}>
+                <Text style={styles.resultText}>{i18n.t('pym:buy')}</Text>
+              </View>
+            </View>        
+          }
         </ScrollView>
 
         <AppButton title={i18n.t('payment')} 
                       textStyle={appStyles.confirmText}
-                      disabled={_.isEmpty(selected) || (simIncluded && noProfile)}
+                      disabled={ pymPrice !=0 && (_.isEmpty(selected) || (simIncluded && noProfile))}
                       key={i18n.t('payment')}
                       onPress={this._onSubmit}
                       style={appStyles.confirm} />
@@ -266,14 +269,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 0
-  },
-  total: {
-    height: 52,
-    paddingHorizontal: 20,
-    borderTopColor: colors.blackack,
-    borderTopWidth: 1,
-    backgroundColor: colors.whiteTwo,
-    alignItems: 'center'
   },
   divider: {
     marginTop: 30,
@@ -308,52 +303,11 @@ const styles = StyleSheet.create({
     color: colors.black,
     lineHeight: 24
   },
-  mrgBottom0: {
-    marginBottom: 0
-  },
   mrgBottom5: {
     marginBottom: 5
   },
   mrgBottom33: {
     marginBottom: 33
-  },
-  brdrBottom0: {
-    borderBottomWidth: 0
-  },
-  colorWarmGrey: {
-    color: colors.warmGrey
-  },
-  colorClearBlue: {
-    color: colors.clearBlue
-  },
-  fontWeightNormal: {
-    fontWeight: 'normal'
-  },
-  productPriceInfo: {
-    paddingVertical: 11,
-    marginTop: 9,
-    marginHorizontal: 20, 
-    borderBottomColor: colors.lightGrey, 
-    borderBottomWidth: 1
-  },
-  productPriceTitle: {
-    ... appStyles.normal16Text, 
-    lineHeight: 36, 
-    letterSpacing: 0.26,
-    fontWeight: 'normal'
-  },
-  normalText14: {
-    ... appStyles.normal14Text,
-    fontWeight: 'normal'
-  },
-  normalText16: {
-    ... appStyles.normal16Text,
-    fontWeight: 'normal'
-  },
-  PriceInfo: {
-    height:72, 
-    marginVertical: 11, 
-    marginHorizontal: 20
   },
   addrBtn: {
     height: 48, 
@@ -403,6 +357,19 @@ const styles = StyleSheet.create({
     borderColor: colors.clearBlue,
     justifyContent: 'center',
     alignSelf: 'center',
+  },
+  result: {
+    flex: 1,
+    // flexDirection: 'column',
+    justifyContent: 'center',
+    alignSelf: 'center'
+  },
+  resultText: {
+    ... appStyles.normal14Text,
+    color: colors.warmGrey,
+    justifyContent: 'center', 
+    textAlign: 'center', 
+    alignItems: 'center'
   }
 });
 

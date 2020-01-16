@@ -35,7 +35,7 @@ class PaymentScreen extends Component{
   componentDidMount() {
     const params = this.props.navigation.getParam('params')
 
-    if (params.mode == 'test' || Constants.appOwnership === 'expo') {
+    if (params.mode == 'test' || Constants.appOwnership === 'expo' || params.amount == 0) {
       const {impId} = getEnvVars()
       const response = { imp_success: true,
         imp_uid: impId,
