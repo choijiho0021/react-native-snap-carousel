@@ -28,8 +28,7 @@ class ProfileAPI {
                     zipCode: postal_code,
                     addressLine1: address_line1,
                     addressLine2: address_line2,
-                    detailAddr: item.field_detail_address,
-                    organization: organization,
+                    detailAddr: organization,
                     givenName: given_name,
                     familyName: family_name,
                     alias: item.attributes.field_alias,
@@ -37,7 +36,6 @@ class ProfileAPI {
                     prefix: item.attributes.field_recipient_number.substring(0,3),
                     recipientNumber : item.attributes.field_recipient_number.substring(3),
                     isBasicAddr: item.attributes.is_default,
-                    detailAddr: item.attributes.field_detail_address,
                     uuid: item.id,
                 }
             
@@ -91,14 +89,13 @@ class ProfileAPI {
                         postal_code: profile.zipCode,
                         address_line1: profile.addressLine1,
                         address_line2: profile.addressLine2,
-                        organization: defaultProfile.organization ||profile.organization || profile.alias,
-                        given_name: defaultProfile.givenName || profile.givenName || profile.recipient, //.substring(0,1), //'choi',//profile[0].givenName,
-                        family_name: defaultProfile.familyName || profile.familyName|| profile.recipient//.substring(1), //'soojeong', //profile[0].familyName,
+                        organization: profile.detailAddr,        // 상세주소
+                        given_name: profile.recipient || profile.givenName, 
+                        family_name: profile.recipient || profile.familyName
                     },
                     field_recipient : profile.recipient,
                     field_recipient_number : profile.recipientNumber,
                     field_alias : profile.alias,
-                    field_detail_address : profile.detailAddr,
                     is_default: profile.isBasicAddr
                 }
             }
