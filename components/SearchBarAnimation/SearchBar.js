@@ -58,6 +58,7 @@ export default class SearchBar extends Component {
                 <TextInput 
                   style={styles.inputText}
                   placeholder={'I\'m looking for...'}
+                  placeholderTextColor={colors.greyish}
                   placeholderTextColor={'#999'}
                   underlineColorAndroid={'#fff'}
                   autoCorrect={false}
