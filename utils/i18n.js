@@ -286,6 +286,7 @@ const en = {
   "pym:syrup": "Syrup",
   "pym:kakao": "Kakao Pay",
   "pym:payco": "Payco",
+  "pym:buy": "Pay with Balance.",
   "pym:success": "결제에 성공하였습니다",
   "pym:fail": "결제에 실패하였습니다",
 
@@ -611,6 +612,7 @@ const ko = {
   "pym:kakao": "카카오 페이",
   "pym:payco": "페이코",
   "pym:syrup": "시럽",
+  "pym:buy": "잔액에서 결제 됩니다.\n구매 하시겠습니까?",
   "pym:success": "결제에 성공하였습니다",
   "pym:fail": "결제에 실패하였습니다",
 
