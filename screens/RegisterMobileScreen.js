@@ -147,7 +147,7 @@ class RegisterMobileScreen extends Component {
       }
 
       if ( isValid && this._isMounted ) {
-        const resp = userApi.signUp({ user: mobile, pass: pin, email: `${email}@${domain}`, mktgOptIn: confirm.get('2')})
+        let resp = await userApi.signUp({ user: mobile, pass: pin, email: `${email}@${domain}`, mktgOptIn: confirm.get('2')})
 
         if (resp.result === 0 && ! _.isEmpty(resp.objects) ) {
           this._signIn({ mobile, pin })

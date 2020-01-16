@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, TextInput, Picker } from 'react-native'
+import { StyleSheet, View, Text, TextInput, Picker, TouchableOpacity } from 'react-native'
 import i18n from '../utils/i18n'
 import RNPickerSelect from 'react-native-picker-select';
 import { colors } from '../constants/Colors';
 import _ from 'underscore'
 import Triangle from './Triangle';
 import { appStyles } from '../constants/Styles';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const DIRECT_INPUT = 'direct'
 const domains = [
@@ -148,7 +147,6 @@ const styles = StyleSheet.create({
   textInputWrapper: {
     borderBottomColor: colors.black,
     borderBottomWidth: 1,
-    width: 106,
     marginRight: 10,
     paddingLeft: 10
   },
@@ -175,7 +173,7 @@ const styles = StyleSheet.create({
   placeholder: {
     ... appStyles.normal14Text,
     lineHeight: 19
-  },
+  }
 });
 
 
