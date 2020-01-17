@@ -4,7 +4,8 @@ import {
   View,
   Text,
   Dimensions,
-  SafeAreaView
+  SafeAreaView,
+  Platform
 } from 'react-native';
 
 import i18n from '../utils/i18n'
@@ -148,6 +149,11 @@ class SimpleTextScreen extends Component {
               </View> :
               null
           }
+
+          {
+            Platform.OS === 'ios' ? <AppButton style={styles.button} title={i18n.t('ok')} 
+            onPress={() => this.props.navigation.goBack()}/> : null
+          }
       </SafeAreaView>
     )
   }
@@ -193,6 +199,13 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 3,
     backgroundColor: colors.clearBlue,
+  },
+  button: {
+    ... appStyles.normal16Text,
+    height: 52,
+    backgroundColor: colors.clearBlue,
+    textAlign: "center",
+    color: "#ffffff"
   }
 });
 
