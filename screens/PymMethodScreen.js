@@ -21,6 +21,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import PaymentItemInfo from '../components/PaymentItemInfo';
 import { isAndroid } from '../components/SearchBarAnimation/utils';
 import { isDeviceSize } from '../constants/SliderEntry.style';
+import getEnvVars from '../environment';
 
 class PymMethodScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -90,7 +91,7 @@ class PymMethodScreen extends Component {
 
   }
 
-  _onSubmit() {
+  async _onSubmit() {
     const { selected, pymPrice, deduct } = this.state
     
     if ( (! selected) && (pymPrice !=0) ) return
@@ -98,22 +99,35 @@ class PymMethodScreen extends Component {
     const { mobile, email } = this.props.account,
       profileId = this.props.profile.selectedAddr || (this.props.profile.profile.find(item => item.isBasicAddr) || {}).uuid
 
-    const params = {
-      pg : selected,
-      pay_method: 'card',
-      merchant_uid: `mid_${new Date().getTime()}`,
-      name:'esim',
-      amount: pymPrice,                 // 최종 결제 금액 
-      deduct_from_balance: deduct,      // balance 차감 금액 
-      buyer_tel: mobile,
-      buyer_email: email,
-      escrow: false,
-      app_scheme: 'esim',
-      profile_uuid: profileId,
-      // mode: 'test'
-    };
+    if(pymPrice == 0){
+      const {impId} = getEnvVars()
+      const response = { imp_success: true,
+        imp_uid: impId,
+        merchant_uid: `mid_${new Date().getTime()}`,
+        profile_uuid: profileId,
+        deduct_from_balance: deduct
+      }
+      await this.props.action.cart.payNorder(response)
+      this.props.navigation.replace('PaymentResult', {pymResult:response})
 
-    this.props.navigation.navigate('Payment', {params: params})
+    } else{
+      const params = {
+        pg : selected,
+        pay_method: 'card',
+        merchant_uid: `mid_${new Date().getTime()}`,
+        name:'esim',
+        amount: pymPrice,                 // 최종 결제 금액 
+        deduct_from_balance: deduct,      // balance 차감 금액 
+        buyer_tel: mobile,
+        buyer_email: email,
+        escrow: false,
+        app_scheme: 'esim',
+        profile_uuid: profileId,
+        mode: 'test'
+      };
+
+      this.props.navigation.navigate('Payment', {params: params})
+    }
   }
 
   _onPress = (key) => () => {
@@ -228,11 +242,9 @@ class PymMethodScreen extends Component {
                 </View>
               </View>  
             :
-            <View style={{flex:1, height: '100%', flexDirection: 'column', alignItems: 'stretch'}}> 
               <View style={styles.result}>
                 <Text style={styles.resultText}>{i18n.t('pym:buy')}</Text>
               </View>
-            </View>        
           }
         </ScrollView>
 
@@ -360,16 +372,14 @@ const styles = StyleSheet.create({
   },
   result: {
     flex: 1,
-    // flexDirection: 'column',
+    flexDirection: 'column',
     justifyContent: 'center',
-    alignSelf: 'center'
+    minHeight: isDeviceSize('small') ? '40%' : '50%',
   },
   resultText: {
     ... appStyles.normal14Text,
     color: colors.warmGrey,
-    justifyContent: 'center', 
     textAlign: 'center', 
-    alignItems: 'center'
   }
 });
 
