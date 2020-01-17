@@ -123,14 +123,14 @@ class PaymentItemInfo extends PureComponent {
                 </View>) 
             }
             <View style={styles.row} key="balance">
-              <Text key="title" style={styles.normalText14}>{i18n.t('cart:deductBalance')}</Text>
               <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+                <Text key="title" style={styles.normalText14}>{i18n.t('cart:deductBalance')}</Text>
                 {
                   screen != 'PaymentResult' &&
-                  <Text key="currentBal" style={[styles.normalText14, {textAlignVertical: 'center', marginRight: 5}]}>{`(${i18n.t('cart:currentBalance')}:${utils.numberToCommaString(balance) + ' ' + i18n.t('won')}) `}</Text>
+                  <Text key="currentBal" style={[styles.normalText14, {marginLeft: 18}]}>{`(${i18n.t('cart:currentBalance')}:${utils.numberToCommaString(balance) + ' ' + i18n.t('won')}) `}</Text>
                 }
-                <Text key="amount" style={styles.normalText16}>{utils.price(deduct)}</Text>
               </View>
+              <Text key="amount" style={styles.normalText16}>{utils.price(deduct)}</Text>
             </View>
           </View>
         }
