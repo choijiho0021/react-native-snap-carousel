@@ -20,6 +20,7 @@ class AccountAPI {
                     balance: utils.stringToNumber(item.field_balance) || 0,
                     simPartnerId: utils.stringToNumber( item.field_ref_sim_partner),
                     actDate: item.field_activation_date,
+                    firstActDate: item.field_first_activation_date,
                     mobile: item.field_mobile,
                     deviceToken: item.field_device_token,
                     simCardName: item.sim_card_name,
@@ -48,6 +49,7 @@ class AccountAPI {
                 expDate: data.field_expiration_date && data.field_expiration_date[0].value,
                 balance: data.field_balance && utils.stringToNumber(data.field_balance[0].value) || 0,
                 actDate: data.field_activation_date &&  data.field_activation_date[0].value,
+                firstActDate: data.field_first_activation_date && data.field_first_activation_date[0].value,
                 mobile: data.field_mobile && data.field_mobile[0].value,
                 deviceToken: data.field_device_token && data.field_device_token[0].value,
                 simPartnerId: undefined,
@@ -65,6 +67,7 @@ class AccountAPI {
                 expDate: item.attributes.field_expiration_date,
                 balance: utils.stringToNumber(item.attributes.field_balance) || 0,
                 actDate: item.attributes.field_activation_date,
+                firstActDate: item.attributes.field_first_activation_date,
                 mobile: item.attributes.field_mobile,
                 deviceToken: item.attributes.field_device_token,
                 simPartnerId: undefined,
@@ -129,8 +132,6 @@ class AccountAPI {
                 relationships: relation
             }
         }
-        console.log("url999",url)
-        console.log("body999",body)
         return api.callHttp(url, {
             method: 'PATCH',
             headers,
