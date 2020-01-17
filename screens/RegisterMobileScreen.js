@@ -64,7 +64,7 @@ class RegisterMobileScreen extends Component {
         ],
         navi: { 
           route: 'SimpleTextForAuth', 
-          param: { key: 'Contract', title: i18n.t('cfm:contract') } 
+          param: { key: 'TNC', title: i18n.t('cfm:contract') } 
         }
       },
       {
@@ -75,7 +75,7 @@ class RegisterMobileScreen extends Component {
         ],
         navi: { 
           route: 'SimpleTextForAuth', 
-          param: { key: 'Privacy', title: i18n.t('cfm:personalInfo') } 
+          param: { key: 'PrivacyPolicy', title: i18n.t('cfm:personalInfo') } 
         }
       },
       {
@@ -86,7 +86,7 @@ class RegisterMobileScreen extends Component {
         ],
         navi: { 
           route: 'SimpleTextForAuth', 
-          param: { key: 'Privacy', title: i18n.t('cfm:marketing') } 
+          param: { key: 'MarketingAgreement', title: i18n.t('cfm:marketing') } 
         }
       }
     ]
