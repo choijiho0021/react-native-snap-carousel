@@ -136,6 +136,7 @@ class InputPinInTime extends Component {
                         activeOpacity={1}>
                         <TextInput {... this.props}
                             placeholder={i18n.t('mobile:auth')}
+                            placeholderTextColor={colors.greyish}
                             ref={forwardRef}
                             keyboardType="numeric"
                             enablesReturnKeyAutomatically={true}

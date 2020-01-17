@@ -189,6 +189,7 @@ class BoardMsgList extends Component {
 
               <TextInput style={styles.inputMobile} 
                 placeholder={i18n.t('board:noMobile')}
+                placeholderTextColor={colors.greyish}
                 keyboardType='numeric'
                 returnKeyType='done'
                 maxLength={13}

@@ -33,7 +33,8 @@ const styles = StyleSheet.create({
 
 export default class LabelText extends PureComponent {
   render() {
-    const {label, value, deduct, style, format, color, labelStyle, valueStyle} = this.props
+
+    const {label, value = 0, deduct, style, format, color = colors.black, labelStyle, valueStyle} = this.props
     const isDeduct = label == i18n.t('cart:deductBalance') 
 
     return (

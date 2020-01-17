@@ -183,6 +183,7 @@ class RegisterSimScreen extends Component {
                       <TextInput style={styles.input} key={idx+""}
                         ref={this.inputIccid[idx/2]}
                         placeholder={this.defaultIccid}
+                        placeholderTextColor={colors.greyish}
                         onChangeText={this._onChangeText('iccid', idx/2)}
                         keyboardType='numeric'
                         returnKeyType='done'
@@ -211,6 +212,7 @@ class RegisterSimScreen extends Component {
                 keyboardType="numeric"
                 returnKeyType='done'
                 placeholder='1234'
+                placeholderTextColor={colors.greyish}
                 enablesReturnKeyAutomatically={true}
                 maxLength={4}
                 clearTextOnFocus={true}
