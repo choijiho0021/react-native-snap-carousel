@@ -1,6 +1,6 @@
 import React from "react";
 import {connect} from 'react-redux'
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
 import { Badge } from "react-native-elements";
 
 const styles = StyleSheet.create({
@@ -45,20 +45,22 @@ const withBadge = (value, options = {}, stateToProps=() => ({})) => WrappedCompo
       const {hidden = ! badgeValue} = options
 
       return (
-        <View>
-          <WrappedComponent {...this.props} />
-          {!hidden && (
-            <Badge
-              badgeStyle={styles.badge}
-              textStyle={styles.badgeText}
-              value={badgeValue}
-              status="error"
-              onPress={this.props.onPress}
-              containerStyle={[styles.badgeContainer, { top, right, left, bottom }]}
-              {...badgeProps}
-            />
-          )}
-        </View>
+        <TouchableOpacity onPress={this.props.onPress}>
+          <View>
+            <WrappedComponent {...this.props} />
+            {!hidden && (
+              <Badge
+                badgeStyle={styles.badge}
+                textStyle={styles.badgeText}
+                value={badgeValue}
+                status="error"
+                // onPress={this.props.onPress}
+                containerStyle={[styles.badgeContainer, { top, right, left, bottom }]}
+                {...badgeProps}
+              />
+            )}
+          </View>
+        </TouchableOpacity>
       );
     }
   })

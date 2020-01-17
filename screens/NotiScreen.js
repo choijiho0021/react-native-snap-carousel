@@ -32,27 +32,18 @@ class NotiScreen extends Component {
     }
   }
 
-  componentDidMount() {
-    const mode = this.props.navigation.getParam('mode')
-    // navigation param으로 notiList를 받은 경우 처리 - 공지 사항
-    // const list = ( mode == 'info') ? this.props.navigation.getParam('info') : this.props.noti.notiList
-    // if ( list) {
-    //   this.setState({list})
-    // }
-  }
-
   _onPress = (uuid, bodyTitle, body, notiType) => () => {
     if (uuid) {
       this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
 
       switch (notiType) {
-        case 'noti':
-          this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:bodyTitle, text:body})
-          break;
         case 'reply':
           this.props.navigation.navigate('ContactBoard')
           break;
-        default:
+        case 'pym':
+          this.props.navigation.navigate('MyPage')
+          break;
+        default: // notitype = 'noti'인 경우 포함
           this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:bodyTitle, text:body})
       }
     }
@@ -116,8 +107,9 @@ const styles = StyleSheet.create({
   //   })
   // },
   notibox : {
-      height: 98,
-      marginTop:7,
+      height: 126,
+      marginTop:3,
+      paddingTop:14,
       paddingLeft:18,
       paddingRight:20,
       alignItems:'center',
@@ -149,21 +141,22 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start"
   },
   notiText:{
-    height:98,
-    flex:8,
+    width:'90%',
+    height:98
   },
   body: {
     ... appStyles.normal14Text,
     height:48,
+    width:'100%',
     lineHeight: 24,
     letterSpacing: 0.23,
     color: colors.warmGrey
   },
   Icon : {
-    flex:2,
     justifyContent:'center',
     alignItems:'flex-end',
-    height:98
+    height:98,
+    width:10
   },
   emptyPage: {
     marginTop: 60,
