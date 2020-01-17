@@ -72,8 +72,9 @@ class Utils {
             seg.map((v,i,a) => str.substring(v, a[i+1])).filter(n => n.length > 0 ).join(delimiter) : str
     }
 
+    //html5: <br> == <br/>, &lt;br/&gt; == <br/>
     htmlToString = (html) => {
-        return html && html.replace(/<br>/ig, '\n\n').replace(/<\/p>/ig, '\n\n').replace(/<[^>]*>/ig, '').replace(/\&nbsp;/ig, ' ')
+        return html && html.replace(/<br>/ig, '\n\n').replace(/<br\/>/ig, '\n\n').replace(/&lt;br\/&gt;/ig, '\n\n').replace(/<\/p>/ig, '\n\n').replace(/<[^>]*>/ig, '').replace(/\&nbsp;/ig, ' ')
     }
 
     storeData = async (key, value) => {
