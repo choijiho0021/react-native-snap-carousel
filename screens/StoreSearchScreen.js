@@ -92,6 +92,7 @@ class HeaderTitle extends Component {
           <TextInput
             style={styles.searchText}
             placeholder={i18n.t('store:search')}
+            placeholderTextColor={colors.greyish}
             returnKeyType='search'
             enablesReturnKeyAutomatically={true}
             clearButtonMode = 'always'

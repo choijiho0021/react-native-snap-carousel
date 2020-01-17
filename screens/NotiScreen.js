@@ -48,8 +48,12 @@ class NotiScreen extends Component {
       switch (notiType) {
         case 'noti':
           this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:bodyTitle, text:body})
+          break;
         case 'reply':
-          this.props.navigation.navigate('ContactBoard')  
+          this.props.navigation.navigate('ContactBoard')
+          break;
+        default:
+          this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:bodyTitle, text:body})
       }
     }
   }

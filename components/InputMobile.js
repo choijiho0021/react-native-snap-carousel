@@ -110,6 +110,7 @@ class InputMobile extends Component {
           <View style={{flex:1}}>
             <AppTextInput 
               placeholder={i18n.t('mobile:input')}
+              placeholderTextColor={colors.greyish}
               keyboardType="numeric"
               // returnKeyType='done'
               enablesReturnKeyAutomatically={true}

@@ -217,6 +217,7 @@ class BoardMsgAdd extends Component {
         <Text style={appStyles.normal14Text}>{i18n.t('board:pass')}</Text>
         <TextInput style={styles.passwordInput}
           placeholder={i18n.t('board:inputPass')}
+          placeholderTextColor={colors.greyish}
           keyboardType="numeric"
           returnKeyType='done'
           enablesReturnKeyAutomatically={true}
@@ -264,6 +265,7 @@ class BoardMsgAdd extends Component {
         <Text style={styles.label}>{i18n.t('board:contact')}</Text>
         <TextInput style={styles.button}
           placeholder={i18n.t('board:noMobile')}
+          placeholderTextColor={colors.greyish}
           keyboardType='numeric'
           returnKeyType='next'
           enablesReturnKeyAutomatically={true}
@@ -303,6 +305,7 @@ class BoardMsgAdd extends Component {
           <View style={{flex:1}}>
             <TextInput style={[styles.inputBox, title && {borderColor: colors.black}]}
               placeholder={i18n.t('title')}
+              placeholderTextColor={colors.greyish}
               returnKeyType='next'
               enablesReturnKeyAutomatically={true}
               clearTextOnFocus={false}
@@ -317,6 +320,7 @@ class BoardMsgAdd extends Component {
             <TextInput style={[styles.inputBox, {height:208}, msg && {borderColor: colors.black}]}
               ref={this._keybd}
               placeholder={i18n.t('content')}
+              placeholderTextColor={colors.greyish}
               multiline={true}
               numberOfLines={8}
               inputAccessoryViewID={inputAccessoryViewID}

@@ -78,6 +78,7 @@ class InputEmail extends Component {
           activeOpacity={1}>
           <TextInput style={[styles.textInput, email? {} : styles.emptyInput]} 
             placeholder={i18n.t('reg:email')}
+            placeholderTextColor={colors.greyish}
             returnKeyType='next'
             enablesReturnKeyAutomatically={true}
             onChangeText={this._onChangeText('email')}

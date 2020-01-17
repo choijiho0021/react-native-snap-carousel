@@ -252,6 +252,7 @@ _onSubmit() {
                   <TextInput style={[styles.textBox, {borderColor: this._changeBorder('recipient')}]}
                             value={profile.get('recipient')}
                             placeholder={i18n.t('addr:enterWithin50')}
+                            placeholderTextColor={colors.greyish}
                             onFocus={()=>this._onFocusClear('recipient')}
                             onChangeText={this._onChangeProfile('recipient')} />
                 </View>
@@ -289,7 +290,8 @@ _onSubmit() {
                               keyboardType='numeric'
                               value={profile.get('recipientNumber')} 
                               onFocus={()=>this._onFocusClear('recipientNumber')}
-                              placeholder={i18n.t('addr:noHyphen')}/>
+                              placeholder={i18n.t('addr:noHyphen')}
+                              placeholderTextColor={colors.greyish}/>
                   </View>                            
                 </View>
                 { 
@@ -319,7 +321,8 @@ _onSubmit() {
                             value={profile.get('detailAddr')}
                             onFocus={()=>this._onFocusClear('detailAddr')}
                             onChangeText={this._onChangeProfile('detailAddr')} 
-                            placeholder={i18n.t('addr:details')}/>
+                            placeholder={i18n.t('addr:details')}
+                            placeholderTextColor={colors.greyish}/>
                 </View>
                 {
                   !_.isEmpty(profile.get('addressLine1'))  && 
@@ -412,6 +415,7 @@ const styles = StyleSheet.create({
     width: '78%',//isDeviceSize('small') ? '74%':'78%',
     height: 36,
     fontSize: isDeviceSize('small') || isAndroid() ? 12 : 14,
+    color:colors.black,
     borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: "solid",

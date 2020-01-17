@@ -139,17 +139,20 @@ export const registerMobile = (uuid, mobile) => {
         if ( resp.result == 0 && resp.objects.length > 0 ) {
           const accountAttr = {}
           const relation = {}
+          const now = moment()
 
           if ( ! _.isEmpty(mobile) && resp.objects[0].mobile != mobile ) {
             accountAttr.field_mobile = mobile
           }
 
-          if ( _.isEmpty(resp.objects[0].actDate)) {
-            const now = moment()
-            accountAttr.field_activation_date = now.format()
+          if ( _.isEmpty(resp.objects[0].firstActDate)) {
+            accountAttr.field_first_activation_date = now.format()
             accountAttr.field_expiration_date = now.add(1, 'years').format('YYYY-MM-DD')
           }
-          
+
+          //activation code는 카드등록시 항상 update
+          accountAttr.field_activation_date = now.format()
+
           relation.field_ref_user_account = {
             data: {
               type: 'user--user',
@@ -201,13 +204,14 @@ export const auth = (state) => ({
 })
 
 const updateAccountState = (state, payload) => {
-    const {expDate, balance, simPartnerId, actDate, userId, simCardImage, simCardName,
+    const {expDate, balance, simPartnerId, actDate, firstActDate, userId, simCardImage, simCardName,
       iccid, uuid, nid, uid, mobile, pin, email, token, deviceToken} = payload
 
     if ( ! _.isEmpty(expDate)) state = state.set('expDate', expDate)
     if ( _.isNumber(balance)) state = state.set('balance', balance)
     if ( _.isNumber(simPartnerId)) state = state.set('simPartnerId', simPartnerId)
     if ( ! _.isEmpty(actDate)) state = state.set('actDate', actDate)
+    if ( ! _.isEmpty(firstActDate)) state = state.set('firstActDate', firstActDate)
     if ( ! _.isEmpty(userId)) state = state.set('userId', userId)
     if ( ! _.isEmpty(iccid)) state = state.set('iccid', iccid)
     if ( ! _.isEmpty(uuid)) state = state.set('uuid', uuid)
@@ -232,6 +236,7 @@ const initialState = Map({
     token: undefined,
     simPartnerId: undefined,
     actDate: undefined,
+    firstActDate: undefined,
     userId: undefined,
     uid: undefined,
     uuid: undefined,
