@@ -1,10 +1,7 @@
-import {
-    Alert
-} from 'react-native'
-import i18n from '../i18n'
 import _ from 'underscore'
 import api from './api'
 import utils from '../utils'
+import AppAlert from '../../components/AppAlert'
 
 class ProductAPI {
 
@@ -52,7 +49,7 @@ class ProductAPI {
             .then(json => {
                 return this.toProduct(json)
             }).catch(err => {
-                Alert.alert( i18n.t('error'), err, [{ text : 'OK'}])
+                AppAlert.error( err)
             })
     }
 

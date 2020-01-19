@@ -1,9 +1,7 @@
 import i18n from './i18n'
-import { 
-    Alert, 
-} from 'react-native'
 import Constants from 'expo-constants';
 import _ from 'underscore'
+import AppAlert from '../components/AppAlert';
 
 let UniAsyncStorage
 if ( Constants.appOwnership === 'expo') {
@@ -81,8 +79,7 @@ class Utils {
         try {
             await UniAsyncStorage.setItem( key, value)
         } catch (error) {
-            // Error saving data
-            Alert.alert( i18n.t('error'), error, [ {text: 'OK'} ]);
+            AppAlert.error( i18n.t('util:storeDataFailed') + error)
         }
     }
 
@@ -90,8 +87,7 @@ class Utils {
         try {
             return await UniAsyncStorage.getItem(key)
         } catch (error) {
-            // Error retrieving data
-            Alert.alert( i18n.t('error'), error, [ {text: 'OK'} ]);
+            AppAlert.error( i18n.t('util:retrieveDataFailed') + error)
         }
     }
     
@@ -99,8 +95,7 @@ class Utils {
         try {
             return await UniAsyncStorage.removeItem(key)
         } catch (error) {
-            // Error retrieving data
-            Alert.alert( i18n.t('error'), error, [ {text: 'OK'} ]);
+            AppAlert.error( i18n.t('util:removeDataFailed') + error)
         }
     }
 

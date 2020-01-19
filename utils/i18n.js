@@ -317,7 +317,11 @@ const en = {
   "codepush:ignore" : "Update cancelled by user.", 
   "codepush:nextresume" : "Update installed and will be run when the app next resumes.",
   "codepush:error" : "An unknown error occurred.",
-  "codepush:failedToUpdate" : "Failed to update"
+  "codepush:failedToUpdate" : "Failed to update",
+
+  "util:storeDataFailed": "Failed to store data:",
+  "util:retrieveDataFailed": "Failed to retrieve data:",
+  "util:removeDataFailed": "Failed to remove data:",
 };
 
 const ko = {
@@ -643,7 +647,11 @@ const ko = {
   "codepush:ignore" : "업데이트가 취소되었습니다",
   "codepush:nextresume" : "업데이트 완료했습니다. 최신 버전으로 사용하려면 앱을 재기동해주세요.",
   "codepush:error" : "알 수 없는 에러가 발생했습니다",
-  "codepush:failedToUpdate" : "업데이트 과정에 오류가 발생했습니다."
+  "codepush:failedToUpdate" : "업데이트 과정에 오류가 발생했습니다.",
+
+  "util:storeDataFailed": "데이터 저장 실패:",
+  "util:retrieveDataFailed": "데이터 조회 실패:",
+  "util:removeDataFailed": "데이터 삭제 실패:",
 };
 
 i18n.fallbacks = true;

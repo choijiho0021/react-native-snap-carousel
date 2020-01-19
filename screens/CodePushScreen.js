@@ -15,6 +15,7 @@ import codePush from "react-native-code-push";
 import i18n from '../utils/i18n';
 import { appStyles } from '../constants/Styles';
 import { colors } from '../constants/Colors';
+import AppAlert from '../components/AppAlert';
 
 class CodePushScreen extends Component {
     constructor(props) {
@@ -118,7 +119,7 @@ class CodePushScreen extends Component {
                 }
             );
         } catch (error) {
-            Alert.alert(i18n.t('error'), i18n.t('codepush:failedToUpdate'), [ {text: i18n.t('ok'), onPress: () => this.props.action.sync.complete()} ]);
+            AppAlert.error( i18n.t('codepush:failedToUpdate'), () => this.props.action.sync.complete())
             codePush.log(error);
         }
     }

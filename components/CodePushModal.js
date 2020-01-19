@@ -30,9 +30,9 @@ class CodePushModal extends Component {
                 if ( this.props.sync.isSkipped ) return;
                 
                 if (update) {
-                    const { isMendatory } = update
+                    const { isMandatory } = update
 
-                    if ( isMendatory ) {
+                    if ( isMandatory ) {
                         Alert.alert(
                             i18n.t('codepush:title'),
                             i18n.t('codepush:mandatory'),
