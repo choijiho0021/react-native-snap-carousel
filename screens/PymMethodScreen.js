@@ -99,7 +99,7 @@ class PymMethodScreen extends Component {
     const { mobile, email } = this.props.account,
       profileId = this.props.profile.selectedAddr || (this.props.profile.profile.find(item => item.isBasicAddr) || {}).uuid
 
-    if(pymPrice == 0){
+    if (pymPrice == 0) {
       const {impId} = getEnvVars()
       const response = { imp_success: true,
         imp_uid: impId,
@@ -107,10 +107,12 @@ class PymMethodScreen extends Component {
         profile_uuid: profileId,
         deduct_from_balance: deduct
       }
-      await this.props.action.cart.payNorder(response)
+      const pymResult = await this.props.action.cart.payNorder(response)
+      // 최종 결제 처리 과정에서 실패할 수 있다. pymResult.result 값이 0인지 다시 확인한다.
+      response.imp_success = pymResult.result == 0
       this.props.navigation.replace('PaymentResult', {pymResult:response})
 
-    } else{
+    } else {
       const params = {
         pg : selected,
         pay_method: 'card',
@@ -123,7 +125,7 @@ class PymMethodScreen extends Component {
         escrow: false,
         app_scheme: 'esim',
         profile_uuid: profileId,
-        mode: 'test'
+        //mode: 'test'
       };
 
       this.props.navigation.navigate('Payment', {params: params})

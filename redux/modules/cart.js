@@ -83,6 +83,8 @@ export const payNorder = (result) => {
             return dispatch(getAccount(iccid, {token}))
           }
         }
+
+        return resp
       }
     )
   }

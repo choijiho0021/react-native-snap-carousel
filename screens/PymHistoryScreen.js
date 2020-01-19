@@ -69,7 +69,7 @@ class PymHistoryScreen extends Component {
         }
       }
       else {
-        console.log('Failed to get payment hisotyr', resp)
+        console.log('Failed to get payment history', resp)
         throw new Error('Failed to get payment history')
       }
     }).catch(err => {
