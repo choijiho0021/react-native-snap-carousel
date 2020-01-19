@@ -350,7 +350,7 @@ const ko = {
   'qty': '개',
   'sum': '합계',
   'payment': '결제',
-  'appTitle': '로밍 도깨비',
+  'appTitle': '로밍도깨비',
   'ok': '확인',
   'loggingIn': '로그인 시도 중...',
   'cancel': '취소',
@@ -373,7 +373,7 @@ const ko = {
   'now' : '현재',
   'latest' : '최신',
 
-  'home:guide': '로밍 도깨비 사용가이드 !',
+  'home:guide': '로밍도깨비 사용가이드 !',
   'home:checkGuide': '확인하기',
 
   'store:dest': '목적지',

@@ -208,6 +208,7 @@ class CartAPI {
                 details: {
                     merchant_uid: result.merchant_uid,
                 },
+                amount: result.amount,
                 deduct_from_balance: result.deduct_from_balance
             },
         }

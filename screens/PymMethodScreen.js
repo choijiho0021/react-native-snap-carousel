@@ -103,21 +103,21 @@ class PymMethodScreen extends Component {
       const {impId} = getEnvVars()
       const response = { imp_success: true,
         imp_uid: impId,
-        merchant_uid: `mid_${new Date().getTime()}`,
+        merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
         profile_uuid: profileId,
+        amount: 0,
         deduct_from_balance: deduct
       }
-      const pymResult = await this.props.action.cart.payNorder(response)
+      const orderResult = await this.props.action.cart.payNorder(response)
       // 최종 결제 처리 과정에서 실패할 수 있다. pymResult.result 값이 0인지 다시 확인한다.
-      response.imp_success = pymResult.result == 0
-      this.props.navigation.replace('PaymentResult', {pymResult:response})
+      this.props.navigation.replace('PaymentResult', {pymResult:response, orderResult})
 
     } else {
       const params = {
         pg : selected,
         pay_method: 'card',
-        merchant_uid: `mid_${new Date().getTime()}`,
-        name:'esim',
+        merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
+        name: i18n.t('appTitle'),
         amount: pymPrice,                 // 최종 결제 금액 
         deduct_from_balance: deduct,      // balance 차감 금액 
         buyer_tel: mobile,
