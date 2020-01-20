@@ -125,7 +125,7 @@ class PymMethodScreen extends Component {
         escrow: false,
         app_scheme: 'esim',
         profile_uuid: profileId,
-        //mode: 'test'
+        // mode: 'test'
       };
 
       this.props.navigation.navigate('Payment', {params: params})
@@ -376,7 +376,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
-    minHeight: isDeviceSize('small') ? '40%' : '50%',
+    height: 400,
+    minHeight: isDeviceSize('small') ? '30%' : '40%',
   },
   resultText: {
     ... appStyles.normal14Text,
