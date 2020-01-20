@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
 
 export default function AddressCard({label, textStyle, mobileStyle, profile, style, format, color, labelStyle, valueStyle}) {
   const name = _.isEmpty(profile.recipient) ? (profile.familyName + ' ' + profile.givenName):  profile.recipient 
-  console.log('address card recipient', profile.recipient)
+  
   return (
     <View style={[styles.container, style]}>
       <Text style={textStyle}>{name}</Text>

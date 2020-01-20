@@ -33,25 +33,24 @@ const styles = StyleSheet.create({
 
 export default class LabelText extends PureComponent {
   render() {
+
     const {label, value = 0, deduct, style, format, color = colors.black, labelStyle, valueStyle} = this.props
+    const isDeduct = label == i18n.t('cart:deductBalance') 
 
     return (
       <View style={[styles.container, style]} >
         <Text style={labelStyle || styles.label}>{label}</Text>
         {
+          isDeduct &&
+          <Text style={[styles.label, {marginLeft: 18}]}>{`(${i18n.t('cart:currentBalance')}:${utils.numberToCommaString(value) + ' ' + i18n.t('won')}) `}</Text>
+        }
+        {
           ( format == 'price') ?
-            (label == i18n.t('cart:deductBalance')) ? 
-              <View style={styles.value}>
-                <Text style={styles.label}>{`(${i18n.t('cart:currentBalance')}:${utils.numberToCommaString(value) + ' ' + i18n.t('won')}) `}</Text>
-                <Text style={[valueStyle|| appStyles.price, {color}]}>{utils.numberToCommaString(deduct)}</Text>
-                <Text style={appStyles.normal14Text}>{' ' + i18n.t('won')}</Text>
-              </View>
-              :
-              <View style={styles.value}>
-                <Text style={[valueStyle|| appStyles.price, {color}]}>{utils.numberToCommaString(value)}</Text>
-                <Text style={appStyles.normal14Text}>{' ' + i18n.t('won')}</Text>
-              </View>
-          : <Text style={valueStyle || styles.singleValue}>{value}</Text>
+            <View style={styles.value}>
+              <Text style={[valueStyle|| appStyles.price, {color}]}>{utils.numberToCommaString(isDeduct ? deduct : value)}</Text>
+              <Text style={appStyles.normal14Text}>{' ' + i18n.t('won')}</Text>
+            </View>
+            : <Text style={valueStyle || styles.singleValue}>{value}</Text>
         }
       </View>
     )

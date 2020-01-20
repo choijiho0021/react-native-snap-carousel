@@ -90,7 +90,7 @@ class CountryScreen extends Component {
 
   _onPressBtn = (key) => () => {
     const {selected} = this.state
-    const {loggedIn} = this.props.account
+    const {loggedIn, balance} = this.props.account
 
   if(!loggedIn){
       this.props.navigation.navigate('Auth')
@@ -116,7 +116,7 @@ class CountryScreen extends Component {
             break
           case 'purchase':
             // 구매 품목을 갱신한다. 
-            this.props.action.cart.purchase({ purchaseItems: [ addProduct ]})
+            this.props.action.cart.purchase({ purchaseItems: [ addProduct ], balance})
             this.props.navigation.navigate('PymMethod')
             break
           case 'regCard':

@@ -21,6 +21,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import PaymentItemInfo from '../components/PaymentItemInfo';
 import { isAndroid } from '../components/SearchBarAnimation/utils';
 import { isDeviceSize } from '../constants/SliderEntry.style';
+import getEnvVars from '../environment';
 
 class PymMethodScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -32,7 +33,6 @@ class PymMethodScreen extends Component {
 
     this.state = {
       data: undefined,
-      // profile: undefined,
       selected: undefined,
       showModal: false,
       pymPrice: undefined,
@@ -79,7 +79,6 @@ class PymMethodScreen extends Component {
     ]
   }
 
-  //
   componentDidMount() {
     this.props.action.profile.getCustomerProfile(this.props.auth)
     const {pymPrice, deduct} = this.props.cart
@@ -92,36 +91,45 @@ class PymMethodScreen extends Component {
 
   }
 
-  _onSubmit() {
+  async _onSubmit() {
     const { selected, pymPrice, deduct } = this.state
-    // const { selected } = this.state
+    
+    if ( (! selected) && (pymPrice !=0) ) return
 
-    if ( ! selected ) return
-
-    const { mobile, email, balance = 0} = this.props.account,
-    // const { pymReq } = this.props.cart,
-    //   total = pymReq.reduce((sum,cur) => sum + cur.amount, 0),
-    //   [pymPrice, deduct_from_balance] = total > balance ? [total - balance, balance] : [0, total],
-    // const deduct_from_balance = pymPrice > 0 ? balance : totalPrice,
-
+    const { mobile, email } = this.props.account,
       profileId = this.props.profile.selectedAddr || (this.props.profile.profile.find(item => item.isBasicAddr) || {}).uuid
 
-    const params = {
-      pg : selected,
-      pay_method: 'card',
-      merchant_uid: `mid_${new Date().getTime()}`,
-      name:'esim',
-      amount: pymPrice,    // 결제 금액 
-      deduct_from_balance: deduct, // balance 차감 금액 
-      buyer_tel: mobile,
-      buyer_email: email,
-      escrow: false,
-      app_scheme: 'esim',
-      profile_uuid: profileId,
-      // mode: 'test'
-    };
+    if (pymPrice == 0) {
+      const {impId} = getEnvVars()
+      const response = { imp_success: true,
+        imp_uid: impId,
+        merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
+        profile_uuid: profileId,
+        amount: 0,
+        deduct_from_balance: deduct
+      }
+      const orderResult = await this.props.action.cart.payNorder(response)
+      // 최종 결제 처리 과정에서 실패할 수 있다. pymResult.result 값이 0인지 다시 확인한다.
+      this.props.navigation.replace('PaymentResult', {pymResult:response, orderResult})
 
-    this.props.navigation.navigate('Payment', {params: params})
+    } else {
+      const params = {
+        pg : selected,
+        pay_method: 'card',
+        merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
+        name: i18n.t('appTitle'),
+        amount: pymPrice,                 // 최종 결제 금액 
+        deduct_from_balance: deduct,      // balance 차감 금액 
+        buyer_tel: mobile,
+        buyer_email: email,
+        escrow: false,
+        app_scheme: 'esim',
+        profile_uuid: profileId,
+        //mode: 'test'
+      };
+
+      this.props.navigation.navigate('Payment', {params: params})
+    }
   }
 
   _onPress = (key) => () => {
@@ -181,7 +189,7 @@ class PymMethodScreen extends Component {
                 </View>
                 <AddressCard 
                   textStyle={styles.addrCardText}
-                  mobileStyle={[styles.addrCardText, styles.colorWarmGrey]}
+                  mobileStyle={[styles.addrCardText, {color: colors.warmGrey}]}
                   style={styles.addrCard}
                   profile={item}
                   mobile={this.props.account.mobile}/>
@@ -225,17 +233,26 @@ class PymMethodScreen extends Component {
             simIncluded && this._address()
           }
 
-          <Text style={[styles.title, styles.mrgBottom5]}>{i18n.t('pym:method')}</Text>
-          <View style={styles.mrgBottom33}>
-            {
-              this.method.map((v,idx) => this._button(idx+"", v))
-            }
-          </View>
+          {
+            pymPrice !=0 ?
+              <View>
+                <Text style={[styles.title, styles.mrgBottom5]}>{i18n.t('pym:method')}</Text>
+                <View style={styles.mrgBottom33}>
+                  {
+                    this.method.map((v,idx) => this._button(idx+"", v))
+                  }
+                </View>
+              </View>  
+            :
+              <View style={styles.result}>
+                <Text style={styles.resultText}>{i18n.t('pym:buy')}</Text>
+              </View>
+          }
         </ScrollView>
 
         <AppButton title={i18n.t('payment')} 
                       textStyle={appStyles.confirmText}
-                      disabled={_.isEmpty(selected) || (simIncluded && noProfile)}
+                      disabled={ pymPrice !=0 && (_.isEmpty(selected) || (simIncluded && noProfile))}
                       key={i18n.t('payment')}
                       onPress={this._onSubmit}
                       style={appStyles.confirm} />
@@ -266,14 +283,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 0
-  },
-  total: {
-    height: 52,
-    paddingHorizontal: 20,
-    borderTopColor: colors.blackack,
-    borderTopWidth: 1,
-    backgroundColor: colors.whiteTwo,
-    alignItems: 'center'
   },
   divider: {
     marginTop: 30,
@@ -308,52 +317,11 @@ const styles = StyleSheet.create({
     color: colors.black,
     lineHeight: 24
   },
-  mrgBottom0: {
-    marginBottom: 0
-  },
   mrgBottom5: {
     marginBottom: 5
   },
   mrgBottom33: {
     marginBottom: 33
-  },
-  brdrBottom0: {
-    borderBottomWidth: 0
-  },
-  colorWarmGrey: {
-    color: colors.warmGrey
-  },
-  colorClearBlue: {
-    color: colors.clearBlue
-  },
-  fontWeightNormal: {
-    fontWeight: 'normal'
-  },
-  productPriceInfo: {
-    paddingVertical: 11,
-    marginTop: 9,
-    marginHorizontal: 20, 
-    borderBottomColor: colors.lightGrey, 
-    borderBottomWidth: 1
-  },
-  productPriceTitle: {
-    ... appStyles.normal16Text, 
-    lineHeight: 36, 
-    letterSpacing: 0.26,
-    fontWeight: 'normal'
-  },
-  normalText14: {
-    ... appStyles.normal14Text,
-    fontWeight: 'normal'
-  },
-  normalText16: {
-    ... appStyles.normal16Text,
-    fontWeight: 'normal'
-  },
-  PriceInfo: {
-    height:72, 
-    marginVertical: 11, 
-    marginHorizontal: 20
   },
   addrBtn: {
     height: 48, 
@@ -403,6 +371,17 @@ const styles = StyleSheet.create({
     borderColor: colors.clearBlue,
     justifyContent: 'center',
     alignSelf: 'center',
+  },
+  result: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    minHeight: isDeviceSize('small') ? '40%' : '50%',
+  },
+  resultText: {
+    ... appStyles.normal14Text,
+    color: colors.warmGrey,
+    textAlign: 'center', 
   }
 });
 

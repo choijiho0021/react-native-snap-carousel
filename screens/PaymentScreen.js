@@ -29,17 +29,26 @@ class PaymentScreen extends Component{
   constructor(props) {
     super(props)
 
+    this.state = {
+      params: {}
+    }
+
     this._callback = this._callback.bind(this)
   }
 
   componentDidMount() {
     const params = this.props.navigation.getParam('params')
 
-    if (params.mode == 'test' || Constants.appOwnership === 'expo') {
+    this.setState({
+      params
+    })
+
+    if (params.mode == 'test' || Constants.appOwnership === 'expo' || params.amount == 0) {
       const {impId} = getEnvVars()
       const response = { imp_success: true,
         imp_uid: impId,
         merchant_uid: params.merchant_uid,
+        amount: params.amount,
         profile_uuid: params.profile_uuid,
         deduct_from_balance: params.deduct_from_balance
       }
@@ -49,13 +58,19 @@ class PaymentScreen extends Component{
   }
 
   async _callback( response ) {
-    await this.props.action.cart.payNorder(response)
-    this.props.navigation.replace('PaymentResult', {pymResult:response})
+    const {params} = this.state
+    const orderResult = await this.props.action.cart.payNorder({
+      ... response,
+      amount: params.amount,
+      profile_uuid: params.profile_uuid,
+      deduct_from_balance: params.deduct_from_balance
+    })
+    this.props.navigation.replace('PaymentResult', {pymResult:response, orderResult})
   }
 
   render() {
     const {impId} = getEnvVars()
-    const params = this.props.navigation.getParam('params')
+    const {params} = this.state
 
     return (
       <View style={styles.container}>

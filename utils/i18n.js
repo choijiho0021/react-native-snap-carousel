@@ -286,6 +286,7 @@ const en = {
   "pym:syrup": "Syrup",
   "pym:kakao": "Kakao Pay",
   "pym:payco": "Payco",
+  "pym:buy": "Pay with Balance.",
   "pym:success": "결제에 성공하였습니다",
   "pym:fail": "결제에 실패하였습니다",
 
@@ -316,7 +317,11 @@ const en = {
   "codepush:ignore" : "Update cancelled by user.", 
   "codepush:nextresume" : "Update installed and will be run when the app next resumes.",
   "codepush:error" : "An unknown error occurred.",
-  "codepush:failedToUpdate" : "Failed to update"
+  "codepush:failedToUpdate" : "Failed to update",
+
+  "util:storeDataFailed": "Failed to store data:",
+  "util:retrieveDataFailed": "Failed to retrieve data:",
+  "util:removeDataFailed": "Failed to remove data:",
 };
 
 const ko = {
@@ -345,7 +350,7 @@ const ko = {
   'qty': '개',
   'sum': '합계',
   'payment': '결제',
-  'appTitle': '로밍 도깨비',
+  'appTitle': '로밍도깨비',
   'ok': '확인',
   'loggingIn': '로그인 시도 중...',
   'cancel': '취소',
@@ -368,7 +373,7 @@ const ko = {
   'now' : '현재',
   'latest' : '최신',
 
-  'home:guide': '로밍 도깨비 사용가이드 !',
+  'home:guide': '로밍도깨비 사용가이드 !',
   'home:checkGuide': '확인하기',
 
   'store:dest': '목적지',
@@ -611,6 +616,7 @@ const ko = {
   "pym:kakao": "카카오 페이",
   "pym:payco": "페이코",
   "pym:syrup": "시럽",
+  "pym:buy": "잔액에서 결제 됩니다.\n구매 하시겠습니까?",
   "pym:success": "결제에 성공하였습니다",
   "pym:fail": "결제에 실패하였습니다",
 
@@ -641,7 +647,11 @@ const ko = {
   "codepush:ignore" : "업데이트가 취소되었습니다",
   "codepush:nextresume" : "업데이트 완료했습니다. 최신 버전으로 사용하려면 앱을 재기동해주세요.",
   "codepush:error" : "알 수 없는 에러가 발생했습니다",
-  "codepush:failedToUpdate" : "업데이트 과정에 오류가 발생했습니다."
+  "codepush:failedToUpdate" : "업데이트 과정에 오류가 발생했습니다.",
+
+  "util:storeDataFailed": "데이터 저장 실패:",
+  "util:retrieveDataFailed": "데이터 조회 실패:",
+  "util:removeDataFailed": "데이터 삭제 실패:",
 };
 
 i18n.fallbacks = true;

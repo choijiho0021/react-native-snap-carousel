@@ -38,6 +38,7 @@ class PaymentResultScreen extends Component {
 
     this.state = {
       result : {},
+      orderResult : {},
       purchaseItems: [],
       pymReq: [],
       pymPrice: undefined,
@@ -57,6 +58,7 @@ class PaymentResultScreen extends Component {
 
     this.setState({
       result: this.props.navigation.getParam('pymResult'),
+      orderResult: this.props.navigation.getParam('orderResult'),
       purchaseItems,
       pymReq,
       pymPrice,
@@ -74,12 +76,13 @@ class PaymentResultScreen extends Component {
 
   render() {
     const { pymReq, purchaseItems, pymPrice, deduct, isRecharge, screen } = this.state
-    const { imp_success, success} = this.state.result
+      ,{ imp_success } = this.state.result
+      ,{ result } = this.state.orderResult
 
     // [WARNING: 이해를 돕기 위한 것일 뿐, imp_success 또는 success 파라미터로 결제 성공 여부를 장담할 수 없습니다.]
     // 아임포트 서버로 결제내역 조회(GET /payments/${imp_uid})를 통해 그 응답(status)에 따라 결제 성공 여부를 판단하세요.
     
-    const isSuccess = !(imp_success === 'false' || imp_success === false || success === 'false' || success === false);
+    const isSuccess = imp_success && (result == 0)
 
     return (
       <SafeAreaView style={styles.container}>

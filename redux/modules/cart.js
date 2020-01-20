@@ -83,6 +83,8 @@ export const payNorder = (result) => {
             return dispatch(getAccount(iccid, {token}))
           }
         }
+
+        return resp
       }
     )
   }
@@ -166,12 +168,12 @@ export default handleActions({
     }) 
 
     // 배송비 포함 상품 합계
-    const totalPrice = total + dlvCost,
+    const totalPrice = total + (dlvCost && utils.dlvCost(total)),
     // 계산해야하는 총액
     pymPrice = totalPrice > balance ? totalPrice - balance : 0,
     // 잔액 차감
     deduct = (totalPrice > balance) ? balance : totalPrice
-
+    
     // purchaseItems에는 key, qty, price, title 정보 필요
     return state.set('purchaseItems', purchaseItems)
       .set('pymReq', pymReq)
