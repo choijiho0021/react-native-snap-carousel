@@ -40,10 +40,7 @@ class NotiScreen extends Component {
         case 'reply':
           this.props.navigation.navigate('ContactBoard')
           break;
-        case 'pym':
-          this.props.navigation.navigate('MyPage')
-          break;
-        default: // notitype = 'noti'인 경우 포함
+        default: // notitype = 'noti' OR 'pym 인 경우 포함
           this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:bodyTitle, text:body})
       }
     }
