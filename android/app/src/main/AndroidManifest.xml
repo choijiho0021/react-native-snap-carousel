@@ -19,7 +19,8 @@
       android:icon="@mipmap/ic_launcher_app_icon"
       android:roundIcon="@mipmap/ic_launcher_app_icon"
       android:allowBackup="false"
-      android:theme="@style/SplashTheme">
+      android:theme="@style/SplashTheme"
+      android:usesCleartextTraffic="true">
 <!--      android:theme="@style/SplashTheme">-->
 
         <service android:name="io.invertase.firebase.messaging.RNFirebaseMessagingService">
