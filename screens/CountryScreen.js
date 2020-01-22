@@ -74,13 +74,6 @@ class CountryScreen extends Component {
     })
   }
 
-  componentDidUpdate(prevProps) {
-    if(prevProps != this.props) {
-      const {result} = this.props.cart
-      if(result != api.NOT_FOUND &&result < 0)  AppAlert.error( i18n.t('reg:fail'))
-    }
-  }
-
   _onPress = (uuid) => () => {
     const {prodData} = this.state
 
