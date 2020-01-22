@@ -312,7 +312,7 @@ class RegisterMobileScreen extends Component {
     const disableButton = ! authorized || ( newUser && !(confirm.get("0") && confirm.get("1")) )
 
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <Text style={styles.title}>{i18n.t('mobile:title')}</Text>
 
         <InputMobile style={{marginTop:30, paddingHorizontal:20}}

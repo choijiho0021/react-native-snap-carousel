@@ -150,7 +150,7 @@ class CustomerProfileScreen extends Component {
   render() {
  
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <AppActivityIndicator visible={this.props.pending} />
         <FlatList data={this.props.profile.profile} 
                   keyExtractor={item => item.uuid}

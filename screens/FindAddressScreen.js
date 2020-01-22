@@ -114,7 +114,7 @@ class FindAddressScreen extends Component {
     const { addr, data } = this.state
 
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <View style={{flex:1,justifyContent: 'space-between'}}>
           <View style={styles.modal}>
             <View style={styles.textFieldBox}>

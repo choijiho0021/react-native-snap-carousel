@@ -96,7 +96,7 @@ class RechargeScreen extends Component {
     const amount = [[5000, 10000], [15000, 20000], [25000, 30000]]
 
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <ScrollView>
           <Image style={styles.card} source={{uri:api.httpImageUrl(simCardImage)}}
             resizeMode='contain'/> 
