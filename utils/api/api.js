@@ -74,19 +74,19 @@ class Api {
     }
 
     httpUrl = (path, lang = i18n.lang) => {
-        return (lang == '') ? `http://${apiUrl}/${path}` : `http://${apiUrl}/${lang}/${path}` 
+        return (lang == '') ? `https://${apiUrl}/${path}` : `https://${apiUrl}/${lang}/${path}` 
     }
 
     httpImageUrl = (path) => {
-        return `http://${apiUrl}/${path}` 
+        return `https://${apiUrl}/${path}` 
     }
 
     addrApiUrl = () => {
-        return 'http://www.juso.go.kr/addrlink/addrLinkApi.do'
+        return 'https://www.juso.go.kr/addrlink/addrLinkApi.do'
     }
 
     rokHttpUrl = ( path ) => {
-        return `http://${rokApiUrl}/${path}`
+        return `https://${rokApiUrl}/${path}`
     }
 
     queryString(obj) {

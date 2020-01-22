@@ -48,13 +48,13 @@ class PymMethodScreen extends Component {
     this.method = [
       [
         {
-          key: 'naverco',
-          title: i18n.t('pym:naver')
-        },
-        {
           key: 'html5_inicis',
           title: i18n.t('pym:ccard')
         },
+        {
+          key: 'danal',
+          title: i18n.t('pym:mobile')
+        }
       ],
       [
         {
@@ -66,16 +66,16 @@ class PymMethodScreen extends Component {
           title: i18n.t('pym:payco')
         },
       ],
-      [
-        {
-          key: 'danal',
-          title: i18n.t('pym:mobile')
-        },
-        {
-          key: 'syrup',
-          title: i18n.t('pym:syrup')
-        },
-      ],
+      // [
+      //    {
+      //      key: 'naverco',
+      //      title: i18n.t('pym:naver')
+      //    },        
+      //    {
+      //      key: 'syrup',
+      //      title: i18n.t('pym:syrup')
+      //    },
+      // ],
     ]
   }
 

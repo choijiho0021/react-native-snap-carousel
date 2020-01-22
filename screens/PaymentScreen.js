@@ -8,6 +8,9 @@ import Video from 'react-native-video'
 import Constants from 'expo-constants'
 
 import getEnvVars from '../environment'
+import i18n from '../utils/i18n';
+import { SafeAreaView } from 'react-navigation';
+import AppBackButton from '../components/AppBackButton';
 
 let IMP
 if (Constants.appOwnership === 'expo') {
@@ -22,9 +25,10 @@ else {
 }
 
 class PaymentScreen extends Component{
-  static navigationOptions = {
-    header: null,
-  }
+  static navigationOptions = ({navigation}) => ({
+    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('payment')} />
+  })
+
 
   constructor(props) {
     super(props)
@@ -38,10 +42,6 @@ class PaymentScreen extends Component{
 
   componentDidMount() {
     const params = this.props.navigation.getParam('params')
-
-    this.setState({
-      params
-    })
 
     if (params.mode == 'test' || Constants.appOwnership === 'expo' || params.amount == 0) {
       const {impId} = getEnvVars()
@@ -58,22 +58,30 @@ class PaymentScreen extends Component{
   }
 
   async _callback( response ) {
-    const {params} = this.state
-    const orderResult = await this.props.action.cart.payNorder({
-      ... response,
-      amount: params.amount,
-      profile_uuid: params.profile_uuid,
-      deduct_from_balance: params.deduct_from_balance
-    })
-    this.props.navigation.replace('PaymentResult', {pymResult:response, orderResult})
+    
+    if ((response.imp_success == true) || (response.success == true)) {
+      
+      const params = this.props.navigation.getParam('params')
+      const orderResult = await this.props.action.cart.payNorder({
+        ... response,
+        amount: params.amount,
+        profile_uuid: params.profile_uuid,
+        deduct_from_balance: params.deduct_from_balance
+      })
+
+      this.props.navigation.replace('PaymentResult', {pymResult:response, orderResult})
+    
+    }else{
+      this.props.navigation.goBack()
+    }
   }
 
   render() {
     const {impId} = getEnvVars()
-    const {params} = this.state
+    const params = this.props.navigation.getParam('params')
 
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <IMP.Payment
           userCode={impId}
           loading={<Video source={require('../assets/images/loading_1.mp4')} style={styles.backgroundVideo} />} 
@@ -81,7 +89,7 @@ class PaymentScreen extends Component{
           callback={response => this._callback(response)}
           style={styles.webview}
         />
-      </View>
+      </SafeAreaView>
     );
   }
 }
