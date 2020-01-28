@@ -39,7 +39,6 @@ class AddProfileScreen extends Component {
     this.state = {
       update: undefined,
       disabled: true,
-      roadAddr: " ",
       profile: new Map({
         prefix: "010",
         alias: undefined,
@@ -54,6 +53,7 @@ class AddProfileScreen extends Component {
         detailAddr: undefined,
         isBasicAddr: true,
         uuid:undefined,
+        roadAddr:undefined,
       }),
       errors: {}
     }
@@ -115,8 +115,8 @@ class AddProfileScreen extends Component {
             .set('zipCode', addr.zipNo)
             .set('province', findEngAddress.findProvince(provinceNumber))
             .set('city', findEngAddress.findCity(provinceNumber, cityNumber))
-            .set('detailAddr', ''),
-          roadAddr: addr.roadAddr
+            .set('detailAddr', '')
+            .set('roadAddr', addr.roadAddr)
         })
 
       this._validate("addressLine1", addr.roadAddrPart1)  
@@ -333,7 +333,7 @@ _onSubmit() {
                       </View>                       
                         <Text style={styles.addrText}>
                         {!_.isEmpty(profile.get('detailAddr')) ? 
-                        this.state.roadAddr + ' '+ profile.get('detailAddr') : this.state.roadAddr}</Text>
+                        profile.get('roadAddr') + ' '+ profile.get('detailAddr') : profile.get('roadAddr')}</Text>
                     </View> 
                   </View>)
                 }                

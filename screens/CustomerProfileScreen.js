@@ -25,6 +25,29 @@ import { isDeviceSize } from '../constants/SliderEntry.style';
   
 
 class Profile extends PureComponent {
+ 
+  constructor(props) {
+    super(props)
+    this._onChecked = this._onChecked.bind(this)
+    this._deleteProfile = this._deleteProfile.bind(this)    
+  }
+
+  _onChecked(uuid) {
+    this.setState({
+      checked: uuid
+    })
+
+    // profile.updateCustomerProfile(this.state.profile.toJS(), this.props.account)
+    this.props.props.action.profile.selectedAddr(uuid)
+    this.props.props.navigation.goBack()
+  }
+
+  _deleteProfile(uuid) {
+    this.props.props.action.profile.profileDelAndGet(uuid, this.props.props.account)
+
+    //AppAlert.confirm(i18n.t('purchase:delAddr'))
+    //AppAlert.error( i18n.t('purchase:failedToDelete'))
+  }
 
   render() {
     // props profile
@@ -49,7 +72,7 @@ class Profile extends PureComponent {
                   <AppButton title={i18n.t('modify')}
                             style={styles.updateOrDeleteBtn}
                             titleStyle={styles.chgButtonText}
-                            onPress={() => this.props.navigation.navigate('AddProfile', {update:item})}/>
+                            onPress={() => this.props.props.navigation.navigate('AddProfile', {update:item})}/>
                   <View style={styles.buttonBorder}/>                        
                   <AppButton title={i18n.t('delete')} 
                             style={styles.updateOrDeleteBtn}
@@ -88,8 +111,6 @@ class CustomerProfileScreen extends Component {
       profile: undefined,
     }    
 
-    this._onChecked = this._onChecked.bind(this)
-    this._deleteProfile = this._deleteProfile.bind(this)
     this._isEmptyList = this._isEmptyList.bind(this)
 
   }
@@ -117,28 +138,8 @@ class CustomerProfileScreen extends Component {
     
   }
 
-  _onChecked(uuid) {
-
-    this.setState({
-      checked: uuid
-    })
-
-    // profile.updateCustomerProfile(this.state.profile.toJS(), this.props.account)
-    this.props.action.profile.selectedAddr(uuid)
-    this.props.navigation.goBack()
-
-  }
-
-  _deleteProfile(uuid) {
-
-    this.props.action.profile.profileDelAndGet(uuid, this.props.account)
-
-    //AppAlert.confirm(i18n.t('purchase:delAddr'))
-    //AppAlert.error( i18n.t('purchase:failedToDelete'))
-  }
-
   _renderItem = ({item}) => {
-    return <Profile item={item} checked={this.state.checked} />
+    return <Profile item={item} checked={this.state.checked} props={this.props}/>
   }
 
   _isEmptyList(){
