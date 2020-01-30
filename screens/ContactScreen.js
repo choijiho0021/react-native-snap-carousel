@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   StyleSheet,
   View,
@@ -19,6 +19,22 @@ import AppIcon from '../components/AppIcon'
 import * as infoActions from '../redux/modules/info'
 import * as notiActions from '../redux/modules/noti'
 import AppModal from '../components/AppModal';
+
+class ContactListItem extends PureComponent {
+  render() {
+    const {item} = this.props
+    return (
+      <TouchableOpacity onPress={item.onPress}>
+        <View style={styles.row}>
+          <Text style={styles.itemTitle}>{item.value}</Text>
+          {
+            item.onPress && <AppIcon style={{alignSelf:'center'}} name="iconArrowRight"/>
+          }
+        </View>
+      </TouchableOpacity>
+    )
+  }
+}
 
 
 class ContactScreen extends Component {
@@ -70,16 +86,7 @@ class ContactScreen extends Component {
   }
 
   _renderItem = ({item}) => {
-    return (
-      <TouchableOpacity onPress={item.onPress}>
-        <View style={styles.row}>
-          <Text style={styles.itemTitle}>{item.value}</Text>
-          {
-            item.onPress && <AppIcon style={{alignSelf:'center'}} name="iconArrowRight"/>
-          }
-        </View>
-      </TouchableOpacity>
-    )
+    return <ContactListItem item={item} />
   }
 
   _showModal = (value) => {

@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { Component } from 'react';
+import React, { Component, PureComponent } from 'react';
 import { FlatList, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import _ from 'underscore';
@@ -11,6 +11,40 @@ import paymentApi from '../utils/api/paymentApi';
 import i18n from '../utils/i18n';
 import utils from '../utils/utils';
 import { bindActionCreators } from 'redux'
+
+
+class PymHistoryListItem extends PureComponent {
+
+  _toPurchaseCnt( value) {
+    if (_.isArray(value) && value.length > 0) {
+      return value[0].name + ((value.length > 1) ? i18n.t('his:etcCnt').replace('%%', value.length) : '')
+    } 
+    return ''
+  }
+
+  render() {
+    const {item, onPressItem} = this.props
+
+    const dt = moment(item.created).format('YYYY-MM-DD')
+    const amt = `${utils.numberToCommaString(item.amount + item.directPayment)} ${i18n.t('won')}`
+    const prod = item.paymentType == 'R' ? i18n.t('recharge') : this._toPurchaseCnt(item.purchase)
+
+    return (
+      <View style={styles.container} key={item.key}>
+        <TouchableOpacity onPress={onPressItem(item.key)}>
+          <View style={styles.itemRow} key="date">
+            <Text style={styles.date} key="date">{dt}</Text>
+            <Text style={styles.amount} key="detail">{i18n.t('his:detail')}</Text>
+          </View>
+          <View style={styles.itemRow} key="payment">
+            <Text style={styles.date} key="prod">{prod}</Text>
+            <Text style={styles.amount} key="amount">{amt}</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+}
 
 
 class PymHistoryScreen extends Component {
@@ -31,6 +65,7 @@ class PymHistoryScreen extends Component {
 
     this._getHistory = this._getHistory.bind(this)
     this._getNext = this._getNext.bind(this)
+    this._onPressItem = this._onPressItem.bind(this)
   }
 
   componentDidMount() {
@@ -86,13 +121,6 @@ class PymHistoryScreen extends Component {
     if ( next) this._getHistory(next)
   }
 
-  _toPurchaseCnt( value) {
-    if (_.isArray(value) && value.length > 0) {
-      return value[0].name + ((value.length > 1) ? i18n.t('his:etcCnt').replace('%%', value.length) : '')
-    } 
-    return ''
-  }
-
   _onPressItem = (key) => () => {
     const obj = this.state.data.find( item => item.key === key)
     if ( obj) {
@@ -101,25 +129,7 @@ class PymHistoryScreen extends Component {
   }
 
   _renderItem = ({item}) => {
-
-    const dt = moment(item.created).format('YYYY-MM-DD')
-    const amt = `${utils.numberToCommaString(item.amount + item.directPayment)} ${i18n.t('won')}`
-    const prod = item.paymentType == 'R' ? i18n.t('recharge') : this._toPurchaseCnt(item.purchase)
-
-    return (
-      <View style={styles.container} key={item.key}>
-        <TouchableOpacity onPress={this._onPressItem(item.key).bind(this)}>
-          <View style={styles.itemRow} key="date">
-            <Text style={styles.date} key="date">{dt}</Text>
-            <Text style={styles.amount} key="detail">{i18n.t('his:detail')}</Text>
-          </View>
-          <View style={styles.itemRow} key="payment">
-            <Text style={styles.date} key="prod">{prod}</Text>
-            <Text style={styles.amount} key="amount">{amt}</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-    )
+    return <PymHistoryListItem item={item} onPress={this._onPressItem} />
   }
 
   render() {

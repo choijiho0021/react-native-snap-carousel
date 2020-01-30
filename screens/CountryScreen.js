@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   StyleSheet,
   Text,
@@ -29,6 +29,34 @@ import AppPrice from '../components/AppPrice';
 import AppAlert from '../components/AppAlert';
 import AppCartButton from '../components/AppCartButton';
 import { windowWidth, device } from '../constants/SliderEntry.style';
+
+
+class CountryListItem extends PureComponent {
+  render() {
+    const {item, selected, onPress} = this.props
+    let borderColor = {}, color = {}
+
+    if(selected && selected.uuid == item.uuid) {
+      borderColor = {borderColor : colors.clearBlue}
+      color = {color:colors.clearBlue}
+    }
+
+    return (
+      <TouchableOpacity onPress={onPress(item.uuid)}>
+        <View key={"product"} style={[styles.card,borderColor]}>
+          <View key={"text"} style={styles.textView}>
+            <Text key={"name"} style={[windowWidth > device.small.window.width ? appStyles.bold16Text : appStyles.bold14Text,color]}>{item.name}</Text>
+            <Text key={"desc"} style={[{marginTop:5},windowWidth > device.small.window.width ? appStyles.normal14Text : appStyles.normal12Text]}>({item.field_description})</Text>
+          </View>
+          <View key={"priceText"} style={styles.appPrice}>
+            <AppPrice key={"price"} price={item.price} balanceStyle={styles.priceStyle} wonStyle={styles.wonStyle} />
+          </View>
+        </View>
+      </TouchableOpacity>
+    )
+  }
+}
+
 class CountryScreen extends Component {
   static navigationOptions = ({navigation}) => ({
     //todo 해당 국가 이름으로 변경해야함 
@@ -42,14 +70,8 @@ class CountryScreen extends Component {
     super(props)
 
     this.state = {
-      data: [
-        {key: "dest"},
-        {key: "partnerName"},
-        {key: "network"},
-        {key: "apn"},
-        {key: "name"},
-        {key: "startDate"},
-      ]
+      prodData: [],
+      selected: undefined
     }
   }
 
@@ -57,27 +79,24 @@ class CountryScreen extends Component {
     const {idx, prodList} = this.props.product,
       prod = prodList[idx]
 
-      if ( idx >= 0 && idx < prodList.length) {
-        console.log('prod', prodList[idx])
-      }
-    const prodData = prodList.filter(item => prod.categoryId[0] == productApi.category.multi ? 
-        item.uuid == prod.uuid && item.ccode == prod.ccode 
-        : item.categoryId[0] != productApi.category.multi && item.ccode == prod.ccode)
-        .map(item => ({
-      ... item,
-      key: item.uuid
-    }))
+    if ( idx >= 0 && idx < prodList.length) {
+      console.log('prod', prodList[idx])
+    }
+
+    const prodData = prodList.filter( item => 
+      (prod.categoryId[0] == productApi.category.multi) ? (item.uuid == prod.uuid && item.ccode == prod.ccode)
+        : (item.categoryId[0] != productApi.category.multi) && (item.ccode == prod.ccode))
 
     this.setState({
-      prodData: prodData,
-      selected: [prodData[0]]
+      prodData,
+      selected: prodData[0]
     })
   }
 
   _onPress = (uuid) => () => {
     const {prodData} = this.state
+    const selected = prodData.find(elm => elm.uuid == uuid)
 
-    const selected = prodData.filter(elm => elm.uuid == uuid)
     this.setState({selected})
   }
 
@@ -85,13 +104,13 @@ class CountryScreen extends Component {
     const {selected} = this.state
     const {loggedIn, balance} = this.props.account
 
-  if(!loggedIn){
+    if(!loggedIn){
       this.props.navigation.navigate('Auth')
     }
     else {
 
       if(selected){
-        const prod = this.props.product.prodList.find(item => item.uuid == selected[0].uuid),
+        const prod = this.props.product.prodList.find(item => item.uuid == selected.uuid),
           addProduct = prod ? { 
             title: prod.name, 
             variationId: prod.variationId, 
@@ -113,34 +132,14 @@ class CountryScreen extends Component {
             this.props.navigation.navigate('PymMethod')
             break
           case 'regCard':
-          this.props.navigation.navigate('RegisterSim')
+            this.props.navigation.navigate('RegisterSim')
         }
       }
     }
   }
 
   _renderItem = ({item}) => {
-    const {selected} = this.state
-    let borderColor = {}, color = {}
-
-    if(selected && selected[0].uuid == item.uuid) {
-      borderColor = {borderColor : colors.clearBlue}
-      color = {color:colors.clearBlue}
-    }
-
-    return (
-      <TouchableOpacity onPress={this._onPress(item.uuid)}>
-        <View key={"product"} style={[styles.card,borderColor]}>
-          <View key={"text"} style={styles.textView}>
-            <Text key={"name"} style={[windowWidth > device.small.window.width ? appStyles.bold16Text : appStyles.bold14Text,color]}>{item.name}</Text>
-            <Text key={"desc"} style={[{marginTop:5},windowWidth > device.small.window.width ? appStyles.normal14Text : appStyles.normal12Text]}>({item.field_description})</Text>
-          </View>
-          <View key={"priceText"} style={styles.appPrice}>
-            <AppPrice key={"price"} price={item.price} balanceStyle={styles.priceStyle} wonStyle={styles.wonStyle} />
-          </View>
-        </View>
-      </TouchableOpacity>
-    )
+    return <CountryListItem item={item} selected={this.state.selected} onPress={this._onPress}/>
   }
 
   render() {
@@ -153,7 +152,7 @@ class CountryScreen extends Component {
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <Image style={styles.box} source={{uri:api.httpImageUrl(imageUrl)}}/>
 
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {title:this.props.navigation.getParam('title'), text:selected[0].body})}>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {title:this.props.navigation.getParam('title'), text:selected.body})}>
           <View style={styles.detail}>
             <Text style={windowWidth > device.small.window.width ? appStyles.normal14Text : appStyles.normal12Text}>{i18n.t('country:detail')}</Text>
             <AppIcon style={{marginRight:20}} name="iconArrowRight" size={10} />
@@ -166,7 +165,6 @@ class CountryScreen extends Component {
           <FlatList 
             data={prodData} 
             renderItem={this._renderItem}
-            keyExtractor={(item,idx) => idx.toString()}
             extraData={[name, startDate]} />
         </View>
 

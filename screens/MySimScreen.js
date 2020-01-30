@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   StyleSheet,
   FlatList,
@@ -15,6 +15,19 @@ import { colors } from '../constants/Colors';
 import _ from 'underscore'
 import LabelText from '../components/LabelText';
 import AppActivityIndicator from '../components/AppActivityIndicator';
+
+
+class MySimListItem extends PureComponent {
+  render() {
+    const {item, value} = this.props
+    return (
+      <LabelText style={styles.row}
+        label={i18n.t('mysim:' + item.key)} labelStyle={styles.title}
+        value={value} valueStyle={styles.value} />
+    )
+  }
+}
+
 
 class MySimScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -42,12 +55,7 @@ class MySimScreen extends Component {
 
   _renderItem = ({item}) => {
     const { simPartner = {} } = this.props.sim
-    return (
-      <LabelText style={styles.row}
-        label={i18n.t('mysim:' + item.key)} labelStyle={styles.title}
-        value={simPartner[item.key]} valueStyle={styles.value}
-        />
-    )
+    return <MySimListItem item={item} value={simPartner[item.key]} />
   }
 
   render() {

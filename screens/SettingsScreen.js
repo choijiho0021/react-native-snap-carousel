@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   StyleSheet,
   Text,
@@ -19,6 +19,22 @@ import AppIcon from '../components/AppIcon';
 import { colors } from '../constants/Colors';
 import AppModal from '../components/AppModal';
 import VersionCheck from 'react-native-version-check';
+
+class SettingsListItem extends PureComponent {
+  render() {
+    const {item, onPress} = this.props
+    return (
+      <TouchableOpacity onPress={onPress(item.key, item.value, item.route)}>
+        <View style={styles.row}>
+          <Text style={styles.itemTitle}>{item.value}</Text>
+          {item.desc ? <Text style={styles.itemDesc}>{item.desc}</Text> :
+          <AppIcon style={{alignSelf:'center'}} name="iconArrowRight"/> }
+        </View>
+      </TouchableOpacity>
+    )
+  }
+}
+
 
 class SettingsScreen extends Component {
   static navigationOptions = (navigation) => ({
@@ -99,15 +115,7 @@ class SettingsScreen extends Component {
   }
 
   _renderItem = ({item}) => {
-    return (
-      <TouchableOpacity onPress={this._onPress(item.key, item.value, item.route)}>
-        <View style={styles.row}>
-          <Text style={styles.itemTitle}>{item.value}</Text>
-          {item.desc ? <Text style={styles.itemDesc}>{item.desc}</Text> :
-          <AppIcon style={{alignSelf:'center'}} name="iconArrowRight"/> }
-        </View>
-      </TouchableOpacity>
-    )
+    return <SettingsListItem item={item} onPress={this._onPress} />
   }
 
   render() {

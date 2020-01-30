@@ -2,19 +2,14 @@ import React, {Component} from 'react';
 import {
   StyleSheet,
   Text,
-  FlatList,
   View,
-  TouchableOpacity,
   Dimensions,
-  Image,
 } from 'react-native';
 import {connect} from 'react-redux'
 import {appStyles} from "../constants/Styles"
 import productApi from '../utils/api/productApi';
 import i18n from '../utils/i18n';
-import utils from '../utils/utils';
 import * as productActions from '../redux/modules/product'
-import api from '../utils/api/api'
 import country from '../utils/country'
 import _ from 'underscore'
 import { bindActionCreators } from 'redux'
@@ -22,7 +17,6 @@ import { TabView, TabBar } from 'react-native-tab-view';
 import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import StoreList from '../components/StoreList';
-import {withnavigationFocus} from 'react-navigation'
 import moment from 'moment'
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import { isDeviceSize } from '../constants/SliderEntry.style';

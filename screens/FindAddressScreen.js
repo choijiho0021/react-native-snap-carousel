@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   StyleSheet,
   Text,
@@ -23,6 +23,19 @@ import AppBackButton from '../components/AppBackButton';
 import AppIcon from '../components/AppIcon';
 import { SafeAreaView } from 'react-navigation';
 import { isDeviceSize } from '../constants/SliderEntry.style';
+
+
+class FindAddressListItem extends PureComponent {
+  render() {
+    const {item, onPress} = this.props
+    return (
+      <TouchableOpacity style={styles.dataCard} onPress={onPress(item)}>
+        <Address item={item}/>
+      </TouchableOpacity>
+    )
+  }
+}
+
 
 class FindAddressScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -103,11 +116,7 @@ class FindAddressScreen extends Component {
   }
 
   _renderItem({item}) {
-    return (
-      <TouchableOpacity style={styles.dataCard} onPress={this._onPress(item)}>
-        <Address item={item}/>
-      </TouchableOpacity>
-    )
+    return <FindAddressListItem item={item} onPress={this._onPress}/>
   }
 
   render() {
@@ -134,7 +143,7 @@ class FindAddressScreen extends Component {
             </View>
             <View style={styles.divider}/>
             { 
-              (addr&&data) ? 
+              (addr && data) ? 
                 (<FlatList data={data} 
                           renderItem={this._renderItem} 
                           keyExtractor={item => item.bdMgtSn} scroll/> ) :
