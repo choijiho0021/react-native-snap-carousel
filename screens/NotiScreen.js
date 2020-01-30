@@ -19,6 +19,7 @@ import * as accountActions from '../redux/modules/account'
 import AppBackButton from '../components/AppBackButton';
 import moment from 'moment-with-locales-es6'
 
+const MODE_NOTIFICATION = 'info'
 class NotiScreen extends Component {
   static navigationOptions = ({navigation}) => ({
     headerLeft: <AppBackButton navigation={navigation} title={navigation.getParam('title') || i18n.t('set:noti')} />
@@ -32,9 +33,19 @@ class NotiScreen extends Component {
     }
   }
 
+  componentDidMount(){
+    const mode = this.props.navigation.getParam('mode')
+    const info = this.props.navigation.getParam('info')
+
+    this.setState({mode,info})
+  }
+
   _onPress = (uuid, bodyTitle, body, notiType) => () => {
+
+    const {mode} = this.state
+
     if (uuid) {
-      this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
+      mode == MODE_NOTIFICATION ? null : this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
 
       switch (notiType) {
         case 'reply':
@@ -73,11 +84,14 @@ class NotiScreen extends Component {
 
   render() {
     const {notiList} = this.props.noti
+    const {mode,info} = this.state
+
+    const data = mode == MODE_NOTIFICATION ? info : notiList
 
     return (
       <View key={"container"} style={styles.container}>
         <FlatList 
-          data={notiList} 
+          data={data} 
           renderItem={this._renderItem }
           ListEmptyComponent={this.renderEmptyContainer()}
           />
