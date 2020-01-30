@@ -127,15 +127,33 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    defaultConfig {
-			missingDimensionStrategy 'react-native-camera', 'general' 
-        applicationId "com.rokebi"
+    //자동 버전 증가
+    def versionPropsFile = file('version.properties')
+    if (versionPropsFile.canRead()) {
+        def Properties versionProps = new Properties()
+
+        versionProps.load(new FileInputStream((versionPropsFile)))
+
+        def versionMajor = versionProps['VERSION_MAJOR'].toInteger()
+        def versionMinor = versionProps['VERSION_MINOR'].toInteger()
+        def versionBuild = versionProps['VERSION_BUILD'].toInteger() + 1
+
+        // Update the build number in the local file
+        versionProps['VERSION_BUILD'] = versionBuild.toString()
+        versionProps.store(versionPropsFile.newWriter(), null)
+
+
+        defaultConfig {
+            missingDimensionStrategy 'react-native-camera', 'general'
+            applicationId "com.rokebi"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
 				vectorDrawables.useSupportLibrary = true
-        versionCode 1
-        versionName "1.2"
+        versionCode versionBuild
+        versionName "${versionMajor}.${versionMinor}"
+        }
     }
+
     splits {
         abi {
             reset()
