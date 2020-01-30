@@ -1,5 +1,5 @@
 import getEnvVars from '../../environment'
-const { apiUrl, rokApiUrl } = getEnvVars();
+const { apiUrl, rokApiUrl, scheme } = getEnvVars();
 import {Buffer} from 'buffer'
 import _ from 'underscore'
 import i18n from '../i18n'
@@ -74,19 +74,19 @@ class Api {
     }
 
     httpUrl = (path, lang = i18n.lang) => {
-        return (lang == '') ? `https://${apiUrl}/${path}` : `https://${apiUrl}/${lang}/${path}` 
+        return (lang == '') ? `${scheme}://${apiUrl}/${path}` : `${scheme}://${apiUrl}/${lang}/${path}` 
     }
 
     httpImageUrl = (path) => {
-        return `https://${apiUrl}/${path}` 
+        return `${scheme}://${apiUrl}/${path}` 
     }
 
     addrApiUrl = () => {
-        return 'https://www.juso.go.kr/addrlink/addrLinkApi.do'
+        return '${scheme}://www.juso.go.kr/addrlink/addrLinkApi.do'
     }
 
     rokHttpUrl = ( path ) => {
-        return `https://${rokApiUrl}/${path}`
+        return `${scheme}://${rokApiUrl}/${path}`
     }
 
     queryString(obj) {
