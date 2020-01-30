@@ -1,51 +1,27 @@
-import Constants from "expo-constants";
-
-const rokApiHost = "simrm.ap-northeast-2.elasticbeanstalk.com"
-//const rokApiHost = "api.rokebi.com"
-const awsHost = "web.rokebi.com"
-//const awsHost = "esim2-dev.ap-northeast-2.elasticbeanstalk.com"
-//const awsHost = "localhost:8888"
 const impId = "imp53913318"
 
 const ENV = {
   dev: {
-    rokApiUrl: rokApiHost,
-    apiUrl: awsHost,
+    rokApiUrl: "simrm.ap-northeast-2.elasticbeanstalk.com",
+    apiUrl: "esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com",
     impId: impId
   },
   staging: {
-    rokApiUrl: rokApiHost,
-    apiUrl: awsHost,
+    rokApiUrl: "simrm.ap-northeast-2.elasticbeanstalk.com",
+    apiUrl: "esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com",
     impId: impId
   },
   prod: {
-    rokApiUrl: rokApiHost,
-    apiUrl: awsHost,
+    rokApiUrl: "service.rokebi.com",
+    apiUrl: "api.rokebi.com",
     impId: impId
   }
 };
 
-let getEnvVars
-if (Constants.appOwnership === 'expo') {
-  getEnvVars = (env = Constants.manifest.releaseChannel) => {
-  // What is __DEV__ ?
-  // This variable is set to true when react-native is running in Dev mode.
-  // __DEV__ is true when run locally, but false when published.
-    if (__DEV__) {
-      return ENV.dev;
-    } else if (env === 'staging') {
-      return ENV.staging;
-    } else if (env === 'prod') {
-      return ENV.prod;
-    }
-    return ENV.dev;
-  }
-}
-else {
-  getEnvVars = () => {
-    return ENV.dev
-  }
+export default function() {
+  if ( process.env.NODE_ENV == 'production') return ENV.prod
+  if ( process.env.NODE_ENV == 'staging') return ENV.staging
+  return ENV.dev
 }
 
-export default getEnvVars;
 

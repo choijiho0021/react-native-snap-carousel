@@ -22,7 +22,7 @@ import CodePushModal from './components/CodePushModal'
 import codePush from 'react-native-code-push';
 
 const logger = createLogger()
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const composeEnhancers = (process.env.NODE_ENV == 'development' ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ : null) || compose;
 const store = createStore(reducer, composeEnhancers(
   applyMiddleware( logger, ReduxThunk, penderMiddleware())
   //applyMiddleware( ReduxThunk, penderMiddleware())
