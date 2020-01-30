@@ -319,6 +319,10 @@ const en = {
   "codepush:error" : "An unknown error occurred.",
   "codepush:failedToUpdate" : "Failed to update",
 
+  "tutorial:skip" : "skip",
+  "tutorial:next" : "next",
+  "tutorial:close" : "close",
+
   "util:storeDataFailed": "Failed to store data:",
   "util:retrieveDataFailed": "Failed to retrieve data:",
   "util:removeDataFailed": "Failed to remove data:",
@@ -648,6 +652,10 @@ const ko = {
   "codepush:nextresume" : "업데이트 완료했습니다. 최신 버전으로 사용하려면 앱을 재기동해주세요.",
   "codepush:error" : "알 수 없는 에러가 발생했습니다",
   "codepush:failedToUpdate" : "업데이트 과정에 오류가 발생했습니다.",
+
+  "tutorial:skip" : "건너뛰기",
+  "tutorial:next" : "다음",
+  "tutorial:close" : "완료",
 
   "util:storeDataFailed": "데이터 저장 실패:",
   "util:retrieveDataFailed": "데이터 조회 실패:",
