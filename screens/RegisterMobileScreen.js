@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   StyleSheet,
   View,
@@ -27,6 +27,35 @@ import { Map } from 'immutable'
 import validationUtil from '../utils/validationUtil';
 import InputPinInTime from '../components/InputPinInTime';
 import api from '../utils/api/api';
+
+
+class RegisterMobileListItem extends PureComponent {
+  render() {
+    const {item, confirm, onPress, onMove} = this.props,
+      confirmed = confirm.get(item.key),
+      navi = item.navi || {}
+
+    return (
+      <View style={styles.confirmList}>
+        <TouchableOpacity onPress={() => onPress(item.key)} activeOpacity={1} style={{paddingVertical: 13}}>
+          <AppIcon style={{marginRight:10}} name="btnCheck2" checked={confirmed}/>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onMove(item.key, navi.route, navi.param)} activeOpacity={1}
+          style={[styles.rowStyle, {paddingVertical: 13}]}>
+          <View style={styles.rowStyle}>
+            {
+              item.list.map((elm,idx) => (
+                <Text key={idx+""} style={[styles.confirmItem, {color:elm.color}]}>{elm.text}</Text>
+              ))
+            }
+          </View>
+          <AppIcon style={{marginRight:10, marginTop:5}} name="iconArrowRight"/>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+}
+
 
 class RegisterMobileScreen extends Component {
   static navigationOptions = ({navigation, state}) => ({
@@ -98,6 +127,7 @@ class RegisterMobileScreen extends Component {
     this._renderItem = this._renderItem.bind(this)
     this._focusAuthInput = this._focusAuthInput.bind(this)
     this._focusEmailInput = this._focusEmailInput.bind(this)
+    this._onPress = this._onPress.bind(this)
 
     this.authInputRef = React.createRef()
     this._isMounted = false
@@ -216,56 +246,55 @@ class RegisterMobileScreen extends Component {
     this.setState(val)
   }
 
-  _onPress = (key) => (value) => {
-    if ( key == 'pin') {
-      const { mobile, authorized } = this.state,
-        pin = value
-      // PIN이 맞는지 먼저 확인한다. 
+  _onPressPin = (value) => {
+    const { mobile, authorized } = this.state,
+      pin = value
+    // PIN이 맞는지 먼저 확인한다. 
 
-      if ( authorized ) return;
+    if ( authorized ) return;
 
-      return userApi.confirmSmsCode({ user: mobile, pass: pin, abortController: this.controller })
-        .then( resp => {
-          if (resp.result === 0 && this._isMounted) {
-            this.setState({
-              authorized: true,
-              newUser: _.isEmpty(resp.objects),
-              pin
-            })
+    return userApi.confirmSmsCode({ user: mobile, pass: pin, abortController: this.controller })
+      .then( resp => {
+        if (resp.result === 0 && this._isMounted) {
+          this.setState({
+            authorized: true,
+            newUser: _.isEmpty(resp.objects),
+            pin
+          })
 
-            if ( ! _.isEmpty(resp.objects) ) {
-              this._signIn({mobile, pin})
-            }
-            else {
-              this._focusEmailInput()
-            }
+          if ( ! _.isEmpty(resp.objects) ) {
+            this._signIn({mobile, pin})
           }
           else {
-            console.log('sms confirmation failed', resp)
-            throw new Error('failed to send sms')
+            this._focusEmailInput()
           }
+        }
+        else {
+          console.log('sms confirmation failed', resp)
+          throw new Error('failed to send sms')
+        }
+      })
+      .catch(err => {
+        console.log('sms confirmation failed', err)
+
+        if ( ! this._isMounted ) return;
+
+        this.setState({
+          authorized: false
         })
-        .catch(err => {
-          console.log('sms confirmation failed', err)
+      })
+  }
 
-          if ( ! this._isMounted ) return;
-
-          this.setState({
-            authorized: false
-          })
-        })
-    }
-
+  _onPress = (key) => {
     const { confirm } = this.state
 
+    console.log('confirm', key)
     this.setState({
       confirm: confirm.update(key, value => ! value)
     })
   }
 
   _onMove = (key, route, param ) => () => {
-    const { confirm } = this.state
-
     if ( ! _.isEmpty(route) ) {
       this.props.navigation.navigate(route, param)
     }
@@ -283,27 +312,7 @@ class RegisterMobileScreen extends Component {
   }
 
   _renderItem({item}) {
-    const confirmed = this.state.confirm.get(item.key),
-      navi = item.navi || {}
-
-    return (
-      <View style={styles.confirmList}>
-        <TouchableOpacity onPress={this._onPress(item.key)} activeOpacity={1} style={{paddingVertical: 13}}>
-          <AppIcon style={{marginRight:10}} name="btnCheck2" checked={confirmed}/>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={this._onMove(item.key, navi.route, navi.param)} activeOpacity={1}
-          style={[styles.rowStyle, {paddingVertical: 13}]}>
-          <View style={styles.rowStyle}>
-            {
-              item.list.map((elm,idx) => (
-                <Text key={idx+""} style={[styles.confirmItem, {color:elm.color}]}>{elm.text}</Text>
-              ))
-            }
-          </View>
-          <AppIcon style={{marginRight:10, marginTop:5}} name="iconArrowRight"/>
-        </TouchableOpacity>
-      </View>
-    )
+    return <RegisterMobileListItem item={item} confirm={this.state.confirm} onPress={this._onPress} onMove={this._onMove} />
   }
 
   render() {
@@ -328,7 +337,7 @@ class RegisterMobileScreen extends Component {
           authorized={ mobile ? authorized : undefined }
           countdown={ authNoti && ! authorized && ! timeout }
           onTimeout={ this._onTimeout }
-          onPress={this._onPress('pin')}
+          onPress={this._onPressPin}
           duration={180}/>
 
         <View style={{flex:1}}>
