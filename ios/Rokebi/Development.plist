@@ -34,7 +34,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>14</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>CodePushDeploymentKey</key>
 	<string>PNwiGg8_CvNb0C3TjXUR9TyYbS7J98WPvHRDW</string>
 	<key>LSApplicationCategoryType</key>
@@ -86,12 +86,12 @@
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>
-			<key>www.juso.go.kr</key>
+			<key>simrm.ap-northeast-2.elasticbeanstalk.com</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>
-			<key>simrm.ap-northeast-2.elasticbeanstalk.com</key>
+			<key>www.juso.go.kr</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>

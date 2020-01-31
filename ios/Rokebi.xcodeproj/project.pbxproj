@@ -18,6 +18,7 @@
 		194A544668EF491C93036E90 /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2B724F71607F42C9984B056F /* FontAwesome5_Regular.ttf */; };
 		39C76941ABAF4DF292B19EC7 /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AFE9936F560A412CABB40AFE /* AntDesign.ttf */; };
 		3B68A3E48ED042039892C148 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AE9F849D96DE44A5AAF4084C /* Ionicons.ttf */; };
+		40965D2923E3AAEF003E8249 /* Development.plist in Resources */ = {isa = PBXBuildFile; fileRef = 40965D2823E3AAEF003E8249 /* Development.plist */; };
 		46194724760D4369B79788A5 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 21343FD7414C4DF1AC30C20A /* Foundation.ttf */; };
 		5C4D2A6C2E07423DA90E8228 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 387414320DF943A8A94F8F41 /* Octicons.ttf */; };
 		76FCC866C94A468B8A808A8B /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 39EF1D8F28994FC5BAC96019 /* Entypo.ttf */; };
@@ -51,6 +52,7 @@
 		387414320DF943A8A94F8F41 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		39EF1D8F28994FC5BAC96019 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		3EF6740ADCE34419ACC078ED /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
+		40965D2823E3AAEF003E8249 /* Development.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Development.plist; path = Rokebi/Development.plist; sourceTree = "<group>"; };
 		5B47FC0EFC7348AE92F80F75 /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
 		66877FDA2CA449A1949D9700 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
 		8A5627E20C514F48AB67FB9D /* Fontisto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Fontisto.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; };
@@ -83,6 +85,7 @@
 		13B07FAE1A68108700A75B9A /* Rokebi */ = {
 			isa = PBXGroup;
 			children = (
+				40965D2823E3AAEF003E8249 /* Development.plist */,
 				A36D7FD223D575EA00552A3B /* AppCenter-Config.plist */,
 				0D19ADD4239112C900EAEAAB /* Rokebi.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
@@ -184,6 +187,7 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				00F4D3E32282F1A5AB82A635 /* [CP] Copy Pods Resources */,
+				40965D2B23E3B646003E8249 /* Increment Build */,
 			);
 			buildRules = (
 			);
@@ -253,6 +257,7 @@
 				5C4D2A6C2E07423DA90E8228 /* Octicons.ttf in Resources */,
 				FFBC012D75F941389E5666D9 /* SimpleLineIcons.ttf in Resources */,
 				9D96DA7E4C474BD2B332FC90 /* Zocial.ttf in Resources */,
+				40965D2923E3AAEF003E8249 /* Development.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -271,7 +276,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
 		00F4D3E32282F1A5AB82A635 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -324,6 +329,24 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Rokebi/Pods-Rokebi-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		40965D2B23E3B646003E8249 /* Increment Build */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Increment Build";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ $CONFIGURATION == Release ]; then\nbuildNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\")\nbuildNumber=$(($buildNumber + 1))\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\"\nfi\n";
 		};
 		83F353DA531F5D7165EABE4D /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -401,12 +424,12 @@
 				CODE_SIGN_ENTITLEMENTS = Rokebi/Rokebi.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 14;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
-				INFOPLIST_FILE = Rokebi/Info.plist;
+				INFOPLIST_FILE = Rokebi/Development.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.6.5;
+				MARKETING_VERSION = 0.6.6;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -427,11 +450,11 @@
 				CODE_SIGN_ENTITLEMENTS = Rokebi/Rokebi.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				INFOPLIST_FILE = Rokebi/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.6.5;
+				MARKETING_VERSION = 0.6.6;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
