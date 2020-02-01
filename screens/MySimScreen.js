@@ -2,7 +2,7 @@ import React, {Component, PureComponent} from 'react';
 import {
   StyleSheet,
   FlatList,
-  View,
+  Platform
 } from 'react-native';
 import {connect} from 'react-redux'
 
@@ -15,6 +15,8 @@ import { colors } from '../constants/Colors';
 import _ from 'underscore'
 import LabelText from '../components/LabelText';
 import AppActivityIndicator from '../components/AppActivityIndicator';
+import { SafeAreaView } from 'react-navigation';
+import AppButton from '../components/AppButton';
 
 
 class MySimListItem extends PureComponent {
@@ -60,11 +62,15 @@ class MySimScreen extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <AppActivityIndicator visible={this.props.pending} />
         <FlatList style={{marginTop:30}} data={this.state.data} renderItem={this._renderItem}
           extraData={this.props.sim.simPartner} />
-      </View>
+          {
+            Platform.OS === 'ios' ? <AppButton style={styles.button} title={i18n.t('ok')} 
+              onPress={() => this.props.navigation.goBack()}/> : null
+          }
+      </SafeAreaView>
     )
   }
 }
@@ -86,6 +92,13 @@ const styles = StyleSheet.create({
     ... appStyles.normal16Text,
     color: colors.black
   },
+  button: {
+    ... appStyles.normal16Text,
+    height: 52,
+    backgroundColor: colors.clearBlue,
+    textAlign: "center",
+    color: "#ffffff"
+  }
 });
 
 const mapStateToProps = (state) => ({

@@ -128,12 +128,13 @@ const SettingsStack = createStackNavigator(
   config
 );
 
-SettingsStack.navigationOptions = {
+SettingsStack.navigationOptions = ({navigation}) => ({
+  tabBarVisible: navigation.state.index == 0,
   tabBarLabel: i18n.t('setting'),
   tabBarIcon: ({ focused }) => (
     <AppIcon focused={focused} name="btnSetup" style={styles.tabBarIcon}/>
   ),
-};
+})
 
 const MyPageStack = createStackNavigator(
   {
