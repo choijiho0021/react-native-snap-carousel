@@ -82,7 +82,7 @@ class Api {
     }
 
     addrApiUrl = () => {
-        return '${scheme}://www.juso.go.kr/addrlink/addrLinkApi.do'
+        return `${scheme}://www.juso.go.kr/addrlink/addrLinkApi.do`
     }
 
     rokHttpUrl = ( path ) => {

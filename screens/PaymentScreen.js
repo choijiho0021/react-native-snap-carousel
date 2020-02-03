@@ -81,7 +81,7 @@ class PaymentScreen extends Component{
     const params = this.props.navigation.getParam('params')
 
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <IMP.Payment
           userCode={impId}
           loading={<Video source={require('../assets/images/loading_1.mp4')} style={styles.backgroundVideo} />} 

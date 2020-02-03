@@ -221,7 +221,7 @@ _onSubmit() {
     const { profile } = this.state
 
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <KeyboardAwareScrollView
           resetScrollToCoords={{ x: 0, y: 0 }}
           extraScrollHeight={60}
