@@ -18,6 +18,7 @@ import pageApi from '../utils/api/pageApi';
 import AppFlatListItem from '../components/AppFlatListItem';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import { sliderWidth } from '../constants/SliderEntry.style'
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const guideImages = {
   step1: require('../assets/images/guide/step1/img.png'),
@@ -100,9 +101,9 @@ class GuideScreen extends Component {
           inactiveDotScale={1.0}
           containerStyle={styles.pagination}/>
 
-        <View style={styles.faqBox}>
+        <TouchableOpacity style={styles.faqBox} onPress={()=>this.props.navigation.navigate('Faq')}>
           <Text style={styles.faq}>FAQ</Text>
-        </View>
+        </TouchableOpacity>
         <View style={styles.divider}/>
         <View style={styles.tipBox}>
           <Text style={styles.tip}>{i18n.t('guide:tip')}</Text>

@@ -287,3 +287,31 @@ export const appStyles = StyleSheet.create({
         textAlign: 'center'
     }
 })
+
+export const htmlWithCss = (title, body) => {
+    return `
+<html>
+<head>
+<title>${title}</title>
+<style>
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 25px;
+}
+p {
+  font-size: 20px;
+}
+.main-content {
+  padding: 20px;
+}
+</style>
+</head>
+<body>
+<div class="main-content">
+${body}
+</div>
+</body>
+</html>
+`}

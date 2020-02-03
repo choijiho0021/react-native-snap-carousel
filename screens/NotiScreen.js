@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   StyleSheet,
   View,
@@ -20,6 +20,31 @@ import AppBackButton from '../components/AppBackButton';
 import moment from 'moment-with-locales-es6'
 
 const MODE_NOTIFICATION = 'info'
+
+class NotiListItem extends PureComponent {
+  render() {
+    const {item, index, onPress} = this.props
+    return (
+      <TouchableOpacity onPress={() => onPress(item.uuid, item.title, item.body, item.notiType)}>
+        <View key={item.uuid} style={[styles.notibox,{backgroundColor:item.isRead == "F" ? "#f7f8f9" : colors.white}]}>
+          <View key='notitext' style={styles.notiText} >
+            <Text key='created' style={styles.created}>{moment(item.created).format('LLL')}</Text>
+            <View style={styles.title}>
+              {index == 0 ? <Text key='titleHead' style={styles.titleHead}>●</Text> : null }
+              <Text key='titleText' style={styles.titleText}>{item.title}</Text>
+            </View>
+            <Text key='body' style={styles.body} numberOfLines={3} ellipsizeMode={'tail'} >{utils.htmlToString(item.body)}
+            </Text>
+          </View>
+          <View key='iconview' style={styles.Icon}>
+            <AppIcon key='icon' name="iconArrowRight" size={10} />
+          </View>
+        </View>
+      </TouchableOpacity>
+    )
+  }
+}
+
 class NotiScreen extends Component {
   static navigationOptions = ({navigation}) => ({
     headerLeft: <AppBackButton navigation={navigation} title={navigation.getParam('title') || i18n.t('set:noti')} />
@@ -40,46 +65,29 @@ class NotiScreen extends Component {
     this.setState({mode,info})
   }
 
-  _onPress = (uuid, bodyTitle, body, notiType) => () => {
+  _onPress = (uuid, bodyTitle, body, notiType) => {
 
     const {mode} = this.state
 
     if (uuid) {
-      mode == MODE_NOTIFICATION ? null : this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
+      if ( mode != MODE_NOTIFICATION) this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
 
       switch (notiType) {
         case 'reply':
           this.props.navigation.navigate('ContactBoard')
           break;
         default: // notitype = 'noti' OR 'pym 인 경우 포함
-          this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:bodyTitle, text:body})
+          this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:bodyTitle, text:body, mode:'text'})
       }
     }
   }
 
   _renderItem = ({item,index}) => {
-      return (
-        <TouchableOpacity onPress={this._onPress(item.uuid, item.title, item.body, item.notiType)}>
-          <View key={item.uuid} style={[styles.notibox,{backgroundColor:item.isRead == "F" ? "#f7f8f9" : colors.white}]}>
-            <View key='notitext' style={styles.notiText} >
-              <Text key='created' style={styles.created}>{moment(item.created).format('LLL')}</Text>
-              <View style={styles.title}>
-                {index == 0 ? <Text key='titleHead' style={styles.titleHead}>●</Text> : null }
-                <Text key='titleText' style={styles.titleText}>{item.title}</Text>
-              </View>
-              <Text key='body' style={styles.body} numberOfLines={3} ellipsizeMode={'tail'} >{utils.htmlToString(item.body)}
-              </Text>
-            </View>
-            <View key='iconview' style={styles.Icon}>
-              <AppIcon key='icon' name="iconArrowRight" size={10} />
-            </View>
-          </View>
-        </TouchableOpacity>
-      )
+    return <NotiListItem item={item} index={index} onPress={this._onPress}/>
   }
 
   renderEmptyContainer () {
-    return (<Text style={styles.emptyPage}>{i18n.t('noti:empty')}</Text>)
+    return <Text style={styles.emptyPage}>{i18n.t('noti:empty')}</Text>
   }
 
   render() {
