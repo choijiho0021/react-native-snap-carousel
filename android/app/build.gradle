@@ -129,7 +129,7 @@ android {
 
     //자동 버전 증가
     def versionPropsFile = file('version.properties')
-    if (versionPropsFile.canRead()) {
+//    if (versionPropsFile.canRead()) {
         def Properties versionProps = new Properties()
 
         versionProps.load(new FileInputStream((versionPropsFile)))
@@ -152,7 +152,7 @@ android {
         versionCode versionBuild
         versionName "${versionMajor}.${versionMinor}"
         }
-    }
+//    }
 
     splits {
         abi {
