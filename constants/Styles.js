@@ -303,11 +303,14 @@ h3 {
 h4 {
   font-size: 45px;
 }
-p, li {
+p, li, table {
   font-size: 40px;
 }
 .main-content {
   padding: 30px;
+}
+td {
+  padding: 10px 20px;
 }
 </style>
 </head>
