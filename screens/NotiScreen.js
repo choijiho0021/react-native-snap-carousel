@@ -24,7 +24,6 @@ const MODE_NOTIFICATION = 'info'
 class NotiListItem extends PureComponent {
   render() {
     const {item, index, onPress} = this.props
-    console.log('@@@ render noti item')
     return (
       <TouchableOpacity onPress={() => onPress(item.uuid, item.title, item.body, item.notiType)}>
         <View key={item.uuid} style={[styles.notibox,{backgroundColor:item.isRead == "F" ? "#f7f8f9" : colors.white}]}>
