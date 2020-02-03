@@ -3,6 +3,8 @@ import {
   StyleSheet,
   View,
   SafeAreaView,
+  ScrollView,
+  Text,
   Platform
 } from 'react-native';
 
@@ -16,6 +18,7 @@ import { colors } from '../constants/Colors';
 import { appStyles, htmlWithCss } from '../constants/Styles';
 import AppButton from '../components/AppButton';
 import WebView from 'react-native-webview';
+import utils from '../utils/utils';
 
 class SimpleTextScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -29,7 +32,8 @@ class SimpleTextScreen extends Component {
       querying: false,
       body: '',
       markAsRead: false,
-      disable: true
+      disable: true,
+      mode: undefined
     }
 
     this._isMounted = false
@@ -41,12 +45,10 @@ class SimpleTextScreen extends Component {
     const body = this.props.navigation.getParam('text')
     const bodyTitle = this.props.navigation.getParam('bodyTitle')
     const mode = this.props.navigation.getParam('mode')
+    
+    this.setState({mode})
 
     this._isMounted = true
-
-    if (mode) {
-      this.setState({ mode })
-    }
 
     if (body) {
       this.setState({ body, bodyTitle })
@@ -80,52 +82,37 @@ class SimpleTextScreen extends Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    if ( this.props.navigation.state.params != prevProps.navigation.state.params) {
+      const body = this.props.navigation.getParam('text')
+      const bodyTitle = this.props.navigation.getParam('bodyTitle')
+      const mode = this.props.navigation.getParam('mode')
+
+      this.setState({mode, body, bodyTitle})
+    }
+  }
+
   componentWillUnmount() {
     this._isMounted = false
     this.controller.abort()
   }
 
-  _onOk = async () => {
-    const onOk = this.props.navigation.getParam('onOk')
-
-    if ( _.isFunction(onOk) ) {
-      await onOk()
-    }
-    this.props.navigation.goBack()
-  }
-
-  _onClose = async () => {
-    const onClose = this.props.navigation.getParam('onClose')
-
-    if ( _.isFunction(onClose) ) {
-      await onClose()
-    }
-    this.props.navigation.goBack()
-  }
-
   render() {
-    const {querying, body, bodyTitle, mode } = this.state,
-      disable = this.state.disable || ! this.state.markAsRead
+    const {querying, body, bodyTitle, mode = 'html'} = this.state
 
     return (
       <SafeAreaView style={styles.screen}>
         <AppActivityIndicator visible={querying} />
-        <WebView style={styles.container}
-          originWhitelist={['*']}
-          source={{html: htmlWithCss(bodyTitle, body)}} />
-        {
-          mode === 'confirm' &&
-            <View style={styles.buttonContainer}>
-              <AppButton onPress={this._onClose}
-                style={styles.buttonStyle}
-                titleStyle={styles.titleStyle} 
-                title={i18n.t('cancel')}/>
-              <AppButton disabled={disable}
-                onPress={this._onOk}
-                style={styles.buttonStyle}
-                titleStyle={styles.titleStyle} 
-                title={i18n.t('cfm:accept')}/>
-            </View> 
+        { mode == 'text' ?
+          <ScrollView style={styles.scrollContainer}>
+            <View style={styles.container}>
+              { bodyTitle && <Text style={styles.bodyTitle}>{bodyTitle +'\n\n'}</Text> }
+              <Text style={styles.text}>{utils.htmlToString(body) }</Text>
+            </View>
+          </ScrollView> :
+          <WebView style={styles.container}
+            originWhitelist={['*']}
+            source={{html: htmlWithCss(bodyTitle, body)}} />
         }
         {
           Platform.OS === 'ios' && <AppButton style={styles.button} title={i18n.t('ok')} 
