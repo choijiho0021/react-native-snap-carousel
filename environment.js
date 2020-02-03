@@ -5,18 +5,21 @@ const ENV = {
     scheme: 'http',
     rokApiUrl: "simrm.ap-northeast-2.elasticbeanstalk.com",
     apiUrl: "esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com",
+    baseUrl: "http://esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com",
     impId: impId
   },
   staging: {
     scheme: 'https',
     rokApiUrl: "simrm.ap-northeast-2.elasticbeanstalk.com",
     apiUrl: "esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com",
+    baseUrl: "http://esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com",
     impId: impId
   },
   prod: {
     scheme: 'https',
     rokApiUrl: "service.rokebi.com",
     apiUrl: "api.rokebi.com",
+    baseUrl: "https://www.rokebi.com",
     impId: impId
   }
 };
