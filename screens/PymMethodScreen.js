@@ -38,6 +38,7 @@ class PymMethodScreen extends Component {
       pymPrice: undefined,
       deduct: undefined,
       isRecharge: undefined,
+      clickable: true,
     }
 
     this._onSubmit = this._onSubmit.bind(this)
@@ -92,6 +93,13 @@ class PymMethodScreen extends Component {
   }
 
   async _onSubmit() {
+    
+    if (this.state.clickable) {
+      this.setState({
+        clickable: false
+      })
+    }else return
+
     const { selected, pymPrice, deduct } = this.state
     
     if ( (! selected) && (pymPrice !=0) ) return
@@ -128,6 +136,9 @@ class PymMethodScreen extends Component {
         // mode: 'test'
       };
 
+      this.setState({
+        clickable : true
+      })
       this.props.navigation.navigate('Payment', {params: params})
     }
   }
