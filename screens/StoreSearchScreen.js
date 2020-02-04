@@ -21,6 +21,7 @@ import AppButton from '../components/AppButton';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import StoreList from '../components/StoreList';
 import { sliderWidth, windowHeight } from '../constants/SliderEntry.style'
+import Analytics from 'appcenter-analytics'
 
 // windowHeight
 // iphone 6, 7, 8 - 375 x 667 points
@@ -164,6 +165,13 @@ class StoreSearchScreen extends Component {
   
   _search(searchWord, searching = false) {
     this.setState({searchWord : searchWord, searching : searching})
+
+    //어떤 국가를 검색했는지 통계 수집
+    if(searching){
+      properties = {"Search Word" : searchWord}
+
+      Analytics.trackEvent("국가 검색 분석", properties)
+    }
   }
 
   _onPressItem = (key) => {

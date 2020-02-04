@@ -1,10 +1,13 @@
 package com.rokebi;
 
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.microsoft.appcenter.AppCenter;
+import com.microsoft.appcenter.analytics.Analytics;
 import com.rokebi.generated.BasePackageList;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
@@ -95,6 +98,7 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+    AppCenter.start(this,"ff7d5d5a-8b74-4ec2-99be-4dfd81b4b0fd", Analytics.class);
     FirebaseMessaging.getInstance().subscribeToTopic("ALL");
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this); // Remove this line if you don't want Flipper enabled

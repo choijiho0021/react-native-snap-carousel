@@ -29,6 +29,7 @@ import AppPrice from '../components/AppPrice';
 import AppAlert from '../components/AppAlert';
 import AppCartButton from '../components/AppCartButton';
 import { windowWidth, device } from '../constants/SliderEntry.style';
+import Analytics from 'appcenter-analytics'
 
 
 class CountryListItem extends PureComponent {
@@ -103,6 +104,23 @@ class CountryScreen extends Component {
   _onPressBtn = (key) => () => {
     const {selected} = this.state
     const {loggedIn, balance} = this.props.account
+
+    //analytics 기록용
+    let appCenterEvent
+    switch (key) {
+      case 'cart':
+        appCenterEvent = '카트에 담기 클릭'
+        break
+      case 'purchase':
+        appCenterEvent = '바로구매 클릭'
+        break
+      // case 'regCard':
+      //   appCenterEvent = 'Country Screen에서 로그인 버튼 클릭'
+      //   break
+    }
+
+    console.log("key", key, appCenterEvent)
+    Analytics.trackEvent(appCenterEvent)
 
     if(!loggedIn){
       this.props.navigation.navigate('Auth')
