@@ -19,6 +19,8 @@ import { appStyles, htmlWithCss } from '../constants/Styles';
 import AppButton from '../components/AppButton';
 import WebView from 'react-native-webview';
 import utils from '../utils/utils';
+import getEnvVars from '../environment'
+const { baseUrl } = getEnvVars();
 
 class SimpleTextScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -112,7 +114,7 @@ class SimpleTextScreen extends Component {
           </ScrollView> :
           <WebView style={styles.container}
             originWhitelist={['*']}
-            source={{html: htmlWithCss(bodyTitle, body)}} />
+            source={{html: htmlWithCss(bodyTitle, body), baseUrl}} />
         }
         {
           Platform.OS === 'ios' && <AppButton style={styles.button} title={i18n.t('ok')} 

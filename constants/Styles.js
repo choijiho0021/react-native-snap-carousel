@@ -295,16 +295,22 @@ export const htmlWithCss = (title, body) => {
 <title>${title}</title>
 <style>
 h2 {
-  font-size: 30px;
+  font-size: 60px;
 }
 h3 {
-  font-size: 25px;
+  font-size: 55px;
 }
-p {
-  font-size: 20px;
+h4 {
+  font-size: 45px;
+}
+p, li, table {
+  font-size: 40px;
 }
 .main-content {
-  padding: 20px;
+  padding: 30px;
+}
+td {
+  padding: 10px 20px;
 }
 </style>
 </head>
