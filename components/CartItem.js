@@ -23,14 +23,14 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.lightGrey,
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 20
+    marginHorizontal: isDeviceSize('small') ? 15 : 20
   },
   checker: {
-    marginRight: 20
+    marginRight: isDeviceSize('small') ? 15 : 20
   },
   slide: {
-    width: 90,
-    height: 90
+    width: isDeviceSize('small') ? 70 : 90,
+    height: isDeviceSize('small') ? 70 : 90
   },
   desc: {
     marginLeft: 30,
@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
   },
   itemTitle: {
     ... appStyles.bold16Text,
+    fontSize: isDeviceSize('small') ? 15 : 16,
     color: colors.black
   },
   itemPrice: {
@@ -88,7 +89,7 @@ class CartItem extends React.PureComponent {
 
         <View style={styles.desc}>
           <Text style={styles.itemTitle}>{name}</Text>
-          <View style={[styles.input, isDeviceSize('small') && {flexDirection:'column', alignItems:'flex-end'}]}>
+          <View style={styles.input}>
             <Text style={styles.itemPrice}>{utils.price(price)}</Text>
             <InputNumber value={qty} onChange={onChange} />
           </View>

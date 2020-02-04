@@ -8,6 +8,7 @@ import {
 import {appStyles} from '../constants/Styles'
 import { colors } from '../constants/Colors';
 import Icon from 'react-native-vector-icons/AntDesign';
+import { isDeviceSize } from '../constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   container: {
@@ -16,18 +17,19 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     flexDirection: 'row',
     alignItems: 'stretch',
+    justifyContent: 'flex-end'
   },
   box: {
-    width: 32,
-    height: 32,
+    width: isDeviceSize('small') ? 28 : 32,
+    height: isDeviceSize('small') ? 28 : 32,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.lightGrey,
   },
   boxCenter:{
-    width: 32,
-    height: 32,
+    width: isDeviceSize('small') ? 28 : 32,
+    height: isDeviceSize('small') ? 28 : 32,
     justifyContent: 'center',
     alignItems: 'center',
     borderTopWidth: 1,
