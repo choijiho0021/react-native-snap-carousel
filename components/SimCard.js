@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 20,
+    marginHorizontal:  isDeviceSize('small') ? 15 : 20,
     paddingVertical: 20
   },
   divider: {
@@ -29,11 +29,11 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.lightGrey,    
   },  
   checker: {
-    marginRight: 20
+    marginRight: isDeviceSize('small') ? 15 : 20
   },
   slide: {
-    width: 90,
-    height: 90
+    width: isDeviceSize('small') ? 70 : 90,
+    height: isDeviceSize('small') ? 70 : 90
   },
   desc: {
     marginLeft: 30,
@@ -80,7 +80,7 @@ export default class SimCard extends PureComponent {
             <AppIcon name="btnCheck" checked={checked}/>
           </View>
 
-          <Image source={{uri:api.httpImageUrl(imageUrl)}} style={styles.slide}/>
+          <Image source={{uri:api.httpImageUrl(imageUrl)}} style={[styles.slide, {marginRight: 0}]}/>
         </TouchableOpacity>
 
         <View style={styles.desc}>
@@ -89,7 +89,7 @@ export default class SimCard extends PureComponent {
           <View style={styles.input}>
             <InputNumber value={qty} onChange={onChange}/>
           </View>
-          <LabelText style={{... styles.balance, flexDirection: isDeviceSize('small') ? 'column' : 'row'}}
+          <LabelText style={{... styles.balance}}
             label={i18n.t('sim:rechargeAmt')}
             format="price"
             value={balance} />
