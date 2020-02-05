@@ -178,7 +178,8 @@ const styles = StyleSheet.create({
   },
   emptyPage: {
     marginTop: 60,
-    textAlign: 'center'
+    textAlign: 'center',
+    color:colors.black
   },
 });
 
