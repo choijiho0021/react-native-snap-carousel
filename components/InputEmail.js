@@ -48,6 +48,8 @@ class InputEmail extends Component {
   }
 
   _onChangeText = (key) => (value) => {
+    value = _.isEmpty(value) ? '' : value.replace(/\s+/g,'')
+
     this.setState({
       [key]: value
     })
