@@ -49,6 +49,9 @@ const styles = StyleSheet.create({
   disabled: {
     color: colors.lightGrey
   },
+  abled: {
+    color: colors.black
+  }
 });
 
 export default class InputNumber extends PureComponent {
@@ -62,7 +65,7 @@ export default class InputNumber extends PureComponent {
       <View style={styles.container}>
         <TouchableOpacity onPress={() => onChange(value-1)} disabled={min} >
           <View style={styles.box}>
-            <Icon name="minus" style={min && styles.disabled}/>
+            <Icon name="minus" style={min ? styles.disabled : styles.abled}/>
           </View> 
         </TouchableOpacity>
         <View style={styles.boxCenter}>
@@ -70,7 +73,7 @@ export default class InputNumber extends PureComponent {
         </View>
         <TouchableOpacity onPress={() => onChange(value+1)} disabled={max}>
           <View style={styles.box}>
-            <Icon name="plus" style={max && styles.disabled}/>
+            <Icon name="plus" style={max ? styles.disabled : styles.abled}/>
           </View>
         </TouchableOpacity>
       </View>
