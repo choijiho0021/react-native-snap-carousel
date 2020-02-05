@@ -63,7 +63,7 @@ public class MainApplication extends Application implements ReactApplication {
             new AppCenterReactNativeAnalyticsPackage(getApplication(), getResources().getString(R.string.appCenterAnalytics_whenToEnableAnalytics)),
             new AppCenterReactNativePackage(getApplication()),
             new RNVersionCheckPackage(),
-            new CodePush(getResources().getString(R.string.CodePushDeploymentKey), getApplicationContext(), BuildConfig.DEBUG),
+            new CodePush(BuildConfig.CODEPUSH_KEY, getApplicationContext(), BuildConfig.DEBUG),
             new RNCameraPackage(),
             new RNFirebasePackage(),
             new RNFirebaseMessagingPackage(),
