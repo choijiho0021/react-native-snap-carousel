@@ -228,7 +228,9 @@ class CartScreen extends Component {
 
     const { qty, checked, section, total} = this.state,
       dlvCost = this._dlvCost( checked, qty, total, section),
-      balance = this.props.account.balance || 0
+      balance = this.props.account.balance || 0,
+      amount = total.price + dlvCost,
+      pymPrice = amount > balance ? amount - balance : 0      
 
       return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
@@ -246,7 +248,7 @@ class CartScreen extends Component {
         <View style={styles.buttonBox}>
           <View style={styles.sumBox}>
             <Text style={[styles.btnBuyText, {color:colors.black}]}>{i18n.t('sum') + ': '}</Text>
-            <Text style={[styles.btnBuyText, {color:colors.black}]}>{utils.numberToCommaString(total.price)}</Text>
+            <Text style={[styles.btnBuyText, {color:colors.black}]}>{utils.numberToCommaString(pymPrice)}</Text>
             <Text style={[styles.btnBuyText, {color:colors.black}]}>{i18n.t('won')}</Text>
           </View>
           <AppButton style={styles.btnBuy} title={i18n.t('cart:purchase') + `(${total.cnt})`} 
