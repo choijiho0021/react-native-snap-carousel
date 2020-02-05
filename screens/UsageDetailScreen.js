@@ -27,7 +27,7 @@ class UsageDetailScreen extends Component {
   }
 
   render() {
-    const {prodName, activationDate, termDate, expireDate, purchaseDate} = this.state || {}
+    const {prodName, activationDate, endDate, expireDate, purchaseDate} = this.state || {}
 
     return (
       <View style={styles.container}>
@@ -37,9 +37,9 @@ class UsageDetailScreen extends Component {
         <LabelText style={styles.info} 
           label={i18n.t('his:purchaseDate')} value={utils.toDateString(purchaseDate)} />
         <LabelText style={styles.info} 
-          label={i18n.t('his:activationDate')} value={utils.toDateString(activationDate)} />
+          label={i18n.t('his:activationDate')} value={activationDate ? utils.toDateString(activationDate) : i18n.t('his:inactive')} />
         <LabelText style={styles.info} 
-          label={i18n.t('his:termDate')} value={utils.toDateString(termDate)} />
+          label={i18n.t('his:termDate')} value={endDate ? utils.toDateString(endDate) : i18n.t('his:inactive')} />
         <LabelText style={styles.info} 
           label={i18n.t('his:expireDate')} value={utils.toDateString(expireDate, 'LL')} />
       </View>

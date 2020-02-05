@@ -14,7 +14,7 @@ else {
 
 class Utils {
     constructor() {
-        this.timeZoneReg = /(\+|\-)\d{2}:*\d{2}$/
+        this.dateTimeFmt = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})*$/
         moment.locale(i18n.locale)
     }
 
@@ -81,12 +81,15 @@ class Utils {
     }
 
     toDateString = (str, fmt = 'LLL') => {
-        if ( typeof str === 'string' && ! this.timeZoneReg.test(str)) {
-            // timezone 정보가 없는 경우는 UTC timezone flag 'Z'를 추가해서 처리한다.
-            return moment(str + 'Z').format(fmt)
+        if ( typeof str === 'string' ) {
+            // m[1] == undefined 이면 date 정보 (yyyy-mm-dd) 형식이고, 
+            // m[1]이 정의되면, timezone 정보가 없는 경우이므로 UTC timezone flag 'Z'를 추가해서 처리한다.
+            const m = str.match(this.dateTimeFmt)
+            if ( m && m[1]) str = str + 'Z'
+            return moment(str).format(fmt)
         }
 
-        return moment(str).format(fmt)
+        return ''
     }
 
     storeData = async (key, value) => {
