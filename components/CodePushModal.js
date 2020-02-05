@@ -24,6 +24,8 @@ class CodePushModal extends Component {
     }
 
     codePushCheckForUpdate() {
+        if ( process.env.NODE_ENV !== 'production' &&  process.env.NODE_ENV !== 'staging' ) return;
+
         codePush.notifyAppReady()
             .then(_ => codePush.checkForUpdate())
             .then((update) => {

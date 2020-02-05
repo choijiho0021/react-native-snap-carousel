@@ -107,9 +107,19 @@ class MyPageScreen extends Component {
   }
 
   componentDidUpdate(prevProps) {
+    const { mode } = this.state
+
     if ( this.props.uid && this.props.uid != prevProps.uid) {
       // reload order history
       this.props.action.order.getOrders(this.props.auth)
+    }
+
+    if ( mode === 'usage' && this.props.account ) {
+      const { account: {iccid}, auth } = this.props
+
+      if ( iccid && iccid !== (prevProps.account || {}).iccid ) {
+        this.props.action.order.getUsage( iccid, auth)
+      }
     }
   }
 
