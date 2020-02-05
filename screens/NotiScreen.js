@@ -30,7 +30,6 @@ class NotiListItem extends PureComponent {
           <View key='notitext' style={styles.notiText} >
             <Text key='created' style={styles.created}>{moment(item.created).format('LLL')}</Text>
             <View style={styles.title}>
-              {index == 0 ? <Text key='titleHead' style={styles.titleHead}>●</Text> : null }
               <Text key='titleText' style={styles.titleText}>{item.title}</Text>
             </View>
             <Text key='body' style={styles.body} numberOfLines={3} ellipsizeMode={'tail'} >{utils.htmlToString(item.body)}
