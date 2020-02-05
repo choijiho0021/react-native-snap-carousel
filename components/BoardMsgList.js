@@ -14,7 +14,6 @@ import { bindActionCreators } from 'redux'
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import _ from 'underscore'
-import moment from 'moment-with-locales-es6'
 import { colors } from '../constants/Colors';
 import * as boardActions from '../redux/modules/board'
 import * as accountActions from '../redux/modules/account'
@@ -24,7 +23,6 @@ import AppModal from './AppModal';
 import AppButton from './AppButton';
 import AppIcon from './AppIcon';
 
-moment.locale(i18n.locale)
 
 class BoardMsg extends Component {
   constructor(props) {
@@ -37,7 +35,7 @@ class BoardMsg extends Component {
 
   render() {
     const {title, created, status, statusCode, uuid, mobile} = this.props.item,
-      date = moment(created).format('LLL'),
+      date = utils.toDateString(created),
       titleOrMobile = this.props.uid ? title : (mobile.substr(0,3) + "-****-" + mobile.substr(7))
 
     return (

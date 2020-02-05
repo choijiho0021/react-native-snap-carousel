@@ -7,7 +7,6 @@ import {
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import utils from '../utils/utils';
-import moment from 'moment-with-locales-es6'
 import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';
 import LabelText from '../components/LabelText';
@@ -23,8 +22,6 @@ class UsageDetailScreen extends Component {
   }
 
   componentDidMount() {
-    moment.locale(i18n.locale)
-
     const detail = this.props.navigation.getParam('detail')
     this.setState(detail)
   }
@@ -38,13 +35,13 @@ class UsageDetailScreen extends Component {
         <Text style={styles.title}>{prodName}</Text>
         <View style={styles.divider} />
         <LabelText style={styles.info} 
-          label={i18n.t('his:purchaseDate')} value={moment(purchaseDate).format('LLL')} />
+          label={i18n.t('his:purchaseDate')} value={utils.toDateString(purchaseDate)} />
         <LabelText style={styles.info} 
-          label={i18n.t('his:activationDate')} value={moment(activationDate).format('LLL')} />
+          label={i18n.t('his:activationDate')} value={utils.toDateString(activationDate)} />
         <LabelText style={styles.info} 
-          label={i18n.t('his:termDate')} value={moment(termDate).format('LLL')} />
+          label={i18n.t('his:termDate')} value={utils.toDateString(termDate)} />
         <LabelText style={styles.info} 
-          label={i18n.t('his:expireDate')} value={moment(expireDate).format('LL')} />
+          label={i18n.t('his:expireDate')} value={utils.toDateString(expireDate, 'LL')} />
       </View>
     )
   }

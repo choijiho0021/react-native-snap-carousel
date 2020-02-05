@@ -1,4 +1,3 @@
-import moment from 'moment';
 import React, { Component, PureComponent } from 'react';
 import { FlatList, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
@@ -25,7 +24,7 @@ class PymHistoryListItem extends PureComponent {
   render() {
     const {item, onPressItem} = this.props
 
-    const dt = moment(item.created).format('YYYY-MM-DD')
+    const dt = utils.toDateString(item.created, 'YYYY-MM-DD')
     const amt = `${utils.numberToCommaString(item.amount + item.directPayment)} ${i18n.t('won')}`
     const prod = item.paymentType == 'R' ? i18n.t('recharge') : this._toPurchaseCnt(item.purchase)
 
