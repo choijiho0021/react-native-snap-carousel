@@ -1,7 +1,6 @@
 import _ from 'underscore'
 import api from './api'
 import i18n from '../i18n'
-import moment from 'moment'
 
 class SubscriptionAPI {
     PAGE_SIZE = 10

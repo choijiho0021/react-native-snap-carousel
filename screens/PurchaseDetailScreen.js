@@ -7,7 +7,6 @@ import {
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import utils from '../utils/utils';
-import moment from 'moment-with-locales-es6'
 import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';
 import LabelText from '../components/LabelText';
@@ -23,8 +22,6 @@ class PurchaseDetailScreen extends Component {
   }
 
   componentDidMount() {
-    moment.locale(i18n.locale)
-
     const detail = this.props.navigation.getParam('detail')
     this.setState(detail)
   }
@@ -34,7 +31,7 @@ class PurchaseDetailScreen extends Component {
 
     return (
       <View style={styles.container}>
-        <Text style={styles.date}>{moment(orderDate).format('LLL')}</Text>
+        <Text style={styles.date}>{utils.toDateString(orderDate)}</Text>
         <View style={styles.price}>
           <Text style={appStyles.normal14Text}>{i18n.t('total') +' '}</Text>
           <Text style={appStyles.price}>{utils.numberToCommaString(totalPrice)}</Text>

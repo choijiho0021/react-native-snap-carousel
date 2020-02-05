@@ -18,7 +18,6 @@ import { colors } from '../constants/Colors';
 import AppIcon from '../components/AppIcon';
 import * as orderActions from '../redux/modules/order'
 import * as accountActions from '../redux/modules/account'
-import moment from 'moment'
 import AppActivityIndicator from '../components/AppActivityIndicator'
 import Constants from 'expo-constants'
 import AppAlert from '../components/AppAlert';
@@ -51,7 +50,7 @@ class OrderItem extends PureComponent {
     return (
       <TouchableOpacity onPress={onPress}>
         <View key={item.orderId} style={styles.order}>
-          <Text style={appStyles.normal14Text}>{moment(item.orderDate).format('YYYY-MM-DD')}</Text>
+          <Text style={appStyles.normal14Text}>{utils.toDateString(item.orderDate, 'YYYY-MM-DD')}</Text>
           <LabelText style={[styles.orderValue, isDeviceSize('small') && {flexDirection : 'column', alignItems:'space-between'}]}
             label={label} labelStyle={appStyles.normal16Text}
             value={item.totalPrice} format="price" />

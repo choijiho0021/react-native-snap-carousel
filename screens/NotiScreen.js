@@ -17,7 +17,6 @@ import _ from 'underscore'
 import * as notiActions from '../redux/modules/noti'
 import * as accountActions from '../redux/modules/account'
 import AppBackButton from '../components/AppBackButton';
-import moment from 'moment-with-locales-es6'
 
 const MODE_NOTIFICATION = 'info'
 
@@ -28,7 +27,7 @@ class NotiListItem extends PureComponent {
       <TouchableOpacity onPress={() => onPress(item.uuid, item.title, item.body, item.notiType)}>
         <View key={item.uuid} style={[styles.notibox,{backgroundColor:item.isRead == "F" ? "#f7f8f9" : colors.white}]}>
           <View key='notitext' style={styles.notiText} >
-            <Text key='created' style={styles.created}>{moment(item.created).format('LLL')}</Text>
+            <Text key='created' style={styles.created}>{utils.toDateString(item.created)}</Text>
             <View style={styles.title}>
               <Text key='titleText' style={styles.titleText}>{item.title}</Text>
             </View>
