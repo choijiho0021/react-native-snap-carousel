@@ -118,12 +118,12 @@ class NewSimScreen extends Component {
 
     this.setState({
       checked, simQty,
-      total: this._getTotal( checked, this.state.simQty)
+      total: this._getTotal( checked, simQty )
     })
   }
 
   _renderItem = ({item, index}) => {
-    const { simQty} = this.state
+    const { simQty } = this.state
 
     return (
       <SimCard onChange={value => this._onChangeQty(item.key, value)} 
