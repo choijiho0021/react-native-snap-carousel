@@ -22,6 +22,7 @@ import PaymentItemInfo from '../components/PaymentItemInfo';
 import { isAndroid } from '../components/SearchBarAnimation/utils';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import getEnvVars from '../environment';
+import Video from 'react-native-video';
 
 class PymMethodScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -39,6 +40,7 @@ class PymMethodScreen extends Component {
       deduct: undefined,
       isRecharge: undefined,
       clickable: true,
+      loading: undefined,
     }
 
     this._onSubmit = this._onSubmit.bind(this)
@@ -108,6 +110,9 @@ class PymMethodScreen extends Component {
       profileId = this.props.profile.selectedAddr || (this.props.profile.profile.find(item => item.isBasicAddr) || {}).uuid
 
     if (pymPrice == 0) {
+      this.setState({
+        loading: true
+      })
       const {impId} = getEnvVars()
       const response = { imp_success: true,
         imp_uid: impId,
@@ -137,10 +142,13 @@ class PymMethodScreen extends Component {
       };
 
       this.setState({
-        clickable : true
+        clickable: true
       })
       this.props.navigation.navigate('Payment', {params: params})
     }
+    this.setState({
+      loading: false
+    })
   }
 
   _onPress = (key) => () => {
@@ -267,6 +275,9 @@ class PymMethodScreen extends Component {
                       key={i18n.t('payment')}
                       onPress={this._onSubmit}
                       style={appStyles.confirm} />
+        {
+          this.state.loading && <Video source={require('../assets/images/loading_1.mp4')} resizeMode={"stretch"} repeat={true} style={styles.backgroundVideo}/>
+        }      
 
       </SafeAreaView>
             
@@ -394,7 +405,14 @@ const styles = StyleSheet.create({
     ... appStyles.normal14Text,
     color: colors.warmGrey,
     textAlign: 'center', 
-  }
+  },
+  backgroundVideo: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  } 
 });
 
 const mapStateToProps = (state) => ({
