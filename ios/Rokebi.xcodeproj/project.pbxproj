@@ -38,7 +38,7 @@
 		0C3366E7360846E782A22905 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		0D19ADD4239112C900EAEAAB /* Rokebi.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Rokebi.entitlements; path = Rokebi/Rokebi.entitlements; sourceTree = "<group>"; };
 		0D75258D2393BEBB000D9C77 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../assets/fonts; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* Rokebi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rokebi.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* 로깨비.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "로깨비.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Rokebi/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = Rokebi/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -159,7 +159,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* Rokebi.app */,
+				13B07F961A680F5B00A75B9A /* 로깨비.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -195,7 +195,7 @@
 			);
 			name = Rokebi;
 			productName = Rokebi;
-			productReference = 13B07F961A680F5B00A75B9A /* Rokebi.app */;
+			productReference = 13B07F961A680F5B00A75B9A /* 로깨비.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -424,7 +424,7 @@
 				CODE_SIGN_ENTITLEMENTS = Rokebi/Rokebi.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 18;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				INFOPLIST_FILE = Rokebi/Development.plist;
@@ -436,7 +436,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.uangel.esim;
-				PRODUCT_NAME = Rokebi;
+				PRODUCT_NAME = "로깨비";
 				PROVISIONING_PROFILE_SPECIFIER = Esim_profile;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -450,7 +450,7 @@
 				CODE_SIGN_ENTITLEMENTS = Rokebi/Rokebi.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 18;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				INFOPLIST_FILE = Rokebi/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -461,7 +461,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.uangel.esim;
-				PRODUCT_NAME = Rokebi;
+				PRODUCT_NAME = "로깨비";
 				PROVISIONING_PROFILE_SPECIFIER = Esim_distribution_appstore;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
