@@ -57,9 +57,8 @@ const styles = StyleSheet.create({
 export default class InputNumber extends PureComponent {
 
   render() {
-    const { value, onChange, minValue=1, maxValue=9} = this.props,
-      min = value <= minValue, 
-      max = value >= maxValue
+    const { value, onChange, minValue=1} = this.props,
+      min = value <= minValue
 
     return (
       <View style={styles.container}>
@@ -71,9 +70,9 @@ export default class InputNumber extends PureComponent {
         <View style={styles.boxCenter}>
           <Text style={styles.text}>{value}</Text>
         </View>
-        <TouchableOpacity onPress={() => onChange(value+1)} disabled={max}>
+        <TouchableOpacity onPress={() => onChange(value+1)}>
           <View style={styles.box}>
-            <Icon name="plus" style={max ? styles.disabled : styles.abled}/>
+            <Icon name="plus"/>
           </View>
         </TouchableOpacity>
       </View>

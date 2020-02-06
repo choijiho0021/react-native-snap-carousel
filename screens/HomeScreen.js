@@ -321,17 +321,17 @@ class HomeScreen extends Component {
 
   _guide() {
     return (
-      <View style={styles.guide}>
-        <TouchableOpacity styel={{flex:1}} onPress={this._navigate('Guide')}>
+      <TouchableOpacity style={styles.guide} onPress={this._navigate('Guide')}>
+        <View style={{flex:1, justifyContent: 'space-between'}}>
           <Text style={[appStyles.normal16Text, {marginLeft:30}]}>{i18n.t('home:guide')}</Text> 
           <View style={{flexDirection:'row', marginTop:9, marginLeft:30}}>
             <Text style={styles.checkGuide}>{i18n.t('home:checkGuide')}</Text> 
             <AppIcon name="iconArrowRightBlue"/>
           </View>
-        </TouchableOpacity>
+        </View>
         <AppButton iconName="imgDokebi" style={{marginRight:30}} iconStyle={{height:'100%', justifyContent:'flex-end'}}
           onPress={this._navigate('Guide')}/>
-      </View>
+      </TouchableOpacity>
     )
   }
 
@@ -372,7 +372,7 @@ class HomeScreen extends Component {
     return(
       <ScrollView style={styles.container}>
         {
-          this.state.firstLaunch && <TutorialScreen/>
+          // this.state.firstLaunch && <TutorialScreen/>
         }
         <StatusBar barStyle={darkMode ? "dark-content" : 'light-content'} />
         <AppActivityIndicator visible={this.props.loginPending}/>

@@ -2,6 +2,7 @@ import i18n from './i18n'
 import Constants from 'expo-constants';
 import _ from 'underscore'
 import AppAlert from '../components/AppAlert';
+import moment from 'moment-with-locales-es6'
 
 let UniAsyncStorage
 if ( Constants.appOwnership === 'expo') {
@@ -12,6 +13,10 @@ else {
 }
 
 class Utils {
+    constructor() {
+        this.dateTimeFmt = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})*$/
+        moment.locale(i18n.locale)
+    }
 
     numberToCommaString = (number) => {
         if (number && number.toString()) {
@@ -73,6 +78,18 @@ class Utils {
     //html5: <br> == <br/>, &lt;br/&gt; == <br/>
     htmlToString = (html) => {
         return html && html.replace(/<br>/ig, '\n\n').replace(/<br\/>/ig, '\n\n').replace(/&lt;br\/&gt;/ig, '\n\n').replace(/<\/p>/ig, '\n\n').replace(/<[^>]*>/ig, '').replace(/\&nbsp;/ig, ' ')
+    }
+
+    toDateString = (str, fmt = 'LLL') => {
+        if ( typeof str === 'string' ) {
+            // m[1] == undefined 이면 date 정보 (yyyy-mm-dd) 형식이고, 
+            // m[1]이 정의되면, timezone 정보가 없는 경우이므로 UTC timezone flag 'Z'를 추가해서 처리한다.
+            const m = str.match(this.dateTimeFmt)
+            if ( m && m[1]) str = str + 'Z'
+            return moment(str).format(fmt)
+        }
+
+        return ''
     }
 
     storeData = async (key, value) => {

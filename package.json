@@ -9,7 +9,10 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "code_push_release": "sh ./code_push.sh release $1",
+    "code_push_patch": "sh ./code_push.sh patch $1",
+    "code_push_promote": "sh ./code_push.sh promote production"
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.6.3",

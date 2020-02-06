@@ -19,6 +19,8 @@ import AppIcon from '../components/AppIcon';
 import { colors } from '../constants/Colors';
 import AppModal from '../components/AppModal';
 import VersionCheck from 'react-native-version-check';
+import getEnvVars from '../environment'
+const { label } = getEnvVars();
 
 class SettingsListItem extends PureComponent {
   render() {
@@ -52,7 +54,7 @@ class SettingsScreen extends Component {
         { "key": "info", "value": i18n.t('set:info'), route: 'MySim'},
         { "key": "Contract", "value": i18n.t('set:contract'), route: 'SimpleText'},
         { "key": "Privacy", "value": i18n.t('set:privacy'), route: 'SimpleText'},
-        { "key": "version", "value": i18n.t('set:version'), "desc": i18n.t('now') + ' ' + VersionCheck.getCurrentVersion(), route: undefined},
+        { "key": "version", "value": i18n.t('set:version'), "desc": i18n.t('now') + ' ' + VersionCheck.getCurrentVersion() + '/' + label.replace(/v/g, ''), route: undefined},
         { "key": "aboutus", "value": i18n.t('set:aboutus'), route: 'SimpleText'},
         { "key": "logout", "value": i18n.t(props.loggedIn ? 'set:logout' : 'set:login'), route: undefined},
       ],

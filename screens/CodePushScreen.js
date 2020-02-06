@@ -50,6 +50,8 @@ class CodePushScreen extends Component {
     
 
     codePushSync() {
+        if ( process.env.NODE_ENV !== 'production' &&  process.env.NODE_ENV !== 'staging' ) return;
+
         try {
             codePush.sync(
                 {

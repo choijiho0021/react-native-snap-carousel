@@ -34,9 +34,11 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>13</string>
+	<string>18</string>
 	<key>CodePushDeploymentKey</key>
-	<string>PNwiGg8_CvNb0C3TjXUR9TyYbS7J98WPvHRDW</string>
+	<string>$(CODEPUSH_KEY)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
 	<key>LSApplicationQueriesSchemes</key>
