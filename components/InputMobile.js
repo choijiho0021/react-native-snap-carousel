@@ -41,6 +41,8 @@ class InputMobile extends Component {
       [key]: value
     })
 
+    if (key === 'mobile') value = utils.toPhoneNumber(value)
+
     this._validate(key, value)
   }
 
