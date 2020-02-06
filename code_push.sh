@@ -73,6 +73,17 @@ sed -i '' -E 's/\$\(CODEPUSH_KEY\)/'"${CODEPUSH_IOS_KEY}"'/g' $_dir/ios/Rokebi/D
 case $cmd in
 	release) 
 		echo "\033[32m"[Info]"\033[0m" "Release an update to the app deployment ($environment)"
+		
+		nextiOSVersion=`echo $curiOSVersion | awk -F 'v' '{ print "v" $2 + 1 }'`
+		nextAndroidVersion=`echo $curAndroidVersion | awk -F 'v' '{ print "v" $2 + 1 }'`
+
+		if [ "$environment" = "Production" ]; then
+  		sed -i '' -E 's/codePushAndProdLabel ?= ?.+/codePushAndProdLabel = "'"${nextAndroidVersion}"'"/g'  $_dir/environment.js
+  		sed -i '' -E 's/codePushiOSProdLabel ?= ?.+/codePushiOSProdLabel = "'"${nextiOSVersion}"'"/g'  $_dir/environment.js
+		else
+  		sed -i '' -E 's/codePushAndStagLabel ?= ?.+/codePushAndStagLabel = "'"${nextAndroidVersion}"'"/g'  $_dir/environment.js
+ 	 		sed -i '' -E 's/codePushiOSStagLabel ?= ?.+/codePushiOSStagLabel = "'"${nextiOSVersion}"'"/g'  $_dir/environment.js
+		fi
 	
 		appcenter codepush release-react -a admin-uangel.kr/Rokebi-iOS -t $targetiOSBinaryVersion -d $environment
 		appcenter codepush release-react -a admin-uangel.kr/Rokebi-Android -t $targetAndroidBinaryVersion -d $environment

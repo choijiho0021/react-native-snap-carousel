@@ -146,9 +146,6 @@ class PymMethodScreen extends Component {
       })
       this.props.navigation.navigate('Payment', {params: params})
     }
-    this.setState({
-      loading: false
-    })
   }
 
   _onPress = (key) => () => {
@@ -243,7 +240,7 @@ class PymMethodScreen extends Component {
       noProfile = this.props.profile.profile.length == 0
 
     return (
-      <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
+      <SafeAreaView style={styles.container} forceInset={{top: 'never', bottom:"always"}}>
         <ScrollView>
           <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance}
                           pymPrice={pymPrice} deduct={deduct} isRecharge={isRecharge}/>              
@@ -357,6 +354,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   profileTitleText: {
+    color: colors.black,
     alignItems: 'flex-start', 
     marginHorizontal: 20, 
     marginVertical: 10, 

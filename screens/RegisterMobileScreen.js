@@ -66,7 +66,7 @@ class RegisterMobileScreen extends Component {
     super(props)
 
     this.state = {
-      querying: false,
+      loading: false,
       pin: undefined,
       mobile: undefined,
       authorized: undefined,
@@ -141,6 +141,18 @@ class RegisterMobileScreen extends Component {
         this.props.navigation.navigate('Main')
       }
     }
+
+    if ( ! this.props.pending && this.props.pending != prevProps.pending ) {
+      if ( this.props.loginSuccess &&  this.props.account.loggedIn) {
+        if (this._isMounted) {
+          this.setState({ authorized: true })
+        }
+        this.props.navigation.navigate('Main')
+      }
+      else {
+        AppAlert.error(i18n.t('reg:failedToLogIn'))
+      }
+    }
   }
 
   componentDidMount() {
@@ -155,10 +167,14 @@ class RegisterMobileScreen extends Component {
   _onSubmit = async () => {
 
     const {email, domain} = this.email.current.state,
-      { pin, mobile, confirm } = this.state
+      { pin, mobile, confirm, loading } = this.state
 
     let error = validationUtil.validate('email', `${email}@${domain}`),
       isValid = true
+
+    if (loading || this.props.pending ) return;
+
+    this.setState({ loading: true })
 
     try {
       if ( ! _.isEmpty(error) ) {
@@ -167,6 +183,9 @@ class RegisterMobileScreen extends Component {
       }
       else {
         let resp = await userApi.confirmEmail({ email: `${email}@${domain}` })
+
+        if (! this._isMounted) return;
+
         if ( resp.result !== 0 && resp.result !== api.INVALID_ARGUMENT ) {
           console.log('confirm email failed', resp)
           throw new Error('failed to confirm email')
@@ -191,6 +210,10 @@ class RegisterMobileScreen extends Component {
     } catch(err) {
       console.log('sign up failed', err)
       AppAlert.error(i18n.t('reg:fail'))
+    }
+
+    if (this._isMounted) {
+      this.setState({ loading: false })
     }
   }
 
@@ -253,11 +276,17 @@ class RegisterMobileScreen extends Component {
 
     if ( authorized ) return;
 
+    this.setState({ loading: true })
+
     return userApi.confirmSmsCode({ user: mobile, pass: pin, abortController: this.controller })
       .then( resp => {
+        if (this._isMounted) {
+          this.setState({ loading: false })
+        }
+
         if (resp.result === 0 && this._isMounted) {
           this.setState({
-            authorized: true,
+            authorized: _.isEmpty(resp.objects) ? true : undefined,
             newUser: _.isEmpty(resp.objects),
             pin
           })
@@ -302,7 +331,6 @@ class RegisterMobileScreen extends Component {
 
   _signIn = ({ mobile, pin }) => {
     this.props.action.account.logInAndGetAccount( mobile, pin)
-    this.props.navigation.navigate('Main')
   }
 
   _onTimeout = () => {
@@ -316,9 +344,10 @@ class RegisterMobileScreen extends Component {
   }
 
   render() {
-    const { mobile, authorized, confirm, authNoti, newUser, timeout, emailValidation } = this.state,
+    const { mobile, authorized, confirm, authNoti, newUser, timeout, emailValidation, loading } = this.state,
       { isValid, error } = emailValidation || {}
-    const disableButton = ! authorized || ( newUser && !(confirm.get("0") && confirm.get("1")) )
+    const disableButton = ! authorized || ( newUser && !(confirm.get("0") && confirm.get("1")) ),
+      disablePin = mobile && authNoti && ! authorized && ! loading
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
@@ -332,8 +361,8 @@ class RegisterMobileScreen extends Component {
 
         <InputPinInTime style={{marginTop:26, paddingHorizontal:20}}
           forwardRef={this.authInputRef}
-          editable={ mobile && authNoti && ! authorized }
-          clickable={ mobile && authNoti && ! timeout && ! authorized }
+          editable={ disablePin }
+          clickable={ disablePin && ! timeout }
           authorized={ mobile ? authorized : undefined }
           countdown={ authNoti && ! authorized && ! timeout }
           onTimeout={ this._onTimeout }
@@ -349,9 +378,8 @@ class RegisterMobileScreen extends Component {
               <InputEmail style={{marginTop:38, paddingHorizontal:20}} ref={this.email}/>
 
               {
-                  isValid ? null :
                   <Text style={[styles.helpText, {color: colors.errorBackground}]}>
-                      {error}
+                      {isValid ? null : error}
                   </Text>
               }
               
@@ -377,7 +405,7 @@ class RegisterMobileScreen extends Component {
           
         </View>
 
-        <AppActivityIndicator visible={this.props.pending} />
+        <AppActivityIndicator visible={this.props.pending || loading} />
       </SafeAreaView>
     )
   }
