@@ -4,9 +4,7 @@ import {
   Text,
   View,
   Image,
-  Linking,
 } from 'react-native';
-import * as Permissions from 'expo-permissions';
 import { RNCamera } from 'react-native-camera';
 import BarcodeMask from 'react-native-barcode-mask';
 import i18n from '../utils/i18n';
@@ -14,7 +12,7 @@ import { appStyles } from '../constants/Styles';
 import { colors } from '../constants/Colors';
 import AppAlert from './AppAlert';
 import { isDeviceSize, windowWidth } from '../constants/SliderEntry.style';
-
+import { openSettings, check, PERMISSIONS, RESULTS } from 'react-native-permissions';
 class ScanSim extends PureComponent {
   constructor(props) {
     super(props)
@@ -37,9 +35,10 @@ class ScanSim extends PureComponent {
   }
 
   async componentDidMount() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    const permission = Platform.OS == 'ios' ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA
+    const result = await check(permission)
 
-    this.setState({ hasCameraPermission: status === 'granted' });
+    this.setState({ hasCameraPermission: result === 'granted' });
   }
 
   _onPress() {
@@ -62,9 +61,9 @@ class ScanSim extends PureComponent {
     } 
     
     if (hasCameraPermission === false) {
-      // 사진 앨범 조회 권한을 요청한다.
+      // 카메라 권한을 요청한다.
       AppAlert.confirm( i18n.t('settings'), i18n.t('acc:permCamera'), {
-        ok: () => Linking.openURL('app-settings:')
+        ok: () => openSettings()
       })
 
       return (
