@@ -97,6 +97,7 @@ const en = {
   'reg:scanOff': 'Scan off',
   'reg:confirm': 'Confirm',
   'reg:failedToSendSms': 'Failed to send sms',
+  'reg:failedToLogIn': 'Failed to sign in. Please try again.',
 
   'menu:purchase' : 'Purchase',
   'menu:card' : 'Register',
@@ -424,6 +425,7 @@ const ko = {
   'reg:scanOff': '스캔 중단',
   'reg:confirm': '등록',
   'reg:failedToSendSms': 'SMS 인증번호 발송 실패',
+  'reg:failedToLogIn': '로깨비 로그인이 실패하였습니다. 다시 시도해주시기 바랍니다.',
 
   'menu:purchase' : '유심 구매',
   'menu:card' : '유심 등록',
