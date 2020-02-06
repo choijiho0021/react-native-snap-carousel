@@ -72,7 +72,7 @@ export default class InputNumber extends PureComponent {
         </View>
         <TouchableOpacity onPress={() => onChange(value+1)}>
           <View style={styles.box}>
-            <Icon name="plus"/>
+            <Icon name="plus" style={styles.abled}/>
           </View>
         </TouchableOpacity>
       </View>
