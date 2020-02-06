@@ -127,7 +127,7 @@ class StoreSearchScreen extends Component {
       searching : false,
       searchWord : '',
       searchList : [],
-      recommendCountry : ["인도네시아","스페인","아일랜드","네덜란다"]
+      recommendCountry : ["인도네시아","스페인","아일랜드","네덜란드"]
     }
     this._search = this._search.bind(this)
   }
