@@ -363,6 +363,7 @@ _onSubmit() {
 }
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
+    color: colors.black,
     fontSize: isDeviceSize('small') ? 12 : 14,
     paddingVertical: 8
   },
@@ -370,7 +371,8 @@ const pickerSelectStyles = StyleSheet.create({
     height: 37,
     fontSize: 12,
     lineHeight: 20, 
-    color: colors.black
+    color: colors.black,
+    // backgroundColor: colors.white
   },
   iconContainer: {
     top: 4,

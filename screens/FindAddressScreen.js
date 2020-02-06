@@ -236,6 +236,7 @@ const styles = StyleSheet.create({
     flexDirection:'row'
   },
   paginationText: {
+    color: colors.black,
     height:19, 
     fontSize:14, 
     fontWeight: 'bold', 

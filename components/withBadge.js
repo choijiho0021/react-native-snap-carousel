@@ -45,7 +45,7 @@ const withBadge = (value, options = {}, stateToProps=() => ({})) => WrappedCompo
       const {hidden = ! badgeValue} = options
 
       return (
-        <TouchableOpacity onPress={this.props.onPress}>
+        // <TouchableOpacity onPress={this.props.onPress}>
           <View>
             <WrappedComponent {...this.props} />
             {!hidden && (
@@ -54,13 +54,13 @@ const withBadge = (value, options = {}, stateToProps=() => ({})) => WrappedCompo
                 textStyle={styles.badgeText}
                 value={badgeValue}
                 status="error"
-                // onPress={this.props.onPress}
+                onPress={this.props.onPress}
                 containerStyle={[styles.badgeContainer, { top, right, left, bottom }]}
                 {...badgeProps}
               />
             )}
           </View>
-        </TouchableOpacity>
+        // </TouchableOpacity>
       );
     }
   })

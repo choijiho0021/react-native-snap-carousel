@@ -150,6 +150,8 @@ class CustomerProfileScreen extends Component {
 
   render() {
  
+    console.log('pending@@', this.props.pending)
+    console.log('pending@@', this.props)
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <AppActivityIndicator visible={this.props.pending} />
@@ -158,6 +160,9 @@ class CustomerProfileScreen extends Component {
                   renderItem={this._renderItem} 
                   ListEmptyComponent={this._isEmptyList}
                   extraData={this.state.checked}/>
+
+        {/* <AppActivityIndicator visible={true}/> */}
+
         <AppButton title={i18n.t('add')} 
                   textStyle={appStyles.confirmText}
                   onPress={()=>this.props.navigation.navigate('AddProfile')}
@@ -198,6 +203,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   profileTitleText: {
+    color: colors.black,
     height: 19, 
     marginHorizontal: 20, 
     fontSize: 16, 
@@ -270,10 +276,11 @@ const mapStateToProps = (state) => ({
   account: state.account.toJS(),
   auth: accountActions.auth(state.account),
   profile: state.profile.toJS(),
+  // pending: state.pender.pending[profileActions.GET_CUSTOMER_PROFILE] || false
   pending: state.pender.pending[profileActions.ADD_CUSTOMER_PROFILE] || 
-  state.pender.pending[profileActions.UPDATE_CUSTOMER_PROFILE] ||   
-  state.pender.pending[profileActions.GET_CUSTOMER_PROFILE] || 
-    state.pender.pending[profileActions.DELETE_CUSTOMER_PROFILE] ||false
+          state.pender.pending[profileActions.UPDATE_CUSTOMER_PROFILE] ||   
+          state.pender.pending[profileActions.GET_CUSTOMER_PROFILE] || 
+          state.pender.pending[profileActions.DELETE_CUSTOMER_PROFILE] || false
 })
 
 // export default CustomerProfileScreen
@@ -281,7 +288,7 @@ export default connect(mapStateToProps,
   (dispatch) => ({
     action: {
       account : bindActionCreators(accountActions, dispatch),
-      profile : bindActionCreators(profileActions, dispatch),  
+      profile : bindActionCreators(profileActions, dispatch),
     }
   })
 )(CustomerProfileScreen)
