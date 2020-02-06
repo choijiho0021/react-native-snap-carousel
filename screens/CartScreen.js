@@ -3,7 +3,8 @@ import {
   StyleSheet,
   View,
   Text,
-  SectionList
+  SectionList,
+  Alert
 } from 'react-native';
 import {connect} from 'react-redux'
 
@@ -47,6 +48,7 @@ class CartScreen extends Component {
     this._init = this._init.bind(this)
     this._isEmptyList = this._isEmptyList.bind(this)
     this._sim = this._sim.bind(this)
+    this._registerSimAlert = this._registerSimAlert.bind(this)
   }
 
   componentDidMount() {
@@ -220,17 +222,38 @@ class CartScreen extends Component {
 
   _isEmptyList(){
       return <View style={styles.emptyView}>
-                <Text style={styles.emptyText}>{i18n.t('cart:empty')}</Text>
+                <Text style={[styles.emptyText, {color:colors.black}]}>{i18n.t('cart:empty')}</Text>
             </View>
+  }
+
+  _registerSimAlert(){
+    Alert.alert(
+      'ICCID 카드 등록',
+      'ICCID 카드 등록 후 \n데이터상품 구매가 가능합니다.\n카드등록화면으로 이동하시겠습니까?',
+      [
+        {
+          text: i18n.t('cancel'),
+          // style: 'cancel',
+        },
+        {
+          text: i18n.t('ok'),
+          onPress: () => this.props.navigation.navigate('RegisterSim')
+        }
+      ],
+    )
   }
 
   render() {
 
     const { qty, checked, section, total} = this.state,
+      { iccid } = this.props.account,
       dlvCost = this._dlvCost( checked, qty, total, section),
       balance = this.props.account.balance || 0,
       amount = total.price + dlvCost,
       pymPrice = amount > balance ? amount - balance : 0      
+
+      const data = this.props.cart.orderItems
+                  .find(item => item.prod.type == 'roaming_product' && this.state.checked.get(item.key))
 
       return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
@@ -253,7 +276,7 @@ class CartScreen extends Component {
           </View>
           <AppButton style={styles.btnBuy} title={i18n.t('cart:purchase') + `(${total.cnt})`} 
             disabled={total.price == 0}
-            onPress={this._onPurchase}/>
+            onPress={!_.isEmpty(!iccid && data) ? this._registerSimAlert : this._onPurchase}/>
         </View>
       </SafeAreaView>
     )
