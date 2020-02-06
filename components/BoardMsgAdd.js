@@ -318,7 +318,7 @@ class BoardMsgAdd extends Component {
               autoCorrect={false}
               value={title} /> 
 
-            <TextInput style={[styles.inputBox, {height:208}, msg && {borderColor: colors.black}]}
+            <TextInput style={[styles.inputBox, {height:208, paddingTop:5, textAlignVertical:"top"}, msg && {borderColor: colors.black}]}
               ref={this._keybd}
               placeholder={i18n.t('content')}
               placeholderTextColor={colors.greyish}
