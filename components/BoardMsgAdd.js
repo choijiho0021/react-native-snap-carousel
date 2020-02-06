@@ -7,8 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
-  InputAccessoryView,
-  Linking
+  InputAccessoryView
 } from 'react-native';
 import {connect} from 'react-redux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -30,10 +29,12 @@ import {List} from 'immutable'
 import { attachmentSize } from '../constants/SliderEntry.style'
 import AppAlert from './AppAlert'
 import AppIcon from './AppIcon';
-import * as Permissions from 'expo-permissions';
 import { Platform } from '@unimodules/core';
+import { openSettings, check, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
-let ImagePicker 
+
+let ImagePicker
+
 if (Constants.appOwnership === 'expo') {
   ImagePicker = {
     openPicker : function() {
@@ -44,7 +45,6 @@ if (Constants.appOwnership === 'expo') {
 else {
   ImagePicker = require('react-native-image-crop-picker').default
 }
-
 
 class BoardMsgAdd extends Component {
   static navigationOptions = {
@@ -102,12 +102,13 @@ class BoardMsgAdd extends Component {
   } 
 
   async componentDidMount() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL),
+    const permission = Platform.OS == 'ios' ? PERMISSIONS.IOS.PHOTO_LIBRARY : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE
+    const result = await check(permission),
       {mobile, email} = this.props.account,
       number = utils.toPhoneNumber(mobile)
 
     this.setState({
-      hasCameraRollPermission: status === 'granted',
+      hasCameraRollPermission: result === RESULTS.GRANTED,
       mobile: number,
       email
     })
@@ -197,8 +198,8 @@ class BoardMsgAdd extends Component {
     }
     else {
       // 사진 앨범 조회 권한을 요청한다.
-      AppAlert.confirm( i18n.t('settings'), i18n.t('acc:permCamera'), {
-        ok: () => Linking.openURL('app-settings:')
+      AppAlert.confirm( i18n.t('settings'), i18n.t('acc:permPhoto'), {
+        ok: () => openSettings()
       })
     }
   }

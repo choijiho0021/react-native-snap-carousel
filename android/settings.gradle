@@ -1,4 +1,8 @@
 rootProject.name = 'Rokebi'
+include ':react-native-image-crop-picker'
+project(':react-native-image-crop-picker').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-image-crop-picker/android')
+include ':react-native-permissions'
+project(':react-native-permissions').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-permissions/android')
 include ':iamport-react-native'
 project(':iamport-react-native').projectDir = new File(rootProject.projectDir, '../node_modules/iamport-react-native/android')
 include ':appcenter-crashes'
