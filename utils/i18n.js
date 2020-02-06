@@ -97,6 +97,7 @@ const en = {
   'reg:scanOff': 'Scan off',
   'reg:confirm': 'Confirm',
   'reg:failedToSendSms': 'Failed to send sms',
+  'reg:failedToLogIn': 'Failed to sign in. Please try again.',
 
   'menu:purchase' : 'Purchase',
   'menu:card' : 'Register',
@@ -124,7 +125,8 @@ const en = {
   'acc:chat': 'Online Chat (24/7)',
   'acc:notfound': 'ICCID is not found',
   'acc:changeEmail': 'Input new email',
-  'acc:permCamera': 'Please, grant the permission to read photos',
+  'acc:permPhoto': 'Please, grant the permission to read photos',
+  'acc:permCamera': 'Please, grant the permission to camera',
   'acc:duplicatedEmail': 'Duplicated email',
 
   "set:info" : "My SIM Info",
@@ -424,6 +426,7 @@ const ko = {
   'reg:scanOff': '스캔 중단',
   'reg:confirm': '등록',
   'reg:failedToSendSms': 'SMS 인증번호 발송 실패',
+  'reg:failedToLogIn': '로깨비 로그인이 실패하였습니다. 다시 시도해주시기 바랍니다.',
 
   'menu:purchase' : '유심 구매',
   'menu:card' : '유심 등록',
@@ -451,7 +454,8 @@ const ko = {
   'acc:chat': '채팅 상담 (24/7)',
   'acc:notfound': '등록되지 않은 ICCID 입니다.',
   'acc:changeEmail': '이메일 변경',
-  'acc:permCamera': '사진 앨범 권한을 허가해 주세요',
+  'acc:permPhoto': '사진 앨범 권한을 허가해 주세요',
+  'acc:permCamera': '카메라 권한을 허가해 주세요',
   'acc:duplicatedEmail': '이미 등록된 이메일 입니다',
 
   "set:info" : "내 SIM 정보",

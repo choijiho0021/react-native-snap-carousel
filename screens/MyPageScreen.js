@@ -5,7 +5,6 @@ import {
   View,
   TouchableOpacity,
   FlatList,
-  Linking,
 } from 'react-native';
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
@@ -24,11 +23,11 @@ import AppAlert from '../components/AppAlert';
 import _ from 'underscore'
 import AppUserPic from '../components/AppUserPic';
 import AppModal from '../components/AppModal';
-import * as Permissions from 'expo-permissions';
 import validationUtil from '../utils/validationUtil';
 import userApi from '../utils/api/userApi';
 import LabelTextTouchable from '../components/LabelTextTouchable';
 import { isDeviceSize } from '../constants/SliderEntry.style';
+import { openSettings, check, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 let ImagePicker 
 if (Constants.appOwnership === 'expo') {
@@ -100,8 +99,10 @@ class MyPageScreen extends Component {
   }
 
   async componentDidMount() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
-    this.setState({ hasCameraRollPermission: status === 'granted'})
+    const permission = Platform.OS == 'ios' ? PERMISSIONS.IOS.PHOTO_LIBRARY : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE
+    const result = await check(permission)
+
+    this.setState({ hasCameraRollPermission: result === 'granted'})
 
     if ( this.props.uid) this.props.action.order.getOrders(this.props.auth)
   }
@@ -170,8 +171,8 @@ class MyPageScreen extends Component {
     }
     else {
       // 사진 앨범 조회 권한을 요청한다.
-      AppAlert.confirm( i18n.t('settings'), i18n.t('acc:permCamera'), {
-        ok: () => Linking.openURL('app-settings:')
+      AppAlert.confirm( i18n.t('settings'), i18n.t('acc:permPhoto'), {
+        ok: () => openSettings()
       })
     }
   }

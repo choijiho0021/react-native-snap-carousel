@@ -46,6 +46,8 @@ class Api {
 
         recharge: 'rokebi/rch',
         resetPw: 'rokebi/user/pw',
+        regMobile: 'rokebi/reg',
+
         simCard: 'json/smc/list',
         cart: 'cart',
         order: 'json/orders',

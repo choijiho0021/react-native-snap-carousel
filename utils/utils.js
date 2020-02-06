@@ -60,7 +60,7 @@ class Utils {
     }
 
     toPhoneNumber = (str = "") => {
-        if ( _.isEmpty(str)) return ""
+        if ( _.isEmpty(str) || typeof str !== 'string') return ""
 
         const num = str.replace(/-/g, '')
         return this.toSegmentedString(num, [0,3,7,11])

@@ -79,17 +79,20 @@ class RegisterSimScreen extends Component {
 
       if ( resp.result == 0) {
         // activation code is valid
-        utils.storeData( userApi.KEY_ICCID, iccid)
         const uuid = resp.objects[0].uuid
 
-        // redux store도 갱신한다. (actCode)
-        this.props.action.account.getAccount(iccid, this.props.auth)
-
         // 서버의 account에 mobile 번호를 등록한다.
-        this.props.action.account.registerMobile(uuid, this.props.account.mobile)
+        this.props.action.account.registerMobile(uuid, this.props.account.mobile, this.props.auth).then( resp => {
+          if ( resp.result == 0) {
+            //signup, update를 모두 성공한 경우, 화면에 성공으로 표시 
+            AppAlert.info(i18n.t('reg:success'), i18n.t('appTitle'), () => this.props.navigation.popToTop())
+          }
+          else {
+            console.log('Failed to register mobile')
+            AppAlert.error(i18n.t('reg:fail'))
+          }
+        })
 
-        //signup, update를 모두 성공한 경우, 화면에 성공으로 표시 
-        AppAlert.info(i18n.t('reg:success'), i18n.t('appTitle'), () => this.props.navigation.popToTop())
       }
       else {
         // invalid activation code

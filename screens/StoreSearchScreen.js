@@ -67,13 +67,6 @@ class HeaderTitle extends Component {
   }
 
   async search(searchWord) {
-    const old_searchHist = await utils.retrieveData("searchHist")
-
-    if(searchWord && !searchWord.match(',')){
-      //중복 제거 후 최대 7개까지 저장한다. 저장 형식 : ex) 대만,중국,일본 
-      const new_searchHist = _.isNull(old_searchHist) ? searchWord : Array.from(new Set([searchWord].concat(old_searchHist.split(',')))).slice(0,MAX_HISTORY_LENGTH).join(',')
-      utils.storeData("searchHist", new_searchHist)
-    }
     this.setState({searching:true})
     this.props._search(searchWord,true);
   }
@@ -127,7 +120,7 @@ class StoreSearchScreen extends Component {
       searching : false,
       searchWord : '',
       searchList : [],
-      recommendCountry : ["인도네시아","스페인","아일랜드","네덜란다"]
+      recommendCountry : ["인도네시아","스페인","아일랜드","네덜란드"]
     }
     this._search = this._search.bind(this)
   }
@@ -163,11 +156,21 @@ class StoreSearchScreen extends Component {
     }
   }
   
-  _search(searchWord, searching = false) {
+  async _search(searchWord, searching = false) {
     this.setState({searchWord : searchWord, searching : searching})
 
-    //어떤 국가를 검색했는지 통계 수집
+    
     if(searching){
+      //최근 검색 기록 
+      const old_searchHist = await utils.retrieveData("searchHist")
+
+      if(searchWord && !searchWord.match(',')){
+        //중복 제거 후 최대 7개까지 저장한다. 저장 형식 : ex) 대만,중국,일본 
+        const new_searchHist = _.isNull(old_searchHist) ? searchWord : Array.from(new Set([searchWord].concat(old_searchHist.split(',')))).slice(0,MAX_HISTORY_LENGTH).join(',')
+        utils.storeData("searchHist", new_searchHist)
+      }
+
+      //어떤 국가를 검색했는지 통계 수집
       properties = {"Search Word" : searchWord}
 
       Analytics.trackEvent("국가 검색 분석", properties)
