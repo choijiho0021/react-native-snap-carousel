@@ -21,6 +21,7 @@ const UPLOAD_PICTURE =   'rokebi/account/UPLOAD_PICTURE'
 const CHANGE_PICTURE =   'rokebi/account/CHANGE_PICTURE'
 const GET_TOKEN = 'rokebi/account/GET_TOKEN'
 export const CHANGE_ATTR = 'rokebi/account/CHANGE_ATTR'
+const REGISTER_MOBILE = 'rokebi/account/REGISTER_MOBILE'
 
 export const getToken = createAction(GET_TOKEN, userApi.getToken)
 export const updateAccount = createAction(UPDATE_ACCOUNT)
@@ -31,6 +32,7 @@ export const getUserId = createAction(GET_USER_ID, userApi.getByName)
 export const getAccount = createAction(GET_ACCOUNT, accountApi.getAccount)
 export const getAccountByUUID = createAction(GET_ACCOUNT_BY_UUID, accountApi.getByUUID)
 export const activateAccount = createAction(ACTIVATE_ACCOUNT, accountApi.update)
+const registerMobile0 = createAction(REGISTER_MOBILE, accountApi.registerMobile)
 const uploadPicture = createAction(UPLOAD_PICTURE, accountApi.uploadPicture)
 const changePicture = createAction(CHANGE_PICTURE, userApi.changePicture)
 const changeUserAttr = createAction(CHANGE_ATTR, userApi.update)
@@ -99,6 +101,26 @@ export const changeNotiToken = () => {
   }
 }
 
+export const registerMobile = (uuid, mobile) => {
+  return (dispatch, getState) => {
+    const { account } = getState(),
+      authObj = auth(account)
+    return dispatch(registerMobile0(uuid, mobile, authObj)).then(
+      resp => {
+        if ( resp.result == 0 && resp.objects.length > 0) {
+          return dispatch(getAccount(resp.objects[0].iccid, authObj))
+        }
+        else {
+          console.log('failed to register mobile resp:', resp)
+        }
+      },
+      err => {
+        console.log('failed to register mobile', err)
+      }
+    )
+  }
+}
+
 export const logInAndGetAccount = (mobile, pin, iccid) => {
   return (dispatch, getState) => {
     return dispatch(logIn(mobile, pin)).then(
@@ -115,7 +137,7 @@ export const logInAndGetAccount = (mobile, pin, iccid) => {
               console.log("resp register",resp)})
           }
 
-          //iccid 산과없이 로그인마다 토큰 업데이트
+          //iccid 상관 없이 로그인마다 토큰 업데이트
           return dispatch(getUserId( obj.current_user.name, {token: obj.csrf_token})).then(
             resp => {
               console.log("user resp",resp)
@@ -126,56 +148,6 @@ export const logInAndGetAccount = (mobile, pin, iccid) => {
       },
       err => {
         console.log('login failed', err)
-      }
-    )
-  }
-}
-
-export const registerMobile = (uuid, mobile) => {
-  return (dispatch, getState) => {
-    const { account } = getState()
-    return dispatch(getAccountByUUID(uuid)).then(
-      (resp) => {
-        if ( resp.result == 0 && resp.objects.length > 0 ) {
-          const accountAttr = {}
-          const relation = {}
-          const now = moment()
-
-          if ( ! _.isEmpty(mobile) && resp.objects[0].mobile != mobile ) {
-            accountAttr.field_mobile = mobile
-          }
-
-          if ( _.isEmpty(resp.objects[0].firstActDate)) {
-            accountAttr.field_first_activation_date = now.format()
-            accountAttr.field_expiration_date = now.add(1, 'years').format('YYYY-MM-DD')
-          }
-
-          //activation code는 카드등록시 항상 update
-          accountAttr.field_activation_date = now.format()
-
-          relation.field_ref_user_account = {
-            data: {
-              type: 'user--user',
-              id  : account.get('userId')
-            }
-          }
-
-          console.log('REGISTER', accountAttr, relation, resp.objects[0])
-
-          if ( ! _.isEmpty(accountAttr)) return dispatch(activateAccount(uuid, accountAttr, relation, auth(account))).then(
-            resp => {
-              if ( resp.result == 0 && resp.objects.length > 0) {
-                return dispatch(updateAccount(resp.objects[0]))
-              }
-            },
-            err => {
-              console.log('failed to activate account', err)
-            }
-          )
-        }
-      },
-      err => {
-        console.log('failed to get account', err)
       }
     )
   }
@@ -257,7 +229,6 @@ export default handleActions({
   },
 
   [UPDATE_ACCOUNT]: (state, action) => {
-    console.log("update dddddd")
     return updateAccountState(state, action.payload)
   },
 
@@ -301,10 +272,27 @@ export default handleActions({
   }),
 
   ... pender({
+    type: REGISTER_MOBILE,
+    onSuccess: (state, action) => {
+      const {result, objects} = action.payload
+      if (result == 0 && objects.length > 0) {
+        utils.storeData( userApi.KEY_ICCID, objects[0].iccid)
+        return updateAccountState(state, objects[0])
+      }
+      return state
+    }
+  }),
+
+  ... pender({
     type: GET_ACCOUNT,
     onSuccess: (state, action) => {
       const {result, objects} = action.payload
       if (result == 0 && objects.length > 0) {
+        const mobile = state.get('mobile')
+        if ( ! _.isEmpty(mobile) && mobile != objects[0].mobile) {
+          // mobile 번호가 다르면, ICCID는 다른 단말에 할당된 것이므로 무시한다.
+          return state
+        }
         utils.storeData( userApi.KEY_ICCID, objects[0].iccid)
         return updateAccountState(state, objects[0])
       }

@@ -31,17 +31,7 @@ class AccountAPI {
         }
 
         // REST API node/{nid}로 조회하는 경우 
-        if (! _.isEmpty(data._links)) {
-            const user = Object.keys( data._links).filter(item => item.endsWith('field_user'))
-            console.log( 'account user', user, data._links[user[0]])
-            let uid = undefined
-            if (! _.isEmpty(user)) {
-                const match = this.re.field_user.exec(data._links[user[0]][0].href)
-                console.log( 'match', match)
-                if (match) uid = match[1] 
-            }
-
-            
+        if (! _.isEmpty(data._links) || ! _.isEmpty(data.nid)) {
             return api.success([{
                 nid: utils.stringToNumber( data.nid[0].value),
                 uuid: data.uuid[0].value,
@@ -53,7 +43,6 @@ class AccountAPI {
                 mobile: data.field_mobile && data.field_mobile[0].value,
                 deviceToken: data.field_device_token && data.field_device_token[0].value,
                 simPartnerId: undefined,
-                uid 
             }])
         }
 
@@ -114,6 +103,20 @@ class AccountAPI {
 
         const url = `${api.httpUrl(api.path.jsonapi.account)}/${uuid}`
         return api.callHttpGet(url, this.toAccount)
+    }
+
+    registerMobile = (uuid, mobile, {token}) => {
+        if (_.isEmpty(uuid) || _.isEmpty(mobile)) return api.reject( api.INVALID_ARGUMENT)
+
+        const url = api.httpUrl(api.path.regMobile)
+        const headers = api.withToken(token, 'json', {
+            'Accept': 'application/json'
+        })
+        return api.callHttp(url, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ uuid, mobile})
+        }, this.toAccount)
     }
 
     // Update User of ContentType Account
