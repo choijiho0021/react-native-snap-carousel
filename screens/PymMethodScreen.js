@@ -96,18 +96,19 @@ class PymMethodScreen extends Component {
 
   async _onSubmit() {
     
-    if (this.state.clickable) {
-      this.setState({
-        clickable: false
-      })
-    }else return
+    if (! this.state.clickable) return
+
+    this.setState({
+      clickable: false
+    })
 
     const { selected, pymPrice, deduct } = this.state
     
     if ( (! selected) && (pymPrice !=0) ) return
 
     const { mobile, email } = this.props.account,
-      profileId = this.props.profile.selectedAddr || (this.props.profile.profile.find(item => item.isBasicAddr) || {}).uuid
+      profileId = this.props.profile.selectedAddr || (this.props.profile.profile.find(item => item.isBasicAddr) || {}).uuid,
+      dlvCost = (this.props.cart.pymReq.find(item => item.key == 'dlvCost') || {}).amount
 
     if (pymPrice == 0) {
       this.setState({
@@ -119,7 +120,8 @@ class PymMethodScreen extends Component {
         merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
         profile_uuid: profileId,
         amount: 0,
-        deduct_from_balance: deduct
+        deduct_from_balance: deduct,
+        dlvCost
       }
       const orderResult = await this.props.action.cart.payNorder(response)
       // 최종 결제 처리 과정에서 실패할 수 있다. pymResult.result 값이 0인지 다시 확인한다.
@@ -138,6 +140,7 @@ class PymMethodScreen extends Component {
         escrow: false,
         app_scheme: 'esim',
         profile_uuid: profileId,
+        dlvCost,
         // mode: 'test'
       };
 

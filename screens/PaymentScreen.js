@@ -63,7 +63,8 @@ class PaymentScreen extends Component{
       ... response,
       amount: params.amount,
       profile_uuid: params.profile_uuid,
-      deduct_from_balance: params.deduct_from_balance
+      deduct_from_balance: params.deduct_from_balance,
+      dlvCost: params.dlvCost
     })
     this.props.navigation.replace('PaymentResult', {pymResult:response, orderResult})  
   }
