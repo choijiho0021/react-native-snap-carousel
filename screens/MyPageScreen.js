@@ -85,7 +85,8 @@ class MyPageScreen extends Component {
     this.state = {
       mode: 'purchase',
       hasCameraRollPermission: null,
-      showEmailModal: false
+      showEmailModal: false,
+      isReloaded: false
     }
 
     this._info = this._info.bind(this)
@@ -108,18 +109,25 @@ class MyPageScreen extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { mode } = this.state
+    const { mode, isReloaded } = this.state
 
     if ( this.props.uid && this.props.uid != prevProps.uid) {
       // reload order history
       this.props.action.order.getOrders(this.props.auth)
     }
 
-    if ( mode === 'usage' && this.props.account ) {
+    if ( this.props.account ) {
       const { account: {iccid}, auth } = this.props
-
-      if ( iccid && iccid !== (prevProps.account || {}).iccid ) {
+      if ( iccid && iccid !== (prevProps.account || {}).iccid && mode === 'usage' ) {
         this.props.action.order.getUsage( iccid, auth)
+        this.setState({ isReloaded: true })
+      }
+    }
+
+    if ( this.props.lastTab[0] === 'MyPageStack' && this.props.lastTab[0] !== prevProps.lastTab[0] ) {
+      if ( mode === 'usage' && isReloaded ) {
+        this.props.navigation.popToTop()
+        this.setState({ isReloaded: false })
       }
     }
   }
@@ -423,6 +431,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = state => ({
+  lastTab: state.cart.get('lastTab').toJS(),
   account: state.account.toJS(),
   order: state.order.toJS(),
   auth: accountActions.auth( state.account),
