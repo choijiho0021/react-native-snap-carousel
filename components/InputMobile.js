@@ -17,23 +17,31 @@ class InputMobile extends Component {
     this.state = {
       //prefix: "010",
       mobile: "",
-      errors: undefined
+      errors: undefined,
+      waiting: false,
     }
 
     this._onChangeText = this._onChangeText.bind(this)
     this._validate = this._validate.bind(this)
     this._onPress = this._onPress.bind(this)
     this._onClick = this._onClick.bind(this)
+    this._onTimer = this._onTimer.bind(this)
 
     this.ref = React.createRef()
+    this._isMounted = null
   }
 
   componentDidMount() {
+    this._isMounted = true
     this._validate()
 
     if ( this.props.onRef) {
       this.props.onRef(this)
     }
+  }
+
+  componentWillUnmount(){
+    this._isMounted = false
   }
 
   _onChangeText = (key) => (value) => {
@@ -72,18 +80,28 @@ class InputMobile extends Component {
     if ( typeof this.props.onPress === 'function') {
       this.props.onPress( mobile.replace(/-/g, ''))
     }
+    this._onTimer()
   }
 
   _onClick(){
     if (this.ref.current) this.ref.current.focus()
   }
 
-  render() {
-    const {mobile} = this.state
-    const {authNoti, timeout} = this.props
+  _onTimer = () => {
+    this.setState({ waiting: true })
+    setTimeout(() => {
+      if (this._isMounted){
+        this.setState({ waiting: false })
+      }
+    }, 3000)
+  }
 
-    const clickable = _.isEmpty(this._error('mobile')) && (! authNoti || timeout )
-    const disabled = this.props.disabled || ( authNoti && ! timeout )
+  render() {
+    const {mobile, waiting} = this.state
+    const {authNoti, timeout, authorized} = this.props
+
+    const disabled = this.props.disabled || waiting
+    const clickable = _.isEmpty(this._error('mobile')) && (! authNoti || ! waiting ) && ! this.props.disabled
 
     return (
       <View>
@@ -135,7 +153,7 @@ class InputMobile extends Component {
           </View>
         </View>
         {
-          authNoti && ! disabled && <Text style={styles.helpText}>{i18n.t('reg:authNoti')}</Text>
+          authNoti && typeof authorized === 'undefined' && <Text style={styles.helpText}>{i18n.t('reg:authNoti')}</Text>
         }
       </View>
     )

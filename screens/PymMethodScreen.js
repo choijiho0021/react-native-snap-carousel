@@ -271,7 +271,7 @@ class PymMethodScreen extends Component {
 
         <AppButton title={i18n.t('payment')} 
                       textStyle={appStyles.confirmText}
-                      disabled={ pymPrice !=0 && (_.isEmpty(selected) || (simIncluded && noProfile))}
+                      disabled={(pymPrice !=0 && (_.isEmpty(selected)) || (simIncluded && noProfile))}
                       key={i18n.t('payment')}
                       onPress={this._onSubmit}
                       style={appStyles.confirm} />
