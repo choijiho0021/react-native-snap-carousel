@@ -30,7 +30,7 @@ class BoardMsg extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    return this.props.item.uuid != nextProps.item.uuid
+    return this.props.item.uuid != nextProps.item.uuid || this.props.item.statusCode != nextProps.item.statusCode
   }
 
   render() {

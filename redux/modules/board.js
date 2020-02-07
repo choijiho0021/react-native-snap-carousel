@@ -107,9 +107,22 @@ export default handleActions({
       const {result, objects} = action.payload
       const list = state.get('list')
       if (result == 0 && objects.length > 0) {
-        const newList = objects.filter(item => list.findIndex(org => org.uuid == item.uuid) < 0)
 
-        return state.set('list', list.concat(newList).sort((a,b) => a.created < b.created ? 1 : -1))
+        //Status가 변경된 item을 찾아서 변경해 준다.
+        const changedList = list.map(item => {
+          const findObjects = objects.find(org => org.uuid == item.uuid)
+          if(item.statusCode != findObjects.statusCode)
+          {
+            return  findObjects
+          }
+          else {
+            return item
+          }
+        })
+
+        const newList = objects.filter(item => changedList.findIndex(org => org.uuid == item.uuid) < 0)
+
+        return state.set('list', changedList.concat(newList).sort((a,b) => a.created < b.created ? 1 : -1))
           .set('next', newList.length == PAGE_LIMIT)
       }
       return state.set('next', false)
