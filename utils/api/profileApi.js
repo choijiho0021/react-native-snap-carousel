@@ -16,7 +16,7 @@ class ProfileAPI {
                     address_line1,
                     address_line2,
                     organization,
-                    // dependent_locality,
+                    additional_name,
                     given_name,
                     family_name,
                 } = item.attributes.address
@@ -30,7 +30,7 @@ class ProfileAPI {
                     addressLine1: address_line1,
                     addressLine2: address_line2,
                     detailAddr: organization,
-                    // roadAddr: dependent_locality,
+                    roadAddr: additional_name,
                     givenName: given_name,
                     familyName: family_name,
                     alias: item.attributes.field_alias,
@@ -42,7 +42,6 @@ class ProfileAPI {
                 }
             
             })
-            console.log('obj', obj)
             return api.success(objects)
         }
         return api.failure(api.NOT_FOUND)        
@@ -92,7 +91,7 @@ class ProfileAPI {
                         address_line1: profile.addressLine1,
                         address_line2: profile.addressLine2,
                         organization: profile.detailAddr,        // 상세주소
-                        // dependent_locality: profile.roadAddr,    // 도로명주소
+                        additional_name: profile.roadAddr,    // 도로명주소
                         given_name: profile.recipient || profile.givenName, 
                         family_name: profile.recipient || profile.familyName
                     },
