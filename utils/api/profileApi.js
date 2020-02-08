@@ -70,12 +70,8 @@ class ProfileAPI {
     addOrUpdate = (url, profile, defaultProfile = {}, method, token) => {
         if ( _.isEmpty(url) || _.isEmpty(profile) || _.isEmpty(method) || _.isEmpty(token) ) return api.reject(api.INVALID_ARGUMENT)
 
-        console.log('profile add or update', profile)
-        const headers = 
-        method=='patch'?
-        api.withToken(token, 'vnd.api+json', {
-            'Accept': 'application/vnd.api+json'
-        }):api.withToken(token, 'vnd.api+json')
+        const headers = api.withToken(token, 'vnd.api+json', 
+            (method == 'patch') && { 'Accept': 'application/vnd.api+json' })
 
         const body = {
             data : {
