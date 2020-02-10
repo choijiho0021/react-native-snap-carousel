@@ -321,7 +321,7 @@ const mapStateToProps = (state) => ({
   board: state.board.toJS(),
   account: state.account.toJS(),
   auth: accountActions.auth(state.account),
-  uid: state.account.get('uid'),
+  uid: state.account.get('uid') || 0,
   pending: state.pender.pending[boardActions.FETCH_ISSUE_LIST] || false
 })
 
