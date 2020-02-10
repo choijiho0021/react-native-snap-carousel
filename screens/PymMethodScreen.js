@@ -136,6 +136,7 @@ class PymMethodScreen extends Component {
         amount: pymPrice,                 // 최종 결제 금액 
         deduct_from_balance: deduct,      // balance 차감 금액 
         buyer_tel: mobile,
+        buyer_name: mobile,
         buyer_email: email,
         escrow: false,
         app_scheme: 'esim',
