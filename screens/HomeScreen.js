@@ -372,7 +372,7 @@ class HomeScreen extends Component {
     return(
       <ScrollView style={styles.container}>
         {
-          // this.state.firstLaunch && <TutorialScreen/>
+          this.state.firstLaunch && <TutorialScreen/>
         }
         <StatusBar barStyle={darkMode ? "dark-content" : 'light-content'} />
         <AppActivityIndicator visible={this.props.loginPending}/>
