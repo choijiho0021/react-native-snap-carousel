@@ -63,7 +63,15 @@ class Utils {
         if ( _.isEmpty(str) || typeof str !== 'string') return ""
 
         const num = str.replace(/-/g, '')
-        return this.toSegmentedString(num, [0,3,7,11])
+
+        if(num.length == 7){
+            return this.toSegmentedString(num, [0,3,7])
+        }else if(num.length == 8){
+            return this.toSegmentedString(num, [0,4,8])
+        }else{
+            return this.toSegmentedString(num, [0,3,7,11])
+        }
+
     }
 
     toICCID = (str, delimiter='-') => {

@@ -26,6 +26,7 @@ import {Map} from 'immutable'
 import validationUtil from '../utils/validationUtil';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import { isAndroid } from '../components/SearchBarAnimation/utils';
+import utils from '../utils/utils';
 
 class AddProfileScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -286,9 +287,9 @@ _onSubmit() {
                     </View>
                     <TextInput style={[styles.textBox, {borderColor: this._changeBorder('recipientNumber'), width: '65%'}]}  // 56%
                               onChangeText={this._onChangeProfile('recipientNumber')}
-                              maxLength={8}
+                              maxLength={9}
                               keyboardType='numeric'
-                              value={profile.get('recipientNumber')} 
+                              value={utils.toPhoneNumber(profile.get('recipientNumber'))} 
                               onFocus={()=>this._onFocusClear('recipientNumber')}
                               placeholder={i18n.t('addr:noHyphen')}
                               placeholderTextColor={colors.greyish}/>
