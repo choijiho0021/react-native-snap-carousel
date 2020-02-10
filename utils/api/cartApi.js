@@ -209,7 +209,8 @@ class CartAPI {
                     merchant_uid: result.merchant_uid,
                 },
                 amount: result.amount,
-                deduct_from_balance: result.deduct_from_balance
+                deduct_from_balance: result.deduct_from_balance,
+                shipping_cost: result.dlvCost
             },
         }
 
