@@ -9,6 +9,7 @@ import { bindActionCreators } from 'redux'
 import * as cartActions from '../redux/modules/cart'
 import * as orderActions from '../redux/modules/order'
 import * as accountActions from '../redux/modules/account'
+import * as notiActions from '../redux/modules/noti'
 
 import PaymentItemInfo from '../components/PaymentItemInfo';
 import SafeAreaView from 'react-native-safe-area-view';
@@ -50,6 +51,8 @@ class PaymentResultScreen extends Component {
   }
 
   componentDidMount() {
+    this.props.action.noti.getNotiList(this.props.auth.user)
+
     this._init()
   }
 
@@ -100,7 +103,8 @@ class PaymentResultScreen extends Component {
 const mapStateToProps = (state) => ({
   account: state.account.toJS(),
   cart: state.cart.toJS(),
-  auth: accountActions.auth(state.account)
+  auth: accountActions.auth(state.account),
+  noti : state.noti.toJS(),
 })
 
 export default connect(mapStateToProps, 
@@ -108,6 +112,7 @@ export default connect(mapStateToProps,
     action: {
       cart : bindActionCreators(cartActions, dispatch),
       order: bindActionCreators(orderActions, dispatch),
+      noti: bindActionCreators(notiActions, dispatch),
     }
   })
 )(PaymentResultScreen)
