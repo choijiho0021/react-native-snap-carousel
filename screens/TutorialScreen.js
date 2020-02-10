@@ -5,7 +5,8 @@ import {
   View,
   Image,
   Dimensions,
-  Modal
+  Modal,
+  TouchableOpacity
 } from 'react-native';
 import {connect} from 'react-redux'
 import {appStyles} from "../constants/Styles"
@@ -16,7 +17,7 @@ import * as accountActions from '../redux/modules/account'
 import _ from 'underscore'
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import { sliderWidth, windowHeight, windowWidth, isDeviceSize } from '../constants/SliderEntry.style'
-import { TouchableOpacity } from 'react-native-gesture-handler';
+// import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const {width, height, sliderHeight} = Dimensions.get('window')
 const tutorialImages = {
@@ -66,60 +67,61 @@ class TutorialScreen extends Component {
     return (
           
       <View style={styles.container}>
-        {/* <View > */}
         <Modal
-              animationType="slide"
-              transparent={false}
-              visible={this.state.modalVisible}
-              // onRequestClose={() => {
-              //   Alert.alert('Modal has been closed.');
-              // }}
-              >
-          <Carousel
-            ref={this.carousel}
-            data={images}
-            renderItem={this._renderTutorial}
-            onSnapToItem={(index) => this.setState({activeSlide: index})}
-            autoplay={false}
-            loop={true}
-            useScrollView={true}
-            lockScrollWhileSnapping={true}
-            // resizeMode='stretch'
-            // overflow='hidden'
-            sliderWidth={sliderWidth}
-            itemWidth={sliderWidth}
-            // itemHeight={sliderHeight*0.5}
-            />
+          animationType="slide"
+          transparent={false}
+          visible={this.state.modalVisible}
+          // onRequestClose={() => {
+          //   Alert.alert('Modal has been closed.');
+          // }}
+          >
+          <View style={{flex:1}}>
+            <Carousel
+              ref={this.carousel}
+              data={images}
+              renderItem={this._renderTutorial}
+              onSnapToItem={(index) => this.setState({activeSlide: index})}
+              autoplay={false}
+              loop={true}
+              useScrollView={true}
+              lockScrollWhileSnapping={true}
+              // resizeMode='stretch'
+              // overflow='hidden'
+              sliderWidth={sliderWidth}
+              itemWidth={sliderWidth}
+              // itemHeight={sliderHeight*0.5}
+              />
 
-          <Pagination dotsLength={images.length}
-            activeDotIndex={activeSlide} 
-            dotContainerStyle={{width:10, height:15}}
-            dotStyle={styles.dotStyle}
-            inactiveDotStyle={styles.inactiveDotStyle}
-            inactiveDotOpacity={0.4}
-            inactiveDotScale={1.0}
-            carouselRef={this.carousel.current}
-            tappableDots={!_.isEmpty(this.carousel.current)}
-            containerStyle={styles.pagination}/>
-          {/* <View style={{flex:1, flexDirection: 'row', justifyContent: 'space-between', minHeight: 52, marginTop: 10}}> */}
+            <Pagination dotsLength={images.length}
+              activeDotIndex={activeSlide} 
+              dotContainerStyle={{width:10, height:15}}
+              dotStyle={styles.dotStyle}
+              inactiveDotStyle={styles.inactiveDotStyle}
+              inactiveDotOpacity={0.4}
+              inactiveDotScale={1.0}
+              carouselRef={this.carousel.current}
+              tappableDots={!_.isEmpty(this.carousel.current)}
+              containerStyle={styles.pagination}/>
+          </View>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between', height:52}}>
             {
               this.state.activeSlide == this.state.images.length -1 ?
-              <View style={[isDeviceSize('small')? styles.smallBottom : styles.largeBottom, {justifyContent: 'center'}]}>
-                <TouchableOpacity onPress={()=> this.setState({modalVisible: false})}>
+              <View style={isDeviceSize('small')? styles.smallBottom : styles.largeBottom}>
+                <TouchableOpacity style={[styles.touchableOpacity, {flex:1, alignItems:"center"}]} onPress={()=> this.setState({modalVisible: false})}>
                   <Text style={styles.bottomText}>{i18n.t('tutorial:close')}</Text>
                 </TouchableOpacity>
               </View>
               :
               <View style={[isDeviceSize('small')? styles.smallBottom : styles.largeBottom, {justifyContent: 'space-between'}]}>
-                <TouchableOpacity onPress={()=> this.setState({modalVisible: false})}>
+                <TouchableOpacity style={styles.touchableOpacity} onPress={()=> this.setState({modalVisible: false})}>
                   <Text style={styles.bottomText}>{i18n.t('tutorial:skip')}</Text>
                 </TouchableOpacity> 
-                <TouchableOpacity onPress={()=> this.carousel.current.snapToNext()}>
+                <TouchableOpacity style={styles.touchableOpacity} onPress={()=> this.carousel.current.snapToNext()}>
                   <Text style={[styles.bottomText, {color: colors.clearBlue}]}>{i18n.t('tutorial:next')}</Text>
                 </TouchableOpacity>
               </View>
             }
-          
+          </View>
         </Modal>
       </View>
     )
@@ -131,7 +133,7 @@ class TutorialScreen extends Component {
 const styles = StyleSheet.create({
   pagination: {
     position: 'absolute',
-    bottom: '10%', 
+    bottom: 0, 
     right: 0,
     left: 0,
   },
@@ -161,7 +163,7 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: width,
     // maxHeight: height,
-    height: isDeviceSize('small') ? '100%':'98%',
+    height: '100%',
     alignSelf: 'stretch'
   },
   text: {
@@ -176,24 +178,26 @@ const styles = StyleSheet.create({
   bottomText: {
     ...appStyles.normal16Text,
     letterSpacing: 0.22,
-    lineHeight: 15,
-    paddingHorizontal: 30,
+    // lineHeight: 15,
+    marginHorizontal: 30,
     textAlignVertical: 'center'
   },
   smallBottom: {
+    // backgroundColor:colors.black,
     flex:1, 
     flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    minHeight: '10%', 
-    paddingTop: 22
+    justifyContent: 'space-between'
   },
   largeBottom: {
+    // backgroundColor:colors.black,
     flex:1, 
     flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    minHeight: '7%', 
-    paddingTop: 10
-  }  
+    justifyContent: 'space-between'
+  },
+  touchableOpacity: {
+    height:'100%',
+    justifyContent:"center"
+  }
 });
 
 const mapStateToProps = state => ({

@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
   tabBarLabel: {
       height: 17,
       // fontFamily: "AppleSDGothicNeo",
-      fontSize: isDeviceSize('small') ? 10 : 14 ,
+      fontSize: isDeviceSize('medium') ? 12 : 14 ,
       fontWeight: "500",
       fontStyle: "normal",
       letterSpacing: 0.17

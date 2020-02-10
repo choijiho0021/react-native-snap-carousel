@@ -214,8 +214,8 @@ class BoardMsgAdd extends Component {
   _renderPass() {
     return (
       <View style={styles.passwordBox}>
-        <Text style={[appStyles.normal14Text, {color:colors.tomato, marginRight:5}]}>*</Text>
-        <Text style={appStyles.normal14Text}>{i18n.t('board:pass')}</Text>
+        <Text style={[appStyles.normal14Text, {color:colors.tomato, marginRight:5, textAlignVertical:"center"}]}>*</Text>
+        <Text style={[appStyles.normal14Text,{textAlignVertical:"center"}]}>{i18n.t('board:pass')}</Text>
         <TextInput style={styles.passwordInput}
           placeholder={i18n.t('board:inputPass')}
           placeholderTextColor={colors.greyish}
@@ -318,7 +318,7 @@ class BoardMsgAdd extends Component {
               autoCorrect={false}
               value={title} /> 
 
-            <TextInput style={[styles.inputBox, {height:208}, msg && {borderColor: colors.black}]}
+            <TextInput style={[styles.inputBox, {height:208, paddingTop:5, textAlignVertical:"top"}, msg && {borderColor: colors.black}]}
               ref={this._keybd}
               placeholder={i18n.t('content')}
               placeholderTextColor={colors.greyish}
@@ -366,6 +366,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     marginLeft: 15, 
     paddingBottom: 10,
+    color:colors.black,
     flex: 1
   },
   passwordBox: {

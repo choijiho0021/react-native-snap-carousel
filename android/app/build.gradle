@@ -210,6 +210,11 @@ android {
 apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
 
 dependencies {
+    def appcompat_version = "1.1.0"
+
+    implementation "androidx.appcompat:appcompat:$appcompat_version"
+    // For loading and tinting drawables on older versions of the platform
+    implementation "androidx.appcompat:appcompat-resources:$appcompat_version"
     implementation project(':react-native-image-crop-picker')
     implementation project(':react-native-permissions')
     implementation project(':iamport-react-native')
