@@ -99,9 +99,16 @@ class AccountAPI {
     }
 
     getByUUID = (uuid) => {
-        if (_.isEmpty(uuid)) return api.reject( api.INVALID_ARGUMENT, `test uuid:${_.isEmpty(uuid)}`)
+        if (_.isEmpty(uuid)) return api.reject( api.INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.jsonapi.account)}/${uuid}`
+        return api.callHttpGet(url, this.toAccount)
+    }
+
+    getByUser = (mobile) => {
+        if (_.isEmpty(mobile)) return api.reject( api.INVALID_ARGUMENT)
+
+        const url = `${api.httpUrl(api.path.accountOfUser)}/${mobile}?_format=json`
         return api.callHttpGet(url, this.toAccount)
     }
 

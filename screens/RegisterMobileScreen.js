@@ -347,7 +347,7 @@ class RegisterMobileScreen extends Component {
     const { mobile, authorized, confirm, authNoti, newUser, timeout, emailValidation, loading } = this.state,
       { isValid, error } = emailValidation || {}
     const disableButton = ! authorized || ( newUser && !(confirm.get("0") && confirm.get("1")) ),
-      disablePin = mobile && authNoti && ! authorized && ! loading
+      editablePin = mobile && authNoti && ! authorized && ! loading
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
@@ -356,13 +356,14 @@ class RegisterMobileScreen extends Component {
         <InputMobile style={{marginTop:30, paddingHorizontal:20}}
           onPress={this._onChangeText('mobile')}
           authNoti={authNoti }
-          disabled={authNoti &&  authorized}
+          disabled={(authNoti && authorized) || loading}
+          authorized={authorized}
           timeout={ timeout }/>
 
         <InputPinInTime style={{marginTop:26, paddingHorizontal:20}}
           forwardRef={this.authInputRef}
-          editable={ disablePin }
-          clickable={ disablePin && ! timeout }
+          editable={ editablePin }
+          clickable={ editablePin && ! timeout }
           authorized={ mobile ? authorized : undefined }
           countdown={ authNoti && ! authorized && ! timeout }
           onTimeout={ this._onTimeout }

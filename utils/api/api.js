@@ -33,6 +33,7 @@ class Api {
             page: 'jsonapi/node/page',
         },
         account: 'json/account/list',
+        accountOfUser: 'json/account/ofuser',
         noti: 'json/noti/list',
         prodByCntry: 'json/product/ccode',
         token: 'rest/session/token',

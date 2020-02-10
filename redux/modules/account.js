@@ -14,6 +14,7 @@ const UPDATE_ACCOUNT = 'rokebi/account/UPDATE_ACCOUNT'
 const RESET_ACCOUNT =  'rokebi/account/RESET_ACCOUNT'
 const GET_USER_ID =   'rokebi/account/GET_USER_ID'
 const GET_ACCOUNT =   'rokebi/account/GET_ACCOUNT'
+const GET_ACCOUNT_BY_USER =   'rokebi/account/GET_ACCOUNT_BY_USER'
 const GET_ACCOUNT_BY_UUID =   'rokebi/account/GET_ACCOUNT_BY_UUID'
 const ACTIVATE_ACCOUNT =   'rokebi/account/ACTIVATE_ACCOUNT'
 export const LOGIN =   'rokebi/account/LOGIN'
@@ -30,6 +31,7 @@ export const signUp = createAction(SIGN_UP)
 const logIn = createAction(LOGIN, userApi.logIn)
 export const getUserId = createAction(GET_USER_ID, userApi.getByName)
 export const getAccount = createAction(GET_ACCOUNT, accountApi.getAccount)
+const getAccountByUser = createAction(GET_ACCOUNT_BY_USER, accountApi.getByUser)
 export const getAccountByUUID = createAction(GET_ACCOUNT_BY_UUID, accountApi.getByUUID)
 export const activateAccount = createAction(ACTIVATE_ACCOUNT, accountApi.update)
 const registerMobile0 = createAction(REGISTER_MOBILE, accountApi.registerMobile)
@@ -126,19 +128,30 @@ export const logInAndGetAccount = (mobile, pin, iccid) => {
     return dispatch(logIn(mobile, pin)).then(
       resp => {
         if ( resp.result == 0 && resp.objects.length > 0) {
-          const obj = resp.objects[0]
+          const obj = resp.objects[0],
+            token = {token: obj.csrf_token}
 
           utils.storeData( userApi.KEY_MOBILE, obj.current_user.name)
           utils.storeData( userApi.KEY_PIN, pin)
 
           // get ICCID account info
           if ( iccid) {
-            dispatch(getAccount(iccid, {token: obj.csrf_token})).then(resp => {
-              console.log("resp register",resp)})
+            dispatch(getAccount(iccid, token)).then(resp => {
+              console.log("resp register",resp)
+            })
+          }
+          else {
+            // 가장 최근 사용한 SIM 카드 번호를 조회한다. 
+            dispatch(getAccountByUser(mobile, token)).then(resp => {
+              if ( resp.result == 0 && resp.objects.length > 0) {
+                utils.storeData( userApi.KEY_ICCID, resp.objects[0].iccid)
+                dispatch(getAccount(resp.objects[0].iccid, token))
+              }
+            })
           }
 
           //iccid 상관 없이 로그인마다 토큰 업데이트
-          return dispatch(getUserId( obj.current_user.name, {token: obj.csrf_token})).then(
+          return dispatch(getUserId( obj.current_user.name, token)).then(
             resp => {
               console.log("user resp",resp)
               dispatch(changeNotiToken())
