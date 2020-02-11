@@ -346,7 +346,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ $CONFIGURATION == Release ]; then\nbuildNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\")\nbuildNumber=$(($buildNumber + 1))\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\"\nfi\n";
+			shellScript = "if [ $CONFIGURATION == Release ]; then\nlastNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\")\nnewNumber=$(($lastNumber + 1))\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $newNumber\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\"\nfi\n";
 		};
 		83F353DA531F5D7165EABE4D /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -424,7 +424,7 @@
 				CODE_SIGN_ENTITLEMENTS = Rokebi/Rokebi.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 19;
+				CURRENT_PROJECT_VERSION = 20;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				INFOPLIST_FILE = Rokebi/Development.plist;
@@ -450,7 +450,7 @@
 				CODE_SIGN_ENTITLEMENTS = Rokebi/Rokebi.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 19;
+				CURRENT_PROJECT_VERSION = 20;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				INFOPLIST_FILE = Rokebi/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
