@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
 
 class ChargeSummary extends PureComponent {
   render() {
-    const {totalCnt, totalPrice, balance, dlvCost} = this.props,
+    const {totalCnt=0, totalPrice=0, balance=0, dlvCost=0} = this.props,
           // 상품가격 + 배송비
           amount = totalPrice + dlvCost,
           // 잔액 차감
