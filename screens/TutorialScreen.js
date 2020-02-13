@@ -106,13 +106,13 @@ class TutorialScreen extends Component {
           <View style={{flexDirection: 'row', justifyContent: 'space-between', height:52}}>
             {
               this.state.activeSlide == this.state.images.length -1 ?
-              <View style={isDeviceSize('small')? styles.smallBottom : styles.largeBottom}>
+              <View style={styles.bottom}>
                 <TouchableOpacity style={[styles.touchableOpacity, {flex:1, alignItems:"center"}]} onPress={()=> this.setState({modalVisible: false})}>
                   <Text style={styles.bottomText}>{i18n.t('tutorial:close')}</Text>
                 </TouchableOpacity>
               </View>
               :
-              <View style={[isDeviceSize('small')? styles.smallBottom : styles.largeBottom, {justifyContent: 'space-between'}]}>
+              <View style={[styles.bottom, {justifyContent: 'space-between'}]}>
                 <TouchableOpacity style={styles.touchableOpacity} onPress={()=> this.setState({modalVisible: false})}>
                   <Text style={styles.bottomText}>{i18n.t('tutorial:skip')}</Text>
                 </TouchableOpacity> 
@@ -182,13 +182,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
     textAlignVertical: 'center'
   },
-  smallBottom: {
-    // backgroundColor:colors.black,
-    flex:1, 
-    flexDirection: 'row', 
-    justifyContent: 'space-between'
-  },
-  largeBottom: {
+  bottom: {
     // backgroundColor:colors.black,
     flex:1, 
     flexDirection: 'row', 
