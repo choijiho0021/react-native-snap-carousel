@@ -53,6 +53,7 @@ export const getNextIssueList = () => {
 
 // 10 items per page
 const PAGE_LIMIT = 10
+const PAGE_UPDATE = 0
 
 export const postAndGetList = (issue, attachment) => {
   return (dispatch,getState) => {
@@ -106,12 +107,13 @@ export default handleActions({
     onSuccess: (state, action) => {
       const {result, objects} = action.payload
       const list = state.get('list')
+
       if (result == 0 && objects.length > 0) {
 
         //Status가 변경된 item을 찾아서 변경해 준다.
         const changedList = list.map(item => {
           const findObjects = objects.find(org => org.uuid == item.uuid)
-          if(item.statusCode != findObjects.statusCode)
+          if(findObjects != undefined && item.statusCode != findObjects.statusCode)
           {
             return  findObjects
           }
@@ -119,11 +121,11 @@ export default handleActions({
             return item
           }
         })
-
+        
         const newList = objects.filter(item => changedList.findIndex(org => org.uuid == item.uuid) < 0)
 
         return state.set('list', changedList.concat(newList).sort((a,b) => a.created < b.created ? 1 : -1))
-          .set('next', newList.length == PAGE_LIMIT)
+          .set('next', newList.length == PAGE_LIMIT || newList.length == PAGE_UPDATE)
       }
       return state.set('next', false)
     }
