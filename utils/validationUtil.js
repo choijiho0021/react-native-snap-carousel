@@ -82,7 +82,7 @@ class ValidationUtil {
                 message: i18n.t('addr:noTelephone')
             },
             length: {
-                minimum: 7,
+                minimum: 8,
                 message: i18n.t('addr:invalidTelephone')
             },        
         },
