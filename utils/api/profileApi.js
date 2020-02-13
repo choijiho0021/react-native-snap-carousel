@@ -87,7 +87,7 @@ class ProfileAPI {
                         address_line1: profile.addressLine1,
                         address_line2: profile.addressLine2,
                         organization: profile.detailAddr,        // 상세주소
-                        additional_name: profile.roadAddr,    // 도로명주소
+                        additional_name: profile.roadAddr,       // 도로명주소
                         given_name: profile.recipient || profile.givenName, 
                         family_name: profile.recipient || profile.familyName
                     },
