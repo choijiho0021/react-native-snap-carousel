@@ -319,8 +319,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   button: {
-    width: isDeviceSize('small') ? 130 : 160,
-    height: isDeviceSize('small') ? 40 : 48,
+    width: '44%',
+    height: isDeviceSize('small') ? 43 : 48,
     borderRadius: 24,
     backgroundColor: colors.white,
     borderStyle: "solid",
