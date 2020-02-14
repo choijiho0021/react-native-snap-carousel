@@ -51,9 +51,9 @@ class NewSimScreen extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if ( this.props.sim.simList != prevProps.sim.simList) {
-      this._init()
-    }
+    // if ( this.props.sim.simList != prevProps.sim.simList) {
+    //   this._init()
+    // }
   }
 
   _init() {
@@ -66,7 +66,11 @@ class NewSimScreen extends Component {
       simQty: new Map(simList.reduce((acc,cur) => ({
         ... acc,
         [cur.key]: 0
-      }), {}))
+      }), {})),
+      total: {
+        cnt:0,
+        price: 0
+      }
     })
   }
 
@@ -106,7 +110,10 @@ class NewSimScreen extends Component {
           this.props.action.cart.purchase({ purchaseItems:simList, dlvCost:true, balance})
           this.props.navigation.navigate('PymMethod')
         }
-        else this.props.action.cart.cartAddAndGet( simList)
+        else {
+          this.props.action.cart.cartAddAndGet( simList)
+          this._init()
+        }
       }
     }
     
