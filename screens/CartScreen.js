@@ -270,11 +270,12 @@ class CartScreen extends Component {
                                               dlvCost={dlvCost}/>} />
         <View style={styles.buttonBox}>
           <View style={styles.sumBox}>
-            <Text style={[styles.btnBuyText, {color:colors.black}]}>{i18n.t('sum') + ': '}</Text>
+            <Text style={[styles.btnBuyText, {color:colors.black}]}>{i18n.t('cart:pymAmount') + ': '}</Text>
             <Text style={[styles.btnBuyText, {color:colors.black}]}>{utils.numberToCommaString(pymPrice)}</Text>
             <Text style={[styles.btnBuyText, {color:colors.black}]}>{i18n.t('won')}</Text>
           </View>
           <AppButton style={styles.btnBuy} title={i18n.t('cart:purchase') + `(${total.cnt})`} 
+            titleStyle={{fontSize: isDeviceSize('small') ? 16 : 18}}
             disabled={total.price == 0}
             onPress={!_.isEmpty(!iccid && data) ? this._registerSimAlert : this._onPurchase}/>
         </View>

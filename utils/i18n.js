@@ -275,6 +275,7 @@ const en = {
   "cart:dlvCostNotice" : "Free Delivery condition",
   "cart:toCart" : "To Cart",
   "cart:buy" : "Purchase",
+  "cart:pymAmount" : "Payment Amount",
   "cart:purchase" : "Purchase",
   "cart:empty" : "Cart is Empty",
 
@@ -611,6 +612,7 @@ const ko = {
   "cart:dlvCostNotice" : "* 3만원 이상 구매시 배송료 무료",
   "cart:toCart" : "카트에 넣기",
   "cart:buy" : "바로 구매",
+  "cart:pymAmount" : "결제 금액",
   "cart:purchase" : "구매하기",
   "cart:empty" : "카트가 비어있습니다.",
 
