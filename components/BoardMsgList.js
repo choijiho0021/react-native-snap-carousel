@@ -204,7 +204,7 @@ class BoardMsgList extends Component {
           </View>
         }
 
-        <Text style={styles.mylist}>{i18n.t('board:mylist')}</Text>
+        <Text style={styles.mylist}>{this.props.uid == 0 ? i18n.t('board:list') : i18n.t('board:mylist')}</Text> 
 
       </View>
     )
