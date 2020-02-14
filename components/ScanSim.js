@@ -18,7 +18,7 @@ class ScanSim extends PureComponent {
     super(props)
     this.state = {
       cameraOn: false,
-      hasCameraPermission: null,
+      hasCameraPermission: false,
       flashOn: false,
       scanned: false
     }
@@ -27,19 +27,20 @@ class ScanSim extends PureComponent {
   }
 
   componentDidUpdate( prevProps) {
-    if ( this.props.scan != prevProps.scan) {
+    if ( this.props.scan != prevProps.scan || this.props.hasCameraPermission != prevProps.hasCameraPermission) {
       this.setState({
-        cameraOn : this.props.scan
+        cameraOn : this.props.scan,
+        hasCameraPermission : this.props.hasCameraPermission
       })
     }
   }
 
-  async componentDidMount() {
-    const permission = Platform.OS == 'ios' ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA
-    const result = await check(permission)
+  // async componentDidMount() {
+  //   const permission = Platform.OS == 'ios' ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA
+  //   const result = await check(permission)
 
-    this.setState({ hasCameraPermission: result === 'granted' });
-  }
+  //   this.setState({ hasCameraPermission: result === 'granted' });
+  // }
 
   _onPress() {
     const flashOn = ! this.state.flashOn
@@ -62,9 +63,9 @@ class ScanSim extends PureComponent {
     
     if (hasCameraPermission === false) {
       // 카메라 권한을 요청한다.
-      AppAlert.confirm( i18n.t('settings'), i18n.t('acc:permCamera'), {
-        ok: () => openSettings()
-      })
+      // AppAlert.confirm( i18n.t('settings'), i18n.t('acc:permCamera'), {
+      //   ok: () => openSettings()
+      // })
 
       return (
         <View style={styles.box}>

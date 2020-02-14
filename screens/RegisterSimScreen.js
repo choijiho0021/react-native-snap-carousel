@@ -27,6 +27,7 @@ import utils from '../utils/utils';
 import userApi from '../utils/api/userApi';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { isDeviceSize } from '../constants/SliderEntry.style';
+import { openSettings, check, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 class RegisterSimScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -43,7 +44,8 @@ class RegisterSimScreen extends Component {
       querying: false,
       iccid: ['','','',''],
       actCode: undefined,
-      focusInputIccid: false
+      focusInputIccid: false,
+      hasCameraPermission : false
     }
 
     this._onSubmit = this._onSubmit.bind(this)
@@ -109,10 +111,24 @@ class RegisterSimScreen extends Component {
     })
   }
 
-  _onCamera(flag) {
-    this.setState({
-      scan: flag
-    })
+  async _onCamera(flag) {
+
+    const permission = Platform.OS == 'ios' ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA
+    const result = await check(permission)
+    const hasCameraPermission = result === 'granted'
+
+    if (hasCameraPermission === false) {
+      // 카메라 권한을 요청한다.
+      AppAlert.confirm( i18n.t('settings'), i18n.t('acc:permCamera'), {
+        ok: () => openSettings()
+      })
+    }
+    else{
+      this.setState({
+        scan: flag,
+        hasCameraPermission
+      })
+    }
   }
 
   _onScan = ({data, rawData, type}) => {
@@ -151,7 +167,7 @@ class RegisterSimScreen extends Component {
   }
 
   render() {
-    const {scan, iccid, actCode, querying, focusInputIccid} = this.state
+    const {scan, iccid, actCode, querying, focusInputIccid, hasCameraPermission} = this.state
     const disabled = _.size(iccid) !== 4 || ! iccid.every( elm => _.size(elm) === 5 ) ||
       _.isEmpty(actCode) || actCode.length < 4
     let iccidIdx = iccid.findIndex(elm => _.size(elm) !== 5)
@@ -168,7 +184,7 @@ class RegisterSimScreen extends Component {
           scrollEnabled={isDeviceSize('small')}>
 
           <TouchableOpacity style={styles.card} onPress={() => this._onCamera(!scan)}>
-            <ScanSim scan={scan} onScan={this._onScan}/>
+            <ScanSim scan={scan} onScan={this._onScan} hasCameraPermission={hasCameraPermission}/>
           </TouchableOpacity>
 
           <Text style={styles.title}>{i18n.t('mysim:title')}</Text>
