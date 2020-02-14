@@ -116,7 +116,7 @@ class AddProfileScreen extends Component {
             .set('zipCode', addr.zipNo)
             .set('province', findEngAddress.findProvince(provinceNumber))
             .set('city', findEngAddress.findCity(provinceNumber, cityNumber))
-            .set('detailAddr', '')
+            // .set('detailAddr', '')
             .set('roadAddr', addr.roadAddr)
         })
 
