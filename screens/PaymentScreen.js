@@ -58,15 +58,20 @@ class PaymentScreen extends Component{
   }
 
   async _callback( response ) {
-    const params = this.props.navigation.getParam('params')
-    const orderResult = await this.props.action.cart.payNorder({
-      ... response,
-      amount: params.amount,
-      profile_uuid: params.profile_uuid,
-      deduct_from_balance: params.deduct_from_balance,
-      dlvCost: params.dlvCost
-    })
-    this.props.navigation.replace('PaymentResult', {pymResult:response, orderResult})  
+    if(response.success){
+      const params = this.props.navigation.getParam('params')
+      const orderResult = await this.props.action.cart.payNorder({
+        ... response,
+        amount: params.amount,
+        profile_uuid: params.profile_uuid,
+        deduct_from_balance: params.deduct_from_balance,
+        dlvCost: params.dlvCost
+      })
+      this.props.navigation.replace('PaymentResult', {pymResult:response, orderResult})  
+    }
+    else{
+      this.props.navigation.goBack()
+    }
   }
 
   render() {
