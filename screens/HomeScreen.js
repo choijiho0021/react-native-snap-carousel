@@ -35,7 +35,6 @@ import { initialMode } from 'react-native-dark-mode'
 import { Animated } from 'react-native';
 import TutorialScreen from './TutorialScreen';
 import AsyncStorage from '@react-native-community/async-storage';
-// import AsyncStorage from '@react-native-community/async-storage'; 
 
 const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti, 
   {badgeStyle:{right:-3,top:0}},
