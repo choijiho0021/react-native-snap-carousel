@@ -168,7 +168,7 @@ class PymMethodScreen extends Component {
         value.map((v,idx) => <AppButton 
           key={idx+""} 
           title={v.title} 
-          style={styles.button}
+          style={styles.button(idx)}
           checked={v.key == selected}
           checkedColor={colors.clearBlue}
           onPress={this._onPress(v.key)}
@@ -318,15 +318,17 @@ const styles = StyleSheet.create({
     marginTop: 15,
     marginHorizontal: 20,
   },
-  button: {
+  button: (idx) => ({
     width: isDeviceSize('small') ? 130 : 160,
     height: isDeviceSize('small') ? 40 : 48,
     borderRadius: 24,
     backgroundColor: colors.white,
     borderStyle: "solid",
     borderWidth: 1,
+    marginLeft: idx == 0 ? 0 : 8,
+    marginRight: idx ==0  ? 8 : 0,
     borderColor: colors.warmGrey
-  },
+  }),
   buttonText: {
     ... appStyles.normal14Text,
     textAlign: 'center',
