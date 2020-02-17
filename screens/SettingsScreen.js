@@ -75,19 +75,19 @@ class SettingsScreen extends Component {
           value: i18n.t(loggedIn ? 'set:logout' : 'set:login')
         } : item)
       })
+      if(loggedIn){
+        this.props.action.cart.cartFetch()
+      }
     }
-
   }
-  // 최신버전 가져오는 소스코드 주석처리
-  // componentDidMount(){
-  //   VersionCheck.getLatestVersion({
-  //     provider: Platform.OS == 'ios' ? 'appStore' : 'playStore'
-  //   })
-  //   .then(latestVersion => {
-  //     this.setState({latestVersion})
-  //     console.log(latestVersion);
-  //   });
-  // }
+
+  componentDidMount(){
+    const { loggedIn} = this.props
+ 
+    if(loggedIn){
+      this.props.action.cart.cartFetch()
+    }
+  }
 
   _onPress = (key, title, route) => () => {
     if ( key == 'logout') {
