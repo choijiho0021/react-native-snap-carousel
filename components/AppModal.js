@@ -87,7 +87,7 @@ class AppModal extends PureComponent {
 
   render() {
     const { value, error } = this.state
-    const { title, type } = this.props
+    const { title, type, maxLength = undefined, keyboardType = 'default' } = this.props
 
     return (
       <Modal animationType="fade"
@@ -106,6 +106,8 @@ class AppModal extends PureComponent {
                     returnKeyType='done'
                     enablesReturnKeyAutomatically={true}
                     onChangeText={this._onChangeText('value')}
+                    maxLength={maxLength}
+                    keyboardType={keyboardType}
                     value={value} /> 
 
                   <AppButton style={styles.cancelButton} iconName="btnCancel" onPress={() => this._onChangeText('value')('')}/>

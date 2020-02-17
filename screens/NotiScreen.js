@@ -19,7 +19,7 @@ import * as accountActions from '../redux/modules/account'
 import AppBackButton from '../components/AppBackButton';
 
 const MODE_NOTIFICATION = 'info'
-
+const CONTACT_BOARD_LIST_INDEX = 1
 class NotiListItem extends PureComponent {
   render() {
     const {item, index, onPress} = this.props
@@ -72,7 +72,7 @@ class NotiScreen extends Component {
 
       switch (notiType) {
         case 'reply':
-          this.props.navigation.navigate('ContactBoard')
+          this.props.navigation.navigate('ContactBoard', {index: CONTACT_BOARD_LIST_INDEX})
           break;
         default: // notitype = 'noti' OR 'pym 인 경우 포함
           this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:bodyTitle, text:body, mode:'text'})
