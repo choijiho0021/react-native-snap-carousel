@@ -274,8 +274,14 @@ class CartScreen extends Component {
             <Text style={[styles.btnBuyText, {color:colors.black}]}>{utils.numberToCommaString(pymPrice)}</Text>
             <Text style={[styles.btnBuyText, {color:colors.black}]}>{i18n.t('won')}</Text>
           </View>
-          <AppButton style={styles.btnBuy} title={i18n.t('cart:purchase') + `(${total.cnt})`} 
-            titleStyle={{fontSize: isDeviceSize('small') ? 16 : 18}}
+          <AppButton style={styles.btnBuy} 
+            title={i18n.t('cart:purchase') + `(${total.cnt})`} 
+            titleStyle={{fontSize: isDeviceSize('small') ? 16 : 18,
+                          ... appStyles.normal18Text,
+                          color: colors.white,
+                          textAlign: "center",
+                          margin: 5}}
+            checkedColor={colors.white}
             disabled={total.price == 0}
             onPress={!_.isEmpty(!iccid && data) ? this._registerSimAlert : this._onPurchase}/>
         </View>
