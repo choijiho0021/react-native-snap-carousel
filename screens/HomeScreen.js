@@ -345,19 +345,21 @@ class HomeScreen extends Component {
 
   _info() {
     return (
-      <View style={{flexDirection: 'row', marginHorizontal: 20}}>
-        <AppIcon name="iconNotice" size={36} />
-        <Carousel
-          data={this.props.info.infoList}
-          renderItem={this._renderInfo}
-          autoplay={true}
-          vertical={true}
-          loop={true}
-          useScrollView={true}
-          lockScrollWhileSnapping={true}
-          sliderHeight={60}
-          itemHeight={60} />
-      </View>
+      <TouchableOpacity onPress={() => this.props.navigation.navigate('Noti', {mode: 'info', title:i18n.t('notice'), info: this.props.info.infoList})}>
+        <View style={{flexDirection: 'row', marginHorizontal: 20}}>
+          <AppIcon name="iconNotice" size={36} />
+          <Carousel
+            data={this.props.info.infoList}
+            renderItem={this._renderInfo}
+            autoplay={true}
+            vertical={true}
+            loop={true}
+            useScrollView={true}
+            lockScrollWhileSnapping={true}
+            sliderHeight={60}
+            itemHeight={60} />
+        </View>
+      </TouchableOpacity>
     )
   }
 

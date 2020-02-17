@@ -212,6 +212,7 @@ class BoardMsgAdd extends Component {
 
 
   _renderPass() {
+    const {pin} = this.state
     return (
       <View style={styles.passwordBox}>
         <Text style={[appStyles.normal14Text, {color:colors.tomato, marginRight:5, textAlignVertical:"center"}]}>*</Text>
@@ -225,6 +226,7 @@ class BoardMsgAdd extends Component {
           maxLength={4}
           secureTextEntry={true}
           onChangeText={this._onChangeText('pin')} 
+          value={pin}
           onFocus={() => this.setState({extraHeight: 20})}
           /> 
       </View>

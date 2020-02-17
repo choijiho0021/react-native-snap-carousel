@@ -165,7 +165,7 @@ class BoardMsgList extends Component {
   }
 
   _onEndReached() {
-    this.props.action.board.getNextIssueList()
+      this.props.action.board.getNextIssueList()    
   }
 
   _onRefresh() {
@@ -204,7 +204,7 @@ class BoardMsgList extends Component {
           </View>
         }
 
-        <Text style={styles.mylist}>{i18n.t('board:mylist')}</Text>
+        <Text style={styles.mylist}>{this.props.uid == 0 ? i18n.t('board:list') : i18n.t('board:mylist')}</Text> 
 
       </View>
     )
@@ -227,8 +227,9 @@ class BoardMsgList extends Component {
         <FlatList data={data} 
           ListHeaderComponent={this._header}
           ListEmptyComponent={this._empty}
-          onEndReached={this._onEndReached}
-          onEndReachedThreshold={0.5}
+          // onEndReached={this._onEndReached} 
+          // onEndReachedThreshold={0.5}
+          onScrollEndDrag={this._onEndReached} //검색 시 onEndReached가 발생하는 버그가 Flatlist에 있어 끝까지 스크롤한 경우 list를 더 가져오도록 변경
           onRefresh={this._onRefresh}
           refreshing={refreshing}
           extraData={mobile}
