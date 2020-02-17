@@ -37,7 +37,8 @@ export default handleActions({
     type: GET_USAGE,
     onSuccess: (state, action) => {
       const {result, objects} = action.payload
-      if (result == 0 && objects.length > 0) {
+      console.log("objects",objects)
+      if (result == 0) {
         return state.set('usage', objects)
       }
       return state
