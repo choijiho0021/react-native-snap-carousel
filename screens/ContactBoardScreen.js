@@ -23,7 +23,7 @@ class ContactBoardScreen extends Component {
     super(props)
 
     this.state = {
-      index: 0,
+      index: this.props.navigation.getParam('index') || 0,
       routes: [
         { key: 'new', title: i18n.t('board:new') },
         { key: 'list', title: i18n.t('board:list') },
