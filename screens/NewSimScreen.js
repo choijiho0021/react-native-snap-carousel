@@ -175,7 +175,11 @@ class NewSimScreen extends Component {
 
         <View style={styles.buttonBox}>
           <AppButton style={styles.btnCart} title={i18n.t('cart:toCart')} 
+            disableBackgroundColor={colors.whiteTwo}
+            checkedColor={colors.lightGrey}
+            disableColor={colors.black}
             titleStyle={styles.btnCartText}
+            disabled={! selected}
             onPress={this._onPress('cart')}/>
 
           <AppButton style={styles.btnBuy} title={i18n.t('cart:buy')} 
