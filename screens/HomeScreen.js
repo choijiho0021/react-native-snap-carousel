@@ -35,6 +35,7 @@ import { initialMode } from 'react-native-dark-mode'
 import { Animated } from 'react-native';
 import TutorialScreen from './TutorialScreen';
 import AsyncStorage from '@react-native-community/async-storage';
+import { PERMISSIONS, request } from 'react-native-permissions';
 
 const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti, 
   {badgeStyle:{right:-3,top:0}},
@@ -114,6 +115,10 @@ class HomeScreen extends Component {
  }
 
   async componentDidMount() {
+    if(Platform.OS == 'ios'){
+      await request(PERMISSIONS.IOS.PHOTO_LIBRARY)
+      await request(PERMISSIONS.IOS.CAMERA)
+    }
  
     // 로그인 여부와 관련 없이 항상 처리할 부분
 
