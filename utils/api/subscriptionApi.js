@@ -8,6 +8,7 @@ class SubscriptionAPI {
     code = {
         'A' : 'active',
         'I' : 'inactive',
+        'R' : 'reserved',
         'E' : 'expired',
         'U' : 'used'
     }
@@ -52,6 +53,23 @@ class SubscriptionAPI {
                 expireDate: item.field_subs_expiration_date,
                 staus: item.field_status
             })), data.links)
+        }
+        return {
+            result: api.NOT_FOUND 
+        }
+    }
+
+    toSubsUpdate = (data) => {
+        console.log('subscription update', data)
+        if ( _.isArray(data)) {
+            return api.success( data.map(item => ({
+                key: item.uuid[0].value,
+                uuid: item.uuid[0].value,
+                statusCd: item.field_status[0].value,
+                status: this.toStatus(item.field_status[0].value),
+                prodName: item.title[0].value
+                })
+            ))
         }
         return {
             result: api.NOT_FOUND 
@@ -117,9 +135,21 @@ class SubscriptionAPI {
             headers,
             body: JSON.stringify(body)
         }, this.toSubscription)
-
     }
 
+    updateSubscriptionStatus = (uuid, status, {token}) => {
+        if ( _.isEmpty(uuid) || _.isEmpty(status) || _.isEmpty(token) ) return api.reject( api.INVALID_ARGUMENT)
+
+        const url = `${api.httpUrl(api.path.rokApi.rokebi.subs,'')}/${uuid}?_format=json`
+        const headers = api.withToken(token, 'json')
+        const body = {status : status}
+        
+        return api.callHttp(url, {
+            method: 'PATCH',
+            headers,
+            body: JSON.stringify(body)
+        }, this.toSubsUpdate)
+    }
 }
 
 export default new SubscriptionAPI()

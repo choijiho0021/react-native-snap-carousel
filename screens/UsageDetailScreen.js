@@ -4,13 +4,17 @@ import {
   Text,
   View,
 } from 'react-native';
+import {bindActionCreators} from 'redux'
+import {connect} from 'react-redux'
+import * as accountActions from '../redux/modules/account'
+import * as orderActions from '../redux/modules/order'
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import utils from '../utils/utils';
 import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';
 import LabelText from '../components/LabelText';
-
+import AppButton from '../components/AppButton';
 class UsageDetailScreen extends Component {
   static navigationOptions = ({navigation}) => ({
     headerLeft: <AppBackButton navigation={navigation} title={i18n.t('his:detail')} />
@@ -19,6 +23,8 @@ class UsageDetailScreen extends Component {
   constructor(props) {
     super(props)
     this.state = {}
+
+    this._onSubmit = this._onSubmit.bind(this)
   }
 
   componentDidMount() {
@@ -26,22 +32,37 @@ class UsageDetailScreen extends Component {
     this.setState(detail)
   }
 
+  _onSubmit() {
+    const { auth } = this.props
+    const { uuid } = this.state
+    const status = 'R'
+
+    //update status as Reserved
+    this.props.action.order.updateUsageStatus( uuid, status, auth)
+    this.props.navigation.goBack()
+  }
+
   render() {
     const {prodName, activationDate, endDate, expireDate, purchaseDate} = this.state || {}
 
     return (
       <View style={styles.container}>
-        <Text style={styles.notice}>{i18n.t('his:timeStd')}</Text>
-        <Text style={styles.title}>{prodName}</Text>
-        <View style={styles.divider} />
-        <LabelText style={styles.info} 
-          label={i18n.t('his:purchaseDate')} value={utils.toDateString(purchaseDate)} />
-        <LabelText style={styles.info} 
-          label={i18n.t('his:activationDate')} value={activationDate ? utils.toDateString(activationDate) : i18n.t('his:inactive')} />
-        <LabelText style={styles.info} 
-          label={i18n.t('his:termDate')} value={endDate ? utils.toDateString(endDate) : i18n.t('his:inactive')} />
-        <LabelText style={styles.info} 
-          label={i18n.t('his:expireDate')} value={utils.toDateString(expireDate, 'LL')} />
+        <View style={styles.container}>
+          <Text style={styles.notice}>{i18n.t('his:timeStd')}</Text>
+          <Text style={styles.title}>{prodName}</Text>
+          <View style={styles.divider} />
+          <LabelText style={styles.info} 
+            label={i18n.t('his:purchaseDate')} value={utils.toDateString(purchaseDate)} />
+          <LabelText style={styles.info} 
+            label={i18n.t('his:activationDate')} value={activationDate ? utils.toDateString(activationDate) : i18n.t('his:inactive')} />
+          <LabelText style={styles.info} 
+            label={i18n.t('his:termDate')} value={endDate ? utils.toDateString(endDate) : i18n.t('his:inactive')} />
+          <LabelText style={styles.info} 
+            label={i18n.t('his:expireDate')} value={utils.toDateString(expireDate, 'LL')} />
+        </View>
+        <AppButton style={appStyles.confirm} 
+          title={i18n.t('reg:ReserveToUse')} titleStyle={appStyles.confirmText}
+          onPress={this._onSubmit}/>
       </View>
     )
   }
@@ -84,4 +105,17 @@ const styles = StyleSheet.create({
   }
 });
 
-export default UsageDetailScreen
+const mapStateToProps = (state) => ({
+  account : state.account.toJS(),
+  auth: accountActions.auth(state.account),
+  order: state.order.toJS()
+})
+
+export default connect(mapStateToProps, 
+  (dispatch) => ({
+    action : {
+      account: bindActionCreators(accountActions, dispatch),
+      order: bindActionCreators(orderActions, dispatch)
+    }
+  })
+)(UsageDetailScreen)

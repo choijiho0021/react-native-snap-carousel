@@ -96,6 +96,7 @@ const en = {
   'reg:scan': 'Scan card',
   'reg:scanOff': 'Scan off',
   'reg:confirm': 'Confirm',
+  'reg:ReserveToUse': 'Reserve to use',
   'reg:failedToSendSms': 'Failed to send sms',
   'reg:failedToLogIn': 'Failed to sign in. Please try again.',
 
@@ -227,6 +228,7 @@ const en = {
   "his:active" : "Active",
   "his:used" : "Used",
   "his:expired" : "Expired",
+  "his:reserved" : "Reserved",
   "his:timeStd" : "Based on KST",
 
   "contact:title" : "Customer Center",
@@ -427,6 +429,7 @@ const ko = {
   'reg:scan': '카드 스캔',
   'reg:scanOff': '스캔 중단',
   'reg:confirm': '등록',
+  'reg:ReserveToUse': '사용 예약',
   'reg:failedToSendSms': 'SMS 인증번호 발송 실패',
   'reg:failedToLogIn': '로깨비 로그인이 실패하였습니다. 다시 시도해주시기 바랍니다.',
 
@@ -561,10 +564,11 @@ const ko = {
   "his:noPurchase" : "구매 내역이 없습니다",
   "his:noUsage" : "사용 내역이 없습니다",
   "his:orderId" : "주문 번호",
-  "his:inactive" : "사용 대기중",
+  "his:inactive" : "미사용",
   "his:active" : "사용 중",
   "his:used" : "사용 완료",
   "his:expired" : "사용 기한 종료",
+  "his:reserved" : "사용 대기중",
   "his:timeStd" : "한국 시각 기준",
 
   "contact:title" : "고객 센터",
