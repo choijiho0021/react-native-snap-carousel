@@ -68,6 +68,11 @@ class AppModal extends PureComponent {
     }
   }
 
+  _onCancelClose() {
+    this.props.onCancelClose()
+    this.setState({error:undefined})
+  }
+
   _renderError() {
     const { error } = this.state
 
@@ -121,7 +126,7 @@ class AppModal extends PureComponent {
               {
                 type === 'info' ? null:
                   <AppButton style={styles.button} 
-                    onPress={this.props.onCancelClose}
+                    onPress={() => this._onCancelClose()}
                     title={i18n.t('cancel')} 
                     titleStyle={styles.buttonTitle}/>
               }

@@ -42,7 +42,7 @@ class PurchaseDetailScreen extends Component {
           orderItems && orderItems.map((item,idx) => 
             <LabelText 
               key={idx+""} style={styles.item}
-              label={item.title} labelStyle={styles.label}
+              label={item.title + '   X   ' + item.qty} labelStyle={styles.label}
               format="price"
               valueStyle={appStyles.roboto16Text}
               value={item.price}/>

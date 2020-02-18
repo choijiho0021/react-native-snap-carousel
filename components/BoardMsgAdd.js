@@ -84,7 +84,7 @@ class BoardMsgAdd extends Component {
     this.state = {
       ... this.initialState,
       extraHeight: 80,
-      hasCameraRollPermission: null,
+      hasPhotoPermission: false,
     }
 
     this._onSubmit = this._onSubmit.bind(this)
@@ -108,7 +108,7 @@ class BoardMsgAdd extends Component {
       number = utils.toPhoneNumber(mobile)
 
     this.setState({
-      hasCameraRollPermission: result === RESULTS.GRANTED,
+      hasPhotoPermission: result === RESULTS.GRANTED,
       mobile: number,
       email
     })
@@ -176,8 +176,18 @@ class BoardMsgAdd extends Component {
     this.scroll.props.scrollToFocusedInput(findNodeHandle(event.target));
   }
   
-  _addAttachment() {
-    if ( this.state.hasCameraRollPermission ) {
+  async _addAttachment() {
+
+    let checkNewPermission = false
+
+    if(!this.state.hasPhotoPermission){
+      const permission = Platform.OS == 'ios' ? PERMISSIONS.IOS.PHOTO_LIBRARY : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE
+      const result = await check(permission)
+
+      checkNewPermission =  result === RESULTS.GRANTED
+    }
+
+    if ( this.state.hasPhotoPermission || checkNewPermission) {
       ImagePicker && ImagePicker.openPicker({
         width: 750,
         height: 1334,   // iphone 8 size
