@@ -14,6 +14,7 @@ class OrderAPI {
                     totalPrice: utils.stringToNumber( item.total_price__number),
                     orderItems: [{
                         title: item.title,
+                        qty: item.quantity,
                         price: utils.stringToNumber( item.item_price)
                     }]
                 })).reduce((acc,cur) => {
