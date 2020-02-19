@@ -84,7 +84,7 @@ class MyPageScreen extends Component {
     super(props)
     this.state = {
       mode: 'purchase',
-      hasCameraRollPermission: null,
+      hasPhotoPermission: false,
       showEmailModal: false,
       isReloaded: false
     }
@@ -131,13 +131,17 @@ class MyPageScreen extends Component {
         this.setState({ isReloaded: false })
       }
     }
+    
+    if(this.props.account.loggedIn != prevProps.account.loggedIn){
+      this.props.navigation.navigate('RegisterMobile')
+    }
   }
 
   async _didMount(){
     const permission = Platform.OS == 'ios' ? PERMISSIONS.IOS.PHOTO_LIBRARY : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE
     const result = await check(permission)
 
-    this.setState({ hasCameraRollPermission: result === 'granted'})
+    this.setState({ hasPhotoPermission: result === 'granted'})
 
     if ( this.props.uid) this.props.action.order.getOrders(this.props.auth)
   }
@@ -164,11 +168,21 @@ class MyPageScreen extends Component {
   }
 
   async _changePhoto() {
+
+    let checkNewPermission = false
+
+    if(!this.state.hasPhotoPermission){
+      const permission = Platform.OS == 'ios' ? PERMISSIONS.IOS.PHOTO_LIBRARY : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE
+      const result = await check(permission)
+
+      checkNewPermission =  result === RESULTS.GRANTED
+    }
+
     if ( ! this.props.uid) {
       return this.props.navigation.navigate('Auth')
     }
 
-    if ( this.state.hasCameraRollPermission ) {
+    if ( this.state.hasPhotoPermission || checkNewPermission) {
       ImagePicker && ImagePicker.openPicker({
         width: 76,
         height: 76,
