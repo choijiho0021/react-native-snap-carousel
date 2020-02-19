@@ -72,6 +72,9 @@ class Api {
             },
             noti: {
                 alimtalk: 'api/v1/noti/msg/alimtalk'
+            },
+            rokebi: {
+                subs: 'rokebi/subs'
             }
         }
     }

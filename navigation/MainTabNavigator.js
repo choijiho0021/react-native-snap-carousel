@@ -155,7 +155,7 @@ const MyPageStack = createStackNavigator(
 );
 
 MyPageStack.navigationOptions = ({navigation}) => ({
-  tabBarVisible: ! ['Recharge', 'Payment', 'PymMethod', 'PaymentResult', 'RegisterSim'].includes(navigation.state.routes[navigation.state.index].routeName),
+  tabBarVisible: navigation.state.index == 0,
   tabBarLabel: i18n.t('mypage'),
   tabBarIcon: ({ focused }) => (
     <AppIcon focused={focused} name="btnMypage" style={styles.tabBarIcon}/>
