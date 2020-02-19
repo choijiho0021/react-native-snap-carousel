@@ -79,7 +79,7 @@ class SubscriptionAPI {
     getSubscription = (iccid, {token}) => {
         if ( _.isEmpty(iccid) || _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
 
-        const url = `${api.httpUrl(api.path.subscription)}/${iccid}?_format=hal_json`
+        const url = `${api.httpUrl(api.path.subscription)}/iccid/${iccid}?_format=hal_json`
         const headers = api.withToken(token)
 
         return api.callHttp(url, {
