@@ -51,13 +51,13 @@ class UsageDetailScreen extends Component {
           <Text style={styles.notice}>{i18n.t('his:timeStd')}</Text>
           <Text style={styles.title}>{prodName}</Text>
           <View style={styles.divider} />
-          <LabelText style={styles.info} 
+          <LabelText style={styles.info} valueStyle={{color:colors.black}}
             label={i18n.t('his:purchaseDate')} value={utils.toDateString(purchaseDate)} />
-          <LabelText style={styles.info} 
+          <LabelText style={styles.info} valueStyle={{color:colors.black}}
             label={i18n.t('his:activationDate')} value={activationDate ? utils.toDateString(activationDate) : i18n.t('his:inactive')} />
-          <LabelText style={styles.info} 
+          <LabelText style={styles.info} valueStyle={{color:colors.black}}
             label={i18n.t('his:termDate')} value={endDate ? utils.toDateString(endDate) : i18n.t('his:inactive')} />
-          <LabelText style={styles.info} 
+          <LabelText style={styles.info} valueStyle={{color:colors.black}}
             label={i18n.t('his:expireDate')} value={utils.toDateString(expireDate, 'LL')} />
         </View>
         <AppButton style={appStyles.confirm} 
