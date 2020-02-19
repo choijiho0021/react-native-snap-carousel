@@ -14,9 +14,14 @@ class AppBackButton extends PureComponent {
   _goBack() {
     const {navigation, back, lastTab} = this.props
 
+    var tab = ''
     if ( back == 'top') return navigation.popToTop()
     if ( back == 'lastTab') {
-      const tab = (lastTab[0] == 'CartStack') ? lastTab[1] : lastTab[0]
+      if( lastTab[0] == 'MyPageStack' ){
+        tab = 'Home'
+      }else{
+        tab = (lastTab[0] == 'CartStack') ? lastTab[1] : lastTab[0]
+      }
       return navigation.navigate(tab)
     }
 

@@ -97,15 +97,16 @@ class MyPageScreen extends Component {
     this._validEmail = this._validEmail.bind(this)
     this._changeEmail = this._changeEmail.bind(this)
     this._recharge = this._recharge.bind(this)
+    this._didMount = this._didMount.bind(this)
   }
 
-  async componentDidMount() {
-    const permission = Platform.OS == 'ios' ? PERMISSIONS.IOS.PHOTO_LIBRARY : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE
-    const result = await check(permission)
-
-    this.setState({ hasCameraRollPermission: result === 'granted'})
-
-    if ( this.props.uid) this.props.action.order.getOrders(this.props.auth)
+  componentDidMount() {
+    if(!this.props.account.loggedIn){
+      this.props.navigation.navigate('RegisterMobile')
+    }
+    else{
+      this._didMount()
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -130,6 +131,15 @@ class MyPageScreen extends Component {
         this.setState({ isReloaded: false })
       }
     }
+  }
+
+  async _didMount(){
+    const permission = Platform.OS == 'ios' ? PERMISSIONS.IOS.PHOTO_LIBRARY : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE
+    const result = await check(permission)
+
+    this.setState({ hasCameraRollPermission: result === 'granted'})
+
+    if ( this.props.uid) this.props.action.order.getOrders(this.props.auth)
   }
 
   _onPress = (key) => () => {
