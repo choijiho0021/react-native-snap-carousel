@@ -13,6 +13,25 @@ class SubscriptionAPI {
         'U' : 'used'
     }
 
+    getPriority (statusCd) {
+        if(statusCd == 'A'){
+            return 6
+        }
+        else if(statusCd == 'R'){
+            return 5
+        }
+        else if(statusCd == 'I'){
+            return 4
+        }
+        else if(statusCd == 'U'){
+            return 3
+        }
+        else if(statusCd == 'E'){
+            return 2
+        }
+        else return 1
+    }
+
     toString(val) {
         return typeof val === 'string' ? val : undefined
     }
@@ -27,8 +46,31 @@ class SubscriptionAPI {
 
     toSubscription = (data) => {
         console.log('subscription', data)
-        if ( _.isArray(data)) {
-            return api.success( data.map(item => ({
+        // const sortData = [].concat(data.filter(elm => elm.field_status == 'A'))
+        //     .concat(data.filter(elm => elm.field_status == 'R'))
+        //     .concat(data.filter(elm => elm.field_status == 'I'))
+        //     .concat(data.filter(elm => elm.field_status == 'U'))
+        //     .concat(data.filter(elm => elm.field_status == 'E'))
+
+        let sortData = data
+
+        //status 우선순위, 구입날짜별로 정렬
+        if(data.length > 1) {
+            sortData = data.sort((a,b) => {
+                if(a.field_status == b.field_status && a.field_purchase_date > b.field_purchase_date){
+                    return -1
+                }
+                else if(this.getPriority(a.field_status) > this.getPriority(b.field_status)) {
+                    return -1
+                }
+                else {
+                    return 1
+                }
+            })
+        }
+
+        if ( _.isArray(sortData)) {
+            return api.success( sortData.map(item => ({
                 key: item.uuid,
                 uuid: item.uuid,
                 purchaseDate: this.toString(item.field_purchase_date),
@@ -37,13 +79,14 @@ class SubscriptionAPI {
                 endDate: this.toString(item.field_subs_expiration_date),
                 statusCd: item.field_status,
                 status: this.toStatus(item.field_status),
+                country: item.field_country,
                 prodName: item.title,
                 prodId: item.product_uuid,
             })))
         }
 
         if ( data.jsonapi) {
-            const obj = _.isArray(data.data) ? data.data : [data.data]
+            const obj = _.isArray(sortData.data) ? sortData.data : [sortData.data]
 
             return api.success( obj.map(item => ({
                 key: item.id,
@@ -52,7 +95,7 @@ class SubscriptionAPI {
                 activationDate: item.field_subs_activation_date,
                 expireDate: item.field_subs_expiration_date,
                 staus: item.field_status
-            })), data.links)
+            })), sortData.links)
         }
         return {
             result: api.NOT_FOUND 

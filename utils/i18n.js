@@ -97,6 +97,7 @@ const en = {
   'reg:scanOff': 'Scan off',
   'reg:confirm': 'Confirm',
   'reg:ReserveToUse': 'Reserve to use',
+  'reg:RegisterToUse': 'Register to use',
   'reg:failedToSendSms': 'Failed to send sms',
   'reg:failedToLogIn': 'Failed to sign in. Please try again.',
 
@@ -430,6 +431,7 @@ const ko = {
   'reg:scanOff': '스캔 중단',
   'reg:confirm': '등록',
   'reg:ReserveToUse': '사용 예약',
+  'reg:RegisterToUse': '사용 등록',
   'reg:failedToSendSms': 'SMS 인증번호 발송 실패',
   'reg:failedToLogIn': '로깨비 로그인이 실패하였습니다. 다시 시도해주시기 바랍니다.',
 

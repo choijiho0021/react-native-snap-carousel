@@ -22,28 +22,50 @@ class UsageDetailScreen extends Component {
 
   constructor(props) {
     super(props)
-    this.state = {}
+    this.state = {
+      activating : false,
+      activatable : false
+    }
 
     this._onSubmit = this._onSubmit.bind(this)
   }
 
   componentDidMount() {
     const detail = this.props.navigation.getParam('detail')
-    this.setState(detail)
+    const country = detail.country
+    const uuid = detail.uuid
+    const { usage } = this.props.order
+
+    let activatable = false
+    let activating = false
+
+    usage.map(elm => { 
+      if(elm.country == country && elm.statusCd == 'A' && elm.uuid == uuid) {
+        activating = true
+      }
+      else if(elm.country == country && elm.statusCd == 'A') {
+        activatable = true
+      }
+    })
+    this.setState({activating, activatable, ... detail})
   }
 
   _onSubmit() {
     const { auth } = this.props
-    const { uuid } = this.state
-    const status = 'R'
-
+    const { uuid, activating, activatable } = this.state
+    const status = activatable ? 'A' : 'R'
+    
     //update status as Reserved
-    this.props.action.order.updateUsageStatus( uuid, status, auth)
+    // todo : Active로 변경하는 APi가 필요함 (현재 상태값만 A로변경 적용)
+    if(!activating){
+      this.props.action.order.updateUsageStatus( uuid, status, auth)
+    }
     this.props.navigation.goBack()
   }
 
   render() {
-    const {prodName, activationDate, endDate, expireDate, purchaseDate} = this.state || {}
+    const {prodName, activationDate, endDate, expireDate, purchaseDate, activating, activatable} = this.state || {}
+    const buttonTitle = activating ? i18n.t('ok') : activatable ? i18n.t('reg:RegisterToUse') : i18n.t('reg:ReserveToUse')
 
     return (
       <View style={styles.container}>
@@ -61,7 +83,7 @@ class UsageDetailScreen extends Component {
             label={i18n.t('his:expireDate')} value={utils.toDateString(expireDate, 'LL')} />
         </View>
         <AppButton style={appStyles.confirm} 
-          title={i18n.t('reg:ReserveToUse')} titleStyle={appStyles.confirmText}
+          title={buttonTitle} titleStyle={appStyles.confirmText}
           onPress={this._onSubmit}/>
       </View>
     )
