@@ -47,7 +47,7 @@ export default handleActions({
         const idx = usage.findIndex(item => item.uuid == elm.uuid)
 
         usage[idx].status = elm.status
-        usage[idx].statuscd = elm.statuscd
+        usage[idx].statusCd = elm.statusCd
       })
 
       if (result == 0) {
