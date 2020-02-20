@@ -42,10 +42,12 @@ class BoardMsg extends Component {
       <TouchableOpacity onPress={() => this.props.onPress(uuid,statusCode)}>
         <View style={styles.list} key="info">
           <View style={{flex:1}}>
-            <Text key="title" style={styles.title}>{titleOrMobile || ''}</Text>
+            <Text key="title" ellipsizeMode={'tail'} numberOfLines={2} style={styles.title}>{titleOrMobile || ''}</Text>
             <Text key="date" style={styles.date}>{date}</Text>
+          </View >
+          <View style={{width:'30%', alignItems:'flex-end'}}>
+            <Text key="status" style={[styles.status, {color: statusCode == 'C' ? colors.clearBlue : colors.warmGrey}]}>{status}</Text>
           </View>
-          <Text key="status" style={[styles.status, {color: statusCode == 'C' ? colors.clearBlue : colors.warmGrey}]}>{status}</Text>
         </View>
       </TouchableOpacity>
     )
@@ -316,7 +318,7 @@ const styles = StyleSheet.create({
     textAlign: 'left'
   },
   status : {
-    ... appStyles.normal14Text,
+    ... appStyles.normal14Text
   },
 });
 
