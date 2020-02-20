@@ -44,7 +44,7 @@ else {
 class OrderItem extends PureComponent {
   render () {
     const {item, onPress} = this.props
-    const label = `${item.orderItems[0].title}  ${item.orderItems.length > 1 ? i18n.t('his:etcCnt').replace('%%', item.orderItems.length) : ''}`
+    const label = `${item.orderItems[0].title}  ${item.orderItems.length > 1 ? i18n.t('his:etcCnt').replace('%%', item.orderItems.length - 1) : ''}`
 
     return (
       <TouchableOpacity onPress={onPress}>

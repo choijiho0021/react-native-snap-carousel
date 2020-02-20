@@ -16,7 +16,7 @@ class PymHistoryListItem extends PureComponent {
 
   _toPurchaseCnt( value) {
     if (_.isArray(value) && value.length > 0) {
-      return value[0].name + ((value.length > 1) ? i18n.t('his:etcCnt').replace('%%', value.length) : '')
+      return value[0].name + ((value.length > 1) ? i18n.t('his:etcCnt').replace('%%', value.length - 1) : '')
     } 
     return ''
   }
