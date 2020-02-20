@@ -284,20 +284,21 @@ class BoardMsgAdd extends Component {
           enablesReturnKeyAutomatically={true}
           maxLength={13}
           disabled={disable}
-          onChangeText={this._onChangeText('mobile')}
+          onChangeText={(value) => this._onChangeText('mobile')(utils.toPhoneNumber(value))}
           onFocus={() => this.setState({extraHeight: 20})}
           error={this._error('mobile')}
-          defaultValue={utils.toPhoneNumber(mobile)} /> 
+          value = {mobile}
+          /> 
       </View> 
     )
   }
 
   render() {
-    const { disable, title, msg, extraHeight, pin, errors = {} } = this.state
+    const { disable, title, msg, extraHeight, pin, mobile, errors = {} } = this.state
     const inputAccessoryViewID = "doneKbd"
     // errors object의 모든 value 값들이 undefined인지 확인한다.
     const hasError = Object.values(errors).findIndex(val => ! _.isEmpty(val)) >= 0 ||
-      (! this.props.isLoggedIn && _.isEmpty(pin))
+      (! this.props.isLoggedIn && _.isEmpty(pin)) || _.isEmpty(msg) || _.isEmpty(title) || _.isEmpty(mobile)
 
     return (
       <SafeAreaView style={styles.container}>
