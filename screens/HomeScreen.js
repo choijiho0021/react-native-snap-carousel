@@ -115,12 +115,12 @@ class HomeScreen extends Component {
  }
 
   async componentDidMount() {
-    if(Platform.OS == 'ios'){
-      await request(PERMISSIONS.IOS.PHOTO_LIBRARY)
-      await request(PERMISSIONS.IOS.CAMERA)
-    }
- 
+    
     // 로그인 여부와 관련 없이 항상 처리할 부분
+      if(Platform.OS == 'ios'){
+        await request(PERMISSIONS.IOS.PHOTO_LIBRARY)
+        await request(PERMISSIONS.IOS.CAMERA)
+      }
 
     // 앱 첫 실행 여부 확인
     AsyncStorage.getItem("alreadyLaunched").then(value => {
