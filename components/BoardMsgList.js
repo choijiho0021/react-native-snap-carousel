@@ -39,7 +39,7 @@ class BoardMsg extends Component {
       titleOrMobile = this.props.uid ? title : (mobile.substr(0,3) + "-****-" + mobile.substr(7))
 
     return (
-      <TouchableOpacity onPress={() => statusCode == 'C' && this.props.onPress(uuid)}>
+      <TouchableOpacity onPress={() => this.props.onPress(uuid,statusCode)}>
         <View style={styles.list} key="info">
           <View style={{flex:1}}>
             <Text key="title" style={styles.title}>{titleOrMobile || ''}</Text>
