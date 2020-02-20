@@ -6,6 +6,7 @@ import {
 import { colors } from '../constants/Colors';
 import i18n from '../utils/i18n'
 import LabelText from './LabelText';
+import {appStyles} from "../constants/Styles"
 
 const styles = StyleSheet.create({
   container: {
@@ -39,7 +40,7 @@ class ChargeSummary extends PureComponent {
       <View style={styles.price}>
         <LabelText label={i18n.t('cart:dlvCostNotice')} labelStyle={{color:colors.warmGrey}} style={{marginVertical:17}}/>
 
-        <LabelText label={i18n.t('cart:totalCnt')} style={styles.summary}
+        <LabelText label={i18n.t('cart:totalCnt')} style={styles.summary} valueStyle={{...appStyles.normal14Text,color:colors.black}}
           value={i18n.t('cart:totalCntX').replace('%%', totalCnt)}/>
 
         <LabelText label={i18n.t('cart:totalPrice')} style={styles.summary}
