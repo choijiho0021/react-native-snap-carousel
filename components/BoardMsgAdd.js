@@ -323,6 +323,7 @@ class BoardMsgAdd extends Component {
               enablesReturnKeyAutomatically={true}
               clearTextOnFocus={false}
               disabled={disable}
+              maxLength={50}
               onChangeText={this._onChangeText('title')}
               onFocus={() => this.setState({extraHeight: 20})}
               error={this._error('title')}
@@ -340,6 +341,7 @@ class BoardMsgAdd extends Component {
               enablesReturnKeyAutomatically={true}
               clearTextOnFocus={false}
               disabled={disable}
+              maxLength={2000}
               onChangeText={this._onChangeText('msg')}
               onFocus={() => this.setState({extraHeight: 80})}
               error={this._error('msg')}
