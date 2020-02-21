@@ -75,9 +75,6 @@ class SettingsScreen extends Component {
           value: i18n.t(loggedIn ? 'set:logout' : 'set:login')
         } : item)
       })
-      if(loggedIn){
-        this.props.action.cart.cartFetch()
-      }
     }
   }
 

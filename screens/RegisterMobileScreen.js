@@ -12,6 +12,7 @@ import {connect} from 'react-redux'
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import * as accountActions from '../redux/modules/account'
+import * as cartActions from '../redux/modules/cart'
 import userApi from '../utils/api/userApi';
 import _ from 'underscore'
 import AppActivityIndicator from '../components/AppActivityIndicator';
@@ -330,7 +331,7 @@ class RegisterMobileScreen extends Component {
   }
 
   _signIn = ({ mobile, pin }) => {
-    this.props.action.account.logInAndGetAccount( mobile, pin)
+    this.props.action.account.logInAndGetAccount( mobile, pin).then((resp) => this.props.action.cart.cartFetch())
   }
 
   _onTimeout = () => {
@@ -491,7 +492,8 @@ const mapStateToProps = (state) => ({
 export default connect(mapStateToProps, 
   (dispatch) => ({
     action: {
-      account : bindActionCreators(accountActions, dispatch)
+      account : bindActionCreators(accountActions, dispatch),
+      cart : bindActionCreators(cartActions, dispatch)
     }
   })
 )(RegisterMobileScreen)
