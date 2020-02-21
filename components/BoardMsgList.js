@@ -129,17 +129,18 @@ class BoardMsgList extends Component {
     })
   }
 
-  _onPress = (uuid) => () => {
+  _onPress = (uuid,status) => () => {
     if ( this.props.uid == 0) {
       // anonymous인 경우에는 비밀 번호를 입력받아서 일치하면 보여준다.
       this.setState({
         showModal: true,
-        selected: uuid
+        selected: uuid,
+        status
       })
     }
     else {
       // login 한 경우에는 곧바로 응답 결과를 보여준다.
-      this.props.onPress(uuid)
+      this.props.onPress(uuid,status)
     }
   }
 
@@ -149,7 +150,7 @@ class BoardMsgList extends Component {
       showModal: false
     })
 
-    this.props.onPress(this.state.selected)
+    this.props.onPress(this.state.selected,this.state.status)
   }
 
   // 입력된 PIN이 일치하는지 확인한다. 
@@ -163,7 +164,7 @@ class BoardMsgList extends Component {
 
 
   _renderItem({item}) {
-    return (<BoardMsg onPress={this._onPress(item.uuid)} item={item} uid={this.props.uid}/>)
+    return (<BoardMsg onPress={this._onPress(item.uuid,item.statusCode)} item={item} uid={this.props.uid}/>)
   }
 
   _onEndReached() {

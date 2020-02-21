@@ -41,6 +41,7 @@ class BoardMsgRespScreen extends Component {
   componentDidMount() {
     const uuid = this.props.navigation.getParam('key')
     const status = this.props.navigation.getParam('status')
+
     if ( uuid ) {
       const {list = []} = this.props.board
       const idx = list.findIndex(item => item.uuid == uuid)
@@ -51,6 +52,9 @@ class BoardMsgRespScreen extends Component {
       })
       if(status == 'C'){
         this.props.action.board.getIssueResp(uuid, this.props.auth)
+      }
+      else {
+        this.props.action.board.resetIssueComment()
       }
     }
   }

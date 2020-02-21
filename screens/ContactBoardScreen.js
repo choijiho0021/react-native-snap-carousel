@@ -34,7 +34,7 @@ class ContactBoardScreen extends Component {
     this._onPress = this._onPress.bind(this)
   } 
 
-  _onPress = (key,status) => {
+  _onPress = (key,status = 'O') => {
     this.props.navigation.navigate('BoardMsgResp', {key,status})
   }
 

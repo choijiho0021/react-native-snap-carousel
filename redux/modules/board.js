@@ -12,12 +12,14 @@ export const FETCH_ISSUE_LIST =   'rokebi/board/FETCH_ISSUE_LIST'
 export const GET_ISSUE_RESP =   'rokebi/board/GET_ISSUE_RESP'
 const RESET_ISSUE_LIST =   'rokebi/board/RESET_ISSUE_LIST'
 const NEXT_ISSUE_LIST =   'rokebi/board/NEXT_ISSUE_LIST'
+const RESET_ISSUE_COMMENT = 'rokebi/board/RESET_ISSUE_COMMENT'
 
 export const postIssue = createAction(POST_ISSUE, boardApi.post)
 export const postAttach = createAction(GET_ISSUE_RESP, boardApi.uploadAttachment)
 export const fetchIssueList = createAction(FETCH_ISSUE_LIST, boardApi.getIssueList)
 export const getIssueResp = createAction(GET_ISSUE_RESP, boardApi.getComments)
 const resetIssueList = createAction(RESET_ISSUE_LIST)
+export const resetIssueComment = createAction(RESET_ISSUE_COMMENT)
 const nextIssueList = createAction(NEXT_ISSUE_LIST)
 
 export const getIssueList = () => {
@@ -99,7 +101,11 @@ export default handleActions({
   },
 
   [RESET_ISSUE_LIST]: (state, action) => {
-    return state.set('next', true).set('page', 0)
+    return state.set('next', true).set('page', 0).set('list',[])
+  },
+
+  [RESET_ISSUE_COMMENT]: (state, action) => {
+    return state.set('comment', undefined)
   },
 
   ... pender({
