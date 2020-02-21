@@ -324,7 +324,7 @@ class BoardMsgAdd extends Component {
               enablesReturnKeyAutomatically={true}
               clearTextOnFocus={false}
               disabled={disable}
-              maxLength={50}
+              maxLength={25}
               onChangeText={this._onChangeText('title')}
               onFocus={() => this.setState({extraHeight: 20})}
               error={this._error('title')}
