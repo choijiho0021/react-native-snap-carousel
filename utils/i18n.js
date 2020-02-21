@@ -465,7 +465,7 @@ const ko = {
   'acc:permCamera': '카메라 권한을 허가해 주세요',
   'acc:duplicatedEmail': '이미 등록된 이메일 입니다',
 
-  "set:info" : "내 SIM 정보",
+  "set:info" : "유심 정보",
   "set:noti" : "알림",
   "set:notice" : "공지 사항",
   "set:contract" : "이용 안내",
