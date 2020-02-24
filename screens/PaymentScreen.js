@@ -58,7 +58,7 @@ class PaymentScreen extends Component{
   }
 
   async _callback( response ) {
-    if(response.success){
+    if(response.success || response.imp_success || false){
       const params = this.props.navigation.getParam('params')
       const orderResult = await this.props.action.cart.payNorder({
         ... response,
