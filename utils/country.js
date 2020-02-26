@@ -265,9 +265,13 @@ class Country {
     }).filter(item => item != '').join('+')
   }
 
-  getName(code = '', lang='ko') {
-    const cc = code.toLowerCase()
-    return ( this.ccode.hasOwnProperty(cc)) ? this.ccode[cc][lang] : 'N/A'
+  getName(code = [], lang='ko') {
+    const codeList = code.map(elm => {
+      const cc = elm.toLowerCase()
+      return ( this.ccode.hasOwnProperty(cc)) ? this.ccode[cc][lang][0] : 'N/A'
+    })
+    
+    return codeList
   }
 }
 

@@ -85,8 +85,8 @@ class CountryScreen extends Component {
     }
 
     const prodData = prodList.filter( item => 
-      (prod.categoryId[0] == productApi.category.multi) ? (item.uuid == prod.uuid && item.ccode == prod.ccode)
-        : (item.categoryId[0] != productApi.category.multi) && (item.ccode == prod.ccode))
+      (prod.categoryId[0] == productApi.category.multi) ? item.uuid == prod.uuid
+        : (item.categoryId[0] != productApi.category.multi) && (item.ccode[0] == prod.ccode[0]))
 
     this.setState({
       prodData,

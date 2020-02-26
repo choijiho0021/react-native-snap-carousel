@@ -158,7 +158,6 @@ class StoreSearchScreen extends Component {
   
   async _search(searchWord, searching = false) {
     this.setState({searchWord : searchWord, searching : searching})
-
     
     if(searching){
       //최근 검색 기록 
@@ -171,7 +170,7 @@ class StoreSearchScreen extends Component {
       }
 
       //어떤 국가를 검색했는지 통계 수집
-      properties = {"Search Word" : searchWord}
+      const properties = {"Search Word" : searchWord}
 
       Analytics.trackEvent("국가 검색 분석", properties)
     }
@@ -283,7 +282,7 @@ class StoreSearchScreen extends Component {
 
   filterBySearchWord( list, searchWord) {
     return list.filter(elm => (_.isEmpty(searchWord) ? true : (elm.categoryId[0] == productApi.category.multi && elm.name.match(searchWord)) || [...elm.cntry].join(',').match(searchWord)))
-      .map((elm,idx,arr) => ({key:elm.ccode, data:[elm,arr[idx+1]] }))
+      .map((elm,idx,arr) => ({key:elm.uuid, data:[elm,arr[idx+1]] }))
       .filter((elm,idx) => idx % 2 == 0)
   }
 

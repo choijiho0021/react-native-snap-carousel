@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   StyleSheet,
   Text,
@@ -17,22 +17,22 @@ import api from '../utils/api/api'
 import _ from 'underscore'
 import { colors } from '../constants/Colors';
 import { isDeviceSize } from '../constants/SliderEntry.style';
-class CountryItem extends Component {
+class CountryItem extends PureComponent {
   constructor(props) {
     super(props)
   }
 
-  shouldComponentUpdate(nextProps) {
+  // shouldComponentUpdate(nextProps) {
     
-    const oldData = this.props.item.data,
-      newData = nextProps.item.data
+  //   const oldData = this.props.item.data,
+  //     newData = nextProps.item.data
 
-    //데이터중 바뀐게 있다면 다시 그린다
-    return JSON.stringify(oldData) !== JSON.stringify(newData)
+  //   //데이터중 바뀐게 있다면 다시 그린다
+  //   return JSON.stringify(oldData) !== JSON.stringify(newData)
 
-    // ccode 목록이 달라지면, 다시 그린다. 
-    // return newData.findIndex((elm,idx) => _.isEmpty(oldData[idx]) || elm == undefined  ? true : elm.ccode != oldData[idx].ccode) >= 0
-  }
+  //   // ccode 목록이 달라지면, 다시 그린다. 
+  //   // return newData.findIndex((elm,idx) => _.isEmpty(oldData[idx]) || elm == undefined  ? true : elm.ccode != oldData[idx].ccode) >= 0
+  // }
 
   render() {
     const {item} = this.props
@@ -41,7 +41,7 @@ class CountryItem extends Component {
       <View key={item.key} style={styles.productList}>
         {item.data.map((elm,idx) => (
             // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
-          elm ? <View key={elm.ccode + idx} style={{flex:1, marginLeft:idx == 1 ? 14 : 0}}>
+          elm ? <View key={elm.ccode[0] + idx} style={{flex:1, marginLeft:idx == 1 ? 14 : 0}}>
             <TouchableOpacity onPress={() => this.props.onPress && this.props.onPress(elm.uuid)}>
               <Image key={"img"} source={{uri:api.httpImageUrl(elm.imageUrl)}} style={styles.image}/>
               {/* cntry가 Set이므로 첫번째 값을 가져오기 위해서 values().next().value를 사용함 */}
