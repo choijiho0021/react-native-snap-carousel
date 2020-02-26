@@ -15,6 +15,7 @@ import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';
 import LabelText from '../components/LabelText';
 import AppButton from '../components/AppButton';
+import { SafeAreaView } from 'react-navigation';
 class UsageDetailScreen extends Component {
   static navigationOptions = ({navigation}) => ({
     headerLeft: <AppBackButton navigation={navigation} title={i18n.t('his:detail')} />
@@ -68,7 +69,7 @@ class UsageDetailScreen extends Component {
     const buttonTitle = activating ? i18n.t('ok') : activatable ? i18n.t('reg:RegisterToUse') : i18n.t('reg:ReserveToUse')
 
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <View style={styles.container}>
           <Text style={styles.notice}>{i18n.t('his:timeStd')}</Text>
           <Text style={styles.title}>{prodName}</Text>
@@ -85,7 +86,7 @@ class UsageDetailScreen extends Component {
         <AppButton style={appStyles.confirm} 
           title={buttonTitle} titleStyle={appStyles.confirmText}
           onPress={this._onSubmit}/>
-      </View>
+      </SafeAreaView>
     )
   }
 
