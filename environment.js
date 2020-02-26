@@ -1,15 +1,15 @@
 import { Platform } from 'react-native';
 
 const impId = "imp53913318"
-const codePushiOSStagLabel = "v11"
+const codePushiOSStagLabel = "v22"
 const codePushiOSProdLabel = "v0"
-const codePushAndStagLabel = "v8"
+const codePushAndStagLabel = "v19"
 const codePushAndProdLabel = "v0"
 
 const ENV = {
   dev: {
     scheme: 'http',
-    rokApiUrl: "simrm.ap-northeast-2.elasticbeanstalk.com",
+    rokApiUrl: "rokebi-svc-tb.ap-northeast-2.elasticbeanstalk.com",
     apiUrl: "esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com",
     //apiUrl: "api.rokebi.com",
     baseUrl: "http://esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com",
@@ -19,7 +19,7 @@ const ENV = {
   },
   staging: {
     scheme: 'http',
-    rokApiUrl: "simrm.ap-northeast-2.elasticbeanstalk.com",
+    rokApiUrl: "rokebi-svc-tb.ap-northeast-2.elasticbeanstalk.com",
     apiUrl: "esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com",
     baseUrl: "http://esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com",
     impId: impId,

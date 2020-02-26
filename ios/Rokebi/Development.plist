@@ -86,7 +86,7 @@
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>
-			<key>simrm.ap-northeast-2.elasticbeanstalk.com</key>
+			<key>rokebi-svc-tb.ap-northeast-2.elasticbeanstalk.com</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
