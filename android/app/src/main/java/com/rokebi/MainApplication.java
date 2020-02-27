@@ -1,5 +1,8 @@
 package com.rokebi;
 
+import com.android.installreferrer.api.InstallReferrerClient;
+import com.android.installreferrer.api.InstallReferrerStateListener;
+import com.android.installreferrer.api.ReferrerDetails;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.analytics.Analytics;
@@ -7,6 +10,9 @@ import com.rokebi.generated.BasePackageList;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.RemoteException;
 import android.util.Log;
 
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
@@ -38,16 +44,79 @@ import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
+    public SharedPreferences prefs;
+
     private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
             new BasePackageList().getPackageList(), Arrays.<SingletonModule>asList()
     );
+
+    private final void getReferrer() {
+        //referrer 유입경로 확인 코드
+        InstallReferrerClient referrerClient;
+
+        referrerClient = InstallReferrerClient.newBuilder(this).build();
+        referrerClient.startConnection(new InstallReferrerStateListener() {
+            @Override
+            public void onInstallReferrerSetupFinished(int responseCode) {
+
+                Map<String, String> properties = new HashMap<>();
+
+                switch (responseCode) {
+                    case InstallReferrerClient.InstallReferrerResponse.OK:
+                        // Connection established.
+
+                        ReferrerDetails response = null;
+                        try {
+                            response = referrerClient.getInstallReferrer();
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                        String referrerUrl = response.getInstallReferrer();
+//                        long referrerClickTime = response.getReferrerClickTimestampSeconds();
+//                        long appInstallTime = response.getInstallBeginTimestampSeconds();
+
+                        properties.put("유입경로", referrerUrl);
+
+                        Analytics.trackEvent("유입경로",properties);
+
+                        break;
+                    case InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED:
+                        // API not available on the current Play Store app.
+                        properties.put("유입경로 TEST", "FEATURE_NOT_SUPPORTED");
+
+                        Analytics.trackEvent("유입경로",properties);
+
+                        break;
+                    case InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE:
+                        // Connection couldn't be established.
+                        properties.put("유입경로", "SERVICE_UNAVAILABLE");
+
+                        Analytics.trackEvent("유입경로",properties);
+                        break;
+                }
+            }
+
+            @Override
+            public void onInstallReferrerServiceDisconnected() {
+                // Try to restart the connection on the next request to
+                // Google Play by calling the startConnection() method.
+            }
+
+
+        });
+
+        prefs.edit().putBoolean("isFirstRun",false).apply();
+    }
 
   private final ReactNativeHost mReactNativeHost =
       new ReactNativeHost(this) {
@@ -106,6 +175,15 @@ public class MainApplication extends Application implements ReactApplication {
     FirebaseMessaging.getInstance().subscribeToTopic("ALL");
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this); // Remove this line if you don't want Flipper enabled
+
+      prefs = getSharedPreferences("Pref", MODE_PRIVATE);
+
+
+      boolean isFirstRun = prefs.getBoolean("isFirstRun",true);
+      if(isFirstRun)
+      {
+          getReferrer();
+      }
   }
 
   /**
