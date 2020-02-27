@@ -98,6 +98,7 @@ const en = {
   'reg:confirm': 'Confirm',
   'reg:ReserveToUse': 'Reserve to use',
   'reg:RegisterToUse': 'Register to use',
+  'reg:CancelReservation': 'Cancel Reservation',
   'reg:failedToSendSms': 'Failed to send sms',
   'reg:failedToLogIn': 'Failed to sign in. Please try again.',
 
@@ -144,6 +145,7 @@ const en = {
   "set:confirmLogout": "Please, confirm logout",
   "set:sendAlimTalk" : "The alim talk has been sent",
   "set:failedToSendAlimTalk" : "Failed to send a alim talk. Please try again later",
+  "reg:activateProduct": "current data product is completed and this product will be activated.\nPress the 'OK' button and call 0000# to activate it.",
 
   "rch:recharge" : "Recharge",
 
@@ -432,8 +434,10 @@ const ko = {
   'reg:confirm': '등록',
   'reg:ReserveToUse': '사용 예약',
   'reg:RegisterToUse': '사용 등록',
+  'reg:CancelReservation': '예약 취소',
   'reg:failedToSendSms': 'SMS 인증번호 발송 실패',
   'reg:failedToLogIn': '로깨비 로그인이 실패하였습니다. 다시 시도해주시기 바랍니다.',
+  "reg:activateProduct": "현 사용 중인 데이터 상품 사용이 완료되고 해당 상품이 등록되며,\n확인 버튼 누른 후 0000# 통화버튼을 눌러주시면 활성화 됩니다.",
 
   'menu:purchase' : '유심 구매',
   'menu:card' : '유심 등록',

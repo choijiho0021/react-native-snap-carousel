@@ -108,7 +108,7 @@ class StoreScreen extends Component {
         //days가 "00일" 형식으로 오기 때문에 일 제거 후 넘버타입으로 변환
         item.pricePerDay = Math.round(item.price / Number(item.days.replace(/[^0-9]/g,"")))
         
-        const idxCcode = acc.findIndex(elm => item.categoryId == multi ? elm.uuid == item.uuid : elm.ccode[0] == item.ccode[0])
+        const idxCcode = acc.findIndex(elm => item.categoryId == multi ? elm.uuid == item.uuid : _.isEqual(elm.ccode, item.ccode))
 
         if ( idxCcode < 0) {
           // new item, insert it

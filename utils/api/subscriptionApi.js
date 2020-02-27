@@ -180,12 +180,14 @@ class SubscriptionAPI {
         }, this.toSubscription)
     }
 
-    updateSubscriptionStatus = (uuid, status, {token}) => {
+    updateSubscriptionStatus = (uuid, status, {token}, deact_prod_uuid = []) => {
         if ( _.isEmpty(uuid) || _.isEmpty(status) || _.isEmpty(token) ) return api.reject( api.INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.rokApi.rokebi.subs,'')}/${uuid}?_format=json`
         const headers = api.withToken(token, 'json')
-        const body = {status : status}
+        const body = {
+            status : status,
+            deact_prod_uuid : _.isEmpty(deact_prod_uuid) ? undefined : deact_prod_uuid}
         
         return api.callHttp(url, {
             method: 'PATCH',

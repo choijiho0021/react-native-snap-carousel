@@ -124,6 +124,16 @@ class Utils {
         }
     }
 
+    //두 배열을 비교, 중복된 값을 가진 배열을 리턴하는 함수
+    compareArr = (arr1, arr2) => {
+        var duplicatedArr = [];
+        arr1.map(elm => {
+            if (arr2.includes(elm)) {
+                duplicatedArr.push(elm)
+            }
+        })   
+        return duplicatedArr
+    }
 }
 
 export default new Utils()

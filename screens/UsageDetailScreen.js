@@ -15,7 +15,16 @@ import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';
 import LabelText from '../components/LabelText';
 import AppButton from '../components/AppButton';
+import AppModal from '../components/AppModal';
 import { SafeAreaView } from 'react-navigation';
+
+const STATUS = {
+  ACTIVE : "A",
+  RESERVED : "R",
+  INACTIVE : "I",
+  EXPIRED : "E",
+  USED : "U" 
+}
 class UsageDetailScreen extends Component {
   static navigationOptions = ({navigation}) => ({
     headerLeft: <AppBackButton navigation={navigation} title={i18n.t('his:detail')} />
@@ -24,8 +33,8 @@ class UsageDetailScreen extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      activating : false,
-      activatable : false
+      activatable : false,
+      showModal : false
     }
 
     this._onSubmit = this._onSubmit.bind(this)
@@ -38,35 +47,66 @@ class UsageDetailScreen extends Component {
     const { usage } = this.props.order
 
     let activatable = false
-    let activating = false
 
     usage.map(elm => { 
-      if(elm.country == country && elm.statusCd == 'A' && elm.uuid == uuid) {
-        activating = true
-      }
-      else if(elm.country == country && elm.statusCd == 'A') {
+      if(elm.country == country && elm.statusCd == STATUS.ACTIVE) {
         activatable = true
       }
     })
-    this.setState({activating, activatable, ... detail})
+    this.setState({activatable, ... detail})
   }
 
-  _onSubmit() {
+  _onSubmit(targetStatus = undefined) {
     const { auth } = this.props
-    const { uuid, activating, activatable } = this.state
-    const status = activatable ? 'A' : 'R'
-    
-    //update status as Reserved
-    // todo : Active로 변경하는 APi가 필요함 (현재 상태값만 A로변경 적용)
-    if(!activating){
-      this.props.action.order.updateUsageStatus( uuid, status, auth)
+    const { uuid, statusCd, showModal, country } = this.state
+    const { usage } = this.props.order
+
+    let deact_prod_uuid = []
+
+    if(targetStatus) {
+      if(targetStatus == STATUS.ACTIVE){
+        usage.map(elm => {
+          if(elm.statusCd == STATUS.ACTIVE && utils.compareArr(elm.country, country).length > 0){
+            deact_prod_uuid.push(elm.uuid)
+          }
+        })
+      }
+  
+      // 사용 등록 시 한번 더 물어보도록 한다.
+      if(statusCd == STATUS.RESERVED && !showModal && targetStatus == STATUS.ACTIVE ){
+        this._showModal(true)
+        return
+      }
+      else {
+        this.props.action.order.updateUsageStatus( uuid, targetStatus, auth, deact_prod_uuid)
+      }
     }
     this.props.navigation.goBack()
   }
 
+  _showModal(value) {
+    this.setState({
+      showModal: value
+    })
+  }
+
   render() {
-    const {prodName, activationDate, endDate, expireDate, purchaseDate, activating, activatable} = this.state || {}
-    const buttonTitle = activating ? i18n.t('ok') : activatable ? i18n.t('reg:RegisterToUse') : i18n.t('reg:ReserveToUse')
+    const {prodName, activationDate, endDate, expireDate, purchaseDate, statusCd, showModal} = this.state || {}
+    let buttonTitle, targetStatus
+    
+    //현재 상태값에 따라 버튼 이름과 변경할 상태값이 다르다.
+    if(statusCd == STATUS.RESERVED){
+      buttonTitle = i18n.t('reg:RegisterToUse')
+      targetStatus = STATUS.ACTIVE
+    }
+    else if(statusCd == STATUS.INACTIVE){
+      buttonTitle = i18n.t('reg:ReserveToUse')
+      targetStatus = STATUS.RESERVED
+    }
+    else {
+      buttonTitle = i18n.t('ok')
+      targetStatus = undefined
+    }
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
@@ -83,9 +123,21 @@ class UsageDetailScreen extends Component {
           <LabelText style={styles.info} valueStyle={{color:colors.black}}
             label={i18n.t('his:expireDate')} value={utils.toDateString(expireDate, 'LL')} />
         </View>
-        <AppButton style={appStyles.confirm} 
-          title={buttonTitle} titleStyle={appStyles.confirmText}
-          onPress={this._onSubmit}/>
+        
+        <View style={{flexDirection: 'row' }}>
+          <AppButton style={styles.confirm} 
+            title={buttonTitle} titleStyle={appStyles.confirmText}
+            onPress={() => this._onSubmit(targetStatus)}/>
+          
+          {statusCd == STATUS.RESERVED && <AppButton style={styles.confirm} 
+            title={i18n.t('reg:CancelReservation')} titleStyle={appStyles.confirmText}
+            onPress={() => this._onSubmit(STATUS.INACTIVE)}/> }
+        </View>
+
+        <AppModal title={i18n.t('reg:activateProduct')} 
+          onOkClose={() => this._onSubmit(STATUS.ACTIVE)}
+          onCancelClose={() => this._showModal(false)}
+          visible={showModal} />
       </SafeAreaView>
     )
   }
@@ -125,7 +177,12 @@ const styles = StyleSheet.create({
   info: {
     height: 36,
     marginHorizontal: 20
-  }
+  },
+  confirm: {
+    height: 52,
+    flex:1,
+    backgroundColor: colors.clearBlue
+  },
 });
 
 const mapStateToProps = (state) => ({
