@@ -139,7 +139,7 @@ class PymMethodScreen extends Component {
         buyer_name: mobile,
         buyer_email: email,
         escrow: false,
-        app_scheme: 'esim',
+        app_scheme: 'Rokebi',
         profile_uuid: profileId,
         dlvCost,
         // mode: 'test'
@@ -314,12 +314,12 @@ const styles = StyleSheet.create({
   },
   buttonRow : {
     flexDirection: "row",
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     marginTop: 15,
     marginHorizontal: 20,
   },
   button: {
-    width: '44%',
+    width: '46%',
     height: isDeviceSize('small') ? 43 : 48,
     borderRadius: 24,
     backgroundColor: colors.white,
