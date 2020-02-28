@@ -617,7 +617,7 @@ const ko = {
   "cart:totalPrice" : "총 상품 금액",
   "cart:deductBalance" : "차감 잔액",
   "cart:currentBalance" : "현재 잔액",
-  "cart:afterDeductBalance" : "차감 후 잔액",
+  "cart:afterDeductBalance" : "결제 후 잔액",
   "cart:dlvCost" : "배송비",
   "cart:totalCost" : "총 결제 금액",
   "cart:totalCntX" : "총 %% 개",
