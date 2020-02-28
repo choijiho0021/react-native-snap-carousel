@@ -80,7 +80,7 @@ export default class SimCard extends PureComponent {
             <AppIcon name="btnCheck" checked={checked}/>
           </View>
 
-          <Image source={{uri:api.httpImageUrl(imageUrl)}} style={[styles.slide, {marginRight: 0}]}/>
+          <Image source={{uri:api.httpImageUrl(imageUrl)}} resizeMode={'contain'} style={[styles.slide, {marginRight: 0}]}/>
         </TouchableOpacity>
 
         <View style={styles.desc}>
