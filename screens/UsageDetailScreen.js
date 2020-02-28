@@ -125,13 +125,14 @@ class UsageDetailScreen extends Component {
         </View>
         
         <View style={{flexDirection: 'row' }}>
+          
+          { statusCd == STATUS.RESERVED && <AppButton style={[styles.confirm,{backgroundColor:colors.gray}]} 
+            title={i18n.t('reg:CancelReservation')} titleStyle={appStyles.confirmText}
+            onPress={() => this._onSubmit(STATUS.INACTIVE)}/> }
+          
           <AppButton style={styles.confirm} 
             title={buttonTitle} titleStyle={appStyles.confirmText}
             onPress={() => this._onSubmit(targetStatus)}/>
-          
-          {statusCd == STATUS.RESERVED && <AppButton style={styles.confirm} 
-            title={i18n.t('reg:CancelReservation')} titleStyle={appStyles.confirmText}
-            onPress={() => this._onSubmit(STATUS.INACTIVE)}/> }
         </View>
 
         <AppModal title={i18n.t('reg:activateProduct')} 
