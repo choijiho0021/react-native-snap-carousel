@@ -320,6 +320,7 @@ _onSubmit() {
                 <View style={[styles.findTextRow, {marginBottom: 13}]}>
                   <TextInput style={[styles.textBox, {borderColor: this._changeBorder('detailAddr')}]}
                             value={profile.get('detailAddr')}
+                            maxLength={25}
                             onFocus={()=>this._onFocusClear('detailAddr')}
                             onChangeText={this._onChangeProfile('detailAddr')} 
                             placeholder={i18n.t('addr:details')}
