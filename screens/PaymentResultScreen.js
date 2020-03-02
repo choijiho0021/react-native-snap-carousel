@@ -90,7 +90,7 @@ class PaymentResultScreen extends Component {
     return (
       <SafeAreaView style={styles.container}>
         <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance}
-                        pymPrice={pymPrice} deduct={deduct} isRecharge={isRecharge} screen={screen}/>     
+                        pymPrice={isSuccess ? pymPrice : 0} deduct={isSuccess ? deduct : 0} isRecharge={isRecharge} screen={screen}/>     
 
         <View style={styles.result}>
           <Text style={{alignSelf: 'center'}}>{i18n.t( isSuccess ? 'pym:success' : 'pym:fail')}</Text>
