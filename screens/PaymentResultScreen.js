@@ -79,8 +79,8 @@ class PaymentResultScreen extends Component {
 
   render() {
     const { pymReq, purchaseItems, pymPrice, deduct, isRecharge, screen } = this.state
-      , imp_success = this.props.navigation.getParam('orderResult')
-      ,{ result } = this.state.orderResult
+      , { imp_success } = this.props.navigation.getParam('pymResult')
+      ,{ result } = this.props.navigation.getParam('orderResult')
 
     // [WARNING: 이해를 돕기 위한 것일 뿐, imp_success 또는 success 파라미터로 결제 성공 여부를 장담할 수 없습니다.]
     // 아임포트 서버로 결제내역 조회(GET /payments/${imp_uid})를 통해 그 응답(status)에 따라 결제 성공 여부를 판단하세요.

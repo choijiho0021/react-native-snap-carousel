@@ -11,6 +11,7 @@ import getEnvVars from '../environment'
 import i18n from '../utils/i18n';
 import { SafeAreaView } from 'react-navigation';
 import AppBackButton from '../components/AppBackButton';
+import _ from 'underscore';
 
 let IMP
 if (Constants.appOwnership === 'expo') {
@@ -58,14 +59,18 @@ class PaymentScreen extends Component{
   }
 
   async _callback( response ) {
-    if(response.success || response.imp_success || false){
+    const isSuccess = _.isUndefined(response.success) ? false : response.success
+    const isImpSuccess = response.imp_success === 'true'
+
+    if(isSuccess || isImpSuccess || false){
       const params = this.props.navigation.getParam('params')
       const orderResult = await this.props.action.cart.payNorder({
         ... response,
         amount: params.amount,
         profile_uuid: params.profile_uuid,
         deduct_from_balance: params.deduct_from_balance,
-        dlvCost: params.dlvCost
+        dlvCost: params.dlvCost,
+        // pay_method: params.pay_method,
       })
       this.props.navigation.replace('PaymentResult', {pymResult:response, orderResult})  
     }
