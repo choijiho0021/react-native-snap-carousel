@@ -171,9 +171,9 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+    SoLoader.init(this, /* native exopackage */ false);
     AppCenter.start(this,"ff7d5d5a-8b74-4ec2-99be-4dfd81b4b0fd", Analytics.class);
     FirebaseMessaging.getInstance().subscribeToTopic("ALL");
-    SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this); // Remove this line if you don't want Flipper enabled
 
       prefs = getSharedPreferences("Pref", MODE_PRIVATE);
