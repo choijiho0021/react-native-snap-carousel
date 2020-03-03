@@ -223,7 +223,7 @@ class StoreScreen extends Component {
           renderScene={this.renderScene}
           onIndexChange={this._onIndexChange}
           initialLayout={{ width: Dimensions.get('window').width, height:10 }}
-          titleStyle={appStyles.normal14Text}
+          titleStyle={appStyles.normal16Text}
           indicatorStyle={{ backgroundColor: 'white' }}
           renderTabBar={props => (
             <TabBar
@@ -258,10 +258,10 @@ const styles = StyleSheet.create({
   tabBarLabel: {
       height: 17,
       // fontFamily: "AppleSDGothicNeo",
-      fontSize: isDeviceSize('medium') ? 12 : 14 ,
+      fontSize: isDeviceSize('small') ? 12 : 16 ,
       fontWeight: "500",
       fontStyle: "normal",
-      letterSpacing: 0.17
+      letterSpacing: 0.17,
   },
   showSearchBar : {
     marginRight:20,
@@ -271,8 +271,6 @@ const styles = StyleSheet.create({
   tabStyle: {
     backgroundColor:colors.whiteTwo,
     height: isDeviceSize('small') ? 40 : 60  ,
-    alignItems:"flex-start",
-    paddingLeft:20,
   },
   tabBarStyle : {
     backgroundColor:colors.whiteTwo,
