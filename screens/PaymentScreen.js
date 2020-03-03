@@ -60,12 +60,13 @@ class PaymentScreen extends Component{
 
   async _callback( response ) {
     const isSuccess = _.isUndefined(response.success) ? false : response.success
-    const isImpSuccess = response.imp_success === 'true'
+    const isImpSuccess = typeof(response.imp_success) === 'boolean' ? response.imp_success  : response.imp_success === 'true'
 
     if(isSuccess || isImpSuccess || false){
       const params = this.props.navigation.getParam('params')
       const orderResult = await this.props.action.cart.payNorder({
         ... response,
+        // payment_type: params.pg,
         amount: params.amount,
         profile_uuid: params.profile_uuid,
         deduct_from_balance: params.deduct_from_balance,
