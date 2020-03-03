@@ -63,7 +63,7 @@ class CountryScreen extends Component {
     //todo 해당 국가 이름으로 변경해야함 
     headerLeft: <AppBackButton navigation={navigation} title={navigation.getParam('title')} />,
     headerRight: (
-      <AppCartButton style={styles.btnCartIcon} onPress={() => navigation.navigate('Cart')} />
+      <AppCartButton onPress={() => navigation.navigate('Cart')} />
     )
   })
 
@@ -240,10 +240,6 @@ const styles = StyleSheet.create({
     padding:3, 
     marginLeft:15,
     flex:7},
-  btnCartIcon : {
-    marginRight:22,
-    alignSelf:'center'
-  },
   bottomBtn : {
     position:"absolute",
     bottom:0
