@@ -84,7 +84,10 @@ class CartItem extends React.PureComponent {
             <AppIcon name="btnCheck" checked={checked}/>
           </View>
 
-          <Image source={{uri:api.httpImageUrl(image)}} style={styles.slide}/>
+          <View style={styles.slide}>
+            <Image source={{uri:api.httpImageUrl(image)}} style={styles.slide} resizeMode='stretch'/>
+          </View>
+          
         </TouchableOpacity>
 
         <View style={styles.desc}>
