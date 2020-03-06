@@ -5,6 +5,7 @@ import utils from '../utils'
 class OrderAPI {
 
     toOrder = (data) => {
+
         if ( _.isArray(data) && data.length > 0) {
             return api.success(
                 data.map(item => ({
@@ -12,11 +13,18 @@ class OrderAPI {
                     orderId: item.order_number,
                     orderDate: item.placed,
                     totalPrice: utils.stringToNumber( item.total_price__number),
-                    orderItems: [{
-                        title: item.title,
-                        qty: item.quantity,
-                        price: utils.stringToNumber( item.item_price)
-                    }]
+                    iamportPayment: JSON.parse(item.iamport_payment).map(value => ({
+                        totalPrice: value.amount.split('.')[0],
+                        pg: value.pg_provider,
+                        cardName: value.card_name,
+                        buyerAddr: value.buyer_addr,
+
+                    })),
+                    orderItems: JSON.parse(item.order_items).map(value => ({
+                        title: value.title,
+                        qty: value.quantity.split('.')[0],
+                        price: utils.stringToNumber(value.total_price__number)
+                    }))
                 })).reduce((acc,cur) => {
                     const idx = acc.findIndex(item => item.orderId == cur.orderId)
                     return ( idx < 0) ? acc.concat([cur]) :
