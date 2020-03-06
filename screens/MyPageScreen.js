@@ -46,13 +46,15 @@ class OrderItem extends PureComponent {
     const {item, onPress} = this.props
     const label = `${item.orderItems[0].title}  ${item.orderItems.length > 1 ? i18n.t('his:etcCnt').replace('%%', item.orderItems.length - 1) : ''}`
 
+    const totalPrice = !_.isEmpty(item.iamportPayment[0]) ? item.iamportPayment[0].totalPrice : item.totalPrice
+    
     return (
       <TouchableOpacity onPress={onPress}>
         <View key={item.orderId} style={styles.order}>
           <Text style={appStyles.normal14Text}>{utils.toDateString(item.orderDate, 'YYYY-MM-DD')}</Text>
           <LabelText style={[styles.orderValue, isDeviceSize('small') && {flexDirection : 'column', alignItems:'space-between'}]}
             label={label} labelStyle={appStyles.normal16Text}
-            value={item.totalPrice} format="price" />
+            value={totalPrice} format="price" />
         </View>
       </TouchableOpacity>
     )
