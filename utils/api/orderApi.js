@@ -24,6 +24,10 @@ class OrderAPI {
                         title: value.title,
                         qty: value.quantity.split('.')[0],
                         price: utils.stringToNumber(value.total_price__number)
+                    })),
+                    paymentList: JSON.parse(item.payment_list).map(value => ({
+                        dlvCost: value.shipping_cost,
+                        balanceCharge: value.balance_charge.split('.')[0]
                     }))
                 })).reduce((acc,cur) => {
                     const idx = acc.findIndex(item => item.orderId == cur.orderId)
