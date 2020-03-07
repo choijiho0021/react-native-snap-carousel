@@ -265,7 +265,7 @@ class PymMethodScreen extends Component {
               </View>  
             :
               <View style={styles.result}>
-                <Text style={styles.resultText}>{i18n.t('pym:buy')}</Text>
+                <Text style={styles.resultText}>{i18n.t('pym:balPurchase')}</Text>
               </View>
           }
         </ScrollView>
