@@ -108,21 +108,21 @@ class findEngAddress {
         "36110":{
                 // 세종특별자치시 : 36110, 24개
                 province: "Sejong",
-                "105": "Garam-dong",            // 가람동 x
+                "105": "Garam-dong",            // 가람동
                 "112": "Goun-dong",             // 고운동
                 "340": "Geumnam-myeon",         // 금남면  
-                "107": "Naseong-dong",          // 나성동 x
-                "109": "Dajeong-dong",          // 다정동 x
+                "107": "Naseong-dong",          // 나성동
+                "109": "Dajeong-dong",          // 다정동
                 "104": "Daepyeong-dong",        // 대평동
                 "114": "Dodam-dong",            // 도담동
-                "101": "Bangok-dong",           // 반곡동 x 
+                "101": "Bangok-dong",           // 반곡동
                 "103": "Boram-dong",            // 보람동
                 "330": "Bugang-myeon",          // 부강면
                 "108": "Saerom-dong",           // 새롬동
                 "102": "Sodam-dong",            // 소담동
                 "390": "Sojeong-myeon",         // 소정면
                 "113": "Areum-dong",            // 아름동
-                "110": "Ujin-dong",             // 어진동 x
+                "110": "Ujin-dong",             // 어진동
                 "310": "Yeongi-myeon",          // 연기면  
                 "320": "Yeondong-myeon",        // 연동면  
                 "360": "Yeonseo-myeon",         // 연서면  

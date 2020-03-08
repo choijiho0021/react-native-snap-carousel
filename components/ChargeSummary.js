@@ -38,7 +38,7 @@ class ChargeSummary extends PureComponent {
 
     return (
       <View style={styles.price}>
-        <LabelText label={i18n.t('cart:dlvCostNotice')} labelStyle={{color:colors.warmGrey}} style={{marginVertical:17}}/>
+        <LabelText label={i18n.t('cart:dlvCostNotice')} labelStyle={{color:colors.warmGrey}} style={{marginVertical:17}} value=""/>
 
         <LabelText label={i18n.t('cart:totalCnt')} style={styles.summary} valueStyle={{...appStyles.normal14Text,color:colors.black}}
           value={i18n.t('cart:totalCntX').replace('%%', totalCnt)}/>
