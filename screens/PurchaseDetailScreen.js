@@ -49,24 +49,28 @@ class PurchaseDetailScreen extends Component {
   }
 
   render() {
-    const {orderId, orderDate, orderItems, iamportPayment, totalPrice} = this.state || {}
+    // const {orderId, orderDate, orderItems, iamportPayment, totalPrice} = this.state || {}
+    const {orderId, orderDate, orderItems, iamportPayment, totalPrice} = this.props.navigation.getParam('detail') || {}
+    const label = `${orderItems[0].title}  ${orderItems.length > 1 ? i18n.t('his:etcCnt').replace('%%', orderItems.length - 1) : ''}`
 
-    const pg = !_.isEmpty(iamportPayment) && this.method[0].find(item => item.key == iamportPayment[0].pg).title
+    const pg = !_.isEmpty(iamportPayment) ? this.method[0].find(item => item.key == iamportPayment[0].pg).title : i18n.t("pym:balance")
     const paidAmount = !_.isEmpty(iamportPayment) ? (iamportPayment[0].totalPrice) : 0
     const paymentList = this.props.navigation.getParam('detail').paymentList[0]
-
+    
     return (
       <View style={styles.container}>
+        <Text style={styles.date}>{utils.toDateString(orderDate)}</Text>
+        <Text style={styles.price}>{label}</Text>
+        <View style={styles.bar}/>
         <LabelText 
           key="orderId" style={styles.item}
           label={i18n.t('his:orderId')} labelStyle={styles.label2}
-          value={orderId} valueStyle={styles.label}/>
+          value={orderId} valueStyle={styles.labelValue}/>
         <LabelText
-          key="purchaseDate" style={styles.item}
-          label={i18n.t('his:purchaseDate')} labelStyle={styles.label2}
-          value={utils.toDateString(orderDate)} valueStyle={styles.label}/>
+          key="pymMethod" style={styles.item}
+          label={i18n.t('pym:method')} labelStyle={styles.label2}
+          value={pg} valueStyle={styles.labelValue}/>
         <View style={styles.divider} />
-        <Text style={styles.title}>{i18n.t('pym:title')}</Text>
         { 
           orderItems && orderItems.map((item,idx) => 
             <LabelText 
@@ -77,23 +81,19 @@ class PurchaseDetailScreen extends Component {
               value={item.price}/>
             )
         }
+        <View style={styles.bar}/>
+        <LabelText 
+          key="productAmount" style={styles.item}
+          label={i18n.t('his:productAmount')} labelStyle={styles.label2}
+          format="price"
+          valueStyle={appStyles.roboto16Text}
+          value={totalPrice}/>
         <LabelText 
           key="dvlCost" style={styles.item}
-          label={i18n.t('cart:dlvCost')} labelStyle={styles.label}
+          label={i18n.t('cart:dlvCost')} labelStyle={styles.label2}
           format="price"
           valueStyle={appStyles.roboto16Text}
           value={paymentList.dlvCost}/>     
-        <View style={styles.bar}/>
-        <Text style={[styles.title, {marginTop: 10}]}>{i18n.t('pym:method')}</Text>
-        {
-          !_.isEmpty(iamportPayment) &&
-            <LabelText 
-              key={"paymentMethod"} style={styles.item}
-              label={pg} labelStyle={styles.label2}
-              format="price"
-              valueStyle={appStyles.roboto16Text}
-              value={paidAmount}/>
-        }
         {
           paymentList.balanceCharge != 0 &&
             <LabelText 
@@ -101,11 +101,18 @@ class PurchaseDetailScreen extends Component {
               label={i18n.t("pym:balance")} labelStyle={styles.label2}
               format="price"
               valueStyle={appStyles.roboto16Text}
-              value={paymentList.balanceCharge}/>
+              value={`(-) ${paymentList.balanceCharge}`}/>
         }
-        <View style={[styles.row, styles.total, styles.brdrBottom0]}>
-          <Text style={[appStyles.normal14Text]}>{i18n.t('cart:totalCost')} </Text>
-          <Text style={[appStyles.normal16Text, styles.colorClearBlue, styles.fontWeightNormal]}>{utils.numberToCommaString(paidAmount)+ ' ' + i18n.t('won')}</Text>
+        <View style={styles.bar}/>
+        <View style={styles.row}>
+          <Text style={[appStyles.normal16Text]}>{i18n.t('cart:totalCost')} </Text>
+          <View style={{flex:1, flexDirection: 'row', justifyContent: 'flex-end'}}>
+            <Text style={styles.priceTxt}>{i18n.t('total') +' '}</Text>
+            <Text style={[appStyles.price, {fontWeight: 'bold', lineHeight:24, letterSpacing: 0.21}]}>{utils.numberToCommaString(paidAmount)}</Text>
+            <Text style={styles.priceTxt}>{' ' + i18n.t('won')}</Text>
+
+          {/* <Text style={[appStyles.normal16Text, styles.colorClearBlue, styles.fontWeightNormal]}>{utils.numberToCommaString(paidAmount)+ ' ' + i18n.t('won')}</Text> */}
+          </View>
         </View>
       </View>
     )
@@ -117,7 +124,6 @@ class PurchaseDetailScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 20
   },
   title: {
     ... appStyles.bold18Text,
@@ -134,16 +140,19 @@ const styles = StyleSheet.create({
     color: colors.warmGrey
   },
   price: {
+    ... appStyles.bold18Text,
+    lineHeight: 24,
+    letterSpacing: 0.27,
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: 20,
-    marginTop: 10,
+    marginVertical: 10,
   },
   bar: {
     borderBottomColor: colors.lightGrey,
     borderBottomWidth: 0.5, 
     marginHorizontal: 20,
-    marginVertical: 15,
+    marginVertical: 20,
   },
   item: {
     marginHorizontal: 20,
@@ -151,36 +160,38 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
+    ... appStyles.bold16Text,
+    lineHeight: 36, 
+    letterSpacing: 0.26,
+    color: colors.black,
+  },
+  labelValue: {
     ... appStyles.normal16Text,
+    lineHeight: 36, 
+    letterSpacing: 0.22,
     color: colors.black,
   },
   divider: {
-    marginVertical: 27,
+    marginVertical: 40,
     height: 10,
     backgroundColor: colors.whiteTwo
   },
   label2: {
     ... appStyles.normal14Text,
+    lineHeight: 36,
     color: colors.warmGrey
+  },
+  priceTxt: {
+    ... appStyles.normal16Text,
+    lineHeight: 24,
+    letterSpacing: 0.24
   },
   row: {
     ... appStyles.itemRow,
-    marginTop: 27,
+    paddingHorizontal: 20,
     height: isDeviceSize('small') ? 30 : 36,
-    justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 0
-  },
-  total: {
-    height: 52,
-    paddingHorizontal: 20,
-    borderTopColor: colors.blackack,
-    borderTopWidth: 1,
-    backgroundColor: colors.whiteTwo,
-    alignItems: 'center',
-  },
-  mrgBottom0: {
-    marginBottom: 0
   },
   fontWeightNormal: {
     fontWeight: 'normal'
