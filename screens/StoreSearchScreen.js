@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
+  ScrollView,
   TouchableWithoutFeedback
 } from 'react-native';
 import {connect} from 'react-redux'
@@ -292,10 +293,13 @@ class StoreSearchScreen extends Component {
     return (
       <View style={[appStyles.container,{marginTop:15}]}>
         <AppActivityIndicator visible={querying} />
-        {!searchWord && !searching ? this.renderSearchWord() : null }
-        {!searchWord && !searching ? this.renderRecommend() : null }
-        {searchWord && !searching ? this.renderSearching() : null}
-        {searching ? this.renderStoreList() : null}
+        { !searching ? 
+          <ScrollView style={{width:'100%'}}>
+            {!searchWord ? this.renderSearchWord() : null }
+            {!searchWord ? this.renderRecommend() : null }
+            {searchWord ? this.renderSearching() : null } 
+          </ScrollView> : this.renderStoreList()
+        }
       </View>
     )
   }
