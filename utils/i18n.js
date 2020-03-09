@@ -451,7 +451,7 @@ const ko = {
   'mysim:operator': '네트워크 사업자 이름',
   'mysim:permCamera': '카메라 권한을 허가해 주세요',
 
-  'acc:title': '마이 페이지',
+  'acc:title': '내 계정',
   'acc:subTitle': '구매 및 사용 이력',
   'acc:accountId': 'Account No',
   'acc:mobile': '휴대전화 번호',

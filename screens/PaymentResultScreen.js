@@ -17,6 +17,8 @@ import AppBackButton from '../components/AppBackButton';
 import i18n from '../utils/i18n';
 import _ from 'underscore';
 
+import { colors } from '../constants/Colors'
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
