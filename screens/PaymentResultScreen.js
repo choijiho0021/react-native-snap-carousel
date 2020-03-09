@@ -94,7 +94,7 @@ class PaymentResultScreen extends Component {
                         pymPrice={isSuccess ? pymPrice : 0} deduct={isSuccess ? deduct : 0} isRecharge={isRecharge} screen={screen}/>     
 
         <View style={styles.result}>
-          <Text style={{alignSelf: 'center'}}>{i18n.t( isSuccess ? 'pym:success' : 'pym:fail')}</Text>
+          <Text style={{alignSelf: 'center', color: colors.black}}>{i18n.t( isSuccess ? 'pym:success' : 'pym:fail')}</Text>
         </View>
       </SafeAreaView>
     )
