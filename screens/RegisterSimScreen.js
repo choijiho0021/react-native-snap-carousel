@@ -216,7 +216,7 @@ class RegisterSimScreen extends Component {
               }
             </View>
           </TouchableOpacity>
-
+          
           <AppButton iconName={scan ? "iconCameraCancel" : "iconCamera"}
             style={styles.scanButton}
             title={i18n.t(scan ? 'reg:scanOff' : 'reg:scan')} titleStyle={styles.scanTitle}
@@ -287,7 +287,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     height: 20,
     marginHorizontal: 20,
-    justifyContent: 'flex-start'
+    justifyContent: 'flex-start',
+    width:150
   },
   inputBox: {
     marginTop: 13,
