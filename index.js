@@ -10,8 +10,8 @@ AppRegistry.registerComponent(appName, () => App);
 
 
 if(Platform.OS=='android'){
-  const firebase = require('react-native-firebase'
-)
+  const firebase = require('react-native-firebase')
+  
   AppRegistry.registerHeadlessTask('RNFirebaseBackgroundMessage', () => async (message) => {
 
     const { badge = 0 } = message.data

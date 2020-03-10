@@ -31,7 +31,7 @@ import { openSettings, check, PERMISSIONS, RESULTS } from 'react-native-permissi
 
 class RegisterSimScreen extends Component {
   static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('sim:reg')} />
+    headerLeft: <AppBackButton navigation={navigation} title={navigation.getParam('title') || i18n.t('sim:reg')} />
   })
 
   constructor(props) {
