@@ -5,14 +5,14 @@ import AppIcon from './AppIcon';
 
 export default function AppUserPic({style, url, icon, onPress}) {
   return ( 
-    <TouchableOpacity onPress={onPress}>
-      <View style={[style, {alignSelf:'center'}]}>
+    <View style={[style, {alignSelf:'center'}]}>
+      <TouchableOpacity onPress={onPress}>
         {
           url ?
           <Image source={{uri:api.httpImageUrl(url)}} style={[style, {borderRadius: style.width/2}]}/> :
           <AppIcon name={icon}/>
         }
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </View>
   )
 }
