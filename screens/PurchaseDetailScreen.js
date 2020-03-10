@@ -12,6 +12,8 @@ import { colors } from '../constants/Colors';
 import LabelText from '../components/LabelText';
 import _ from 'underscore';
 import { isDeviceSize } from '../constants/SliderEntry.style';
+import { ScrollView } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-navigation';
 
 class PurchaseDetailScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -58,63 +60,65 @@ class PurchaseDetailScreen extends Component {
     const paymentList = this.props.navigation.getParam('detail').paymentList[0]
     
     return (
-      <View style={styles.container}>
-        <Text style={styles.date}>{utils.toDateString(orderDate)}</Text>
-        <Text style={styles.price}>{label}</Text>
-        <View style={styles.bar}/>
-        <LabelText 
-          key="orderId" style={styles.item}
-          label={i18n.t('his:orderId')} labelStyle={styles.label2}
-          value={orderId} valueStyle={styles.labelValue}/>
-        <LabelText
-          key="pymMethod" style={styles.item}
-          label={i18n.t('pym:method')} labelStyle={styles.label2}
-          value={pg} valueStyle={styles.labelValue}/>
-        <View style={styles.divider} />
-        { 
-          orderItems && orderItems.map((item,idx) => 
-            <LabelText 
-              key={idx+""} style={styles.item}
-              label={`${item.title}   X   ${item.qty} 개`} labelStyle={styles.label}
-              format="price"
-              valueStyle={appStyles.roboto16Text}
-              value={item.price}/>
-            )
-        }
-        <View style={styles.bar}/>
-        <LabelText 
-          key="productAmount" style={styles.item}
-          label={i18n.t('his:productAmount')} labelStyle={styles.label2}
-          format="price"
-          valueStyle={appStyles.roboto16Text}
-          value={totalPrice}/>
-        <LabelText 
-          key="dvlCost" style={styles.item}
-          label={i18n.t('cart:dlvCost')} labelStyle={styles.label2}
-          format="price"
-          valueStyle={appStyles.roboto16Text}
-          value={paymentList.dlvCost}/>     
-        {
-          paymentList.balanceCharge != 0 &&
-            <LabelText 
-              key={"pymBalance"} style={styles.item}
-              label={i18n.t("pym:balance")} labelStyle={styles.label2}
-              format="price"
-              valueStyle={appStyles.roboto16Text}
-              value={`(-) ${paymentList.balanceCharge}`}/>
-        }
-        <View style={styles.bar}/>
-        <View style={styles.row}>
-          <Text style={[appStyles.normal16Text]}>{i18n.t('cart:totalCost')} </Text>
-          <View style={{flex:1, flexDirection: 'row', justifyContent: 'flex-end'}}>
-            <Text style={styles.priceTxt}>{i18n.t('total') +' '}</Text>
-            <Text style={[appStyles.price, {fontWeight: 'bold', lineHeight:24, letterSpacing: 0.21}]}>{utils.numberToCommaString(paidAmount)}</Text>
-            <Text style={styles.priceTxt}>{' ' + i18n.t('won')}</Text>
+      <ScrollView style={styles.container}>
+        <SafeAreaView forceInset={{ top: 'never', bottom:"always"}}>
+          <Text style={styles.date}>{utils.toDateString(orderDate)}</Text>
+          <Text style={styles.price}>{label}</Text>
+          <View style={styles.bar}/>
+          <LabelText
+            key="orderId" style={styles.item}
+            label={i18n.t('his:orderId')} labelStyle={styles.label2}
+            value={orderId} valueStyle={styles.labelValue}/>
+          <LabelText
+            key="pymMethod" style={styles.item}
+            label={i18n.t('pym:method')} labelStyle={styles.label2}
+            value={pg} valueStyle={styles.labelValue}/>
+          <View style={styles.divider} />
+          { 
+            orderItems && orderItems.map((item,idx) =>
+              <LabelText
+                key={idx+""} style={styles.item}
+                label={`${item.title}   X   ${item.qty} 개`} labelStyle={styles.label}
+                format="price"
+                valueStyle={appStyles.roboto16Text}
+                value={item.price}/>
+              )
+          }
+          <View style={styles.bar}/>
+          <LabelText
+            key="productAmount" style={styles.item}
+            label={i18n.t('his:productAmount')} labelStyle={styles.label2}
+            format="price"
+            valueStyle={appStyles.roboto16Text}
+            value={totalPrice}/>
+          <LabelText
+            key="dvlCost" style={styles.item}
+            label={i18n.t('cart:dlvCost')} labelStyle={styles.label2}
+            format="price"
+            valueStyle={appStyles.roboto16Text}
+            value={paymentList.dlvCost}/>
+          {
+            paymentList.balanceCharge != 0 &&
+              <LabelText
+                key={"pymBalance"} style={styles.item}
+                label={i18n.t("pym:balance")} labelStyle={styles.label2}
+                format="price"
+                valueStyle={appStyles.roboto16Text}
+                value={`(-) ${paymentList.balanceCharge}`}/>
+          }
+          <View style={styles.bar}/>
+          <View style={styles.row}>
+            <Text style={[appStyles.normal16Text]}>{i18n.t('cart:totalCost')} </Text>
+            <View style={{flex:1, flexDirection: 'row', justifyContent: 'flex-end'}}>
+              <Text style={styles.priceTxt}>{i18n.t('total') +' '}</Text>
+              <Text style={[appStyles.price, {fontWeight: 'bold', lineHeight:24, letterSpacing: 0.21}]}>{utils.numberToCommaString(paidAmount)}</Text>
+              <Text style={styles.priceTxt}>{' ' + i18n.t('won')}</Text>
 
-          {/* <Text style={[appStyles.normal16Text, styles.colorClearBlue, styles.fontWeightNormal]}>{utils.numberToCommaString(paidAmount)+ ' ' + i18n.t('won')}</Text> */}
+            {/* <Text style={[appStyles.normal16Text, styles.colorClearBlue, styles.fontWeightNormal]}>{utils.numberToCommaString(paidAmount)+ ' ' + i18n.t('won')}</Text> */}
+            </View>
           </View>
-        </View>
-      </View>
+        </SafeAreaView>
+      </ScrollView>
     )
   }
 
