@@ -31,7 +31,7 @@ import { openSettings, check, PERMISSIONS, RESULTS } from 'react-native-permissi
 
 class RegisterSimScreen extends Component {
   static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('sim:reg')} />
+    headerLeft: <AppBackButton navigation={navigation} title={navigation.getParam('title') || i18n.t('sim:reg')} />
   })
 
   constructor(props) {
@@ -216,7 +216,7 @@ class RegisterSimScreen extends Component {
               }
             </View>
           </TouchableOpacity>
-
+          
           <AppButton iconName={scan ? "iconCameraCancel" : "iconCamera"}
             style={styles.scanButton}
             title={i18n.t(scan ? 'reg:scanOff' : 'reg:scan')} titleStyle={styles.scanTitle}
@@ -287,7 +287,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     height: 20,
     marginHorizontal: 20,
-    justifyContent: 'flex-start'
+    justifyContent: 'flex-start',
+    width:150
   },
   inputBox: {
     marginTop: 13,

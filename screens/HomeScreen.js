@@ -256,7 +256,7 @@ class HomeScreen extends Component {
   }
 
 
-  _navigate = (key) => () => {
+  _navigate = (key,params = {}) => () => {
 
     const { mobile, iccid } = this.props.account
 
@@ -266,7 +266,7 @@ class HomeScreen extends Component {
       else key.indexOf('_') > 0 ? key = 'Recharge' : 'RegisterSim'
     }
 
-    this.props.navigation.navigate(key)
+    this.props.navigation.navigate(key,params)
   }
 
   _userInfo() {
@@ -275,7 +275,7 @@ class HomeScreen extends Component {
 
     return (
       <TouchableOpacity style={styles.userInfo} onPress={this._navigate('RegisterSim_user')}>
-        <AppUserPic url={userPictureUrl} icon="imgPeople" style={styles.userPicture}/>
+        <AppUserPic url={userPictureUrl} icon="imgPeople" style={styles.userPicture} onPress={this._navigate('RegisterSim_user')}/>
         <View style={{marginLeft:20, justifyContent:'space-around', flex:1}}>
           {
             loggedIn ? [
@@ -294,6 +294,7 @@ class HomeScreen extends Component {
   _menu() {
 
     const { mobile, iccid } = this.props.account
+    const title = iccid ? i18n.t('menu:change') : i18n.t('menu:card')
 
     return (
       <View style={styles.menu}>
@@ -307,9 +308,9 @@ class HomeScreen extends Component {
 
         <AppButton iconName="imgCard2"
           style={styles.menuBox}
-          title={mobile && iccid ? i18n.t('menu:change') : i18n.t('menu:card')}
+          title={title}
           // onPress={this._navigate('AddProfile')}
-          onPress={this._navigate('RegisterSim')}
+          onPress={this._navigate('RegisterSim',{title: title})}
           titleStyle={styles.menuText} />  
 
         <View style={styles.bar}/>

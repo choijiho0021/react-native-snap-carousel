@@ -147,7 +147,9 @@ class BoardMsgAdd extends Component {
     // reset data
     setTimeout (() => {
       this.setState({
-        ... this.initialState
+        msg: undefined,
+        title: undefined,
+        pin : undefined
       })
     }, 1000)
 

@@ -95,11 +95,11 @@ class RechargeScreen extends Component {
     const seg = [0, 5, 10, 15].map(v => iccid.substring(v, v+5))
     const amount = [[5000, 10000], [15000, 20000], [25000, 30000]]
 
+    console.log("image22222",api.httpImageUrl(simCardImage))
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <ScrollView>
-          <Image style={styles.card} source={{uri:api.httpImageUrl(simCardImage)}}
-            resizeMode='contain'/> 
+          <Image style={styles.card} source={{uri:api.httpImageUrl(simCardImage)}} resizeMode='stretch'/> 
           <View style={styles.iccidBox}>
             <Text style={styles.iccidTitle}>ICCID</Text>
             <View style={styles.iccidRow}>

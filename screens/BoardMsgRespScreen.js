@@ -89,7 +89,6 @@ class BoardMsgRespScreen extends Component {
                 <AppIcon name="btnReply" style={{justifyContent:'flex-start'}}/>
                 <View style={{marginLeft:10}}>
                   <Text style={styles.replyTitle}>{i18n.t('board:resp')}</Text>
-                  <Text style={styles.reply}>{resp.title + "\n"}</Text>
                   <Text style={styles.reply}>{resp.body}</Text>
                 </View>
               </View>

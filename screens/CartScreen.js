@@ -4,7 +4,8 @@ import {
   View,
   Text,
   SectionList,
-  Alert
+  Alert,
+  BackHandler
 } from 'react-native';
 import {connect} from 'react-redux'
 
@@ -61,6 +62,13 @@ class CartScreen extends Component {
     if ( cart && cart != prevProps.cart && cart.orderItems && ! pending ) {
       this._init()
     }
+
+    this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      const { lastTab } = this.props
+      const tab = (lastTab[0] == 'CartStack') ? lastTab[1] : lastTab[0]
+      this.props.navigation.navigate(tab);
+      return true;
+    })
   }
 
   _section( ... args) {
@@ -348,6 +356,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => ({
+  lastTab: state.cart.get('lastTab').toJS(),
   sim: state.sim.toJS(),
   product: state.product.toJS(),
   cart: state.cart.toJS(),
