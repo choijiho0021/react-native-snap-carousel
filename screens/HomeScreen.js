@@ -275,7 +275,7 @@ class HomeScreen extends Component {
 
     return (
       <TouchableOpacity style={styles.userInfo} onPress={this._navigate('RegisterSim_user')}>
-        <AppUserPic url={userPictureUrl} icon="imgPeople" style={styles.userPicture}/>
+        <AppUserPic url={userPictureUrl} icon="imgPeople" style={styles.userPicture} onPress={this._navigate('RegisterSim_user')}/>
         <View style={{marginLeft:20, justifyContent:'space-around', flex:1}}>
           {
             loggedIn ? [
