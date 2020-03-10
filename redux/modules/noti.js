@@ -5,7 +5,7 @@ import { pender } from 'redux-pender'
 import notiAPI from '../../utils/api/notiApi';
 import api from '../../utils/api/api';
 
-const  GET_NOTI_LIST =  "rokebi/noti/GET_NOTI_LIST"
+export const  GET_NOTI_LIST =  "rokebi/noti/GET_NOTI_LIST"
 const  READ_NOTI = "rokebi/noti/READ_NOTI"
 const  UPDATE_NOTI =  "rokebi/noti/UPDATE_NOTI"
 const  INIT = "rokebi/noti/INIT"
@@ -54,7 +54,7 @@ export default handleActions({
   [INIT] : (state, action) => {
     return initialState
   },
-
+  
   ... pender({
     type: GET_NOTI_LIST,
     onSuccess: (state, action) => {

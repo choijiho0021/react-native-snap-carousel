@@ -17,6 +17,7 @@ import _ from 'underscore'
 import * as notiActions from '../redux/modules/noti'
 import * as accountActions from '../redux/modules/account'
 import AppBackButton from '../components/AppBackButton';
+import { Platform } from '@unimodules/core';
 
 const MODE_NOTIFICATION = 'info'
 const CONTACT_BOARD_LIST_INDEX = 1
@@ -52,8 +53,11 @@ class NotiScreen extends Component {
     super(props)
 
     this.state = {
-      list : undefined
+      list : undefined,
+      refreshing : false
     }
+
+    this._onRefresh = this._onRefresh.bind(this)
   }
 
   componentDidMount(){
@@ -61,6 +65,23 @@ class NotiScreen extends Component {
     const info = this.props.navigation.getParam('info')
 
     this.setState({mode,info})
+  }
+
+  componentDidUpdate(prevProps){
+    if ( ! this.props.pending && this.props.pending != prevProps.pending) {
+
+      if(Platform.OS == 'android'){
+        const firebase = require('react-native-firebase')
+        const { notiList } = this.props.noti
+        const notiCount = notiList.filter(item => item.isRead == 'F').length
+  
+        firebase.notifications().setBadge(notiCount)
+      }
+      
+      this.setState({
+        refreshing: false
+      })
+    }
   }
 
   _onPress = (uuid, bodyTitle, body, notiType) => {
@@ -88,9 +109,16 @@ class NotiScreen extends Component {
     return <Text style={styles.emptyPage}>{i18n.t('noti:empty')}</Text>
   }
 
+  _onRefresh() {
+    this.setState({
+      refreshing: true
+    })
+    this.props.action.noti.getNotiList(this.props.account.mobile)
+  }
+
   render() {
     const {notiList} = this.props.noti
-    const {mode,info} = this.state
+    const {mode, info, refreshing} = this.state
 
     const data = mode == MODE_NOTIFICATION ? info : notiList
 
@@ -99,6 +127,8 @@ class NotiScreen extends Component {
         <FlatList 
           data={data} 
           renderItem={this._renderItem }
+          onRefresh={this._onRefresh}
+          refreshing={refreshing}
           ListEmptyComponent={this.renderEmptyContainer()}
           />
       </View>
@@ -185,7 +215,9 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => ({
   account : state.account.toJS(),
   auth: accountActions.auth(state.account),
-  noti: state.noti.toJS()
+  noti: state.noti.toJS(),
+  pending: state.pender.pending[notiActions.GET_NOTI_LIST] || false
+  // pending: state.pender.pending
 })
 
 export default connect(mapStateToProps, 
