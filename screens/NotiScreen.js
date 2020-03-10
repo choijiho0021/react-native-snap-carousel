@@ -23,16 +23,17 @@ const MODE_NOTIFICATION = 'info'
 const CONTACT_BOARD_LIST_INDEX = 1
 class NotiListItem extends PureComponent {
   render() {
-    const {item, index, onPress} = this.props
+    const {item, onPress} = this.props
+    // summary가 있으면, 우선적으로 표시한다.
     return (
-      <TouchableOpacity onPress={() => onPress(item.uuid, item.title, item.body, item.notiType)}>
+      <TouchableOpacity onPress={() => onPress(item.uuid, item.title, item.body, item.notiType, item.format)}>
         <View key={item.uuid} style={[styles.notibox,{backgroundColor:item.isRead == "F" ? "#f7f8f9" : colors.white}]}>
           <View key='notitext' style={styles.notiText} >
             <Text key='created' style={styles.created}>{utils.toDateString(item.created)}</Text>
             <View style={styles.title}>
               <Text key='titleText' style={styles.titleText}>{item.title}</Text>
             </View>
-            <Text key='body' style={styles.body} numberOfLines={3} ellipsizeMode={'tail'} >{utils.htmlToString(item.body)}
+            <Text key='body' style={styles.body} numberOfLines={3} ellipsizeMode={'tail'} >{utils.htmlToString(item.summary || item.body)}
             </Text>
           </View>
           <View key='iconview' style={styles.Icon}>
@@ -84,7 +85,7 @@ class NotiScreen extends Component {
     }
   }
 
-  _onPress = (uuid, bodyTitle, body, notiType) => {
+  _onPress = (uuid, bodyTitle, body, notiType, format = 'text') => {
 
     const {mode} = this.state
 
@@ -95,8 +96,8 @@ class NotiScreen extends Component {
         case 'reply':
           this.props.navigation.navigate('ContactBoard', {index: CONTACT_BOARD_LIST_INDEX})
           break;
-        default: // notitype = 'noti' OR 'pym 인 경우 포함
-          this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:bodyTitle, text:body, mode:'text'})
+        default: // notitype = 'noti'
+          this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:bodyTitle, text:body, mode:format})
       }
     }
   }

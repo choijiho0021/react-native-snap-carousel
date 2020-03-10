@@ -19,7 +19,9 @@ class NotiAPI {
                     notiType:item.noti_type,
                     uuid:item.uuid,
                     mobile:item.name,
-                    isRead:item.isRead
+                    isRead:item.isRead,
+                    format:item.field_format,
+                    summary:item.summary
                 }))
             )
         }
@@ -29,12 +31,13 @@ class NotiAPI {
             const obj = _.isArray(data.data) ? data.data : [data.data]
             let objects = obj.map((item,idx) => ({
                 title:item.attributes.title,
-                body:item.attributes.field_body,
+                body:item.attributes.body,
                 created:item.attributes.created,
                 notiType:item.attributes.field_noti_type,
                 uuid:item.id,
                 // mobile:item.attributes.name,
-                isRead:item.attributes.field_isread
+                isRead:item.attributes.field_isread,
+                format:item.attributes.field_format
             }))
             console.log('Noti list', objects)
             return api.success(objects)
