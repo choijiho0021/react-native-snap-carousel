@@ -38,7 +38,7 @@ class PaymentScreen extends Component{
 
     this.state = {
       params: {},
-      isPaid: false
+      isPaid: true
     }
 
     this._callback = this._callback.bind(this)
@@ -56,7 +56,10 @@ class PaymentScreen extends Component{
 
   componentDidMount() {
     const params = this.props.navigation.getParam('params')
-    if(_.isEmpty(this.props.navigation.isPaid)){
+    if(this.state.isPaid){
+      this.setState({
+        isPaid: false
+      })
       this.props.navigation.setParams({isPaid:false})
     }
 
@@ -80,13 +83,7 @@ class PaymentScreen extends Component{
 
     console.log('@@@response', response)
     if(isSuccess || isImpSuccess || false){
-      await this.props.navigation.setParams({isPaid:true})
-
-      if(!_.isEmpty(orderResult)){
-        this.setState({
-          isPaid: true
-        })
-      }
+      this.props.navigation.setParams({isPaid:true})
 
       const params = this.props.navigation.getParam('params')
       const orderResult = await this.props.action.cart.payNorder({
