@@ -29,12 +29,18 @@ class AppBackButton extends PureComponent {
   }
 
   render() {
-    const {title} = this.props
+    const {title, isPaid=false} = this.props
 
     return (
-      <TouchableWithoutFeedback onPress={this._goBack} >
+      <TouchableWithoutFeedback onPress={this._goBack}>
+        {/* <TouchableWithoutFeedback onPress={isPaid ? this.props.navigation.replace() : this._goBack}> */}
+      {/*  <TouchableWithoutFeedback onPress={goBack ? this._goBack : this._alert}> */}
         <View style={{flexDirection: "row", alignItems:'center'}}>
-          <Image style={{marginLeft: 20}} source={require('../assets/images/header/btnBack.png')} />
+          {
+            !isPaid ? 
+            <Image style={{marginLeft: 20}} source={require('../assets/images/header/btnBack.png')} />
+            :<View style={{marginLeft: 15}}/>
+          }
           <Text style={[appStyles.subTitle, {marginLeft:16}]}>{title}</Text>
         </View>
       </TouchableWithoutFeedback>
