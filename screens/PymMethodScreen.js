@@ -294,7 +294,6 @@ const styles = StyleSheet.create({
   },
   title: {
     ... appStyles.bold18Text,
-    height: 21,
     //fontFamily: "AppleSDGothicNeo",
     marginVertical: 20,
     marginHorizontal: 20,

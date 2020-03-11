@@ -269,6 +269,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: colors.black,
     marginLeft: 40,
+    paddingTop:0,
+    paddingBottom:0
   },
   actCodeBox: {
     marginTop: 50,

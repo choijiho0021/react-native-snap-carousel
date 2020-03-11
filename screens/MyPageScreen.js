@@ -128,6 +128,8 @@ class MyPageScreen extends Component {
     }
 
     if ( this.props.lastTab[0] === 'MyPageStack' && this.props.lastTab[0] !== prevProps.lastTab[0] ) {
+      this.flatListRef.scrollToOffset({ animated: false, y: 0 })
+      
       if ( mode === 'usage' && isReloaded ) {
         this.props.navigation.popToTop()
         this.setState({ isReloaded: false })
@@ -343,7 +345,8 @@ class MyPageScreen extends Component {
 
     return (
       <View style={styles.container}>
-        <FlatList data={mode == 'purchase' ? orders : usage} 
+        <FlatList ref={(ref) => { this.flatListRef = ref; }}
+          data={mode == 'purchase' ? orders : usage} 
           ListHeaderComponent={this._info}
           ListEmptyComponent={this._empty(mode)}
           renderItem={mode == 'purchase' ? this._renderOrder : this._renderUsage} /> 

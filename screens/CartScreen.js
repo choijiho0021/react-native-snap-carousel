@@ -63,12 +63,13 @@ class CartScreen extends Component {
       this._init()
     }
 
-    this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      const { lastTab } = this.props
-      const tab = (lastTab[0] == 'CartStack') ? lastTab[1] : lastTab[0]
-      this.props.navigation.navigate(tab);
-      return true;
-    })
+    // [Android] 강제로 백버튼 handler 추가
+    // this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+    //   const { lastTab } = this.props
+    //   const tab = (lastTab[0] == 'CartStack') ? lastTab[1] : lastTab[0]
+    //   this.props.navigation.navigate(tab);
+    //   return true;
+    // })
   }
 
   _section( ... args) {
