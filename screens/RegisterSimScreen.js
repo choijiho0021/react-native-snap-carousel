@@ -180,8 +180,10 @@ class RegisterSimScreen extends Component {
         <KeyboardAwareScrollView
           resetScrollToCoords={{ x: 0, y: 0 }}
           contentContainerStyle={styles.container}
-          extraScrollHeight={50} 
-          scrollEnabled={isDeviceSize('small')}>
+          enableOnAndroid={true}
+          // extraScrollHeight={50} 
+          // scrollEnabled={isDeviceSize('small')}
+          >
 
           <TouchableOpacity style={styles.card} onPress={() => this._onCamera(!scan)}>
             <ScanSim scan={scan} onScan={this._onScan} hasCameraPermission={hasCameraPermission}/>
@@ -328,6 +330,7 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'flex-start',
     alignItems: 'stretch',
+    flexGrow: 1
   },
   card: {
     marginHorizontal: 20,

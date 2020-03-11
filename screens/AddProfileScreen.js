@@ -225,7 +225,9 @@ _onSubmit() {
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <KeyboardAwareScrollView
           resetScrollToCoords={{ x: 0, y: 0 }}
-          extraScrollHeight={60}
+          contentContainerStyle={styles.scrollContainer}
+          enableOnAndroid={true}
+          // extraScrollHeight={60}
           innerRef={ref => { this.scroll = ref; }}>
 
             <View style={{ flex: 1, justifyContent: 'flex-start', flexDirection: 'row'}}>
@@ -488,6 +490,9 @@ const styles = StyleSheet.create({
     marginTop: 3, 
     textAlign: 'left'
   },
+  scrollContainer: {
+    flexGrow: 1
+  }
 });
 
 const mapStateToProps = (state) => ({
