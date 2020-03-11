@@ -23,6 +23,7 @@ const CHANGE_PICTURE =   'rokebi/account/CHANGE_PICTURE'
 const GET_TOKEN = 'rokebi/account/GET_TOKEN'
 export const CHANGE_ATTR = 'rokebi/account/CHANGE_ATTR'
 const REGISTER_MOBILE = 'rokebi/account/REGISTER_MOBILE'
+const CLEAR_ACCOUNT = 'rokebi/account/CLEAR_ACCOUNT'
 
 export const getToken = createAction(GET_TOKEN, userApi.getToken)
 export const updateAccount = createAction(UPDATE_ACCOUNT)
@@ -38,6 +39,7 @@ const registerMobile0 = createAction(REGISTER_MOBILE, accountApi.registerMobile)
 const uploadPicture = createAction(UPLOAD_PICTURE, accountApi.uploadPicture)
 const changePicture = createAction(CHANGE_PICTURE, userApi.changePicture)
 const changeUserAttr = createAction(CHANGE_ATTR, userApi.update)
+const clearAccount = createAction(CLEAR_ACCOUNT)
 
 export const logout = () => {
   return (dispatch) => {
@@ -182,6 +184,16 @@ export const uploadAndChangePicture = (image) => {
   }
 }
 
+export const clearCurrentAccount = () => {
+  return (dispatch) => {
+    utils.removeData( userApi.KEY_ICCID)
+
+    batch(() => {
+      dispatch(clearAccount())
+    })
+  }
+}
+
 export const auth = (state) => ({
   user: state.get('mobile'),
   pass: state.get('pin'),
@@ -245,8 +257,20 @@ export default handleActions({
     return updateAccountState(state, action.payload)
   },
 
-  [RESET_ACCOUNT]: (state, action) => {
-    return initialState
+  [CLEAR_ACCOUNT]: (state, action) => {
+    return state.set('expDate', undefined)
+      .set('balance', undefined)
+      .set('expDate', undefined)
+      .set('simPartnerId', undefined)
+      .set('actDate', undefined)
+      .set('firstActDate', undefined)
+      .set('userId', undefined)
+      .set('uid', undefined)
+      .set('uuid', undefined)
+      .set('iccid', undefined)
+      .set('nid', undefined)
+      .set('simCardName', undefined)
+      .set('simCardImage', undefined)
   },
 
   ... pender({

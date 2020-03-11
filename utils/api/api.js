@@ -71,7 +71,8 @@ class Api {
                 create: 'api/v1/auth/user'
             },
             noti: {
-                alimtalk: 'api/v1/noti/msg/alimtalk'
+                alimtalk: 'api/v1/noti/msg/alimtalk',
+                log: 'api/v1/noti/log'
             },
             rokebi: {
                 subs: 'rokebi/subs'

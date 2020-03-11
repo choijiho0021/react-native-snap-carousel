@@ -18,6 +18,7 @@ if ( Constants.appOwnership !== 'expo') {
 class PushNoti {
   constructor() {
     this.callback = undefined
+    this.notificationListener = undefined
     this._onRegister = this._onRegister.bind(this)
     this._onNotification = this._onNotification.bind(this)
   }
@@ -59,11 +60,22 @@ class PushNoti {
     PushNotification && PushNotification.unregister()
   }
 
+  _configureForAndroid({ onRegister = ({token}) => {}, onNotification = (notification) => {} }) {
+    if ( _.isFunction(onRegister) ) {
+      firebase.messaging().getToken().then(token => onRegister({token}))
+    }
+
+    if ( _.isFunction(onNotification)) {
+      this.notificationListener = firebase.notifications().onNotification((notification) => {
+          onNotification(notification)
+      });
+    }
+  }
+
   add( callback) {
     this.callback = callback
 
-    if(Platform.OS=='ios'){
-      
+    if ( Platform.OS === 'ios' ) {
       PushNotification && PushNotification.configure({
         // (optional) Called when Token is generated (iOS and Android)
         onRegister: this._onRegister,
@@ -93,10 +105,11 @@ class PushNoti {
         requestPermissions: true
       })
     }
-    else{
-      firebase.messaging().getToken().then(
-        fcmToken => {this.callback('register',fcmToken)}
-      )
+    else {
+      this._configureForAndroid({
+        onRegister: this._onRegister,
+        onNotification: this._onNotification
+      })
     }
   }
 }
