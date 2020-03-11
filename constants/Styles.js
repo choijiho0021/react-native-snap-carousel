@@ -48,7 +48,6 @@ export const appStyles = StyleSheet.create({
     },
 
     h1: {
-        height: 21,
 //        fontFamily: "AppleSDGothicNeo",
         fontSize: 18,
         fontWeight: "bold",
