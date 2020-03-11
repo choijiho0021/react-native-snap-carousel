@@ -70,13 +70,17 @@ class NotiScreen extends Component {
 
   componentDidUpdate(prevProps){
     if ( ! this.props.pending && this.props.pending != prevProps.pending) {
+      const { notiList } = this.props.noti
+      const notiCount = notiList.filter(item => item.isRead == 'F').length
 
       if(Platform.OS == 'android'){
         const firebase = require('react-native-firebase')
-        const { notiList } = this.props.noti
-        const notiCount = notiList.filter(item => item.isRead == 'F').length
-  
+        
         firebase.notifications().setBadge(notiCount)
+      }
+      else if(Platform.OS == 'ios'){
+        const PushNotificationIOS = require('@react-native-community/push-notification-ios')
+        PushNotificationIOS.setApplicationIconBadgeNumber(notiCount)
       }
       
       this.setState({
