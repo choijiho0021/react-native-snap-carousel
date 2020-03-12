@@ -18,16 +18,17 @@ import i18n from '../utils/i18n';
 import _ from 'underscore';
 
 import { colors } from '../constants/Colors'
+import { ScrollView } from 'react-native-gesture-handler';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "flex-start",
-    alignItems: 'stretch'
   },
   result: {
     flex: 1,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    height: 400, //500
   }
 })
 
@@ -91,14 +92,15 @@ class PaymentResultScreen extends Component {
     const isSuccess = !_.isUndefined(imp_success) ? imp_success && (result == 0) : result == 0
 
     return (
-      <SafeAreaView style={styles.container}>
-        <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance}
-                        pymPrice={isSuccess ? pymPrice : 0} deduct={isSuccess ? deduct : 0} isRecharge={isRecharge} screen={screen}/>     
-
-        <View style={styles.result}>
-          <Text style={{alignSelf: 'center', color: colors.black}}>{i18n.t( isSuccess ? 'pym:success' : 'pym:fail')}</Text>
-        </View>
-      </SafeAreaView>
+      <ScrollView>
+        <SafeAreaView style={styles.container}>
+          <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance}
+                          pymPrice={isSuccess ? pymPrice : 0} deduct={isSuccess ? deduct : 0} isRecharge={isRecharge} screen={screen}/>
+          <View style={styles.result}>
+            <Text style={{alignSelf: 'center', color: colors.black}}>{i18n.t( isSuccess ? 'pym:success' : 'pym:fail')}</Text>
+          </View>
+        </SafeAreaView>
+      </ScrollView>
     )
   }
 }
