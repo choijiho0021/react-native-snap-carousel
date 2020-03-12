@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteTwo
   },
   tabBarLabel: {
-      height: 17,
+      // height: 17,
       // fontFamily: "AppleSDGothicNeo",
       fontSize: isDeviceSize('small') ? 12 : 14 ,
       fontWeight: "500",
