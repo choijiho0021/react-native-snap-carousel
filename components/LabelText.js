@@ -8,6 +8,7 @@ import {appStyles} from '../constants/Styles'
 import utils from '../utils/utils';
 import i18n from '../utils/i18n';
 import { colors } from '../constants/Colors';
+import _ from 'underscore'
 
 const styles = StyleSheet.create({
   label: {
@@ -39,7 +40,7 @@ export default class LabelText extends PureComponent {
 
     return (
       <View style={[styles.container, style]} >
-        <Text style={labelStyle || styles.label}>{label}</Text>
+        <Text style={[labelStyle || styles.label, {maxWidth:'70%'}]}>{label}</Text>
         {
           isDeduct &&
           <Text style={[styles.label, {marginLeft: 18}]}>{`(${i18n.t('cart:currentBalance')}:${utils.numberToCommaString(value) + ' ' + i18n.t('won')}) `}</Text>
