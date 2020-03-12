@@ -23,6 +23,7 @@ import AppActivityIndicator from '../components/AppActivityIndicator';
 import StoreList from '../components/StoreList';
 import { sliderWidth, windowHeight } from '../constants/SliderEntry.style'
 import Analytics from 'appcenter-analytics'
+import AppBackButton from '../components/AppBackButton';
 
 // windowHeight
 // iphone 6, 7, 8 - 375 x 667 points
@@ -64,12 +65,12 @@ class HeaderTitle extends Component {
     this.setState({
       [key] : value
     })
-    this.props._search(value,false);
+    this.props._search && this.props._search(value,false);
   }
 
-  async search(searchWord) {
+  search(searchWord) {
     this.setState({searching:true})
-    this.props._search(searchWord,true);
+    this.props._search && this.props._search(searchWord,true);
   }
 
   render() {
@@ -79,11 +80,12 @@ class HeaderTitle extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.headerTitle}>
-          <TouchableWithoutFeedback onPress={() => navigation.navigation.goBack()}>
+          <AppBackButton navigation={navigation.navigation} />
+          {/* <TouchableWithoutFeedback onPress={() => navigation.navigation.goBack()}>
             <View style={styles.backButton}>
               <Image style={{marginLeft: 5}} source={require('../assets/images/header/btnBack.png')} />
             </View>
-          </TouchableWithoutFeedback>
+          </TouchableWithoutFeedback> */}
           <TextInput
             style={styles.searchText}
             placeholder={i18n.t('store:search')}
@@ -315,7 +317,7 @@ const styles = StyleSheet.create({
   headerTitle : {
     flexDirection: 'row',
     alignContent:"center",
-    marginHorizontal:20,
+    // marginHorizontal:20,
     flex : 1
   },
   showSearchBar : {

@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Image, TouchableWithoutFeedback, View, Text } from 'react-native'
+import { Image, TouchableWithoutFeedback, View, Text, BackHandler } from 'react-native'
 import {connect} from 'react-redux'
 import { appStyles } from '../constants/Styles';
 import _ from 'underscore'
@@ -9,6 +9,11 @@ class AppBackButton extends PureComponent {
     super(props)
 
     this._goBack = this._goBack.bind(this)
+  }
+
+  componentDidMount(){
+    // [Android] 강제로 백버튼 handler 추가
+    this.backHandler = BackHandler.addEventListener('hardwareBackPress', this._goBack)
   }
 
   _goBack() {
