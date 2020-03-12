@@ -111,7 +111,7 @@ class PaymentScreen extends Component{
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <IMP.Payment
           userCode={impId}
-          loading={<Video source={require('../assets/images/loading_1.mp4')} style={styles.backgroundVideo} />} 
+          loading={<Video source={require('../assets/images/loading_1.mp4')} style={styles.backgroundVideo} resizeMode={'cover'}/>} 
           data={params}             // 결제 데이터
           callback={response => this._callback(response)}
           style={styles.webview}
