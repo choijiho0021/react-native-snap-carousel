@@ -63,7 +63,7 @@ class PurchaseDetailScreen extends Component {
       <ScrollView style={styles.container}>
         <SafeAreaView forceInset={{ top: 'never', bottom:"always"}}>
           <Text style={styles.date}>{utils.toDateString(orderDate)}</Text>
-          <Text style={styles.price}>{label}</Text>
+          <Text style={styles.productTitle}>{label}</Text>
           <View style={styles.bar}/>
           <LabelText
             key="orderId" style={styles.item}
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     color: colors.warmGrey
   },
-  price: {
+  productTitle: {
     ... appStyles.bold18Text,
     lineHeight: 24,
     letterSpacing: 0.27,
@@ -151,6 +151,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 20,
     marginVertical: 10,
+    maxWidth: '90%'
   },
   bar: {
     borderBottomColor: colors.lightGrey,
