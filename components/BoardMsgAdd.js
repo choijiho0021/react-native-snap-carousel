@@ -309,7 +309,7 @@ class BoardMsgAdd extends Component {
         <KeyboardAwareScrollView 
           resetScrollToCoords={{ x: 0, y: 0 }}
           contentContainerStyle={styles.modalInner}
-          // extraScrollHeight={extraHeight}
+          extraScrollHeight={extraHeight}
           enableOnAndroid={true}
           
           innerRef={ref => { this.scroll = ref; }}>
