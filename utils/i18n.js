@@ -269,6 +269,7 @@ const en = {
   "board:mylist" : "My Requests",
   "board:nolist" : "No Requests",
   "board:pinMismatch" : "PIN mismatch",
+  "board:loading" : "Loading",
 
   "cart:totalCnt" : "Total count",
   "cart:totalPrice" : "Total price",
@@ -613,6 +614,7 @@ const ko = {
   "board:mylist" : "나의 문의 내역",
   "board:nolist" : "문의 내역이 없습니다",
   "board:pinMismatch" : "비밀 번호가 일치하지 않습니다",
+  "board:loading" : "문의내역을 불러오고 있습니다.",
 
   "cart:totalCnt" : "총 상품 수",
   "cart:totalPrice" : "총 상품 금액",
