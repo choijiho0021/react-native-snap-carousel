@@ -143,6 +143,7 @@ class InputPinInTime extends Component {
                             maxLength={6}
                             clearTextOnFocus={true}
                             autoFocus={ editable }
+                            onFocus={() => {this.setState({pin:""})}} //android - clearTextOnFocus 수동적용
                             onChangeText={this._onChangeText('pin')}
                             value={pin}
                             style={styles.input}

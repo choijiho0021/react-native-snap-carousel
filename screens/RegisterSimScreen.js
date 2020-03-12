@@ -5,6 +5,7 @@ import {
   Text,
   TextInput,
   SafeAreaView,
+  findNodeHandle,
   TouchableOpacity,
   Keyboard
 } from 'react-native';
@@ -52,6 +53,7 @@ class RegisterSimScreen extends Component {
     this._onCamera = this._onCamera.bind(this)
     this._onScan = this._onScan.bind(this)
     this._updateIccid = this._updateIccid.bind(this)
+    this._scrolll = this._scrolll.bind(this)
 
     this.inputIccid = [...Array(4)].map( () =>  React.createRef() )
     this.defaultIccid = "12345"
@@ -139,6 +141,10 @@ class RegisterSimScreen extends Component {
     this._updateIccid(data)
   }
 
+  _scrolll = (event) => {
+    this.scroll.props.scrollToFocusedInput(findNodeHandle(event.target));
+  }
+
   _onChangeText = (key, idx) => (value) => {
     //if (key == 'iccid') value = value.replace(/[ -]/g, '')
 
@@ -178,10 +184,13 @@ class RegisterSimScreen extends Component {
         <AppActivityIndicator visible={querying}/>
 
         <KeyboardAwareScrollView
+          innerRef={ref => { this.scroll = ref; }}
           resetScrollToCoords={{ x: 0, y: 0 }}
           contentContainerStyle={styles.container}
+          enableOnAndroid={true}
           extraScrollHeight={50} 
-          scrollEnabled={isDeviceSize('small')}>
+          // scrollEnabled={isDeviceSize('small')}
+          >
 
           <TouchableOpacity style={styles.card} onPress={() => this._onCamera(!scan)}>
             <ScanSim scan={scan} onScan={this._onScan} hasCameraPermission={hasCameraPermission}/>
@@ -211,7 +220,8 @@ class RegisterSimScreen extends Component {
                         value={ elm }
                         focus={focusInputIccid}
                         blurOnSubmit={false}
-                        onFocus={() => {}} />
+                        // onFocus={() => {}} 
+                        />
                   ))
               }
             </View>
@@ -236,6 +246,7 @@ class RegisterSimScreen extends Component {
                 maxLength={4}
                 clearTextOnFocus={true}
                 onFocus={() => this.setState({actCode: ''})}
+                onContentSizeChange={this._scrolll}
                 value={actCode} />
             </View>
           </View>
@@ -328,6 +339,7 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'flex-start',
     alignItems: 'stretch',
+    flexGrow: 1
   },
   card: {
     marginHorizontal: 20,

@@ -100,7 +100,6 @@ const StoreStack = createStackNavigator(
     Product: ProductScreen,
     NewSim: NewSimScreen,
     SimpleText: SimpleTextScreen,
-    Cart: CartScreen,
 
     // Roaming Product 바로 구매와 관련된 화면
     Payment: PaymentScreen,

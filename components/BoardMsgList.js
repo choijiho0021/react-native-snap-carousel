@@ -80,6 +80,7 @@ class BoardMsgList extends Component {
     this._onValidate = this._onValidate.bind(this)
     this._init = this._init.bind(this)
     this._onRefresh = this._onRefresh.bind(this)
+    this._empty = this._empty.bind(this)
   } 
 
   componentDidMount() {
@@ -217,7 +218,7 @@ class BoardMsgList extends Component {
     return (
       <View style={{alignItems:'center'}}>
         <AppIcon style={styles.mark} name="imgMark"/>
-        <Text style={styles.noList}>{i18n.t('board:nolist')}</Text>
+        <Text style={styles.noList}>{this.state.refreshing ? i18n.t('board:loading') : i18n.t('board:nolist')}</Text>
       </View>
     )
   }

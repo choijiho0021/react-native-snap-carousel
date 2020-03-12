@@ -99,7 +99,7 @@ class RechargeScreen extends Component {
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <ScrollView>
-          <Image style={styles.card} source={{uri:api.httpImageUrl(simCardImage)}} resizeMode='stretch'/> 
+          <Image style={styles.card} source={{uri:api.httpImageUrl(simCardImage)}} resizeMode='contain'/> 
           <View style={styles.iccidBox}>
             <Text style={styles.iccidTitle}>ICCID</Text>
             <View style={styles.iccidRow}>
@@ -148,8 +148,8 @@ const styles = StyleSheet.create({
   },
   card: {
     height: 168,
-    borderWidth: 1,
-    borderColor: colors.lightGrey,
+    // borderWidth: 1,
+    // borderColor: colors.lightGrey,
     marginHorizontal: 47,
     marginTop: 20
   },

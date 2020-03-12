@@ -5,10 +5,11 @@ import {
   Text,
   TouchableOpacity,
   FlatList,
+  StatusBar,
   SafeAreaView,
 } from 'react-native';
 import {connect} from 'react-redux'
-
+import { initialMode } from 'react-native-dark-mode'
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import * as accountActions from '../redux/modules/account'
@@ -82,7 +83,8 @@ class RegisterMobileScreen extends Component {
       emailValidation: {
         isValid: false,
         error: undefined
-      }
+      },
+      darkMode:initialMode
     }
 
     this.confirmList = [
@@ -345,13 +347,14 @@ class RegisterMobileScreen extends Component {
   }
 
   render() {
-    const { mobile, authorized, confirm, authNoti, newUser, timeout, emailValidation, loading } = this.state,
+    const { mobile, authorized, confirm, authNoti, newUser, timeout, emailValidation, loading, darkMode } = this.state,
       { isValid, error } = emailValidation || {}
     const disableButton = ! authorized || ( newUser && !(confirm.get("0") && confirm.get("1")) ),
       editablePin = mobile && authNoti && ! authorized && ! loading
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
+        <StatusBar barStyle={darkMode ? "dark-content" : 'light-content'} />
         <Text style={styles.title}>{i18n.t('mobile:title')}</Text>
 
         <InputMobile style={{marginTop:30, paddingHorizontal:20}}

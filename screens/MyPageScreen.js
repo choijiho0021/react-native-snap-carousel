@@ -51,9 +51,9 @@ class OrderItem extends PureComponent {
     return (
       <TouchableOpacity onPress={onPress}>
         <View key={item.orderId} style={styles.order}>
-          <Text style={appStyles.normal14Text}>{utils.toDateString(item.orderDate, 'YYYY-MM-DD')}</Text>
+          <Text style={[appStyles.normal14Text]}>{utils.toDateString(item.orderDate, 'YYYY-MM-DD')}</Text>
           <LabelText style={[styles.orderValue, isDeviceSize('small') && {flexDirection : 'column', alignItems:'space-between'}]}
-            label={label} labelStyle={appStyles.normal16Text}
+            label={label} labelStyle={[{width:'70%'}, appStyles.normal16Text]}
             value={totalPrice} format="price" />
         </View>
       </TouchableOpacity>
@@ -434,7 +434,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20
   },
   orderValue: {
-    marginTop: 12,
+    marginTop: 12
   },
   button: {
     width: "50%",
