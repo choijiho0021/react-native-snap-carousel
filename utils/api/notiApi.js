@@ -106,6 +106,30 @@ class NotiAPI {
             }
         }, {abortController})
     }
+
+    sendLog = (mobile, message) => {
+        if ( _.isEmpty(mobile) ) return api.reject( api.INVALID_ARGUMENT)
+
+        const url = `${api.rokHttpUrl(api.path.rokApi.noti.log)}`,
+        headers = api.basicAuth(undefined, undefined, 'json'),
+        body = {
+            mobile,
+            message
+        }
+
+        return api.callHttp(url, {
+            method: 'post',
+            headers,
+            body: JSON.stringify(body)
+        }, (data = {}) => {
+            if ( _.size(data.result) > 0 && data.result.code === 0) {
+                return api.success();
+            }
+            else {
+                return api.failure(api.FAILED, undefined, (data.result || {}).error);
+            }
+        })
+    }
 }
 
 export default new NotiAPI()

@@ -12,6 +12,7 @@ const  INIT = "rokebi/noti/INIT"
 
 const  INIT_ALIM_TALK = "rokebi/noti/INIT_ALIM_TALK"
 const  SEND_ALIM_TALK = "rokebi/noti/SEND_ALIM_TALK"
+const  SEND_LOG = "rokebi/noti/SEND_LOG"
 
 export const getNotiList = createAction(GET_NOTI_LIST, notiAPI.getNoti)
 export const readNoti = createAction(READ_NOTI, notiAPI.read)
@@ -19,6 +20,7 @@ export const updateNoti = createAction(UPDATE_NOTI, notiAPI.update)
 export const init = createAction(INIT)
 const initAlimTalk = createAction(INIT_ALIM_TALK)
 const sendAlimTalk = createAction(SEND_ALIM_TALK, notiAPI.sendAlimTalk, (... args) => ({abortController:args.abortController}))
+export const sendLog = createAction(SEND_LOG, notiAPI.sendLog)
 
 export const notiReadAndGet = (uuid,mobile,auth) => {
   return (dispatch,getState) => {

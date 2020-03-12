@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, Button } from 'react-native'
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as cartActions from '../redux/modules/cart'
@@ -11,6 +11,7 @@ import getEnvVars from '../environment'
 import i18n from '../utils/i18n';
 import { SafeAreaView } from 'react-navigation';
 import AppBackButton from '../components/AppBackButton';
+import AppButton from '../components/AppButton';
 import _ from 'underscore';
 
 let IMP
@@ -22,27 +23,45 @@ if (Constants.appOwnership === 'expo') {
   }
 }
 else {
+
   IMP = require('iamport-react-native').default;
 }
 
 class PaymentScreen extends Component{
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('payment')} />
-  })
-
+  // static navigationOptions = ({navigation= this.props.navigation}) => ({
+  //   headerLeft: <AppBackButton navigation={navigation} title={!_.isEmpty(navigation.state.params.isPaid) && navigation.state.params.isPaid ? '결제완료' : i18n.t('payment')}/>
+  //     // goBack={!_.isEmpty(this.state.isPaid) && !this.state.isPaid || true}
+  //   })
 
   constructor(props) {
     super(props)
 
     this.state = {
-      params: {}
+      params: {},
+      isPaid: true
     }
 
     this._callback = this._callback.bind(this)
   }
 
+  static navigationOptions =  ({ navigation }) => {
+    const { params = {} } = navigation.state
+
+    return {
+        headerLeft: <AppBackButton navigation={navigation} title={params.isPaid ? '결제완료' : i18n.t('payment')} isPaid={params.isPaid}/>
+        // headerLeft: <AppBackButton navigation={navigation} title={'결제완료'} isPaid={true}/>
+        // Similarly for the rest
+    }  
+  }
+
   componentDidMount() {
     const params = this.props.navigation.getParam('params')
+    if(this.state.isPaid){
+      this.setState({
+        isPaid: false
+      })
+      this.props.navigation.setParams({isPaid:false})
+    }
 
     if (params.mode == 'test' || Constants.appOwnership === 'expo' || params.amount == 0) {
       const {impId} = getEnvVars()
@@ -62,7 +81,10 @@ class PaymentScreen extends Component{
     const isSuccess = _.isUndefined(response.success) ? false : response.success
     const isImpSuccess = typeof(response.imp_success) === 'boolean' ? response.imp_success  : response.imp_success === 'true'
 
+    console.log('@@@response', response)
     if(isSuccess || isImpSuccess || false){
+      this.props.navigation.setParams({isPaid:true})
+
       const params = this.props.navigation.getParam('params')
       const orderResult = await this.props.action.cart.payNorder({
         ... response,
@@ -73,6 +95,7 @@ class PaymentScreen extends Component{
         dlvCost: params.dlvCost,
         // pay_method: params.pay_method,
       })
+
       this.props.navigation.replace('PaymentResult', {pymResult:response, orderResult})  
     }
     else{

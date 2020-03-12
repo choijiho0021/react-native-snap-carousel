@@ -36,6 +36,7 @@ import { Animated } from 'react-native';
 import TutorialScreen from './TutorialScreen';
 import AsyncStorage from '@react-native-community/async-storage';
 import { PERMISSIONS, request } from 'react-native-permissions';
+import AppAlert from './../components/AppAlert';
 
 const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti, 
   {badgeStyle:{right:-3,top:0}},
@@ -111,6 +112,8 @@ class HomeScreen extends Component {
     this._navigate = this._navigate.bind(this)
     this._userInfo = this._userInfo.bind(this)
     this._notification = this._notification.bind(this)
+    this._handleNotification = this._handleNotification.bind(this)
+    this._clearAccount = this._clearAccount.bind(this)
 
  }
 
@@ -203,8 +206,37 @@ class HomeScreen extends Component {
         break;
       case 'notification':
         console.log('notification', data)
+        this._handleNotification( data )
+    }
+  }
+
+  _handleNotification( payload ) {
+    const type = (payload.data || {}).notiType
+    const targetIccid = (payload.data || {}).iccid
+    const { mobile, iccid } = this.props.account
+
+    if (mobile && _.size(payload) > 0) {
+      let msg = JSON.stringify(payload)
+      this.props.action.noti.sendLog(mobile, msg)
+    }
+    
+    switch(type) {
+      case 'account':
+        if ( typeof iccid !== 'undefined' && iccid === targetIccid ) {
+          AppAlert.info( i18n.t('acc:disconnectSim'), i18n.t('noti'), this._clearAccount )
+        }
+        else {
+          this.props.navigation.navigate('Noti')
+        }
+
+        break;
+      default:
         this.props.navigation.navigate('Noti')
     }
+  }
+
+  _clearAccount() {
+    this.props.action.account.clearCurrentAccount()
   }
 
   _login(mobile, pin, iccid) {
