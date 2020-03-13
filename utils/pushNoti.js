@@ -61,17 +61,19 @@ class PushNoti {
   }
 
   _configureForAndroid({ onRegister = ({token}) => {}, onNotification = (notification) => {} }) {
-    if ( _.isFunction(onRegister) ) {
-      firebase.messaging().getToken().then(token => onRegister({token}))
-    }
+    firebase.messaging().getToken().then(token => {
+      if ( _.isFunction(onRegister) ) {
+        onRegister({token})
+      }
+    })
 
-    if ( _.isFunction(onNotification)) {
-      this.notificationListener = firebase.notifications().onNotification((notification) => {
-          onNotification(notification)
-      });
-    }
+    firebase.notifications().onNotification((notification) => {
+      if ( _.isFunction(onNotification)) {
+            onNotification(notification)
+      }
+    });
   }
-
+  
   add( callback) {
     this.callback = callback
 
@@ -97,11 +99,9 @@ class PushNoti {
         // default: true
         popInitialNotification: true,
       
-        /**
-         * (optional) default: true
-         * - Specified if permissions (ios) and token (android and ios) will requested or not,
-         * - if not, you must call PushNotificationsHandler.requestPermissions() later
-         */
+        //(optional) default: true
+        //- Specified if permissions (ios) and token (android and ios) will requested or not,
+        //- if not, you must call PushNotificationsHandler.requestPermissions() later
         requestPermissions: true
       })
     }
@@ -115,3 +115,34 @@ class PushNoti {
 }
 
 export default new PushNoti()
+
+PushNotification.cancelAllLocalNotifications()
+
+PushNotification.localNotificationSchedule({
+  /* Android Only Properties */
+  vibrate: true,
+  vibration: 300,
+  priority: 'hight',
+  visibility: 'public',
+  importance: 'hight',
+
+  /* iOS and Android properties */
+  message: 'TEST3', // (required)
+  playSound: false,
+  number: 1,
+
+  userInfo: {
+    flag: 'test3'
+  },
+
+  // for production
+  //repeatType: 'day', // (optional) Repeating interval. Check 'Repeating Notifications' section for more info.
+  //date: nextHour,
+
+  // test to trigger each miniute
+  repeatType: 'minute',
+  date: new Date(Date.now()),
+
+  // test to trigger one time
+  // date: new Date(Date.now() + 20 * 1000),
+});
