@@ -60,16 +60,21 @@ class PushNoti {
     PushNotification && PushNotification.unregister()
   }
 
-  _configureForAndroid({ onRegister = ({token}) => {}, onNotification = (notification) => {} }) {
+  async _configureForAndroid({ onRegister = ({token}) => {}, onNotification = (notification) => {} }) {
+    const enabled = await firebase.messaging().hasPermission()
+    if (enabled) {
+      await firebase.messaging().requestPermission()
+    }
+
     firebase.messaging().getToken().then(token => {
       if ( _.isFunction(onRegister) ) {
         onRegister({token})
       }
     })
 
-    firebase.notifications().onNotification((notification) => {
+    this.notificationListener = firebase.notifications().onNotification((notification) => {
       if ( _.isFunction(onNotification)) {
-            onNotification(notification)
+        onNotification(notification)
       }
     });
   }

@@ -38,7 +38,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import AppAlert from './../components/AppAlert';
 import appStateHandler from '../utils/appState'
-import moment from 'moment'
 
 const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti, 
   {badgeStyle:{right:-3,top:0}},
@@ -105,8 +104,7 @@ class HomeScreen extends Component {
       darkMode: initialMode,
       activeSlide: 0,
       promotions: [],
-      firstLaunch: undefined,
-      lastRefresh: moment()
+      firstLaunch: undefined
     }
 
     this._login = this._login.bind(this)
@@ -118,6 +116,8 @@ class HomeScreen extends Component {
     this._handleNotification = this._handleNotification.bind(this)
     this._clearAccount = this._clearAccount.bind(this)
     this._appStateHandler = this._appStateHandler.bind(this)
+
+    this._isNoticed = null
 
  }
 
@@ -169,7 +169,7 @@ class HomeScreen extends Component {
   }
 
   componentDidUpdate( prevProps) {
-    const {mobile, pin, iccid, loggedIn, deviceToken} = this.props.account
+    const {mobile, pin, iccid, loggedIn, deviceToken, isUsedByOther} = this.props.account
 
     if ( mobile != prevProps.account.mobile || pin != prevProps.account.pin) {
 
@@ -188,6 +188,11 @@ class HomeScreen extends Component {
 
     if ( this.props.sync.progress ) {
       this.props.navigation.navigate('CodePush')
+    }
+
+    if ( isUsedByOther && prevProps.account.isUsedByOther != isUsedByOther && ! this._isNoticed) {
+      this._isNoticed = true
+      AppAlert.info( i18n.t('acc:disconnectSim'), i18n.t('noti'), this._clearAccount )
     }
   }
 
@@ -229,7 +234,10 @@ class HomeScreen extends Component {
     switch(type) {
       case 'account':
         if ( typeof iccid !== 'undefined' && iccid === target ) {
-          AppAlert.info( i18n.t('acc:disconnectSim'), i18n.t('noti'), this._clearAccount )
+          if (! this._isNoticed) {
+            this._isNoticed = true
+            AppAlert.info( i18n.t('acc:disconnectSim'), i18n.t('noti'), this._clearAccount )
+          }
         }
         else {
           this.props.navigation.navigate('Noti')
@@ -242,23 +250,12 @@ class HomeScreen extends Component {
   }
 
   _appStateHandler(state) {
-    const { lastRefresh, notiList } = this.props.noti,
-      acntNotiList = notiList.filter( elm => elm.notiType === 'account' && moment(elm.created, 'YYYY-MM-DDTHH:mm:ssZZ').diff(this.state.lastRefresh) >= 0 )
-        .map( elm => {
-          let r = elm.body.match(/\[(.*)\]/g),
-            iccid = ''
-          if (r) iccid = r[0].replace(/(\[|\])/g, '')
-          
-          return iccid
-        }),
-      { iccid } = this.props.account
-
+    const { iccid, token } = this.props.account
     switch(state) {
       case 'active': 
-        if ( acntNotiList.includes(iccid) ) {
-          AppAlert.info( i18n.t('acc:disconnectSim'), i18n.t('noti'), this._clearAccount )
+        if ( ! _.isEmpty(iccid) && ! this._isNoticed ) {
+          this.props.action.account.getAccount( iccid, {token} )
         }
-        this.setState({ lastRefresh })
         break;
 
       default:
@@ -267,6 +264,7 @@ class HomeScreen extends Component {
 
   _clearAccount() {
     this.props.action.account.clearCurrentAccount()
+    this._isNoticed = null
   }
 
   _login(mobile, pin, iccid) {

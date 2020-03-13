@@ -222,6 +222,8 @@ const updateAccountState = (state, payload) => {
     if ( ! _.isEmpty(simCardName)) state = state.set('simCardName', simCardName)
     if ( ! _.isEmpty(simCardImage)) state = state.set('simCardImage', simCardImage)
 
+    state = state.set('isUsedByOther', undefined)
+
     return state
 }
 
@@ -245,7 +247,8 @@ const initialState = Map({
     userPictureUrl: undefined,
     deviceToken: undefined,
     simCardName: undefined,
-    simCardImage: undefined
+    simCardImage: undefined,
+    isUsedByOther: undefined
 })
 
 export default handleActions({
@@ -275,6 +278,7 @@ export default handleActions({
       .set('nid', undefined)
       .set('simCardName', undefined)
       .set('simCardImage', undefined)
+      .set('isUsedByOther', undefined)
   },
 
   ... pender({
@@ -332,7 +336,7 @@ export default handleActions({
         const mobile = state.get('mobile')
         if ( ! _.isEmpty(mobile) && mobile != objects[0].mobile) {
           // mobile 번호가 다르면, ICCID는 다른 단말에 할당된 것이므로 무시한다.
-          return state
+          return state.set('isUsedByOther', true)
         }
         utils.storeData( userApi.KEY_ICCID, objects[0].iccid)
         return updateAccountState(state, objects[0])
