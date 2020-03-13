@@ -257,6 +257,10 @@ export default handleActions({
     return updateAccountState(state, action.payload)
   },
 
+  [RESET_ACCOUNT] : (state, action) => {
+    return initialState
+  },
+
   [CLEAR_ACCOUNT]: (state, action) => {
     return state.set('expDate', undefined)
       .set('balance', undefined)

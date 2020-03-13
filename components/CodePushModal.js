@@ -67,7 +67,6 @@ class CodePushModal extends Component {
             })
             .catch((error) => {
                 codePush.log(error);
-                this.props.action.sync.skip()
             })
     }
 
