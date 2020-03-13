@@ -115,34 +115,3 @@ class PushNoti {
 }
 
 export default new PushNoti()
-
-PushNotification.cancelAllLocalNotifications()
-
-PushNotification.localNotificationSchedule({
-  /* Android Only Properties */
-  vibrate: true,
-  vibration: 300,
-  priority: 'hight',
-  visibility: 'public',
-  importance: 'hight',
-
-  /* iOS and Android properties */
-  message: 'TEST3', // (required)
-  playSound: false,
-  number: 1,
-
-  userInfo: {
-    flag: 'test3'
-  },
-
-  // for production
-  //repeatType: 'day', // (optional) Repeating interval. Check 'Repeating Notifications' section for more info.
-  //date: nextHour,
-
-  // test to trigger each miniute
-  repeatType: 'minute',
-  date: new Date(Date.now()),
-
-  // test to trigger one time
-  // date: new Date(Date.now() + 20 * 1000),
-});
