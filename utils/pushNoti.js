@@ -60,18 +60,25 @@ class PushNoti {
     PushNotification && PushNotification.unregister()
   }
 
-  _configureForAndroid({ onRegister = ({token}) => {}, onNotification = (notification) => {} }) {
-    if ( _.isFunction(onRegister) ) {
-      firebase.messaging().getToken().then(token => onRegister({token}))
+  async _configureForAndroid({ onRegister = ({token}) => {}, onNotification = (notification) => {} }) {
+    const enabled = await firebase.messaging().hasPermission()
+    if (enabled) {
+      await firebase.messaging().requestPermission()
     }
 
-    if ( _.isFunction(onNotification)) {
-      this.notificationListener = firebase.notifications().onNotification((notification) => {
-          onNotification(notification)
-      });
-    }
+    firebase.messaging().getToken().then(token => {
+      if ( _.isFunction(onRegister) ) {
+        onRegister({token})
+      }
+    })
+
+    this.notificationListener = firebase.notifications().onNotification((notification) => {
+      if ( _.isFunction(onNotification)) {
+        onNotification(notification)
+      }
+    });
   }
-
+  
   add( callback) {
     this.callback = callback
 
@@ -97,11 +104,9 @@ class PushNoti {
         // default: true
         popInitialNotification: true,
       
-        /**
-         * (optional) default: true
-         * - Specified if permissions (ios) and token (android and ios) will requested or not,
-         * - if not, you must call PushNotificationsHandler.requestPermissions() later
-         */
+        //(optional) default: true
+        //- Specified if permissions (ios) and token (android and ios) will requested or not,
+        //- if not, you must call PushNotificationsHandler.requestPermissions() later
         requestPermissions: true
       })
     }

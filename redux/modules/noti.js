@@ -4,6 +4,7 @@ import _ from 'underscore'
 import { pender } from 'redux-pender'
 import notiAPI from '../../utils/api/notiApi';
 import api from '../../utils/api/api';
+import moment from 'moment'
 
 export const  GET_NOTI_LIST =  "rokebi/noti/GET_NOTI_LIST"
 const  READ_NOTI = "rokebi/noti/READ_NOTI"
@@ -48,7 +49,8 @@ export const initAndSendAlimTalk = ({ mobile, abortController }) => {
 const initialState = Map({
   notiList: [],
   lastSent: undefined,
-  result: undefined
+  result: undefined,
+  lastRefresh: undefined
 })
 
 export default handleActions({
@@ -63,6 +65,7 @@ export default handleActions({
       const {result, objects} = action.payload
       if (result == 0 && objects.length > 0) {
         return state.set('notiList', objects)
+          .set('lastRefresh', moment())
       }
       return state
     }

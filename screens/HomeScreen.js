@@ -37,6 +37,7 @@ import TutorialScreen from './TutorialScreen';
 import AsyncStorage from '@react-native-community/async-storage';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import AppAlert from './../components/AppAlert';
+import appStateHandler from '../utils/appState'
 
 const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti, 
   {badgeStyle:{right:-3,top:0}},
@@ -103,7 +104,7 @@ class HomeScreen extends Component {
       darkMode: initialMode,
       activeSlide: 0,
       promotions: [],
-      firstLaunch: undefined,
+      firstLaunch: undefined
     }
 
     this._login = this._login.bind(this)
@@ -114,6 +115,9 @@ class HomeScreen extends Component {
     this._notification = this._notification.bind(this)
     this._handleNotification = this._handleNotification.bind(this)
     this._clearAccount = this._clearAccount.bind(this)
+    this._appStateHandler = this._appStateHandler.bind(this)
+
+    this._isNoticed = null
 
  }
 
@@ -139,6 +143,7 @@ class HomeScreen extends Component {
 
     // config push notification
     pushNoti.add(this._notification)
+    appStateHandler.add(this._appStateHandler)
     
     // get promotion list
     promotionApi.getPromotion().then(resp => {
@@ -160,10 +165,11 @@ class HomeScreen extends Component {
 
   componentWillUnmount() {
     pushNoti.remove()
+    appStateHandler.remove()
   }
 
   componentDidUpdate( prevProps) {
-    const {mobile, pin, iccid, loggedIn, deviceToken} = this.props.account
+    const {mobile, pin, iccid, loggedIn, deviceToken, isUsedByOther} = this.props.account
 
     if ( mobile != prevProps.account.mobile || pin != prevProps.account.pin) {
 
@@ -182,6 +188,11 @@ class HomeScreen extends Component {
 
     if ( this.props.sync.progress ) {
       this.props.navigation.navigate('CodePush')
+    }
+
+    if ( isUsedByOther && prevProps.account.isUsedByOther != isUsedByOther && ! this._isNoticed) {
+      this._isNoticed = true
+      AppAlert.info( i18n.t('acc:disconnectSim'), i18n.t('noti'), this._clearAccount )
     }
   }
 
@@ -212,7 +223,7 @@ class HomeScreen extends Component {
 
   _handleNotification( payload ) {
     const type = (payload.data || {}).notiType
-    const targetIccid = (payload.data || {}).iccid
+    const target = (payload.data || {}).iccid
     const { mobile, iccid } = this.props.account
 
     if (mobile && _.size(payload) > 0) {
@@ -222,8 +233,11 @@ class HomeScreen extends Component {
     
     switch(type) {
       case 'account':
-        if ( typeof iccid !== 'undefined' && iccid === targetIccid ) {
-          AppAlert.info( i18n.t('acc:disconnectSim'), i18n.t('noti'), this._clearAccount )
+        if ( typeof iccid !== 'undefined' && iccid === target ) {
+          if (! this._isNoticed) {
+            this._isNoticed = true
+            AppAlert.info( i18n.t('acc:disconnectSim'), i18n.t('noti'), this._clearAccount )
+          }
         }
         else {
           this.props.navigation.navigate('Noti')
@@ -235,8 +249,22 @@ class HomeScreen extends Component {
     }
   }
 
+  _appStateHandler(state) {
+    const { iccid, token } = this.props.account
+    switch(state) {
+      case 'active': 
+        if ( ! _.isEmpty(iccid) && ! this._isNoticed ) {
+          this.props.action.account.getAccount( iccid, {token} )
+        }
+        break;
+
+      default:
+    }
+  }
+
   _clearAccount() {
     this.props.action.account.clearCurrentAccount()
+    this._isNoticed = null
   }
 
   _login(mobile, pin, iccid) {

@@ -38,7 +38,6 @@ export default handleActions({
     },
     [SKIP] : (state, action) => {
         return state.set('isSkipped', true)
-            .set('progress', false)
     },
     [PROGRESS] : (state, action) => {
         return state.set('progress', true)
