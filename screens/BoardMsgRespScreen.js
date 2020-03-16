@@ -23,6 +23,7 @@ import utils from '../utils/utils';
 import api from '../utils/api/api';
 import { attachmentSize } from '../constants/SliderEntry.style'
 import AppButton from '../components/AppButton';
+import { windowWidth } from '../constants/SliderEntry.style';
 
 class BoardMsgRespScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -60,11 +61,12 @@ class BoardMsgRespScreen extends Component {
   }
 
   _renderAttachment(images) {
+    const uri =  images && images.map(item => api.httpImageUrl(item))
     return (
       <View style={styles.attachBox}>
-      {
-        images && images.map(uri => <Image key={uri} source={{uri}} style={styles.attach}/> )
-      }
+        {
+          uri && uri.map((imageURI, idx) => <Image key={imageURI+idx} source={{uri: imageURI.toString()}} style={styles.attach}/>)
+        }
       </View>
     )
   }
@@ -108,11 +110,14 @@ class BoardMsgRespScreen extends Component {
 const styles = StyleSheet.create({
   attachBox: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
+    width: windowWidth - 20,
     marginTop: 10,
     marginHorizontal: 20
   },
   attach: {
+    // flex: 1,
+    marginRight: 20,
     width: attachmentSize,
     height: attachmentSize,
   },
