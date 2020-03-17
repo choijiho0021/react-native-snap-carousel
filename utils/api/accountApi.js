@@ -15,7 +15,7 @@ class AccountAPI {
                 data.map(item => ({
                     nid: utils.stringToNumber( item.nid),
                     uuid: item.uuid,
-                    iccid: item.field_iccid,
+                    iccid: item.title,
                     expDate: item.field_expiration_date,
                     balance: utils.stringToNumber(item.field_balance) || 0,
                     simPartnerId: utils.stringToNumber( item.field_ref_sim_partner),
@@ -35,7 +35,7 @@ class AccountAPI {
             return api.success([{
                 nid: utils.stringToNumber( data.nid[0].value),
                 uuid: data.uuid[0].value,
-                iccid: data.field_iccid && data.field_iccid[0].value,
+                iccid: data.title && data.title[0].value,
                 expDate: data.field_expiration_date && data.field_expiration_date[0].value,
                 balance: data.field_balance && utils.stringToNumber(data.field_balance[0].value) || 0,
                 actDate: data.field_activation_date &&  data.field_activation_date[0].value,
@@ -52,7 +52,7 @@ class AccountAPI {
             return api.success( obj.map(item => ({
                 nid: utils.stringToNumber( item.attributes.drupal_internal__nid),
                 uuid: item.id,
-                iccid: item.attributes.field_iccid,
+                iccid: item.title,
                 expDate: item.attributes.field_expiration_date,
                 balance: utils.stringToNumber(item.attributes.field_balance) || 0,
                 actDate: item.attributes.field_activation_date,
