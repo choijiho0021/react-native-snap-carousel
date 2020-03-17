@@ -15,7 +15,7 @@ class AccountAPI {
                 data.map(item => ({
                     nid: utils.stringToNumber( item.nid),
                     uuid: item.uuid,
-                    iccid: item.title,
+                    iccid: item.field_iccid,
                     expDate: item.field_expiration_date,
                     balance: utils.stringToNumber(item.field_balance) || 0,
                     simPartnerId: utils.stringToNumber( item.field_ref_sim_partner),
