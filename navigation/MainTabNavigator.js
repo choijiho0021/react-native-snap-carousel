@@ -141,6 +141,7 @@ const MyPageStack = createStackNavigator(
     MyPage: MyPageScreen,
     PurchaseDetail: PurchaseDetailScreen,
     UsageDetail: UsageDetailScreen,
+    SimpleText: SimpleTextScreen,
 
     // 충전 관련 화면
     Recharge: RechargeScreen,

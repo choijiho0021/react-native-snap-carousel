@@ -14,6 +14,8 @@ import _ from 'underscore';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-navigation';
+import LabelTextTouchable from '../components/LabelTextTouchable';
+import orderApi from '../utils/api/orderApi';
 
 class PurchaseDetailScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -117,6 +119,10 @@ class PurchaseDetailScreen extends Component {
             {/* <Text style={[appStyles.normal16Text, styles.colorClearBlue, styles.fontWeightNormal]}>{utils.numberToCommaString(paidAmount)+ ' ' + i18n.t('won')}</Text> */}
             </View>
           </View>
+          <LabelTextTouchable 
+            onPress={() => this.props.navigation.navigate('SimpleText', {mode:'uri', text:orderApi.deliveryTrackingUrl('CJ', '341495229094')})}
+            label={'송장 번호'} labelStyle={styles.priceTxt}
+            value={'341495229094'} valueStyle={styles.priceTxt}/>
         </SafeAreaView>
       </ScrollView>
     )

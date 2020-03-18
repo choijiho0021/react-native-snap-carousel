@@ -112,6 +112,8 @@ class SimpleTextScreen extends Component {
               <Text style={styles.text}>{utils.htmlToString(body) }</Text>
             </View>
           </ScrollView> :
+          mode == 'uri' ?
+          <WebView source={{ uri: body}} style={styles.container} /> :
           <WebView style={styles.container}
             originWhitelist={['*']}
             source={{html: htmlWithCss(bodyTitle, body), baseUrl}} />
