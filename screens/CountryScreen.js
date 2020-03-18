@@ -10,26 +10,22 @@ import {
 import {connect} from 'react-redux'
 
 import {appStyles} from "../constants/Styles"
-// import Button from 'react-native-button';
 import i18n from '../utils/i18n'
 import * as productActions from '../redux/modules/product'
 import * as cartActions from '../redux/modules/cart'
 import * as accountActions from '../redux/modules/account'
-import productApi from '../utils/api/productApi';
 import api from '../utils/api/api';
 import { bindActionCreators } from 'redux'
-// import Icon from 'react-native-vector-icons/Ionicons';
-// import { Card } from "react-native-elements";
 import AppButton from '../components/AppButton'
 import AppIcon from '../components/AppIcon';
 import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';
 import { SafeAreaView } from 'react-navigation'
 import AppPrice from '../components/AppPrice';
-import AppAlert from '../components/AppAlert';
 import AppCartButton from '../components/AppCartButton';
 import { windowWidth, device } from '../constants/SliderEntry.style';
 import Analytics from 'appcenter-analytics'
+import _ from 'underscore'
 
 
 class CountryListItem extends PureComponent {
@@ -84,9 +80,7 @@ class CountryScreen extends Component {
       console.log('prod', prodList[idx])
     }
 
-    const prodData = prodList.filter( item => 
-      (prod.categoryId[0] == productApi.category.multi) ? item.uuid == prod.uuid
-        : (item.categoryId[0] != productApi.category.multi) && (item.ccode[0] == prod.ccode[0]))
+    const prodData = prodList.filter( item => _.isEqual(item.ccode, prod.ccode))
 
     this.setState({
       prodData,

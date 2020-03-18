@@ -1,3 +1,5 @@
+import _ from 'underscore'
+
 //동의어 추가 ':'
 const countryList = 
 `GH,가나,Ghana
@@ -266,6 +268,8 @@ class Country {
   }
 
   getName(code = [], lang='ko') {
+    if ( _.isEmpty(code)) return [ 'N/A' ];
+
     const codeList = code.map(elm => {
       const cc = elm.toLowerCase()
       return ( this.ccode.hasOwnProperty(cc)) ? this.ccode[cc][lang][0] : 'N/A'

@@ -35,6 +35,8 @@ class ProductAPI {
                     body : item.body,
                     sku: item.sku
                 }))
+                .filter(item => ! _.isEmpty(item.ccode))
+                // ccode가 NULL인 상품은 제외한다.
             }
         }
         return {
