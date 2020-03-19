@@ -16,6 +16,9 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-navigation';
 import LabelTextTouchable from '../components/LabelTextTouchable';
 import orderApi from '../utils/api/orderApi';
+import profileApi from '../utils/api/profileApi';
+import {connect} from 'react-redux'
+import * as accountActions from '../redux/modules/account'
 
 class PurchaseDetailScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -50,6 +53,11 @@ class PurchaseDetailScreen extends Component {
   componentDidMount() {
     const detail = this.props.navigation.getParam('detail')
     this.setState(detail)
+
+    // TODO
+    // load Profile by profile_id
+    profileApi.getCustomerProfileById('789', this.props.auth).then(resp => 
+      console.log('profile', resp));
   }
 
   render() {
@@ -215,4 +223,8 @@ const styles = StyleSheet.create({
   }
 });
 
-export default PurchaseDetailScreen
+const mapStateToProps = state => ({
+  auth: accountActions.auth( state.account),
+})
+
+export default connect(mapStateToProps)(PurchaseDetailScreen)

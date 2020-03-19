@@ -55,6 +55,7 @@ class Api {
         uploadFile: 'file/upload',
         board: 'json/contactboard',
         subscription: 'json/subs',
+        profile: 'json/profile',
 
         commerce: {
             payment: 'commerce/payment',

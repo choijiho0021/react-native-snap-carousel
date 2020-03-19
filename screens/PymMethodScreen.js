@@ -83,7 +83,7 @@ class PymMethodScreen extends Component {
   }
 
   componentDidMount() {
-    this.props.action.profile.getCustomerProfile(this.props.auth)
+    this.props.action.profile.getCustomerProfile(this.props.account)
     const {pymPrice, deduct} = this.props.cart
 
     this.setState({
