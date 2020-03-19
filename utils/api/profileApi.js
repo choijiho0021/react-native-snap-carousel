@@ -44,6 +44,45 @@ class ProfileAPI {
             })
             return api.success(objects)
         }
+
+        if ( _.isArray(data)) {
+            const objects = data.map(item => {
+                const {
+                    country_code,
+                    administrative_area,
+                    locality,
+                    postal_code,
+                    address_line1,
+                    address_line2,
+                    organization,
+                    additional_name,
+                    given_name,
+                    family_name,
+                } = item.address[0] || []
+
+                return {
+                    //langcode: 'ko',
+                    countryCode : country_code,
+                    province: administrative_area,
+                    city: locality,
+                    zipCode: postal_code,
+                    addressLine1: address_line1,
+                    addressLine2: address_line2,
+                    detailAddr: organization,
+                    roadAddr: additional_name,
+                    givenName: given_name,
+                    familyName: family_name,
+                    alias: item.field_alias && item.field_alias[0].value,
+                    recipient: item.field_recipient && item.field_recipient[0].value,
+                    prefix: item.field_recipient_number && item.field_recipient_number[0].value.substring(0,3),
+                    recipientNumber : item.field_recipient_number && item.field_recipient_number[0].value.substring(3),
+                    isBasicAddr: item.is_default && item.is_default[0].value,
+                    uuid: item.uuid && item.uuid[0].value,
+                }
+            
+            })
+            return api.success(objects)
+        }
         return api.failure(api.NOT_FOUND)        
     }
 
@@ -52,6 +91,18 @@ class ProfileAPI {
         
         const url = `${api.httpUrl(api.path.jsonapi.profile)}`
         const headers = api.withToken(token, 'vnd.api+json')
+
+        return api.callHttp(url, {
+            method: 'get',
+            headers,
+        }, this.toCustomerProfile)
+    }
+
+    getCustomerProfileById = (id, {token}) => {
+        if ( _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
+        
+        const url = `${api.httpUrl(api.path.profile)}/${id}?_format=json`
+        const headers = api.withToken(token, 'json')
 
         return api.callHttp(url, {
             method: 'get',
