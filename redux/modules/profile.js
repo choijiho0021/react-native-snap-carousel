@@ -25,13 +25,13 @@ const initialState = Map({
   addr: {}
 })
 
-export const profileDelAndGet = (uuid ,auth) => {
+export const profileDelAndGet = (uuid ,account) => {
   return (dispatch,getState) => {
     const {profile} = getState()
     const deleted = profile.get('profile').find(item => item.uuid == uuid)
     const updateProfile = profile.get('profile').find(item => item.uuid != uuid)
     
-    return dispatch(delCustomerProfile(uuid ,auth)).then(
+    return dispatch(delCustomerProfile(uuid ,account)).then(
       resp => {
         if (resp.result == 0 ) {
           
@@ -39,13 +39,13 @@ export const profileDelAndGet = (uuid ,auth) => {
             return dispatch(updateCustomerProfile({
               ...updateProfile,
               isBasicAddr: true
-            }, auth)).then(
+            }, account)).then(
               res => {
-              return dispatch(getCustomerProfile(auth))
+              return dispatch(getCustomerProfile(account))
               }
             )
           }
-          return dispatch(getCustomerProfile(auth))
+          return dispatch(getCustomerProfile(account))
         }
         throw new Error('Failed to delete Profile')
       },
@@ -56,12 +56,12 @@ export const profileDelAndGet = (uuid ,auth) => {
 }
 
 
-export const profileAddAndGet = (profile, defaultProfile, auth) => {
+export const profileAddAndGet = (profile, defaultProfile, account) => {
   return (dispatch,getState) => {
     
-    return dispatch(addCustomerProfile(profile, defaultProfile, auth)).then(
+    return dispatch(addCustomerProfile(profile, defaultProfile, account)).then(
       resp => {
-        return dispatch(getCustomerProfile(auth))     
+        return dispatch(getCustomerProfile(account))     
       },
       err => {
         throw err

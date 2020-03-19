@@ -86,11 +86,11 @@ class ProfileAPI {
         return api.failure(api.NOT_FOUND)        
     }
 
-    getCustomerProfile = ({token}) => {
+    getCustomerProfile = ({uid, token}) => {
         if ( _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
-        
-        const url = `${api.httpUrl(api.path.jsonapi.profile)}`
-        const headers = api.withToken(token, 'vnd.api+json')
+
+        const url = `${api.httpUrl(api.path.profile)}/user/${uid}?_format=json`
+        const headers = api.withToken(token, 'json')
 
         return api.callHttp(url, {
             method: 'get',
@@ -101,7 +101,7 @@ class ProfileAPI {
     getCustomerProfileById = (id, {token}) => {
         if ( _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
         
-        const url = `${api.httpUrl(api.path.profile)}/${id}?_format=json`
+        const url = `${api.httpUrl(api.path.profile)}/id/${id}?_format=json`
         const headers = api.withToken(token, 'json')
 
         return api.callHttp(url, {
