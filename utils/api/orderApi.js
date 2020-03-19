@@ -60,7 +60,7 @@ class OrderAPI {
             // 지금은 CJ 주소만 있음. 다른 회사 주소 확인 필요 
             case 'CJ':
             default:
-                return `http://nplus.doortodoor.co.kr/web/detail.jsp?slipno=${trackingCode}`
+                return `https://www.cjlogistics.com/ko/tool/parcel/newTracking?gnbInvcNo=${trackingCode}`
         }
     }
 }
