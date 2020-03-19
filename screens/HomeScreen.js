@@ -209,6 +209,13 @@ class HomeScreen extends Component {
   }
 
   _notification(type, data) {
+
+    const {mobile, loggedIn} = this.props.account
+
+    if ( loggedIn ) {
+      this.props.action.noti.getNotiList(mobile)
+    }
+
     switch(type) {
       case 'register' :
         this.props.action.account.updateAccount({
@@ -227,8 +234,13 @@ class HomeScreen extends Component {
     const { mobile, iccid } = this.props.account
 
     if (mobile && _.size(payload) > 0) {
-      let msg = JSON.stringify(payload)
-      this.props.action.noti.sendLog(mobile, msg)
+      if(Platform.OS === 'ios') {
+        let msg = JSON.stringify(payload)
+        this.props.action.noti.sendLog(mobile, msg)
+      }
+      else {
+
+      }
     }
     
     switch(type) {

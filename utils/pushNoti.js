@@ -19,8 +19,12 @@ class PushNoti {
   constructor() {
     this.callback = undefined
     this.notificationListener = undefined
+    this.notificationOpenedListener = undefined
+    this.notificationInitListener = undefined
+    this.onMessage = undefined
     this._onRegister = this._onRegister.bind(this)
     this._onNotification = this._onNotification.bind(this)
+    this.AndroidOnNoti = this.AndroidOnNoti.bind(this)
   }
 
   _onRegister(token) {
@@ -60,8 +64,10 @@ class PushNoti {
     PushNotification && PushNotification.unregister()
   }
 
-  async _configureForAndroid({ onRegister = ({token}) => {}, onNotification = (notification) => {} }) {
+  async _configureForAndroid({ onRegister = ({token}) => {}, onNotification = (notification) => {}}) {
     const enabled = await firebase.messaging().hasPermission()
+    const notifications = firebase.notifications()
+
     if (enabled) {
       await firebase.messaging().requestPermission()
     }
@@ -72,13 +78,35 @@ class PushNoti {
       }
     })
 
-    this.notificationListener = firebase.notifications().onNotification((notification) => {
-      if ( _.isFunction(onNotification)) {
-        onNotification(notification)
+    //App이 foreground상태, push noti를 클릭하는 경우
+    this.notificationListener = notifications.onNotification(this.AndroidOnNoti("onNotification",onNotification));
+
+    //App이 background상태, push noti를 클릭하는 경우
+    this.notificationOpenedListener = notifications.onNotificationOpened(this.AndroidOnNoti("onNotificationOpened",onNotification));
+
+    //App이 Killed상태, push noti를 클릭하고 앱을 실행하는 경우
+    this.notificationInitListener = notifications.getInitialNotification().then(this.AndroidOnNoti("getInitialNotification",onNotification))
+
+    //foreground 상태에서 data만 받아서 처리 (foreground badge 수 변경 전용)
+    this.onMessage = firebase.messaging().onMessage(message => {
+      console.log("message",message)
+      const { badge = 0, notiType, iccid } = message.data
+      firebase.notifications().setBadge(Number(badge))
+
+      if(notiType && iccid){
+        onNotification({data: {notiType,iccid}})
       }
-    });
+    })
   }
-  
+
+  AndroidOnNoti = (key, onNotification) => (notification) => {
+    console.log('key & notification', key, notification);
+    if ( notification && _.isFunction(onNotification)) {
+      if(key == "onNotification") onNotification(notification)
+      else onNotification(notification.notification)
+    }
+  }
+
   add( callback) {
     this.callback = callback
 
