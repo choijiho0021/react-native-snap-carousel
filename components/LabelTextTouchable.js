@@ -9,7 +9,7 @@ import _ from 'underscore'
 
 export default class LabelTextTouchable extends PureComponent {
   render() {
-    const {onPress, arrow, style, disabled, ... props} = this.props
+    const {onPress, arrow, style, disabled, format, ... props} = this.props
 
     return (
       <TouchableOpacity onPress={onPress} disabled={disabled}>

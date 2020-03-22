@@ -18,7 +18,6 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     flexDirection: 'row',
-    justifyContent: 'space-between'
   },
   value: {
     flex: 1,
@@ -36,17 +35,17 @@ export default class LabelText extends PureComponent {
   render() {
 
     const {label, value = 0, deduct, style, format, color = colors.black, labelStyle, valueStyle} = this.props
-    const isDeduct = label == i18n.t('cart:deductBalance') 
+    const isDeduct = label == i18n.t('cart:deductBalance')
 
     return (
-      <View style={[styles.container, style]} >
+      <View style={[styles.container, style, format != "shortDistance" && {justifyContent: 'space-between'}]} >
         <Text style={[labelStyle || styles.label, {maxWidth:'70%'}]}>{label}</Text>
         {
           isDeduct &&
           <Text style={[styles.label, {marginLeft: 18}]}>{`(${i18n.t('cart:currentBalance')}:${utils.numberToCommaString(value) + ' ' + i18n.t('won')}) `}</Text>
         }
         {
-          ( format == 'price') ?
+          ( format == 'price' ) ?
             <View style={styles.value}>
               <Text style={[valueStyle|| appStyles.price, {color}]}>{utils.numberToCommaString(isDeduct ? deduct : value)}</Text>
               <Text style={appStyles.normal14Text}>{' ' + i18n.t('won')}</Text>
