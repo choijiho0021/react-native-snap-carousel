@@ -12,7 +12,12 @@ class OrderAPI {
                     key: item.order_number,
                     orderId: item.order_number,
                     orderDate: item.placed,
+                    orderType: item.type,
                     totalPrice: utils.stringToNumber( item.total_price__number),
+                    profileId: item.profile_id,
+                    trackingCode: item.tracking_code,
+                    trackingCompany: item.tracking_company,
+                    shipmentState: item.shipment_state,
                     iamportPayment: JSON.parse(item.iamport_payment).map(value => ({
                         totalPrice: value.amount.split('.')[0],
                         pg: value.pg_provider,
