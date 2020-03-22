@@ -45,16 +45,16 @@ class OrderItem extends PureComponent {
   render () {
     const {item, onPress} = this.props
     const label = `${item.orderItems[0].title}  ${item.orderItems.length > 1 ? i18n.t('his:etcCnt').replace('%%', item.orderItems.length - 1) : ''}`
+    const dlvCost = utils.stringToNumber(!_.isEmpty(item.paymentList) ? item.paymentList[0].dlvCost : 0)
+    const billingAmt = item.totalPrice + dlvCost
 
-    const totalPrice = !_.isEmpty(item.iamportPayment[0]) ? item.iamportPayment[0].totalPrice : item.totalPrice
-    
     return (
       <TouchableOpacity onPress={onPress}>
         <View key={item.orderId} style={styles.order}>
-          <Text style={[appStyles.normal14Text]}>{utils.toDateString(item.orderDate, 'YYYY-MM-DD')}</Text>
-          <LabelText style={[styles.orderValue, isDeviceSize('small') && {flexDirection : 'column', alignItems:'space-between'}]}
-            label={label} labelStyle={[{width:'70%'}, appStyles.normal16Text]}
-            value={totalPrice} format="price" />
+          <Text style={[isDeviceSize('small') ? appStyles.normal12Text : appStyles.normal14Text, {alignSelf:'flex-start'}]}>{utils.toDateString(item.orderDate, 'YYYY-MM-DD')}</Text>
+          <LabelText style={styles.orderValue}
+            label={label} labelStyle={[{width:'70%'}, isDeviceSize('small') ? appStyles.normal14Text : appStyles.normal16Text]}
+            value={billingAmt} format="price" />
         </View>
       </TouchableOpacity>
     )
