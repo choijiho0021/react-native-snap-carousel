@@ -24,6 +24,7 @@ export const colors = {
   whiteTwo: "#f5f5f5",
   tomato: "#ed4847",
   greyish: "#aaaaaa",
+  greyishTwo: "#a8a8a8",
   lightPeriwinkle: "#bfc6f6",
   blue: '#2A7FF6',
   goldenYellow: '#ffc61b',
