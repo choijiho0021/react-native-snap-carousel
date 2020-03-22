@@ -8,12 +8,14 @@ const codePushAndProdLabel = "v0"
 
 const ENV = {
   dev: {
+    // scheme: 'https',
+    // rokApiUrl: "service.rokebi.com",
+    // apiUrl: "api.rokebi.com",
+    // baseUrl: "https://www.rokebi.com",
     scheme: 'http',
     rokApiUrl: "rokebi-svc-tb.ap-northeast-2.elasticbeanstalk.com",
     apiUrl: "esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com",
-    //apiUrl: "api.rokebi.com",
     baseUrl: "http://esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com",
-    //baseUrl: "https://www.rokebi.com",
     impId: impId,
     label: Platform.OS === 'ios' ? codePushiOSStagLabel : codePushAndStagLabel
   },

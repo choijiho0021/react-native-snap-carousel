@@ -48,7 +48,7 @@ class PaymentScreen extends Component{
     const { params = {} } = navigation.state
 
     return {
-        headerLeft: <AppBackButton navigation={navigation} title={params.isPaid ? '결제완료' : i18n.t('payment')} isPaid={params.isPaid}/>
+        headerLeft: <AppBackButton navigation={navigation} title={params.isPaid ? i18n.t('his:paymentCompleted') : i18n.t('payment')} isPaid={params.isPaid} pymResult={params.pymResult} orderResult={params.orderResult}/>
         // headerLeft: <AppBackButton navigation={navigation} title={'결제완료'} isPaid={true}/>
         // Similarly for the rest
     }  
@@ -83,7 +83,7 @@ class PaymentScreen extends Component{
 
     console.log('@@@response', response)
     if(isSuccess || isImpSuccess || false){
-      this.props.navigation.setParams({isPaid:true})
+      await this.props.navigation.setParams({isPaid:true})
 
       const params = this.props.navigation.getParam('params')
       const orderResult = await this.props.action.cart.payNorder({

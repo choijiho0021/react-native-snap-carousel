@@ -37,7 +37,7 @@ class AppBackButton extends PureComponent {
     const {title, isPaid=false} = this.props
 
     return (
-      <TouchableWithoutFeedback onPress={!isPaid && this._goBack} disabled={isPaid}>
+      <TouchableWithoutFeedback onPress={isPaid ? null : this._goBack} disabled={isPaid}>
         <View style={{flexDirection: "row", alignItems:'center'}}>
           {
             !isPaid ? 

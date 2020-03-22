@@ -74,7 +74,12 @@ const HomeStack = createStackNavigator(
     Payment: PaymentScreen,
     PymMethod: PymMethodScreen,
     FindAddress: FindAddressScreen,
-    PaymentResult : PaymentResultScreen,
+    PaymentResult: {
+      screen:PaymentResultScreen,
+      navigationOptions: {
+        gesturesEnabled: false 
+      },
+    },
     CustomerProfile: CustomerProfileScreen,
     AddProfile: AddProfileScreen,
   },
@@ -104,7 +109,12 @@ const StoreStack = createStackNavigator(
     // Roaming Product 바로 구매와 관련된 화면
     Payment: PaymentScreen,
     PymMethod: PymMethodScreen,
-    PaymentResult : PaymentResultScreen,
+    PaymentResult: {
+      screen:PaymentResultScreen,
+      navigationOptions: {
+        gesturesEnabled: false 
+      },
+    },
   },
   config, 
 );
@@ -147,7 +157,12 @@ const MyPageStack = createStackNavigator(
     Recharge: RechargeScreen,
     Payment: PaymentScreen,
     PymMethod: PymMethodScreen,
-    PaymentResult : PaymentResultScreen,
+    PaymentResult: {
+      screen:PaymentResultScreen,
+      navigationOptions: {
+        gesturesEnabled: false 
+      },
+    },
 
     // SIM 카드 등록 화면
     RegisterSim: RegisterSimScreen
@@ -160,7 +175,7 @@ MyPageStack.navigationOptions = ({navigation}) => ({
   tabBarLabel: i18n.t('mypage'),
   tabBarIcon: ({ focused }) => (
     <AppIcon focused={focused} name="btnMypage" style={styles.tabBarIcon}/>
-  ),
+  )
 })
 
 MyPageStack.path = '';
@@ -171,7 +186,12 @@ const CartStack = createStackNavigator(
     Payment: PaymentScreen,
     PymMethod: PymMethodScreen,
     FindAddress: FindAddressScreen,
-    PaymentResult : PaymentResultScreen,
+    PaymentResult: {
+      screen:PaymentResultScreen,
+      navigationOptions: {
+        gesturesEnabled: false 
+      },
+    },
     CustomerProfile: CustomerProfileScreen,
     AddProfile: AddProfileScreen,
   },
