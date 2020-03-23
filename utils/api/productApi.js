@@ -23,6 +23,7 @@ class ProductAPI {
                     name: item.title,
                     price: utils.stringToNumber(item.price),
                     ccode: item.field_ccode,
+                    field_daily: item.field_daily,
                     partnerName: item.partner_name,
                     apn: item.field_apn_setting,
                     network: item.field_network,
