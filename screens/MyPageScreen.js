@@ -45,8 +45,7 @@ class OrderItem extends PureComponent {
   render () {
     const {item, onPress} = this.props
     const label = `${item.orderItems[0].title}  ${item.orderItems.length > 1 ? i18n.t('his:etcCnt').replace('%%', item.orderItems.length - 1) : ''}`
-    const dlvCost = utils.stringToNumber(!_.isEmpty(item.paymentList) ? item.paymentList[0].dlvCost : 0)
-    const billingAmt = item.totalPrice + dlvCost
+    const billingAmt = item.totalPrice + item.dlvCost
 
     return (
       <TouchableOpacity onPress={onPress}>

@@ -21,7 +21,7 @@ describe('Account API', () => {
         expect(resp.objects.length).toBeGreaterThan(0)
         const account = resp.objects[0]
         console.log('Account', resp.objects[0])
-        accountNid = resp.objects[0].nid
+        const accountNid = resp.objects[0].nid
         expect(account.iccid).toEqual(iccid)
         expect(account.nid).toBeGreaterThan(0)
 

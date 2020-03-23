@@ -91,11 +91,15 @@ class AccountAPI {
         }, this.toAccount)
     }
 
-    validateActCode = (iccid, actCode) => {
+    validateActCode = (iccid, actCode, {token}) => {
         if (_.isEmpty(iccid) || _.isEmpty(actCode)) return api.reject( api.INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.account)}/${iccid}/${actCode}?_format=json`
-        return api.callHttpGet(url, this.toAccount)
+        const headers = api.withToken(token)
+        return api.callHttp(url, {
+            method: 'GET',
+            headers
+        }, this.toAccount)
     }
 
     getByUUID = (uuid) => {

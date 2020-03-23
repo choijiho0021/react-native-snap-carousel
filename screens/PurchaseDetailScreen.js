@@ -116,13 +116,11 @@ class PurchaseDetailScreen extends Component {
 
   render() {
     const {orderId, orderDate, orderItems, orderType, iamportPayment, totalPrice,
-        trackingCompany, trackingCode, shipmentState} = this.props.navigation.getParam('detail') || {}
+        trackingCompany, trackingCode, shipmentState, dlvCost, balanceCharge} = this.props.navigation.getParam('detail') || {}
     const label = `${orderItems[0].title}  ${orderItems.length > 1 ? i18n.t('his:etcCnt').replace('%%', orderItems.length - 1) : ''}`
 
     const pg = !_.isEmpty(iamportPayment) ? this.method[0].find(item => item.key == iamportPayment[0].pg).title : i18n.t("pym:balance")
     const paidAmount = !_.isEmpty(iamportPayment) ? (iamportPayment[0].totalPrice) : 0
-    const paymentList = !_.isEmpty(this.props.navigation.getParam('detail').paymentList) && this.props.navigation.getParam('detail').paymentList[0]
-    const dlvCost = utils.stringToNumber(!_.isEmpty(paymentList) ? paymentList.dlvCost : 0)
     const billingAmt = utils.numberToCommaString(totalPrice + dlvCost)
 
     console.log('@@@shipment', shipmentState)
@@ -188,13 +186,12 @@ class PurchaseDetailScreen extends Component {
                 valueStyle={appStyles.roboto16Text}
                 value={dlvCost}/>
               {
-                paymentList.balanceCharge != 0 && !_.isEmpty(paymentList) &&
                   <LabelText
                     key={"pymBalance"} style={styles.item}
                     label={i18n.t("pym:balance")} labelStyle={styles.label2}
                     format="price"
                     valueStyle={appStyles.roboto16Text}
-                    value={`- ${paymentList.balanceCharge}`}/>
+                    value={`- ${balanceCharge}`}/>
               }
               <View style={styles.bar}/>
               <View style={[styles.row, {marginBottom: 25}]}>

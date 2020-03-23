@@ -186,7 +186,7 @@ class CartAPI {
         // SIM card와 같이 배송이 필요한 상품은 orderType을 'physical'로 설정한다.
         const orderType = ( items.findIndex(item => item.type == 'sim_card') >= 0) ? 'physical' : 'default'
 
-        const url = `${api.httpUrl(api.path.commerce.order, '')}/create?_format=json`
+        const url = `${api.httpUrl(api.path.commerce.order, '')}?_format=json`
         const headers = api.withToken( token, 'json')
         const body = {
             iccid,

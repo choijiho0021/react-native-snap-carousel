@@ -4,7 +4,7 @@ import { Map, List } from 'immutable';
 import orderApi from '../../utils/api/orderApi'
 import subscriptionApi from '../../utils/api/subscriptionApi';
 
-export const  GET_ORDERS = 'rokebi/order/GET_ORDERS'
+export const GET_ORDERS = 'rokebi/order/GET_ORDERS'
 export const GET_USAGE = 'rokebi/order/usage'
 export const UPDATE_USAGE = 'rokebi/order/UPDATE_USAGE'
 const  RESET = 'rokebi/order/RESET'

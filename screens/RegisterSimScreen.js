@@ -79,7 +79,7 @@ class RegisterSimScreen extends Component {
     const {actCode} = this.state,
       iccid = this.state.iccid.join('')
 
-    accountApi.validateActCode(iccid, actCode).then( resp => {
+    accountApi.validateActCode(iccid, actCode, this.props.auth).then( resp => {
 
       if ( resp.result == 0) {
         // activation code is valid
