@@ -93,6 +93,7 @@ class PushNoti {
       const { badge = 0, notiType, iccid } = message.data
       firebase.notifications().setBadge(Number(badge))
 
+      // sim 카드 해지 알림이 왓을 때 백그라운드
       if(notiType && iccid){
         onNotification({data: {notiType,iccid}})
       }

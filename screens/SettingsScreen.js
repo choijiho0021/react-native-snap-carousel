@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux'
 
+import AppBackButton from '../components/AppBackButton';
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import * as accountActions from '../redux/modules/account'
@@ -39,9 +40,10 @@ class SettingsListItem extends PureComponent {
 
 
 class SettingsScreen extends Component {
-  static navigationOptions = (navigation) => ({
+  static navigationOptions = ({navigation}) => ({
     headerLeft: (
-      <Text style={styles.title}>{i18n.t('settings')}</Text>
+      <AppBackButton navigation={navigation} title={i18n.t('settings')}/>
+      // <Text style={styles.title}>{i18n.t('settings')}</Text>
     ),
   })
 

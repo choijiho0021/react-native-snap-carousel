@@ -110,11 +110,11 @@ class StoreScreen extends Component {
         
         const idxCcode = acc.findIndex(elm => _.isEqual(elm.ccode, item.ccode))
 
-        if ( idxCcode < 0) {
+        if ( idxCcode < 0 || item.field_daily == 'total') {
           // new item, insert it
           return acc.concat( [item])
         }
-        else if ( acc[idxCcode].pricePerDay > item.pricePerDay) {
+        else if ( acc[idxCcode].pricePerDay > item.pricePerDay && item.field_daily == 'daily') {
           // cheaper
           acc.splice( idxCcode, 1, item)
           return acc
@@ -143,7 +143,7 @@ class StoreScreen extends Component {
     const {allData} = this.state
     const country = this.state.allData.filter(elm => elm.uuid == key)[0]
     this.props.action.product.selectCountry({uuid: key})
-    this.props.navigation.navigate('Country',{allData:allData,title:country.categoryId == productApi.category.multi ? country.name : country.cntry.values().next().value})
+    this.props.navigation.navigate('Country',{allData:allData,title:country.categoryId == productApi.category.multi ? country.partnerName : country.cntry.values().next().value})
   }
 
   /*

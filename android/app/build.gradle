@@ -147,11 +147,17 @@ android {
         defaultConfig {
             missingDimensionStrategy 'react-native-camera', 'general'
             applicationId "com.rokebi"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        vectorDrawables.useSupportLibrary = true
-        versionCode Code
-        versionName "${versionMajor}.${versionMinor}"
+            minSdkVersion rootProject.ext.minSdkVersion
+            multiDexEnabled true
+            targetSdkVersion rootProject.ext.targetSdkVersion
+            vectorDrawables.useSupportLibrary = true
+            versionCode Code
+            versionName "${versionMajor}.${versionMinor}"
+        }
+
+        dexOptions {
+            jumboMode true
+            javaMaxHeapSize "4g"
         }
 //    }
 
