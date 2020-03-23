@@ -149,7 +149,8 @@ class BoardMsgAdd extends Component {
       this.setState({
         msg: undefined,
         title: undefined,
-        pin : undefined
+        pin : undefined,
+        attachment: this.state.attachment.clear()
       })
     }, 1000)
 
