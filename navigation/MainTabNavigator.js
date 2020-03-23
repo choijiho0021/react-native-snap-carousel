@@ -129,22 +129,22 @@ StoreStack.navigationOptions =  ({navigation}) => ({
 
 StoreStack.path = '';
 
-const SettingsStack = createStackNavigator(
-  {
-    Settings: SettingsScreen,
-    MySim: MySimScreen,
-    SimpleText: SimpleTextScreen,
-  },
-  config
-);
+// const SettingsStack = createStackNavigator(
+//   {
+//     Settings: SettingsScreen,
+//     MySim: MySimScreen,
+//     SimpleText: SimpleTextScreen,
+//   },
+//   config
+// );
 
-SettingsStack.navigationOptions = ({navigation}) => ({
-  tabBarVisible: navigation.state.index == 0,
-  tabBarLabel: i18n.t('setting'),
-  tabBarIcon: ({ focused }) => (
-    <AppIcon focused={focused} name="btnSetup" style={styles.tabBarIcon}/>
-  ),
-})
+// SettingsStack.navigationOptions = ({navigation}) => ({
+//   tabBarVisible: navigation.state.index == 0,
+//   tabBarLabel: i18n.t('setting'),
+//   tabBarIcon: ({ focused }) => (
+//     <AppIcon focused={focused} name="btnSetup" style={styles.tabBarIcon}/>
+//   ),
+// })
 
 const MyPageStack = createStackNavigator(
   {
@@ -165,7 +165,11 @@ const MyPageStack = createStackNavigator(
     },
 
     // SIM 카드 등록 화면
-    RegisterSim: RegisterSimScreen
+    RegisterSim: RegisterSimScreen,
+
+    //Settings 관련 화면
+    Settings: SettingsScreen,
+    MySim: MySimScreen
   },
   config
 );
@@ -221,7 +225,7 @@ const TabNavigator = createBottomTabNavigator({
   StoreStack,
   CartStack,
   MyPageStack,
-  SettingsStack,
+  // SettingsStack,
 }, {
   tabBarOptions: {
     inactiveTintColor: colors.black,

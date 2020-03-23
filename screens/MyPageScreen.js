@@ -80,6 +80,11 @@ class MyPageScreen extends Component {
     headerLeft: (
       <Text style={styles.title}>{i18n.t('acc:title')}</Text>
     ),
+    headerRight: (
+        <AppButton key="cnter" style={styles.settings} 
+          onPress={() => navigation.navigate('Settings')} 
+          iconName="btnSetup" />
+    ),
   })
 
   constructor(props) {
@@ -456,6 +461,11 @@ const styles = StyleSheet.create({
   usageValue: {
     flex: 1,
     textAlign: 'right'
+  },
+  settings : {
+    marginRight:20,
+    justifyContent:"flex-end",
+    backgroundColor:colors.white
   }
 });
 
