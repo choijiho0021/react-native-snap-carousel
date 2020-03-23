@@ -143,7 +143,7 @@ class StoreScreen extends Component {
     const {allData} = this.state
     const country = this.state.allData.filter(elm => elm.uuid == key)[0]
     this.props.action.product.selectCountry({uuid: key})
-    this.props.navigation.navigate('Country',{allData:allData,title:country.categoryId == productApi.category.multi ? country.name : country.cntry.values().next().value})
+    this.props.navigation.navigate('Country',{allData:allData,title:country.categoryId == productApi.category.multi ? country.partnerName : country.cntry.values().next().value})
   }
 
   /*
