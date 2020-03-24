@@ -33,7 +33,7 @@ class OrderAPI {
                         qty: parseInt(value.quantity),
                         price: utils.stringToNumber(value.total_price__number)
                     })),
-                    dlvCost: utils.stringToNumber(item.dlv_cost),
+                    dlvCost: utils.stringToNumber(item.dlv_cost) || 0,
                     balanceCharge : balanceCharge ? utils.stringToNumber( balanceCharge.amount__number) : 0,
                 }
                 }).reduce((acc,cur) => {
