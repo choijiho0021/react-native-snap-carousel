@@ -32,8 +32,8 @@ class Utils {
 
     // 숫자만 입력 받기
     stringToNumber = (value) => {
-
-        if (typeof(value) == 'number') return value
+        if (typeof(value) === 'undefined' ) return undefined
+        if (typeof(value) === 'number') return value
         if (typeof(value) !== 'string' || _.isEmpty(value)) return undefined
 
         // const num = value.replace(/[^0-9.]/g, '');

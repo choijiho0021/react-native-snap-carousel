@@ -35,7 +35,7 @@ class OrderAPI {
                         price: utils.stringToNumber(value.total_price__number)
                     })),
                     dlvCost: utils.stringToNumber(item.dlv_cost) || 0,
-                    balanceCharge : utils.stringToNumber( balanceCharge.amount__number) || 0,
+                    balanceCharge : balanceCharge ? utils.stringToNumber( balanceCharge.amount__number) : 0,
                 }
                 }).reduce((acc,cur) => {
                     const idx = acc.findIndex(item => item.orderId == cur.orderId)
