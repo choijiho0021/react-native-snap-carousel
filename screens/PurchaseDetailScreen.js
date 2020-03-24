@@ -35,6 +35,7 @@ class PurchaseDetailScreen extends Component {
       showPayment: false,
       showDelivery: false
     }
+
     this.method = [
       [
         {
@@ -60,6 +61,7 @@ class PurchaseDetailScreen extends Component {
     this._deliveryInfo = this._deliveryInfo.bind(this)
     this._profile = this._profile.bind(this)
     this._address = this._address.bind(this)
+    this._cancelOrder = this._cancelOrder.bind(this)
   }
 
   componentDidMount() {
@@ -114,12 +116,18 @@ class PurchaseDetailScreen extends Component {
     )
   }
 
+  _cancelOrder(orderId) {
+    orderApi.cancelOrder(orderId, this.props.auth).then(resp =>
+      console.log('cancel order', resp))
+  }
+
   render() {
-    const {orderId, orderDate, orderItems, orderType, iamportPayment, totalPrice,
+    const {orderId, orderNo, orderDate, orderItems, orderType, iamportPayment, totalPrice,
         trackingCompany, trackingCode, shipmentState, dlvCost, balanceCharge} = this.props.navigation.getParam('detail') || {}
     const label = `${orderItems[0].title}  ${orderItems.length > 1 ? i18n.t('his:etcCnt').replace('%%', orderItems.length - 1) : ''}`
 
     const pg = !_.isEmpty(iamportPayment) ? this.method[0].find(item => item.key == iamportPayment[0].pg).title : i18n.t("pym:balance")
+
     const paidAmount = !_.isEmpty(iamportPayment) ? (iamportPayment[0].totalPrice) : 0
     const billingAmt = utils.numberToCommaString(totalPrice + dlvCost)
 
@@ -130,12 +138,12 @@ class PurchaseDetailScreen extends Component {
         <SafeAreaView forceInset={{ top: 'never', bottom:"always"}}>
           <Text style={styles.date}>{utils.toDateString(orderDate)}</Text>
           <Text style={styles.productTitle}>{label}</Text>
-          <AppButton>취소</AppButton>
+          <AppButton onPress={() => this._cancelOrder(orderId)}>Cancel</AppButton>
           <View style={styles.bar}/>
           <LabelText
             key="orderId" style={styles.item}
             label={i18n.t('his:orderId')} labelStyle={styles.label2}
-            value={orderId} valueStyle={styles.labelValue}/>
+            value={orderNo} valueStyle={styles.labelValue}/>
           <LabelText
             key="pymMethod" style={[styles.item, {marginBottom: 20}]}
             label={i18n.t('pym:method')} labelStyle={styles.label2}

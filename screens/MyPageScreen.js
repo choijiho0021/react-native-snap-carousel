@@ -5,6 +5,7 @@ import {
   View,
   TouchableOpacity,
   FlatList,
+  Platform
 } from 'react-native';
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'

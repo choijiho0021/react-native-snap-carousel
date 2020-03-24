@@ -13,8 +13,9 @@ class OrderAPI {
                     balanceCharge = paymentList.find(value => value.payment_gateway == 'rokebi_cash')
 
                 return {
-                    key: item.order_number,
-                    orderId: item.order_number,
+                    key: item.order_id,
+                    orderId: item.order_id,
+                    orderNo: item.order_number,
                     orderDate: item.placed,
                     orderType: item.type,
                     totalPrice: utils.stringToNumber( item.total_price__number),
@@ -33,7 +34,7 @@ class OrderAPI {
                         qty: parseInt(value.quantity),
                         price: utils.stringToNumber(value.total_price__number)
                     })),
-                    dlvCost: utils.stringToNumber(item.dlv_cost),
+                    dlvCost: item.dlv_cost ? utils.stringToNumber(item.dlv_cost): 0,
                     balanceCharge : balanceCharge ? utils.stringToNumber( balanceCharge.amount__number) : 0,
                 }
                 }).reduce((acc,cur) => {
@@ -51,14 +52,26 @@ class OrderAPI {
         return api.failure( api.NOT_FOUND)
     }
 
-    getOrders = ({user}) => {
+    getOrders = ({user, token}) => {
         const url = `${api.httpUrl(api.path.order)}/${user}?_format=json`
-        const headers = api.headers({})
+        const headers = api.withToken(token, 'json')
 
         return api.callHttp(url, {
             method: 'get',
             headers,
         }, this.toOrder)
+    }
+
+    cancelOrder = (orderId, {token}) => {
+        const url = `${api.httpUrl(api.path.commerce.order, '')}/${orderId}?_format=json`
+        const headers = api.withToken(token, 'json')
+
+        return api.callHttp(url, {
+            method: 'delete',
+            headers,
+        }, (resp) => ({
+            result: resp.status == '204' ? 0 : api.FAILED
+        }))
     }
 
     deliveryTrackingUrl = (company, trackingCode) => {
