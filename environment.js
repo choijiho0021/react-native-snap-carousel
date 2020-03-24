@@ -14,8 +14,8 @@ const ENV = {
     // baseUrl: "https://www.rokebi.com",
     scheme: 'http',
     rokApiUrl: "rokebi-svc-tb.ap-northeast-2.elasticbeanstalk.com",
-    apiUrl: "esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com",
-    baseUrl: "http://esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com",
+    apiUrl: "esim2-tb-v2.ap-northeast-2.elasticbeanstalk.com",
+    baseUrl: "http://esim2-tb-v2.ap-northeast-2.elasticbeanstalk.com",
     impId: impId,
     label: Platform.OS === 'ios' ? codePushiOSStagLabel : codePushAndStagLabel
   },
