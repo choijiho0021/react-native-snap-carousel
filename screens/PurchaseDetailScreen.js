@@ -130,6 +130,7 @@ class PurchaseDetailScreen extends Component {
         <SafeAreaView forceInset={{ top: 'never', bottom:"always"}}>
           <Text style={styles.date}>{utils.toDateString(orderDate)}</Text>
           <Text style={styles.productTitle}>{label}</Text>
+          <AppButton>취소</AppButton>
           <View style={styles.bar}/>
           <LabelText
             key="orderId" style={styles.item}
