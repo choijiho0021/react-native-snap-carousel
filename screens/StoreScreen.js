@@ -110,7 +110,7 @@ class StoreScreen extends Component {
         
         const idxCcode = acc.findIndex(elm => _.isEqual(elm.ccode, item.ccode))
 
-        if ( idxCcode < 0 || item.field_daily == 'total') {
+        if ( idxCcode < 0 ) {
           // new item, insert it
           return acc.concat( [item])
         }
