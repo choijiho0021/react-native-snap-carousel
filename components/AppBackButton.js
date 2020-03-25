@@ -34,9 +34,11 @@ class AppBackButton extends PureComponent {
   _goBack() {
     const {navigation, back, lastTab} = this.props
 
-    //Android Backbutton Handler 초기화
-    this.backHandler.remove()
-    this.backHandler = null
+    if(this.backHandler){
+      //Android Backbutton Handler 초기화
+      this.backHandler.remove()
+      this.backHandler = null
+    }
 
     var tab = ''
     if ( back == 'top') return navigation.popToTop()
