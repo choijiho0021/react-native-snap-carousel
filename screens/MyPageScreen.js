@@ -45,7 +45,11 @@ else {
 class OrderItem extends PureComponent {
   render () {
     const {item, onPress} = this.props
-    const label = `${item.orderItems[0].title}  ${item.orderItems.length > 1 ? i18n.t('his:etcCnt').replace('%%', item.orderItems.length - 1) : ''}`
+    if ( _.isEmpty(item.orderItems) ) return <View></View>
+
+    var label = item.orderItems[0].title
+    if ( item.orderItems.length > 1) label = label + i18n.t('his:etcCnt').replace('%%', item.orderItems.length - 1)
+
     const billingAmt = item.totalPrice + item.dlvCost
 
     return (
