@@ -11,13 +11,32 @@ class AppBackButton extends PureComponent {
     this._goBack = this._goBack.bind(this)
   }
 
+  componentDidUpdate(){
+    const {lastTab} = this.props
+    
+    //카트의 경우 다시 mount가 되지 않기 때문에 update조건으로 추가
+    if(lastTab[0] == 'CartStack' && !this.backHandler){
+      // [Android] 강제로 백버튼 handler 추가
+      this.backHandler = BackHandler.addEventListener('hardwareBackPress', this._goBack)
+    }
+  }
+
   componentDidMount(){
-    // [Android] 강제로 백버튼 handler 추가
-    this.backHandler = BackHandler.addEventListener('hardwareBackPress', this._goBack)
+    const {lastTab} = this.props
+
+    //카트가 아닌 경우 화면에 들어가면 다시 mount가 됨
+    if(lastTab[0] != 'CartStack'){
+      // [Android] 강제로 백버튼 handler 추가
+      this.backHandler = BackHandler.addEventListener('hardwareBackPress', this._goBack)
+    }
   }
 
   _goBack() {
     const {navigation, back, lastTab} = this.props
+
+    //Android Backbutton Handler 초기화
+    this.backHandler.remove()
+    this.backHandler = null
 
     var tab = ''
     if ( back == 'top') return navigation.popToTop()

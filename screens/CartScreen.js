@@ -4,8 +4,7 @@ import {
   View,
   Text,
   SectionList,
-  Alert,
-  BackHandler
+  Alert
 } from 'react-native';
 import {connect} from 'react-redux'
 
@@ -62,14 +61,6 @@ class CartScreen extends Component {
     if ( cart && cart != prevProps.cart && cart.orderItems && ! pending ) {
       this._init()
     }
-
-    // [Android] 강제로 백버튼 handler 추가
-    // this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-    //   const { lastTab } = this.props
-    //   const tab = (lastTab[0] == 'CartStack') ? lastTab[1] : lastTab[0]
-    //   this.props.navigation.navigate(tab);
-    //   return true;
-    // })
   }
 
   _section( ... args) {
