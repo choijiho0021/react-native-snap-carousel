@@ -455,7 +455,8 @@ const styles = StyleSheet.create({
     height: 76
   },
   usage: {
-    height: 36,
+    // height: 36,
+    marginVertical:5,
     marginHorizontal: 20
   },
   usageValue: {
