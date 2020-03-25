@@ -225,7 +225,7 @@ _onSubmit() {
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <KeyboardAwareScrollView
           resetScrollToCoords={{ x: 0, y: 0 }}
-          contentContainerStyle={styles.scrollContainer}
+          // contentContainerStyle={styles.scrollContainer}
           enableOnAndroid={true}
           // extraScrollHeight={60}
           innerRef={ref => { this.scroll = ref; }}>
