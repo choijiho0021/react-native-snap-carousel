@@ -35,6 +35,7 @@ import AddProfileScreen from '../screens/AddProfileScreen';
 import StoreSearchScreen from '../screens/StoreSearchScreen';
 import BoardMsgRespScreen from '../screens/BoardMsgRespScreen';
 import SimpleTextScreen from '../screens/SimpleTextScreen';
+import UsimScreen from '../screens/UsimScreen';
 import FaqScreen from '../screens/FaqScreen';
 import GuideScreen from '../screens/GuideScreen';
 import { colors } from '../constants/Colors';
@@ -129,22 +130,21 @@ StoreStack.navigationOptions =  ({navigation}) => ({
 
 StoreStack.path = '';
 
-// const SettingsStack = createStackNavigator(
-//   {
-//     Settings: SettingsScreen,
-//     MySim: MySimScreen,
-//     SimpleText: SimpleTextScreen,
-//   },
-//   config
-// );
+const UsimStack = createStackNavigator(
+  {
+    Usim: UsimScreen
+  },
+  config
+);
 
-// SettingsStack.navigationOptions = ({navigation}) => ({
-//   tabBarVisible: navigation.state.index == 0,
-//   tabBarLabel: i18n.t('setting'),
-//   tabBarIcon: ({ focused }) => (
-//     <AppIcon focused={focused} name="btnSetup" style={styles.tabBarIcon}/>
-//   ),
-// })
+UsimStack.navigationOptions = ({navigation}) => ({
+  tabBarVisible: navigation.state.index == 0,
+  tabBarLabel: i18n.t('usim'),
+  tabBarIcon: ({ focused }) => (
+    //임시로 이미지 넣어 놓음 변경필요
+    <AppIcon focused={focused} name="btnBoxCancel" style={styles.tabBarIcon}/>
+  ),
+})
 
 const MyPageStack = createStackNavigator(
   {
@@ -224,8 +224,8 @@ const TabNavigator = createBottomTabNavigator({
   HomeStack,
   StoreStack,
   CartStack,
+  UsimStack,
   MyPageStack,
-  // SettingsStack,
 }, {
   tabBarOptions: {
     inactiveTintColor: colors.black,
