@@ -14,7 +14,7 @@ export default class LabelTextTouchable extends PureComponent {
     return (
       <TouchableOpacity onPress={onPress} disabled={disabled}>
         <View style={[style, {flexDirection:'row', alignItems:'center'}]}>
-          <LabelText style={{flex:1}} {... props} />
+          <LabelText style={{flex:1}} format={format} {... props} />
           {
             ! _.isEmpty(arrow) && <AppIcon style={{alignSelf:'center', marginLeft:20}} name={arrow}/>
           }
