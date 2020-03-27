@@ -50,6 +50,7 @@ class OrderItem extends PureComponent {
     var label = item.orderItems[0].title
     if ( item.orderItems.length > 1) label = label + i18n.t('his:etcCnt').replace('%%', item.orderItems.length - 1)
 
+    const isCanceled = item.state == 'canceled' ? '(결제취소)' : ''
     const billingAmt = item.totalPrice + item.dlvCost
 
     return (
@@ -57,7 +58,7 @@ class OrderItem extends PureComponent {
         <View key={item.orderId} style={styles.order}>
           <Text style={[isDeviceSize('small') ? appStyles.normal12Text : appStyles.normal14Text, {alignSelf:'flex-start'}]}>{utils.toDateString(item.orderDate, 'YYYY-MM-DD')}</Text>
           <LabelText style={styles.orderValue}
-            label={label} labelStyle={[{width:'70%'}, isDeviceSize('small') ? appStyles.normal14Text : appStyles.normal16Text]}
+            label={isCanceled + label} labelStyle={[{width:'70%'}, isDeviceSize('small') ? appStyles.normal14Text : appStyles.normal16Text]}
             value={billingAmt} format="price" />
         </View>
       </TouchableOpacity>
@@ -97,7 +98,8 @@ class MyPageScreen extends Component {
       mode: 'purchase',
       hasPhotoPermission: false,
       showEmailModal: false,
-      isReloaded: false
+      isReloaded: false,
+      isFocused: false,
     }
 
     this._info = this._info.bind(this)
@@ -119,11 +121,20 @@ class MyPageScreen extends Component {
       this._didMount()
     }
   }
-
   componentDidUpdate(prevProps) {
     const { mode, isReloaded } = this.state
+    const focus = this.props.navigation.isFocused()
 
-    if ( this.props.uid && this.props.uid != prevProps.uid) {
+    // 구매내역 원래 조건 확인 
+    if(this.state.isFocused != focus){
+      this.setState({isFocused: focus})
+      if(focus){
+        this.props.action.order.getOrders(this.props.auth)
+        this.props.action.order.getUsage(this.props.account.iccid, this.props.auth)
+      }
+    }
+
+    if ( this.props.uid && this.props.uid != prevProps.uid ) {
       // reload order history
       this.props.action.order.getOrders(this.props.auth)
     }
@@ -131,7 +142,7 @@ class MyPageScreen extends Component {
     if ( this.props.account ) {
       const { account: {iccid}, auth } = this.props
       if ( iccid && iccid !== (prevProps.account || {}).iccid && mode === 'usage' ) {
-        this.props.action.order.getUsage( iccid, auth)
+        this.props.action.order.getUsage(iccid, auth)
         this.setState({ isReloaded: true })
       }
     }
@@ -156,7 +167,7 @@ class MyPageScreen extends Component {
 
     this.setState({ hasPhotoPermission: result === 'granted'})
 
-    if ( this.props.uid) this.props.action.order.getOrders(this.props.auth)
+    if (this.props.uid) this.props.action.order.getOrders(this.props.auth)
   }
 
   _onPress = (key) => () => {
@@ -302,7 +313,7 @@ class MyPageScreen extends Component {
 
   _onPressOrderDetail = (orderId) => () => {
     const { orders } = this.props.order
-    this.props.navigation.navigate('PurchaseDetail', {detail: orders.find(item => item.orderId == orderId)})
+    this.props.navigation.navigate('PurchaseDetail', {detail: orders.find(item => item.orderId == orderId), props: this.props})
   }
 
   _onPressUsageDetail = (key) => () => {
