@@ -11,6 +11,7 @@ import * as profileActions from '../redux/modules/profile'
 import * as cartActions from '../redux/modules/cart'
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
+import unityConstant from '../utils/unityConstant';
 import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
@@ -25,9 +26,14 @@ import getEnvVars from '../environment';
 import Video from 'react-native-video';
 
 class PymMethodScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('payment')} />
-  })
+
+  static navigationOptions =  ({ navigation }) => {
+    const { params = {} } = navigation.state
+    return {
+        headerLeft: <AppBackButton navigation={navigation} title={params.isPaid ? i18n.t('his:paymentCompleted') : i18n.t('payment')} isPaid={params.isPaid} pymResult={params.pymResult} orderResult={params.orderResult}/>
+    }  
+  }
+
 
   constructor(props) {
     super(props)
@@ -110,6 +116,7 @@ class PymMethodScreen extends Component {
       profileId = this.props.profile.selectedAddr || (this.props.profile.profile.find(item => item.isBasicAddr) || {}).uuid,
       dlvCost = (this.props.cart.pymReq.find(item => item.key == 'dlvCost') || {}).amount
 
+    // 로깨비캐시 결제
     if (pymPrice == 0) {
       this.setState({
         loading: true
@@ -124,6 +131,7 @@ class PymMethodScreen extends Component {
         dlvCost
       }
       const orderResult = await this.props.action.cart.payNorder(response)
+      await this.props.navigation.setParams({isPaid:true})
       // 최종 결제 처리 과정에서 실패할 수 있다. pymResult.result 값이 0인지 다시 확인한다.
       this.props.navigation.replace('PaymentResult', {pymResult:response, orderResult})
 
@@ -259,7 +267,7 @@ class PymMethodScreen extends Component {
                 <Text style={[styles.title, styles.mrgBottom5]}>{i18n.t('pym:method')}</Text>
                 <View style={styles.mrgBottom33}>
                   {
-                    this.method.map((v,idx) => this._button(idx+"", v))
+                    unityConstant.method().map((v,idx) => this._button(idx+"", v))
                   }
                 </View>
               </View>  
