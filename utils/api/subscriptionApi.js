@@ -8,6 +8,7 @@ class SubscriptionAPI {
     code = {
         'A' : 'active',
         'I' : 'inactive',
+        'C' : 'canceled',
         'R' : 'reserved',
         'E' : 'expired',
         'U' : 'used'
@@ -88,7 +89,9 @@ class SubscriptionAPI {
         if ( data.jsonapi) {
             const obj = _.isArray(sortData.data) ? sortData.data : [sortData.data]
 
-            return api.success( obj.map(item => ({
+            return api.success( obj.map(item => 
+                console.log('usage item@@@@@', item)
+                ({
                 key: item.id,
                 uuid: item.id,
                 purchaseDate: item.field_purchase_date,
