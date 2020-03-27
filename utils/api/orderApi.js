@@ -23,6 +23,7 @@ class OrderAPI {
                     trackingCode: item.tracking_code,
                     trackingCompany: item.tracking_company,
                     shipmentState: item.shipment_state,
+                    state: item.state,
                     iamportPayment: JSON.parse(item.iamport_payment).map(value => ({
                         totalPrice: utils.stringToNumber(value.amount),
                         pg: value.pg_provider,
@@ -33,6 +34,10 @@ class OrderAPI {
                         title: value.title,
                         qty: parseInt(value.quantity),
                         price: utils.stringToNumber(value.total_price__number)
+                    })),
+                    usageList: JSON.parse(item.usage_list).map(value => ({
+                        status: value.field_status,
+                        nid: value.nid
                     })),
                     dlvCost: utils.stringToNumber(item.dlv_cost) || 0,
                     balanceCharge : balanceCharge ? utils.stringToNumber( balanceCharge.amount__number) : 0,
