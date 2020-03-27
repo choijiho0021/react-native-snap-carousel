@@ -76,7 +76,8 @@ class PaymentResultScreen extends Component {
 
     // 구매 이력을 다시 읽어 온다.
     this.props.action.order.getOrders(this.props.auth)
-
+    // 사용 내역을 다시 읽어 온다.
+    this.props.action.order.getUsage(this.props.account.iccid, this.props.auth)
     // 카트를 비운다.
     this.props.action.cart.empty()
   }
