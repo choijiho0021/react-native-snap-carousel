@@ -3,10 +3,13 @@ import {
   StyleSheet,
   Text,
   View,
+  Alert,
 } from 'react-native';
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import utils from '../utils/utils';
+import unityConstant from '../utils/unityConstant';
+import AppAlert from '../components/AppAlert';
 import AppButton from '../components/AppButton';
 import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';
@@ -19,10 +22,12 @@ import LabelTextTouchable from '../components/LabelTextTouchable';
 import orderApi from '../utils/api/orderApi';
 import profileApi from '../utils/api/profileApi';
 import {connect} from 'react-redux'
+import * as orderActions from '../redux/modules/order'
 import * as accountActions from '../redux/modules/account'
 import AppIcon from '../components/AppIcon';
 import { isAndroid } from '../components/SearchBarAnimation/utils';
 import AddressCard from '../components/AddressCard';
+import { bindActionCreators } from 'redux';
 
 class PurchaseDetailScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -33,29 +38,9 @@ class PurchaseDetailScreen extends Component {
     super(props)
     this.state = {
       showPayment: false,
-      showDelivery: false
+      showDelivery: false,
+      cancelPressed: false,
     }
-
-    this.method = [
-      [
-        {
-          key: 'html5_inicis',
-          title: i18n.t('pym:ccard')
-        },
-        {
-          key: 'danal',
-          title: i18n.t('pym:mobile')
-        },
-        {
-          key: 'kakaopay',
-          title: i18n.t('pym:kakao')
-        },
-        {
-          key: 'payco',
-          title: i18n.t('pym:payco')
-        },
-      ],
-    ]
     
     this._paymentDetail = this._paymentDetail.bind(this)
     this._deliveryInfo = this._deliveryInfo.bind(this)
@@ -70,8 +55,22 @@ class PurchaseDetailScreen extends Component {
 
     // TODO
     // load Profile by profile_id
-    profileApi.getCustomerProfileById(detail.profileId, this.props.auth).then(resp => 
-      this._profile(resp));
+    profileApi.getCustomerProfileById(detail.profileId, this.props.auth).then(resp => {
+      if(resp.result == 0) this._profile(resp)
+    },
+    err => {
+      console.log('Failed to get profile', err)
+    })
+
+  }
+  
+  componentWillUnmount(){
+
+    // 보완 필요
+    const{auth, account} = this.props.navigation.getParam('props')
+    if(this.state.cancelPressed){
+      this.props.action.order.getOrders(auth)
+    }
   }
 
   _profile(profile){
@@ -117,28 +116,66 @@ class PurchaseDetailScreen extends Component {
   }
 
   _cancelOrder(orderId) {
-    orderApi.cancelOrder(orderId, this.props.auth).then(resp =>
-      console.log('cancel order', resp))
+    Alert.alert(  
+      i18n.t('his:cancel'),
+      i18n.t('his:cancelAlert'),
+      [
+        {
+          text: i18n.t('cancel'),
+          // style: 'cancel',
+        },
+        {
+          text: i18n.t('ok'),
+          onPress: () =>  orderApi.cancelOrder(orderId, this.props.auth).then(resp =>{
+            console.log('detail resp', resp)
+            if (resp.result == 0){
+              AppAlert.info(i18n.t("his:cancelSuccess"))
+              console.log('cancel order', resp)
+              this.setState({cancelPressed: true})
+            }else{
+              AppAlert.info(i18n.t("his:cancelFail"))
+            }},
+            err =>{
+              AppAlert.info(i18n.t("his:cancelError"))
+            })
+          
+        }
+      ],
+    )
   }
 
   render() {
-    const {orderId, orderNo, orderDate, orderItems, orderType, iamportPayment, totalPrice,
+
+    const {orderId, orderNo, orderDate, orderItems, orderType, iamportPayment, totalPrice, state, usageList,
         trackingCompany, trackingCode, shipmentState, dlvCost, balanceCharge} = this.props.navigation.getParam('detail') || {}
-    const label = `${orderItems[0].title}  ${orderItems.length > 1 ? i18n.t('his:etcCnt').replace('%%', orderItems.length - 1) : ''}`
 
-    const pg = !_.isEmpty(iamportPayment) ? this.method[0].find(item => item.key == iamportPayment[0].pg).title : i18n.t("pym:balance")
+    if ( _.isEmpty(orderItems) ) return <View></View>
 
+    var label = orderItems[0].title
+    if ( orderItems.length > 1) label = label + i18n.t('his:etcCnt').replace('%%', orderItems.length - 1)
+
+    const pg = !_.isEmpty(iamportPayment) ? unityConstant.method().flatMap(item => item).find(item => item.key == iamportPayment[0].pg).title : i18n.t("pym:balance")
     const paidAmount = !_.isEmpty(iamportPayment) ? (iamportPayment[0].totalPrice) : 0
     const billingAmt = utils.numberToCommaString(totalPrice + dlvCost)
 
-    console.log('@@@shipment', shipmentState)
+    // [physical] shipmentState : draft(취소 가능) / ready shipped (취소 불가능)
+    // [draft] state = validation && status = inactive , reserved
+    const isCanceled = state == 'canceled'
+    const isUsed = !_.isEmpty(usageList) && usageList.find(value => value.status != 'R' && value.status != 'I') || false
+    const activateCancelBtn = orderType == 'physical' ? shipmentState == 'draft' : (state == 'validation') && !isUsed
+
 
     return (
       <ScrollView style={styles.container}>
         <SafeAreaView forceInset={{ top: 'never', bottom:"always"}}>
           <Text style={styles.date}>{utils.toDateString(orderDate)}</Text>
-          <Text style={styles.productTitle}>{label}</Text>
-          <AppButton onPress={() => this._cancelOrder(orderId)}>Cancel</AppButton>
+          <View style={styles.productTitle}>
+            {
+              (isCanceled || this.state.cancelPressed) &&
+              <Text style={[appStyles.bold18Text, {color: colors.tomato}]}>{`(${i18n.t("his:cancel")})`}</Text>
+            }
+            <Text style={appStyles.bold18Text}>{label}</Text>
+          </View>
           <View style={styles.bar}/>
           <LabelText
             key="orderId" style={styles.item}
@@ -175,7 +212,7 @@ class PurchaseDetailScreen extends Component {
                 orderItems && orderItems.map((item,idx) =>
                   <LabelText
                     key={idx+""} style={styles.item}
-                    label={`${item.title}  X  ${item.qty} 개`} labelStyle={styles.label}
+                    label={`${item.title}  X  ${item.qty} ${i18n.t('qty')}`} labelStyle={styles.label}
                     format="price"
                     valueStyle={appStyles.roboto16Text}
                     value={item.price}/>
@@ -203,7 +240,7 @@ class PurchaseDetailScreen extends Component {
                     value={`- ${balanceCharge}`}/>
               }
               <View style={styles.bar}/>
-              <View style={[styles.row, {marginBottom: 25}]}>
+              <View style={[styles.row, {marginBottom: 5}]}>
                 <Text style={[appStyles.normal16Text]}>{i18n.t('cart:totalCost')} </Text>
                 <View style={{flex:1, flexDirection: 'row', justifyContent: 'flex-end'}}>
                   <Text style={styles.priceTxt}>{i18n.t('total') +' '}</Text>
@@ -211,6 +248,32 @@ class PurchaseDetailScreen extends Component {
                   <Text style={styles.priceTxt}>{' ' + i18n.t('won')}</Text>
                 </View>
               </View>
+              {
+                (!isCanceled || !this.state.cancelPressed) &&
+                <TouchableOpacity style={{borderColor: colors.lightGrey, borderWidth: 1, margin: 20, height: 48, justifyContent: 'center'}} 
+                      disabled={isCanceled || !activateCancelBtn || this.state.cancelPressed} onPress={() => this._cancelOrder(orderId)}>
+                  <Text style={[appStyles.normal16Text ,{color: (isCanceled|| !activateCancelBtn || this.state.cancelPressed) ? colors.lightGrey : colors.clearBlue, textAlign: 'center', textAlignVertical: 'center'}]}>{i18n.t('his:cancel')}</Text>
+                </TouchableOpacity>
+              }
+              {
+                isCanceled ?
+                <View style={{marginBottom: 40}}>
+                  <Text style={[appStyles.normal14Text, {margin: 20, color: colors.warmGrey, lineHeight: 28}]}>{i18n.t('his:afterCancelInfo')}</Text>
+                </View>
+                :<View style={{marginBottom: 40}}>
+                  {
+                    orderType == 'physical' ?
+                    <View>
+                      <Text style={[appStyles.normal14Text, {marginHorizontal: 20, color: colors.warmGrey, lineHeight: 28}]}>{i18n.t('his:simCancelInfo')}</Text>
+                    </View>
+                  : <View>
+                      <Text style={[appStyles.normal14Text, {marginHorizontal: 20, color: colors.warmGrey, lineHeight: 28}]}>{i18n.t('his:dataCancelInfo')}</Text>
+                    </View>
+
+
+                  }
+                </View>
+              }
             </View>  
           }
 
@@ -223,7 +286,7 @@ class PurchaseDetailScreen extends Component {
                 <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
                   {
                     !this.state.showDelivery &&
-                    <Text style={[appStyles.normal16Text, {color: colors.clearBlue, alignSelf: 'center', marginRight: 15}]}>{_.isEmpty(shipmentState) ?'결제완료' : (shipmentState == ('fulfillment') ? '상품 준비중' : '출고완료')}</Text>
+                    <Text style={[appStyles.normal16Text, {color: colors.clearBlue, alignSelf: 'center', marginRight: 15}]}>{(_.isEmpty(shipmentState) || shipmentState == 'draft') ? i18n.t('his:paymentCompleted') : (shipmentState == ('ready') ? i18n.t('his:ready') : i18n.t('his:shipped'))}</Text>
                   }
                   <AppButton style={{backgroundColor: colors.white, height:70, paddingRight: 20}} 
                             iconName= {this.state.showDelivery ? "iconArrowUp" : "iconArrowDown"} iconStyle={{flexDirection: 'column', alignSelf: 'flex-end'}}/>
@@ -236,9 +299,9 @@ class PurchaseDetailScreen extends Component {
                   <View style={{marginHorizontal: 20}}>
                     <Text style={styles.deliveryTitle}>{i18n.t('his:shipmentState')}</Text>
                     <View style={{flex:1, flexDirection: 'row', justifyContent: 'flex-start'}}>
-                      <Text style={[styles.deliveryStatus, (_.isEmpty(shipmentState)|| shipmentState == 'validation' )&& {color: colors.clearBlue}]}>{i18n.t('his:paymentCompleted')}</Text>
+                      <Text style={[styles.deliveryStatus, (_.isEmpty(shipmentState)|| shipmentState == 'draft' )&& {color: colors.clearBlue}]}>{i18n.t('his:paymentCompleted')}</Text>
                       <AppIcon name="iconArrowRight" style={styles.arrowIcon}/>
-                      <Text style={[styles.deliveryStatus, shipmentState == ('fulfillment') && {color: colors.clearBlue}]}>{i18n.t('his:ready')}</Text>
+                      <Text style={[styles.deliveryStatus, shipmentState == ('ready') && {color: colors.clearBlue}]}>{i18n.t('his:ready')}</Text>
                       <AppIcon name="iconArrowRight" style={styles.arrowIcon}/>
                       <Text style={[styles.deliveryStatus, shipmentState == ('shipped') && {color: colors.clearBlue}]}>{i18n.t('his:shipped')}</Text>
                     </View>
@@ -251,19 +314,24 @@ class PurchaseDetailScreen extends Component {
                         this._address()
                       }
                   </View>
-                  <View style={styles.bar}/>
-                  <View style={{marginBottom: 20}}>
-                    <Text style={[styles.deliveryTitle, {marginHorizontal: 20}]}>{i18n.t('his:companyInfo')}</Text>
-                    <LabelText key="trackingCompany" style={styles.item} format="shortDistance"
-                        label={i18n.t('his:trackingCompany')} labelStyle={styles.companyInfoTitle}
-                        value={trackingCompany} valueStyle={[styles.labelValue, {justifyContent: 'flex-start'}]}/>
-                    <LabelText key="tel" style={styles.item}  format="shortDistance"
-                        label={i18n.t('his:tel')} labelStyle={styles.companyInfoTitle}
-                        value={utils.toPhoneNumber('12341234')} valueStyle={styles.labelValue}/>
-                    <LabelTextTouchable onPress={() => this.props.navigation.navigate('SimpleText', {mode:'uri', text:orderApi.deliveryTrackingUrl('CJ', '341495229094')})}
-                        label={i18n.t('his:trackingCode')} labelStyle={[styles.companyInfoTitle, {marginLeft: 20, width: '20%'}]}  format="shortDistance"
-                        value={trackingCode} valueStyle={[styles.labelValue, {color: colors.clearBlue, textDecorationLine: 'underline'}]}/>
+                  {
+                    !_.isEmpty(trackingCode) &&
+                  <View>
+                    <View style={styles.bar}/>
+                    <View style={{marginBottom: 20}}>
+                      <Text style={[styles.deliveryTitle, {marginHorizontal: 20}]}>{i18n.t('his:companyInfo')}</Text>
+                      <LabelText key="trackingCompany" style={styles.item} format="shortDistance"
+                          label={i18n.t('his:trackingCompany')} labelStyle={styles.companyInfoTitle}
+                          value={trackingCompany} valueStyle={[styles.labelValue, {justifyContent: 'flex-start'}]}/>
+                      <LabelText key="tel" style={styles.item}  format="shortDistance"
+                          label={i18n.t('his:tel')} labelStyle={styles.companyInfoTitle}
+                          value={utils.toPhoneNumber('12341234')} valueStyle={styles.labelValue}/>
+                      <LabelTextTouchable onPress={() => this.props.navigation.navigate('SimpleText', {mode:'uri', text:orderApi.deliveryTrackingUrl('CJ', '341495229094')})}
+                          label={i18n.t('his:trackingCode')} labelStyle={[styles.companyInfoTitle, {marginLeft: 20, width: '20%'}]}  format="shortDistance"
+                          value={trackingCode} valueStyle={[styles.labelValue, {color: colors.clearBlue, textDecorationLine: 'underline'}]}/>
+                    </View>
                   </View>
+                  }
 
                 </View>
               }    
@@ -458,7 +526,21 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = state => ({
-  auth: accountActions.auth( state.account),
+  account: state.account.toJS(),
+  order: state.order.toJS(),
+  auth: accountActions.auth(state.account),
+  uid: state.account.get('uid'),
+  pending: state.pender.pending[orderActions.GET_ORDERS] || 
+    state.pender.pending[orderActions.GET_USAGE] || 
+    state.pender.pending[accountActions.CHANGE_EMAIL] || 
+    state.pender.pending[accountActions.UPLOAD_PICTURE] || false,
 })
 
-export default connect(mapStateToProps)(PurchaseDetailScreen)
+export default connect(mapStateToProps,
+  (dispatch) => ({
+    action: {
+      order: bindActionCreators (orderActions, dispatch),
+      account: bindActionCreators(accountActions, dispatch)
+    }
+  })
+)(PurchaseDetailScreen)
