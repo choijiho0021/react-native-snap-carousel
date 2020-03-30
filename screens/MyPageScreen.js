@@ -313,7 +313,7 @@ class MyPageScreen extends Component {
 
   _onPressOrderDetail = (orderId) => () => {
     const { orders } = this.props.order
-    this.props.navigation.navigate('PurchaseDetail', {detail: orders.find(item => item.orderId == orderId), props: this.props})
+    this.props.navigation.navigate('PurchaseDetail', {detail: orders.find(item => item.orderId == orderId), auth: this.props.auth})
   }
 
   _onPressUsageDetail = (key) => () => {
