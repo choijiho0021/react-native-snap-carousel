@@ -56,7 +56,7 @@ class OrderItem extends PureComponent {
     return (
       <TouchableOpacity onPress={onPress}>
         <View key={item.orderId} style={styles.order}>
-          <Text style={[isDeviceSize('small') ? appStyles.normal12Text : appStyles.normal14Text, {alignSelf:'flex-start'}]}>{utils.toDateString(item.orderDate, 'YYYY-MM-DD')}</Text>
+          <Text style={[isDeviceSize('small') ? appStyles.normal12Text : appStyles.normal14Text, {alignSelf:'flex-start', color: colors.warmGrey}]}>{utils.toDateString(item.orderDate, 'YYYY-MM-DD')}</Text>
           <LabelText style={styles.orderValue}
             label={isCanceled + label} labelStyle={[{width:'70%'}, isDeviceSize('small') ? appStyles.normal14Text : appStyles.normal16Text]}
             value={billingAmt} format="price" />
@@ -248,15 +248,31 @@ class MyPageScreen extends Component {
       } 
 
     return (
-      <View style={{marginTop:20, marginBottom:10}}>
-        <View >
-          <AppUserPic url={userPictureUrl} icon="imgPeopleL" 
-            style={styles.userPicture} 
-            onPress={this._changePhoto} />
-          <AppIcon name="imgPeoplePlus" style={{bottom:20, right:-29, alignSelf:'center'}}/>
+      <View style={{marginBottom:10}}>
+        <View style={{marginTop:35, flex:1, flexDirection: 'row', marginHorizontal: 20, height: 76, marginBottom: 30}}>
+          <View style={{flex:1, alignSelf: 'center'}}>
+            <AppUserPic url={userPictureUrl} icon="imgPeopleL"
+              style={styles.userPicture}
+              onPress={this._changePhoto} />
+            <AppIcon name="imgPeoplePlus" style={{bottom:20, right:-29, alignSelf:'center'}}/>
+          </View>
+          <View style={{flex:4, justifyContent: 'center'}}>
+            <Text style={styles.label}>{utils.toPhoneNumber(mobile)}</Text>
+            <LabelTextTouchable key='email' 
+              label={email} labelStyle={styles.value}
+              value={''}
+              onPress={() => this._showEmailModal(true)}
+              arrow='iconArrowRight' />
+          </View>
         </View>
-
-        <LabelTextTouchable key='iccid' 
+        <TouchableOpacity style={{marginHorizontal: 20, borderColor: colors.lightGrey, borderWidth: 1, height: 40, justifyContent: 'center'}}>
+          <Text style={[appStyles.normal16Text, {textAlign: 'center'}]}>내 문의 내역</Text>
+        </TouchableOpacity>
+        <View style={styles.divider}/>
+        <Text style={styles.subTitle}>{i18n.t('acc:purchaseHistory')}</Text>
+        <View style={styles.dividerSmall}/>
+      </View>
+        /* <LabelTextTouchable key='iccid' 
           style={styles.box}
           label={'ICCID'} labelStyle={styles.label} 
           value={iccid ? utils.toICCID(iccid) : i18n.t('reg:card')} valueStyle={styles.value}
@@ -269,21 +285,8 @@ class MyPageScreen extends Component {
             style={styles.box}
             label={i18n.t('acc:expDate')} labelStyle={styles.label} 
             value={expDate} valueStyle={styles.value}/>
-        }
-
-        <LabelText key='mobile' 
-          style={styles.box}
-          label={i18n.t('acc:mobile')} labelStyle={styles.label} 
-          value={ utils.toPhoneNumber(mobile)} valueStyle={styles.value} />
-
+        } 
         <View style={styles.dividerSmall} />
-
-        <LabelTextTouchable key='email' 
-          style={styles.box}
-          label={i18n.t('reg:email')} labelStyle={styles.label} 
-          value={ email} valueStyle={styles.value} 
-          onPress={() => this._showEmailModal(true)}
-          arrow='iconArrowRight' />
 
         {
           iccid &&
@@ -294,20 +297,10 @@ class MyPageScreen extends Component {
               onPress={this._recharge}
               arrow='iconArrowRight' />
         }
-
-        <View style={styles.divider} />
-
-        <Text style={styles.subTitle}>{i18n.t('acc:subTitle')}</Text>
-
-        <View style={styles.buttonRow}>
-          <AppButton style={[styles.button, {borderColor:selected('purchase')}]}
-            titleStyle={[styles.buttonTitle, {color:selected('purchase', colors.warmGrey)}]}
-            onPress={this._onPress('purchase')} title={i18n.t('acc:purchaseHistory')}/>
           <AppButton style={[styles.button, {borderColor:selected('usage')}]} 
             titleStyle={[styles.buttonTitle, {color:selected('usage', colors.warmGrey)}]} 
             onPress={this._onPress('usage')} title={i18n.t('acc:usageHistory')}/>
-        </View>
-      </View>
+*/
     )
   }
 
@@ -351,25 +344,25 @@ class MyPageScreen extends Component {
     return (<UsageItem item={item} onPress={this._onPressUsageDetail(item.key)}/>)
   }
 
-  _empty = (mode) => () => {
-    if ( this.props.pending) return null
+  _empty(){
+    if ( this.props.pending ) return null
 
     return (
-      <Text style={styles.nolist}>{i18n.t(mode == 'purchase' ? 'his:noPurchase' : 'his:noUsage')}</Text>
+      <Text style={styles.nolist}>{i18n.t('his:noPurchase')}</Text>
     )
   }
 
   render() {
-    const { showEmailModal, mode} = this.state
+    const { showEmailModal } = this.state
     const { orders, usage } = this.props.order
 
     return (
       <View style={styles.container}>
         <FlatList ref={(ref) => { this.flatListRef = ref; }}
-          data={mode == 'purchase' ? orders : usage} 
+          data={orders} 
           ListHeaderComponent={this._info}
-          ListEmptyComponent={this._empty(mode)}
-          renderItem={mode == 'purchase' ? this._renderOrder : this._renderUsage} /> 
+          ListEmptyComponent={this._empty()}
+          renderItem={this._renderOrder} /> 
 
         <AppActivityIndicator visible={this.props.pending}/>
 
@@ -413,24 +406,20 @@ const styles = StyleSheet.create({
   },
   value: {
     ... appStyles.roboto16Text,
+    marginLeft: 20,
+    width: '100%',
     lineHeight: 40,
     color: colors.black
   },
-  box: {
-    height: 36,
-    alignItems: 'center',
-    flex: 1,
-    marginRight: 20,
-  },
   dividerSmall: {
     borderBottomWidth:1, 
-    marginHorizontal:20,
-    marginVertical: 18,
-    borderBottomColor: colors.lightGrey
+    margin: 20,
+    marginBottom: 0,
+    borderBottomColor: colors.black
   },
   divider: {
     height: 10,
-    marginTop: 30,
+    marginTop: 40,
     backgroundColor: colors.whiteTwo
   },
   subTitle: {
@@ -438,12 +427,6 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginLeft: 20,
     color: colors.black
-  },
-  buttonRow: {
-    marginTop: 20,
-    marginHorizontal: 20,
-    flexDirection: "row",
-    justifyContent: "space-around",
   },
   buttonTitle: {
     ... appStyles.normal16Text,
@@ -455,11 +438,6 @@ const styles = StyleSheet.create({
   },
   orderValue: {
     marginTop: 12
-  },
-  button: {
-    width: "50%",
-    height: 48,
-    borderWidth: 0.5,
   },
   nolist: {
     marginVertical: 60,
