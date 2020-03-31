@@ -77,7 +77,7 @@ export const payNorder = (result) => {
             }
           })
 
-          if (purchaseItems.findIndex(item => item.type == 'rch') >= 0 || result.deduct_from_balance > 0) {
+          if (purchaseItems.findIndex(item => item.type == 'rch') >= 0 || result.rokebi_cash > 0) {
             // 충전을 한 경우에는 account를 다시 읽어들인다.
             // balance에서 차감한 경우에도 다시 읽어들인다.
             return dispatch(getAccount(iccid, {token}))

@@ -94,7 +94,7 @@ class PymMethodScreen extends Component {
         merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
         profile_uuid: profileId,
         amount: 0,
-        deduct_from_balance: deduct,
+        rokebi_cash: deduct,
         dlvCost
       }
       const orderResult = await this.props.action.cart.payNorder(response)
@@ -108,7 +108,7 @@ class PymMethodScreen extends Component {
         merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
         name: i18n.t('appTitle'),
         amount: pymPrice,                 // 최종 결제 금액 
-        deduct_from_balance: deduct,      // balance 차감 금액 
+        rokebi_cash: deduct,      // balance 차감 금액 
         buyer_tel: mobile,
         buyer_name: mobile,
         buyer_email: email,
