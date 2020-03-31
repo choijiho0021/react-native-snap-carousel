@@ -141,8 +141,7 @@ UsimStack.navigationOptions = ({navigation}) => ({
   tabBarVisible: navigation.state.index == 0,
   tabBarLabel: i18n.t('usim'),
   tabBarIcon: ({ focused }) => (
-    //임시로 이미지 넣어 놓음 변경필요
-    <AppIcon focused={focused} name="btnBoxCancel" style={styles.tabBarIcon}/>
+    <AppIcon focused={focused} name="btnUsim" style={styles.tabBarIcon}/>
   ),
 })
 
