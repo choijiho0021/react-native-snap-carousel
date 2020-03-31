@@ -213,7 +213,7 @@ class CartAPI {
                     merchant_uid: result.merchant_uid,
                 },
                 amount: result.amount,
-                deduct_from_balance: result.deduct_from_balance,
+                rokebi_cash: result.rokebi_cash,
                 shipping_cost: result.dlvCost
             },
         }

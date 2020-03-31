@@ -70,7 +70,7 @@ class PaymentScreen extends Component{
         merchant_uid: params.merchant_uid,
         amount: params.amount,
         profile_uuid: params.profile_uuid,
-        deduct_from_balance: params.deduct_from_balance
+        rokebi_cash: params.rokebi_cash
       }
 
       this._callback(response)
@@ -91,7 +91,7 @@ class PaymentScreen extends Component{
         // payment_type: params.pg,
         amount: params.amount,
         profile_uuid: params.profile_uuid,
-        deduct_from_balance: params.deduct_from_balance,
+        rokebi_cash: params.rokebi_cash,
         dlvCost: params.dlvCost,
         // pay_method: params.pay_method,
       })
