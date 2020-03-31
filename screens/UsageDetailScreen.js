@@ -79,6 +79,7 @@ class UsageDetailScreen extends Component {
       }
       else {
         this.props.action.order.updateUsageStatus( uuid, targetStatus, auth, deact_prod_uuid)
+        this.props.action.order.getOrders(auth)
       }
     }
     this.props.navigation.goBack()

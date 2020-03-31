@@ -30,10 +30,9 @@ class PymMethodScreen extends Component {
   static navigationOptions =  ({ navigation }) => {
     const { params = {} } = navigation.state
     return {
-        headerLeft: <AppBackButton navigation={navigation} title={params.isPaid ? i18n.t('his:paymentCompleted') : i18n.t('payment')} isPaid={params.isPaid} pymResult={params.pymResult} orderResult={params.orderResult}/>
+        headerLeft: <AppBackButton navigation={navigation} title={i18n.t('payment')} isPaid={params.isPaid}/>
     }  
   }
-
 
   constructor(props) {
     super(props)
@@ -53,39 +52,6 @@ class PymMethodScreen extends Component {
     this._onPress = this._onPress.bind(this)
     this._button = this._button.bind(this)
     this._address = this._address.bind(this)
-
-    this.method = [
-      [
-        {
-          key: 'html5_inicis',
-          title: i18n.t('pym:ccard')
-        },
-        {
-          key: 'danal',
-          title: i18n.t('pym:mobile')
-        }
-      ],
-      [
-        {
-          key: 'kakaopay',
-          title: i18n.t('pym:kakao')
-        },
-        {
-          key: 'payco',
-          title: i18n.t('pym:payco')
-        },
-      ],
-      // [
-      //    {
-      //      key: 'naverco',
-      //      title: i18n.t('pym:naver')
-      //    },        
-      //    {
-      //      key: 'syrup',
-      //      title: i18n.t('pym:syrup')
-      //    },
-      // ],
-    ]
   }
 
   componentDidMount() {
@@ -121,17 +87,17 @@ class PymMethodScreen extends Component {
       this.setState({
         loading: true
       })
+      await this.props.navigation.setParams({isPaid:true})
       const {impId} = getEnvVars()
       const response = { imp_success: true,
         imp_uid: impId,
         merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
         profile_uuid: profileId,
         amount: 0,
-        deduct_from_balance: deduct,
+        rokebi_cash: deduct,
         dlvCost
       }
       const orderResult = await this.props.action.cart.payNorder(response)
-      await this.props.navigation.setParams({isPaid:true})
       // 최종 결제 처리 과정에서 실패할 수 있다. pymResult.result 값이 0인지 다시 확인한다.
       this.props.navigation.replace('PaymentResult', {pymResult:response, orderResult})
 
@@ -142,7 +108,7 @@ class PymMethodScreen extends Component {
         merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
         name: i18n.t('appTitle'),
         amount: pymPrice,                 // 최종 결제 금액 
-        deduct_from_balance: deduct,      // balance 차감 금액 
+        rokebi_cash: deduct,      // balance 차감 금액 
         buyer_tel: mobile,
         buyer_name: mobile,
         buyer_email: email,

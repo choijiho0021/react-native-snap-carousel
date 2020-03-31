@@ -55,19 +55,22 @@ class PurchaseDetailScreen extends Component {
 
     // TODO
     // load Profile by profile_id
-    profileApi.getCustomerProfileById(detail.profileId, this.props.auth).then(resp => {
-      if(resp.result == 0) this._profile(resp)
-    },
-    err => {
-      console.log('Failed to get profile', err)
-    })
 
+    if(detail.orderType == 'physical'){
+      profileApi.getCustomerProfileById(detail.profileId, this.props.auth).then(resp => {
+        if(resp.result == 0) this._profile(resp)
+      },
+      err => {
+        console.log('Failed to get profile', err)
+      })
+    }
+      
   }
   
   componentWillUnmount(){
 
     // 보완 필요
-    const{auth, account} = this.props.navigation.getParam('props')
+    const auth = this.props.navigation.getParam('auth')
     if(this.state.cancelPressed){
       this.props.action.order.getOrders(auth)
     }
@@ -159,11 +162,10 @@ class PurchaseDetailScreen extends Component {
     const billingAmt = utils.numberToCommaString(totalPrice + dlvCost)
 
     // [physical] shipmentState : draft(취소 가능) / ready shipped (취소 불가능)
-    // [draft] state = validation && status = inactive , reserved
+    // [draft] state = validation && status = inactive , reserved (취소 가능)
     const isCanceled = state == 'canceled'
     const isUsed = !_.isEmpty(usageList) && usageList.find(value => value.status != 'R' && value.status != 'I') || false
     const activateCancelBtn = orderType == 'physical' ? shipmentState == 'draft' : (state == 'validation') && !isUsed
-
 
     return (
       <ScrollView style={styles.container}>
@@ -249,7 +251,7 @@ class PurchaseDetailScreen extends Component {
                 </View>
               </View>
               {
-                (!isCanceled || !this.state.cancelPressed) &&
+                (!isCanceled || !isUsed) &&
                 <TouchableOpacity style={{borderColor: colors.lightGrey, borderWidth: 1, margin: 20, height: 48, justifyContent: 'center'}} 
                       disabled={isCanceled || !activateCancelBtn || this.state.cancelPressed} onPress={() => this._cancelOrder(orderId)}>
                   <Text style={[appStyles.normal16Text ,{color: (isCanceled|| !activateCancelBtn || this.state.cancelPressed) ? colors.lightGrey : colors.clearBlue, textAlign: 'center', textAlignVertical: 'center'}]}>{i18n.t('his:cancel')}</Text>
@@ -261,17 +263,9 @@ class PurchaseDetailScreen extends Component {
                   <Text style={[appStyles.normal14Text, {margin: 20, color: colors.warmGrey, lineHeight: 28}]}>{i18n.t('his:afterCancelInfo')}</Text>
                 </View>
                 :<View style={{marginBottom: 40}}>
-                  {
-                    orderType == 'physical' ?
-                    <View>
-                      <Text style={[appStyles.normal14Text, {marginHorizontal: 20, color: colors.warmGrey, lineHeight: 28}]}>{i18n.t('his:simCancelInfo')}</Text>
-                    </View>
-                  : <View>
-                      <Text style={[appStyles.normal14Text, {marginHorizontal: 20, color: colors.warmGrey, lineHeight: 28}]}>{i18n.t('his:dataCancelInfo')}</Text>
-                    </View>
-
-
-                  }
+                  <View>
+                    <Text style={[appStyles.normal14Text, {marginHorizontal: 20, color: colors.warmGrey, lineHeight: 28}]}>{orderType == 'physical' ? i18n.t('his:simCancelInfo') : i18n.t('his:dataCancelInfo')}</Text>
+                  </View>
                 </View>
               }
             </View>  
