@@ -85,7 +85,16 @@ class Utils {
 
     //html5: <br> == <br/>, &lt;br/&gt; == <br/>
     htmlToString = (html) => {
-        return html && html.replace(/<br>/ig, '\n\n').replace(/<br\/>/ig, '\n\n').replace(/&lt;br\/&gt;/ig, '\n\n').replace(/&amp;lt;br\/&amp;gt;/ig, '\n\n').replace(/<\/p>/ig, '\n\n').replace(/<[^>]*>/ig, '').replace(/\&nbsp;/ig, ' ')
+        return html && html.replace(/<br>/ig, '\n\n')
+            .replace(/<br\/>/ig, '\n\n')
+            .replace(/&lt;br\/&gt;/ig, '\n\n')
+            .replace(/&amp;lt;br\/&amp;gt;/ig, '\n\n')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&#039;/g, "'")
+            .replace(/<\/p>/ig, '\n\n')
+            .replace(/<[^>]*>/ig, '')
+            .replace(/\&nbsp;/ig, ' ')
     }
 
     toDateString = (str, fmt = 'LLL') => {
