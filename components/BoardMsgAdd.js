@@ -254,7 +254,7 @@ class BoardMsgAdd extends Component {
         <View style={styles.attachBox}>
           {
             attachment.map((image,idx) => (
-              <TouchableOpacity key={image.filename} 
+              <TouchableOpacity key={image.filename + idx} 
                 style={[styles.attach, idx < 2 && {marginRight:33}]} 
                 onPress={() => this._rmAttachment(idx)}>
                 <Image style={styles.imgSize} source={{uri:`data:${image.mime};base64,${image.data}`}} />
