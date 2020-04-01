@@ -56,8 +56,8 @@ class UsageItem extends PureComponent {
           if(resp.result == 0){
             console.log("getSubsUsage progress",resp.objects, item.nid)
             const {activated, quota, used, unit} = resp.objects
-            const progress = used > 0 ? Math.floor(used / quota * 100) : 0
-            this.circularProgress.animate(80, 3000, null)
+            const progress = used > 0 ? 100 - Math.floor(used / quota * 100) : 0
+            this.circularProgress.animate(progress, 3000, null)
             this.setState({activated, quota, used, unit})
           }
         }
