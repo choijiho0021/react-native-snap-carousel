@@ -54,7 +54,7 @@ class UsageItem extends PureComponent {
       subscriptionApi.getSubsUsage(item.nid, this.props.auth).then(
         resp => {
           if(resp.result == 0){
-            console.log("getSubsUsage progress",resp.objects)
+            console.log("getSubsUsage progress",resp.objects, item.nid)
             const {activated, quota, used, unit} = resp.objects
             const progress = used > 0 ? Math.floor(used / quota * 100) : 0
             this.circularProgress.animate(80, 3000, null)
@@ -150,7 +150,7 @@ class UsageItem extends PureComponent {
           </View> : 
           <View style={styles.inactiveContainer}>
             <Text style={appStyles.normal12Text}>{i18n.t('usim:usablePeriod')}</Text>
-            <Text style={styles.normal14WarmGrey}>{`${item.purchaseDate} ~ ${item.expireDate}`}</Text>
+            <Text style={styles.normal14WarmGrey}>{`${utils.toDateString(item.purchaseDate,'YYYY-MM-DD')} ~ ${item.expireDate}`}</Text>
           </View> }
         </View>
         
