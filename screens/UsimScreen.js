@@ -23,6 +23,7 @@ import * as orderActions from '../redux/modules/order'
 import _ from 'underscore'
 import AppButton from '../components/AppButton';
 import subscriptionApi from '../utils/api/subscriptionApi';
+import LabelText from '../components/LabelText';
 
 const STATUS_ACTIVE = 'A'     //사용중
 const STATUS_INACTIVE = 'I'   //미사용
@@ -174,6 +175,7 @@ class UsimScreen extends Component {
 
     this._renderUsage = this._renderUsage.bind(this)
     this._onRefresh = this._onRefresh.bind(this)
+    this._info = this._info.bind(this)
  }
 
   componentDidMount() {
@@ -220,18 +222,47 @@ class UsimScreen extends Component {
   }
 
   _info() {
+    const { account: {iccid, mobile, balance, expDate, email, userPictureUrl, loggedIn}} = this.props
+
     return (
       <View>
-        <View style={{backgroundColor: colors.clearBlue, height: 280, paddingHorizontal: 20}}>
-          <View style={{flex:1, flexDirection: 'row', marginTop: 30, justifyContent: 'space-between'}}>
-            <Text style={[appStyles.normal16Text, {color: colors.white,}]}>로깨비 캐시</Text>
-            <AppButton title={'유심변경'} 
+        <View style={{backgroundColor: colors.clearBlue, paddingHorizontal: 20}}>
+          <View style={{flexDirection: 'row', marginTop: 30, marginBottom:10, justifyContent: 'space-between'}}>
+            <Text style={[appStyles.bold16Text, {color: colors.white, height: 16, alignSelf: 'center'}]}>로깨비 캐시</Text>
+            <AppButton title={i18n.t('menu:change')} 
               titleStyle={[appStyles.normal12Text, {color: colors.white}]}
               style={{borderWidth:1, borderColor: colors.white, paddingHorizontal: 4, paddingTop: 3, borderRadius: 11.5, height: 25}}
               iconName={'iconRefresh'} direction={'row'}
               size={16}
               iconStyle={{margin:3}}/>
           </View>
+          {
+            iccid &&
+            <View style={{flexDirection: 'row', marginBottom: 25}}>
+              <Text style={[appStyles.bold30Text, {color: colors.white}]}>{utils.numberToCommaString(balance)}</Text>
+              <Text style={[appStyles.normal22Text, {color: colors.white}]}>{i18n.t('won')}</Text>
+            </View>  
+          }
+          {
+            iccid &&
+            <LabelText key='iccid' 
+              style={styles.box}
+              format={'shortDistance'}
+              label={'ICCID'} labelStyle={[styles.iccid, {fontWeight: 'bold', marginRight: 10}]} 
+              value={iccid ? utils.toICCID(iccid) : i18n.t('reg:card')} valueStyle={styles.iccid}/>
+          }
+          {
+            iccid && 
+            <LabelText key='expDate' 
+              style={styles.box}
+              format={'shortDistance'}
+              label={i18n.t('acc:expDate')} labelStyle={[styles.expDate, {fontWeight: 'bold', marginRight: 10}]} 
+              value={expDate} valueStyle={styles.expDate}/>
+          } 
+          <AppButton
+            style={styles.rechargeBtn}
+            title={i18n.t('recharge')}
+            titleStyle={styles.rechargeBtnTitle}/>
         </View>
         <View style={{backgroundColor:colors.whiteTwo, marginHorizontal:20, marginBottom:20, marginTop:30}}>
           <Text style={{... appStyles.bold18Text}} >{i18n.t('usim:dataUsageList')}</Text>
@@ -319,7 +350,33 @@ const styles = StyleSheet.create({
     textAlign:'left' ,
     marginHorizontal: 20, 
     marginBottom: 20
-  }
+  },
+  box: {
+    marginBottom: 5,
+  },
+  iccid: {
+    ... appStyles.normal14Text,
+    color: colors.white,
+  },
+  expDate: {
+    ... appStyles.normal12Text,
+    color: colors.white
+  },
+  rechargeBtn: {
+    width: 160,
+    height: 50,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    backgroundColor: colors.white,
+    borderRadius: 24,
+    marginBottom: 40,
+    marginTop: 25
+  },
+  rechargeBtnTitle: {
+    ... appStyles.bold16Text,
+    textAlign: 'center',
+    color:colors.clearBlue
+  },
 });
 
 const mapStateToProps = (state) => ({
