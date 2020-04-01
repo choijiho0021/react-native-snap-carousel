@@ -83,6 +83,7 @@ class SubscriptionAPI {
                 country: item.field_country,
                 prodName: item.title,
                 prodId: item.product_uuid,
+                nid: item.nid
             })))
         }
 
@@ -100,6 +101,7 @@ class SubscriptionAPI {
                 staus: item.field_status
             })), sortData.links)
         }
+
         return {
             result: api.NOT_FOUND 
         }
@@ -122,6 +124,18 @@ class SubscriptionAPI {
         }
     }
 
+    toSubsUsage = (data) => {
+        console.log('subscription usage', data)
+
+        if(data.objects && data.objects.usage) {
+            return api.success(data.objects.usage)
+        }
+
+        return {
+            result: api.NOT_FOUND 
+        }
+    }
+
     getSubscription = (iccid, {token}) => {
         if ( _.isEmpty(iccid) || _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
 
@@ -133,7 +147,6 @@ class SubscriptionAPI {
             headers,
         }, this.toSubscription)
     }
-
 
     /*
     getHistory = ( userId, {user, pass}, link) => {
@@ -197,6 +210,20 @@ class SubscriptionAPI {
             headers,
             body: JSON.stringify(body)
         }, this.toSubsUpdate)
+    }
+
+    //그래프를 그리기 위해서 가져올 데이터
+    getSubsUsage = (id, {token}) => {
+
+        if ( _.isEmpty(id) || _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
+
+        const url = `${api.httpUrl(api.path.rokApi.rokebi.usage)}/${id}?_format=json`
+        const headers = api.withToken(token)
+
+        return api.callHttp(url, {
+            method: 'get',
+            headers,
+        }, this.toSubsUsage)
     }
 }
 

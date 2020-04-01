@@ -76,7 +76,8 @@ class Api {
                 log: 'api/v1/noti/log'
             },
             rokebi: {
-                subs: 'rokebi/subs'
+                subs: 'rokebi/subs',
+                usage: 'rokebi/usage/subs'
             }
         }
     }

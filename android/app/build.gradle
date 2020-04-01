@@ -217,6 +217,7 @@ android {
 apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
 
 dependencies {
+    implementation project(':react-native-svg')
     def appcompat_version = "1.1.0"
 
     implementation "androidx.appcompat:appcompat:$appcompat_version"
