@@ -66,20 +66,6 @@ class OrderItem extends PureComponent {
   }
 }
 
-class UsageItem extends PureComponent {
-  render () {
-    const {item, onPress} = this.props,
-      color = item.statusCd == 'A' ? colors.tomato : item.statusCd == 'E' ? colors.warmGrey : colors.clearBlue
-
-    return (
-      <LabelTextTouchable style={styles.usage}
-        onPress={onPress}
-        label={item.prodName} labelStyle={appStyles.normal16Text}
-        value={item.status} valueStyle={[styles.usageValue, {color}]}/>
-    )
-  }
-}
-
 class MyPageScreen extends Component {
   static navigationOptions = ({navigation}) => ({
     headerLeft: (
@@ -95,7 +81,6 @@ class MyPageScreen extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      mode: 'purchase',
       hasPhotoPermission: false,
       showEmailModal: false,
       isReloaded: false,
@@ -104,7 +89,6 @@ class MyPageScreen extends Component {
 
     this._info = this._info.bind(this)
     this._renderOrder = this._renderOrder.bind(this)
-    this._renderUsage = this._renderUsage.bind(this)
     this._changePhoto = this._changePhoto.bind(this)
     this._showEmailModal = this._showEmailModal.bind(this)
     this._validEmail = this._validEmail.bind(this)
@@ -122,7 +106,6 @@ class MyPageScreen extends Component {
     }
   }
   componentDidUpdate(prevProps) {
-    const { mode, isReloaded } = this.state
     const focus = this.props.navigation.isFocused()
 
     // 구매내역 원래 조건 확인 
@@ -130,7 +113,6 @@ class MyPageScreen extends Component {
       this.setState({isFocused: focus})
       if(focus){
         this.props.action.order.getOrders(this.props.auth)
-        this.props.action.order.getUsage(this.props.account.iccid, this.props.auth)
       }
     }
 
@@ -139,21 +121,8 @@ class MyPageScreen extends Component {
       this.props.action.order.getOrders(this.props.auth)
     }
 
-    if ( this.props.account ) {
-      const { account: {iccid}, auth } = this.props
-      if ( iccid && iccid !== (prevProps.account || {}).iccid && mode === 'usage' ) {
-        this.props.action.order.getUsage(iccid, auth)
-        this.setState({ isReloaded: true })
-      }
-    }
-
     if ( this.props.lastTab[0] === 'MyPageStack' && this.props.lastTab[0] !== prevProps.lastTab[0] ) {
       this.flatListRef.scrollToOffset({ animated: false, y: 0 })
-      
-      if ( mode === 'usage' && isReloaded ) {
-        this.props.navigation.popToTop()
-        this.setState({ isReloaded: false })
-      }
     }
     
     if(this.props.account.loggedIn != prevProps.account.loggedIn){
@@ -168,17 +137,6 @@ class MyPageScreen extends Component {
     this.setState({ hasPhotoPermission: result === 'granted'})
 
     if (this.props.uid) this.props.action.order.getOrders(this.props.auth)
-  }
-
-  _onPress = (key) => () => {
-    this.setState({
-      mode: key
-    })
-
-    const { account: {iccid}, auth} = this.props
-    if ( key == 'usage' && iccid) {
-      this.props.action.order.getUsage( iccid, auth)
-    }
   }
 
   _showEmailModal(flag) {
@@ -242,10 +200,7 @@ class MyPageScreen extends Component {
   }
 
   _info() {
-    const { account: {iccid, mobile, balance, expDate, email, userPictureUrl, loggedIn}} = this.props,
-      selected = (mode, disableColor = colors.lightGrey) => {
-        return (mode == this.state.mode) ? colors.clearBlue : disableColor
-      } 
+    const { account: {iccid, mobile, balance, expDate, email, userPictureUrl, loggedIn}} = this.props
 
     return (
       <View style={{marginBottom:10}}>
@@ -272,46 +227,12 @@ class MyPageScreen extends Component {
         <Text style={styles.subTitle}>{i18n.t('acc:purchaseHistory')}</Text>
         <View style={styles.dividerSmall}/>
       </View>
-        /* <LabelTextTouchable key='iccid' 
-          style={styles.box}
-          label={'ICCID'} labelStyle={styles.label} 
-          value={iccid ? utils.toICCID(iccid) : i18n.t('reg:card')} valueStyle={styles.value}
-          disabled={loggedIn && ! _.isEmpty(iccid)}
-          onPress={() => this.props.navigation.navigate(loggedIn ? 'RegisterSim' : 'Auth')}
-          arrow={_.isEmpty(iccid) && 'iconArrowRight'} />
-
-        {
-          iccid && <LabelText key='expDate' 
-            style={styles.box}
-            label={i18n.t('acc:expDate')} labelStyle={styles.label} 
-            value={expDate} valueStyle={styles.value}/>
-        } 
-        <View style={styles.dividerSmall} />
-
-        {
-          iccid &&
-            <LabelTextTouchable key='balance' 
-              style={styles.box}
-              label={i18n.t('acc:balance')} labelStyle={styles.label} 
-              value={ utils.price(balance)} valueStyle={[styles.value, {color:colors.clearBlue}]} 
-              onPress={this._recharge}
-              arrow='iconArrowRight' />
-        }
-          <AppButton style={[styles.button, {borderColor:selected('usage')}]} 
-            titleStyle={[styles.buttonTitle, {color:selected('usage', colors.warmGrey)}]} 
-            onPress={this._onPress('usage')} title={i18n.t('acc:usageHistory')}/>
-*/
     )
   }
 
   _onPressOrderDetail = (orderId) => () => {
     const { orders } = this.props.order
     this.props.navigation.navigate('PurchaseDetail', {detail: orders.find(item => item.orderId == orderId), auth: this.props.auth})
-  }
-
-  _onPressUsageDetail = (key) => () => {
-    const { usage } = this.props.order
-    this.props.navigation.navigate('UsageDetail', {detail: usage.find(item => item.key == key)})
   }
 
   async _validEmail(value) {
@@ -339,10 +260,6 @@ class MyPageScreen extends Component {
   _renderOrder({item}) {
     return (<OrderItem item={item} onPress={this._onPressOrderDetail(item.orderId)}/>)
   }
-  
-  _renderUsage({item}) {
-    return (<UsageItem item={item} onPress={this._onPressUsageDetail(item.key)}/>)
-  }
 
   _empty(){
     if ( this.props.pending ) return null
@@ -354,7 +271,7 @@ class MyPageScreen extends Component {
 
   render() {
     const { showEmailModal } = this.state
-    const { orders, usage } = this.props.order
+    const { orders } = this.props.order
 
     return (
       <View style={styles.container}>
@@ -446,15 +363,6 @@ const styles = StyleSheet.create({
   userPicture: {
     width: 76, 
     height: 76
-  },
-  usage: {
-    // height: 36,
-    marginVertical:5,
-    marginHorizontal: 20
-  },
-  usageValue: {
-    flex: 1,
-    textAlign: 'right'
   },
   settings : {
     marginRight:20,
