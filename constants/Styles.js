@@ -244,6 +244,16 @@ export const appStyles = StyleSheet.create({
         padding: 0,
         margin: 0
     },
+    normal22Text: {
+        // fontFamily: "Roboto",
+        fontSize: 22,
+        fontStyle: "normal",
+        lineHeight: 24,
+        letterSpacing: 0.33,
+        color: colors.black,
+        padding: 0,
+        margin: 0
+    },    
     mobileNo: {
         fontFamily: "Roboto-Regular",
         fontSize: 16,
@@ -268,6 +278,17 @@ export const appStyles = StyleSheet.create({
         fontWeight: "bold",
         fontStyle: "normal",
         letterSpacing: 0.25,
+        color: colors.black,
+        padding: 0,
+        margin: 0
+    },
+    bold30Text: {
+//        fontFamily: "AppleSDGothicNeo",
+        fontSize: 30,
+        fontWeight: "bold",
+        fontStyle: "normal",
+        letterSpacing: 0.29,
+        lineHeight: 30,
         color: colors.black,
         padding: 0,
         margin: 0

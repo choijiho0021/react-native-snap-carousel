@@ -98,7 +98,7 @@ class PurchaseDetailScreen extends Component {
     return(
       // 주소
       profile && 
-      <View>
+      <View style={{marginBottom: 30}}>
         <View style={styles.profileTitle}>
           <Text style={styles.profileTitleText}>{profile.alias}</Text>
           { 
@@ -309,9 +309,9 @@ class PurchaseDetailScreen extends Component {
                       }
                   </View>
                   {
-                    !_.isEmpty(trackingCode) &&
+                    !isCanceled && shipmentState == ('shipped') &&
                   <View>
-                    <View style={styles.bar}/>
+                    <View style={[styles.bar, {marginTop: 0}]}/>
                     <View style={{marginBottom: 20}}>
                       <Text style={[styles.deliveryTitle, {marginHorizontal: 20}]}>{i18n.t('his:companyInfo')}</Text>
                       <LabelText key="trackingCompany" style={styles.item} format="shortDistance"

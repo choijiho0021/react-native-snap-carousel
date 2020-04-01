@@ -22,6 +22,7 @@ import org.unimodules.core.interfaces.SingletonModule;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.horcrux.svg.SvgPackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.reactnativecommunity.rnpermissions.RNPermissionsPackage;
 import com.iamport.IamportPackage;
@@ -129,6 +130,7 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.<ReactPackage>asList(
                 new MainReactPackage(),
+            new SvgPackage(),
             new PickerPackage(),
             new RNPermissionsPackage(),
             new IamportPackage(),
