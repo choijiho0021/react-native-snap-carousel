@@ -42,7 +42,10 @@ class PurchaseDetailScreen extends Component {
       cancelPressed: false,
     }
     
-    this._paymentDetail = this._paymentDetail.bind(this)
+    this._onPressPayment = this._onPressPayment.bind(this)
+    this._onPressDelivery = this._onPressDelivery.bind(this)
+    this._headerInfo = this._headerInfo.bind(this)
+    this._paymentInfo = this._paymentInfo.bind(this)
     this._deliveryInfo = this._deliveryInfo.bind(this)
     this._profile = this._profile.bind(this)
     this._address = this._address.bind(this)
@@ -53,9 +56,7 @@ class PurchaseDetailScreen extends Component {
     const detail = this.props.navigation.getParam('detail')
     this.setState(detail)
 
-    // TODO
     // load Profile by profile_id
-
     if(detail.orderType == 'physical'){
       profileApi.getCustomerProfileById(detail.profileId, this.props.auth).then(resp => {
         if(resp.result == 0) this._profile(resp)
@@ -64,11 +65,9 @@ class PurchaseDetailScreen extends Component {
         console.log('Failed to get profile', err)
       })
     }
-      
   }
   
   componentWillUnmount(){
-
     // 보완 필요
     const auth = this.props.navigation.getParam('auth')
     if(this.state.cancelPressed){
@@ -82,17 +81,18 @@ class PurchaseDetailScreen extends Component {
     })
   }
 
-  _paymentDetail(){
+  _onPressPayment(){
     this.setState({
       showPayment: !this.state.showPayment
     })
   }
 
-  _deliveryInfo(){
+  _onPressDelivery(){
     this.setState({
       showDelivery: !this.state.showDelivery
     })
   }
+
   _address(){
     const profile = !_.isEmpty(this.state.profile) && this.state.profile
     return(
@@ -147,187 +147,219 @@ class PurchaseDetailScreen extends Component {
     )
   }
 
-  render() {
+  _deliveryInfo(isCanceled){
 
-    const {orderId, orderNo, orderDate, orderItems, orderType, iamportPayment, totalPrice, state, usageList,
-        trackingCompany, trackingCode, shipmentState, dlvCost, balanceCharge} = this.props.navigation.getParam('detail') || {}
+    const {trackingCompany, trackingCode, shipmentState} = this.props.navigation.getParam('detail') || {}
+
+    return(
+      <View>
+        <View style={styles.thickBar}/>
+          <Text style={styles.deliveryTitle}>{i18n.t('his:shipmentState')}</Text>
+          <View style={{flex:1, flexDirection: 'row', justifyContent: 'flex-start', marginHorizontal: 20}}>
+            <Text style={[styles.deliveryStatus, (_.isEmpty(shipmentState)|| shipmentState == 'draft' )&& {color: colors.clearBlue}]}>{i18n.t('his:paymentCompleted')}</Text>
+            <AppIcon name="iconArrowRight" style={styles.arrowIcon}/>
+            <Text style={[styles.deliveryStatus, shipmentState == ('ready') && {color: colors.clearBlue}]}>{i18n.t('his:ready')}</Text>
+            <AppIcon name="iconArrowRight" style={styles.arrowIcon}/>
+            <Text style={[styles.deliveryStatus, shipmentState == ('shipped') && {color: colors.clearBlue}]}>{i18n.t('his:shipped')}</Text>
+          </View>
+        
+        <View style={styles.bar}/>
+        <Text style={styles.deliveryTitle}>{i18n.t('his:addressInfo')}</Text>
+        {
+          // !_.isEmpty(this.state.profile) && this._address()
+          this._address()
+        }
+
+        {
+          !isCanceled && shipmentState == ('shipped') &&
+          <View>
+            <View style={[styles.bar, {marginTop: 0}]}/>
+              <Text style={styles.deliveryTitle}>{i18n.t('his:companyInfo')}</Text>
+              <LabelText key="trackingCompany" 
+                  style={styles.item} format="shortDistance"
+                  label={i18n.t('his:trackingCompany')} 
+                  labelStyle={styles.companyInfoTitle}
+                  value={trackingCompany} 
+                  valueStyle={[styles.labelValue, {justifyContent: 'flex-start'}]}/>
+              <LabelText key="tel" 
+                  style={styles.item} format="shortDistance"
+                  label={i18n.t('his:tel')} 
+                  labelStyle={styles.companyInfoTitle}
+                  value={utils.toPhoneNumber('12341234')}
+                  valueStyle={styles.labelValue}/>
+              <LabelTextTouchable onPress={() => this.props.navigation.navigate('SimpleText', {mode:'uri', text:orderApi.deliveryTrackingUrl('CJ', '341495229094')})}
+                  label={i18n.t('his:trackingCode')}
+                  labelStyle={[styles.companyInfoTitle, {marginLeft: 20, width: '20%'}]}
+                  format="shortDistance"
+                  value={trackingCode}
+                  valueStyle={[styles.labelValue, {color: colors.clearBlue, textDecorationLine: 'underline'}]}/>
+          </View>
+        }
+      </View>
+    )
+  }
+
+  _paymentInfo(isCanceled){
+    const {orderId, orderItems, orderType, iamportPayment, usageList, totalPrice, state, shipmentState,
+      dlvCost, balanceCharge} = this.props.navigation.getParam('detail') || {}
+
+      const paidAmount = !_.isEmpty(iamportPayment) ? (iamportPayment[0].totalPrice) : 0
+      const isUsed = !_.isEmpty(usageList) && usageList.find(value => value.status != 'R' && value.status != 'I') || false
+      const activateCancelBtn = orderType == 'physical' ? shipmentState == 'draft' : (state == 'validation') && !isUsed
+      const disableBtn = isCanceled || !activateCancelBtn || this.state.cancelPressed
+      const infoText = isCanceled ? i18n.t('his:afterCancelInfo') : (orderType == 'physical' ? i18n.t('his:simCancelInfo') : i18n.t('his:dataCancelInfo'))
+
+    return(
+        <View>
+          <View style={styles.thickBar}/>
+          { 
+            orderItems && orderItems.map((item,idx) =>
+              <LabelText
+                key={idx+""} style={styles.item}
+                label={`${item.title}  X  ${item.qty} ${i18n.t('qty')}`} labelStyle={styles.label}
+                format="price"
+                valueStyle={appStyles.roboto16Text}
+                value={item.price}/>
+              )
+          }
+          <View style={styles.bar}/>
+          <LabelText
+            key="productAmount" style={styles.item}
+            label={i18n.t('his:productAmount')} labelStyle={styles.label2}
+            format="price"
+            valueStyle={appStyles.roboto16Text}
+            value={totalPrice}/>
+          <LabelText
+            key="dvlCost" style={styles.item}
+            label={i18n.t('cart:dlvCost')} labelStyle={styles.label2}
+            format="price"
+            valueStyle={appStyles.roboto16Text}
+            value={dlvCost}/>
+          {
+              <LabelText
+                key={"pymBalance"} style={styles.item}
+                label={i18n.t("pym:balance")} labelStyle={styles.label2}
+                format="price"
+                valueStyle={appStyles.roboto16Text}
+                value={`- ${balanceCharge}`}/>
+          }
+          <View style={styles.bar}/>
+          <View style={[styles.row, {marginBottom: 5}]}>
+            <Text style={[appStyles.normal16Text]}>{i18n.t('cart:totalCost')} </Text>
+            <View style={{flex:1, flexDirection: 'row', justifyContent: 'flex-end'}}>
+              <Text style={[styles.normal16BlueTxt, {color: colors.black}]}>{i18n.t('total')}</Text>
+              <Text style={[appStyles.price, styles.fontWeightBold, {marginHorizontal: 5}]}>{utils.numberToCommaString(paidAmount)}</Text>
+              <Text style={[styles.normal16BlueTxt, {color: colors.black}]}>{i18n.t('won')}</Text>
+            </View>
+          </View>
+          {
+            (!isCanceled || !isUsed) &&
+            <AppButton
+                style={styles.cancelBtn} 
+                disableBackgroundColor={colors.whiteTwo}
+                disableColor={colors.greyish}
+                disabled={disableBtn}
+                onPress={() => this._cancelOrder(orderId)}
+                title={i18n.t('his:cancel')}
+                titleStyle={styles.normal16BlueTxt}/>
+          }
+          <Text style={styles.cancelInfo}>{infoText}</Text>
+        </View>  
+      )
+  }
+
+  _headerInfo(isCanceled){
+    const { orderNo, orderDate, orderItems, iamportPayment } = this.props.navigation.getParam('detail') || {}
+    const pg = !_.isEmpty(iamportPayment) ? unityConstant.method().flatMap(item => item)
+                  .find(item => item.key == iamportPayment[0].pg).title : i18n.t("pym:balance")
 
     if ( _.isEmpty(orderItems) ) return <View></View>
 
     var label = orderItems[0].title
     if ( orderItems.length > 1) label = label + i18n.t('his:etcCnt').replace('%%', orderItems.length - 1)
+              
+    return(
+      <View>
+        <Text style={styles.date}>{utils.toDateString(orderDate)}</Text>
+        <View style={styles.productTitle}>
+          {
+            (isCanceled || this.state.cancelPressed) &&
+            <Text style={[appStyles.bold18Text, {color: colors.tomato}]}>{`(${i18n.t("his:cancel")})`}</Text>
+          }
+          <Text style={appStyles.bold18Text}>{label}</Text>
+        </View>
+        <View style={styles.bar}/>
+        <LabelText
+          key="orderId" style={styles.item}
+          label={i18n.t('his:orderId')} labelStyle={styles.label2}
+          value={orderNo} valueStyle={styles.labelValue}/>
+        <LabelText
+          key="pymMethod" style={[styles.item, {marginBottom: 20}]}
+          label={i18n.t('pym:method')} labelStyle={styles.label2}
+          value={pg} valueStyle={styles.labelValue}/>
+        <View style={styles.divider}/>
+      </View>
+    )
+  }
 
-    const pg = !_.isEmpty(iamportPayment) ? unityConstant.method().flatMap(item => item).find(item => item.key == iamportPayment[0].pg).title : i18n.t("pym:balance")
-    const paidAmount = !_.isEmpty(iamportPayment) ? (iamportPayment[0].totalPrice) : 0
-    const billingAmt = utils.numberToCommaString(totalPrice + dlvCost)
+  render() {
+
+    const {orderItems, orderType, totalPrice, state, shipmentState, dlvCost} = this.props.navigation.getParam('detail') || {}
+
+    if ( _.isEmpty(orderItems) ) return <View></View>
 
     // [physical] shipmentState : draft(취소 가능) / ready shipped (취소 불가능)
     // [draft] state = validation && status = inactive , reserved (취소 가능)
-    const isCanceled = state == 'canceled'
-    const isUsed = !_.isEmpty(usageList) && usageList.find(value => value.status != 'R' && value.status != 'I') || false
-    const activateCancelBtn = orderType == 'physical' ? shipmentState == 'draft' : (state == 'validation') && !isUsed
+    const isCanceled = state == 'canceled' || false
+    const shipStatus = (_.isEmpty(shipmentState) || shipmentState == 'draft') ? 
+                    i18n.t('his:paymentCompleted') : (shipmentState == ('ready') ? i18n.t('his:ready') : i18n.t('his:shipped'))
 
     return (
       <ScrollView style={styles.container}>
         <SafeAreaView forceInset={{ top: 'never', bottom:"always"}}>
-          <Text style={styles.date}>{utils.toDateString(orderDate)}</Text>
-          <View style={styles.productTitle}>
-            {
-              (isCanceled || this.state.cancelPressed) &&
-              <Text style={[appStyles.bold18Text, {color: colors.tomato}]}>{`(${i18n.t("his:cancel")})`}</Text>
-            }
-            <Text style={appStyles.bold18Text}>{label}</Text>
-          </View>
-          <View style={styles.bar}/>
-          <LabelText
-            key="orderId" style={styles.item}
-            label={i18n.t('his:orderId')} labelStyle={styles.label2}
-            value={orderNo} valueStyle={styles.labelValue}/>
-          <LabelText
-            key="pymMethod" style={[styles.item, {marginBottom: 20}]}
-            label={i18n.t('pym:method')} labelStyle={styles.label2}
-            value={pg} valueStyle={styles.labelValue}/>
-          <View style={styles.divider}/>
-
-          <TouchableOpacity style={{marginLeft: 20, flex:1, flexDirection:'row', justifyContent: 'space-between'}} onPress={this._paymentDetail} >
+          {
+            this._headerInfo(isCanceled)
+          }
+          <TouchableOpacity style={styles.dropDownBox} onPress={this._onPressPayment} >
             <Text style={styles.boldTitle}>{i18n.t('his:paymentDetail')}</Text>
-            <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+            <View style={{flexDirection: 'row'}}>
             {
               !this.state.showPayment &&
-              <View style={[{alignSelf: 'center', marginRight: 15, flexDirection: 'row',}]}>
-                <Text style={[styles.summaryTitle, {textAlignVertical: 'center'}]}>{i18n.t('total')}</Text>
-                <Text style={[styles.summaryTitle, styles.fontWeightBold]}>{orderItems.length}</Text>
-                <Text style={[styles.summaryTitle]}>{i18n.t('qty')} / </Text>
-                <Text style={[styles.summaryTitle, styles.fontWeightBold]}>{billingAmt}</Text>
-                <Text style={[styles.summaryTitle]}>{i18n.t('won')}</Text>
+              <View style={[{alignSelf: 'center', marginRight: 15, flexDirection: 'row'}]}>
+                <Text style={styles.normal16BlueTxt}>{i18n.t('total')}</Text>
+                <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>{orderItems.length}</Text>
+                <Text style={styles.normal16BlueTxt}>{i18n.t('qty')} / </Text>
+                <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>{utils.numberToCommaString(totalPrice + dlvCost)}</Text>
+                <Text style={styles.normal16BlueTxt}>{i18n.t('won')}</Text>
               </View>
             }
-              <AppButton style={{backgroundColor: colors.white, height:70, paddingRight: 20}} 
-                        iconName= {this.state.showPayment ? "iconArrowUp" : "iconArrowDown"} iconStyle={{flexDirection: 'column', alignSelf: 'flex-end'}}/>
+              <AppButton style={{backgroundColor: colors.white, height:70}} 
+                        iconName= {this.state.showPayment ? "iconArrowUp" : "iconArrowDown"}
+                        iconStyle={styles.dropDownIcon}/>
             </View>
           </TouchableOpacity>  
           {
-            this.state.showPayment &&
-            <View>
-              <View style={styles.thickBar}/>
-              {
-                orderItems && orderItems.map((item,idx) =>
-                  <LabelText
-                    key={idx+""} style={styles.item}
-                    label={`${item.title}  X  ${item.qty} ${i18n.t('qty')}`} labelStyle={styles.label}
-                    format="price"
-                    valueStyle={appStyles.roboto16Text}
-                    value={item.price}/>
-                  )
-              }
-              <View style={styles.bar}/>
-              <LabelText
-                key="productAmount" style={styles.item}
-                label={i18n.t('his:productAmount')} labelStyle={styles.label2}
-                format="price"
-                valueStyle={appStyles.roboto16Text}
-                value={totalPrice}/>
-              <LabelText
-                key="dvlCost" style={styles.item}
-                label={i18n.t('cart:dlvCost')} labelStyle={styles.label2}
-                format="price"
-                valueStyle={appStyles.roboto16Text}
-                value={dlvCost}/>
-              {
-                  <LabelText
-                    key={"pymBalance"} style={styles.item}
-                    label={i18n.t("pym:balance")} labelStyle={styles.label2}
-                    format="price"
-                    valueStyle={appStyles.roboto16Text}
-                    value={`- ${balanceCharge}`}/>
-              }
-              <View style={styles.bar}/>
-              <View style={[styles.row, {marginBottom: 5}]}>
-                <Text style={[appStyles.normal16Text]}>{i18n.t('cart:totalCost')} </Text>
-                <View style={{flex:1, flexDirection: 'row', justifyContent: 'flex-end'}}>
-                  <Text style={styles.priceTxt}>{i18n.t('total') +' '}</Text>
-                  <Text style={[appStyles.price, {fontWeight: 'bold', lineHeight:24, letterSpacing: 0.21}]}>{utils.numberToCommaString(paidAmount)}</Text>
-                  <Text style={styles.priceTxt}>{' ' + i18n.t('won')}</Text>
-                </View>
-              </View>
-              {
-                (!isCanceled || !isUsed) &&
-                <TouchableOpacity style={{borderColor: colors.lightGrey, borderWidth: 1, margin: 20, height: 48, justifyContent: 'center'}} 
-                      disabled={isCanceled || !activateCancelBtn || this.state.cancelPressed} onPress={() => this._cancelOrder(orderId)}>
-                  <Text style={[appStyles.normal16Text ,{color: (isCanceled|| !activateCancelBtn || this.state.cancelPressed) ? colors.lightGrey : colors.clearBlue, textAlign: 'center', textAlignVertical: 'center'}]}>{i18n.t('his:cancel')}</Text>
-                </TouchableOpacity>
-              }
-              {
-                isCanceled ?
-                <View style={{marginBottom: 40}}>
-                  <Text style={[appStyles.normal14Text, {margin: 20, color: colors.warmGrey, lineHeight: 28}]}>{i18n.t('his:afterCancelInfo')}</Text>
-                </View>
-                :<View style={{marginBottom: 40}}>
-                  <View>
-                    <Text style={[appStyles.normal14Text, {marginHorizontal: 20, color: colors.warmGrey, lineHeight: 28}]}>{orderType == 'physical' ? i18n.t('his:simCancelInfo') : i18n.t('his:dataCancelInfo')}</Text>
-                  </View>
-                </View>
-              }
-            </View>  
+            this.state.showPayment && this._paymentInfo(isCanceled)
           }
-
           {
-            orderType == 'physical' &&
+            orderType == 'physical' && !isCanceled &&
             <View>
               <View style={styles.divider}/>
-              <TouchableOpacity style={{marginLeft: 20, flex:1, flexDirection:'row', justifyContent: 'space-between'}} onPress={this._deliveryInfo} >
+              <TouchableOpacity style={styles.dropDownBox} onPress={this._onPressDelivery} >
                 <Text style={styles.boldTitle}>{i18n.t('his:shipmentInfo')}</Text>
-                <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+                <View style={{flexDirection: 'row'}}>
                   {
                     !this.state.showDelivery &&
-                    <Text style={[appStyles.normal16Text, {color: colors.clearBlue, alignSelf: 'center', marginRight: 15}]}>{(_.isEmpty(shipmentState) || shipmentState == 'draft') ? i18n.t('his:paymentCompleted') : (shipmentState == ('ready') ? i18n.t('his:ready') : i18n.t('his:shipped'))}</Text>
+                    <Text style={[appStyles.normal16Text, {color: colors.clearBlue, alignSelf: 'center', marginRight: 15}]}>{shipStatus}</Text>
                   }
-                  <AppButton style={{backgroundColor: colors.white, height:70, paddingRight: 20}} 
-                            iconName= {this.state.showDelivery ? "iconArrowUp" : "iconArrowDown"} iconStyle={{flexDirection: 'column', alignSelf: 'flex-end'}}/>
+                  <AppButton style={{backgroundColor: colors.white, height:70}}
+                            iconName= {this.state.showDelivery ? "iconArrowUp" : "iconArrowDown"}
+                            iconStyle={styles.dropDownIcon}/>
                 </View>
               </TouchableOpacity>  
               {
-                this.state.showDelivery &&
-                <View>
-                  <View style={styles.thickBar}/>
-                  <View style={{marginHorizontal: 20}}>
-                    <Text style={styles.deliveryTitle}>{i18n.t('his:shipmentState')}</Text>
-                    <View style={{flex:1, flexDirection: 'row', justifyContent: 'flex-start'}}>
-                      <Text style={[styles.deliveryStatus, (_.isEmpty(shipmentState)|| shipmentState == 'draft' )&& {color: colors.clearBlue}]}>{i18n.t('his:paymentCompleted')}</Text>
-                      <AppIcon name="iconArrowRight" style={styles.arrowIcon}/>
-                      <Text style={[styles.deliveryStatus, shipmentState == ('ready') && {color: colors.clearBlue}]}>{i18n.t('his:ready')}</Text>
-                      <AppIcon name="iconArrowRight" style={styles.arrowIcon}/>
-                      <Text style={[styles.deliveryStatus, shipmentState == ('shipped') && {color: colors.clearBlue}]}>{i18n.t('his:shipped')}</Text>
-                    </View>
-                  </View>
-                  <View style={styles.bar}/>
-                  <View>
-                    <Text style={[styles.deliveryTitle, {marginHorizontal: 20}]}>{i18n.t('his:addressInfo')}</Text>
-                      {
-                        // !_.isEmpty(this.state.profile) && this._address()
-                        this._address()
-                      }
-                  </View>
-                  {
-                    !isCanceled && shipmentState == ('shipped') &&
-                  <View>
-                    <View style={[styles.bar, {marginTop: 0}]}/>
-                    <View style={{marginBottom: 20}}>
-                      <Text style={[styles.deliveryTitle, {marginHorizontal: 20}]}>{i18n.t('his:companyInfo')}</Text>
-                      <LabelText key="trackingCompany" style={styles.item} format="shortDistance"
-                          label={i18n.t('his:trackingCompany')} labelStyle={styles.companyInfoTitle}
-                          value={trackingCompany} valueStyle={[styles.labelValue, {justifyContent: 'flex-start'}]}/>
-                      <LabelText key="tel" style={styles.item}  format="shortDistance"
-                          label={i18n.t('his:tel')} labelStyle={styles.companyInfoTitle}
-                          value={utils.toPhoneNumber('12341234')} valueStyle={styles.labelValue}/>
-                      <LabelTextTouchable onPress={() => this.props.navigation.navigate('SimpleText', {mode:'uri', text:orderApi.deliveryTrackingUrl('CJ', '341495229094')})}
-                          label={i18n.t('his:trackingCode')} labelStyle={[styles.companyInfoTitle, {marginLeft: 20, width: '20%'}]}  format="shortDistance"
-                          value={trackingCode} valueStyle={[styles.labelValue, {color: colors.clearBlue, textDecorationLine: 'underline'}]}/>
-                    </View>
-                  </View>
-                  }
-
-                </View>
+                this.state.showDelivery && this._deliveryInfo(isCanceled)
+                // this._deliveryInfo(isCanceled)
               }    
             <View style={styles.divider}/>
             </View>
@@ -339,10 +371,18 @@ class PurchaseDetailScreen extends Component {
 
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  dropDownBox: {
+    marginHorizontal: 20,
+    flexDirection:'row',
+    justifyContent: 'space-between'
+  },
+  dropDownIcon: {
+    flexDirection: 'column',
+    alignSelf: 'flex-end'
   },
   alias: {
     ... appStyles.bold18Text,
@@ -407,11 +447,11 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     color: colors.warmGrey
   },
-  summaryTitle: {
+  normal16BlueTxt: {
     ... appStyles.normal16Text,
     color: colors.clearBlue,
-    lineHeight: 22,
-    letterSpacing: 0.22
+    lineHeight: 24,
+    letterSpacing: 0.24,
   },
   arrowIcon: {
     justifyContent: 'center', 
@@ -434,11 +474,27 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     maxWidth: '90%'
   },
+  cancelBtn: {
+    backgroundColor: colors.white,
+    borderRadius: 3,
+    borderColor: colors.lightGrey,
+    borderWidth: 1,
+    margin: 20,
+    height: 48,
+    justifyContent: 'center'
+  },
+  cancelInfo: {
+    ... appStyles.normal14Text,
+    marginHorizontal: 20,
+    marginBottom: 40,
+    color: colors.warmGrey,
+    lineHeight: 28
+  },
   deliveryTitle: {
     ... appStyles.normal18Text,
     color: colors.warmGrey,
     marginBottom: 20,
-    // marginHorizontal: 20,
+    marginHorizontal: 20,
   },
   companyInfoTitle: {
     ... appStyles.normal14Text,
@@ -449,7 +505,9 @@ const styles = StyleSheet.create({
   },
   deliveryStatus: {
     ... appStyles.normal16Text,
-    color: colors.greyishTwo
+    color: colors.greyishTwo,
+    letterSpacing: 0.26,
+    alignSelf: 'center',
   },
   bar: {
     borderBottomColor: colors.lightGrey,
@@ -495,11 +553,6 @@ const styles = StyleSheet.create({
     lineHeight: 36,
     color: colors.warmGrey
   },
-  priceTxt: {
-    ... appStyles.normal16Text,
-    lineHeight: 24,
-    letterSpacing: 0.24
-  },
   row: {
     ... appStyles.itemRow,
     paddingHorizontal: 20,
@@ -512,7 +565,9 @@ const styles = StyleSheet.create({
     fontWeight: 'normal'
   },
   fontWeightBold: {
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    lineHeight:24,
+    letterSpacing: 0.22
   },
   colorClearBlue: {
     color: colors.clearBlue
