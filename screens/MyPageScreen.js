@@ -50,16 +50,23 @@ class OrderItem extends PureComponent {
     var label = item.orderItems[0].title
     if ( item.orderItems.length > 1) label = label + i18n.t('his:etcCnt').replace('%%', item.orderItems.length - 1)
 
-    const isCanceled = item.state == 'canceled' ? '(결제취소)' : ''
+    const isCanceled = item.state == 'canceled'
     const billingAmt = item.totalPrice + item.dlvCost
 
     return (
       <TouchableOpacity onPress={onPress}>
         <View key={item.orderId} style={styles.order}>
-          <Text style={[isDeviceSize('small') ? appStyles.normal12Text : appStyles.normal14Text, {alignSelf:'flex-start', color: colors.warmGrey}]}>{utils.toDateString(item.orderDate, 'YYYY-MM-DD')}</Text>
           <LabelText style={styles.orderValue}
-            label={isCanceled + label} labelStyle={[{width:'70%'}, isDeviceSize('small') ? appStyles.normal14Text : appStyles.normal16Text]}
-            value={billingAmt} format="price" />
+            label={utils.toDateString(item.orderDate, 'YYYY-MM-DD')}
+            labelStyle={styles.date}
+            valueStyle={{color:colors.tomato}}
+            value={isCanceled && i18n.t('his:cancel')}/>
+          <LabelText style={styles.orderValue}
+            label={label}
+            labelStyle={[{width:'70%'}, isDeviceSize('small') ? appStyles.normal14Text : appStyles.normal16Text]}
+            value={billingAmt}
+            color={isCanceled ? colors.warmGrey : colors.black}
+            valueStyle={appStyles.price} format="price"/>
         </View>
       </TouchableOpacity>
     )
@@ -327,6 +334,12 @@ const styles = StyleSheet.create({
     width: '100%',
     lineHeight: 40,
     color: colors.black
+  },
+  date: {
+    ... appStyles.normal14Text,
+    fontSize: isDeviceSize('small') ? 12 : 14,
+    alignSelf:'flex-start',
+    color: colors.warmGrey
   },
   dividerSmall: {
     borderBottomWidth:1, 
