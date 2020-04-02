@@ -181,7 +181,7 @@ class UsimScreen extends Component {
   componentDidMount() {
     const { account: {iccid}, auth} = this.props
     if ( iccid) {
-      this.props.action.order.getUsage( iccid, auth)
+      this.props.action.order.getUsage(iccid, auth)
     }
   }
 
@@ -222,19 +222,21 @@ class UsimScreen extends Component {
   }
 
   _info() {
-    const { account: {iccid, mobile, balance, expDate, email, userPictureUrl, loggedIn}} = this.props
+    const { account: {iccid, balance, expDate}} = this.props
 
     return (
       <View>
         <View style={{backgroundColor: colors.clearBlue, paddingHorizontal: 20}}>
           <View style={{flexDirection: 'row', marginTop: 30, marginBottom:10, justifyContent: 'space-between'}}>
-            <Text style={[appStyles.bold16Text, {color: colors.white, height: 16, alignSelf: 'center'}]}>로깨비 캐시</Text>
+            <Text style={[appStyles.bold16Text, {color: colors.white, height: 16, alignSelf: 'center'}]}>{i18n.t('acc:balance')}</Text>
             <AppButton title={i18n.t('menu:change')} 
               titleStyle={[appStyles.normal12Text, {color: colors.white}]}
-              style={{borderWidth:1, borderColor: colors.white, paddingHorizontal: 4, paddingTop: 3, borderRadius: 11.5, height: 25}}
+              style={{borderWidth:1, borderColor: colors.white, paddingRight: 9, paddingLeft:7, borderRadius: 11.5, height: 25}}
+              onPress={()=> this.props.navigation.navigate('RegisterSim')}
               iconName={'iconRefresh'} direction={'row'}
               size={16}
-              iconStyle={{margin:3}}/>
+              iconStyle={{margin:3}}
+              />
           </View>
           {
             iccid &&
@@ -261,6 +263,7 @@ class UsimScreen extends Component {
           } 
           <AppButton
             style={styles.rechargeBtn}
+            onPress={()=>this.props.navigation.navigate('Recharge')}
             title={i18n.t('recharge')}
             titleStyle={styles.rechargeBtnTitle}/>
         </View>
@@ -270,6 +273,7 @@ class UsimScreen extends Component {
       </View>
       )
   }
+
   render() {
     const { usage } = this.props.order
     const {refreshing} = this.state
