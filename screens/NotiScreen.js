@@ -21,6 +21,7 @@ import { Platform } from '@unimodules/core';
 
 const MODE_NOTIFICATION = 'info'
 const CONTACT_BOARD_LIST_INDEX = 1
+
 class NotiListItem extends PureComponent {
   render() {
     const {item, onPress} = this.props
@@ -97,10 +98,10 @@ class NotiScreen extends Component {
       if ( mode != MODE_NOTIFICATION) this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
 
       switch (notiType) {
-        case 'reply':
+        case notiActions.NOTI_TYPE_REPLY:
           this.props.navigation.navigate('ContactBoard', {index: CONTACT_BOARD_LIST_INDEX})
           break;
-        default: // notitype = 'noti'
+        default: 
           this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:bodyTitle, text:body, mode:format})
       }
     }
