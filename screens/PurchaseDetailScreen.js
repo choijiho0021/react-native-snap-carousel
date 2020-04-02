@@ -154,14 +154,14 @@ class PurchaseDetailScreen extends Component {
     return(
       <View>
         <View style={styles.thickBar}/>
-          <Text style={styles.deliveryTitle}>{i18n.t('his:shipmentState')}</Text>
-          <View style={{flex:1, flexDirection: 'row', justifyContent: 'flex-start', marginHorizontal: 20}}>
-            <Text style={[styles.deliveryStatus, (_.isEmpty(shipmentState)|| shipmentState == 'draft' )&& {color: colors.clearBlue}]}>{i18n.t('his:paymentCompleted')}</Text>
-            <AppIcon name="iconArrowRight" style={styles.arrowIcon}/>
-            <Text style={[styles.deliveryStatus, shipmentState == ('ready') && {color: colors.clearBlue}]}>{i18n.t('his:ready')}</Text>
-            <AppIcon name="iconArrowRight" style={styles.arrowIcon}/>
-            <Text style={[styles.deliveryStatus, shipmentState == ('shipped') && {color: colors.clearBlue}]}>{i18n.t('his:shipped')}</Text>
-          </View>
+        <Text style={styles.deliveryTitle}>{i18n.t('his:shipmentState')}</Text>
+        <View style={{flex:1, flexDirection: 'row', justifyContent: 'flex-start', marginHorizontal: 20}}>
+          <Text style={[styles.deliveryStatus, (_.isEmpty(shipmentState)|| shipmentState == 'draft' )&& {color: colors.clearBlue}]}>{i18n.t('his:paymentCompleted')}</Text>
+          <AppIcon name="iconArrowRight" style={styles.arrowIcon}/>
+          <Text style={[styles.deliveryStatus, shipmentState == ('ready') && {color: colors.clearBlue}]}>{i18n.t('his:ready')}</Text>
+          <AppIcon name="iconArrowRight" style={styles.arrowIcon}/>
+          <Text style={[styles.deliveryStatus, shipmentState == ('shipped') && {color: colors.clearBlue}]}>{i18n.t('his:shipped')}</Text>
+        </View>
         
         <View style={styles.bar}/>
         <Text style={styles.deliveryTitle}>{i18n.t('his:addressInfo')}</Text>
@@ -172,7 +172,7 @@ class PurchaseDetailScreen extends Component {
 
         {
           !isCanceled && shipmentState == ('shipped') &&
-          <View>
+          <View style={{marginBottom: 40}}>
             <View style={[styles.bar, {marginTop: 0}]}/>
               <Text style={styles.deliveryTitle}>{i18n.t('his:companyInfo')}</Text>
               <LabelText key="trackingCompany" 
@@ -200,13 +200,16 @@ class PurchaseDetailScreen extends Component {
   }
 
   _paymentInfo(isCanceled){
-    const {orderId, orderItems, orderType, iamportPayment, usageList, totalPrice, state, shipmentState,
+    const {orderId, orderDate, orderItems, orderType, iamportPayment, usageList, totalPrice, state, shipmentState,
       dlvCost, balanceCharge} = this.props.navigation.getParam('detail') || {}
 
+      const elapsedDay = Math.ceil((new Date() - new Date(orderDate)) / (24 * 60 * 60 * 1000))
+      
       const paidAmount = !_.isEmpty(iamportPayment) ? (iamportPayment[0].totalPrice) : 0
+      const isRecharge = orderItems.find(item => item.title.indexOf(i18n.t('acc:recharge')) > -1) || false
       const isUsed = !_.isEmpty(usageList) && usageList.find(value => value.status != 'R' && value.status != 'I') || false
       const activateCancelBtn = orderType == 'physical' ? shipmentState == 'draft' : (state == 'validation') && !isUsed
-      const disableBtn = isCanceled || !activateCancelBtn || this.state.cancelPressed
+      const disableBtn = isCanceled || !activateCancelBtn || this.state.cancelPressed || elapsedDay > 8
       const infoText = isCanceled ? i18n.t('his:afterCancelInfo') : (orderType == 'physical' ? i18n.t('his:simCancelInfo') : i18n.t('his:dataCancelInfo'))
 
     return(
@@ -253,7 +256,7 @@ class PurchaseDetailScreen extends Component {
             </View>
           </View>
           {
-            (!isCanceled || !isUsed) &&
+            !(isCanceled || isUsed || isRecharge )?
             <AppButton
                 style={styles.cancelBtn} 
                 disableBackgroundColor={colors.whiteTwo}
@@ -262,6 +265,7 @@ class PurchaseDetailScreen extends Component {
                 onPress={() => this._cancelOrder(orderId)}
                 title={i18n.t('his:cancel')}
                 titleStyle={styles.normal16BlueTxt}/>
+            : <View style={{marginBottom: 20}}/>    
           }
           <Text style={styles.cancelInfo}>{infoText}</Text>
         </View>  
@@ -341,10 +345,10 @@ class PurchaseDetailScreen extends Component {
           {
             this.state.showPayment && this._paymentInfo(isCanceled)
           }
+          <View style={styles.divider}/>
           {
             orderType == 'physical' && !isCanceled &&
             <View>
-              <View style={styles.divider}/>
               <TouchableOpacity style={styles.dropDownBox} onPress={this._onPressDelivery} >
                 <Text style={styles.boldTitle}>{i18n.t('his:shipmentInfo')}</Text>
                 <View style={{flexDirection: 'row'}}>
