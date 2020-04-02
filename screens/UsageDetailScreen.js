@@ -19,11 +19,11 @@ import AppModal from '../components/AppModal';
 import { SafeAreaView } from 'react-navigation';
 
 const STATUS = {
-  ACTIVE : "A",
-  RESERVED : "R",
-  INACTIVE : "I",
-  EXPIRED : "E",
-  USED : "U" 
+  ACTIVE : "A", //사용중
+  RESERVED : "R", //사용 대기 중
+  INACTIVE : "I", // 미사용
+  EXPIRED : "E", // 사용 기한 종료
+  USED : "U"  // 사용 완료
 }
 class UsageDetailScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -93,20 +93,34 @@ class UsageDetailScreen extends Component {
 
   render() {
     const {prodName, activationDate, endDate, expireDate, purchaseDate, statusCd, showModal} = this.state || {}
-    let buttonTitle, targetStatus
+    let buttonTitle, targetStatus, disable
     
-    //현재 상태값에 따라 버튼 이름과 변경할 상태값이 다르다.
-    if(statusCd == STATUS.RESERVED){
-      buttonTitle = i18n.t('reg:RegisterToUse')
-      targetStatus = STATUS.ACTIVE
-    }
-    else if(statusCd == STATUS.INACTIVE){
-      buttonTitle = i18n.t('reg:ReserveToUse')
-      targetStatus = STATUS.RESERVED
-    }
-    else {
-      buttonTitle = i18n.t('ok')
-      targetStatus = undefined
+    switch (statusCd) {
+      case STATUS.RESERVED:
+        buttonTitle = i18n.t('reg:registerToUse')
+        targetStatus = STATUS.ACTIVE
+        disable = false
+        break
+      case STATUS.INACTIVE:
+        buttonTitle = i18n.t('reg:reserveToUse')
+        targetStatus = STATUS.RESERVED
+        disable = false
+        break
+      case STATUS.EXPIRED:
+        buttonTitle = i18n.t('reg:expired')
+        targetStatus = undefined
+        disable = true
+        break
+      case STATUS.USED:
+        buttonTitle = i18n.t('reg:used')
+        targetStatus = undefined
+        disable = true
+        break
+      default:
+        buttonTitle = i18n.t('ok')
+        targetStatus = undefined
+        disable = false
+        break
     }
 
     return (
@@ -127,12 +141,19 @@ class UsageDetailScreen extends Component {
         
         <View style={{flexDirection: 'row' }}>
           
-          { statusCd == STATUS.RESERVED && <AppButton style={[styles.confirm,{backgroundColor:colors.gray}]} 
-            title={i18n.t('reg:CancelReservation')} titleStyle={appStyles.confirmText}
+          { statusCd == STATUS.RESERVED && <AppButton style={[styles.confirm,{backgroundColor:colors.white}]} 
+            title={i18n.t('reg:cancelReservation')} titleStyle={[appStyles.confirmText,{color:colors.black}]}
+            style={{borderWidth:1, borderColor: colors.warmGrey, flex:1}}
             onPress={() => this._onSubmit(STATUS.INACTIVE)}/> }
+
+          { statusCd == STATUS.INACTIVE && <AppButton style={[styles.confirm,{backgroundColor:colors.white}]} 
+            title={i18n.t('reg:toRokebiCash')} titleStyle={[appStyles.confirmText,{color:colors.black}]}
+            style={{borderWidth:1, borderColor: colors.warmGrey, flex:1}}
+            onPress={() => this._onSubmit(STATUS.USED)}/> }
           
           <AppButton style={styles.confirm} 
             title={buttonTitle} titleStyle={appStyles.confirmText}
+            disabled={disable}
             onPress={() => this._onSubmit(targetStatus)}/>
         </View>
 
