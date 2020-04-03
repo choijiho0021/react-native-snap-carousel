@@ -95,7 +95,8 @@ class PymMethodScreen extends Component {
         profile_uuid: profileId,
         amount: 0,
         rokebi_cash: deduct,
-        dlvCost
+        dlvCost,
+        payment_type: 'rokebi_cash'
       }
       const orderResult = await this.props.action.cart.payNorder(response)
       // 최종 결제 처리 과정에서 실패할 수 있다. pymResult.result 값이 0인지 다시 확인한다.

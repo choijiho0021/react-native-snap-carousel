@@ -208,7 +208,7 @@ class CartAPI {
             },
             payment: {
                 gateway: 'iamport',
-                type: 'paypal',
+                type: result.payment_type,
                 details: {
                     merchant_uid: result.merchant_uid,
                 },
