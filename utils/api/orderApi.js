@@ -18,18 +18,12 @@ class OrderAPI {
                     orderNo: item.order_number,
                     orderDate: item.placed,
                     orderType: item.type,
-                    totalPrice: utils.stringToNumber( item.total_price__number),
+                    totalPrice: utils.stringToNumber( item.total_price__number),    // 배송비 포함 금액
                     profileId: item.profile_id,
                     trackingCode: item.tracking_code,
                     trackingCompany: item.tracking_company,
                     shipmentState: item.shipment_state,
                     state: item.state,
-                    iamportPayment: JSON.parse(item.iamport_payment).map(value => ({
-                        totalPrice: utils.stringToNumber(value.amount),
-                        pg: value.pg_provider,
-                        cardName: value.card_name,
-                        buyerAddr: value.buyer_addr,
-                    })),
                     orderItems: JSON.parse(item.order_items).map(value => ({
                         title: value.title,
                         qty: parseInt(value.quantity),
@@ -38,6 +32,11 @@ class OrderAPI {
                     usageList: JSON.parse(item.usage_list).map(value => ({
                         status: value.field_status,
                         nid: value.nid
+                    })),
+                    paymentList: JSON.parse(item.payment_list).map(value => ({
+                        amount: value.amount__number,
+                        paymentGateway: value.payment_gateway,
+                        paymentMethod: value.payment_method,                        // 결제 수단
                     })),
                     dlvCost: utils.stringToNumber(item.dlv_cost) || 0,
                     balanceCharge : balanceCharge ? utils.stringToNumber( balanceCharge.amount__number) : 0,
