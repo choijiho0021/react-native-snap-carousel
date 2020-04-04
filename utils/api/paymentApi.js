@@ -1,11 +1,53 @@
 import api from './api'
 import _ from 'underscore'
 import utils from '../utils';
+import i18n from '../i18n';
 
 
 
 class PaymentAPI {
     PAGE_SIZE = 10
+    
+    method = [
+        [
+            {
+            key: 'html5_inicis',
+            title: i18n.t('pym:ccard')
+            },
+            {
+            key: 'danal',
+            title: i18n.t('pym:mobile')
+            }
+        ],
+        [
+            {
+            key: 'kakaopay',
+            title: i18n.t('pym:kakao')
+            },
+            {
+            key: 'payco',
+            title: i18n.t('pym:payco')
+            },
+        ]
+        // [
+        //     {
+        //         key: 'html5_inicis',
+        //         title: i18n.t('pym:ccard')
+        //     },
+        //     {
+        //         key: 'danal',
+        //         title: i18n.t('pym:mobile')
+        //     },
+        //     {
+        //         key: 'kakaopay',
+        //         title: i18n.t('pym:kakao')
+        //     },
+        //     {
+        //         key: 'payco',
+        //         title: i18n.t('pym:payco')
+        //     },
+        // ],
+    ]
 
     toPayment = (data) => {
         if ( data.jsonapi) {
