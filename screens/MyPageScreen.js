@@ -51,7 +51,6 @@ class OrderItem extends PureComponent {
     if ( item.orderItems.length > 1) label = label + i18n.t('his:etcCnt').replace('%%', item.orderItems.length - 1)
 
     const isCanceled = item.state == 'canceled'
-    const billingAmt = item.totalPrice + item.dlvCost
 
     return (
       <TouchableOpacity onPress={onPress}>
@@ -64,7 +63,7 @@ class OrderItem extends PureComponent {
           <LabelText style={styles.orderValue}
             label={label}
             labelStyle={[{width:'70%'}, isDeviceSize('small') ? appStyles.normal14Text : appStyles.normal16Text]}
-            value={billingAmt}
+            value={item.totalPrice}
             color={isCanceled ? colors.warmGrey : colors.black}
             valueStyle={appStyles.price} format="price"/>
         </View>
@@ -224,11 +223,12 @@ class MyPageScreen extends Component {
               label={email} labelStyle={styles.value}
               value={''}
               onPress={() => this._showEmailModal(true)}
-              arrow='iconArrowRight' />
+              arrow='iconArrowRight'/>
           </View>
         </View>
-        <TouchableOpacity style={{marginHorizontal: 20, borderColor: colors.lightGrey, borderWidth: 1, height: 40, justifyContent: 'center'}}>
-          <Text style={[appStyles.normal16Text, {textAlign: 'center'}]}>내 문의 내역</Text>
+        <TouchableOpacity style={{marginHorizontal: 20, borderColor: colors.lightGrey, borderWidth: 1, height: 40, justifyContent: 'center'}}
+          onPress={()=> this.props.navigation.navigate('ConatactBoard')}>
+          <Text style={[appStyles.normal16Text, {textAlign: 'center'}]}>{i18n.t("board:mylist")}</Text> 
         </TouchableOpacity>
         <View style={styles.divider}/>
         <Text style={styles.subTitle}>{i18n.t('acc:purchaseHistory')}</Text>
