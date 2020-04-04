@@ -11,7 +11,6 @@ import * as profileActions from '../redux/modules/profile'
 import * as cartActions from '../redux/modules/cart'
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
-import unityConstant from '../utils/unityConstant';
 import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
@@ -24,6 +23,7 @@ import { isAndroid } from '../components/SearchBarAnimation/utils';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import getEnvVars from '../environment';
 import Video from 'react-native-video';
+import paymentApi from '../utils/api/paymentApi';
 
 class PymMethodScreen extends Component {
 
@@ -234,7 +234,7 @@ class PymMethodScreen extends Component {
                 <Text style={[styles.title, styles.mrgBottom5]}>{i18n.t('pym:method')}</Text>
                 <View style={styles.mrgBottom33}>
                   {
-                    unityConstant.method().map((v,idx) => this._button(idx+"", v))
+                    paymentApi.method.map((v,idx) => this._button(idx+"", v))
                   }
                 </View>
               </View>  
