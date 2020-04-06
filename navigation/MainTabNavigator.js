@@ -134,6 +134,21 @@ const UsimStack = createStackNavigator(
   {
     Usim: UsimScreen,
     UsageDetail: UsageDetailScreen,
+    
+    // 충전 관련 화면
+    Recharge: RechargeScreen,
+    Payment: PaymentScreen,
+    PymMethod: PymMethodScreen,
+    PaymentResult: {
+      screen:PaymentResultScreen,
+      navigationOptions: {
+        gesturesEnabled: false 
+      },
+    },
+
+    // SIM 카드 등록 화면
+    RegisterSim: RegisterSimScreen,
+
   },
   config
 );

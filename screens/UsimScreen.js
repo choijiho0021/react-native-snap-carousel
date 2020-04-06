@@ -24,6 +24,7 @@ import _ from 'underscore'
 import AppButton from '../components/AppButton';
 import subscriptionApi from '../utils/api/subscriptionApi';
 import LabelText from '../components/LabelText';
+import { isDeviceSize } from '../constants/SliderEntry.style';
 
 const STATUS_ACTIVE = 'A'     //사용중
 const STATUS_INACTIVE = 'I'   //미사용
@@ -109,8 +110,8 @@ class UsageItem extends PureComponent {
       <TouchableOpacity onPress={onPress}>
         <View style ={styles.usageListContainer}>
           <View style={styles.titleAndStatus}>
-            <Text style={isActive ? appStyles.bold16Text : appStyles.normal16Text}>{item.prodName}</Text>
-            <Text style={[appStyles.bold14Text,{color:statusColor}]}> • {item.status}</Text>
+            <Text style={[styles.usageTitleNormal, { fontWeight: isActive ? "bold" : "normal" }]}>{item.prodName}</Text>
+            <Text style={[styles.usageStatus,{color:statusColor}]}> • {item.status}</Text>
           </View>
           {item.statusCd == 'A' ?
           <View>
@@ -150,7 +151,7 @@ class UsageItem extends PureComponent {
           </View> : 
           <View style={styles.inactiveContainer}>
             <Text style={appStyles.normal12Text}>{i18n.t('usim:usablePeriod')}</Text>
-            <Text style={styles.normal14WarmGrey}>{`${utils.toDateString(item.purchaseDate,'YYYY-MM-DD')} ~ ${item.expireDate}`}</Text>
+            <Text style={styles.usagePeriod}>{`${utils.toDateString(item.purchaseDate,'YYYY-MM-DD')} ~ ${item.expireDate}`}</Text>
           </View> }
         </View>
         
@@ -180,8 +181,18 @@ class UsimScreen extends Component {
 
   componentDidMount() {
     const { account: {iccid}, auth} = this.props
-    if ( iccid) {
-      this.props.action.order.getUsage(iccid, auth)
+
+
+    if(!this.props.account.loggedIn){
+      this.props.navigation.navigate('RegisterMobile')
+    }else{
+      if ( iccid ) {
+        console.log('@@iccid', iccid)
+        this.props.action.order.getUsage(iccid, auth)
+      }
+      // else {
+      //   this.props.navigation.navigate('RegisterSim')
+      // }
     }
   }
 
@@ -189,6 +200,8 @@ class UsimScreen extends Component {
   }
 
   _empty = () => {
+
+
     if ( this.props.pending) return null
 
     return (
@@ -226,12 +239,12 @@ class UsimScreen extends Component {
 
     return (
       <View>
-        <View style={{backgroundColor: colors.clearBlue, paddingHorizontal: 20}}>
+        <View style={styles.headerBox}>
           <View style={{flexDirection: 'row', marginTop: 30, marginBottom:10, justifyContent: 'space-between'}}>
             <Text style={[appStyles.bold16Text, {color: colors.white, height: 16, alignSelf: 'center'}]}>{i18n.t('acc:balance')}</Text>
             <AppButton title={i18n.t('menu:change')} 
               titleStyle={[appStyles.normal12Text, {color: colors.white}]}
-              style={{borderWidth:1, borderColor: colors.white, paddingRight: 9, paddingLeft:7, borderRadius: 11.5, height: 25}}
+              style={styles.changeBorder}
               onPress={()=> this.props.navigation.navigate('RegisterSim')}
               iconName={'iconRefresh'} direction={'row'}
               size={16}
@@ -240,26 +253,24 @@ class UsimScreen extends Component {
           </View>
           {
             iccid &&
-            <View style={{flexDirection: 'row', marginBottom: 25}}>
-              <Text style={[appStyles.bold30Text, {color: colors.white}]}>{utils.numberToCommaString(balance)}</Text>
-              <Text style={[appStyles.normal22Text, {color: colors.white}]}>{i18n.t('won')}</Text>
-            </View>  
-          }
-          {
-            iccid &&
-            <LabelText key='iccid' 
-              style={styles.box}
-              format={'shortDistance'}
-              label={'ICCID'} labelStyle={[styles.iccid, {fontWeight: 'bold', marginRight: 10}]} 
-              value={iccid ? utils.toICCID(iccid) : i18n.t('reg:card')} valueStyle={styles.iccid}/>
-          }
-          {
-            iccid && 
-            <LabelText key='expDate' 
-              style={styles.box}
-              format={'shortDistance'}
-              label={i18n.t('acc:expDate')} labelStyle={[styles.expDate, {fontWeight: 'bold', marginRight: 10}]} 
-              value={expDate} valueStyle={styles.expDate}/>
+            <View>
+              <View style={{flexDirection: 'row', marginBottom: 25}}>
+                <Text style={[appStyles.bold30Text, {color: colors.white}]}>{utils.numberToCommaString(balance)}</Text>
+                <Text style={[appStyles.normal22Text, {color: colors.white}]}>{i18n.t('won')}</Text>
+              </View>
+
+              <LabelText key='iccid'
+                style={styles.box}
+                format={'shortDistance'}
+                label={'ICCID'} labelStyle={[styles.normal14White, {fontWeight: 'bold', marginRight: 10}]} 
+                value={iccid ? utils.toICCID(iccid) : i18n.t('reg:card')} valueStyle={styles.normal14White}/>
+
+              <LabelText key='expDate'
+                style={styles.box}
+                format={'shortDistance'}
+                label={i18n.t('acc:expDate')} labelStyle={[styles.normal12White, {fontWeight: 'bold', marginRight: 10}]} 
+                value={expDate} valueStyle={styles.normal12White}/>
+            </View>
           } 
           <AppButton
             style={styles.rechargeBtn}
@@ -267,7 +278,7 @@ class UsimScreen extends Component {
             title={i18n.t('recharge')}
             titleStyle={styles.rechargeBtnTitle}/>
         </View>
-        <View style={{backgroundColor:colors.whiteTwo, marginHorizontal:20, marginBottom:20, marginTop:30}}>
+        <View style={{backgroundColor:colors.whiteTwo, margin:20, marginTop:30}}>
           <Text style={{... appStyles.bold18Text}} >{i18n.t('usim:dataUsageList')}</Text>
         </View>
       </View>
@@ -296,12 +307,16 @@ class UsimScreen extends Component {
 }
 
 const styles = StyleSheet.create({
+  headerBox: {
+    backgroundColor: colors.clearBlue,
+    paddingHorizontal: 20
+  },
   title: {
     ... appStyles.title,
     marginLeft: 20,
   },
   nolist: {
-    marginVertical: 60,
+    marginVertical: '40%',
     textAlign: 'center',
     marginHorizontal:20
   },
@@ -329,8 +344,30 @@ const styles = StyleSheet.create({
     alignItems:'center', 
     justifyContent:'space-between'
   },
+  changeBorder: {
+    borderWidth:1,
+    borderColor: colors.white,
+    paddingRight: 9,
+    paddingLeft:7,
+    borderRadius: 11.5,
+    height: 25
+  },
   circular: {
     marginLeft:12
+  },
+  usageTitleNormal : {
+    ... appStyles.normal16Text,
+    fontSize: isDeviceSize('small') ? 14 : 16,
+    maxWidth: '70%'
+  },
+  usageStatus: {
+    ... appStyles.bold14Text,
+    fontSize: isDeviceSize('small') ? 12 : 14
+  },
+  usagePeriod: {
+    ... appStyles.normal14Text, 
+    color:colors.warmGrey,
+    fontSize: isDeviceSize('small') ? 12 : 14
   },
   normal12WarmGrey : {
     ... appStyles.normal12Text, 
@@ -358,11 +395,11 @@ const styles = StyleSheet.create({
   box: {
     marginBottom: 5,
   },
-  iccid: {
+  normal14White: {
     ... appStyles.normal14Text,
     color: colors.white,
   },
-  expDate: {
+  normal12White: {
     ... appStyles.normal12Text,
     color: colors.white
   },

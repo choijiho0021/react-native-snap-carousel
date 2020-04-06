@@ -8,7 +8,6 @@ import {
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import utils from '../utils/utils';
-import unityConstant from '../utils/unityConstant';
 import AppAlert from '../components/AppAlert';
 import AppButton from '../components/AppButton';
 import AppBackButton from '../components/AppBackButton';
@@ -20,6 +19,7 @@ import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-navigation';
 import LabelTextTouchable from '../components/LabelTextTouchable';
 import orderApi from '../utils/api/orderApi';
+import paymentApi from '../utils/api/paymentApi'
 import profileApi from '../utils/api/profileApi';
 import {connect} from 'react-redux'
 import * as orderActions from '../redux/modules/order'
@@ -200,16 +200,16 @@ class PurchaseDetailScreen extends Component {
   }
 
   _paymentInfo(isCanceled){
-    const {orderId, orderDate, orderItems, orderType, iamportPayment, usageList, totalPrice, state, shipmentState,
+    const {orderId, orderDate, orderItems, orderType, paymentList, usageList, totalPrice, state, shipmentState,
       dlvCost, balanceCharge} = this.props.navigation.getParam('detail') || {}
 
       const elapsedDay = Math.ceil((new Date() - new Date(orderDate)) / (24 * 60 * 60 * 1000))
-      
-      const paidAmount = !_.isEmpty(iamportPayment) ? (iamportPayment[0].totalPrice) : 0
+      const payment = !_.isEmpty(paymentList) && (paymentList.find(item => item.paymentGateway != 'rokebi_cash')) // 다른 결제 수단 활용 여부 확인
+      const paidAmount = !_.isEmpty(payment) ? payment.amount : 0
       const isRecharge = orderItems.find(item => item.title.indexOf(i18n.t('acc:recharge')) > -1) || false
       const isUsed = !_.isEmpty(usageList) && usageList.find(value => value.status != 'R' && value.status != 'I') || false
       const activateCancelBtn = orderType == 'physical' ? shipmentState == 'draft' : (state == 'validation') && !isUsed
-      const disableBtn = isCanceled || !activateCancelBtn || this.state.cancelPressed || elapsedDay > 8
+      const disableBtn = isCanceled || !activateCancelBtn || this.state.cancelPressed //|| elapsedDay > 7
       const infoText = isCanceled ? i18n.t('his:afterCancelInfo') : (orderType == 'physical' ? i18n.t('his:simCancelInfo') : i18n.t('his:dataCancelInfo'))
 
     return(
@@ -231,7 +231,7 @@ class PurchaseDetailScreen extends Component {
             label={i18n.t('his:productAmount')} labelStyle={styles.label2}
             format="price"
             valueStyle={appStyles.roboto16Text}
-            value={totalPrice}/>
+            value={totalPrice - balanceCharge}/>
           <LabelText
             key="dvlCost" style={styles.item}
             label={i18n.t('cart:dlvCost')} labelStyle={styles.label2}
@@ -267,15 +267,19 @@ class PurchaseDetailScreen extends Component {
                 titleStyle={styles.normal16BlueTxt}/>
             : <View style={{marginBottom: 20}}/>    
           }
-          <Text style={styles.cancelInfo}>{infoText}</Text>
+          <Text style={styles.cancelInfo}>{!isRecharge && infoText}</Text>
         </View>  
       )
   }
 
   _headerInfo(isCanceled){
-    const { orderNo, orderDate, orderItems, iamportPayment } = this.props.navigation.getParam('detail') || {}
-    const pg = !_.isEmpty(iamportPayment) ? unityConstant.method().flatMap(item => item)
-                  .find(item => item.key == iamportPayment[0].pg).title : i18n.t("pym:balance")
+    const { orderNo, orderDate, orderItems, paymentList } = this.props.navigation.getParam('detail') || {}
+
+    console.log('@@paymentList', paymentList)
+    console.log('@@list', paymentList.find(item => item.paymentGateway != 'rokebi_cash')) 
+    const method = !_.isEmpty(paymentList) && paymentList.find(item => item.paymentGateway != 'rokebi_cash')
+    const pg = !_.isEmpty(method) ? method.paymentMethod : i18n.t("pym:balance")
+    console.log('@@method', pg)
 
     if ( _.isEmpty(orderItems) ) return <View></View>
 
@@ -333,7 +337,7 @@ class PurchaseDetailScreen extends Component {
                 <Text style={styles.normal16BlueTxt}>{i18n.t('total')}</Text>
                 <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>{orderItems.length}</Text>
                 <Text style={styles.normal16BlueTxt}>{i18n.t('qty')} / </Text>
-                <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>{utils.numberToCommaString(totalPrice + dlvCost)}</Text>
+                <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>{utils.numberToCommaString(totalPrice)}</Text>
                 <Text style={styles.normal16BlueTxt}>{i18n.t('won')}</Text>
               </View>
             }
@@ -476,7 +480,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 20,
     marginVertical: 10,
-    maxWidth: '90%'
+    maxWidth: isDeviceSize('small') ? '70%' : '80%'
   },
   cancelBtn: {
     backgroundColor: colors.white,

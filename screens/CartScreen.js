@@ -228,8 +228,8 @@ class CartScreen extends Component {
 
   _registerSimAlert(){
     Alert.alert(
-      'ICCID 카드 등록',
-      'ICCID 카드 등록 후 \n데이터상품 구매가 가능합니다.\n카드등록화면으로 이동하시겠습니까?',
+      i18n.t('reg:ICCID'),
+      i18n.t('reg:noICCID'),
       [
         {
           text: i18n.t('cancel'),
