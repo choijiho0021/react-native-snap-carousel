@@ -114,12 +114,14 @@ export const registerMobile = (uuid, mobile) => {
         if ( resp.result == 0 && resp.objects.length > 0) {
           return dispatch(getAccount(resp.objects[0].iccid, authObj))
         }
-        else {
-          console.log('failed to register mobile resp:', resp)
-        }
+        console.log('failed to register mobile resp:', resp)
+        return resp
       },
       err => {
         console.log('failed to register mobile', err)
+        return {
+          result : -1
+        }
       }
     )
   }
