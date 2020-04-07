@@ -23,10 +23,10 @@ const initAlimTalk = createAction(INIT_ALIM_TALK)
 const sendAlimTalk = createAction(SEND_ALIM_TALK, notiAPI.sendAlimTalk, (... args) => ({abortController:args.abortController}))
 export const sendLog = createAction(SEND_LOG, notiAPI.sendLog)
 
-export const NOTI_TYPE_REPLY = 'R'
-export const NOTI_TYPE_PYM = 'P'
-export const NOTI_TYPE_ACCOUNT = 'A'
-export const NOTI_TYPE_NOTI = 'N'
+export const NOTI_TYPE_REPLY = 'reply'
+export const NOTI_TYPE_PYM = 'pym'
+export const NOTI_TYPE_ACCOUNT = 'account'
+export const NOTI_TYPE_NOTI = 'noti'
 
 export const notiReadAndGet = (uuid,mobile,auth) => {
   return (dispatch,getState) => {

@@ -83,6 +83,7 @@ const HomeStack = createStackNavigator(
     },
     CustomerProfile: CustomerProfileScreen,
     AddProfile: AddProfileScreen,
+    PurchaseDetail: PurchaseDetailScreen,
   },
   config
 );

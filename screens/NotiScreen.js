@@ -14,7 +14,9 @@ import { colors } from '../constants/Colors';
 import AppIcon from '../components/AppIcon';
 import utils from '../utils/utils';
 import _ from 'underscore'
+import * as orderActions from '../redux/modules/order'
 import * as notiActions from '../redux/modules/noti'
+import * as boardActions from '../redux/modules/board'
 import * as accountActions from '../redux/modules/account'
 import AppBackButton from '../components/AppBackButton';
 import { Platform } from '@unimodules/core';
@@ -66,6 +68,8 @@ class NotiScreen extends Component {
     const mode = this.props.navigation.getParam('mode')
     const info = this.props.navigation.getParam('info')
 
+    this.props.action.board.getIssueList()
+    this.props.action.order.getOrders(this.props.auth)
     this.setState({mode,info})
   }
 
@@ -91,15 +95,22 @@ class NotiScreen extends Component {
   }
 
   _onPress = (uuid, bodyTitle, body, notiType, format = 'text') => {
+    const { orders } = this.props.order
 
     const {mode} = this.state
+    const split = notiType.split('/') 
+    const type = split[0]
+    const id = split[1]
 
     if (uuid) {
       if ( mode != MODE_NOTIFICATION) this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
 
-      switch (notiType) {
-        case notiActions.NOTI_TYPE_REPLY:
-          this.props.navigation.navigate('ContactBoard', {index: CONTACT_BOARD_LIST_INDEX})
+      switch (type) {
+        case notiActions.NOTI_TYPE_REPLY :
+          this.props.navigation.navigate('BoardMsgResp', {key:id,status:'C'})
+          break;
+        case notiActions.NOTI_TYPE_PYM:
+          this.props.navigation.navigate('PurchaseDetail', {detail: orders.find(item => item.orderId == id), auth: this.props.auth})
           break;
         default: 
           this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:bodyTitle, text:body, mode:format})
@@ -221,6 +232,8 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => ({
   account : state.account.toJS(),
   auth: accountActions.auth(state.account),
+  order: state.order.toJS(),
+  board: state.board.toJS(),
   noti: state.noti.toJS(),
   pending: state.pender.pending[notiActions.GET_NOTI_LIST] || false
   // pending: state.pender.pending
@@ -229,6 +242,8 @@ const mapStateToProps = (state) => ({
 export default connect(mapStateToProps, 
   (dispatch) => ({
     action : {
+      order: bindActionCreators(orderActions, dispatch),
+      board : bindActionCreators(boardActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
       noti: bindActionCreators(notiActions, dispatch),
     }
