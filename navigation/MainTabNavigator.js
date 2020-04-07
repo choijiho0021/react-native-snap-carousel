@@ -147,7 +147,12 @@ const UsimStack = createStackNavigator(
     },
 
     // SIM 카드 등록 화면
-    RegisterSim: RegisterSimScreen,
+    RegisterSim: {
+    screen: RegisterSimScreen,
+      navigationOptions: {
+        gesturesEnabled: false 
+      },
+    },
 
   },
   config
@@ -166,6 +171,10 @@ const MyPageStack = createStackNavigator(
     MyPage: MyPageScreen,
     PurchaseDetail: PurchaseDetailScreen,
     SimpleText: SimpleTextScreen,
+    
+    // 문의내역
+    ContactBoard: ContactBoardScreen,
+    BoardMsgResp: BoardMsgRespScreen,
 
     // 충전 관련 화면
     Recharge: RechargeScreen,
