@@ -25,6 +25,7 @@ import AppButton from '../components/AppButton';
 import subscriptionApi from '../utils/api/subscriptionApi';
 import LabelText from '../components/LabelText';
 import { isDeviceSize } from '../constants/SliderEntry.style';
+import AppActivityIndicator from '../components/AppActivityIndicator';
 
 const STATUS_ACTIVE = 'A'     //사용중
 const STATUS_INACTIVE = 'I'   //미사용
@@ -52,7 +53,7 @@ class UsageItem extends PureComponent {
 
     //그래프 테스트 nid = 1616
     if(item.statusCd == 'A') {
-      subscriptionApi.getSubsUsage(item.nid, this.props.auth).then(
+      subscriptionApi.getSubsUsage(item.nid, auth).then(
         resp => {
           if(resp.result == 0){
             console.log("getSubsUsage progress",resp.objects, item.nid)
@@ -182,17 +183,14 @@ class UsimScreen extends Component {
   componentDidMount() {
     const { account: {iccid}, auth} = this.props
 
-
     if(!this.props.account.loggedIn){
       this.props.navigation.navigate('RegisterMobile')
     }else{
-      if ( iccid ) {
-        console.log('@@iccid', iccid)
+      if (iccid) {
         this.props.action.order.getUsage(iccid, auth)
+      }else{
+        this.props.navigation.replace('RegisterSim', {back:'lastTab'})
       }
-      // else {
-      //   this.props.navigation.navigate('RegisterSim')
-      // }
     }
   }
 
@@ -298,8 +296,8 @@ class UsimScreen extends Component {
             ListEmptyComponent={this._empty}
             renderItem={this._renderUsage} 
             onRefresh={this._onRefresh}
-            refreshing={refreshing}
-            /> 
+            refreshing={refreshing}/>
+          <AppActivityIndicator visible={this.props.pending}/> 
         </View>
       </View>
     );
@@ -428,6 +426,7 @@ const mapStateToProps = (state) => ({
   noti : state.noti.toJS(),
   info : state.info.toJS(),
   loginPending: state.pender.pending[accountActions.LOGIN] || false,
+  pending: state.pender.pending[orderActions.GET_USAGE] || false,
   sync : state.sync.toJS()
 })
 
