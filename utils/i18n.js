@@ -670,7 +670,7 @@ const ko = {
   "board:resp" : "답변",
   "board:contact" : "연락처",
   "board:attach" : "사진 첨부",
-  "board:noti" : "- 문의한 내용의 답변유무를 알림 혹은 카카오톡 알림톡으로 발송해 드립니다.\n- 문의내역 확인 시 작성한 연락처 정보 입력이 필요합니다.",
+  "board:noti" : "- 문의한 내용의 답변유무를 알림 혹은 카카오톡 알림톡으로 발송해 드립니다.",
   "board:pass" : "비밀 번호",
   "board:inputPass" : "비밀 번호를 입력하세요",
   "board:list" : "문의 내역",
