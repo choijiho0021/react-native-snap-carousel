@@ -26,6 +26,7 @@ export const sendLog = createAction(SEND_LOG, notiAPI.sendLog)
 export const NOTI_TYPE_REPLY = 'reply'
 export const NOTI_TYPE_PYM = 'pym'
 export const NOTI_TYPE_ACCOUNT = 'account'
+export const NOTI_TYPE_USIM = 'usim'
 export const NOTI_TYPE_NOTI = 'noti'
 
 export const notiReadAndGet = (uuid,mobile,auth) => {
@@ -94,6 +95,19 @@ export default handleActions({
       return state.set('result', api.API_FAILED)
     },
     onCancel: (state, action) => {
+      return state
+    }
+  }),
+
+  ... pender({
+    type: READ_NOTI,
+    onSuccess: (state, action) => {
+      const {result, objects} = action.payload
+      const notiList = state.toJS().notiList.map(elm => elm.uuid == objects[0].uuid ? {...elm, isRead:'T'} : elm)
+      
+      if (state && result == 0) {
+        return state.set('notiList',notiList)
+      }
       return state
     }
   }),

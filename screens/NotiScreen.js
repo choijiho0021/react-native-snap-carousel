@@ -39,9 +39,10 @@ class NotiListItem extends PureComponent {
             <Text key='body' style={styles.body} numberOfLines={3} ellipsizeMode={'tail'} >{utils.htmlToString(item.summary || item.body)}
             </Text>
           </View>
+          { item.notiType != notiActions.NOTI_TYPE_NOTI ?
           <View key='iconview' style={styles.Icon}>
             <AppIcon key='icon' name="iconArrowRight" size={10} />
-          </View>
+          </View> : null}
         </View>
       </TouchableOpacity>
     )
@@ -103,7 +104,8 @@ class NotiScreen extends Component {
     const id = split[1]
 
     if (uuid) {
-      if ( mode != MODE_NOTIFICATION) this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
+      // if ( mode != MODE_NOTIFICATION) this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
+      if ( mode != MODE_NOTIFICATION) this.props.action.noti.readNoti(uuid, this.props.auth )
 
       switch (type) {
         case notiActions.NOTI_TYPE_REPLY :
@@ -111,6 +113,12 @@ class NotiScreen extends Component {
           break;
         case notiActions.NOTI_TYPE_PYM:
           this.props.navigation.navigate('PurchaseDetail', {detail: orders.find(item => item.orderId == id), auth: this.props.auth})
+          break;
+        case notiActions.NOTI_TYPE_USIM:
+          this.props.navigation.navigate('Usim')
+          break;
+        case notiActions.NOTI_TYPE_NOTI:
+        // 아무것도 하지 않음
           break;
         default: 
           this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:bodyTitle, text:body, mode:format})
