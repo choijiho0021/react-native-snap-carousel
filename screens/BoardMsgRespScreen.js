@@ -51,7 +51,7 @@ class BoardMsgRespScreen extends Component {
         uuid,
         status
       })
-      if(status == 'C'){
+      if(status == 'Closed'){
         this.props.action.board.getIssueResp(uuid, this.props.auth)
       }
       else {
