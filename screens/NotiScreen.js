@@ -109,7 +109,7 @@ class NotiScreen extends Component {
 
       switch (type) {
         case notiActions.NOTI_TYPE_REPLY :
-          this.props.navigation.navigate('BoardMsgResp', {key:id,status:'C'})
+          this.props.navigation.navigate('BoardMsgResp', {key:id,status:'Closed'})
           break;
         case notiActions.NOTI_TYPE_PYM:
           this.props.navigation.navigate('PurchaseDetail', {detail: orders.find(item => item.orderId == id), auth: this.props.auth})
