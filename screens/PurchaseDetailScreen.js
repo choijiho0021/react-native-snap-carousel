@@ -3,7 +3,6 @@ import {
   StyleSheet,
   Text,
   View,
-  Alert,
 } from 'react-native';
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
@@ -19,7 +18,6 @@ import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-navigation';
 import LabelTextTouchable from '../components/LabelTextTouchable';
 import orderApi from '../utils/api/orderApi';
-import paymentApi from '../utils/api/paymentApi'
 import profileApi from '../utils/api/profileApi';
 import {connect} from 'react-redux'
 import * as orderActions from '../redux/modules/order'
@@ -29,8 +27,7 @@ import { isAndroid } from '../components/SearchBarAnimation/utils';
 import AddressCard from '../components/AddressCard';
 import { bindActionCreators } from 'redux';
 import SnackBar from 'react-native-snackbar-component';
-import { sliderWidth, windowHeight } from '../constants/SliderEntry.style';
-import { getStatusBarHeight } from "react-native-status-bar-height";
+import { windowHeight } from '../constants/SliderEntry.style';
 
 class PurchaseDetailScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -45,6 +42,7 @@ class PurchaseDetailScreen extends Component {
       cancelPressed: false,
       isCanceled: false,
       disableBtn: false,
+      scrollHeight: 0,
     }
     
     this._onPressPayment = this._onPressPayment.bind(this)
@@ -55,6 +53,7 @@ class PurchaseDetailScreen extends Component {
     this._profile = this._profile.bind(this)
     this._address = this._address.bind(this)
     this._cancelOrder = this._cancelOrder.bind(this)
+    this._onScroll = this._onScroll.bind(this)
 
   }
 
@@ -95,6 +94,12 @@ class PurchaseDetailScreen extends Component {
     if(this.state.disableBtn && auth){
       this.props.action.order.getOrders(auth)
     }
+  }
+
+  _onScroll = (e) => {
+    this.setState({
+      scrollHeight: e.nativeEvent.contentOffset.y,
+    })
   }
 
   _profile(profile){
@@ -330,16 +335,17 @@ class PurchaseDetailScreen extends Component {
     const shipStatus = (_.isEmpty(shipmentState) || shipmentState == 'draft') ? 
                     i18n.t('his:paymentCompleted') : (shipmentState == ('ready') ? i18n.t('his:ready') : i18n.t('his:shipped'))
 
-                    console.log('window', (windowHeight- getStatusBarHeight())/2)
     return (
-      <ScrollView style={styles.container}>
+      <ScrollView style={styles.container}
+                  onScroll={this._onScroll}>
         <SafeAreaView forceInset={{ top: 'never', bottom:"always"}}>
         <SnackBar visible={cancelPressed} backgroundColor={colors.clearBlue} messageColor={colors.white}
-                  position={'bottom'}
-                  bottom='50%'//(windowHeight- getStatusBarHeight())/2}//windowHeight/2}
+                  position={'top'}
+                  top={this.state.scrollHeight + windowHeight/2}
                   containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 10}}
-                  distanceCallback={(distance) => {console.log('@@@@distance', distance)}}
-                  textMessage={i18n.t("his:cancelSuccess")} actionHandler={()=>{console.log("snackbar button clicked!")}}/>  
+                  distanceCallback={(distance) => {console.log(distance)}}
+                  textMessage={i18n.t("his:cancelSuccess")}
+                  actionHandler={()=>{console.log("snackbar button clicked!")}}/>  
           {
             this._headerInfo()
           }
