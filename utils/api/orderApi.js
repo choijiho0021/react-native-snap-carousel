@@ -18,7 +18,7 @@ class OrderAPI {
                     orderNo: item.order_number,
                     orderDate: item.placed,
                     orderType: item.type,
-                    totalPrice: utils.stringToNumber( item.total_price__number),    // 배송비 포함 금액
+                    totalPrice: utils.stringToNumber( item.total_price__number),    // 배송비 불포함 금액
                     profileId: item.profile_id,
                     trackingCode: item.tracking_code,
                     trackingCompany: item.tracking_company,

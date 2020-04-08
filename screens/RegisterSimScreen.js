@@ -14,6 +14,7 @@ import {connect} from 'react-redux'
 import i18n from '../utils/i18n'
 import * as simActions from '../redux/modules/sim'
 import * as accountActions from '../redux/modules/account'
+import * as orderActions from '../redux/modules/order'
 import ScanSim from '../components/ScanSim'
 import _ from 'underscore'
 import accountApi from '../utils/api/accountApi';
@@ -24,15 +25,14 @@ import AppBackButton from '../components/AppBackButton';
 import { bindActionCreators } from 'redux'
 import { colors } from '../constants/Colors';
 import { appStyles } from '../constants/Styles';
-import utils from '../utils/utils';
-import userApi from '../utils/api/userApi';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { isDeviceSize } from '../constants/SliderEntry.style';
-import { openSettings, check, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import { openSettings, check, PERMISSIONS } from 'react-native-permissions';
 
 class RegisterSimScreen extends Component {
   static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={navigation.getParam('title') || i18n.t('sim:reg')} />
+    headerLeft: <AppBackButton navigation={navigation} back={!_.isEmpty(navigation.state.params) && navigation.state.params.back || ''} 
+                      title={navigation.getParam('title') || i18n.t('sim:reg')} />
   })
 
   constructor(props) {
@@ -57,6 +57,14 @@ class RegisterSimScreen extends Component {
 
     this.inputIccid = [...Array(4)].map( () =>  React.createRef() )
     this.defaultIccid = "12345"
+  }
+
+  componentWillUnmount(){
+    const iccid = this.props.account.iccid,
+          auth = this.props.auth
+    if(iccid && auth){
+      this.props.action.order.getUsage(iccid, auth)
+    }
   }
 
   _updateIccid(iccid) {
@@ -358,14 +366,16 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => ({
   account: state.account.toJS(),
-  auth: accountActions.auth(state.account)
+  auth: accountActions.auth(state.account),
+  order: state.order.toJS(),
 })
 
 export default connect(mapStateToProps, 
   (dispatch) => ({
     action: {
       sim : bindActionCreators(simActions, dispatch),
-      account : bindActionCreators(accountActions, dispatch)
+      account : bindActionCreators(accountActions, dispatch),
+      order: bindActionCreators (orderActions, dispatch),
     }
   })
 )(RegisterSimScreen)

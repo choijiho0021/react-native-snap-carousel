@@ -28,6 +28,9 @@ import AppIcon from '../components/AppIcon';
 import { isAndroid } from '../components/SearchBarAnimation/utils';
 import AddressCard from '../components/AddressCard';
 import { bindActionCreators } from 'redux';
+import SnackBar from 'react-native-snackbar-component';
+import { sliderWidth, windowHeight } from '../constants/SliderEntry.style';
+import { getStatusBarHeight } from "react-native-status-bar-height";
 
 class PurchaseDetailScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -40,6 +43,8 @@ class PurchaseDetailScreen extends Component {
       showPayment: false,
       showDelivery: false,
       cancelPressed: false,
+      isCanceled: false,
+      disableBtn: false,
     }
     
     this._onPressPayment = this._onPressPayment.bind(this)
@@ -50,11 +55,17 @@ class PurchaseDetailScreen extends Component {
     this._profile = this._profile.bind(this)
     this._address = this._address.bind(this)
     this._cancelOrder = this._cancelOrder.bind(this)
+
   }
 
   componentDidMount() {
     const detail = this.props.navigation.getParam('detail')
-    this.setState(detail)
+    this.setState({
+      ... detail,
+      isCanceled : detail.state == 'canceled' || false,
+      billingAmt: utils.numberToCommaString(detail.totalPrice + detail.dlvCost),
+      method : !_.isEmpty(detail.paymentList) && detail.paymentList.find(item => item.paymentGateway != 'rokebi_cash'),
+    })
 
     // load Profile by profile_id
     if(detail.orderType == 'physical'){
@@ -64,6 +75,17 @@ class PurchaseDetailScreen extends Component {
       err => {
         console.log('Failed to get profile', err)
       })
+    }
+  }
+
+  componentDidUpdate(){
+    if(this.state.cancelPressed){
+      setTimeout(()=>{
+        this.setState({
+          cancelPressed: false
+          , disableBtn: true
+        })
+      }, 3000)
     }
   }
   
@@ -93,6 +115,26 @@ class PurchaseDetailScreen extends Component {
     })
   }
 
+  _cancelOrder() {
+
+    AppAlert.confirm(i18n.t('his:cancel'), i18n.t('his:cancelAlert'), 
+    {ok: () => 
+      {
+        orderApi.cancelOrder(this.state.orderId, this.props.auth).then(resp =>{
+          console.log('detail resp', resp)
+          if (resp.result == 0){
+            console.log('cancel order', resp)
+            this.setState({cancelPressed: true})
+          }else{
+            AppAlert.info(i18n.t("his:cancelFail"))
+          }},
+          err =>{
+            AppAlert.info(i18n.t("his:cancelError"))
+        })
+      }
+    })
+  }
+
   _address(){
     const profile = !_.isEmpty(this.state.profile) && this.state.profile
     return(
@@ -118,38 +160,9 @@ class PurchaseDetailScreen extends Component {
     )
   }
 
-  _cancelOrder(orderId) {
-    Alert.alert(  
-      i18n.t('his:cancel'),
-      i18n.t('his:cancelAlert'),
-      [
-        {
-          text: i18n.t('cancel'),
-          // style: 'cancel',
-        },
-        {
-          text: i18n.t('ok'),
-          onPress: () =>  orderApi.cancelOrder(orderId, this.props.auth).then(resp =>{
-            console.log('detail resp', resp)
-            if (resp.result == 0){
-              AppAlert.info(i18n.t("his:cancelSuccess"))
-              console.log('cancel order', resp)
-              this.setState({cancelPressed: true})
-            }else{
-              AppAlert.info(i18n.t("his:cancelFail"))
-            }},
-            err =>{
-              AppAlert.info(i18n.t("his:cancelError"))
-            })
-          
-        }
-      ],
-    )
-  }
+  _deliveryInfo(){
 
-  _deliveryInfo(isCanceled){
-
-    const {trackingCompany, trackingCode, shipmentState} = this.props.navigation.getParam('detail') || {}
+    const { trackingCompany, trackingCode, shipmentState, isCanceled } = this.state || {}
 
     return(
       <View>
@@ -199,23 +212,22 @@ class PurchaseDetailScreen extends Component {
     )
   }
 
-  _paymentInfo(isCanceled){
-    const {orderId, orderDate, orderItems, orderType, paymentList, usageList, totalPrice, state, shipmentState,
-      dlvCost, balanceCharge} = this.props.navigation.getParam('detail') || {}
+  _paymentInfo(){
+    const { orderId, orderDate, orderItems, orderType, usageList, totalPrice, state, shipmentState, billingAmt,
+      dlvCost, balanceCharge, isCanceled, method } = this.state || {} 
 
       const elapsedDay = Math.ceil((new Date() - new Date(orderDate)) / (24 * 60 * 60 * 1000))
-      const payment = !_.isEmpty(paymentList) && (paymentList.find(item => item.paymentGateway != 'rokebi_cash')) // 다른 결제 수단 활용 여부 확인
-      const paidAmount = !_.isEmpty(payment) ? payment.amount : 0
+      const paidAmount = !_.isEmpty(method) ? method.amount : 0
       const isRecharge = orderItems.find(item => item.title.indexOf(i18n.t('acc:recharge')) > -1) || false
       const isUsed = !_.isEmpty(usageList) && usageList.find(value => value.status != 'R' && value.status != 'I') || false
-      const activateCancelBtn = orderType == 'physical' ? shipmentState == 'draft' : (state == 'validation') && !isUsed
-      const disableBtn = isCanceled || !activateCancelBtn || this.state.cancelPressed //|| elapsedDay > 7
+      const activateCancelBtn = orderType == 'physical' ? shipmentState == 'draft' : (state == 'draft' || state == 'validation') && !isUsed
+      const disableBtn = isCanceled || !activateCancelBtn || this.state.cancelPressed || (elapsedDay > 7)
       const infoText = isCanceled ? i18n.t('his:afterCancelInfo') : (orderType == 'physical' ? i18n.t('his:simCancelInfo') : i18n.t('his:dataCancelInfo'))
 
-    return(
+      return(
         <View>
           <View style={styles.thickBar}/>
-          { 
+          {
             orderItems && orderItems.map((item,idx) =>
               <LabelText
                 key={idx+""} style={styles.item}
@@ -231,7 +243,7 @@ class PurchaseDetailScreen extends Component {
             label={i18n.t('his:productAmount')} labelStyle={styles.label2}
             format="price"
             valueStyle={appStyles.roboto16Text}
-            value={totalPrice - balanceCharge}/>
+            value={totalPrice}/>
           <LabelText
             key="dvlCost" style={styles.item}
             label={i18n.t('cart:dlvCost')} labelStyle={styles.label2}
@@ -261,8 +273,8 @@ class PurchaseDetailScreen extends Component {
                 style={styles.cancelBtn} 
                 disableBackgroundColor={colors.whiteTwo}
                 disableColor={colors.greyish}
-                disabled={disableBtn}
-                onPress={() => this._cancelOrder(orderId)}
+                disabled={disableBtn || this.state.disableBtn}
+                onPress={() => this._cancelOrder()}
                 title={i18n.t('his:cancel')}
                 titleStyle={styles.normal16BlueTxt}/>
             : <View style={{marginBottom: 20}}/>    
@@ -272,14 +284,10 @@ class PurchaseDetailScreen extends Component {
       )
   }
 
-  _headerInfo(isCanceled){
-    const { orderNo, orderDate, orderItems, paymentList } = this.props.navigation.getParam('detail') || {}
+  _headerInfo(){
+    const { orderNo, orderDate, orderItems, isCanceled, method, cancelPressed } = this.state || {}
 
-    console.log('@@paymentList', paymentList)
-    console.log('@@list', paymentList.find(item => item.paymentGateway != 'rokebi_cash')) 
-    const method = !_.isEmpty(paymentList) && paymentList.find(item => item.paymentGateway != 'rokebi_cash')
     const pg = !_.isEmpty(method) ? method.paymentMethod : i18n.t("pym:balance")
-    console.log('@@method', pg)
 
     if ( _.isEmpty(orderItems) ) return <View></View>
 
@@ -291,7 +299,7 @@ class PurchaseDetailScreen extends Component {
         <Text style={styles.date}>{utils.toDateString(orderDate)}</Text>
         <View style={styles.productTitle}>
           {
-            (isCanceled || this.state.cancelPressed) &&
+            (isCanceled || cancelPressed) &&
             <Text style={[appStyles.bold18Text, {color: colors.tomato}]}>{`(${i18n.t("his:cancel")})`}</Text>
           }
           <Text style={appStyles.bold18Text}>{label}</Text>
@@ -312,42 +320,49 @@ class PurchaseDetailScreen extends Component {
 
   render() {
 
-    const {orderItems, orderType, totalPrice, state, shipmentState, dlvCost} = this.props.navigation.getParam('detail') || {}
+    const { orderItems, orderType, isCanceled, shipmentState, billingAmt,
+          showPayment, showDelivery, cancelPressed } = this.state || {}
 
     if ( _.isEmpty(orderItems) ) return <View></View>
 
     // [physical] shipmentState : draft(취소 가능) / ready shipped (취소 불가능)
     // [draft] state = validation && status = inactive , reserved (취소 가능)
-    const isCanceled = state == 'canceled' || false
     const shipStatus = (_.isEmpty(shipmentState) || shipmentState == 'draft') ? 
                     i18n.t('his:paymentCompleted') : (shipmentState == ('ready') ? i18n.t('his:ready') : i18n.t('his:shipped'))
 
+                    console.log('window', (windowHeight- getStatusBarHeight())/2)
     return (
       <ScrollView style={styles.container}>
         <SafeAreaView forceInset={{ top: 'never', bottom:"always"}}>
+        <SnackBar visible={cancelPressed} backgroundColor={colors.clearBlue} messageColor={colors.white}
+                  position={'bottom'}
+                  bottom={'50%'}//(windowHeight- getStatusBarHeight())/2}//windowHeight/2}
+                  containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 10}}
+                  distanceCallback={(distance) => {console.log('@@@@distance', distance)}}
+                  textMessage={i18n.t("his:cancelSuccess")} actionHandler={()=>{console.log("snackbar button clicked!")}}/>  
           {
-            this._headerInfo(isCanceled)
+            this._headerInfo()
           }
           <TouchableOpacity style={styles.dropDownBox} onPress={this._onPressPayment} >
             <Text style={styles.boldTitle}>{i18n.t('his:paymentDetail')}</Text>
             <View style={{flexDirection: 'row'}}>
             {
-              !this.state.showPayment &&
-              <View style={[{alignSelf: 'center', marginRight: 15, flexDirection: 'row'}]}>
+              !showPayment &&
+              <View style={[styles.alignCenter, {flexDirection: 'row'}]}>
                 <Text style={styles.normal16BlueTxt}>{i18n.t('total')}</Text>
                 <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>{orderItems.length}</Text>
                 <Text style={styles.normal16BlueTxt}>{i18n.t('qty')} / </Text>
-                <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>{utils.numberToCommaString(totalPrice)}</Text>
+                <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>{utils.numberToCommaString(billingAmt)}</Text>
                 <Text style={styles.normal16BlueTxt}>{i18n.t('won')}</Text>
               </View>
             }
               <AppButton style={{backgroundColor: colors.white, height:70}} 
-                        iconName= {this.state.showPayment ? "iconArrowUp" : "iconArrowDown"}
+                        iconName= {showPayment ? "iconArrowUp" : "iconArrowDown"}
                         iconStyle={styles.dropDownIcon}/>
             </View>
           </TouchableOpacity>  
           {
-            this.state.showPayment && this._paymentInfo(isCanceled)
+            showPayment && this._paymentInfo()
           }
           <View style={styles.divider}/>
           {
@@ -357,19 +372,19 @@ class PurchaseDetailScreen extends Component {
                 <Text style={styles.boldTitle}>{i18n.t('his:shipmentInfo')}</Text>
                 <View style={{flexDirection: 'row'}}>
                   {
-                    !this.state.showDelivery &&
-                    <Text style={[appStyles.normal16Text, {color: colors.clearBlue, alignSelf: 'center', marginRight: 15}]}>{shipStatus}</Text>
+                    !showDelivery &&
+                    <Text style={[styles.normal16BlueTxt, styles.alignCenter]}>{shipStatus}</Text>
                   }
                   <AppButton style={{backgroundColor: colors.white, height:70}}
-                            iconName= {this.state.showDelivery ? "iconArrowUp" : "iconArrowDown"}
+                            iconName= {showDelivery ? "iconArrowUp" : "iconArrowDown"}
                             iconStyle={styles.dropDownIcon}/>
                 </View>
               </TouchableOpacity>  
               {
-                this.state.showDelivery && this._deliveryInfo(isCanceled)
+                showDelivery && this._deliveryInfo()
                 // this._deliveryInfo(isCanceled)
               }    
-            <View style={styles.divider}/>
+              <View style={styles.divider}/>
             </View>
           }      
         </SafeAreaView>
@@ -569,16 +584,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0,
     marginBottom: 20,
   },
-  fontWeightNormal: {
-    fontWeight: 'normal'
-  },
   fontWeightBold: {
     fontWeight: 'bold',
     lineHeight:24,
     letterSpacing: 0.22
   },
-  colorClearBlue: {
-    color: colors.clearBlue
+  alignCenter: {
+    alignSelf: 'center',
+    marginRight: 15
   }
 });
 
@@ -588,7 +601,6 @@ const mapStateToProps = state => ({
   auth: accountActions.auth(state.account),
   uid: state.account.get('uid'),
   pending: state.pender.pending[orderActions.GET_ORDERS] || 
-    state.pender.pending[orderActions.GET_USAGE] || 
     state.pender.pending[accountActions.CHANGE_EMAIL] || 
     state.pender.pending[accountActions.UPLOAD_PICTURE] || false,
 })

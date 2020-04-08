@@ -168,24 +168,13 @@ class NewSimScreen extends Component {
           extraData={[checked, simQty]}
           ListFooterComponent={
             <ChargeSummary totalCnt={total.cnt} 
-              totalPrice={total.price} 
-              balance={this.props.account.balance}
-              dlvCost={utils.dlvCost(total.price)}/>
+            totalPrice={total.price} 
+            balance={this.props.account.balance}
+            dlvCost={utils.dlvCost(total.price)}/>
             }/>
-
-        <View style={styles.buttonBox}>
-          <AppButton style={styles.btnCart} title={i18n.t('cart:toCart')} 
-            disableBackgroundColor={colors.whiteTwo}
-            checkedColor={colors.lightGrey}
-            disableColor={colors.black}
-            titleStyle={styles.btnCartText}
-            disabled={! selected}
-            onPress={this._onPress('cart')}/>
-
-          <AppButton style={styles.btnBuy} title={i18n.t('cart:buy')} 
-            disabled={! selected}
-            onPress={this._onPress('purchase')}/>
-        </View>
+        <AppButton style={styles.btnBuy} title={i18n.t('cart:buy')} 
+          disabled={! selected}
+          onPress={this._onPress('purchase')}/>
       </SafeAreaView>
     );
   }
@@ -195,11 +184,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1
   },
-  buttonBox: {
-    flexDirection: 'row'
-  },
   btnBuy: {
-    width: "50%",
+    width: "100%",
     height: 52,
     backgroundColor: colors.clearBlue
   },

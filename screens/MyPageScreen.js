@@ -51,6 +51,7 @@ class OrderItem extends PureComponent {
     if ( item.orderItems.length > 1) label = label + i18n.t('his:etcCnt').replace('%%', item.orderItems.length - 1)
 
     const isCanceled = item.state == 'canceled'
+    const billingAmt = item.totalPrice + item.dlvCost
 
     return (
       <TouchableOpacity onPress={onPress}>
@@ -63,7 +64,7 @@ class OrderItem extends PureComponent {
           <LabelText style={styles.orderValue}
             label={label}
             labelStyle={[{width:'70%'}, isDeviceSize('small') ? appStyles.normal14Text : appStyles.normal16Text]}
-            value={item.totalPrice}
+            value={billingAmt}
             color={isCanceled ? colors.warmGrey : colors.black}
             valueStyle={appStyles.price} format="price"/>
         </View>
@@ -206,7 +207,7 @@ class MyPageScreen extends Component {
   }
 
   _info() {
-    const { account: {iccid, mobile, balance, expDate, email, userPictureUrl, loggedIn}} = this.props
+    const { account: { mobile, email, userPictureUrl, loggedIn } } = this.props
 
     return (
       <View style={{marginBottom:10}}>
@@ -227,7 +228,7 @@ class MyPageScreen extends Component {
           </View>
         </View>
         <TouchableOpacity style={{marginHorizontal: 20, borderColor: colors.lightGrey, borderWidth: 1, height: 40, justifyContent: 'center'}}
-          onPress={()=> this.props.navigation.navigate('ConatactBoard')}>
+          onPress={()=> this.props.navigation.navigate('ContactBoard', {index:2})}>
           <Text style={[appStyles.normal16Text, {textAlign: 'center'}]}>{i18n.t("board:mylist")}</Text> 
         </TouchableOpacity>
         <View style={styles.divider}/>

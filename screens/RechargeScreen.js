@@ -11,6 +11,8 @@ import {connect} from 'react-redux'
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import * as cartActions from '../redux/modules/cart'
+import * as orderActions from '../redux/modules/order'
+import * as accountActions from '../redux/modules/account'
 import utils from '../utils/utils';
 import { bindActionCreators } from 'redux'
 import { colors } from '../constants/Colors';
@@ -38,6 +40,15 @@ class RechargeScreen extends Component {
     this._onSubmit = this._onSubmit.bind(this)
     this._onPress = this._onPress.bind(this)
     this._rechargeButton = this._rechargeButton.bind(this)
+  }
+
+  componentWillUnmount(){
+    // 보완 필요
+    const iccid = this.props.account.iccid,
+          auth = this.props.auth
+    if(iccid && auth){
+      this.props.action.order.getUsage(iccid, auth)
+    }
   }
 
   _onSubmit() {
@@ -201,13 +212,16 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => ({
-  account: state.account.toJS()
+  account: state.account.toJS(),
+  auth: accountActions.auth(state.account),
+  order: state.order.toJS(),
 })
 
 export default connect(mapStateToProps, 
   (dispatch) => ({
     action : {
-      cart : bindActionCreators(cartActions, dispatch)
+      cart : bindActionCreators(cartActions, dispatch),
+      order: bindActionCreators (orderActions, dispatch),
     }
   })
 )(RechargeScreen)
