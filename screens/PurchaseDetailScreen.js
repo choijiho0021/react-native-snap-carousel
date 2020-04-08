@@ -92,7 +92,7 @@ class PurchaseDetailScreen extends Component {
   componentWillUnmount(){
     // 보완 필요
     const auth = this.props.navigation.getParam('auth')
-    if(this.state.cancelPressed){
+    if(this.state.disableBtn && auth){
       this.props.action.order.getOrders(auth)
     }
   }
@@ -285,7 +285,7 @@ class PurchaseDetailScreen extends Component {
   }
 
   _headerInfo(){
-    const { orderNo, orderDate, orderItems, isCanceled, method, cancelPressed } = this.state || {}
+    const { orderNo, orderDate, orderItems, isCanceled, method, disableBtn } = this.state || {}
 
     const pg = !_.isEmpty(method) ? method.paymentMethod : i18n.t("pym:balance")
 
@@ -299,7 +299,7 @@ class PurchaseDetailScreen extends Component {
         <Text style={styles.date}>{utils.toDateString(orderDate)}</Text>
         <View style={styles.productTitle}>
           {
-            (isCanceled || cancelPressed) &&
+            (isCanceled || disableBtn) &&
             <Text style={[appStyles.bold18Text, {color: colors.tomato}]}>{`(${i18n.t("his:cancel")})`}</Text>
           }
           <Text style={appStyles.bold18Text}>{label}</Text>
@@ -336,7 +336,7 @@ class PurchaseDetailScreen extends Component {
         <SafeAreaView forceInset={{ top: 'never', bottom:"always"}}>
         <SnackBar visible={cancelPressed} backgroundColor={colors.clearBlue} messageColor={colors.white}
                   position={'bottom'}
-                  bottom={'50%'}//(windowHeight- getStatusBarHeight())/2}//windowHeight/2}
+                  bottom='50%'//(windowHeight- getStatusBarHeight())/2}//windowHeight/2}
                   containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 10}}
                   distanceCallback={(distance) => {console.log('@@@@distance', distance)}}
                   textMessage={i18n.t("his:cancelSuccess")} actionHandler={()=>{console.log("snackbar button clicked!")}}/>  
