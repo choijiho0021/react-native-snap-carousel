@@ -186,7 +186,7 @@ class UsimScreen extends Component {
     if(!this.props.account.loggedIn){
       this.props.navigation.navigate('RegisterMobile')
     }else{
-      if (iccid) {
+      if (iccid && auth) {
         this.props.action.order.getUsage(iccid, auth)
       }else{
         this.props.navigation.replace('RegisterSim', {back:'lastTab'})

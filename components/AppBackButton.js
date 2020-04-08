@@ -43,7 +43,7 @@ class AppBackButton extends PureComponent {
     var tab = ''
     if ( back == 'top') return navigation.popToTop()
     if ( back == 'lastTab') {
-      if( lastTab[0] == 'MyPageStack' ){
+      if( lastTab[0] == 'MyPageStack' || 'UsimStack'){
         tab = 'Home'
       }else{
         tab = (lastTab[0] == 'CartStack') ? lastTab[1] : lastTab[0]
@@ -55,7 +55,7 @@ class AppBackButton extends PureComponent {
   }
 
   render() {
-    const {title, isPaid=false} = this.props
+    const { title, isPaid=false } = this.props
 
     return (
       <TouchableWithoutFeedback onPress={isPaid ? null : this._goBack} disabled={isPaid}>
