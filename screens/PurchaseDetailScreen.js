@@ -43,6 +43,7 @@ class PurchaseDetailScreen extends Component {
       isCanceled: false,
       disableBtn: false,
       scrollHeight: 0,
+      borderBlue: false,
     }
     
     this._onPressPayment = this._onPressPayment.bind(this)
@@ -81,8 +82,8 @@ class PurchaseDetailScreen extends Component {
     if(this.state.cancelPressed){
       setTimeout(()=>{
         this.setState({
-          cancelPressed: false
-          , disableBtn: true
+          cancelPressed: false,
+          disableBtn: true
         })
       }, 3000)
     }
@@ -122,10 +123,12 @@ class PurchaseDetailScreen extends Component {
 
   _cancelOrder() {
 
+    this.setState({borderBlue: true})
+
     AppAlert.confirm(i18n.t('his:cancel'), i18n.t('his:cancelAlert'), 
-    {ok: () => 
-      {
-        orderApi.cancelOrder(this.state.orderId, this.props.auth).then(resp =>{
+    {
+      ok: () => 
+        {orderApi.cancelOrder(this.state.orderId, this.props.auth).then(resp =>{
           console.log('detail resp', resp)
           if (resp.result == 0){
             console.log('cancel order', resp)
@@ -135,7 +138,11 @@ class PurchaseDetailScreen extends Component {
           }},
           err =>{
             AppAlert.info(i18n.t("his:cancelError"))
-        })
+          })
+          this.setState({borderBlue: false})
+        }
+      ,cancel: ()=> {
+          this.setState({borderBlue: false})
       }
     })
   }
@@ -275,7 +282,7 @@ class PurchaseDetailScreen extends Component {
           {
             !(isCanceled || isUsed || isRecharge )?
             <AppButton
-                style={styles.cancelBtn} 
+                style={[styles.cancelBtn, {borderColor: this.state.borderBlue ? colors.clearBlue : colors.lightGrey}]}
                 disableBackgroundColor={colors.whiteTwo}
                 disableColor={colors.greyish}
                 disabled={disableBtn || this.state.disableBtn}
