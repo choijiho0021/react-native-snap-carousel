@@ -74,9 +74,10 @@ class UsageItem extends PureComponent {
   setStatusColor() {
     const {item} = this.props
     let statusColor = colors.warmGrey
+    let isActive = false
 
     switch(item.statusCd) {
-      case STATUS_ACTIVE :
+      case STATUS_ACTIVE : 
         statusColor = colors.tomato
         isActive = true
         break
@@ -90,7 +91,7 @@ class UsageItem extends PureComponent {
         statusColor = colors.warmGrey
         break
     }
-    this.setState({statusColor : statusColor})
+    this.setState({statusColor : statusColor, isActive : isActive})
   }
 
   toMb(kb){
@@ -105,7 +106,7 @@ class UsageItem extends PureComponent {
 
   render () {
     const {item, onPress} = this.props
-    const {statusColor = colors.warmGrey, isActive, quota = 0, used = 0} = this.state 
+    const {statusColor = colors.warmGrey, isActive = false, quota = 0, used = 0} = this.state 
       
     return (
       <TouchableOpacity onPress={onPress}>
@@ -183,6 +184,7 @@ class UsimScreen extends Component {
   componentDidMount() {
     const { account: {iccid}, auth} = this.props
 
+    console.log('@@iccid', iccid, auth)
     if(!this.props.account.loggedIn){
       this.props.navigation.navigate('RegisterMobile')
     }else{
@@ -195,8 +197,12 @@ class UsimScreen extends Component {
   }
 
   componentDidUpdate( prevProps) {
+    console.log('@@didupdate')
   }
 
+  componentWillUnmount(){
+    console.log('@@unmount')
+  }
   _empty = () => {
 
 
