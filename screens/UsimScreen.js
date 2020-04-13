@@ -41,30 +41,16 @@ class UsageItem extends PureComponent {
 
     this.state = {
       statusColor : colors.warmGrey,
-      isActive : false
+      isActive : false,
+      isShowUsage : false
     }
     this.setStatusColor = this.setStatusColor.bind(this)
+    this.usageRender = this.usageRender.bind(this)
+    this.getUsage = this.getUsage.bind(this)
   }
 
   componentDidMount() {
-    const {item, auth} = this.props
-
     this.setStatusColor()
-
-    //그래프 테스트 nid = 1616
-    if(item.statusCd == 'A') {
-      subscriptionApi.getSubsUsage(item.nid, auth).then(
-        resp => {
-          if(resp.result == 0){
-            console.log("getSubsUsage progress",resp.objects, item.nid)
-            const {activated, quota, used, unit} = resp.objects
-            const progress = used > 0 ? 100 - Math.floor(used / quota * 100) : 0
-            this.circularProgress.animate(progress, 3000, null)
-            this.setState({activated, quota, used, unit})
-          }
-        }
-      )
-    }
   }
 
   componentDidUpdate() {
@@ -94,6 +80,27 @@ class UsageItem extends PureComponent {
     this.setState({statusColor : statusColor, isActive : isActive})
   }
 
+  getUsage() {
+    const {item, auth} = this.props
+
+    //그래프 테스트 nid = 1616
+    if(item.statusCd == 'A') {
+      subscriptionApi.getSubsUsage(item.nid, auth).then(
+        resp => {
+          if(resp.result == 0){
+            console.log("getSubsUsage progress",resp.objects, item.nid)
+            const {activated, quota, used, unit} = resp.objects
+            const progress = used > 0 ? 100 - Math.floor(used / quota * 100) : 0
+            this.setState({activated, quota, used, unit, isShowUsage:true})
+            this.circularProgress.animate(progress, 3000, null)
+          }
+          else {
+            console.log("Get Usage failed", resp)
+          }
+        }
+      )
+    }
+  }
   toMb(kb){
     if(kb == 0) return 0
     return utils.numberToCommaString(kb/1024)
@@ -104,20 +111,10 @@ class UsageItem extends PureComponent {
     return (kb/1024/1024).toFixed(2)
   }
 
-  render () {
-    const {item, onPress} = this.props
-    const {statusColor = colors.warmGrey, isActive = false, quota = 0, used = 0} = this.state 
-      
-    return (
-      <TouchableOpacity onPress={onPress}>
-        <View style ={styles.usageListContainer}>
-          <View style={styles.titleAndStatus}>
-            <Text style={[styles.usageTitleNormal, { fontWeight: isActive ? "bold" : "normal" }]}>{item.prodName}</Text>
-            <Text style={[styles.usageStatus,{color:statusColor}]}> • {item.status}</Text>
-          </View>
-          {item.statusCd == 'A' ?
-          <View>
-            <View style={styles.activeContainer}>
+  usageRender() {
+    const {quota = 0, used = 0} = this.state 
+
+    return (<View style={styles.activeContainer}>
               <AnimatedCircularProgress
               ref={(ref) => this.circularProgress = ref}
               style={styles.circular}
@@ -147,8 +144,34 @@ class UsageItem extends PureComponent {
                 <Text style={styles.bold16WarmGrey}>{`${this.toGb(used)}GB ` + i18n.t('usim:used')}</Text>
                 <Text style={styles.normal12WarmGrey}>{`(${this.toMb(used)}MB)`}</Text>
               </View>
+            </View>)
+  }
 
-            </View> 
+  checkUsageButton() {
+    return(
+    <View style={styles.checkUsageBtnContainer}>
+      <AppButton
+            style={styles.checkUsageBtn}
+            onPress={() => this.getUsage()}
+            title={i18n.t('usim:checkUsage')}
+            titleStyle={styles.checkUsageBtnTitle}/>
+    </View>)
+  }
+
+  render () {
+    const {item, onPress} = this.props
+    const {statusColor = colors.warmGrey, isActive = false, isShowUsage = false} = this.state 
+      
+    return (
+      <TouchableOpacity onPress={onPress}> 
+        <View style ={styles.usageListContainer}>
+          <View style={styles.titleAndStatus}>
+            <Text style={[styles.usageTitleNormal, { fontWeight: isActive ? "bold" : "normal" }]}>{item.prodName}</Text>
+            <Text style={[styles.usageStatus,{color:statusColor}]}> • {item.status}</Text>
+          </View>
+          {item.statusCd == 'A' ?
+          <View>
+            {isShowUsage ? this.usageRender() : this.checkUsageButton()}
             <Text style={styles.warning}>{i18n.t('usim:warning')}</Text>
           </View> : 
           <View style={styles.inactiveContainer}>
@@ -156,7 +179,6 @@ class UsageItem extends PureComponent {
             <Text style={styles.usagePeriod}>{`${utils.toDateString(item.purchaseDate,'YYYY-MM-DD')} ~ ${item.expireDate}`}</Text>
           </View> }
         </View>
-        
       </TouchableOpacity>
     )
   }
@@ -303,7 +325,7 @@ class UsimScreen extends Component {
             renderItem={this._renderUsage} 
             onRefresh={this._onRefresh}
             refreshing={refreshing}/>
-          <AppActivityIndicator visible={this.props.pending}/> 
+          {/* <AppActivityIndicator visible={this.props.pending}/>  */}
         </View>
       </View>
     );
@@ -422,6 +444,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color:colors.clearBlue
   },
+  checkUsageBtn:{
+    width: 160,
+    height: 50,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    backgroundColor: colors.clearBlue,
+    borderRadius: 24
+  },
+  checkUsageBtnTitle : {
+    ... appStyles.bold16Text,
+    textAlign: 'center',
+    color:colors.white
+  },
+  checkUsageBtnContainer : {
+    marginBottom: 30,
+    alignContent:'center'
+  }
 });
 
 const mapStateToProps = (state) => ({

@@ -320,6 +320,7 @@ const en = {
   "usim:used" : "Used",
   "usim:usablePeriod" : "Usable Period",
   "usim:warning" : "※ It may not exactly match your actual usage.",
+  "usim:checkUsage" : "Usage Check",
 
   "pym:title": "Payment Info",
   "pym:delivery": "Shipping Info",
@@ -702,6 +703,7 @@ const ko = {
   "usim:used" : "사용",
   "usim:usablePeriod" : "사용기간",
   "usim:warning" : "※ 실 사용량과 정확히 일치하지 않을 수 있습니다.",
+  "usim:checkUsage" : "사용량 확인",
 
   "pym:title": "결제 정보",
   "pym:delivery": "주문 및 배송정보",
