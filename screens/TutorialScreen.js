@@ -16,10 +16,9 @@ import * as orderActions from '../redux/modules/order'
 import * as accountActions from '../redux/modules/account'
 import _ from 'underscore'
 import Carousel, {Pagination} from 'react-native-snap-carousel';
-import { sliderWidth, windowHeight, windowWidth, isDeviceSize } from '../constants/SliderEntry.style'
-// import { TouchableOpacity } from 'react-native-gesture-handler';
+import { sliderWidth } from '../constants/SliderEntry.style'
 
-const {width, height, sliderHeight} = Dimensions.get('window')
+const {width} = Dimensions.get('window')
 const tutorialImages = {
   step1: require('../assets/images/tutorial/step1/mT1.png'),
   step2: require('../assets/images/tutorial/step2/mT2.png'),
@@ -57,12 +56,6 @@ class TutorialScreen extends Component {
 
   render() {
     const { images, activeSlide } = this.state
-
-    console.log('dimmension', width)
-    console.log('window', windowWidth)
-    console.log('dimmension', sliderWidth)
-    console.log('dimmension', sliderHeight)
-    console.log('dimmension', height)
 
     return (
           
