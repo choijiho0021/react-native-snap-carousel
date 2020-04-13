@@ -17,7 +17,7 @@ import AppButton from '../components/AppButton';
 import _ from 'underscore'
 import { SafeAreaView } from 'react-navigation';
 import AddressCard from '../components/AddressCard'
-import { ScrollView } from 'react-native-gesture-handler';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import PaymentItemInfo from '../components/PaymentItemInfo';
 import { isAndroid } from '../components/SearchBarAnimation/utils';
 import { isDeviceSize } from '../constants/SliderEntry.style';
@@ -39,19 +39,24 @@ class PymMethodScreen extends Component {
 
     this.state = {
       data: undefined,
-      selected: undefined,
-      showModal: false,
+      selected: {},
       pymPrice: undefined,
       deduct: undefined,
       isRecharge: undefined,
       clickable: true,
       loading: undefined,
+      showModal:{
+        delivery: true,
+        memo: true,
+        method: true
+      }      
     }
 
     this._onSubmit = this._onSubmit.bind(this)
     this._onPress = this._onPress.bind(this)
     this._button = this._button.bind(this)
     this._address = this._address.bind(this)
+    // this._memo = this._memo.bind(this)
   }
 
   componentDidMount() {
@@ -104,8 +109,8 @@ class PymMethodScreen extends Component {
 
     } else {
       const params = {
-        pg : selected,
-        pay_method: 'card',
+        pg : selected.key,
+        pay_method: selected.method,
         merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
         name: i18n.t('appTitle'),
         amount: pymPrice,                 // 최종 결제 금액 
@@ -127,9 +132,9 @@ class PymMethodScreen extends Component {
     }
   }
 
-  _onPress = (key) => () => {
+  _onPress = (method) => () => {
     this.setState({
-      selected: key
+      selected: method
     })
   }
 
@@ -144,9 +149,9 @@ class PymMethodScreen extends Component {
           key={idx+""} 
           title={v.title} 
           style={styles.button}
-          checked={v.key == selected}
+          checked={v.title == selected.title}
           checkedColor={colors.clearBlue}
-          onPress={this._onPress(v.key)}
+          onPress={this._onPress(v)}
           titleStyle={styles.buttonText}/>)
       }
       </View>
@@ -212,6 +217,15 @@ class PymMethodScreen extends Component {
     )
   }
 
+  // _memo(){
+  //   return(
+  //     <View>
+  //       <Text style={styles.title}>{i18n.t('pym:deliveryMemo')}</Text>
+  //       <View style={styles.divider}/>
+  //     </View>
+  //   )
+  // }
+
   render() {
     const { selected, pymPrice, deduct, isRecharge } = this.state,
       { purchaseItems = [], pymReq } = this.props.cart,
@@ -227,7 +241,29 @@ class PymMethodScreen extends Component {
           {
             simIncluded && this._address()
           }
-
+          {
+            // simIncluded && 
+            // <TouchableOpacity style={styles.dropDownBox} onPress={this._onPressPayment} >
+            //   <Text style={styles.boldTitle}>{i18n.t('pym:deliveryMemo')}</Text>
+            //   <View style={styles.thickBar}/>
+            //   <View style={{flexDirection: 'row'}}>
+            //   {
+            //     !this.state.showModal.memo &&
+            //     <View style={[styles.alignCenter, {flexDirection: 'row'}]}>
+            //       <Text>hihi</Text>
+            //       {/* <Text style={styles.normal16BlueTxt}>{i18n.t('total')}</Text>
+            //       <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>{orderItems.length}</Text>
+            //       <Text style={styles.normal16BlueTxt}>{i18n.t('qty')} / </Text>
+            //       <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>{utils.numberToCommaString(billingAmt)}</Text>
+            //       <Text style={styles.normal16BlueTxt}>{i18n.t('won')}</Text> */}
+            //     </View>
+            //   }
+            //     <AppButton style={{backgroundColor: colors.white, height:70}} 
+            //               iconName= {this.state.showModal.memo ? "iconArrowUp" : "iconArrowDown"}
+            //               iconStyle={styles.dropDownIcon}/>
+            //   </View>
+            // </TouchableOpacity>  
+          }
           {
             pymPrice !=0 ?
               <View>
@@ -251,9 +287,9 @@ class PymMethodScreen extends Component {
                       key={i18n.t('payment')}
                       onPress={this._onSubmit}
                       style={appStyles.confirm} />
-        {
+                              {/* {
           this.state.loading && <Video source={require('../assets/images/loading_1.mp4')} resizeMode={"stretch"} repeat={true} style={styles.backgroundVideo}/>
-        }      
+        }       */}
 
       </SafeAreaView>
             
@@ -289,17 +325,17 @@ const styles = StyleSheet.create({
   buttonRow : {
     flexDirection: "row",
     justifyContent: 'space-between',
-    marginTop: 15,
+    // marginTop: 15,
     marginHorizontal: 20,
   },
   button: {
-    width: '46%',
-    height: isDeviceSize('small') ? 43 : 48,
-    borderRadius: 24,
+    flex:1,
+    height: 62,
     backgroundColor: colors.white,
     borderStyle: "solid",
-    borderWidth: 1,
-    borderColor: colors.warmGrey
+    borderLeftWidth: 1,
+    borderTopWidth: 1,
+    borderColor: colors.lightGrey
   },
   buttonText: {
     ... appStyles.normal14Text,
@@ -388,7 +424,30 @@ const styles = StyleSheet.create({
     left: 0,
     bottom: 0,
     right: 0,
-  } 
+  },
+  dropDownBox: {
+    marginHorizontal: 20,
+    flexDirection:'row',
+    justifyContent: 'space-between'
+  },
+  boldTitle: {
+    ... appStyles.bold18Text,
+    color: colors.black,
+    lineHeight: 22,
+    // marginTop: 20,
+    alignSelf: 'center'
+  },
+  dropDownIcon: {
+    flexDirection: 'column',
+    alignSelf: 'flex-end'
+  },
+  thickBar: {
+    borderBottomColor: colors.black,
+    borderBottomWidth: 1, 
+    marginHorizontal: 20,
+    // marginVertical: 20,
+    marginBottom: 30,
+  },
 });
 
 const mapStateToProps = (state) => ({
