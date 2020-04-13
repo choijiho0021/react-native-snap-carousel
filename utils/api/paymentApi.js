@@ -11,42 +11,56 @@ class PaymentAPI {
     method = [
         [
             {
-            key: 'html5_inicis',
-            title: i18n.t('pym:ccard')
+                key: 'html5_inicis',
+                method: 'card',
+                title: i18n.t('pym:ccard')
             },
             {
-            key: 'danal',
-            title: i18n.t('pym:mobile')
+                key: 'html5_inicis',
+                method: 'card',
+                title: i18n.t('pym:bank')                
+            },
+            {
+                key: 'danal',
+                method: 'card',
+                title: i18n.t('pym:mobile')
             }
         ],
         [
             {
-            key: 'kakaopay',
-            title: i18n.t('pym:kakao')
+                key: 'kakaopay',
+                method: 'card',
+                title: i18n.t('pym:kakao')
             },
             {
-            key: 'payco',
-            title: i18n.t('pym:payco')
+                // 확인필요
+                key: 'naverco',
+                method: 'card',
+                title: i18n.t('pym:naver')
             },
-        ]
-        // [
-        //     {
-        //         key: 'html5_inicis',
-        //         title: i18n.t('pym:ccard')
-        //     },
-        //     {
-        //         key: 'danal',
-        //         title: i18n.t('pym:mobile')
-        //     },
-        //     {
-        //         key: 'kakaopay',
-        //         title: i18n.t('pym:kakao')
-        //     },
-        //     {
-        //         key: 'payco',
-        //         title: i18n.t('pym:payco')
-        //     },
-        // ],
+            {
+                key: 'payco',
+                method: 'card',
+                title: i18n.t('pym:payco')
+            },
+        ],
+        [
+            {
+                key: 'html5_inicis',
+                method: 'samsung',
+                title: i18n.t('pym:samsung')
+            },
+            {
+                key: 'html5_inicis',
+                method: 'ssgpay',
+                title: i18n.t('pym:ssgpay')
+            },
+            {
+                key: 'html5_inicis',
+                method: 'lpay',
+                title: i18n.t('pym:lpay')
+            },
+        ]        
     ]
 
     toPayment = (data) => {
