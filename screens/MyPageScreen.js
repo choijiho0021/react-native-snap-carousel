@@ -132,9 +132,10 @@ class MyPageScreen extends Component {
       this.flatListRef.scrollToOffset({ animated: false, y: 0 })
     }
     
-    if(this.props.account.loggedIn != prevProps.account.loggedIn){
-      this.props.navigation.navigate('RegisterMobile')
-    }
+    // if(this.props.account.loggedIn != prevProps.account.loggedIn && ){
+    //   console.log("goto login page - aa",this.props.account.loggedIn,prevProps.account.loggedIn)
+    //   this.props.navigation.navigate('RegisterMobile')
+    // }
   }
 
   async _didMount(){
