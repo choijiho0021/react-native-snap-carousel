@@ -50,7 +50,6 @@ class CardInfo extends Component {
   render () {
     const { iccid, balance, expDate, navigation } = this.props
 
-    console.log("render info -aaaa")
     return (
       <View>
         <View style={styles.headerBox}>
@@ -232,8 +231,6 @@ class UsageItem extends Component {
     const {item, onPress} = this.props
     const {isShowUsage = false} = this.state 
     const {statusColor = colors.warmGrey, isActive = false} = this.setStatusColor()
-
-    console.log("render item -aaaa")
 
     return (
       <TouchableOpacity onPress={onPress}> 
