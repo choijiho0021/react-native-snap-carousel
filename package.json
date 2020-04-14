@@ -27,7 +27,7 @@
     "expo-constants": "^7.0.1",
     "expo-localization": "^7.0.0",
     "i18n-js": "^3.5.0",
-    "iamport-react-native": "^1.4.0",
+    "iamport-react-native": "^1.4.1",
     "immutable": "^4.0.0-rc.12",
     "moment": "^2.24.0",
     "moment-with-locales-es6": "^1.0.1",
