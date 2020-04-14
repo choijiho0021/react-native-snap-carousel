@@ -34,7 +34,72 @@ const STATUS_CANCELED = 'C'   //취소
 const STATUS_EXPIRED = 'E'    //사용 기간 종료
 const STATUS_USED = 'U'       //사용 완료
 
-class UsageItem extends PureComponent {
+class CardInfo extends Component {
+
+  constructor(props) {
+    super(props)
+
+  }
+
+  shouldComponentUpdate(nextProps, nextState){
+    const {iccid, balance} = nextProps
+
+    return (iccid != this.props.iccid || balance != this.props.balance) 
+  }
+
+  render () {
+    const { iccid, balance, expDate, navigation } = this.props
+
+    console.log("render info -aaaa")
+    return (
+      <View>
+        <View style={styles.headerBox}>
+          <View style={{flexDirection: 'row', marginTop: 30, marginBottom:10, justifyContent: 'space-between'}}>
+            <Text style={[appStyles.bold16Text, {color: colors.white, height: 16, alignSelf: 'center'}]}>{i18n.t('acc:balance')}</Text>
+            <AppButton title={i18n.t('menu:change')} 
+              titleStyle={[appStyles.normal12Text, {color: colors.white}]}
+              style={styles.changeBorder}
+              onPress={() => navigation.navigate('RegisterSim')}
+              iconName={'iconRefresh'} direction={'row'}
+              size={16}
+              iconStyle={{margin:3}}
+              />
+          </View>
+          {
+            iccid &&
+            <View>
+              <View style={{flexDirection: 'row', marginBottom: 25}}>
+                <Text style={[appStyles.bold30Text, {color: colors.white}]}>{utils.numberToCommaString(balance)}</Text>
+                <Text style={[appStyles.normal22Text, {color: colors.white}]}>{i18n.t('won')}</Text>
+              </View>
+
+              <LabelText key='iccid'
+                style={styles.box}
+                format={'shortDistance'}
+                label={'ICCID'} labelStyle={[styles.normal14White, {fontWeight: 'bold', marginRight: 10}]} 
+                value={iccid ? utils.toICCID(iccid) : i18n.t('reg:card')} valueStyle={styles.normal14White}/>
+
+              <LabelText key='expDate'
+                style={styles.box}
+                format={'shortDistance'}
+                label={i18n.t('acc:expDate')} labelStyle={[styles.normal12White, {fontWeight: 'bold', marginRight: 10}]} 
+                value={expDate} valueStyle={styles.normal12White}/>
+            </View>
+          } 
+          <AppButton
+            style={styles.rechargeBtn}
+            onPress={()=>this.props.navigation.navigate('Recharge')}
+            title={i18n.t('recharge')}
+            titleStyle={styles.rechargeBtnTitle}/>
+        </View>
+        <View style={{backgroundColor:colors.whiteTwo, margin:20, marginTop:30}}>
+          <Text style={{... appStyles.bold18Text}} >{i18n.t('usim:dataUsageList')}</Text>
+        </View>
+      </View>
+      )
+    }
+  }
+class UsageItem extends Component {
 
   constructor(props) {
     super(props)
@@ -47,6 +112,11 @@ class UsageItem extends PureComponent {
     this.setStatusColor = this.setStatusColor.bind(this)
     this.usageRender = this.usageRender.bind(this)
     this.getUsage = this.getUsage.bind(this)
+  }
+
+  shouldComponentUpdate(nextProps, nextState){
+
+    return this.props.item.statusCd != nextProps.item.statusCd
   }
 
   componentDidMount() {
@@ -77,7 +147,7 @@ class UsageItem extends PureComponent {
         statusColor = colors.warmGrey
         break
     }
-    this.setState({statusColor : statusColor, isActive : isActive})
+    return {statusColor : statusColor, isActive : isActive}
   }
 
   getUsage() {
@@ -160,8 +230,11 @@ class UsageItem extends PureComponent {
 
   render () {
     const {item, onPress} = this.props
-    const {statusColor = colors.warmGrey, isActive = false, isShowUsage = false} = this.state 
-      
+    const {isShowUsage = false} = this.state 
+    const {statusColor = colors.warmGrey, isActive = false} = this.setStatusColor()
+
+    console.log("render item -aaaa")
+
     return (
       <TouchableOpacity onPress={onPress}> 
         <View style ={styles.usageListContainer}>
@@ -227,7 +300,6 @@ class UsimScreen extends Component {
   }
   _empty = () => {
 
-
     if ( this.props.pending) return null
 
     return (
@@ -260,55 +332,9 @@ class UsimScreen extends Component {
     }
   }
 
-  _info() {
-    const { account: {iccid, balance, expDate}} = this.props
-
-    return (
-      <View>
-        <View style={styles.headerBox}>
-          <View style={{flexDirection: 'row', marginTop: 30, marginBottom:10, justifyContent: 'space-between'}}>
-            <Text style={[appStyles.bold16Text, {color: colors.white, height: 16, alignSelf: 'center'}]}>{i18n.t('acc:balance')}</Text>
-            <AppButton title={i18n.t('menu:change')} 
-              titleStyle={[appStyles.normal12Text, {color: colors.white}]}
-              style={styles.changeBorder}
-              onPress={()=> this.props.navigation.navigate('RegisterSim')}
-              iconName={'iconRefresh'} direction={'row'}
-              size={16}
-              iconStyle={{margin:3}}
-              />
-          </View>
-          {
-            iccid &&
-            <View>
-              <View style={{flexDirection: 'row', marginBottom: 25}}>
-                <Text style={[appStyles.bold30Text, {color: colors.white}]}>{utils.numberToCommaString(balance)}</Text>
-                <Text style={[appStyles.normal22Text, {color: colors.white}]}>{i18n.t('won')}</Text>
-              </View>
-
-              <LabelText key='iccid'
-                style={styles.box}
-                format={'shortDistance'}
-                label={'ICCID'} labelStyle={[styles.normal14White, {fontWeight: 'bold', marginRight: 10}]} 
-                value={iccid ? utils.toICCID(iccid) : i18n.t('reg:card')} valueStyle={styles.normal14White}/>
-
-              <LabelText key='expDate'
-                style={styles.box}
-                format={'shortDistance'}
-                label={i18n.t('acc:expDate')} labelStyle={[styles.normal12White, {fontWeight: 'bold', marginRight: 10}]} 
-                value={expDate} valueStyle={styles.normal12White}/>
-            </View>
-          } 
-          <AppButton
-            style={styles.rechargeBtn}
-            onPress={()=>this.props.navigation.navigate('Recharge')}
-            title={i18n.t('recharge')}
-            titleStyle={styles.rechargeBtnTitle}/>
-        </View>
-        <View style={{backgroundColor:colors.whiteTwo, margin:20, marginTop:30}}>
-          <Text style={{... appStyles.bold18Text}} >{i18n.t('usim:dataUsageList')}</Text>
-        </View>
-      </View>
-      )
+  _info () {
+    const { account: {iccid, balance, expDate}, navigation} = this.props
+    return (<CardInfo iccid={iccid} balance={balance} expDate={expDate} navigation={navigation}/>)
   }
 
   render() {
