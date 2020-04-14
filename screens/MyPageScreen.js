@@ -42,7 +42,13 @@ else {
   ImagePicker = require('react-native-image-crop-picker').default
 }
 
-class OrderItem extends PureComponent {
+class OrderItem extends Component {
+
+  shouldComponentUpdate(nextProps, nextState){
+
+    return (this.props.item.state != nextProps.item.state)
+  }
+
   render () {
     const {item, onPress} = this.props
     if ( _.isEmpty(item.orderItems) ) return <View></View>
@@ -53,6 +59,7 @@ class OrderItem extends PureComponent {
     const isCanceled = item.state == 'canceled'
     const billingAmt = item.totalPrice + item.dlvCost
 
+    console.log("order Iitem - aaaa")
     return (
       <TouchableOpacity onPress={onPress}>
         <View key={item.orderId} style={styles.order}>
