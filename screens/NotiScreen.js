@@ -24,13 +24,20 @@ import { Platform } from '@unimodules/core';
 const MODE_NOTIFICATION = 'info'
 const CONTACT_BOARD_LIST_INDEX = 1
 
-class NotiListItem extends PureComponent {
+class NotiListItem extends Component {
+
+  shouldComponentUpdate(nextProps, nextState){
+    const {isRead} = nextProps.item
+
+    return this.props.item.isRead != isRead
+  }
+
   render() {
     const {item, onPress} = this.props
     // summary가 있으면, 우선적으로 표시한다.
     return (
       <TouchableOpacity onPress={() => onPress(item.uuid, item.title, item.body, item.notiType, item.format)}>
-        <View key={item.uuid} style={[styles.notibox,{backgroundColor:item.isRead == "F" ? "#f7f8f9" : colors.white}]}>
+        <View key={item.uuid} style={[styles.notibox,{backgroundColor:item.isRead == "F" ? colors.whiteTwo : colors.white}]}>
           <View key='notitext' style={styles.notiText} >
             <Text key='created' style={styles.created}>{utils.toDateString(item.created)}</Text>
             <View style={styles.title}>
