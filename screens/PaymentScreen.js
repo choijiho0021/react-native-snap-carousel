@@ -82,12 +82,11 @@ class PaymentScreen extends Component{
       const params = this.props.navigation.getParam('params')
       const orderResult = await this.props.action.cart.payNorder({
         ... response,
-        payment_type: params.pg,
+        payment_type: params.pay_method,
         amount: params.amount,
         profile_uuid: params.profile_uuid,
         rokebi_cash: params.rokebi_cash,
         dlvCost: params.dlvCost,
-        // pay_method: params.pay_method,
       })
 
       this.props.navigation.replace('PaymentResult', {pymResult:response, orderResult})  

@@ -3,8 +3,6 @@ import _ from 'underscore'
 import utils from '../utils';
 import i18n from '../i18n';
 
-
-
 class PaymentAPI {
     PAGE_SIZE = 10
     
@@ -16,20 +14,21 @@ class PaymentAPI {
                 title: i18n.t('pym:ccard')
             },
             {
+                // method 확인
                 key: 'html5_inicis',
                 method: 'card',
                 title: i18n.t('pym:bank')                
             },
             {
                 key: 'danal',
-                method: 'card',
+                method: 'danal',
                 title: i18n.t('pym:mobile')
             }
         ],
         [
             {
                 key: 'kakaopay',
-                method: 'card',
+                method: 'kakaopay',
                 title: i18n.t('pym:kakao')
             },
             {
@@ -40,7 +39,7 @@ class PaymentAPI {
             },
             {
                 key: 'payco',
-                method: 'card',
+                method: 'payco',
                 title: i18n.t('pym:payco')
             },
         ],
