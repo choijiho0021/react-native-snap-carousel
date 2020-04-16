@@ -3,7 +3,8 @@ import {
   View, 
   Text,
   StyleSheet,
-  Image
+  Image,
+  BackHandler
 } from 'react-native';
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -108,12 +109,32 @@ class PaymentResultScreen extends Component {
     }
 
     this._init = this._init.bind(this)
+    this.moveScreen = this.moveScreen.bind(this)
+    this.backKeyHandler = this.backKeyHandler.bind(this)
+
   }
 
   componentDidMount() {
-    this.props.action.noti.getNotiList(this.props.auth.user)
-
     this._init()
+    this.props.action.noti.getNotiList(this.props.auth.user)
+    this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.backKeyHandler)
+  }
+
+  backKeyHandler() {
+    console.log("Disabled back key")
+    return true
+  }
+
+  moveScreen(key) {
+    
+    this.backHandler.remove()
+
+    if(key == 'MyPage') {
+      this.props.navigation.popToTop() && this.props.navigation.navigate('MyPage')
+    }
+    else {
+      this.props.navigation.popToTop() && this.props.navigation.navigate('Home')
+    }
   }
 
   _init() {
@@ -156,7 +177,7 @@ class PaymentResultScreen extends Component {
             <Text style={styles.paymentResultText}> {i18n.t( isSuccess ? 'pym:success' : 'pym:fail')}</Text>
             <AppButton style={styles.btnOrderList}
                       //MyPage화면 이동 필요
-                      onPress={() => this.props.navigation.popToTop() && this.props.navigation.navigate('MyPage')}
+                      onPress={() => this.moveScreen('MyPage')}
                       // title={i18n.t('cancel')} 
                       title={i18n.t('pym:toOrderList')}
                       titleStyle={appStyles.normal16Text}/>
@@ -175,7 +196,7 @@ class PaymentResultScreen extends Component {
         
         <AppButton style={styles.btnHome} title={i18n.t('pym:toHome')} 
             titleStyle={styles.btnHomeText}
-            onPress={() => this.props.navigation.popToTop() && this.props.navigation.navigate('Home')}/>
+            onPress={() => this.moveScreen('Home')}/>
       </SafeAreaView>
     )
   }
