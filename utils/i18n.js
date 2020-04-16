@@ -543,7 +543,7 @@ const ko = {
   "sim:rechargeAmt" : "충전 금액",
   "sim:cardPrice" : "카드 가격",
   "sim:deductFromBalance" : "충전 금액 차감",
-  "sim:remainingBalance" : "남은 금액",
+  "sim:remainingBalance" : "로깨비캐시",
 
   "mobile:header": "로그인",
   "mobile:title": "간편 인증 로그인",
