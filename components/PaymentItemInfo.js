@@ -47,6 +47,9 @@ const styles = StyleSheet.create({
   colorClearBlue: {
     color: colors.clearBlue
   },
+  colorWarmGrey: {
+    color:colors.warmGrey
+  },
   fontWeightNormal: {
     fontWeight: 'normal'
   },
@@ -69,6 +72,14 @@ const styles = StyleSheet.create({
   normalText16: {
     ... appStyles.normal16Text,
     fontWeight: 'normal',
+    fontSize: isDeviceSize('small') ? 14 : 16
+  },
+  boldText16: {
+    ... appStyles.bold16Text,
+    fontSize: isDeviceSize('small') ? 14 : 16
+  },
+  boldText18: {
+    ... appStyles.bold18Text,
     fontSize: isDeviceSize('small') ? 14 : 16
   },
   productPriceTitle: { 
@@ -129,22 +140,16 @@ class PaymentItemInfo extends PureComponent {
                   <Text key="currentBal" style={[styles.normalText14, {marginLeft: 18}]}>{`(${i18n.t('cart:currentBalance')}:${utils.numberToCommaString(balance) + ' ' + i18n.t('won')}) `}</Text>
                 }
               </View>
-              <Text key="amount" style={styles.normalText16}>{utils.price(deduct)}</Text>
+              <Text key="amount" style={styles.normalText16}>{`-${utils.price(deduct)}`}</Text>
             </View>
           </View>
         }
 
-        <View style={[styles.row, styles.total, styles.brdrBottom0]}>
-          <Text style={[styles.normalText14]}>{i18n.t('cart:totalCost')} </Text>
-          <Text style={[styles.normalText16, styles.colorClearBlue, styles.fontWeightNormal]}>{utils.numberToCommaString(pymPrice)+ ' ' + i18n.t('won')}</Text>
+        <View style={[styles.row, styles.total, styles.brdrBottom0, {backgroundColor:colors.white, marginBottom:10}]}>
+          <Text style={[styles.boldText16, styles.colorWarmGrey]}>{i18n.t('cart:totalCost')} </Text>
+          <Text style={[styles.boldText16, styles.colorClearBlue]}>{utils.numberToCommaString(pymPrice)+ ' ' + i18n.t('won')}</Text>
         </View>
-        {
-          screen == 'PaymentResult' &&
-          <View style={[styles.row, styles.total, {borderTopWidth: 0, backgroundColor: colors.white}]}>
-            <Text style={[styles.normalText14]}>{i18n.t('cart:afterDeductBalance')} </Text>
-            <Text style={[styles.normalText16, styles.fontWeightNormal]}>{utils.numberToCommaString(balance)+ ' ' + i18n.t('won')}</Text>
-          </View>
-        }
+
         <View style={[styles.divider, screen == 'PaymentResult' && { marginTop: 0} ]}>
         </View>
       </View>

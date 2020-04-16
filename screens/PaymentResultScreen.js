@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { 
   View, 
   Text,
-  StyleSheet
+  StyleSheet,
+  Image
 } from 'react-native';
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -11,6 +12,9 @@ import * as orderActions from '../redux/modules/order'
 import * as accountActions from '../redux/modules/account'
 import * as notiActions from '../redux/modules/noti'
 
+import utils from '../utils/utils';
+import AppButton from '../components/AppButton';
+import {appStyles} from '../constants/Styles'
 import PaymentItemInfo from '../components/PaymentItemInfo';
 import SafeAreaView from 'react-native-safe-area-view';
 import AppBackButton from '../components/AppBackButton';
@@ -23,19 +27,71 @@ import { ScrollView } from 'react-native-gesture-handler';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor:colors.white,
+    marginHorizontal:10,
     justifyContent: "flex-start",
   },
   result: {
-    flex: 1,
-    justifyContent: 'center',
-    height: 400, //500
-  }
+    ... appStyles.itemRow,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottomWidth: 0,
+
+    height: 52,
+    paddingHorizontal: 20,
+    borderTopColor: colors.blackack,
+    borderTopWidth: 1,
+    backgroundColor: colors.whiteTwo,
+    alignItems: 'center',
+
+    borderTopWidth: 0, 
+    backgroundColor: colors.white
+  },
+  title: {
+    ... appStyles.title,
+    marginLeft: 20,
+  },
+  image : {
+    marginTop:30
+  },
+  paymentResultView: {
+    backgroundColor:colors.white, 
+    alignItems:'center',
+    marginHorizontal:10, 
+    marginVertical:10
+  },
+  paymentResultText: {
+    ... appStyles.normal14Text,
+    color:colors.clearBlue, 
+    marginVertical:15
+  },
+  btnOrderList: {
+    borderWidth:1,
+    borderColor:colors.lightGrey, 
+    width:180, 
+    height:44, 
+    marginTop:15, 
+    marginBottom:40
+  },
+  btnHomeText: {
+    ... appStyles.normal18Text,
+    textAlign: "center",
+    color: colors.white
+  },
+  btnHome: {
+    width: "100%",
+    height: 52,
+    backgroundColor: colors.clearBlue
+  },
 })
 
 class PaymentResultScreen extends Component {
 
   static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('his:paymentCompleted')} back="top"/>
+    headerLeft: (
+      <Text style={styles.title}>{i18n.t('his:paymentCompleted')}</Text>
+    )
+    // headerLeft: <AppBackButton navigation={navigation} title={i18n.t('his:paymentCompleted')} back="top"/>
   })
 
   constructor(props){
@@ -93,15 +149,34 @@ class PaymentResultScreen extends Component {
     const isSuccess = !_.isUndefined(imp_success) ? imp_success && (result == 0) : result == 0
 
     return (
-      <ScrollView>
-        <SafeAreaView style={styles.container}>
-          <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance}
-                          pymPrice={isSuccess ? pymPrice : 0} deduct={isSuccess ? deduct : 0} isRecharge={isRecharge} screen={screen}/>
-          <View style={styles.result}>
-            <Text style={{alignSelf: 'center', color: colors.black}}>{i18n.t( isSuccess ? 'pym:success' : 'pym:fail')}</Text>
+      <SafeAreaView style={{flex:1}}>
+        <ScrollView style={{backgroundColor:colors.whiteTwo}}>
+          <View style={styles.paymentResultView}>
+            <Image style={styles.image} source={require('../assets/images/main/imgCheck.png')} resizeMode='contain'/>
+            <Text style={styles.paymentResultText}> {i18n.t( isSuccess ? 'pym:success' : 'pym:fail')}</Text>
+            <AppButton style={styles.btnOrderList}
+                      //MyPage화면 이동 필요
+                      onPress={() => this.props.navigation.popToTop() && this.props.navigation.navigate('MyPage')}
+                      // title={i18n.t('cancel')} 
+                      title={i18n.t('pym:toOrderList')}
+                      titleStyle={appStyles.normal16Text}/>
           </View>
-        </SafeAreaView>
-      </ScrollView>
+          <View style={styles.container}>
+            <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance}
+                            pymPrice={isSuccess ? pymPrice : 0} deduct={isSuccess ? deduct : 0} isRecharge={isRecharge} screen={screen}/>
+            { screen == 'PaymentResult' &&
+              <View style={styles.result}>
+                <Text style={appStyles.normal16Text}>{i18n.t('cart:afterDeductBalance')} </Text>
+                <Text style={appStyles.normal16Text}>{utils.numberToCommaString(this.props.account.balance)+ ' ' + i18n.t('won')}</Text>
+              </View>
+            }
+          </View>
+        </ScrollView>
+        
+        <AppButton style={styles.btnHome} title={i18n.t('pym:toHome')} 
+            titleStyle={styles.btnHomeText}
+            onPress={() => this.props.navigation.popToTop() && this.props.navigation.navigate('Home')}/>
+      </SafeAreaView>
     )
   }
 }
@@ -111,6 +186,7 @@ const mapStateToProps = (state) => ({
   cart: state.cart.toJS(),
   auth: accountActions.auth(state.account),
   noti : state.noti.toJS(),
+  order: state.order.toJS()
 })
 
 export default connect(mapStateToProps, 

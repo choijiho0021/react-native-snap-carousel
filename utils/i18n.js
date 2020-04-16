@@ -341,6 +341,8 @@ const en = {
   "pym:balance": "Balance Payment",
   "pym:success": "Payment successful",
   "pym:fail": "Payment failed",
+  "pym:toOrderList": "Go To Order List",
+  "pym:toHome": "Go To Home",
 
   "err:login" : "Please login first",
   "err:body"  : "There is no body to show",
@@ -687,9 +689,9 @@ const ko = {
 
   "cart:totalCnt" : "총 상품 수",
   "cart:totalPrice" : "총 상품 금액",
-  "cart:deductBalance" : "차감 총액",
+  "cart:deductBalance" : "차감금액",
   "cart:currentBalance" : "현재 로깨비캐시",
-  "cart:afterDeductBalance" : "결제 후 로깨비캐시",
+  "cart:afterDeductBalance" : "남은 로깨비캐시",
   "cart:dlvCost" : "배송비",
   "cart:totalCost" : "총 결제 금액",
   "cart:totalCntX" : "총 %% 개",
@@ -729,6 +731,8 @@ const ko = {
   "pym:balance": "로깨비캐시",
   "pym:success": "결제에 성공하였습니다",
   "pym:fail": "결제에 실패하였습니다",
+  "pym:toOrderList": "구매내역 보기",
+  "pym:toHome": "홈으로 이동",
 
   "err:login" : "로그인 후 이용해 주세요",
   "err:body"  : "본문이 없습니다",
