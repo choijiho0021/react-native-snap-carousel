@@ -36,16 +36,10 @@ const styles = StyleSheet.create({
     ... appStyles.itemRow,
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomWidth: 0,
 
     height: 52,
     paddingHorizontal: 20,
-    borderTopColor: colors.blackack,
-    borderTopWidth: 1,
-    backgroundColor: colors.whiteTwo,
     alignItems: 'center',
-
-    borderTopWidth: 0, 
     backgroundColor: colors.white
   },
   title: {
