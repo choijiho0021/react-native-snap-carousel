@@ -4,6 +4,7 @@ import { View, Image } from 'react-native'
 const tabbarPath = '../assets/images/tabbar/'
 const mainPath = '../assets/images/main/'
 const headerPath = '../assets/images/header/'
+const paymentPath = '../assets/images/payment/'
 const images = {
   btnHome : [ require( tabbarPath + 'btnHome.png'), require( tabbarPath + 'btnHomeSel.png')],
   btnStore : [ require( tabbarPath + 'btnStore.png'), require( tabbarPath + 'btnStoreSel.png')],
@@ -43,6 +44,12 @@ const images = {
   btnCnter: [ require( headerPath + 'btnCnter.png')],
   btnSearchTop: [ require( headerPath + 'btnSearchTop.png')],
   btnCheck : [ require( mainPath + 'btnCheckNon.png'), require( mainPath + 'btnCheckSel.png')],
+  kakao: [ require( paymentPath + 'logoKakao.png')],
+  naver: [ require( paymentPath + 'logoNaver.png')],
+  payco: [ require( paymentPath + 'logoPayco.png')],
+  samsung: [ require( paymentPath + 'logoSamsung.png')],
+  ssgpay: [ require( paymentPath + 'logoSsg.png')],
+  lpay: [ require( paymentPath + 'logoLpay.png')],
 }
 
 export default class AppIcon extends PureComponent {
