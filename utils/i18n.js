@@ -321,6 +321,7 @@ const en = {
   "usim:usablePeriod" : "Usable Period",
   "usim:warning" : "※ It may not exactly match your actual usage.",
   "usim:checkUsage" : "Usage Check",
+  "usim:failSnackBar" : "You can't see usage temporarily. Please try again after a few minutes.",
 
   "pym:title": "Payment Info",
   "pym:delivery": "Shipping Info",
@@ -711,6 +712,7 @@ const ko = {
   "usim:usablePeriod" : "사용기간",
   "usim:warning" : "※ 실 사용량과 정확히 일치하지 않을 수 있습니다.",
   "usim:checkUsage" : "사용량 확인",
+  "usim:failSnackBar" : "일시적으로 사용량을 조회할 수 없습니다. 잠시 후 다시 시도해주세요.",
 
   "pym:title": "결제 정보",
   "pym:delivery": "배송정보",

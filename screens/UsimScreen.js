@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
+import SnackBar from 'react-native-snackbar-component';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
@@ -106,7 +107,8 @@ class UsageItem extends Component {
     this.state = {
       statusColor : colors.warmGrey,
       isActive : false,
-      isShowUsage : false
+      isShowUsage : false,
+      disableBtn : false
     }
     this.setStatusColor = this.setStatusColor.bind(this)
     this.usageRender = this.usageRender.bind(this)
@@ -115,7 +117,7 @@ class UsageItem extends Component {
 
   shouldComponentUpdate(nextProps, nextState){
 
-    return this.props.item.statusCd != nextProps.item.statusCd
+    return (this.props.item.statusCd != nextProps.item.statusCd || this.state.disableBtn != nextState.disableBtn)
   }
 
   componentDidMount() {
@@ -123,6 +125,15 @@ class UsageItem extends Component {
   }
 
   componentDidUpdate() {
+
+    if(this.state.disableBtn){
+      setTimeout(()=>{
+        this.setState({
+          disableBtn: false
+        })
+      }, 5000)
+    }
+
     this.setStatusColor()
   }
 
@@ -150,12 +161,13 @@ class UsageItem extends Component {
   }
 
   getUsage() {
-    const {item, auth} = this.props
+    const {item, auth, showSnackBar} = this.props
 
     //그래프 테스트 nid = 1616
     if(item.statusCd == 'A') {
       subscriptionApi.getSubsUsage(item.nid, auth).then(
         resp => {
+          this.setState({disableBtn: true})
           if(resp.result == 0){
             console.log("getSubsUsage progress",resp.objects, item.nid)
             const {activated, quota, used, unit} = resp.objects
@@ -164,6 +176,7 @@ class UsageItem extends Component {
             this.circularProgress.animate(progress, 3000, null)
           }
           else {
+            showSnackBar()
             console.log("Get Usage failed", resp)
           }
         }
@@ -221,6 +234,7 @@ class UsageItem extends Component {
     <View style={styles.checkUsageBtnContainer}>
       <AppButton
             style={styles.checkUsageBtn}
+            disabled={this.state.disableBtn}
             onPress={() => this.getUsage()}
             title={i18n.t('usim:checkUsage')}
             titleStyle={styles.checkUsageBtnTitle}/>
@@ -265,12 +279,14 @@ class UsimScreen extends Component {
     super(props)
 
     this.state = {
-      refreshing: false
+      refreshing: false,
+      cancelPressed: false
     }
-
+    
     this._renderUsage = this._renderUsage.bind(this)
     this._onRefresh = this._onRefresh.bind(this)
     this._info = this._info.bind(this)
+    this.showSnackBar = this.showSnackBar.bind(this)
  }
 
   componentDidMount() {
@@ -290,6 +306,14 @@ class UsimScreen extends Component {
 
   componentDidUpdate( prevProps) {
     console.log('@@didupdate')
+
+    if(this.state.cancelPressed){
+      setTimeout(()=>{
+        this.setState({
+          cancelPressed: false
+        })
+      }, 3000)
+    }
   }
 
   componentWillUnmount(){
@@ -309,8 +333,14 @@ class UsimScreen extends Component {
     this.props.navigation.navigate('UsageDetail', {detail: usage.find(item => item.key == key)})
   }
   
+  showSnackBar () {
+    this.setState({
+      cancelPressed:true
+    })
+  }
+
   _renderUsage({item}) {
-    return (<UsageItem item={item} auth={this.props.auth} onPress={this._onPressUsageDetail(item.key)}/>)
+    return (<UsageItem item={item} auth={this.props.auth} showSnackBar={this.showSnackBar} onPress={this._onPressUsageDetail(item.key)}/>)
   }
 
   _onRefresh() {
@@ -336,7 +366,7 @@ class UsimScreen extends Component {
 
   render() {
     const { usage } = this.props.order
-    const {refreshing} = this.state
+    const {refreshing, cancelPressed} = this.state
 
     return(
       <View style={styles.container}>        
@@ -350,6 +380,14 @@ class UsimScreen extends Component {
             refreshing={refreshing}/>
           {/* <AppActivityIndicator visible={this.props.pending}/>  */}
         </View>
+        <SnackBar visible={cancelPressed} backgroundColor={colors.clearBlue} messageColor={colors.white}
+                  position={'bottom'}
+                  // top={this.state.scrollHeight + windowHeight/2}
+                  top={0}
+                  containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 0}}
+                  distanceCallback={(distance) => {console.log(distance)}}
+                  textMessage={i18n.t("usim:failSnackBar")}
+                  actionHandler={()=>{console.log("snackbar button clicked!")}}/>  
       </View>
     );
   }
