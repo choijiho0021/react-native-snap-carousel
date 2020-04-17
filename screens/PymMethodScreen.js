@@ -235,7 +235,7 @@ class PymMethodScreen extends Component {
     return (
       <SafeAreaView style={styles.container} forceInset={{top: 'never', bottom:"always"}}>
         <ScrollView>
-          <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance}
+          <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance} mode={'method'}
                           pymPrice={pymPrice} deduct={deduct} isRecharge={isRecharge}/>              
 
           {
