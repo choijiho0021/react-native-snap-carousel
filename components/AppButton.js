@@ -35,7 +35,7 @@ export default class AppButton extends PureComponent {
 
   render() {
     const {style, disabled=false, size, title, iconName, uri, 
-      onPress, titleStyle, checked, disableColor, disableBackgroundColor, 
+      onPress, titleStyle, checkedStyle, checked, disableColor, disableBackgroundColor, 
       direction, checkedColor, iconStyle
     } = this.props
 
@@ -45,7 +45,7 @@ export default class AppButton extends PureComponent {
       <TouchableOpacity 
         style={[style || styles.button, 
           disabled && {backgroundColor: disableBackgroundColor || colors.warmGrey},
-          checked && {borderColor: checkedColor || colors.clearBlue}
+          checked && (checkedStyle || {borderColor: checkedColor || colors.clearBlue})
         ]} 
         disabled={disabled} 
         onPress={onPress}>
