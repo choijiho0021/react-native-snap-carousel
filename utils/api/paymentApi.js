@@ -16,7 +16,7 @@ class PaymentAPI {
             {
                 // method 확인
                 key: 'html5_inicis',
-                method: 'card',
+                method: 'trans',
                 title: i18n.t('pym:bank')                
             },
             {
@@ -29,35 +29,41 @@ class PaymentAPI {
             {
                 key: 'kakaopay',
                 method: 'kakaopay',
-                title: i18n.t('pym:kakao')
+                title: i18n.t('pym:kakao'),
+                icon: 'kakao'
             },
             {
                 // 확인필요
                 key: 'naverco',
-                method: 'card',
-                title: i18n.t('pym:naver')
+                method: 'naverco',
+                title: i18n.t('pym:naver'),
+                icon: 'naver'
             },
             {
                 key: 'payco',
                 method: 'payco',
-                title: i18n.t('pym:payco')
+                title: i18n.t('pym:payco'),
+                icon: 'payco'
             },
         ],
         [
             {
                 key: 'html5_inicis',
                 method: 'samsung',
-                title: i18n.t('pym:samsung')
+                title: i18n.t('pym:samsung'),
+                icon: 'samsung'
             },
             {
                 key: 'html5_inicis',
                 method: 'ssgpay',
-                title: i18n.t('pym:ssgpay')
+                title: i18n.t('pym:ssgpay'),
+                icon: 'ssgpay'
             },
             {
                 key: 'html5_inicis',
                 method: 'lpay',
-                title: i18n.t('pym:lpay')
+                title: i18n.t('pym:lpay'),
+                icon: 'lpay'
             },
         ]        
     ]
