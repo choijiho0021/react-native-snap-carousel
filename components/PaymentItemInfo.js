@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
 class PaymentItemInfo extends PureComponent {
 
   render() {
-    const { cart, pymReq, balance=0, deduct=0, pymPrice=0, isRecharge, screen } = this.props
+    const { cart, pymReq, balance=0, deduct=0, pymPrice=0, isRecharge, screen, mode ='method' } = this.props
 
     return (
       <View>
@@ -145,9 +145,9 @@ class PaymentItemInfo extends PureComponent {
           </View>
         }
 
-        <View style={[styles.row, styles.total, styles.brdrBottom0, {backgroundColor:colors.white, marginBottom:10}]}>
-          <Text style={[styles.boldText16, styles.colorWarmGrey]}>{i18n.t('cart:totalCost')} </Text>
-          <Text style={[styles.boldText16, styles.colorClearBlue]}>{utils.numberToCommaString(pymPrice)+ ' ' + i18n.t('won')}</Text>
+        <View style={[styles.row, styles.total, styles.brdrBottom0, {backgroundColor:mode=='result'? colors.white : colors.whiteTwo, marginBottom:10}]}>
+          <Text style={[mode=='result'? styles.boldText16 : styles.normalText14, styles.colorWarmGrey]}>{i18n.t('cart:totalCost')} </Text>
+          <Text style={[mode=='result'? styles.boldText16 : styles.normalText14, styles.colorClearBlue]}>{utils.numberToCommaString(pymPrice)+ ' ' + i18n.t('won')}</Text>
         </View>
 
         <View style={[styles.divider, screen == 'PaymentResult' && { marginTop: 0} ]}>
