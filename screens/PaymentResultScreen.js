@@ -36,16 +36,10 @@ const styles = StyleSheet.create({
     ... appStyles.itemRow,
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomWidth: 0,
 
     height: 52,
     paddingHorizontal: 20,
-    borderTopColor: colors.blackack,
-    borderTopWidth: 1,
-    backgroundColor: colors.whiteTwo,
     alignItems: 'center',
-
-    borderTopWidth: 0, 
     backgroundColor: colors.white
   },
   title: {
@@ -183,7 +177,7 @@ class PaymentResultScreen extends Component {
                       titleStyle={appStyles.normal16Text}/>
           </View>
           <View style={styles.container}>
-            <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance}
+            <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance} mode={'result'}
                             pymPrice={isSuccess ? pymPrice : 0} deduct={isSuccess ? deduct : 0} isRecharge={isRecharge} screen={screen}/>
             { screen == 'PaymentResult' &&
               <View style={styles.result}>

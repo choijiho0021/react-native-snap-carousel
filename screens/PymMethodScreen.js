@@ -453,8 +453,8 @@ class PymMethodScreen extends Component {
           enableOnAndroid={true}
           // extraScrollHeight={60}
           innerRef={ref => { this.scroll = ref; }}>
-          <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance}
-                          pymPrice={pymPrice} deduct={deduct} isRecharge={isRecharge}/>
+          <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance} mode={'method'}
+                          pymPrice={pymPrice} deduct={deduct} isRecharge={isRecharge}/>  
               
           {
             simIncluded && this._address()

@@ -321,6 +321,7 @@ const en = {
   "usim:usablePeriod" : "Usable Period",
   "usim:warning" : "※ It may not exactly match your actual usage.",
   "usim:checkUsage" : "Usage Check",
+  "usim:failSnackBar" : "You can't see usage temporarily. Please try again after a few minutes.",
 
   "pym:title": "Payment Info",
   "pym:delivery": "Shipping Info",
@@ -561,7 +562,7 @@ const ko = {
   "sim:rechargeAmt" : "충전 금액",
   "sim:cardPrice" : "카드 가격",
   "sim:deductFromBalance" : "충전 금액 차감",
-  "sim:remainingBalance" : "남은 금액",
+  "sim:remainingBalance" : "로깨비캐시",
 
   "mobile:header": "로그인",
   "mobile:title": "간편 인증 로그인",
@@ -729,6 +730,7 @@ const ko = {
   "usim:usablePeriod" : "사용기간",
   "usim:warning" : "※ 실 사용량과 정확히 일치하지 않을 수 있습니다.",
   "usim:checkUsage" : "사용량 확인",
+  "usim:failSnackBar" : "일시적으로 사용량을 조회할 수 없습니다. 잠시 후 다시 시도해주세요.",
 
   "pym:title": "결제 정보",
   "pym:delivery": "배송정보",
