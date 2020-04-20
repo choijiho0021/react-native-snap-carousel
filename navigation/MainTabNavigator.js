@@ -140,6 +140,7 @@ const UsimStack = createStackNavigator(
     Recharge: RechargeScreen,
     Payment: PaymentScreen,
     PymMethod: PymMethodScreen,
+    SimpleText: SimpleTextScreen,
     PaymentResult: {
       screen:PaymentResultScreen,
       navigationOptions: {
@@ -214,6 +215,7 @@ const CartStack = createStackNavigator(
     Payment: PaymentScreen,
     PymMethod: PymMethodScreen,
     FindAddress: FindAddressScreen,
+    SimpleText: SimpleTextScreen,
     PaymentResult: {
       screen:PaymentResultScreen,
       navigationOptions: {
