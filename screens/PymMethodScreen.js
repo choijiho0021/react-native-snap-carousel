@@ -132,7 +132,7 @@ class PymMethodScreen extends Component {
 
     const { selected, pymPrice, deduct } = this.state
     
-    if ( (! selected) && (pymPrice !=0) ) return
+    if ( (_.isEmpty(selected)) && (pymPrice !=0) ) return
 
     const { mobile, email } = this.props.account,
       profileId = this.props.profile.selectedAddr || (this.props.profile.profile.find(item => item.isBasicAddr) || {}).uuid,
