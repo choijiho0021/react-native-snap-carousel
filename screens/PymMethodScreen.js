@@ -27,14 +27,15 @@ import Triangle from '../components/Triangle';
 import paymentApi from '../utils/api/paymentApi';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AppIcon from '../components/AppIcon';
+import Video from 'react-native-video';
 
 const deliveryText = [{
                         key: i18n.t("pym:tel"),
                         value: i18n.t("pym:toTel")
                       },
                       {
-                        key: i18n.t("pym:home"),
-                        value: i18n.t("pym:toHome")
+                        key: i18n.t("pym:frontDoor"),
+                        value: i18n.t("pym:atFrontDoor")
                       },
                       {
                         key: i18n.t("pym:deliveryBox"),
@@ -480,6 +481,9 @@ class PymMethodScreen extends Component {
                       key={i18n.t('payment')}
                       onPress={this._onSubmit}
                       style={appStyles.confirm} />
+        {
+          this.state.loading && <Video source={require('../assets/images/loading_1.mp4')} resizeMode={"stretch"} repeat={true} style={styles.backgroundVideo}/>
+        }
       </SafeAreaView>
     )
   }
