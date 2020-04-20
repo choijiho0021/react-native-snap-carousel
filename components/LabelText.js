@@ -40,14 +40,14 @@ export default class LabelText extends PureComponent {
     return (
       <View style={[styles.container, style, format != "shortDistance" && {justifyContent: 'space-between'}]} >
         <Text style={[labelStyle || styles.label, {maxWidth:'70%'}]}>{label}</Text>
-        {
+        {/* {
           isDeduct &&
           <Text style={[styles.label, {marginLeft: 18}]}>{`(${i18n.t('cart:currentBalance')}:${utils.numberToCommaString(value) + ' ' + i18n.t('won')}) `}</Text>
-        }
+        } */}
         {
           ( format == 'price' ) ?
             <View style={styles.value}>
-              <Text style={[valueStyle|| appStyles.price, {color}]}>{utils.numberToCommaString(isDeduct ? deduct : value)}</Text>
+              <Text style={[valueStyle|| appStyles.price, {color}]}>{isDeduct && '- '}{utils.numberToCommaString(isDeduct ? deduct : value)}</Text>
               <Text style={appStyles.normal14Text}>{' ' + i18n.t('won')}</Text>
             </View>
             : <Text style={valueStyle || styles.singleValue}>{value}</Text>
