@@ -37,7 +37,12 @@ const styles = StyleSheet.create({
     borderTopColor: colors.blackack,
     borderTopWidth: 1,
     backgroundColor: colors.whiteTwo,
-    alignItems: 'center'
+    alignItems: 'center',
+  },
+  resultTotal: {
+    backgroundColor: colors.white,
+    height: 60,
+    marginTop: 20
   },
   mrgBottom0: {
     marginBottom: 0
@@ -149,7 +154,7 @@ class PaymentItemInfo extends PureComponent {
           </View>
         }
 
-        <View style={[styles.row, styles.total, styles.brdrBottom0, {backgroundColor:mode=='result'? colors.white : colors.whiteTwo, marginBottom:10}]}>
+        <View style={[styles.row, styles.total, styles.brdrBottom0, mode=='result' && styles.resultTotal]}>
           <Text style={[mode=='result'? styles.boldText16 : styles.normal14WarmGrey, styles.colorWarmGrey]}>{i18n.t('cart:totalCost')} </Text>
           <Text style={[mode=='result'? styles.boldText18 : styles.normalText16, styles.colorClearBlue]}>{utils.numberToCommaString(pymPrice)+ ' ' + i18n.t('won')}</Text>
         </View>
