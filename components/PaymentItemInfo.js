@@ -19,7 +19,8 @@ const styles = StyleSheet.create({
   title: {
     ... appStyles.bold18Text,
     //fontFamily: "AppleSDGothicNeo",
-    marginVertical: isDeviceSize('small') ? 10 : 20,
+    marginTop: 20,
+    marginBottom: isDeviceSize('small') ? 10 : 20,
     marginHorizontal: 20,
     color: colors.black
   },
@@ -48,7 +49,10 @@ const styles = StyleSheet.create({
     color: colors.clearBlue
   },
   colorWarmGrey: {
-    color:colors.warmGrey
+    color: colors.warmGrey
+  },
+  colorBlack: {
+    color: colors.black
   },
   fontWeightNormal: {
     fontWeight: 'normal'
@@ -64,7 +68,7 @@ const styles = StyleSheet.create({
     marginVertical: 11, 
     marginHorizontal: 20
   },
-  normalText14: {
+  normal14WarmGrey: {
     ... appStyles.normal14Text,
     fontWeight: 'normal',
     color: colors.warmGrey
@@ -116,7 +120,7 @@ class PaymentItemInfo extends PureComponent {
                 {/* <View style={{maxWidth: '70%'}}> */}
                 <Text key="title" style={styles.productPriceTitle}>{item.title + qty}</Text>
                 {/* </View> */}
-                <Text key="price" style={styles.normalText16}>{utils.price(price)}</Text>
+                <Text key="price" style={[styles.normalText16, mode=='result' && styles.colorWarmGrey]}>{utils.price(price)}</Text>
               </View>)
           })
         }
@@ -128,26 +132,26 @@ class PaymentItemInfo extends PureComponent {
             {
               pymReq.map(item =>                      
                 <View style={styles.row} key={item.title}>
-                  <Text key="title" style={styles.normalText14}>{item.title}</Text>
-                  <Text key="amount" style={styles.normalText16}>{utils.price(item.amount)}</Text>
+                  <Text key="title" style={styles.normal14WarmGrey}>{item.title}</Text>
+                  <Text key="amount" style={[styles.normalText16, mode=='result' && styles.colorWarmGrey]}>{utils.price(item.amount)}</Text>
                 </View>) 
             }
             <View style={styles.row} key="balance">
               <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-                <Text key="title" style={styles.normalText14}>{i18n.t('cart:deductBalance')}</Text>
+                <Text key="title" style={styles.normal14WarmGrey}>{i18n.t('cart:deductBalance')}</Text>
                 {/* {
                   screen != 'PaymentResult' &&
-                  <Text key="currentBal" style={[styles.normalText14, {marginLeft: 18}]}>{`(${i18n.t('cart:currentBalance')}:${utils.numberToCommaString(balance) + ' ' + i18n.t('won')}) `}</Text>
+                  <Text key="currentBal" style={[styles.normal14WarmGrey, {marginLeft: 18}]}>{`(${i18n.t('cart:currentBalance')}:${utils.numberToCommaString(balance) + ' ' + i18n.t('won')}) `}</Text>
                 } */}
               </View>
-              <Text key="amount" style={styles.normalText16}>{`- ${utils.price(deduct)}`}</Text>
+              <Text key="amount" style={[styles.normalText16, mode=='result' && styles.colorWarmGrey]}>{`- ${utils.price(deduct)}`}</Text>
             </View>
           </View>
         }
 
         <View style={[styles.row, styles.total, styles.brdrBottom0, {backgroundColor:mode=='result'? colors.white : colors.whiteTwo, marginBottom:10}]}>
-          <Text style={[mode=='result'? styles.boldText16 : styles.normalText14, styles.colorWarmGrey]}>{i18n.t('cart:totalCost')} </Text>
-          <Text style={[mode=='result'? styles.boldText16 : styles.normalText14, styles.colorClearBlue]}>{utils.numberToCommaString(pymPrice)+ ' ' + i18n.t('won')}</Text>
+          <Text style={[mode=='result'? styles.boldText16 : styles.normal14WarmGrey, styles.colorWarmGrey]}>{i18n.t('cart:totalCost')} </Text>
+          <Text style={[mode=='result'? styles.boldText18 : styles.normalText16, styles.colorClearBlue]}>{utils.numberToCommaString(pymPrice)+ ' ' + i18n.t('won')}</Text>
         </View>
 
         <View style={[styles.divider, screen == 'PaymentResult' && { marginTop: 0} ]}>
