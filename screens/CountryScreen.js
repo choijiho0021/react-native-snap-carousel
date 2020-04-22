@@ -26,6 +26,7 @@ import AppCartButton from '../components/AppCartButton';
 import { windowWidth, device } from '../constants/SliderEntry.style';
 import Analytics from 'appcenter-analytics'
 import _ from 'underscore'
+import AppActivityIndicator from '../components/AppActivityIndicator';
 
 
 class CountryListItem extends PureComponent {
@@ -197,7 +198,7 @@ class CountryScreen extends Component {
           <Text style={styles.regCard}>{i18n.t('reg:card')}</Text>
         </View>
         }
-
+        <AppActivityIndicator visible={this.props.pending}/>
       </SafeAreaView>
     )
   }
@@ -347,6 +348,7 @@ const mapStateToProps = (state) => ({
   product: state.product.toJS(),
   cart: state.cart.toJS(),
   account : state.account.toJS(),
+  pending: state.pender.pending[cartActions.CART_ADD] || false,
 })
 
 export default connect(mapStateToProps, 

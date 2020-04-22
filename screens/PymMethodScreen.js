@@ -27,14 +27,15 @@ import Triangle from '../components/Triangle';
 import paymentApi from '../utils/api/paymentApi';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AppIcon from '../components/AppIcon';
+import Video from 'react-native-video';
 
 const deliveryText = [{
                         key: i18n.t("pym:tel"),
                         value: i18n.t("pym:toTel")
                       },
                       {
-                        key: i18n.t("pym:home"),
-                        value: i18n.t("pym:toHome")
+                        key: i18n.t("pym:frontDoor"),
+                        value: i18n.t("pym:atFrontDoor")
                       },
                       {
                         key: i18n.t("pym:deliveryBox"),
@@ -107,6 +108,7 @@ class PymMethodScreen extends Component {
     this._move = this._move.bind(this)
     this._consentEssential = this._consentEssential.bind(this)
     this._consentBox = this._consentBox.bind(this)
+    this._dropDownHeader = this._dropDownHeader.bind(this)
   }
 
   componentDidMount() {
@@ -131,7 +133,7 @@ class PymMethodScreen extends Component {
 
     const { selected, pymPrice, deduct } = this.state
     
-    if ( (! selected) && (pymPrice !=0) ) return
+    if ( (_.isEmpty(selected)) && (pymPrice !=0) ) return
 
     const { mobile, email } = this.props.account,
       profileId = this.props.profile.selectedAddr || (this.props.profile.profile.find(item => item.isBasicAddr) || {}).uuid,
@@ -247,6 +249,23 @@ class PymMethodScreen extends Component {
     })
   }
 
+  _dropDownHeader(stateTitle, title, alias){
+    return(
+      <TouchableOpacity style={styles.dropDownBox} onPress={()=>this._showModal(stateTitle)}>
+      <Text style={styles.boldTitle}>{title}</Text>
+      <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+        {
+          !this.state.showModal[stateTitle] &&
+          <Text style={[styles.alignCenter,styles.normal16BlueTxt]}>{alias}</Text>
+        }
+        <AppButton style={{backgroundColor: colors.white, height:70}} 
+                iconName= {this.state.showModal[stateTitle] ? "iconArrowUp" : "iconArrowDown"}
+                iconStyle={styles.dropDownIcon}/>
+      </View>          
+    </TouchableOpacity>
+    )
+  }
+
   _address(){
 
     const selectedAddr = this.props.profile.selectedAddr || undefined
@@ -255,18 +274,9 @@ class PymMethodScreen extends Component {
 
     return (
       <View>
-        <TouchableOpacity style={styles.dropDownBox} onPress={()=>this._showModal('address')}>
-          <Text style={styles.boldTitle}>{i18n.t('pym:delivery')}</Text>
-          <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
-            {
-              !this.state.showModal.address &&
-              <Text style={[styles.alignCenter,styles.normal16BlueTxt]}>{item.alias}</Text>
-            }
-            <AppButton style={{backgroundColor: colors.white, height:70}} 
-                    iconName= {this.state.showModal.address ? "iconArrowUp" : "iconArrowDown"}
-                    iconStyle={styles.dropDownIcon}/>
-          </View>          
-        </TouchableOpacity>
+        {
+          this._dropDownHeader('address', i18n.t('pym:delivery'), item.alias)
+        }
         {
           this.state.showModal.address &&
           <View style={styles.beforeDrop}>
@@ -300,7 +310,6 @@ class PymMethodScreen extends Component {
           {
             // 주소 등록 
             // == 0
-            // 확인하기
             this.props.profile.profile.length == 0 &&
               <AppButton title={i18n.t('reg:address')}
                 textStyle={appStyles.confirmText}
@@ -317,18 +326,9 @@ class PymMethodScreen extends Component {
   _memo(){
     return(
       <View>
-        <TouchableOpacity style={styles.dropDownBox} onPress={()=>this._showModal('memo')}>
-          <Text style={styles.boldTitle}>{i18n.t('pym:deliveryMemo')}</Text>
-          <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
-            {
-              !this.state.showModal.memo &&
-              <Text style={[styles.alignCenter,styles.normal16BlueTxt]}>{this.state.deliveryMemo.header}</Text>
-            }
-            <AppButton style={{backgroundColor: colors.white, height:70}} 
-                      iconName= {this.state.showModal.memo ? "iconArrowUp" : "iconArrowDown"}
-                      iconStyle={styles.dropDownIcon}/>
-          </View>
-        </TouchableOpacity>
+        {
+          this._dropDownHeader('memo', i18n.t('pym:deliveryMemo'), this.state.deliveryMemo.header)
+        }
         {
           this.state.showModal.memo &&
           <View style={styles.beforeDrop}>
@@ -375,18 +375,9 @@ class PymMethodScreen extends Component {
   _method(){
     return(
       <View>
-        <TouchableOpacity style={styles.dropDownBox} onPress={()=>this._showModal('method')}>
-          <Text style={styles.boldTitle}>{i18n.t('pym:method')}</Text>
-          <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
-            {
-              !this.state.showModal.method &&
-              <Text style={[styles.alignCenter,styles.normal16BlueTxt]}>{this.state.selected.title}</Text>
-            }
-            <AppButton style={{backgroundColor: colors.white, height:70}} 
-                      iconName= {this.state.showModal.method ? "iconArrowUp" : "iconArrowDown"}
-                      iconStyle={styles.dropDownIcon}/>
-          </View>
-        </TouchableOpacity>
+        {
+          this._dropDownHeader('method', i18n.t('pym:method'), this.state.selected.title)
+        }
         {
           this.state.showModal.method &&
           <View style={styles.beforeDrop}>
@@ -480,6 +471,9 @@ class PymMethodScreen extends Component {
                       key={i18n.t('payment')}
                       onPress={this._onSubmit}
                       style={appStyles.confirm} />
+        {
+          this.state.loading && <Video source={require('../assets/images/loading_1.mp4')} resizeMode={"stretch"} repeat={true} style={styles.backgroundVideo}/>
+        }
       </SafeAreaView>
     )
   }
