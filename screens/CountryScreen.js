@@ -104,10 +104,10 @@ class CountryScreen extends Component {
     let appCenterEvent
     switch (key) {
       case 'cart':
-        appCenterEvent = '카트에 담기 클릭'
+        appCenterEvent = i18n.t('appCenter:cartClick')
         break
       case 'purchase':
-        appCenterEvent = '바로구매 클릭'
+        appCenterEvent = i18n.t('appCenter:purchaseClick')
         break
       // case 'regCard':
       //   appCenterEvent = 'Country Screen에서 로그인 버튼 클릭'
