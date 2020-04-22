@@ -45,6 +45,8 @@ class PurchaseDetailScreen extends Component {
       scrollHeight: 0,
       borderBlue: false,
     }
+
+    this.snackRef = React.createRef();
     
     this._onPressPayment = this._onPressPayment.bind(this)
     this._onPressDelivery = this._onPressDelivery.bind(this)
@@ -346,13 +348,17 @@ class PurchaseDetailScreen extends Component {
       <ScrollView style={styles.container}
                   onScroll={this._onScroll}>
         <SafeAreaView forceInset={{ top: 'never', bottom:"always"}}>
-        <SnackBar visible={cancelPressed} backgroundColor={colors.clearBlue} messageColor={colors.white}
+        <SnackBar ref={this.snackRef}
+                  visible={cancelPressed} backgroundColor={colors.clearBlue} 
+                  textMessage={i18n.t("his:cancelSuccess")} messageColor={colors.white}
                   position={'top'}
                   top={this.state.scrollHeight + windowHeight/2}
                   containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 10}}
-                  distanceCallback={(distance) => {console.log(distance)}}
-                  textMessage={i18n.t("his:cancelSuccess")}
-                  actionHandler={()=>{console.log("snackbar button clicked!")}}/>  
+                  actionText={'X'}
+                  actionStyle={{paddingHorizontal: 20}}
+                  accentColor={colors.white}
+                  // distanceCallback={(distance) => {console.log('distance', distance)}}
+                  actionHandler={()=>{this.snackRef.current.hideSnackbar()}}/>  
           {
             this._headerInfo()
           }
