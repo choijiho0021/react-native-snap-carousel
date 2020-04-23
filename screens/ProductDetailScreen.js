@@ -77,22 +77,19 @@ class ProductDetailScreen extends Component {
   componentDidUpdate(prevProps) {
   }
 
-  onNavigationStateChange(key, navState) {
+  onNavigationStateChange(navState) {
     // console.log("webView Height:", navState.title);
     console.log("navState", navState)
 
-    const split = navState.title.split(',') 
-
-    this.setState({
-      height1: Number(split[0]/PixelRatio.get()),
-      height2: Number(split[1]/PixelRatio.get()),
-      height3: Number(split[2]/PixelRatio.get())
-    });
+    navState.title.split(',').map((bottom, idx) => 
+      this.setState({
+        ['height' + idx] : Number(bottom)
+      })) 
   }
 
 
   render() {
-    const {querying = false, body, bodyTitle, imageAnimation, isShow, height1, height2, height3} = this.state
+    const {querying = false, body, bodyTitle, imageAnimation, isShow, height0, height1, height2, height3, height4} = this.state
     const {navigation} = this.props
 
     const headerHeight = this.state.scrollY.interpolate({
@@ -114,16 +111,23 @@ class ProductDetailScreen extends Component {
     }
 
 const html0 = htmlWithCss("test", body)
-const html1 = '<div id="testa" style="font-size:16px; padding: 0px;">starta <p> test1 test2 </p> <p> test1 test2 </p></div>'
-const html2 = '<div id="testb" style="font-size:16px; padding: 30px">startb <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>'
-const html3 = '<div id="testc" style="font-size:16px; padding: 30px">startc <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>'
+const html = [
+  '<div id="testa" style="font-size:16px; border:1px solid black;"><h1>starta</h1> <p> test1 test2 </p> <p> test1 test2 </p></div>',
+  '<div id="testb" style="font-size:16px; border:1px solid black;"><h1>startb</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
+  '<div id="testc" style="font-size:16px; border:1px solid black;"><h1>startc</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
+  '<div id="testd" style="font-size:16px; border:1px solid black;"><h1>startd</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
+  '<div id="teste" style="font-size:16px; border:1px solid black;"><h1>starte</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>'
+]
 
 
-const html =  html1 + html2 + html3 
-
-const script = `<script>window.location.hash = 1;document.title = document.getElementById('testa').clientHeight+',' + document.getElementById('testb').offsetHeight+',' + document.getElementById('testc').clientHeight </script>`
+const script = `<script>window.location.hash = 1;
+document.title = ['testa', 'testb', 'testc', 'testd', 'teste'].map(item => {
+  var rect = document.getElementById(item).getBoundingClientRect();
+  return rect.bottom;
+}).join(',');</script>`
+//const script = `<script>window.location.hash = 1;document.title = document.getElementById('testa').scrollHeight+',' + document.getElementById('testb').scrollHeight+',' + document.getElementById('testc').scrollHeight </script>`
 // const script = `<script>window.location.hash = 1;document.title = document.getElementById('testa').clientHeight </script>`
-const scale = 0.55
+const scale = 0.422
 
     return (
       <SafeAreaView style={styles.screen}>
@@ -137,37 +141,47 @@ const scale = 0.55
 
           <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginHorizontal:40}}>
             <AppButton title={'상품정보'} onPress={() => { this._scrollView.scrollTo({x: 0, y: 0, animated: true}) }}/>
-            <AppButton title={'주의사항'} onPress={() => { this._scrollView.scrollTo({x: 0, y: height1 * scale + 200, animated: true}) }}/>
-            <AppButton title={'사용팁'} onPress={() => { this._scrollView.scrollTo({x: 0, y: (height1 + height2) * scale + 200, animated: true}) }}/>
-            <AppButton title={'물어보기'} onPress={() => { this._scrollView.scrollTo({x: 0, y: 200, animated: true}) }}/>
+            <AppButton title={'주의사항'} onPress={() => { 
+              console.log('scroll to ', height0 * scale)
+              this._scrollView.scrollTo({x: 0, y: height0 * scale, animated: true}) 
+            }}/>
+            <AppButton title={'사용팁'} onPress={() => { 
+              console.log('scroll to ', height1 * scale)
+              this._scrollView.scrollTo({x: 0, y: height1 * scale, animated: true}) 
+            }}/>
+            <AppButton title={'물어보기'} onPress={() => { 
+              console.log('scroll to ', height2 * scale)
+              this._scrollView.scrollTo({x: 0, y: height2 * scale, animated: true}) 
+            }}/>
           </View>
         </View>
 
         {/* <Animated.View style={{height:emptyHeaderHeight}}></Animated.View> */}
 
         <ScrollView 
-        ref={scrollView => {this._scrollView = scrollView}}
-        style={{flex:1}}
-        showsVerticalScrollIndicator={false}
-        scrollEventThrottle={11}
-        onScroll={Animated.event(
-          [{nativeEvent: {contentOffset: {y: this.state.scrollY}}}]
-        )}
-        >
-
-        <WebView 
-        ref={webView1 => {this._webView1 = webView1}}
-        automaticallyAdjustContentInsets={false}
-        javaScriptEnabled={true}
-        domStorageEnabled={true}
-        scalesPageToFit={true}
-        decelerationRate="normal"
-        onNavigationStateChange={(navState) => this.onNavigationStateChange('webView1',navState)}
-        scrollEnabled = {false}
-        source={{html: html + script} } 
-        // style={{height:  2000}} 
-        style={{height: height1 + height2 + height3 || 1000}} 
-        />
+          ref={scrollView => {this._scrollView = scrollView}}
+          style={{flex:1}}
+          showsVerticalScrollIndicator={false}
+          scrollEventThrottle={11}
+          onScroll={event => { 
+            console.log('scroll y:' + event.nativeEvent.contentOffset.y);
+          }}
+          //onScroll={Animated.event(
+           // [{nativeEvent: {contentOffset: {y: this.state.scrollY}}}]
+          //)}// > 
+          >
+          <WebView 
+            automaticallyAdjustContentInsets={false}
+            javaScriptEnabled={true}
+            domStorageEnabled={true}
+            scalesPageToFit={true}
+            decelerationRate="normal"
+            onNavigationStateChange={(navState) => this.onNavigationStateChange(navState)}
+            scrollEnabled = {false}
+            source={{html: html.join('') + script} } 
+            // style={{height:  2000}} 
+            style={{height: height1 + height2 + height3 || 1000}} 
+          />
 
         {/* <WebView 
         ref={webView2 => {this._webView2 = webView2}}
@@ -202,7 +216,7 @@ const scale = 0.55
         style={{height:Number(webView3) ||200}} 
         /> */}
          
-         </ScrollView>
+        </ScrollView>
       </SafeAreaView>
     )
   }
