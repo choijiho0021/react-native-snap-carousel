@@ -164,8 +164,10 @@ class CountryScreen extends Component {
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <Image style={styles.box} source={{uri:api.httpImageUrl(imageUrl)}}/>
-
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {title:this.props.navigation.getParam('title'), text:selected.body})}>
+        
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('ProductDetail', {title:this.props.navigation.getParam('title'), text:selected.body, img:imageUrl})}>
+       
+        {/* <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {title:this.props.navigation.getParam('title'), text:selected.body})}> */}
           <View style={styles.detail}>
             <Text style={windowWidth > device.small.window.width ? appStyles.normal14Text : appStyles.normal12Text}>{i18n.t('country:detail')}</Text>
             <AppIcon style={{marginRight:20}} name="iconArrowRight" size={10} />

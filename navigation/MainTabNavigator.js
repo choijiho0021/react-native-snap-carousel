@@ -14,6 +14,7 @@ import StoreScreen from '../screens/StoreScreen';
 import CountryScreen from '../screens/CountryScreen';
 import ProductScreen from '../screens/ProductScreen';
 import RegisterSimScreen from '../screens/RegisterSimScreen';
+import ProductDetailScreen from '../screens/ProductDetailScreen';
 
 import SettingsScreen from '../screens/SettingsScreen';
 import i18n from '../utils/i18n'
@@ -107,6 +108,7 @@ const StoreStack = createStackNavigator(
     Product: ProductScreen,
     NewSim: NewSimScreen,
     SimpleText: SimpleTextScreen,
+    ProductDetail: ProductDetailScreen,
 
     // Roaming Product 바로 구매와 관련된 화면
     Payment: PaymentScreen,
