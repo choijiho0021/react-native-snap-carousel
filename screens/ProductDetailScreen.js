@@ -1,15 +1,12 @@
 import React, {Component} from 'react';
-import ReactNative, {
+import {
   StyleSheet,
   View,
   SafeAreaView,
   ScrollView,
   Text,
-  Platform,
   Animated,
   Image,
-  FlatList,
-  findNodeHandle,
   PixelRatio
 } from 'react-native';
 
@@ -25,13 +22,23 @@ import { appStyles, htmlWithCss } from '../constants/Styles';
 import AppButton from '../components/AppButton';
 import WebView from 'react-native-webview';
 import utils from '../utils/utils';
-import getEnvVars from '../environment'
 
-const { baseUrl } = getEnvVars();
+const HEADER_IMG_HEIGHT = 200;
+const INIT_IDX = 999;
 
-const HEADER_MAX_HEIGHT = 200;
-const HEADER_MIN_HEIGHT = 0;
-const HEADER_SCROLL_DISTANCE = 200;
+const html = [
+  '<div id="testa" style="font-size:16px; border:1px solid black;"><h1>starta</h1> <p> test1 test2 </p> <p> test1 test2 </p></div>',
+  '<div id="testb" style="font-size:16px; border:1px solid black;"><h1>startb</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
+  '<div id="testc" style="font-size:16px; border:1px solid black;"><h1>startc</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
+]
+
+const script = `<script>window.location.hash = 1;
+document.title = ['testa', 'testb', 'testc'].map(item => {
+  var rect = document.getElementById(item).getBoundingClientRect();
+  return rect.bottom;
+}).join(',');</script>`
+
+const scale = 0.422
 
 class ProductDetailScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -42,23 +49,34 @@ class ProductDetailScreen extends Component {
     super(props)
     
     this.state = {
-      imageAnimation : new Animated.Value(200),
       scrollY: new Animated.Value(0),
-      isShow:true,
-      offset:0
+      idx : INIT_IDX,
+      querying : true,
+      body : ''
     }
     
     this.onNavigationStateChange = this.onNavigationStateChange.bind(this)
+    this.checkIdx = this.checkIdx.bind(this)
+    this._scrollTo = this._scrollTo.bind(this)
+    this.renderContactKakao = this.renderContactKakao.bind(this)
+    this.renderWebView = this.renderWebView.bind(this)
     this.controller = new AbortController()
+  }
+
+  shouldComponentUpdate(preProps,preState){
+    const {idx, height2, body} = this.state
+
+    return preState.idx != idx || preState.body != body || preState.height2 != height2
   }
 
   componentDidMount() {
 
+    //todo : 상세 HTML을 가져오도록 변경 필요
     pageApi.getPageByCategory('Contract', this.controller).then(resp => { 
       console.log("resp -aaaa",resp)
       if ( resp.result == 0 && resp.objects.length > 0) {
         this.setState({
-          body: resp.objects[0].body,
+          body: htmlWithCss("test", resp.objects[0].body),
           disable: false
         })
       }
@@ -74,12 +92,7 @@ class ProductDetailScreen extends Component {
 
   }
 
-  componentDidUpdate(prevProps) {
-  }
-
   onNavigationStateChange(navState) {
-    // console.log("webView Height:", navState.title);
-    console.log("navState", navState)
 
     navState.title.split(',').map((bottom, idx) => 
       this.setState({
@@ -87,135 +100,139 @@ class ProductDetailScreen extends Component {
       })) 
   }
 
+  checkIdx(offset) {
+    const {height0, height1} = this.state
+
+    // if(this.state.idx != 3){
+    //   if(offset < height0 * scale + HEADER_IMG_HEIGHT - 1 && this.state.idx != 0){
+    //     this.setState({idx : 0})
+    //   }
+    //   else if(offset >= height0 * scale + HEADER_IMG_HEIGHT -1 && offset < height1 * scale + HEADER_IMG_HEIGHT -1 && this.state.idx != 1){
+    //     this.setState({idx : 1})
+    //   }
+    //   else if(offset >= height1 * scale + HEADER_IMG_HEIGHT -1 && this.state.idx != 2) {
+    //     this.setState({idx : 2})
+    //   }
+    // }
+
+    // 정확하게 Title이 상단끝에 걸쳐야 idx가 변경되어야 하는가?
+    if(this.state.idx != 3){
+      if(offset < height0 * scale && this.state.idx != 0){
+        this.setState({idx : 0})
+      }
+      else if(offset >= height0 * scale && offset < height1 * scale&& this.state.idx != 1){
+        this.setState({idx : 1})
+      }
+      else if(offset >= height1 * scale && this.state.idx != 2) {
+        this.setState({idx : 2})
+      }
+    }
+  }
+
+  _scrollTo(y){
+    console.log('scroll to y:', y)
+    this._scrollView.scrollTo({x: 0, y: y, animated: true}) 
+  }
+
+  _clickTab(idx) {
+    const {height0, height1} = this.state
+    
+    switch(idx){
+      case 0:
+        this._scrollTo(HEADER_IMG_HEIGHT)
+        this.setState({idx:0})
+        break
+      case 1:
+        this._scrollTo(height0 * scale + HEADER_IMG_HEIGHT)
+        this.setState({idx:1})
+        break
+      case 2:
+        this._scrollTo(height1 * scale + HEADER_IMG_HEIGHT)
+        this.setState({idx:2})
+        break
+      case 3:
+        this.setState({idx:3})
+        break
+    }
+  }
+
+  renderContactKakao() {
+    return (
+    <View>
+      <Text> 로밍도깨비에 궁금하신점 있으신가요?</Text>
+      <Text> 카카오톡 플러스 친구로 편하게 물어보세요!</Text>
+    </View>)
+  }
+
+  renderWebView() {
+    const {body, height2} = this.state
+
+    return (
+    <WebView 
+      ref={webView1 => {this._webView1 = webView1}}
+      automaticallyAdjustContentInsets={false}
+      javaScriptEnabled={true}
+      domStorageEnabled={true}
+      scalesPageToFit={true}
+      decelerationRate="normal"
+      onNavigationStateChange={(navState) => this.onNavigationStateChange(navState)}
+      scrollEnabled = {false}
+      // source={{html: body + html + script} } 
+      source={{html: html + script} } 
+      style={{height: height2 * scale + HEADER_IMG_HEIGHT || 1000}} 
+    />)
+  }
 
   render() {
-    const {querying = false, body, bodyTitle, imageAnimation, isShow, height0, height1, height2, height3, height4} = this.state
+    const {querying = false, idx} = this.state
     const {navigation} = this.props
-
-    const headerHeight = this.state.scrollY.interpolate({
-      inputRange: [0, HEADER_SCROLL_DISTANCE],
-      outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
-      extrapolate: 'clamp',
-    });
-
-    const emptyHeaderHeight = this.state.scrollY.interpolate({
-      inputRange: [0, HEADER_SCROLL_DISTANCE],
-      outputRange: [HEADER_MIN_HEIGHT, HEADER_MAX_HEIGHT],
-      extrapolate: 'clamp',
-    });
-
-    console.log("render")
-
-    if(headerHeight > height1) {
-      console.log("aaaaaa height")
-    }
-
-const html0 = htmlWithCss("test", body)
-const html = [
-  '<div id="testa" style="font-size:16px; border:1px solid black;"><h1>starta</h1> <p> test1 test2 </p> <p> test1 test2 </p></div>',
-  '<div id="testb" style="font-size:16px; border:1px solid black;"><h1>startb</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
-  '<div id="testc" style="font-size:16px; border:1px solid black;"><h1>startc</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
-  '<div id="testd" style="font-size:16px; border:1px solid black;"><h1>startd</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
-  '<div id="teste" style="font-size:16px; border:1px solid black;"><h1>starte</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>'
-]
-
-
-const script = `<script>window.location.hash = 1;
-document.title = ['testa', 'testb', 'testc', 'testd', 'teste'].map(item => {
-  var rect = document.getElementById(item).getBoundingClientRect();
-  return rect.bottom;
-}).join(',');</script>`
-//const script = `<script>window.location.hash = 1;document.title = document.getElementById('testa').scrollHeight+',' + document.getElementById('testb').scrollHeight+',' + document.getElementById('testc').scrollHeight </script>`
-// const script = `<script>window.location.hash = 1;document.title = document.getElementById('testa').clientHeight </script>`
-const scale = 0.422
 
     return (
       <SafeAreaView style={styles.screen}>
         <AppActivityIndicator visible={querying} />
 
-
-        <View>
-          <Animated.View style={{height:headerHeight}}>
-            <Animated.Image style={{height:headerHeight}} source={{uri:api.httpImageUrl(navigation.getParam('img'))}}/>
-          </Animated.View>
-
-          <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginHorizontal:40}}>
-            <AppButton title={'상품정보'} onPress={() => { this._scrollView.scrollTo({x: 0, y: 0, animated: true}) }}/>
-            <AppButton title={'주의사항'} onPress={() => { 
-              console.log('scroll to ', height0 * scale)
-              this._scrollView.scrollTo({x: 0, y: height0 * scale, animated: true}) 
-            }}/>
-            <AppButton title={'사용팁'} onPress={() => { 
-              console.log('scroll to ', height1 * scale)
-              this._scrollView.scrollTo({x: 0, y: height1 * scale, animated: true}) 
-            }}/>
-            <AppButton title={'물어보기'} onPress={() => { 
-              console.log('scroll to ', height2 * scale)
-              this._scrollView.scrollTo({x: 0, y: height2 * scale, animated: true}) 
-            }}/>
-          </View>
-        </View>
-
-        {/* <Animated.View style={{height:emptyHeaderHeight}}></Animated.View> */}
-
         <ScrollView 
           ref={scrollView => {this._scrollView = scrollView}}
-          style={{flex:1}}
+          stickyHeaderIndices={[1]} //탭 버튼 고정
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={11}
-          onScroll={event => { 
-            console.log('scroll y:' + event.nativeEvent.contentOffset.y);
-          }}
-          //onScroll={Animated.event(
-           // [{nativeEvent: {contentOffset: {y: this.state.scrollY}}}]
-          //)}// > 
-          >
-          <WebView 
-            automaticallyAdjustContentInsets={false}
-            javaScriptEnabled={true}
-            domStorageEnabled={true}
-            scalesPageToFit={true}
-            decelerationRate="normal"
-            onNavigationStateChange={(navState) => this.onNavigationStateChange(navState)}
-            scrollEnabled = {false}
-            source={{html: html.join('') + script} } 
-            // style={{height:  2000}} 
-            style={{height: height1 + height2 + height3 || 1000}} 
-          />
+          onScroll={(state) => {this.checkIdx(state.nativeEvent.contentOffset.y)}}
+          onContentSizeChange={(contentWidth, contentHeight)=>{this._clickTab(idx)}}>
+          
+          <View style={{height:HEADER_IMG_HEIGHT}}>
+            <Image style={{height:HEADER_IMG_HEIGHT}} source={{uri:api.httpImageUrl(navigation.getParam('img'))}}/>
+          </View>
 
-        {/* <WebView 
-        ref={webView2 => {this._webView2 = webView2}}
-        automaticallyAdjustContentInsets={false}
-        javaScriptEnabled={true}
-        domStorageEnabled={true}
-        scalesPageToFit={true}
-        onLayout={event => {
-          const layout = event.nativeEvent.layout;
-          console.log('height:', layout.height);
-          console.log('width:', layout.width);
-          console.log('x:', layout.x);
-          console.log('y:', layout.y);
-        }}
-        decelerationRate="normal"
-        onNavigationStateChange={(navState) => this.onNavigationStateChange('webView2',navState)}
-        scrollEnabled = {false}
-        source={{html: html1 + script} } 
-        style={{height:Number(webView2) ||200}} 
-        />
+          {/* ScrollView  stickyHeaderIndices로 상단 탭을 고정하기 위해서 View한번 더 사용*/}
+          <View style={{backgroundColor:colors.white}}>
+            <View style={styles.tabView}>
+              <AppButton 
+                style={{backgroundColor: idx == 0 || idx == INIT_IDX ? colors.tomato : colors.gray}} 
+                title={'상품정보'} 
+                onPress={() => {this._clickTab(0)}}
+              />
+              <AppButton 
+                style={{backgroundColor: idx == 1 ? colors.tomato : colors.gray}}
+                title={'주의사항'} 
+                onPress={() => {this._clickTab(1)}}
+              />
+              <AppButton 
+                style={{backgroundColor: idx == 2 ? colors.tomato : colors.gray}} 
+                title={'사용팁'} 
+                onPress={() => {this._clickTab(2)}}
+              />
+              <AppButton 
+              style={{backgroundColor: idx == 3 ? colors.tomato : colors.gray}} 
+              title={'물어보기'} 
+              onPress={() => {this._clickTab(3)}}
+              />
+            </View>
+          </View>
 
-        <WebView 
-        ref={webView3 => {this._webView3 = webView3}}
-        automaticallyAdjustContentInsets={false}
-        javaScriptEnabled={true}
-        domStorageEnabled={true}
-        scalesPageToFit={true}
-        decelerationRate="normal"
-        onNavigationStateChange={(navState) => this.onNavigationStateChange('webView3',navState)}
-        scrollEnabled = {false}
-        source={{html: html1 + script} } 
-        style={{height:Number(webView3) ||200}} 
-        /> */}
-         
+          {idx == 3 && this.renderContactKakao() }
+          
+          {idx != 3 && this.renderWebView()}
+
         </ScrollView>
       </SafeAreaView>
     )
@@ -232,6 +249,12 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingHorizontal: 20
   },
+  tabView: {
+    flexDirection:'row', 
+    alignItems:'center', 
+    justifyContent:'space-between', 
+    marginHorizontal:40
+  }
 });
 
 export default ProductDetailScreen
