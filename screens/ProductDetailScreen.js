@@ -7,7 +7,6 @@ import {
   Text,
   Animated,
   Image,
-  PixelRatio
 } from 'react-native';
 
 import i18n from '../utils/i18n'
@@ -101,23 +100,11 @@ class ProductDetailScreen extends Component {
   }
 
   checkIdx(offset) {
-    // if(this.state.idx != 3){
-    //   if(offset < height0 * scale + HEADER_IMG_HEIGHT - 1 && this.state.idx != 0){
-    //     this.setState({idx : 0})
-    //   }
-    //   else if(offset >= height0 * scale + HEADER_IMG_HEIGHT -1 && offset < height1 * scale + HEADER_IMG_HEIGHT -1 && this.state.idx != 1){
-    //     this.setState({idx : 1})
-    //   }
-    //   else if(offset >= height1 * scale + HEADER_IMG_HEIGHT -1 && this.state.idx != 2) {
-    //     this.setState({idx : 2})
-    //   }
-    // }
-
-    // 정확하게 Title이 상단끝에 걸쳐야 idx가 변경되어야 하는가?
+    
+    // todo: 정확하게 Title이 상단끝에 걸쳐야 idx가 변경되어야 하는지 확인필요
     if ( this.state.idx != 3){
-      var idx = 0;
-      for( var i=0; i<2; i++) {
-        if ( offset < this.state['height' + i]) break;
+      for( var idx=0; idx<3; idx++) {
+        if ( offset < this.state['height' + idx]) break;
       }
       this.setState({idx})
     }
@@ -128,13 +115,14 @@ class ProductDetailScreen extends Component {
     this._scrollView.scrollTo({x: 0, y: y, animated: true}) 
   }
 
-  _clickTab(idx) {
+  _clickTab = (idx) => () => {
     var height = 0;
     if ( idx < 3) height += (this.state['height' + (idx-1)] || 0) + HEADER_IMG_HEIGHT
     this._scrollTo( height)
     this.setState({idx})
   }
 
+  //todo : 디자인 나오면 변경
   renderContactKakao() {
     return (
     <View>
@@ -158,7 +146,7 @@ class ProductDetailScreen extends Component {
       scrollEnabled = {false}
       // source={{html: body + html + script} } 
       source={{html: html + script} } 
-      style={{height: height2 * scale + HEADER_IMG_HEIGHT || 1000}} 
+      style={{height: height2 + HEADER_IMG_HEIGHT || 1000}} 
     />)
   }
 
@@ -176,7 +164,7 @@ class ProductDetailScreen extends Component {
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={11}
           onScroll={(state) => {this.checkIdx(state.nativeEvent.contentOffset.y)}}
-          onContentSizeChange={(contentWidth, contentHeight)=>{this._clickTab(idx)}}>
+          onContentSizeChange={this._clickTab(idx)}>
           
           <View style={{height:HEADER_IMG_HEIGHT}}>
             <Image style={{height:HEADER_IMG_HEIGHT}} source={{uri:api.httpImageUrl(navigation.getParam('img'))}}/>
@@ -188,22 +176,22 @@ class ProductDetailScreen extends Component {
               <AppButton 
                 style={{backgroundColor: idx == 0 || idx == INIT_IDX ? colors.tomato : colors.gray}} 
                 title={'상품정보'} 
-                onPress={() => {this._clickTab(0)}}
+                onPress={this._clickTab(0)}
               />
               <AppButton 
                 style={{backgroundColor: idx == 1 ? colors.tomato : colors.gray}}
                 title={'주의사항'} 
-                onPress={() => {this._clickTab(1)}}
+                onPress={this._clickTab(1)}
               />
               <AppButton 
                 style={{backgroundColor: idx == 2 ? colors.tomato : colors.gray}} 
                 title={'사용팁'} 
-                onPress={() => {this._clickTab(2)}}
+                onPress={this._clickTab(2)}
               />
               <AppButton 
               style={{backgroundColor: idx == 3 ? colors.tomato : colors.gray}} 
               title={'물어보기'} 
-              onPress={() => {this._clickTab(3)}}
+              onPress={this._clickTab(3)}
               />
             </View>
           </View>
