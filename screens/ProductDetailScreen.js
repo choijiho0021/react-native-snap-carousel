@@ -96,13 +96,11 @@ class ProductDetailScreen extends Component {
 
     navState.title.split(',').map((bottom, idx) => 
       this.setState({
-        ['height' + idx] : Number(bottom)
+        ['height' + idx] : Number(bottom) * scale
       })) 
   }
 
   checkIdx(offset) {
-    const {height0, height1} = this.state
-
     // if(this.state.idx != 3){
     //   if(offset < height0 * scale + HEADER_IMG_HEIGHT - 1 && this.state.idx != 0){
     //     this.setState({idx : 0})
@@ -116,16 +114,12 @@ class ProductDetailScreen extends Component {
     // }
 
     // 정확하게 Title이 상단끝에 걸쳐야 idx가 변경되어야 하는가?
-    if(this.state.idx != 3){
-      if(offset < height0 * scale && this.state.idx != 0){
-        this.setState({idx : 0})
+    if ( this.state.idx != 3){
+      var idx = 0;
+      for( var i=0; i<2; i++) {
+        if ( offset < this.state['height' + i]) break;
       }
-      else if(offset >= height0 * scale && offset < height1 * scale&& this.state.idx != 1){
-        this.setState({idx : 1})
-      }
-      else if(offset >= height1 * scale && this.state.idx != 2) {
-        this.setState({idx : 2})
-      }
+      this.setState({idx})
     }
   }
 
@@ -135,25 +129,10 @@ class ProductDetailScreen extends Component {
   }
 
   _clickTab(idx) {
-    const {height0, height1} = this.state
-    
-    switch(idx){
-      case 0:
-        this._scrollTo(HEADER_IMG_HEIGHT)
-        this.setState({idx:0})
-        break
-      case 1:
-        this._scrollTo(height0 * scale + HEADER_IMG_HEIGHT)
-        this.setState({idx:1})
-        break
-      case 2:
-        this._scrollTo(height1 * scale + HEADER_IMG_HEIGHT)
-        this.setState({idx:2})
-        break
-      case 3:
-        this.setState({idx:3})
-        break
-    }
+    var height = 0;
+    if ( idx < 3) height += (this.state['height' + (idx-1)] || 0) + HEADER_IMG_HEIGHT
+    this._scrollTo( height)
+    this.setState({idx})
   }
 
   renderContactKakao() {
