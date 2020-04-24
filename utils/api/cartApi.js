@@ -192,6 +192,7 @@ class CartAPI {
             iccid,
             order: {
                 type: orderType,
+                field_memo: result.memo,
                 order_items: items.map(item => ({
                     quantity: item.qty,
                     purchased_entity : {
