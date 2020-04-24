@@ -23,6 +23,7 @@ class OrderAPI {
                     trackingCode: item.tracking_code,
                     trackingCompany: item.tracking_company,
                     shipmentState: item.shipment_state,
+                    memo: item.memo || '',
                     state: item.state,
                     orderItems: JSON.parse(item.order_items).map(value => ({
                         title: value.title,

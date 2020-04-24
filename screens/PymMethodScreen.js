@@ -109,16 +109,22 @@ class PymMethodScreen extends Component {
     this._consentEssential = this._consentEssential.bind(this)
     this._consentBox = this._consentBox.bind(this)
     this._dropDownHeader = this._dropDownHeader.bind(this)
+    this._inputMemo = this._inputMemo.bind(this)
   }
 
   componentDidMount() {
     this.props.action.profile.getCustomerProfile(this.props.account)
     const {pymPrice, deduct} = this.props.cart
+    const content = this.props.profile.content
 
     this.setState({
       pymPrice,
       deduct,
-      isRecharge: this.props.cart.purchaseItems.findIndex(item => item.type == 'rch') >= 0
+      isRecharge: this.props.cart.purchaseItems.findIndex(item => item.type == 'rch') >= 0,
+      deliveryMemo: {
+        ... this.state.deliveryMemo,
+        content
+      }
     })
 
   }
@@ -131,7 +137,8 @@ class PymMethodScreen extends Component {
       clickable: false
     })
 
-    const { selected, pymPrice, deduct } = this.state
+    const { selected, pymPrice, deduct, deliveryMemo } = this.state
+    const memo = deliveryMemo.selected == i18n.t("pym:input") ? deliveryMemo.content : deliveryMemo.selected
     
     if ( (_.isEmpty(selected)) && (pymPrice !=0) ) return
 
@@ -153,6 +160,7 @@ class PymMethodScreen extends Component {
         amount: 0,
         rokebi_cash: deduct,
         dlvCost,
+        memo,
         payment_type: 'rokebi_cash'
       }
       const orderResult = await this.props.action.cart.payNorder(response)
@@ -174,6 +182,7 @@ class PymMethodScreen extends Component {
         app_scheme: 'Rokebi',
         profile_uuid: profileId,
         dlvCost,
+        memo
         // mode: 'test'
       };
 
@@ -225,7 +234,7 @@ class PymMethodScreen extends Component {
             directInput: true,
             header: !_.isEmpty(selectedMemo) && selectedMemo.key,
             selected: value,
-            content: undefined,
+            ... this.state.deliveryMemo.content
           }
         })
       }else{
@@ -264,6 +273,15 @@ class PymMethodScreen extends Component {
       </View>          
     </TouchableOpacity>
     )
+  }
+
+  _inputMemo(val){
+    this.setState({
+      deliveryMemo: {
+        ... this.state.deliveryMemo,
+        content: val
+      }
+    })
   }
 
   _address(){
@@ -360,8 +378,9 @@ class PymMethodScreen extends Component {
                     maxLength={50}
                     returnKeyType='done'
                     multiline={true}
+                    value={this.state.deliveryMemo.content || ''}
                     enablesReturnKeyAutomatically={true}
-                    onChangeText={(val)=>{this.setState({... this.state.deliveryMemo, content: val})}}
+                    onChangeText={(val)=>this._inputMemo(val)}
                     // maxFontSizeMultiplier
                     />
             }
@@ -420,11 +439,11 @@ class PymMethodScreen extends Component {
         <Text style={[appStyles.bold16Text,{color: colors.black, marginLeft: 12}]}>{i18n.t('pym:consentEssential')}</Text>
       </TouchableOpacity>
       <TouchableOpacity style={[styles.buttonRow, {marginTop: 20}]} onPress={()=>this._move("1")}>
-        <Text style={[appStyles.normal14Text, {color: colors.warmGrey, lineHeight: 22}]}>{i18n.t("pym:privacy")}</Text>
+        <Text style={[appStyles.normal14Text, {color: colors.warmGrey, lineHeight: 22}]}>{i18n.t("pym:privacy")}{i18n.t('pym:mandatory')}</Text>
         <Text style={styles.underlinedClearBlue}>{i18n.t("pym:detail")}</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.buttonRow} onPress={()=>this._move("2")}>
-        <Text style={[appStyles.normal14Text, {color: colors.warmGrey, lineHeight: 22}]}>{i18n.t("pym:paymentAgency")}</Text>
+        <Text style={[appStyles.normal14Text, {color: colors.warmGrey, lineHeight: 22}]}>{i18n.t("pym:paymentAgency")}{i18n.t('pym:mandatory')}</Text>
         <Text style={styles.underlinedClearBlue}>{i18n.t("pym:detail")}</Text>
       </TouchableOpacity>
     </View>
@@ -605,11 +624,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   result: {
-    flex: 1,
-    flexDirection: 'column',
     justifyContent: 'center',
-    height: 400,
-    minHeight: isDeviceSize('small') ? '30%' : '40%',
+    height: isDeviceSize('small') ? 300 : 400,
   },
   resultText: {
     ... appStyles.normal14Text,
