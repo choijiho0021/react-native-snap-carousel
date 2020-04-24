@@ -65,7 +65,8 @@ class PaymentScreen extends Component{
         merchant_uid: params.merchant_uid,
         amount: params.amount,
         profile_uuid: params.profile_uuid,
-        rokebi_cash: params.rokebi_cash
+        rokebi_cash: params.rokebi_cash,
+        memo: params.memo,
       }
 
       this._callback(response)
@@ -87,6 +88,7 @@ class PaymentScreen extends Component{
         profile_uuid: params.profile_uuid,
         rokebi_cash: params.rokebi_cash,
         dlvCost: params.dlvCost,
+        memo: params.memo,
       })
 
       this.props.navigation.replace('PaymentResult', {pymResult:response, orderResult})  
@@ -104,11 +106,11 @@ class PaymentScreen extends Component{
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <IMP.Payment
           userCode={impId}
-          loading={<Video source={require('../assets/images/loading_1.mp4')} 
+          loading={<Video source={require('../assets/images/loading_1.mp4')}
                       repeat={true}
-                      paused={false} 
-                      style={styles.backgroundVideo} 
-                      resizeMode='cover'/>} 
+                      style={styles.backgroundVideo}
+                      resizeMode='cover'/>}
+          startInLoadingState={true}
           data={params}             // 결제 데이터
           callback={response => this._callback(response)}
           style={styles.webview}
