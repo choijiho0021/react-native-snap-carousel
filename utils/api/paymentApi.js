@@ -21,7 +21,7 @@ class PaymentAPI {
             },
             {
                 key: 'danal',
-                method: 'danal',
+                method: 'phone',
                 title: i18n.t('pym:mobile')
             }
         ],
