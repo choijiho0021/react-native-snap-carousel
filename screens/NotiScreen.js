@@ -102,7 +102,8 @@ class NotiScreen extends Component {
     }
   }
 
-  _onPress = (uuid, bodyTitle, body, notiType, format = 'text') => {
+  // 공지사항의 경우 notiType이 없으므로 Notice/0으로 기본값 설정
+  _onPress = (uuid, bodyTitle, body, notiType = 'Notice/0', format = 'text') => {
     const { orders } = this.props.order
 
     const {mode} = this.state
