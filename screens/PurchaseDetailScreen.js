@@ -176,7 +176,7 @@ class PurchaseDetailScreen extends Component {
 
   _deliveryInfo(){
 
-    const { trackingCompany, trackingCode, shipmentState, isCanceled } = this.state || {}
+    const { trackingCompany, trackingCode, shipmentState, isCanceled, memo } = this.state || {}
 
     return(
       <View>
@@ -196,30 +196,39 @@ class PurchaseDetailScreen extends Component {
           // !_.isEmpty(this.state.profile) && this._address()
           this._address()
         }
+        <View style={[styles.bar, {marginTop: 0}]}/>
+        <Text style={styles.deliveryTitle}>{i18n.t('his:memo')}</Text>
+        <View style={{marginHorizontal: 20, marginBottom: 40}}>
+          {
+            _.isEmpty(orderApi.deliveryText.find(item => item.value == memo)) && 
+            <Text style={[styles.label2, {marginBottom: 5, lineHeight: 24}]}>{i18n.t('his:input')}</Text>
+          }
+          <Text style={[appStyles.normal16Text, {borderBottomWidth:1}]}>{memo}</Text>
+        </View>
 
         {
           !isCanceled && shipmentState == ('shipped') &&
           <View style={{marginBottom: 40}}>
             <View style={[styles.bar, {marginTop: 0}]}/>
-              <Text style={styles.deliveryTitle}>{i18n.t('his:companyInfo')}</Text>
-              <LabelText key="trackingCompany" 
-                  style={styles.item} format="shortDistance"
-                  label={i18n.t('his:trackingCompany')} 
-                  labelStyle={styles.companyInfoTitle}
-                  value={trackingCompany} 
-                  valueStyle={[styles.labelValue, {justifyContent: 'flex-start'}]}/>
-              <LabelText key="tel" 
-                  style={styles.item} format="shortDistance"
-                  label={i18n.t('his:tel')} 
-                  labelStyle={styles.companyInfoTitle}
-                  value={utils.toPhoneNumber('12341234')}
-                  valueStyle={styles.labelValue}/>
-              <LabelTextTouchable onPress={() => this.props.navigation.navigate('SimpleText', {mode:'uri', text:orderApi.deliveryTrackingUrl('CJ', '341495229094')})}
-                  label={i18n.t('his:trackingCode')}
-                  labelStyle={[styles.companyInfoTitle, {marginLeft: 20, width: '20%'}]}
-                  format="shortDistance"
-                  value={trackingCode}
-                  valueStyle={[styles.labelValue, {color: colors.clearBlue, textDecorationLine: 'underline'}]}/>
+            <Text style={styles.deliveryTitle}>{i18n.t('his:companyInfo')}</Text>
+            <LabelText key="trackingCompany"
+                style={styles.item} format="shortDistance"
+                label={i18n.t('his:trackingCompany')}
+                labelStyle={styles.companyInfoTitle}
+                value={trackingCompany}
+                valueStyle={[styles.labelValue, {justifyContent: 'flex-start'}]}/>
+            <LabelText key="tel"
+                style={styles.item} format="shortDistance"
+                label={i18n.t('his:tel')}
+                labelStyle={styles.companyInfoTitle}
+                value={utils.toPhoneNumber('12341234')}
+                valueStyle={styles.labelValue}/>
+            <LabelTextTouchable onPress={() => this.props.navigation.navigate('SimpleText', {mode:'uri', text:orderApi.deliveryTrackingUrl('CJ', '341495229094')})}
+                label={i18n.t('his:trackingCode')}
+                labelStyle={[styles.companyInfoTitle, {marginLeft: 20, width: '20%'}]}
+                format="shortDistance"
+                value={trackingCode}
+                valueStyle={[styles.labelValue, {color: colors.clearBlue, textDecorationLine: 'underline'}]}/>
           </View>
         }
       </View>
@@ -346,7 +355,8 @@ class PurchaseDetailScreen extends Component {
 
     return (
       <ScrollView style={styles.container}
-                  onScroll={this._onScroll}>
+                  onScroll={this._onScroll}
+                  scrollEventThrottle={16}>
         <SafeAreaView forceInset={{ top: 'never', bottom:"always"}}>
         <SnackBar ref={this.snackRef}
                   visible={cancelPressed} backgroundColor={colors.clearBlue} 
