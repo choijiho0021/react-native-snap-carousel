@@ -28,27 +28,9 @@ import paymentApi from '../utils/api/paymentApi';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AppIcon from '../components/AppIcon';
 import Video from 'react-native-video';
+import orderApi from '../utils/api/orderApi';
 
-const deliveryText = [{
-                        key: i18n.t("pym:tel"),
-                        value: i18n.t("pym:toTel")
-                      },
-                      {
-                        key: i18n.t("pym:frontDoor"),
-                        value: i18n.t("pym:atFrontDoor")
-                      },
-                      {
-                        key: i18n.t("pym:deliveryBox"),
-                        value: i18n.t("pym:toDeliveryBox")
-                      },
-                      {
-                        key: i18n.t("pym:security"),
-                        value: i18n.t("pym:toSecurity")
-                      },
-                      {
-                        key: i18n.t("pym:input"),
-                        value: i18n.t("pym:input")
-                      }]
+const deliveryText = orderApi.deliveryText
 
 class PymMethodScreen extends Component {
 
@@ -82,6 +64,7 @@ class PymMethodScreen extends Component {
         content: undefined,
       },
       consent: undefined,
+      simIncluded: undefined,
     }
 
     this.confirmList = [
@@ -121,6 +104,7 @@ class PymMethodScreen extends Component {
       pymPrice,
       deduct,
       isRecharge: this.props.cart.purchaseItems.findIndex(item => item.type == 'rch') >= 0,
+      simIncluded: this.props.cart.purchaseItems.findIndex(item => item.type == 'sim_card') >= 0,
       deliveryMemo: {
         ... this.state.deliveryMemo,
         content
@@ -137,9 +121,9 @@ class PymMethodScreen extends Component {
       clickable: false
     })
 
-    const { selected, pymPrice, deduct, deliveryMemo } = this.state
+    const { selected, pymPrice, deduct, deliveryMemo, simIncluded } = this.state
     const memo = deliveryMemo.selected == i18n.t("pym:input") ? deliveryMemo.content : deliveryMemo.selected
-    
+
     if ( (_.isEmpty(selected)) && (pymPrice !=0) ) return
 
     const { mobile, email } = this.props.account,
@@ -160,6 +144,7 @@ class PymMethodScreen extends Component {
         amount: 0,
         rokebi_cash: deduct,
         dlvCost,
+        digital: !simIncluded,
         memo,
         payment_type: 'rokebi_cash'
       }
@@ -182,6 +167,7 @@ class PymMethodScreen extends Component {
         app_scheme: 'Rokebi',
         profile_uuid: profileId,
         dlvCost,
+        digital: !simIncluded,            // 컨텐츠 - 데이터상품일 경우 true
         memo
         // mode: 'test'
       };
@@ -451,9 +437,8 @@ class PymMethodScreen extends Component {
   }
 
   render() {
-    const { selected, pymPrice, deduct, isRecharge, consent, deliveryMemo:{header, content} } = this.state,
+    const { selected, pymPrice, deduct, isRecharge, consent, deliveryMemo:{header, content}, simIncluded } = this.state,
       { purchaseItems = [], pymReq } = this.props.cart,
-      simIncluded = purchaseItems.findIndex(item => item.type == 'sim_card') >= 0,
       noProfile = this.props.profile.profile.length == 0
 
     return (
@@ -464,7 +449,7 @@ class PymMethodScreen extends Component {
           // extraScrollHeight={60}
           innerRef={ref => { this.scroll = ref; }}>
           <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance} mode={'method'}
-                          pymPrice={pymPrice} deduct={deduct} isRecharge={isRecharge}/>  
+                          pymPrice={pymPrice} deduct={deduct} isRecharge={isRecharge}/>
               
           {
             simIncluded && this._address()
