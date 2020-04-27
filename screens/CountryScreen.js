@@ -160,12 +160,15 @@ class CountryScreen extends Component {
     const { iccid,loggedIn } = this.props.account
     const { prodData, selected} = this.state
     const imageUrl = (prodList.length > idx >= 0) ? prodList[idx].imageUrl : ''
-      
+    const title = this.props.navigation.getParam('title')
+    const Tip = this.props.navigation.getParam('Tip')
+    const Caution = this.props.navigation.getParam('Caution')
+
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <Image style={styles.box} source={{uri:api.httpImageUrl(imageUrl)}}/>
         
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('ProductDetail', {title:this.props.navigation.getParam('title'), text:selected.body, img:imageUrl})}>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('ProductDetail', {Tip, Caution, title:title, text:selected.body, img:imageUrl})}>
        
         {/* <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {title:this.props.navigation.getParam('title'), text:selected.body})}> */}
           <View style={styles.detail}>

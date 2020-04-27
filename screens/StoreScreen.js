@@ -17,6 +17,8 @@ import { TabView, TabBar } from 'react-native-tab-view';
 import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import StoreList from '../components/StoreList';
+import pageApi from '../utils/api/pageApi';
+import AppAlert from '../components/AppAlert';
 import moment from 'moment'
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import { isDeviceSize } from '../constants/SliderEntry.style';
@@ -34,7 +36,6 @@ class StoreScreen extends Component {
     super(props)
 
     this.state = {
-      querying: false,
       search: undefined,
       index: 0,
       country:"",
@@ -50,6 +51,9 @@ class StoreScreen extends Component {
       europe: [],
       usaAu: [],
       multi: [],
+      querying : true,
+      Tip: undefined,
+      Caution: undefined
     }
 
     this._refresh = this._refresh.bind(this)
@@ -69,6 +73,9 @@ class StoreScreen extends Component {
       onChangeText : this._onChangeText('country'),
       search : this._search()
     })
+
+    this.getDetailPage('Tip') // 상세페이지 - 공용팁
+    this.getDetailPage('Caution') // 상세페이지 - 주의사항
     this.setState({time: now})
     this._refresh()
   }
@@ -88,6 +95,25 @@ class StoreScreen extends Component {
       this._refresh()
     }
   }
+
+  getDetailPage(key) {
+    pageApi.getPageByCategory(key, this.controller).then(resp => { 
+      if ( resp.result == 0 && resp.objects.length > 0) {
+        this.setState({
+          [key]: resp.objects[0].body
+        })
+      }
+      else throw Error('Failed to get Tip')
+    }).catch( err => {
+      console.log('failed', err)
+      AppAlert.error(i18n.t('set:fail'))
+    }).finally(_ => {
+      this.setState({
+        querying: false
+      })
+  })
+  }
+
   _navigateToStoreSearch() {
     const {allData} = this.state
     this.props.navigation.navigate('StoreSearch',{allData})
@@ -140,41 +166,13 @@ class StoreScreen extends Component {
   }
  
   _onPressItem = (key) => {
-    const {allData} = this.state
-    const country = this.state.allData.filter(elm => elm.uuid == key)[0]
-    this.props.action.product.selectCountry({uuid: key})
-    this.props.navigation.navigate('Country',{allData:allData,title:country.categoryId == productApi.category.multi ? country.partnerName : country.cntry.values().next().value})
-  }
-
-  /*
-  _renderHeader = (props) => (
-    this.state.showSearchBar && 
-    <SearchBar platform={Platform.OS} 
-      onChangeText={this._onChange}
-      clearIcon
-      onEndEditing={() => this._refresh('all','all',true)}
-      value={this.state.search}
-      />
-  )
-  */
-
-  /*
-  _onScroll = (event) => {
-    const currentOffset = event.nativeEvent.contentOffset.y
-
-    console.log("offset",currentOffset)
-    // if ( this.state.showSearchBar == false && currentOffset < -20) {
-    //   this.setState({
-    //     showSearchBar : true
-    //   })
-    // }
-    if ( this.state.showSearchBar && currentOffset > 20) {
-      this.setState({
-        showSearchBar : false
-      })
+    const {allData,Tip, Caution} = this.state
+    if(Tip && Caution){
+      const country = this.state.allData.filter(elm => elm.uuid == key)[0]
+      this.props.action.product.selectCountry({uuid: key})
+      this.props.navigation.navigate('Country',{Tip, Caution, allData:allData, title:country.categoryId == productApi.category.multi ? country.partnerName : country.cntry.values().next().value})
     }
-  
-  */
+  }
 
   _onChangeText = (key) => (value) => {
     this.setState({
@@ -211,12 +209,13 @@ class StoreScreen extends Component {
   }
 
   render() {
-    const {country, querying} = this.state
+    const {country, Tip, Caution, querying} = this.state
+    const loading = !(Tip && Caution) && querying
 
     return (
       //AppTextInput
       <View style={appStyles.container}>
-        <AppActivityIndicator visible={querying} />
+        <AppActivityIndicator visible={loading} />
         <TabView 
           style={styles.container}
           navigationState={this.state}
