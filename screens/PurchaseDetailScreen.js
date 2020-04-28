@@ -200,10 +200,10 @@ class PurchaseDetailScreen extends Component {
         <Text style={styles.deliveryTitle}>{i18n.t('his:memo')}</Text>
         <View style={{marginHorizontal: 20, marginBottom: 40}}>
           {
-            _.isEmpty(orderApi.deliveryText.find(item => item.value == memo)) && 
+            !_.isEmpty(memo) && _.isEmpty(orderApi.deliveryText.find(item => item.value == memo)) && 
             <Text style={[styles.label2, {marginBottom: 5, lineHeight: 24}]}>{i18n.t('his:input')}</Text>
           }
-          <Text style={[appStyles.normal16Text, {borderBottomWidth:1}]}>{memo}</Text>
+          <Text style={[appStyles.normal16Text, {borderBottomWidth:1}]}>{_.isEmpty(memo) ? i18n.t('his:notSelected') : memo}</Text>
         </View>
 
         {
