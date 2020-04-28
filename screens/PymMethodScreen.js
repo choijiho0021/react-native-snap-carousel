@@ -436,7 +436,7 @@ class PymMethodScreen extends Component {
   }
 
   render() {
-    const { selected, pymPrice, deduct, isRecharge, consent, deliveryMemo:{header, content}, simIncluded } = this.state,
+    const { selected, pymPrice, deduct, isRecharge, consent, simIncluded } = this.state,
       { purchaseItems = [], pymReq } = this.props.cart,
       noProfile = this.props.profile.profile.length == 0
 
@@ -468,7 +468,7 @@ class PymMethodScreen extends Component {
           }
           <AppButton title={i18n.t('payment')}
                         textStyle={appStyles.confirmText}
-                        disabled={(pymPrice !=0 && (_.isEmpty(selected)) || (simIncluded && (noProfile || _.isEmpty(header))) || !consent)}
+                        disabled={(pymPrice !=0 && (_.isEmpty(selected)) || (simIncluded && noProfile) || !consent)}
                         key={i18n.t('payment')}
                         onPress={this._onSubmit}
                         style={appStyles.confirm} />
