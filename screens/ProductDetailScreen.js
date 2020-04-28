@@ -7,6 +7,7 @@ import {
   Text,
   Animated,
   Image,
+  Clipboard
 } from 'react-native';
 
 import i18n from '../utils/i18n'
@@ -26,7 +27,7 @@ const HEADER_IMG_HEIGHT = 200;
 const INIT_IDX = 999;
 
 const html = [
-  '<div id="testa" style="font-size:16px; border:1px solid black;"><h1>starta</h1> <p> test1 test2 </p> <p> test1 test2 </p></div>'
+  '<button onclick="send()">Send</button> <div id="testa" style="font-size:16px; border:1px solid black;"><h1>starta</h1>  <p> test1 test2 </p> <p> test1 test2 </p> </div>'
   // '<div id="testb" style="font-size:16px; border:1px solid black;"><h1>startb</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
   // '<div id="testc" style="font-size:16px; border:1px solid black;"><h1>startc</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
 ]
@@ -35,7 +36,22 @@ const script = `<script>window.location.hash = 1;
 document.title = ['testa', 'testb', 'testc'].map(item => {
   var rect = document.getElementById(item).getBoundingClientRect();
   return rect.bottom;
-}).join(',');</script>`
+}).join(',');
+function send() {
+  window.ReactNativeWebView.postMessage('APN Value have to insert into this', '*');
+  window.alert('copy');
+};</script>`
+
+// const script = `window.location.hash = 1;
+// document.title = ['testa', 'testb', 'testc'].map(item => {
+//   var rect = document.getElementById(item).getBoundingClientRect();
+//   return rect.bottom;
+// }).join(',');
+// function send() {
+//   window.ReactNativeWebView.postMessage('APN Value have to insert into this', '*');
+//   window.alert('copy');
+// };
+// return true;`
 
 const scale = 0.422
 
@@ -59,6 +75,7 @@ class ProductDetailScreen extends Component {
     this._scrollTo = this._scrollTo.bind(this)
     this.renderContactKakao = this.renderContactKakao.bind(this)
     this.renderWebView = this.renderWebView.bind(this)
+    this._onMessage = this._onMessage.bind(this)
     this.controller = new AbortController()
   }
 
@@ -136,6 +153,12 @@ class ProductDetailScreen extends Component {
     </View>)
   }
 
+  _onMessage(event) {
+    const {data} = event.nativeEvent
+    Clipboard.setString(data)
+    console.log("Copy APN value : ",data)
+  }
+
   renderWebView() {
     const {body, Tip, Caution, height2} = this.state
 
@@ -146,10 +169,12 @@ class ProductDetailScreen extends Component {
       javaScriptEnabled={true}
       domStorageEnabled={true}
       scalesPageToFit={true}
+      // injectedJavaScript={script}
       decelerationRate="normal"
       onNavigationStateChange={(navState) => this.onNavigationStateChange(navState)}
       scrollEnabled = {false}
       // source={{html: body + html + script} } 
+      onMessage={this._onMessage}
       source={{html: html + Caution + Tip + script} } 
       style={{height: height2 + HEADER_IMG_HEIGHT || 1000}} 
     />)
