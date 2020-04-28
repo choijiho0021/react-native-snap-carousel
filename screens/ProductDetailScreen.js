@@ -26,9 +26,9 @@ const HEADER_IMG_HEIGHT = 200;
 const INIT_IDX = 999;
 
 const html = [
-  '<div id="testa" style="font-size:16px; border:1px solid black;"><h1>starta</h1> <p> test1 test2 </p> <p> test1 test2 </p></div>',
-  '<div id="testb" style="font-size:16px; border:1px solid black;"><h1>startb</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
-  '<div id="testc" style="font-size:16px; border:1px solid black;"><h1>startc</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
+  '<div id="testa" style="font-size:16px; border:1px solid black;"><h1>starta</h1> <p> test1 test2 </p> <p> test1 test2 </p></div>'
+  // '<div id="testb" style="font-size:16px; border:1px solid black;"><h1>startb</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
+  // '<div id="testc" style="font-size:16px; border:1px solid black;"><h1>startc</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
 ]
 
 const script = `<script>window.location.hash = 1;
@@ -63,16 +63,20 @@ class ProductDetailScreen extends Component {
   }
 
   shouldComponentUpdate(preProps,preState){
-    const {idx, height2, body} = this.state
-
-    return preState.idx != idx || preState.body != body || preState.height2 != height2
+    const {idx, height2, body, Tip, Caution} = this.state
+    return preState.idx != idx || preState.body != body || preState.height2 != height2 || preState.Tip != Tip || preState.Caution != Caution
   }
 
   componentDidMount() {
 
+    const Tip =this.props.navigation.getParam('Tip')
+    const Caution =this.props.navigation.getParam('Caution')
+
+    this.setState({Tip,Caution})
+
     //todo : 상세 HTML을 가져오도록 변경 필요
-    pageApi.getPageByCategory('Contract', this.controller).then(resp => { 
-      console.log("resp -aaaa",resp)
+    pageApi.getPageByCategory('Tip', this.controller).then(resp => { 
+      console.log("resp",resp)
       if ( resp.result == 0 && resp.objects.length > 0) {
         this.setState({
           body: htmlWithCss("test", resp.objects[0].body),
@@ -106,7 +110,7 @@ class ProductDetailScreen extends Component {
       for( var idx=0; idx<3; idx++) {
         if ( offset < this.state['height' + idx]) break;
       }
-      this.setState({idx})
+      if(idx != 3) this.setState({idx})
     }
   }
 
@@ -119,6 +123,7 @@ class ProductDetailScreen extends Component {
     var height = 0;
     if ( idx < 3) height += (this.state['height' + (idx-1)] || 0) + HEADER_IMG_HEIGHT
     this._scrollTo( height)
+    console.log("idx", idx)
     this.setState({idx})
   }
 
@@ -132,7 +137,7 @@ class ProductDetailScreen extends Component {
   }
 
   renderWebView() {
-    const {body, height2} = this.state
+    const {body, Tip, Caution, height2} = this.state
 
     return (
     <WebView 
@@ -145,7 +150,7 @@ class ProductDetailScreen extends Component {
       onNavigationStateChange={(navState) => this.onNavigationStateChange(navState)}
       scrollEnabled = {false}
       // source={{html: body + html + script} } 
-      source={{html: html + script} } 
+      source={{html: html + Caution + Tip + script} } 
       style={{height: height2 + HEADER_IMG_HEIGHT || 1000}} 
     />)
   }
