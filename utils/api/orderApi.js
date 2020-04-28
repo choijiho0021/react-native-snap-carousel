@@ -1,8 +1,30 @@
 import _ from 'underscore'
 import api from './api'
 import utils from '../utils'
+import i18n from '../i18n'
 
 class OrderAPI {
+
+    deliveryText = [{
+        key: i18n.t("pym:tel"),
+        value: i18n.t("pym:toTel")
+    },
+    {
+        key: i18n.t("pym:frontDoor"),
+        value: i18n.t("pym:atFrontDoor")
+    },
+    {
+        key: i18n.t("pym:deliveryBox"),
+        value: i18n.t("pym:toDeliveryBox")
+    },
+    {
+        key: i18n.t("pym:security"),
+        value: i18n.t("pym:toSecurity")
+    },
+    {
+        key: i18n.t("pym:input"),
+        value: i18n.t("pym:input")
+    }]
 
     toOrder = (data) => {
 
