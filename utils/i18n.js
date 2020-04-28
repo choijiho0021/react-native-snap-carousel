@@ -153,6 +153,7 @@ const en = {
   "set:sendAlimTalk" : "The KakaoTalk message has been sent",
   "set:failedToSendAlimTalk" : "Failed to send a KakaoTalk message. Please try again later",
   "reg:activateProduct": "current data product is completed and this product will be activated.\nPress the 'OK' button and call 0000# to activate it.",
+  "set:pushnoti" : "Push Notifications",
 
   "rch:recharge" : "Recharge",
 
@@ -563,6 +564,7 @@ const ko = {
   "set:confirmLogout": "로그아웃 하시겠습니까?",
   "set:sendAlimTalk" : "알림톡이 발송되었습니다",
   "set:failedToSendAlimTalk" : "알림톡 발송에 실패했습니다. 나중에 다시 시도해 주세요",
+  "set:pushnoti" : "Push 알림 받기",
 
   "rch:recharge" : "충전 하기",
 

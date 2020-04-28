@@ -10,7 +10,7 @@ import { batch } from 'react-redux';
 import { Platform } from '@unimodules/core';
 
 const SIGN_UP =        'rokebi/account/SIGN_UP'
-const UPDATE_ACCOUNT = 'rokebi/account/UPDATE_ACCOUNT'
+export const UPDATE_ACCOUNT = 'rokebi/account/UPDATE_ACCOUNT'
 const RESET_ACCOUNT =  'rokebi/account/RESET_ACCOUNT'
 const GET_USER_ID =   'rokebi/account/GET_USER_ID'
 const GET_ACCOUNT =   'rokebi/account/GET_ACCOUNT'
@@ -102,6 +102,24 @@ export const changeNotiToken = () => {
         console.log('failed to update noti token', err)
       }
     )
+  }
+}
+
+export const changePushNoti = () => {
+  return (dispatch, getState) => {
+    const { account } = getState(),
+      isPushNotiEnabled = ! account.get('isPushNotiEnabled'),
+      authObj = auth(account),
+      attr = {
+        field_is_notification_enabled: isPushNotiEnabled
+      }
+
+    return dispatch(changeUserAttr( account.get('userId'), authObj, attr)).then(
+      resp => {
+        if ( resp.result === 0) {
+          return dispatch(updateAccount({isPushNotiEnabled}))
+        }
+      })
   }
 }
 
@@ -204,7 +222,7 @@ export const auth = (state) => ({
 
 const updateAccountState = (state, payload) => {
     const {expDate, balance, simPartnerId, actDate, firstActDate, userId, simCardImage, simCardName,
-      iccid, uuid, nid, uid, mobile, pin, email, token, deviceToken} = payload
+      iccid, uuid, nid, uid, mobile, pin, email, token, deviceToken, isPushNotiEnabled} = payload
 
     if ( ! _.isEmpty(expDate)) state = state.set('expDate', expDate)
     if ( _.isNumber(balance)) state = state.set('balance', balance)
@@ -223,6 +241,7 @@ const updateAccountState = (state, payload) => {
     if ( ! _.isEmpty(deviceToken)) state = state.set('deviceToken', deviceToken)
     if ( ! _.isEmpty(simCardName)) state = state.set('simCardName', simCardName)
     if ( ! _.isEmpty(simCardImage)) state = state.set('simCardImage', simCardImage)
+    if ( ! _.isUndefined(isPushNotiEnabled)) state = state.set('isPushNotiEnabled', isPushNotiEnabled)
 
     state = state.set('isUsedByOther', undefined)
 
@@ -250,7 +269,8 @@ const initialState = Map({
     deviceToken: undefined,
     simCardName: undefined,
     simCardImage: undefined,
-    isUsedByOther: undefined
+    isUsedByOther: undefined,
+    isPushNotiEnabled: undefined
 })
 
 export default handleActions({
@@ -312,6 +332,7 @@ export default handleActions({
       if (result == 0 && objects.length > 0) {
         return state.set('userId', objects[0].id)
           .set('email', objects[0].mail)
+          .set('isPushNotiEnabled', objects[0].isPushNotiEnabled)
           .set('userPictureUrl', objects[0].userPictureUrl)
       }
       return state
