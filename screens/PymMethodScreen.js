@@ -110,7 +110,6 @@ class PymMethodScreen extends Component {
         content
       }
     })
-
   }
 
   async _onSubmit() {
@@ -467,15 +466,16 @@ class PymMethodScreen extends Component {
           {
             this._consentBox()
           }
+          <AppButton title={i18n.t('payment')}
+                        textStyle={appStyles.confirmText}
+                        disabled={(pymPrice !=0 && (_.isEmpty(selected)) || (simIncluded && (noProfile || _.isEmpty(header))) || !consent)}
+                        key={i18n.t('payment')}
+                        onPress={this._onSubmit}
+                        style={appStyles.confirm} />
         </KeyboardAwareScrollView>
 
-        <AppButton title={i18n.t('payment')} 
-                      textStyle={appStyles.confirmText}
-                      disabled={(pymPrice !=0 && (_.isEmpty(selected)) || (simIncluded && (noProfile || _.isEmpty(header))) || !consent)}
-                      key={i18n.t('payment')}
-                      onPress={this._onSubmit}
-                      style={appStyles.confirm} />
         {
+          // 로깨비캐시 결제시 필요한 로딩처리
           this.state.loading && <Video source={require('../assets/images/loading_1.mp4')} resizeMode={"stretch"} repeat={true} style={styles.backgroundVideo}/>
         }
       </SafeAreaView>

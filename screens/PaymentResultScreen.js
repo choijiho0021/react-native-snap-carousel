@@ -35,12 +35,11 @@ const styles = StyleSheet.create({
   result: {
     ... appStyles.itemRow,
     justifyContent: 'space-between',
-    alignItems: 'center',
-
-    height: 52,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-    backgroundColor: colors.white
+    alignItems: 'flex-start',
+    height: 90,
+    padding: 20,
+    backgroundColor: colors.white,
+    borderBottomWidth: 0
   },
   title: {
     ... appStyles.title,
@@ -186,11 +185,10 @@ class PaymentResultScreen extends Component {
               </View>
             }
           </View>
+          <AppButton style={styles.btnHome} title={i18n.t('pym:toHome')} 
+              titleStyle={styles.btnHomeText}
+              onPress={() => this.moveScreen('Home')}/>
         </ScrollView>
-        
-        <AppButton style={styles.btnHome} title={i18n.t('pym:toHome')} 
-            titleStyle={styles.btnHomeText}
-            onPress={() => this.moveScreen('Home')}/>
       </SafeAreaView>
     )
   }
