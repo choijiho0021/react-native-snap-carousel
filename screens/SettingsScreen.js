@@ -19,6 +19,7 @@ import { bindActionCreators } from 'redux'
 import AppIcon from '../components/AppIcon';
 import { colors } from '../constants/Colors';
 import AppModal from '../components/AppModal';
+import AppSwitch from '../components/AppSwitch';
 import VersionCheck from 'react-native-version-check';
 import getEnvVars from '../environment'
 const { label } = getEnvVars();
@@ -31,6 +32,7 @@ class SettingsListItem extends PureComponent {
         <View style={styles.row}>
           <Text style={styles.itemTitle}>{item.value}</Text>
           {item.desc ? <Text style={styles.itemDesc}>{item.desc}</Text> :
+          item.hasOwnProperty('toggle') ? <AppSwitch value={item.toggle} onPress={onPress(item.key, item.value, item.route)}/> :
           <AppIcon style={{alignSelf:'center'}} name="iconArrowRight"/> }
         </View>
       </TouchableOpacity>
@@ -53,6 +55,7 @@ class SettingsScreen extends Component {
     this.state = {
       showModal: false,
       data: [
+        { "key": "pushnoti", "value": i18n.t('set:pushnoti'), toggle: props.isPushNotiEnabled, route: undefined},
         { "key": "info", "value": i18n.t('set:info'), route: 'MySim'},
         { "key": "Contract", "value": i18n.t('set:contract'), route: 'SimpleText'},
         { "key": "Privacy", "value": i18n.t('set:privacy'), route: 'SimpleText'},
@@ -65,10 +68,12 @@ class SettingsScreen extends Component {
     this._onPress = this._onPress.bind(this)
     this._showModal = this._showModal.bind(this)
     this._logout = this._logout.bind(this)
+
+    this._isMounted = null
   }
 
   componentDidUpdate(prevProps) {
-    const { loggedIn} = this.props
+    const { loggedIn, isPushNotiEnabled, failure } = this.props
 
     if ( loggedIn != prevProps.loggedIn) {
       this.setState({
@@ -78,23 +83,55 @@ class SettingsScreen extends Component {
         } : item)
       })
     }
+
+    if ( isPushNotiEnabled !== prevProps.isPushNotiEnabled && this._isMounted) {
+      this.setState({
+        data: this.state.data.map(item => item.key == 'pushnoti' ? {
+          ... item, 
+          toggle: isPushNotiEnabled
+        } : item)
+      })
+    }
+
+    if ( failure && failure !== prevProps.failure ) {
+      AppAlert.error(i18n.t('set:fail'))
+    }
   }
 
   componentDidMount(){
-    const { loggedIn} = this.props
+    const { loggedIn, isPushNotiEnabled} = this.props
+    this._isMounted = true
  
     if(loggedIn){
       this.props.action.cart.cartFetch()
     }
   }
 
+  componentWillUnmount() {
+    this._isMounted = false
+  }
+
   _onPress = (key, title, route) => () => {
-    if ( key == 'logout') {
-      if ( this.props.loggedIn) this._showModal(true)
-      else this.props.navigation.navigate('Auth')
-    }
-    else if ( route) {
-      this.props.navigation.navigate(route, {key,title})
+    const { pending } = this.props
+
+    switch(key) {
+      case 'logout' :
+        if ( this.props.loggedIn) this._showModal(true)
+        else this.props.navigation.navigate('Auth')
+
+        break;
+
+      case 'pushnoti':
+        if ( ! pending ) {
+          this.props.action.account.changePushNoti()
+        }
+
+        break;
+
+      default:
+        if ( route) {
+          this.props.navigation.navigate(route, {key,title})
+        }
     }
   }
 
@@ -160,11 +197,18 @@ const styles = StyleSheet.create({
   itemDesc: {
     ... appStyles.normal12Text,
     color: colors.warmGrey
+  },
+  switch: {
+    transform:[{ scaleX: 1 }, { scaleY: .7 }]
   }
 });
 
 const mapStateToProps = (state) => ({
-  loggedIn: state.account.get('loggedIn')
+  loggedIn: state.account.get('loggedIn'),
+  isPushNotiEnabled: state.account.get('isPushNotiEnabled'),
+  pending: state.pender.pending[accountActions.CHANGE_ATTR] ||
+    state.pender.pending[accountActions.UPDATE_ACCOUNT] || false,
+  failure: state.pender.failure[accountActions.CHANGE_ATTR]
 })
 
 export default connect(mapStateToProps, 
