@@ -212,6 +212,22 @@ class SubscriptionAPI {
         }, this.toSubsUpdate)
     }
 
+    toRokebiCash = ( uuid, {token}, status ) => {
+        if ( _.isEmpty(uuid) || _.isEmpty(token) || _.isEmpty(status) ) return api.reject( api.INVALID_ARGUMENT)
+
+        const url = `${api.httpUrl(api.path.rokApi.rokebi.subs,'')}/${uuid}?_format=json`
+        const headers = api.withToken(token, 'json')
+        const body = {
+            status : status,
+        }
+        
+        return api.callHttp(url, {
+            method: 'PATCH',
+            headers,
+            body: JSON.stringify(body)
+        }, this.toSubscription)
+    }
+
     //그래프를 그리기 위해서 가져올 데이터
     getSubsUsage = (id, {token}) => {
 
