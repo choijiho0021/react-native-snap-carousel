@@ -92,7 +92,7 @@ class AppModal extends PureComponent {
 
   render() {
     const { value, error } = this.state
-    const { title, type, maxLength = undefined, keyboardType = 'default' } = this.props
+    const { title, type, maxLength = undefined, keyboardType = 'default', toRokebiCash = undefined } = this.props
 
     return (
       <Modal animationType="fade"
@@ -104,7 +104,13 @@ class AppModal extends PureComponent {
             {
               title && <Text style={styles.title}>{title}</Text>
             }
-
+            {
+              !_.isUndefined(toRokebiCash) && 
+                <View style={{marginTop: 30}}>
+                  <Text style={styles.blueCenter}>{i18n.t('usim:toRokebiCash')}</Text>
+                  <Text style={styles.blueCenter}>{toRokebiCash} {i18n.t('usim:balance')}</Text>
+                </View>
+            }
             {
               this.props.mode == 'edit' && <View style={styles.inputBox}>
                   <TextInput style={styles.textInput} 
@@ -191,6 +197,12 @@ const styles = StyleSheet.create({
   title: {
     ... appStyles.normal18Text,
     marginHorizontal: 30
+  },
+  blueCenter: {
+    ... appStyles.normal18Text,
+    marginHorizontal: 30,
+    color: colors.clearBlue,
+    alignSelf: 'center'
   },
   inner: {
     ... appStyles.modalInner,

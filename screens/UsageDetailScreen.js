@@ -10,6 +10,7 @@ import * as accountActions from '../redux/modules/account'
 import * as orderActions from '../redux/modules/order'
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
+import _ from 'underscore'
 import utils from '../utils/utils';
 import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';
@@ -19,12 +20,16 @@ import AppModal from '../components/AppModal';
 import { SafeAreaView } from 'react-navigation';
 
 const STATUS = {
-  ACTIVE : "A", //사용중
-  RESERVED : "R", //사용 대기 중
-  INACTIVE : "I", // 미사용
-  EXPIRED : "E", // 사용 기한 종료
-  USED : "U"  // 사용 완료
+  ACTIVE : "A",           //사용중
+  RESERVED : "R",         //사용 대기 중
+  INACTIVE : "I",         // 미사용
+  EXPIRED : "E",          // 사용 기한 종료
+  USED : "U"              // 사용 완료
 }
+
+const activateBtn = 'activateBtn';
+const deactivateBtn = 'deactivateBtn';
+
 class UsageDetailScreen extends Component {
   static navigationOptions = ({navigation}) => ({
     headerLeft: <AppBackButton navigation={navigation} title={i18n.t('his:detail')} />
@@ -34,7 +39,10 @@ class UsageDetailScreen extends Component {
     super(props)
     this.state = {
       activatable : false,
-      showModal : false
+      showModal : {
+        deactivateBtn: false,
+        activateBtn: false
+      }
     }
 
     this._onSubmit = this._onSubmit.bind(this)
@@ -56,7 +64,7 @@ class UsageDetailScreen extends Component {
     this.setState({activatable, ... detail})
   }
 
-  _onSubmit(targetStatus = undefined) {
+  _onSubmit(modal=undefined, targetStatus=undefined) {
     const { auth } = this.props
     const { uuid, statusCd, showModal, country } = this.state
     const { usage } = this.props.order
@@ -73,21 +81,34 @@ class UsageDetailScreen extends Component {
       }
   
       // 사용 등록 시 한번 더 물어보도록 한다.
-      if(statusCd == STATUS.RESERVED && !showModal && targetStatus == STATUS.ACTIVE ){
-        this._showModal(true)
+      if(statusCd == STATUS.RESERVED && !showModal[modal] && targetStatus == STATUS.ACTIVE ){
+        !_.isEmpty(modal) && this._showModal(modal,true)
         return
       }
+      // 로깨비캐시로 전환한다.
+      else if(statusCd == STATUS.INACTIVE && targetStatus == STATUS.USED ){
+        if(showModal[modal]){
+          this.props.action.order.updateSubsToCash(uuid, auth, targetStatus)
+          this.props.action.order.getOrders(auth)
+        }else{
+          !_.isEmpty(modal) && this._showModal(modal, true)
+          return
+        }
+      } 
       else {
-        this.props.action.order.updateUsageStatus( uuid, targetStatus, auth, deact_prod_uuid)
-        this.props.action.order.getOrders(auth)
+            this.props.action.order.updateUsageStatus( uuid, targetStatus, auth, deact_prod_uuid)
+            this.props.action.order.getOrders(auth)
+          }
+        this.props.navigation.goBack()
       }
-    }
-    this.props.navigation.goBack()
-  }
+}
 
-  _showModal(value) {
+  _showModal(title, value) {
     this.setState({
-      showModal: value
+      showModal: {
+        ... this.state.showModal,
+        [title]: value
+      }
     })
   }
 
@@ -141,26 +162,35 @@ class UsageDetailScreen extends Component {
         
         <View style={{flexDirection: 'row' }}>
           
-          { statusCd == STATUS.RESERVED && <AppButton style={[styles.confirm,{backgroundColor:colors.white}]} 
+          { statusCd == STATUS.RESERVED && <AppButton style={[styles.confirm,{backgroundColor:colors.white}]}
             title={i18n.t('reg:cancelReservation')} titleStyle={[appStyles.confirmText,{color:colors.black}]}
             style={{borderWidth:1, borderColor: colors.warmGrey, flex:1}}
-            onPress={() => this._onSubmit(STATUS.INACTIVE)}/> }
+            onPress={() => this._onSubmit(deactivateBtn, STATUS.INACTIVE)}/> }
 
-          { statusCd == STATUS.INACTIVE && <AppButton style={[styles.confirm,{backgroundColor:colors.white}]} 
+          { statusCd == STATUS.INACTIVE && <AppButton style={[styles.confirm,{backgroundColor:colors.white}]}
             title={i18n.t('reg:toRokebiCash')} titleStyle={[appStyles.confirmText,{color:colors.black}]}
             style={{borderWidth:1, borderColor: colors.warmGrey, flex:1}}
-            onPress={() => this._onSubmit(STATUS.USED)}/> }
+            onPress={() => this._onSubmit(deactivateBtn, STATUS.USED)}/> }
           
-          <AppButton style={styles.confirm} 
+          <AppButton style={styles.confirm}
             title={buttonTitle} titleStyle={appStyles.confirmText}
             disabled={disable}
-            onPress={() => this._onSubmit(targetStatus)}/>
+            onPress={() => this._onSubmit(activateBtn, targetStatus)}/>
         </View>
 
-        <AppModal title={i18n.t('reg:activateProduct')} 
-          onOkClose={() => this._onSubmit(STATUS.ACTIVE)}
-          onCancelClose={() => this._showModal(false)}
-          visible={showModal} />
+        {
+          showModal.activateBtn ?
+          <AppModal title={i18n.t('reg:activateProduct')}
+            onOkClose={() => this._onSubmit(activateBtn, STATUS.ACTIVE)}
+            onCancelClose={() => this._showModal(activateBtn,false)}
+            visible={showModal.activateBtn} />
+          :
+          <AppModal title={'현재 상품을 사용 완료 처리하고 구매 금액과 동일한 금액의 캐시로 전환합니다.'}
+          onOkClose={() => this._onSubmit(deactivateBtn, STATUS.USED)}
+          onCancelClose={() => this._showModal(deactivateBtn,false)}
+          toRokebiCash={10000}
+          visible={showModal.deactivateBtn} />
+        }  
       </SafeAreaView>
     )
   }
