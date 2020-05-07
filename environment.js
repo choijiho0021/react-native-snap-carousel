@@ -5,6 +5,7 @@ const codePushiOSStagLabel = "v63"
 const codePushiOSProdLabel = "v0"
 const codePushAndStagLabel = "v59"
 const codePushAndProdLabel = "v0"
+const channelId = "_nzQhxb"
 
 const ENV = {
   dev: {
@@ -17,7 +18,8 @@ const ENV = {
     apiUrl: "esim2-tb-v2.ap-northeast-2.elasticbeanstalk.com",
     baseUrl: "http://esim2-tb-v2.ap-northeast-2.elasticbeanstalk.com",
     impId: impId,
-    label: Platform.OS === 'ios' ? codePushiOSStagLabel : codePushAndStagLabel
+    label: Platform.OS === 'ios' ? codePushiOSStagLabel : codePushAndStagLabel,
+    channelId
   },
   staging: {
     scheme: 'http',
@@ -25,7 +27,8 @@ const ENV = {
     apiUrl: "esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com",
     baseUrl: "http://esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com",
     impId: impId,
-    label: Platform.OS === 'ios' ? codePushiOSStagLabel : codePushAndStagLabel
+    label: Platform.OS === 'ios' ? codePushiOSStagLabel : codePushAndStagLabel,
+    channelId
   },
   prod: {
     scheme: 'https',
@@ -33,7 +36,8 @@ const ENV = {
     apiUrl: "api.rokebi.com",
     baseUrl: "https://www.rokebi.com",
     impId: impId,
-    label: Platform.OS === 'ios' ? codePushiOSProdLabel : codePushAndProdLabel
+    label: Platform.OS === 'ios' ? codePushiOSProdLabel : codePushAndProdLabel,
+    channelId
   }
 };
 

@@ -32,6 +32,14 @@
 				<string>Rokebi</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakao150021eafe4c18d2a51fb5ff97c38d9f</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>25</string>
@@ -43,6 +51,10 @@
 	<string></string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>kakaotalk-5.9.7</string>
+		<string>kakaolink</string>
+		<string>kakaokompassauth</string>
+		<string>kakao150021eafe4c18d2a51fb5ff97c38d9f</string>
 		<string>kftc-bankpay</string>
 		<string>ispmobile</string>
 		<string>itms-apps</string>
