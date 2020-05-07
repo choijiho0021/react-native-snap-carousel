@@ -86,5 +86,9 @@ target 'Rokebi' do
   
   pod 'RNSVG', :path => '../node_modules/react-native-svg'
 
+  #pod 'KakaoOpenSDK'
+  pod 'ARNKakaoSDK', :path => '../node_modules/@actbase/react-native-kakaosdk'
+  pod 'ARNKakaoChannel', :path => '../node_modules/@actbase/react-native-kakao-channel'
+
 end
 

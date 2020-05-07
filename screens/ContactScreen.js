@@ -19,6 +19,9 @@ import AppIcon from '../components/AppIcon'
 import * as infoActions from '../redux/modules/info'
 import * as notiActions from '../redux/modules/noti'
 import AppModal from '../components/AppModal';
+import KakaoSDK from '@actbase/react-native-kakaosdk';
+import getEnvVars from '../environment';
+const { channelId } = getEnvVars()
 
 class ContactListItem extends PureComponent {
   render() {
@@ -62,7 +65,7 @@ class ContactScreen extends Component {
           }},
         { "key": "ktalk", "value": i18n.t('contact:ktalk'),
           onPress:() => {
-            this._sendKTalk()
+            this._openKTalk()
           }},
         { "key": "call", "value": i18n.t('contact:call'),
           onPress:() => {
@@ -72,7 +75,7 @@ class ContactScreen extends Component {
       showModal: false
     }
 
-    this._sendKTalk = this._sendKTalk.bind(this);
+    this._openKTalk = this._openKTalk.bind(this);
     this._showModal = this._showModal.bind(this);
 
     this._cancelKtalk = null;
@@ -93,7 +96,12 @@ class ContactScreen extends Component {
     this.setState({ 'showModal': value })
   }
 
-  _sendKTalk = () => {
+  _openKTalk = () => {
+    KakaoSDK.Channel.chat(channelId)
+      .then(res => console.log(res))
+      .catch(e => console.error(e));
+
+    /*
     const resendable = this.props.noti.result !== 0 ||
       (this.props.noti.lastSent instanceof Date ? Math.round( (new Date() - this.props.noti.lastSent)/ (1000*60) ) > 0 : true)
 
@@ -119,6 +127,8 @@ class ContactScreen extends Component {
 
     this._cancelKtalk = sendKtalk.cancel
     sendKtalk.catch( err => console.log("failed to send alimtalk", err))
+
+    */
     
   }
 

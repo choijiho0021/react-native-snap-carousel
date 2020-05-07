@@ -45,3 +45,11 @@ allprojects {
         maven { url "https://www.jitpack.io" }
     }
 }
+
+subprojects {
+  repositories {
+    google()
+    jcenter()
+    maven { url 'https://devrepo.kakao.com/nexus/content/groups/public/' }
+  }
+}
