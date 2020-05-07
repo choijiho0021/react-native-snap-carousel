@@ -287,7 +287,7 @@ class UsimScreen extends Component {
     this._onRefresh = this._onRefresh.bind(this)
     this._info = this._info.bind(this)
     this.showSnackBar = this.showSnackBar.bind(this)
- }
+  }
 
   componentDidMount() {
     const { account: {iccid}, auth} = this.props
@@ -349,11 +349,17 @@ class UsimScreen extends Component {
       refreshing: true
     })
 
-    const { account: {iccid}, auth} = this.props
-    if ( iccid) {
+    const { account: {iccid}, auth } = this.props
+    if (iccid) {
       this.props.action.order.getUsage( iccid, auth).then(resp =>{
-        this.setState({
-          refreshing: false
+        this.props.action.account.getAccount(iccid, auth).then(res => {
+
+          if(resp.result == 0 && res.result == 0){
+            this.setState({
+              refreshing: false
+            })
+          }
+
         })
       })
     }
@@ -369,25 +375,26 @@ class UsimScreen extends Component {
     const {refreshing, cancelPressed} = this.state
 
     return(
-      <View style={styles.container}>        
+      <View style={styles.container}>
         <View style={{backgroundColor:colors.whiteTwo, marginBottom:20}}>
           <FlatList ref={(ref) => { this.flatListRef = ref; }}
-            data={usage} 
+            data={usage}
             ListHeaderComponent={this._info}
             ListEmptyComponent={this._empty}
-            renderItem={this._renderUsage} 
+            renderItem={this._renderUsage}
             onRefresh={this._onRefresh}
-            refreshing={refreshing}/>
-          {/* <AppActivityIndicator visible={this.props.pending}/>  */}
+            refreshing={refreshing}
+            // disableVirtualization={true}
+            />
+          <AppActivityIndicator visible={this.props.pending}/>
         </View>
         <SnackBar visible={cancelPressed} backgroundColor={colors.clearBlue} messageColor={colors.white}
                   position={'bottom'}
                   // top={this.state.scrollHeight + windowHeight/2}
                   top={0}
                   containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 0}}
-                  distanceCallback={(distance) => {console.log(distance)}}
-                  textMessage={i18n.t("usim:failSnackBar")}
-                  actionHandler={()=>{console.log("snackbar button clicked!")}}/>  
+                  // distanceCallback={(distance) => {console.log(distance)}}
+                  textMessage={i18n.t("usim:failSnackBar")}/>  
       </View>
     );
   }
