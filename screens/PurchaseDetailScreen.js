@@ -85,7 +85,8 @@ class PurchaseDetailScreen extends Component {
       setTimeout(()=>{
         this.setState({
           cancelPressed: false,
-          disableBtn: true
+          disableBtn: true,
+          isCanceled: true,
         })
       }, 3000)
     }
@@ -130,16 +131,17 @@ class PurchaseDetailScreen extends Component {
     AppAlert.confirm(i18n.t('his:cancel'), i18n.t('his:cancelAlert'), 
     {
       ok: () => 
-        {orderApi.cancelOrder(this.state.orderId, this.props.auth).then(resp =>{
-          console.log('detail resp', resp)
-          if (resp.result == 0){
-            console.log('cancel order', resp)
-            this.setState({cancelPressed: true})
-          }else{
-            AppAlert.info(i18n.t("his:cancelFail"))
-          }},
-          err =>{
-            AppAlert.info(i18n.t("his:cancelError"))
+        {
+          orderApi.cancelOrder(this.state.orderId, this.props.auth).then(resp =>{
+            console.log('detail resp', resp)
+            if (resp.result == 0){
+              console.log('cancel order', resp)
+              this.setState({cancelPressed: true})
+            }else{
+              AppAlert.info(i18n.t("his:cancelFail"))
+            }},
+            err =>{
+              AppAlert.info(i18n.t("his:cancelError"))
           })
           this.setState({borderBlue: false})
         }
@@ -368,7 +370,7 @@ class PurchaseDetailScreen extends Component {
                   actionStyle={{paddingHorizontal: 20}}
                   accentColor={colors.white}
                   // distanceCallback={(distance) => {console.log('distance', distance)}}
-                  actionHandler={()=>{this.snackRef.current.hideSnackbar()}}/>  
+                  actionHandler={()=>{this.snackRef.current.hideSnackbar()}}/>
           {
             this._headerInfo()
           }
