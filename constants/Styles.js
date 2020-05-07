@@ -341,3 +341,39 @@ ${body}
 </body>
 </html>
 `}
+
+export const htmlDetailWithCss = (body) => {
+    return `
+    <html>
+    <head>
+    <style>
+    .main-title {
+      font-size: 60px;
+      color: ${colors.clearBlue};
+      padding-bottom: 20px;
+      margin-bottom: 50;
+      border-bottom:10px solid ${colors.clearBlue};
+    }
+    .sub-title {
+      font-size: 40px;
+      padding: 0px;
+    }
+    .content {
+      font-size: 30px;
+      margin-bottom: 80px;
+      padding: 0px;
+    }
+    .caution {
+        padding : 40px;
+    }
+    .tip {
+        padding : 40px;
+    }
+    .
+    </style>
+    </head>
+    <body>
+    ${body}
+    </body>
+    </html>
+`}

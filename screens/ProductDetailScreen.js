@@ -18,7 +18,7 @@ import api from '../utils/api/api';
 import pageApi from '../utils/api/pageApi';
 import AppAlert from '../components/AppAlert';
 import { colors } from '../constants/Colors';
-import { appStyles, htmlWithCss } from '../constants/Styles';
+import { appStyles, htmlDetailWithCss } from '../constants/Styles';
 import AppButton from '../components/AppButton';
 import WebView from 'react-native-webview';
 import utils from '../utils/utils';
@@ -27,13 +27,13 @@ const HEADER_IMG_HEIGHT = 200;
 const INIT_IDX = 999;
 
 const html = [
-  '<button onclick="send()">Send</button> <div id="testa" style="font-size:16px; border:1px solid black;"><h1>starta</h1>  <p> test1 test2 </p> <p> test1 test2 </p> </div>'
+  '<button onclick="send()">Send</button> <div id="info" style="font-size:16px; border:1px solid black;"><h1>starta</h1>  <p> test1 test2 </p> <p> test1 test2 </p> </div>'
   // '<div id="testb" style="font-size:16px; border:1px solid black;"><h1>startb</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
   // '<div id="testc" style="font-size:16px; border:1px solid black;"><h1>startc</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
 ]
 
 const script = `<script>window.location.hash = 1;
-document.title = ['testa', 'testb', 'testc'].map(item => {
+document.title = ['info', 'caution', 'tip'].map(item => {
   var rect = document.getElementById(item).getBoundingClientRect();
   return rect.bottom;
 }).join(',');
@@ -96,7 +96,7 @@ class ProductDetailScreen extends Component {
       console.log("resp",resp)
       if ( resp.result == 0 && resp.objects.length > 0) {
         this.setState({
-          body: htmlWithCss("test", resp.objects[0].body),
+          body: htmlDetailWithCss("test", resp.objects[0].body),
           disable: false
         })
       }
@@ -175,7 +175,7 @@ class ProductDetailScreen extends Component {
       scrollEnabled = {false}
       // source={{html: body + html + script} } 
       onMessage={this._onMessage}
-      source={{html: html + Caution + Tip + script} } 
+      source={{html: htmlDetailWithCss(html + Caution + Tip + script)} } 
       style={{height: height2 + HEADER_IMG_HEIGHT || 1000}} 
     />)
   }

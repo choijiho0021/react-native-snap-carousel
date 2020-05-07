@@ -61,7 +61,7 @@ class PurchaseDetailScreen extends Component {
   }
 
   componentDidMount() {
-    const detail = this.props.navigation.getParam('detail')
+    const detail = this.props.navigation.getParam('detail') || {}
     this.setState({
       ... detail,
       isCanceled : detail.state == 'canceled' || false,
