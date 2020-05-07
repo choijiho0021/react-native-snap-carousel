@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
+import * as productActions from '../redux/modules/product'
 import * as accountActions from '../redux/modules/account'
 import * as orderActions from '../redux/modules/order'
 import {appStyles} from "../constants/Styles"
@@ -20,8 +21,8 @@ import AppModal from '../components/AppModal';
 import { SafeAreaView } from 'react-navigation';
 
 const STATUS = {
-  ACTIVE : "A",           //사용중
-  RESERVED : "R",         //사용 대기 중
+  ACTIVE : "A",           // 사용중
+  RESERVED : "R",         // 사용 대기 중
   INACTIVE : "I",         // 미사용
   EXPIRED : "E",          // 사용 기한 종료
   USED : "U"              // 사용 완료
@@ -50,8 +51,9 @@ class UsageDetailScreen extends Component {
 
   componentDidMount() {
     const detail = this.props.navigation.getParam('detail')
-    const country = detail.country
-    const uuid = detail.uuid
+    const { country, uuid } = detail
+    const price = (this.props.product.prodList.find(item => item.key == detail.prodId) || {}).price
+
     const { usage } = this.props.order
 
     let activatable = false
@@ -61,11 +63,11 @@ class UsageDetailScreen extends Component {
         activatable = true
       }
     })
-    this.setState({activatable, ... detail})
+    this.setState({activatable, price, ... detail})
   }
 
   _onSubmit(modal=undefined, targetStatus=undefined) {
-    const { auth } = this.props
+    const { account:{iccid}, auth } = this.props
     const { uuid, statusCd, showModal, country } = this.state
     const { usage } = this.props.order
 
@@ -85,22 +87,32 @@ class UsageDetailScreen extends Component {
         !_.isEmpty(modal) && this._showModal(modal,true)
         return
       }
-      // 로깨비캐시로 전환한다.
       else if(statusCd == STATUS.INACTIVE && targetStatus == STATUS.USED ){
+        // 로깨비캐시로 전환
         if(showModal[modal]){
-          this.props.action.order.updateSubsToCash(uuid, auth, targetStatus)
-          this.props.action.order.getOrders(auth)
+            this.props.action.order.updateSubsToCash(uuid, auth, targetStatus).then(resp =>
+              {
+                // 업데이트 후 정렬된 usage list 가져오기
+                if(resp.result == 0){
+                  this.props.action.order.getUsage(iccid, auth)
+                  this.props.action.account.getAccount(iccid, auth)
+                }
+              })
         }else{
           !_.isEmpty(modal) && this._showModal(modal, true)
           return
         }
       } 
       else {
-            this.props.action.order.updateUsageStatus( uuid, targetStatus, auth, deact_prod_uuid)
-            this.props.action.order.getOrders(auth)
-          }
-        this.props.navigation.goBack()
+        this.props.action.order.updateUsageStatus( uuid, targetStatus, auth, deact_prod_uuid).then(resp =>
+          {
+            if(resp.result == 0){
+              this.props.action.order.getUsage(iccid, auth)
+            }
+          })
       }
+      this.props.navigation.goBack()
+    }
 }
 
   _showModal(title, value) {
@@ -113,7 +125,7 @@ class UsageDetailScreen extends Component {
   }
 
   render() {
-    const {prodName, activationDate, endDate, expireDate, purchaseDate, statusCd, showModal} = this.state || {}
+    const {prodName, activationDate, endDate, expireDate, purchaseDate, statusCd, showModal, price} = this.state || {}
     let buttonTitle, targetStatus, disable
     
     switch (statusCd) {
@@ -161,17 +173,20 @@ class UsageDetailScreen extends Component {
         </View>
         
         <View style={{flexDirection: 'row' }}>
-          
-          { statusCd == STATUS.RESERVED && <AppButton style={[styles.confirm,{backgroundColor:colors.white}]}
-            title={i18n.t('reg:cancelReservation')} titleStyle={[appStyles.confirmText,{color:colors.black}]}
-            style={{borderWidth:1, borderColor: colors.warmGrey, flex:1}}
-            onPress={() => this._onSubmit(deactivateBtn, STATUS.INACTIVE)}/> }
-
-          { statusCd == STATUS.INACTIVE && <AppButton style={[styles.confirm,{backgroundColor:colors.white}]}
-            title={i18n.t('reg:toRokebiCash')} titleStyle={[appStyles.confirmText,{color:colors.black}]}
-            style={{borderWidth:1, borderColor: colors.warmGrey, flex:1}}
-            onPress={() => this._onSubmit(deactivateBtn, STATUS.USED)}/> }
-          
+          { 
+            statusCd == STATUS.RESERVED && 
+            <AppButton style={[styles.confirm,{backgroundColor:colors.white}]}
+              title={i18n.t('reg:cancelReservation')} titleStyle={[appStyles.confirmText,{color:colors.black}]}
+              style={{borderWidth:1, borderColor: colors.warmGrey, flex:1}}
+              onPress={() => this._onSubmit(deactivateBtn, STATUS.INACTIVE)}/> 
+          }
+          { 
+            statusCd == STATUS.INACTIVE && 
+            <AppButton style={[styles.confirm,{backgroundColor:colors.white}]}
+              title={i18n.t('reg:toRokebiCash')} titleStyle={[appStyles.confirmText,{color:colors.black}]}
+              style={{borderWidth:1, borderColor: colors.warmGrey, flex:1}}
+              onPress={() => this._onSubmit(deactivateBtn, STATUS.USED)}/> 
+          }
           <AppButton style={styles.confirm}
             title={buttonTitle} titleStyle={appStyles.confirmText}
             disabled={disable}
@@ -185,10 +200,10 @@ class UsageDetailScreen extends Component {
             onCancelClose={() => this._showModal(activateBtn,false)}
             visible={showModal.activateBtn} />
           :
-          <AppModal title={'현재 상품을 사용 완료 처리하고 구매 금액과 동일한 금액의 캐시로 전환합니다.'}
+          <AppModal title={i18n.t('reg:toCash')}
           onOkClose={() => this._onSubmit(deactivateBtn, STATUS.USED)}
           onCancelClose={() => this._showModal(deactivateBtn,false)}
-          toRokebiCash={10000}
+          toRokebiCash={utils.numberToCommaString(price)}
           visible={showModal.deactivateBtn} />
         }  
       </SafeAreaView>
@@ -239,6 +254,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => ({
+  product: state.product.toJS(),
   account : state.account.toJS(),
   auth: accountActions.auth(state.account),
   order: state.order.toJS()
@@ -247,6 +263,7 @@ const mapStateToProps = (state) => ({
 export default connect(mapStateToProps, 
   (dispatch) => ({
     action : {
+      product: bindActionCreators(productActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
       order: bindActionCreators(orderActions, dispatch)
     }
