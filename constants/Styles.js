@@ -369,7 +369,9 @@ export const htmlDetailWithCss = (body) => {
     .tip {
         padding : 40px;
     }
-    .
+    .prodInfo {
+        padding : 40px;
+    }
     </style>
     </head>
     <body>
