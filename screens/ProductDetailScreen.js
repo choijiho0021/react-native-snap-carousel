@@ -7,6 +7,7 @@ import {
   Text,
   Animated,
   Image,
+  Clipboard
 } from 'react-native';
 
 import i18n from '../utils/i18n'
@@ -17,7 +18,7 @@ import api from '../utils/api/api';
 import pageApi from '../utils/api/pageApi';
 import AppAlert from '../components/AppAlert';
 import { colors } from '../constants/Colors';
-import { appStyles, htmlWithCss } from '../constants/Styles';
+import { appStyles, htmlDetailWithCss } from '../constants/Styles';
 import AppButton from '../components/AppButton';
 import WebView from 'react-native-webview';
 import utils from '../utils/utils';
@@ -26,16 +27,31 @@ const HEADER_IMG_HEIGHT = 200;
 const INIT_IDX = 999;
 
 const html = [
-  '<div id="testa" style="font-size:16px; border:1px solid black;"><h1>starta</h1> <p> test1 test2 </p> <p> test1 test2 </p></div>'
+  '<button onclick="send()">Send</button> <div id="info" style="font-size:16px; border:1px solid black;"><h1>starta</h1>  <p> test1 test2 </p> <p> test1 test2 </p> </div>'
   // '<div id="testb" style="font-size:16px; border:1px solid black;"><h1>startb</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
   // '<div id="testc" style="font-size:16px; border:1px solid black;"><h1>startc</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
 ]
 
 const script = `<script>window.location.hash = 1;
-document.title = ['testa', 'testb', 'testc'].map(item => {
+document.title = ['prodInfo', 'caution', 'tip'].map(item => {
   var rect = document.getElementById(item).getBoundingClientRect();
   return rect.bottom;
-}).join(',');</script>`
+}).join(',');
+function send() {
+  window.ReactNativeWebView.postMessage('APN Value have to insert into this', '*');
+  window.alert('copy');
+};</script>`
+
+// const script = `window.location.hash = 1;
+// document.title = ['testa', 'testb', 'testc'].map(item => {
+//   var rect = document.getElementById(item).getBoundingClientRect();
+//   return rect.bottom;
+// }).join(',');
+// function send() {
+//   window.ReactNativeWebView.postMessage('APN Value have to insert into this', '*');
+//   window.alert('copy');
+// };
+// return true;`
 
 const scale = 0.422
 
@@ -51,7 +67,7 @@ class ProductDetailScreen extends Component {
       scrollY: new Animated.Value(0),
       idx : INIT_IDX,
       querying : true,
-      body : ''
+      prodInfo : ''
     }
     
     this.onNavigationStateChange = this.onNavigationStateChange.bind(this)
@@ -59,12 +75,13 @@ class ProductDetailScreen extends Component {
     this._scrollTo = this._scrollTo.bind(this)
     this.renderContactKakao = this.renderContactKakao.bind(this)
     this.renderWebView = this.renderWebView.bind(this)
+    this._onMessage = this._onMessage.bind(this)
     this.controller = new AbortController()
   }
 
   shouldComponentUpdate(preProps,preState){
-    const {idx, height2, body, Tip, Caution} = this.state
-    return preState.idx != idx || preState.body != body || preState.height2 != height2 || preState.Tip != Tip || preState.Caution != Caution
+    const {idx, height2, prodInfo, Tip, Caution} = this.state
+    return preState.idx != idx || preState.prodInfo != prodInfo || preState.height2 != height2 || preState.Tip != Tip || preState.Caution != Caution
   }
 
   componentDidMount() {
@@ -75,11 +92,11 @@ class ProductDetailScreen extends Component {
     this.setState({Tip,Caution})
 
     //todo : 상세 HTML을 가져오도록 변경 필요
-    pageApi.getPageByCategory('Tip', this.controller).then(resp => { 
+    pageApi.getPageByCategory('prodInfo', this.controller).then(resp => { 
       console.log("resp",resp)
       if ( resp.result == 0 && resp.objects.length > 0) {
         this.setState({
-          body: htmlWithCss("test", resp.objects[0].body),
+          prodInfo: resp.objects[0].body,
           disable: false
         })
       }
@@ -136,8 +153,14 @@ class ProductDetailScreen extends Component {
     </View>)
   }
 
+  _onMessage(event) {
+    const {data} = event.nativeEvent
+    Clipboard.setString(data)
+    console.log("Copy APN value : ",data)
+  }
+
   renderWebView() {
-    const {body, Tip, Caution, height2} = this.state
+    const {prodInfo, Tip, Caution, height2} = this.state
 
     return (
     <WebView 
@@ -146,11 +169,14 @@ class ProductDetailScreen extends Component {
       javaScriptEnabled={true}
       domStorageEnabled={true}
       scalesPageToFit={true}
+      startInLoadingState={true}
+      // injectedJavaScript={script}
       decelerationRate="normal"
       onNavigationStateChange={(navState) => this.onNavigationStateChange(navState)}
       scrollEnabled = {false}
       // source={{html: body + html + script} } 
-      source={{html: html + Caution + Tip + script} } 
+      onMessage={this._onMessage}
+      source={{html: htmlDetailWithCss(prodInfo + Caution + Tip + script)} } 
       style={{height: height2 + HEADER_IMG_HEIGHT || 1000}} 
     />)
   }

@@ -128,6 +128,10 @@ class HomeScreen extends Component {
         await request(PERMISSIONS.IOS.PHOTO_LIBRARY)
         await request(PERMISSIONS.IOS.CAMERA)
       }
+      else if(Platform.OS == 'android'){
+        await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE)
+        await request(PERMISSIONS.ANDROID.CAMERA)
+      }
 
     // 앱 첫 실행 여부 확인
     AsyncStorage.getItem("alreadyLaunched").then(value => {
