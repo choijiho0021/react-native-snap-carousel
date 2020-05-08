@@ -29,14 +29,6 @@ const domains = [
     label: 'Hanmail',
     value: 'hanmail.net'
   },
-  {
-    label: 'Daum',
-    value: 'daum.net'
-  },
-  {
-    label: 'Hanmail',
-    value: 'hanmail.net'
-  },
 ]
 
 class InputEmail extends Component {
