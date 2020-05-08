@@ -14,12 +14,20 @@ const domains = [
     value: DIRECT_INPUT
   },
   {
+    label: 'Naver',
+    value: 'naver.com'
+  },
+  {
     label: 'Gmail',
     value: 'gmail.com'
   },
   {
-    label: 'Naver',
-    value: 'naver.com'
+    label: 'Daum',
+    value: 'daum.net'
+  },
+  {
+    label: 'Hanmail',
+    value: 'hanmail.net'
   },
   {
     label: 'Daum',

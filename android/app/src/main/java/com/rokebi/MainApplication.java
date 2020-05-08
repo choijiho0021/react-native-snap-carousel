@@ -53,6 +53,8 @@ import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 
+import io.actbase.kakaosdk.channel.ARNKakaoChannelPackage;
+
 public class MainApplication extends Application implements ReactApplication {
 
     public SharedPreferences prefs;
@@ -130,27 +132,28 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.<ReactPackage>asList(
                 new MainReactPackage(),
-            new SvgPackage(),
-            new PickerPackage(),
-            new RNPermissionsPackage(),
-            new IamportPackage(),
-            new AppCenterReactNativeCrashesPackage(getApplication(), getResources().getString(R.string.appCenterCrashes_whenToSendCrashes)),
-            new AppCenterReactNativeAnalyticsPackage(getApplication(), getResources().getString(R.string.appCenterAnalytics_whenToEnableAnalytics)),
-            new AppCenterReactNativePackage(getApplication()),
-            new RNVersionCheckPackage(),
-            new CodePush(BuildConfig.CODEPUSH_KEY, getApplicationContext(), BuildConfig.DEBUG),
-            new RNCameraPackage(),
-            new RNFirebasePackage(),
-            new RNFirebaseMessagingPackage(),
-            new RNFirebaseNotificationsPackage(),
-            new ReactNativePushNotificationPackage(),
-            new ReactVideoPackage(),
-            new DarkModePackage(),
-            new AsyncStoragePackage(),
-            new RNGestureHandlerPackage(),
-            new ReanimatedPackage(),
+                new SvgPackage(),
+                new PickerPackage(),
+                new RNPermissionsPackage(),
+                new IamportPackage(),
+                new AppCenterReactNativeCrashesPackage(getApplication(), getResources().getString(R.string.appCenterCrashes_whenToSendCrashes)),
+                new AppCenterReactNativeAnalyticsPackage(getApplication(), getResources().getString(R.string.appCenterAnalytics_whenToEnableAnalytics)),
+                new AppCenterReactNativePackage(getApplication()),
+                new RNVersionCheckPackage(),
+                new CodePush(BuildConfig.CODEPUSH_KEY, getApplicationContext(), BuildConfig.DEBUG),
+                new RNCameraPackage(),
+                new RNFirebasePackage(),
+                new RNFirebaseMessagingPackage(),
+                new RNFirebaseNotificationsPackage(),
+                new ReactNativePushNotificationPackage(),
+                new ReactVideoPackage(),
+                new DarkModePackage(),
+                new AsyncStoragePackage(),
+                new RNGestureHandlerPackage(),
+                new ReanimatedPackage(),
                 new RNCWebViewPackage(),
-                    new ModuleRegistryAdapter(mModuleRegistryProvider)
+                new ModuleRegistryAdapter(mModuleRegistryProvider),
+                new ARNKakaoChannelPackage()
             );
         }
 

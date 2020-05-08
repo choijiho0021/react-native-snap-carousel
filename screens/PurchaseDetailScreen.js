@@ -95,15 +95,19 @@ class PurchaseDetailScreen extends Component {
   componentWillUnmount(){
     // 보완 필요
     const auth = this.props.navigation.getParam('auth')
+    const { iccid } = this.props.account
     if(this.state.disableBtn && auth){
       this.props.action.order.getOrders(auth)
+      this.props.action.account.getAccount(iccid, auth)
     }
   }
 
   _onScroll = (e) => {
-    this.setState({
-      scrollHeight: e.nativeEvent.contentOffset.y,
-    })
+    if(this.state.cancelPressed){
+      this.setState({
+        scrollHeight: e.nativeEvent.contentOffset.y,
+      })
+    }
   }
 
   _profile(profile){
