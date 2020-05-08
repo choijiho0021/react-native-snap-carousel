@@ -117,11 +117,11 @@ class InputEmail extends Component {
           activeOpacity={1}>
           <RNPickerSelect style={{
             placeholder: styles.placeholder,
-            inputIOS: domainIdx === DIRECT_INPUT ? styles.directInput : styles.noDirectInput,
+            inputIOS: [styles.inputIOS, domainIdx === DIRECT_INPUT ? styles.directInput : styles.noDirectInput],
             inputAndroid: [styles.placeholder, domainIdx === DIRECT_INPUT ? styles.directInput : styles.noDirectInput],
             iconContainer: {
-              bottom: 5,
-              right: 10,
+              bottom: 14,
+              right: 10
             },
             inputAndroidContainer: {
               bottom: -1
@@ -175,14 +175,19 @@ const styles = StyleSheet.create({
   pickerWrapper: {
     ... appStyles.borderWrapper,
     width: 96,
-    paddingLeft: 10,
-    paddingVertical: 8,
     borderColor: colors.black,
     marginTop: 5
   },
   placeholder: {
     ... appStyles.normal14Text,
-    lineHeight: 19
+    lineHeight: 19,
+    paddingLeft: 10,
+    paddingVertical: 8,
+    height: '100%'
+  },
+  inputIOS : {
+    paddingLeft: 10,
+    paddingVertical: 8
   }
 });
 
