@@ -21,6 +21,14 @@ const domains = [
     label: 'Naver',
     value: 'naver.com'
   },
+  {
+    label: 'Daum',
+    value: 'daum.net'
+  },
+  {
+    label: 'Hanmail',
+    value: 'hanmail.net'
+  },
 ]
 
 class InputEmail extends Component {
