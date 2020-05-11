@@ -174,8 +174,7 @@ class StoreSearchScreen extends Component {
 
       //어떤 국가를 검색했는지 통계 수집
       const properties = {"Search Word" : searchWord}
-
-      Analytics.trackEvent("국가 검색 분석", properties)
+      Analytics.trackEvent(i18n.t('appCenter:searchWord'), properties)
     }
   }
 
