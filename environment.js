@@ -14,7 +14,7 @@ const ENV = {
     // apiUrl: "api.rokebi.com",
     // baseUrl: "https://www.rokebi.com",
     scheme: 'http',
-    rokApiUrl: "rokebi-svc-tb.ap-northeast-2.elasticbeanstalk.com",
+    rokApiUrl: "tb.service.rokebi.com",
     apiUrl: "esim2-tb-v2.ap-northeast-2.elasticbeanstalk.com",
     baseUrl: "http://esim2-tb-v2.ap-northeast-2.elasticbeanstalk.com",
     impId: impId,
@@ -23,7 +23,7 @@ const ENV = {
   },
   staging: {
     scheme: 'http',
-    rokApiUrl: "rokebi-svc-tb.ap-northeast-2.elasticbeanstalk.com",
+    rokApiUrl: "tb.service.rokebi.com",
     apiUrl: "esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com",
     baseUrl: "http://esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com",
     impId: impId,
