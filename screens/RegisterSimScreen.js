@@ -55,9 +55,13 @@ class RegisterSimScreen extends Component {
     this._onScan = this._onScan.bind(this)
     this._updateIccid = this._updateIccid.bind(this)
     this._scrolll = this._scrolll.bind(this)
+    this.validIccid = this.validIccid.bind(this)
 
     this.inputIccid = [...Array(4)].map( () =>  React.createRef() )
     this.defaultIccid = "12345"
+    this.defaultLastIccid = "1234"
+    this.lastIccidIdx = 6
+
   }
 
   componentWillUnmount(){
@@ -172,7 +176,8 @@ class RegisterSimScreen extends Component {
         this.inputIccid[idx+1].current.focus()
       }
       else {
-        if ( iccid.map((elm,i) => i === idx ? value : elm ).every(elm => _.size(elm) === 5) && idx === 3 ) {
+        // if ( iccid.map((elm,i) => i === idx ? value : elm ).every(elm => _.size(elm) === 4) && idx === 3 ) {
+          if ( value.length === 4 && idx === 3 ) {
           Keyboard.dismiss()
         }
       }
@@ -185,10 +190,20 @@ class RegisterSimScreen extends Component {
     })
   }
 
+  validIccid(iccid) {
+    let valid = true
+
+    iccid.map((elm,idx) => {
+      if(idx == iccid.length-1 && elm.length != 4) valid = false
+      else if(idx != iccid.length-1 && elm.length != 5) valid = false
+    })
+    return valid
+  }
+
   render() {
     const {scan, iccid, actCode, querying, focusInputIccid, hasCameraPermission} = this.state
-    const disabled = _.size(iccid) !== 4 || ! iccid.every( elm => _.size(elm) === 5 ) ||
-      _.isEmpty(actCode) || actCode.length < 4
+    const disabled = _.size(iccid) !== 4 || ! this.validIccid(iccid) ||
+      _.isEmpty(actCode) || actCode.length < 6
     let iccidIdx = iccid.findIndex(elm => _.size(elm) !== 5)
     if (iccidIdx < 0) iccidIdx = 3
 
@@ -223,13 +238,13 @@ class RegisterSimScreen extends Component {
                         <Text key={idx+""} style={[styles.delimiter, { color: _.size(elm) === 5 ? colors.black : colors.greyish } ]}>-</Text>):
                       <TextInput style={styles.input} key={idx+""}
                         ref={this.inputIccid[idx/2]}
-                        placeholder={this.defaultIccid}
+                        placeholder={idx == this.lastIccidIdx ? this.defaultLastIccid : this.defaultIccid}
                         placeholderTextColor={colors.greyish}
                         onChangeText={this._onChangeText('iccid', idx/2)}
                         keyboardType='numeric'
                         returnKeyType='done'
                         enablesReturnKeyAutomatically={true}
-                        maxLength={5}
+                        maxLength={idx == this.lastIccidIdx ? 4 : 5}
                         value={ elm }
                         focus={focusInputIccid}
                         blurOnSubmit={false}
