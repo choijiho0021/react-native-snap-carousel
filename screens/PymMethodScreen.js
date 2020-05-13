@@ -610,10 +610,10 @@ const styles = StyleSheet.create({
   },
   result: {
     justifyContent: 'center',
-    height: isDeviceSize('small') ? 300 : 400,
+    height: isDeviceSize('small') ? 200 : 255,
   },
   resultText: {
-    ... appStyles.normal14Text,
+    ... appStyles.normal16Text,
     color: colors.warmGrey,
     textAlign: 'center', 
   },
