@@ -20,6 +20,7 @@ export const colors = {
   warmGrey: "#777777",
   disabled: "#777777",
   lightGrey: "#d8d8d8",
+  paleGrey: "#f7f8f9",
   white: "#ffffff",
   whiteTwo: "#f5f5f5",
   tomato: "#ed4847",
