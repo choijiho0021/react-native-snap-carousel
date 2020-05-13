@@ -105,7 +105,7 @@
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>
-			<key>rokebi-svc-tb.ap-northeast-2.elasticbeanstalk.com</key>
+			<key>tb.service.rokebi.com</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
