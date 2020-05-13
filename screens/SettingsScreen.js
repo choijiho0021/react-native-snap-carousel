@@ -22,6 +22,8 @@ import AppModal from '../components/AppModal';
 import AppSwitch from '../components/AppSwitch';
 import VersionCheck from 'react-native-version-check';
 import getEnvVars from '../environment'
+import Analytics from 'appcenter-analytics'
+
 const { label } = getEnvVars();
 
 class SettingsListItem extends PureComponent {
@@ -130,6 +132,7 @@ class SettingsScreen extends Component {
 
       default:
         if ( route) {
+          Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'MyPage' + key})
           this.props.navigation.navigate(route, {key,title})
         }
     }

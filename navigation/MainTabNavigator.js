@@ -42,6 +42,8 @@ import GuideScreen from '../screens/GuideScreen';
 import { colors } from '../constants/Colors';
 import UsageDetailScreen from '../screens/UsageDetailScreen';
 
+import Analytics from 'appcenter-analytics'
+
 const config = Platform.select({
   web: { headerMode: 'screen' },
   default: {
@@ -281,6 +283,7 @@ class AppTabNavigator extends React.Component {
         lastTab = navigation.state.routes[navigation.state.index].routeName
 
       if ( lastTab != this.props.lastTab[0]) {
+        Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : lastTab.substring(0,lastTab.length-5)})
         this.props.action.cart.pushLastTab(lastTab)
       }
     }

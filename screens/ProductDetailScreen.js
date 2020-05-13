@@ -23,6 +23,7 @@ import AppButton from '../components/AppButton';
 import WebView from 'react-native-webview';
 import utils from '../utils/utils';
 import getEnvVars from '../environment'
+import Analytics from 'appcenter-analytics'
 
 const HEADER_IMG_HEIGHT = 200;
 const INIT_IDX = 999;
@@ -139,6 +140,23 @@ class ProductDetailScreen extends Component {
   }
 
   _clickTab = (idx) => () => {
+    let page = ''
+    switch (idx) {
+      case 1 :
+        page = 'ProdInfo'
+        break
+      case 2:
+        page = 'Caution'
+        break
+      case 3:
+        page = 'Tip'
+        break
+      case 4:
+        page = 'Ask with KakaoTalk'
+        break
+    }
+    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page})
+
     var height = 0;
     if ( idx < 3) height += (this.state['height' + (idx-1)] || 0) + HEADER_IMG_HEIGHT
     this._scrollTo( height)

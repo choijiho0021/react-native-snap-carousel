@@ -7,6 +7,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 import {bindActionCreators} from 'redux'
+import Analytics from 'appcenter-analytics'
 import i18n from '../utils/i18n'
 import {connect} from 'react-redux'
 import {appStyles} from '../constants/Styles'
@@ -76,6 +77,8 @@ class NotiScreen extends Component {
     const mode = this.props.navigation.getParam('mode')
     const info = this.props.navigation.getParam('info')
 
+    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Noti'})
+
     this.props.action.board.getIssueList()
     this.props.action.order.getOrders(this.props.auth)
     this.setState({mode,info})
@@ -110,6 +113,8 @@ class NotiScreen extends Component {
     const split = notiType.split('/') 
     const type = split[0]
     const id = split[1]
+
+    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Noti Detail'})
 
     if (uuid) {
       // if ( mode != MODE_NOTIFICATION) this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )

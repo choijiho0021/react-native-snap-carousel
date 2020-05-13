@@ -211,7 +211,7 @@ class MyPageScreen extends Component {
       return this.props.navigation.navigate('Auth')
     }
 
-    return this.props.navigation.navigate('Recharge')
+    return this.props.navigation.navigate('Recharge',{mode : 'MyPage'})
   }
 
   _info() {
@@ -267,7 +267,7 @@ class MyPageScreen extends Component {
 
   _changeEmail(mail) {
     this.props.action.account.changeEmail(mail)
-
+    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Change Email'})
     this.setState({
       showEmailModal: false
     })

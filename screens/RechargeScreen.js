@@ -52,7 +52,7 @@ class RechargeScreen extends Component {
   }
 
   _onSubmit() {
-
+    const mode = this.props.navigation.getParam('mode')
     const {selected} = this.state,
       purchaseItems = [
       {
@@ -66,7 +66,7 @@ class RechargeScreen extends Component {
     ]
 
     this.props.action.cart.purchase({purchaseItems})
-    this.props.navigation.navigate('PymMethod', {pymPrice: utils.stringToNumber(selected)})
+    this.props.navigation.navigate('PymMethod', {pymPrice: utils.stringToNumber(selected), mode : mode + 'Recharge'})
   }
 
   _onPress = (key) => () => {

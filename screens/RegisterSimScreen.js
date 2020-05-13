@@ -28,6 +28,7 @@ import { appStyles } from '../constants/Styles';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import { openSettings, check, PERMISSIONS } from 'react-native-permissions';
+import Analytics from 'appcenter-analytics'
 
 class RegisterSimScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -65,6 +66,10 @@ class RegisterSimScreen extends Component {
     if(iccid && auth){
       this.props.action.order.getUsage(iccid, auth)
     }
+  }
+
+  componentDidMount() {
+    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Register Usim'})
   }
 
   _updateIccid(iccid) {
@@ -248,10 +253,10 @@ class RegisterSimScreen extends Component {
                 onChangeText={this._onChangeText('actCode')}
                 keyboardType="numeric"
                 returnKeyType='done'
-                placeholder='1234'
+                placeholder='123456'
                 placeholderTextColor={colors.greyish}
                 enablesReturnKeyAutomatically={true}
-                maxLength={4}
+                maxLength={6}
                 clearTextOnFocus={true}
                 onFocus={() => this.setState({actCode: ''})}
                 onContentSizeChange={this._scrolll}

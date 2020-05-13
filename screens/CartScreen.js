@@ -146,7 +146,7 @@ class CartScreen extends Component {
         }))
 
       this.props.action.cart.purchase({purchaseItems, dlvCost: dlvCost > 0, balance})
-      this.props.navigation.navigate('PymMethod')
+      this.props.navigation.navigate('PymMethod',{mode : 'Cart'})
 
     }
   }

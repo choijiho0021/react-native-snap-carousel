@@ -24,6 +24,7 @@ import _ from 'underscore';
 
 import { colors } from '../constants/Colors'
 import { ScrollView } from 'react-native-gesture-handler';
+import Analytics from 'appcenter-analytics'
 
 const styles = StyleSheet.create({
   container: {
@@ -108,6 +109,14 @@ class PaymentResultScreen extends Component {
   }
 
   componentDidMount() {
+    const { imp_success } = this.props.navigation.getParam('pymResult')
+    const { result } = this.props.navigation.getParam('orderResult')
+    const mode = this.props.navigation.getParam('mode')
+
+    const isSuccess = !_.isUndefined(imp_success) ? imp_success && (result == 0) : result == 0
+
+    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Purchase ' + mode + (isSuccess ? ' Success' : ' Fail')})
+
     this._init()
     this.props.action.noti.getNotiList(this.props.auth.user)
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.backKeyHandler)
