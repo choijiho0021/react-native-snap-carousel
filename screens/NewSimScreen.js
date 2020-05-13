@@ -23,7 +23,7 @@ import ChargeSummary from '../components/ChargeSummary';
 import { SafeAreaView} from 'react-navigation'
 import AppCartButton from '../components/AppCartButton';
 import utils from '../utils/utils';
-
+import Analytics from 'appcenter-analytics'
 class NewSimScreen extends Component {
   static navigationOptions = ({navigation}) => ({
     headerLeft: <AppBackButton navigation={navigation} title={i18n.t('sim:purchase')} />,
@@ -47,6 +47,7 @@ class NewSimScreen extends Component {
   }
 
   componentDidMount() {
+    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Purchase New Sim'})
     this._init()
   }
 
@@ -108,7 +109,7 @@ class NewSimScreen extends Component {
       if ( simList.length > 0) {
         if ( mode == 'purchase') {
           this.props.action.cart.purchase({ purchaseItems:simList, dlvCost:true, balance})
-          this.props.navigation.navigate('PymMethod')
+          this.props.navigation.navigate('PymMethod',{mode : 'New Sim'})
         }
         else {
           this.props.action.cart.cartAddAndGet( simList)

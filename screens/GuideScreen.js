@@ -19,6 +19,7 @@ import AppFlatListItem from '../components/AppFlatListItem';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import { sliderWidth } from '../constants/SliderEntry.style'
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import Analytics from 'appcenter-analytics'
 
 const guideImages = {
   step1: require('../assets/images/guide/step1/img.png'),
@@ -50,6 +51,7 @@ class GuideScreen extends Component {
   }
 
   componentDidMount() {
+    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Guide'})
     this._refreshData()
   }
 

@@ -38,6 +38,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import AppAlert from './../components/AppAlert';
 import appStateHandler from '../utils/appState'
+import Analytics from 'appcenter-analytics'
 
 const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti, 
   {badgeStyle:{right:-3,top:0}},
@@ -122,7 +123,7 @@ class HomeScreen extends Component {
  }
 
   async componentDidMount() {
-    
+    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Home'})
     // 로그인 여부와 관련 없이 항상 처리할 부분
       if(Platform.OS == 'ios'){
         await request(PERMISSIONS.IOS.PHOTO_LIBRARY)
@@ -213,6 +214,8 @@ class HomeScreen extends Component {
   }
 
   _notification(type, data) {
+
+    Analytics.trackEvent(i18n.t('appCenter:touchNoti'), {type})
 
     const {mobile, loggedIn} = this.props.account
 
@@ -350,8 +353,8 @@ class HomeScreen extends Component {
       phone = mobile ? utils.toPhoneNumber(mobile) : 'unknown'
 
     return (
-      <TouchableOpacity style={styles.userInfo} onPress={this._navigate('RegisterSim_user')}>
-        <AppUserPic url={userPictureUrl} icon="imgPeople" style={styles.userPicture} onPress={this._navigate('RegisterSim_user')}/>
+      <TouchableOpacity style={styles.userInfo} onPress={this._navigate('RegisterSim_user',{mode:'Home'})}>
+        <AppUserPic url={userPictureUrl} icon="imgPeople" style={styles.userPicture} onPress={this._navigate('RegisterSim_user',{mode:'Home'})}/>
         <View style={{marginLeft:20, justifyContent:'space-around', flex:1}}>
           {
             loggedIn ? [

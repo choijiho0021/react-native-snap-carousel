@@ -27,6 +27,7 @@ import subscriptionApi from '../utils/api/subscriptionApi';
 import LabelText from '../components/LabelText';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import AppActivityIndicator from '../components/AppActivityIndicator';
+import Analytics from 'appcenter-analytics'
 
 const STATUS_ACTIVE = 'A'     //사용중
 const STATUS_INACTIVE = 'I'   //미사용
@@ -40,12 +41,18 @@ class CardInfo extends Component {
   constructor(props) {
     super(props)
 
+    this._onPress = this._onPress.bind(this)
   }
 
   shouldComponentUpdate(nextProps, nextState){
     const {iccid, balance} = nextProps
 
     return (iccid != this.props.iccid || balance != this.props.balance) 
+  }
+
+  _onPress() {
+    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Change Usim'})
+    navigation.navigate('RegisterSim')
   }
 
   render () {
@@ -59,7 +66,7 @@ class CardInfo extends Component {
             <AppButton title={i18n.t('menu:change')} 
               titleStyle={[appStyles.normal12Text, {color: colors.white}]}
               style={styles.changeBorder}
-              onPress={() => navigation.navigate('RegisterSim')}
+              onPress={this.onPress}
               iconName={'iconRefresh'} direction={'row'}
               size={16}
               iconStyle={{margin:3}}
@@ -174,6 +181,7 @@ class UsageItem extends Component {
             const progress = used > 0 ? 100 - Math.floor(used / quota * 100) : 0
             this.setState({activated, quota, used, unit, isShowUsage:true})
             this.circularProgress.animate(progress, 3000, null)
+            Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Get Detail Data'})
           }
           else {
             showSnackBar()

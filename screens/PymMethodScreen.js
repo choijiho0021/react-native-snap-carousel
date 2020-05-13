@@ -29,6 +29,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import AppIcon from '../components/AppIcon';
 import Video from 'react-native-video';
 import orderApi from '../utils/api/orderApi';
+import Analytics from 'appcenter-analytics'
 
 const deliveryText = orderApi.deliveryText
 
@@ -45,6 +46,7 @@ class PymMethodScreen extends Component {
     super(props)
 
     this.state = {
+      mode: undefined,
       data: undefined,
       selected: {},
       pymPrice: undefined,
@@ -99,6 +101,9 @@ class PymMethodScreen extends Component {
     this.props.action.profile.getCustomerProfile(this.props.account)
     const {pymPrice, deduct} = this.props.cart
     const content = this.props.profile.content
+    const mode = this.props.navigation.getParam('mode')
+
+    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Payment - ' + mode})
 
     this.setState({
       pymPrice,
@@ -108,7 +113,8 @@ class PymMethodScreen extends Component {
       deliveryMemo: {
         ... this.state.deliveryMemo,
         content
-      }
+      },
+      mode : mode
     })
   }
 
@@ -120,7 +126,7 @@ class PymMethodScreen extends Component {
       clickable: false
     })
 
-    const { selected, pymPrice, deduct, deliveryMemo, simIncluded } = this.state
+    const { selected, pymPrice, deduct, deliveryMemo, simIncluded, mode } = this.state
     const memo = deliveryMemo.selected == i18n.t("pym:input") ? deliveryMemo.content : deliveryMemo.selected
 
     if ( (_.isEmpty(selected)) && (pymPrice !=0) ) return
@@ -149,7 +155,7 @@ class PymMethodScreen extends Component {
       }
       const orderResult = await this.props.action.cart.payNorder(response)
       // 최종 결제 처리 과정에서 실패할 수 있다. pymResult.result 값이 0인지 다시 확인한다.
-      this.props.navigation.replace('PaymentResult', {pymResult:response, orderResult})
+      this.props.navigation.replace('PaymentResult', {pymResult:response, orderResult,mode:mode})
 
     } else {
       const params = {
@@ -404,6 +410,7 @@ class PymMethodScreen extends Component {
   _move(key) {
     if ( !_.isEmpty(key) ) {
       const {route, param} = this.confirmList.find(item => item.key == key)
+      Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : param.key})
       this.props.navigation.navigate(route, param)
     }
   }

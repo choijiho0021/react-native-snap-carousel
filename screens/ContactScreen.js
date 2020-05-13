@@ -8,6 +8,7 @@ import {
   Linking
 } from 'react-native';
 
+import Analytics from 'appcenter-analytics'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import {appStyles} from "../constants/Styles"
@@ -53,22 +54,27 @@ class ContactScreen extends Component {
       data: [
         { "key": "noti", "value": i18n.t('contact:notice'), 
           onPress:() => {
+            Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Notice'})
             this.props.navigation.navigate('Noti', {mode: 'info', title:i18n.t('notice'), info: this.props.info.infoList})
           }},
         { "key": "faq", "value": i18n.t('contact:faq'), 
           onPress:() => {
+            Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'FAQ'})
             this.props.navigation.navigate('Faq')
           }},
         { "key": "board", "value": i18n.t('contact:board'), 
           onPress:() => {
+            Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Contact Board'})
             this.props.navigation.navigate('ContactBoard')
           }},
         { "key": "ktalk", "value": i18n.t('contact:ktalk'),
           onPress:() => {
+            Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Open Kakao Talk'})
             this._openKTalk()
           }},
         { "key": "call", "value": i18n.t('contact:call'),
           onPress:() => {
+            Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Call Center'})
             Linking.openURL(`tel:114`)
           }},
       ],
@@ -86,6 +92,10 @@ class ContactScreen extends Component {
       && prevProps.noti.result !== this.props.noti.result ) {
         this._showModal(true)
     }
+  }
+
+  componentDidMount(){
+    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Service Center'})
   }
 
   _renderItem = ({item}) => {

@@ -74,6 +74,7 @@ class CountryScreen extends Component {
   }
 
   componentDidMount() {
+
     const {idx, prodList} = this.props.product,
       prod = prodList[idx]
 
@@ -142,7 +143,7 @@ class CountryScreen extends Component {
           case 'purchase':
             // 구매 품목을 갱신한다. 
             this.props.action.cart.purchase({ purchaseItems: [ addProduct ], balance})
-            this.props.navigation.navigate('PymMethod')
+            this.props.navigation.navigate('PymMethod',{mode : 'Roaming Product'})
             break
           case 'regCard':
             this.props.navigation.navigate('RegisterSim')
