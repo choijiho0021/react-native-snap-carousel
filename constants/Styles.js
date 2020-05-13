@@ -341,36 +341,76 @@ ${body}
 </body>
 </html>
 `}
+    // <script>
+    // function ChangeImageSrc() {
+    //     var images = document.getElementsByClassName("prodImage")[0];
+    //     // var images = div.getElementsByTagName("img");
 
+    //     for (var i = 0; i < images.length; i++) {
+    //         console.log('@@imagelength', i)
+    //         images[i].setAttribute("src", '../assets/images/productDetail/img-1.png');
+    //     }
+    // }
+
+    // window.onload = ChangeImageSrc;
+    // </script>
 export const htmlDetailWithCss = (body) => {
     return `
     <html>
     <head>
     <style>
     .main-title {
-      font-size: 60px;
-      color: ${colors.clearBlue};
-      padding-bottom: 20px;
-      margin-bottom: 50;
-      border-bottom:10px solid ${colors.clearBlue};
+        font-size: 60px;
+        color: ${colors.clearBlue};
+        padding-bottom: 15px;
+        margin-bottom: 60px;
+        margin-top: 70px;
+        border-bottom: 10px solid ${colors.clearBlue};
     }
     .sub-title {
-      font-size: 40px;
-      padding: 0px;
+        font-size: 50px;
+        padding: 0px;
     }
     .content {
-      font-size: 30px;
-      margin-bottom: 80px;
-      padding: 0px;
+        font-size: 40px;
+        margin-bottom: 50px;
     }
-    .caution {
-        padding : 40px;
+    .caution, .ProdInfo, .tip {
+        padding: 20px;
+        line-height: 1.6;
     }
-    .tip {
-        padding : 40px;
+    #prodImg {
+        background-color: ${colors.paleGrey};
+        padding-top: 35px;
+        padding-bottom: 40px !important;
+        margin-bottom: 70px;
     }
-    .prodInfo {
-        padding : 40px;
+    .settings{
+        border-radius: 5px;
+    }    
+    .blueBox, .copyBox {
+        display: flex;
+        // flex-direction: 'row';
+        background-color: ${colors.clearBlue};
+        // justify-content: 'center';
+        // align-self: 'center';        
+    }
+    .blueBox {
+        height: '5%';
+    }
+    .copyBox {
+        padding: 30px;
+        height: 120px;
+    }
+    .withImg {
+        background-color: ${colors.paleGrey};
+        padding: 40px;
+        margin-bottom: 120;
+    }
+    img {
+        padding-top: 90px;
+        padding-bottom: 80px;
+        background-color: ${colors.paleGrey}
     }
     </style>
     </head>
