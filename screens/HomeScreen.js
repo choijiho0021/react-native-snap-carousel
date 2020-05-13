@@ -214,9 +214,6 @@ class HomeScreen extends Component {
   }
 
   _notification(type, data) {
-
-    Analytics.trackEvent(i18n.t('appCenter:touchNoti'), {type})
-
     const {mobile, loggedIn} = this.props.account
 
     if ( loggedIn ) {
@@ -230,7 +227,6 @@ class HomeScreen extends Component {
         })
         break;
       case 'notification':
-        console.log('notification', data)
         this._handleNotification( data )
     }
   }
