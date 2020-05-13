@@ -414,7 +414,7 @@ const en = {
   "appCenter:purchaseClick": "Click the 'buy' button",
   "appCenter:searchWord": "Search_Country",
   "appCenter:viewCount" : "Page_View_Count",
-  "appCenter:touchNoti" : "Touch Noti",
+  "appCenter:touchNoti" : "Touch_Noti",
 };
 
 const ko = {
