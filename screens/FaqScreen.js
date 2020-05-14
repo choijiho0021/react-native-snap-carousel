@@ -52,14 +52,14 @@ class FaqScreen extends Component {
       index: 0,
       routes: [
         { key: 'general', title: i18n.t('faq:general') },
+        { key: 'config', title: i18n.t('faq:config') },
         { key: 'payment', title: i18n.t('faq:payment') },
-        { key: 'lost', title: i18n.t('faq:lost') },
-        { key: 'refund', title: i18n.t('faq:refund') },
+        { key: 'etc', title: i18n.t('faq:etc') },
       ],
       general: [], 
       payment: [],
-      lost: [], 
-      refund: []
+      config: [], 
+      etc: []
     }
 
     this._onPress = this._onPress.bind(this)
