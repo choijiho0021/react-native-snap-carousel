@@ -131,6 +131,7 @@ class StoreSearchScreen extends Component {
   componentDidMount() {
     const allData = this.props.navigation.getParam('allData')
 
+    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Country Search'})
     this.setState({allData})
     this.getSearchHist()
 
@@ -171,14 +172,12 @@ class StoreSearchScreen extends Component {
         const new_searchHist = _.isNull(old_searchHist) ? searchWord : Array.from(new Set([searchWord].concat(old_searchHist.split(',')))).slice(0,MAX_HISTORY_LENGTH).join(',')
         utils.storeData("searchHist", new_searchHist)
       }
-
-      //어떤 국가를 검색했는지 통계 수집
-      const properties = {"country" : searchWord}
-      Analytics.trackEvent(i18n.t('appCenter:searchWord'), properties)
     }
   }
 
   _onPressItem = (key) => {
+    if(this.state.searchWord.length > 0) Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Move To Country with Searching'})
+
     const country = this.state.allData.filter(elm => elm.uuid == key)[0]
 
     this.props.action.product.selectCountry({uuid: key})

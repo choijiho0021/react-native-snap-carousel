@@ -415,6 +415,7 @@ const en = {
   "appCenter:searchWord": "Search_Country",
   "appCenter:viewCount" : "Page_View_Count",
   "appCenter:touchNoti" : "Touch_Noti",
+  "appCenter:payment" : "Payment",
 };
 
 const ko = {
@@ -839,7 +840,8 @@ const ko = {
   "appCenter:purchaseClick": "바로구매 클릭",
   "appCenter:searchWord": "Search_Country",
   "appCenter:viewCount" : "Page_View_Count",
-  "appCenter:touchNoti" : "Touch Noti",
+  "appCenter:touchNoti" : "Touch_Noti",
+  "appCenter:payment" : "Payment",
 };
 
 i18n.fallbacks = true;

@@ -115,7 +115,7 @@ class PaymentResultScreen extends Component {
 
     const isSuccess = !_.isUndefined(imp_success) ? imp_success && (result == 0) : result == 0
 
-    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Purchase ' + mode + (isSuccess ? ' Success' : ' Fail')})
+    Analytics.trackEvent(i18n.t('appCenter:payment'), {payment : mode + ' Payment' + (isSuccess ? ' Success' : ' Fail')})
 
     this._init()
     this.props.action.noti.getNotiList(this.props.auth.user)
