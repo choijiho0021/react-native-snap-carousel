@@ -73,7 +73,7 @@ class RegisterSimScreen extends Component {
   }
 
   componentDidMount() {
-    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Register Usim'})
+    Analytics.trackEvent('Page_View_Count', {page : 'Register Usim'})
   }
 
   _updateIccid(iccid) {

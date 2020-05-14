@@ -123,7 +123,7 @@ class HomeScreen extends Component {
  }
 
   async componentDidMount() {
-    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Home'})
+    Analytics.trackEvent('Page_View_Count', {page : 'Home'})
     // 로그인 여부와 관련 없이 항상 처리할 부분
       if(Platform.OS == 'ios'){
         await request(PERMISSIONS.IOS.PHOTO_LIBRARY)

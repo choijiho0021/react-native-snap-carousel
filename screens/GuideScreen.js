@@ -51,7 +51,7 @@ class GuideScreen extends Component {
   }
 
   componentDidMount() {
-    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Guide'})
+    Analytics.trackEvent('Page_View_Count', {page : 'Guide'})
     this._refreshData()
   }
 

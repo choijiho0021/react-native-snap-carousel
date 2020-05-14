@@ -62,7 +62,7 @@ class PurchaseDetailScreen extends Component {
 
   componentDidMount() {
     const detail = this.props.navigation.getParam('detail') || {}
-    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Purchase Detail'})
+    Analytics.trackEvent('Page_View_Count', {page : 'Purchase Detail'})
     this.setState({
       ... detail,
       isCanceled : detail.state == 'canceled' || false,

@@ -51,7 +51,7 @@ class CardInfo extends Component {
   }
 
   _onPress() {
-    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Change Usim'})
+    Analytics.trackEvent('Page_View_Count', {page : 'Change Usim'})
     navigation.navigate('RegisterSim')
   }
 
@@ -181,7 +181,7 @@ class UsageItem extends Component {
             const progress = used > 0 ? 100 - Math.floor(used / quota * 100) : 0
             this.setState({activated, quota, used, unit, isShowUsage:true})
             this.circularProgress.animate(progress, 3000, null)
-            Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Get Detail Data'})
+            Analytics.trackEvent('Page_View_Count', {page : 'Get Detail Data'})
           }
           else {
             showSnackBar()

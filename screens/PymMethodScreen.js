@@ -103,7 +103,7 @@ class PymMethodScreen extends Component {
     const content = this.props.profile.content
     const mode = this.props.navigation.getParam('mode')
 
-    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Payment - ' + mode})
+    Analytics.trackEvent('Page_View_Count', {page : 'Payment - ' + mode})
 
     this.setState({
       pymPrice,
@@ -410,7 +410,7 @@ class PymMethodScreen extends Component {
   _move(key) {
     if ( !_.isEmpty(key) ) {
       const {route, param} = this.confirmList.find(item => item.key == key)
-      Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : param.key})
+      Analytics.trackEvent('Page_View_Count', {page : param.key})
       this.props.navigation.navigate(route, param)
     }
   }

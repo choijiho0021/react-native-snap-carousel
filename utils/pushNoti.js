@@ -107,10 +107,9 @@ class PushNoti {
     if ( notification && _.isFunction(onNotification)) {
       if(key == "onNotification") onNotification(notification)
       else {
-        console.log("notification -aaaaa",notification.notification)
         const notiType = notification.notification._data.notiType.split('/')
         //push noti를 클릭하여 앱으로 진입한 경우에만 카운트
-        Analytics.trackEvent(i18n.t('appCenter:touchNoti'), {type : notiType[0]})
+        Analytics.trackEvent('Touch_Noti', {type : notiType[0]})
         onNotification(notification.notification)
       }
     }

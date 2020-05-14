@@ -283,7 +283,7 @@ class AppTabNavigator extends React.Component {
         lastTab = navigation.state.routes[navigation.state.index].routeName
 
       if ( lastTab != this.props.lastTab[0]) {
-        Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : lastTab.substring(0,lastTab.length-5)})
+        Analytics.trackEvent('Page_View_Count', {page : lastTab.substring(0,lastTab.length-5)})
         this.props.action.cart.pushLastTab(lastTab)
       }
     }

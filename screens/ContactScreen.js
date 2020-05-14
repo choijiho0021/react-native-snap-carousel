@@ -54,27 +54,27 @@ class ContactScreen extends Component {
       data: [
         { "key": "noti", "value": i18n.t('contact:notice'), 
           onPress:() => {
-            Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Notice'})
+            Analytics.trackEvent('Page_View_Count', {page : 'Notice'})
             this.props.navigation.navigate('Noti', {mode: 'info', title:i18n.t('notice'), info: this.props.info.infoList})
           }},
         { "key": "faq", "value": i18n.t('contact:faq'), 
           onPress:() => {
-            Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'FAQ'})
+            Analytics.trackEvent('Page_View_Count', {page : 'FAQ'})
             this.props.navigation.navigate('Faq')
           }},
         { "key": "board", "value": i18n.t('contact:board'), 
           onPress:() => {
-            Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Contact Board'})
+            Analytics.trackEvent('Page_View_Count', {page : 'Contact Board'})
             this.props.navigation.navigate('ContactBoard')
           }},
         { "key": "ktalk", "value": i18n.t('contact:ktalk'),
           onPress:() => {
-            Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Open Kakao Talk'})
+            Analytics.trackEvent('Page_View_Count', {page : 'Open Kakao Talk'})
             this._openKTalk()
           }},
         { "key": "call", "value": i18n.t('contact:call'),
           onPress:() => {
-            Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Call Center'})
+            Analytics.trackEvent('Page_View_Count', {page : 'Call Center'})
             Linking.openURL(`tel:114`)
           }},
       ],
@@ -95,7 +95,7 @@ class ContactScreen extends Component {
   }
 
   componentDidMount(){
-    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Service Center'})
+    Analytics.trackEvent('Page_View_Count', {page : 'Service Center'})
   }
 
   _renderItem = ({item}) => {

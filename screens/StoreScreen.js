@@ -195,7 +195,7 @@ class StoreScreen extends Component {
 
   _onIndexChange(index) {
 
-    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Store'})
+    Analytics.trackEvent('Page_View_Count', {page : 'Store'})
     if ( country != '') {
       const key = Object.keys(productApi.category)[this.state.index]
       this.setState({

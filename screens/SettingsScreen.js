@@ -132,7 +132,7 @@ class SettingsScreen extends Component {
 
       default:
         if ( route) {
-          Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'MyPage' + key})
+          Analytics.trackEvent('Page_View_Count', {page : 'MyPage' + key})
           this.props.navigation.navigate(route, {key,title})
         }
     }

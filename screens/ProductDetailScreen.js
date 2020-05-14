@@ -29,6 +29,7 @@ const HEADER_IMG_HEIGHT = 200;
 const INIT_IDX = 999;
 const { baseUrl } = getEnvVars();
 
+const tabList = ['ProdInfo','Caution','Tip','Ask with KakaoTalk']
 const html = [
   '<button onclick="send()">Send</button> <div id="info" style="font-size:16px; border:1px solid black;"><h1>starta</h1>  <p> test1 test2 </p> <p> test1 test2 </p> </div>'
   // '<div id="testb" style="font-size:16px; border:1px solid black;"><h1>startb</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
@@ -140,27 +141,12 @@ class ProductDetailScreen extends Component {
   }
 
   _clickTab = (idx) => () => {
-    let page = ''
-    switch (idx) {
-      case 1 :
-        page = 'ProdInfo'
-        break
-      case 2:
-        page = 'Caution'
-        break
-      case 3:
-        page = 'Tip'
-        break
-      case 4:
-        page = 'Ask with KakaoTalk'
-        break
-    }
-    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page})
+    
+    Analytics.trackEvent('Page_View_Count', {page: tabList[idx+1]})
 
     var height = 0;
     if ( idx < 3) height += (this.state['height' + (idx-1)] || 0) + HEADER_IMG_HEIGHT
     this._scrollTo( height)
-    console.log("idx", idx)
     this.setState({idx})
   }
 
@@ -224,30 +210,16 @@ class ProductDetailScreen extends Component {
           {/* ScrollView  stickyHeaderIndices로 상단 탭을 고정하기 위해서 View한번 더 사용*/}
           <View style={styles.whiteBackground}>
             <View style={styles.tabView}>
-              <AppButton 
-              style={styles.whiteBackground}
+            {
+              tabList.map((elm,idx) => (
+                <AppButton 
+                style={styles.whiteBackground}
                 titleStyle={[styles.normal16WarmGrey, (idx == 0 || idx == INIT_IDX) && styles.boldClearBlue]}
-                title={'상품정보'}
-                onPress={this._clickTab(0)}
+                title={i18n.t(`prodDetail:${elm}`)}
+                onPress={this._clickTab(idx)}
               />
-              <AppButton
-                style={styles.whiteBackground}
-                titleStyle={[styles.normal16WarmGrey, idx == 1 && styles.boldClearBlue]}
-                title={'주의사항'}
-                onPress={this._clickTab(1)}
-              />
-              <AppButton
-                style={styles.whiteBackground}
-                titleStyle={[styles.normal16WarmGrey, idx == 2 && styles.boldClearBlue]}
-                title={'사용팁'}
-                onPress={this._clickTab(2)}
-              />
-              <AppButton
-                style={styles.whiteBackground}
-                titleStyle={[styles.normal16WarmGrey, idx == 3 && styles.boldClearBlue]}
-                title={'물어보기'}
-                onPress={this._clickTab(3)}
-              />
+              ))
+            }
             </View>
           </View>
           {idx == 3 && this.renderContactKakao() }

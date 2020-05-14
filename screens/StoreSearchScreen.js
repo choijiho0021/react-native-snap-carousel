@@ -131,7 +131,7 @@ class StoreSearchScreen extends Component {
   componentDidMount() {
     const allData = this.props.navigation.getParam('allData')
 
-    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Country Search'})
+    Analytics.trackEvent('Page_View_Count', {page : 'Country Search'})
     this.setState({allData})
     this.getSearchHist()
 
@@ -176,7 +176,7 @@ class StoreSearchScreen extends Component {
   }
 
   _onPressItem = (key) => {
-    if(this.state.searchWord.length > 0) Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Move To Country with Searching'})
+    if(this.state.searchWord.length > 0) Analytics.trackEvent('Page_View_Count', {page : 'Move To Country with Searching'})
 
     const country = this.state.allData.filter(elm => elm.uuid == key)[0]
 

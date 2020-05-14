@@ -413,8 +413,6 @@ const en = {
   "appCenter:cartClick": "Click the 'to Cart' button",
   "appCenter:purchaseClick": "Click the 'buy' button",
   "appCenter:searchWord": "Search_Country",
-  "appCenter:viewCount" : "Page_View_Count",
-  "appCenter:touchNoti" : "Touch_Noti",
   "appCenter:payment" : "Payment",
 };
 
@@ -838,10 +836,10 @@ const ko = {
 
   "appCenter:cartClick": "카트에 담기 클릭",
   "appCenter:purchaseClick": "바로구매 클릭",
-  "appCenter:searchWord": "Search_Country",
-  "appCenter:viewCount" : "Page_View_Count",
-  "appCenter:touchNoti" : "Touch_Noti",
-  "appCenter:payment" : "Payment",
+  "prodDetail:ProdInfo" : "상품정보",
+  "prodDetail:Caution" : "주의사항",
+  "prodDetail:Tip" : "사용팁",
+  "prodDetail:Ask with KakaoTalk" : "물어보기",
 };
 
 i18n.fallbacks = true;

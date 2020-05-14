@@ -47,7 +47,7 @@ class NewSimScreen extends Component {
   }
 
   componentDidMount() {
-    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Purchase New Sim'})
+    Analytics.trackEvent('Page_View_Count', {page : 'Purchase New Sim'})
     this._init()
   }
 

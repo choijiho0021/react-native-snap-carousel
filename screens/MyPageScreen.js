@@ -267,7 +267,7 @@ class MyPageScreen extends Component {
 
   _changeEmail(mail) {
     this.props.action.account.changeEmail(mail)
-    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Change Email'})
+    Analytics.trackEvent('Page_View_Count', {page : 'Change Email'})
     this.setState({
       showEmailModal: false
     })
