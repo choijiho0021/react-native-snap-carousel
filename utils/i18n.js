@@ -412,7 +412,9 @@ const en = {
 
   "appCenter:cartClick": "Click the 'to Cart' button",
   "appCenter:purchaseClick": "Click the 'buy' button",
-  "appCenter:searchWord": "Search Country Name"
+  "appCenter:searchWord": "Search_Country",
+  "appCenter:viewCount" : "Page_View_Count",
+  "appCenter:touchNoti" : "Touch_Noti",
 };
 
 const ko = {
@@ -835,7 +837,9 @@ const ko = {
 
   "appCenter:cartClick": "카트에 담기 클릭",
   "appCenter:purchaseClick": "바로구매 클릭",
-  "appCenter:searchWord": "국가 검색"
+  "appCenter:searchWord": "Search_Country",
+  "appCenter:viewCount" : "Page_View_Count",
+  "appCenter:touchNoti" : "Touch Noti",
 };
 
 i18n.fallbacks = true;

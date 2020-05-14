@@ -46,7 +46,7 @@ class BoardMsg extends Component {
             <Text key="date" style={styles.date}>{date}</Text>
           </View >
           <View style={{width:'30%', alignItems:'flex-end'}}>
-            <Text key="status" style={[styles.status, {color: statusCode == 'Closed' ? colors.clearBlue : colors.warmGrey}]}>{i18n.t(`board:${status}`)}</Text>
+            <Text key="status" style={[styles.status, {color: statusCode == 'Closed' ? colors.clearBlue : colors.warmGrey}]}>{status}</Text>
           </View>
         </View>
       </TouchableOpacity>

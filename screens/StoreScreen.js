@@ -22,7 +22,7 @@ import AppAlert from '../components/AppAlert';
 import moment from 'moment'
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import { isDeviceSize } from '../constants/SliderEntry.style';
-
+import Analytics from 'appcenter-analytics'
 class StoreScreen extends Component {
   static navigationOptions = ({navigation}) => ({
     headerLeft: <Text style={styles.title}>{i18n.t('store')}</Text>,
@@ -195,6 +195,7 @@ class StoreScreen extends Component {
 
   _onIndexChange(index) {
 
+    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Store'})
     if ( country != '') {
       const key = Object.keys(productApi.category)[this.state.index]
       this.setState({

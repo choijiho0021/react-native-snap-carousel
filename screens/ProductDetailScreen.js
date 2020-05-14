@@ -22,9 +22,12 @@ import { appStyles, htmlDetailWithCss } from '../constants/Styles';
 import AppButton from '../components/AppButton';
 import WebView from 'react-native-webview';
 import utils from '../utils/utils';
+import getEnvVars from '../environment'
+import Analytics from 'appcenter-analytics'
 
 const HEADER_IMG_HEIGHT = 200;
 const INIT_IDX = 999;
+const { baseUrl } = getEnvVars();
 
 const html = [
   '<button onclick="send()">Send</button> <div id="info" style="font-size:16px; border:1px solid black;"><h1>starta</h1>  <p> test1 test2 </p> <p> test1 test2 </p> </div>'
@@ -137,6 +140,23 @@ class ProductDetailScreen extends Component {
   }
 
   _clickTab = (idx) => () => {
+    let page = ''
+    switch (idx) {
+      case 1 :
+        page = 'ProdInfo'
+        break
+      case 2:
+        page = 'Caution'
+        break
+      case 3:
+        page = 'Tip'
+        break
+      case 4:
+        page = 'Ask with KakaoTalk'
+        break
+    }
+    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page})
+
     var height = 0;
     if ( idx < 3) height += (this.state['height' + (idx-1)] || 0) + HEADER_IMG_HEIGHT
     this._scrollTo( height)
@@ -174,10 +194,10 @@ class ProductDetailScreen extends Component {
       decelerationRate="normal"
       onNavigationStateChange={(navState) => this.onNavigationStateChange(navState)}
       scrollEnabled = {false}
-      // source={{html: body + html + script} } 
+      // source={{html: body + html + script} }
       onMessage={this._onMessage}
-      source={{html: htmlDetailWithCss(prodInfo + Caution + Tip + script)} } 
-      style={{height: height2 + HEADER_IMG_HEIGHT || 1000}} 
+      source={{html: htmlDetailWithCss(prodInfo + Caution + Tip + script), baseUrl} }
+      style={{height: height2 + HEADER_IMG_HEIGHT || 1000}}
     />)
   }
 
@@ -202,31 +222,34 @@ class ProductDetailScreen extends Component {
           </View>
 
           {/* ScrollView  stickyHeaderIndices로 상단 탭을 고정하기 위해서 View한번 더 사용*/}
-          <View style={{backgroundColor:colors.white}}>
+          <View style={styles.whiteBackground}>
             <View style={styles.tabView}>
               <AppButton 
-                style={{backgroundColor: idx == 0 || idx == INIT_IDX ? colors.tomato : colors.gray}} 
-                title={'상품정보'} 
+              style={styles.whiteBackground}
+                titleStyle={[styles.normal16WarmGrey, (idx == 0 || idx == INIT_IDX) && styles.boldClearBlue]}
+                title={'상품정보'}
                 onPress={this._clickTab(0)}
               />
-              <AppButton 
-                style={{backgroundColor: idx == 1 ? colors.tomato : colors.gray}}
-                title={'주의사항'} 
+              <AppButton
+                style={styles.whiteBackground}
+                titleStyle={[styles.normal16WarmGrey, idx == 1 && styles.boldClearBlue]}
+                title={'주의사항'}
                 onPress={this._clickTab(1)}
               />
-              <AppButton 
-                style={{backgroundColor: idx == 2 ? colors.tomato : colors.gray}} 
-                title={'사용팁'} 
+              <AppButton
+                style={styles.whiteBackground}
+                titleStyle={[styles.normal16WarmGrey, idx == 2 && styles.boldClearBlue]}
+                title={'사용팁'}
                 onPress={this._clickTab(2)}
               />
-              <AppButton 
-              style={{backgroundColor: idx == 3 ? colors.tomato : colors.gray}} 
-              title={'물어보기'} 
-              onPress={this._clickTab(3)}
+              <AppButton
+                style={styles.whiteBackground}
+                titleStyle={[styles.normal16WarmGrey, idx == 3 && styles.boldClearBlue]}
+                title={'물어보기'}
+                onPress={this._clickTab(3)}
               />
             </View>
           </View>
-
           {idx == 3 && this.renderContactKakao() }
           
           {idx != 3 && this.renderWebView()}
@@ -248,11 +271,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20
   },
   tabView: {
+    height: 60,
     flexDirection:'row', 
     alignItems:'center', 
     justifyContent:'space-between', 
-    marginHorizontal:40
+    marginHorizontal: 20,
+  },
+  whiteBackground: {
+    backgroundColor: colors.white
+  },
+  normal16WarmGrey: {
+    ... appStyles.normal16Text,
+    color: colors.warmGrey
+  },
+  boldClearBlue: {
+    color: colors.clearBlue,
+    fontWeight: 'bold'
   }
+
 });
 
 export default ProductDetailScreen

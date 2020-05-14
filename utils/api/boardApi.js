@@ -8,9 +8,9 @@ class BoardAPI {
     PAGE_SIZE = 10
 
     statusToString = (status) => {
-        return (status == 'O') ? i18n.t('board:open') :
-            (status == 'C') ? i18n.t('board:closed') :
-            (status == 'P') ? i18n.t('board:processing') : status
+        return (status == 'Open') ? i18n.t('board:open') :
+            (status == 'Closed') ? i18n.t('board:closed') :
+            (status == 'Processing') ? i18n.t('board:processing') : status
     }
 
     toBoard = (data) => {

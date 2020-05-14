@@ -28,7 +28,7 @@ import AddressCard from '../components/AddressCard';
 import { bindActionCreators } from 'redux';
 import SnackBar from 'react-native-snackbar-component';
 import { windowHeight } from '../constants/SliderEntry.style';
-
+import Analytics from 'appcenter-analytics'
 class PurchaseDetailScreen extends Component {
   static navigationOptions = ({navigation}) => ({
     headerLeft: <AppBackButton navigation={navigation} title={i18n.t('his:detail')}/>
@@ -62,6 +62,7 @@ class PurchaseDetailScreen extends Component {
 
   componentDidMount() {
     const detail = this.props.navigation.getParam('detail') || {}
+    Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Purchase Detail'})
     this.setState({
       ... detail,
       isCanceled : detail.state == 'canceled' || false,
