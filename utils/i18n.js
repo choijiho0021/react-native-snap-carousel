@@ -275,8 +275,8 @@ const en = {
 
   "faq:general": "General",
   "faq:payment": "Payment",
-  "faq:lost": "Lost",
-  "faq:refund": "Refund",
+  "faq:config": "Config",
+  "faq:etc": "ETC",
 
   "board:title" : "Help Center",
   "board:new" : "New Reqeust",
@@ -698,10 +698,10 @@ const ko = {
   "contact:ktalk" : "1:1 카카오톡 상담",
   "contact:call" : "고객 센터 전화 연결",
 
-  "faq:general": "일반/주문",
-  "faq:payment": "결제/장애",
-  "faq:lost": "분실/취소",
-  "faq:refund": "환불/기타",
+  "faq:general": "사용방법",
+  "faq:config": "로밍설정",
+  "faq:payment": "결제/환불",
+  "faq:etc": "기타",
 
   "board:title" : "1:1 게시판",
   "board:new" : "문의 하기",
