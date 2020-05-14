@@ -363,19 +363,24 @@ export const htmlDetailWithCss = (body) => {
         font-size: 60px;
         color: ${colors.clearBlue};
         padding-bottom: 15px;
-        margin-bottom: 60px;
+        margin-bottom: 80px;
         margin-top: 70px;
         border-bottom: 10px solid ${colors.clearBlue};
     }
     .sub-title {
         font-size: 50px;
         padding: 0px;
+        margin-bottom: 20px;
     }
     .content {
         font-size: 40px;
-        margin-bottom: 50px;
+        margin-bottom: 100px;
     }
-    .caution, .ProdInfo, .tip {
+    .caution, .ProdInfo, #tip {
+        padding: 20px;
+        line-height: 1.6;
+    }
+    .Tip {
         padding: 20px;
         line-height: 1.6;
     }
@@ -389,28 +394,52 @@ export const htmlDetailWithCss = (body) => {
         border-radius: 5px;
     }    
     .blueBox, .copyBox {
-        display: flex;
-        // flex-direction: 'row';
-        background-color: ${colors.clearBlue};
+        text-align: center;
+
+        // display: flex;
+        // flex-direction: 'column';
+        // border-radius: 5px;
         // justify-content: 'center';
         // align-self: 'center';        
     }
     .blueBox {
         height: '5%';
+        background-color: ${colors.clearBlue};
     }
     .copyBox {
+        background-color: ${colors.white};
         padding: 30px;
         height: 120px;
+        vertical-align: middle;
     }
-    .withImg {
+    .settings img {
+        dispay: inline-block;
+        width=4%;
+        background-color: '#B404AE';
+        padding: 0px;
+    }
+    .blueBox img {
+
+    }
+    #copyLogo {
+        width=4%;
+        height=17%;
+    }
+    .padding20Img {
         background-color: ${colors.paleGrey};
         padding: 40px;
-        margin-bottom: 120;
+        padding-bottom: 80px;
+        margin-bottom: 120px;
     }
     img {
-        padding-top: 90px;
+        padding-top: 80px;
         padding-bottom: 80px;
-        background-color: ${colors.paleGrey}
+
+    }
+    .noBackgroundImg {
+        background-color: ${colors.white}
+        margin-left: 60px;
+        margin-right: 60px;
     }
     </style>
     </head>
