@@ -52,11 +52,11 @@ class CardInfo extends Component {
 
   _onPress() {
     Analytics.trackEvent(i18n.t('appCenter:viewCount'), {page : 'Change Usim'})
-    navigation.navigate('RegisterSim')
+    this.props.navigation.navigate('RegisterSim')
   }
 
   render () {
-    const { iccid, balance, expDate, navigation } = this.props
+    const { iccid, balance, expDate } = this.props
 
     return (
       <View>
@@ -66,7 +66,7 @@ class CardInfo extends Component {
             <AppButton title={i18n.t('menu:change')} 
               titleStyle={[appStyles.normal12Text, {color: colors.white}]}
               style={styles.changeBorder}
-              onPress={this.onPress}
+              onPress={this._onPress}
               iconName={'iconRefresh'} direction={'row'}
               size={16}
               iconStyle={{margin:3}}
@@ -288,32 +288,69 @@ class UsimScreen extends Component {
 
     this.state = {
       refreshing: false,
-      cancelPressed: false
+      cancelPressed: false,
+      // afterLogin: false,
     }
     
+    this._init = this._init.bind(this)
     this._renderUsage = this._renderUsage.bind(this)
     this._onRefresh = this._onRefresh.bind(this)
     this._info = this._info.bind(this)
     this.showSnackBar = this.showSnackBar.bind(this)
   }
 
-  componentDidMount() {
-    const { account: {iccid}, auth} = this.props
+  // shouldComponentUpdate(nextProps){
+  //   const {account:{loggedIn, iccid}, auth} = nextProps
 
-    console.log('@@iccid', iccid, auth)
-    if(!this.props.account.loggedIn){
-      this.props.navigation.navigate('RegisterMobile')
-    }else{
-      if (iccid && auth) {
-        this.props.action.order.getUsage(iccid, auth)
-      }else{
-        this.props.navigation.replace('RegisterSim', {back:'lastTab'})
-      }
-    }
+    
+  //   // if(loggedIn != prevProps.account.loggedIn || auth != prevProps.auth){
+  //   //   this._init(loggedIn, iccid, auth)
+  //   //   // return true
+  //   // }
+  //   console.log('@@shouldcomponent loggedIn', this.props.account.loggedIn, loggedIn)
+  //   console.log('@@shouldcomponent iccid', this.props.account.iccid, iccid)
+  //   console.log('@@shouldcomponent auth', this.props.auth, auth)
+  //   if(!(loggedIn == this.props.account.loggedIn && auth == this.props.auth && iccid == this.props.account.iccid)){
+  //     this._init(loggedIn, iccid, auth)
+  //     // return true
+  //   }
+  //   return false
+    
+  // }
+  componentDidMount() {
+    const { account: {iccid, loggedIn}, auth} = this.props
+
+    console.log('로그인@@@@@', this.props)
+    console.log('@@@@@iccid', iccid, auth)
+    this._init(loggedIn, iccid, auth)
+
+    // if(!loggedIn){
+    //   this.props.navigation.navigate('RegisterMobile')
+    // }else{
+    //   if (iccid && auth) {
+    //     this.props.action.order.getUsage(iccid, auth)
+    //   }else{
+    //     this.props.navigation.navigate('RegisterSim', {back:'lastTab'})eme u rokrok rok my wao
+    //   }
+    // }
   }
 
-  componentDidUpdate( prevProps) {
-    console.log('@@didupdate')
+  componentDidUpdate(prevProps) {
+    // const {account:{loggedIn, iccid}, auth} = this.props
+    
+    // if(loggedIn != prevProps.account.loggedIn || auth != prevProps.auth){
+    //   this._init(loggedIn, iccid, auth)
+    //   // return true
+    // }
+
+
+    // if(prevProps.account.loggedIn != this.props.loggedIn) {
+    //   // this.setState({
+    //   //   afterLoginTest: !this.state.afterLoginTest
+    //   // })
+    // }
+
+
 
     if(this.state.cancelPressed){
       setTimeout(()=>{
@@ -325,7 +362,21 @@ class UsimScreen extends Component {
   }
 
   componentWillUnmount(){
-    console.log('@@unmount')
+    // this.setState({
+    //   isIccidChanged: false,
+    // })
+  }
+
+  _init(loggedIn, iccid, auth){
+    if(!loggedIn){
+      this.props.navigation.navigate('RegisterMobile')
+    }else{
+      if (iccid && auth) {
+        this.props.action.order.getUsage(iccid, auth)
+      }else{
+        this.props.navigation.navigate('RegisterSim', {back:'lastTab'})
+      }
+    }
   }
   _empty = () => {
 
