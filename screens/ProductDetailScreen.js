@@ -212,7 +212,8 @@ class ProductDetailScreen extends Component {
             <View style={styles.tabView}>
             {
               tabList.map((elm,idx) => (
-                <AppButton 
+                <AppButton
+                key = {elm + idx}
                 style={styles.whiteBackground}
                 titleStyle={[styles.normal16WarmGrey, (idx == 0 || idx == INIT_IDX) && styles.boldClearBlue]}
                 title={i18n.t(`prodDetail:${elm}`)}
