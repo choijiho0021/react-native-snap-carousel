@@ -836,10 +836,13 @@ const ko = {
 
   "appCenter:cartClick": "카트에 담기 클릭",
   "appCenter:purchaseClick": "바로구매 클릭",
+
   "prodDetail:ProdInfo" : "상품정보",
   "prodDetail:Caution" : "주의사항",
   "prodDetail:Tip" : "사용팁",
   "prodDetail:Ask with KakaoTalk" : "물어보기",
+  "prodDetail:Question" : "로밍도깨비에 궁금하신점 있으신가요?",
+  "prodDetail:KakaoPlus" : "카카오톡 플러스 친구로 편하게 물어보세요!",
 };
 
 i18n.fallbacks = true;

@@ -154,8 +154,8 @@ class ProductDetailScreen extends Component {
   renderContactKakao() {
     return (
     <View>
-      <Text> 로밍도깨비에 궁금하신점 있으신가요?</Text>
-      <Text> 카카오톡 플러스 친구로 편하게 물어보세요!</Text>
+      <Text>{i18n.t("prodDetail:Question")}</Text>
+      <Text>{i18n.t("prodDetail:KakaoPlus")}</Text>
     </View>)
   }
 
