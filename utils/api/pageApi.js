@@ -30,6 +30,13 @@ class PageAPI {
         const url = `${api.httpUrl(api.path.jsonapi.page)}?filter[field_category.name]=${name}`
         return api.callHttpGet(url, this.toPage, { abortController })
     }
+
+    getPageByTitle = (title, abortController = undefined) => {
+        if (_.isEmpty(title)) return api.reject( api.INVALID_ARGUMENT, `test name:${_.isEmpty(title)}`)
+
+        const url = `${api.httpUrl(api.path.jsonapi.page)}?filter[title]=${title}`
+        return api.callHttpGet(url, this.toPage, { abortController })
+    }    
 }
 
 export default new PageAPI()

@@ -96,7 +96,7 @@ class ProductDetailScreen extends Component {
     this.setState({Tip,Caution})
 
     //todo : 상세 HTML을 가져오도록 변경 필요
-    pageApi.getPageByCategory('prodInfo', this.controller).then(resp => { 
+      pageApi.getPageByTitle('prodInfo', this.controller).then(resp =>{
       console.log("resp",resp)
       if ( resp.result == 0 && resp.objects.length > 0) {
         this.setState({
