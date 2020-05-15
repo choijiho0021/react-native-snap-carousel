@@ -59,9 +59,6 @@ const styles = StyleSheet.create({
   colorBlack: {
     color: colors.black
   },
-  fontWeightNormal: {
-    fontWeight: 'normal'
-  },
   productPriceInfo: {
     paddingVertical: isDeviceSize('small') ? 13 : 11,
     marginTop: isDeviceSize('small') ? 0 : 9,
@@ -73,14 +70,10 @@ const styles = StyleSheet.create({
     marginVertical: 11, 
     marginHorizontal: 20
   },
-  normal14WarmGrey: {
-    ... appStyles.normal14Text,
-    fontWeight: 'normal',
-    color: colors.warmGrey
-  },
   normalText16: {
     ... appStyles.normal16Text,
     fontWeight: 'normal',
+    color: colors.black,
     fontSize: isDeviceSize('small') ? 14 : 16
   },
   boldText16: {
@@ -155,8 +148,8 @@ class PaymentItemInfo extends PureComponent {
         }
 
         <View style={[styles.row, styles.total, styles.brdrBottom0, mode=='result' && styles.resultTotal]}>
-          <Text style={[mode=='result'? styles.boldText16 : styles.normal14WarmGrey, styles.colorWarmGrey]}>{i18n.t('cart:totalCost')} </Text>
-          <Text style={[mode=='result'? styles.boldText18 : styles.normalText16, styles.colorClearBlue]}>{utils.numberToCommaString(pymPrice)+ ' ' + i18n.t('won')}</Text>
+          <Text style={mode=='result'? styles.boldText16 : styles.normalText16}>{i18n.t('cart:totalCost')} </Text>
+          <Text style={[mode=='result'? styles.boldText18 : styles.boldText16, styles.colorClearBlue]}>{utils.numberToCommaString(pymPrice)+ ' ' + i18n.t('won')}</Text>
         </View>
 
         <View style={[styles.divider, screen == 'PaymentResult' && { marginTop: 0} ]}>
