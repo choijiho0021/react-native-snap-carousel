@@ -55,8 +55,8 @@ class ScanSim extends PureComponent {
     if ( ! cameraOn || hasCameraPermission === null ) {
       return (
         <View style={styles.box}>
-          <Image style={styles.image} source={require('../assets/images/main/imgCard.png')} resizeMode='contain'/>
-          <Text style={styles.boxTitle}>{i18n.t('reg:card')}</Text>
+          <Image style={styles.image} source={require('../assets/images/main/imgCard.png')} resizeMode='stretch'/>
+          <Text style={styles.boxTitle}>{i18n.t('reg:cardScan')}</Text>
         </View>
         )
     } 
@@ -69,7 +69,7 @@ class ScanSim extends PureComponent {
 
       return (
         <View style={styles.box}>
-          <Image style={styles.image} source={require('../assets/images/main/imgCard.png')} resizeMode='contain'/>
+          <Image style={styles.image} source={require('../assets/images/main/imgCard.png')} resizeMode='stretch'/>
           <Text style={styles.boxTitle}>{i18n.t('reg:noPerm')}</Text>
         </View>
       )
@@ -96,8 +96,10 @@ class ScanSim extends PureComponent {
 const styles = StyleSheet.create({
   image: {
     position: 'absolute',
-    width: windowWidth - 40,
-    height: 200
+    height: '100%',
+    width: '100%'
+    //width: windowWidth - 40,
+    //height: 200
   },
   boxTitle: {
     ... appStyles.normal16Text,
@@ -108,7 +110,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
-    padding: 2
+    //padding: 2,
   },
   cameraOuter: {
     flex: 1,
