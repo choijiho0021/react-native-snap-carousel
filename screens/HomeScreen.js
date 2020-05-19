@@ -342,8 +342,7 @@ class HomeScreen extends Component {
   }
 
   _userInfo() {
-    const { mobile, loggedIn, iccid, balance = 0, userPictureUrl } = this.props.account,
-      phone = mobile ? utils.toPhoneNumber(mobile) : 'unknown'
+    const { mobile, loggedIn, iccid, balance = 0, userPictureUrl } = this.props.account
 
     return (
       <TouchableOpacity style={styles.userInfo} onPress={this._navigate('RegisterSim_user',{mode:'Home'})}>
@@ -351,7 +350,7 @@ class HomeScreen extends Component {
         <View style={{marginLeft:20, justifyContent:'space-around', flex:1}}>
           {
             loggedIn ? [
-              <Text key="mobile" style={appStyles.mobileNo}>{phone}</Text>,
+              <Text key="mobile" style={appStyles.mobileNo}>{i18n.t('acc:balance')}</Text>,
               iccid ? <AppPrice key="price" price={balance} /> :
                 <Text key="sim" style={[appStyles.normal14Text, {color:colors.warmGrey}]}>{i18n.t('reg:card')}</Text>
             ] : 

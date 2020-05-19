@@ -13,7 +13,6 @@ import AppActivityIndicator from '../components/AppActivityIndicator'
 import AppButton from '../components/AppButton';
 import * as simActions from '../redux/modules/sim'
 import * as accountActions from '../redux/modules/account'
-import * as cartActions from '../redux/modules/cart'
 import SimCard from '../components/SimCard'
 import { bindActionCreators } from 'redux'
 import AppBackButton from '../components/AppBackButton';
@@ -21,13 +20,11 @@ import { appStyles } from '../constants/Styles';
 import { colors } from '../constants/Colors';
 import ChargeSummary from '../components/ChargeSummary';
 import { SafeAreaView} from 'react-navigation'
-import AppCartButton from '../components/AppCartButton';
 import utils from '../utils/utils';
 import Analytics from 'appcenter-analytics'
 class NewSimScreen extends Component {
   static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('sim:purchase')} />,
-    headerRight: <AppCartButton onPress={() => navigation.navigate('Cart')} />
+    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('sim:purchase')} />
     })
 
   constructor(props) {
@@ -94,7 +91,6 @@ class NewSimScreen extends Component {
       this.props.navigation.navigate('Auth')
     }
     else{
-      // insert to cart
       const simList = this.props.sim.simList.filter(item => checked.get(item.uuid) && simQty.get(item.uuid) > 0)
         .map(item => ({
           title: item.name,
@@ -112,7 +108,6 @@ class NewSimScreen extends Component {
           this.props.navigation.navigate('PymMethod',{mode : 'New Sim'})
         }
         else {
-          this.props.action.cart.cartAddAndGet( simList)
           this._init()
         }
       }
@@ -189,24 +184,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 52,
     backgroundColor: colors.clearBlue
-  },
-  btnCart: {
-    width: "50%",
-    height: 52,
-    backgroundColor: "#ffffff",
-    borderColor: colors.lightGrey,
-    borderTopWidth: 1
-  },
-  btnCartText: {
-    ... appStyles.normal16Text,
-    textAlign: "center",
-    color: colors.black
-  },
-  btnCartIcon : {
-    width:40,
-    height:40,
-    marginRight: 10
-  },
+  }
 });
 
 const mapStateToProps = (state) => ({
@@ -218,7 +196,6 @@ export default connect(mapStateToProps,
   (dispatch) => ({
     action:{
       sim : bindActionCreators( simActions, dispatch),
-      cart : bindActionCreators( cartActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
     }
   })
