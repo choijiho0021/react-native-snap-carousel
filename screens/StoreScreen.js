@@ -17,12 +17,10 @@ import { TabView, TabBar } from 'react-native-tab-view';
 import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import StoreList from '../components/StoreList';
-import pageApi from '../utils/api/pageApi';
-import AppAlert from '../components/AppAlert';
 import moment from 'moment'
-import AppActivityIndicator from '../components/AppActivityIndicator';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import Analytics from 'appcenter-analytics'
+
 class StoreScreen extends Component {
   static navigationOptions = ({navigation}) => ({
     headerLeft: <Text style={styles.title}>{i18n.t('store')}</Text>,
@@ -51,9 +49,6 @@ class StoreScreen extends Component {
       europe: [],
       usaAu: [],
       multi: [],
-      querying : true,
-      Tip: undefined,
-      Caution: undefined
     }
 
     this._refresh = this._refresh.bind(this)
@@ -63,6 +58,7 @@ class StoreScreen extends Component {
     this._onPressItem = this._onPressItem.bind(this)
 
     this.offset = 0
+    this.controller = new AbortController()
   }
 
   componentDidMount() {
@@ -74,8 +70,6 @@ class StoreScreen extends Component {
       search : this._search()
     })
 
-    this.getDetailPage('Tip') // 상세페이지 - 공용팁
-    this.getDetailPage('Caution') // 상세페이지 - 주의사항
     this.setState({time: now})
     this._refresh()
   }
@@ -94,24 +88,6 @@ class StoreScreen extends Component {
     {
       this._refresh()
     }
-  }
-
-  getDetailPage(key) {
-    pageApi.getPageByCategory(key, this.controller).then(resp => { 
-      if ( resp.result == 0 && resp.objects.length > 0) {
-        this.setState({
-          [key]: resp.objects[0].body
-        })
-      }
-      else throw Error('Failed to get Tip')
-    }).catch( err => {
-      console.log('failed', err)
-      AppAlert.error(i18n.t('set:fail'))
-    }).finally(_ => {
-      this.setState({
-        querying: false
-      })
-  })
   }
 
   _navigateToStoreSearch() {
@@ -165,12 +141,12 @@ class StoreScreen extends Component {
       .filter((elm,idx) => idx % 2 == 0)
   }
  
-  _onPressItem = (key) => {
-    const {allData,Tip, Caution} = this.state
-    if(Tip && Caution){
-      const country = this.state.allData.filter(elm => elm.uuid == key)[0]
-      this.props.action.product.selectCountry({uuid: key})
-      this.props.navigation.navigate('Country',{Tip, Caution, allData:allData, title:country.categoryId == productApi.category.multi ? country.partnerName : country.cntry.values().next().value})
+  _onPressItem = (idx) => {
+    const {prodList} = this.props.product
+
+    if ( idx >= 0 && idx < prodList.length) {
+      const prod = prodList[idx]
+      this.props.navigation.navigate('Country',{title: productApi.getTitle(prod), prodIdx:idx})
     }
   }
 
@@ -210,13 +186,10 @@ class StoreScreen extends Component {
   }
 
   render() {
-    const {country, Tip, Caution, querying} = this.state
-    const loading = !(Tip && Caution) && querying
 
     return (
       //AppTextInput
       <View style={appStyles.container}>
-        <AppActivityIndicator visible={loading} />
         <TabView 
           style={styles.container}
           navigationState={this.state}

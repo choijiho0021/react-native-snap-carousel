@@ -270,12 +270,10 @@ class Country {
   getName(code = [], lang='ko') {
     if ( _.isEmpty(code)) return [ 'N/A' ];
 
-    const codeList = code.map(elm => {
+    return code.map(elm => {
       const cc = elm.toLowerCase()
-      return ( this.ccode.hasOwnProperty(cc)) ? this.ccode[cc][lang][0] : 'N/A'
+      return (typeof this.ccode[cc] === 'undefined') ? 'N/A' : this.ccode[cc][lang][0];
     })
-    
-    return codeList
   }
 }
 

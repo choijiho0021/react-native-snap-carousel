@@ -2,6 +2,7 @@ import _ from 'underscore'
 import api from './api'
 import utils from '../utils'
 import AppAlert from '../../components/AppAlert'
+import country from '../country'
 
 class ProductAPI {
 
@@ -10,14 +11,13 @@ class ProductAPI {
         "europe" : "69",
         "usaAu" : "65",
         "multi" : "67"
-        
         }
 
     toProduct = (data) => {
         if ( _.isArray(data)) {
             return {
                 result: 0,
-                objects: data.map(item => ({
+                objects: data.map((item,idx) => ({
                     key: item.uuid,
                     uuid: item.uuid,
                     name: item.title,
@@ -34,7 +34,8 @@ class ProductAPI {
                     variationId: item.variations && item.variations[0],
                     field_description : item.field_description,
                     body : item.body,
-                    sku: item.sku
+                    sku: item.sku,
+                    idx: idx
                 }))
                 .filter(item => ! _.isEmpty(item.ccode))
                 // ccode가 NULL인 상품은 제외한다.
@@ -43,6 +44,10 @@ class ProductAPI {
         return {
             result: api.NOT_FOUND 
         }
+    }
+
+    getTitle(prod) {
+        return prod.categoryId == this.category.multi ? prod.partnerName : country.getName(prod.ccode)[0];
     }
 
     getProduct = () => {

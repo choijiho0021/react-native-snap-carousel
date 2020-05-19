@@ -57,7 +57,6 @@ class CountryListItem extends PureComponent {
 
 class CountryScreen extends Component {
   static navigationOptions = ({navigation}) => ({
-    //todo 해당 국가 이름으로 변경해야함 
     headerLeft: <AppBackButton navigation={navigation} title={navigation.getParam('title')} />,
     headerRight: (
       <AppCartButton onPress={() => navigation.navigate('Cart')} />
@@ -69,25 +68,25 @@ class CountryScreen extends Component {
 
     this.state = {
       prodData: [],
-      selected: undefined
+      selected: undefined,
+      idx: undefined
     }
   }
 
   componentDidMount() {
-
-    const {idx, prodList} = this.props.product,
-      prod = prodList[idx]
+    const idx = this.props.navigation.getParam('prodIdx'),
+      {prodList} = this.props.product
 
     if ( idx >= 0 && idx < prodList.length) {
-      console.log('prod', prodList[idx])
+      const prod = prodList[idx],
+        prodData = prodList.filter( item => _.isEqual(item.ccode, prod.ccode))
+
+      this.setState({
+        idx,
+        prodData,
+        selected: prodData[0]
+      })
     }
-
-    const prodData = prodList.filter( item => _.isEqual(item.ccode, prod.ccode))
-
-    this.setState({
-      prodData,
-      selected: prodData[0]
-    })
   }
 
   _onPress = (uuid) => () => {
@@ -157,19 +156,17 @@ class CountryScreen extends Component {
   }
 
   render() {
-    const { idx, prodList, startDate, name} = this.props.product
+    const { prodList} = this.props.product
     const { iccid,loggedIn } = this.props.account
-    const { prodData, selected} = this.state
-    const imageUrl = (prodList.length > idx >= 0) ? prodList[idx].imageUrl : ''
+    const { prodData, selected, idx} = this.state
+    const imageUrl = (prodList && idx && prodList.length > idx >= 0) ? prodList[idx].imageUrl : ''
     const title = this.props.navigation.getParam('title')
-    const Tip = this.props.navigation.getParam('Tip')
-    const Caution = this.props.navigation.getParam('Caution')
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <Image style={styles.box} source={{uri:api.httpImageUrl(imageUrl)}}/>
         
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('ProductDetail', {Tip, Caution, title:title, text:selected.body, img:imageUrl})}>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('ProductDetail', {title:title, text:selected.body, img:imageUrl})}>
        
         {/* <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {title:this.props.navigation.getParam('title'), text:selected.body})}> */}
           <View style={styles.detail}>
@@ -183,8 +180,7 @@ class CountryScreen extends Component {
         <View style={{flex:1}}>
           <FlatList 
             data={prodData} 
-            renderItem={this._renderItem}
-            extraData={[name, startDate]} />
+            renderItem={this._renderItem} />
         </View>
 
         { iccid ? 
