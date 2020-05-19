@@ -42,7 +42,7 @@ class CountryItem extends PureComponent {
         {item.data.map((elm,idx) => (
             // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
           elm ? <View key={elm.ccode[0] + idx} style={{flex:1, marginLeft:idx == 1 ? 14 : 0}}>
-            <TouchableOpacity onPress={() => this.props.onPress && this.props.onPress(elm.uuid)}>
+            <TouchableOpacity onPress={() => this.props.onPress && this.props.onPress(elm.idx)}>
               <Image key={"img"} source={{uri:api.httpImageUrl(elm.imageUrl)}} style={styles.image}/>
               {/* cntry가 Set이므로 첫번째 값을 가져오기 위해서 values().next().value를 사용함 */}
               <Text key={"cntry"} style={styles.cntry}>{elm.categoryId == productApi.category.multi ? elm.name : elm.cntry.values().next().value}</Text>

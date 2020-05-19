@@ -175,14 +175,17 @@ class StoreSearchScreen extends Component {
     }
   }
 
-  _onPressItem = (key) => {
+  _onPressItem = (idx) => {
     if(this.state.searchWord.length > 0) Analytics.trackEvent('Page_View_Count', {page : 'Move To Country with Searching'})
 
-    const country = this.state.allData.filter(elm => elm.uuid == key)[0]
+    const {prodList} = this.props.product
 
-    this.props.action.product.selectCountry({uuid: key})
-    this.props.navigation.navigate('Country',{title:country.categoryId == productApi.category.multi ? country.name : country.cntry.values().next().value})
+    if ( idx >= 0 && idx < prodList.length) {
+      const prod = prodList[idx]
+      this.props.navigation.navigate('Country',{title: productApi.getTitle(prod), prodIdx:idx})
+    }
   }
+
 
   renderSearchWord() {
     const {searchList}= this.state

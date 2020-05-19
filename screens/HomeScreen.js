@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
   StatusBar,
   ScrollView,
+  Platform
 } from 'react-native';
+import { NavigationActions } from 'react-navigation';
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import i18n from '../utils/i18n'
@@ -17,6 +19,7 @@ import * as accountActions from '../redux/modules/account'
 import * as notiActions from '../redux/modules/noti'
 import * as infoActions from '../redux/modules/info'
 import * as cartActions from '../redux/modules/cart'
+import * as productActions from '../redux/modules/product'
 import _ from 'underscore'
 import utils from '../utils/utils';
 import AppActivityIndicator from '../components/AppActivityIndicator'
@@ -39,6 +42,7 @@ import { PERMISSIONS, request } from 'react-native-permissions';
 import AppAlert from './../components/AppAlert';
 import appStateHandler from '../utils/appState'
 import Analytics from 'appcenter-analytics'
+import productApi from '../utils/api/productApi';
 
 const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti, 
   {badgeStyle:{right:-3,top:0}},
@@ -68,13 +72,13 @@ class PromotionImage extends PureComponent {
   render() {
   const {item} = this.props
     return (
-      <View style={styles.overlay}>
-      {
-        _.isEmpty(item.imageUrl) ?
-          <Text style={styles.text}>{item.title}</Text> :
-          <Image source={{uri:api.httpImageUrl(item.imageUrl)}} style={{height:size.carouselHeight}} resizeMode='contain'/>
-      }
-      </View> 
+      <TouchableOpacity style={styles.overlay} onPress={() => this.props.onPress(item)}>
+        {
+          _.isEmpty(item.imageUrl) ?
+            <Text style={styles.text}>{item.title}</Text> :
+            <Image source={{uri:api.httpImageUrl(item.imageUrl)}} style={{height:size.carouselHeight}} resizeMode='contain'/>
+        }
+      </TouchableOpacity>
     )
   }
 } 
@@ -110,13 +114,14 @@ class HomeScreen extends Component {
 
     this._login = this._login.bind(this)
     this._init = this._init.bind(this)
-    this._renderItem = this._renderItem.bind(this)
+    this._renderPromotion = this._renderPromotion.bind(this)
     this._navigate = this._navigate.bind(this)
     this._userInfo = this._userInfo.bind(this)
     this._notification = this._notification.bind(this)
     this._handleNotification = this._handleNotification.bind(this)
     this._clearAccount = this._clearAccount.bind(this)
     this._appStateHandler = this._appStateHandler.bind(this)
+    this._onPressPromotion = this._onPressPromotion.bind(this)
 
     this._isNoticed = null
 
@@ -240,9 +245,6 @@ class HomeScreen extends Component {
       if(Platform.OS === 'ios') {
         let msg = JSON.stringify(payload)
         this.props.action.noti.sendLog(mobile, msg)
-      }
-      else {
-
       }
     }
     
@@ -384,7 +386,6 @@ class HomeScreen extends Component {
         <AppButton iconName="imgCard2"
           style={styles.menuBox}
           title={title}
-          // onPress={this._navigate('AddProfile')}
           onPress={this._navigate('RegisterSim',{title: title})}
           titleStyle={styles.menuText} />  
 
@@ -444,8 +445,35 @@ class HomeScreen extends Component {
     )
   }
 
-  _renderItem({item}) {
-    return (<PromotionImage item={item} />)
+  _onPressPromotion(item) {
+    if ( item.product_uuid) {
+      const {prodList} = this.props.product,
+        idx = prodList.findIndex(prod => prod.uuid == item.product_uuid)
+
+      if ( idx >= 0 && idx < prodList.length) {
+        const prod = prodList[idx]
+
+        const navigateAction = NavigationActions.navigate({
+          routeName: 'StoreStack',
+          action: NavigationActions.navigate({ 
+            routeName: 'Country', 
+            params: {
+              title : productApi.getTitle(prod),
+              prodIdx: idx
+            }
+          })
+        })
+        
+        this.props.navigation.dispatch(navigateAction)
+      }
+    }
+    else if ( item.notice) {
+      console.log('go to notice page')
+    }
+  }
+
+  _renderPromotion({item}) {
+    return <PromotionImage item={item} onPress={this._onPressPromotion}/>
   }
 
   render() {
@@ -461,7 +489,7 @@ class HomeScreen extends Component {
         <View style={styles.carousel}>
           <Carousel
             data={this.state.promotions}
-            renderItem={this._renderItem}
+            renderItem={this._renderPromotion}
             autoplay={true}
             loop={true}
             loopClonesPerSide={5}
@@ -670,7 +698,8 @@ const mapStateToProps = (state) => ({
   noti : state.noti.toJS(),
   info : state.info.toJS(),
   loginPending: state.pender.pending[accountActions.LOGIN] || false,
-  sync : state.sync.toJS()
+  sync : state.sync.toJS(),
+  product: state.product.toJS()
 })
 
 export default connect(mapStateToProps, 
@@ -680,7 +709,8 @@ export default connect(mapStateToProps,
       account: bindActionCreators(accountActions, dispatch),
       noti: bindActionCreators(notiActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
-      info: bindActionCreators(infoActions, dispatch)
+      info: bindActionCreators(infoActions, dispatch),
+      product: bindActionCreators(productActions, dispatch)
     }
   })
 )(HomeScreen)

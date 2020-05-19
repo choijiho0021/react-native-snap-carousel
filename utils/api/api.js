@@ -43,7 +43,7 @@ class Api {
         node: 'node',
         userByName: 'json/user/name',
         userByEmail: 'json/user/email',
-        featured: 'json/featured/list',
+        promotion: 'json/promotion/list',
 
         recharge: 'rokebi/rch',
         resetPw: 'rokebi/user/pw',
