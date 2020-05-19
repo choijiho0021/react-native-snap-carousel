@@ -259,6 +259,10 @@ const TabNavigator = createBottomTabNavigator({
 }, {
   tabBarOptions: {
     inactiveTintColor: colors.black,
+    labelStyle: {
+      marginTop: 0,
+      marginBottom:5
+    },
     style: {
       height: 56,
     }
@@ -270,7 +274,7 @@ TabNavigator.path = '';
 
 const styles = StyleSheet.create({
   tabBarIcon: {
-    marginTop: 5
+    marginTop: 5,
   }
 })
  

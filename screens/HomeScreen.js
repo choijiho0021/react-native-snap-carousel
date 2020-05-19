@@ -241,9 +241,6 @@ class HomeScreen extends Component {
         let msg = JSON.stringify(payload)
         this.props.action.noti.sendLog(mobile, msg)
       }
-      else {
-
-      }
     }
     
     switch(type) {
@@ -555,7 +552,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
     flexDirection: "row",
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    borderRadius: 10
   },
   menu: {
     marginHorizontal: 20,
@@ -577,13 +575,14 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     height: size.userInfoHeight,
-    borderRadius: 3,
+    borderRadius: 12,
     backgroundColor: colors.white,
     shadowColor: "rgba(0, 0, 0, 0.1)",
     shadowOffset: {
       width: 0,
       height: 5
     },
+    elevation: 9,
     shadowRadius: 14,
     shadowOpacity: 1,
     borderStyle: "solid",
