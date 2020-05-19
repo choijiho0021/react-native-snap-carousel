@@ -177,12 +177,17 @@ class RegisterSimScreen extends Component {
       }
       else {
         // if ( iccid.map((elm,i) => i === idx ? value : elm ).every(elm => _.size(elm) === 4) && idx === 3 ) {
-          if ( value.length === 4 && idx === 3 ) {
+        if ( value.length === 4 && idx === 3 ) {
           Keyboard.dismiss()
         }
       }
 
       return;
+    }
+    else if (key === 'actCode') {
+      if (value.length === 6) {
+        Keyboard.dismiss()
+      }
     }
 
     this.setState({
@@ -224,7 +229,7 @@ class RegisterSimScreen extends Component {
             <ScanSim scan={scan} onScan={this._onScan} hasCameraPermission={hasCameraPermission}/>
           </TouchableOpacity>
 
-          <Text style={styles.title}>{i18n.t('mysim:title')}</Text>
+          <Text style={styles.title}>{i18n.t('reg:inputIccid')}</Text>
           <TouchableOpacity onPress={() => this.inputIccid[ iccidIdx ].current.focus() } 
             activeOpacity={1.0} style={styles.iccidBox}>
 
@@ -272,8 +277,8 @@ class RegisterSimScreen extends Component {
                 placeholderTextColor={colors.greyish}
                 enablesReturnKeyAutomatically={true}
                 maxLength={6}
-                clearTextOnFocus={true}
-                onFocus={() => this.setState({actCode: ''})}
+                //clearTextOnFocus={true}
+                //onFocus={() => this.setState({actCode: ''})}
                 onContentSizeChange={this._scrolll}
                 value={actCode} />
             </View>
@@ -370,10 +375,11 @@ const styles = StyleSheet.create({
     flexGrow: 1
   },
   card: {
-    marginHorizontal: 20,
+    //marginHorizontal: 20,
     marginVertical: 20,
+    paddingHorizontal: 20,
     height: 200,
-    borderWidth: 1,
+    //borderWidth: 1,
     borderColor: 'transparent'
   },
   title: {
