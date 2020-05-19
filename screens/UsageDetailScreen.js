@@ -50,11 +50,11 @@ class UsageDetailScreen extends Component {
   }
 
   componentDidMount() {
-    const detail = this.props.navigation.getParam('detail')
-    const { country, uuid } = detail
-    const price = (this.props.product.prodList.find(item => item.key == detail.prodId) || {}).price
-
-    const { usage } = this.props.order
+    const detail = this.props.navigation.getParam('detail'),
+      { country, uuid } = detail,
+      prodList = this.props.product.get('prodList'),
+      { price } = prodList.get(detail.prodId) || {},
+      { usage } = this.props.order
 
     let activatable = false
 
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => ({
-  product: state.product.toJS(),
+  product: state.product,
   account : state.account.toJS(),
   auth: accountActions.auth(state.account),
   order: state.order.toJS()

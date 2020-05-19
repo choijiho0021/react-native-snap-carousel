@@ -27,6 +27,7 @@ import { windowWidth, device } from '../constants/SliderEntry.style';
 import Analytics from 'appcenter-analytics'
 import _ from 'underscore'
 import AppActivityIndicator from '../components/AppActivityIndicator';
+import productApi from '../utils/api/productApi';
 
 
 class CountryListItem extends PureComponent {
@@ -55,12 +56,24 @@ class CountryListItem extends PureComponent {
   }
 }
 
+
+class CountryBackButton extends PureComponent {
+  render() {
+
+    const {navigation} = this.props,
+      key = navigation.getParam('prodKey'),
+      prod = this.props.prodList.get(key)
+
+    return <AppBackButton navigation={navigation} title={productApi.getTitle(prod)} />
+  }
+}
+
+let BackButton = connect(state => ({prodList: state.product.get('prodList')}))(CountryBackButton)
+
 class CountryScreen extends Component {
   static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={navigation.getParam('title')} />,
-    headerRight: (
-      <AppCartButton onPress={() => navigation.navigate('Cart')} />
-    )
+    headerLeft: <BackButton navigation={navigation} />,
+    headerRight: <AppCartButton onPress={() => navigation.navigate('Cart')} />
   })
 
   constructor(props) {
@@ -74,15 +87,15 @@ class CountryScreen extends Component {
   }
 
   componentDidMount() {
-    const idx = this.props.navigation.getParam('prodIdx'),
-      {prodList} = this.props.product
+    const key = this.props.navigation.getParam('prodKey'),
+      prodList = this.props.product.get('prodList'),
+      prod = prodList.get(key)
 
-    if ( idx >= 0 && idx < prodList.length) {
-      const prod = prodList[idx],
-        prodData = prodList.filter( item => _.isEqual(item.ccode, prod.ccode))
+    if ( prod) {
+      // 같은 국가에 정의된 여러 상품 목록을 구한다. 
+      const prodData = prodList.toList().filter( item => _.isEqual(item.ccode, prod.ccode)).toJS()
 
       this.setState({
-        idx,
         prodData,
         selected: prodData[0]
       })
@@ -123,7 +136,7 @@ class CountryScreen extends Component {
     else {
 
       if(selected){
-        const prod = this.props.product.prodList.find(item => item.uuid == selected.uuid),
+        const prod = this.props.product.prodList.get(selected.uuid),
           addProduct = prod ? { 
             title: prod.name, 
             variationId: prod.variationId, 
@@ -156,10 +169,9 @@ class CountryScreen extends Component {
   }
 
   render() {
-    const { prodList} = this.props.product
     const { iccid,loggedIn } = this.props.account
-    const { prodData, selected, idx} = this.state
-    const imageUrl = (prodList && idx && prodList.length > idx >= 0) ? prodList[idx].imageUrl : ''
+    const { prodData, selected} = this.state
+    const imageUrl = selected ? selected.imageUrl : ''
     const title = this.props.navigation.getParam('title')
 
     return (
@@ -347,7 +359,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => ({
-  product: state.product.toJS(),
+  product: state.product,
   cart: state.cart.toJS(),
   account : state.account.toJS(),
   pending: state.pender.pending[cartActions.CART_ADD] || false,

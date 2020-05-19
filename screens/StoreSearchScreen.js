@@ -175,15 +175,10 @@ class StoreSearchScreen extends Component {
     }
   }
 
-  _onPressItem = (idx) => {
+  _onPressItem = (key) => {
     if(this.state.searchWord.length > 0) Analytics.trackEvent('Page_View_Count', {page : 'Move To Country with Searching'})
 
-    const {prodList} = this.props.product
-
-    if ( idx >= 0 && idx < prodList.length) {
-      const prod = prodList[idx]
-      this.props.navigation.navigate('Country',{title: productApi.getTitle(prod), prodIdx:idx})
-    }
+    this.props.navigation.navigate('Country',{prodKey: key})
   }
 
 

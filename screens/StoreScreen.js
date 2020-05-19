@@ -103,8 +103,8 @@ class StoreScreen extends Component {
 
   _refresh() {
     const { asia, europe, usaAu, multi } = productApi.category,
-      {prodList} = this.props.product,
-      list = prodList.reduce((acc,item) => {
+      prodList = this.props.product.get('prodList'),
+      list = prodList.toList().reduce((acc,item) => {
         item.key = item.uuid 
         item.cntry = new Set(country.getName(item.ccode))
         //days가 "00일" 형식으로 오기 때문에 일 제거 후 넘버타입으로 변환
@@ -141,13 +141,8 @@ class StoreScreen extends Component {
       .filter((elm,idx) => idx % 2 == 0)
   }
  
-  _onPressItem = (idx) => {
-    const {prodList} = this.props.product
-
-    if ( idx >= 0 && idx < prodList.length) {
-      const prod = prodList[idx]
-      this.props.navigation.navigate('Country',{title: productApi.getTitle(prod), prodIdx:idx})
-    }
+  _onPressItem = (key) => {
+    this.props.navigation.navigate('Country',{prodKey:key})
   }
 
   _onChangeText = (key) => (value) => {
@@ -258,7 +253,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => ({
-  product : state.product.toJS()
+  product : state.product
 })
 
 export default connect(mapStateToProps, 

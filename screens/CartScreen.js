@@ -192,7 +192,7 @@ class CartScreen extends Component {
     const { qty, checked } = this.state
     const prod = (item.type == 'sim_card') ?
       this.props.sim.simList.find(sim => sim.uuid == item.key) : 
-      this.props.product.prodList.find(p => p.uuid == item.key)
+      this.props.product.prodList.get(item.key)
 
     return <CartItem checked={checked.get(item.key) || false}
       onChange={(value) => this._onChangeQty(item.key, item.orderItemId, value)} 
@@ -350,7 +350,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => ({
   lastTab: state.cart.get('lastTab').toJS(),
   sim: state.sim.toJS(),
-  product: state.product.toJS(),
+  product: state.product,
   cart: state.cart.toJS(),
   account : state.account.toJS(),
   pending: state.pender.pending[cartActions.CART_ADD] || 

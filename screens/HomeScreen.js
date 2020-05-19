@@ -447,22 +447,19 @@ class HomeScreen extends Component {
 
   _onPressPromotion(item) {
     if ( item.product_uuid) {
-      const {prodList} = this.props.product,
-        idx = prodList.findIndex(prod => prod.uuid == item.product_uuid)
+      const prodList = this.props.product.get('prodList'),
+        prod = prodList.get(item.product_uuid)
 
-      if ( idx >= 0 && idx < prodList.length) {
-        const prod = prodList[idx]
-
-        const navigateAction = NavigationActions.navigate({
-          routeName: 'StoreStack',
-          action: NavigationActions.navigate({ 
-            routeName: 'Country', 
-            params: {
-              title : productApi.getTitle(prod),
-              prodIdx: idx
-            }
+        if ( prod) {
+          const navigateAction = NavigationActions.navigate({
+            routeName: 'StoreStack',
+            action: NavigationActions.navigate({ 
+              routeName: 'Country', 
+              params: {
+                prodKey: item.product_uuid
+              }
+            })
           })
-        })
         
         this.props.navigation.dispatch(navigateAction)
       }
@@ -699,7 +696,7 @@ const mapStateToProps = (state) => ({
   info : state.info.toJS(),
   loginPending: state.pender.pending[accountActions.LOGIN] || false,
   sync : state.sync.toJS(),
-  product: state.product.toJS()
+  product: state.product
 })
 
 export default connect(mapStateToProps, 
