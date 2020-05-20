@@ -43,6 +43,14 @@ window.onload = function() {
     return rect.bottom;
   }).join(',');
 }
+function copy(val) {
+  var txtArea = document.createElement("textarea");
+  document.body.appendChild(txtArea);
+  txtArea.value = val;
+  txtArea.select();
+  document.execCommand("copy");
+  document.body.removeChild(txtArea);
+  }
 function send() {
   window.ReactNativeWebView.postMessage('APN Value have to insert into this', '*');
   window.alert('copy');
