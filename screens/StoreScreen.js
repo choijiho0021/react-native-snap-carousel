@@ -20,6 +20,7 @@ import StoreList from '../components/StoreList';
 import moment from 'moment'
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import Analytics from 'appcenter-analytics'
+import { Set } from 'immutable';
 
 class StoreScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -104,56 +105,48 @@ class StoreScreen extends Component {
   _refresh() {
     const { asia, europe, usaAu, multi } = productApi.category,
       prodList = this.props.product.get('prodList'),
-      list = prodList.toList()
-        .sort((a,b) => { return a.name >= b.name ? 1 : -1})
-        .reduce((acc,item) => {
-          item.key = item.uuid 
-          item.cntry = new Set(country.getName(item.ccode))
-          //days가 "00일" 형식으로 오기 때문에 일 제거 후 넘버타입으로 변환
-          item.pricePerDay = Math.round(item.price / Number(item.days.replace(/[^0-9]/g,"")))
-          
-          const idxCcode = acc.findIndex(elm => _.isEqual(elm.ccode, item.ccode))
+      list = []
+      
+    for(let item of prodList.values()) {
+      item.cntry = Set(country.getName(item.ccode))
+      item.search = [... item.cntry].join(',')
+      //days가 "00일" 형식으로 오기 때문에 일 제거 후 넘버타입으로 변환
+      item.pricePerDay = Math.round(item.price / Number(item.days.replace(/[^0-9]/g,"")))
+      
+      const idxCcode = list.findIndex(elm => elm.length > 0 && _.isEqual(elm[0].ccode, item.ccode))
 
-          if ( idxCcode < 0 ) {
-            // new item, insert it
-            return acc.concat( [item])
-          }
-          else if ( acc[idxCcode].pricePerDay > item.pricePerDay && item.field_daily == 'daily') {
-            // cheaper
-            acc.splice( idxCcode, 1, item)
-            return acc
-          }
-          return acc
-        }, [])
-    
+      if ( idxCcode < 0 ) {
+        // new item, insert it
+        list.push([item])
+      }
+      else {
+        // 이미 같은 country code를 갖는 데이터가 존재하면, 그 아래에 추가한다. (2차원 배열)
+        list[idxCcode].push(item)
+      }
+    }
+
+    // 동일 국가내의 상품을 정렬한다. 
+    const sorted = list.map(item => item.sort((a,b) => a.pricePerDay > b.pricePerDay ? 1 : -1))
+      .sort((a,b) => a[0].name > b[0].name ? 1 : -1)
+
     this.setState({
-      allData: list,
-      asia: this.filterByCategory(list, asia, ''),
-      europe: this.filterByCategory(list, europe, ''),
-      usaAu: this.filterByCategory(list, usaAu, ''),
-      multi: this.filterByCategory(list, multi, ''),
+      allData: sorted,
+      asia: this.filterByCategory(sorted, asia, ''),
+      europe: this.filterByCategory(sorted, europe, ''),
+      usaAu: this.filterByCategory(sorted, usaAu, ''),
+      multi: this.filterByCategory(sorted, multi, ''),
     })
   }
 
   filterByCategory( list, key, searchword) {
-    return list.filter(elm => 
-      elm.categoryId.findIndex(idx => idx == key) >= 0 &&
-      (_.isEmpty(searchword) ? true : !_.isUndefined(elm.cntry.find(item => item.match(searchword))))) 
-      .reduce((acc,elm) => {
-        if ( acc.length > 0 && ! acc[acc.length-1].data[1]) {
-          acc[acc.length-1].data[1] = elm
-          return acc
-        }
+    const filtered = list.filter(elm => elm.length > 0 && elm[0].categoryId.includes(key) && 
+        (_.isEmpty(searchword) || elm[0].cntry.find(item => item.match(searchword))) )
 
-        return acc.concat({
-          key: elm.uuid,
-          data:[elm, undefined]
-        })
-      }, [])
+    return productApi.toColumnList(filtered)
   }
 
-  _onPressItem = (key) => {
-    this.props.navigation.navigate('Country',{prodKey:key})
+  _onPressItem = (prodOfCountry) => {
+    this.props.navigation.navigate('Country',{prodOfCountry})
   }
 
   _onChangeText = (key) => (value) => {
@@ -235,12 +228,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteTwo
   },
   tabBarLabel: {
-      // height: 17,
-      // fontFamily: "AppleSDGothicNeo",
-      fontSize: isDeviceSize('small') ? 12 : 14 ,
-      fontWeight: "500",
-      fontStyle: "normal",
-      letterSpacing: 0.17,
+    // height: 17,
+    // fontFamily: "AppleSDGothicNeo",
+    fontSize: isDeviceSize('small') ? 12 : 14 ,
+    fontWeight: "500",
+    fontStyle: "normal",
+    letterSpacing: 0.17,
   },
   showSearchBar : {
     marginRight:20,

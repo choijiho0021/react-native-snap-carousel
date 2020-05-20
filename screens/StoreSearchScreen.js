@@ -4,10 +4,8 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Image,
   TextInput,
   ScrollView,
-  TouchableWithoutFeedback
 } from 'react-native';
 import {connect} from 'react-redux'
 import {appStyles} from "../constants/Styles"
@@ -175,37 +173,15 @@ class StoreSearchScreen extends Component {
     }
   }
 
-  _onPressItem = (key) => {
-    if(this.state.searchWord.length > 0) Analytics.trackEvent('Page_View_Count', {page : 'Move To Country with Searching'})
+  _onPressItem = (prodOfCountry) => {
+    if ( this.state.searchWord.length > 0) Analytics.trackEvent('Page_View_Count', {page : 'Move To Country with Searching'})
 
-    this.props.navigation.navigate('Country',{prodKey: key})
+    this.props.navigation.navigate('Country',{prodOfCountry})
   }
 
 
   renderSearchWord() {
     const {searchList}= this.state
-
-    return (
-      <View style={styles.width100}>
-        {/* 최근 검색 */}
-        <View style={styles.searchListHeader}>
-          <Text style={styles.searchListHeaderText}>{i18n.t('search:list')}</Text>
-        </View>
-        {_.isEmpty(searchList) ? <View style={styles.noList}> 
-          <Text style={styles.searchListText}> {i18n.t('search:err')} </Text>
-        </View> : searchList.map((elm,idx) => (
-          <TouchableOpacity key={idx+''} onPress={() => this._search(elm,true)}>
-            <View key={elm} style={styles.searchList}>
-              <Text key={"Text"} style={styles.searchListText}>{elm}</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </View>
-    )
-  }
-
-  // 인기국가
-  renderRecommend() {
     const { recommendCountry} = this.state
     
     const recommendCountryList = recommendCountry.map((elm, idx, arr) => 
@@ -213,18 +189,37 @@ class StoreSearchScreen extends Component {
 
     return (
       <View style={styles.width100}>
-      <View style={styles.recommendHeader}>
-        <Text style={styles.searchListHeaderText}>{i18n.t('search:recommend')}</Text>
+        {/* 최근 검색 */}
+        <View style={styles.searchListHeader}>
+          <Text style={styles.searchListHeaderText}>{i18n.t('search:list')}</Text>
+        </View>
+        {
+          _.isEmpty(searchList) ? 
+          <View style={styles.noList}> 
+            <Text style={styles.searchListText}> {i18n.t('search:err')} </Text>
+          </View> : 
+          searchList.map((elm,idx) => (
+            <TouchableOpacity key={idx+''} onPress={() => this._search(elm,true)}>
+              <View key={elm} style={styles.searchList}>
+                <Text key={"Text"} style={styles.searchListText}>{elm}</Text>
+              </View>
+            </TouchableOpacity>
+          ))
+        }
+        <View style={styles.recommendHeader}>
+          <Text style={styles.searchListHeaderText}>{i18n.t('search:recommend')}</Text>
+        </View>
+        {
+          recommendCountryList.map((elm,idx )=> 
+            <View key={elm.key} style={styles.recommendRow}>
+              {elm.data.map((elm2,idx) => 
+                elm2 ? <TouchableOpacity key={elm2} style={styles.recommebdItem} onPress={() => this._search(elm2,true)}>
+                        <Text style={styles.recommendText}>{elm2}</Text>
+                  </TouchableOpacity> : <View key={idx+''}style={styles.recommebdEmpty}/>)}
+            </View>
+          )
+        }
       </View>
-      {recommendCountryList.map((elm,idx )=> 
-          <View key={elm.key} style={styles.recommendRow}>
-            {elm.data.map((elm2,idx) => 
-              elm2 ? <TouchableOpacity key={elm2} style={styles.recommebdItem} onPress={() => this._search(elm2,true)}>
-                      <Text style={styles.recommendText}>{elm2}</Text>
-                </TouchableOpacity> : <View key={idx+''}style={styles.recommebdEmpty}/>)}
-          </View>
-        )}
-    </View>
     )
   }
 
@@ -251,20 +246,19 @@ class StoreSearchScreen extends Component {
     // )
 
     // 복수국가 이름 검색 추가
-    const searchResult = allData.filter(elm => 
-      [...elm.cntry].join(',').match(searchWord)).map(elm => 
-        {return {name:elm.name, country:elm.cntry, categoryId: elm.categoryId, uuid:elm.uuid}})
+    const searchResult = allData.filter(elm => elm.length > 0 && elm[0].search.match(searchWord))
+      .map(elm => ({name:elm[0].name, country:elm[0].cntry, categoryId: elm[0].categoryId, uuid:elm[0].uuid}))
 
     return (
-    <View style={styles.width100}>
-      {searchResult.map((elm,idx) => 
-        <TouchableOpacity key={elm.uuid} onPress={() => this._search(elm.country.values().next().value,true)}>
-          <View key={idx+''} style={styles.autoList}>
-            <Text key="text" style={styles.autoText}>{elm.categoryId == productApi.category.multi ? elm.name : elm.country.values().next().value}</Text>
-          </View>
-        </TouchableOpacity>
-      )}
-    </View>
+      <View style={styles.width100}>
+        {searchResult.map((elm,idx) => 
+          <TouchableOpacity key={elm.uuid} onPress={() => this._search(elm.country.first(),true)}>
+            <View key={idx+''} style={styles.autoList}>
+              <Text key="text" style={styles.autoText}>{elm.categoryId == productApi.category.multi ? elm.name : elm.country.first()}</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+      </View>
     )
   }
 
@@ -273,16 +267,18 @@ class StoreSearchScreen extends Component {
     const {allData, searchWord = ''} = this.state
     const list = this.filterBySearchWord(allData, searchWord)
 
-    if(list.length < 1) {
-      return (<View style={styles.emptyViewPage}><Text style={styles.emptyPage}>{i18n.t('country:empty')}</Text></View>)
-    }
-    return <StoreList data={list} onPress={this._onPressItem}/>
+    return list.length > 0 ?
+      <StoreList data={list} onPress={this._onPressItem}/> :
+      <View style={styles.emptyViewPage}>
+        <Text style={styles.emptyPage}>{i18n.t('country:empty')}</Text>
+      </View>
   }
 
   filterBySearchWord( list, searchWord) {
-    return list.filter(elm => (_.isEmpty(searchWord) ? true : (elm.categoryId[0] == productApi.category.multi && elm.name.match(searchWord)) || [...elm.cntry].join(',').match(searchWord)))
-      .map((elm,idx,arr) => ({key:elm.uuid, data:[elm,arr[idx+1]] }))
-      .filter((elm,idx) => idx % 2 == 0)
+    const filtered =  list.filter(elm => _.isEmpty(searchWord) || 
+      (elm.length > 0 && (elm[0].name.match(searchWord) || elm[0].search.match(searchWord))))
+
+    return productApi.toColumnList(filtered)
   }
 
   render() {
@@ -291,12 +287,13 @@ class StoreSearchScreen extends Component {
     return (
       <View style={[appStyles.container,{marginTop:15}]}>
         <AppActivityIndicator visible={querying} />
-        { !searching ? 
+        { 
+          searching ? this.renderStoreList() :
           <ScrollView style={{width:'100%'}}>
-            {!searchWord ? this.renderSearchWord() : null }
-            {!searchWord ? this.renderRecommend() : null }
-            {searchWord ? this.renderSearching() : null } 
-          </ScrollView> : this.renderStoreList()
+            {
+              searchWord ? this.renderSearching() : this.renderSearchWord() 
+            } 
+          </ScrollView> 
         }
       </View>
     )

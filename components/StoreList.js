@@ -17,22 +17,12 @@ import api from '../utils/api/api'
 import _ from 'underscore'
 import { colors } from '../constants/Colors';
 import { isDeviceSize } from '../constants/SliderEntry.style';
+import { _Image } from 'react-native';
+
 class CountryItem extends PureComponent {
   constructor(props) {
     super(props)
   }
-
-  // shouldComponentUpdate(nextProps) {
-    
-  //   const oldData = this.props.item.data,
-  //     newData = nextProps.item.data
-
-  //   //데이터중 바뀐게 있다면 다시 그린다
-  //   return JSON.stringify(oldData) !== JSON.stringify(newData)
-
-  //   // ccode 목록이 달라지면, 다시 그린다. 
-  //   // return newData.findIndex((elm,idx) => _.isEmpty(oldData[idx]) || elm == undefined  ? true : elm.ccode != oldData[idx].ccode) >= 0
-  // }
 
   render() {
     const {item} = this.props
@@ -41,14 +31,14 @@ class CountryItem extends PureComponent {
       <View key={item.key} style={styles.productList}>
         {item.data.map((elm,idx) => (
             // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
-          elm ? <View key={elm.ccode[0] + idx} style={{flex:1, marginLeft:idx == 1 ? 14 : 0}}>
-            <TouchableOpacity onPress={() => this.props.onPress && this.props.onPress(elm.key)}>
-              <Image key={"img"} source={{uri:api.httpImageUrl(elm.imageUrl)}} style={styles.image}/>
-              {/* cntry가 Set이므로 첫번째 값을 가져오기 위해서 values().next().value를 사용함 */}
-              <Text key={"cntry"} style={styles.cntry}>{elm.categoryId == productApi.category.multi ? elm.name : elm.cntry.values().next().value}</Text>
+          elm && elm.length > 0 ? 
+          <View key={elm[0].ccode[0] + idx} style={{flex:1, marginLeft:idx == 1 ? 14 : 0}}>
+            <TouchableOpacity onPress={() => this.props.onPress && this.props.onPress(elm)}>
+              <Image key={"img"} source={{uri:api.httpImageUrl(elm[0].imageUrl)}} style={styles.image}/>
+              <Text key={"cntry"} style={styles.cntry}>{productApi.getTitle(elm[0])}</Text>
               <View style={styles.priceRow}>
                 <View style={styles.price}>
-                  <Text key={"price"} style={styles.priceNumber}>{utils.numberToCommaString(elm.pricePerDay)}</Text> 
+                  <Text key={"price"} style={styles.priceNumber}>{utils.numberToCommaString(elm[0].pricePerDay)}</Text> 
                   <Text key={"days"} style={[isDeviceSize('small') ? appStyles.normal14Text : appStyles.normal16Text,styles.text]}>{` ${i18n.t('won')}/Day`}</Text>
                 </View>
                 <View style={styles.lowPriceView}>
@@ -75,7 +65,7 @@ class StoreList extends Component {
   }
   
   _renderItem = ({item}) => {
-    return _.isEmpty(item) ? {ccode:'nodata'} : <CountryItem onPress={this.props.onPress} item={item}/>
+    return <CountryItem onPress={this.props.onPress} item={item}/>
   }
 
   render() {
