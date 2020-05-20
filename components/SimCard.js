@@ -46,18 +46,21 @@ const styles = StyleSheet.create({
   },
   itemPrice: {
     ... appStyles.normal14Text,
-    color: colors.clearBlue,
+    color: colors.warmGrey,
     marginTop: 2
   },
   input: {
-    marginTop: 10,
-    alignItems: 'flex-end'
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 10,
   },
   itemRch: {
     ... appStyles.normal12Text
   },
   balance: {
-    marginTop: 12,
+    marginTop: 20,
   },
   touch: {
     flexDirection: 'row',
@@ -67,7 +70,7 @@ const styles = StyleSheet.create({
 
 export default class SimCard extends PureComponent {
   render() {
-    const {name, price, balance, imageUrl, qty, onChange, onChecked, checked, last} = this.props
+    const {name, price, imageUrl, qty, onChange, onChecked, checked, last, simPrice } = this.props
 
     return (
       <View style={[styles.container, 
@@ -79,22 +82,19 @@ export default class SimCard extends PureComponent {
           <View style={styles.checker}>
             <AppIcon name="btnCheck" checked={checked}/>
           </View>
-
           <Image source={{uri:api.httpImageUrl(imageUrl)}} resizeMode={'contain'} style={[styles.slide, {marginRight: 0}]}/>
         </TouchableOpacity>
 
         <View style={styles.desc}>
           <Text style={styles.itemTitle}>{name}</Text>
-          <Text style={styles.itemPrice}>{utils.price(price)}</Text>
           <View style={styles.input}>
+            <Text style={styles.itemPrice}>{utils.price(price)}</Text>
             <InputNumber value={qty} onChange={onChange}/>
           </View>
           <LabelText style={{... styles.balance}}
-            label={i18n.t('sim:rechargeAmt')}
             format="price"
-            value={balance} />
+            value={simPrice} />
         </View>
-        {/* <View style={styles.divider,{flex:1, flexDirection:'flex-end'}}/> */}
       </View>
     )
   }
