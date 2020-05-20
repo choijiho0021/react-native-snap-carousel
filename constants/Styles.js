@@ -341,19 +341,7 @@ ${body}
 </body>
 </html>
 `}
-    // <script>
-    // function ChangeImageSrc() {
-    //     var images = document.getElementsByClassName("prodImage")[0];
-    //     // var images = div.getElementsByTagName("img");
 
-    //     for (var i = 0; i < images.length; i++) {
-    //         console.log('@@imagelength', i)
-    //         images[i].setAttribute("src", '../assets/images/productDetail/img-1.png');
-    //     }
-    // }
-
-    // window.onload = ChangeImageSrc;
-    // </script>
 export const htmlDetailWithCss = (body, script = '') => {
     return `
     <html>
@@ -363,79 +351,133 @@ export const htmlDetailWithCss = (body, script = '') => {
         font-size: 60px;
         color: ${colors.clearBlue};
         padding-bottom: 15px;
-        margin-bottom: 80px;
-        margin-top: 70px;
+        margin-bottom: 10%;
+        margin-top: 100px;
+        font-weight: bold;
         border-bottom: 10px solid ${colors.clearBlue};
     }
     .sub-title {
         font-size: 50px;
         padding: 0px;
         margin-bottom: 20px;
+        font-weight: bold;
     }
     .content {
         font-size: 40px;
         margin-bottom: 100px;
     }
-    #caution, #prodInfo, #tip {
-        padding: 20px;
+    // #caution, #prodInfo, #tip {
+    //     padding: 20px;
+    // }
+    .warmGrey {
+        color: ${colors.warmGrey};
+    }
+    .tab {
         line-height: 1.6;
     }
-    #prodImg {
-        background-color: ${colors.paleGrey};
-        padding-top: 35px;
-        padding-bottom: 40px !important;
-        margin-bottom: 70px;
+    .tab div:not(.noMargin) {
+        margin-left: 40px;
+        margin-right: 40px;
     }
-    .settings{
-        border-radius: 5px;
-    }    
-    .blueBox, .copyBox {
+    .noMargin {
+        margin-bottom: 200px;
+    }
+    .blueBox, .copyBox, .moveToBox {
         text-align: center;
-
-        // display: flex;
-        // flex-direction: 'column';
-        // border-radius: 5px;
-        // justify-content: 'center';
-        // align-self: 'center';        
+        display: flex;
+        justify-content: center;
+        align-items: center;   
     }
     .blueBox {
-        height: '5%';
+        height: 120px;
+        border-radius: 10px 10px 0px 0px;
         background-color: ${colors.clearBlue};
+        color: ${colors.white};
     }
     .copyBox {
+        height: 250px;
         background-color: ${colors.white};
-        padding: 30px;
-        height: 120px;
-        vertical-align: middle;
+        border: 1px solid ${colors.greyish};
+        border-top-width: 0px;
     }
-    .settings img {
-        dispay: inline-block;
-        width=4%;
-        background-color: '#B404AE';
-        padding: 0px;
+    .moveToBox {
+        font-size: 40px;
+        height: 130px;
+        border-radius: 0px 0px 10px 10px;
+        background-color: ${colors.white};
+        border: 1px solid ${colors.greyish};
+        border-top-width: 0px;
     }
-    .blueBox img {
-
-    }
-    #copyLogo {
-        width=4%;
-        height=17%;
+    .settings {
+        margin-top: 60px;
+        margin-bottom: 60px;
     }
     .padding20Img {
         background-color: ${colors.paleGrey};
         padding: 40px;
-        padding-bottom: 80px;
-        margin-bottom: 120px;
+    }
+    .padding40Img {
+        background-color: ${colors.paleGrey};
+        padding: 80px;
+    }
+    #iosLogo {
+        width: 6%;
+        margin: 20px;
+    }
+    #andLogo {
+        width: 8%;
+        margin: 20px;
+    }
+    .moveToBox img {
+        width: 3%;
+        margin: 20px;
+        color: ${colors.black}
+    }
+    .copyImg {
+        width: 7%;
+        height: 25%;
+    }
+    .copyBox font {
+        font-size: 45px;
+        line-height: 70px;
+    }
+    .blueBox font{
+        font-size: 55px;
+    }
+    .contentFont14{
+        font-size: 40px;
+    }
+    .copyBtn{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 40%;
+        color: ${colors.warmGrey};
+        border: solid 1px ${colors.whiteThree};
+        background-color: ${colors.whiteTwo};
+    }
+    .copyTextLine {
+        margin: 50px;
+    }
+    .moveToBox button {
+        background-color: ${colors.white};
+        font-size: 45px;
+        border: none;
     }
     img {
         padding-top: 80px;
         padding-bottom: 80px;
-
+    }
+    #arrowDown {
+        width: 10%;
+        display: block;
+        margin: 0 auto;
     }
     .noBackgroundImg {
         background-color: ${colors.white}
         margin-left: 60px;
         margin-right: 60px;
+        margin-bottom: 200px;
     }
     </style>
     ${script}
