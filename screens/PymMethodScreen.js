@@ -59,6 +59,7 @@ class PymMethodScreen extends Component {
         memo: true,
         method: true
       },
+      label: i18n.t("pym:selectMemo"),
       deliveryMemo:{
         directInput: false,
         header: undefined,
@@ -87,6 +88,7 @@ class PymMethodScreen extends Component {
     this._button = this._button.bind(this)
     this._address = this._address.bind(this)
     this._memo = this._memo.bind(this)
+    this._changePlaceHolder = this._changePlaceHolder.bind(this)
     this._method = this._method.bind(this)
     this._saveMemo = this._saveMemo.bind(this)
     this._showModal = this._showModal.bind(this)
@@ -198,6 +200,7 @@ class PymMethodScreen extends Component {
     return (
       <View key={key} style={styles.buttonRow}>
       {
+        // key: row, idx: column
         value.map((v,idx) => 
         <AppButton 
           key={v.method} 
@@ -332,7 +335,17 @@ class PymMethodScreen extends Component {
     )
   }
 
+  _changePlaceHolder(){
+    if(_.isEmpty(this.state.deliveryMemo.selected)){
+      this.setState({
+        label: undefined
+      })
+      this._saveMemo(deliveryText[0].key)
+    }
+  }
+
   _memo(){
+    const { label } = this.state
     return(
       <View>
         {
@@ -347,9 +360,10 @@ class PymMethodScreen extends Component {
                             ... pickerSelectStyles,
                           }}
                             useNativeAndroidPickerStyle={false}
-                            placeholder={{label: i18n.t("pym:selectMemo")}}
+                            placeholder={!_.isEmpty(label) ? {label} : {}}
                             placeholderTextColor={colors.warmGrey}
-                            onValueChange={(value)=>{this._saveMemo(value)}} 
+                            onValueChange={(value)=>{this._saveMemo(value)}}
+                            onOpen={this._changePlaceHolder}
                             items={deliveryText.map(item => ({
                               label: item.value,
                               value: item.value
@@ -424,7 +438,7 @@ class PymMethodScreen extends Component {
   _consentBox(){
     return(
       <View style={{backgroundColor: colors.whiteTwo, padding: 20, paddingBottom: 45}}>
-      <TouchableOpacity style={{flexDirection: 'row'}} onPress={()=>this._consentEssential()}>
+      <TouchableOpacity style={styles.rowCenter} onPress={()=>this._consentEssential()}>
         <AppIcon name="btnCheck2"
                 checked={this.state.consent}
                 size={22}/>
@@ -521,6 +535,10 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     marginHorizontal: 20,
     color: colors.black
+  },
+  rowCenter: {
+    flexDirection: 'row',
+    alignItems: 'center'
   },
   row: {
     ... appStyles.itemRow,
