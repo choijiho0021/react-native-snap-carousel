@@ -13,6 +13,7 @@ import AppActivityIndicator from '../components/AppActivityIndicator'
 import AppButton from '../components/AppButton';
 import * as simActions from '../redux/modules/sim'
 import * as accountActions from '../redux/modules/account'
+import * as cartActions from '../redux/modules/cart'
 import SimCard from '../components/SimCard'
 import { bindActionCreators } from 'redux'
 import AppBackButton from '../components/AppBackButton';
@@ -200,6 +201,7 @@ export default connect(mapStateToProps,
   (dispatch) => ({
     action:{
       sim : bindActionCreators( simActions, dispatch),
+      cart: bindActionCreators(cartActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
     }
   })
