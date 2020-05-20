@@ -35,7 +35,7 @@ class CountryListItem extends PureComponent {
     const {item, selected, onPress} = this.props
     let borderColor = {}, color = {}
 
-    if(selected && selected.uuid == item.uuid) {
+    if(selected == item.uuid) {
       borderColor = {borderColor : colors.clearBlue}
       color = {color:colors.clearBlue}
     }
@@ -82,7 +82,8 @@ class CountryScreen extends Component {
     this.state = {
       prodData: [],
       selected: undefined,
-      idx: undefined
+      imageUrl: undefined,
+      title: undefined
     }
   }
 
@@ -97,38 +98,22 @@ class CountryScreen extends Component {
 
       this.setState({
         prodData,
-        selected: prodData[0]
+        imageUrl: prod.imageUrl,
+        selected: prodData[0].uuid,
+        title : productApi.getTitle(prod)
       })
     }
   }
 
   _onPress = (uuid) => () => {
-    const {prodData} = this.state
-    const selected = prodData.find(elm => elm.uuid == uuid)
-
-    this.setState({selected})
+    this.setState({selected: uuid})
   }
 
   _onPressBtn = (key) => () => {
     const {selected} = this.state
     const {loggedIn, balance} = this.props.account
 
-    //analytics 기록용
-    let appCenterEvent
-    switch (key) {
-      case 'cart':
-        appCenterEvent = i18n.t('appCenter:cartClick')
-        break
-      case 'purchase':
-        appCenterEvent = i18n.t('appCenter:purchaseClick')
-        break
-      // case 'regCard':
-      //   appCenterEvent = 'Country Screen에서 로그인 버튼 클릭'
-      //   break
-    }
-
-    console.log("key", key, appCenterEvent)
-    Analytics.trackEvent(appCenterEvent)
+    Analytics.trackEvent( 'Click_' + key)
 
     if(!loggedIn){
       this.props.navigation.navigate('Auth')
@@ -136,7 +121,7 @@ class CountryScreen extends Component {
     else {
 
       if(selected){
-        const prod = this.props.product.prodList.get(selected.uuid),
+        const prod = this.props.product.get('prodList').get(selected),
           addProduct = prod ? { 
             title: prod.name, 
             variationId: prod.variationId, 
@@ -170,17 +155,13 @@ class CountryScreen extends Component {
 
   render() {
     const { iccid,loggedIn } = this.props.account
-    const { prodData, selected} = this.state
-    const imageUrl = selected ? selected.imageUrl : ''
-    const title = this.props.navigation.getParam('title')
+    const { prodData, imageUrl, title, selected} = this.state
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <Image style={styles.box} source={{uri:api.httpImageUrl(imageUrl)}}/>
         
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('ProductDetail', {title:title, text:selected.body, img:imageUrl})}>
-       
-        {/* <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {title:this.props.navigation.getParam('title'), text:selected.body})}> */}
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('ProductDetail', {title:title, img:imageUrl})}>
           <View style={styles.detail}>
             <Text style={windowWidth > device.small.window.width ? appStyles.normal14Text : appStyles.normal12Text}>{i18n.t('country:detail')}</Text>
             <AppIcon style={{marginRight:20}} name="iconArrowRight" size={10} />
@@ -192,7 +173,8 @@ class CountryScreen extends Component {
         <View style={{flex:1}}>
           <FlatList 
             data={prodData} 
-            renderItem={this._renderItem} />
+            renderItem={this._renderItem} 
+            extraData={selected} />
         </View>
 
         { iccid ? 

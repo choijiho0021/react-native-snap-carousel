@@ -104,25 +104,27 @@ class StoreScreen extends Component {
   _refresh() {
     const { asia, europe, usaAu, multi } = productApi.category,
       prodList = this.props.product.get('prodList'),
-      list = prodList.toList().reduce((acc,item) => {
-        item.key = item.uuid 
-        item.cntry = new Set(country.getName(item.ccode))
-        //days가 "00일" 형식으로 오기 때문에 일 제거 후 넘버타입으로 변환
-        item.pricePerDay = Math.round(item.price / Number(item.days.replace(/[^0-9]/g,"")))
-        
-        const idxCcode = acc.findIndex(elm => _.isEqual(elm.ccode, item.ccode))
+      list = prodList.toList()
+        .sort((a,b) => { return a.name >= b.name ? 1 : -1})
+        .reduce((acc,item) => {
+          item.key = item.uuid 
+          item.cntry = new Set(country.getName(item.ccode))
+          //days가 "00일" 형식으로 오기 때문에 일 제거 후 넘버타입으로 변환
+          item.pricePerDay = Math.round(item.price / Number(item.days.replace(/[^0-9]/g,"")))
+          
+          const idxCcode = acc.findIndex(elm => _.isEqual(elm.ccode, item.ccode))
 
-        if ( idxCcode < 0 ) {
-          // new item, insert it
-          return acc.concat( [item])
-        }
-        else if ( acc[idxCcode].pricePerDay > item.pricePerDay && item.field_daily == 'daily') {
-          // cheaper
-          acc.splice( idxCcode, 1, item)
+          if ( idxCcode < 0 ) {
+            // new item, insert it
+            return acc.concat( [item])
+          }
+          else if ( acc[idxCcode].pricePerDay > item.pricePerDay && item.field_daily == 'daily') {
+            // cheaper
+            acc.splice( idxCcode, 1, item)
+            return acc
+          }
           return acc
-        }
-        return acc
-      }, [])
+        }, [])
     
     this.setState({
       allData: list,
@@ -137,10 +139,19 @@ class StoreScreen extends Component {
     return list.filter(elm => 
       elm.categoryId.findIndex(idx => idx == key) >= 0 &&
       (_.isEmpty(searchword) ? true : !_.isUndefined(elm.cntry.find(item => item.match(searchword))))) 
-      .map((elm,idx,arr) => ({key:elm.uuid, data:[elm,arr[idx+1]] }))
-      .filter((elm,idx) => idx % 2 == 0)
+      .reduce((acc,elm) => {
+        if ( acc.length > 0 && ! acc[acc.length-1].data[1]) {
+          acc[acc.length-1].data[1] = elm
+          return acc
+        }
+
+        return acc.concat({
+          key: elm.uuid,
+          data:[elm, undefined]
+        })
+      }, [])
   }
- 
+
   _onPressItem = (key) => {
     this.props.navigation.navigate('Country',{prodKey:key})
   }
