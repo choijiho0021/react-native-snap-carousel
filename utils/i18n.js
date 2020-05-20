@@ -412,8 +412,8 @@ const en = {
   "util:retrieveDataFailed": "Failed to retrieve data:",
   "util:removeDataFailed": "Failed to remove data:",
 
-  "appCenter:cartClick": "Click the 'to Cart' button",
-  "appCenter:purchaseClick": "Click the 'buy' button",
+  "appCenter:cart": "Click the 'to Cart' button",
+  "appCenter:purchase": "Click the 'buy' button",
   "appCenter:searchWord": "Search_Country",
   "appCenter:payment" : "Payment",
 };
@@ -838,8 +838,8 @@ const ko = {
   "util:retrieveDataFailed": "데이터 조회 실패:",
   "util:removeDataFailed": "데이터 삭제 실패:",
 
-  "appCenter:cartClick": "카트에 담기 클릭",
-  "appCenter:purchaseClick": "바로구매 클릭",
+  "appCenter:cart": "카트에 담기 클릭",
+  "appCenter:purchase": "바로구매 클릭",
 
   "prodDetail:ProdInfo" : "상품정보",
   "prodDetail:Caution" : "주의사항",

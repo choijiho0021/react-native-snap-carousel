@@ -28,7 +28,10 @@ class ContactListItem extends PureComponent {
   render() {
     const {item} = this.props
     return (
-      <TouchableOpacity onPress={item.onPress}>
+      <TouchableOpacity onPress={() => {
+        Analytics.trackEvent('Page_View_Count', {page: item.page})
+        item.onPress()
+      }}>
         <View style={styles.row}>
           <Text style={styles.itemTitle}>{item.value}</Text>
           {
@@ -52,31 +55,46 @@ class ContactScreen extends Component {
 
     this.state = {
       data: [
-        { "key": "noti", "value": i18n.t('contact:notice'), 
+        { 
+          key: "noti", 
+          value: i18n.t('contact:notice'), 
+          page : 'Notice',
           onPress:() => {
-            Analytics.trackEvent('Page_View_Count', {page : 'Notice'})
             this.props.navigation.navigate('Noti', {mode: 'info', title:i18n.t('notice'), info: this.props.info.infoList})
-          }},
-        { "key": "faq", "value": i18n.t('contact:faq'), 
+          }
+        },
+        { 
+          key: "faq", 
+          value: i18n.t('contact:faq'), 
+          page : 'FAQ',
           onPress:() => {
-            Analytics.trackEvent('Page_View_Count', {page : 'FAQ'})
             this.props.navigation.navigate('Faq')
-          }},
-        { "key": "board", "value": i18n.t('contact:board'), 
+          }
+        },
+        { 
+          key: "board", 
+          value: i18n.t('contact:board'), 
+          page : 'Contact Board',
           onPress:() => {
-            Analytics.trackEvent('Page_View_Count', {page : 'Contact Board'})
             this.props.navigation.navigate('ContactBoard')
-          }},
-        { "key": "ktalk", "value": i18n.t('contact:ktalk'),
+          }
+        },
+        { 
+          key: "ktalk", 
+          value: i18n.t('contact:ktalk'),
+          page : 'Open Kakao Talk',
           onPress:() => {
-            Analytics.trackEvent('Page_View_Count', {page : 'Open Kakao Talk'})
             this._openKTalk()
-          }},
-        { "key": "call", "value": i18n.t('contact:call'),
+          }
+        },
+        { 
+          key: "call", 
+          value: i18n.t('contact:call'),
+          page : 'Call Center',
           onPress:() => {
-            Analytics.trackEvent('Page_View_Count', {page : 'Call Center'})
             Linking.openURL(`tel:114`)
-          }},
+          }
+        },
       ],
       showModal: false
     }
