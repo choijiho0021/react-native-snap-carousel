@@ -5,6 +5,7 @@ const tabbarPath = '../assets/images/tabbar/'
 const mainPath = '../assets/images/main/'
 const headerPath = '../assets/images/header/'
 const paymentPath = '../assets/images/payment/'
+const guidePath = '../assets/images/guide/'
 const images = {
   btnHome : [ require( tabbarPath + 'btnHome.png'), require( tabbarPath + 'btnHomeSel.png')],
   btnStore : [ require( tabbarPath + 'btnStore.png'), require( tabbarPath + 'btnStoreSel.png')],
@@ -50,6 +51,7 @@ const images = {
   samsung: [ require( paymentPath + 'logoSamsung.png')],
   ssgpay: [ require( paymentPath + 'logoSsg.png')],
   lpay: [ require( paymentPath + 'logoLpay.png')],
+  specialTip: [ require( guidePath + 'iconHoney.png')],
 }
 
 export default class AppIcon extends PureComponent {
