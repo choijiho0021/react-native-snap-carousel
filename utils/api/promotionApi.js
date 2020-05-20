@@ -11,7 +11,10 @@ class PromotionAPI {
                     title: item.title,
                     imageUrl : item.field_image,
                     product_uuid : item.field_product_uuid,   // product variation id
-                    notice: item.field_ref_content
+                    notice: item.field_ref_content ? {
+                        title: item.field_notice_title,
+                        body: item.field_notice_body 
+                    } : null 
                 }))
             }
         }

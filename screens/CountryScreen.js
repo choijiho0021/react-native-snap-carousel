@@ -27,6 +27,7 @@ import { windowWidth, device } from '../constants/SliderEntry.style';
 import Analytics from 'appcenter-analytics'
 import _ from 'underscore'
 import AppActivityIndicator from '../components/AppActivityIndicator';
+import productApi from '../utils/api/productApi';
 
 
 class CountryListItem extends PureComponent {
@@ -34,7 +35,7 @@ class CountryListItem extends PureComponent {
     const {item, selected, onPress} = this.props
     let borderColor = {}, color = {}
 
-    if(selected && selected.uuid == item.uuid) {
+    if(selected == item.uuid) {
       borderColor = {borderColor : colors.clearBlue}
       color = {color:colors.clearBlue}
     }
@@ -55,12 +56,24 @@ class CountryListItem extends PureComponent {
   }
 }
 
+
+class CountryBackButton extends PureComponent {
+  render() {
+
+    const {navigation} = this.props,
+      key = navigation.getParam('prodKey'),
+      prod = this.props.prodList.get(key)
+
+    return <AppBackButton navigation={navigation} title={productApi.getTitle(prod)} />
+  }
+}
+
+let BackButton = connect(state => ({prodList: state.product.get('prodList')}))(CountryBackButton)
+
 class CountryScreen extends Component {
   static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={navigation.getParam('title')} />,
-    headerRight: (
-      <AppCartButton onPress={() => navigation.navigate('Cart')} />
-    )
+    headerLeft: <BackButton navigation={navigation} />,
+    headerRight: <AppCartButton onPress={() => navigation.navigate('Cart')} />
   })
 
   constructor(props) {
@@ -69,53 +82,38 @@ class CountryScreen extends Component {
     this.state = {
       prodData: [],
       selected: undefined,
-      idx: undefined
+      imageUrl: undefined,
+      title: undefined
     }
   }
 
   componentDidMount() {
-    const idx = this.props.navigation.getParam('prodIdx'),
-      {prodList} = this.props.product
+    const key = this.props.navigation.getParam('prodKey'),
+      prodList = this.props.product.get('prodList'),
+      prod = prodList.get(key)
 
-    if ( idx >= 0 && idx < prodList.length) {
-      const prod = prodList[idx],
-        prodData = prodList.filter( item => _.isEqual(item.ccode, prod.ccode))
+    if ( prod) {
+      // 같은 국가에 정의된 여러 상품 목록을 구한다. 
+      const prodData = prodList.toList().filter( item => _.isEqual(item.ccode, prod.ccode)).toJS()
 
       this.setState({
-        idx,
         prodData,
-        selected: prodData[0]
+        imageUrl: prod.imageUrl,
+        selected: prodData[0].uuid,
+        title : productApi.getTitle(prod)
       })
     }
   }
 
   _onPress = (uuid) => () => {
-    const {prodData} = this.state
-    const selected = prodData.find(elm => elm.uuid == uuid)
-
-    this.setState({selected})
+    this.setState({selected: uuid})
   }
 
   _onPressBtn = (key) => () => {
     const {selected} = this.state
     const {loggedIn, balance} = this.props.account
 
-    //analytics 기록용
-    let appCenterEvent
-    switch (key) {
-      case 'cart':
-        appCenterEvent = i18n.t('appCenter:cartClick')
-        break
-      case 'purchase':
-        appCenterEvent = i18n.t('appCenter:purchaseClick')
-        break
-      // case 'regCard':
-      //   appCenterEvent = 'Country Screen에서 로그인 버튼 클릭'
-      //   break
-    }
-
-    console.log("key", key, appCenterEvent)
-    Analytics.trackEvent(appCenterEvent)
+    Analytics.trackEvent( 'Click_' + key)
 
     if(!loggedIn){
       this.props.navigation.navigate('Auth')
@@ -123,7 +121,7 @@ class CountryScreen extends Component {
     else {
 
       if(selected){
-        const prod = this.props.product.prodList.find(item => item.uuid == selected.uuid),
+        const prod = this.props.product.get('prodList').get(selected),
           addProduct = prod ? { 
             title: prod.name, 
             variationId: prod.variationId, 
@@ -156,19 +154,14 @@ class CountryScreen extends Component {
   }
 
   render() {
-    const { prodList} = this.props.product
     const { iccid,loggedIn } = this.props.account
-    const { prodData, selected, idx} = this.state
-    const imageUrl = (prodList && idx && prodList.length > idx >= 0) ? prodList[idx].imageUrl : ''
-    const title = this.props.navigation.getParam('title')
+    const { prodData, imageUrl, title, selected} = this.state
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <Image style={styles.box} source={{uri:api.httpImageUrl(imageUrl)}}/>
         
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('ProductDetail', {title:title, text:selected.body, img:imageUrl})}>
-       
-        {/* <TouchableOpacity onPress={() => this.props.navigation.navigate('SimpleText', {title:this.props.navigation.getParam('title'), text:selected.body})}> */}
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('ProductDetail', {title:title, img:imageUrl})}>
           <View style={styles.detail}>
             <Text style={windowWidth > device.small.window.width ? appStyles.normal14Text : appStyles.normal12Text}>{i18n.t('country:detail')}</Text>
             <AppIcon style={{marginRight:20}} name="iconArrowRight" size={10} />
@@ -180,7 +173,8 @@ class CountryScreen extends Component {
         <View style={{flex:1}}>
           <FlatList 
             data={prodData} 
-            renderItem={this._renderItem} />
+            renderItem={this._renderItem} 
+            extraData={selected} />
         </View>
 
         { iccid ? 
@@ -347,7 +341,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => ({
-  product: state.product.toJS(),
+  product: state.product,
   cart: state.cart.toJS(),
   account : state.account.toJS(),
   pending: state.pender.pending[cartActions.CART_ADD] || false,

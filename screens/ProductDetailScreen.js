@@ -21,26 +21,28 @@ import { colors } from '../constants/Colors';
 import { appStyles, htmlDetailWithCss } from '../constants/Styles';
 import AppButton from '../components/AppButton';
 import WebView from 'react-native-webview';
-import utils from '../utils/utils';
 import getEnvVars from '../environment'
 import Analytics from 'appcenter-analytics'
 
 const HEADER_IMG_HEIGHT = 200;
-const INIT_IDX = 999;
+const TAB_IDX_ASK_BY_KAKAO = 3    // KakaoTalk으로 물어보기 Tab의 index
 const { baseUrl } = getEnvVars();
 
-const tabList = ['ProdInfo','Caution','Tip','Ask with KakaoTalk']
+const tabList = ['ProdInfo','Tip','Caution','Ask with KakaoTalk']
 const html = [
   '<button onclick="send()">Send</button> <div id="info" style="font-size:16px; border:1px solid black;"><h1>starta</h1>  <p> test1 test2 </p> <p> test1 test2 </p> </div>'
   // '<div id="testb" style="font-size:16px; border:1px solid black;"><h1>startb</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
   // '<div id="testc" style="font-size:16px; border:1px solid black;"><h1>startc</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
 ]
 
-const script = `<script>window.location.hash = 1;
-document.title = ['prodInfo', 'caution', 'tip'].map(item => {
-  var rect = document.getElementById(item).getBoundingClientRect();
-  return rect.bottom;
-}).join(',');
+const script = `<script>
+window.onload = function() {
+  window.location.hash = 1;
+  document.title = ['prodInfo', 'tip', 'caution'].map(item => {
+    var rect = document.getElementById(item).getBoundingClientRect();
+    return rect.bottom;
+  }).join(',');
+}
 function send() {
   window.ReactNativeWebView.postMessage('APN Value have to insert into this', '*');
   window.alert('copy');
@@ -69,7 +71,7 @@ class ProductDetailScreen extends Component {
     
     this.state = {
       scrollY: new Animated.Value(0),
-      idx : INIT_IDX,
+      tabIdx : 0,
       querying : true,
       prodInfo : ''
     }
@@ -84,23 +86,17 @@ class ProductDetailScreen extends Component {
   }
 
   shouldComponentUpdate(preProps,preState){
-    const {idx, height2, prodInfo, Tip, Caution} = this.state
-    return preState.idx != idx || preState.prodInfo != prodInfo || preState.height2 != height2 || preState.Tip != Tip || preState.Caution != Caution
+    const {tabIdx, height2, prodInfo} = this.state
+    return preState.tabIdx != tabIdx || preState.prodInfo != prodInfo || preState.height2 != height2 
   }
 
   componentDidMount() {
 
-    const Tip =this.props.navigation.getParam('Tip')
-    const Caution =this.props.navigation.getParam('Caution')
-
-    this.setState({Tip,Caution})
-
     //todo : 상세 HTML을 가져오도록 변경 필요
-      pageApi.getPageByTitle('prodInfo', this.controller).then(resp =>{
-      console.log("resp",resp)
+    pageApi.getProductDetails(this.controller).then(resp =>{
       if ( resp.result == 0 && resp.objects.length > 0) {
         this.setState({
-          prodInfo: resp.objects[0].body,
+          prodInfo: resp.objects,
           disable: false
         })
       }
@@ -109,9 +105,9 @@ class ProductDetailScreen extends Component {
       console.log('failed', err)
       AppAlert.error(i18n.t('set:fail'))
     }).finally(_ => {
-        this.setState({
-          querying: false
-        })
+      this.setState({
+        querying: false
+      })
     })
 
   }
@@ -127,11 +123,11 @@ class ProductDetailScreen extends Component {
   checkIdx(offset) {
     
     // todo: 정확하게 Title이 상단끝에 걸쳐야 idx가 변경되어야 하는지 확인필요
-    if ( this.state.idx != 3){
-      for( var idx=0; idx<3; idx++) {
+    if ( this.state.tabIdx != TAB_IDX_ASK_BY_KAKAO){
+      for( var idx=0; idx< TAB_IDX_ASK_BY_KAKAO; idx++) {
         if ( offset < this.state['height' + idx]) break;
       }
-      if(idx != 3) this.setState({idx})
+      if(idx != TAB_IDX_ASK_BY_KAKAO) this.setState({tabIdx:idx})
     }
   }
 
@@ -142,12 +138,12 @@ class ProductDetailScreen extends Component {
 
   _clickTab = (idx) => () => {
     
-    Analytics.trackEvent('Page_View_Count', {page: tabList[idx+1]})
+    Analytics.trackEvent('Page_View_Count', {page: tabList[idx]})
 
     var height = 0;
-    if ( idx < 3) height += (this.state['height' + (idx-1)] || 0) + HEADER_IMG_HEIGHT
+    if ( idx < TAB_IDX_ASK_BY_KAKAO) height += (this.state['height' + (idx-1)] || 0) + HEADER_IMG_HEIGHT
     this._scrollTo( height)
-    this.setState({idx})
+    this.setState({tabIdx:idx})
   }
 
   //todo : 디자인 나오면 변경
@@ -166,10 +162,9 @@ class ProductDetailScreen extends Component {
   }
 
   renderWebView() {
-    const {prodInfo, Tip, Caution, height2} = this.state
+    const {height2, prodInfo} = this.state
 
-    return (
-    <WebView 
+    return <WebView 
       ref={webView1 => {this._webView1 = webView1}}
       automaticallyAdjustContentInsets={false}
       javaScriptEnabled={true}
@@ -182,13 +177,13 @@ class ProductDetailScreen extends Component {
       scrollEnabled = {false}
       // source={{html: body + html + script} }
       onMessage={this._onMessage}
-      source={{html: htmlDetailWithCss(prodInfo + Caution + Tip + script), baseUrl} }
+      source={{html: htmlDetailWithCss(prodInfo, script), baseUrl} }
       style={{height: height2 + HEADER_IMG_HEIGHT || 1000}}
-    />)
+    />
   }
 
   render() {
-    const {querying = false, idx} = this.state
+    const {querying = false, tabIdx} = this.state
     const {navigation} = this.props
 
     return (
@@ -201,7 +196,7 @@ class ProductDetailScreen extends Component {
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={11}
           onScroll={(state) => {this.checkIdx(state.nativeEvent.contentOffset.y)}}
-          onContentSizeChange={this._clickTab(idx)}>
+          onContentSizeChange={this._clickTab(tabIdx)}>
           
           <View style={{height:HEADER_IMG_HEIGHT}}>
             <Image style={{height:HEADER_IMG_HEIGHT}} source={{uri:api.httpImageUrl(navigation.getParam('img'))}}/>
@@ -211,21 +206,20 @@ class ProductDetailScreen extends Component {
           <View style={styles.whiteBackground}>
             <View style={styles.tabView}>
             {
-              tabList.map((elm,idx) => (
+              tabList.map((elm,idx) => 
                 <AppButton
-                key = {elm + idx}
-                style={styles.whiteBackground}
-                titleStyle={[styles.normal16WarmGrey, (idx == 0 || idx == INIT_IDX) && styles.boldClearBlue]}
-                title={i18n.t(`prodDetail:${elm}`)}
-                onPress={this._clickTab(idx)}
-              />
-              ))
+                  key = {elm + idx}
+                  style={styles.whiteBackground}
+                  titleStyle={[styles.normal16WarmGrey, (idx == tabIdx) ? styles.boldClearBlue : {}]}
+                  title={i18n.t(`prodDetail:${elm}`)}
+                  onPress={this._clickTab(idx)} />
+              )
             }
             </View>
           </View>
-          {idx == 3 && this.renderContactKakao() }
-          
-          {idx != 3 && this.renderWebView()}
+          { 
+            tabIdx == TAB_IDX_ASK_BY_KAKAO ? this.renderContactKakao() : this.renderWebView()
+          }
 
         </ScrollView>
       </SafeAreaView>

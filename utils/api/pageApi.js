@@ -24,6 +24,14 @@ class PageAPI {
         return api.failure(api.NOT_FOUND, data.message)
     }
 
+    toProductDetails = (data) => {
+        if ( _.isArray(data)) {
+            return api.success(data.map(item => item.body).join())
+        }
+
+        return api.failure(api.NOT_FOUND)
+    }
+
     getPageByCategory = (name, abortController = undefined) => {
         if (_.isEmpty(name)) return api.reject( api.INVALID_ARGUMENT, `test name:${_.isEmpty(name)}`)
 
@@ -36,6 +44,11 @@ class PageAPI {
 
         const url = `${api.httpUrl(api.path.jsonapi.page)}?filter[title]=${title}`
         return api.callHttpGet(url, this.toPage, { abortController })
+    }    
+
+    getProductDetails = (abortController = undefined) => {
+        const url = `${api.httpUrl(api.path.productDetails)}?_format=json`
+        return api.callHttpGet(url, this.toProductDetails, { abortController })
     }    
 }
 

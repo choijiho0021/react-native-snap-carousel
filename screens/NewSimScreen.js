@@ -34,6 +34,7 @@ class NewSimScreen extends Component {
       querying: false,
       total: { cnt:0, price:0},
       checked: new Map(),
+      simPrice: new Map(),
       simQty: new Map()
     }
 
@@ -53,6 +54,7 @@ class NewSimScreen extends Component {
     //   this._init()
     // }
   }
+// key value array로 리턴해서 합쳐야 함 - array로 맵을 초기화 할 수 있음
 
   _init() {
     const {simList} = this.props.sim
@@ -65,6 +67,10 @@ class NewSimScreen extends Component {
         ... acc,
         [cur.key]: 0
       }), {})),
+      simPrice: new Map(simList.reduce((acc,cur) => ({
+        ... acc,
+        [cur.key]: 0
+      }), {})),
       total: {
         cnt:0,
         price: 0
@@ -74,11 +80,12 @@ class NewSimScreen extends Component {
 
   _onChangeQty(key, qty) {
     const simQty = this.state.simQty.set(key, qty),
-      checked = this.state.checked.set(key, qty > 0)
+    checked = this.state.checked.set(key, qty > 0),
+    simPrice = this.state.simPrice.set(key, this.props.sim.simList.filter(item => item.key == key || false)[0].price * qty)
 
     // update qty
     this.setState({
-      checked, simQty,
+      checked, simQty, simPrice,
       total: this._getTotal(checked, simQty)
     })
   }
@@ -103,13 +110,8 @@ class NewSimScreen extends Component {
         }))
 
       if ( simList.length > 0) {
-        if ( mode == 'purchase') {
           this.props.action.cart.purchase({ purchaseItems:simList, dlvCost:true, balance})
           this.props.navigation.navigate('PymMethod',{mode : 'New Sim'})
-        }
-        else {
-          this._init()
-        }
       }
     }
     
@@ -117,22 +119,24 @@ class NewSimScreen extends Component {
 
   _onChecked(key) {
     const checked = this.state.checked.update(key, value => ! value),
-      simQty = this.state.simQty.update(key, value => value || 1)
+      simQty = this.state.simQty.update(key, value => value || 1),
+      simPrice = this.state.simPrice.update(key, value => value || this.props.sim.simList.filter(item => item.key == key || false)[0].price)
 
     this.setState({
-      checked, simQty,
+      checked, simQty, simPrice,
       total: this._getTotal( checked, simQty )
     })
   }
 
   _renderItem = ({item, index}) => {
-    const { simQty } = this.state
+    const { simQty, simPrice } = this.state
 
     return (
       <SimCard onChange={value => this._onChangeQty(item.key, value)} 
         checked={this.state.checked.get(item.key) || false}
         onChecked={() => this._onChecked(item.key)}
         qty={simQty.get(item.uuid)}
+        simPrice={simPrice.get(item.uuid)}
         last={index == this.props.sim.simList.length -1}
         {... item} />
     )
@@ -152,7 +156,7 @@ class NewSimScreen extends Component {
 
 
   render() {
-    const { querying, checked, simQty, total} = this.state,
+    const { querying, checked, simQty, total, simPrice } = this.state,
       {simList} = this.props.sim,
       selected = simList.findIndex(item => checked.get(item.key) && simQty.get(item.key) > 0) >= 0
 
@@ -161,7 +165,7 @@ class NewSimScreen extends Component {
         <AppActivityIndicator visible={querying}/>
         <FlatList data={simList} 
           renderItem={this._renderItem} 
-          extraData={[checked, simQty]}
+          extraData={[checked, simQty, simPrice]}
           ListFooterComponent={
             <ChargeSummary totalCnt={total.cnt} 
             totalPrice={total.price} 

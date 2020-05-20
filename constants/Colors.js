@@ -23,6 +23,7 @@ export const colors = {
   paleGrey: "#f7f8f9",
   white: "#ffffff",
   whiteTwo: "#f5f5f5",
+  whiteThree: "#e3e3e3",
   tomato: "#ed4847",
   greyish: "#aaaaaa",
   greyishTwo: "#a8a8a8",

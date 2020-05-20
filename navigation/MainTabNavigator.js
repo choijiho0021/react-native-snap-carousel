@@ -12,7 +12,6 @@ import MySimScreen from '../screens/MySimScreen';
 
 import StoreScreen from '../screens/StoreScreen';
 import CountryScreen from '../screens/CountryScreen';
-import ProductScreen from '../screens/ProductScreen';
 import RegisterSimScreen from '../screens/RegisterSimScreen';
 import ProductDetailScreen from '../screens/ProductDetailScreen';
 
@@ -107,7 +106,6 @@ const StoreStack = createStackNavigator(
     StoreSearch: StoreSearchScreen,
     RegisterSim: RegisterSimScreen,
     Country: CountryScreen,
-    Product: ProductScreen,
     NewSim: NewSimScreen,
     SimpleText: SimpleTextScreen,
     ProductDetail: ProductDetailScreen,
