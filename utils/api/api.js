@@ -44,6 +44,7 @@ class Api {
         userByName: 'json/user/name',
         userByEmail: 'json/user/email',
         promotion: 'json/promotion/list',
+        productDetails: 'json/product/details',
 
         recharge: 'rokebi/rch',
         resetPw: 'rokebi/user/pw',

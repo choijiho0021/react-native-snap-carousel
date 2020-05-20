@@ -354,7 +354,7 @@ ${body}
 
     // window.onload = ChangeImageSrc;
     // </script>
-export const htmlDetailWithCss = (body) => {
+export const htmlDetailWithCss = (body, script = '') => {
     return `
     <html>
     <head>
@@ -376,11 +376,7 @@ export const htmlDetailWithCss = (body) => {
         font-size: 40px;
         margin-bottom: 100px;
     }
-    .caution, .ProdInfo, #tip {
-        padding: 20px;
-        line-height: 1.6;
-    }
-    .Tip {
+    #caution, #prodInfo, #tip {
         padding: 20px;
         line-height: 1.6;
     }
@@ -442,6 +438,7 @@ export const htmlDetailWithCss = (body) => {
         margin-right: 60px;
     }
     </style>
+    ${script}
     </head>
     <body>
     ${body}
