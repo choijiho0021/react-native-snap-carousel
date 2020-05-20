@@ -450,22 +450,22 @@ class HomeScreen extends Component {
       const prodList = this.props.product.get('prodList'),
         prod = prodList.get(item.product_uuid)
 
-        if ( prod) {
-          const navigateAction = NavigationActions.navigate({
-            routeName: 'StoreStack',
-            action: NavigationActions.navigate({ 
-              routeName: 'Country', 
-              params: {
-                prodKey: item.product_uuid
-              }
-            })
+      if ( prod) {
+        const navigateAction = NavigationActions.navigate({
+          routeName: 'StoreStack',
+          action: NavigationActions.navigate({ 
+            routeName: 'Country', 
+            params: {
+              prodKey: item.product_uuid
+            }
           })
+        })
         
         this.props.navigation.dispatch(navigateAction)
       }
     }
     else if ( item.notice) {
-      console.log('go to notice page')
+      this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:item.notice.title, text:item.notice.body, mode:'text'})
     }
   }
 
