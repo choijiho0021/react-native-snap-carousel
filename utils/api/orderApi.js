@@ -5,7 +5,12 @@ import i18n from '../i18n'
 
 class OrderAPI {
 
-    deliveryText = [{
+    deliveryText = [
+    {
+        key: i18n.t("pym:notSelected"),
+        value: i18n.t("pym:notSelected")
+    },
+    {
         key: i18n.t("pym:tel"),
         value: i18n.t("pym:toTel")
     },
