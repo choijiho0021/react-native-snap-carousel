@@ -252,8 +252,6 @@ class StoreSearchScreen extends Component {
     const searchResult = allData.filter(elm => elm.length > 0 && elm[0].search.match(searchWord))
       .map(elm => ({name:elm[0].name, country:elm[0].cntry, categoryId: elm[0].categoryId, uuid:elm[0].uuid}))
 
-      console.log('search', searchResult, searchWord)
-
     return (
       <View style={styles.width100}>
         {searchResult.map((elm,idx) => 
