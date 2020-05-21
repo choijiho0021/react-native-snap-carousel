@@ -192,7 +192,7 @@ class CartScreen extends Component {
     const { qty, checked } = this.state
     const prod = (item.type == 'sim_card') ?
       this.props.sim.simList.find(sim => sim.uuid == item.key) : 
-      this.props.product.prodList.get(item.key)
+      this.props.product.get('prodList').get(item.key)
 
     return <CartItem checked={checked.get(item.key) || false}
       onChange={(value) => this._onChangeQty(item.key, item.orderItemId, value)} 

@@ -61,10 +61,9 @@ class CountryBackButton extends PureComponent {
   render() {
 
     const {navigation} = this.props,
-      key = navigation.getParam('prodKey'),
-      prod = this.props.prodList.get(key)
+      prodOfCountry = navigation.getParam('prodOfCountry')
 
-    return <AppBackButton navigation={navigation} title={productApi.getTitle(prod)} />
+    return <AppBackButton navigation={navigation} title={productApi.getTitle(prodOfCountry[0])} />
   }
 }
 
@@ -88,19 +87,14 @@ class CountryScreen extends Component {
   }
 
   componentDidMount() {
-    const key = this.props.navigation.getParam('prodKey'),
-      prodList = this.props.product.get('prodList'),
-      prod = prodList.get(key)
+    const prodOfCountry = this.props.navigation.getParam('prodOfCountry')
 
-    if ( prod) {
-      // 같은 국가에 정의된 여러 상품 목록을 구한다. 
-      const prodData = prodList.toList().filter( item => _.isEqual(item.ccode, prod.ccode)).toJS()
-
+    if ( prodOfCountry) {
       this.setState({
-        prodData,
-        imageUrl: prod.imageUrl,
-        selected: prodData[0].uuid,
-        title : productApi.getTitle(prod)
+        prodData: prodOfCountry,
+        imageUrl: prodOfCountry[0].imageUrl,
+        selected: prodOfCountry[0].uuid,
+        title : productApi.getTitle(prodOfCountry[0])
       })
     }
   }

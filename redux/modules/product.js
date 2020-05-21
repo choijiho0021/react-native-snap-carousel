@@ -1,5 +1,5 @@
 import { createAction, handleActions } from 'redux-actions';
-import { Map, List } from 'immutable';
+import { Map } from 'immutable';
 import { pender } from 'redux-pender/lib/utils';
 import productApi from '../../utils/api/productApi'
 

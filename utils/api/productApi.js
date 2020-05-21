@@ -46,6 +46,23 @@ class ProductAPI {
         }
     }
 
+    toColumnList(list) {
+        const result = []
+        for( let elm of list) {
+            if ( result.length > 0 && ! result[result.length-1].data[1]) {
+                result[result.length-1].data[1] = elm
+            }
+            else {
+                result.push({
+                    key: elm[0].uuid,
+                    data:[elm, undefined]
+                })
+            }
+        }
+
+        return result
+    }
+
     getTitle(prod) {
         return prod.categoryId == this.category.multi ? prod.partnerName : country.getName(prod.ccode)[0];
     }

@@ -450,17 +450,8 @@ class HomeScreen extends Component {
         prod = prodList.get(item.product_uuid)
 
       if ( prod) {
-        const navigateAction = NavigationActions.navigate({
-          routeName: 'StoreStack',
-          action: NavigationActions.navigate({ 
-            routeName: 'Country', 
-            params: {
-              prodKey: item.product_uuid
-            }
-          })
-        })
-        
-        this.props.navigation.dispatch(navigateAction)
+        const prodOfCountry = prodList.filter( item => _.isEqual(item.ccode, prod.ccode)).toList().toArray()
+        this.props.navigation.navigate('Country', {prodOfCountry})
       }
     }
     else if ( item.notice) {
