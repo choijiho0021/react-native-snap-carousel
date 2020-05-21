@@ -27,7 +27,7 @@ class StoreScreen extends Component {
     headerLeft: <Text style={styles.title}>{i18n.t('store')}</Text>,
     headerRight: <AppButton key="search" 
       style={styles.showSearchBar} 
-      onPress={navigation.getParam('StoreSearch')} 
+      onPress={() => navigation.navigate('StoreSearch')} 
       iconName="btnSearchTop" />
   })
 
@@ -35,16 +35,13 @@ class StoreScreen extends Component {
     super(props)
 
     this.state = {
-      search: undefined,
       index: 0,
-      country:"",
       routes: [
         { key: 'asia', title: i18n.t('store:asia'), category:'아시아'},
         { key: 'europe', title: i18n.t('store:europe'), category:'유럽' },
         { key: 'usaAu', title: i18n.t('store:usa/au'), category:'미주/호주' },
         { key: 'multi', title: i18n.t('store:multi'), category:'복수 국가' }
       ],
-  
       allData:[],
       asia: [],
       europe: [],
@@ -53,8 +50,6 @@ class StoreScreen extends Component {
     }
 
     this._refresh = this._refresh.bind(this)
-    this._onChange = this._onChange.bind(this)
-    this._navigateToStoreSearch = this._navigateToStoreSearch.bind(this)
     this._onIndexChange = this._onIndexChange.bind(this)
     this._onPressItem = this._onPressItem.bind(this)
 
@@ -64,12 +59,6 @@ class StoreScreen extends Component {
 
   componentDidMount() {
     const now = moment()
-
-    this.props.navigation.setParams({
-      StoreSearch: this._navigateToStoreSearch,
-      onChangeText : this._onChangeText('country'),
-      search : this._search()
-    })
 
     this.setState({time: now})
     this._refresh()
@@ -89,17 +78,6 @@ class StoreScreen extends Component {
     {
       this._refresh()
     }
-  }
-
-  _navigateToStoreSearch() {
-    const {allData} = this.state
-    this.props.navigation.navigate('StoreSearch',{allData})
-  }
-
-  _onChange = (search) => {
-    this.setState({
-      search
-    })
   }
 
   _refresh() {
@@ -131,16 +109,15 @@ class StoreScreen extends Component {
 
     this.setState({
       allData: sorted,
-      asia: this.filterByCategory(sorted, asia, ''),
-      europe: this.filterByCategory(sorted, europe, ''),
-      usaAu: this.filterByCategory(sorted, usaAu, ''),
-      multi: this.filterByCategory(sorted, multi, ''),
+      asia: this.filterByCategory(sorted, asia),
+      europe: this.filterByCategory(sorted, europe),
+      usaAu: this.filterByCategory(sorted, usaAu),
+      multi: this.filterByCategory(sorted, multi),
     })
   }
 
-  filterByCategory( list, key, searchword) {
-    const filtered = list.filter(elm => elm.length > 0 && elm[0].categoryId.includes(key) && 
-        (_.isEmpty(searchword) || elm[0].cntry.find(item => item.match(searchword))) )
+  filterByCategory( list, key) {
+    const filtered = list.filter(elm => elm.length > 0 && elm[0].categoryId.includes(key))
 
     return productApi.toColumnList(filtered)
   }
@@ -149,35 +126,12 @@ class StoreScreen extends Component {
     this.props.navigation.navigate('Country',{prodOfCountry})
   }
 
-  _onChangeText = (key) => (value) => {
-    this.setState({
-      [key] : value
-    })
-  }
-
-  _search = () => (searchWord) => {
-    const {country, index, allData} = this.state
-    const key = Object.keys(productApi.category)[index]
-
-    this.setState({
-      [key]: this.filterByCategory(allData, productApi.category[key], searchWord == 'all' ? '' : country)
-    })
-  }
-
   renderScene = (props) => {
     return <StoreList data={this.state[props.route.key]} jumpTp={props.jumpTo} onPress={this._onPressItem}/>
   }
 
   _onIndexChange(index) {
-
     Analytics.trackEvent('Page_View_Count', {page : 'Store'})
-    if ( country != '') {
-      const key = Object.keys(productApi.category)[this.state.index]
-      this.setState({
-        country: '',
-        [key] : this.filterByCategory(this.state.allData, productApi.category[key], ''),
-      })
-    }
 
     this.setState({
       index,

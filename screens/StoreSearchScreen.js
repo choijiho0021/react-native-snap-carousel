@@ -8,6 +8,7 @@ import {
   ScrollView,
 } from 'react-native';
 import {connect} from 'react-redux'
+import country from '../utils/country'
 import {appStyles} from "../constants/Styles"
 import productApi from '../utils/api/productApi';
 import * as productActions from '../redux/modules/product'
@@ -127,10 +128,35 @@ class StoreSearchScreen extends Component {
   }
 
   componentDidMount() {
-    const allData = this.props.navigation.getParam('allData')
+    //Store에서 검색 관련 기능을 지우면서 임시로 추가
+    //todo: Store와 여기서 두번 검색하는 것을 한번으로 줄이도록 변경 필요 
+    const prodList = this.props.product.get('prodList'),
+      list = prodList.toList()
+        .sort((a,b) => { return a.name >= b.name ? 1 : -1})
+        .reduce((acc,item) => {
+          item.key = item.uuid 
+          item.cntry = new Set(country.getName(item.ccode))
+          //days가 "00일" 형식으로 오기 때문에 일 제거 후 넘버타입으로 변환
+          item.pricePerDay = Math.round(item.price / Number(item.days.replace(/[^0-9]/g,"")))
+          
+          const idxCcode = acc.findIndex(elm => _.isEqual(elm.ccode, item.ccode))
+
+          if ( idxCcode < 0 ) {
+            // new item, insert it
+            return acc.concat( [item])
+          }
+          else if ( acc[idxCcode].pricePerDay > item.pricePerDay && item.field_daily == 'daily') {
+            // cheaper
+            acc.splice( idxCcode, 1, item)
+            return acc
+          }
+          return acc
+        }, [])
+
+        this.setState({list})
 
     Analytics.trackEvent('Page_View_Count', {page : 'Country Search'})
-    this.setState({allData})
+    this.setState({allData : list})
     this.getSearchHist()
 
     this.props.navigation.setParams({
@@ -434,7 +460,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => ({
-  product : state.product.toJS()
+  product : state.product
 })
 
 export default connect(mapStateToProps, 
