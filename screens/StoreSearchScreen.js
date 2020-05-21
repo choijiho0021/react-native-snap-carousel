@@ -30,10 +30,10 @@ import AppBackButton from '../components/AppBackButton';
 // iphone 11, pro max - 414 x 896 points
 const SIZE_NORMAL = 'normal'
 const SIZE_PLUS = 'plus'
-const ELSE = 'else'
+const SIZE_OTHERS = 'others'
 
 const size = windowHeight == 667 || windowHeight == 812 ? SIZE_NORMAL : 
-             windowHeight == 736 || windowHeight == 896 ? SIZE_PLUS : ELSE
+             windowHeight == 736 || windowHeight == 896 ? SIZE_PLUS : SIZE_OTHERS
 
 
 const MAX_HISTORY_LENGTH = 7
@@ -58,17 +58,17 @@ class HeaderTitle extends Component {
       })
     }
   }
- 
+
   _onChangeText = (key) => (value) => {
     this.setState({
       [key] : value
     })
-    this.props._search && this.props._search(value,false);
+    this.props.search && this.props.search(value,false);
   }
 
   search(searchWord) {
     this.setState({searching:true})
-    this.props._search && this.props._search(searchWord,true);
+    this.props.search && this.props.search(searchWord,true);
   }
 
   render() {
@@ -109,9 +109,9 @@ class StoreSearchScreen extends Component {
 
     return {
       headerLeft: null,
-      headerTitle : <HeaderTitle _search={params._search} searchWord={params.searchWord} navigation={navigation}/>
+      headerTitle : <HeaderTitle search={params.search} searchWord={params.searchWord} navigation={navigation}/>
     }
-}
+  }
 
   constructor(props) {
     super(props)
@@ -135,15 +135,15 @@ class StoreSearchScreen extends Component {
 
     this.props.navigation.setParams({
       searchWord : this.state.searchWord,
-      _search: this._search
+      search: this._search
     })
   }
 
   async getSearchHist() {
     const searchHist = await utils.retrieveData("searchHist")
     //searchHist 저장 형식 : ex) 대만,중국,일본 
-    const searchList = _.isNull(searchHist) ? [] : searchHist.split(',').slice(0,7)
-    this.setState({searchList:searchList})
+    const searchList = _.isNull(searchHist) ? [] : searchHist.split(',').slice(0,MAX_HISTORY_LENGTH)
+    this.setState({searchList})
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -167,8 +167,11 @@ class StoreSearchScreen extends Component {
 
       if(searchWord && !searchWord.match(',')){
         //중복 제거 후 최대 7개까지 저장한다. 저장 형식 : ex) 대만,중국,일본 
-        const new_searchHist = _.isNull(old_searchHist) ? searchWord : Array.from(new Set([searchWord].concat(old_searchHist.split(',')))).slice(0,MAX_HISTORY_LENGTH).join(',')
-        utils.storeData("searchHist", new_searchHist)
+        if ( ! _.isNull(old_searchHist)) {
+          const oldHist = old_searchHist.split(',')
+          searchWord = oldHist.includes(searchWord) ? old_searchHist : searchWord + ',' + oldHist.slice(0, MAX_HISTORY_LENGTH-1).join(',')
+        } 
+        utils.storeData("searchHist", searchWord)
       }
     }
   }
@@ -181,11 +184,11 @@ class StoreSearchScreen extends Component {
 
 
   renderSearchWord() {
-    const {searchList}= this.state
-    const { recommendCountry} = this.state
+    const { searchList, recommendCountry}= this.state
     
-    const recommendCountryList = recommendCountry.map((elm, idx, arr) => 
-      ({key : elm, data:[elm, arr[idx+1], arr[idx+2]]})).filter((elm, idx) => idx % 3 == 0 )
+    const recommendCountryList = recommendCountry
+      .map((elm, idx, arr) => ({key : elm, data:[elm, arr[idx+1], arr[idx+2]]}))
+      .filter((elm, idx) => idx % 3 == 0 )
 
     return (
       <View style={styles.width100}>
@@ -215,7 +218,7 @@ class StoreSearchScreen extends Component {
               {elm.data.map((elm2,idx) => 
                 elm2 ? <TouchableOpacity key={elm2} style={styles.recommebdItem} onPress={() => this._search(elm2,true)}>
                         <Text style={styles.recommendText}>{elm2}</Text>
-                  </TouchableOpacity> : <View key={idx+''}style={styles.recommebdEmpty}/>)}
+                  </TouchableOpacity> : <View key={idx+''} style={styles.recommebdEmpty}/>)}
             </View>
           )
         }
@@ -249,6 +252,8 @@ class StoreSearchScreen extends Component {
     const searchResult = allData.filter(elm => elm.length > 0 && elm[0].search.match(searchWord))
       .map(elm => ({name:elm[0].name, country:elm[0].cntry, categoryId: elm[0].categoryId, uuid:elm[0].uuid}))
 
+      console.log('search', searchResult, searchWord)
+
     return (
       <View style={styles.width100}>
         {searchResult.map((elm,idx) => 
@@ -265,20 +270,15 @@ class StoreSearchScreen extends Component {
   // 국가 검색
   renderStoreList () {
     const {allData, searchWord = ''} = this.state
-    const list = this.filterBySearchWord(allData, searchWord)
+    const filtered = allData.filter(elm => _.isEmpty(searchWord) || 
+      (elm.length > 0 && (elm[0].name.match(searchWord) || elm[0].search.match(searchWord))))
+    const list = productApi.toColumnList(filtered)
 
     return list.length > 0 ?
       <StoreList data={list} onPress={this._onPressItem}/> :
       <View style={styles.emptyViewPage}>
         <Text style={styles.emptyPage}>{i18n.t('country:empty')}</Text>
       </View>
-  }
-
-  filterBySearchWord( list, searchWord) {
-    const filtered =  list.filter(elm => _.isEmpty(searchWord) || 
-      (elm.length > 0 && (elm[0].name.match(searchWord) || elm[0].search.match(searchWord))))
-
-    return productApi.toColumnList(filtered)
   }
 
   render() {

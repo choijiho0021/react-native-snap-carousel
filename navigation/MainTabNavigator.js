@@ -73,6 +73,7 @@ const HomeStack = createStackNavigator(
     Faq: FaqScreen,
     Guide: GuideScreen,
 
+    Country: CountryScreen,
     // SIM card 바로 구매와 관련된 화면
     Payment: PaymentScreen,
     PymMethod: PymMethodScreen,
