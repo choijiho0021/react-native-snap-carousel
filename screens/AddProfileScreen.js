@@ -240,7 +240,7 @@ _onSubmit() {
                   <TextInput style={[styles.textBox, {borderColor: this._changeBorder('alias')}]}
                             value={profile.get('alias')}
                             placeholderTextColor={colors.black}
-                            onFocus={()=>this._onFocusClear('alias')}
+                            // onFocus={()=>this._onFocusClear('alias')}
                             onChangeText={this._onChangeProfile('alias')}/>
                 </View>
                 { 
@@ -256,7 +256,7 @@ _onSubmit() {
                             value={profile.get('recipient')}
                             placeholder={i18n.t('addr:enterWithin50')}
                             placeholderTextColor={colors.greyish}
-                            onFocus={()=>this._onFocusClear('recipient')}
+                            // onFocus={()=>this._onFocusClear('recipient')}
                             onChangeText={this._onChangeProfile('recipient')} />
                 </View>
                 { 
@@ -292,7 +292,7 @@ _onSubmit() {
                               maxLength={9}
                               keyboardType='numeric'
                               value={utils.toPhoneNumber(profile.get('recipientNumber'))} 
-                              onFocus={()=>this._onFocusClear('recipientNumber')}
+                              // onFocus={()=>this._onFocusClear('recipientNumber')}
                               placeholder={i18n.t('addr:noHyphen')}
                               placeholderTextColor={colors.greyish}/>
                   </View>                            
@@ -323,7 +323,7 @@ _onSubmit() {
                   <TextInput style={[styles.textBox, {borderColor: this._changeBorder('detailAddr')}]}
                             value={profile.get('detailAddr')}
                             maxLength={25}
-                            onFocus={()=>this._onFocusClear('detailAddr')}
+                            // onFocus={()=>this._onFocusClear('detailAddr')}
                             onChangeText={this._onChangeProfile('detailAddr')} 
                             placeholder={i18n.t('addr:details')}
                             placeholderTextColor={colors.greyish}/>
@@ -432,6 +432,7 @@ const styles = StyleSheet.create({
   titleView: {
     flex: 1, 
     flexDirection: 'row',
+    alignSelf: 'center',
   },
   titleText: {
     fontSize: isDeviceSize('small') ? 12 : 14,
@@ -452,6 +453,7 @@ const styles = StyleSheet.create({
   basicProfile: {
     ... appStyles.normal12Text,
     color: colors.warmGrey,
+    alignSelf: 'center',
     marginLeft: 10
   },
   checkBasicProfile: {
@@ -460,7 +462,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row', 
     alignSelf: 'flex-end',
     marginVertical: 10,
-
   },
   textWidth: {
     width: '78%'
