@@ -130,11 +130,9 @@ class NotiScreen extends Component {
         case notiActions.NOTI_TYPE_USIM:
           this.props.navigation.navigate('Usim')
           break;
-        case notiActions.NOTI_TYPE_NOTI:
-        // 아무것도 하지 않음
-          break;
-        default: 
-          this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:bodyTitle, text:body, mode:format})
+        default:
+          //아직 일반 Noti 알림은 없으므로 공지사항 용으로만 사용, 후에 일반 Noti 상세페이지(notitype = noti)가 사용될 수 있도록 함 
+          this.props.navigation.navigate('SimpleText', {key:'noti', title:type == notiActions.NOTI_TYPE_NOTI ? i18n.t('set:noti') : i18n.t('contact:noticeDetail'), bodyTitle:bodyTitle, text:body, mode:format})
       }
     }
   }

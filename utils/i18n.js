@@ -271,6 +271,7 @@ const en = {
 
   "contact:title" : "Contact Center",
   "contact:notice" : "Notice",
+  "contact:noticeDetail" : "Notice Detail",
   "contact:faq" : "FAQ",
   "contact:board" : "Help Center",
   "contact:ktalk" : "Request Support by KakaoTalk",
@@ -700,6 +701,7 @@ const ko = {
 
   "contact:title" : "고객센터",
   "contact:notice" : "공지사항",
+  "contact:noticeDetail" : "공지사항 상세",
   "contact:faq" : "자주하는 질문",
   "contact:board" : "1:1 게시판 문의",
   "contact:ktalk" : "1:1 카카오톡 상담",
