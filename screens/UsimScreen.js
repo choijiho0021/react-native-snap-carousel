@@ -378,6 +378,7 @@ class UsimScreen extends Component {
       }
     }
   }
+
   _empty = () => {
 
     if ( this.props.pending) return null
@@ -435,7 +436,7 @@ class UsimScreen extends Component {
 
     return(
       <View style={styles.container}>
-        <View style={{backgroundColor:colors.whiteTwo, marginBottom:20}}>
+        <View style={{backgroundColor:colors.whiteTwo}}>
           <FlatList ref={(ref) => { this.flatListRef = ref; }}
             data={usage}
             ListHeaderComponent={this._info}
