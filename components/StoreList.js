@@ -100,7 +100,8 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: 110,
-    resizeMode: 'cover'
+    resizeMode: 'cover',
+    borderRadius:10
   },
   productList : {
     flexDirection: 'row',
