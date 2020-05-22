@@ -62,6 +62,8 @@ class RegisterSimScreen extends Component {
     this.defaultLastIccid = "1234"
     this.lastIccidIdx = 6
 
+    this._isMounted = null
+
   }
 
   componentWillUnmount(){
@@ -70,10 +72,14 @@ class RegisterSimScreen extends Component {
     if(iccid && auth){
       this.props.action.order.getUsage(iccid, auth)
     }
+
+    this._isMounted = false
   }
 
   componentDidMount() {
     Analytics.trackEvent('Page_View_Count', {page : 'Register Usim'})
+
+    this._isMounted = true
   }
 
   _updateIccid(iccid) {
@@ -96,34 +102,41 @@ class RegisterSimScreen extends Component {
     const {actCode} = this.state,
       iccid = this.state.iccid.join('')
 
+    this._isMounted && this.setState({
+      querying: true
+    })
+
     accountApi.validateActCode(iccid, actCode, this.props.auth).then( resp => {
+      return new Promise((resolve, reject) => {
+        if ( resp.result == 0) {
+          // activation code is valid
+          const uuid = resp.objects[0].uuid
 
-      if ( resp.result == 0) {
-        // activation code is valid
-        const uuid = resp.objects[0].uuid
+          // 서버의 account에 mobile 번호를 등록한다.
+          this.props.action.account.registerMobile(uuid, this.props.account.mobile, this.props.auth).then( resp => {
+            if ( resp.result == 0) {
+              //signup, update를 모두 성공한 경우, 화면에 성공으로 표시 
+              resolve()
+              AppAlert.info(i18n.t('reg:success'), i18n.t('appTitle'), () => this.props.navigation.popToTop())
+            }
+            else {
+              reject(resp)
+              //AppAlert.error(i18n.t('reg:fail'))
+            }
+          })
 
-        // 서버의 account에 mobile 번호를 등록한다.
-        this.props.action.account.registerMobile(uuid, this.props.account.mobile, this.props.auth).then( resp => {
-          if ( resp.result == 0) {
-            //signup, update를 모두 성공한 경우, 화면에 성공으로 표시 
-            AppAlert.info(i18n.t('reg:success'), i18n.t('appTitle'), () => this.props.navigation.popToTop())
-          }
-          else {
-            console.log('Failed to register mobile')
-            AppAlert.error(i18n.t('reg:fail'))
-          }
-        })
-
-      }
-      else {
-        // invalid activation code
-        AppAlert.error(i18n.t('reg:wrongActCode'))
-      }
+        }
+        else {
+          resolve()
+          // invalid activation code
+          AppAlert.error(i18n.t('reg:wrongActCode'))
+        }
+      })
     }).catch(err => {
       console.log('failed to update', err)
       AppAlert.error(i18n.t('reg:fail'))
     }).finally(() => {
-      this.setState({
+      this._isMounted && this.setState({
         querying: false,
         disable: false
       })
@@ -208,7 +221,7 @@ class RegisterSimScreen extends Component {
   render() {
     const {scan, iccid, actCode, querying, focusInputIccid, hasCameraPermission} = this.state
     const disabled = _.size(iccid) !== 4 || ! this.validIccid(iccid) ||
-      _.isEmpty(actCode) || actCode.length < 6
+      _.isEmpty(actCode) || actCode.length < 6 || querying
     let iccidIdx = iccid.findIndex(elm => _.size(elm) !== 5)
     if (iccidIdx < 0) iccidIdx = 3
 

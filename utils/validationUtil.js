@@ -112,7 +112,16 @@ class ValidationUtil {
                 minimum: 2,
                 message: i18n.t('addr:invalidDetails')
             }
-        },              
+        },
+        mobileSms: {
+            presence: {
+                message: i18n.t('reg:noMobile')
+            },
+            format: {
+                pattern: /^01(?:0|1|[6-9])\d{8}$/,
+                message: i18n.t('reg:invalidMobile')
+            }
+        }            
     }
 
     /*

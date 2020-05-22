@@ -7,7 +7,8 @@ import {
   FlatList,
   TextInput,
   TouchableOpacity,
-  SafeAreaView
+  SafeAreaView,
+  RefreshControl
 } from 'react-native';
 import { bindActionCreators } from 'redux'
 
@@ -234,10 +235,19 @@ class BoardMsgList extends Component {
           // onEndReached={this._onEndReached} 
           // onEndReachedThreshold={0.5}
           onScrollEndDrag={this._onEndReached} //검색 시 onEndReached가 발생하는 버그가 Flatlist에 있어 끝까지 스크롤한 경우 list를 더 가져오도록 변경
-          onRefresh={this._onRefresh}
-          refreshing={refreshing}
+          // onRefresh={this._onRefresh}
+          // refreshing={refreshing}
           extraData={mobile}
-          renderItem={this._renderItem} />
+          renderItem={this._renderItem} 
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={this._onRefresh}
+              colors={[colors.clearBlue]} //android 전용
+              tintColor={colors.clearBlue} //ios 전용
+            />
+          }
+          />
 
         <AppActivityIndicator visible={this.props.pending && ! refreshing}/>
         <AppModal visible={showModal}

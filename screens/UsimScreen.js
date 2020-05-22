@@ -5,6 +5,7 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
+  RefreshControl
 } from 'react-native';
 
 import SnackBar from 'react-native-snackbar-component';
@@ -378,6 +379,7 @@ class UsimScreen extends Component {
       }
     }
   }
+
   _empty = () => {
 
     if ( this.props.pending) return null
@@ -435,15 +437,22 @@ class UsimScreen extends Component {
 
     return(
       <View style={styles.container}>
-        <View style={{backgroundColor:colors.whiteTwo, marginBottom:20}}>
+        <View style={{backgroundColor:colors.whiteTwo}}>
           <FlatList ref={(ref) => { this.flatListRef = ref; }}
             data={usage}
             ListHeaderComponent={this._info}
             ListEmptyComponent={this._empty}
             renderItem={this._renderUsage}
-            onRefresh={this._onRefresh}
-            refreshing={refreshing}
-            // disableVirtualization={true}
+            // onRefresh={this._onRefresh}
+            // refreshing={refreshing}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={this._onRefresh}
+                colors={[colors.clearBlue]} //android 전용
+                tintColor={colors.clearBlue} //ios 전용
+              />
+            }
             />
           <AppActivityIndicator visible={this.props.pending}/>
         </View>

@@ -65,3 +65,8 @@ buck-out/
 
 *.swp
 /ios/Podfile.lock
+
+#android realease mode 실행 후 파일 생성 무시
+android/app/bin/*
+android/.project
+android/app/.project

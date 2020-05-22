@@ -63,6 +63,8 @@ const styles = StyleSheet.create({
     paddingVertical: isDeviceSize('small') ? 13 : 11,
     marginTop: isDeviceSize('small') ? 0 : 9,
     marginHorizontal: 20, 
+  },
+  borderBottomGrey: {
     borderBottomColor: colors.lightGrey, 
     borderBottomWidth: 1
   },
@@ -109,10 +111,10 @@ class PaymentItemInfo extends PureComponent {
     return (
       <View>
         <Text style={[styles.title, styles.mrgBottom0]}>{i18n.t('pym:title')}</Text>
-        <View style={styles.productPriceInfo}>        
+        <View style={[styles.productPriceInfo, !isRecharge && styles.borderBottomGrey]}>
         {
           cart.map(item => {
-            const [qty, price] = _.isUndefined(item.qty) ? ['', item.price] : [` x ${item.qty}${i18n.t('qty')}`, item.price * item.qty]
+            const [qty, price] = _.isUndefined(item.qty) ? ['', item.price] : [` × ${item.qty}${i18n.t('qty')}`, item.price * item.qty]
             return (
               <View style={styles.row} key={item.key}>
                 {/* <View style={{maxWidth: '70%'}}> */}
@@ -128,7 +130,7 @@ class PaymentItemInfo extends PureComponent {
           !isRecharge &&
           <View style={styles.priceInfo}>
             {
-              pymReq.map(item =>                      
+              pymReq.map(item =>
                 <View style={styles.row} key={item.title}>
                   <Text key="title" style={styles.normal14WarmGrey}>{item.title}</Text>
                   <Text key="amount" style={[styles.normalText16, mode=='result' && styles.colorWarmGrey]}>{utils.price(item.amount)}</Text>

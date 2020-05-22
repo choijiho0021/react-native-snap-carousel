@@ -108,6 +108,8 @@ const en = {
   'reg:used': 'Used',
   'reg:expired': 'Expired',
   'reg:failedToSendSms': 'Failed to send sms',
+  'reg:unableToSendSms': 'Unable to send sms',
+  'reg:invalidTelephone': 'Please input the number correctly to verify the code',
   'reg:failedToLogIn': 'Failed to sign in. Please try again.',
   'reg:toCash': 'Make the status of current product "Used" and convert it into a Rokebi cash with the same amount as the purchase amount.',
 
@@ -271,6 +273,7 @@ const en = {
 
   "contact:title" : "Contact Center",
   "contact:notice" : "Notice",
+  "contact:noticeDetail" : "Notice Detail",
   "contact:faq" : "FAQ",
   "contact:board" : "Help Center",
   "contact:ktalk" : "Request Support by KakaoTalk",
@@ -491,6 +494,7 @@ const ko = {
 
   'country:detail' : "상세보기",
   'country:empty' : "상품검색 결과가 없습니다",
+  'country:addCart' : "장바구니에 담겼습니다.",
 
   'view:detail' : '상세보기',
 
@@ -528,6 +532,8 @@ const ko = {
   'reg:used': '사용 완료',
   'reg:expired': '사용 기한 만료',
   'reg:failedToSendSms': 'SMS 인증번호 발송 실패',
+  'reg:unableToSendSms': 'SMS 발송 불가',
+  'reg:invalidTelephone': '인증번호를 확인할 수 있는 휴대폰 번호를 입력해주세요.',
   'reg:failedToLogIn': '로깨비 로그인이 실패하였습니다. 다시 시도해주시기 바랍니다.',
   'reg:toCash': '현재 상품을 사용 완료 처리하고 구매 금액과 동일한 금액의 캐시로 전환합니다.',
   "reg:activateProduct": "현 사용 중인 데이터 상품 사용이 완료되고 해당 상품이 등록되며,\n확인 버튼 누른 후 0000# 통화버튼을 눌러주시면 활성화 됩니다.",
@@ -564,14 +570,14 @@ const ko = {
   'acc:duplicatedEmail': '이미 등록된 이메일 입니다',
   'acc:disconnectSim': '다른 번호에서 같은 SIM 카드를 사용하여 카드 연결을 해제합니다',
 
-  "set:info" : "유심 정보",
+  // "set:info" : "유심 정보",
   "set:noti" : "알림",
   "set:notice" : "공지 사항",
-  "set:contract" : "이용 안내",
+  "set:contract" : "이용 약관",
   "set:privacy" : "개인 정보 처리 방침",
   "set:version" : "버전 정보",
   "set:aboutus" : "About Us",
-  "set:logout" : "로그 아웃",
+  "set:logout" : "로그아웃",
   "set:login" : "로그인",
   "set:fail" : "시스템 연동에 실패했습니다. 나중에 다시 이용해 주세요",
   "set:confirmLogout": "로그아웃 하시겠습니까?",
@@ -695,11 +701,12 @@ const ko = {
   "his:cancelFail" : "결제 취소 요청이 실패했습니다.",
   "his:cancelError" : "결제 취소 중 오류가 발생했습니다.",
   "his:afterCancelInfo" : "• 결제 수단에 따라 취소 요청 후 환불까지 평일 기준 3~7일이 소요됩니다.",
-  "his:simCancelInfo" : "• 상품 준비가 시작되면 배송지 변경 및 결제 취소할 수 없습니다.\n• 유심 수령 후 반품 및 환불 요청은 1:1문의를 이용해주세요.",
-  "his:dataCancelInfo" : "• 결제건에 포함된 상품 모두 미사용 상태일 시, 결제 후 7일간 취소할 수 있습니다.",
+  "his:simCancelInfo" : "• 상품 준비가 시작되면 결제 취소할 수 없습니다.\n• 유심 수령 후 반품 및 환불 요청은 1:1문의를 이용해주세요.",
+  "his:dataCancelInfo" : "• 결제건에 포함된 상품 모두 미사용 상태일 시, \n   결제 후 7일간 취소할 수 있습니다.",
 
   "contact:title" : "고객센터",
   "contact:notice" : "공지사항",
+  "contact:noticeDetail" : "공지사항 상세",
   "contact:faq" : "자주하는 질문",
   "contact:board" : "1:1 문의",
   "contact:ktalk" : "1:1 카카오톡 상담",
