@@ -66,7 +66,7 @@ class AddProfileScreen extends Component {
     this._validate = this._validate.bind(this)
     this._warning = this._warning.bind(this)
     this._changeBorder = this._changeBorder.bind(this)
-    this._onFocusClear = this._onFocusClear.bind(this)
+    // this._onFocusClear = this._onFocusClear.bind(this)
   }
 
   componentDidMount() {
@@ -168,14 +168,14 @@ _onSubmit() {
     this._validate(key, value)
   }
 
-  _onFocusClear(key){
+  // _onFocusClear(key){
 
-    this.setState({
-      profile: this.state.profile.set(key, '')
-    })
+  //   this.setState({
+  //     profile: this.state.profile.set(key, '')
+  //   })
 
-    this._validate(key, '')
-  }
+  //   this._validate(key, '')
+  // }
 
   _validate = (key, value) => {
 
