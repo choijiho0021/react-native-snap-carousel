@@ -491,6 +491,7 @@ const ko = {
 
   'country:detail' : "상세보기",
   'country:empty' : "상품검색 결과가 없습니다",
+  'country:addCart' : "장바구니에 담겼습니다.",
 
   'view:detail' : '상세보기',
 
@@ -564,14 +565,14 @@ const ko = {
   'acc:duplicatedEmail': '이미 등록된 이메일 입니다',
   'acc:disconnectSim': '다른 번호에서 같은 SIM 카드를 사용하여 카드 연결을 해제합니다',
 
-  "set:info" : "유심 정보",
+  // "set:info" : "유심 정보",
   "set:noti" : "알림",
   "set:notice" : "공지 사항",
-  "set:contract" : "이용 안내",
+  "set:contract" : "이용 약관",
   "set:privacy" : "개인 정보 처리 방침",
   "set:version" : "버전 정보",
   "set:aboutus" : "About Us",
-  "set:logout" : "로그 아웃",
+  "set:logout" : "로그아웃",
   "set:login" : "로그인",
   "set:fail" : "시스템 연동에 실패했습니다. 나중에 다시 이용해 주세요",
   "set:confirmLogout": "로그아웃 하시겠습니까?",
@@ -695,8 +696,8 @@ const ko = {
   "his:cancelFail" : "결제 취소 요청이 실패했습니다.",
   "his:cancelError" : "결제 취소 중 오류가 발생했습니다.",
   "his:afterCancelInfo" : "• 결제 수단에 따라 취소 요청 후 환불까지 평일 기준 3~7일이 소요됩니다.",
-  "his:simCancelInfo" : "• 상품 준비가 시작되면 배송지 변경 및 결제 취소할 수 없습니다.\n• 유심 수령 후 반품 및 환불 요청은 1:1문의를 이용해주세요.",
-  "his:dataCancelInfo" : "• 결제건에 포함된 상품 모두 미사용 상태일 시, 결제 후 7일간 취소할 수 있습니다.",
+  "his:simCancelInfo" : "• 상품 준비가 시작되면 결제 취소할 수 없습니다.\n• 유심 수령 후 반품 및 환불 요청은 1:1문의를 이용해주세요.",
+  "his:dataCancelInfo" : "• 결제건에 포함된 상품 모두 미사용 상태일 시, \n   결제 후 7일간 취소할 수 있습니다.",
 
   "contact:title" : "고객센터",
   "contact:notice" : "공지사항",
