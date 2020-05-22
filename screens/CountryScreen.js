@@ -23,11 +23,12 @@ import { colors } from '../constants/Colors';
 import { SafeAreaView } from 'react-navigation'
 import AppPrice from '../components/AppPrice';
 import AppCartButton from '../components/AppCartButton';
-import { windowWidth, device } from '../constants/SliderEntry.style';
+import { windowWidth, device, windowHeight } from '../constants/SliderEntry.style';
 import Analytics from 'appcenter-analytics'
 import _ from 'underscore'
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import productApi from '../utils/api/productApi';
+import SnackBar from 'react-native-snackbar-component';
 
 
 class CountryListItem extends PureComponent {
@@ -82,8 +83,11 @@ class CountryScreen extends Component {
       prodData: [],
       selected: undefined,
       imageUrl: undefined,
-      title: undefined
+      title: undefined,
+      addToCart: false,
     }
+
+    this.snackRef = React.createRef()
   }
 
   componentDidMount() {
@@ -96,6 +100,17 @@ class CountryScreen extends Component {
         selected: prodOfCountry[0].uuid,
         title : productApi.getTitle(prodOfCountry[0])
       })
+    }
+  }
+
+  componentDidUpdate(){
+    if(this.state.addToCart){
+      setTimeout(()=>{
+        this.setState({
+          addToCart: false,
+          disableCart: false
+        })
+      }, 3000)
     }
   }
 
@@ -129,7 +144,13 @@ class CountryScreen extends Component {
   
         switch (key) {
           case 'cart':
-            this.props.action.cart.cartAddAndGet( [ addProduct ])
+            this.props.action.cart.cartAddAndGet( [ addProduct ]).then(resp=>{
+              if(resp.result == 0){
+                this.setState({
+                  addToCart: true
+                })
+              }
+            })
             break
           case 'purchase':
             // 구매 품목을 갱신한다. 
@@ -149,7 +170,7 @@ class CountryScreen extends Component {
 
   render() {
     const { iccid,loggedIn } = this.props.account
-    const { prodData, imageUrl, title, selected} = this.state
+    const { prodData, imageUrl, title, selected, addToCart, disableCart} = this.state
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
@@ -170,11 +191,23 @@ class CountryScreen extends Component {
             renderItem={this._renderItem} 
             extraData={selected} />
         </View>
-
+        <SnackBar ref={this.snackRef}
+                  visible={addToCart} backgroundColor={colors.clearBlue} messageColor={colors.white}
+                  position={'top'}
+                  top={windowHeight /2}
+                  containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 0}}
+                  actionText={'X'}
+                  actionStyle={{paddingHorizontal: 20}}
+                  accentColor={colors.white}
+                  actionHandler={()=>{this.snackRef.current.hideSnackbar()}}
+                  textMessage={i18n.t('country:addCart')}/>  
         { iccid ? 
         <View style={styles.buttonBox}>
           <AppButton style={styles.btnCart} title={i18n.t('cart:toCart')} 
             titleStyle={styles.btnCartText}
+            disabled={this.props.pending}
+            disableColor={colors.black}
+            disableBackgroundColor={colors.whiteTwo}
             onPress={this._onPressBtn('cart')}/>
           <AppButton style={styles.btnBuy} title={i18n.t('cart:buy')} 
             titleStyle={styles.btnBuyText}
