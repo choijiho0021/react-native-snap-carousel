@@ -351,8 +351,7 @@ class HomeScreen extends Component {
   }
 
   _userInfo() {
-    const { mobile, loggedIn, iccid, balance = 0, userPictureUrl } = this.props.account,
-      phone = mobile ? utils.toPhoneNumber(mobile) : 'unknown'
+    const { mobile, loggedIn, iccid, balance = 0, userPictureUrl } = this.props.account
 
     return (
       <TouchableOpacity style={styles.userInfo} onPress={this._navigate('RegisterSim_user',{mode:'Home'})}>
@@ -360,7 +359,7 @@ class HomeScreen extends Component {
         <View style={{marginLeft:20, justifyContent:'space-around', flex:1}}>
           {
             loggedIn ? [
-              <Text key="mobile" style={appStyles.mobileNo}>{phone}</Text>,
+              <Text key="mobile" style={appStyles.mobileNo}>{i18n.t('acc:remain')}</Text>,
               iccid ? <AppPrice key="price" price={balance} /> :
                 <Text key="sim" style={[appStyles.normal14Text, {color:colors.warmGrey}]}>{i18n.t('reg:card')}</Text>
             ] : 
@@ -575,7 +574,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
     flexDirection: "row",
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    borderRadius: 5
   },
   menu: {
     marginHorizontal: 20,
@@ -597,13 +597,14 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     height: size.userInfoHeight,
-    borderRadius: 3,
+    borderRadius: 5,
     backgroundColor: colors.white,
     shadowColor: "rgba(0, 0, 0, 0.1)",
     shadowOffset: {
       width: 0,
       height: 5
     },
+    elevation: 3,
     shadowRadius: 14,
     shadowOpacity: 1,
     borderStyle: "solid",
