@@ -4,7 +4,8 @@ import {
   View,
   Text,
   FlatList,
-  TouchableOpacity
+  TouchableOpacity,
+  RefreshControl
 } from 'react-native';
 import {bindActionCreators} from 'redux'
 import Analytics from 'appcenter-analytics'
@@ -13,6 +14,7 @@ import {connect} from 'react-redux'
 import {appStyles} from '../constants/Styles'
 import { colors } from '../constants/Colors';
 import AppIcon from '../components/AppIcon';
+
 import utils from '../utils/utils';
 import _ from 'underscore'
 import * as orderActions from '../redux/modules/order'
@@ -163,10 +165,19 @@ class NotiScreen extends Component {
         <FlatList 
           data={data} 
           renderItem={this._renderItem }
-          onRefresh={this._onRefresh}
-          refreshing={refreshing}
+          // refreshing={refreshing}
+          // onRefresh={this._onRefresh}
           ListEmptyComponent={this.renderEmptyContainer()}
-          />
+          tintColor={colors.clearBlue}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={this._onRefresh}
+              colors={[colors.clearBlue]} //android 전용
+              tintColor={colors.clearBlue} //ios 전용
+            />
+          }
+        />
       </View>
     );
   }
