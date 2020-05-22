@@ -40,7 +40,7 @@ class NotiListItem extends Component {
     // summary가 있으면, 우선적으로 표시한다.
     return (
       <TouchableOpacity onPress={() => onPress(item.uuid, item.title, item.body, item.notiType, item.format)}>
-        <View key={item.uuid} style={[styles.notibox,{backgroundColor:item.isRead == "F" ? colors.whiteTwo : colors.white}]}>
+        <View key={item.uuid} style={[styles.notibox, {backgroundColor:item.isRead == "F" ? colors.whiteTwo : colors.white}]}>
           <View key='notitext' style={styles.notiText} >
             <Text key='created' style={styles.created}>{utils.toDateString(item.created)}</Text>
             <View style={styles.title}>
@@ -49,10 +49,12 @@ class NotiListItem extends Component {
             <Text key='body' style={styles.body} numberOfLines={3} ellipsizeMode={'tail'} >{utils.htmlToString(item.summary || item.body)}
             </Text>
           </View>
-          { item.notiType != notiActions.NOTI_TYPE_NOTI ?
-          <View key='iconview' style={styles.Icon}>
-            <AppIcon key='icon' name="iconArrowRight" size={10} />
-          </View> : null}
+          { 
+            item.notiType != notiActions.NOTI_TYPE_NOTI &&
+              <View key='iconview' style={styles.Icon}>
+                <AppIcon key='icon' name="iconArrowRight" size={10} />
+              </View> 
+          }
         </View>
       </TouchableOpacity>
     )
@@ -203,7 +205,8 @@ const styles = StyleSheet.create({
   notibox : {
       height: 126,
       marginTop:3,
-      paddingTop:14,
+      paddingTop:10,
+      paddingBottom:14,
       paddingLeft:18,
       paddingRight:20,
       alignItems:'center',
