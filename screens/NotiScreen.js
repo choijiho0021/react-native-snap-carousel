@@ -4,7 +4,8 @@ import {
   View,
   Text,
   FlatList,
-  TouchableOpacity
+  TouchableOpacity,
+  RefreshControl
 } from 'react-native';
 import {bindActionCreators} from 'redux'
 import Analytics from 'appcenter-analytics'
@@ -13,6 +14,7 @@ import {connect} from 'react-redux'
 import {appStyles} from '../constants/Styles'
 import { colors } from '../constants/Colors';
 import AppIcon from '../components/AppIcon';
+
 import utils from '../utils/utils';
 import _ from 'underscore'
 import * as orderActions from '../redux/modules/order'
@@ -38,7 +40,7 @@ class NotiListItem extends Component {
     // summary가 있으면, 우선적으로 표시한다.
     return (
       <TouchableOpacity onPress={() => onPress(item.uuid, item.title, item.body, item.notiType, item.format)}>
-        <View key={item.uuid} style={[styles.notibox,{backgroundColor:item.isRead == "F" ? colors.whiteTwo : colors.white}]}>
+        <View key={item.uuid} style={[styles.notibox, {backgroundColor:item.isRead == "F" ? colors.whiteTwo : colors.white}]}>
           <View key='notitext' style={styles.notiText} >
             <Text key='created' style={styles.created}>{utils.toDateString(item.created)}</Text>
             <View style={styles.title}>
@@ -47,10 +49,12 @@ class NotiListItem extends Component {
             <Text key='body' style={styles.body} numberOfLines={3} ellipsizeMode={'tail'} >{utils.htmlToString(item.summary || item.body)}
             </Text>
           </View>
-          { item.notiType != notiActions.NOTI_TYPE_NOTI ?
-          <View key='iconview' style={styles.Icon}>
-            <AppIcon key='icon' name="iconArrowRight" size={10} />
-          </View> : null}
+          { 
+            item.notiType != notiActions.NOTI_TYPE_NOTI &&
+              <View key='iconview' style={styles.Icon}>
+                <AppIcon key='icon' name="iconArrowRight" size={10} />
+              </View> 
+          }
         </View>
       </TouchableOpacity>
     )
@@ -130,11 +134,9 @@ class NotiScreen extends Component {
         case notiActions.NOTI_TYPE_USIM:
           this.props.navigation.navigate('Usim')
           break;
-        case notiActions.NOTI_TYPE_NOTI:
-        // 아무것도 하지 않음
-          break;
-        default: 
-          this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:bodyTitle, text:body, mode:format})
+        default:
+          //아직 일반 Noti 알림은 없으므로 공지사항 용으로만 사용, 후에 일반 Noti 상세페이지(notitype = noti)가 사용될 수 있도록 함 
+          this.props.navigation.navigate('SimpleText', {key:'noti', title:type == notiActions.NOTI_TYPE_NOTI ? i18n.t('set:noti') : i18n.t('contact:noticeDetail'), bodyTitle:bodyTitle, text:body, mode:format})
       }
     }
   }
@@ -165,10 +167,19 @@ class NotiScreen extends Component {
         <FlatList 
           data={data} 
           renderItem={this._renderItem }
-          onRefresh={this._onRefresh}
-          refreshing={refreshing}
+          // refreshing={refreshing}
+          // onRefresh={this._onRefresh}
           ListEmptyComponent={this.renderEmptyContainer()}
-          />
+          tintColor={colors.clearBlue}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={this._onRefresh}
+              colors={[colors.clearBlue]} //android 전용
+              tintColor={colors.clearBlue} //ios 전용
+            />
+          }
+        />
       </View>
     );
   }
@@ -194,7 +205,8 @@ const styles = StyleSheet.create({
   notibox : {
       height: 126,
       marginTop:3,
-      paddingTop:14,
+      paddingTop:10,
+      paddingBottom:14,
       paddingLeft:18,
       paddingRight:20,
       alignItems:'center',

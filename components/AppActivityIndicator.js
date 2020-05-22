@@ -5,6 +5,7 @@ import {
   View,
 } from 'react-native';
 import Layout from '../constants/Layout'
+import { colors } from '../constants/Colors';
 
 const styles = StyleSheet.create({
   indicator: {
@@ -22,7 +23,7 @@ export default function AppActivityIndicator({visible = true, size="large"}) {
   }
 
   if (visible) return (
-      <ActivityIndicator style={[styles.indicator, position]} size={size} />
+      <ActivityIndicator style={[styles.indicator, position]} size={size} color={colors.clearBlue}/>
     )
   return null
 }

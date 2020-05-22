@@ -67,6 +67,10 @@ const size = windowHeight > 810 ? {
   carouselMargin : 20
 }
 
+const DOT_MARGIN = 6
+const INACTIVE_DOT_WIDTH = 6
+const ACTIVE_DOT_WIDTH = 20
+
 class PromotionImage extends PureComponent {
 
   render() {
@@ -109,7 +113,7 @@ class HomeScreen extends Component {
       darkMode: initialMode,
       activeSlide: 0,
       promotions: [],
-      firstLaunch: undefined
+      firstLaunch: undefined,
     }
 
     this._login = this._login.bind(this)
@@ -122,10 +126,10 @@ class HomeScreen extends Component {
     this._clearAccount = this._clearAccount.bind(this)
     this._appStateHandler = this._appStateHandler.bind(this)
     this._onPressPromotion = this._onPressPromotion.bind(this)
+    this._renderDots = this._renderDots.bind(this)
 
     this._isNoticed = null
-
- }
+  }
 
   async componentDidMount() {
     Analytics.trackEvent('Page_View_Count', {page : 'Home'})
@@ -291,47 +295,47 @@ class HomeScreen extends Component {
   }
 
   _pagination () {
-    const { promotions, activeSlide } = this.state,
-      activeDotWidth = new Animated.Value(6),
-      inactiveDotWidth = new Animated.Value(20)
-
-    Animated.parallel([
-      Animated.timing (
-        activeDotWidth, {
-          toValue : 20,
-          duration : 500,
-      }),
-      Animated.timing (
-        inactiveDotWidth, {
-          toValue : 6,
-          duration : 500,
-      }),
-    ]).start()
+    const { promotions, activeSlide } = this.state
 
     return (
       <View style={styles.pagination}>
         <Pagination 
           dotsLength={promotions.length}
           activeDotIndex={activeSlide}
-          containerStyle={{paddingVertical:5, paddingRight:0}}
-          renderDots={ activeIndex => (
-            promotions.map((promo, i) => (
-              <View key={i+""} style={styles.dotContainer}>
-              {
-                activeIndex == i ?
-                  <Animated.View style={[styles.dot, {width:activeDotWidth, backgroundColor:colors.clearBlue}]}/> :
-                (activeIndex == (i+1)%promotions.length) ?
-                  <Animated.View style={[styles.dot, {width:inactiveDotWidth, backgroundColor:colors.lightGrey}]}/> :
-                  <View style={styles.inactiveDot}/>
-              }
-              </View>
-            ))
-          )}
+          containerStyle={styles.paginationContainer}
+          renderDots={this._renderDots}
         />
       </View>
     )
   }
 
+  _renderDots( activeIndex) {
+    const { promotions } = this.state,
+      duration = 200,
+      width = new Animated.Value(INACTIVE_DOT_WIDTH),
+      margin = width.interpolate({
+        inputRange: [ INACTIVE_DOT_WIDTH, ACTIVE_DOT_WIDTH],
+        outputRange: [ ACTIVE_DOT_WIDTH, INACTIVE_DOT_WIDTH]
+      })
+
+    Animated.timing ( width, { toValue : ACTIVE_DOT_WIDTH, duration }).start()
+
+    if ( activeIndex == 0) {
+      return promotions.map((_, idx) =>
+        idx == 0 ?
+          <Animated.View key={idx+""} style={styles.dot(width, margin)}/> :
+          <View key={idx+""} style={styles.inactiveDot}/> 
+        )
+    }
+
+    return promotions.map((_,idx) =>
+      activeIndex == idx ?
+        <Animated.View key={idx+""} style={styles.dot(width, DOT_MARGIN, colors.clearBlue)}/> :
+      (activeIndex == (idx+1)%promotions.length) ?
+        <Animated.View key={idx+""} style={styles.dot(margin, DOT_MARGIN, colors.lightGrey)}/> :
+        <View key={idx+""} style={styles.inactiveDot}/>
+    )
+  }
 
   _navigate = (key,params = {}) => () => {
 
@@ -622,25 +626,28 @@ const styles = StyleSheet.create({
   carousel: {
     alignItems: 'flex-end',
   },
-  dot: {
-    width: 20,
+  dot: (width = ACTIVE_DOT_WIDTH, marginLeft = DOT_MARGIN, backgroundColor = colors.clearBlue) => ({
     height: 6,
     borderRadius: 3.5,
-    backgroundColor: colors.clearBlue,
-  },
-  dotContainer: {
-    marginLeft: 5,
-  },
+    width,
+    marginLeft,
+    backgroundColor,
+  }),
   inactiveDot: {
-    width: 6,
+    width: INACTIVE_DOT_WIDTH,
     height: 6,
     borderRadius: 3,
-    backgroundColor: colors.lightGrey
+    backgroundColor: colors.lightGrey,
+    marginLeft: DOT_MARGIN
   },
   pagination: {
-    alignSelf: 'flex-end',
     marginRight: 30,
-    marginTop: 20
+    marginTop: 10,
+  },
+  paginationContainer: {
+    paddingVertical:5, 
+    paddingHorizontal:0, 
+    justifyContent:'flex-start'
   },
   cardLayer: {
     flexDirection: 'row',

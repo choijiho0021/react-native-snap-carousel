@@ -61,11 +61,11 @@ class BoardMsgRespScreen extends Component {
   }
 
   _renderAttachment(images) {
-    const uri =  images && images.map(item => api.httpImageUrl(item))
     return (
       <View style={styles.attachBox}>
         {
-          uri && uri.map((imageURI, idx) => <Image key={imageURI+idx} source={{uri: imageURI.toString()}} style={styles.attach}/>)
+          images && images.filter(item => ! _.isEmpty(item))
+            .map((url, idx) => <Image key={url+idx} source={{uri: api.httpImageUrl(url).toString()}} style={styles.attach}/>)
         }
       </View>
     )
@@ -84,12 +84,12 @@ class BoardMsgRespScreen extends Component {
             <Text style={[styles.inputBox, {marginTop:30}]}>{issue.title}</Text>
             <Text style={[styles.inputBox, {marginTop:15, paddingBottom:72}]}>{utils.htmlToString(issue.msg)}</Text>
             {
-              issue.images && this._renderAttachment(issue.images)
+              this._renderAttachment(issue.images)
             }
             {
               ! _.isEmpty(resp) && <View style={styles.resp}>
                 <AppIcon name="btnReply" style={{justifyContent:'flex-start'}}/>
-                <View style={{marginLeft:10}}>
+                <View style={{marginLeft:10, marginRight:30}}>
                   <Text style={styles.replyTitle}>{i18n.t('board:resp')}</Text>
                   <Text style={styles.reply}>{resp.body}</Text>
                 </View>
@@ -127,6 +127,7 @@ const styles = StyleSheet.create({
   },
   replyTitle: {
     ... appStyles.normal12Text,
+    textAlign: "left",
     marginBottom: 10,
     color: colors.warmGrey,
   },
@@ -147,6 +148,7 @@ const styles = StyleSheet.create({
   resp: {
     flexDirection: 'row',
     marginTop: 18,
+    marginBottom: 36,
     marginHorizontal: 20,
     padding: 15,
     borderRadius: 3,

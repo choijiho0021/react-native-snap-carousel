@@ -271,6 +271,7 @@ const en = {
 
   "contact:title" : "Contact Center",
   "contact:notice" : "Notice",
+  "contact:noticeDetail" : "Notice Detail",
   "contact:faq" : "FAQ",
   "contact:board" : "Help Center",
   "contact:ktalk" : "Request Support by KakaoTalk",
@@ -701,8 +702,9 @@ const ko = {
 
   "contact:title" : "고객센터",
   "contact:notice" : "공지사항",
+  "contact:noticeDetail" : "공지사항 상세",
   "contact:faq" : "자주하는 질문",
-  "contact:board" : "1:1 게시판 문의",
+  "contact:board" : "1:1 문의",
   "contact:ktalk" : "1:1 카카오톡 상담",
   "contact:call" : "고객 센터 전화 연결",
 
@@ -711,7 +713,7 @@ const ko = {
   "faq:payment": "결제/환불",
   "faq:etc": "기타",
 
-  "board:title" : "1:1 게시판",
+  "board:title" : "1:1 문의",
   "board:new" : "문의 하기",
   "board:open" : "접수중",
   "board:closed" : "답변 완료",
