@@ -9,7 +9,7 @@ class AppBackButton extends PureComponent {
     super(props)
 
     this._goBack = this._goBack.bind(this)
-    this.backHandler = null
+    this.backHandler = undefined
   }
   
   componentDidMount(){
@@ -20,13 +20,16 @@ class AppBackButton extends PureComponent {
     }
   }
 
+  componentWillUnmount(){
+    if(this.backHandler) this.backHandler.remove()
+  }
+
   _goBack() {
     const {navigation, back, lastTab} = this.props
 
-    //Android Backbutton Handler 초기화
-    if(this.backHandler){
-      this.backHandler.remove()
-      this.backHandler = undefined
+    //활성화 안된 AppBackButton의 핸들러가 작동하지 않도록 추가
+    if(!navigation.isFocused()) {
+      return
     }
 
     var tab = ''
