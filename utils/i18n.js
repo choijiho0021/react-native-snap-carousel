@@ -108,6 +108,8 @@ const en = {
   'reg:used': 'Used',
   'reg:expired': 'Expired',
   'reg:failedToSendSms': 'Failed to send sms',
+  'reg:unableToSendSms': 'Unable to send sms',
+  'reg:invalidTelephone': 'Please input the number correctly to verify the code',
   'reg:failedToLogIn': 'Failed to sign in. Please try again.',
   'reg:toCash': 'Make the status of current product "Used" and convert it into a Rokebi cash with the same amount as the purchase amount.',
 
@@ -530,6 +532,8 @@ const ko = {
   'reg:used': '사용 완료',
   'reg:expired': '사용 기한 만료',
   'reg:failedToSendSms': 'SMS 인증번호 발송 실패',
+  'reg:unableToSendSms': 'SMS 발송 불가',
+  'reg:invalidTelephone': '인증번호를 확인할 수 있는 휴대폰 번호를 입력해주세요.',
   'reg:failedToLogIn': '로깨비 로그인이 실패하였습니다. 다시 시도해주시기 바랍니다.',
   'reg:toCash': '현재 상품을 사용 완료 처리하고 구매 금액과 동일한 금액의 캐시로 전환합니다.',
   "reg:activateProduct": "현 사용 중인 데이터 상품 사용이 완료되고 해당 상품이 등록되며,\n확인 버튼 누른 후 0000# 통화버튼을 눌러주시면 활성화 됩니다.",
