@@ -172,19 +172,19 @@ class UsageDetailScreen extends Component {
             label={i18n.t('his:expireDate')} value={utils.toDateString(expireDate, 'LL')} />
         </View>
         
-        <View style={{flexDirection: 'row' }}>
+        <View style={{flexDirection: 'row'}}>
           { 
             statusCd == STATUS.RESERVED && 
             <AppButton style={[styles.confirm,{backgroundColor:colors.white}]}
               title={i18n.t('reg:cancelReservation')} titleStyle={[appStyles.confirmText,{color:colors.black}]}
-              style={{borderWidth:1, borderColor: colors.warmGrey, flex:1}}
+              style={{borderWidth:1, borderColor: colors.lightGrey, flex:1}}
               onPress={() => this._onSubmit(deactivateBtn, STATUS.INACTIVE)}/> 
           }
           { 
             statusCd == STATUS.INACTIVE && 
             <AppButton style={[styles.confirm,{backgroundColor:colors.white}]}
               title={i18n.t('reg:toRokebiCash')} titleStyle={[appStyles.confirmText,{color:colors.black}]}
-              style={{borderWidth:1, borderColor: colors.warmGrey, flex:1}}
+              style={{borderWidth:1, borderColor: colors.lightGrey, flex:1}}
               onPress={() => this._onSubmit(deactivateBtn, STATUS.USED)}/> 
           }
           <AppButton style={styles.confirm}
