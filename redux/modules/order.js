@@ -5,6 +5,7 @@ import orderApi from '../../utils/api/orderApi'
 import subscriptionApi from '../../utils/api/subscriptionApi';
 
 export const GET_ORDERS = 'rokebi/order/GET_ORDERS'
+export const CANCEL_ORDER = 'rokebi/order/CANCEL_ORDER'
 export const GET_USAGE = 'rokebi/order/usage'
 export const GET_SUBS_USAGE = 'rokebi/usage/subs' 
 export const UPDATE_USAGE = 'rokebi/order/UPDATE_USAGE'
@@ -12,6 +13,7 @@ export const UPDATE_SUBS_TO_CASH = 'rokebi/subs/UPDATE_SUBS_TO_CASH'
 const  RESET = 'rokebi/order/RESET'
 
 export const getOrders = createAction(GET_ORDERS, orderApi.getOrders)
+export const cancelOrder = createAction(CANCEL_ORDER, orderApi.cancelOrder)
 export const getUsage = createAction(GET_USAGE, subscriptionApi.getSubscription)
 export const getSubsUsage = createAction(GET_SUBS_USAGE, subscriptionApi.getSubsUsage)
 export const updateUsageStatus = createAction(UPDATE_USAGE, subscriptionApi.updateSubscriptionStatus)
@@ -36,6 +38,16 @@ export default handleActions({
       if (result == 0 && objects.length > 0) {
         return state.set('orders', objects)
       }
+      return state
+    }
+  }),
+
+  ... pender({
+    type: CANCEL_ORDER,
+    onSuccess: (state, action) => {
+      const {result, objects} = action.payload
+      console.log('CANCEL_ORDER', result, objects, state, action)
+
       return state
     }
   }),
