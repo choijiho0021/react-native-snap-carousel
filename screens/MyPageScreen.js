@@ -220,13 +220,13 @@ class MyPageScreen extends Component {
     return (
       <View style={{marginBottom:10}}>
         <View style={{marginTop:35, flex:1, flexDirection: 'row', marginHorizontal: 20, height: 76, marginBottom: 30}}>
-          <View style={{flex:1, alignSelf: 'center'}}>
+          <TouchableOpacity style={{flex:1, alignSelf: 'center'}} onPress={this._changePhoto}>
             <AppUserPic url={userPictureUrl} icon="imgPeopleL"
               style={styles.userPicture}
-              onPress={this._changePhoto} />
+              onPress={this._changePhoto}/>
             <AppIcon name="imgPeoplePlus" style={{bottom:20, right:-29, alignSelf:'center'}}/>
-          </View>
-          <View style={{flex:4, justifyContent: 'center'}}>
+          </TouchableOpacity>
+          <View style={{flex:3, justifyContent: 'center'}}>
             <Text style={styles.label}>{utils.toPhoneNumber(mobile)}</Text>
             <LabelTextTouchable key='email' 
               label={email} labelStyle={styles.value}
