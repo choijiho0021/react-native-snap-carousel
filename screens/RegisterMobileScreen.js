@@ -240,33 +240,39 @@ class RegisterMobileScreen extends Component {
     }
 
     if (key == 'mobile') {
+      const error = validationUtil.validate('mobileSms', `${value}`)
       if ( authorized ) return;
 
-      this.setState({ 
-        pin: undefined,
-        authorized: undefined,
-        timeout: true
-      })
-
-      userApi.sendSms({ user: value, abortController: this.controller })
-        .then( resp => {
-          if (resp.result === 0) {
-            this.setState({
-              authNoti: true,
-              timeout: false
-            })
-
-            this._focusAuthInput()
-          }
-          else {
-            console.log('send sms failed', resp)
-            throw new Error('failed to send sms')
-          }
+      if ( ! _.isEmpty(error) ) {
+        AppAlert.error(i18n.t('reg:invalidTelephone'), i18n.t('reg:unableToSendSms'))
+      }
+      else {
+        this.setState({ 
+          pin: undefined,
+          authorized: undefined,
+          timeout: true
         })
-        .catch(err => {
-          console.log('send sms failed', err)
-          AppAlert.error(i18n.t('reg:failedToSendSms'))
-        })
+
+        userApi.sendSms({ user: value, abortController: this.controller })
+          .then( resp => {
+            if (resp.result === 0) {
+              this.setState({
+                authNoti: true,
+                timeout: false
+              })
+
+              this._focusAuthInput()
+            }
+            else {
+              console.log('send sms failed', resp)
+              throw new Error('failed to send sms')
+            }
+          })
+          .catch(err => {
+            console.log('send sms failed', err)
+            AppAlert.error(i18n.t('reg:failedToSendSms'), i18n.t('reg:unableToSendSms'))
+          })
+      }
     } 
 
     this.setState(val)

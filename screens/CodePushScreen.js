@@ -121,7 +121,7 @@ class CodePushScreen extends Component {
                 }
             );
         } catch (error) {
-            AppAlert.error( i18n.t('codepush:failedToUpdate'), () => this.props.action.sync.complete())
+            AppAlert.error( i18n.t('codepush:failedToUpdate'), '', () => this.props.action.sync.complete())
             codePush.log(error);
         }
     }

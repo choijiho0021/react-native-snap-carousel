@@ -6,8 +6,8 @@ import i18n from '../utils/i18n'
 
 
 class AppAlert {
-  error = (message, onPress = () => {}) => {
-    return this.info(message, 'error', onPress)
+  error = (message, title='', onPress = () => {}) => {
+    return this.info(message, title || 'error', onPress)
   }
 
   info = (message, title='', onPress= () => {}) => {

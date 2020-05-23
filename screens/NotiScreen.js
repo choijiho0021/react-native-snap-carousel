@@ -25,7 +25,6 @@ import AppBackButton from '../components/AppBackButton';
 import { Platform } from '@unimodules/core';
 
 const MODE_NOTIFICATION = 'info'
-const CONTACT_BOARD_LIST_INDEX = 1
 
 class NotiListItem extends Component {
 
