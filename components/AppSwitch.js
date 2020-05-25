@@ -38,7 +38,7 @@ export default class AppSwitch extends PureComponent {
         this.state.animatedValue,
         {
           toValue: isOn ? 1 : 0,
-          easing: Easing.ease,
+          easing: Easing.elastic(.2),
           duration: 300
         }
       ).start()
