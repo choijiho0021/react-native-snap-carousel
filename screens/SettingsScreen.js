@@ -59,7 +59,7 @@ class SettingsScreen extends Component {
       showModal: false,
       data: [
         { "key": "pushnoti", "value": i18n.t('set:pushnoti'), toggle: props.isPushNotiEnabled, route: undefined},
-        { "key": "info", "value": i18n.t('set:info'), route: 'MySim'},
+        // { "key": "info", "value": i18n.t('set:info'), route: 'MySim'},
         { "key": "Contract", "value": i18n.t('set:contract'), route: 'SimpleText'},
         { "key": "Privacy", "value": i18n.t('set:privacy'), route: 'SimpleText'},
         { "key": "version", "value": i18n.t('set:version'), "desc": i18n.t('now') + ' ' + VersionCheck.getCurrentVersion() + '/' + label.replace(/v/g, ''), route: undefined},
@@ -107,6 +107,8 @@ class SettingsScreen extends Component {
  
     if(loggedIn){
       this.props.action.cart.cartFetch()
+    }else{
+      this.props.navigation.navigate('RegisterMobile')
     }
   }
 
@@ -156,6 +158,7 @@ class SettingsScreen extends Component {
     this.props.action.cart.reset()
     this.props.action.order.reset()
     this.props.action.account.logout()
+    this.props.navigation.popToTop()
 
     this.props.navigation.navigate('HomeStack')
 
