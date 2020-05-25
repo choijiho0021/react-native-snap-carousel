@@ -107,6 +107,7 @@ const en = {
   'reg:toRokebiCash': 'Change to Rokebi cash',
   'reg:used': 'Used',
   'reg:expired': 'Expired',
+  'reg:canceled' : 'Canceled',
   'reg:failedToSendSms': 'Failed to send sms',
   'reg:unableToSendSms': 'Unable to send sms',
   'reg:invalidTelephone': 'Please input the number correctly to verify the code',
@@ -270,6 +271,7 @@ const en = {
   "his:cancelError" : "An error occurred while canceling payment.",
   "his:afterCancelInfo" : "• Depending on the payment method, it takes 3 to 7 business days on a weekday to get a refund after a cancellation request.",
   "his:simCancelInfo" : "• Once the product has been prepared, you cannot change the delivery address or cancel the payment. \n• Please use the 1: 1 inquiry for return and refund requests after receipt of the product.",
+  "his:usedOrExpiredInfo" : "• The product has been used or the deadline for canceling payment has expired.",
   "his:dataCancelInfo" : "• If all products included in the payment are not in use, you can cancel them within 7 days after payment.",
 
   "contact:title" : "Contact Center",
@@ -532,6 +534,7 @@ const ko = {
   'reg:toRokebiCash': '로깨비캐시 전환',
   'reg:used': '사용 완료',
   'reg:expired': '사용 기한 만료',
+  'reg:canceled' : '취소 완료',
   'reg:failedToSendSms': 'SMS 인증번호 발송 실패',
   'reg:unableToSendSms': 'SMS 발송 불가',
   'reg:invalidTelephone': '인증번호를 확인할 수 있는 휴대폰 번호를 입력해주세요.',
@@ -704,6 +707,7 @@ const ko = {
   "his:cancelError" : "결제 취소 중 오류가 발생했습니다.",
   "his:afterCancelInfo" : "• 결제 수단에 따라 취소 요청 후 환불까지 평일 기준 3~7일이 소요됩니다.",
   "his:simCancelInfo" : "• 상품 준비가 시작되면 결제 취소할 수 없습니다.\n• 유심 수령 후 반품 및 환불 요청은 1:1문의를 이용해주세요.",
+  "his:usedOrExpiredInfo" : "• 상품이 사용처리되었거나, \n   결제 취소 가능 기한이 만료되었습니다.",
   "his:dataCancelInfo" : "• 결제건에 포함된 상품 모두 미사용 상태일 시, \n   결제 후 7일간 취소할 수 있습니다.",
 
   "contact:title" : "고객센터",
