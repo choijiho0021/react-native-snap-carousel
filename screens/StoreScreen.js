@@ -23,13 +23,17 @@ import Analytics from 'appcenter-analytics'
 import { Set } from 'immutable';
 
 class StoreScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
+  static navigationOptions = ({navigation}) => {
+    const {params = {}} = navigation.state
+
+    return ({
     headerLeft: <Text style={styles.title}>{i18n.t('store')}</Text>,
     headerRight: <AppButton key="search" 
       style={styles.showSearchBar} 
-      onPress={() => navigation.navigate('StoreSearch')} 
+      onPress={() => navigation.navigate('StoreSearch',{allData:params.allData})} 
       iconName="btnSearchTop" />
-  })
+    })
+  }
 
   constructor(props) {
     super(props)
@@ -106,6 +110,10 @@ class StoreScreen extends Component {
     // 동일 국가내의 상품을 정렬한다. 
     const sorted = list.map(item => item.sort((a,b) => a.pricePerDay > b.pricePerDay ? 1 : -1))
       .sort((a,b) => a[0].name > b[0].name ? 1 : -1)
+
+    this.props.navigation.setParams({
+      allData: sorted
+    })
 
     this.setState({
       allData: sorted,

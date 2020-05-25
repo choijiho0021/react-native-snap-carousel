@@ -23,19 +23,8 @@ import StoreList from '../components/StoreList';
 import { sliderWidth, windowHeight } from '../constants/SliderEntry.style'
 import Analytics from 'appcenter-analytics'
 import AppBackButton from '../components/AppBackButton';
-
-// windowHeight
-// iphone 6, 7, 8 - 375 x 667 points
-// iphone 6, 7, 8 Plus - 414 x 736 points
-// iphone 11 pro - 375 x 812 points
-// iphone 11, pro max - 414 x 896 points
-const SIZE_NORMAL = 'normal'
-const SIZE_PLUS = 'plus'
-const SIZE_OTHERS = 'others'
-
-const size = windowHeight == 667 || windowHeight == 812 ? SIZE_NORMAL : 
-             windowHeight == 736 || windowHeight == 896 ? SIZE_PLUS : SIZE_OTHERS
-
+import { isDeviceSize } from '../constants/SliderEntry.style';
+import pageApi from '../utils/api/pageApi';
 
 const MAX_HISTORY_LENGTH = 7
 class HeaderTitle extends Component {
@@ -80,11 +69,6 @@ class HeaderTitle extends Component {
       <View style={styles.container}>
         <View style={styles.headerTitle}>
           <AppBackButton navigation={navigation.navigation} />
-          {/* <TouchableWithoutFeedback onPress={() => navigation.navigation.goBack()}>
-            <View style={styles.backButton}>
-              <Image style={{marginLeft: 5}} source={require('../assets/images/header/btnBack.png')} />
-            </View>
-          </TouchableWithoutFeedback> */}
           <TextInput
             style={styles.searchText}
             placeholder={i18n.t('store:search')}
@@ -118,45 +102,38 @@ class StoreSearchScreen extends Component {
     super(props)
 
     this.state = {
-      querying: false,
+      querying: true,
       searching : false,
       searchWord : '',
       searchList : [],
-      recommendCountry : ["인도네시아","스페인","아일랜드","네덜란드"]
+      recommendCountry : []
     }
     this._search = this._search.bind(this)
   }
 
+  getRecommendation(){
+    pageApi.getPageByTitle('Recommendation').then(resp => {
+      if ( resp.result == 0 && resp.objects.length > 0) {
+        const recommendation = resp.objects[0].body.replace(/<\/p>/ig, '').replace(/<p>/ig, '').split(',')
+        this.setState({
+          recommendCountry : recommendation
+        })
+      }
+    }).catch(err => {
+      console.log('failed to get page', err)
+    }).finally(_ => {
+      this.setState({
+        querying: false
+      })
+    })
+  }
+
   componentDidMount() {
-    //Store에서 검색 관련 기능을 지우면서 임시로 추가
-    //todo: Store와 여기서 두번 검색하는 것을 한번으로 줄이도록 변경 필요 
-    const prodList = this.props.product.get('prodList'),
-      list = prodList.toList()
-        .sort((a,b) => { return a.name >= b.name ? 1 : -1})
-        .reduce((acc,item) => {
-          item.key = item.uuid 
-          item.cntry = new Set(country.getName(item.ccode))
-          //days가 "00일" 형식으로 오기 때문에 일 제거 후 넘버타입으로 변환
-          item.pricePerDay = Math.round(item.price / Number(item.days.replace(/[^0-9]/g,"")))
-          
-          const idxCcode = acc.findIndex(elm => _.isEqual(elm.ccode, item.ccode))
-
-          if ( idxCcode < 0 ) {
-            // new item, insert it
-            return acc.concat( [item])
-          }
-          else if ( acc[idxCcode].pricePerDay > item.pricePerDay && item.field_daily == 'daily') {
-            // cheaper
-            acc.splice( idxCcode, 1, item)
-            return acc
-          }
-          return acc
-        }, [])
-
-        this.setState({list})
+    this.getRecommendation()
 
     Analytics.trackEvent('Page_View_Count', {page : 'Country Search'})
-    this.setState({allData : list})
+    
+    this.setState({allData : this.props.navigation.getParam('allData')})
     this.getSearchHist()
 
     this.props.navigation.setParams({
@@ -257,33 +234,16 @@ class StoreSearchScreen extends Component {
     const {allData, searchWord = ''} = this.state
     if(!allData) { return null }
 
-    // 복수국가 검색제외
-    // const searchResult = allData.filter(elm => 
-    //   elm.categoryId != productApi.category.multi && [...elm.cntry].join(',').match(searchWord)).map(elm => 
-    //     {return {name:elm.name, country:elm.cntry, uuid:elm.uuid}})
-
-    // return (
-    // <View style={styles.width100}>
-    //   {searchResult.map((elm,idx) => 
-    //     <TouchableOpacity key={elm.uuid} onPress={() => this._search(elm.country.values().next().value,true)}>
-    //       <View key={idx+''} style={styles.autoList}>
-    //         <Text key="text">{elm.country.values().next().value}</Text>
-    //       </View>
-    //     </TouchableOpacity>
-    //   )}
-    // </View>
-    // )
-
     // 복수국가 이름 검색 추가
     const searchResult = allData.filter(elm => elm.length > 0 && elm[0].search.match(searchWord))
-      .map(elm => ({name:elm[0].name, country:elm[0].cntry, categoryId: elm[0].categoryId, uuid:elm[0].uuid}))
+      .map(elm => ({name:elm[0].name, country:elm[0].search, categoryId: elm[0].categoryId, uuid:elm[0].uuid}))
 
     return (
       <View style={styles.width100}>
         {searchResult.map((elm,idx) => 
-          <TouchableOpacity key={elm.uuid} onPress={() => this._search(elm.country.first(),true)}>
+          <TouchableOpacity key={elm.uuid} onPress={() => this._search(elm.country,true)}>
             <View key={idx+''} style={styles.autoList}>
-              <Text key="text" style={styles.autoText}>{elm.categoryId == productApi.category.multi ? elm.name : elm.country.first()}</Text>
+              <Text key="text" style={styles.autoText}>{elm.categoryId == productApi.category.multi ? elm.name : elm.country}</Text>
             </View>
           </TouchableOpacity>
         )}
@@ -294,9 +254,11 @@ class StoreSearchScreen extends Component {
   // 국가 검색
   renderStoreList () {
     const {allData, searchWord = ''} = this.state
-    const filtered = allData.filter(elm => _.isEmpty(searchWord) || 
-      (elm.length > 0 && (elm[0].name.match(searchWord) || elm[0].search.match(searchWord))))
+    const filtered = allData.filter(elm => _.isEmpty(searchWord) || elm[0].search.match(searchWord))
+
     const list = productApi.toColumnList(filtered)
+
+
 
     return list.length > 0 ?
       <StoreList data={list} onPress={this._onPressItem}/> :
@@ -378,7 +340,7 @@ const styles = StyleSheet.create({
     alignContent: "space-between",
     flexDirection: 'row',
   },
-  recommebdItem : size == SIZE_NORMAL ? 
+  recommebdItem : isDeviceSize('medium') ? 
   {
     height: 46,
     borderRadius: 3,
@@ -424,7 +386,7 @@ const styles = StyleSheet.create({
   searchListHeaderText : {
     ... appStyles.bold16Text,
   },
-  searchListText : size == SIZE_NORMAL ? 
+  searchListText : isDeviceSize('medium') ? 
   {
     ... appStyles.normal14Text,
     color: colors.warmGrey
