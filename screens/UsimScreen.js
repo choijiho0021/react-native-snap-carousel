@@ -290,6 +290,7 @@ class UsimScreen extends Component {
     this.state = {
       refreshing: false,
       cancelPressed: false,
+      isFocused: false,
       // afterLogin: false,
     }
     
@@ -319,7 +320,7 @@ class UsimScreen extends Component {
     
   // }
   componentDidMount() {
-    const { account: {iccid, loggedIn}, auth} = this.props
+    const { account: {iccid, loggedIn}, auth } = this.props
 
     console.log('로그인@@@@@', this.props)
     console.log('@@@@@iccid', iccid, auth)
@@ -337,6 +338,18 @@ class UsimScreen extends Component {
   }
 
   componentDidUpdate(prevProps) {
+
+    const focus = this.props.navigation.isFocused()
+    const { account: {iccid, loggedIn}, auth} = this.props
+
+    // 구매내역 원래 조건 확인 
+    if(this.state.isFocused != focus){
+      this.setState({isFocused: focus})
+      if(focus){
+        this._init(loggedIn, iccid, auth)
+      }
+    }
+
     // const {account:{loggedIn, iccid}, auth} = this.props
     
     // if(loggedIn != prevProps.account.loggedIn || auth != prevProps.auth){
