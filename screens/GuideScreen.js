@@ -49,6 +49,7 @@ class GuideScreen extends Component {
     }
 
     this._header = this._header.bind(this)
+    this._footer = this._footer.bind(this)
   }
 
   componentDidMount() {
@@ -61,7 +62,7 @@ class GuideScreen extends Component {
       querying: true
     })
 
-    pageApi.getPageByCategory('FAQ').then(resp => {
+    pageApi.getPageByCategory('faq:tip').then(resp => {
       if ( resp.result == 0 && resp.objects.length > 0) {
         this.setState({
           data: resp.objects
@@ -108,6 +109,13 @@ class GuideScreen extends Component {
           <AppIcon name='specialTip'/>
           <Text style={styles.tip}>{i18n.t('guide:tip')}</Text>
         </View>
+      </View>
+    )
+  }
+
+  _footer(){
+    return(
+      <View style={styles.footer}>
         <View style={styles.divider}/>
         <TouchableOpacity style={styles.faqBox} onPress={()=>this.props.navigation.navigate('Faq')}>
           <Text style={styles.faq}>{i18n.t("guide:detail")}</Text>
@@ -129,7 +137,8 @@ class GuideScreen extends Component {
       <View style={styles.container}>
         <FlatList data={data} renderItem={this._renderItem} 
           extraData={activeSlide}
-          ListHeaderComponent={this._header} />
+          ListHeaderComponent={this._header}
+          ListFooterComponent={this._footer} />
       </View>
     )
   }
@@ -160,7 +169,8 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     borderBottomColor: colors.whiteTwo,
     borderBottomWidth: 1,
-    marginLeft: 20
+    marginLeft: 20,
+    marginTop: 30
   },
   tip: {
     ... appStyles.bold18Text,
@@ -201,6 +211,9 @@ const styles = StyleSheet.create({
   divider: {
     height: 10,
     backgroundColor: colors.whiteTwo
+  },
+  footer: {
+    marginBottom: 30,
   }
 });
 
