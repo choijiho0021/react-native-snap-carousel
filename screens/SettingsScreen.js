@@ -20,6 +20,7 @@ import AppIcon from '../components/AppIcon';
 import { colors } from '../constants/Colors';
 import AppModal from '../components/AppModal';
 import AppSwitch from '../components/AppSwitch';
+import AppToast from '../components/AppToast';
 import VersionCheck from 'react-native-version-check';
 import getEnvVars from '../environment'
 import Analytics from 'appcenter-analytics'
@@ -65,6 +66,7 @@ class SettingsScreen extends Component {
         { "key": "aboutus", "value": i18n.t('set:aboutus'), route: 'SimpleText'},
         { "key": "logout", "value": i18n.t(props.loggedIn ? 'set:logout' : 'set:login'), route: undefined},
       ],
+      isPushNotiEnabled: props.isPushNotiEnabled
     }
 
     this._onPress = this._onPress.bind(this)
@@ -72,10 +74,12 @@ class SettingsScreen extends Component {
     this._logout = this._logout.bind(this)
 
     this._isMounted = null
+    this._toastRef = React.createRef()
   }
 
   componentDidUpdate(prevProps) {
-    const { loggedIn, isPushNotiEnabled, failure } = this.props
+    const { loggedIn, isPushNotiEnabled } = this.props,
+      statePushNoti = (this.state.data.find(item => item.key == 'pushnoti') || {}).toggle 
 
     if ( loggedIn != prevProps.loggedIn) {
       this.setState({
@@ -86,22 +90,19 @@ class SettingsScreen extends Component {
       })
     }
 
-    if ( isPushNotiEnabled !== prevProps.isPushNotiEnabled && this._isMounted) {
-      this.setState({
-        data: this.state.data.map(item => item.key == 'pushnoti' ? {
-          ... item, 
-          toggle: isPushNotiEnabled
-        } : item)
-      })
-    }
-
-    if ( failure && failure !== prevProps.failure ) {
-      AppAlert.error(i18n.t('set:fail'))
-    }
+    if ( isPushNotiEnabled !== prevProps.isPushNotiEnabled 
+      && isPushNotiEnabled !== statePushNoti ) {
+        this.setState({
+          data: this.state.data.map(item => item.key == 'pushnoti' ? {
+            ... item, 
+            toggle: isPushNotiEnabled
+          } : item)
+        })
+      }
   }
 
   componentDidMount(){
-    const { loggedIn, isPushNotiEnabled} = this.props
+    const { loggedIn } = this.props
     this._isMounted = true
  
     if(loggedIn){
@@ -114,8 +115,6 @@ class SettingsScreen extends Component {
   }
 
   _onPress = (key, title, route) => () => {
-    const { pending } = this.props
-
     switch(key) {
       case 'logout' :
         if ( this.props.loggedIn) this._showModal(true)
@@ -124,9 +123,23 @@ class SettingsScreen extends Component {
         break;
 
       case 'pushnoti':
-        if ( ! pending ) {
-          this.props.action.account.changePushNoti()
-        }
+        const isEnabled = (this.state.data.find(item => item.key == 'pushnoti') || {}).toggle 
+        this.setState({
+          data: this.state.data.map(item => item.key == 'pushnoti' ? {
+            ... item, 
+            toggle: ! isEnabled
+          } : item)
+        })
+        this.props.action.account.changePushNoti({ isPushNotiEnabled: ! isEnabled })
+          .catch(_ => {
+            if (this._toastRef.current) this._toastRef.current.show()
+            this._isMounted && this.setState({
+              data: this.state.data.map(item => item.key == 'pushnoti' ? {
+                ... item, 
+                toggle: this.props.isPushNotiEnabled
+              } : item)
+            })
+          })
 
         break;
 
@@ -170,6 +183,7 @@ class SettingsScreen extends Component {
           onOkClose={this._logout}
           onCancelClose={() => this._showModal(false)}
           visible={showModal} />
+        <AppToast ref={this._toastRef} text={i18n.t('set:failedToUpdate')}/>
       </View>
     )
   }
@@ -208,10 +222,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => ({
   loggedIn: state.account.get('loggedIn'),
-  isPushNotiEnabled: state.account.get('isPushNotiEnabled'),
-  pending: state.pender.pending[accountActions.CHANGE_ATTR] ||
-    state.pender.pending[accountActions.UPDATE_ACCOUNT] || false,
-  failure: state.pender.failure[accountActions.CHANGE_ATTR]
+  isPushNotiEnabled: state.account.get('isPushNotiEnabled')
 })
 
 export default connect(mapStateToProps, 

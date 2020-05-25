@@ -160,6 +160,7 @@ const en = {
   "set:failedToSendAlimTalk" : "Failed to send a KakaoTalk message. Please try again later",
   "reg:activateProduct": "current data product is completed and this product will be activated.\nPress the 'OK' button and call 0000# to activate it.",
   "set:pushnoti" : "Push Notifications",
+  "set:failedToUpdate" : "Failed to change settings.\nPlease check your network connection.",
 
   "rch:recharge" : "Recharge",
 
@@ -584,6 +585,7 @@ const ko = {
   "set:sendAlimTalk" : "알림톡이 발송되었습니다",
   "set:failedToSendAlimTalk" : "알림톡 발송에 실패했습니다. 나중에 다시 시도해 주세요",
   "set:pushnoti" : "Push 알림 받기",
+  "set:failedToUpdate" : "설정 변경에 실패했습니다.\n네트워크 연결 상태를 확인해주세요.",
 
   "rch:recharge" : "충전 하기",
 
@@ -596,7 +598,7 @@ const ko = {
   "sim:remainingBalance" : "로깨비캐시",
 
   "mobile:header": "로그인",
-  "mobile:title": "간편 인증 로그인",
+  "mobile:title": "휴대폰 간편 인증 로그인",
   "mobile:input": "- 없이 숫자만 입력",
   "mobile:auth": "인증번호 입력",
   "mobile:sendAuth": "인증번호 전송",

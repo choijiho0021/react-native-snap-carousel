@@ -73,6 +73,7 @@ class PurchaseDetailScreen extends Component {
       isCanceled : detail.state == 'canceled' || false,
       billingAmt: utils.numberToCommaString(detail.totalPrice + detail.dlvCost),
       method : !_.isEmpty(detail.paymentList) && detail.paymentList.find(item => item.paymentGateway != 'rokebi_cash'),
+      totalCnt: detail.orderItems.reduce((acc,cur) => acc + cur.qty, 0)
     })
 
     // load Profile by profile_id
@@ -306,7 +307,7 @@ class PurchaseDetailScreen extends Component {
             </View>
           </View>
           {
-            !(isCanceled || isUsed || isRecharge )?
+            !( isRecharge )?
             <AppButton
                 style={[styles.cancelBtn, {borderColor: this.state.borderBlue ? colors.clearBlue : colors.lightGrey}]}
                 disableBackgroundColor={colors.whiteTwo}
@@ -359,7 +360,7 @@ class PurchaseDetailScreen extends Component {
   render() {
 
     const { orderItems, orderType, isCanceled, shipmentState, billingAmt,
-          showPayment, showDelivery, cancelPressed } = this.state || {}
+          showPayment, showDelivery, cancelPressed, totalCnt } = this.state || {}
 
     if ( _.isEmpty(orderItems) ) return <View></View>
 
@@ -394,7 +395,7 @@ class PurchaseDetailScreen extends Component {
               !showPayment &&
               <View style={[styles.alignCenter, {flexDirection: 'row'}]}>
                 <Text style={styles.normal16BlueTxt}>{i18n.t('total')}</Text>
-                <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>{orderItems.length}</Text>
+                <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>{totalCnt}</Text>
                 <Text style={styles.normal16BlueTxt}>{i18n.t('qty')} / </Text>
                 <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>{utils.numberToCommaString(billingAmt)}</Text>
                 <Text style={styles.normal16BlueTxt}>{i18n.t('won')}</Text>
