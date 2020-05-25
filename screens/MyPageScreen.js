@@ -29,6 +29,7 @@ import userApi from '../utils/api/userApi';
 import LabelTextTouchable from '../components/LabelTextTouchable';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import { openSettings, check, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import Analytics from 'appcenter-analytics';
 
 let ImagePicker 
 if (Constants.appOwnership === 'expo') {
@@ -126,7 +127,11 @@ class MyPageScreen extends Component {
     if(this.state.isFocused != focus){
       this.setState({isFocused: focus})
       if(focus){
-        this.props.action.order.getOrders(this.props.auth)
+        if(!this.props.account.loggedIn){
+          this.props.navigation.navigate('RegisterMobile')
+        }else{
+          this.props.action.order.getOrders(this.props.auth)
+        }
       }
     }
 
