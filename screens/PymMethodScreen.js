@@ -59,8 +59,13 @@ class PymMethodScreen extends Component {
         memo: true,
         method: true
       },
-      label: i18n.t("pym:selectMemo"),
-      deliveryMemo:{
+      label: Platform.OS == 'android' ? undefined : i18n.t("pym:selectMemo"),
+      deliveryMemo: Platform.OS == 'android' ? {
+        directInput: false,
+        header: i18n.t("pym:notSelected"),
+        selected: undefined,
+        content: i18n.t("pym:notSelected"),
+      } : {
         directInput: false,
         header: undefined,
         selected: undefined,
@@ -218,7 +223,6 @@ class PymMethodScreen extends Component {
   }
 
   _saveMemo(value){
-
     const selectedMemo = deliveryText.find(item => item.value == value) || {}
 
     if(!_.isEmpty(selectedMemo)){
@@ -506,6 +510,7 @@ class PymMethodScreen extends Component {
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
+    height: 37,
     color: colors.black,
     fontSize: isDeviceSize('small') ? 12 : 14,
     paddingVertical: 8
@@ -514,10 +519,11 @@ const pickerSelectStyles = StyleSheet.create({
     height: 37,
     fontSize: 12,
     lineHeight: 20, 
+    paddingVertical: 8,
     color: colors.black,
   },
   iconContainer: {
-    top: 4,
+    top: 8,
     right: 10,
     paddingVertical: 8
   }
