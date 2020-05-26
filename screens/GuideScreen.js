@@ -21,6 +21,7 @@ import Carousel, {Pagination} from 'react-native-snap-carousel';
 import { sliderWidth } from '../constants/SliderEntry.style'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Analytics from 'appcenter-analytics'
+import AppActivityIndicator from '../components/AppActivityIndicator';
 
 const guideImages = {
   step1: require('../assets/images/guide/step1/img.png'),
@@ -139,6 +140,7 @@ class GuideScreen extends Component {
           extraData={activeSlide}
           ListHeaderComponent={this._header}
           ListFooterComponent={this._footer} />
+        <AppActivityIndicator visible={this.props.pending || this.state.querying}/>
       </View>
     )
   }
