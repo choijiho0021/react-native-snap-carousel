@@ -102,6 +102,7 @@ const en = {
   'reg:scanOff': 'Scan off',
   'reg:confirm': 'Confirm',
   'reg:reserveToUse': 'Reserve to use',
+  'reg:canceled': 'Cancel',
   'reg:registerToUse': 'Register to use',
   'reg:cancelReservation': 'Cancel Reservation',
   'reg:toRokebiCash': 'Change to Rokebi cash',
@@ -338,6 +339,8 @@ const en = {
   "usim:warning" : "※ It may not exactly match your actual usage.",
   "usim:checkUsage" : "Usage Check",
   "usim:failSnackBar" : "You can't see usage temporarily. Please try again after a few minutes.",
+  "usim:usingTime" : "Service active time",
+  "usim:until" : "until",
 
   "pym:title": "Payment Info",
   "pym:delivery": "Shipping Info",
@@ -527,6 +530,7 @@ const ko = {
   'reg:scanOff': '스캔 중단',
   'reg:confirm': '등록',
   'reg:reserveToUse': '사용 예약',
+  'reg:canceled': '취소 완료',
   'reg:registerToUse': '사용 등록',
   'reg:cancelReservation': '사용 예약 취소',
   'reg:toRokebiCash': '로깨비캐시 전환',
@@ -772,6 +776,8 @@ const ko = {
   "usim:warning" : "※ 실 사용량과 정확히 일치하지 않을 수 있습니다.",
   "usim:checkUsage" : "사용량 확인",
   "usim:failSnackBar" : "일시적으로 사용량을 조회할 수 없습니다. 잠시 후 다시 시도해주세요.",
+  "usim:usingTime" : "서비스 이용 시간",
+  "usim:until" : "까지",
 
   "pym:title": "결제 정보",
   "pym:delivery": "배송 정보",
