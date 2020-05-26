@@ -260,19 +260,33 @@ class MyPageScreen extends Component {
     const err = validationUtil.validate('email', value)
     if ( ! _.isEmpty(err)) return err.email
 
-    // check duplicated email
-    const resp = await userApi.getByMail(value, this.props.auth)
-    if (resp.result == 0 && resp.objects.length > 0) {
-      // duplicated email
-      return [ i18n.t('acc:duplicatedEmail')]
+    const { email } = this.props.account
+
+    if(email !== value){
+      // check duplicated email
+      const resp = await userApi.getByMail(value, this.props.auth)
+      if (resp.result == 0 && resp.objects.length > 0) {
+        // duplicated email
+        return [ i18n.t('acc:duplicatedEmail')]
+      }
+    }else{
+      this.setState({
+        showEmailModal: false
+      })
     }
 
     return undefined
   }
 
   _changeEmail(mail) {
-    this.props.action.account.changeEmail(mail)
-    Analytics.trackEvent('Page_View_Count', {page : 'Change Email'})
+
+    const { email } = this.props.account
+
+    if(email !== mail){
+      this.props.action.account.changeEmail(mail)
+      Analytics.trackEvent('Page_View_Count', {page : 'Change Email'})
+    }
+
     this.setState({
       showEmailModal: false
     })
