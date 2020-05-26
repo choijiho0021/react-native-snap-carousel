@@ -258,19 +258,31 @@ class UsageItem extends Component {
     return (
       <TouchableOpacity onPress={onPress}> 
         <View style ={styles.usageListContainer}>
-          <View style={styles.titleAndStatus}>
-            <Text style={[styles.usageTitleNormal, { fontWeight: isActive ? "bold" : "normal" }]}>{item.prodName}</Text>
-            <Text style={[styles.usageStatus,{color:statusColor}]}> • {item.status}</Text>
+          <View style={{backgroundColor: colors.white}}>
+            <View style={styles.titleAndStatus}>
+              <Text style={[styles.usageTitleNormal, { fontWeight: isActive ? "bold" : "normal" }]}>{item.prodName}</Text>
+              <Text style={[styles.usageStatus,{color:statusColor}]}> • {item.status}</Text>
+            </View>
           </View>
           {item.statusCd == 'A' ?
-          <View>
-            {isShowUsage ? this.usageRender() : this.checkUsageButton()}
-            <Text style={styles.warning}>{i18n.t('usim:warning')}</Text>
-          </View> : 
-          <View style={styles.inactiveContainer}>
-            <Text style={appStyles.normal12Text}>{i18n.t('usim:usablePeriod')}</Text>
-            <Text style={styles.usagePeriod}>{`${utils.toDateString(item.purchaseDate,'YYYY-MM-DD')} ~ ${item.expireDate}`}</Text>
-          </View> }
+            <View>
+              <View style={styles.topOfActiveContainer}>
+                {isShowUsage ? this.usageRender() : this.checkUsageButton()}
+                <Text style={styles.warning}>{i18n.t('usim:warning')}</Text>
+              </View>
+              <View style={styles.bottomOfActiveContainer}>
+                <View style={styles.dashedLine}></View>
+                <View style={styles.endDateContainer}>
+                  <Text style={appStyles.normal12Text}>{i18n.t('usim:usingTime')}</Text>
+                  <Text style={styles.usageUntil}>{`${utils.toDateString(item.endDate,'YYYY-MM-DD h:mm')} ${i18n.t('usim:until')}`}</Text>
+                </View> 
+              </View>
+            </View> : 
+            <View style={styles.inactiveContainer}>
+              <Text style={appStyles.normal12Text}>{i18n.t('usim:usablePeriod')}</Text>
+              <Text style={styles.usagePeriod}>{`${utils.toDateString(item.purchaseDate,'YYYY-MM-DD')} ~ ${item.expireDate}`}</Text>
+            </View> 
+          }
         </View>
       </TouchableOpacity>
     )
@@ -497,15 +509,15 @@ const styles = StyleSheet.create({
   },
   usageListContainer: {
     marginHorizontal: 20,
-    marginBottom:20, 
-    backgroundColor:colors.white
+    marginBottom:20
   },
   titleAndStatus: {
     flexDirection:'row', 
     marginHorizontal: 20, 
     marginVertical: 20, 
     alignItems:'center', 
-    justifyContent:'space-between'
+    justifyContent:'space-between',
+    backgroundColor: colors.white
   },
   activeContainer: {
     flexDirection:'row', 
@@ -513,11 +525,44 @@ const styles = StyleSheet.create({
     marginVertical: 20
   },
   inactiveContainer: {
+    paddingHorizontal: 20,
+    paddingBottom:20,
     flexDirection:'row', 
-    marginHorizontal: 20, 
     marginBottom: 20, 
     alignItems:'center', 
+    backgroundColor:colors.white,
+    width:'100%',
     justifyContent:'space-between'
+  },
+  endDateContainer: {
+    paddingHorizontal: 20,
+    paddingVertical:20,
+    flexDirection:'row',
+    alignItems:'center', 
+    backgroundColor:colors.white,
+    width:'100%',
+    justifyContent:'space-between',
+    borderTopRightRadius:8, 
+    borderTopLeftRadius : 8
+  },
+  dashedLine: {
+    height:1, 
+    width : '98%',
+    borderStyle: 'dashed', 
+    borderColor:colors.warmGrey, 
+    borderWidth : 1, 
+    borderRadius:8
+  },
+  topOfActiveContainer : {
+    backgroundColor: colors.white, 
+    borderBottomLeftRadius: 8, 
+    borderBottomRightRadius : 8
+  },
+  bottomOfActiveContainer : {
+    alignItems:'center',
+    backgroundColor:colors.white, 
+    borderTopRightRadius:8, 
+    borderTopLeftRadius : 8
   },
   changeBorder: {
     borderWidth:1,
@@ -543,6 +588,10 @@ const styles = StyleSheet.create({
     ... appStyles.normal14Text, 
     color:colors.warmGrey,
     fontSize: isDeviceSize('small') ? 12 : 14
+  },
+  usageUntil: {
+    ... appStyles.normal14Text, 
+    color:colors.black
   },
   normal12WarmGrey : {
     ... appStyles.normal12Text, 
