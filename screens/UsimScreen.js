@@ -29,6 +29,7 @@ import LabelText from '../components/LabelText';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import Analytics from 'appcenter-analytics'
+import Dash from 'react-native-dash';
 
 const STATUS_ACTIVE = 'A'     //사용중
 const STATUS_INACTIVE = 'I'   //미사용
@@ -256,22 +257,34 @@ class UsageItem extends Component {
     const {statusColor = colors.warmGrey, isActive = false} = this.setStatusColor()
 
     return (
-      <TouchableOpacity onPress={onPress}> 
-        <View style ={styles.usageListContainer}>
+      <TouchableOpacity style={styles.usageListContainer} onPress={onPress}> 
+        <View style ={[{backgroundColor: colors.white}, isActive && styles.borderBottomRadius8]}>
           <View style={styles.titleAndStatus}>
             <Text style={[styles.usageTitleNormal, { fontWeight: isActive ? "bold" : "normal" }]}>{item.prodName}</Text>
             <Text style={[styles.usageStatus,{color:statusColor}]}> • {item.status}</Text>
           </View>
-          {item.statusCd == 'A' ?
-          <View>
-            {isShowUsage ? this.usageRender() : this.checkUsageButton()}
-            <Text style={styles.warning}>{i18n.t('usim:warning')}</Text>
-          </View> : 
-          <View style={styles.inactiveContainer}>
-            <Text style={appStyles.normal12Text}>{i18n.t('usim:usablePeriod')}</Text>
-            <Text style={styles.usagePeriod}>{`${utils.toDateString(item.purchaseDate,'YYYY-MM-DD')} ~ ${item.expireDate}`}</Text>
-          </View> }
+          {
+            item.statusCd == 'A' ?
+            <View>
+              {
+                isShowUsage ? this.usageRender() : this.checkUsageButton()
+              }
+              <Text style={styles.warning}>{i18n.t('usim:warning')}</Text>
+              <Dash style={{marginHorizontal: 8}} dashColor={colors.lightGrey} dashGap={6} dashThickness={1} dashLength={6}/>
+            </View>
+            :<View style={styles.inactiveContainer}>
+              <Text style={appStyles.normal12Text}>{i18n.t('usim:usablePeriod')}</Text>
+              <Text style={styles.usagePeriod}>{`${utils.toDateString(item.purchaseDate,'YYYY-MM-DD')} ~ ${item.expireDate}`}</Text>
+            </View> 
+          }
         </View>
+        {
+          isActive &&
+          <View style={styles.activeBottomBox}>
+            <Text style={styles.normal12WarmGrey}>{i18n.t('usim:effectiveDate')}</Text>
+        <Text style={appStyles.normal14Text}>{utils.toDateString(item.endDate)}{i18n.t('usim:until')}</Text>
+          </View>
+        }
       </TouchableOpacity>
     )
   }
@@ -495,10 +508,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginHorizontal:20
   },
+  activeBottomBox: {
+    height: 50,
+    backgroundColor: colors.white,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  borderBottomRadius8: {
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8
+  },
   usageListContainer: {
     marginHorizontal: 20,
     marginBottom:20, 
-    backgroundColor:colors.white
   },
   titleAndStatus: {
     flexDirection:'row', 
@@ -564,6 +590,7 @@ const styles = StyleSheet.create({
   warning : {
     ... appStyles.normal12Text, 
     textAlign:'left' ,
+    color: colors.warmGrey,
     marginHorizontal: 20, 
     marginBottom: 20
   },
