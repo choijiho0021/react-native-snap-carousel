@@ -29,6 +29,7 @@ import LabelText from '../components/LabelText';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import Analytics from 'appcenter-analytics'
+import Svg, {Line} from 'react-native-svg';
 
 const STATUS_ACTIVE = 'A'     //사용중
 const STATUS_INACTIVE = 'I'   //미사용
@@ -271,7 +272,18 @@ class UsageItem extends Component {
                 <Text style={styles.warning}>{i18n.t('usim:warning')}</Text>
               </View>
               <View style={styles.bottomOfActiveContainer}>
-                <View style={styles.dashedLine}></View>
+              <Svg height={2} width={'100%'}>
+                <Line
+                  style={{marginLeft:2}}
+                  stroke={colors.warmGrey}
+                  strokeWidth="2"
+                  strokeDasharray="5, 5"
+                  x1={'2%'}
+                  y1={'0'}
+                  x2={'98%'}
+                  y2={'0'}
+                />
+              </Svg>
                 <View style={styles.endDateContainer}>
                   <Text style={appStyles.normal12Text}>{i18n.t('usim:usingTime')}</Text>
                   <Text style={styles.usageUntil}>{`${utils.toDateString(item.endDate,'YYYY-MM-DD h:mm')} ${i18n.t('usim:until')}`}</Text>
@@ -531,14 +543,6 @@ const styles = StyleSheet.create({
     justifyContent:'space-between',
     borderTopRightRadius:8, 
     borderTopLeftRadius : 8
-  },
-  dashedLine: {
-    height:1, 
-    width : '98%',
-    borderStyle: 'dashed', 
-    borderColor:colors.warmGrey, 
-    borderWidth : 1, 
-    borderRadius:8
   },
   topOfActiveContainer : {
     backgroundColor: colors.white, 
