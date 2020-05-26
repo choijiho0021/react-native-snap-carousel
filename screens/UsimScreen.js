@@ -281,8 +281,8 @@ class UsageItem extends Component {
         {
           isActive &&
           <View style={styles.activeBottomBox}>
-            <Text style={styles.normal12WarmGrey}>{i18n.t('usim:effectiveDate')}</Text>
-        <Text style={appStyles.normal14Text}>{utils.toDateString(item.endDate)}{i18n.t('usim:until')}</Text>
+            <Text style={styles.normal12WarmGrey}>{i18n.t('usim:usingTime')}</Text>
+            <Text style={appStyles.normal14Text}>{utils.toDateString(item.endDate,'YYYY-MM-DD h:mm')} {i18n.t('usim:until')}</Text>
           </View>
         }
       </TouchableOpacity>
@@ -531,7 +531,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 20, 
     marginVertical: 20, 
     alignItems:'center', 
-    justifyContent:'space-between'
+    justifyContent:'space-between',
+    backgroundColor: colors.white
   },
   activeContainer: {
     flexDirection:'row', 
@@ -539,11 +540,44 @@ const styles = StyleSheet.create({
     marginVertical: 20
   },
   inactiveContainer: {
+    paddingHorizontal: 20,
+    paddingBottom:20,
     flexDirection:'row', 
-    marginHorizontal: 20, 
     marginBottom: 20, 
     alignItems:'center', 
+    backgroundColor:colors.white,
+    width:'100%',
     justifyContent:'space-between'
+  },
+  endDateContainer: {
+    paddingHorizontal: 20,
+    paddingVertical:20,
+    flexDirection:'row',
+    alignItems:'center', 
+    backgroundColor:colors.white,
+    width:'100%',
+    justifyContent:'space-between',
+    borderTopRightRadius:8, 
+    borderTopLeftRadius : 8
+  },
+  dashedLine: {
+    height:1, 
+    width : '98%',
+    borderStyle: 'dashed', 
+    borderColor:colors.warmGrey, 
+    borderWidth : 1, 
+    borderRadius:8
+  },
+  topOfActiveContainer : {
+    backgroundColor: colors.white, 
+    borderBottomLeftRadius: 8, 
+    borderBottomRightRadius : 8
+  },
+  bottomOfActiveContainer : {
+    alignItems:'center',
+    backgroundColor:colors.white, 
+    borderTopRightRadius:8, 
+    borderTopLeftRadius : 8
   },
   changeBorder: {
     borderWidth:1,
