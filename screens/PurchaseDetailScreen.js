@@ -255,9 +255,11 @@ class PurchaseDetailScreen extends Component {
       const paidAmount = !_.isEmpty(method) ? method.amount : 0
       const isRecharge = orderItems.find(item => item.title.indexOf(i18n.t('acc:recharge')) > -1) || false
       const isUsed = !_.isEmpty(usageList) && usageList.find(value => value.status != 'R' && value.status != 'I') || false
+      const usedOrExpired = isUsed || elapsedDay > 7
       const activateCancelBtn = orderType == 'physical' ? shipmentState == 'draft' : (state == 'draft' || state == 'validation') && !isUsed
       const disableBtn = isCanceled || !activateCancelBtn || this.state.cancelPressed || (elapsedDay > 7)
-      const infoText = isCanceled ? i18n.t('his:afterCancelInfo') : (orderType == 'physical' ? i18n.t('his:simCancelInfo') : i18n.t('his:dataCancelInfo'))
+      const infoText = isCanceled ? i18n.t('his:afterCancelInfo') 
+                : (orderType == 'physical' ? i18n.t('his:simCancelInfo') : usedOrExpired ? i18n.t('his:usedOrExpiredInfo') : i18n.t('his:dataCancelInfo'))
 
       return(
         <View>
@@ -339,7 +341,7 @@ class PurchaseDetailScreen extends Component {
         <View style={styles.productTitle}>
           {
             (isCanceled || disableBtn) &&
-            <Text style={[appStyles.bold18Text, {color: colors.tomato}]}>{`(${i18n.t("his:cancel")})`}</Text>
+            <Text style={[appStyles.bold18Text, {color: colors.tomato}]}>{`(${i18n.t("his:cancel")})`} </Text>
           }
           <Text style={appStyles.bold18Text}>{label}</Text>
         </View>

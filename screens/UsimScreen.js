@@ -265,7 +265,8 @@ class UsageItem extends Component {
               <Text style={[styles.usageStatus,{color:statusColor}]}> • {item.status}</Text>
             </View>
           </View>
-          {item.statusCd == 'A' ?
+          {
+            item.statusCd == 'A' ?
             <View>
               <View style={styles.topOfActiveContainer}>
                 {isShowUsage ? this.usageRender() : this.checkUsageButton()}

@@ -24,19 +24,32 @@ import AppToast from '../components/AppToast';
 import VersionCheck from 'react-native-version-check';
 import getEnvVars from '../environment'
 import Analytics from 'appcenter-analytics'
+import _ from 'underscore'
 
 const { label } = getEnvVars();
 
 class SettingsListItem extends PureComponent {
+  constructor(props) {
+    super(props)
+    this.child = React.createRef()
+  }
+
   render() {
     const {item, onPress} = this.props
+
     return (
-      <TouchableOpacity onPress={onPress(item.key, item.value, item.route)}>
+      <TouchableOpacity onPress={
+          _.isFunction( (this.child.current || {}).onPress ) ?
+            this.child.current.onPress :
+            onPress(item.key, item.value, item.route)
+        }>
         <View style={styles.row}>
           <Text style={styles.itemTitle}>{item.value}</Text>
-          {item.desc ? <Text style={styles.itemDesc}>{item.desc}</Text> :
-          item.hasOwnProperty('toggle') ? <AppSwitch value={item.toggle} onPress={onPress(item.key, item.value, item.route)}/> :
-          <AppIcon style={{alignSelf:'center'}} name="iconArrowRight"/> }
+          {item.desc ? 
+            <Text style={styles.itemDesc}>{item.desc}</Text> :
+            item.hasOwnProperty('toggle') ? 
+              <AppSwitch value={item.toggle} ref={this.child} onPress={onPress(item.key, item.value, item.route)} waitFor={1000}/> :
+              <AppIcon style={{alignSelf:'center'}} name="iconArrowRight"/> }
         </View>
       </TouchableOpacity>
     )
@@ -59,7 +72,7 @@ class SettingsScreen extends Component {
       showModal: false,
       data: [
         { "key": "pushnoti", "value": i18n.t('set:pushnoti'), toggle: props.isPushNotiEnabled, route: undefined},
-        { "key": "info", "value": i18n.t('set:info'), route: 'MySim'},
+        // { "key": "info", "value": i18n.t('set:info'), route: 'MySim'},
         { "key": "Contract", "value": i18n.t('set:contract'), route: 'SimpleText'},
         { "key": "Privacy", "value": i18n.t('set:privacy'), route: 'SimpleText'},
         { "key": "version", "value": i18n.t('set:version'), "desc": i18n.t('now') + ' ' + VersionCheck.getCurrentVersion() + '/' + label.replace(/v/g, ''), route: undefined},
@@ -107,6 +120,8 @@ class SettingsScreen extends Component {
  
     if(loggedIn){
       this.props.action.cart.cartFetch()
+    }else{
+      this.props.navigation.navigate('RegisterMobile')
     }
   }
 
@@ -156,6 +171,7 @@ class SettingsScreen extends Component {
     this.props.action.cart.reset()
     this.props.action.order.reset()
     this.props.action.account.logout()
+    this.props.navigation.popToTop()
 
     this.props.navigation.navigate('HomeStack')
 

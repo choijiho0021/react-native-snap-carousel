@@ -11,10 +11,13 @@ export default class AppSwitch extends PureComponent {
     this.state = {
       animatedValue: new Animated.Value(0),
       circlePosXStart: 0,
-      circlePosXEnd: 30
+      circlePosXEnd: 30,
+      waitFor: typeof props.waitFor === 'number' ? props.waitFor : 1000
     }
 
     this._onPress = this._onPress.bind(this)
+    this.onPress = this._onPress
+    this._clickable = true
   }
 
   componentDidMount() {
@@ -46,10 +49,15 @@ export default class AppSwitch extends PureComponent {
   }
 
   _onPress() {
-    const { onPress } = this.props
+    const { onPress } = this.props,
+      { waitFor } = this.state
 
-    if (_.isFunction(onPress)) {
+    if ( _.isFunction(onPress) && this._clickable ) {
+      this._clickable = false
       onPress()
+      setTimeout(() => {
+        this._clickable = true
+      }, waitFor)
     }
   }
 
