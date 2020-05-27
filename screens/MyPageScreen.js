@@ -29,6 +29,7 @@ import userApi from '../utils/api/userApi';
 import LabelTextTouchable from '../components/LabelTextTouchable';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import { openSettings, check, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import Analytics from 'appcenter-analytics';
 
 let ImagePicker 
 if (Constants.appOwnership === 'expo') {
@@ -126,7 +127,11 @@ class MyPageScreen extends Component {
     if(this.state.isFocused != focus){
       this.setState({isFocused: focus})
       if(focus){
-        this.props.action.order.getOrders(this.props.auth)
+        if(!this.props.account.loggedIn){
+          this.props.navigation.navigate('RegisterMobile')
+        }else{
+          this.props.action.order.getOrders(this.props.auth)
+        }
       }
     }
 
@@ -220,13 +225,13 @@ class MyPageScreen extends Component {
     return (
       <View style={{marginBottom:10}}>
         <View style={{marginTop:35, flex:1, flexDirection: 'row', marginHorizontal: 20, height: 76, marginBottom: 30}}>
-          <View style={{flex:1, alignSelf: 'center'}}>
+          <TouchableOpacity style={{flex:1, alignSelf: 'center'}} onPress={this._changePhoto}>
             <AppUserPic url={userPictureUrl} icon="imgPeopleL"
               style={styles.userPicture}
-              onPress={this._changePhoto} />
+              onPress={this._changePhoto}/>
             <AppIcon name="imgPeoplePlus" style={{bottom:20, right:-29, alignSelf:'center'}}/>
-          </View>
-          <View style={{flex:4, justifyContent: 'center'}}>
+          </TouchableOpacity>
+          <View style={{flex:3, justifyContent: 'center'}}>
             <Text style={styles.label}>{utils.toPhoneNumber(mobile)}</Text>
             <LabelTextTouchable key='email' 
               label={email} labelStyle={styles.value}
@@ -255,19 +260,33 @@ class MyPageScreen extends Component {
     const err = validationUtil.validate('email', value)
     if ( ! _.isEmpty(err)) return err.email
 
-    // check duplicated email
-    const resp = await userApi.getByMail(value, this.props.auth)
-    if (resp.result == 0 && resp.objects.length > 0) {
-      // duplicated email
-      return [ i18n.t('acc:duplicatedEmail')]
+    const { email } = this.props.account
+
+    if(email !== value){
+      // check duplicated email
+      const resp = await userApi.getByMail(value, this.props.auth)
+      if (resp.result == 0 && resp.objects.length > 0) {
+        // duplicated email
+        return [ i18n.t('acc:duplicatedEmail')]
+      }
+    }else{
+      this.setState({
+        showEmailModal: false
+      })
     }
 
     return undefined
   }
 
   _changeEmail(mail) {
-    this.props.action.account.changeEmail(mail)
-    Analytics.trackEvent('Page_View_Count', {page : 'Change Email'})
+
+    const { email } = this.props.account
+
+    if(email !== mail){
+      this.props.action.account.changeEmail(mail)
+      Analytics.trackEvent('Page_View_Count', {page : 'Change Email'})
+    }
+
     this.setState({
       showEmailModal: false
     })

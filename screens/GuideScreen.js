@@ -10,6 +10,7 @@ import {connect} from 'react-redux'
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import { colors } from '../constants/Colors';
+import AppIcon from '../components/AppIcon';
 import * as orderActions from '../redux/modules/order'
 import * as accountActions from '../redux/modules/account'
 import _ from 'underscore'
@@ -20,6 +21,7 @@ import Carousel, {Pagination} from 'react-native-snap-carousel';
 import { sliderWidth } from '../constants/SliderEntry.style'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Analytics from 'appcenter-analytics'
+import AppActivityIndicator from '../components/AppActivityIndicator';
 
 const guideImages = {
   step1: require('../assets/images/guide/step1/img.png'),
@@ -48,6 +50,7 @@ class GuideScreen extends Component {
     }
 
     this._header = this._header.bind(this)
+    this._footer = this._footer.bind(this)
   }
 
   componentDidMount() {
@@ -60,7 +63,7 @@ class GuideScreen extends Component {
       querying: true
     })
 
-    pageApi.getPageByCategory('FAQ').then(resp => {
+    pageApi.getPageByCategory('faq:tip').then(resp => {
       if ( resp.result == 0 && resp.objects.length > 0) {
         this.setState({
           data: resp.objects
@@ -103,13 +106,21 @@ class GuideScreen extends Component {
           inactiveDotScale={1.0}
           containerStyle={styles.pagination}/>
 
-        <TouchableOpacity style={styles.faqBox} onPress={()=>this.props.navigation.navigate('Faq')}>
-          <Text style={styles.faq}>FAQ</Text>
-        </TouchableOpacity>
-        <View style={styles.divider}/>
         <View style={styles.tipBox}>
+          <AppIcon name='specialTip'/>
           <Text style={styles.tip}>{i18n.t('guide:tip')}</Text>
         </View>
+      </View>
+    )
+  }
+
+  _footer(){
+    return(
+      <View style={styles.footer}>
+        <View style={styles.divider}/>
+        <TouchableOpacity style={styles.faqBox} onPress={()=>this.props.navigation.navigate('Faq')}>
+          <Text style={styles.faq}>{i18n.t("guide:detail")}</Text>
+        </TouchableOpacity>
       </View>
     )
   }
@@ -127,7 +138,9 @@ class GuideScreen extends Component {
       <View style={styles.container}>
         <FlatList data={data} renderItem={this._renderItem} 
           extraData={activeSlide}
-          ListHeaderComponent={this._header} />
+          ListHeaderComponent={this._header}
+          ListFooterComponent={this._footer} />
+        <AppActivityIndicator visible={this.props.pending || this.state.querying}/>
       </View>
     )
   }
@@ -151,14 +164,20 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   tipBox: {
+    flex: 1,
     height: 71,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignContent: 'center',
     borderBottomColor: colors.whiteTwo,
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
+    marginLeft: 20,
+    marginTop: 30
   },
   tip: {
     ... appStyles.bold18Text,
-    marginLeft: 20
+    alignSelf: 'center',
+    marginLeft: 10
   },
   container: {
     flex:1,
@@ -194,6 +213,9 @@ const styles = StyleSheet.create({
   divider: {
     height: 10,
     backgroundColor: colors.whiteTwo
+  },
+  footer: {
+    marginBottom: 30,
   }
 });
 

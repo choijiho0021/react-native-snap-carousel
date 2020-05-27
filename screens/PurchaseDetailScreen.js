@@ -29,6 +29,7 @@ import { bindActionCreators } from 'redux';
 import SnackBar from 'react-native-snackbar-component';
 import { windowHeight } from '../constants/SliderEntry.style';
 import Analytics from 'appcenter-analytics'
+import AppActivityIndicator from '../components/AppActivityIndicator';
 
 
 class PurchaseDetailScreen extends Component {
@@ -39,10 +40,10 @@ class PurchaseDetailScreen extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      showPayment: false,
-      showDelivery: false,
-      cancelPressed: false,
-      isCanceled: false,
+      showPayment: true,
+      showDelivery: true,
+      cancelPressed: false,   // 결제취소버튼 클릭시 true
+      isCanceled: false,      // 결제취소처리 완료시 및 기존결제 취소상품의 경우 true
       disableBtn: false,
       scrollHeight: 0,
       borderBlue: false,
@@ -72,6 +73,7 @@ class PurchaseDetailScreen extends Component {
       isCanceled : detail.state == 'canceled' || false,
       billingAmt: utils.numberToCommaString(detail.totalPrice + detail.dlvCost),
       method : !_.isEmpty(detail.paymentList) && detail.paymentList.find(item => item.paymentGateway != 'rokebi_cash'),
+      totalCnt: detail.orderItems.reduce((acc,cur) => acc + cur.qty, 0)
     })
 
     // load Profile by profile_id
@@ -141,8 +143,7 @@ class PurchaseDetailScreen extends Component {
     {
       ok: () => 
         {
-          orderApi.cancelOrder(this.state.orderId, this.props.auth).then(resp =>{
-            console.log('detail resp', resp)
+          this.props.action.order.cancelOrder(this.state.orderId, this.props.auth).then(resp =>{
             if (resp.result == 0){
               console.log('cancel order', resp)
               this.setState({cancelPressed: true})
@@ -214,7 +215,7 @@ class PurchaseDetailScreen extends Component {
             !_.isEmpty(memo) && _.isEmpty(orderApi.deliveryText.find(item => item.value == memo)) && 
             <Text style={[styles.label2, {marginBottom: 5, lineHeight: 24}]}>{i18n.t('his:input')}</Text>
           }
-          <Text style={[appStyles.normal16Text, {borderBottomWidth:1}]}>{_.isEmpty(memo) ? i18n.t('his:notSelected') : memo}</Text>
+          <Text style={appStyles.normal16Text}>{_.isEmpty(memo) ? i18n.t('his:notSelected') : memo}</Text>
         </View>
 
         {
@@ -232,7 +233,7 @@ class PurchaseDetailScreen extends Component {
                 style={styles.item} format="shortDistance"
                 label={i18n.t('his:tel')}
                 labelStyle={styles.companyInfoTitle}
-                value={utils.toPhoneNumber('12341234')}
+                value={utils.toPhoneNumber('12341234')} // 택배사 전화번호
                 valueStyle={styles.labelValue}/>
             <LabelTextTouchable onPress={() => this.props.navigation.navigate('SimpleText', {mode:'uri', text:orderApi.deliveryTrackingUrl('CJ', '341495229094')})}
                 label={i18n.t('his:trackingCode')}
@@ -254,9 +255,11 @@ class PurchaseDetailScreen extends Component {
       const paidAmount = !_.isEmpty(method) ? method.amount : 0
       const isRecharge = orderItems.find(item => item.title.indexOf(i18n.t('acc:recharge')) > -1) || false
       const isUsed = !_.isEmpty(usageList) && usageList.find(value => value.status != 'R' && value.status != 'I') || false
+      const usedOrExpired = isUsed || elapsedDay > 7
       const activateCancelBtn = orderType == 'physical' ? shipmentState == 'draft' : (state == 'draft' || state == 'validation') && !isUsed
       const disableBtn = isCanceled || !activateCancelBtn || this.state.cancelPressed || (elapsedDay > 7)
-      const infoText = isCanceled ? i18n.t('his:afterCancelInfo') : (orderType == 'physical' ? i18n.t('his:simCancelInfo') : i18n.t('his:dataCancelInfo'))
+      const infoText = isCanceled ? i18n.t('his:afterCancelInfo') 
+                : (orderType == 'physical' ? i18n.t('his:simCancelInfo') : usedOrExpired ? i18n.t('his:usedOrExpiredInfo') : i18n.t('his:dataCancelInfo'))
 
       return(
         <View>
@@ -265,7 +268,7 @@ class PurchaseDetailScreen extends Component {
             orderItems && orderItems.map((item,idx) =>
               <LabelText
                 key={idx+""} style={styles.item}
-                label={`${item.title}  X  ${item.qty} ${i18n.t('qty')}`} labelStyle={styles.label}
+                label={`${item.title}  ×  ${item.qty} ${i18n.t('qty')}`} labelStyle={styles.label}
                 format="price"
                 valueStyle={appStyles.roboto16Text}
                 value={item.price}/>
@@ -278,13 +281,17 @@ class PurchaseDetailScreen extends Component {
             format="price"
             valueStyle={appStyles.roboto16Text}
             value={totalPrice}/>
-          <LabelText
-            key="dvlCost" style={styles.item}
-            label={i18n.t('cart:dlvCost')} labelStyle={styles.label2}
-            format="price"
-            valueStyle={appStyles.roboto16Text}
-            value={dlvCost}/>
           {
+            orderType == 'physical' &&
+              <LabelText
+                key="dvlCost" style={styles.item}
+                label={i18n.t('cart:dlvCost')} labelStyle={styles.label2}
+                format="price"
+                valueStyle={appStyles.roboto16Text}
+                value={dlvCost}/>
+          }
+          {
+            !isRecharge &&
               <LabelText
                 key={"pymBalance"} style={styles.item}
                 label={i18n.t("pym:balance")} labelStyle={styles.label2}
@@ -302,7 +309,7 @@ class PurchaseDetailScreen extends Component {
             </View>
           </View>
           {
-            !(isCanceled || isUsed || isRecharge )?
+            !( isRecharge )?
             <AppButton
                 style={[styles.cancelBtn, {borderColor: this.state.borderBlue ? colors.clearBlue : colors.lightGrey}]}
                 disableBackgroundColor={colors.whiteTwo}
@@ -334,7 +341,7 @@ class PurchaseDetailScreen extends Component {
         <View style={styles.productTitle}>
           {
             (isCanceled || disableBtn) &&
-            <Text style={[appStyles.bold18Text, {color: colors.tomato}]}>{`(${i18n.t("his:cancel")})`}</Text>
+            <Text style={[appStyles.bold18Text, {color: colors.tomato}]}>{`(${i18n.t("his:cancel")})`} </Text>
           }
           <Text style={appStyles.bold18Text}>{label}</Text>
         </View>
@@ -355,7 +362,7 @@ class PurchaseDetailScreen extends Component {
   render() {
 
     const { orderItems, orderType, isCanceled, shipmentState, billingAmt,
-          showPayment, showDelivery, cancelPressed } = this.state || {}
+          showPayment, showDelivery, cancelPressed, totalCnt } = this.state || {}
 
     if ( _.isEmpty(orderItems) ) return <View></View>
 
@@ -390,7 +397,7 @@ class PurchaseDetailScreen extends Component {
               !showPayment &&
               <View style={[styles.alignCenter, {flexDirection: 'row'}]}>
                 <Text style={styles.normal16BlueTxt}>{i18n.t('total')}</Text>
-                <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>{orderItems.length}</Text>
+                <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>{totalCnt}</Text>
                 <Text style={styles.normal16BlueTxt}>{i18n.t('qty')} / </Text>
                 <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>{utils.numberToCommaString(billingAmt)}</Text>
                 <Text style={styles.normal16BlueTxt}>{i18n.t('won')}</Text>
@@ -426,7 +433,8 @@ class PurchaseDetailScreen extends Component {
               }    
               <View style={styles.divider}/>
             </View>
-          }      
+          }
+          <AppActivityIndicator visible={this.props.pending} />      
         </SafeAreaView>
       </ScrollView>
     )
@@ -641,8 +649,7 @@ const mapStateToProps = state => ({
   auth: accountActions.auth(state.account),
   uid: state.account.get('uid'),
   pending: state.pender.pending[orderActions.GET_ORDERS] || 
-    state.pender.pending[accountActions.CHANGE_EMAIL] || 
-    state.pender.pending[accountActions.UPLOAD_PICTURE] || false,
+    state.pender.pending[orderActions.CANCEL_ORDER] || false
 })
 
 export default connect(mapStateToProps,

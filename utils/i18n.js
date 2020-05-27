@@ -102,11 +102,13 @@ const en = {
   'reg:scanOff': 'Scan off',
   'reg:confirm': 'Confirm',
   'reg:reserveToUse': 'Reserve to use',
+  'reg:canceled': 'Cancel',
   'reg:registerToUse': 'Register to use',
   'reg:cancelReservation': 'Cancel Reservation',
   'reg:toRokebiCash': 'Change to Rokebi cash',
   'reg:used': 'Used',
   'reg:expired': 'Expired',
+  'reg:canceled' : 'Canceled',
   'reg:failedToSendSms': 'Failed to send sms',
   'reg:unableToSendSms': 'Unable to send sms',
   'reg:invalidTelephone': 'Please input the number correctly to verify the code',
@@ -145,7 +147,7 @@ const en = {
   'acc:duplicatedEmail': 'Duplicated email',
   'acc:disconnectSim': 'Disconnect SIM card because another user used the same SIM card',
 
-  "set:info" : "My SIM Info",
+  // "set:info" : "My SIM Info",
   "set:noti" : "Noti",
   "set:notice" : "Notice",
   "set:contract" : "User Guide",
@@ -160,6 +162,7 @@ const en = {
   "set:failedToSendAlimTalk" : "Failed to send a KakaoTalk message. Please try again later",
   "reg:activateProduct": "current data product is completed and this product will be activated.\nPress the 'OK' button and call 0000# to activate it.",
   "set:pushnoti" : "Push Notifications",
+  "set:failedToUpdate" : "Failed to change settings.\nPlease check your network connection.",
 
   "rch:recharge" : "Recharge",
 
@@ -269,6 +272,7 @@ const en = {
   "his:cancelError" : "An error occurred while canceling payment.",
   "his:afterCancelInfo" : "• Depending on the payment method, it takes 3 to 7 business days on a weekday to get a refund after a cancellation request.",
   "his:simCancelInfo" : "• Once the product has been prepared, you cannot change the delivery address or cancel the payment. \n• Please use the 1: 1 inquiry for return and refund requests after receipt of the product.",
+  "his:usedOrExpiredInfo" : "• The product has been used or the deadline for canceling payment has expired.",
   "his:dataCancelInfo" : "• If all products included in the payment are not in use, you can cancel them within 7 days after payment.",
 
   "contact:title" : "Contact Center",
@@ -337,6 +341,8 @@ const en = {
   "usim:warning" : "※ It may not exactly match your actual usage.",
   "usim:checkUsage" : "Usage Check",
   "usim:failSnackBar" : "You can't see usage temporarily. Please try again after a few minutes.",
+  "usim:usingTime" : "Service active time",
+  "usim:until" : "until",
 
   "pym:title": "Payment Info",
   "pym:delivery": "Shipping Info",
@@ -526,11 +532,13 @@ const ko = {
   'reg:scanOff': '스캔 중단',
   'reg:confirm': '등록',
   'reg:reserveToUse': '사용 예약',
+  'reg:canceled': '취소 완료',
   'reg:registerToUse': '사용 등록',
   'reg:cancelReservation': '사용 예약 취소',
   'reg:toRokebiCash': '로깨비캐시 전환',
   'reg:used': '사용 완료',
   'reg:expired': '사용 기한 만료',
+  'reg:canceled' : '취소 완료',
   'reg:failedToSendSms': 'SMS 인증번호 발송 실패',
   'reg:unableToSendSms': 'SMS 발송 불가',
   'reg:invalidTelephone': '인증번호를 확인할 수 있는 휴대폰 번호를 입력해주세요.',
@@ -584,6 +592,7 @@ const ko = {
   "set:sendAlimTalk" : "알림톡이 발송되었습니다",
   "set:failedToSendAlimTalk" : "알림톡 발송에 실패했습니다. 나중에 다시 시도해 주세요",
   "set:pushnoti" : "Push 알림 받기",
+  "set:failedToUpdate" : "설정 변경에 실패했습니다.\n네트워크 연결 상태를 확인해주세요.",
 
   "rch:recharge" : "충전 하기",
 
@@ -596,7 +605,7 @@ const ko = {
   "sim:remainingBalance" : "로깨비캐시",
 
   "mobile:header": "로그인",
-  "mobile:title": "간편 인증 로그인",
+  "mobile:title": "휴대폰 간편 인증 로그인",
   "mobile:input": "- 없이 숫자만 입력",
   "mobile:auth": "인증번호 입력",
   "mobile:sendAuth": "인증번호 전송",
@@ -702,6 +711,7 @@ const ko = {
   "his:cancelError" : "결제 취소 중 오류가 발생했습니다.",
   "his:afterCancelInfo" : "• 결제 수단에 따라 취소 요청 후 환불까지 평일 기준 3~7일이 소요됩니다.",
   "his:simCancelInfo" : "• 상품 준비가 시작되면 결제 취소할 수 없습니다.\n• 유심 수령 후 반품 및 환불 요청은 1:1문의를 이용해주세요.",
+  "his:usedOrExpiredInfo" : "• 상품이 사용처리되었거나, \n   결제 취소 가능 기한이 만료되었습니다.",
   "his:dataCancelInfo" : "• 결제건에 포함된 상품 모두 미사용 상태일 시, \n   결제 후 7일간 취소할 수 있습니다.",
 
   "contact:title" : "고객센터",
@@ -770,6 +780,8 @@ const ko = {
   "usim:warning" : "※ 실 사용량과 정확히 일치하지 않을 수 있습니다.",
   "usim:checkUsage" : "사용량 확인",
   "usim:failSnackBar" : "일시적으로 사용량을 조회할 수 없습니다. 잠시 후 다시 시도해주세요.",
+  "usim:usingTime" : "서비스 이용 시간",
+  "usim:until" : "까지",
 
   "pym:title": "결제 정보",
   "pym:delivery": "배송 정보",

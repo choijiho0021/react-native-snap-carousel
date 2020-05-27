@@ -105,10 +105,9 @@ export const changeNotiToken = () => {
   }
 }
 
-export const changePushNoti = () => {
+export const changePushNoti = ({ isPushNotiEnabled }) => {
   return (dispatch, getState) => {
     const { account } = getState(),
-      isPushNotiEnabled = ! account.get('isPushNotiEnabled'),
       authObj = auth(account),
       attr = {
         field_is_notification_enabled: isPushNotiEnabled
@@ -119,6 +118,7 @@ export const changePushNoti = () => {
         if ( resp.result === 0) {
           return dispatch(updateAccount({isPushNotiEnabled}))
         }
+        return Promise.reject()
       })
   }
 }

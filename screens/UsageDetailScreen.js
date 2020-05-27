@@ -21,11 +21,12 @@ import AppModal from '../components/AppModal';
 import { SafeAreaView } from 'react-navigation';
 
 const STATUS = {
-  ACTIVE : "A",           // 사용중
-  RESERVED : "R",         // 사용 대기 중
-  INACTIVE : "I",         // 미사용
-  EXPIRED : "E",          // 사용 기한 종료
-  USED : "U"              // 사용 완료
+  ACTIVE : "A",               // 사용중
+  RESERVED : "R",             // 사용 대기 중
+  INACTIVE : "I",             // 미사용
+  EXPIRED : "E",              // 사용 기한 종료
+  USED : "U",                 // 사용 완료
+  CANCELED : "C"              // 사용 완료
 }
 
 const activateBtn = 'activateBtn';
@@ -149,6 +150,11 @@ class UsageDetailScreen extends Component {
         targetStatus = undefined
         disable = true
         break
+      case STATUS.CANCELED:
+        buttonTitle = i18n.t('reg:canceled')
+        targetStatus = undefined
+        disable = true
+        break        
       default:
         buttonTitle = i18n.t('ok')
         targetStatus = undefined

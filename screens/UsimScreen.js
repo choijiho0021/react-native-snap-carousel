@@ -29,6 +29,7 @@ import LabelText from '../components/LabelText';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import Analytics from 'appcenter-analytics'
+import Dash from 'react-native-dash';
 
 const STATUS_ACTIVE = 'A'     //사용중
 const STATUS_INACTIVE = 'I'   //미사용
@@ -256,22 +257,34 @@ class UsageItem extends Component {
     const {statusColor = colors.warmGrey, isActive = false} = this.setStatusColor()
 
     return (
-      <TouchableOpacity onPress={onPress}> 
-        <View style ={styles.usageListContainer}>
+      <TouchableOpacity style={styles.usageListContainer} onPress={onPress}> 
+        <View style ={[{backgroundColor: colors.white}, isActive && styles.borderBottomRadius8]}>
           <View style={styles.titleAndStatus}>
             <Text style={[styles.usageTitleNormal, { fontWeight: isActive ? "bold" : "normal" }]}>{item.prodName}</Text>
             <Text style={[styles.usageStatus,{color:statusColor}]}> • {item.status}</Text>
           </View>
-          {item.statusCd == 'A' ?
-          <View>
-            {isShowUsage ? this.usageRender() : this.checkUsageButton()}
-            <Text style={styles.warning}>{i18n.t('usim:warning')}</Text>
-          </View> : 
-          <View style={styles.inactiveContainer}>
-            <Text style={appStyles.normal12Text}>{i18n.t('usim:usablePeriod')}</Text>
-            <Text style={styles.usagePeriod}>{`${utils.toDateString(item.purchaseDate,'YYYY-MM-DD')} ~ ${item.expireDate}`}</Text>
-          </View> }
+          {
+            item.statusCd == 'A' ?
+            <View>
+              {
+                isShowUsage ? this.usageRender() : this.checkUsageButton()
+              }
+              <Text style={styles.warning}>{i18n.t('usim:warning')}</Text>
+              <Dash style={{marginHorizontal: 8}} dashColor={colors.lightGrey} dashGap={6} dashThickness={1} dashLength={6}/>
+            </View>
+            :<View style={styles.inactiveContainer}>
+              <Text style={appStyles.normal12Text}>{i18n.t('usim:usablePeriod')}</Text>
+              <Text style={styles.usagePeriod}>{`${utils.toDateString(item.purchaseDate,'YYYY-MM-DD')} ~ ${item.expireDate}`}</Text>
+            </View> 
+          }
         </View>
+        {
+          isActive &&
+          <View style={styles.activeBottomBox}>
+            <Text style={styles.normal12WarmGrey}>{i18n.t('usim:usingTime')}</Text>
+            <Text style={appStyles.normal14Text}>{utils.toDateString(item.endDate,'YYYY-MM-DD h:mm')} {i18n.t('usim:until')}</Text>
+          </View>
+        }
       </TouchableOpacity>
     )
   }
@@ -290,6 +303,7 @@ class UsimScreen extends Component {
     this.state = {
       refreshing: false,
       cancelPressed: false,
+      isFocused: false,
       // afterLogin: false,
     }
     
@@ -319,7 +333,7 @@ class UsimScreen extends Component {
     
   // }
   componentDidMount() {
-    const { account: {iccid, loggedIn}, auth} = this.props
+    const { account: {iccid, loggedIn}, auth } = this.props
 
     console.log('로그인@@@@@', this.props)
     console.log('@@@@@iccid', iccid, auth)
@@ -337,6 +351,18 @@ class UsimScreen extends Component {
   }
 
   componentDidUpdate(prevProps) {
+
+    const focus = this.props.navigation.isFocused()
+    const { account: {iccid, loggedIn}, auth} = this.props
+
+    // 구매내역 원래 조건 확인 
+    if(this.state.isFocused != focus){
+      this.setState({isFocused: focus})
+      if(focus){
+        this._init(loggedIn, iccid, auth)
+      }
+    }
+
     // const {account:{loggedIn, iccid}, auth} = this.props
     
     // if(loggedIn != prevProps.account.loggedIn || auth != prevProps.auth){
@@ -482,17 +508,31 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginHorizontal:20
   },
+  activeBottomBox: {
+    height: 50,
+    backgroundColor: colors.white,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  borderBottomRadius8: {
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8
+  },
   usageListContainer: {
     marginHorizontal: 20,
     marginBottom:20, 
-    backgroundColor:colors.white
   },
   titleAndStatus: {
     flexDirection:'row', 
     marginHorizontal: 20, 
     marginVertical: 20, 
     alignItems:'center', 
-    justifyContent:'space-between'
+    justifyContent:'space-between',
+    backgroundColor: colors.white
   },
   activeContainer: {
     flexDirection:'row', 
@@ -500,11 +540,44 @@ const styles = StyleSheet.create({
     marginVertical: 20
   },
   inactiveContainer: {
+    paddingHorizontal: 20,
+    paddingBottom:20,
     flexDirection:'row', 
-    marginHorizontal: 20, 
     marginBottom: 20, 
     alignItems:'center', 
+    backgroundColor:colors.white,
+    width:'100%',
     justifyContent:'space-between'
+  },
+  endDateContainer: {
+    paddingHorizontal: 20,
+    paddingVertical:20,
+    flexDirection:'row',
+    alignItems:'center', 
+    backgroundColor:colors.white,
+    width:'100%',
+    justifyContent:'space-between',
+    borderTopRightRadius:8, 
+    borderTopLeftRadius : 8
+  },
+  dashedLine: {
+    height:1, 
+    width : '98%',
+    borderStyle: 'dashed', 
+    borderColor:colors.warmGrey, 
+    borderWidth : 1, 
+    borderRadius:8
+  },
+  topOfActiveContainer : {
+    backgroundColor: colors.white, 
+    borderBottomLeftRadius: 8, 
+    borderBottomRightRadius : 8
+  },
+  bottomOfActiveContainer : {
+    alignItems:'center',
+    backgroundColor:colors.white, 
+    borderTopRightRadius:8, 
+    borderTopLeftRadius : 8
   },
   changeBorder: {
     borderWidth:1,
@@ -551,6 +624,7 @@ const styles = StyleSheet.create({
   warning : {
     ... appStyles.normal12Text, 
     textAlign:'left' ,
+    color: colors.warmGrey,
     marginHorizontal: 20, 
     marginBottom: 20
   },

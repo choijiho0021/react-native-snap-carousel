@@ -171,7 +171,8 @@ class NewSimScreen extends Component {
             <ChargeSummary totalCnt={total.cnt} 
             totalPrice={total.price} 
             balance={this.props.account.balance}
-            dlvCost={utils.dlvCost(total.price)}/>
+            dlvCost={utils.dlvCost(total.price)}
+            simList={simList}/>
             }/>
         <AppButton style={styles.btnBuy} title={i18n.t('cart:buy')} 
           disabled={! selected}
