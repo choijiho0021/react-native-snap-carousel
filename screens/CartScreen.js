@@ -250,7 +250,7 @@ class CartScreen extends Component {
       dlvCost = this._dlvCost( checked, qty, total, section),
       balance = this.props.account.balance || 0,
       amount = total.price + dlvCost,
-      pymPrice = amount > balance ? amount - balance : 0      
+      pymPrice = amount > balance ? amount - balance : 0
 
       const data = this.props.cart.orderItems
                   .find(item => item.prod.type == 'roaming_product' && this.state.checked.get(item.key))
