@@ -30,6 +30,7 @@ import AppIcon from '../components/AppIcon';
 import Video from 'react-native-video';
 import orderApi from '../utils/api/orderApi';
 import Analytics from 'appcenter-analytics'
+import pageApi from '../utils/api/pageApi';
 
 const deliveryText = orderApi.deliveryText
 
@@ -54,6 +55,7 @@ class PymMethodScreen extends Component {
       isRecharge: undefined,
       clickable: true,
       loading: undefined,
+      data: {},
       showModal:{
         address: true,
         memo: true,
@@ -102,6 +104,7 @@ class PymMethodScreen extends Component {
     this._consentBox = this._consentBox.bind(this)
     this._dropDownHeader = this._dropDownHeader.bind(this)
     this._inputMemo = this._inputMemo.bind(this)
+    this._benefit = this._benefit.bind(this)
   }
 
   componentDidMount() {
@@ -123,6 +126,7 @@ class PymMethodScreen extends Component {
       },
       mode : mode
     })
+    this._benefit()
   }
 
   async _onSubmit() {
@@ -401,6 +405,9 @@ class PymMethodScreen extends Component {
   }
 
   _method(){
+    const { selected, data } = this.state,
+          benefit = !_.isEmpty(data) && !_.isEmpty(selected) && this.state.data.find(item => item.title.indexOf(selected.title) > -1)
+
     return(
       <View>
         {
@@ -414,10 +421,13 @@ class PymMethodScreen extends Component {
               paymentApi.method.map((v,idx) => this._button(idx+"", v))
             }
             <Text style={{marginVertical: 20, color: colors.clearBlue}}>{i18n.t('pym:tossInfo')}</Text>
-            <View style={{backgroundColor: colors.whiteTwo, padding: 15}}>
-              <Text style={styles.normal12TxtLeft}>{i18n.t('pym:kakaoInfo')}</Text>
-              <Text style={[styles.normal12TxtLeft, {color: colors.warmGrey}]}>{i18n.t('pym:kakaoInfoContent')}</Text>
-            </View>
+            {
+              !_.isEmpty(benefit) &&
+              <View style={{backgroundColor: colors.whiteTwo, padding: 15}}>
+                <Text style={[styles.normal12TxtLeft, {marginBottom: 5}]}>{benefit.title}</Text>
+                <Text style={[styles.normal12TxtLeft, {color: colors.warmGrey}]}>{benefit.body}</Text>
+              </View>
+            }
           </View>
         }
         <View style={styles.divider}/>
@@ -436,6 +446,23 @@ class PymMethodScreen extends Component {
   _consentEssential(){
     this.setState({
       consent: !this.state.consent
+    })
+  }
+
+  _benefit(){
+    pageApi.getPageByCategory('pym:benefit').then(resp => {
+      if ( resp.result == 0 && resp.objects.length > 0) {
+        console.log('benefit resp', resp)
+          this.setState({
+            data: resp.objects
+          })
+        }
+      }).catch(err => {
+        console.log('failed to get page', err)
+      }).finally(_ => {
+        this.setState({
+          querying: false
+      })
     })
   }
 
@@ -708,7 +735,9 @@ const styles = StyleSheet.create({
   normal12TxtLeft: {
     ... appStyles.normal12Text,
     color: colors.black,
-    textAlign: 'left'
+    textAlign: 'left',
+    lineHeight: 14,
+    textAlignVertical: 'center'
   },
   underlinedClearBlue: {
     color: colors.clearBlue,
