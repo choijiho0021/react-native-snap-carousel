@@ -24,19 +24,32 @@ import AppToast from '../components/AppToast';
 import VersionCheck from 'react-native-version-check';
 import getEnvVars from '../environment'
 import Analytics from 'appcenter-analytics'
+import _ from 'underscore'
 
 const { label } = getEnvVars();
 
 class SettingsListItem extends PureComponent {
+  constructor(props) {
+    super(props)
+    this.child = React.createRef()
+  }
+
   render() {
     const {item, onPress} = this.props
+
     return (
-      <TouchableOpacity onPress={onPress(item.key, item.value, item.route)}>
+      <TouchableOpacity onPress={
+          _.isFunction( (this.child.current || {}).onPress ) ?
+            this.child.current.onPress :
+            onPress(item.key, item.value, item.route)
+        }>
         <View style={styles.row}>
           <Text style={styles.itemTitle}>{item.value}</Text>
-          {item.desc ? <Text style={styles.itemDesc}>{item.desc}</Text> :
-          item.hasOwnProperty('toggle') ? <AppSwitch value={item.toggle} onPress={onPress(item.key, item.value, item.route)}/> :
-          <AppIcon style={{alignSelf:'center'}} name="iconArrowRight"/> }
+          {item.desc ? 
+            <Text style={styles.itemDesc}>{item.desc}</Text> :
+            item.hasOwnProperty('toggle') ? 
+              <AppSwitch value={item.toggle} ref={this.child} onPress={onPress(item.key, item.value, item.route)} waitFor={1000}/> :
+              <AppIcon style={{alignSelf:'center'}} name="iconArrowRight"/> }
         </View>
       </TouchableOpacity>
     )
