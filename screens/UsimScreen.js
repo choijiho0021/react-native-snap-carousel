@@ -314,6 +314,7 @@ class UsimScreen extends Component {
     this.state = {
       refreshing: false,
       cancelPressed: false,
+      isFocused: false,
       // afterLogin: false,
     }
     
@@ -343,7 +344,7 @@ class UsimScreen extends Component {
     
   // }
   componentDidMount() {
-    const { account: {iccid, loggedIn}, auth} = this.props
+    const { account: {iccid, loggedIn}, auth } = this.props
 
     console.log('로그인@@@@@', this.props)
     console.log('@@@@@iccid', iccid, auth)
@@ -361,6 +362,18 @@ class UsimScreen extends Component {
   }
 
   componentDidUpdate(prevProps) {
+
+    const focus = this.props.navigation.isFocused()
+    const { account: {iccid, loggedIn}, auth} = this.props
+
+    // 구매내역 원래 조건 확인 
+    if(this.state.isFocused != focus){
+      this.setState({isFocused: focus})
+      if(focus){
+        this._init(loggedIn, iccid, auth)
+      }
+    }
+
     // const {account:{loggedIn, iccid}, auth} = this.props
     
     // if(loggedIn != prevProps.account.loggedIn || auth != prevProps.auth){
@@ -506,9 +519,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginHorizontal:20
   },
+  activeBottomBox: {
+    height: 50,
+    backgroundColor: colors.white,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  borderBottomRadius8: {
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8
+  },
   usageListContainer: {
     marginHorizontal: 20,
-    marginBottom:20
+    marginBottom:20, 
   },
   titleAndStatus: {
     flexDirection:'row', 
@@ -580,10 +607,6 @@ const styles = StyleSheet.create({
     color:colors.warmGrey,
     fontSize: isDeviceSize('small') ? 12 : 14
   },
-  usageUntil: {
-    ... appStyles.normal14Text, 
-    color:colors.black
-  },
   normal12WarmGrey : {
     ... appStyles.normal12Text, 
     color:colors.warmGrey,
@@ -604,6 +627,7 @@ const styles = StyleSheet.create({
   warning : {
     ... appStyles.normal12Text, 
     textAlign:'left' ,
+    color: colors.warmGrey,
     marginHorizontal: 20, 
     marginBottom: 20
   },

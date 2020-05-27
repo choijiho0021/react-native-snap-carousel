@@ -23,6 +23,8 @@ import AppButton from '../components/AppButton';
 import WebView from 'react-native-webview';
 import getEnvVars from '../environment'
 import Analytics from 'appcenter-analytics'
+import KakaoSDK from '@actbase/react-native-kakaosdk';
+const { channelId } = getEnvVars()
 
 const HEADER_IMG_HEIGHT = 200;
 const TAB_IDX_ASK_BY_KAKAO = 3    // KakaoTalk으로 물어보기 Tab의 index
@@ -84,6 +86,7 @@ class ProductDetailScreen extends Component {
       prodInfo : ''
     }
     
+    this._openKTalk = this._openKTalk.bind(this);
     this.onNavigationStateChange = this.onNavigationStateChange.bind(this)
     this.checkIdx = this.checkIdx.bind(this)
     this._scrollTo = this._scrollTo.bind(this)
@@ -153,13 +156,24 @@ class ProductDetailScreen extends Component {
     this._scrollTo( height)
     this.setState({tabIdx:idx})
   }
+  _openKTalk = () => {
+    KakaoSDK.Channel.chat(channelId)
+      .then(res => console.log(res))
+      .catch(e => console.error(e));    
+  }
 
-  //todo : 디자인 나오면 변경
   renderContactKakao() {
     return (
-    <View>
-      <Text>{i18n.t("prodDetail:Question")}</Text>
-      <Text>{i18n.t("prodDetail:KakaoPlus")}</Text>
+    <View style={styles.kakaoContainer}>
+      <Image style={styles.questionImage} source={require('../assets/images/main/imgQuestion.png')} />
+      <Text style={appStyles.normal16Text}>
+        <Text style={{...appStyles.normal16Text, color:colors.clearBlue, }}>{i18n.t("prodDetail:Rokebi")}</Text>
+        {i18n.t("prodDetail:on")}
+      </Text>
+      <Text style={appStyles.normal16Text}>{i18n.t("prodDetail:Question")}</Text>
+
+      <Text style={styles.kakaoPlus}>{i18n.t("prodDetail:KakaoPlus")}</Text>
+      <AppButton iconName="openKakao" onPress={this._openKTalk} style={{flex:1}}/>
     </View>)
   }
 
@@ -198,7 +212,7 @@ class ProductDetailScreen extends Component {
       <SafeAreaView style={styles.screen}>
         <AppActivityIndicator visible={querying} />
 
-        <ScrollView 
+        <ScrollView style={{backgroundColor:colors.whiteTwo}}
           ref={scrollView => {this._scrollView = scrollView}}
           stickyHeaderIndices={[1]} //탭 버튼 고정
           showsVerticalScrollIndicator={false}
@@ -224,7 +238,7 @@ class ProductDetailScreen extends Component {
               )
             }
             </View>
-          </View>
+          </View >
           { 
             tabIdx == TAB_IDX_ASK_BY_KAKAO ? this.renderContactKakao() : this.renderWebView()
           }
@@ -262,7 +276,23 @@ const styles = StyleSheet.create({
   boldClearBlue: {
     color: colors.clearBlue,
     fontWeight: 'bold'
-  }
+  },
+  questionImage : {
+    marginBottom: 14,
+    marginTop: 45
+  },
+  kakaoImage : {
+  },
+  kakaoContainer : {
+    alignItems:'center',
+    backgroundColor:colors.whiteTwo,
+    height: 350
+  },
+  kakaoPlus : {
+    ... appStyles.normal14Text, 
+    marginTop:56, 
+    marginBottom: 10, 
+    color:colors.warmGrey}
 
 });
 
