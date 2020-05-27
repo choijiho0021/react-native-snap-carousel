@@ -58,7 +58,7 @@ class RechargeScreen extends Component {
       {
         key: 'rch',
         type: 'rch',
-        title: i18n.t('sim:rechargeAmt'),
+        title: `${utils.numberToCommaString(utils.stringToNumber( selected))} ${i18n.t('sim:rechargeBalance')}`,
         price: utils.stringToNumber( selected),
         qty: 1,
         sku: selected
