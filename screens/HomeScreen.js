@@ -171,7 +171,7 @@ class HomeScreen extends Component {
     })
 
     // 공지 사항 가져오기 
-    this.props.action.info.getInfoList('Info')
+    this.props.action.info.getInfoList('info')
 
     // 로그인 여부에 따라 달라지는 부분
     this._init()
