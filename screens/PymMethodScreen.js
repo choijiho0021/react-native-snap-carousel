@@ -79,12 +79,12 @@ class PymMethodScreen extends Component {
       {
         key: "1",
         route: 'SimpleText', 
-        param: { key: 'PrivacyPolicy', title: i18n.t('pym:privacy')} 
+        param: { key: 'pym:privacy_policy', title: i18n.t('pym:privacy')} 
       },
       {
         key: "2",
         route: 'SimpleText', 
-        param: { key: 'MarketingAgreement', title: i18n.t('pym:paymentAgency')} 
+        param: { key: 'pym:marketing_agreement', title: i18n.t('pym:paymentAgency')} 
       }
     ]
 

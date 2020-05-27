@@ -428,6 +428,15 @@ const en = {
   "appCenter:purchase": "Click the 'buy' button",
   "appCenter:searchWord": "Search_Country",
   "appCenter:payment" : "Payment",
+
+  "prodDetail:ProdInfo" : "Info",
+  "prodDetail:Caution" : "Caution",
+  "prodDetail:Tip" : "Tip",
+  "prodDetail:Ask with KakaoTalk" : "Ask With KakaoTalk",
+  "prodDetail:Rokebi" : "Rokebi",
+  "prodDetail:On" : "",
+  "prodDetail:Question" : "Is there any question?",
+  "prodDetail:KakaoPlus" : "Ask KakaoTalk Plus as a friend!",
 };
 
 const ko = {
@@ -871,8 +880,10 @@ const ko = {
   "prodDetail:Caution" : "주의사항",
   "prodDetail:Tip" : "사용팁",
   "prodDetail:Ask with KakaoTalk" : "물어보기",
-  "prodDetail:Question" : "로밍도깨비에 궁금하신점 있으신가요?",
-  "prodDetail:KakaoPlus" : "카카오톡 플러스 친구로 편하게 물어보세요!",
+  "prodDetail:Rokebi" : "로밍도깨비",
+  "prodDetail:On" : "에",
+  "prodDetail:Question" : "궁금하신점 있으신가요?",
+  "prodDetail:KakaoPlus" : "카카오톡 플러스 친구로\n 편하게 물어보세요!",
 };
 
 i18n.fallbacks = true;

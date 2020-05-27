@@ -71,13 +71,13 @@ class SettingsScreen extends Component {
     this.state = {
       showModal: false,
       data: [
-        { "key": "pushnoti", "value": i18n.t('set:pushnoti'), toggle: props.isPushNotiEnabled, route: undefined},
+        { "key": "setting:pushnoti", "value": i18n.t('set:pushnoti'), toggle: props.isPushNotiEnabled, route: undefined},
         // { "key": "info", "value": i18n.t('set:info'), route: 'MySim'},
-        { "key": "Contract", "value": i18n.t('set:contract'), route: 'SimpleText'},
-        { "key": "Privacy", "value": i18n.t('set:privacy'), route: 'SimpleText'},
-        { "key": "version", "value": i18n.t('set:version'), "desc": i18n.t('now') + ' ' + VersionCheck.getCurrentVersion() + '/' + label.replace(/v/g, ''), route: undefined},
-        { "key": "aboutus", "value": i18n.t('set:aboutus'), route: 'SimpleText'},
-        { "key": "logout", "value": i18n.t(props.loggedIn ? 'set:logout' : 'set:login'), route: undefined},
+        { "key": "setting:contract", "value": i18n.t('set:contract'), route: 'SimpleText'},
+        { "key": "setting:privacy", "value": i18n.t('set:privacy'), route: 'SimpleText'},
+        { "key": "setting:version", "value": i18n.t('set:version'), "desc": i18n.t('now') + ' ' + VersionCheck.getCurrentVersion() + '/' + label.replace(/v/g, ''), route: undefined},
+        { "key": "setting:aboutus", "value": i18n.t('set:aboutus'), route: 'SimpleText'},
+        { "key": "setting:logout", "value": i18n.t(props.loggedIn ? 'set:logout' : 'set:login'), route: undefined},
       ],
       isPushNotiEnabled: props.isPushNotiEnabled
     }
@@ -92,11 +92,11 @@ class SettingsScreen extends Component {
 
   componentDidUpdate(prevProps) {
     const { loggedIn, isPushNotiEnabled } = this.props,
-      statePushNoti = (this.state.data.find(item => item.key == 'pushnoti') || {}).toggle 
+      statePushNoti = (this.state.data.find(item => item.key == "setting:pushnoti") || {}).toggle 
 
     if ( loggedIn != prevProps.loggedIn) {
       this.setState({
-        data: this.state.data.map(item => item.key == 'logout' ? {
+        data: this.state.data.map(item => item.key == 'setting:logout' ? {
           ... item, 
           value: i18n.t(loggedIn ? 'set:logout' : 'set:login')
         } : item)
@@ -106,7 +106,7 @@ class SettingsScreen extends Component {
     if ( isPushNotiEnabled !== prevProps.isPushNotiEnabled 
       && isPushNotiEnabled !== statePushNoti ) {
         this.setState({
-          data: this.state.data.map(item => item.key == 'pushnoti' ? {
+          data: this.state.data.map(item => item.key == "setting:pushnoti" ? {
             ... item, 
             toggle: isPushNotiEnabled
           } : item)
@@ -131,16 +131,16 @@ class SettingsScreen extends Component {
 
   _onPress = (key, title, route) => () => {
     switch(key) {
-      case 'logout' :
+      case 'setting:logout' :
         if ( this.props.loggedIn) this._showModal(true)
         else this.props.navigation.navigate('Auth')
 
         break;
 
-      case 'pushnoti':
-        const isEnabled = (this.state.data.find(item => item.key == 'pushnoti') || {}).toggle 
+      case "setting:pushnoti":
+        const isEnabled = (this.state.data.find(item => item.key == "setting:pushnoti") || {}).toggle 
         this.setState({
-          data: this.state.data.map(item => item.key == 'pushnoti' ? {
+          data: this.state.data.map(item => item.key == "setting:pushnoti" ? {
             ... item, 
             toggle: ! isEnabled
           } : item)
@@ -149,7 +149,7 @@ class SettingsScreen extends Component {
           .catch(_ => {
             if (this._toastRef.current) this._toastRef.current.show()
             this._isMounted && this.setState({
-              data: this.state.data.map(item => item.key == 'pushnoti' ? {
+              data: this.state.data.map(item => item.key == "setting:pushnoti" ? {
                 ... item, 
                 toggle: this.props.isPushNotiEnabled
               } : item)

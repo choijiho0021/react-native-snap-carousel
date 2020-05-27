@@ -168,7 +168,7 @@ class ProductDetailScreen extends Component {
       <Image style={styles.questionImage} source={require('../assets/images/main/imgQuestion.png')} />
       <Text style={appStyles.normal16Text}>
         <Text style={{...appStyles.normal16Text, color:colors.clearBlue, }}>{i18n.t("prodDetail:Rokebi")}</Text>
-        {i18n.t("prodDetail:on")}
+        {i18n.t("prodDetail:On")}
       </Text>
       <Text style={appStyles.normal16Text}>{i18n.t("prodDetail:Question")}</Text>
 

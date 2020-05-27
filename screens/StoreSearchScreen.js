@@ -112,7 +112,7 @@ class StoreSearchScreen extends Component {
   }
 
   getRecommendation(){
-    pageApi.getPageByTitle('Recommendation').then(resp => {
+    pageApi.getPageByCategory('store:search_key').then(resp => {
       if ( resp.result == 0 && resp.objects.length > 0) {
         const recommendation = resp.objects[0].body.replace(/<\/p>/ig, '').replace(/<p>/ig, '').split(',')
         this.setState({
