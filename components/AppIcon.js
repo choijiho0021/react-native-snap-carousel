@@ -45,6 +45,7 @@ const images = {
   btnCnter: [ require( headerPath + 'btnCnter.png')],
   btnSearchTop: [ require( headerPath + 'btnSearchTop.png')],
   btnCheck : [ require( mainPath + 'btnCheckNon.png'), require( mainPath + 'btnCheckSel.png')],
+  openKakao : [require( mainPath + 'imgKakao.png')],
   kakao: [ require( paymentPath + 'logoKakao.png')],
   naver: [ require( paymentPath + 'logoNaver.png')],
   payco: [ require( paymentPath + 'logoPayco.png')],
@@ -53,7 +54,6 @@ const images = {
   lpay: [ require( paymentPath + 'logoLpay.png')],
   specialTip: [ require( guidePath + 'iconHoney.png')],
 }
-
 export default class AppIcon extends PureComponent {
 
   render() {

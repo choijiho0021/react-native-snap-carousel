@@ -112,8 +112,8 @@ class UsageDetailScreen extends Component {
             }
           })
       }
-      this.props.navigation.goBack()
     }
+    this.props.navigation.goBack()
 }
 
   _showModal(title, value) {

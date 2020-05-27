@@ -29,7 +29,7 @@ import LabelText from '../components/LabelText';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import Analytics from 'appcenter-analytics'
-import Dash from 'react-native-dash';
+import Svg, {Line} from 'react-native-svg';
 
 const STATUS_ACTIVE = 'A'     //사용중
 const STATUS_INACTIVE = 'I'   //미사용
@@ -257,34 +257,46 @@ class UsageItem extends Component {
     const {statusColor = colors.warmGrey, isActive = false} = this.setStatusColor()
 
     return (
-      <TouchableOpacity style={styles.usageListContainer} onPress={onPress}> 
-        <View style ={[{backgroundColor: colors.white}, isActive && styles.borderBottomRadius8]}>
-          <View style={styles.titleAndStatus}>
-            <Text style={[styles.usageTitleNormal, { fontWeight: isActive ? "bold" : "normal" }]}>{item.prodName}</Text>
-            <Text style={[styles.usageStatus,{color:statusColor}]}> • {item.status}</Text>
+      <TouchableOpacity onPress={onPress}> 
+        <View style ={styles.usageListContainer}>
+          <View style={{backgroundColor: colors.white}}>
+            <View style={styles.titleAndStatus}>
+              <Text style={[styles.usageTitleNormal, { fontWeight: isActive ? "bold" : "normal" }]}>{item.prodName}</Text>
+              <Text style={[styles.usageStatus,{color:statusColor}]}> • {item.status}</Text>
+            </View>
           </View>
           {
             item.statusCd == 'A' ?
             <View>
-              {
-                isShowUsage ? this.usageRender() : this.checkUsageButton()
-              }
-              <Text style={styles.warning}>{i18n.t('usim:warning')}</Text>
-              <Dash style={{marginHorizontal: 8}} dashColor={colors.lightGrey} dashGap={6} dashThickness={1} dashLength={6}/>
-            </View>
-            :<View style={styles.inactiveContainer}>
+              <View style={styles.topOfActiveContainer}>
+                {isShowUsage ? this.usageRender() : this.checkUsageButton()}
+                <Text style={styles.warning}>{i18n.t('usim:warning')}</Text>
+              </View>
+              <View style={styles.bottomOfActiveContainer}>
+              <Svg height={2} width={'100%'}>
+                <Line
+                  style={{marginLeft:2}}
+                  stroke={colors.warmGrey}
+                  strokeWidth="2"
+                  strokeDasharray="5, 5"
+                  x1={'2%'}
+                  y1={'0'}
+                  x2={'98%'}
+                  y2={'0'}
+                />
+              </Svg>
+                <View style={styles.endDateContainer}>
+                  <Text style={appStyles.normal12Text}>{i18n.t('usim:usingTime')}</Text>
+                  <Text style={styles.usageUntil}>{`${utils.toDateString(item.endDate,'YYYY-MM-DD h:mm')} ${i18n.t('usim:until')}`}</Text>
+                </View> 
+              </View>
+            </View> : 
+            <View style={styles.inactiveContainer}>
               <Text style={appStyles.normal12Text}>{i18n.t('usim:usablePeriod')}</Text>
               <Text style={styles.usagePeriod}>{`${utils.toDateString(item.purchaseDate,'YYYY-MM-DD')} ~ ${item.expireDate}`}</Text>
             </View> 
           }
         </View>
-        {
-          isActive &&
-          <View style={styles.activeBottomBox}>
-            <Text style={styles.normal12WarmGrey}>{i18n.t('usim:usingTime')}</Text>
-            <Text style={appStyles.normal14Text}>{utils.toDateString(item.endDate,'YYYY-MM-DD h:mm')} {i18n.t('usim:until')}</Text>
-          </View>
-        }
       </TouchableOpacity>
     )
   }
@@ -559,14 +571,6 @@ const styles = StyleSheet.create({
     justifyContent:'space-between',
     borderTopRightRadius:8, 
     borderTopLeftRadius : 8
-  },
-  dashedLine: {
-    height:1, 
-    width : '98%',
-    borderStyle: 'dashed', 
-    borderColor:colors.warmGrey, 
-    borderWidth : 1, 
-    borderRadius:8
   },
   topOfActiveContainer : {
     backgroundColor: colors.white, 

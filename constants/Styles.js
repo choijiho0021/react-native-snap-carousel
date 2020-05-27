@@ -452,6 +452,7 @@ export const htmlDetailWithCss = (body, script = '') => {
         justify-content: center;
         align-items: center;
         height: 40%;
+        width: 20%;
         color: ${colors.warmGrey};
         border: solid 1px ${colors.whiteThree};
         background-color: ${colors.whiteTwo};
