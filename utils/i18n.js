@@ -568,7 +568,7 @@ const ko = {
   'acc:permPhoto': '사진 앨범 권한을 허가해 주세요',
   'acc:permCamera': '카메라 권한을 허가해 주세요',
   'acc:duplicatedEmail': '이미 등록된 이메일 입니다',
-  'acc:disconnectSim': '다른 번호에서 같은 SIM 카드를 사용하여 카드 연결을 해제합니다',
+  'acc:disconnectSim': '사용 중인 유심이 새로운 계정에서 등록되어 기존 계정과 연결이 해제되었습니다.',
 
   // "set:info" : "유심 정보",
   "set:noti" : "알림",
