@@ -25,6 +25,7 @@ import getEnvVars from '../environment'
 import Analytics from 'appcenter-analytics'
 import KakaoSDK from '@actbase/react-native-kakaosdk';
 import AppIcon from '../components/AppIcon';
+import AppToast from '../components/AppToast';
 
 const { channelId } = getEnvVars()
 
@@ -88,6 +89,8 @@ class ProductDetailScreen extends Component {
       prodInfo : ''
     }
     
+    this._toastRef = React.createRef()
+
     this._openKTalk = this._openKTalk.bind(this);
     this.onNavigationStateChange = this.onNavigationStateChange.bind(this)
     this.checkIdx = this.checkIdx.bind(this)
@@ -160,8 +163,11 @@ class ProductDetailScreen extends Component {
   }
   _openKTalk = () => {
     KakaoSDK.Channel.chat(channelId)
-      .then(res => console.log(res))
-      .catch(e => console.error(e));    
+      .then(res => {console.log(res)})
+      .catch(e => {
+        if (this._toastRef.current) this._toastRef.current.show()
+        console.error(e)
+      });    
   }
 
   renderContactKakao() {
@@ -176,6 +182,7 @@ class ProductDetailScreen extends Component {
 
       <Text style={styles.kakaoPlus}>{i18n.t("prodDetail:KakaoPlus")}</Text>
       <AppButton iconName="openKakao" onPress={this._openKTalk} style={{flex:1}}/>
+      <AppToast ref={this._toastRef} text={i18n.t('set:failedOpenKakao')}/>
     </View>)
   }
 

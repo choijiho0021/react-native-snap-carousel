@@ -888,6 +888,7 @@ const ko = {
   "prodDetail:On" : "에",
   "prodDetail:Question" : "궁금하신점 있으신가요?",
   "prodDetail:KakaoPlus" : "카카오톡 플러스 친구로\n 편하게 물어보세요!",
+  "set:failedOpenKakao" : "카카오 상담 연결에 실패했습니다.\n 잠시 후 다시 시도해주세요.",
 
   "loading:error": "로딩 불가",
   "loading:terminate": "로딩 중 오류가 발생하여 앱을 종료합니다.",
