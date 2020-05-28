@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 import {
   StyleSheet,
   Text,
-  View
+  View,
+  Platform
 } from 'react-native';
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -48,7 +49,6 @@ class PymMethodScreen extends Component {
 
     this.state = {
       mode: undefined,
-      data: undefined,
       selected: {},
       pymPrice: undefined,
       deduct: undefined,
@@ -81,12 +81,12 @@ class PymMethodScreen extends Component {
       {
         key: "1",
         route: 'SimpleText', 
-        param: { key: 'pym:privacy_policy', title: i18n.t('pym:privacy')} 
+        param: { key: 'setting:privacy', title: i18n.t('pym:privacy')} 
       },
       {
         key: "2",
         route: 'SimpleText', 
-        param: { key: 'pym:marketing_agreement', title: i18n.t('pym:paymentAgency')} 
+        param: { key: 'pym:agreement', title: i18n.t('pym:paymentAgency')} 
       }
     ]
 
