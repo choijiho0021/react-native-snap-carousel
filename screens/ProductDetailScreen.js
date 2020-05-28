@@ -24,6 +24,8 @@ import WebView from 'react-native-webview';
 import getEnvVars from '../environment'
 import Analytics from 'appcenter-analytics'
 import KakaoSDK from '@actbase/react-native-kakaosdk';
+import AppIcon from '../components/AppIcon';
+
 const { channelId } = getEnvVars()
 
 const HEADER_IMG_HEIGHT = 200;
@@ -165,7 +167,7 @@ class ProductDetailScreen extends Component {
   renderContactKakao() {
     return (
     <View style={styles.kakaoContainer}>
-      <Image style={styles.questionImage} source={require('../assets/images/main/imgQuestion.png')} />
+      <AppIcon style={styles.questionImage} name="imgQuestion"/>
       <Text style={appStyles.normal16Text}>
         <Text style={{...appStyles.normal16Text, color:colors.clearBlue, }}>{i18n.t("prodDetail:Rokebi")}</Text>
         {i18n.t("prodDetail:On")}
