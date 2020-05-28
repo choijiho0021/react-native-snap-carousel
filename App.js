@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View, BackHandler } from 'react-native';
 import { createStore, applyMiddleware, compose } from 'redux'
 import { Provider } from 'react-redux'
 
@@ -19,7 +19,9 @@ import * as productActions from './redux/modules/product'
 import * as simActions from './redux/modules/sim'
 import * as syncActions from './redux/modules/sync'
 import CodePushModal from './components/CodePushModal'
-import codePush from 'react-native-code-push';
+import codePush from 'react-native-code-push'
+import AppAlert from './components/AppAlert'
+import i18n from './utils/i18n'
 
 const logger = createLogger()
 const composeEnhancers = (process.env.NODE_ENV == 'development' ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ : null) || compose;
@@ -103,6 +105,12 @@ async function loadResourcesAsync() {
 function handleLoadingError(error: Error) {
   // In this case, you might want to report the error to your error reporting
   // service, for example Sentry
+  const errorMsg = Platform.OS === 'ios' ? i18n.t('loading:failedToExec') : i18n.t('loading:terminate')
+  AppAlert.error( errorMsg, i18n.t('loading:error'), () => {
+      if ( Platform.OS !== 'ios' ) {
+        BackHandler.exitApp()
+      }
+  })
   console.warn(error);
 }
 
