@@ -1,21 +1,41 @@
 import React, {PureComponent} from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, Easing } from 'react-native'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import { appStyles } from '../constants/Styles'
 import { colors } from '../constants/Colors'
 import _ from 'underscore'
+import * as toastActions from '../redux/modules/toast'
+import i18n from '../utils/i18n'
+import { Map, List } from 'immutable'
 
-export default class AppToast extends PureComponent {
+class AppToastType {
+  static NOT_LOADED   = 0
+  static NOT_UPDATED  = 1
+
+  static messageMap = Map({
+    [this.NOT_LOADED]   : i18n.t('toast:failedToLoad'),
+    [this.NOT_UPDATED]  : i18n.t('toast:failedToUpdate')
+  })
+
+  static mapToMessage(idx) {
+    if ( idx && this.messageMap.has(idx.toString()) ) {
+      return this.messageMap.get(idx.toString())
+    }
+
+    return this.messageMap.get(this.NOT_LOADED)
+  }
+}
+
+class AppToast extends PureComponent {
   constructor(props) {
     super(props)
 
     this.state = {
       isShown: false,
-      opacity: new Animated.Value(0)
+      opacity: new Animated.Value(0),
+      text: ''
     }
-
-
-    this.show = this.show.bind(this)
-    this.close = this.close.bind(this)
 
     this._onPress = this._onPress.bind(this)
 
@@ -32,6 +52,11 @@ export default class AppToast extends PureComponent {
   }
 
   componentDidUpdate(prevProps) {
+    if ( this.props.toastMsgBox.size > 0 
+      && prevProps.toastMsgBox.size === 0
+      && ! this._isShown ) {
+        this._show()
+      }
   }
 
   componentWillUnmount() {
@@ -39,12 +64,14 @@ export default class AppToast extends PureComponent {
     this._timer && clearTimeout(this._timer)
   }
 
-  show({ duration } = {}) {
+  _show({ duration } = {}) {
+    const { toastMsgBox } = this.props,
+      text = AppToastType.mapToMessage( toastMsgBox.first() )
     if ( _.isNumber(duration) ) {
       this._duration = Number(duration)
     }
 
-    this._isMounted && this.setState({ isShown: true })
+    this._isMounted && this.setState({ isShown: true, text })
 
     Animated.timing(
       this.state.opacity,
@@ -57,14 +84,16 @@ export default class AppToast extends PureComponent {
     ).start(() => {
       this._isShown = true
       this._timer && clearTimeout(this._timer)
+      this.props.action.toast.remove()
 
       this._timer = setTimeout(() => {
-        this.close()
+        this._close()
       }, this._duration)
     })
   }
   
-  close() {
+  _close() {
+    const { toastMsgBox } = this.props
     this._timer && clearTimeout(this._timer)
 
     if (! this._isShown && ! this.state._isShown ) return;
@@ -80,6 +109,10 @@ export default class AppToast extends PureComponent {
     ).start(() => {
       this._isMounted && this.setState({ isShown: false })
       this._isShown = false
+
+      if (toastMsgBox.size > 0) {
+        this._show()
+      }
     })
 
   }
@@ -94,8 +127,7 @@ export default class AppToast extends PureComponent {
 
   render() {
     const props = this.props,
-      { text } = props,
-      { isShown } = this.state
+      { isShown, text } = this.state
 
     return ( 
       isShown ?
@@ -130,3 +162,16 @@ const styles = StyleSheet.create({
   }
 });
 
+const mapStateToProps = (state) => ({
+  toastMsgBox : state.toast.get('messages')
+})
+
+export default connect(mapStateToProps, 
+  (dispatch) => ({
+      action : {
+          toast: bindActionCreators(toastActions, dispatch),
+      }
+  })
+)(AppToast)
+
+export { AppToastType }
