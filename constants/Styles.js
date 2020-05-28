@@ -352,7 +352,6 @@ export const htmlDetailWithCss = (body, script = '') => {
         color: ${colors.clearBlue};
         padding-bottom: 15px;
         margin-bottom: 10%;
-        margin-top: 100px;
         font-weight: bold;
         border-bottom: 10px solid ${colors.clearBlue};
     }
@@ -374,6 +373,7 @@ export const htmlDetailWithCss = (body, script = '') => {
     }
     .tab {
         line-height: 1.6;
+        border-bottom: 1px solid white;
     }
     .tab div:not(.noMargin) {
         margin-left: 40px;
