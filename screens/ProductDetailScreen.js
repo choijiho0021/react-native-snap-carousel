@@ -24,6 +24,7 @@ import WebView from 'react-native-webview';
 import getEnvVars from '../environment'
 import Analytics from 'appcenter-analytics'
 import KakaoSDK from '@actbase/react-native-kakaosdk';
+import { scaleFactor } from '../constants/SliderEntry.style';
 const { channelId } = getEnvVars()
 
 const HEADER_IMG_HEIGHT = 200;
@@ -69,7 +70,7 @@ function send() {
 // };
 // return true;`
 
-const scale = 0.422
+const scale = scaleFactor()
 
 class ProductDetailScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -125,6 +126,8 @@ class ProductDetailScreen extends Component {
 
   onNavigationStateChange(navState) {
 
+    console.log('@@@ height', navState.title)
+
     navState.title.split(',').map((bottom, idx) => 
       this.setState({
         ['height' + idx] : Number(bottom) * scale
@@ -143,7 +146,7 @@ class ProductDetailScreen extends Component {
   }
 
   _scrollTo(y){
-    console.log('scroll to y:', y)
+    
     this._scrollView.scrollTo({x: 0, y: y, animated: true}) 
   }
 
