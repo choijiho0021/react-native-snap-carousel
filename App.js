@@ -86,8 +86,6 @@ async function login() {
     const mobile = await utils.retrieveData( userApi.KEY_MOBILE)
     const pin = await utils.retrieveData( userApi.KEY_PIN)
 
-    console.log('load', mobile, pin, iccid)
-
     if ( mobile && pin ) {
       store.dispatch(accountActions.logInAndGetAccount( mobile, pin, iccid))
     }
