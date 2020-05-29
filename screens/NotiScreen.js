@@ -45,7 +45,7 @@ class NotiListItem extends Component {
             <View style={styles.title}>
               <Text key='titleText' style={styles.titleText}>{item.title}</Text>
             </View>
-            <Text key='body' style={styles.body} numberOfLines={4} ellipsizeMode={'tail'} >{utils.htmlToString(item.summary || item.body)}
+            <Text key='body' style={styles.body} numberOfLines={3} ellipsizeMode={'tail'} >{utils.htmlToString(item.summary || item.body)}
             </Text>
           </View>
           <View key='iconview' style={styles.Icon}>
