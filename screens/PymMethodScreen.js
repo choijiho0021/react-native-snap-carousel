@@ -496,9 +496,8 @@ class PymMethodScreen extends Component {
       <SafeAreaView style={styles.container} forceInset={{top: 'never', bottom:"always"}}>
         <KeyboardAwareScrollView
           resetScrollToCoords={{ x: 0, y: 0 }}
-          enableOnAndroid={true}
-          // extraScrollHeight={60}
-          innerRef={ref => { this.scroll = ref; }}>
+          enableOnAndroid={true}>
+
           <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance} mode={'method'}
                           pymPrice={pymPrice} deduct={deduct} isRecharge={isRecharge}/>
               

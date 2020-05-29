@@ -7,7 +7,8 @@ import {
   SafeAreaView,
   findNodeHandle,
   TouchableOpacity,
-  Keyboard
+  Keyboard,
+  Platform
 } from 'react-native';
 import {connect} from 'react-redux'
 
@@ -64,6 +65,7 @@ class RegisterSimScreen extends Component {
 
     this._isMounted = null
 
+    this.scroll = React.createRef()
   }
 
   componentWillUnmount(){
@@ -166,7 +168,7 @@ class RegisterSimScreen extends Component {
   }
 
   _scrolll = (event) => {
-    this.scroll.props.scrollToFocusedInput(findNodeHandle(event.target));
+    if ( this.scroll.current) this.scroll.current.props.scrollToFocusedInput(findNodeHandle(event.target));
   }
 
   _onChangeText = (key, idx) => (value) => {
@@ -224,7 +226,7 @@ class RegisterSimScreen extends Component {
         <AppActivityIndicator visible={querying}/>
 
         <KeyboardAwareScrollView
-          innerRef={ref => { this.scroll = ref; }}
+          innerRef={this.scroll}
           resetScrollToCoords={{ x: 0, y: 0 }}
           contentContainerStyle={styles.container}
           enableOnAndroid={true}
