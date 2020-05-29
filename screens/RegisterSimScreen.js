@@ -106,41 +106,35 @@ class RegisterSimScreen extends Component {
       querying: true
     })
 
-    accountApi.validateActCode(iccid, actCode, this.props.auth).then( resp => {
-      return new Promise((resolve, reject) => {
-        if ( resp.result == 0) {
-          // activation code is valid
+    accountApi.validateActCode(iccid, actCode, this.props.auth)
+      .then(resp => {
+        if ( resp.result === 0 ) {
           const uuid = resp.objects[0].uuid
 
-          // 서버의 account에 mobile 번호를 등록한다.
-          this.props.action.account.registerMobile(uuid, this.props.account.mobile, this.props.auth).then( resp => {
-            if ( resp.result == 0) {
-              //signup, update를 모두 성공한 경우, 화면에 성공으로 표시 
-              resolve()
-              AppAlert.info(i18n.t('reg:success'), i18n.t('appTitle'), () => this.props.navigation.popToTop())
-            }
-            else {
-              reject(resp)
-              //AppAlert.error(i18n.t('reg:fail'))
-            }
-          })
+          return this.props.action.account.registerMobile(uuid, this.props.account.mobile, this.props.auth)
+            .then( resp => {
+              if(resp.result === 0) {
+                AppAlert.info(i18n.t('reg:success'), i18n.t('appTitle'), () => this.props.navigation.popToTop())
+                return resp
+              }
+              return Promise.reject({ msg: i18n.t('reg:fail') })
+            })
+        }
 
-        }
-        else {
-          resolve()
-          // invalid activation code
-          AppAlert.error(i18n.t('reg:wrongActCode'))
-        }
+        return Promise.reject({ msg: i18n.t('reg:wrongActCode') })
       })
-    }).catch(err => {
-      console.log('failed to update', err)
-      AppAlert.error(i18n.t('reg:fail'))
-    }).finally(() => {
-      this._isMounted && this.setState({
-        querying: false,
-        disable: false
+      .catch(err => {
+        const msg = _.isObject(err) ? err.msg || i18n.t('reg:fail') : i18n.t('reg:fail')
+        console.log('failed to update', err)
+        AppAlert.error(msg)
       })
-    })
+      .finally(() => {
+        this._isMounted && this.setState({
+          querying: false,
+          disable: false
+        })
+      })
+
   }
 
   async _onCamera(flag) {
