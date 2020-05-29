@@ -48,13 +48,14 @@ const html = [
 // getBoundingClientRect().y : 각 div의 시작 위치 y position
 
 const script = `<script>
-window.onload = function() {
+window.onload = function () {
   window.location.hash = 1;
-  document.title = document.body.clientWidth + ',' + document.documentElement.clientHeight + ',' + 
+  var dimension = document.body.clientWidth + ',' + document.documentElement.clientHeight + ',' + 
     ['prodInfo', 'tip', 'caution'].map(item => {
       var rect = document.getElementById(item).getBoundingClientRect();
       return rect.y;
     }).join(',');
+  window.ReactNativeWebView.postMessage('size:' + dimension);
 }
 function copy(val) {
   var txtArea = document.createElement("textarea");
@@ -63,22 +64,13 @@ function copy(val) {
   txtArea.select();
   document.execCommand("copy");
   document.body.removeChild(txtArea);
-  }
+}
+
 function send() {
   window.ReactNativeWebView.postMessage('APN Value have to insert into this', '*');
   window.alert('copy');
-};</script>`
-
-// const script = `window.location.hash = 1;
-// document.title = ['testa', 'testb', 'testc'].map(item => {
-//   var rect = document.getElementById(item).getBoundingClientRect();
-//   return rect.bottom;
-// }).join(',');
-// function send() {
-//   window.ReactNativeWebView.postMessage('APN Value have to insert into this', '*');
-//   window.alert('copy');
-// };
-// return true;`
+}
+</script>`
 
 
 class ProductDetailScreen extends Component {
@@ -97,13 +89,16 @@ class ProductDetailScreen extends Component {
     }
     
     this._openKTalk = this._openKTalk.bind(this);
-    this.onNavigationStateChange = this.onNavigationStateChange.bind(this)
     this.checkIdx = this.checkIdx.bind(this)
     this._scrollTo = this._scrollTo.bind(this)
     this.renderContactKakao = this.renderContactKakao.bind(this)
     this.renderWebView = this.renderWebView.bind(this)
     this._onMessage = this._onMessage.bind(this)
+    this._checkWindowSize = this._checkWindowSize.bind(this)
+    this._clickTab = this._clickTab.bind(this)
+
     this.controller = new AbortController()
+    this.scrollView = React.createRef()
   }
 
   shouldComponentUpdate(preProps,preState){
@@ -132,12 +127,12 @@ class ProductDetailScreen extends Component {
 
   }
 
-  onNavigationStateChange(navState) {
+  _checkWindowSize(sizeString = '') {
 
-    const sz = navState.title.split(','),
+    const sz = sizeString.split(','),
       scale = windowWidth / Number(sz[0])
 
-    // console.log('@@@ height', navState.title, scale)
+    // console.log('@@@ height', sizeString, scale)
 
     for( var i =2; i< sz.length; i++) {
       // 각 tab별로 시작 위치를 설정한다. 
@@ -151,8 +146,11 @@ class ProductDetailScreen extends Component {
     })
   }
 
-  checkIdx(offset) {
-    // console.log('@@@ offset', offset)
+  checkIdx(event) {
+    var { contentOffset } = event,
+      offset = contentOffset.y
+
+    // console.log('@@@ offset', offset, event)
     
     offset -= HEADER_IMG_HEIGHT
     if ( this.state.tabIdx != TAB_IDX_ASK_BY_KAKAO){
@@ -169,10 +167,11 @@ class ProductDetailScreen extends Component {
   _scrollTo(y){
     // console.log('@@@ scroll to', y)
     
-    this._scrollView.scrollTo({x: 0, y: y, animated: true}) 
+    if ( this.scrollView.current) this.scrollView.current.scrollTo({x: 0, y: y, animated: true}) 
   }
 
   _clickTab = (idx) => () => {
+    // console.log('@@@ click tab', this._webView1)
     
     Analytics.trackEvent('Page_View_Count', {page: tabList[idx]})
 
@@ -202,15 +201,21 @@ class ProductDetailScreen extends Component {
 
   _onMessage(event) {
     const {data} = event.nativeEvent
-    Clipboard.setString(data)
-    console.log("Copy APN value : ",data)
+
+    // console.log("@@@ on Message : ", data)
+
+    if ( data.startsWith('size:')) {
+      this._checkWindowSize( data.substring(5))
+    }
+    else {
+      Clipboard.setString(data)
+    }
   }
 
   renderWebView() {
     const {height3, prodInfo} = this.state
 
     return <WebView 
-      ref={webView1 => {this._webView1 = webView1}}
       automaticallyAdjustContentInsets={false}
       javaScriptEnabled={true}
       domStorageEnabled={true}
@@ -218,8 +223,8 @@ class ProductDetailScreen extends Component {
       startInLoadingState={true}
       // injectedJavaScript={script}
       decelerationRate="normal"
-      onNavigationStateChange={(navState) => this.onNavigationStateChange(navState)}
-      scrollEnabled = {false}
+      // onNavigationStateChange={(navState) => this.onNavigationStateChange(navState)}
+      scrollEnabled = {true}
       // source={{html: body + html + script} }
       onMessage={this._onMessage}
       source={{html: htmlDetailWithCss(prodInfo, script), baseUrl} }
@@ -236,12 +241,11 @@ class ProductDetailScreen extends Component {
         <AppActivityIndicator visible={querying} />
 
         <ScrollView style={{backgroundColor:colors.whiteTwo}}
-          ref={scrollView => {this._scrollView = scrollView}}
+          ref={this.scrollView}
           stickyHeaderIndices={[1]} //탭 버튼 고정
           showsVerticalScrollIndicator={false}
-          scrollEventThrottle={11}
-          onScroll={(state) => {this.checkIdx(state.nativeEvent.contentOffset.y)}}
-          onContentSizeChange={this._clickTab(tabIdx)}>
+          scrollEventThrottle={100}
+          onScroll={(state) => {this.checkIdx(state.nativeEvent)}} >
           
           {
           <View style={{height:HEADER_IMG_HEIGHT}}>
