@@ -474,11 +474,14 @@ export const htmlDetailWithCss = (body, script = '') => {
     }
     .padding20Img {
         background-color: ${colors.paleGrey};
-        padding: 20px;
+        padding: 20px 0px;
     }
     .padding40Img {
         background-color: ${colors.paleGrey};
         padding: 20px;
+    }
+    .padding40Img img {
+        margin: 20px 0px;
     }
     #iosLogo {
         width: 6%;
