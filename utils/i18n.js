@@ -442,7 +442,8 @@ const en = {
   "loading:failedToExec": "The app cannot be launched because an error occurred during loading.",
 
   "toast:failedToUpdate" : "Failed to change settings.\nPlease check your network connection.",
-  "toast:failedToLoad" : "Failed to load the data.\nPlease check your network connection."
+  "toast:failedToLoad" : "Failed to load the data.\nPlease check your network connection.",
+  "toast:failedToOpen" : "Failed to open the KakaoTalk Channel."
 };
 
 const ko = {
@@ -895,7 +896,8 @@ const ko = {
   "loading:failedToExec": "로딩 중 오류가 발생하여 앱을 실행할 수 없습니다.",
 
   "toast:failedToUpdate" : "설정 변경에 실패했습니다.\n네트워크 연결 상태를 확인해주세요.",
-  "toast:failedToLoad" : "데이터 로딩에 실패했습니다.\n네트워크 연결 상태를 확인해주세요."
+  "toast:failedToLoad" : "데이터 로딩에 실패했습니다.\n네트워크 연결 상태를 확인해주세요.",
+  "toast:failedToOpen" : "카카오톡 채널에 연결할 수 없습니다."
 };
 
 i18n.fallbacks = true;
