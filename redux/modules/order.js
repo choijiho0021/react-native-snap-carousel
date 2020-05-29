@@ -1,6 +1,6 @@
 import { createAction, handleActions } from 'redux-actions';
 import { pender } from 'redux-pender'
-import { Map, List } from 'immutable';
+import { Map } from 'immutable';
 import orderApi from '../../utils/api/orderApi'
 import subscriptionApi from '../../utils/api/subscriptionApi';
 
@@ -19,6 +19,15 @@ export const getSubsUsage = createAction(GET_SUBS_USAGE, subscriptionApi.getSubs
 export const updateUsageStatus = createAction(UPDATE_USAGE, subscriptionApi.updateSubscriptionStatus)
 export const updateSubsToCash = createAction(UPDATE_SUBS_TO_CASH, subscriptionApi.toRokebiCash)
 export const reset = createAction(RESET)
+
+export const getOrdersIfEmpty = (auth) => {
+  return (dispatch, getState) => {
+    const { order } = getState()
+
+    if ( order.get('orders').length == 0) return dispatch( getOrders(auth))
+    return new Promise.resolve()
+  }
+}
 
 const initialState = Map({
     orders: [],
