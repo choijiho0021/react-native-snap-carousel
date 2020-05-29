@@ -8,7 +8,6 @@ class NotiAPI {
 
     toNoti = (data) => {
         // REST API json/noti/list/{id}로 조회하는 경우
-        console.log("data",data)
         if ( data && data.length > 0) {
             return api.success(
                 data.map((item,idx) => ({
@@ -20,7 +19,7 @@ class NotiAPI {
                     uuid:item.uuid,
                     mobile:item.name,
                     isRead:item.isRead,
-                    format:item.field_format,
+                    format:item.field_format == 'T' ? 'text' : 'html',
                     summary:item.summary
                 }))
             )
