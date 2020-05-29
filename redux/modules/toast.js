@@ -1,7 +1,7 @@
 import { createAction, handleActions } from 'redux-actions';
 import { Map, List } from 'immutable';
 import _ from 'underscore'
-import { AppToastType } from '../../components/AppToast'
+import { Toast } from '../../constants/CustomTypes'
 
 const INIT = "rokebi/toast/INIT"
 const PUSH = "rokebi/toast/PUSH"
@@ -21,9 +21,10 @@ export default handleActions({
     },
     [PUSH] : (state, action) => {
         const messages = state.get('messages'),
-            newMsg = action.payload || AppToastType.NOT_LOADED
+            newMsg = action.payload || Toast.NOT_LOADED
+
         if ( ! messages.contains(newMsg) ) {
-            state = state.set('messages', messages.push(action.payload))
+            state = state.set('messages', messages.push(newMsg))
         }
         return state
     },

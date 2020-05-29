@@ -100,7 +100,7 @@ async function login() {
 
 async function loadResourcesAsync() {
     // load product list
-    store.dispatch(productActions.getProdList())
+    store.dispatch(productActions.getProdListWithToast())
     store.dispatch(simActions.getSimCardList())
 }
 

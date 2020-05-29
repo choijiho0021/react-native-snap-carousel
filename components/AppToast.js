@@ -8,24 +8,7 @@ import _ from 'underscore'
 import * as toastActions from '../redux/modules/toast'
 import i18n from '../utils/i18n'
 import { Map, List } from 'immutable'
-
-class AppToastType {
-  static NOT_LOADED   = 0
-  static NOT_UPDATED  = 1
-
-  static messageMap = Map({
-    [this.NOT_LOADED]   : i18n.t('toast:failedToLoad'),
-    [this.NOT_UPDATED]  : i18n.t('toast:failedToUpdate')
-  })
-
-  static mapToMessage(idx) {
-    if ( idx && this.messageMap.has(idx.toString()) ) {
-      return this.messageMap.get(idx.toString())
-    }
-
-    return this.messageMap.get(this.NOT_LOADED)
-  }
-}
+import { Toast } from '../constants/CustomTypes'
 
 class AppToast extends PureComponent {
   constructor(props) {
@@ -66,7 +49,8 @@ class AppToast extends PureComponent {
 
   _show({ duration } = {}) {
     const { toastMsgBox } = this.props,
-      text = AppToastType.mapToMessage( toastMsgBox.first() )
+      text = Toast.mapToMessage( toastMsgBox.first() )
+
     if ( _.isNumber(duration) ) {
       this._duration = Number(duration)
     }
@@ -173,5 +157,3 @@ export default connect(mapStateToProps,
       }
   })
 )(AppToast)
-
-export { AppToastType }

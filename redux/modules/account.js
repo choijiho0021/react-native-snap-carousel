@@ -9,7 +9,7 @@ import moment from 'moment'
 import { batch } from 'react-redux';
 import { Platform } from '@unimodules/core';
 import * as ToastActions from './toast'
-import { AppToastType } from '../../components/AppToast';
+import { Toast } from '../../constants/CustomTypes';
 
 const SIGN_UP =        'rokebi/account/SIGN_UP'
 export const UPDATE_ACCOUNT = 'rokebi/account/UPDATE_ACCOUNT'
@@ -120,7 +120,11 @@ export const changePushNoti = ({ isPushNotiEnabled }) => {
         if ( resp.result === 0) {
           return dispatch(updateAccount({isPushNotiEnabled}))
         }
-        dispatch(ToastActions.push(AppToastType.NOT_UPDATED))
+        dispatch(ToastActions.push(Toast.NOT_UPDATED))
+        return Promise.reject()
+      },
+      err => {
+        dispatch(ToastActions.push(Toast.NOT_UPDATED))
         return Promise.reject()
       })
   }
