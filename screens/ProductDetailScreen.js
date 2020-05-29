@@ -167,7 +167,7 @@ class ProductDetailScreen extends Component {
   }
 
   _scrollTo(y){
-    console.log('@@@ scroll to', y)
+    // console.log('@@@ scroll to', y)
     
     this._scrollView.scrollTo({x: 0, y: y, animated: true}) 
   }
