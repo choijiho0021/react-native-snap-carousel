@@ -19,9 +19,11 @@ import {colors} from '../constants/Colors'
 import AppIcon from '../components/AppIcon'
 import * as infoActions from '../redux/modules/info'
 import * as notiActions from '../redux/modules/noti'
+import * as toastActions from '../redux/modules/toast'
 import AppModal from '../components/AppModal';
 import KakaoSDK from '@actbase/react-native-kakaosdk';
 import getEnvVars from '../environment';
+import { Toast } from '../constants/CustomTypes';
 const { channelId } = getEnvVars()
 
 class ContactListItem extends PureComponent {
@@ -126,8 +128,7 @@ class ContactScreen extends Component {
 
   _openKTalk = () => {
     KakaoSDK.Channel.chat(channelId)
-      .then(res => console.log(res))
-      .catch(e => console.error(e));
+      .catch(_ => { this.props.action.toast.push(Toast.NOT_OPENED) });
 
     /*
     const resendable = this.props.noti.result !== 0 ||
@@ -215,7 +216,8 @@ export default connect(mapStateToProps,
   (dispatch) => ({
     action : {
       info: bindActionCreators(infoActions, dispatch),
-      noti: bindActionCreators(notiActions, dispatch)
+      noti: bindActionCreators(notiActions, dispatch),
+      toast: bindActionCreators(toastActions, dispatch)
     }
   })
 )(ContactScreen)

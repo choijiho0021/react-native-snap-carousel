@@ -3,6 +3,7 @@ import Constants from 'expo-constants';
 import _ from 'underscore'
 import AppAlert from '../components/AppAlert';
 import moment from 'moment-with-locales-es6'
+import * as ToastActions from '../redux/modules/toast'
 
 let UniAsyncStorage
 if ( Constants.appOwnership === 'expo') {
@@ -143,6 +144,23 @@ class Utils {
         })   
         return duplicatedArr
     }
+
+    reflectWithToast = (action, toastType) => (...args) => {
+        return (dispatch, getState) => { 
+          return dispatch(action(...args)).then(
+            resp => {
+              if (resp.result !== 0) {
+                dispatch(ToastActions.push(toastType))
+              }
+              return resp
+            },
+            err => {
+              dispatch(ToastActions.push(toastType))
+              return err
+            }
+          )
+        }
+      }
 }
 
 export default new Utils()

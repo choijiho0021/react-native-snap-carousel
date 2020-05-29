@@ -9,6 +9,8 @@ import {
   Image,
   Clipboard
 } from 'react-native';
+import {bindActionCreators} from 'redux'
+import {connect} from 'react-redux'
 
 import i18n from '../utils/i18n'
 import AppBackButton from '../components/AppBackButton';
@@ -25,6 +27,8 @@ import getEnvVars from '../environment'
 import Analytics from 'appcenter-analytics'
 import KakaoSDK from '@actbase/react-native-kakaosdk';
 import { windowWidth } from '../constants/SliderEntry.style';
+import * as toastActions from '../redux/modules/toast'
+import { Toast } from '../constants/CustomTypes'
 
 const { channelId } = getEnvVars()
 
@@ -178,8 +182,7 @@ class ProductDetailScreen extends Component {
   }
   _openKTalk = () => {
     KakaoSDK.Channel.chat(channelId)
-      .then(res => console.log(res))
-      .catch(e => console.error(e));    
+      .catch(_ => { this.props.action.toast.push(Toast.NOT_OPENED) });  
   }
 
   renderContactKakao() {
@@ -317,4 +320,8 @@ const styles = StyleSheet.create({
 
 });
 
-export default ProductDetailScreen
+export default connect(undefined, (dispatch) => ({
+  action : {
+    toast: bindActionCreators(toastActions, dispatch)
+  }
+}))(ProductDetailScreen)
