@@ -215,15 +215,15 @@ export const appStyles = StyleSheet.create({
     },
     bold16Text: {
         //        fontFamily: "AppleSDGothicNeo",
-                fontSize: 16,
-                fontWeight: "bold",
-                fontStyle: "normal",
-                lineHeight: 19,
-                letterSpacing: -0.03,
-                color: colors.black,
-                padding: 0,
-                margin: 0
-            },    
+        fontSize: 16,
+        fontWeight: "bold",
+        fontStyle: "normal",
+        lineHeight: 19,
+        letterSpacing: -0.03,
+        color: colors.black,
+        padding: 0,
+        margin: 0
+    },    
     normal18Text: {
 //        fontFamily: "AppleSDGothicNeo",
         fontSize: 18,
@@ -373,7 +373,6 @@ export const htmlDetailWithCss = (body, script = '') => {
     }
     .tab {
         line-height: 1.6;
-        border-bottom: 1px solid white;
     }
     .tab div:not(.noMargin) {
         margin-left: 40px;

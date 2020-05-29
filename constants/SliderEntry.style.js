@@ -4,6 +4,7 @@ import _ from 'underscore'
 
 const IS_IOS = Platform.OS === 'ios';
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
+// console.log('@@@ window', viewportHeight, viewportWidth)
 
 function wp (percentage) {
     const value = (percentage * viewportWidth) / 100;
@@ -30,62 +31,36 @@ export const device = {
     small : {
         // iphone5
         window: {
-            width: 320
-        },
-        pixel: {
-            width: 640,
-            height: 1136
-        },
-        scale : 0.3827
+            width: 320,
+            height: 568
+        }
     },
     medium: {
         // iphone8
         window: {
             width: 375,
             height: 667
-        },
-        pixel: {
-            width: 750,
-            height: 1334
-        },
-        scale : 0.3827
+        }
     },
     large : {
         // iphone 11
         window: {
-            width: 375,
-            height: 812
-        },
-        pixel: {
-            width: 828,
-            height: 1792
-        },
-        scale : 0.422
+            width: 414,
+            height: 896
+        }
     },
     xlarge: {
         // iphone 11 max
         window: {
             width: 414,
             height: 896
-        },
-        pixel: {
-            width: 1242,
-            height: 2688
-        },
-        scale : 0.422
+        }
     }
 }
 
 export const isDeviceSize = (size) => {
     if ( _.isEmpty(device[size])) return false
     return windowWidth <= device[size].window.width
-}
-
-export const scaleFactor = () => {
-    for( var spec of Object.values(device)) {
-        if (windowHeight <= spec.window.height) return spec.scale
-    }
-    return 0.422    // default value
 }
 
 const entryBorderRadius = 8;
