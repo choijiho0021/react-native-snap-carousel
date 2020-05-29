@@ -9,7 +9,7 @@ import moment from 'moment'
 import { batch } from 'react-redux';
 import { Platform } from '@unimodules/core';
 import * as ToastActions from './toast'
-import { Toast } from '../../constants/CustomTypes';
+import { Toast } from '../../constants/CustomTypes'
 
 const SIGN_UP =        'rokebi/account/SIGN_UP'
 export const UPDATE_ACCOUNT = 'rokebi/account/UPDATE_ACCOUNT'
@@ -43,6 +43,10 @@ const changePicture = createAction(CHANGE_PICTURE, userApi.changePicture)
 const changeUserAttr = createAction(CHANGE_ATTR, userApi.update)
 const clearAccount = createAction(CLEAR_ACCOUNT)
 
+const changeUserAttrWithToast = utils.reflectWithToast(changeUserAttr, Toast.NOT_UPDATED)
+const uploadPictureWithToast = utils.reflectWithToast(uploadPicture, Toast.NOT_UPDATED)
+const changePictureWithToast = utils.reflectWithToast(changePicture, Toast.NOT_UPDATED)
+
 export const logout = () => {
   return (dispatch) => {
     utils.removeData( userApi.KEY_ICCID)
@@ -68,7 +72,7 @@ export const changeEmail = (mail) => {
         }
       }
 
-    return dispatch(changeUserAttr( account.get('userId'), authObj, attr)).then(
+    return dispatch(changeUserAttrWithToast( account.get('userId'), authObj, attr)).then(
       resp => {
         if ( resp.result == 0) {
           return dispatch(updateAccount({email:mail}))
@@ -115,16 +119,11 @@ export const changePushNoti = ({ isPushNotiEnabled }) => {
         field_is_notification_enabled: isPushNotiEnabled
       }
 
-    return dispatch(changeUserAttr( account.get('userId'), authObj, attr)).then(
+    return dispatch(changeUserAttrWithToast( account.get('userId'), authObj, attr)).then(
       resp => {
         if ( resp.result === 0) {
           return dispatch(updateAccount({isPushNotiEnabled}))
         }
-        dispatch(ToastActions.push(Toast.NOT_UPDATED))
-        return Promise.reject()
-      },
-      err => {
-        dispatch(ToastActions.push(Toast.NOT_UPDATED))
         return Promise.reject()
       })
   }
@@ -189,6 +188,7 @@ export const logInAndGetAccount = (mobile, pin, iccid) => {
         }
       },
       err => {
+        dispatch(ToastActions.push())
         console.log('login failed', err)
       }
     )
@@ -198,10 +198,10 @@ export const logInAndGetAccount = (mobile, pin, iccid) => {
 export const uploadAndChangePicture = (image) => {
   return (dispatch,getState) => {
     const { account } = getState()
-    return dispatch(uploadPicture(image, auth(account))).then(
+    return dispatch(uploadPictureWithToast(image, auth(account))).then(
       resp => {
         if (resp.result == 0 && resp.objects.length > 0) {
-          return dispatch(changePicture( account.get('userId'), resp.objects[0], auth(account)))
+          return dispatch(changePictureWithToast( account.get('userId'), resp.objects[0], auth(account)))
         }
         console.log('Failed to upload picture', resp)
       },
