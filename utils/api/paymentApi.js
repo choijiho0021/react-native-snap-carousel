@@ -2,6 +2,7 @@ import api from './api'
 import _ from 'underscore'
 import utils from '../utils';
 import i18n from '../i18n';
+import { Platform } from 'react-native';
 
 class PaymentAPI {
     PAGE_SIZE = 10
@@ -49,12 +50,6 @@ class PaymentAPI {
         [
             {
                 key: 'html5_inicis',
-                method: 'samsung',
-                title: i18n.t('pym:samsung'),
-                icon: 'samsung'
-            },
-            {
-                key: 'html5_inicis',
                 method: 'ssgpay',
                 title: i18n.t('pym:ssgpay'),
                 icon: 'ssgpay'
@@ -64,6 +59,13 @@ class PaymentAPI {
                 method: 'lpay',
                 title: i18n.t('pym:lpay'),
                 icon: 'lpay'
+            },
+            Platform.OS == 'android' &&
+            {
+                key: 'html5_inicis',
+                method: 'samsung',
+                title: i18n.t('pym:samsung'),
+                icon: 'samsung'
             },
         ]        
     ]
