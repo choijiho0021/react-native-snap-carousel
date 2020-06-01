@@ -425,9 +425,10 @@ export const htmlDetailWithCss = (body, script = '') => {
         font-size: 15px;
         margin-bottom: 30px;
     }
-    // #caution, #prodInfo, #tip {
-    //     padding: 20px;
-    // }
+    .content .padding20Img img{
+        margin: 20px 0px;
+    }
+    // #caution, #prodInfo, #tip
     .warmGrey {
         color: ${colors.warmGrey};
     }
@@ -453,12 +454,40 @@ export const htmlDetailWithCss = (body, script = '') => {
         background-color: ${colors.clearBlue};
         color: ${colors.white};
     }
+    .blueBox font{
+        font-family: NotoSansKR-Medium;
+        font-size: 20px;
+    }
     .copyBox {
         height: 114px;
         background-color: ${colors.white};
         border: 1px solid ${colors.greyish};
         border-top-width: 0px;
     }
+    .copyImg {
+        width: 7%;
+    }
+    .copyBox font {
+        font-family: NotoSansKR;
+        font-size: 16px;
+        line-height: normal;
+    }
+    .copyBtn{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 40px;
+        width: 64px;
+        color: ${colors.warmGrey};
+        border: solid 1px ${colors.whiteThree};
+        background-color: ${colors.whiteTwo};
+    }
+    .copyTextLine {
+        margin: 20px;
+    }
+    // .copyTextLine font{
+        // line-height: 30px;
+    // }
     .moveToBox {
         font-size: 24px;
         height: 56px;
@@ -466,7 +495,17 @@ export const htmlDetailWithCss = (body, script = '') => {
         background-color: ${colors.white};
         border: 1px solid ${colors.greyish};
         border-top-width: 0px;
-        padding: 5px;
+    }
+    .moveToBox button{
+        width: 100%; 
+        height: 100%;
+        font-size: 16px;
+        border: none;
+    }
+    .moveToBox img {
+        width: 4%;
+        margin-left: 5px;
+        color: ${colors.black}
     }
     .settings {
         margin-top: 40px;
@@ -474,7 +513,7 @@ export const htmlDetailWithCss = (body, script = '') => {
     }
     .padding20Img {
         background-color: ${colors.paleGrey};
-        padding: 20px 0px;
+        padding: 20px;
     }
     .padding40Img {
         background-color: ${colors.paleGrey};
@@ -491,43 +530,8 @@ export const htmlDetailWithCss = (body, script = '') => {
         width: 8%;
         margin: 20px;
     }
-    .moveToBox img {
-        width: 7%;
-        margin-left: 20px;
-        color: ${colors.black}
-    }
-    .copyImg {
-        width: 7%;
-    }
-    .copyBox font {
-        font-family: NotoSansKR;
-        font-size: 16px;
-        line-height: normal;
-    }
-    .blueBox font{
-        font-family: NotoSansKR-Medium;
-        font-size: 20px;
-    }
     .contentFont14{
         font-size: 14px;
-    }
-    .copyBtn{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 40px;
-        width: 64px;
-        color: ${colors.warmGrey};
-        border: solid 1px ${colors.whiteThree};
-        background-color: ${colors.whiteTwo};
-    }
-    .copyTextLine {
-        margin: 20px;
-    }
-    .moveToBox button {
-        background-color: ${colors.white};
-        font-size: 16px;
-        border: none;
     }
     #arrowDown {
         width: 10%;
