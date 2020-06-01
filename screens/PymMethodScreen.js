@@ -746,7 +746,8 @@ const styles = StyleSheet.create({
   },
   underlinedClearBlue: {
     color: colors.clearBlue,
-    textDecorationLine: 'underline'
+    textDecorationLine: 'underline',
+    alignSelf: 'center'
   },
   beforeDrop: {
     marginHorizontal: 20,
