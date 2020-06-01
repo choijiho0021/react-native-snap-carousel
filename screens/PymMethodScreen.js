@@ -195,31 +195,37 @@ class PymMethodScreen extends Component {
     }
   }
 
-  _onPress = (method) => () => {
+  _onPress = (method, key, idx) => () => {
+
     this.setState({
-      selected: method
+      selected: method,
+      row: key,
+      column: idx
     })
   }
 
   _button(key, value) {
 
-    const { selected } = this.state
-    const rowLength = paymentApi.method.length - 1
+    const { selected, row, column } = this.state
 
     return (
       <View key={key} style={styles.buttonRow}>
       {
         // key: row, idx: column
         value.map((v,idx) => 
+        !_.isEmpty(v) &&
         <AppButton 
           key={v.method} 
           title={_.isEmpty(v.icon) && v.title}
-          style={[styles.button, idx == rowLength && {borderRightWidth:1}, key == rowLength && {borderBottomWidth: 1}]}
+          style={[styles.button,
+            idx == 0 && {borderLeftWidth:1}, key == 0 && {borderTopWidth: 1},
+          !_.isEmpty(selected) && ( ( idx == column -1 ) && (key == row ) && {borderRightColor: colors.clearBlue}
+          || (key == row -1) && (idx == column) && {borderBottomColor: colors.clearBlue} ) ]}
           iconName={!_.isEmpty(v.icon) && v.icon}
           checked={v.method == selected.method}
-          checkedStyle={{borderWidth: 1, borderColor: colors.clearBlue}}
+          checkedStyle={{borderColor: colors.clearBlue}}
           checkedColor={colors.clearBlue}
-          onPress={this._onPress(v)}
+          onPress={this._onPress(v, key, idx)}
         titleStyle={styles.buttonText}/>)
       }
       </View>
@@ -406,7 +412,7 @@ class PymMethodScreen extends Component {
 
   _method(){
     const { selected, data } = this.state,
-          benefit = !_.isEmpty(data) && !_.isEmpty(selected) && this.state.data.find(item => item.title.indexOf(selected.title) > -1)
+          benefit = !_.isEmpty(data) && !_.isEmpty(selected) && this.state.data.find(item => item.title.indexOf(selected.title) >= 0)
 
     return(
       <View>
@@ -496,9 +502,8 @@ class PymMethodScreen extends Component {
       <SafeAreaView style={styles.container} forceInset={{top: 'never', bottom:"always"}}>
         <KeyboardAwareScrollView
           resetScrollToCoords={{ x: 0, y: 0 }}
-          enableOnAndroid={true}
-          // extraScrollHeight={60}
-          innerRef={ref => { this.scroll = ref; }}>
+          enableOnAndroid={true}>
+
           <PaymentItemInfo cart={purchaseItems} pymReq={pymReq} balance={this.props.account.balance} mode={'method'}
                           pymPrice={pymPrice} deduct={deduct} isRecharge={isRecharge}/>
               
@@ -587,17 +592,17 @@ const styles = StyleSheet.create({
   },
   buttonRow : {
     flexDirection: "row",
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     // marginTop: 15,
     // marginHorizontal: 20,
   },
   button: {
-    flex:1,
+    width: '33.3%',
     height: 62,
     backgroundColor: colors.white,
     borderStyle: "solid",
-    borderLeftWidth: 1,
-    borderTopWidth: 1,
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
     borderColor: colors.lightGrey
   },
   buttonText: {
@@ -741,7 +746,8 @@ const styles = StyleSheet.create({
   },
   underlinedClearBlue: {
     color: colors.clearBlue,
-    textDecorationLine: 'underline'
+    textDecorationLine: 'underline',
+    alignSelf: 'center'
   },
   beforeDrop: {
     marginHorizontal: 20,

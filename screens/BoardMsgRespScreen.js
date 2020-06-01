@@ -44,19 +44,21 @@ class BoardMsgRespScreen extends Component {
     const status = this.props.navigation.getParam('status')
 
     if ( uuid ) {
-      const {list = []} = this.props.board
-      const idx = list.findIndex(item => item.uuid == uuid)
-      this.setState({
-        idx,
-        uuid,
-        status
+      // issue list를 아직 가져오지 않은 경우에는, 먼저 가져와서 처리한다. 
+      this.props.action.board.getIssueList(false).then(_ => {
+        this.setState({
+          idx : this.props.board.list.findIndex(item => item.uuid == uuid),
+          uuid,
+          status
+        })
+
+        if(status == 'Closed'){
+          this.props.action.board.getIssueResp(uuid, this.props.auth)
+        }
+        else {
+          this.props.action.board.resetIssueComment()
+        }
       })
-      if(status == 'Closed'){
-        this.props.action.board.getIssueResp(uuid, this.props.auth)
-      }
-      else {
-        this.props.action.board.resetIssueComment()
-      }
     }
   }
 

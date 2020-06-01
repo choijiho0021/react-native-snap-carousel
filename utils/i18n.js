@@ -162,7 +162,6 @@ const en = {
   "set:failedToSendAlimTalk" : "Failed to send a KakaoTalk message. Please try again later",
   "reg:activateProduct": "current data product is completed and this product will be activated.\nPress the 'OK' button and call 0000# to activate it.",
   "set:pushnoti" : "Push Notifications",
-  "set:failedToUpdate" : "Failed to change settings.\nPlease check your network connection.",
 
   "rch:recharge" : "Recharge",
 
@@ -440,7 +439,11 @@ const en = {
 
   "loading:error": "Loading Error",
   "loading:terminate": "This application has experienced an error during loading and will terminate.",
-  "loading:failedToExec": "The app cannot be launched because an error occurred during loading."
+  "loading:failedToExec": "The app cannot be launched because an error occurred during loading.",
+
+  "toast:failedToUpdate" : "Failed to change settings.\nPlease check your network connection.",
+  "toast:failedToLoad" : "Failed to load the data.\nPlease check your network connection.",
+  "toast:failedToOpen" : "Failed to open the KakaoTalk Channel."
 };
 
 const ko = {
@@ -605,7 +608,6 @@ const ko = {
   "set:sendAlimTalk" : "알림톡이 발송되었습니다",
   "set:failedToSendAlimTalk" : "알림톡 발송에 실패했습니다. 나중에 다시 시도해 주세요",
   "set:pushnoti" : "Push 알림 받기",
-  "set:failedToUpdate" : "설정 변경에 실패했습니다.\n네트워크 연결 상태를 확인해주세요.",
 
   "rch:recharge" : "충전 하기",
 
@@ -892,7 +894,11 @@ const ko = {
 
   "loading:error": "로딩 불가",
   "loading:terminate": "로딩 중 오류가 발생하여 앱을 종료합니다.",
-  "loading:failedToExec": "로딩 중 오류가 발생하여 앱을 실행할 수 없습니다."
+  "loading:failedToExec": "로딩 중 오류가 발생하여 앱을 실행할 수 없습니다.",
+
+  "toast:failedToUpdate" : "설정 변경에 실패했습니다.\n네트워크 연결 상태를 확인해주세요.",
+  "toast:failedToLoad" : "데이터 로딩에 실패했습니다.\n네트워크 연결 상태를 확인해주세요.",
+  "toast:failedToOpen" : "카카오톡 채널에 연결할 수 없습니다."
 };
 
 i18n.fallbacks = true;

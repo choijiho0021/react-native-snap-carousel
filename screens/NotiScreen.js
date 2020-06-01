@@ -38,7 +38,7 @@ class NotiListItem extends Component {
     const {item, onPress} = this.props
     // summary가 있으면, 우선적으로 표시한다.
     return (
-      <TouchableOpacity onPress={() => onPress(item.uuid, item.title, item.body, item.notiType, item.format)}>
+      <TouchableOpacity onPress={() => onPress(item)}>
         <View key={item.uuid} style={[styles.notibox, {backgroundColor:item.isRead == "F" ? colors.whiteTwo : colors.white}]}>
           <View key='notitext' style={styles.notiText} >
             <Text key='created' style={styles.created}>{utils.toDateString(item.created)}</Text>
@@ -48,12 +48,9 @@ class NotiListItem extends Component {
             <Text key='body' style={styles.body} numberOfLines={3} ellipsizeMode={'tail'} >{utils.htmlToString(item.summary || item.body)}
             </Text>
           </View>
-          { 
-            item.notiType != notiActions.NOTI_TYPE_NOTI &&
-              <View key='iconview' style={styles.Icon}>
-                <AppIcon key='icon' name="iconArrowRight" size={10} />
-              </View> 
-          }
+          <View key='iconview' style={styles.Icon}>
+            <AppIcon key='icon' name="iconArrowRight" size={10} />
+          </View> 
         </View>
       </TouchableOpacity>
     )
@@ -82,8 +79,7 @@ class NotiScreen extends Component {
 
     Analytics.trackEvent('Page_View_Count', {page : 'Noti'})
 
-    this.props.action.board.getIssueList()
-    this.props.action.order.getOrders(this.props.auth)
+    // this.props.action.board.getIssueList()
     this.setState({mode,info})
   }
 
@@ -109,8 +105,8 @@ class NotiScreen extends Component {
   }
 
   // 공지사항의 경우 notiType이 없으므로 Notice/0으로 기본값 설정
-  _onPress = (uuid, bodyTitle, body, notiType = 'Notice/0', format = 'text') => {
-    const { orders } = this.props.order
+  _onPress = ({uuid, isRead, bodyTitle, body, notiType = 'Notice/0', format = 'text'}) => {
+    const { auth } = this.props
 
     const {mode} = this.state
     const split = notiType.split('/') 
@@ -121,21 +117,30 @@ class NotiScreen extends Component {
 
     if (uuid) {
       // if ( mode != MODE_NOTIFICATION) this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
-      if ( mode != MODE_NOTIFICATION) this.props.action.noti.readNoti(uuid, this.props.auth )
+      if ( mode != MODE_NOTIFICATION && isRead == 'F') this.props.action.noti.readNoti(uuid, this.props.auth )
 
       switch (type) {
         case notiActions.NOTI_TYPE_REPLY :
           this.props.navigation.navigate('BoardMsgResp', {key:id,status:'Closed'})
           break;
         case notiActions.NOTI_TYPE_PYM:
-          this.props.navigation.navigate('PurchaseDetail', {detail: orders.find(item => item.orderId == id), auth: this.props.auth})
+          // read orders if not read before
+          this.props.action.order.getOrdersIfEmpty(auth).then(_ => {
+            this.props.navigation.navigate('PurchaseDetail', {detail: this.props.order.orders.find(item => item.orderId == id), auth})
+          })
           break;
         case notiActions.NOTI_TYPE_USIM:
           this.props.navigation.navigate('Usim')
           break;
         default:
           //아직 일반 Noti 알림은 없으므로 공지사항 용으로만 사용, 후에 일반 Noti 상세페이지(notitype = noti)가 사용될 수 있도록 함 
-          this.props.navigation.navigate('SimpleText', {key:'noti', title:type == notiActions.NOTI_TYPE_NOTI ? i18n.t('set:noti') : i18n.t('contact:noticeDetail'), bodyTitle:bodyTitle, text:body, mode:format})
+          this.props.navigation.navigate('SimpleText', {
+            key:'noti', 
+            title:type == notiActions.NOTI_TYPE_NOTI ? i18n.t('set:noti') : i18n.t('contact:noticeDetail'), 
+            bodyTitle:bodyTitle, 
+            text:body, 
+            mode:format
+          })
       }
     }
   }

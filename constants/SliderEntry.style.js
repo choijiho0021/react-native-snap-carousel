@@ -4,6 +4,7 @@ import _ from 'underscore'
 
 const IS_IOS = Platform.OS === 'ios';
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
+// console.log('@@@ window', viewportHeight, viewportWidth)
 
 function wp (percentage) {
     const value = (percentage * viewportWidth) / 100;
@@ -30,7 +31,8 @@ export const device = {
     small : {
         // iphone5
         window: {
-            width: 320
+            width: 320,
+            height: 568
         }
     },
     medium: {
@@ -43,8 +45,8 @@ export const device = {
     large : {
         // iphone 11
         window: {
-            width: 375,
-            height: 812
+            width: 414,
+            height: 896
         }
     },
     xlarge: {

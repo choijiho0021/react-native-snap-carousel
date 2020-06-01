@@ -110,6 +110,8 @@ class MyPageScreen extends Component {
     this._changeEmail = this._changeEmail.bind(this)
     this._recharge = this._recharge.bind(this)
     this._didMount = this._didMount.bind(this)
+
+    this.flatListRef = React.createRef()
   }
 
   componentDidMount() {
@@ -120,6 +122,7 @@ class MyPageScreen extends Component {
       this._didMount()
     }
   }
+
   componentDidUpdate(prevProps) {
     const focus = this.props.navigation.isFocused()
 
@@ -140,8 +143,10 @@ class MyPageScreen extends Component {
       this.props.action.order.getOrders(this.props.auth)
     }
 
-    if ( this.props.lastTab[0] === 'MyPageStack' && this.props.lastTab[0] !== prevProps.lastTab[0] ) {
-      this.flatListRef.scrollToOffset({ animated: false, y: 0 })
+    if ( this.props.lastTab[0] === 'MyPageStack' && 
+      this.props.lastTab[0] !== prevProps.lastTab[0] &&
+      this.flatListRef.current ) {
+      this.flatListRef.current.scrollToOffset({ animated: false, y: 0 })
     }
     
     // if(this.props.account.loggedIn != prevProps.account.loggedIn && ){
@@ -310,7 +315,7 @@ class MyPageScreen extends Component {
 
     return (
       <View style={styles.container}>
-        <FlatList ref={(ref) => { this.flatListRef = ref; }}
+        <FlatList ref={this.flatListRef}
           data={orders} 
           ListHeaderComponent={this._info}
           ListEmptyComponent={this._empty()}

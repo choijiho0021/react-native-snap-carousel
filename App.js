@@ -22,6 +22,7 @@ import CodePushModal from './components/CodePushModal'
 import codePush from 'react-native-code-push'
 import AppAlert from './components/AppAlert'
 import i18n from './utils/i18n'
+import AppToast from './components/AppToast'
 
 const logger = createLogger()
 const composeEnhancers = (process.env.NODE_ENV == 'development' ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ : null) || compose;
@@ -75,6 +76,7 @@ export default codePush(codePushOptions)(function App(props) {
               <AppNavigator />
           }
           <CodePushModal />
+          <AppToast />
         </View>
       </Provider>
     );
@@ -86,8 +88,6 @@ async function login() {
     const mobile = await utils.retrieveData( userApi.KEY_MOBILE)
     const pin = await utils.retrieveData( userApi.KEY_PIN)
 
-    console.log('load', mobile, pin, iccid)
-
     if ( mobile && pin ) {
       store.dispatch(accountActions.logInAndGetAccount( mobile, pin, iccid))
     }
@@ -98,7 +98,7 @@ async function login() {
 
 async function loadResourcesAsync() {
     // load product list
-    store.dispatch(productActions.getProdList())
+    store.dispatch(productActions.getProdListWithToast())
     store.dispatch(simActions.getSimCardList())
 }
 

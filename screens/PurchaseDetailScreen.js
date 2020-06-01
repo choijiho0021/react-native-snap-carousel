@@ -73,7 +73,7 @@ class PurchaseDetailScreen extends Component {
       isCanceled : detail.state == 'canceled' || false,
       billingAmt: utils.numberToCommaString(detail.totalPrice + detail.dlvCost),
       method : !_.isEmpty(detail.paymentList) && detail.paymentList.find(item => item.paymentGateway != 'rokebi_cash'),
-      totalCnt: detail.orderItems.reduce((acc,cur) => acc + cur.qty, 0)
+      totalCnt: _.isEmpty(detail) ? 0 : detail.orderItems.reduce((acc,cur) => acc + cur.qty, 0)
     })
 
     // load Profile by profile_id

@@ -215,15 +215,15 @@ export const appStyles = StyleSheet.create({
     },
     bold16Text: {
         //        fontFamily: "AppleSDGothicNeo",
-                fontSize: 16,
-                fontWeight: "bold",
-                fontStyle: "normal",
-                lineHeight: 19,
-                letterSpacing: -0.03,
-                color: colors.black,
-                padding: 0,
-                margin: 0
-            },    
+        fontSize: 16,
+        fontWeight: "bold",
+        fontStyle: "normal",
+        lineHeight: 19,
+        letterSpacing: -0.03,
+        color: colors.black,
+        padding: 0,
+        margin: 0
+    },    
     normal18Text: {
 //        fontFamily: "AppleSDGothicNeo",
         fontSize: 18,
@@ -346,24 +346,84 @@ export const htmlDetailWithCss = (body, script = '') => {
     return `
     <html>
     <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
+
+    @font-face {
+        font-family: NotoSansKR;
+        font-style: normal;
+        font-weight: 100;
+        src: url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Thin.woff2) format('woff2'),
+        url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Thin.woff) format('woff'),
+        url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Thin.otf) format('opentype');
+    }
+    
+    @font-face {
+        font-family: NotoSansKR;
+        font-style: normal;
+        font-weight: 300;
+        src: url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Light.woff2) format('woff2'),
+        url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Light.woff) format('woff'),
+        url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Light.otf) format('opentype');
+    }
+    
+    @font-face {
+        font-family: NotoSansKR;
+        font-style: normal;
+        font-weight: 400;
+        src: url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Regular.woff2) format('woff2'),
+        url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Regular.woff) format('woff'),
+        url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Regular.otf) format('opentype');
+    }
+    
+    @font-face {
+        font-family: NotoSansKR-Medium;
+        font-style: normal;
+        font-weight: 500;
+        src: url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Medium.woff2) format('woff2'),
+        url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Medium.woff) format('woff'),
+        url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Medium.otf) format('opentype');
+    }
+    
+    @font-face {
+        font-family: NotoSansKR;
+        font-style: normal;
+        font-weight: bold;
+        src: url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Bold.woff2) format('woff2'),
+        url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Bold.woff) format('woff'),
+        url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Bold.otf) format('opentype');
+    }
+    
+    
+    @font-face {
+        font-family: NotoSansKR;
+        font-style: normal;
+        font-weight: 900;
+        src: url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Black.woff2) format('woff2'),
+        url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Black.woff) format('woff'),
+        url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Black.otf) format('opentype');
+    }
+
     .main-title {
-        font-size: 60px;
+        font-family: NotoSansKR;
+        font-size: 24px;
         color: ${colors.clearBlue};
         padding-bottom: 15px;
         margin-bottom: 10%;
         font-weight: bold;
-        border-bottom: 10px solid ${colors.clearBlue};
+        border-bottom: 3px solid ${colors.clearBlue};
     }
     .sub-title {
-        font-size: 50px;
+        font-family: NotoSansKR;
+        font-size: 18px;
         padding: 0px;
         margin-bottom: 20px;
         font-weight: bold;
     }
     .content {
-        font-size: 40px;
-        margin-bottom: 100px;
+        font-family: NotoSansKR;
+        font-size: 15px;
+        margin-bottom: 30px;
     }
     // #caution, #prodInfo, #tip {
     //     padding: 20px;
@@ -373,14 +433,13 @@ export const htmlDetailWithCss = (body, script = '') => {
     }
     .tab {
         line-height: 1.6;
-        border-bottom: 1px solid white;
     }
     .tab div:not(.noMargin) {
-        margin-left: 40px;
-        margin-right: 40px;
+        margin-left: 20px;
+        margin-right: 20px;
     }
     .noMargin {
-        margin-bottom: 200px;
+        margin-bottom: 66px;
     }
     .blueBox, .copyBox, .moveToBox {
         text-align: center;
@@ -389,36 +448,40 @@ export const htmlDetailWithCss = (body, script = '') => {
         align-items: center;   
     }
     .blueBox {
-        height: 120px;
-        border-radius: 10px 10px 0px 0px;
+        height: 50px;
+        border-radius: 5px 5px 0px 0px;
         background-color: ${colors.clearBlue};
         color: ${colors.white};
     }
     .copyBox {
-        height: 250px;
+        height: 114px;
         background-color: ${colors.white};
         border: 1px solid ${colors.greyish};
         border-top-width: 0px;
     }
     .moveToBox {
-        font-size: 40px;
-        height: 130px;
-        border-radius: 0px 0px 10px 10px;
+        font-size: 24px;
+        height: 56px;
+        border-radius: 0px 0px 5px 5px;
         background-color: ${colors.white};
         border: 1px solid ${colors.greyish};
         border-top-width: 0px;
+        padding: 5px;
     }
     .settings {
-        margin-top: 60px;
-        margin-bottom: 60px;
+        margin-top: 40px;
+        margin-bottom: 40px;
     }
     .padding20Img {
         background-color: ${colors.paleGrey};
-        padding: 40px;
+        padding: 20px 0px;
     }
     .padding40Img {
         background-color: ${colors.paleGrey};
-        padding: 80px;
+        padding: 20px;
+    }
+    .padding40Img img {
+        margin: 20px 0px;
     }
     #iosLogo {
         width: 6%;
@@ -429,45 +492,42 @@ export const htmlDetailWithCss = (body, script = '') => {
         margin: 20px;
     }
     .moveToBox img {
-        width: 3%;
-        margin: 20px;
+        width: 7%;
+        margin-left: 20px;
         color: ${colors.black}
     }
     .copyImg {
         width: 7%;
-        height: 25%;
     }
     .copyBox font {
-        font-size: 45px;
-        line-height: 70px;
+        font-family: NotoSansKR;
+        font-size: 16px;
+        line-height: normal;
     }
     .blueBox font{
-        font-size: 55px;
+        font-family: NotoSansKR-Medium;
+        font-size: 20px;
     }
     .contentFont14{
-        font-size: 40px;
+        font-size: 14px;
     }
     .copyBtn{
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 40%;
-        width: 20%;
+        height: 40px;
+        width: 64px;
         color: ${colors.warmGrey};
         border: solid 1px ${colors.whiteThree};
         background-color: ${colors.whiteTwo};
     }
     .copyTextLine {
-        margin: 50px;
+        margin: 20px;
     }
     .moveToBox button {
         background-color: ${colors.white};
-        font-size: 45px;
+        font-size: 16px;
         border: none;
-    }
-    img {
-        padding-top: 80px;
-        padding-bottom: 80px;
     }
     #arrowDown {
         width: 10%;
@@ -476,9 +536,9 @@ export const htmlDetailWithCss = (body, script = '') => {
     }
     .noBackgroundImg {
         background-color: ${colors.white}
-        margin-left: 60px;
-        margin-right: 60px;
-        margin-bottom: 200px;
+        margin-left: 30px;
+        margin-right: 30px;
+        margin-bottom: 66px;
     }
     </style>
     ${script}

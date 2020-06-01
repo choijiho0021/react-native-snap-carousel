@@ -105,7 +105,8 @@ class SimpleTextScreen extends Component {
     return (
       <SafeAreaView style={styles.screen}>
         <AppActivityIndicator visible={querying} />
-        { mode == 'text' ?
+        { 
+          mode == 'text' ?
           <ScrollView style={styles.scrollContainer}>
             <View style={styles.container}>
               { bodyTitle && <Text style={styles.bodyTitle}>{bodyTitle +'\n\n'}</Text> }

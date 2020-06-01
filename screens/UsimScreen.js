@@ -1,4 +1,4 @@
-import React, {Component, PureComponent} from 'react';
+import React, {Component} from 'react';
 import {
   StyleSheet,
   View,
@@ -54,7 +54,7 @@ class CardInfo extends Component {
 
   _onPress() {
     Analytics.trackEvent('Page_View_Count', {page : 'Change Usim'})
-    navigation.navigate('RegisterSim')
+    this.props.navigation.navigate('RegisterSim')
   }
 
   render () {
@@ -105,9 +105,10 @@ class CardInfo extends Component {
           <Text style={{... appStyles.bold18Text}} >{i18n.t('usim:dataUsageList')}</Text>
         </View>
       </View>
-      )
-    }
+    )
   }
+}
+
 class UsageItem extends Component {
 
   constructor(props) {
@@ -122,6 +123,8 @@ class UsageItem extends Component {
     this.setStatusColor = this.setStatusColor.bind(this)
     this.usageRender = this.usageRender.bind(this)
     this.getUsage = this.getUsage.bind(this)
+
+    this.circularProgress = React.createRef()
   }
 
   shouldComponentUpdate(nextProps, nextState){
@@ -181,8 +184,11 @@ class UsageItem extends Component {
             console.log("getSubsUsage progress",resp.objects, item.nid)
             const {activated, quota, used, unit} = resp.objects
             const progress = used > 0 ? 100 - Math.floor(used / quota * 100) : 0
+
             this.setState({activated, quota, used, unit, isShowUsage:true})
-            this.circularProgress.animate(progress, 3000, null)
+
+            if ( this.circularProgress.current) this.circularProgress.current.animate(progress, 3000, null)
+
             Analytics.trackEvent('Page_View_Count', {page : 'Get Detail Data'})
           }
           else {
@@ -206,37 +212,36 @@ class UsageItem extends Component {
   usageRender() {
     const {quota = 0, used = 0} = this.state 
 
-    return (<View style={styles.activeContainer}>
-              <AnimatedCircularProgress
-              ref={(ref) => this.circularProgress = ref}
-              style={styles.circular}
-              size={130}
-              width={25}
-              fill={0}
-              rotation={0}
-              backgroundWidth={25}
-              tintColor={colors.clearBlue}
-              // onAnimationComplete={() => console.log('onAnimationComplete')}
-              backgroundColor={colors.whiteTwo} >
-              {
-                (fill) => (
-                  <View style={{alignItems:'center'}}>
-                    <Text style={styles.normal12WarmGrey}>{i18n.t('usim:remainAmount')}</Text>
-                    <Text style={styles.bold18ClearBlue}> { Math.floor(fill) + "%"} </Text>
-                  </View>
-                  
-                )
-              } 
-              </AnimatedCircularProgress>
-              <View style={{marginLeft:20,flex:1}}>
-                <Text style={styles.normal14WarmGrey}>{i18n.t('usim:remainData')}</Text>
-                <Text style={appStyles.bold18Text}>{`${this.toGb(quota-used)}GB ` + i18n.t('usim:remain')}</Text>
-                <Text style={styles.normal12WarmGrey}>{`(${this.toMb(quota-used)}MB)`}</Text>
-                <Text style={[styles.normal14WarmGrey,{marginTop:10}]}>{i18n.t('usim:usageAmount')}</Text>
-                <Text style={styles.bold16WarmGrey}>{`${this.toGb(used)}GB ` + i18n.t('usim:used')}</Text>
-                <Text style={styles.normal12WarmGrey}>{`(${this.toMb(used)}MB)`}</Text>
-              </View>
-            </View>)
+    return <View style={styles.activeContainer}>
+      <AnimatedCircularProgress
+        ref={this.circularProgress}
+        style={styles.circular}
+        size={130}
+        width={25}
+        fill={0}
+        rotation={0}
+        backgroundWidth={25}
+        tintColor={colors.clearBlue}
+        // onAnimationComplete={() => console.log('onAnimationComplete')}
+        backgroundColor={colors.whiteTwo} >
+      {
+        (fill) => (
+          <View style={{alignItems:'center'}}>
+            <Text style={styles.normal12WarmGrey}>{i18n.t('usim:remainAmount')}</Text>
+            <Text style={styles.bold18ClearBlue}> { Math.floor(fill) + "%"} </Text>
+          </View>
+        )
+      } 
+      </AnimatedCircularProgress>
+      <View style={{marginLeft:20,flex:1}}>
+        <Text style={styles.normal14WarmGrey}>{i18n.t('usim:remainData')}</Text>
+        <Text style={appStyles.bold18Text}>{`${this.toGb(quota-used)}GB ` + i18n.t('usim:remain')}</Text>
+        <Text style={styles.normal12WarmGrey}>{`(${this.toMb(quota-used)}MB)`}</Text>
+        <Text style={[styles.normal14WarmGrey,{marginTop:10}]}>{i18n.t('usim:usageAmount')}</Text>
+        <Text style={styles.bold16WarmGrey}>{`${this.toGb(used)}GB ` + i18n.t('usim:used')}</Text>
+        <Text style={styles.normal12WarmGrey}>{`(${this.toMb(used)}MB)`}</Text>
+      </View>
+    </View>
   }
 
   checkUsageButton() {
@@ -466,7 +471,7 @@ class UsimScreen extends Component {
 
   _info () {
     const { account: {iccid, balance, expDate}, navigation} = this.props
-    return (<CardInfo iccid={iccid} balance={balance} expDate={expDate} navigation={navigation}/>)
+    return <CardInfo iccid={iccid} balance={balance} expDate={expDate} navigation={navigation}/>
   }
 
   render() {
@@ -476,7 +481,7 @@ class UsimScreen extends Component {
     return(
       <View style={styles.container}>
         <View style={{backgroundColor:colors.whiteTwo}}>
-          <FlatList ref={(ref) => { this.flatListRef = ref; }}
+          <FlatList 
             data={usage}
             ListHeaderComponent={this._info}
             ListEmptyComponent={this._empty}

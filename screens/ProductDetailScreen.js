@@ -9,6 +9,8 @@ import {
   Image,
   Clipboard
 } from 'react-native';
+import {bindActionCreators} from 'redux'
+import {connect} from 'react-redux'
 
 import i18n from '../utils/i18n'
 import AppBackButton from '../components/AppBackButton';
@@ -24,8 +26,9 @@ import WebView from 'react-native-webview';
 import getEnvVars from '../environment'
 import Analytics from 'appcenter-analytics'
 import KakaoSDK from '@actbase/react-native-kakaosdk';
-import AppIcon from '../components/AppIcon';
-import AppToast from '../components/AppToast';
+import { windowWidth } from '../constants/SliderEntry.style';
+import * as toastActions from '../redux/modules/toast'
+import { Toast } from '../constants/CustomTypes'
 
 const { channelId } = getEnvVars()
 
@@ -40,13 +43,19 @@ const html = [
   // '<div id="testc" style="font-size:16px; border:1px solid black;"><h1>startc</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
 ]
 
+// document.body.clientWidth : 화면의 너비
+// document.documentElement.clientHeight : 문서의 총 높이 
+// getBoundingClientRect().y : 각 div의 시작 위치 y position
+
 const script = `<script>
-window.onload = function() {
+window.onload = function () {
   window.location.hash = 1;
-  document.title = ['prodInfo', 'tip', 'caution'].map(item => {
-    var rect = document.getElementById(item).getBoundingClientRect();
-    return rect.bottom;
-  }).join(',');
+  var dimension = document.body.clientWidth + ',' + document.documentElement.clientHeight + ',' + 
+    ['prodInfo', 'tip', 'caution'].map(item => {
+      var rect = document.getElementById(item).getBoundingClientRect();
+      return rect.y;
+    }).join(',');
+  window.ReactNativeWebView.postMessage('size:' + dimension);
 }
 function copy(val) {
   var txtArea = document.createElement("textarea");
@@ -55,24 +64,14 @@ function copy(val) {
   txtArea.select();
   document.execCommand("copy");
   document.body.removeChild(txtArea);
-  }
+}
+
 function send() {
   window.ReactNativeWebView.postMessage('APN Value have to insert into this', '*');
   window.alert('copy');
-};</script>`
+}
+</script>`
 
-// const script = `window.location.hash = 1;
-// document.title = ['testa', 'testb', 'testc'].map(item => {
-//   var rect = document.getElementById(item).getBoundingClientRect();
-//   return rect.bottom;
-// }).join(',');
-// function send() {
-//   window.ReactNativeWebView.postMessage('APN Value have to insert into this', '*');
-//   window.alert('copy');
-// };
-// return true;`
-
-const scale = 0.422
 
 class ProductDetailScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -92,13 +91,16 @@ class ProductDetailScreen extends Component {
     this._toastRef = React.createRef()
 
     this._openKTalk = this._openKTalk.bind(this);
-    this.onNavigationStateChange = this.onNavigationStateChange.bind(this)
     this.checkIdx = this.checkIdx.bind(this)
     this._scrollTo = this._scrollTo.bind(this)
     this.renderContactKakao = this.renderContactKakao.bind(this)
     this.renderWebView = this.renderWebView.bind(this)
     this._onMessage = this._onMessage.bind(this)
+    this._checkWindowSize = this._checkWindowSize.bind(this)
+    this._clickTab = this._clickTab.bind(this)
+
     this.controller = new AbortController()
+    this.scrollView = React.createRef()
   }
 
   shouldComponentUpdate(preProps,preState){
@@ -107,7 +109,6 @@ class ProductDetailScreen extends Component {
   }
 
   componentDidMount() {
-
     //todo : 상세 HTML을 가져오도록 변경 필요
     pageApi.getProductDetails(this.controller).then(resp =>{
       if ( resp.result == 0 && resp.objects.length > 0) {
@@ -128,46 +129,61 @@ class ProductDetailScreen extends Component {
 
   }
 
-  onNavigationStateChange(navState) {
+  _checkWindowSize(sizeString = '') {
 
-    navState.title.split(',').map((bottom, idx) => 
+    const sz = sizeString.split(','),
+      scale = windowWidth / Number(sz[0])
+
+    // console.log('@@@ height', sizeString, scale)
+
+    for( var i =2; i< sz.length; i++) {
+      // 각 tab별로 시작 위치를 설정한다. 
       this.setState({
-        ['height' + idx] : Number(bottom) * scale
-      })) 
+        ['height' + (i-2)] : Math.ceil( Number(sz[i]) * scale)
+      })
+    }
+    // 전체 화면의 높이를 저장한다.
+    this.setState({
+      ['height' + (i-2)]: Math.ceil( Number(sz[1]) * scale)
+    })
   }
 
-  checkIdx(offset) {
+  checkIdx(event) {
+    var { contentOffset } = event,
+      offset = contentOffset.y
+
+    // console.log('@@@ offset', offset, event)
     
-    // todo: 정확하게 Title이 상단끝에 걸쳐야 idx가 변경되어야 하는지 확인필요
+    offset -= HEADER_IMG_HEIGHT
     if ( this.state.tabIdx != TAB_IDX_ASK_BY_KAKAO){
       for( var idx=0; idx< TAB_IDX_ASK_BY_KAKAO; idx++) {
-        if ( offset < this.state['height' + idx]) break;
+        // 어떤 tab 위치를 스크롤하고 있는지 계산한다.
+        if ( offset < this.state['height' + (idx+1)] ) {
+          if ( this.state.tabIdx != idx) this.setState({tabIdx:idx })
+          break
+        }
       }
-      if(idx != TAB_IDX_ASK_BY_KAKAO) this.setState({tabIdx:idx})
     }
   }
 
   _scrollTo(y){
-    console.log('scroll to y:', y)
-    this._scrollView.scrollTo({x: 0, y: y, animated: true}) 
+    // console.log('@@@ scroll to', y)
+    
+    if ( this.scrollView.current) this.scrollView.current.scrollTo({x: 0, y: y, animated: true}) 
   }
 
   _clickTab = (idx) => () => {
+    // console.log('@@@ click tab', this._webView1)
     
     Analytics.trackEvent('Page_View_Count', {page: tabList[idx]})
 
-    var height = 0;
-    if ( idx < TAB_IDX_ASK_BY_KAKAO) height += (this.state['height' + (idx-1)] || 0) + HEADER_IMG_HEIGHT
+    const height = ( idx < TAB_IDX_ASK_BY_KAKAO) ? (this.state['height' + idx] || 0) + HEADER_IMG_HEIGHT : 0
     this._scrollTo( height)
     this.setState({tabIdx:idx})
   }
   _openKTalk = () => {
     KakaoSDK.Channel.chat(channelId)
-      .then(res => {console.log(res)})
-      .catch(e => {
-        if (this._toastRef.current) this._toastRef.current.show()
-        console.error(e)
-      });    
+      .catch(_ => { this.props.action.toast.push(Toast.NOT_OPENED) });  
   }
 
   renderContactKakao() {
@@ -188,15 +204,21 @@ class ProductDetailScreen extends Component {
 
   _onMessage(event) {
     const {data} = event.nativeEvent
-    Clipboard.setString(data)
-    console.log("Copy APN value : ",data)
+
+    // console.log("@@@ on Message : ", data)
+
+    if ( data.startsWith('size:')) {
+      this._checkWindowSize( data.substring(5))
+    }
+    else {
+      Clipboard.setString(data)
+    }
   }
 
   renderWebView() {
-    const {height2, prodInfo} = this.state
+    const {height3, prodInfo} = this.state
 
     return <WebView 
-      ref={webView1 => {this._webView1 = webView1}}
       automaticallyAdjustContentInsets={false}
       javaScriptEnabled={true}
       domStorageEnabled={true}
@@ -204,12 +226,12 @@ class ProductDetailScreen extends Component {
       startInLoadingState={true}
       // injectedJavaScript={script}
       decelerationRate="normal"
-      onNavigationStateChange={(navState) => this.onNavigationStateChange(navState)}
-      scrollEnabled = {false}
+      // onNavigationStateChange={(navState) => this.onNavigationStateChange(navState)}
+      scrollEnabled = {true}
       // source={{html: body + html + script} }
       onMessage={this._onMessage}
       source={{html: htmlDetailWithCss(prodInfo, script), baseUrl} }
-      style={{height: height2 + HEADER_IMG_HEIGHT || 1000}}
+      style={{height: height3 || 1000}}
     />
   }
 
@@ -222,16 +244,17 @@ class ProductDetailScreen extends Component {
         <AppActivityIndicator visible={querying} />
 
         <ScrollView style={{backgroundColor:colors.whiteTwo}}
-          ref={scrollView => {this._scrollView = scrollView}}
+          ref={this.scrollView}
           stickyHeaderIndices={[1]} //탭 버튼 고정
           showsVerticalScrollIndicator={false}
-          scrollEventThrottle={11}
-          onScroll={(state) => {this.checkIdx(state.nativeEvent.contentOffset.y)}}
-          onContentSizeChange={this._clickTab(tabIdx)}>
+          scrollEventThrottle={100}
+          onScroll={(state) => {this.checkIdx(state.nativeEvent)}} >
           
+          {
           <View style={{height:HEADER_IMG_HEIGHT}}>
             <Image style={{height:HEADER_IMG_HEIGHT}} source={{uri:api.httpImageUrl(navigation.getParam('img'))}}/>
           </View>
+          }
 
           {/* ScrollView  stickyHeaderIndices로 상단 탭을 고정하기 위해서 View한번 더 사용*/}
           <View style={styles.whiteBackground}>
@@ -251,7 +274,6 @@ class ProductDetailScreen extends Component {
           { 
             tabIdx == TAB_IDX_ASK_BY_KAKAO ? this.renderContactKakao() : this.renderWebView()
           }
-
         </ScrollView>
       </SafeAreaView>
     )
@@ -305,4 +327,8 @@ const styles = StyleSheet.create({
 
 });
 
-export default ProductDetailScreen
+export default connect(undefined, (dispatch) => ({
+  action : {
+    toast: bindActionCreators(toastActions, dispatch)
+  }
+}))(ProductDetailScreen)

@@ -87,7 +87,6 @@ class SettingsScreen extends Component {
     this._logout = this._logout.bind(this)
 
     this._isMounted = null
-    this._toastRef = React.createRef()
   }
 
   componentDidUpdate(prevProps) {
@@ -147,7 +146,6 @@ class SettingsScreen extends Component {
         })
         this.props.action.account.changePushNoti({ isPushNotiEnabled: ! isEnabled })
           .catch(_ => {
-            if (this._toastRef.current) this._toastRef.current.show()
             this._isMounted && this.setState({
               data: this.state.data.map(item => item.key == "setting:pushnoti" ? {
                 ... item, 
@@ -199,7 +197,6 @@ class SettingsScreen extends Component {
           onOkClose={this._logout}
           onCancelClose={() => this._showModal(false)}
           visible={showModal} />
-        <AppToast ref={this._toastRef} text={i18n.t('set:failedToUpdate')}/>
       </View>
     )
   }
@@ -246,7 +243,7 @@ export default connect(mapStateToProps,
     action : {
       account : bindActionCreators(accountActions, dispatch),
       cart : bindActionCreators(cartActions, dispatch),
-      order : bindActionCreators(orderActions, dispatch),
+      order : bindActionCreators(orderActions, dispatch)
     }
   })
 )(SettingsScreen)
