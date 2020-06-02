@@ -263,7 +263,7 @@ const mapStateToProps = (state) => ({
   product: state.product,
   account : state.account.toJS(),
   auth: accountActions.auth(state.account),
-  order: state.order.toJS()
+  order: state.order.toObject()
 })
 
 export default connect(mapStateToProps, 

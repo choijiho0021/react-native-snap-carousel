@@ -11,7 +11,6 @@ import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import { colors } from '../constants/Colors';
 import AppIcon from '../components/AppIcon';
-import * as orderActions from '../redux/modules/order'
 import * as accountActions from '../redux/modules/account'
 import _ from 'underscore'
 import AppBackButton from '../components/AppBackButton';
@@ -221,7 +220,6 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
   account: state.account.toJS(),
-  order: state.order.toJS(),
   auth: accountActions.auth( state.account),
   pending: state.pender.pending[orderActions.GET_ORDERS] || 
     state.pender.pending[accountActions.UPLOAD_PICTURE] || false,

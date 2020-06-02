@@ -189,7 +189,6 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
   account: state.account.toJS(),
-  order: state.order.toJS(),
   auth: accountActions.auth( state.account),
   pending: state.pender.pending[orderActions.GET_ORDERS] || 
     state.pender.pending[accountActions.UPLOAD_PICTURE] || false,

@@ -683,7 +683,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => ({
-  order: state.order.toJS(),
+  order: state.order.toObject(),
 
   account : state.account.toJS(),
   auth: accountActions.auth(state.account),

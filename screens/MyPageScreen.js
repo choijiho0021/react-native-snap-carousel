@@ -60,7 +60,6 @@ class OrderItem extends Component {
     const isCanceled = item.state == 'canceled'
     const billingAmt = item.totalPrice + item.dlvCost
 
-    console.log("order Iitem - aaaa")
     return (
       <TouchableOpacity onPress={onPress}>
         <View key={item.orderId} style={styles.order}>
@@ -100,6 +99,7 @@ class MyPageScreen extends Component {
       showEmailModal: false,
       isReloaded: false,
       isFocused: false,
+      page: 0
     }
 
     this._info = this._info.bind(this)
@@ -110,6 +110,7 @@ class MyPageScreen extends Component {
     this._changeEmail = this._changeEmail.bind(this)
     this._recharge = this._recharge.bind(this)
     this._didMount = this._didMount.bind(this)
+    this._getNextOrder = this._getNextOrder.bind(this)
 
     this.flatListRef = React.createRef()
   }
@@ -161,7 +162,7 @@ class MyPageScreen extends Component {
 
     this.setState({ hasPhotoPermission: result === 'granted'})
 
-    if (this.props.uid) this.props.action.order.getOrders(this.props.auth)
+    // if (this.props.uid) this.props.action.order.getOrders(this.props.auth)
   }
 
   _showEmailModal(flag) {
@@ -225,7 +226,7 @@ class MyPageScreen extends Component {
   }
 
   _info() {
-    const { account: { mobile, email, userPictureUrl, loggedIn } } = this.props
+    const { account: { mobile, email, userPictureUrl } } = this.props
 
     return (
       <View style={{marginBottom:10}}>
@@ -257,8 +258,8 @@ class MyPageScreen extends Component {
   }
 
   _onPressOrderDetail = (orderId) => () => {
-    const { orders } = this.props.order
-    this.props.navigation.navigate('PurchaseDetail', {detail: orders.find(item => item.orderId == orderId), auth: this.props.auth})
+    const { orders, ordersIdx } = this.props.order
+    this.props.navigation.navigate('PurchaseDetail', {detail: orders[ordersIdx.get(orderId)], auth: this.props.auth})
   }
 
   async _validEmail(value) {
@@ -309,6 +310,10 @@ class MyPageScreen extends Component {
     )
   }
 
+  _getNextOrder() {
+    this.props.action.order.getOrders(this.props.auth)
+  }
+
   render() {
     const { showEmailModal } = this.state
     const { orders } = this.props.order
@@ -319,7 +324,9 @@ class MyPageScreen extends Component {
           data={orders} 
           ListHeaderComponent={this._info}
           ListEmptyComponent={this._empty()}
-          renderItem={this._renderOrder} /> 
+          renderItem={this._renderOrder} 
+          onEndReachedThreshold={0.4}
+          onEndReached={this._getNextOrder} />
 
         <AppActivityIndicator visible={this.props.pending}/>
 
@@ -420,7 +427,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => ({
   lastTab: state.cart.get('lastTab').toJS(),
   account: state.account.toJS(),
-  order: state.order.toJS(),
+  order: state.order.toObject(),
   auth: accountActions.auth( state.account),
   uid: state.account.get('uid'),
   pending: state.pender.pending[orderActions.GET_ORDERS] || 

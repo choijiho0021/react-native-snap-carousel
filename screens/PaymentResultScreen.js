@@ -208,7 +208,6 @@ const mapStateToProps = (state) => ({
   cart: state.cart.toJS(),
   auth: accountActions.auth(state.account),
   noti : state.noti.toJS(),
-  order: state.order.toJS()
 })
 
 export default connect(mapStateToProps, 
