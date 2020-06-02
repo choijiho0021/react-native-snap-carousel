@@ -46,7 +46,8 @@ const html = [
 // document.body.clientWidth : 화면의 너비
 // document.documentElement.clientHeight : 문서의 총 높이 
 // getBoundingClientRect().y : 각 div의 시작 위치 y position
-
+const goToDetailTab = 'config'
+const titleNum = 5
 const script = `<script>
 window.onload = function () {
   window.location.hash = 1;
@@ -57,15 +58,18 @@ window.onload = function () {
     }).join(',');
   window.ReactNativeWebView.postMessage('size:' + dimension);
 }
-function copy(val) {
+function copy() {
+  var copyTxt = document.getElementById('copyTxt').firstChild.innerHTML;
   var txtArea = document.createElement("textarea");
   document.body.appendChild(txtArea);
-  txtArea.value = val;
+  txtArea.value = copyTxt;
   txtArea.select();
   document.execCommand("copy");
   document.body.removeChild(txtArea);
+  }
+function go(){
+  window.ReactNativeWebView.postMessage("moveTo ${goToDetailTab}")
 }
-
 function send() {
   window.ReactNativeWebView.postMessage('APN Value have to insert into this', '*');
   window.alert('copy');
@@ -207,6 +211,9 @@ class ProductDetailScreen extends Component {
     if ( data.startsWith('size:')) {
       this._checkWindowSize( data.substring(5))
     }
+    else if( data.startsWith('moveTo')){
+      this.props.navigation.navigate('Faq', {key: goToDetailTab, num: titleNum})
+    }
     else {
       Clipboard.setString(data)
     }
@@ -215,7 +222,7 @@ class ProductDetailScreen extends Component {
   renderWebView() {
     const {height3, prodInfo} = this.state
 
-    return <WebView 
+    return <WebView
       automaticallyAdjustContentInsets={false}
       javaScriptEnabled={true}
       domStorageEnabled={true}
