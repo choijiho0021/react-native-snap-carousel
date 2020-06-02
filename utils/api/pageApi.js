@@ -35,7 +35,7 @@ class PageAPI {
     getPageByCategory = (name, abortController = undefined) => {
         if (_.isEmpty(name)) return api.reject( api.INVALID_ARGUMENT, `test name:${_.isEmpty(name)}`)
 
-        const url = `${api.httpUrl(api.path.jsonapi.page)}?filter[field_category.name]=${name}`
+        const url = `${api.httpUrl(api.path.jsonapi.page)}?filter[field_category.name]=${name}&sort=-changed`
         return api.callHttpGet(url, this.toPage, { abortController })
     }
 
