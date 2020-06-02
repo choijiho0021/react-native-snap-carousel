@@ -9,10 +9,11 @@ import com.android.installreferrer.api.InstallReferrerClient;
 import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
+import com.bumptech.glide.BuildConfig;
 import com.codemotionapps.reactnativedarkmode.DarkModePackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.facebook.react.ReactApplication;
-import com.facebook.flipper.reactnative.FlipperPackage;
+//import com.facebook.flipper.reactnative.FlipperPackage;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -37,8 +38,10 @@ import com.swmansion.reanimated.ReanimatedPackage;
 
 import org.reactnative.camera.RNCameraPackage;
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
+import org.unimodules.adapters.react.ReactAdapterPackage;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import org.unimodules.core.interfaces.SingletonModule;
+import org.unimodules.core.interfaces.Package;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -51,7 +54,6 @@ import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 import io.xogus.reactnative.versioncheck.RNVersionCheckPackage;
-
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -122,15 +124,13 @@ public class MainApplication extends Application implements ReactApplication {
   private final ReactNativeHost mReactNativeHost =
       new ReactNativeHost(this) {
         @Override
-        public boolean getUseDeveloperSupport() {
-          return BuildConfig.DEBUG;
-        }
+        public boolean getUseDeveloperSupport() { return BuildConfig.DEBUG;}
 
         @Override
         protected List<ReactPackage> getPackages() {
             return Arrays.<ReactPackage>asList(
                 new MainReactPackage(),
-            new FlipperPackage(),
+//            new FlipperPackage(),
                 new SvgPackage(),
                 new PickerPackage(),
                 new RNPermissionsPackage(),
@@ -147,12 +147,13 @@ public class MainApplication extends Application implements ReactApplication {
                 new ReactNativePushNotificationPackage(),
                 new ReactVideoPackage(),
                 new DarkModePackage(),
-                new AsyncStoragePackage(),
+//                new AsyncStoragePackage(),
                 new RNGestureHandlerPackage(),
                 new ReanimatedPackage(),
                 new RNCWebViewPackage(),
                 new ModuleRegistryAdapter(mModuleRegistryProvider),
-                new ARNKakaoChannelPackage()
+                new ReactAdapterPackage()
+//                new ARNKakaoChannelPackage()
             );
         }
 

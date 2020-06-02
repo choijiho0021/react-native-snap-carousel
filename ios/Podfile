@@ -89,7 +89,6 @@ target 'Rokebi' do
 
   pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
 
-  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
 
   pod 'ReactNativeDarkMode', :path => '../node_modules/react-native-dark-mode'
 
