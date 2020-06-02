@@ -1,59 +1,57 @@
 package com.rokebi;
 
+import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.RemoteException;
+
 import com.android.installreferrer.api.InstallReferrerClient;
 import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
+import com.brentvatne.react.ReactVideoPackage;
+import com.codemotionapps.reactnativedarkmode.DarkModePackage;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+import com.facebook.react.ReactApplication;
+import com.facebook.flipper.reactnative.FlipperPackage;
+import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.ReactNativeHost;
+import com.facebook.react.ReactPackage;
+import com.facebook.react.shell.MainReactPackage;
+import com.facebook.soloader.SoLoader;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.horcrux.svg.SvgPackage;
+import com.iamport.IamportPackage;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.analytics.Analytics;
+import com.microsoft.appcenter.reactnative.analytics.AppCenterReactNativeAnalyticsPackage;
+import com.microsoft.appcenter.reactnative.appcenter.AppCenterReactNativePackage;
+import com.microsoft.appcenter.reactnative.crashes.AppCenterReactNativeCrashesPackage;
+import com.microsoft.codepush.react.CodePush;
+import com.reactnative.ivpusic.imagepicker.PickerPackage;
+import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
+import com.reactnativecommunity.rnpermissions.RNPermissionsPackage;
+import com.reactnativecommunity.webview.RNCWebViewPackage;
 import com.rokebi.generated.BasePackageList;
+import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
+import com.swmansion.reanimated.ReanimatedPackage;
 
-import android.app.Application;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.RemoteException;
-import android.util.Log;
-
+import org.reactnative.camera.RNCameraPackage;
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import org.unimodules.core.interfaces.SingletonModule;
 
-
-import com.facebook.react.PackageList;
-import com.facebook.react.ReactApplication;
-import com.horcrux.svg.SvgPackage;
-import com.reactnative.ivpusic.imagepicker.PickerPackage;
-import com.reactnativecommunity.rnpermissions.RNPermissionsPackage;
-import com.iamport.IamportPackage;
-import com.microsoft.appcenter.reactnative.crashes.AppCenterReactNativeCrashesPackage;
-import com.microsoft.appcenter.reactnative.analytics.AppCenterReactNativeAnalyticsPackage;
-import com.microsoft.appcenter.reactnative.appcenter.AppCenterReactNativePackage;
-import io.xogus.reactnative.versioncheck.RNVersionCheckPackage;
-import com.microsoft.codepush.react.CodePush;
-import org.reactnative.camera.RNCameraPackage;
-import com.brentvatne.react.ReactVideoPackage;
-import com.codemotionapps.reactnativedarkmode.DarkModePackage;
-import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
-import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
-import com.swmansion.reanimated.ReanimatedPackage;
-import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
-import com.facebook.react.shell.MainReactPackage;
-import com.reactnativecommunity.webview.RNCWebViewPackage;
-import com.facebook.react.ReactNativeHost;
-import com.facebook.react.ReactPackage;
-import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.actbase.kakaosdk.channel.ARNKakaoChannelPackage;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
+import io.xogus.reactnative.versioncheck.RNVersionCheckPackage;
 
-import io.actbase.kakaosdk.channel.ARNKakaoChannelPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -132,6 +130,7 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.<ReactPackage>asList(
                 new MainReactPackage(),
+            new FlipperPackage(),
                 new SvgPackage(),
                 new PickerPackage(),
                 new RNPermissionsPackage(),
@@ -179,7 +178,7 @@ public class MainApplication extends Application implements ReactApplication {
     SoLoader.init(this, /* native exopackage */ false);
     AppCenter.start(this,"ff7d5d5a-8b74-4ec2-99be-4dfd81b4b0fd", Analytics.class);
     FirebaseMessaging.getInstance().subscribeToTopic("ALL");
-    initializeFlipper(this); // Remove this line if you don't want Flipper enabled
+    initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
 
       prefs = getSharedPreferences("Pref", MODE_PRIVATE);
 
@@ -196,15 +195,16 @@ public class MainApplication extends Application implements ReactApplication {
    *
    * @param context
    */
-  private static void initializeFlipper(Context context) {
+  private static void initializeFlipper(
+          Context context, ReactInstanceManager reactInstanceManager) {
     if (BuildConfig.DEBUG) {
       try {
         /*
          We use reflection here to pick up the class that initializes Flipper,
         since Flipper library is not available in release mode
         */
-        Class<?> aClass = Class.forName("com.facebook.flipper.ReactNativeFlipper");
-        aClass.getMethod("initializeFlipper", Context.class).invoke(null, context);
+        Class<?> aClass = Class.forName("com.rokebi.ReactNativeFlipper");
+        aClass.getMethod("initializeFlipper", Context.class, ReactInstanceManager.class).invoke(null, context, reactInstanceManager);
       } catch (ClassNotFoundException e) {
         e.printStackTrace();
       } catch (NoSuchMethodException e) {

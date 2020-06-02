@@ -25,6 +25,7 @@
 		8BD04D8718D4459F96C6487F /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D10DD61E5B2242D3AE5662E3 /* MaterialIcons.ttf */; };
 		9D96DA7E4C474BD2B332FC90 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3EF6740ADCE34419ACC078ED /* Zocial.ttf */; };
 		A36D7FD323D575EA00552A3B /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = A36D7FD223D575EA00552A3B /* AppCenter-Config.plist */; };
+		A39B6F392485F35C00EDBBB6 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39B6F382485F35C00EDBBB6 /* File.swift */; };
 		B17B8F9232B1453792F6EC90 /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8A5627E20C514F48AB67FB9D /* Fontisto.ttf */; };
 		BE19BB741F6F4643B4034DE9 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C25FD7BA1ACD4C91845B58B5 /* MaterialCommunityIcons.ttf */; };
 		CC71A4880D5CCCA4D6E90E9E /* libPods-Rokebi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BD7D7B3A0A31A5A07F9F8F5 /* libPods-Rokebi.a */; };
@@ -59,6 +60,8 @@
 		97EAF1666BB34E349694FF33 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
 		A36D7FCD23D526C500552A3B /* ios */ = {isa = PBXFileReference; lastKnownFileType = folder; path = ios; sourceTree = "<group>"; };
 		A36D7FD223D575EA00552A3B /* AppCenter-Config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "AppCenter-Config.plist"; sourceTree = "<group>"; };
+		A39B6F372485F35C00EDBBB6 /* Rokebi-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Rokebi-Bridging-Header.h"; sourceTree = "<group>"; };
+		A39B6F382485F35C00EDBBB6 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		AE9F849D96DE44A5AAF4084C /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		AFE9936F560A412CABB40AFE /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
 		B24BE2798E19486C971F7C80 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
@@ -142,6 +145,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				A39B6F382485F35C00EDBBB6 /* File.swift */,
 				A36D7FCD23D526C500552A3B /* ios */,
 				0D75258D2393BEBB000D9C77 /* fonts */,
 				13B07FAE1A68108700A75B9A /* Rokebi */,
@@ -150,6 +154,7 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				AD4FA9CC069D292D65BE8DBA /* Pods */,
 				299DF120DA124036847D3C91 /* Resources */,
+				A39B6F372485F35C00EDBBB6 /* Rokebi-Bridging-Header.h */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -209,6 +214,7 @@
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = ESZYQX5P9N;
+						LastSwiftMigration = 1150;
 						ProvisioningStyle = Manual;
 					};
 				};
@@ -397,6 +403,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				A39B6F392485F35C00EDBBB6 /* File.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -421,6 +428,7 @@
 			baseConfigurationReference = E897C4652D1B0C27AB63709D /* Pods-Rokebi.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Rokebi/Rokebi.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
@@ -438,6 +446,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.uangel.esim;
 				PRODUCT_NAME = "로깨비";
 				PROVISIONING_PROFILE_SPECIFIER = Esim_profile;
+				SWIFT_OBJC_BRIDGING_HEADER = "Rokebi-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -447,6 +458,7 @@
 			baseConfigurationReference = 2BEE59007ECDE64E2F11A26D /* Pods-Rokebi.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Rokebi/Rokebi.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
@@ -463,6 +475,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.uangel.esim;
 				PRODUCT_NAME = "로깨비";
 				PROVISIONING_PROFILE_SPECIFIER = Esim_distribution_appstore;
+				SWIFT_OBJC_BRIDGING_HEADER = "Rokebi-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
