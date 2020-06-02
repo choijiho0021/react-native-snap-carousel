@@ -9,7 +9,6 @@ import {
   ScrollView,
   Platform
 } from 'react-native';
-import { NavigationActions } from 'react-navigation';
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import i18n from '../utils/i18n'
@@ -21,7 +20,6 @@ import * as infoActions from '../redux/modules/info'
 import * as cartActions from '../redux/modules/cart'
 import * as productActions from '../redux/modules/product'
 import _ from 'underscore'
-import utils from '../utils/utils';
 import AppActivityIndicator from '../components/AppActivityIndicator'
 import AppButton from '../components/AppButton';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
@@ -42,7 +40,6 @@ import { PERMISSIONS, request } from 'react-native-permissions';
 import AppAlert from './../components/AppAlert';
 import appStateHandler from '../utils/appState'
 import Analytics from 'appcenter-analytics'
-import productApi from '../utils/api/productApi';
 
 const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti, 
   {badgeStyle:{right:-3,top:0}},
@@ -127,6 +124,7 @@ class HomeScreen extends Component {
     this._appStateHandler = this._appStateHandler.bind(this)
     this._onPressPromotion = this._onPressPromotion.bind(this)
     this._renderDots = this._renderDots.bind(this)
+    this._renderInfo = this._renderInfo.bind(this)
 
     this._isNoticed = null
   }
@@ -421,31 +419,41 @@ class HomeScreen extends Component {
 
   _renderInfo({item}) {
     return (
-      <View style={styles.info}>
-        <Text style={styles.infoText}>{item.title}</Text>
-      </View>
+      <TouchableOpacity onPress={this._onPressInfo(item)}>
+        <View style={styles.info}>
+          <Text style={styles.infoText}>{item.title}</Text>
+        </View>
+      </TouchableOpacity>
     )
-
   }
 
   _info() {
     return (
-      <TouchableOpacity onPress={() => this.props.navigation.navigate('Noti', {mode: 'info', title:i18n.t('notice'), info: this.props.info.infoList})}>
-        <View style={{flexDirection: 'row', marginHorizontal: 20}}>
-          <AppIcon name="iconNotice" size={36} />
-          <Carousel
-            data={this.props.info.infoList}
-            renderItem={this._renderInfo}
-            autoplay={true}
-            vertical={true}
-            loop={true}
-            useScrollView={true}
-            lockScrollWhileSnapping={true}
-            sliderHeight={60}
-            itemHeight={60} />
-        </View>
-      </TouchableOpacity>
+      <View style={{flexDirection: 'row', marginHorizontal: 20}}>
+        <AppIcon name="iconNotice" size={36} />
+        <Carousel
+          data={this.props.info.infoList}
+          renderItem={this._renderInfo}
+          autoplay={true}
+          vertical={true}
+          loop={true}
+          useScrollView={true}
+          lockScrollWhileSnapping={true}
+          sliderHeight={60}
+          itemHeight={60} />
+      </View>
     )
+  }
+
+  // 공지 사항 상세 페이지로 이동 
+  _onPressInfo = ({title, body}) => () => {
+    this.props.navigation.navigate('SimpleText', {
+      key:'noti', 
+      title: i18n.t('contact:noticeDetail'), 
+      bodyTitle:title, 
+      text:body, 
+      mode:'text'
+    })
   }
 
   _onPressPromotion(item) {
