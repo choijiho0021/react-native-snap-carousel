@@ -59,7 +59,11 @@ function updateOrders( state, action) {
     
     // add to the order list if not exist
     objects.forEach(item => {
-      if ( ! ordersIdx.has(item.orderId)) {
+      if ( ordersIdx.has(item.orderId)) {
+        // replace the element
+        orders[ordersIdx.get(item.orderId)] = item
+      }
+      else {
         orders.push(item)
         ordersIdx = ordersIdx.set(item.orderId, orders.length-1)
       }
