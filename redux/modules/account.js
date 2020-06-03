@@ -129,14 +129,14 @@ export const changePushNoti = ({ isPushNotiEnabled }) => {
   }
 }
 
-export const registerMobile = (uuid, mobile) => {
+export const registerMobile = (iccid, code, mobile) => {
   return (dispatch, getState) => {
     const { account } = getState(),
       authObj = auth(account)
-    return dispatch(registerMobile0(uuid, mobile, authObj)).then(
+    return dispatch(registerMobile0(iccid, code, mobile, authObj)).then(
       resp => {
-        if ( resp.result == 0 && resp.objects.length > 0) {
-          return dispatch(getAccount(resp.objects[0].iccid, authObj))
+        if ( resp.result == 0 ) {
+          return dispatch(getAccount(iccid, authObj))
         }
         console.log('failed to register mobile resp:', resp)
         return resp

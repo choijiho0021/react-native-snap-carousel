@@ -8,6 +8,13 @@ class AccountAPI {
         'field_user': /user\/(\d+)/g
     }
 
+    E_NOT_FOUND =           -1001
+    E_ACT_CODE_MISMATCH =   -1002
+    E_INVALID_STATUS =      -1003
+    E_STATUS_EXPIRED =      -1004
+    E_MISSING_ARGUMENTS =   -1005
+
+
     toAccount = (data) => {
         // REST API json/account/list/{id}로 조회하는 경우
         if ( _.isArray(data) && data.length > 0) {
@@ -16,6 +23,7 @@ class AccountAPI {
                     nid: utils.stringToNumber( item.nid),
                     uuid: item.uuid,
                     iccid: item.field_iccid,
+                    status: item.field_status,
                     expDate: item.field_expiration_date,
                     balance: utils.stringToNumber(item.field_balance) || 0,
                     simPartnerId: utils.stringToNumber( item.field_ref_sim_partner),
@@ -36,6 +44,7 @@ class AccountAPI {
                 nid: utils.stringToNumber( data.nid[0].value),
                 uuid: data.uuid[0].value,
                 iccid: data.title && data.title[0].value,
+                status: data.field_status && data.field_status[0].value,
                 expDate: data.field_expiration_date && data.field_expiration_date[0].value,
                 balance: data.field_balance && utils.stringToNumber(data.field_balance[0].value) || 0,
                 actDate: data.field_activation_date &&  data.field_activation_date[0].value,
@@ -53,6 +62,7 @@ class AccountAPI {
                 nid: utils.stringToNumber( item.attributes.drupal_internal__nid),
                 uuid: item.id,
                 iccid: item.title,
+                status: item.field_status,
                 expDate: item.attributes.field_expiration_date,
                 balance: utils.stringToNumber(item.attributes.field_balance) || 0,
                 actDate: item.attributes.field_activation_date,
@@ -64,7 +74,7 @@ class AccountAPI {
             })))
         }
 
-        return api.failure(api.NOT_FOUND)
+        return api.failure(data.result || api.NOT_FOUND, 200, data.desc || '')
     }
 
     toFile = (data) => {
@@ -116,8 +126,8 @@ class AccountAPI {
         return api.callHttpGet(url, this.toAccount)
     }
 
-    registerMobile = (uuid, mobile, {token}) => {
-        if (_.isEmpty(uuid) || _.isEmpty(mobile)) return api.reject( api.INVALID_ARGUMENT)
+    registerMobile = (iccid, code, mobile, {token}) => {
+        if (_.isEmpty(iccid) || _.isEmpty(code) || _.isEmpty(mobile)) return api.reject( api.INVALID_ARGUMENT)
 
         const url = api.httpUrl(api.path.regMobile)
         const headers = api.withToken(token, 'json', {
@@ -126,7 +136,7 @@ class AccountAPI {
         return api.callHttp(url, {
             method: 'POST',
             headers,
-            body: JSON.stringify({ uuid, mobile})
+            body: JSON.stringify({ iccid, code, mobile})
         }, this.toAccount)
     }
 
