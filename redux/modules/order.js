@@ -55,7 +55,7 @@ function updateOrders( state, action) {
 
   if (result == 0 && objects.length > 0) {
     const orders = state.get('orders')
-    var ordersIdx = state.get('ordersIdx')
+    let ordersIdx = state.get('ordersIdx')
     
     // add to the order list if not exist
     objects.forEach(item => {
@@ -108,7 +108,6 @@ export default handleActions({
     type: UPDATE_USAGE,
     onSuccess: (state, action) => {
       const {result, objects} = action.payload
-      console.log("objects",objects)
     
       let usage = state.get('usage')
       
@@ -130,7 +129,6 @@ export default handleActions({
     type: GET_USAGE,
     onSuccess: (state, action) => {
       const {result, objects} = action.payload
-      console.log("objects",objects)
       if (result == 0) {
         return state.set('usage', objects)
       }
@@ -142,7 +140,6 @@ export default handleActions({
     type: GET_SUBS_USAGE,
     onSuccess: (state, action) => {
       const {result, objects} = action.payload
-      console.log("objects",objects)
       if (result == 0) {
         return state.set('usageProgress', objects)
       }
@@ -154,9 +151,8 @@ export default handleActions({
     type: UPDATE_SUBS_TO_CASH,
     onSuccess: (state, action) => {
       const {result, objects} = action.payload
-      console.log("objects",objects)
       if (result == 0) {
-        return state.set('usage', usage)
+        return state.set('usage', objects)
       }
       return state
     }
