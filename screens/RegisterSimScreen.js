@@ -77,12 +77,6 @@ class RegisterSimScreen extends Component {
   }
 
   componentWillUnmount(){
-    const iccid = this.props.account.iccid,
-          auth = this.props.auth
-    if(iccid && auth){
-      this.props.action.order.getUsage(iccid, auth)
-    }
-
     this._isMounted = false
   }
 
@@ -119,6 +113,8 @@ class RegisterSimScreen extends Component {
     this.props.action.account.registerMobile(iccid, actCode, this.props.account.mobile)
       .then(resp => {
         if ( resp.result === 0 ) {
+          this.props.action.order.getUsage(iccid, this.props.auth)
+
           AppAlert.info(i18n.t('reg:success'), i18n.t('appTitle'), () => this.props.navigation.popToTop())
           return resp
         }
