@@ -108,7 +108,7 @@ class CountryScreen extends Component {
       setTimeout(()=>{
         this.setState({
           addToCart: false,
-          disableCart: false
+          // disableCart: false
         })
       }, 3000)
     }
@@ -170,7 +170,7 @@ class CountryScreen extends Component {
 
   render() {
     const { iccid,loggedIn } = this.props.account
-    const { prodData, imageUrl, title, selected, addToCart, disableCart} = this.state
+    const { prodData, imageUrl, title, selected, addToCart } = this.state
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>

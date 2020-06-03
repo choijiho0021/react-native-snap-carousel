@@ -76,7 +76,6 @@ class FindAddressScreen extends Component {
   _findAddr = (page=1) => () => {
     const { addr } = this.state
 
-    console.log('@@addr', addr)
     addressApi.find(addr, page).then( resp => {
       this.setState({
         links: resp.links,
