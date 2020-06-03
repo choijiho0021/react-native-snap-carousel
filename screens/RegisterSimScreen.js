@@ -69,6 +69,7 @@ class RegisterSimScreen extends Component {
     this._isMounted = null
 
     this.err = {
+      [api.E_NOT_FOUND] : 'reg:invalidStatus',
       [api.E_ACT_CODE_MISMATCH] : 'reg:wrongActCode',
       [api.E_STATUS_EXPIRED] : 'reg:expiredIccid',
       [api.E_INVALID_STATUS] : 'reg:invalidStatus',

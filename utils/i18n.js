@@ -115,6 +115,7 @@ const en = {
   'reg:invalidTelephone': 'Please input the number correctly to verify the code',
   'reg:failedToLogIn': 'Failed to sign in. Please try again.',
   'reg:toCash': 'Make the status of current product "Used" and convert it into a Rokebi cash with the same amount as the purchase amount.',
+  "reg:activateProduct": "current data product is completed and this product will be activated.\nPress the 'OK' button and call 0000# to activate it.",
 
   'menu:purchase' : 'Purchase',
   'menu:card' : 'Register',
@@ -161,7 +162,6 @@ const en = {
   "set:confirmLogout": "Please, confirm logout",
   "set:sendAlimTalk" : "The KakaoTalk message has been sent",
   "set:failedToSendAlimTalk" : "Failed to send a KakaoTalk message. Please try again later",
-  "reg:activateProduct": "current data product is completed and this product will be activated.\nPress the 'OK' button and call 0000# to activate it.",
   "set:pushnoti" : "Push Notifications",
 
   "rch:recharge" : "Recharge",
