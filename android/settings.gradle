@@ -1,8 +1,6 @@
 rootProject.name = 'Rokebi'
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 
-include ':unimodules-react-native-adapter'
-project(':unimodules-react-native-adapter').projectDir = new File(rootProject.projectDir, '../node_modules/@unimodules/react-native-adapter/android')
 include ':react-native-flipper'
 project(':react-native-flipper').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-flipper/android')
 include ':react-native-svg'

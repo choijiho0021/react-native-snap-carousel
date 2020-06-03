@@ -150,5 +150,7 @@ target 'Rokebi' do
   pod 'FlipperKit/FlipperKitHighlightOverlay', :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitLayoutTextSearchable', :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitNetworkPlugin', :configuration => 'Debug'
+  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
+
 end
 

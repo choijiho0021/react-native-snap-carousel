@@ -9,11 +9,9 @@ import com.android.installreferrer.api.InstallReferrerClient;
 import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
-import com.bumptech.glide.BuildConfig;
 import com.codemotionapps.reactnativedarkmode.DarkModePackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.facebook.react.ReactApplication;
-//import com.facebook.flipper.reactnative.FlipperPackage;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -37,11 +35,8 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.swmansion.reanimated.ReanimatedPackage;
 
 import org.reactnative.camera.RNCameraPackage;
-import org.unimodules.adapters.react.ModuleRegistryAdapter;
-import org.unimodules.adapters.react.ReactAdapterPackage;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import org.unimodules.core.interfaces.SingletonModule;
-import org.unimodules.core.interfaces.Package;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -49,11 +44,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.actbase.kakaosdk.channel.ARNKakaoChannelPackage;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 import io.xogus.reactnative.versioncheck.RNVersionCheckPackage;
+
+//import com.facebook.flipper.reactnative.FlipperPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -130,6 +126,7 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.<ReactPackage>asList(
                 new MainReactPackage(),
+            new AsyncStoragePackage(),
 //            new FlipperPackage(),
                 new SvgPackage(),
                 new PickerPackage(),
@@ -150,9 +147,7 @@ public class MainApplication extends Application implements ReactApplication {
 //                new AsyncStoragePackage(),
                 new RNGestureHandlerPackage(),
                 new ReanimatedPackage(),
-                new RNCWebViewPackage(),
-                new ModuleRegistryAdapter(mModuleRegistryProvider),
-                new ReactAdapterPackage()
+                new RNCWebViewPackage()
 //                new ARNKakaoChannelPackage()
             );
         }
