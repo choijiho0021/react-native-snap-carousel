@@ -171,7 +171,7 @@ export const logInAndGetAccount = (mobile, pin, iccid) => {
           else {
             // 가장 최근 사용한 SIM 카드 번호를 조회한다. 
             dispatch(getAccountByUser(mobile, token)).then(resp => {
-              if ( resp.result == 0 && resp.objects.length > 0) {
+              if ( resp.result == 0 && resp.objects.length > 0 && resp.objects[0].status == 'A') {
                 utils.storeData( userApi.KEY_ICCID, resp.objects[0].iccid)
                 dispatch(getAccount(resp.objects[0].iccid, token))
               }
@@ -363,13 +363,19 @@ export default handleActions({
     onSuccess: (state, action) => {
       const {result, objects} = action.payload
       if (result == 0 && objects.length > 0) {
-        const mobile = state.get('mobile')
-        if ( ! _.isEmpty(mobile) && mobile != objects[0].mobile) {
-          // mobile 번호가 다르면, ICCID는 다른 단말에 할당된 것이므로 무시한다.
-          return state.set('isUsedByOther', true)
+        if ( objects[0].status == 'A') {
+          // Active status
+          const mobile = state.get('mobile')
+          if ( ! _.isEmpty(mobile) && mobile != objects[0].mobile) {
+            // mobile 번호가 다르면, ICCID는 다른 단말에 할당된 것이므로 무시한다.
+            return state.set('isUsedByOther', true)
+          }
+          utils.storeData( userApi.KEY_ICCID, objects[0].iccid)
+          return updateAccountState(state, objects[0])
         }
-        utils.storeData( userApi.KEY_ICCID, objects[0].iccid)
-        return updateAccountState(state, objects[0])
+
+        // invalid status
+        utils.removeData( userApi.KEY_ICCID)
       }
       return state
     }
