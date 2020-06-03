@@ -32,7 +32,7 @@ describe('Account API', () => {
     it(`get Account with invalid ICCID`, () => {
       const iccid = '123'
       return accountApi.getAccount(iccid).then(resp =>  {
-        expect(resp.result).toEqual(API.NOT_FOUND)
+        expect(resp.result).toEqual(Api.E_NOT_FOUND)
       })
     });
   })

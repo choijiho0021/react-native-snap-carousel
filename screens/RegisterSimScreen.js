@@ -29,7 +29,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import { openSettings, check, PERMISSIONS } from 'react-native-permissions';
 import Analytics from 'appcenter-analytics'
-import accountApi from '../utils/api/accountApi';
+import api from '../utils/api/api';
 
 
 const initState = {
@@ -69,9 +69,9 @@ class RegisterSimScreen extends Component {
     this._isMounted = null
 
     this.err = {
-      [accountApi.E_ACT_CODE_MISMATCH] : 'reg:wrongActCode',
-      [accountApi.E_STATUS_EXPIRED] : 'reg:expiredIccid',
-      [accountApi.E_INVALID_STATUS] : 'reg:invalidStatus',
+      [api.E_ACT_CODE_MISMATCH] : 'reg:wrongActCode',
+      [api.E_STATUS_EXPIRED] : 'reg:expiredIccid',
+      [api.E_INVALID_STATUS] : 'reg:invalidStatus',
     }
   }
 

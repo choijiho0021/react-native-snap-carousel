@@ -6,10 +6,12 @@ import i18n from '../i18n'
 //import fetch from 'cross-fetch'
 
 class Api {
-    NOT_FOUND             = -1000
-    FAILED                = -1001
-    INVALID_ARGUMENT      = -1002
-    API_FAILED            = -1003
+    FAILED                  = -1000
+    E_NOT_FOUND             = -1001
+    E_ACT_CODE_MISMATCH     = -1002
+    E_INVALID_STATUS        = -1003
+    E_STATUS_EXPIRED        = -1004
+    E_INVALID_ARGUMENT      = -1005
 
     API_STATUS_INIT    = 0
     API_STATUS_TRYING  = 1

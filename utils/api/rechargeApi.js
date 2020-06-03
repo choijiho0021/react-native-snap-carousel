@@ -32,13 +32,13 @@ class RechargAPI {
             }])
         }
 
-        return api.failure(api.NOT_FOUND)
+        return api.failure(Api.E_NOT_FOUND)
     }
 
     /* not used
         use the function below.
     add = ({amount}, {user,pass}) => {
-        if ( ! _.isNumber(amount) || _.isEmpty(user) || _.isEmpty(pass)) return api.reject( api.INVALID_ARGUMENT, `test: amount`)
+        if ( ! _.isNumber(amount) || _.isEmpty(user) || _.isEmpty(pass)) return api.reject( Api.E_INVALID_ARGUMENT, `test: amount`)
 
         const url = `${api.httpUrl(api.path.jsonapi.recharge)}`
         const headers = api.basicAuth(user, pass, 'vnd.api+json')
@@ -62,7 +62,7 @@ class RechargAPI {
 
     getHistory = ( userId, {user, pass}, link) => {
         if ( _.isEmpty(userId) || _.isEmpty(user) || _.isEmpty(pass)) 
-            return api.reject( api.INVALID_ARGUMENT, `test: userId:${userId} ${user}`)
+            return api.reject( Api.E_INVALID_ARGUMENT, `test: userId:${userId} ${user}`)
 
         const url = link || `${api.httpUrl(api.path.jsonapi.recharge, '')}?fields[node--recharge]=field_amount,created&` +
             `sort=-created&page[limit]=${this.PAGE_SIZE}&filter[uid.id][value]=${userId}`
@@ -74,7 +74,7 @@ class RechargAPI {
     }
 
     get = (uuid, {user, pass}) => {
-        if ( _.isEmpty(uuid) || _.isEmpty(user) || _.isEmpty(pass)) return api.reject( api.INVALID_ARGUMENT, `test: amount`)
+        if ( _.isEmpty(uuid) || _.isEmpty(user) || _.isEmpty(pass)) return api.reject( Api.E_INVALID_ARGUMENT, `test: amount`)
 
         const url = `${api.httpUrl(api.path.recharge, '')}/${uuid}?_format=hal_json`
         const headers = api.basicAuth(user, pass, 'hal+json')
@@ -85,7 +85,7 @@ class RechargAPI {
     }
 
     add = ({iccid, iccidId, amount}, {token}) => {
-        if ( ! _.isNumber(amount) || _.isEmpty(iccid) || _.isEmpty(iccidId) || _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
+        if ( ! _.isNumber(amount) || _.isEmpty(iccid) || _.isEmpty(iccidId) || _.isEmpty(token)) return api.reject( Api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.recharge, '')}?_format=hal_json`
         const headers = api.withToken(token, 'hal+json') 

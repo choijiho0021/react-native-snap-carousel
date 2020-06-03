@@ -89,10 +89,10 @@ export default handleActions({
         return state.set('lastSent', new Date())
             .set('result', result)
       }
-      return state.set('result', api.API_FAILED)
+      return state.set('result', Api.FAILED)
     },
     onFailure: (state, action) => {
-      return state.set('result', api.API_FAILED)
+      return state.set('result', Api.FAILED)
     },
     onCancel: (state, action) => {
       return state

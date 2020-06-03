@@ -19,7 +19,7 @@ class PromotionAPI {
             }
         }
         return {
-            result: api.NOT_FOUND 
+            result: Api.E_NOT_FOUND 
         }
     }
 

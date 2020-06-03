@@ -73,7 +73,7 @@ class OrderAPI {
                 }).sort((a,b) => a.orderDate < b.orderDate ? 1 : -1), [page])
         }
 
-        return api.failure( api.NOT_FOUND)
+        return api.failure( Api.E_NOT_FOUND)
     }
 
     getOrders = ({user, token}, page=0) => {
