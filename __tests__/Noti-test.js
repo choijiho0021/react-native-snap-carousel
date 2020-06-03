@@ -1,8 +1,6 @@
-import accountApi from '../utils/api/accountApi'
 import notiApi from '../utils/api/notiApi'
 import 'isomorphic-fetch'
-import API from '../utils/api/api'
-import moment from 'moment'
+import api from '../utils/api/api'
 
 const iccid = '12345123451234512345'
 const actCode = '1111'
@@ -29,7 +27,7 @@ describe('Noti API', () => {
     it(`get Noti with invalid ICCID`, () => {
       const iccid = '123'
       return notiApi.getNoti(iccid).then(resp =>  {
-        expect(resp.result).toEqual(Api.E_NOT_FOUND)
+        expect(resp.result).toEqual(api.E_NOT_FOUND)
       })
     });
   });

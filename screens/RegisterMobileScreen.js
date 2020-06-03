@@ -189,7 +189,7 @@ class RegisterMobileScreen extends Component {
 
         if (! this._isMounted) return;
 
-        if ( resp.result !== 0 && resp.result !== Api.E_INVALID_ARGUMENT ) {
+        if ( resp.result !== 0 && resp.result !== api.E_INVALID_ARGUMENT ) {
           console.log('confirm email failed', resp)
           throw new Error('failed to confirm email')
         }

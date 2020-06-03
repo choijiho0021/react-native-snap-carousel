@@ -77,7 +77,7 @@ class SubscriptionAPI {
         }
 
         return {
-            result: Api.E_NOT_FOUND 
+            result: api.E_NOT_FOUND 
         }
     }
 
@@ -94,7 +94,7 @@ class SubscriptionAPI {
             ))
         }
         return {
-            result: Api.E_NOT_FOUND 
+            result: api.E_NOT_FOUND 
         }
     }
 
@@ -106,12 +106,12 @@ class SubscriptionAPI {
         }
 
         return {
-            result: Api.E_NOT_FOUND 
+            result: api.E_NOT_FOUND 
         }
     }
 
     getSubscription = (iccid, {token}) => {
-        if ( _.isEmpty(iccid) || _.isEmpty(token)) return api.reject( Api.E_INVALID_ARGUMENT)
+        if ( _.isEmpty(iccid) || _.isEmpty(token)) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.subscription)}/${iccid}?_format=hal_json`
         const headers = api.withToken(token)
@@ -125,7 +125,7 @@ class SubscriptionAPI {
     /*
     getHistory = ( userId, {user, pass}, link) => {
         if ( _.isEmpty(userId) || _.isEmpty(user) || _.isEmpty(pass)) 
-            return api.reject( Api.E_INVALID_ARGUMENT, `test: userId:${userId} ${user}`)
+            return api.reject( api.E_INVALID_ARGUMENT, `test: userId:${userId} ${user}`)
 
         const url = link || `${api.httpUrl(api.path.jsonapi.subscription)}?fields[node--subscription]=created,field_activation_date,title&` +
             `sort=-created&page[limit]=${this.PAGE_SIZE}&filter[uid.id][value]=${userId}`
@@ -139,7 +139,7 @@ class SubscriptionAPI {
 
 
     addSubscription = (subs, {user, pass}) => {
-        if ( _.isEmpty(user) || _.isEmpty(pass) || _.isEmpty(subs)) return api.reject( Api.E_INVALID_ARGUMENT)
+        if ( _.isEmpty(user) || _.isEmpty(pass) || _.isEmpty(subs)) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.jsonapi.subscription)}`
         const headers = api.basicAuth(user, pass, 'vnd.api+json', {
@@ -171,7 +171,7 @@ class SubscriptionAPI {
     }
 
     updateSubscriptionStatus = (uuid, status, {token}, deact_prod_uuid = []) => {
-        if ( _.isEmpty(uuid) || _.isEmpty(status) || _.isEmpty(token) ) return api.reject( Api.E_INVALID_ARGUMENT)
+        if ( _.isEmpty(uuid) || _.isEmpty(status) || _.isEmpty(token) ) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.rokApi.rokebi.subs,'')}/${uuid}?_format=json`
         const headers = api.withToken(token, 'json')
@@ -187,7 +187,7 @@ class SubscriptionAPI {
     }
 
     toRokebiCash = ( uuid, {token}, status ) => {
-        if ( _.isEmpty(uuid) || _.isEmpty(token) || _.isEmpty(status) ) return api.reject( Api.E_INVALID_ARGUMENT)
+        if ( _.isEmpty(uuid) || _.isEmpty(token) || _.isEmpty(status) ) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.rokApi.rokebi.subs,'')}/${uuid}?_format=json`
         const headers = api.withToken(token, 'json')
@@ -205,7 +205,7 @@ class SubscriptionAPI {
     //그래프를 그리기 위해서 가져올 데이터
     getSubsUsage = (id, {token}) => {
 
-        if ( _.isEmpty(id) || _.isEmpty(token)) return api.reject( Api.E_INVALID_ARGUMENT)
+        if ( _.isEmpty(id) || _.isEmpty(token)) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.rokApi.rokebi.usage)}/${id}?_format=json`
         const headers = api.withToken(token)

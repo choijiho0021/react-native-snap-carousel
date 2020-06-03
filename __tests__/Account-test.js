@@ -1,6 +1,6 @@
 import accountApi from '../utils/api/accountApi'
 import 'isomorphic-fetch'
-import API from '../utils/api/api'
+import api from '../utils/api/api'
 import moment from 'moment'
 
 const iccid = '12345123451234512345'
@@ -32,7 +32,7 @@ describe('Account API', () => {
     it(`get Account with invalid ICCID`, () => {
       const iccid = '123'
       return accountApi.getAccount(iccid).then(resp =>  {
-        expect(resp.result).toEqual(Api.E_NOT_FOUND)
+        expect(resp.result).toEqual(api.E_NOT_FOUND)
       })
     });
   })

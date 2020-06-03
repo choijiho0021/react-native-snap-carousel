@@ -5,7 +5,6 @@ import userApi from '../../utils/api/userApi';
 import accountApi from '../../utils/api/accountApi';
 import _ from 'underscore'
 import utils from '../../utils/utils';
-import moment from 'moment'
 import { batch } from 'react-redux';
 import { Platform } from '@unimodules/core';
 import * as ToastActions from './toast'

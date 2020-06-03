@@ -1,6 +1,5 @@
 import boardApi from '../utils/api/boardApi'
 import 'isomorphic-fetch'
-import API from '../utils/api/api'
 
 const user = '01012341000'
 const pass = '0000'

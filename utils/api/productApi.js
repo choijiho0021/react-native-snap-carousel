@@ -42,7 +42,7 @@ class ProductAPI {
             }
         }
         return {
-            result: Api.E_NOT_FOUND 
+            result: api.E_NOT_FOUND 
         }
     }
 

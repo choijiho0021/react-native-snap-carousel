@@ -20,7 +20,7 @@ class AddressAPI {
     }
 
     find = (key, page=1) => {
-        if ( _.isEmpty(key)) return api.reject( Api.E_INVALID_ARGUMENT, key)
+        if ( _.isEmpty(key)) return api.reject( api.E_INVALID_ARGUMENT, key)
 
         const query = {
             currentPage:page,

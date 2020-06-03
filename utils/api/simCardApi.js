@@ -25,7 +25,7 @@ class SimCardAPI {
             })))
         }
 
-        return api.failure(Api.E_NOT_FOUND)
+        return api.failure(api.E_NOT_FOUND)
     }
 
     toSimPartner = (data) => {
@@ -41,7 +41,7 @@ class SimCardAPI {
                 }])
         }
 
-        return api.failure(Api.E_NOT_FOUND)
+        return api.failure(api.E_NOT_FOUND)
     }
 
 
@@ -51,7 +51,7 @@ class SimCardAPI {
     }
 
     getSimPartnerByID = (tid) => {
-        if (! _.isNumber(tid)) return api.reject(Api.E_INVALID_ARGUMENT, `test tid:${_.isNumber(tid)}`)
+        if (! _.isNumber(tid)) return api.reject(api.E_INVALID_ARGUMENT, `test tid:${_.isNumber(tid)}`)
 
         const url = `${api.httpUrl(api.path.jsonapi.simPartner)}?filter[tid]=${tid}`
         return api.callHttpGet(url, this.toSimPartner)

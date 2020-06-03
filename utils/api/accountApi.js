@@ -67,7 +67,7 @@ class AccountAPI {
             })))
         }
 
-        return api.failure(data.result || Api.E_NOT_FOUND, 200, data.desc || '')
+        return api.failure(data.result || api.E_NOT_FOUND, 200, data.desc || '')
     }
 
     toFile = (data) => {
@@ -79,12 +79,12 @@ class AccountAPI {
                 }]
             )
         }
-        return api.failure(Api.E_NOT_FOUND)
+        return api.failure(api.E_NOT_FOUND)
     }
 
     // ContentType Account
     getAccount = (iccid, {token}) => {
-        if (_.isEmpty(iccid) || _.isEmpty(token)) return api.reject( Api.E_INVALID_ARGUMENT, `iccid:${iccid}, token:${token}`)
+        if (_.isEmpty(iccid) || _.isEmpty(token)) return api.reject( api.E_INVALID_ARGUMENT, `iccid:${iccid}, token:${token}`)
 
         const url = `${api.httpUrl(api.path.account)}/${iccid}?_format=json`
         const headers = api.withToken(token)
@@ -95,7 +95,7 @@ class AccountAPI {
     }
 
     validateActCode = (iccid, actCode, {token}) => {
-        if (_.isEmpty(iccid) || _.isEmpty(actCode)) return api.reject( Api.E_INVALID_ARGUMENT)
+        if (_.isEmpty(iccid) || _.isEmpty(actCode)) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.account)}/${iccid}/${actCode}?_format=json`
         const headers = api.withToken(token)
@@ -106,21 +106,21 @@ class AccountAPI {
     }
 
     getByUUID = (uuid) => {
-        if (_.isEmpty(uuid)) return api.reject( Api.E_INVALID_ARGUMENT)
+        if (_.isEmpty(uuid)) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.jsonapi.account)}/${uuid}`
         return api.callHttpGet(url, this.toAccount)
     }
 
     getByUser = (mobile) => {
-        if (_.isEmpty(mobile)) return api.reject( Api.E_INVALID_ARGUMENT)
+        if (_.isEmpty(mobile)) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.accountOfUser)}/${mobile}?_format=json`
         return api.callHttpGet(url, this.toAccount)
     }
 
     registerMobile = (iccid, code, mobile, {token}) => {
-        if (_.isEmpty(iccid) || _.isEmpty(code) || _.isEmpty(mobile)) return api.reject( Api.E_INVALID_ARGUMENT)
+        if (_.isEmpty(iccid) || _.isEmpty(code) || _.isEmpty(mobile)) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = api.httpUrl(api.path.regMobile)
         const headers = api.withToken(token, 'json', {
@@ -135,7 +135,7 @@ class AccountAPI {
 
     // Update User of ContentType Account
     update = ( uuid, attr, relation, {token}) => {
-        if ( _.isEmpty(uuid) || _.isEmpty(token) || _.isEmpty(attr) ) return api.reject(Api.E_INVALID_ARGUMENT)
+        if ( _.isEmpty(uuid) || _.isEmpty(token) || _.isEmpty(attr) ) return api.reject(api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.jsonapi.account)}/${uuid}`
         const headers = api.withToken(token, 'vnd.api+json', {
@@ -158,7 +158,7 @@ class AccountAPI {
 
 
     uploadPicture = ( image, {user, pass, token}) => {
-        if ( _.isEmpty(user) || _.isEmpty(pass) || _.isEmpty(token)) return api.reject( Api.E_INVALID_ARGUMENT)
+        if ( _.isEmpty(user) || _.isEmpty(pass) || _.isEmpty(token)) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.uploadFile, '')}/user/user/user_picture?_format=hal_json`
         const headers = api.headers({
@@ -172,7 +172,7 @@ class AccountAPI {
             body: Buffer.from( image.data, 'base64')
         }, this.toFile)
     // getProfile = (userId, {user, pass}) => {
-    //     if ( _.isEmpty(userId)) return api.reject( Api.E_INVALID_ARGUMENT)
+    //     if ( _.isEmpty(userId)) return api.reject( api.E_INVALID_ARGUMENT)
 
     //     const url = `${api.httpUrl(api.path.jsonapi.user)}/${userId}/customer_profiles`
     //     const headers = api.basicAuth(user, pass, 'vnd.api+json')
