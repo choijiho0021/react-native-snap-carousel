@@ -352,8 +352,6 @@ class UsimScreen extends Component {
   componentDidMount() {
     const { account: {iccid, loggedIn}, auth } = this.props
 
-    console.log('로그인@@@@@', this.props)
-    console.log('@@@@@iccid', iccid, auth)
     this._init(loggedIn, iccid, auth)
 
     // if(!loggedIn){
