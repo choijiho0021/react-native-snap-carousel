@@ -463,6 +463,7 @@ export const htmlDetailWithCss = (body, script = '') => {
         background-color: ${colors.white};
         border: 1px solid ${colors.greyish};
         border-top-width: 0px;
+        padding: 0px 20px;
     }
     .copyImg {
         width: 7%;
@@ -477,7 +478,7 @@ export const htmlDetailWithCss = (body, script = '') => {
         justify-content: center;
         align-items: center;
         height: 40px;
-        width: 64px;
+        width: 55px;
         color: ${colors.warmGrey};
         border: solid 1px ${colors.whiteThree};
         background-color: ${colors.whiteTwo};
@@ -486,7 +487,7 @@ export const htmlDetailWithCss = (body, script = '') => {
         margin: 20px;
     }
     // .copyTextLine font{
-        // line-height: 30px;
+    //     line-height: 60px;
     // }
     .moveToBox {
         font-size: 24px;
