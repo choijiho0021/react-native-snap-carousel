@@ -14,23 +14,21 @@ class SubscriptionAPI {
         'U' : 'used'
     }
 
-    getPriority (statusCd) {
-        if(statusCd == 'A'){
-            return 6
-        }
-        else if(statusCd == 'R'){
-            return 5
-        }
-        else if(statusCd == 'I'){
-            return 4
-        }
-        else if(statusCd == 'U'){
-            return 3
-        }
-        else if(statusCd == 'E'){
-            return 2
-        }
-        else return 1
+    priority = {
+        'A': 6,
+        'R': 5,
+        'I': 4,
+        'U': 3,
+        'E': 2,
+    }
+
+    sortSubs (a,b) {
+        //status 우선순위, 구입날짜별로 정렬
+        if(a.field_status == b.field_status && a.field_purchase_date > b.field_purchase_date) return -1
+
+        if( (this.priority[a.field_status] || 1) > (this.priority[b.field_status] || 1)) return -1
+        
+        return 1
     }
 
     toString(val) {
@@ -46,32 +44,9 @@ class SubscriptionAPI {
     }
 
     toSubscription = (data) => {
-        console.log('subscription', data)
-        // const sortData = [].concat(data.filter(elm => elm.field_status == 'A'))
-        //     .concat(data.filter(elm => elm.field_status == 'R'))
-        //     .concat(data.filter(elm => elm.field_status == 'I'))
-        //     .concat(data.filter(elm => elm.field_status == 'U'))
-        //     .concat(data.filter(elm => elm.field_status == 'E'))
 
-        let sortData = data
-
-        //status 우선순위, 구입날짜별로 정렬
-        if(data.length > 1) {
-            sortData = data.sort((a,b) => {
-                if(a.field_status == b.field_status && a.field_purchase_date > b.field_purchase_date){
-                    return -1
-                }
-                else if(this.getPriority(a.field_status) > this.getPriority(b.field_status)) {
-                    return -1
-                }
-                else {
-                    return 1
-                }
-            })
-        }
-
-        if ( _.isArray(sortData)) {
-            return api.success( sortData.map(item => ({
+        if ( _.isArray(data)) {
+            return api.success( data.map(item => ({
                 key: item.uuid,
                 uuid: item.uuid,
                 purchaseDate: this.toString(item.field_purchase_date),
@@ -84,14 +59,13 @@ class SubscriptionAPI {
                 prodName: item.title,
                 prodId: item.product_uuid,
                 nid: item.nid
-            })))
+            }).sort(this.sortSubs)))
         }
 
         if ( data.jsonapi) {
-            const obj = _.isArray(sortData.data) ? sortData.data : [sortData.data]
+            const obj = _.isArray(data.data) ? data.data : [data.data]
 
             return api.success( obj.map(item => 
-                console.log('usage item@@@@@', item)
                 ({
                 key: item.id,
                 uuid: item.id,
@@ -99,7 +73,7 @@ class SubscriptionAPI {
                 activationDate: item.field_subs_activation_date,
                 expireDate: item.field_subs_expiration_date,
                 staus: item.field_status
-            })), sortData.links)
+            })).sort(this.sortSubs), data.links)
         }
 
         return {
