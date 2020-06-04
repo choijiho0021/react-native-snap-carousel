@@ -152,5 +152,7 @@ target 'Rokebi' do
   pod 'FlipperKit/FlipperKitNetworkPlugin', :configuration => 'Debug'
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
 
+  pod 'RNLocalize', :path => '../node_modules/react-native-localize'
+
 end
 

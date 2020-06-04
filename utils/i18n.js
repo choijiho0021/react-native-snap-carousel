@@ -1,5 +1,10 @@
-import * as Localization from 'expo-localization';
-import i18n from 'i18n-js';
+import * as RNLocalize from 'react-native-localize'
+import i18n from 'i18n-js'
+
+const locales = RNLocalize.getLocales();
+
+// import * as Localization from 'expo-localization';
+// import i18n from 'i18n-js';
 
 const en = {
   'select': 'Select',
@@ -901,9 +906,13 @@ const ko = {
   "toast:failedToOpen" : "카카오톡 채널에 연결할 수 없습니다."
 };
 
+if (Array.isArray(locales)) {
+  i18n.locale = locales[0].languageTag;
+  i18n.lang = i18n.locale.substr(0,2);
+}
+
 i18n.fallbacks = true;
 i18n.translations = { ko, en };
-i18n.locale = Localization.locale || 'ko_KR';
-i18n.lang = i18n.locale.substr(0,2);
-
+// i18n.locale = Localization.locale || 'ko_KR';
+// i18n.lang = i18n.locale.substr(0,2);
 export default i18n;

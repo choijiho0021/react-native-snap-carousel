@@ -12,6 +12,7 @@ import com.brentvatne.react.ReactVideoPackage;
 import com.codemotionapps.reactnativedarkmode.DarkModePackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.facebook.react.ReactApplication;
+import com.reactcommunity.rnlocalize.RNLocalizePackage;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -48,7 +49,6 @@ import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 import io.xogus.reactnative.versioncheck.RNVersionCheckPackage;
-
 //import com.facebook.flipper.reactnative.FlipperPackage;
 
 public class MainApplication extends Application implements ReactApplication {
@@ -126,6 +126,7 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.<ReactPackage>asList(
                 new MainReactPackage(),
+            new RNLocalizePackage(),
             new AsyncStoragePackage(),
 //            new FlipperPackage(),
                 new SvgPackage(),
