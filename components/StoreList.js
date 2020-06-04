@@ -16,7 +16,6 @@ import api from '../utils/api/api'
 import _ from 'underscore'
 import { colors } from '../constants/Colors';
 import { isDeviceSize } from '../constants/SliderEntry.style';
-import { _Image } from 'react-native';
 
 class CountryItem extends PureComponent {
 
