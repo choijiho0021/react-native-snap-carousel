@@ -88,7 +88,7 @@ class StoreScreen extends Component {
     const { asia, europe, usaAu, multi } = productApi.category,
       {prodList, localOpList} = this.props.product,
       list = []
-      
+
     for(let item of prodList.values()) {
       const localOp = localOpList.get(item.partnerId) || {}
       item.ccodeStr = (localOp.ccode || []).join(',')
@@ -115,8 +115,8 @@ class StoreScreen extends Component {
       return b.field_daily ? 1 : a.days - b.days 
     })).sort((a,b) => {
       // 국가는 weight 값이 높은 순서가 우선, weight 값이 같으면 이름 순서
-      const opA = localOpList.get(a[0].partnerId),
-        opB = localOpList.get(b[0].partnerId)
+      const opA = localOpList.get(a[0].partnerId) || {},
+        opB = localOpList.get(b[0].partnerId) || {}
       return opA.weight == opB.weight ? (a[0].search < b[0].search ? -1 : 1) : opB.weight - opA.weight
     })
 
