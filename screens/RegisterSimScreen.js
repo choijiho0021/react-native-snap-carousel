@@ -18,7 +18,6 @@ import * as accountActions from '../redux/modules/account'
 import * as orderActions from '../redux/modules/order'
 import ScanSim from '../components/ScanSim'
 import _ from 'underscore'
-import accountApi from '../utils/api/accountApi';
 import AppActivityIndicator from '../components/AppActivityIndicator'
 import AppButton from '../components/AppButton';
 import AppAlert from '../components/AppAlert';
@@ -30,6 +29,19 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import { openSettings, check, PERMISSIONS } from 'react-native-permissions';
 import Analytics from 'appcenter-analytics'
+import api from '../utils/api/api';
+
+
+const initState = {
+  scan: false,
+  showRegisterSimModal: false,
+  loggedIn: false,
+  querying: false,
+  iccid: ['','','',''],
+  actCode: undefined,
+  focusInputIccid: false,
+  hasCameraPermission : false
+}
 
 class RegisterSimScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -40,16 +52,7 @@ class RegisterSimScreen extends Component {
   constructor(props) {
     super(props)
 
-    this.state = {
-      scan: false,
-      showRegisterSimModal: false,
-      loggedIn: false,
-      querying: false,
-      iccid: ['','','',''],
-      actCode: undefined,
-      focusInputIccid: false,
-      hasCameraPermission : false
-    }
+    this.state = initState
 
     this._onSubmit = this._onSubmit.bind(this)
     this._onCamera = this._onCamera.bind(this)
@@ -65,16 +68,15 @@ class RegisterSimScreen extends Component {
 
     this._isMounted = null
 
-    this.scroll = React.createRef()
+    this.err = {
+      [api.E_NOT_FOUND] : 'reg:invalidStatus',
+      [api.E_ACT_CODE_MISMATCH] : 'reg:wrongActCode',
+      [api.E_STATUS_EXPIRED] : 'reg:expiredIccid',
+      [api.E_INVALID_STATUS] : 'reg:invalidStatus',
+    }
   }
 
   componentWillUnmount(){
-    const iccid = this.props.account.iccid,
-          auth = this.props.auth
-    if(iccid && auth){
-      this.props.action.order.getUsage(iccid, auth)
-    }
-
     this._isMounted = false
   }
 
@@ -108,27 +110,19 @@ class RegisterSimScreen extends Component {
       querying: true
     })
 
-    accountApi.validateActCode(iccid, actCode, this.props.auth)
+    this.props.action.account.registerMobile(iccid, actCode, this.props.account.mobile)
       .then(resp => {
         if ( resp.result === 0 ) {
-          const uuid = resp.objects[0].uuid
+          this.props.action.order.getUsage(iccid, this.props.auth)
 
-          return this.props.action.account.registerMobile(uuid, this.props.account.mobile, this.props.auth)
-            .then( resp => {
-              if(resp.result === 0) {
-                AppAlert.info(i18n.t('reg:success'), i18n.t('appTitle'), () => this.props.navigation.popToTop())
-                return resp
-              }
-              return Promise.reject({ msg: i18n.t('reg:fail') })
-            })
+          AppAlert.info(i18n.t('reg:success'), i18n.t('appTitle'), () => this.props.navigation.popToTop())
+          return resp
         }
-
-        return Promise.reject({ msg: i18n.t('reg:wrongActCode') })
+        return new Promise.reject({msg: i18n.t( this.err[resp.result] || 'reg:fail')})
       })
       .catch(err => {
-        const msg = _.isObject(err) ? err.msg || i18n.t('reg:fail') : i18n.t('reg:fail')
-        console.log('failed to update', err)
-        AppAlert.error(msg)
+        AppAlert.error( err.msg || i18n.t('reg:fail'))
+        this.setState(initState)
       })
       .finally(() => {
         this._isMounted && this.setState({
@@ -168,7 +162,7 @@ class RegisterSimScreen extends Component {
   }
 
   _scrolll = (event) => {
-    if ( this.scroll.current) this.scroll.current.props.scrollToFocusedInput(findNodeHandle(event.target));
+    if ( this.scroll) this.scroll.props.scrollToFocusedInput(findNodeHandle(event.target));
   }
 
   _onChangeText = (key, idx) => (value) => {
@@ -205,13 +199,7 @@ class RegisterSimScreen extends Component {
   }
 
   validIccid(iccid) {
-    let valid = true
-
-    iccid.map((elm,idx) => {
-      if(idx == iccid.length-1 && elm.length != 4) valid = false
-      else if(idx != iccid.length-1 && elm.length != 5) valid = false
-    })
-    return valid
+    return iccid.every((elm,idx) => (idx == iccid.length-1) ? elm.length == 4 : elm.length == 5)
   }
 
   render() {
@@ -226,7 +214,7 @@ class RegisterSimScreen extends Component {
         <AppActivityIndicator visible={querying}/>
 
         <KeyboardAwareScrollView
-          innerRef={this.scroll}
+          innerRef={ref => this.scroll = ref}
           resetScrollToCoords={{ x: 0, y: 0 }}
           contentContainerStyle={styles.container}
           enableOnAndroid={true}
@@ -402,7 +390,6 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => ({
   account: state.account.toJS(),
   auth: accountActions.auth(state.account),
-  order: state.order.toJS(),
 })
 
 export default connect(mapStateToProps, 

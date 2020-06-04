@@ -21,7 +21,7 @@ class PageAPI {
             })))
         }
 
-        return api.failure(api.NOT_FOUND, data.message)
+        return api.failure(api.E_NOT_FOUND, data.message)
     }
 
     toProductDetails = (data) => {
@@ -29,18 +29,18 @@ class PageAPI {
             return api.success(data.map(item => item.body).join())
         }
 
-        return api.failure(api.NOT_FOUND)
+        return api.failure(api.E_NOT_FOUND)
     }
 
     getPageByCategory = (name, abortController = undefined) => {
-        if (_.isEmpty(name)) return api.reject( api.INVALID_ARGUMENT, `test name:${_.isEmpty(name)}`)
+        if (_.isEmpty(name)) return api.reject( api.E_INVALID_ARGUMENT, `test name:${_.isEmpty(name)}`)
 
-        const url = `${api.httpUrl(api.path.jsonapi.page)}?filter[field_category.name]=${name}`
+        const url = `${api.httpUrl(api.path.jsonapi.page)}?filter[field_category.name]=${name}&sort=-changed`
         return api.callHttpGet(url, this.toPage, { abortController })
     }
 
     getPageByTitle = (title, abortController = undefined) => {
-        if (_.isEmpty(title)) return api.reject( api.INVALID_ARGUMENT, `test name:${_.isEmpty(title)}`)
+        if (_.isEmpty(title)) return api.reject( api.E_INVALID_ARGUMENT, `test name:${_.isEmpty(title)}`)
 
         const url = `${api.httpUrl(api.path.jsonapi.page)}?filter[title]=${title}`
         return api.callHttpGet(url, this.toPage, { abortController })

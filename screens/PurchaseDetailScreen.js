@@ -145,7 +145,6 @@ class PurchaseDetailScreen extends Component {
         {
           this.props.action.order.cancelOrder(this.state.orderId, this.props.auth).then(resp =>{
             if (resp.result == 0){
-              console.log('cancel order', resp)
               this.setState({cancelPressed: true})
             }else{
               AppAlert.info(i18n.t("his:cancelFail"))
@@ -645,7 +644,6 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
   account: state.account.toJS(),
-  order: state.order.toJS(),
   auth: accountActions.auth(state.account),
   uid: state.account.get('uid'),
   pending: state.pender.pending[orderActions.GET_ORDERS] || 

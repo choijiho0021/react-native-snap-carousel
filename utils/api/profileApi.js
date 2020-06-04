@@ -83,11 +83,11 @@ class ProfileAPI {
             })
             return api.success(objects)
         }
-        return api.failure(api.NOT_FOUND)        
+        return api.failure(api.E_NOT_FOUND)        
     }
 
     getCustomerProfile = ({uid, token}) => {
-        if ( _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
+        if ( _.isEmpty(token)) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.profile)}/user/${uid}?_format=json`
         const headers = api.withToken(token, 'json')
@@ -99,7 +99,7 @@ class ProfileAPI {
     }
 
     getCustomerProfileById = (id, {token}) => {
-        if ( _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
+        if ( _.isEmpty(token)) return api.reject( api.E_INVALID_ARGUMENT)
         
         const url = `${api.httpUrl(api.path.profile)}/id/${id}?_format=json`
         const headers = api.withToken(token, 'json')
@@ -111,7 +111,7 @@ class ProfileAPI {
     }
 
     addCustomerProfile = (profile, defaultProfile, {token}) => {
-        if ( _.isEmpty(profile) || _.isEmpty(token) ) return api.reject( api.INVALID_ARGUMENT)
+        if ( _.isEmpty(profile) || _.isEmpty(token) ) return api.reject( api.E_INVALID_ARGUMENT)
         
         const url = api.httpUrl(api.path.jsonapi.profile)
 
@@ -119,7 +119,7 @@ class ProfileAPI {
     }
 
     addOrUpdate = (url, profile, defaultProfile = {}, method, token) => {
-        if ( _.isEmpty(url) || _.isEmpty(profile) || _.isEmpty(method) || _.isEmpty(token) ) return api.reject(api.INVALID_ARGUMENT)
+        if ( _.isEmpty(url) || _.isEmpty(profile) || _.isEmpty(method) || _.isEmpty(token) ) return api.reject(api.E_INVALID_ARGUMENT)
 
         const headers = api.withToken(token, 'vnd.api+json', 
             (method == 'patch') && { 'Accept': 'application/vnd.api+json' })
@@ -164,7 +164,7 @@ class ProfileAPI {
 
     // profile uuid
     delCustomerProfile = (uuid, {token}) => {
-        if ( _.isEmpty(uuid) || _.isEmpty(token) ) return api.reject( api.INVALID_ARGUMENT)
+        if ( _.isEmpty(uuid) || _.isEmpty(token) ) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.jsonapi.profile)}/${uuid}`
         const headers = api.withToken(token, 'vnd.api+json')

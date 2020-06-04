@@ -352,8 +352,6 @@ class UsimScreen extends Component {
   componentDidMount() {
     const { account: {iccid, loggedIn}, auth } = this.props
 
-    console.log('로그인@@@@@', this.props)
-    console.log('@@@@@iccid', iccid, auth)
     this._init(loggedIn, iccid, auth)
 
     // if(!loggedIn){
@@ -683,7 +681,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => ({
-  order: state.order.toJS(),
+  order: state.order.toObject(),
 
   account : state.account.toJS(),
   auth: accountActions.auth(state.account),

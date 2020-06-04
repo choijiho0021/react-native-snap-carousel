@@ -20,6 +20,8 @@ import AppFlatListItem from '../components/AppFlatListItem';
 class FaqList extends Component {
   constructor(props) {
     super(props)
+
+    this._renderItem = this._renderItem.bind(this)
   }
 
   shouldComponentUpdate(nextProps) {
@@ -27,7 +29,7 @@ class FaqList extends Component {
   }
 
   _renderItem({item}) {
-    return (<AppFlatListItem key={item.key} item={item} />)
+    return (<AppFlatListItem key={item.key} item={item} checked={item.title.startsWith(this.props.titleNo)}/>)
   }
 
   render() {
@@ -69,7 +71,15 @@ class FaqScreen extends Component {
   } 
 
   componentDidMount() {
-    this._refreshData(0)
+    const index = this.state.routes.findIndex(item => item.key === this.props.navigation.getParam('key'))
+    if(index > 0){
+      this.setState({
+        index,
+        selectedTitleNo: this.props.navigation.getParam('num')
+      })
+    }
+
+    this._refreshData(index > 0 ? index : 0)
   }
 
   _refreshData(index) {
@@ -108,12 +118,13 @@ class FaqScreen extends Component {
     this._refreshData(index)
 
     this.setState({
-      index
+      index,
+      selectedTitleNo: undefined
     })
   }
 
   _renderScene = ({ route, jumpTo }) => {
-    return <FaqList data={this.state[route.key]} jumpTp={jumpTo} />
+    return <FaqList data={this.state[route.key]} jumpTp={jumpTo} titleNo={this.state.selectedTitleNo}/>
   }
 
   _renderTabBar = (props) => {

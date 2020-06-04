@@ -367,8 +367,6 @@ class findEngAddress {
 
     findCity(provinceNumber, cityNumber) {
         const province = this.city[provinceNumber]
-        console.log('@@province', province)
-        console.log('@@city', province[cityNumber])
         if (province) return province[cityNumber]
 
         return ''

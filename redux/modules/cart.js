@@ -118,7 +118,7 @@ const onSuccess = (state, action) => {
 
 const onFailure = (state, action) => {
   console.log('failed')
-  return state.set('result', api.API_FAILED)
+  return state.set('result', Api.FAILED)
 }
 
 const initialState = Map({

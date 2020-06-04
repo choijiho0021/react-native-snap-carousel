@@ -125,8 +125,8 @@ class NotiScreen extends Component {
           break;
         case notiActions.NOTI_TYPE_PYM:
           // read orders if not read before
-          this.props.action.order.getOrdersIfEmpty(auth).then(_ => {
-            this.props.navigation.navigate('PurchaseDetail', {detail: this.props.order.orders.find(item => item.orderId == id), auth})
+          this.props.action.order.checkAndGetOrderById(auth, id).then(_ => {
+            this.props.navigation.navigate('PurchaseDetail', {detail: this.props.order.orders[ this.props.order.ordersIdx.get(id) ], auth})
           })
           break;
         case notiActions.NOTI_TYPE_USIM:
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => ({
   account : state.account.toJS(),
   auth: accountActions.auth(state.account),
-  order: state.order.toJS(),
+  order: state.order.toObject(),
   board: state.board.toJS(),
   noti: state.noti.toJS(),
   pending: state.pender.pending[notiActions.GET_NOTI_LIST] || false

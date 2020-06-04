@@ -43,7 +43,7 @@ class UserAPI {
             })))
         }
 
-        return api.failure(api.NOT_FOUND, data.message)
+        return api.failure(api.E_NOT_FOUND, data.message)
     }
 
     toLogin = (pass, login) => {
@@ -51,18 +51,18 @@ class UserAPI {
             return api.success([{ ...login, pass }])
         }
 
-        return api.failure( api.NOT_FOUND, login.message)
+        return api.failure( api.E_NOT_FOUND, login.message)
     }
 
     getUserByName = (name) => {
-        if (_.isEmpty(name)) return api.reject( api.INVALID_ARGUMENT, `test name:${_.isEmpty(name)}`)
+        if (_.isEmpty(name)) return api.reject( api.E_INVALID_ARGUMENT, `test name:${_.isEmpty(name)}`)
 
         const url = `${api.httpUrl(api.path.userByName)}/${name}?_format=json`
         return api.callHttpGet(url, this.toUser)
     }
 
     getUserByEmail = (mail) => {
-        if (_.isEmpty(mail)) return api.reject( api.INVALID_ARGUMENT, `test name:${_.isEmpty(mail)}`)
+        if (_.isEmpty(mail)) return api.reject( api.E_INVALID_ARGUMENT, `test name:${_.isEmpty(mail)}`)
 
         const url = `${api.httpUrl(api.path.userByEmail)}/${mail}?_format=json`
         return api.callHttpGet(url, this.toUser)
@@ -70,7 +70,7 @@ class UserAPI {
 
     // not used
     findUser = (name, email, {user, pass}) => {
-        if (_.isEmpty(user)) return api.reject( api.INVALID_ARGUMENT, `test user:${_.isEmpty(user)}`)
+        if (_.isEmpty(user)) return api.reject( api.E_INVALID_ARGUMENT, `test user:${_.isEmpty(user)}`)
 
         //const url = `${API.httpUrl(API.path.userList)}/${user}?_format=json`
         const url = `${api.httpUrl(api.path.jsonapi.user)}?`+
@@ -109,7 +109,7 @@ class UserAPI {
         console.log('signUp', user, pass)
 
         if ( _.isEmpty(user) || _.isEmpty(pass)) 
-            return api.reject( api.INVALID_ARGUMENT, `user or pass`)
+            return api.reject( api.E_INVALID_ARGUMENT, `user or pass`)
 
         return this.getToken().then( token => {
             console.log('token', token)
@@ -142,7 +142,7 @@ class UserAPI {
         console.log('reset pw', user, pass)
 
         if ( _.isEmpty(user) || _.isEmpty(pass)) 
-            return api.reject( api.INVALID_ARGUMENT, `test user:${_.isEmpty(user)} pass:${_.isEmpty(pass)}`)
+            return api.reject( api.E_INVALID_ARGUMENT, `test user:${_.isEmpty(user)} pass:${_.isEmpty(pass)}`)
 
         const url = `${api.httpUrl(api.path.resetPw)}?_format=hal_json`
         const body = {
@@ -160,7 +160,7 @@ class UserAPI {
     /*
     signUp2 = ({token, user, pass, email}) => {
         if (_.isEmpty(email) || _.isEmpty(token) || _.isEmpty(user) || _.isEmpty(pass)) 
-            return api.reject( api.INVALID_ARGUMENT,
+            return api.reject( api.E_INVALID_ARGUMENT,
                 `test email:${_.isEmpty(email)} token:${_.isEmpty(token)} user:${_.isEmpty(user)} pass:${_.isEmpty(pass)}`)
 
         const url = `${api.httpUrl(api.path.jsonapi.user)}`
@@ -183,7 +183,7 @@ class UserAPI {
     */
 
     logIn = (user, pass) => {
-        if ( _.isEmpty(user) || _.isEmpty(pass)) return api.reject( api.INVALID_ARGUMENT)
+        if ( _.isEmpty(user) || _.isEmpty(pass)) return api.reject( api.E_INVALID_ARGUMENT)
 
         clearCookies()
 
@@ -207,7 +207,7 @@ class UserAPI {
     }    
 
     getByFilter = (filter, {token}) => {
-        if ( _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
+        if ( _.isEmpty(token)) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.jsonapi.user)}${filter}&include=user_picture` +
             `&fields[user--user]=name,mail,field_fcm_token,field_device_token,field_is_notification_enabled&fields[file--file]=uri`
@@ -220,27 +220,27 @@ class UserAPI {
     }
 
     getByUUID = (uuid, auth) => {
-        if ( _.isEmpty(uuid) || _.isEmpty(auth)) return api.reject( api.INVALID_ARGUMENT)
+        if ( _.isEmpty(uuid) || _.isEmpty(auth)) return api.reject( api.E_INVALID_ARGUMENT)
         return this.getByFilter( `/${uuid}`, auth)
     }
 
     getByUid = (uid, auth) => {
-        if ( ( ! _.isNumber(uid) && _.isEmpty(uid)) || _.isEmpty(auth)) return api.reject( api.INVALID_ARGUMENT)
+        if ( ( ! _.isNumber(uid) && _.isEmpty(uid)) || _.isEmpty(auth)) return api.reject( api.E_INVALID_ARGUMENT)
         return this.getByFilter(`?filter[uid][value]=${uid}`, auth)
     }
 
     getByName = (name, auth) => {
-        if ( _.isEmpty(name) || _.isEmpty(auth)) return api.reject( api.INVALID_ARGUMENT)
+        if ( _.isEmpty(name) || _.isEmpty(auth)) return api.reject( api.E_INVALID_ARGUMENT)
         return this.getByFilter(`?filter[name][value]=${name}`, auth)
     }
 
     getByMail = (mail, auth) => {
-        if ( _.isEmpty(mail) || _.isEmpty(auth)) return api.reject( api.INVALID_ARGUMENT)
+        if ( _.isEmpty(mail) || _.isEmpty(auth)) return api.reject( api.E_INVALID_ARGUMENT)
         return this.getByFilter(`?filter[mail][value]=${mail}`, auth)
     }
     
     update = (uuid, {token}, attr) => {
-        if ( _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
+        if ( _.isEmpty(token)) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.jsonapi.user, '')}/${uuid}`
         const headers = api.withToken(token, 'vnd.api+json')
@@ -262,7 +262,7 @@ class UserAPI {
 
 
     delete = ({uid, token, user, pass}) => {
-        if ( _.isEmpty(user) || _.isEmpty(pass) || _.isEmpty(uid) || _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
+        if ( _.isEmpty(user) || _.isEmpty(pass) || _.isEmpty(uid) || _.isEmpty(token)) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.user)}/${uid}?_format=hal_json`
         const headers = api.basicAuth(user, pass, 'hal+json', {
@@ -279,7 +279,7 @@ class UserAPI {
 
     changePicture = ( userId, userPicture, {user, pass, token}) => {
         if ( _.isEmpty(user) || _.isEmpty(pass) || _.isEmpty(token) || 
-            _.isEmpty(userId) || _.isEmpty(userPicture)) return api.reject( api.INVALID_ARGUMENT)
+            _.isEmpty(userId) || _.isEmpty(userPicture)) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.jsonapi.user, 'en')}/${userId}?include=user_picture`
         const headers = api.basicAuth(user, pass, 'vnd.api+json', {
@@ -313,7 +313,7 @@ class UserAPI {
     }
 
     sendSms = ({ user, abortController }) => {
-        if ( _.isEmpty(user) ) return api.reject( api.INVALID_ARGUMENT)
+        if ( _.isEmpty(user) ) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.rokHttpUrl(api.path.rokApi.auth.verify)}`,
             headers = api.basicAuth(undefined, undefined, 'json'),
@@ -336,7 +336,7 @@ class UserAPI {
     }
 
     confirmSmsCode = ({ user, pass, abortController }) => {
-        if ( _.isEmpty(user) || _.isEmpty(pass) ) return api.reject( api.INVALID_ARGUMENT)
+        if ( _.isEmpty(user) || _.isEmpty(pass) ) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.rokHttpUrl(api.path.rokApi.auth.confirm)}`,
             headers = api.basicAuth(undefined, undefined, 'json'),
@@ -360,7 +360,7 @@ class UserAPI {
     }
 
     signUp = ({ user, pass, email, mktgOptIn }) => {
-        if ( _.isEmpty(user) || _.isEmpty(pass) ) return api.reject( api.INVALID_ARGUMENT)
+        if ( _.isEmpty(user) || _.isEmpty(pass) ) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.rokHttpUrl(api.path.rokApi.user.create)}`,
         headers = api.basicAuth(undefined, undefined, 'json'),
@@ -386,7 +386,7 @@ class UserAPI {
     }
 
     confirmEmail = ({ email, abortController }) => {
-        if ( _.isEmpty(email) ) return api.reject( api.INVALID_ARGUMENT)
+        if ( _.isEmpty(email) ) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.rokHttpUrl(api.path.rokApi.auth.email)}`,
             headers = api.basicAuth(undefined, undefined, 'json'),
@@ -401,7 +401,7 @@ class UserAPI {
         }, (data = {}) => {
             if ( _.size(data.result) > 0) {
                 if (data.result.code  === 0) return api.success();
-                if (data.result.code  === -1006 ) return api.failure(api.INVALID_ARGUMENT, undefined, (data.result || {}).error)
+                if (data.result.code  === -1006 ) return api.failure(api.E_INVALID_ARGUMENT, undefined, (data.result || {}).error)
             }
             
             return api.failure(api.FAILED, undefined, (data.result || {}).error);
