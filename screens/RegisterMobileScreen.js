@@ -189,7 +189,7 @@ class RegisterMobileScreen extends Component {
 
         if (! this._isMounted) return;
 
-        if ( resp.result !== 0 && resp.result !== api.INVALID_ARGUMENT ) {
+        if ( resp.result !== 0 && resp.result !== api.E_INVALID_ARGUMENT ) {
           console.log('confirm email failed', resp)
           throw new Error('failed to confirm email')
         }
@@ -339,7 +339,7 @@ class RegisterMobileScreen extends Component {
   }
 
   _signIn = ({ mobile, pin }) => {
-    this.props.action.account.logInAndGetAccount( mobile, pin).then((resp) => this.props.action.cart.cartFetch())
+    this.props.action.account.logInAndGetAccount( mobile, pin).then(_ => this.props.action.cart.cartFetch())
   }
 
   _onTimeout = () => {

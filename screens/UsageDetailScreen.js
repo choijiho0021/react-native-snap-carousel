@@ -67,7 +67,7 @@ class UsageDetailScreen extends Component {
     this.setState({activatable, price, ... detail})
   }
 
-  _onSubmit(modal=undefined, targetStatus=undefined) {
+  _onSubmit(modal, targetStatus) {
     const { account:{iccid}, auth } = this.props
     const { uuid, statusCd, showModal, country } = this.state
     const { usage } = this.props.order
@@ -263,7 +263,7 @@ const mapStateToProps = (state) => ({
   product: state.product,
   account : state.account.toJS(),
   auth: accountActions.auth(state.account),
-  order: state.order.toJS()
+  order: state.order.toObject()
 })
 
 export default connect(mapStateToProps, 

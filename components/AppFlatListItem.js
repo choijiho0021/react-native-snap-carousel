@@ -18,7 +18,7 @@ export default class AppFlatListItem extends Component {
     super(props)
 
     this.state = {
-      checked: false
+      checked: this.props.checked || false
     }
 
     this._onPress = this._onPress.bind(this)

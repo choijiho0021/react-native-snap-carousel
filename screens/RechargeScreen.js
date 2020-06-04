@@ -214,7 +214,6 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => ({
   account: state.account.toJS(),
   auth: accountActions.auth(state.account),
-  order: state.order.toJS(),
 })
 
 export default connect(mapStateToProps, 

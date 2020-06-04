@@ -49,7 +49,7 @@ class BoardAPI {
             })), data.links)
         }
 
-        return api.failure(api.NOT_FOUND, data.message)
+        return api.failure(api.E_NOT_FOUND, data.message)
     }
 
     toComment = (data) => {
@@ -73,7 +73,7 @@ class BoardAPI {
             }))
         }
 
-        return api.failure(api.NOT_FOUND, data.message)
+        return api.failure(api.E_NOT_FOUND, data.message)
     }
 
     toFile = (data) => {
@@ -85,13 +85,13 @@ class BoardAPI {
                 }]
             )
         }
-        return api.failure(api.NOT_FOUND)
+        return api.failure(api.E_NOT_FOUND)
     }
 
     // anonymous user 도 post 할 수 있으므로, token 값을 확인하지 않는다. 
     post = ({title,msg,mobile,pin}, images, {token}) => {
         if (_.isEmpty(title) || _.isEmpty(msg) || _.isEmpty(token)) 
-            return api.reject( api.INVALID_ARGUMENT, 'empty title, body or token')
+            return api.reject( api.E_INVALID_ARGUMENT, 'empty title, body or token')
 
         const url = `${api.httpUrl(api.path.jsonapi.board)}`
         const headers = api.withToken(token, 'vnd.api+json')
@@ -132,7 +132,7 @@ class BoardAPI {
     }
 
     getByFilter = (filter, {user, pass}) => {
-        if ( _.isEmpty(user) || _.isEmpty(pass)) return api.reject( api.INVALID_ARGUMENT)
+        if ( _.isEmpty(user) || _.isEmpty(pass)) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.jsonapi.board)}${filter}`
         const headers = api.basicAuth(user, pass, 'vnd.api+json')

@@ -42,12 +42,12 @@ class NotiAPI {
             return api.success(objects)
         }
 
-        return api.failure(api.NOT_FOUND)
+        return api.failure(api.E_NOT_FOUND)
     }
 
     // ContentType Account
     getNoti = (mobile) => {
-        if (_.isEmpty(mobile)) return api.reject( api.INVALID_ARGUMENT)
+        if (_.isEmpty(mobile)) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.noti)}/${mobile}?_format=json`
         console.log("noti url",url)
@@ -56,7 +56,7 @@ class NotiAPI {
     }
 
     update = ( uuid, attr, {token}) => {
-        if ( _.isEmpty(uuid) || _.isEmpty(token) || _.isEmpty(attr) ) return api.reject(api.INVALID_ARGUMENT)
+        if ( _.isEmpty(uuid) || _.isEmpty(token) || _.isEmpty(attr) ) return api.reject(api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.jsonapi.noti)}/${uuid}`
         const headers = api.withToken(token, 'vnd.api+json')
@@ -76,14 +76,14 @@ class NotiAPI {
     }
 
     read = (uuid,auth) => {
-        if ( _.isEmpty(uuid) || _.isEmpty(auth)) return api.reject( api.INVALID_ARGUMENT)
+        if ( _.isEmpty(uuid) || _.isEmpty(auth)) return api.reject( api.E_INVALID_ARGUMENT)
         const attr = {field_isread: true}
 
         return this.update(uuid,attr,auth)
     }
 
     sendAlimTalk = (mobile, abortController) => {
-        if ( _.isEmpty(mobile) ) return api.reject( api.INVALID_ARGUMENT)
+        if ( _.isEmpty(mobile) ) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.rokHttpUrl(api.path.rokApi.noti.alimtalk)}`,
         headers = api.basicAuth(undefined, undefined, 'json'),
@@ -107,7 +107,7 @@ class NotiAPI {
     }
 
     sendLog = (mobile, message) => {
-        if ( _.isEmpty(mobile) ) return api.reject( api.INVALID_ARGUMENT)
+        if ( _.isEmpty(mobile) ) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.rokHttpUrl(api.path.rokApi.noti.log)}`,
         headers = api.basicAuth(undefined, undefined, 'json'),

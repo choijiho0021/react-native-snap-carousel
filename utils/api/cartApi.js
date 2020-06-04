@@ -33,7 +33,7 @@ class CartAPI {
             )
         }
 
-        return api.failure(api.NOT_FOUND)
+        return api.failure(api.E_NOT_FOUND)
     }
 
     get = () => {
@@ -73,7 +73,7 @@ class CartAPI {
                 orderId,
                 orderItemId
             }])
-            return api.failure( api.NOT_FOUND)
+            return api.failure( api.E_NOT_FOUND)
         })
     }
 
@@ -176,11 +176,11 @@ class CartAPI {
     makeOrder = (items, result, {user, mail, token, iccid}) => {
 
         if (_.isEmpty(items) || _.isEmpty(result) || _.isEmpty(user) || _.isEmpty(mail) || _.isEmpty(token)) 
-            return api.reject( api.INVALID_ARGUMENT, 'empty parameter')
+            return api.reject( api.E_INVALID_ARGUMENT, 'empty parameter')
 
         if ( items.findIndex(item => item.type != 'sim_card') >= 0 && _.isEmpty(iccid)) {
             // SIM card 이외의 상품 구매시에는 ICCID가 필요함 
-            return api.reject( api.INVALID_ARGUMENT,  'missing parameter: ICCID')
+            return api.reject( api.E_INVALID_ARGUMENT,  'missing parameter: ICCID')
         }
 
         // SIM card와 같이 배송이 필요한 상품은 orderType을 'physical'로 설정한다.

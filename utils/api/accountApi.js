@@ -16,6 +16,7 @@ class AccountAPI {
                     nid: utils.stringToNumber( item.nid),
                     uuid: item.uuid,
                     iccid: item.field_iccid,
+                    status: item.field_status,
                     expDate: item.field_expiration_date,
                     balance: utils.stringToNumber(item.field_balance) || 0,
                     simPartnerId: utils.stringToNumber( item.field_ref_sim_partner),
@@ -36,6 +37,7 @@ class AccountAPI {
                 nid: utils.stringToNumber( data.nid[0].value),
                 uuid: data.uuid[0].value,
                 iccid: data.title && data.title[0].value,
+                status: data.field_status && data.field_status[0].value,
                 expDate: data.field_expiration_date && data.field_expiration_date[0].value,
                 balance: data.field_balance && utils.stringToNumber(data.field_balance[0].value) || 0,
                 actDate: data.field_activation_date &&  data.field_activation_date[0].value,
@@ -53,6 +55,7 @@ class AccountAPI {
                 nid: utils.stringToNumber( item.attributes.drupal_internal__nid),
                 uuid: item.id,
                 iccid: item.title,
+                status: item.field_status,
                 expDate: item.attributes.field_expiration_date,
                 balance: utils.stringToNumber(item.attributes.field_balance) || 0,
                 actDate: item.attributes.field_activation_date,
@@ -64,7 +67,7 @@ class AccountAPI {
             })))
         }
 
-        return api.failure(api.NOT_FOUND)
+        return api.failure(data.result || api.E_NOT_FOUND, 200, data.desc || '')
     }
 
     toFile = (data) => {
@@ -76,12 +79,12 @@ class AccountAPI {
                 }]
             )
         }
-        return api.failure(api.NOT_FOUND)
+        return api.failure(api.E_NOT_FOUND)
     }
 
     // ContentType Account
     getAccount = (iccid, {token}) => {
-        if (_.isEmpty(iccid) || _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT, `iccid:${iccid}, token:${token}`)
+        if (_.isEmpty(iccid) || _.isEmpty(token)) return api.reject( api.E_INVALID_ARGUMENT, `iccid:${iccid}, token:${token}`)
 
         const url = `${api.httpUrl(api.path.account)}/${iccid}?_format=json`
         const headers = api.withToken(token)
@@ -92,7 +95,7 @@ class AccountAPI {
     }
 
     validateActCode = (iccid, actCode, {token}) => {
-        if (_.isEmpty(iccid) || _.isEmpty(actCode)) return api.reject( api.INVALID_ARGUMENT)
+        if (_.isEmpty(iccid) || _.isEmpty(actCode)) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.account)}/${iccid}/${actCode}?_format=json`
         const headers = api.withToken(token)
@@ -103,21 +106,21 @@ class AccountAPI {
     }
 
     getByUUID = (uuid) => {
-        if (_.isEmpty(uuid)) return api.reject( api.INVALID_ARGUMENT)
+        if (_.isEmpty(uuid)) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.jsonapi.account)}/${uuid}`
         return api.callHttpGet(url, this.toAccount)
     }
 
     getByUser = (mobile) => {
-        if (_.isEmpty(mobile)) return api.reject( api.INVALID_ARGUMENT)
+        if (_.isEmpty(mobile)) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.accountOfUser)}/${mobile}?_format=json`
         return api.callHttpGet(url, this.toAccount)
     }
 
-    registerMobile = (uuid, mobile, {token}) => {
-        if (_.isEmpty(uuid) || _.isEmpty(mobile)) return api.reject( api.INVALID_ARGUMENT)
+    registerMobile = (iccid, code, mobile, {token}) => {
+        if (_.isEmpty(iccid) || _.isEmpty(code) || _.isEmpty(mobile)) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = api.httpUrl(api.path.regMobile)
         const headers = api.withToken(token, 'json', {
@@ -126,13 +129,13 @@ class AccountAPI {
         return api.callHttp(url, {
             method: 'POST',
             headers,
-            body: JSON.stringify({ uuid, mobile})
+            body: JSON.stringify({ iccid, code, mobile})
         }, this.toAccount)
     }
 
     // Update User of ContentType Account
     update = ( uuid, attr, relation, {token}) => {
-        if ( _.isEmpty(uuid) || _.isEmpty(token) || _.isEmpty(attr) ) return api.reject(api.INVALID_ARGUMENT)
+        if ( _.isEmpty(uuid) || _.isEmpty(token) || _.isEmpty(attr) ) return api.reject(api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.jsonapi.account)}/${uuid}`
         const headers = api.withToken(token, 'vnd.api+json', {
@@ -155,7 +158,7 @@ class AccountAPI {
 
 
     uploadPicture = ( image, {user, pass, token}) => {
-        if ( _.isEmpty(user) || _.isEmpty(pass) || _.isEmpty(token)) return api.reject( api.INVALID_ARGUMENT)
+        if ( _.isEmpty(user) || _.isEmpty(pass) || _.isEmpty(token)) return api.reject( api.E_INVALID_ARGUMENT)
 
         const url = `${api.httpUrl(api.path.uploadFile, '')}/user/user/user_picture?_format=hal_json`
         const headers = api.headers({
@@ -169,7 +172,7 @@ class AccountAPI {
             body: Buffer.from( image.data, 'base64')
         }, this.toFile)
     // getProfile = (userId, {user, pass}) => {
-    //     if ( _.isEmpty(userId)) return api.reject( api.INVALID_ARGUMENT)
+    //     if ( _.isEmpty(userId)) return api.reject( api.E_INVALID_ARGUMENT)
 
     //     const url = `${api.httpUrl(api.path.jsonapi.user)}/${userId}/customer_profiles`
     //     const headers = api.basicAuth(user, pass, 'vnd.api+json')

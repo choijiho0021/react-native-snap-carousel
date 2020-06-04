@@ -37,11 +37,6 @@ const TAB_IDX_ASK_BY_KAKAO = 3    // KakaoTalk으로 물어보기 Tab의 index
 const { baseUrl } = getEnvVars();
 
 const tabList = ['ProdInfo','Tip','Caution','Ask with KakaoTalk']
-const html = [
-  '<button onclick="send()">Send</button> <div id="info" style="font-size:16px; border:1px solid black;"><h1>starta</h1>  <p> test1 test2 </p> <p> test1 test2 </p> </div>'
-  // '<div id="testb" style="font-size:16px; border:1px solid black;"><h1>startb</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
-  // '<div id="testc" style="font-size:16px; border:1px solid black;"><h1>startc</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
-]
 
 // document.body.clientWidth : 화면의 너비
 // document.documentElement.clientHeight : 문서의 총 높이 
@@ -57,15 +52,19 @@ window.onload = function () {
     }).join(',');
   window.ReactNativeWebView.postMessage('size:' + dimension);
 }
-function copy(val) {
+function copy() {
+  var copyTxt = document.getElementById('copyTxt').firstChild.innerHTML;
   var txtArea = document.createElement("textarea");
   document.body.appendChild(txtArea);
-  txtArea.value = val;
+  txtArea.value = copyTxt;
   txtArea.select();
   document.execCommand("copy");
   document.body.removeChild(txtArea);
+  }
+function go(){
+  var moveTo = document.getElementsByClassName('moveToBox')[0].getAttribute('value');
+  window.ReactNativeWebView.postMessage(moveTo);
 }
-
 function send() {
   window.ReactNativeWebView.postMessage('APN Value have to insert into this', '*');
   window.alert('copy');
@@ -204,11 +203,16 @@ class ProductDetailScreen extends Component {
 
   _onMessage(event) {
     const {data} = event.nativeEvent
+    
+    const moveTo = data.split('/')
 
-    // console.log("@@@ on Message : ", data)
+    // console.log("@@@ on Message : ", data, moveTo)
 
     if ( data.startsWith('size:')) {
       this._checkWindowSize( data.substring(5))
+    }
+    else if( moveTo.length > 1){
+      this.props.navigation.navigate('Faq', {key: moveTo[0], num: moveTo[1]})
     }
     else {
       Clipboard.setString(data)
@@ -218,7 +222,7 @@ class ProductDetailScreen extends Component {
   renderWebView() {
     const {height3, prodInfo} = this.state
 
-    return <WebView 
+    return <WebView
       automaticallyAdjustContentInsets={false}
       javaScriptEnabled={true}
       domStorageEnabled={true}

@@ -5,7 +5,6 @@ import userApi from '../../utils/api/userApi';
 import accountApi from '../../utils/api/accountApi';
 import _ from 'underscore'
 import utils from '../../utils/utils';
-import moment from 'moment'
 import { batch } from 'react-redux';
 import { Platform } from '@unimodules/core';
 import * as ToastActions from './toast'
@@ -129,14 +128,14 @@ export const changePushNoti = ({ isPushNotiEnabled }) => {
   }
 }
 
-export const registerMobile = (uuid, mobile) => {
+export const registerMobile = (iccid, code, mobile) => {
   return (dispatch, getState) => {
     const { account } = getState(),
       authObj = auth(account)
-    return dispatch(registerMobile0(uuid, mobile, authObj)).then(
+    return dispatch(registerMobile0(iccid, code, mobile, authObj)).then(
       resp => {
-        if ( resp.result == 0 && resp.objects.length > 0) {
-          return dispatch(getAccount(resp.objects[0].iccid, authObj))
+        if ( resp.result == 0 ) {
+          return dispatch(getAccount(iccid, authObj))
         }
         console.log('failed to register mobile resp:', resp)
         return resp
@@ -171,7 +170,7 @@ export const logInAndGetAccount = (mobile, pin, iccid) => {
           else {
             // 가장 최근 사용한 SIM 카드 번호를 조회한다. 
             dispatch(getAccountByUser(mobile, token)).then(resp => {
-              if ( resp.result == 0 && resp.objects.length > 0) {
+              if ( resp.result == 0 && resp.objects.length > 0 && resp.objects[0].status == 'A') {
                 utils.storeData( userApi.KEY_ICCID, resp.objects[0].iccid)
                 dispatch(getAccount(resp.objects[0].iccid, token))
               }
@@ -363,13 +362,19 @@ export default handleActions({
     onSuccess: (state, action) => {
       const {result, objects} = action.payload
       if (result == 0 && objects.length > 0) {
-        const mobile = state.get('mobile')
-        if ( ! _.isEmpty(mobile) && mobile != objects[0].mobile) {
-          // mobile 번호가 다르면, ICCID는 다른 단말에 할당된 것이므로 무시한다.
-          return state.set('isUsedByOther', true)
+        if ( objects[0].status == 'A') {
+          // Active status
+          const mobile = state.get('mobile')
+          if ( ! _.isEmpty(mobile) && mobile != objects[0].mobile) {
+            // mobile 번호가 다르면, ICCID는 다른 단말에 할당된 것이므로 무시한다.
+            return state.set('isUsedByOther', true)
+          }
+          utils.storeData( userApi.KEY_ICCID, objects[0].iccid)
+          return updateAccountState(state, objects[0])
         }
-        utils.storeData( userApi.KEY_ICCID, objects[0].iccid)
-        return updateAccountState(state, objects[0])
+
+        // invalid status
+        utils.removeData( userApi.KEY_ICCID)
       }
       return state
     }

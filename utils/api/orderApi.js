@@ -4,6 +4,7 @@ import utils from '../utils'
 import i18n from '../i18n'
 
 class OrderAPI {
+    ORDER_PAGE_ITEMS = 10
 
     deliveryText = [
     {
@@ -31,7 +32,7 @@ class OrderAPI {
         value: i18n.t("pym:input")
     }]
 
-    toOrder = (data) => {
+    toOrder = (data, page) => {
 
         if ( _.isArray(data) && data.length > 0) {
 
@@ -69,29 +70,30 @@ class OrderAPI {
                     dlvCost: utils.stringToNumber(item.dlv_cost) || 0,
                     balanceCharge : balanceCharge ? utils.stringToNumber( balanceCharge.amount__number) : 0,
                 }
-                }).reduce((acc,cur) => {
-                    const idx = acc.findIndex(item => item.orderId == cur.orderId)
-                    return ( idx < 0) ? acc.concat([cur]) :
-                        acc.map(item => {
-                            return (item.orderId == cur.orderId) ? {
-                                ... item,
-                                orderItems: item.orderItems.concat(cur.orderItems)
-                            } : item
-                        })
-                }, []).sort((a,b) => a.orderDate < b.orderDate ? 1 : -1))
+                }).sort((a,b) => a.orderDate < b.orderDate ? 1 : -1), [page])
         }
 
-        return api.failure( api.NOT_FOUND)
+        return api.failure( api.E_NOT_FOUND)
     }
 
-    getOrders = ({user, token}) => {
-        const url = `${api.httpUrl(api.path.order)}/${user}?_format=json`
+    getOrders = ({user, token}, page=0) => {
+        const url = `${api.httpUrl(api.path.order, '')}/${user}?_format=json&page=${page}`
         const headers = api.withToken(token, 'json')
 
         return api.callHttp(url, {
             method: 'get',
             headers,
-        }, this.toOrder)
+        }, (resp) => this.toOrder(resp, page))
+    }
+
+    getOrderById = ({user, token}, orderId) => {
+        const url = `${api.httpUrl(api.path.order, '')}/${user}/${orderId}?_format=json`
+        const headers = api.withToken(token, 'json')
+
+        return api.callHttp(url, {
+            method: 'get',
+            headers,
+        }, (resp) => this.toOrder(resp))
     }
 
     cancelOrder = (orderId, {token}) => {
