@@ -86,8 +86,8 @@ export default handleActions({
       const {objects, links} = action.payload
 
       return updateOrders(state, action)
-        .set('next', objects.length == orderApi.ORDER_PAGE_ITEMS)
-        .update('page', page => typeof links[0] !== 'undefined' ? links[0] : page)
+        .set('next', objects && objects.length == orderApi.ORDER_PAGE_ITEMS)
+        .update('page', page => links && (typeof links[0] !== 'undefined') ? links[0] : page)
     }
   }),
 
