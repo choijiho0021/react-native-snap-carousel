@@ -12,6 +12,7 @@ import i18n from '../utils/i18n'
 import { colors } from '../constants/Colors';
 import AppIcon from '../components/AppIcon';
 import * as accountActions from '../redux/modules/account'
+import * as orderActions from '../redux/modules/order'
 import _ from 'underscore'
 import AppBackButton from '../components/AppBackButton';
 import pageApi from '../utils/api/pageApi';
