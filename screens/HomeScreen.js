@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   StatusBar,
   ScrollView,
-  Platform
+  Platform,
+  Appearance
 } from 'react-native';
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
@@ -32,7 +33,6 @@ import AppUserPic from '../components/AppUserPic';
 import withBadge from '../components/withBadge';
 import AppPrice from '../components/AppPrice';
 import pushNoti from '../utils/pushNoti'
-import { initialMode } from 'react-native-dark-mode'
 import { Animated } from 'react-native';
 import TutorialScreen from './TutorialScreen';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -107,7 +107,7 @@ class HomeScreen extends Component {
     super(props)
 
     this.state = {
-      darkMode: initialMode,
+      darkMode: Appearance.getColorScheme() ,
       activeSlide: 0,
       promotions: [],
       firstLaunch: undefined,

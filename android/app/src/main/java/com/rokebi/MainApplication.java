@@ -9,7 +9,6 @@ import com.android.installreferrer.api.InstallReferrerClient;
 import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
-import com.codemotionapps.reactnativedarkmode.DarkModePackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
@@ -145,7 +144,6 @@ public class MainApplication extends Application implements ReactApplication {
                 new RNFirebaseNotificationsPackage(),
                 new ReactNativePushNotificationPackage(),
                 new ReactVideoPackage(),
-                new DarkModePackage(),
 //                new AsyncStoragePackage(),
                 new RNGestureHandlerPackage(),
                 new ReanimatedPackage(),

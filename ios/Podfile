@@ -90,7 +90,6 @@ target 'Rokebi' do
   pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
 
 
-  pod 'ReactNativeDarkMode', :path => '../node_modules/react-native-dark-mode'
 
   pod 'react-native-video', :path => '../node_modules/react-native-video'
 
