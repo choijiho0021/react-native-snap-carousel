@@ -37,17 +37,11 @@ const TAB_IDX_ASK_BY_KAKAO = 3    // KakaoTalk으로 물어보기 Tab의 index
 const { baseUrl } = getEnvVars();
 
 const tabList = ['ProdInfo','Tip','Caution','Ask with KakaoTalk']
-const html = [
-  '<button onclick="send()">Send</button> <div id="info" style="font-size:16px; border:1px solid black;"><h1>starta</h1>  <p> test1 test2 </p> <p> test1 test2 </p> </div>'
-  // '<div id="testb" style="font-size:16px; border:1px solid black;"><h1>startb</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
-  // '<div id="testc" style="font-size:16px; border:1px solid black;"><h1>startc</h1> <p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p> <p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p><p> test1 test2 </p></div>',
-]
 
 // document.body.clientWidth : 화면의 너비
 // document.documentElement.clientHeight : 문서의 총 높이 
 // getBoundingClientRect().y : 각 div의 시작 위치 y position
-const goToDetailTab = 'config'
-const titleNum = 5
+
 const script = `<script>
 window.onload = function () {
   window.location.hash = 1;
@@ -68,7 +62,8 @@ function copy() {
   document.body.removeChild(txtArea);
   }
 function go(){
-  window.ReactNativeWebView.postMessage("moveTo ${goToDetailTab}")
+  var moveTo = document.getElementsByClassName('moveToBox')[0].getAttribute('value');
+  window.ReactNativeWebView.postMessage(moveTo);
 }
 function send() {
   window.ReactNativeWebView.postMessage('APN Value have to insert into this', '*');
@@ -205,14 +200,16 @@ class ProductDetailScreen extends Component {
 
   _onMessage(event) {
     const {data} = event.nativeEvent
+    
+    const moveTo = data.split('/')
 
-    // console.log("@@@ on Message : ", data)
+    // console.log("@@@ on Message : ", data, moveTo)
 
     if ( data.startsWith('size:')) {
       this._checkWindowSize( data.substring(5))
     }
-    else if( data.startsWith('moveTo')){
-      this.props.navigation.navigate('Faq', {key: goToDetailTab, num: titleNum})
+    else if( moveTo.length > 1){
+      this.props.navigation.navigate('Faq', {key: moveTo[0], num: moveTo[1]})
     }
     else {
       Clipboard.setString(data)
