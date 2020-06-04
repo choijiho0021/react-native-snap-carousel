@@ -1,6 +1,6 @@
 import { createAction, handleActions } from 'redux-actions';
 import { pender } from 'redux-pender'
-import { Map, List } from 'immutable';
+import { Map} from 'immutable';
 import profileApi from '../../utils/api/profileApi'
 
 const  UPDATE_PROFILE_ADDRESS = 'rokebi/order/UPDATE_PROFILE_ADDRESS'
@@ -57,7 +57,7 @@ export const profileDelAndGet = (uuid ,account) => {
 
 
 export const profileAddAndGet = (profile, defaultProfile, account) => {
-  return (dispatch,getState) => {
+  return (dispatch) => {
     
     return dispatch(addCustomerProfile(profile, defaultProfile, account)).then(
       resp => {
@@ -117,10 +117,7 @@ export default handleActions({
       const {result, objects} = action.payload
 
       if (result == 0 && objects.length > 0) {
-
-        const profile = objects.concat(state.get('profile')).sort(_sortProfile)
-
-        return state.update('profile', profile)  
+        return state.update('profile', profile => objects.concat(profile).sort(_sortProfile))  
       }
       return state
     }
