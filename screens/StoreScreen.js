@@ -91,7 +91,7 @@ class StoreScreen extends Component {
       
     for(let item of prodList.values()) {
       const localOp = localOpList.get(item.partnerId) || {}
-      item.ccodeStr = localOp.ccode.join(',') || ''
+      item.ccodeStr = (localOp.ccode || []).join(',')
       item.cntry = Set(country.getName(localOp.ccode))
       item.search = [... item.cntry].join(',')
       item.pricePerDay = Math.round(item.price / item.days)
