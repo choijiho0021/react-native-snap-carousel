@@ -3,7 +3,7 @@ import 'isomorphic-fetch'
 
 describe('Product API', () => {
   it(`get product by country`, () => {
-    return productApi.getProductByCntry().then(resp =>  {
+    return productApi.getProduct().then(resp =>  {
       console.log('resp', resp)
       expect(resp.result).toEqual(0)
       expect(resp.objects.length).toBeGreaterThan(0)
