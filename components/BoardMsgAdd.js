@@ -24,7 +24,6 @@ import validationUtil from '../utils/validationUtil';
 import { bindActionCreators } from 'redux'
 import { colors } from '../constants/Colors';
 import { SafeAreaView } from 'react-navigation';
-import Constants from 'expo-constants'
 import {List} from 'immutable'
 import { attachmentSize } from '../constants/SliderEntry.style'
 import AppAlert from './AppAlert'
@@ -33,18 +32,7 @@ import { Platform } from '@unimodules/core';
 import { openSettings, check, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 
-let ImagePicker
-
-if (Constants.appOwnership === 'expo') {
-  ImagePicker = {
-    openPicker : function() {
-      return Promise.resolve(undefined)
-    }
-  }
-}
-else {
-  ImagePicker = require('react-native-image-crop-picker').default
-}
+let ImagePicker = require('react-native-image-crop-picker').default
 
 class BoardMsgAdd extends Component {
   static navigationOptions = {

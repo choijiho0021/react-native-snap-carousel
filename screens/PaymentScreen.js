@@ -4,9 +4,6 @@ import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as cartActions from '../redux/modules/cart'
 import Video from 'react-native-video'
-
-import Constants from 'expo-constants'
-
 import getEnvVars from '../environment'
 import i18n from '../utils/i18n';
 import { SafeAreaView } from 'react-navigation';
@@ -14,18 +11,7 @@ import AppBackButton from '../components/AppBackButton';
 import IMP from 'iamport-react-native';
 import _ from 'underscore';
 
-// let IMP
-// if (Constants.appOwnership === 'expo') {
-//   IMP = {
-//     Payment : function() {
-//       return (<View/>)
-//     }
-//   }
-// }
-// else {
-
-//   IMP = require('iamport-react-native').default;
-// }
+// const IMP = require('iamport-react-native').default;
 
 class PaymentScreen extends Component{
   constructor(props) {
@@ -58,7 +44,7 @@ class PaymentScreen extends Component{
       this.props.navigation.setParams({isPaid:false})
     }
 
-    if (params.mode == 'test' || Constants.appOwnership === 'expo' || params.amount == 0) {
+    if (params.mode == 'test' || params.amount == 0) {
       const {impId} = getEnvVars()
       const response = { imp_success: true,
         imp_uid: impId,

@@ -37,7 +37,7 @@ allprojects {
 
         google()
         jcenter()
-        maven { url 'https://jitpack.io' }
+//        maven { url 'https://jitpack.io' }
 
         //ImagePicker를 위해 추가
         maven { url 'https://maven.google.com' }

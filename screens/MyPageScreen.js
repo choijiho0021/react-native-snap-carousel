@@ -19,7 +19,6 @@ import AppIcon from '../components/AppIcon';
 import * as orderActions from '../redux/modules/order'
 import * as accountActions from '../redux/modules/account'
 import AppActivityIndicator from '../components/AppActivityIndicator'
-import Constants from 'expo-constants'
 import AppAlert from '../components/AppAlert';
 import _ from 'underscore'
 import AppUserPic from '../components/AppUserPic';
@@ -32,16 +31,7 @@ import { openSettings, check, PERMISSIONS, RESULTS } from 'react-native-permissi
 import Analytics from 'appcenter-analytics';
 
 let ImagePicker 
-if (Constants.appOwnership === 'expo') {
-  ImagePicker = {
-    openPicker : function() {
-      return Promise.resolve(undefined)
-    }
-  }
-}
-else {
-  ImagePicker = require('react-native-image-crop-picker').default
-}
+ImagePicker = require('react-native-image-crop-picker').default
 
 class OrderItem extends Component {
 
