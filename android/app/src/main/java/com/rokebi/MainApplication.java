@@ -12,7 +12,6 @@ import com.brentvatne.react.ReactVideoPackage;
 import com.codemotionapps.reactnativedarkmode.DarkModePackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.facebook.react.ReactApplication;
-import com.reactcommunity.rnlocalize.RNLocalizePackage;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -27,6 +26,7 @@ import com.microsoft.appcenter.reactnative.analytics.AppCenterReactNativeAnalyti
 import com.microsoft.appcenter.reactnative.appcenter.AppCenterReactNativePackage;
 import com.microsoft.appcenter.reactnative.crashes.AppCenterReactNativeCrashesPackage;
 import com.microsoft.codepush.react.CodePush;
+import com.reactcommunity.rnlocalize.RNLocalizePackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.reactnativecommunity.rnpermissions.RNPermissionsPackage;
@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.actbase.kakaosdk.channel.ARNKakaoChannelPackage;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
@@ -148,8 +149,8 @@ public class MainApplication extends Application implements ReactApplication {
 //                new AsyncStoragePackage(),
                 new RNGestureHandlerPackage(),
                 new ReanimatedPackage(),
-                new RNCWebViewPackage()
-//                new ARNKakaoChannelPackage()
+                new RNCWebViewPackage(),
+                new ARNKakaoChannelPackage()
             );
         }
 
