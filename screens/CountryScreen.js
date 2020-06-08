@@ -31,6 +31,7 @@ import productApi from '../utils/api/productApi';
 import SnackBar from 'react-native-snackbar-component';
 
 
+
 class CountryListItem extends PureComponent {
   render() {
     const {item, selected, onPress} = this.props
@@ -43,14 +44,21 @@ class CountryListItem extends PureComponent {
 
     return (
       <TouchableOpacity onPress={onPress(item.uuid)}>
-        <View key={"product"} style={[styles.card,borderColor]}>
-          <View key={"text"} style={styles.textView}>
-            <Text key={"name"} style={[windowWidth > device.small.window.width ? appStyles.bold16Text : appStyles.bold14Text,color]}>{item.name}</Text>
-            <Text key={"desc"} style={[{marginTop:5},windowWidth > device.small.window.width ? appStyles.normal14Text : appStyles.normal12Text]}>({item.field_description})</Text>
+        <View>
+          <View key={"product"} style={[styles.card,borderColor]}>
+            <View key={"text"} style={styles.textView}>
+              <Text key={"name"} style={[windowWidth > device.small.window.width ? appStyles.bold16Text : appStyles.bold14Text,color]}>{item.name}</Text>
+            </View>
+            <View key={"priceText"} style={styles.appPrice}>
+              <AppPrice key={"price"} price={item.price} balanceStyle={styles.priceStyle} wonStyle={styles.wonStyle} />
+            </View>
           </View>
-          <View key={"priceText"} style={styles.appPrice}>
-            <AppPrice key={"price"} price={item.price} balanceStyle={styles.priceStyle} wonStyle={styles.wonStyle} />
-          </View>
+          {
+            ! _.isEmpty(item.promoFlag) &&
+            <View style={styles.badge}>
+              <Text key={"name"} style={styles.badgeText}>{item.promoFlag[0]}</Text>
+            </View>
+          }
         </View>
       </TouchableOpacity>
     )
@@ -368,6 +376,27 @@ const styles = StyleSheet.create({
   textView : {
     flex:1,
     alignItems:"flex-start"
+  },
+  badge : {
+    position: "absolute",
+    right: 0,
+    marginRight: 20,
+    width: 38,
+    height: 22,
+    borderRadius: 2,
+    backgroundColor: colors.white,
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderColor: colors.tomato,
+    alignItems:'center',
+    paddingTop: 2,
+  },
+  badgeText: {
+    color: colors.tomato,
+    fontSize: 13,
+    fontWeight: "bold",
+    fontStyle: "normal",
+    lineHeight: 16,
   }
 });
 

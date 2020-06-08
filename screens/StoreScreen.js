@@ -108,6 +108,8 @@ class StoreScreen extends Component {
       }
     }
 
+    const getMaxWeight = (list) => Math.max( ... list.map(p => (localOpList.get(p.partnerId) || {}).weight))
+
     const sorted = list.map(item => item.sort((a,b) => {
       // 동일 국가내의 상품을 정렬한다. 
       // field_daily == true 인 무제한 상품 우선, 사용 날짜는 오름차순 
@@ -115,9 +117,8 @@ class StoreScreen extends Component {
       return b.field_daily ? 1 : a.days - b.days 
     })).sort((a,b) => {
       // 국가는 weight 값이 높은 순서가 우선, weight 값이 같으면 이름 순서
-      const opA = localOpList.get(a[0].partnerId) || {},
-        opB = localOpList.get(b[0].partnerId) || {}
-      return opA.weight == opB.weight ? (a[0].search < b[0].search ? -1 : 1) : opB.weight - opA.weight
+      const weightA = getMaxWeight(a), weightB = getMaxWeight(b)
+      return weightA == weightB ? (a[0].search < b[0].search ? -1 : 1) : weightB - weightA
     })
 
     this.props.navigation.setParams({

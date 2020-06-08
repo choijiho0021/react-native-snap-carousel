@@ -2,6 +2,7 @@ import _ from 'underscore'
 import api from './api'
 import utils from '../utils'
 import country from '../country'
+import i18n from '../i18n'
 
 class ProductAPI {
 
@@ -11,6 +12,11 @@ class ProductAPI {
         "usaAu" : "65",
         "multi" : "67"
         }
+
+    promoFlag = {
+        "53" : i18n.t('hot'),  // 운용자 추천
+        "57" : i18n.t('sale')   // 할인 
+    }
 
     toProduct = (data) => {
         if ( _.isArray(data)) {
@@ -26,6 +32,7 @@ class ProductAPI {
                     days: utils.stringToNumber(item.field_days),
                     variationId: item.variations && item.variations[0],
                     field_description : item.field_description,
+                    promoFlag: item.field_special_categories.split(",").map(v => this.promoFlag[ v.trim() ]).filter(v => ! _.isEmpty(v)),
                     sku: item.sku,
                     idx: idx,
                 })))
