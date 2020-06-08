@@ -17,8 +17,6 @@ import AppBackButton from '../components/AppBackButton';
 import _ from 'underscore'
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import api from '../utils/api/api';
-import pageApi from '../utils/api/pageApi';
-import AppAlert from '../components/AppAlert';
 import { colors } from '../constants/Colors';
 import { appStyles, htmlDetailWithCss } from '../constants/Styles';
 import AppButton from '../components/AppButton';
@@ -28,6 +26,7 @@ import Analytics from 'appcenter-analytics'
 import KakaoSDK from '@actbase/react-native-kakaosdk';
 import { windowWidth } from '../constants/SliderEntry.style';
 import * as toastActions from '../redux/modules/toast'
+import * as productActions from '../redux/modules/product'
 import { Toast } from '../constants/CustomTypes'
 
 const { channelId } = getEnvVars()
@@ -90,7 +89,6 @@ class ProductDetailScreen extends Component {
       scrollY: new Animated.Value(0),
       tabIdx : 0,
       querying : true,
-      prodInfo : ''
     }
     
     this._openKTalk = this._openKTalk.bind(this);
@@ -107,29 +105,15 @@ class ProductDetailScreen extends Component {
   }
 
   shouldComponentUpdate(preProps,preState){
-    const {tabIdx, height2, prodInfo} = this.state
-    return preState.tabIdx != tabIdx || preState.prodInfo != prodInfo || preState.height2 != height2 
+    const {tabIdx, height2} = this.state
+    const {detail} = this.props.product
+
+    return preState.tabIdx != tabIdx || preProps.detail != detail || preState.height2 != height2 
   }
 
   componentDidMount() {
     //todo : 상세 HTML을 가져오도록 변경 필요
-    pageApi.getProductDetails(this.controller).then(resp =>{
-      if ( resp.result == 0 && resp.objects.length > 0) {
-        this.setState({
-          prodInfo: resp.objects,
-          disable: false
-        })
-      }
-      else throw Error('Failed to get contract')
-    }).catch( err => {
-      console.log('failed', err)
-      AppAlert.error(i18n.t('set:fail'))
-    }).finally(_ => {
-      this.setState({
-        querying: false
-      })
-    })
-
+    this.props.action.product.getProdDetail(this.controller)
   }
 
   _checkWindowSize(sizeString = '') {
@@ -223,7 +207,8 @@ class ProductDetailScreen extends Component {
   }
 
   renderWebView() {
-    const {height3, prodInfo} = this.state
+    const {height3} = this.state
+    const {detail} = this.props.product
 
     return <WebView
       automaticallyAdjustContentInsets={false}
@@ -237,18 +222,18 @@ class ProductDetailScreen extends Component {
       scrollEnabled = {true}
       // source={{html: body + html + script} }
       onMessage={this._onMessage}
-      source={{html: htmlDetailWithCss(prodInfo, script), baseUrl} }
+      source={{html: htmlDetailWithCss(detail, script), baseUrl} }
       style={{height: height3 || 1000}}
     />
   }
 
   render() {
-    const {querying = false, tabIdx} = this.state
-    const {navigation} = this.props
+    const {tabIdx} = this.state
+    const {navigation, pending} = this.props
 
     return (
       <SafeAreaView style={styles.screen}>
-        <AppActivityIndicator visible={querying} />
+        <AppActivityIndicator visible={pending} />
 
         <ScrollView style={{backgroundColor:colors.whiteTwo}}
           ref={this.scrollView}
@@ -334,8 +319,12 @@ const styles = StyleSheet.create({
 
 });
 
-export default connect(undefined, (dispatch) => ({
+export default connect((state) => ({
+  product: state.product.toObject(),
+  pending: state.pender.pending[productActions.GET_PROD_DETAIL] || false,
+}), (dispatch) => ({
   action : {
+    product: bindActionCreators(productActions, dispatch),
     toast: bindActionCreators(toastActions, dispatch)
   }
 }))(ProductDetailScreen)
