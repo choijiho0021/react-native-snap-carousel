@@ -83,6 +83,7 @@ class PaymentScreen extends Component{
       const params = this.props.navigation.getParam('params')
       const orderResult = await this.props.action.cart.payNorder({
         ... response,
+        pg_provider: params.pg,
         payment_type: params.pay_method,
         amount: params.amount,
         profile_uuid: params.profile_uuid,
