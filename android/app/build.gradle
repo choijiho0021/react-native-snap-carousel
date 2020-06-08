@@ -280,7 +280,7 @@ dependencies {
         implementation jscFlavor
     }
 
-    addUnimodulesDependencies()
+    addUnimodulesDependencies([exclude: ['expo-file-system','expo-image-loader','expo-permissions','expo-constants']])
 }
 
 // Run this once to be able to run the application with BUCK
