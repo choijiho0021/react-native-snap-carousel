@@ -47,7 +47,7 @@ class RechargeScreen extends Component {
     const iccid = this.props.account.iccid,
           auth = this.props.auth
     if(iccid && auth){
-      this.props.action.order.getUsage(iccid, auth)
+      this.props.action.order.getSubs(iccid, auth)
     }
   }
 

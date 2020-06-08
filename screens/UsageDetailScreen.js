@@ -95,7 +95,7 @@ class UsageDetailScreen extends Component {
               {
                 // 업데이트 후 정렬된 usage list 가져오기
                 if(resp.result == 0){
-                  this.props.action.order.getUsage(iccid, auth)
+                  this.props.action.order.getSubs(iccid, auth)
                   this.props.action.account.getAccount(iccid, auth)
                 }
               })
@@ -108,7 +108,7 @@ class UsageDetailScreen extends Component {
         this.props.action.order.updateUsageStatus( uuid, targetStatus, auth, deact_prod_uuid).then(resp =>
           {
             if(resp.result == 0){
-              this.props.action.order.getUsage(iccid, auth)
+              this.props.action.order.getSubs(iccid, auth)
             }
           })
       }

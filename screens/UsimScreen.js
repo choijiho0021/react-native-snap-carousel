@@ -358,7 +358,7 @@ class UsimScreen extends Component {
     //   this.props.navigation.navigate('RegisterMobile')
     // }else{
     //   if (iccid && auth) {
-    //     this.props.action.order.getUsage(iccid, auth)
+    //     this.props.action.order.getSubs(iccid, auth)
     //   }else{
     //     this.props.navigation.navigate('RegisterSim', {back:'lastTab'})eme u rokrok rok my wao
     //   }
@@ -414,7 +414,7 @@ class UsimScreen extends Component {
       this.props.navigation.navigate('RegisterMobile')
     }else{
       if (iccid && auth) {
-        this.props.action.order.getUsage(iccid, auth)
+        this.props.action.order.getSubs(iccid, auth)
       }else{
         this.props.navigation.navigate('RegisterSim', {back:'lastTab'})
       }
@@ -453,7 +453,7 @@ class UsimScreen extends Component {
 
     const { account: {iccid}, auth } = this.props
     if (iccid) {
-      this.props.action.order.getUsage( iccid, auth).then(resp =>{
+      this.props.action.order.getSubs( iccid, auth).then(resp =>{
         this.props.action.account.getAccount(iccid, auth).then(res => {
 
           if(resp.result == 0 && res.result == 0){
@@ -688,7 +688,7 @@ const mapStateToProps = (state) => ({
   noti : state.noti.toJS(),
   info : state.info.toJS(),
   loginPending: state.pender.pending[accountActions.LOGIN] || false,
-  pending: state.pender.pending[orderActions.GET_USAGE] || false,
+  pending: state.pender.pending[orderActions.GET_SUBS] || false,
   sync : state.sync.toJS()
 })
 

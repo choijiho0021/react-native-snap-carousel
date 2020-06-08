@@ -431,7 +431,7 @@ const mapStateToProps = state => ({
   auth: accountActions.auth( state.account),
   uid: state.account.get('uid'),
   pending: state.pender.pending[orderActions.GET_ORDERS] || 
-    state.pender.pending[orderActions.GET_USAGE] || 
+    state.pender.pending[orderActions.GET_SUBS] || 
     state.pender.pending[accountActions.CHANGE_EMAIL] || 
     state.pender.pending[accountActions.UPLOAD_PICTURE] || false,
 })
