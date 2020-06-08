@@ -29,6 +29,7 @@ import KakaoSDK from '@actbase/react-native-kakaosdk';
 import { windowWidth } from '../constants/SliderEntry.style';
 import * as toastActions from '../redux/modules/toast'
 import { Toast } from '../constants/CustomTypes'
+import AppIcon from '../components/AppIcon';
 
 const { channelId } = getEnvVars()
 
@@ -197,7 +198,6 @@ class ProductDetailScreen extends Component {
 
       <Text style={styles.kakaoPlus}>{i18n.t("prodDetail:KakaoPlus")}</Text>
       <AppButton iconName="openKakao" onPress={this._openKTalk} style={{flex:1}}/>
-      <AppToast ref={this._toastRef} text={i18n.t('set:failedOpenKakao')}/>
     </View>)
   }
 
