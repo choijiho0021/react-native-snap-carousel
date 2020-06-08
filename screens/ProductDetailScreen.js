@@ -45,12 +45,15 @@ const tabList = ['ProdInfo','Tip','Caution','Ask with KakaoTalk']
 const script = `<script>
 window.onload = function () {
   window.location.hash = 1;
-  var dimension = document.body.clientWidth + ',' + document.documentElement.clientHeight + ',' + 
-    ['prodInfo', 'tip', 'caution'].map(item => {
-      var rect = document.getElementById(item).getBoundingClientRect();
-      return rect.y;
-    }).join(',');
-  window.ReactNativeWebView.postMessage('size:' + dimension);
+  var cmd = {
+    key: 'dimension',
+    value: document.body.clientWidth + ',' + document.documentElement.clientHeight + ',' + 
+      ['prodInfo', 'tip', 'caution'].map(item => {
+        var rect = document.getElementById(item).getBoundingClientRect();
+        return rect.y;
+      }).join(',')
+    };
+  window.ReactNativeWebView.postMessage(JSON.stringify(cmd));
 }
 function copy() {
   var copyTxt = document.getElementById('copyTxt').firstChild.innerHTML;
@@ -62,8 +65,11 @@ function copy() {
   document.body.removeChild(txtArea);
   }
 function go(){
-  var moveTo = document.getElementsByClassName('moveToBox')[0].getAttribute('value');
-  window.ReactNativeWebView.postMessage(moveTo);
+  var cmd = {
+    key: 'move',
+    value: document.getElementsByClassName('moveToBox')[0].getAttribute('value')
+  };
+  window.ReactNativeWebView.postMessage(JSON.stringify(cmd));
 }
 function send() {
   window.ReactNativeWebView.postMessage('APN Value have to insert into this', '*');
@@ -199,20 +205,20 @@ class ProductDetailScreen extends Component {
   }
 
   _onMessage(event) {
-    const {data} = event.nativeEvent
-    
-    const moveTo = data.split('/')
+    const cmd = JSON.parse(event.nativeEvent.data)
 
-    // console.log("@@@ on Message : ", data, moveTo)
-
-    if ( data.startsWith('size:')) {
-      this._checkWindowSize( data.substring(5))
-    }
-    else if( moveTo.length > 1){
-      this.props.navigation.navigate('Faq', {key: moveTo[0], num: moveTo[1]})
-    }
-    else {
-      Clipboard.setString(data)
+    switch ( cmd.key ) {
+      case 'dimension':
+        this._checkWindowSize( cmd.value)
+        break
+      case 'move':
+        if ( cmd.value) {
+          var moveTo = cmd.value.split('/')
+          this.props.navigation.navigate('Faq', {key: moveTo[0], num: moveTo[1]})
+        }
+        break 
+      default:
+        Clipboard.setString(cmd.value)
     }
   }
 
