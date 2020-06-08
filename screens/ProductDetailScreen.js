@@ -28,6 +28,7 @@ import { windowWidth } from '../constants/SliderEntry.style';
 import * as toastActions from '../redux/modules/toast'
 import * as productActions from '../redux/modules/product'
 import { Toast } from '../constants/CustomTypes'
+import AppIcon from '../components/AppIcon';
 
 const { channelId } = getEnvVars()
 
@@ -91,6 +92,8 @@ class ProductDetailScreen extends Component {
       querying : true,
     }
     
+    this._toastRef = React.createRef()
+
     this._openKTalk = this._openKTalk.bind(this);
     this.checkIdx = this.checkIdx.bind(this)
     this._scrollTo = this._scrollTo.bind(this)
@@ -176,7 +179,7 @@ class ProductDetailScreen extends Component {
   renderContactKakao() {
     return (
     <View style={styles.kakaoContainer}>
-      <Image style={styles.questionImage} source={require('../assets/images/main/imgQuestion.png')} />
+      <AppIcon style={styles.questionImage} name="imgQuestion"/>
       <Text style={appStyles.normal16Text}>
         <Text style={{...appStyles.normal16Text, color:colors.clearBlue, }}>{i18n.t("prodDetail:Rokebi")}</Text>
         {i18n.t("prodDetail:On")}

@@ -7,9 +7,9 @@ import {
   FlatList,
   StatusBar,
   SafeAreaView,
+  Appearance
 } from 'react-native';
 import {connect} from 'react-redux'
-import { initialMode } from 'react-native-dark-mode'
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import * as accountActions from '../redux/modules/account'
@@ -84,7 +84,7 @@ class RegisterMobileScreen extends Component {
         isValid: false,
         error: undefined
       },
-      darkMode:initialMode
+      darkMode:Appearance.getColorScheme() === 'dark'
     }
 
     this.confirmList = [

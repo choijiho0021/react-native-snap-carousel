@@ -46,6 +46,7 @@ const images = {
   btnSearchTop: [ require( headerPath + 'btnSearchTop.png')],
   btnCheck : [ require( mainPath + 'btnCheckNon.png'), require( mainPath + 'btnCheckSel.png')],
   openKakao : [require( mainPath + 'imgKakao.png')],
+  imgQuestion: [require('../assets/images/main/imgQuestion.png')],
   kakao: [ require( paymentPath + 'logoKakao.png')],
   naver: [ require( paymentPath + 'logoNaver.png')],
   payco: [ require( paymentPath + 'logoPayco.png')],

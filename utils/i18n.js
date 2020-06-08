@@ -1,5 +1,10 @@
-import * as Localization from 'expo-localization';
-import i18n from 'i18n-js';
+import * as RNLocalize from 'react-native-localize'
+import i18n from 'i18n-js'
+
+const locales = RNLocalize.getLocales();
+
+// import * as Localization from 'expo-localization';
+// import i18n from 'i18n-js';
 
 const en = {
   'select': 'Select',
@@ -894,8 +899,9 @@ const ko = {
   "prodDetail:Ask with KakaoTalk" : "물어보기",
   "prodDetail:Rokebi" : "로밍도깨비",
   "prodDetail:On" : "에",
-  "prodDetail:Question" : "궁금하신점 있으신가요?",
+  "prodDetail:Question" : "궁금하신점이 있으신가요?",
   "prodDetail:KakaoPlus" : "카카오톡 플러스 친구로\n 편하게 물어보세요!",
+  "set:failedOpenKakao" : "카카오 상담 연결에 실패했습니다.\n 잠시 후 다시 시도해주세요.",
 
   "loading:error": "로딩 불가",
   "loading:terminate": "로딩 중 오류가 발생하여 앱을 종료합니다.",
@@ -906,9 +912,13 @@ const ko = {
   "toast:failedToOpen" : "카카오톡 채널에 연결할 수 없습니다."
 };
 
+if (Array.isArray(locales)) {
+  i18n.locale = locales[0].languageTag;
+  i18n.lang = i18n.locale.substr(0,2);
+}
+
 i18n.fallbacks = true;
 i18n.translations = { ko, en };
-i18n.locale = Localization.locale || 'ko_KR';
-i18n.lang = i18n.locale.substr(0,2);
-
+// i18n.locale = Localization.locale || 'ko_KR';
+// i18n.lang = i18n.locale.substr(0,2);
 export default i18n;
