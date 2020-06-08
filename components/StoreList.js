@@ -5,7 +5,6 @@ import {
   FlatList,
   View,
   TouchableOpacity,
-  Dimensions,
   Image,
 } from 'react-native';
 import {connect} from 'react-redux'
@@ -17,41 +16,47 @@ import api from '../utils/api/api'
 import _ from 'underscore'
 import { colors } from '../constants/Colors';
 import { isDeviceSize } from '../constants/SliderEntry.style';
-import { _Image } from 'react-native';
 
 class CountryItem extends PureComponent {
-  constructor(props) {
-    super(props)
-  }
 
   render() {
-    const {item} = this.props
+    const {item, localOpList} = this.props
 
     return (
       <View key={item.key} style={styles.productList}>
-        {item.data.map((elm,idx) => (
+        {
+          item.data.map((elm,idx) => {
             // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
-          elm && elm.length > 0 ? 
-          <View key={elm[0].ccode[0] + idx} style={{flex:1, marginLeft:idx == 1 ? 14 : 0}}>
-            <TouchableOpacity onPress={() => this.props.onPress && this.props.onPress(elm)}>
-              <Image key={"img"} source={{uri:api.httpImageUrl(elm[0].imageUrl)}} style={styles.image}/>
-              <Text key={"cntry"} style={styles.cntry}>{productApi.getTitle(elm[0])}</Text>
-              <View style={styles.priceRow}>
-                <View style={styles.price}>
-                  <Text key={"price"} style={styles.priceNumber}>{utils.numberToCommaString(elm[0].pricePerDay)}</Text> 
-                  <Text key={"days"} style={[isDeviceSize('small') ? appStyles.normal14Text : appStyles.normal16Text,styles.text]}>{` ${i18n.t('won')}/Day`}</Text>
-                </View>
-                <View style={styles.lowPriceView}>
-                  <Text style={styles.lowPrice}>{i18n.t('lowest')}</Text>
-                </View>
+            if ( elm && elm.length > 0 ) {
+              const localOp = localOpList.get(elm[0].partnerId) || {},
+                bestPrice = elm.reduce((acc,cur) => (typeof acc === 'undefined') ? cur.pricePerDay : Math.min(acc, cur.pricePerDay), undefined)
+
+              return <View key={elm[0].key} style={{flex:1, marginLeft:idx == 1 ? 14 : 0}}>
+                <TouchableOpacity onPress={() => this.props.onPress && this.props.onPress(elm)}>
+                  <Image key={"img"} source={{uri:api.httpImageUrl(localOp.imageUrl)}} style={styles.image}/>
+                  <Text key={"cntry"} style={styles.cntry}>{productApi.getTitle(elm[0].categoryId, localOp)}</Text>
+                  <View style={styles.priceRow}>
+                    <View style={styles.price}>
+                      <Text key={"price"} style={styles.priceNumber}>{utils.numberToCommaString(bestPrice)}</Text> 
+                      <Text key={"days"} style={[isDeviceSize('small') ? appStyles.normal14Text : appStyles.normal16Text,styles.text]}>{` ${i18n.t('won')}/Day`}</Text>
+                    </View>
+                    <View style={styles.lowPriceView}>
+                      <Text style={styles.lowPrice}>{i18n.t('lowest')}</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity> 
               </View>
-            </TouchableOpacity> 
-          </View> : <View key="unknown" style={{flex:1}}/>
-        ))}
+            }
+
+            return <View key="unknown" style={{flex:1}}/>
+          })
+        }
       </View>
     )
   }
 }
+
+let CountryItemConnected = connect((state) => ({ localOpList: state.product.get('localOpList')}))(CountryItem)
 
 class StoreList extends Component {
   constructor(props) {
@@ -65,7 +70,7 @@ class StoreList extends Component {
   }
   
   _renderItem = ({item}) => {
-    return <CountryItem onPress={this.props.onPress} item={item}/>
+    return <CountryItemConnected onPress={this.props.onPress} item={item} />
   }
 
   render() {

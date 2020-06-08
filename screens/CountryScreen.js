@@ -61,14 +61,16 @@ class CountryListItem extends PureComponent {
 class CountryBackButton extends PureComponent {
   render() {
 
-    const {navigation} = this.props,
-      prodOfCountry = navigation.getParam('prodOfCountry')
+    const {navigation, product} = this.props,
+      {localOpList} = product,
+      prodOfCountry = navigation.getParam('prodOfCountry'),
+      title = prodOfCountry && prodOfCountry.length > 0 ? productApi.getTitle( prodOfCountry[0].categoryId, localOpList.get(prodOfCountry[0].partnerId)) : ''
 
-    return <AppBackButton navigation={navigation} title={productApi.getTitle(prodOfCountry[0])} />
+    return <AppBackButton navigation={navigation} title={title} />
   }
 }
 
-let BackButton = connect(state => ({prodList: state.product.get('prodList')}))(CountryBackButton)
+let BackButton = connect(state => ({product: state.product.toObject()}))(CountryBackButton)
 
 class CountryScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -91,14 +93,16 @@ class CountryScreen extends Component {
   }
 
   componentDidMount() {
-    const prodOfCountry = this.props.navigation.getParam('prodOfCountry')
+    const prodOfCountry = this.props.navigation.getParam('prodOfCountry'),
+      {localOpList} = this.props.product,
+      localOp = localOpList.get(prodOfCountry[0].partnerId) || {}
 
     if ( prodOfCountry) {
       this.setState({
         prodData: prodOfCountry,
-        imageUrl: prodOfCountry[0].imageUrl,
+        imageUrl: localOp.imageUrl,
         selected: prodOfCountry[0].uuid,
-        title : productApi.getTitle(prodOfCountry[0])
+        title : productApi.getTitle(prodOfCountry[0], localOp)
       })
     }
   }
@@ -130,7 +134,7 @@ class CountryScreen extends Component {
     else {
 
       if(selected){
-        const prod = this.props.product.get('prodList').get(selected),
+        const prod = this.props.product.prodList.get(selected),
           addProduct = prod ? { 
             title: prod.name, 
             variationId: prod.variationId, 
@@ -368,7 +372,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => ({
-  product: state.product,
+  product: state.product.toObject(),
   cart: state.cart.toJS(),
   account : state.account.toJS(),
   pending: state.pender.pending[cartActions.CART_ADD] || false,
