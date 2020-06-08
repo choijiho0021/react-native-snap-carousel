@@ -1,5 +1,6 @@
 import {
     StyleSheet,
+    Platform
 } from 'react-native';
 
 import {colors} from "./Colors"
@@ -544,6 +545,9 @@ export const htmlDetailWithCss = (body, script = '') => {
         margin-left: 30px;
         margin-right: 30px;
         margin-bottom: 66px;
+    }
+    .settings.${Platform.OS == 'ios' ? 'android' : 'ios'} {
+        display: none;
     }
     </style>
     ${script}

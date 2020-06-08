@@ -90,21 +90,23 @@ class StoreScreen extends Component {
       list = []
 
     for(let item of prodList.values()) {
-      const localOp = localOpList.get(item.partnerId) || {}
-      item.ccodeStr = (localOp.ccode || []).join(',')
-      item.cntry = Set(country.getName(localOp.ccode))
-      item.search = [... item.cntry].join(',')
-      item.pricePerDay = Math.round(item.price / item.days)
-      
-      const idxCcode = list.findIndex(elm => elm.length > 0 && elm[0].ccodeStr == item.ccodeStr)
+      if ( localOpList.has(item.partnerId)) {
+        const localOp = localOpList.get(item.partnerId)
+        item.ccodeStr = (localOp.ccode || []).join(',')
+        item.cntry = Set(country.getName(localOp.ccode))
+        item.search = [... item.cntry].join(',')
+        item.pricePerDay = Math.round(item.price / item.days)
+        
+        const idxCcode = list.findIndex(elm => elm.length > 0 && elm[0].ccodeStr == item.ccodeStr)
 
-      if ( idxCcode < 0 ) {
-        // new item, insert it
-        list.push([item])
-      }
-      else {
-        // 이미 같은 country code를 갖는 데이터가 존재하면, 그 아래에 추가한다. (2차원 배열)
-        list[idxCcode].push(item)
+        if ( idxCcode < 0 ) {
+          // new item, insert it
+          list.push([item])
+        }
+        else {
+          // 이미 같은 country code를 갖는 데이터가 존재하면, 그 아래에 추가한다. (2차원 배열)
+          list[idxCcode].push(item)
+        }
       }
     }
 
