@@ -56,6 +56,8 @@ const en = {
   'sec' : 'sec',
   'now' : 'now',
   'latest' : 'latest',
+  'sale' : 'Sale',
+  'hot' : 'Hot',
 
   'home:guide': 'User Guide',
   'home:checkGuide': 'Check',
@@ -501,6 +503,8 @@ const ko = {
   'sec' : '초',
   'now' : '현재',
   'latest' : '최신',
+  'sale' : '할인',
+  'hot' : '추천',
 
   'home:guide': '로밍도깨비 사용가이드 !',
   'home:checkGuide': '확인하기',
