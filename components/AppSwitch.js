@@ -28,7 +28,8 @@ export default class AppSwitch extends PureComponent {
         this.state.animatedValue,
         {
           toValue: isOn ? 1 : 0,
-          duration: 0
+          duration: 0,
+          useNativeDriver: true
         }
       ).start()
     }
@@ -42,7 +43,8 @@ export default class AppSwitch extends PureComponent {
         {
           toValue: isOn ? 1 : 0,
           easing: Easing.elastic(.2),
-          duration: 300
+          duration: 300,
+          useNativeDriver: true
         }
       ).start()
     }

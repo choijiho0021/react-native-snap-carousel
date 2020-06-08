@@ -195,6 +195,7 @@ class CountryScreen extends Component {
             renderItem={this._renderItem} 
             extraData={selected} />
         </View>
+        {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
         <SnackBar ref={this.snackRef}
                   visible={addToCart} backgroundColor={colors.clearBlue} messageColor={colors.white}
                   position={'top'}

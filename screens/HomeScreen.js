@@ -316,7 +316,7 @@ class HomeScreen extends Component {
         outputRange: [ ACTIVE_DOT_WIDTH, INACTIVE_DOT_WIDTH]
       })
 
-    Animated.timing ( width, { toValue : ACTIVE_DOT_WIDTH, duration }).start()
+    Animated.timing ( width, { toValue : ACTIVE_DOT_WIDTH, duration, useNativeDriver: true }).start()
 
     if ( activeIndex == 0) {
       return promotions.map((_, idx) =>
