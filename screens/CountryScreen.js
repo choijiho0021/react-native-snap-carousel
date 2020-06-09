@@ -95,6 +95,7 @@ class CountryScreen extends Component {
       imageUrl: undefined,
       title: undefined,
       addToCart: false,
+      localOpDetails: undefined
     }
 
     this.snackRef = React.createRef()
@@ -109,6 +110,7 @@ class CountryScreen extends Component {
       this.setState({
         prodData: prodOfCountry,
         imageUrl: localOp.imageUrl,
+        localOpDetails: localOp.detail,
         selected: prodOfCountry[0].uuid,
         title : productApi.getTitle(prodOfCountry[0], localOp)
       })
@@ -182,13 +184,13 @@ class CountryScreen extends Component {
 
   render() {
     const { iccid,loggedIn } = this.props.account
-    const { prodData, imageUrl, title, selected, addToCart } = this.state
+    const { prodData, imageUrl, localOpDetails, title, selected, addToCart } = this.state
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
         <Image style={styles.box} source={{uri:api.httpImageUrl(imageUrl)}}/>
         
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('ProductDetail', {title:title, img:imageUrl})}>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('ProductDetail', {title:title, img:imageUrl, localOpDetails})}>
           <View style={styles.detail}>
             <Text style={windowWidth > device.small.window.width ? appStyles.normal14Text : appStyles.normal12Text}>{i18n.t('country:detail')}</Text>
             <AppIcon style={{marginRight:20}} name="iconArrowRight" size={10} />

@@ -111,7 +111,7 @@ class ProductDetailScreen extends Component {
     const {tabIdx, height2} = this.state
     const {detail} = this.props.product
 
-    return preState.tabIdx != tabIdx || preProps.detail != detail || preState.height2 != height2 
+    return preState.tabIdx != tabIdx || preState.height2 != height2 || preProps.detail != detail || preProps.localOpDetails != this.props.localOpDetails
   }
 
   componentDidMount() {
@@ -210,8 +210,9 @@ class ProductDetailScreen extends Component {
   }
 
   renderWebView() {
-    const {height3} = this.state
-    const {detail} = this.props.product
+    const {height3} = this.state,
+      localOpDetails = this.props.navigation.getParam('localOpDetails'),
+      detail = _.isEmpty(localOpDetails) ? this.props.product.detail : localOpDetails
 
     return <WebView
       automaticallyAdjustContentInsets={false}
@@ -225,7 +226,7 @@ class ProductDetailScreen extends Component {
       scrollEnabled = {true}
       // source={{html: body + html + script} }
       onMessage={this._onMessage}
-      source={{html: htmlDetailWithCss(detail, script), baseUrl} }
+      source={{html: htmlDetailWithCss( detail, script), baseUrl} }
       style={{height: height3 || 1000}}
     />
   }
