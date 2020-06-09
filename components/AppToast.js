@@ -63,7 +63,7 @@ class AppToast extends PureComponent {
         toValue: 1,
         easing: Easing.ease,
         duration: this._fadeInDuration,
-        useNativeDriver: true
+        useNativeDriver: false
       }
     ).start(() => {
       this._isShown = true
@@ -88,7 +88,7 @@ class AppToast extends PureComponent {
         toValue: 0,
         easing: Easing.ease,
         duration: this._fadeOutDuration,
-        useNativeDriver: true
+        useNativeDriver: false
       }
     ).start(() => {
       this._isMounted && this.setState({ isShown: false })
