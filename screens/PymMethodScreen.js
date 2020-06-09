@@ -218,7 +218,7 @@ class PymMethodScreen extends Component {
           key={v.method} 
           title={_.isEmpty(v.icon) && v.title}
           style={{
-            buttonStyle(idx, column, key, row, selected.method == v.method)
+            ... buttonStyle(idx, column, key, row, selected.method == v.method)
           }}
           iconName={!_.isEmpty(v.icon) && v.icon}
           checked={v.method == selected.method}
