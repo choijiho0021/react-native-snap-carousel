@@ -15,7 +15,7 @@ import { colors } from '../constants/Colors';
 import _ from 'underscore'
 import LabelText from '../components/LabelText';
 import AppActivityIndicator from '../components/AppActivityIndicator';
-import { SafeAreaView } from 'react-navigation';
+import { SafeAreaView } from '@react-navigation/native';
 import AppButton from '../components/AppButton';
 
 

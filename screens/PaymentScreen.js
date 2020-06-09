@@ -6,7 +6,7 @@ import * as cartActions from '../redux/modules/cart'
 import Video from 'react-native-video'
 import getEnvVars from '../environment'
 import i18n from '../utils/i18n';
-import { SafeAreaView } from 'react-navigation';
+import { SafeAreaView } from '@react-navigation/native';
 import AppBackButton from '../components/AppBackButton';
 import IMP from 'iamport-react-native';
 import _ from 'underscore';

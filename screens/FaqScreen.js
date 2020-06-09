@@ -71,11 +71,15 @@ class FaqScreen extends Component {
   } 
 
   componentDidMount() {
-    const index = this.state.routes.findIndex(item => item.key === this.props.navigation.getParam('key'))
+    const {params} = this.props.route
+    const key = params && params.key ? params.key : undefined
+    const num = params && params.num ? params.num : undefined
+
+    const index = this.state.routes.findIndex(item => item.key === key)
     if(index > 0){
       this.setState({
         index,
-        selectedTitleNo: this.props.navigation.getParam('num')
+        selectedTitleNo: num
       })
     }
 

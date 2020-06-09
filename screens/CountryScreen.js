@@ -20,7 +20,7 @@ import AppButton from '../components/AppButton'
 import AppIcon from '../components/AppIcon';
 import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';
-import { SafeAreaView } from 'react-navigation'
+import { SafeAreaView } from '@react-navigation/native'
 import AppPrice from '../components/AppPrice';
 import AppCartButton from '../components/AppCartButton';
 import { windowWidth, device, windowHeight } from '../constants/SliderEntry.style';

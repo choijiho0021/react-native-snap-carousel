@@ -15,7 +15,7 @@ import LabelText from '../components/LabelText';
 import _ from 'underscore';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-navigation';
+import { SafeAreaView } from '@react-navigation/native';
 import LabelTextTouchable from '../components/LabelTextTouchable';
 import orderApi from '../utils/api/orderApi';
 import profileApi from '../utils/api/profileApi';

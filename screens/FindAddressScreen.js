@@ -21,7 +21,7 @@ import {colors} from '../constants/Colors'
 import { appStyles } from '../constants/Styles';
 import AppBackButton from '../components/AppBackButton';
 import AppIcon from '../components/AppIcon';
-import { SafeAreaView } from 'react-navigation';
+import { SafeAreaView } from '@react-navigation/native';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 
 

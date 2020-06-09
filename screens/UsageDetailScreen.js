@@ -18,7 +18,7 @@ import { colors } from '../constants/Colors';
 import LabelText from '../components/LabelText';
 import AppButton from '../components/AppButton';
 import AppModal from '../components/AppModal';
-import { SafeAreaView } from 'react-navigation';
+import { SafeAreaView } from '@react-navigation/native';
 
 const STATUS = {
   ACTIVE : "A",               // 사용중

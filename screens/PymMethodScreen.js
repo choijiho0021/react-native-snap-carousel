@@ -16,7 +16,7 @@ import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import _ from 'underscore'
-import { SafeAreaView } from 'react-navigation';
+import { SafeAreaView } from '@react-navigation/native';
 import AddressCard from '../components/AddressCard'
 import { TouchableOpacity, TextInput } from 'react-native-gesture-handler';
 import PaymentItemInfo from '../components/PaymentItemInfo';

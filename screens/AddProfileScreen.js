@@ -11,7 +11,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as accountActions from '../redux/modules/account'
 import * as profileActions from '../redux/modules/profile'
-import { SafeAreaView } from 'react-navigation'
+import { SafeAreaView } from '@react-navigation/native'
 import _ from 'underscore'
 import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';

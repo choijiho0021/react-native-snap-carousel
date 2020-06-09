@@ -17,7 +17,7 @@ import { bindActionCreators } from 'redux'
 import { colors } from '../constants/Colors';
 import CartItem from '../components/CartItem';
 import ChargeSummary from '../components/ChargeSummary';
-import { SafeAreaView } from 'react-navigation'
+import { SafeAreaView } from '@react-navigation/native'
 import utils from '../utils/utils';
 import {Map} from 'immutable'
 import _ from 'underscore'
