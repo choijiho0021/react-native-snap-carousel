@@ -212,19 +212,16 @@ class PymMethodScreen extends Component {
       <View key={key} style={styles.buttonRow}>
       {
         // key: row, idx: column
-        value.map((v,idx) => 
+        value.map((v,idx) =>
         !_.isEmpty(v) &&
         <AppButton 
           key={v.method} 
           title={_.isEmpty(v.icon) && v.title}
-          style={[styles.button,
-            idx == 0 && {borderLeftWidth:1}, key == 0 && {borderTopWidth: 1},
-          !_.isEmpty(selected) && ( ( idx == column -1 ) && (key == row ) && {borderRightColor: colors.clearBlue}
-          || (key == row -1) && (idx == column) && {borderBottomColor: colors.clearBlue} ) ]}
+          style={{
+            ... buttonStyle(idx, column, key, row, selected.method == v.method)
+          }}
           iconName={!_.isEmpty(v.icon) && v.icon}
           checked={v.method == selected.method}
-          checkedStyle={{borderColor: colors.clearBlue}}
-          checkedColor={colors.clearBlue}
           onPress={this._onPress(v, key, idx)}
         titleStyle={styles.buttonText}/>)
       }
@@ -268,7 +265,7 @@ class PymMethodScreen extends Component {
 
   _dropDownHeader(stateTitle, title, alias){
     return(
-      <TouchableOpacity style={styles.dropDownBox} onPress={()=>this._showModal(stateTitle)}>
+      <TouchableOpacity style={styles.spaceBetweenBox} onPress={()=>this._showModal(stateTitle)}>
       <Text style={styles.boldTitle}>{title}</Text>
       <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
         {
@@ -474,18 +471,18 @@ class PymMethodScreen extends Component {
 
   _consentBox(){
     return(
-      <View style={{backgroundColor: colors.whiteTwo, padding: 20, paddingBottom: 45}}>
+      <View style={{backgroundColor: colors.whiteTwo, paddingBottom: 45}}>
       <TouchableOpacity style={styles.rowCenter} onPress={()=>this._consentEssential()}>
         <AppIcon name="btnCheck2"
                 checked={this.state.consent}
                 size={22}/>
         <Text style={[appStyles.bold16Text,{color: colors.black, marginLeft: 12}]}>{i18n.t('pym:consentEssential')}</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={[styles.buttonRow, {marginTop: 20}]} onPress={()=>this._move("1")}>
+      <TouchableOpacity style={[styles.spaceBetweenBox]} onPress={()=>this._move("1")}>
         <Text style={[appStyles.normal14Text, {color: colors.warmGrey, lineHeight: 22}]}>{i18n.t("pym:privacy")}{i18n.t('pym:mandatory')}</Text>
         <Text style={styles.underlinedClearBlue}>{i18n.t("pym:detail")}</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.buttonRow} onPress={()=>this._move("2")}>
+      <TouchableOpacity style={styles.spaceBetweenBox} onPress={()=>this._move("2")}>
         <Text style={[appStyles.normal14Text, {color: colors.warmGrey, lineHeight: 22}]}>{i18n.t("pym:paymentAgency")}{i18n.t('pym:mandatory')}</Text>
         <Text style={styles.underlinedClearBlue}>{i18n.t("pym:detail")}</Text>
       </TouchableOpacity>
@@ -539,13 +536,30 @@ class PymMethodScreen extends Component {
     )
   }
 }
+const buttonStyle = (idx, column, key, row, selected) => {
+  // row , column -> selected
+  // key, idx => 현위치
+  return {
+    width: '33.3%',
+    height: 62,
+    backgroundColor: colors.white,
+    borderStyle: "solid",
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: colors.lightGrey,
+    borderLeftWidth: (idx == 0) && 1,
+    borderTopWidth: (key == 0) && 1,
+    borderRightColor: ( idx == column  || idx == column - 1) && (key == row) ? colors.clearBlue : colors.lightGrey,
+    borderBottomColor: ( key == row || key == row -1 ) && (idx == column) ? colors.clearBlue : colors.lightGrey
+  }
+}
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
     height: 37,
     color: colors.black,
     fontSize: isDeviceSize('small') ? 12 : 14,
-    paddingVertical: 8
+    paddingVertical: 8,
   },
   inputAndroid: {
     height: 37,
@@ -576,7 +590,8 @@ const styles = StyleSheet.create({
   },
   rowCenter: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    margin: 20,
   },
   row: {
     ... appStyles.itemRow,
@@ -595,15 +610,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     // marginTop: 15,
     // marginHorizontal: 20,
-  },
-  button: {
-    width: '33.3%',
-    height: 62,
-    backgroundColor: colors.white,
-    borderStyle: "solid",
-    borderRightWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: colors.lightGrey
   },
   buttonText: {
     ... appStyles.normal14Text,
@@ -687,7 +693,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
   },
-  dropDownBox: {
+  spaceBetweenBox: {
     marginHorizontal: 20,
     flexDirection:'row',
     justifyContent: 'space-between'
