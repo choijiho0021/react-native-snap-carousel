@@ -212,19 +212,19 @@ class PymMethodScreen extends Component {
       <View key={key} style={styles.buttonRow}>
       {
         // key: row, idx: column
-        value.map((v,idx) => 
+        value.map((v,idx) =>
         !_.isEmpty(v) &&
         <AppButton 
           key={v.method} 
           title={_.isEmpty(v.icon) && v.title}
-          style={[styles.button,
-            idx == 0 && {borderLeftWidth:1}, key == 0 && {borderTopWidth: 1},
-          !_.isEmpty(selected) && ( ( idx == column -1 ) && (key == row ) && {borderRightColor: colors.clearBlue}
-          || (key == row -1) && (idx == column) && {borderBottomColor: colors.clearBlue} ) ]}
+          style={[
+            // styles.button,
+            buttonStyle(idx, column, key, row, selected.method == v.method),
+            // !_.isEmpty(selected) && ( idx == column -1 ) && (key == row ) && blueBorderRight(),
+            // !_.isEmpty(selected) && (key == row -1) && (idx == column) && blueBorderBottom()
+          ]}
           iconName={!_.isEmpty(v.icon) && v.icon}
           checked={v.method == selected.method}
-          checkedStyle={{borderColor: colors.clearBlue}}
-          checkedColor={colors.clearBlue}
           onPress={this._onPress(v, key, idx)}
         titleStyle={styles.buttonText}/>)
       }
@@ -539,13 +539,42 @@ class PymMethodScreen extends Component {
     )
   }
 }
+const buttonStyle = (idx, column, key, row, selected) => {
+  // row , column -> selected
+  // key, idx => 현위치
+  return {
+    width: '33.3%',
+    height: 62,
+    backgroundColor: colors.white,
+    borderStyle: "solid",
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: colors.lightGrey,
+    borderLeftWidth: (idx == 0) && 1,
+    borderTopWidth: (key == 0) && 1,
+    borderRightColor: ( idx == column  || idx == column - 1) && (key == row) ? colors.clearBlue : colors.lightGrey,
+    borderBottomColor: ( key == row || key == row -1 ) && (idx == column) ? colors.clearBlue : colors.lightGrey
+  }
+}
+
+// const blueBorderRight = () => {
+//   return {
+//     borderRightColor: colors.clearBlue
+//   }
+// }
+
+// const blueBorderBottom = () => {
+//   return {
+//     borderBottomColor: colors.clearBlue
+//   }
+// }
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
     height: 37,
     color: colors.black,
     fontSize: isDeviceSize('small') ? 12 : 14,
-    paddingVertical: 8
+    paddingVertical: 8,
   },
   inputAndroid: {
     height: 37,
@@ -603,7 +632,7 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderRightWidth: 1,
     borderBottomWidth: 1,
-    borderColor: colors.lightGrey
+    // borderColor: colors.lightGrey
   },
   buttonText: {
     ... appStyles.normal14Text,
