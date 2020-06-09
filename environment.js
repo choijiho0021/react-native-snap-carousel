@@ -1,9 +1,9 @@
 import { Platform } from 'react-native';
 
 const impId = "imp53913318"
-const codePushiOSStagLabel = "v97"
+const codePushiOSStagLabel = "v102"
 const codePushiOSProdLabel = "v0"
-const codePushAndStagLabel = "v92"
+const codePushAndStagLabel = "v96"
 const codePushAndProdLabel = "v0"
 const channelId = "_nzQhxb"
 
