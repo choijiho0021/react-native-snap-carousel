@@ -265,7 +265,7 @@ class PymMethodScreen extends Component {
 
   _dropDownHeader(stateTitle, title, alias){
     return(
-      <TouchableOpacity style={styles.dropDownBox} onPress={()=>this._showModal(stateTitle)}>
+      <TouchableOpacity style={styles.spaceBetweenBox} onPress={()=>this._showModal(stateTitle)}>
       <Text style={styles.boldTitle}>{title}</Text>
       <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
         {
@@ -471,18 +471,18 @@ class PymMethodScreen extends Component {
 
   _consentBox(){
     return(
-      <View style={{backgroundColor: colors.whiteTwo, padding: 20, paddingBottom: 45}}>
+      <View style={{backgroundColor: colors.whiteTwo, paddingBottom: 45}}>
       <TouchableOpacity style={styles.rowCenter} onPress={()=>this._consentEssential()}>
         <AppIcon name="btnCheck2"
                 checked={this.state.consent}
                 size={22}/>
         <Text style={[appStyles.bold16Text,{color: colors.black, marginLeft: 12}]}>{i18n.t('pym:consentEssential')}</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={[styles.buttonRow, {marginTop: 20}]} onPress={()=>this._move("1")}>
+      <TouchableOpacity style={[styles.spaceBetweenBox]} onPress={()=>this._move("1")}>
         <Text style={[appStyles.normal14Text, {color: colors.warmGrey, lineHeight: 22}]}>{i18n.t("pym:privacy")}{i18n.t('pym:mandatory')}</Text>
         <Text style={styles.underlinedClearBlue}>{i18n.t("pym:detail")}</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.buttonRow} onPress={()=>this._move("2")}>
+      <TouchableOpacity style={styles.spaceBetweenBox} onPress={()=>this._move("2")}>
         <Text style={[appStyles.normal14Text, {color: colors.warmGrey, lineHeight: 22}]}>{i18n.t("pym:paymentAgency")}{i18n.t('pym:mandatory')}</Text>
         <Text style={styles.underlinedClearBlue}>{i18n.t("pym:detail")}</Text>
       </TouchableOpacity>
@@ -590,7 +590,8 @@ const styles = StyleSheet.create({
   },
   rowCenter: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    margin: 20,
   },
   row: {
     ... appStyles.itemRow,
@@ -692,7 +693,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
   },
-  dropDownBox: {
+  spaceBetweenBox: {
     marginHorizontal: 20,
     flexDirection:'row',
     justifyContent: 'space-between'
