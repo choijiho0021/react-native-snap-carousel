@@ -5,7 +5,8 @@ import {
   StyleSheet,
   Image,
   BackHandler,
-  SafeAreaView
+  SafeAreaView,
+  ScrollView
 } from 'react-native';
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -23,7 +24,6 @@ import i18n from '../utils/i18n';
 import _ from 'underscore';
 
 import { colors } from '../constants/Colors'
-import { ScrollView } from 'react-native-gesture-handler';
 import Analytics from 'appcenter-analytics'
 
 const styles = StyleSheet.create({

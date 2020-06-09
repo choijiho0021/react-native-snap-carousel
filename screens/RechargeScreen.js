@@ -5,7 +5,8 @@ import {
   View,
   Image,
   TouchableOpacity,
-  SafeAreaView
+  SafeAreaView,
+  ScrollView
 } from 'react-native';
 import {connect} from 'react-redux'
 
@@ -20,7 +21,6 @@ import { colors } from '../constants/Colors';
 import LabelText from '../components/LabelText';
 import AppButton from '../components/AppButton';
 import _ from 'underscore'
-import { ScrollView } from '@react-navigation/native';
 import AppBackButton from '../components/AppBackButton';
 import api from '../utils/api/api';
 import { isDeviceSize } from '../constants/SliderEntry.style';

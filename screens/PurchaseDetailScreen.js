@@ -3,7 +3,8 @@ import {
   StyleSheet,
   Text,
   View,
-  SafeAreaView
+  SafeAreaView,
+  ScrollView
 } from 'react-native';
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
@@ -15,7 +16,7 @@ import { colors } from '../constants/Colors';
 import LabelText from '../components/LabelText';
 import _ from 'underscore';
 import { isDeviceSize } from '../constants/SliderEntry.style';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import LabelTextTouchable from '../components/LabelTextTouchable';
 import orderApi from '../utils/api/orderApi';
 import profileApi from '../utils/api/profileApi';
