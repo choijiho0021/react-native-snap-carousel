@@ -110,11 +110,8 @@ target 'Rokebi' do
   #pod 'AppCenter/Crashes'
   #pod 'AppCenter/Distribute'
 
-  pod 'appcenter', :path => '../node_modules/appcenter/ios'
 
-  pod 'appcenter-analytics', :path => '../node_modules/appcenter-analytics/ios'
 
-  pod 'appcenter-crashes', :path => '../node_modules/appcenter-crashes/ios'
 
   permissions_path = '../node_modules/react-native-permissions/ios'
 
@@ -152,6 +149,18 @@ target 'Rokebi' do
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
 
   pod 'RNLocalize', :path => '../node_modules/react-native-localize'
+
+
+
+
+  pod 'appcenter', :path => '../node_modules/appcenter/ios'
+
+  pod 'appcenter-crashes', :path => '../node_modules/appcenter-crashes/ios'
+
+  pod 'appcenter-analytics', :path => '../node_modules/appcenter-analytics/ios'
+
+  pod 'RNScreens', :path => '../node_modules/react-native-screens'
+
 
 end
 
