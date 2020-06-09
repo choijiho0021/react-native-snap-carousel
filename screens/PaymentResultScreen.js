@@ -4,7 +4,8 @@ import {
   Text,
   StyleSheet,
   Image,
-  BackHandler
+  BackHandler,
+  SafeAreaView
 } from 'react-native';
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -17,7 +18,6 @@ import utils from '../utils/utils';
 import AppButton from '../components/AppButton';
 import {appStyles} from '../constants/Styles'
 import PaymentItemInfo from '../components/PaymentItemInfo';
-import SafeAreaView from 'react-native-safe-area-view';
 import AppBackButton from '../components/AppBackButton';
 import i18n from '../utils/i18n';
 import _ from 'underscore';

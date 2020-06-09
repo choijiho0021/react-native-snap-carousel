@@ -7,7 +7,8 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
-  InputAccessoryView
+  InputAccessoryView,
+  SafeAreaView
 } from 'react-native';
 import {connect} from 'react-redux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -23,7 +24,6 @@ import AppButton from './AppButton';
 import validationUtil from '../utils/validationUtil';
 import { bindActionCreators } from 'redux'
 import { colors } from '../constants/Colors';
-import { SafeAreaView } from '@react-navigation/native';
 import {List} from 'immutable'
 import { attachmentSize } from '../constants/SliderEntry.style'
 import AppAlert from './AppAlert'

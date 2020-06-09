@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Text,
   View,
+  SafeAreaView
 } from 'react-native';
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -21,7 +22,6 @@ import {colors} from '../constants/Colors'
 import { appStyles } from '../constants/Styles';
 import AppBackButton from '../components/AppBackButton';
 import AppIcon from '../components/AppIcon';
-import { SafeAreaView } from '@react-navigation/native';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 
 

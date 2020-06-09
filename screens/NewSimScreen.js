@@ -3,6 +3,7 @@ import {
   StyleSheet,
   View,
   FlatList,
+  SafeAreaView
 } from 'react-native';
 import {connect} from 'react-redux'
 import {Map} from 'immutable'
@@ -20,7 +21,6 @@ import AppBackButton from '../components/AppBackButton';
 import { appStyles } from '../constants/Styles';
 import { colors } from '../constants/Colors';
 import ChargeSummary from '../components/ChargeSummary';
-import { SafeAreaView } from '@react-navigation/native';
 import utils from '../utils/utils';
 import Analytics from 'appcenter-analytics'
 class NewSimScreen extends Component {

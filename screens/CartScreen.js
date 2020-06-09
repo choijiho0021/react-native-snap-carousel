@@ -4,7 +4,8 @@ import {
   View,
   Text,
   SectionList,
-  Alert
+  Alert,
+  SafeAreaView
 } from 'react-native';
 import {connect} from 'react-redux'
 
@@ -17,7 +18,6 @@ import { bindActionCreators } from 'redux'
 import { colors } from '../constants/Colors';
 import CartItem from '../components/CartItem';
 import ChargeSummary from '../components/ChargeSummary';
-import { SafeAreaView } from '@react-navigation/native'
 import utils from '../utils/utils';
 import {Map} from 'immutable'
 import _ from 'underscore'

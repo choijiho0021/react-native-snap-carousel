@@ -3,7 +3,8 @@ import {
   StyleSheet,
   View,
   Text,
-  TextInput
+  TextInput,
+  SafeAreaView
 } from 'react-native';
 import i18n from '../utils/i18n'
 import { appStyles } from '../constants/Styles'
@@ -11,7 +12,6 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as accountActions from '../redux/modules/account'
 import * as profileActions from '../redux/modules/profile'
-import { SafeAreaView } from '@react-navigation/native'
 import _ from 'underscore'
 import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';

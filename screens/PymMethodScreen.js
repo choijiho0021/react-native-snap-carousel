@@ -3,7 +3,8 @@ import {
   StyleSheet,
   Text,
   View,
-  Platform
+  Platform,
+  SafeAreaView
 } from 'react-native';
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -16,7 +17,6 @@ import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import _ from 'underscore'
-import { SafeAreaView } from '@react-navigation/native';
 import AddressCard from '../components/AddressCard'
 import { TouchableOpacity, TextInput } from 'react-native-gesture-handler';
 import PaymentItemInfo from '../components/PaymentItemInfo';
