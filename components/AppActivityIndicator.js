@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import {
   StyleSheet,
   ActivityIndicator,
-  View,
 } from 'react-native';
 import Layout from '../constants/Layout'
 import { colors } from '../constants/Colors';
@@ -15,16 +14,18 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function AppActivityIndicator({visible = true, size="large"}) {
-  const width = size == 'large' ? 36 : 20
-  const position = {
-    left:Layout.window.width/2 - width/2, 
-    top:Layout.window.height/2 - width/2
-  }
+class AppActivityIndicator extends PureComponent {
+  render() {
+    const {size = 'large', visible = true } = this.props,
+      width = size == 'large' ? 36 : 20,
+      position = {
+        left:Layout.window.width/2 - width/2, 
+        top:Layout.window.height/2 - width/2
+      }
 
-  if (visible) return (
-      <ActivityIndicator style={[styles.indicator, position]} size={size} color={colors.clearBlue}/>
-    )
-  return null
+    return <ActivityIndicator style={[styles.indicator, position]} animating={visible} size={size} color={colors.clearBlue}/>
+  }
 }
+
+export default AppActivityIndicator
 
