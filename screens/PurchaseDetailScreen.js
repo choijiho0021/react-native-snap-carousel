@@ -98,16 +98,6 @@ class PurchaseDetailScreen extends Component {
       }, 3000)
     }
   }
-  
-  componentWillUnmount(){
-    // 보완 필요
-    const auth = this.props.navigation.getParam('auth')
-    const { iccid } = this.props.account
-    if(this.state.disableBtn && auth){
-      this.props.action.order.getOrders(auth)
-      this.props.action.account.getAccount(iccid, auth)
-    }
-  }
 
   _onScroll = (e) => {
     if(this.state.cancelPressed){
@@ -138,6 +128,7 @@ class PurchaseDetailScreen extends Component {
   _cancelOrder() {
 
     this.setState({borderBlue: true})
+    const { account:{ iccid }, auth } = this.props
 
     AppAlert.confirm(i18n.t('his:cancel'), i18n.t('his:cancelAlert'), 
     {
@@ -146,6 +137,9 @@ class PurchaseDetailScreen extends Component {
           this.props.action.order.cancelOrder(this.state.orderId, this.props.auth).then(resp =>{
             if (resp.result == 0){
               this.setState({cancelPressed: true})
+              // 결제취소 후 order 및 로깨비캐시 (잔액) 가져오기
+              this.props.action.order.getOrderById(auth, this.state.orderId)
+              this.props.action.account.getAccount(iccid, auth)
             }else{
               AppAlert.info(i18n.t("his:cancelFail"))
             }},
