@@ -217,12 +217,9 @@ class PymMethodScreen extends Component {
         <AppButton 
           key={v.method} 
           title={_.isEmpty(v.icon) && v.title}
-          style={[
-            // styles.button,
-            buttonStyle(idx, column, key, row, selected.method == v.method),
-            // !_.isEmpty(selected) && ( idx == column -1 ) && (key == row ) && blueBorderRight(),
-            // !_.isEmpty(selected) && (key == row -1) && (idx == column) && blueBorderBottom()
-          ]}
+          style={{
+            buttonStyle(idx, column, key, row, selected.method == v.method)
+          }}
           iconName={!_.isEmpty(v.icon) && v.icon}
           checked={v.method == selected.method}
           onPress={this._onPress(v, key, idx)}
@@ -557,18 +554,6 @@ const buttonStyle = (idx, column, key, row, selected) => {
   }
 }
 
-// const blueBorderRight = () => {
-//   return {
-//     borderRightColor: colors.clearBlue
-//   }
-// }
-
-// const blueBorderBottom = () => {
-//   return {
-//     borderBottomColor: colors.clearBlue
-//   }
-// }
-
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
     height: 37,
@@ -624,15 +609,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     // marginTop: 15,
     // marginHorizontal: 20,
-  },
-  button: {
-    width: '33.3%',
-    height: 62,
-    backgroundColor: colors.white,
-    borderStyle: "solid",
-    borderRightWidth: 1,
-    borderBottomWidth: 1,
-    // borderColor: colors.lightGrey
   },
   buttonText: {
     ... appStyles.normal14Text,
