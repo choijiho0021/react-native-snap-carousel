@@ -46,20 +46,18 @@ import UsageDetailScreen from '../screens/UsageDetailScreen';
 
 import Analytics from 'appcenter-analytics'
 
-const config = Platform.select({
-  web: { headerMode: 'screen' },
-  default: {
-    defaultNavigationOptions: {
-      headerStyle: {
-        height: 56,
-        shadowColor: 'transparent',
-        shadowOpacity: 0,
-        elevation: 0,
-        borderBottomWidth: 0 
-      },
-    },
-  },
-});
+// const config = Platform.select({
+//   web: { headerMode: 'screen' },
+//   default: {
+//     headerStyle: {
+//       height: 56,
+//       shadowColor: 'transparent',
+//       shadowOpacity: 0,
+//       elevation: 0,
+//       borderBottomWidth: 0 
+//     },
+//   },
+// });
 
 const HomeStack = createStackNavigator();
 const StoreStack = createStackNavigator();
@@ -373,7 +371,6 @@ const BadgedIcon = withBadge(({cartItems}) => cartItems, {badgeStyle : {top:4, l
 const TabNavigator = createBottomTabNavigator();
 
 function tabNavigator() {
-  console.log("aaaaa - tabNavigator")
   return (
     <TabNavigator.Navigator>
       <TabNavigator.Screen 
