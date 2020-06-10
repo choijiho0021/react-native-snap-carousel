@@ -217,9 +217,7 @@ class PymMethodScreen extends Component {
         <AppButton 
           key={v.method} 
           title={_.isEmpty(v.icon) && v.title}
-          style={{
-            ... buttonStyle(idx, column, key, row, selected.method == v.method)
-          }}
+          style={styles.buttonStyle(idx, column, key, row)}
           iconName={!_.isEmpty(v.icon) && v.icon}
           checked={v.method == selected.method}
           onPress={this._onPress(v, key, idx)}
@@ -536,23 +534,6 @@ class PymMethodScreen extends Component {
     )
   }
 }
-const buttonStyle = (idx, column, key, row, selected) => {
-  // row , column -> selected
-  // key, idx => 현위치
-  return {
-    width: '33.3%',
-    height: 62,
-    backgroundColor: colors.white,
-    borderStyle: "solid",
-    borderRightWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: colors.lightGrey,
-    borderLeftWidth: (idx == 0) && 1,
-    borderTopWidth: (key == 0) && 1,
-    borderRightColor: ( idx == column  || idx == column - 1) && (key == row) ? colors.clearBlue : colors.lightGrey,
-    borderBottomColor: ( key == row || key == row -1 ) && (idx == column) ? colors.clearBlue : colors.lightGrey
-  }
-}
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
@@ -576,6 +557,20 @@ const pickerSelectStyles = StyleSheet.create({
 })
 
 const styles = StyleSheet.create({
+  buttonStyle: (idx, column, key, row) => ({
+    // key, idx => 현위치 / row, column -> selected
+      width: '33.3%',
+      height: 62,
+      backgroundColor: colors.white,
+      borderStyle: "solid",
+      borderRightWidth: 1,
+      borderBottomWidth: 1,
+      borderColor: colors.lightGrey,
+      borderLeftWidth: (idx == 0) && 1,
+      borderTopWidth: (key == 0) && 1,
+      borderRightColor: ( idx == column  || idx == column - 1) && (key == row) ? colors.clearBlue : colors.lightGrey,
+      borderBottomColor: ( key == row || key == row -1 ) && (idx == column) ? colors.clearBlue : colors.lightGrey
+  }),  
   container: {
     flex: 1,
     justifyContent: "flex-start",
