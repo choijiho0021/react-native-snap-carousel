@@ -368,7 +368,7 @@ class UsimScreen extends Component {
 
     const focus = this.props.navigation.isFocused()
     const { account: {iccid, loggedIn}, auth, lastTab, loginPending } = this.props,
-      routeName = this.props.navigation.state.routeName,
+      routeName = this.props.route.name,
       isFocusedToUsimTab = (lastTab[0] || '').startsWith( routeName ) && lastTab[0] !== prevProps.lastTab[0]
 
     if ( (isFocusedToUsimTab && ! loginPending)
