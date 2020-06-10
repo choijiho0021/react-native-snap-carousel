@@ -51,7 +51,8 @@ class ProductAPI {
                     apn: item.field_apn_setting,
                     imageUrl: item.field_image,
                     network: item.field_network,
-                    weight: item.field_weight || 0,
+                    weight: utils.stringToNumber(item.field_weight) || 0,
+                    detail: item.body
                 })))
         }
 

@@ -103,17 +103,6 @@ class PurchaseDetailScreen extends Component {
       }, 3000)
     }
   }
-  
-  componentWillUnmount(){
-    const {params} = this.props.route
-    // 보완 필요
-    const auth = params && params.auth
-    const { iccid } = this.props.account
-    if(this.state.disableBtn && auth){
-      this.props.action.order.getOrders(auth)
-      this.props.action.account.getAccount(iccid, auth)
-    }
-  }
 
   _onScroll = (e) => {
     if(this.state.cancelPressed){
@@ -144,6 +133,7 @@ class PurchaseDetailScreen extends Component {
   _cancelOrder() {
 
     this.setState({borderBlue: true})
+    const { account:{ iccid }, auth } = this.props
 
     AppAlert.confirm(i18n.t('his:cancel'), i18n.t('his:cancelAlert'), 
     {
@@ -152,8 +142,17 @@ class PurchaseDetailScreen extends Component {
           this.props.action.order.cancelOrder(this.state.orderId, this.props.auth).then(resp =>{
             if (resp.result == 0){
               this.setState({cancelPressed: true})
+              this.props.action.order.getOrderById(auth, this.state.orderId).then(
+                resp => {
+                  if(resp.result == 0) {
+                    this.props.action.account.getAccount(iccid, auth)
+                  }
+                }
+              )
             }else{
               AppAlert.info(i18n.t("his:cancelFail"))
+              this.props.action.order.getOrderById(auth, this.state.orderId)
+              this.props.action.account.getAccount(iccid, auth)
             }},
             err =>{
               AppAlert.info(i18n.t("his:cancelError"))
@@ -258,7 +257,7 @@ class PurchaseDetailScreen extends Component {
 
       const elapsedDay = Math.ceil((new Date() - new Date(orderDate)) / (24 * 60 * 60 * 1000))
       const paidAmount = !_.isEmpty(method) ? method.amount : 0
-      const isRecharge = orderItems.find(item => item.title.indexOf(i18n.t('acc:recharge')) > -1) || false
+      const isRecharge = orderItems.find(item => item.title.includes(i18n.t('sim:rechargeBalance')) ) || false
       const isUsed = !_.isEmpty(usageList) && usageList.find(value => value.status != 'R' && value.status != 'I') || false
       const usedOrExpired = isUsed || elapsedDay > 7
       const activateCancelBtn = orderType == 'physical' ? shipmentState == 'draft' : (state == 'draft' || state == 'validation') && !isUsed
@@ -318,8 +317,8 @@ class PurchaseDetailScreen extends Component {
             <AppButton
                 style={[styles.cancelBtn, {borderColor: this.state.borderBlue ? colors.clearBlue : colors.lightGrey}]}
                 disableBackgroundColor={colors.whiteTwo}
-                disableColor={colors.greyish}
-                disabled={disableBtn || this.state.disableBtn}
+                disableColor={this.state.pending ? colors.whiteTwo : colors.greyish}
+                disabled={disableBtn || this.state.disableBtn || this.state.pending}
                 onPress={() => this._cancelOrder()}
                 title={i18n.t('his:cancel')}
                 titleStyle={styles.normal16BlueTxt}/>
