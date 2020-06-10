@@ -36,16 +36,13 @@ import pageApi from '../utils/api/pageApi';
 const deliveryText = orderApi.deliveryText
 
 class PymMethodScreen extends Component {
-
-  static navigationOptions =  ({ navigation }) => {
-    const { params = {} } = navigation.state
-    return {
-        headerLeft: <AppBackButton navigation={navigation} title={i18n.t('payment')} isPaid={params.isPaid}/>
-    }  
-  }
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft : () =>  (<AppBackButton navigation={this.props.navigation} title={i18n.t('payment')} isPaid={this.props.route.params && this.props.route.params.isPaid}/>)
+    })
 
     this.state = {
       mode: undefined,
@@ -111,7 +108,7 @@ class PymMethodScreen extends Component {
     this.props.action.profile.getCustomerProfile(this.props.account)
     const {pymPrice, deduct} = this.props.cart
     const content = this.props.profile.content
-    const mode = this.props.navigation.getParam('mode')
+    const mode = this.props.route.param && this.props.route.param.mode
 
     Analytics.trackEvent('Page_View_Count', {page : 'Payment - ' + mode})
 

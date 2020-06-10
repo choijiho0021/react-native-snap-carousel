@@ -31,12 +31,14 @@ const guideImages = {
 }
 
 class GuideScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('guide:title') } />
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('guide:title')} />)
+    })
+
     this.state = {
       querying: false,
       data: [],

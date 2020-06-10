@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
+  Dimensions
 } from 'react-native';
 import {connect} from 'react-redux'
 import country from '../utils/country'
@@ -68,7 +69,7 @@ class HeaderTitle extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.headerTitle}>
-          <AppBackButton navigation={navigation.navigation} />
+          <AppBackButton navigation={navigation} />
           <TextInput
             style={styles.searchText}
             placeholder={i18n.t('store:search')}
@@ -89,17 +90,16 @@ class HeaderTitle extends Component {
 }
 
 class StoreSearchScreen extends Component {
-  static navigationOptions = (navigation) => {
-    const {params = {}} = navigation.navigation.state
-
-    return {
-      headerLeft: null,
-      headerTitle : <HeaderTitle search={params.search} searchWord={params.searchWord} navigation={navigation}/>
-    }
-  }
-
   constructor(props) {
     super(props)
+  
+    const {params = {}} = this.props.route
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft : null,
+      headerTitle : () => (<HeaderTitle search={params.search} searchWord={params.searchWord} navigation={this.props.navigation}/>)
+    })
 
     this.state = {
       querying: true,
@@ -133,7 +133,7 @@ class StoreSearchScreen extends Component {
 
     Analytics.trackEvent('Page_View_Count', {page : 'Country Search'})
     
-    this.setState({allData : this.props.navigation.getParam('allData')})
+    this.setState({allData : this.props.route.params && this.props.route.params.allData  })
     this.getSearchHist()
 
     this.props.navigation.setParams({
@@ -294,6 +294,7 @@ const styles = StyleSheet.create({
     width:'100%'
   },
   headerTitle : {
+    width: Math.round(Dimensions.get('window').width),
     flexDirection: 'row',
     alignContent:"center",
     // marginHorizontal:20,

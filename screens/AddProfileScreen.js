@@ -29,13 +29,13 @@ import { isAndroid } from '../components/SearchBarAnimation/utils';
 import utils from '../utils/utils';
 
 class AddProfileScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('purchase:address')}/>
-  })
-
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft : () =>  (<AppBackButton navigation={this.props.navigation} title={i18n.t('purchase:address')}/>)
+    })
 
     this.state = {
       update: undefined,
@@ -71,7 +71,7 @@ class AddProfileScreen extends Component {
 
   componentDidMount() {
     
-    const update = this.props.navigation.getParam('update') 
+    const update = this.props.route.update 
     const profile = update
 
     this.setState({

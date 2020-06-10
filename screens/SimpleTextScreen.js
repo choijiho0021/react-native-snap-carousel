@@ -23,13 +23,14 @@ import getEnvVars from '../environment'
 const { baseUrl } = getEnvVars();
 
 class SimpleTextScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={navigation.getParam('title')} />,
-  })
-
   constructor(props) {
     super(props)
 
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={this.props.route.params && this.props.route.params.title} />)
+    })
+    
     this.state = {
       querying: false,
       body: '',
@@ -43,10 +44,16 @@ class SimpleTextScreen extends Component {
   }
 
   componentDidMount() {
-    const key = this.props.navigation.getParam('key')
-    const body = this.props.navigation.getParam('text')
-    const bodyTitle = this.props.navigation.getParam('bodyTitle')
-    const mode = this.props.navigation.getParam('mode')
+    const {params} = this.props.route
+    let key,body,bodyTitle,mode
+
+    if(params){
+      key = params.key
+      body = params.text
+      bodyTitle = params.bodyTitle
+      mode = params.mode
+    }
+
     
     this.setState({mode})
 
@@ -85,12 +92,8 @@ class SimpleTextScreen extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if ( this.props.navigation.state.params != prevProps.navigation.state.params) {
-      const body = this.props.navigation.getParam('text')
-      const bodyTitle = this.props.navigation.getParam('bodyTitle')
-      const mode = this.props.navigation.getParam('mode')
-
-      this.setState({mode, body, bodyTitle})
+    if ( this.props.route.params != prevProps.route.params) {
+      this.setState(this.props.route.params)
     }
   }
 

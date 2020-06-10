@@ -26,12 +26,14 @@ import api from '../utils/api/api';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 
 class RechargeScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('recharge')} />
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('recharge')} />)
+
+    })
 
     // recharge 상품의 SKU는 'rch-{amount}' 형식을 갖는다. 
     this.state = {

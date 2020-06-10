@@ -81,16 +81,13 @@ const styles = StyleSheet.create({
 })
 
 class PaymentResultScreen extends Component {
-
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: (
-      <Text style={styles.title}>{i18n.t('his:paymentCompleted')}</Text>
-    )
-    // headerLeft: <AppBackButton navigation={navigation} title={i18n.t('his:paymentCompleted')} back="top"/>
-  })
-
   constructor(props){
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft : () =>  (<Text style={styles.title}>{i18n.t('his:paymentCompleted')}</Text>)
+    })
 
     this.state = {
       result : {},
@@ -109,9 +106,11 @@ class PaymentResultScreen extends Component {
   }
 
   componentDidMount() {
-    const { imp_success } = this.props.navigation.getParam('pymResult')
-    const { result } = this.props.navigation.getParam('orderResult')
-    const mode = this.props.navigation.getParam('mode')
+    const { params } = this.props.route
+
+    const { imp_success } =  params && params.pymResult || {}
+    const { result } = params && params.orderResult
+    const mode = params && params.mode
 
     const isSuccess = !_.isUndefined(imp_success) ? imp_success && (result == 0) : result == 0
 
@@ -141,16 +140,17 @@ class PaymentResultScreen extends Component {
 
   _init() {
     const { pymReq, purchaseItems, pymPrice, deduct} = this.props.cart
+    const { params, name } = this.props.route
 
     this.setState({
-      result: this.props.navigation.getParam('pymResult'),
-      orderResult: this.props.navigation.getParam('orderResult'),
+      result: params && params.pymResult,
+      orderResult: params && params.orderResult,
       purchaseItems,
       pymReq,
       pymPrice,
       deduct,
       isRecharge: this.props.cart.purchaseItems.findIndex(item => item.type == 'rch') >= 0,
-      screen: this.props.navigation.state.routeName,
+      screen: name,
     })
 
     // 구매 이력을 다시 읽어 온다.
@@ -162,9 +162,10 @@ class PaymentResultScreen extends Component {
   }
 
   render() {
+    const { params } = this.props.route
     const { pymReq, purchaseItems, pymPrice, deduct, isRecharge, screen } = this.state
-      , { imp_success } = this.props.navigation.getParam('pymResult')
-      ,{ result } = this.props.navigation.getParam('orderResult')
+      , { imp_success } = params && params.pymResult
+      ,{ result } = params && params.orderResult
 
     // [WARNING: 이해를 돕기 위한 것일 뿐, imp_success 또는 success 파라미터로 결제 성공 여부를 장담할 수 없습니다.]
     // 아임포트 서버로 결제내역 조회(GET /payments/${imp_uid})를 통해 그 응답(status)에 따라 결제 성공 여부를 판단하세요.

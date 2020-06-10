@@ -35,10 +35,6 @@ import { openSettings, check, PERMISSIONS, RESULTS } from 'react-native-permissi
 let ImagePicker = require('react-native-image-crop-picker').default
 
 class BoardMsgAdd extends Component {
-  static navigationOptions = {
-    title: i18n.t('board:new')
-  }
-
   static validation = {
     title: {
       presence: {
@@ -54,6 +50,10 @@ class BoardMsgAdd extends Component {
 
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: i18n.t('board:new')
+    })
 
     this.initialState = {
       name: undefined,

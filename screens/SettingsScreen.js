@@ -58,15 +58,13 @@ class SettingsListItem extends PureComponent {
 
 
 class SettingsScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: (
-      <AppBackButton navigation={navigation} title={i18n.t('settings')}/>
-      // <Text style={styles.title}>{i18n.t('settings')}</Text>
-    ),
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('settings')}/>)
+    })
 
     this.state = {
       showModal: false,
@@ -120,7 +118,7 @@ class SettingsScreen extends Component {
     if(loggedIn){
       this.props.action.cart.cartFetch()
     }else{
-      this.props.navigation.navigate('RegisterMobile')
+      this.props.navigation.navigate('Auth')
     }
   }
 
@@ -171,7 +169,7 @@ class SettingsScreen extends Component {
     this.props.action.account.logout()
     this.props.navigation.popToTop()
 
-    this.props.navigation.navigate('HomeStack')
+    this.props.navigation.navigate('Home')
 
     this._showModal(false)
   }

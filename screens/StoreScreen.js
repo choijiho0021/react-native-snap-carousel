@@ -23,20 +23,19 @@ import Analytics from 'appcenter-analytics'
 import { Set } from 'immutable';
 
 class StoreScreen extends Component {
-  static navigationOptions = ({navigation}) => {
-    const {params = {}} = navigation.state
-
-    return ({
-    headerLeft: <Text style={styles.title}>{i18n.t('store')}</Text>,
-    headerRight: <AppButton key="search" 
-      style={styles.showSearchBar} 
-      onPress={() => navigation.navigate('StoreSearch',{allData:params.allData})} 
-      iconName="btnSearchTop" />
-    })
-  }
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft : () =>  (<Text style={styles.title}>{i18n.t('store')}</Text>),
+      headerRight: () => (
+        <AppButton key="search" 
+          style={styles.showSearchBar} 
+          onPress={() => this.props.navigation.navigate('StoreSearch',{allData:this.props.route.params && this.props.route.params.allData})} 
+          iconName="btnSearchTop" />
+      )
+    })
 
     this.state = {
       index: 0,

@@ -60,12 +60,13 @@ class RegisterMobileListItem extends PureComponent {
 
 
 class RegisterMobileScreen extends Component {
-  static navigationOptions = ({navigation, state}) => ({
-    headerLeft: <AppBackButton navigation={navigation} back={'lastTab'} title={i18n.t('mobile:header')} />
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} back={'lastTab'} title={i18n.t('mobile:header')} />)
+    })
 
     this.state = {
       loading: false,

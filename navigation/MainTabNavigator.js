@@ -74,26 +74,7 @@ const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti,
 function homeStack() {
   return (
     <HomeStack.Navigator>
-      <HomeStack.Screen 
-        name="Home" 
-        component={HomeScreen} 
-        options={({navigation}) => {
-          return ({
-          title: null,
-          headerLeft : () =>  (<Text style={styles.title}>{i18n.t('appTitle')}</Text>),
-          headerRight: () => (
-            <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
-              <AppButton key="cnter" style={styles.btnCnter} 
-                onPress={() => navigation.navigate('Contact')} 
-                iconName="btnCnter" />
-      
-              {/* //BadgeAppButton을 사용했을 때 위치가 변동됨 수정이 필요함 */}
-              <BadgeAppButton key="alarm" style={styles.btnAlarm} 
-                onPress={() => navigation.navigate('Noti', {mode:'noti'})} 
-                iconName="btnAlarm" />
-            </View>
-          )
-          })}}/>
+      <HomeStack.Screen name="Home" component={HomeScreen} />
       <HomeStack.Screen name="Recharge" component={RechargeScreen} />
       <HomeStack.Screen name="RegisterSim" component={RegisterSimScreen} />
       <HomeStack.Screen name="NewSim" component={NewSimScreen} />
@@ -107,7 +88,7 @@ function homeStack() {
 
       <HomeStack.Screen name="Country" component={CountryScreen} />
       <HomeStack.Screen name="Payment" component={PaymentScreen} />
-      <HomeStack.Screen name="PymMethod" component={SettingsScreen} />
+      <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
       <HomeStack.Screen name="FindAddress" component={FindAddressScreen} />
       <HomeStack.Screen name="PaymentResult" component={PaymentResultScreen}/>
       <HomeStack.Screen name="CustomerProfile" component={CustomerProfileScreen} />
@@ -180,12 +161,12 @@ function myPageStack() {
       <MyPageStack.Screen name="Recharge" component={RechargeScreen} />
       <MyPageStack.Screen name="Payment" component={PaymentScreen} />
       <MyPageStack.Screen name="PymMethod" component={PymMethodScreen} />
-      <MyPageStack.Screen name="PaymentResult" component={PaymentScreen} />
+      <MyPageStack.Screen name="PaymentResult" component={PaymentResultScreen} />
 
-      <MyPageStack.Screen name="RegisterSim" component={PymMethodScreen} />
+      <MyPageStack.Screen name="RegisterSim" component={RegisterSimScreen} />
 
-      <MyPageStack.Screen name="Settings" component={PaymentResultScreen} />
-      <MyPageStack.Screen name="MySim" component={PaymentResultScreen} />
+      <MyPageStack.Screen name="Settings" component={SettingsScreen} />
+      <MyPageStack.Screen name="MySim" component={MySimScreen} />
     </MyPageStack.Navigator>
   );
 }
@@ -392,6 +373,7 @@ const BadgedIcon = withBadge(({cartItems}) => cartItems, {badgeStyle : {top:4, l
 const TabNavigator = createBottomTabNavigator();
 
 function tabNavigator() {
+  console.log("aaaaa - tabNavigator")
   return (
     <TabNavigator.Navigator>
       <TabNavigator.Screen 
@@ -509,7 +491,7 @@ class AppTabNavigator extends React.Component {
   render() {
     const { navigation } = this.props
 
-    return <tabNavigator navigation={navigation} />
+    return <TabNavigator navigation={navigation} />
   }
 }
 

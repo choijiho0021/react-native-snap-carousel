@@ -99,12 +99,13 @@ class Profile extends PureComponent {
 }
 
 class CustomerProfileScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('pym:delivery')} />
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft : () =>  (<AppBackButton navigation={this.props.navigation} title={i18n.t('pym:delivery')}/>)
+    })
 
     this.state = {
       checked: undefined,

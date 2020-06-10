@@ -33,12 +33,14 @@ const activateBtn = 'activateBtn';
 const deactivateBtn = 'deactivateBtn';
 
 class UsageDetailScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('his:detail')} />
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('his:detail')} />)
+    })
+
     this.state = {
       activatable : false,
       showModal : {

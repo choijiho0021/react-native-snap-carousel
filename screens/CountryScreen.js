@@ -68,10 +68,9 @@ class CountryListItem extends PureComponent {
 
 class CountryBackButton extends PureComponent {
   render() {
-
     const {navigation, product} = this.props,
       {localOpList} = product,
-      prodOfCountry = navigation.getParam('prodOfCountry'),
+      prodOfCountry = this.props.route.params && this.props.route.params.prodOfCountry,
       title = prodOfCountry && prodOfCountry.length > 0 ? productApi.getTitle( prodOfCountry[0].categoryId, localOpList.get(prodOfCountry[0].partnerId)) : ''
 
     return <AppBackButton navigation={navigation} title={title} />
@@ -81,13 +80,15 @@ class CountryBackButton extends PureComponent {
 let BackButton = connect(state => ({product: state.product.toObject()}))(CountryBackButton)
 
 class CountryScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <BackButton navigation={navigation} />,
-    headerRight: <AppCartButton onPress={() => navigation.navigate('Cart')} />
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft : () =>  (<BackButton navigation={this.props.navigation} route={this.props.route} />),
+      headerRight: () => ( <AppCartButton onPress={() => this.props.navigation.navigate('Cart')} />
+      )
+    })
 
     this.state = {
       prodData: [],
@@ -101,7 +102,7 @@ class CountryScreen extends Component {
   }
 
   componentDidMount() {
-    const prodOfCountry = this.props.navigation.getParam('prodOfCountry'),
+    const prodOfCountry = this.props.route.params && this.props.route.params.prodOfCountry,
       {localOpList} = this.props.product,
       localOp = localOpList.get(prodOfCountry[0].partnerId) || {}
 

@@ -32,12 +32,13 @@ class MySimListItem extends PureComponent {
 
 
 class MySimScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('acc:mysim')} />,
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('acc:mysim')} />)
+    })
 
     this.state = {
       data: [

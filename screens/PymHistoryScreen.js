@@ -47,14 +47,14 @@ class PymHistoryListItem extends PureComponent {
 
 
 class PymHistoryScreen extends Component {
-  static navigationOptions = {
-    title: i18n.t('pym')
-  }
-
   LIST_SIZE = 12
 
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: i18n.t('pym')
+    })
 
     this.state = {
       data: [],

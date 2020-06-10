@@ -79,13 +79,14 @@ function send() {
 
 
 class ProductDetailScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={navigation.getParam('title')} />,
-  })
-
   constructor(props) {
     super(props)
     
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={this.props.route.params && this.props.route.params.title} />)
+    })
+
     this.state = {
       scrollY: new Animated.Value(0),
       tabIdx : 0,
@@ -232,7 +233,7 @@ class ProductDetailScreen extends Component {
 
   render() {
     const {tabIdx} = this.state
-    const {navigation, pending} = this.props
+    const {navigation, pending, route} = this.props
 
     return (
       <SafeAreaView style={styles.screen}>
@@ -247,7 +248,7 @@ class ProductDetailScreen extends Component {
           
           {
           <View style={{height:HEADER_IMG_HEIGHT}}>
-            <Image style={{height:HEADER_IMG_HEIGHT}} source={{uri:api.httpImageUrl(navigation.getParam('img'))}}/>
+            <Image style={{height:HEADER_IMG_HEIGHT}} source={{uri:api.httpImageUrl(route.params && route.params.img)}}/>
           </View>
           }
 

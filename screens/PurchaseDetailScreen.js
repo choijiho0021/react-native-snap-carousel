@@ -34,12 +34,14 @@ import AppActivityIndicator from '../components/AppActivityIndicator';
 
 
 class PurchaseDetailScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('his:detail')}/>
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft : () =>  (<AppBackButton navigation={this.props.navigation} title={i18n.t('his:detail')}/>)
+    })
+
     this.state = {
       showPayment: true,
       showDelivery: true,
@@ -65,7 +67,9 @@ class PurchaseDetailScreen extends Component {
   }
 
   componentDidMount() {
-    const detail = this.props.navigation.getParam('detail') || {}
+    const {params} = this.props.route
+
+    const detail = params && params.detail ? params.detail : {}
 
     Analytics.trackEvent('Page_View_Count', {page : 'Purchase Detail'})
 
@@ -101,8 +105,9 @@ class PurchaseDetailScreen extends Component {
   }
   
   componentWillUnmount(){
+    const {params} = this.props.route
     // 보완 필요
-    const auth = this.props.navigation.getParam('auth')
+    const auth = params && params.auth
     const { iccid } = this.props.account
     if(this.state.disableBtn && auth){
       this.props.action.order.getOrders(auth)

@@ -308,14 +308,13 @@ class UsageItem extends Component {
 }
 
 class UsimScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: (
-      <Text style={styles.title}>{i18n.t('usim')}</Text>
-    )
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<Text style={styles.title}>{i18n.t('usim')}</Text>)
+    })
 
     this.state = {
       refreshing: false,
@@ -411,7 +410,7 @@ class UsimScreen extends Component {
 
   _init(loggedIn, iccid, auth){
     if(!loggedIn){
-      this.props.navigation.navigate('RegisterMobile')
+      this.props.navigation.navigate('Auth')
     }else{
       if (iccid && auth) {
         this.props.action.order.getUsage(iccid, auth)

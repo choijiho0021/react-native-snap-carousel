@@ -57,12 +57,12 @@ class BoardMsg extends Component {
 
 
 class BoardMsgList extends Component {
-  static navigationOptions = {
-    title: i18n.t('board:title')
-  }
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: i18n.t('board:title')
+    })
 
     this.state = {
       data : [],

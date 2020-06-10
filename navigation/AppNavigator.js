@@ -15,9 +15,13 @@ const SwitchNavigator = createSwitchNavigator({
 },
 {
   initialRouteName: "Main",
+  backBehavior: 'history',
+  resetOnBlur: false
 });
 
 export default function createAppContainer() {
+    console.log("SwitchNavigator -aaaaa",SwitchNavigator)
+    console.log("MainTabNavigator -aaaaa",MainTabNavigator)
   return (
       <NavigationContainer>
           <SwitchNavigator />

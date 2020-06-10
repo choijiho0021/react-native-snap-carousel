@@ -25,7 +25,7 @@ class AppBackButton extends PureComponent {
   }
 
   _goBack() {
-    const {navigation, back, lastTab} = this.props
+    const {navigation, back, lastTab=[0,1]} = this.props
 
     //활성화 안된 AppBackButton의 핸들러가 작동하지 않도록 추가
     if(!navigation.isFocused()) {
@@ -34,14 +34,14 @@ class AppBackButton extends PureComponent {
 
     var tab = ''
     if ( back == 'top') return navigation.popToTop()
-    if ( back == 'lastTab') {
-      if( lastTab[0] == 'MyPageStack' || 'UsimStack'){
-        tab = 'Home'
-      }else{
-        tab = (lastTab[0] == 'CartStack') ? lastTab[1] : lastTab[0]
-      }
-      return navigation.navigate(tab)
-    }
+    // if ( back == 'lastTab') {
+    //   if( lastTab[0] == 'MyPageStack' || 'UsimStack'){
+    //     tab = 'Home'
+    //   }else{
+    //     tab = (lastTab[0] == 'CartStack') ? lastTab[1] : lastTab[0]
+    //   }
+    //   return navigation.navigate(tab)
+    // }
 
     return navigation.goBack()
   }

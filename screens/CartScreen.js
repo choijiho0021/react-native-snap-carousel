@@ -27,12 +27,14 @@ import { isDeviceSize } from '../constants/SliderEntry.style';
 const sectionTitle = ['sim', 'product']
 
 class CartScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('cart')} back="lastTab"/>
-  })
 
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('cart')} back="lastTab"/>)
+    })
 
     this.state = {
       section: this._section([], []),
