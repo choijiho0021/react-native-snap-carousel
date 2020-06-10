@@ -368,14 +368,15 @@ class UsimScreen extends Component {
   componentDidUpdate(prevProps) {
 
     const focus = this.props.navigation.isFocused()
-    const { account: {iccid, loggedIn}, auth} = this.props
+    const { account: {iccid, loggedIn}, auth, lastTab, loginPending } = this.props,
+      routeName = this.props.navigation.state.routeName,
+      isFocusedToUsimTab = (lastTab[0] || '').startsWith( routeName ) && lastTab[0] !== prevProps.lastTab[0]
 
-    // 구매내역 원래 조건 확인 
-    if(this.state.isFocused != focus){
-      this.setState({isFocused: focus})
-      if(focus){
-        this._init(loggedIn, iccid, auth)
-      }
+    if ( (isFocusedToUsimTab && ! loginPending)
+      || iccid !== prevProps.account.iccid ) {
+      this.props.navigation.popToTop()
+      
+      this._init(loggedIn, iccid, auth)
     }
 
     // const {account:{loggedIn, iccid}, auth} = this.props
@@ -414,7 +415,7 @@ class UsimScreen extends Component {
       this.props.navigation.navigate('RegisterMobile')
     }else{
       if (iccid && auth) {
-        this.props.action.order.getSubs(iccid, auth)
+        this.props.action.order.getSubsWithToast(iccid, auth)
       }else{
         this.props.navigation.navigate('RegisterSim', {back:'lastTab'})
       }
@@ -453,7 +454,7 @@ class UsimScreen extends Component {
 
     const { account: {iccid}, auth } = this.props
     if (iccid) {
-      this.props.action.order.getSubs( iccid, auth).then(resp =>{
+      this.props.action.order.getSubsWithToast( iccid, auth).then(resp =>{
         this.props.action.account.getAccount(iccid, auth).then(res => {
 
           if(resp.result == 0 && res.result == 0){
@@ -495,7 +496,7 @@ class UsimScreen extends Component {
               />
             }
             />
-          <AppActivityIndicator visible={this.props.pending}/>
+          <AppActivityIndicator visible={this.props.pending || this.props.loginPending}/>
         </View>
         <SnackBar visible={cancelPressed} backgroundColor={colors.clearBlue} messageColor={colors.white}
                   position={'bottom'}
@@ -687,9 +688,11 @@ const mapStateToProps = (state) => ({
   auth: accountActions.auth(state.account),
   noti : state.noti.toJS(),
   info : state.info.toJS(),
-  loginPending: state.pender.pending[accountActions.LOGIN] || false,
+  loginPending: state.pender.pending[accountActions.LOGIN] ||
+    state.pender.pending[accountActions.GET_ACCOUNT] || false,
   pending: state.pender.pending[orderActions.GET_SUBS] || false,
-  sync : state.sync.toJS()
+  sync : state.sync.toJS(),
+  lastTab : state.cart.get('lastTab').toJS()
 })
 
 export default connect(mapStateToProps, 

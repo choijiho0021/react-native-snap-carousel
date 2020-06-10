@@ -3,6 +3,10 @@ import api from './api'
 import i18n from '../i18n'
 
 class SubscriptionAPI {
+    constructor() {
+        this.sortSubs = this.sortSubs.bind(this)
+    }
+
     PAGE_SIZE = 10
 
     code = {
@@ -24,9 +28,9 @@ class SubscriptionAPI {
 
     sortSubs (a,b) {
         //status 우선순위, 구입날짜별로 정렬
-        if(a.field_status == b.field_status && a.field_purchase_date > b.field_purchase_date) return -1
+        if(a.statusCd == b.statusCd && a.purchaseDate > b.purchaseDate) return -1
 
-        if( (this.priority[a.field_status] || 1) > (this.priority[b.field_status] || 1)) return -1
+        if( (this.priority[a.statusCd] || 1) > (this.priority[b.statusCd] || 1)) return -1
         
         return 1
     }
@@ -59,7 +63,7 @@ class SubscriptionAPI {
                 prodName: item.title,
                 prodId: item.product_uuid,
                 nid: item.nid
-            }).sort(this.sortSubs)))
+            })).sort(this.sortSubs))
         }
 
         if ( data.jsonapi) {
@@ -72,7 +76,8 @@ class SubscriptionAPI {
                 purchaseDate: item.field_purchase_date,
                 activationDate: item.field_subs_activation_date,
                 expireDate: item.field_subs_expiration_date,
-                staus: item.field_status
+                statusCd: item.field_status,
+                staus: item.field_status,
             })).sort(this.sortSubs), data.links)
         }
 

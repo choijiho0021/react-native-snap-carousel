@@ -3,6 +3,7 @@ import { pender } from 'redux-pender'
 import { Map } from 'immutable';
 import orderApi from '../../utils/api/orderApi'
 import subscriptionApi from '../../utils/api/subscriptionApi';
+import utils from '../../utils/utils';
 
 export const GET_ORDERS = 'rokebi/order/GET_ORDERS'
 export const GET_ORDER_BY_ID = 'rokebi/order/GET_ORDER_BY_ID'
@@ -21,6 +22,8 @@ export const getSubsUsage = createAction(GET_SUBS_USAGE, subscriptionApi.getSubs
 export const updateUsageStatus = createAction(UPDATE_USAGE, subscriptionApi.updateSubscriptionStatus)
 export const updateSubsToCash = createAction(UPDATE_SUBS_TO_CASH, subscriptionApi.toRokebiCash)
 export const reset = createAction(RESET)
+
+export const getSubsWithToast = utils.reflectWithToast(getSubs)
 
 export const checkAndGetOrderById = (auth, orderId) => {
   return (dispatch, getState) => {
