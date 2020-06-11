@@ -23,6 +23,7 @@ import * as boardActions from '../redux/modules/board'
 import * as accountActions from '../redux/modules/account'
 import AppBackButton from '../components/AppBackButton';
 import { Platform } from '@unimodules/core';
+import PushNotificationIOS from '@react-native-community/push-notification-ios'
 
 const MODE_NOTIFICATION = 'info'
 
@@ -94,7 +95,6 @@ class NotiScreen extends Component {
         firebase.notifications().setBadge(notiCount)
       }
       else if(Platform.OS == 'ios'){
-        const PushNotificationIOS = require('@react-native-community/push-notification-ios')
         PushNotificationIOS.setApplicationIconBadgeNumber(notiCount)
       }
       
