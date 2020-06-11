@@ -77,7 +77,6 @@ target 'Rokebi' do
 
 	use_unimodules!
 
-  pod 'RNCPushNotificationIOS', :path => '../node_modules/@react-native-community/push-notification-ios'
   
   pod 'IamportReactNative', :path => '../node_modules/iamport-react-native'
   
@@ -162,6 +161,8 @@ target 'Rokebi' do
 
   pod 'RNScreens', :path => '../node_modules/react-native-screens'
 
+
+  pod 'RNCPushNotificationIOS', :path => '../node_modules/@react-native-community/push-notification-ios'
 
 end
 
