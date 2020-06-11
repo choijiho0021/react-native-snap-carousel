@@ -464,9 +464,10 @@ const styles = StyleSheet.create({
     color: colors.white
   },
   container: {
-    marginTop: 20,
+    paddingTop: 20,
     flex:1,
     justifyContent: "flex-start",
+    backgroundColor:colors.white
   },
   smsButtonText: {
     ... appStyles.normal14Text,

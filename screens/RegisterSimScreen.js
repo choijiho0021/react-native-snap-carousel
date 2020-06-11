@@ -370,7 +370,8 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'flex-start',
     alignItems: 'stretch',
-    flexGrow: 1
+    flexGrow: 1,
+    backgroundColor:colors.white
   },
   card: {
     //marginHorizontal: 20,
