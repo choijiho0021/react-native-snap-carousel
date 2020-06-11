@@ -51,10 +51,6 @@ class BoardMsgAdd extends Component {
   constructor(props) {
     super(props)
 
-    this.props.navigation.setOptions({
-      title: i18n.t('board:new')
-    })
-
     this.initialState = {
       name: undefined,
       mobile: '',
