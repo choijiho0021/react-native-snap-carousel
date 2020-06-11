@@ -32,7 +32,7 @@ class PaymentScreen extends Component{
   }
 
   componentDidMount() {
-    const params = this.props.navigation.getParam('params')
+    const params = this.props.route.params && this.props.route.params.params
     if(this.state.isPaid){
       this.setState({
         isPaid: false
@@ -62,7 +62,7 @@ class PaymentScreen extends Component{
     if(isSuccess || isImpSuccess || false){
       await this.props.navigation.setParams({isPaid:true})
 
-      const params = this.props.navigation.getParam('params')
+      const params = this.props.route.params && this.props.route.params.params
       const orderResult = await this.props.action.cart.payNorder({
         ... response,
         pg_provider: params.pg,
@@ -83,7 +83,7 @@ class PaymentScreen extends Component{
 
   render() {
     const {impId} = getEnvVars()
-    const params = this.props.navigation.getParam('params')
+    const params = this.props.route.params && this.props.route.params.params
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>

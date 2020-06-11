@@ -25,7 +25,6 @@ class PromotionAPI {
 
     getPromotion = () => {
         const url = `${api.httpUrl(api.path.promotion)}?_format=hal_json`
-        console.log("aaaaa",url)
         return api.callHttpGet(url, this.toPromotion)
     }
 }

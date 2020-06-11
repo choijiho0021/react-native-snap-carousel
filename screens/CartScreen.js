@@ -33,7 +33,7 @@ class CartScreen extends Component {
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('cart')} back="lastTab"/>)
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('cart')} />)
     })
 
     this.state = {

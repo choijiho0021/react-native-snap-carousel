@@ -55,7 +55,7 @@ class RechargeScreen extends Component {
   }
 
   _onSubmit() {
-    const mode = this.props.navigation.getParam('mode')
+    const mode = this.props.route.params && this.props.route.params.mode
     const {selected} = this.state,
       purchaseItems = [
       {

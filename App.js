@@ -69,7 +69,7 @@ export default codePush(codePushOptions)(function App(props) {
               <Video source={require('./assets/images/rokebi_intro.mp4')}   
                 style={styles.backgroundVideo} 
                 resizeMode='contain'/> :
-              <AppNavigator />
+              <AppNavigator store={store}/>
           }
           <CodePushModal />
           <AppToast />

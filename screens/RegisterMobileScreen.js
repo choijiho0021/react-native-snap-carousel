@@ -65,7 +65,7 @@ class RegisterMobileScreen extends Component {
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => (<AppBackButton navigation={this.props.navigation} back={'lastTab'} title={i18n.t('mobile:header')} />)
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('mobile:header')} />)
     })
 
     this.state = {

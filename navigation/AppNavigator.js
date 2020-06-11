@@ -1,4 +1,6 @@
 import React from 'react';
+import Analytics from 'appcenter-analytics'
+import * as cartActions from '../redux/modules/cart'
 // import { createAppContainer, createSwitchNavigator } from '@react-navigation/native';
 import { NavigationContainer } from '@react-navigation/native';
 
@@ -7,6 +9,17 @@ import { createSwitchNavigator } from "@react-navigation/compat";
 import MainTabNavigator from './MainTabNavigator';
 import AuthStackNavigator from './AuthStackNavigator';
 import CodePushStack from './CodePushStackNavigator';
+
+const getActiveRouteName = state => {
+    const route = state.routes[state.index];
+  
+    if (route.state) {
+      // Dive into nested navigators
+      return getActiveRouteName(route.state);
+    }
+  
+    return route.name;
+  };
 
 const SwitchNavigator = createSwitchNavigator({
     Main: MainTabNavigator,
@@ -19,10 +32,18 @@ const SwitchNavigator = createSwitchNavigator({
   resetOnBlur: false
 });
 
-export default function createAppContainer() {
+export default function createAppContainer(props) {
+    const navigationRef = React.useRef();
   return (
-      <NavigationContainer>
-          <SwitchNavigator />
+      <NavigationContainer 
+        ref={navigationRef} 
+        onStateChange={(state) => {
+            const lastTab = getActiveRouteName(state)
+            Analytics.trackEvent('Page_View_Count', {page : lastTab})
+            props.store.dispatch(cartActions.pushLastTab(lastTab))
+        }}
+      >
+        <SwitchNavigator />
       </NavigationContainer>   
   );
 }

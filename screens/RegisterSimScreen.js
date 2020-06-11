@@ -49,8 +49,7 @@ class RegisterSimScreen extends Component {
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => (<AppBackButton navigation={this.props.navigation} back={this.props.route.params && this.props.route.params.back} 
-      title={this.props.route.params && this.props.route.params.title || i18n.t('sim:reg')} />)
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={this.props.route.params && this.props.route.params.title || i18n.t('sim:reg')} />)
     })
 
     

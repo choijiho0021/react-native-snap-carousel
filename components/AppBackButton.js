@@ -32,16 +32,8 @@ class AppBackButton extends PureComponent {
       return
     }
 
-    var tab = ''
     if ( back == 'top') return navigation.popToTop()
-    // if ( back == 'lastTab') {
-    //   if( lastTab[0] == 'MyPageStack' || 'UsimStack'){
-    //     tab = 'Home'
-    //   }else{
-    //     tab = (lastTab[0] == 'CartStack') ? lastTab[1] : lastTab[0]
-    //   }
-    //   return navigation.navigate(tab)
-    // }
+    if ( back == 'lastTab') return navigation.navigate(lastTab[1])
 
     return navigation.goBack()
   }

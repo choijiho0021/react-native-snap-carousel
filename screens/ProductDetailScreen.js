@@ -212,7 +212,7 @@ class ProductDetailScreen extends Component {
 
   renderWebView() {
     const {height3} = this.state,
-      localOpDetails = this.props.navigation.getParam('localOpDetails'),
+      localOpDetails = this.props.route.params && this.props.route.params.localOpDetails,
       detail = _.isEmpty(localOpDetails) ? this.props.product.detail : localOpDetails
 
     return <WebView

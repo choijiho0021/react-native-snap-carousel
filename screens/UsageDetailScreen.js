@@ -53,7 +53,7 @@ class UsageDetailScreen extends Component {
   }
 
   componentDidMount() {
-    const detail = this.props.navigation.getParam('detail'),
+    const detail = this.props.route.params && this.props.route.params.detail,
       { country, uuid } = detail,
       prodList = this.props.product.get('prodList'),
       { price } = prodList.get(detail.prodId) || {},

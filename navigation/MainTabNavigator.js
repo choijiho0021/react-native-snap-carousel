@@ -141,7 +141,7 @@ function usimStack() {
       <UsimStack.Screen name="PymMethod" component={PymMethodScreen} />
       <UsimStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <UsimStack.Screen name="PaymentResult" component={PaymentResultScreen} />
-      <UsimStack.Screen name="RegisterSim" component={FaqScreen} />
+      <UsimStack.Screen name="RegisterSim" component={RegisterSimScreen} />
     </UsimStack.Navigator>
   );
 }
