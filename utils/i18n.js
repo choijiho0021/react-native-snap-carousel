@@ -451,7 +451,8 @@ const en = {
 
   "toast:failedToUpdate" : "Failed to change settings.\nPlease check your network connection.",
   "toast:failedToLoad" : "Failed to load the data.\nPlease check your network connection.",
-  "toast:failedToOpen" : "Failed to open the KakaoTalk Channel."
+  "toast:failedToOpen" : "Failed to open the KakaoTalk Channel.",
+  "toast:copySuccess" : "Copied Successfully."
 };
 
 const ko = {
@@ -909,7 +910,8 @@ const ko = {
 
   "toast:failedToUpdate" : "설정 변경에 실패했습니다.\n네트워크 연결 상태를 확인해주세요.",
   "toast:failedToLoad" : "데이터 로딩에 실패했습니다.\n네트워크 연결 상태를 확인해주세요.",
-  "toast:failedToOpen" : "카카오톡 채널에 연결할 수 없습니다."
+  "toast:failedToOpen" : "카카오톡 채널에 연결할 수 없습니다.",
+  "toast:copySuccess" : "복사되었습니다."
 };
 
 if (Array.isArray(locales)) {

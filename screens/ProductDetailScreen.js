@@ -63,7 +63,12 @@ function copy() {
   txtArea.select();
   document.execCommand("copy");
   document.body.removeChild(txtArea);
-  }
+
+  var cmd = {
+    key: 'copy'
+  }  
+  window.ReactNativeWebView.postMessage(JSON.stringify(cmd));
+}
 function go(){
   var cmd = {
     key: 'move',
@@ -204,7 +209,10 @@ class ProductDetailScreen extends Component {
           var moveTo = cmd.value.split('/')
           this.props.navigation.navigate('Faq', {key: moveTo[0], num: moveTo[1]})
         }
-        break 
+        break
+      case 'copy' :
+        this.props.action.toast.push(Toast.COPY_SUCCESS)
+        break
       default:
         Clipboard.setString(cmd.value)
     }
@@ -239,7 +247,6 @@ class ProductDetailScreen extends Component {
     return (
       <SafeAreaView style={styles.screen}>
         <AppActivityIndicator visible={pending} />
-
         <ScrollView style={{backgroundColor:colors.whiteTwo}}
           ref={this.scrollView}
           stickyHeaderIndices={[1]} //탭 버튼 고정
