@@ -311,7 +311,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "flex-start",
-    alignItems: "stretch"
+    alignItems: "stretch",
+    backgroundColor:colors.white
   },
   btnBuy: {
     flex: 1,

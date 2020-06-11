@@ -187,6 +187,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   container: {
+    backgroundColor:colors.white,
     flex:1,
     alignItems: 'stretch'
   },

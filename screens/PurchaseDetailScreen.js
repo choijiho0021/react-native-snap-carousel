@@ -449,6 +449,7 @@ class PurchaseDetailScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor:colors.white,
   },
   dropDownBox: {
     marginHorizontal: 20,

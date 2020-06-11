@@ -190,6 +190,7 @@ class StoreScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
+    backgroundColor:colors.white,
     flex:1,
   },
   title: {
