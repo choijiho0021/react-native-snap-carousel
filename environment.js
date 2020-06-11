@@ -44,7 +44,7 @@ const ENV = {
 export default function() {
   if ( process.env.NODE_ENV == 'production') return ENV.prod
   if ( process.env.NODE_ENV == 'staging') return ENV.staging
-  return ENV.prod
+  return ENV.dev
 }
 
 
