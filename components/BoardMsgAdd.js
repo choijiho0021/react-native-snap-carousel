@@ -7,7 +7,8 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
-  InputAccessoryView
+  InputAccessoryView,
+  SafeAreaView
 } from 'react-native';
 import {connect} from 'react-redux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -23,7 +24,6 @@ import AppButton from './AppButton';
 import validationUtil from '../utils/validationUtil';
 import { bindActionCreators } from 'redux'
 import { colors } from '../constants/Colors';
-import { SafeAreaView } from 'react-navigation';
 import {List} from 'immutable'
 import { attachmentSize } from '../constants/SliderEntry.style'
 import AppAlert from './AppAlert'
@@ -35,10 +35,6 @@ import { openSettings, check, PERMISSIONS, RESULTS } from 'react-native-permissi
 let ImagePicker = require('react-native-image-crop-picker').default
 
 class BoardMsgAdd extends Component {
-  static navigationOptions = {
-    title: i18n.t('board:new')
-  }
-
   static validation = {
     title: {
       presence: {

@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Text,
   View,
+  SafeAreaView
 } from 'react-native';
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -21,7 +22,6 @@ import {colors} from '../constants/Colors'
 import { appStyles } from '../constants/Styles';
 import AppBackButton from '../components/AppBackButton';
 import AppIcon from '../components/AppIcon';
-import { SafeAreaView } from 'react-navigation';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 
 
@@ -38,12 +38,13 @@ class FindAddressListItem extends PureComponent {
 
 
 class FindAddressScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('purchase:address')} />
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft : () =>  (<AppBackButton navigation={this.props.navigation} title={i18n.t('purchase:address')}/>)
+    })
 
     this.state = {
       addr : undefined,

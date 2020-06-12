@@ -3,6 +3,8 @@ import {
   StyleSheet,
   Text,
   View,
+  SafeAreaView,
+  ScrollView
 } from 'react-native';
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
@@ -14,8 +16,7 @@ import { colors } from '../constants/Colors';
 import LabelText from '../components/LabelText';
 import _ from 'underscore';
 import { isDeviceSize } from '../constants/SliderEntry.style';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-navigation';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import LabelTextTouchable from '../components/LabelTextTouchable';
 import orderApi from '../utils/api/orderApi';
 import profileApi from '../utils/api/profileApi';
@@ -33,12 +34,14 @@ import AppActivityIndicator from '../components/AppActivityIndicator';
 
 
 class PurchaseDetailScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('his:detail')}/>
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft : () =>  (<AppBackButton navigation={this.props.navigation} title={i18n.t('his:detail')}/>)
+    })
+
     this.state = {
       showPayment: true,
       showDelivery: true,
@@ -64,7 +67,9 @@ class PurchaseDetailScreen extends Component {
   }
 
   componentDidMount() {
-    const detail = this.props.navigation.getParam('detail') || {}
+    const {params} = this.props.route
+
+    const detail = params && params.detail ? params.detail : {}
 
     Analytics.trackEvent('Page_View_Count', {page : 'Purchase Detail'})
 
@@ -444,6 +449,7 @@ class PurchaseDetailScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor:colors.white,
   },
   dropDownBox: {
     marginHorizontal: 20,

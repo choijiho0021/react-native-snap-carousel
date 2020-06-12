@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
 class PaymentItemInfo extends PureComponent {
 
   render() {
-    const { cart, pymReq, balance=0, deduct=0, pymPrice=0, isRecharge, screen, mode ='method' } = this.props
+    const { cart, pymReq = [], balance=0, deduct=0, pymPrice=0, isRecharge, screen, mode ='method' } = this.props
 
     return (
       <View>

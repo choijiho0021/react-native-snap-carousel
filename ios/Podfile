@@ -149,6 +149,7 @@ target 'Rokebi' do
 
   pod 'RNLocalize', :path => '../node_modules/react-native-localize'
 
+  pod 'react-native-safe-area-context', :path => '../node_modules/react-native-safe-area-context'
 
 
 

@@ -3,7 +3,8 @@ import {
   StyleSheet,
   Text,
   View,
-  Platform
+  Platform,
+  SafeAreaView
 } from 'react-native';
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -16,7 +17,6 @@ import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import _ from 'underscore'
-import { SafeAreaView } from 'react-navigation';
 import AddressCard from '../components/AddressCard'
 import { TouchableOpacity, TextInput } from 'react-native-gesture-handler';
 import PaymentItemInfo from '../components/PaymentItemInfo';
@@ -36,16 +36,13 @@ import pageApi from '../utils/api/pageApi';
 const deliveryText = orderApi.deliveryText
 
 class PymMethodScreen extends Component {
-
-  static navigationOptions =  ({ navigation }) => {
-    const { params = {} } = navigation.state
-    return {
-        headerLeft: <AppBackButton navigation={navigation} title={i18n.t('payment')} isPaid={params.isPaid}/>
-    }  
-  }
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft : () =>  (<AppBackButton navigation={this.props.navigation} title={i18n.t('payment')} isPaid={this.props.route.params && this.props.route.params.isPaid}/>)
+    })
 
     this.state = {
       mode: undefined,
@@ -111,7 +108,7 @@ class PymMethodScreen extends Component {
     this.props.action.profile.getCustomerProfile(this.props.account)
     const {pymPrice, deduct} = this.props.cart
     const content = this.props.profile.content
-    const mode = this.props.navigation.getParam('mode')
+    const mode = this.props.route.param && this.props.route.param.mode
 
     Analytics.trackEvent('Page_View_Count', {page : 'Payment - ' + mode})
 
@@ -212,8 +209,8 @@ class PymMethodScreen extends Component {
       <View key={key} style={styles.buttonRow}>
       {
         // key: row, idx: column
-        value.map((v,idx) =>
-        !_.isEmpty(v) &&
+        value.map((v,idx) => 
+        !_.isEmpty(v) && 
         <AppButton 
           key={v.method} 
           title={_.isEmpty(v.icon) && v.title}
@@ -566,15 +563,16 @@ const styles = StyleSheet.create({
       borderRightWidth: 1,
       borderBottomWidth: 1,
       borderColor: colors.lightGrey,
-      borderLeftWidth: (idx == 0) && 1,
-      borderTopWidth: (key == 0) && 1,
+      borderLeftWidth: idx == 0 ? 1 : 0,
+      borderTopWidth: key == 0 ? 1 : 0 ,
       borderRightColor: ( idx == column  || idx == column - 1) && (key == row) ? colors.clearBlue : colors.lightGrey,
       borderBottomColor: ( key == row || key == row -1 ) && (idx == column) ? colors.clearBlue : colors.lightGrey
   }),  
   container: {
     flex: 1,
     justifyContent: "flex-start",
-    alignItems: 'stretch'
+    alignItems: 'stretch',
+    backgroundColor:colors.white
   },
   title: {
     ... appStyles.bold18Text,

@@ -2,7 +2,8 @@ import React, {Component, PureComponent} from 'react';
 import {
   StyleSheet,
   FlatList,
-  Platform
+  Platform,
+  SafeAreaView
 } from 'react-native';
 import {connect} from 'react-redux'
 
@@ -15,7 +16,6 @@ import { colors } from '../constants/Colors';
 import _ from 'underscore'
 import LabelText from '../components/LabelText';
 import AppActivityIndicator from '../components/AppActivityIndicator';
-import { SafeAreaView } from 'react-navigation';
 import AppButton from '../components/AppButton';
 
 
@@ -32,12 +32,13 @@ class MySimListItem extends PureComponent {
 
 
 class MySimScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('acc:mysim')} />,
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('acc:mysim')} />)
+    })
 
     this.state = {
       data: [

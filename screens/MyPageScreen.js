@@ -71,19 +71,19 @@ class OrderItem extends Component {
 }
 
 class MyPageScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: (
-      <Text style={styles.title}>{i18n.t('acc:title')}</Text>
-    ),
-    headerRight: (
-        <AppButton key="cnter" style={styles.settings} 
-          onPress={() => navigation.navigate('Settings')} 
-          iconName="btnSetup" />
-    ),
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft : () =>  (<Text style={styles.title}>{i18n.t('acc:title')}</Text>),
+      headerRight: () => (
+        <AppButton key="cnter" style={styles.settings} 
+          onPress={() => this.props.navigation.navigate('Settings')} 
+          iconName="btnSetup" />
+      )
+    })
+
     this.state = {
       hasPhotoPermission: false,
       showEmailModal: false,
@@ -106,8 +106,9 @@ class MyPageScreen extends Component {
   }
 
   componentDidMount() {
-    if(!this.props.account.loggedIn){
-      this.props.navigation.navigate('RegisterMobile')
+    //Logout시에 mount가 새로 되는데 login 페이지로 안가기 위해서 isFocused 조건 추가
+    if(!this.props.account.loggedIn && this.props.navigation.isFocused()){
+      this.props.navigation.navigate('Auth')
     }
     else{
       this._didMount()
@@ -122,7 +123,7 @@ class MyPageScreen extends Component {
       this.setState({isFocused: focus})
       if(focus){
         if(!this.props.account.loggedIn){
-          this.props.navigation.navigate('RegisterMobile')
+          this.props.navigation.navigate('Auth')
         }else{
           this.props.action.order.getOrders(this.props.auth)
         }
@@ -345,7 +346,8 @@ const styles = StyleSheet.create({
   },
   container: {
     flex:1,
-    alignItems: 'stretch'
+    alignItems: 'stretch',
+    backgroundColor:colors.white
   },
   photo: {
     height: 76,

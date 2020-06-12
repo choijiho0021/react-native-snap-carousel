@@ -44,14 +44,15 @@ const initState = {
 }
 
 class RegisterSimScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} back={!_.isEmpty(navigation.state.params) && navigation.state.params.back || ''} 
-                      title={navigation.getParam('title') || i18n.t('sim:reg')} />
-  })
-
   constructor(props) {
     super(props)
 
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={this.props.route.params && this.props.route.params.title || i18n.t('sim:reg')} />)
+    })
+
+    
     this.state = initState
 
     this._onSubmit = this._onSubmit.bind(this)
@@ -369,7 +370,8 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'flex-start',
     alignItems: 'stretch',
-    flexGrow: 1
+    flexGrow: 1,
+    backgroundColor:colors.white
   },
   card: {
     //marginHorizontal: 20,

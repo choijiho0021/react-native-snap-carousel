@@ -4,7 +4,8 @@ import {
   View,
   Text,
   FlatList,
-  TouchableOpacity
+  TouchableOpacity,
+  SafeAreaView
 } from 'react-native';
 import i18n from '../utils/i18n'
 import {appStyles} from '../constants/Styles'
@@ -12,7 +13,6 @@ import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as accountActions from '../redux/modules/account'
 import * as profileActions from '../redux/modules/profile'
-import { SafeAreaView } from 'react-navigation'
 import _ from 'underscore'
 import AppBackButton from '../components/AppBackButton';
 import AddressCard from '../components/AddressCard';
@@ -99,12 +99,13 @@ class Profile extends PureComponent {
 }
 
 class CustomerProfileScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('pym:delivery')} />
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft : () =>  (<AppBackButton navigation={this.props.navigation} title={i18n.t('pym:delivery')}/>)
+    })
 
     this.state = {
       checked: undefined,

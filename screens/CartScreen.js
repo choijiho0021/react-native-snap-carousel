@@ -4,7 +4,8 @@ import {
   View,
   Text,
   SectionList,
-  Alert
+  Alert,
+  SafeAreaView
 } from 'react-native';
 import {connect} from 'react-redux'
 
@@ -17,7 +18,6 @@ import { bindActionCreators } from 'redux'
 import { colors } from '../constants/Colors';
 import CartItem from '../components/CartItem';
 import ChargeSummary from '../components/ChargeSummary';
-import { SafeAreaView } from 'react-navigation'
 import utils from '../utils/utils';
 import {Map} from 'immutable'
 import _ from 'underscore'
@@ -27,12 +27,14 @@ import { isDeviceSize } from '../constants/SliderEntry.style';
 const sectionTitle = ['sim', 'product']
 
 class CartScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('cart')} back="lastTab"/>
-  })
 
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('cart')} />)
+    })
 
     this.state = {
       section: this._section([], []),
@@ -309,7 +311,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "flex-start",
-    alignItems: "stretch"
+    alignItems: "stretch",
+    backgroundColor:colors.white
   },
   btnBuy: {
     flex: 1,

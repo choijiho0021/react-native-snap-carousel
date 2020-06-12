@@ -26,12 +26,13 @@ import AppButton from '../components/AppButton';
 import { windowWidth } from '../constants/SliderEntry.style';
 
 class BoardMsgRespScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('board:title')} />
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('board:title')} />)
+    })
 
     this.state = {
       idx: undefined,
@@ -40,8 +41,10 @@ class BoardMsgRespScreen extends Component {
   } 
 
   componentDidMount() {
-    const uuid = this.props.navigation.getParam('key')
-    const status = this.props.navigation.getParam('status')
+    const {params} = this.props.route
+
+    const uuid = params && params.key
+    const status = params && params.status
 
     if ( uuid ) {
       // issue list를 아직 가져오지 않은 경우에는, 먼저 가져와서 처리한다. 

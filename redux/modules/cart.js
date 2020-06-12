@@ -129,7 +129,7 @@ const initialState = Map({
   purchaseItems: [],
   pymReq: undefined,
   pymResult: undefined,
-  lastTab: List(['HomeStack'])
+  lastTab: List(['Home'])
 })
 
 export default handleActions({
@@ -141,7 +141,10 @@ export default handleActions({
   // set last tab
   // 2개 리스트를 유지한다. 
   [PUSH_LAST_TAB]: (state,action) => {
-    return state.update('lastTab', value => value.unshift(action.payload).setSize(2))
+    if(state.get('lastTab').first() == action.payload) return 
+
+    return state.update('lastTab', value => {
+      return (value.unshift(action.payload).setSize(2))})
   },
 
   // empty cart

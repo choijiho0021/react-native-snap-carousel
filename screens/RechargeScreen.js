@@ -4,7 +4,9 @@ import {
   Text,
   View,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
+  SafeAreaView,
+  ScrollView
 } from 'react-native';
 import {connect} from 'react-redux'
 
@@ -19,18 +21,19 @@ import { colors } from '../constants/Colors';
 import LabelText from '../components/LabelText';
 import AppButton from '../components/AppButton';
 import _ from 'underscore'
-import { SafeAreaView, ScrollView } from 'react-navigation';
 import AppBackButton from '../components/AppBackButton';
 import api from '../utils/api/api';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 
 class RechargeScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('recharge')} />
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('recharge')} />)
+
+    })
 
     // recharge 상품의 SKU는 'rch-{amount}' 형식을 갖는다. 
     this.state = {
@@ -52,7 +55,7 @@ class RechargeScreen extends Component {
   }
 
   _onSubmit() {
-    const mode = this.props.navigation.getParam('mode')
+    const mode = this.props.route.params && this.props.route.params.mode
     const {selected} = this.state,
       purchaseItems = [
       {
@@ -152,6 +155,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    backgroundColor:colors.white
   },
   upper: {
     flex:1,

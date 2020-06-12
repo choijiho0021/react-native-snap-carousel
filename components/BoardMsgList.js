@@ -57,10 +57,6 @@ class BoardMsg extends Component {
 
 
 class BoardMsgList extends Component {
-  static navigationOptions = {
-    title: i18n.t('board:title')
-  }
-
   constructor(props) {
     super(props)
 

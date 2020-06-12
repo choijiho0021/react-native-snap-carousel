@@ -41,10 +41,6 @@ import AppAlert from './../components/AppAlert';
 import appStateHandler from '../utils/appState'
 import Analytics from 'appcenter-analytics'
 
-const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti, 
-  {badgeStyle:{right:-3,top:0}},
-  (state) => ({notReadNoti: state.noti.get('notiList').filter(elm=> elm.isRead == 'F').length }))(AppButton)
-
 // windowHeight
 // iphone 8 - 375x667
 // iphone 11 pro  - 375x812, 2436×1125
@@ -68,6 +64,10 @@ const DOT_MARGIN = 6
 const INACTIVE_DOT_WIDTH = 6
 const ACTIVE_DOT_WIDTH = 20
 
+const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti, 
+  {badgeStyle:{right:-3,top:0}},
+  (state) => ({notReadNoti: state.noti.get('notiList').filter(elm=> elm.isRead == 'F').length }))(AppButton)
+  
 class PromotionImage extends PureComponent {
 
   render() {
@@ -85,26 +85,25 @@ class PromotionImage extends PureComponent {
 } 
 
 class HomeScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: (
-      <Text style={styles.title}>{i18n.t('appTitle')}</Text>
-    ),
-    headerRight: (
-      [
-        <AppButton key="cnter" style={styles.btnCnter} 
-          onPress={() => navigation.navigate('Contact')} 
-          iconName="btnCnter" />,
-
-        //BadgeAppButton을 사용했을 때 위치가 변동됨 수정이 필요함
-        <BadgeAppButton key="alarm" style={styles.btnAlarm} 
-          onPress={() => navigation.navigate('Noti', {mode:'noti'})} 
-          iconName="btnAlarm" />
-      ]
-    ),
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft : () =>  (<Text style={styles.title}>{i18n.t('appTitle')}</Text>),
+      headerRight: () => (
+        <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+          <AppButton key="cnter" style={styles.btnCnter} 
+            onPress={() => props.navigation.navigate('Contact')} 
+            iconName="btnCnter" />
+  
+          {/* //BadgeAppButton을 사용했을 때 위치가 변동됨 수정이 필요함 */}
+          <BadgeAppButton key="alarm" style={styles.btnAlarm} 
+            onPress={() => props.navigation.navigate('Noti', {mode:'noti'})} 
+            iconName="btnAlarm" />
+        </View> 
+      )
+    })
 
     this.state = {
       darkMode: Appearance.getColorScheme() ,

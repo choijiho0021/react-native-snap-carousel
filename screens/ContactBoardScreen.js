@@ -15,15 +15,18 @@ import {colors} from '../constants/Colors'
 import { appStyles } from '../constants/Styles';
 
 class ContactBoardScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('board:title')} />
-  })
-
   constructor(props) {
     super(props)
 
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('board:title')} />)
+    })
+
+    const {params} = this.props.route
+
     this.state = {
-      index: this.props.navigation.getParam('index') || 0,
+      index: params && params.index ? params.index : 0,
       routes: [
         { key: 'new', title: i18n.t('board:new') },
         { key: 'list', title: i18n.t('board:list') },
@@ -78,6 +81,7 @@ class ContactBoardScreen extends Component {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor:colors.white,
     flex: 1
   },
 });
