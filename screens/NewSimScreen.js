@@ -186,7 +186,8 @@ class NewSimScreen extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    backgroundColor:colors.white
   },
   btnBuy: {
     width: "100%",
