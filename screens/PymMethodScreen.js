@@ -209,8 +209,8 @@ class PymMethodScreen extends Component {
       <View key={key} style={styles.buttonRow}>
       {
         // key: row, idx: column
-        value.map((v,idx) =>
-        !_.isEmpty(v) &&
+        value.map((v,idx) => 
+        !_.isEmpty(v) && 
         <AppButton 
           key={v.method} 
           title={_.isEmpty(v.icon) && v.title}
@@ -563,8 +563,8 @@ const styles = StyleSheet.create({
       borderRightWidth: 1,
       borderBottomWidth: 1,
       borderColor: colors.lightGrey,
-      borderLeftWidth: (idx == 0) && 1,
-      borderTopWidth: (key == 0) && 1,
+      borderLeftWidth: idx == 0 ? 1 : 0,
+      borderTopWidth: key == 0 ? 1 : 0 ,
       borderRightColor: ( idx == column  || idx == column - 1) && (key == row) ? colors.clearBlue : colors.lightGrey,
       borderBottomColor: ( key == row || key == row -1 ) && (idx == column) ? colors.clearBlue : colors.lightGrey
   }),  
