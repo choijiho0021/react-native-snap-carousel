@@ -106,7 +106,8 @@ class MyPageScreen extends Component {
   }
 
   componentDidMount() {
-    if(!this.props.account.loggedIn){
+    //Logout시에 mount가 새로 되는데 login 페이지로 안가기 위해서 isFocused 조건 추가
+    if(!this.props.account.loggedIn && this.props.navigation.isFocused()){
       this.props.navigation.navigate('Auth')
     }
     else{

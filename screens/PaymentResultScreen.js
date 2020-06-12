@@ -131,10 +131,10 @@ class PaymentResultScreen extends Component {
     this.backHandler.remove()
 
     if(key == 'MyPage') {
-      this.props.navigation.popToTop() && this.props.navigation.navigate('MyPage')
+      this.props.navigation.reset({index: 0, routes: [{ name: 'MyPage' }] });
     }
     else {
-      this.props.navigation.popToTop() && this.props.navigation.navigate('Home')
+      this.props.navigation.reset({index: 0, routes: [{ name: 'Home' }] });
     }
   }
 

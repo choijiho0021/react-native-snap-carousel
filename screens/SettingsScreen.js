@@ -167,9 +167,8 @@ class SettingsScreen extends Component {
     this.props.action.cart.reset()
     this.props.action.order.reset()
     this.props.action.account.logout()
-    this.props.navigation.popToTop()
-
-    this.props.navigation.navigate('Home')
+    
+    this.props.navigation.reset({index: 0, routes: [{ name: 'Home' }] });
 
     this._showModal(false)
   }
