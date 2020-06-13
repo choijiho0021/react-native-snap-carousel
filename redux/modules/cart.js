@@ -6,6 +6,7 @@ import rechargeApi from '../../utils/api/rechargeApi'
 import api from '../../utils/api/api';
 import i18n from '../../utils/i18n';
 import utils from '../../utils/utils';
+import { getOrders } from './order'
 
 import {getAccount} from './account'
 
@@ -69,6 +70,7 @@ export const payNorder = (result) => {
     return dispatch(makeOrder( purchaseItems, result, auth)).then(
       resp => {
         if ( resp.result == 0 ) {
+          dispatch(getOrders( auth ))
           // cart에서 item 삭제 
           orderItems.forEach(item => {
             if ( purchaseItems.findIndex(o => o.orderItemId == item.orderItemId) >= 0) {

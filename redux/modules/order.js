@@ -36,21 +36,22 @@ export const checkAndGetOrderById = (auth, orderId) => {
 
 export const getOrders = (auth) => {
   return (dispatch, getState) => {
-    const { order } = getState(),
-      page = order.get('page') +1
+    const { order } = getState()
+    const isPageZero = order.get('page') <= 0 || typeof order.get('page') === 'undefined'
 
-    if ( order.get('next')) return dispatch( getNextOrders(auth, page))
-    return new Promise.resolve()
+    if ( isPageZero ) return dispatch( getNextOrders(auth, 0))
+    else if ( order.get('next')) return dispatch( getNextOrders(auth, order.get('page') +1))
+    else return new Promise.resolve()
   }
 }
 
 const initialState = Map({
-    orders: [],
-    ordersIdx: Map(),
-    usage: [],
-    usageProgress: {},
-    next: true, 
-    page: -1
+  orders: [],
+  ordersIdx: Map(),
+  usage: [],
+  usageProgress: {},
+  next: true,
+  page: -1
 })
 
 function updateOrders( state, action) {
@@ -59,7 +60,7 @@ function updateOrders( state, action) {
   if (result == 0 && objects.length > 0) {
     const orders = state.get('orders')
     let ordersIdx = state.get('ordersIdx')
-    
+
     // add to the order list if not exist
     objects.forEach(item => {
       if ( ordersIdx.has(item.orderId)) {
@@ -68,10 +69,12 @@ function updateOrders( state, action) {
       }
       else {
         orders.push(item)
-        ordersIdx = ordersIdx.set(item.orderId, orders.length-1)
       }
     });
 
+    orders.sort((a, b) => b.orderId - a.orderId).forEach((item, idx) => {
+      ordersIdx = ordersIdx.set(item.orderId, idx)
+    })
     return state.set('orders', orders).set('ordersIdx', ordersIdx)
   }
 

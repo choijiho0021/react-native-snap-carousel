@@ -307,12 +307,13 @@ class MyPageScreen extends Component {
 
   render() {
     const { showEmailModal } = this.state
-    const { orders } = this.props.order
+    const { orders, ordersIdx } = this.props.order
 
     return (
       <View style={styles.container}>
         <FlatList ref={this.flatListRef}
-          data={orders} 
+          data={orders}
+          extraData={ordersIdx}
           ListHeaderComponent={this._info}
           ListEmptyComponent={this._empty()}
           renderItem={this._renderOrder} 
