@@ -459,9 +459,9 @@ class HomeScreen extends Component {
     if ( item.product_uuid) {
       const prodList = this.props.product.get('prodList'),
         prod = prodList.get(item.product_uuid)
-
+        
       if ( prod) {
-        const prodOfCountry = prodList.filter( item => _.isEqual(item.ccode, prod.ccode)).toList().toArray()
+        const prodOfCountry = prodList.filter( item => _.isEqual(item.partnerId, prod.partnerId)).toList().toArray()
         this.props.navigation.navigate('Country', {prodOfCountry})
       }
     }
@@ -490,7 +490,7 @@ class HomeScreen extends Component {
             renderItem={this._renderPromotion}
             autoplay={true}
             loop={true}
-            loopClonesPerSide={5}
+            loopClonesPerSide={10}
             lockScrollWhileSnapping={true}
             onSnapToItem={(index) => this.setState({ activeSlide: index }) }
             sliderWidth={sliderWidth}
