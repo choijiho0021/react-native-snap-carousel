@@ -23,20 +23,19 @@ import Analytics from 'appcenter-analytics'
 import { Set } from 'immutable';
 
 class StoreScreen extends Component {
-  static navigationOptions = ({navigation}) => {
-    const {params = {}} = navigation.state
-
-    return ({
-    headerLeft: <Text style={styles.title}>{i18n.t('store')}</Text>,
-    headerRight: <AppButton key="search" 
-      style={styles.showSearchBar} 
-      onPress={() => navigation.navigate('StoreSearch',{allData:params.allData})} 
-      iconName="btnSearchTop" />
-    })
-  }
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft : () =>  (<Text style={styles.title}>{i18n.t('store')}</Text>),
+      headerRight: () => (
+        <AppButton key="search" 
+          style={styles.showSearchBar} 
+          onPress={() => this.props.navigation.navigate('StoreSearch',{allData:this.props.route.params && this.props.route.params.allData})} 
+          iconName="btnSearchTop" />
+      )
+    })
 
     this.state = {
       index: 0,
@@ -68,7 +67,7 @@ class StoreScreen extends Component {
     this._refresh()
   }
 
-  componentDidUpdate(prevProps, prevstate){
+  componentDidUpdate(prevProps){
     const focus = this.props.navigation.isFocused()
     const now = moment()
     const diff = moment.duration(now.diff(this.state.time)).asMinutes()
@@ -86,30 +85,42 @@ class StoreScreen extends Component {
 
   _refresh() {
     const { asia, europe, usaAu, multi } = productApi.category,
-      prodList = this.props.product.get('prodList'),
+      {prodList, localOpList} = this.props.product,
       list = []
-      
-    for(let item of prodList.values()) {
-      item.cntry = Set(country.getName(item.ccode))
-      item.search = [... item.cntry].join(',')
-      //days가 "00일" 형식으로 오기 때문에 일 제거 후 넘버타입으로 변환
-      item.pricePerDay = Math.round(item.price / Number(item.days.replace(/[^0-9]/g,"")))
-      
-      const idxCcode = list.findIndex(elm => elm.length > 0 && _.isEqual(elm[0].ccode, item.ccode))
 
-      if ( idxCcode < 0 ) {
-        // new item, insert it
-        list.push([item])
-      }
-      else {
-        // 이미 같은 country code를 갖는 데이터가 존재하면, 그 아래에 추가한다. (2차원 배열)
-        list[idxCcode].push(item)
+    for(let item of prodList.values()) {
+      if ( localOpList.has(item.partnerId)) {
+        const localOp = localOpList.get(item.partnerId)
+        item.ccodeStr = (localOp.ccode || []).join(',')
+        item.cntry = Set(country.getName(localOp.ccode))
+        item.search = [... item.cntry].join(',')
+        item.pricePerDay = Math.round(item.price / item.days)
+        
+        const idxCcode = list.findIndex(elm => elm.length > 0 && elm[0].ccodeStr == item.ccodeStr)
+
+        if ( idxCcode < 0 ) {
+          // new item, insert it
+          list.push([item])
+        }
+        else {
+          // 이미 같은 country code를 갖는 데이터가 존재하면, 그 아래에 추가한다. (2차원 배열)
+          list[idxCcode].push(item)
+        }
       }
     }
 
-    // 동일 국가내의 상품을 정렬한다. 
-    const sorted = list.map(item => item.sort((a,b) => a.pricePerDay > b.pricePerDay ? 1 : -1))
-      .sort((a,b) => a[0].name > b[0].name ? 1 : -1)
+    const getMaxWeight = (list) => Math.max( ... list.map(p => (localOpList.get(p.partnerId) || {}).weight))
+
+    const sorted = list.map(item => item.sort((a,b) => {
+      // 동일 국가내의 상품을 정렬한다. 
+      // field_daily == true 인 무제한 상품 우선, 사용 날짜는 오름차순 
+      if ( a.field_daily ) return b.field_daily ? a.days - b.days : -1
+      return b.field_daily ? 1 : a.days - b.days 
+    })).sort((a,b) => {
+      // 국가는 weight 값이 높은 순서가 우선, weight 값이 같으면 이름 순서
+      const weightA = getMaxWeight(a), weightB = getMaxWeight(b)
+      return weightA == weightB ? (a[0].search < b[0].search ? -1 : 1) : weightB - weightA
+    })
 
     this.props.navigation.setParams({
       allData: sorted
@@ -179,6 +190,7 @@ class StoreScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
+    backgroundColor:colors.white,
     flex:1,
   },
   title: {
@@ -219,7 +231,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => ({
-  product : state.product
+  product : state.product.toObject()
 })
 
 export default connect(mapStateToProps, 

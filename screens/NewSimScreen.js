@@ -3,6 +3,7 @@ import {
   StyleSheet,
   View,
   FlatList,
+  SafeAreaView
 } from 'react-native';
 import {connect} from 'react-redux'
 import {Map} from 'immutable'
@@ -20,16 +21,17 @@ import AppBackButton from '../components/AppBackButton';
 import { appStyles } from '../constants/Styles';
 import { colors } from '../constants/Colors';
 import ChargeSummary from '../components/ChargeSummary';
-import { SafeAreaView} from 'react-navigation'
 import utils from '../utils/utils';
 import Analytics from 'appcenter-analytics'
 class NewSimScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('sim:purchase')} />
-    })
 
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('sim:purchase')} />)
+    })
 
     this.state = {
       querying: false,
@@ -184,7 +186,8 @@ class NewSimScreen extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    backgroundColor:colors.white
   },
   btnBuy: {
     width: "100%",

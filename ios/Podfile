@@ -2,6 +2,46 @@ platform :ios, '10.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
 
+def add_flipper_pods!(versions = {})
+  versions['Flipper'] ||= '~> 0.33.1'
+  versions['DoubleConversion'] ||= '1.1.7'
+  versions['Flipper-Folly'] ||= '~> 2.1'
+  versions['Flipper-Glog'] ||= '0.3.6'
+  versions['Flipper-PeerTalk'] ||= '~> 0.0.4'
+  versions['Flipper-RSocket'] ||= '~> 1.0'
+  pod 'FlipperKit', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitReactPlugin', versions['Flipper'], :configuration => 'Debug'
+  # List all transitive dependencies for FlipperKit pods
+  # to avoid them being linked in Release builds
+  pod 'Flipper', versions['Flipper'], :configuration => 'Debug'
+  pod 'Flipper-DoubleConversion', versions['DoubleConversion'], :configuration => 'Debug'
+  pod 'Flipper-Folly', versions['Flipper-Folly'], :configuration => 'Debug'
+  pod 'Flipper-Glog', versions['Flipper-Glog'], :configuration => 'Debug'
+  pod 'Flipper-PeerTalk', versions['Flipper-PeerTalk'], :configuration => 'Debug'
+  pod 'Flipper-RSocket', versions['Flipper-RSocket'], :configuration => 'Debug'
+  pod 'FlipperKit/Core', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/CppBridge', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FBCxxFollyDynamicConvert', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FBDefines', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FKPortForwarding', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitHighlightOverlay', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitLayoutTextSearchable', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], :configuration => 'Debug'
+end
+# Post Install processing for Flipper
+def flipper_post_install(installer)
+  installer.pods_project.targets.each do |target|
+    if target.name == 'YogaKit'
+      target.build_configurations.each do |config|
+        config.build_settings['SWIFT_VERSION'] = '4.1'
+      end
+    end
+  end
+end
+
 target 'Rokebi' do
   # Pods for Rokebi
   pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
@@ -27,9 +67,9 @@ target 'Rokebi' do
   pod 'React-jsi', :path => '../node_modules/react-native/ReactCommon/jsi'
   pod 'React-jsiexecutor', :path => '../node_modules/react-native/ReactCommon/jsiexecutor'
   pod 'React-jsinspector', :path => '../node_modules/react-native/ReactCommon/jsinspector'
-  pod 'ReactCommon/jscallinvoker', :path => "../node_modules/react-native/ReactCommon"
+  pod 'ReactCommon/callinvoker', :path => "../node_modules/react-native/ReactCommon"
   pod 'ReactCommon/turbomodule/core', :path => "../node_modules/react-native/ReactCommon"
-  pod 'Yoga', :path => '../node_modules/react-native/ReactCommon/yoga'
+  pod 'Yoga', :path => '../node_modules/react-native/ReactCommon/yoga', :modular_headers => true
 
   pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
@@ -37,7 +77,6 @@ target 'Rokebi' do
 
 	use_unimodules!
 
-  pod 'RNCPushNotificationIOS', :path => '../node_modules/@react-native-community/push-notification-ios'
   
   pod 'IamportReactNative', :path => '../node_modules/iamport-react-native'
   
@@ -49,9 +88,7 @@ target 'Rokebi' do
 
   pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
 
-  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
 
-  pod 'ReactNativeDarkMode', :path => '../node_modules/react-native-dark-mode'
 
   pod 'react-native-video', :path => '../node_modules/react-native-video'
 
@@ -72,11 +109,8 @@ target 'Rokebi' do
   #pod 'AppCenter/Crashes'
   #pod 'AppCenter/Distribute'
 
-  pod 'appcenter', :path => '../node_modules/appcenter/ios'
 
-  pod 'appcenter-analytics', :path => '../node_modules/appcenter-analytics/ios'
 
-  pod 'appcenter-crashes', :path => '../node_modules/appcenter-crashes/ios'
 
   permissions_path = '../node_modules/react-native-permissions/ios'
 
@@ -89,6 +123,46 @@ target 'Rokebi' do
   #pod 'KakaoOpenSDK'
   pod 'ARNKakaoSDK', :path => '../node_modules/@actbase/react-native-kakaosdk'
   pod 'ARNKakaoChannel', :path => '../node_modules/@actbase/react-native-kakao-channel'
+
+  pod 'FlipperKit', :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitLayoutPlugin', :configuration => 'Debug'
+  pod 'FlipperKit/SKIOSNetworkPlugin', :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitReactPlugin', :configuration => 'Debug'
+  # List all transitive dependencies for FlipperKit pods
+  # to avoid them being linked in Release builds
+  pod 'Flipper', :configuration => 'Debug'
+  pod 'Flipper-DoubleConversion', :configuration => 'Debug'
+  pod 'Flipper-Folly', :configuration => 'Debug'
+  pod 'Flipper-Glog', :configuration => 'Debug'
+  pod 'Flipper-PeerTalk', :configuration => 'Debug'
+  pod 'Flipper-RSocket', :configuration => 'Debug'
+  pod 'FlipperKit/Core', :configuration => 'Debug'
+  pod 'FlipperKit/CppBridge', :configuration => 'Debug'
+  pod 'FlipperKit/FBCxxFollyDynamicConvert', :configuration => 'Debug'
+  pod 'FlipperKit/FBDefines', :configuration => 'Debug'
+  pod 'FlipperKit/FKPortForwarding', :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitHighlightOverlay', :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitLayoutTextSearchable', :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitNetworkPlugin', :configuration => 'Debug'
+  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
+
+  pod 'RNLocalize', :path => '../node_modules/react-native-localize'
+
+  pod 'react-native-safe-area-context', :path => '../node_modules/react-native-safe-area-context'
+
+
+
+  pod 'appcenter', :path => '../node_modules/appcenter/ios'
+
+  pod 'appcenter-crashes', :path => '../node_modules/appcenter-crashes/ios'
+
+  pod 'appcenter-analytics', :path => '../node_modules/appcenter-analytics/ios'
+
+  pod 'RNScreens', :path => '../node_modules/react-native-screens'
+
+
+  pod 'RNCPushNotificationIOS', :path => '../node_modules/@react-native-community/push-notification-ios'
 
 end
 

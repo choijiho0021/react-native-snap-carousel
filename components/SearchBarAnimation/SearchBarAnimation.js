@@ -99,7 +99,7 @@ export default class SearchBarAnimation {
     Animated.timing(this.actionAnimated, {
       toValue: toValue,
       duration: 250,
-      useNativeDriver: true,
+      useNativeDriver: false,
     }).start();
 
     this.stateBar = state;

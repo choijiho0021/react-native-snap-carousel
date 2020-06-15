@@ -3,11 +3,12 @@ import { pender } from 'redux-pender'
 import { Map } from 'immutable';
 import orderApi from '../../utils/api/orderApi'
 import subscriptionApi from '../../utils/api/subscriptionApi';
+import utils from '../../utils/utils';
 
 export const GET_ORDERS = 'rokebi/order/GET_ORDERS'
 export const GET_ORDER_BY_ID = 'rokebi/order/GET_ORDER_BY_ID'
 export const CANCEL_ORDER = 'rokebi/order/CANCEL_ORDER'
-export const GET_USAGE = 'rokebi/order/usage'
+export const GET_SUBS = 'rokebi/order/GET_SUBS'
 export const GET_SUBS_USAGE = 'rokebi/usage/subs' 
 export const UPDATE_USAGE = 'rokebi/order/UPDATE_USAGE'
 export const UPDATE_SUBS_TO_CASH = 'rokebi/subs/UPDATE_SUBS_TO_CASH'
@@ -16,11 +17,13 @@ const  RESET = 'rokebi/order/RESET'
 const getNextOrders = createAction(GET_ORDERS, orderApi.getOrders)
 export const getOrderById = createAction(GET_ORDER_BY_ID, orderApi.getOrderById)
 export const cancelOrder = createAction(CANCEL_ORDER, orderApi.cancelOrder)
-export const getUsage = createAction(GET_USAGE, subscriptionApi.getSubscription)
+export const getSubs = createAction(GET_SUBS, subscriptionApi.getSubscription)
 export const getSubsUsage = createAction(GET_SUBS_USAGE, subscriptionApi.getSubsUsage)
 export const updateUsageStatus = createAction(UPDATE_USAGE, subscriptionApi.updateSubscriptionStatus)
 export const updateSubsToCash = createAction(UPDATE_SUBS_TO_CASH, subscriptionApi.toRokebiCash)
 export const reset = createAction(RESET)
+
+export const getSubsWithToast = utils.reflectWithToast(getSubs)
 
 export const checkAndGetOrderById = (auth, orderId) => {
   return (dispatch, getState) => {
@@ -130,7 +133,7 @@ export default handleActions({
   }),
 
   ... pender({
-    type: GET_USAGE,
+    type: GET_SUBS,
     onSuccess: (state, action) => {
       const {result, objects} = action.payload
       if (result == 0) {

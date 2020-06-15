@@ -1,5 +1,10 @@
-import * as Localization from 'expo-localization';
-import i18n from 'i18n-js';
+import * as RNLocalize from 'react-native-localize'
+import i18n from 'i18n-js'
+
+const locales = RNLocalize.getLocales();
+
+// import * as Localization from 'expo-localization';
+// import i18n from 'i18n-js';
 
 const en = {
   'select': 'Select',
@@ -51,6 +56,8 @@ const en = {
   'sec' : 'sec',
   'now' : 'now',
   'latest' : 'latest',
+  'sale' : 'Sale',
+  'hot' : 'Hot',
 
   'home:guide': 'User Guide',
   'home:checkGuide': 'Check',
@@ -444,7 +451,8 @@ const en = {
 
   "toast:failedToUpdate" : "Failed to change settings.\nPlease check your network connection.",
   "toast:failedToLoad" : "Failed to load the data.\nPlease check your network connection.",
-  "toast:failedToOpen" : "Failed to open the KakaoTalk Channel."
+  "toast:failedToOpen" : "Failed to open the KakaoTalk Channel.",
+  "toast:copySuccess" : "Copied Successfully."
 };
 
 const ko = {
@@ -496,6 +504,8 @@ const ko = {
   'sec' : '초',
   'now' : '현재',
   'latest' : '최신',
+  'sale' : '할인',
+  'hot' : '추천',
 
   'home:guide': '로밍도깨비 사용가이드 !',
   'home:checkGuide': '확인하기',
@@ -900,12 +910,17 @@ const ko = {
 
   "toast:failedToUpdate" : "설정 변경에 실패했습니다.\n네트워크 연결 상태를 확인해주세요.",
   "toast:failedToLoad" : "데이터 로딩에 실패했습니다.\n네트워크 연결 상태를 확인해주세요.",
-  "toast:failedToOpen" : "카카오톡 채널에 연결할 수 없습니다."
+  "toast:failedToOpen" : "카카오톡 채널에 연결할 수 없습니다.",
+  "toast:copySuccess" : "복사되었습니다."
 };
+
+if (Array.isArray(locales)) {
+  i18n.locale = locales[0].languageTag;
+  i18n.lang = i18n.locale.substr(0,2);
+}
 
 i18n.fallbacks = true;
 i18n.translations = { ko, en };
-i18n.locale = Localization.locale || 'ko_KR';
-i18n.lang = i18n.locale.substr(0,2);
-
+// i18n.locale = Localization.locale || 'ko_KR';
+// i18n.lang = i18n.locale.substr(0,2);
 export default i18n;

@@ -1,8 +1,6 @@
 //  Created by Artem Bogoslavskiy on 7/5/18.
 
 import React from 'react';
-import { StatusBar } from 'react-native';
-import PropTypes from 'prop-types';
 import SearchBarAnimation from './SearchBarAnimation';
 import { SearchBarContext } from './SearchBarContext';
 

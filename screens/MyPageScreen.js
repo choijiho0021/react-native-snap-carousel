@@ -19,7 +19,6 @@ import AppIcon from '../components/AppIcon';
 import * as orderActions from '../redux/modules/order'
 import * as accountActions from '../redux/modules/account'
 import AppActivityIndicator from '../components/AppActivityIndicator'
-import Constants from 'expo-constants'
 import AppAlert from '../components/AppAlert';
 import _ from 'underscore'
 import AppUserPic from '../components/AppUserPic';
@@ -32,16 +31,7 @@ import { openSettings, check, PERMISSIONS, RESULTS } from 'react-native-permissi
 import Analytics from 'appcenter-analytics';
 
 let ImagePicker 
-if (Constants.appOwnership === 'expo') {
-  ImagePicker = {
-    openPicker : function() {
-      return Promise.resolve(undefined)
-    }
-  }
-}
-else {
-  ImagePicker = require('react-native-image-crop-picker').default
-}
+ImagePicker = require('react-native-image-crop-picker').default
 
 class OrderItem extends Component {
 
@@ -81,19 +71,19 @@ class OrderItem extends Component {
 }
 
 class MyPageScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: (
-      <Text style={styles.title}>{i18n.t('acc:title')}</Text>
-    ),
-    headerRight: (
-        <AppButton key="cnter" style={styles.settings} 
-          onPress={() => navigation.navigate('Settings')} 
-          iconName="btnSetup" />
-    ),
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft : () =>  (<Text style={styles.title}>{i18n.t('acc:title')}</Text>),
+      headerRight: () => (
+        <AppButton key="cnter" style={styles.settings} 
+          onPress={() => this.props.navigation.navigate('Settings')} 
+          iconName="btnSetup" />
+      )
+    })
+
     this.state = {
       hasPhotoPermission: false,
       showEmailModal: false,
@@ -116,8 +106,9 @@ class MyPageScreen extends Component {
   }
 
   componentDidMount() {
-    if(!this.props.account.loggedIn){
-      this.props.navigation.navigate('RegisterMobile')
+    //Logout시에 mount가 새로 되는데 login 페이지로 안가기 위해서 isFocused 조건 추가
+    if(!this.props.account.loggedIn && this.props.navigation.isFocused()){
+      this.props.navigation.navigate('Auth')
     }
     else{
       this._didMount()
@@ -132,7 +123,7 @@ class MyPageScreen extends Component {
       this.setState({isFocused: focus})
       if(focus){
         if(!this.props.account.loggedIn){
-          this.props.navigation.navigate('RegisterMobile')
+          this.props.navigation.navigate('Auth')
         }else{
           this.props.action.order.getOrders(this.props.auth)
         }
@@ -355,7 +346,8 @@ const styles = StyleSheet.create({
   },
   container: {
     flex:1,
-    alignItems: 'stretch'
+    alignItems: 'stretch',
+    backgroundColor:colors.white
   },
   photo: {
     height: 76,
@@ -431,7 +423,7 @@ const mapStateToProps = state => ({
   auth: accountActions.auth( state.account),
   uid: state.account.get('uid'),
   pending: state.pender.pending[orderActions.GET_ORDERS] || 
-    state.pender.pending[orderActions.GET_USAGE] || 
+    state.pender.pending[orderActions.GET_SUBS] || 
     state.pender.pending[accountActions.CHANGE_EMAIL] || 
     state.pender.pending[accountActions.UPLOAD_PICTURE] || false,
 })

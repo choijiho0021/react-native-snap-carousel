@@ -1,22 +1,18 @@
 import { Platform } from 'react-native'
-import Constants from 'expo-constants'
 import Analytics from 'appcenter-analytics'
 import i18n from '../utils/i18n'
 import _ from 'underscore'
+import PushNotificationIOS from '@react-native-community/push-notification-ios'
 
 let PushNotification = undefined
-let PushNotificationIOS = undefined
 let firebase = undefined
-if ( Constants.appOwnership !== 'expo') {
-  PushNotification = require("react-native-push-notification")
 
-  if ( Platform.OS == 'ios') {
-    PushNotificationIOS = require('@react-native-community/push-notification-ios')
-  }
-  else{
-    firebase = require('react-native-firebase')
-  }
+PushNotification = require("react-native-push-notification")
+
+if ( Platform.OS !== 'ios') {
+  firebase = require('react-native-firebase')
 }
+
 class PushNoti {
   constructor() {
     this.callback = undefined
@@ -57,7 +53,7 @@ class PushNoti {
     // process the notification
 
     // required on iOS only (see fetchCompletionHandler docs: https://github.com/react-native-community/react-native-push-notification-ios)
-    if ( PushNotificationIOS) {
+    if (  Platform.OS === 'ios' ) {
       notification.finish(PushNotificationIOS.FetchResult.NoData);
     }
   }

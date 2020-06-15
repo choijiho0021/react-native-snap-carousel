@@ -1,17 +1,10 @@
 import i18n from './i18n'
-import Constants from 'expo-constants';
 import _ from 'underscore'
 import AppAlert from '../components/AppAlert';
 import moment from 'moment-with-locales-es6'
 import * as ToastActions from '../redux/modules/toast'
 
-let UniAsyncStorage
-if ( Constants.appOwnership === 'expo') {
-    UniAsyncStorage = require('react-native').AsyncStorage
-}
-else {
-    UniAsyncStorage = require('@react-native-community/async-storage').default
-}
+let UniAsyncStorage = require('@react-native-community/async-storage').default
 
 class Utils {
     constructor() {

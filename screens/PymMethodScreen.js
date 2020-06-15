@@ -3,7 +3,8 @@ import {
   StyleSheet,
   Text,
   View,
-  Platform
+  Platform,
+  SafeAreaView
 } from 'react-native';
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -16,7 +17,6 @@ import AppBackButton from '../components/AppBackButton';
 import { colors } from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import _ from 'underscore'
-import { SafeAreaView } from 'react-navigation';
 import AddressCard from '../components/AddressCard'
 import { TouchableOpacity, TextInput } from 'react-native-gesture-handler';
 import PaymentItemInfo from '../components/PaymentItemInfo';
@@ -36,16 +36,13 @@ import pageApi from '../utils/api/pageApi';
 const deliveryText = orderApi.deliveryText
 
 class PymMethodScreen extends Component {
-
-  static navigationOptions =  ({ navigation }) => {
-    const { params = {} } = navigation.state
-    return {
-        headerLeft: <AppBackButton navigation={navigation} title={i18n.t('payment')} isPaid={params.isPaid}/>
-    }  
-  }
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft : () =>  (<AppBackButton navigation={this.props.navigation} title={i18n.t('payment')} isPaid={this.props.route.params && this.props.route.params.isPaid}/>)
+    })
 
     this.state = {
       mode: undefined,
@@ -111,7 +108,7 @@ class PymMethodScreen extends Component {
     this.props.action.profile.getCustomerProfile(this.props.account)
     const {pymPrice, deduct} = this.props.cart
     const content = this.props.profile.content
-    const mode = this.props.navigation.getParam('mode')
+    const mode = this.props.route.param && this.props.route.param.mode
 
     Analytics.trackEvent('Page_View_Count', {page : 'Payment - ' + mode})
 
@@ -213,18 +210,13 @@ class PymMethodScreen extends Component {
       {
         // key: row, idx: column
         value.map((v,idx) => 
-        !_.isEmpty(v) &&
+        !_.isEmpty(v) && 
         <AppButton 
           key={v.method} 
           title={_.isEmpty(v.icon) && v.title}
-          style={[styles.button,
-            idx == 0 && {borderLeftWidth:1}, key == 0 && {borderTopWidth: 1},
-          !_.isEmpty(selected) && ( ( idx == column -1 ) && (key == row ) && {borderRightColor: colors.clearBlue}
-          || (key == row -1) && (idx == column) && {borderBottomColor: colors.clearBlue} ) ]}
+          style={styles.buttonStyle(idx, column, key, row)}
           iconName={!_.isEmpty(v.icon) && v.icon}
           checked={v.method == selected.method}
-          checkedStyle={{borderColor: colors.clearBlue}}
-          checkedColor={colors.clearBlue}
           onPress={this._onPress(v, key, idx)}
         titleStyle={styles.buttonText}/>)
       }
@@ -268,7 +260,7 @@ class PymMethodScreen extends Component {
 
   _dropDownHeader(stateTitle, title, alias){
     return(
-      <TouchableOpacity style={styles.dropDownBox} onPress={()=>this._showModal(stateTitle)}>
+      <TouchableOpacity style={styles.spaceBetweenBox} onPress={()=>this._showModal(stateTitle)}>
       <Text style={styles.boldTitle}>{title}</Text>
       <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
         {
@@ -474,18 +466,18 @@ class PymMethodScreen extends Component {
 
   _consentBox(){
     return(
-      <View style={{backgroundColor: colors.whiteTwo, padding: 20, paddingBottom: 45}}>
+      <View style={{backgroundColor: colors.whiteTwo, paddingBottom: 45}}>
       <TouchableOpacity style={styles.rowCenter} onPress={()=>this._consentEssential()}>
         <AppIcon name="btnCheck2"
                 checked={this.state.consent}
                 size={22}/>
         <Text style={[appStyles.bold16Text,{color: colors.black, marginLeft: 12}]}>{i18n.t('pym:consentEssential')}</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={[styles.buttonRow, {marginTop: 20}]} onPress={()=>this._move("1")}>
+      <TouchableOpacity style={[styles.spaceBetweenBox]} onPress={()=>this._move("1")}>
         <Text style={[appStyles.normal14Text, {color: colors.warmGrey, lineHeight: 22}]}>{i18n.t("pym:privacy")}{i18n.t('pym:mandatory')}</Text>
         <Text style={styles.underlinedClearBlue}>{i18n.t("pym:detail")}</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.buttonRow} onPress={()=>this._move("2")}>
+      <TouchableOpacity style={styles.spaceBetweenBox} onPress={()=>this._move("2")}>
         <Text style={[appStyles.normal14Text, {color: colors.warmGrey, lineHeight: 22}]}>{i18n.t("pym:paymentAgency")}{i18n.t('pym:mandatory')}</Text>
         <Text style={styles.underlinedClearBlue}>{i18n.t("pym:detail")}</Text>
       </TouchableOpacity>
@@ -545,7 +537,7 @@ const pickerSelectStyles = StyleSheet.create({
     height: 37,
     color: colors.black,
     fontSize: isDeviceSize('small') ? 12 : 14,
-    paddingVertical: 8
+    paddingVertical: 8,
   },
   inputAndroid: {
     height: 37,
@@ -562,10 +554,25 @@ const pickerSelectStyles = StyleSheet.create({
 })
 
 const styles = StyleSheet.create({
+  buttonStyle: (idx, column, key, row) => ({
+    // key, idx => 현위치 / row, column -> selected
+      width: '33.3%',
+      height: 62,
+      backgroundColor: colors.white,
+      borderStyle: "solid",
+      borderRightWidth: 1,
+      borderBottomWidth: 1,
+      borderColor: colors.lightGrey,
+      borderLeftWidth: idx == 0 ? 1 : 0,
+      borderTopWidth: key == 0 ? 1 : 0 ,
+      borderRightColor: ( idx == column  || idx == column - 1) && (key == row) ? colors.clearBlue : colors.lightGrey,
+      borderBottomColor: ( key == row || key == row -1 ) && (idx == column) ? colors.clearBlue : colors.lightGrey
+  }),  
   container: {
     flex: 1,
     justifyContent: "flex-start",
-    alignItems: 'stretch'
+    alignItems: 'stretch',
+    backgroundColor:colors.white
   },
   title: {
     ... appStyles.bold18Text,
@@ -576,7 +583,8 @@ const styles = StyleSheet.create({
   },
   rowCenter: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    margin: 20,
   },
   row: {
     ... appStyles.itemRow,
@@ -595,15 +603,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     // marginTop: 15,
     // marginHorizontal: 20,
-  },
-  button: {
-    width: '33.3%',
-    height: 62,
-    backgroundColor: colors.white,
-    borderStyle: "solid",
-    borderRightWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: colors.lightGrey
   },
   buttonText: {
     ... appStyles.normal14Text,
@@ -687,7 +686,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
   },
-  dropDownBox: {
+  spaceBetweenBox: {
     marginHorizontal: 20,
     flexDirection:'row',
     justifyContent: 'space-between'

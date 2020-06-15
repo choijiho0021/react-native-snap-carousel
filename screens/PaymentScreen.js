@@ -1,35 +1,27 @@
 import React, {Component} from 'react';
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, SafeAreaView } from 'react-native'
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as cartActions from '../redux/modules/cart'
 import Video from 'react-native-video'
-
-import Constants from 'expo-constants'
-
 import getEnvVars from '../environment'
 import i18n from '../utils/i18n';
-import { SafeAreaView } from 'react-navigation';
 import AppBackButton from '../components/AppBackButton';
 import IMP from 'iamport-react-native';
 import _ from 'underscore';
 
-// let IMP
-// if (Constants.appOwnership === 'expo') {
-//   IMP = {
-//     Payment : function() {
-//       return (<View/>)
-//     }
-//   }
-// }
-// else {
-
-//   IMP = require('iamport-react-native').default;
-// }
+// const IMP = require('iamport-react-native').default;
 
 class PaymentScreen extends Component{
   constructor(props) {
     super(props)
+
+    const {params = {}} = this.props.route
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft : () =>  (<AppBackButton navigation={this.props.navigation} title={params.isPaid ? i18n.t('his:paymentCompleted') : i18n.t('payment')}
+      isPaid={params.isPaid} pymResult={params.pymResult} orderResult={params.orderResult}/>)
+    })
 
     this.state = {
       params: {},
@@ -39,18 +31,8 @@ class PaymentScreen extends Component{
     this._callback = this._callback.bind(this)
   }
 
-  static navigationOptions =  ({ navigation }) => {
-    const { params = {} } = navigation.state
-    return {
-        headerLeft: <AppBackButton navigation={navigation} title={params.isPaid ? i18n.t('his:paymentCompleted') : i18n.t('payment')}
-                                  isPaid={params.isPaid} pymResult={params.pymResult} orderResult={params.orderResult}/>
-        // headerLeft: <AppBackButton navigation={navigation} title={'결제완료'} isPaid={true}/>
-        // Similarly for the rest
-    }  
-  }
-
   componentDidMount() {
-    const params = this.props.navigation.getParam('params')
+    const params = this.props.route.params && this.props.route.params.params
     if(this.state.isPaid){
       this.setState({
         isPaid: false
@@ -58,7 +40,7 @@ class PaymentScreen extends Component{
       this.props.navigation.setParams({isPaid:false})
     }
 
-    if (params.mode == 'test' || Constants.appOwnership === 'expo' || params.amount == 0) {
+    if (params.mode == 'test' || params.amount == 0) {
       const {impId} = getEnvVars()
       const response = { imp_success: true,
         imp_uid: impId,
@@ -80,9 +62,10 @@ class PaymentScreen extends Component{
     if(isSuccess || isImpSuccess || false){
       await this.props.navigation.setParams({isPaid:true})
 
-      const params = this.props.navigation.getParam('params')
+      const params = this.props.route.params && this.props.route.params.params
       const orderResult = await this.props.action.cart.payNorder({
         ... response,
+        pg_provider: params.pg,
         payment_type: params.pay_method,
         amount: params.amount,
         profile_uuid: params.profile_uuid,
@@ -100,7 +83,7 @@ class PaymentScreen extends Component{
 
   render() {
     const {impId} = getEnvVars()
-    const params = this.props.navigation.getParam('params')
+    const params = this.props.route.params && this.props.route.params.params
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>

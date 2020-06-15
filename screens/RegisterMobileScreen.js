@@ -7,9 +7,9 @@ import {
   FlatList,
   StatusBar,
   SafeAreaView,
+  Appearance
 } from 'react-native';
 import {connect} from 'react-redux'
-import { initialMode } from 'react-native-dark-mode'
 import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import * as accountActions from '../redux/modules/account'
@@ -60,12 +60,13 @@ class RegisterMobileListItem extends PureComponent {
 
 
 class RegisterMobileScreen extends Component {
-  static navigationOptions = ({navigation, state}) => ({
-    headerLeft: <AppBackButton navigation={navigation} back={'lastTab'} title={i18n.t('mobile:header')} />
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('mobile:header')} />)
+    })
 
     this.state = {
       loading: false,
@@ -84,7 +85,7 @@ class RegisterMobileScreen extends Component {
         isValid: false,
         error: undefined
       },
-      darkMode:initialMode
+      darkMode:Appearance.getColorScheme() === 'dark'
     }
 
     this.confirmList = [
@@ -463,9 +464,10 @@ const styles = StyleSheet.create({
     color: colors.white
   },
   container: {
-    marginTop: 20,
+    paddingTop: 20,
     flex:1,
     justifyContent: "flex-start",
+    backgroundColor:colors.white
   },
   smsButtonText: {
     ... appStyles.normal14Text,

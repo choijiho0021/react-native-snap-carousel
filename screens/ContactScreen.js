@@ -47,14 +47,14 @@ class ContactListItem extends PureComponent {
 
 
 class ContactScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('contact:title')} />
-  })
-
-
   constructor(props) {
     super(props)
 
+    this.props.navigation.setOptions({
+      title:null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('contact:title')} />)
+    })
+    
     this.state = {
       data: [
         { 
@@ -187,6 +187,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   container: {
+    backgroundColor:colors.white,
     flex:1,
     alignItems: 'stretch'
   },

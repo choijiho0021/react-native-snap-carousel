@@ -10,7 +10,6 @@ import penderMiddleware from 'redux-pender'
 import { createLogger } from 'redux-logger'
 
 import MyAppLoading from './components/MyAppLoading'
-import Constants from 'expo-constants';
 import Video from 'react-native-video'
 import userApi from './utils/api/userApi';
 import utils from './utils/utils';
@@ -31,10 +30,7 @@ const store = createStore(reducer, composeEnhancers(
   //applyMiddleware( ReduxThunk, penderMiddleware())
   ))
 
-let SplashScreen = undefined
-if ( Constants.appOwnership !== 'expo') {
-  SplashScreen = require('react-native-splash-screen').default;
-}
+let SplashScreen = require('react-native-splash-screen').default;
 
 const codePushOptions = { checkFrequency: codePush.CheckFrequency.MANUAL }
 
@@ -69,11 +65,11 @@ export default codePush(codePushOptions)(function App(props) {
         <View style={styles.container}>
           {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
           {
-            showSplash && Constants.appOwnership !== 'expo' ?
+            showSplash ?
               <Video source={require('./assets/images/rokebi_intro.mp4')}   
                 style={styles.backgroundVideo} 
                 resizeMode='contain'/> :
-              <AppNavigator />
+              <AppNavigator store={store}/>
           }
           <CodePushModal />
           <AppToast />

@@ -1,9 +1,9 @@
 import { Platform } from 'react-native';
 
 const impId = "imp53913318"
-const codePushiOSStagLabel = "v78"
+const codePushiOSStagLabel = "v103"
 const codePushiOSProdLabel = "v0"
-const codePushAndStagLabel = "v73"
+const codePushAndStagLabel = "v97"
 const codePushAndProdLabel = "v0"
 const channelId = "_nzQhxb"
 
@@ -15,8 +15,8 @@ const ENV = {
     // baseUrl: "https://www.rokebi.com",
     scheme: 'http',
     rokApiUrl: "tb.service.rokebi.com",
-    apiUrl: "esim2-tb-v2.ap-northeast-2.elasticbeanstalk.com",
-    baseUrl: "http://esim2-tb-v2.ap-northeast-2.elasticbeanstalk.com",
+    apiUrl: "esim2-tb-v3.ap-northeast-2.elasticbeanstalk.com",
+    baseUrl: "http://esim2-tb-v3.ap-northeast-2.elasticbeanstalk.com",
     impId: impId,
     label: Platform.OS === 'ios' ? codePushiOSStagLabel : codePushAndStagLabel,
     channelId

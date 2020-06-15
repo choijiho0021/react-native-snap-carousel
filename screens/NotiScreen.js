@@ -23,6 +23,7 @@ import * as boardActions from '../redux/modules/board'
 import * as accountActions from '../redux/modules/account'
 import AppBackButton from '../components/AppBackButton';
 import { Platform } from '@unimodules/core';
+import PushNotificationIOS from '@react-native-community/push-notification-ios'
 
 const MODE_NOTIFICATION = 'info'
 
@@ -58,29 +59,33 @@ class NotiListItem extends Component {
 }
 
 class NotiScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={navigation.getParam('title') || i18n.t('set:noti')} />
-  })
 
   constructor(props) {
     super(props)
 
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('set:noti')} />)
+    })
+
     this.state = {
       list : undefined,
-      refreshing : false
+      refreshing : false,
+      mode : 'noti'
     }
 
     this._onRefresh = this._onRefresh.bind(this)
   }
 
   componentDidMount(){
-    const mode = this.props.navigation.getParam('mode')
-    const info = this.props.navigation.getParam('info')
+    const {params} = this.props.route
+    const mode = params && params.mode ? params.mode : 'noti'
+    const info = params && params.info
 
     Analytics.trackEvent('Page_View_Count', {page : 'Noti'})
 
     // this.props.action.board.getIssueList()
-    this.setState({mode,info})
+    this.setState({mode, info})
   }
 
   componentDidUpdate(prevProps){
@@ -94,7 +99,6 @@ class NotiScreen extends Component {
         firebase.notifications().setBadge(notiCount)
       }
       else if(Platform.OS == 'ios'){
-        const PushNotificationIOS = require('@react-native-community/push-notification-ios')
         PushNotificationIOS.setApplicationIconBadgeNumber(notiCount)
       }
       

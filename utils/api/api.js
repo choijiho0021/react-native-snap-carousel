@@ -38,6 +38,7 @@ class Api {
         accountOfUser: 'json/account/ofuser',
         noti: 'json/noti/list',
         prodByCntry: 'json/product/ccode',
+        localOp: 'json/localop/list',
         token: 'rest/session/token',
         userRegister: 'user/register',
         login: 'user/login',

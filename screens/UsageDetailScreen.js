@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Text,
   View,
+  SafeAreaView
 } from 'react-native';
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
@@ -18,7 +19,6 @@ import { colors } from '../constants/Colors';
 import LabelText from '../components/LabelText';
 import AppButton from '../components/AppButton';
 import AppModal from '../components/AppModal';
-import { SafeAreaView } from 'react-navigation';
 
 const STATUS = {
   ACTIVE : "A",               // 사용중
@@ -33,12 +33,14 @@ const activateBtn = 'activateBtn';
 const deactivateBtn = 'deactivateBtn';
 
 class UsageDetailScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('his:detail')} />
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('his:detail')} />)
+    })
+
     this.state = {
       activatable : false,
       showModal : {
@@ -51,7 +53,7 @@ class UsageDetailScreen extends Component {
   }
 
   componentDidMount() {
-    const detail = this.props.navigation.getParam('detail'),
+    const detail = this.props.route.params && this.props.route.params.detail,
       { country, uuid } = detail,
       prodList = this.props.product.get('prodList'),
       { price } = prodList.get(detail.prodId) || {},
@@ -95,7 +97,7 @@ class UsageDetailScreen extends Component {
               {
                 // 업데이트 후 정렬된 usage list 가져오기
                 if(resp.result == 0){
-                  this.props.action.order.getUsage(iccid, auth)
+                  this.props.action.order.getSubs(iccid, auth)
                   this.props.action.account.getAccount(iccid, auth)
                 }
               })
@@ -108,7 +110,7 @@ class UsageDetailScreen extends Component {
         this.props.action.order.updateUsageStatus( uuid, targetStatus, auth, deact_prod_uuid).then(resp =>
           {
             if(resp.result == 0){
-              this.props.action.order.getUsage(iccid, auth)
+              this.props.action.order.getSubs(iccid, auth)
             }
           })
       }

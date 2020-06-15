@@ -17,8 +17,6 @@ import AppBackButton from '../components/AppBackButton';
 import _ from 'underscore'
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import api from '../utils/api/api';
-import pageApi from '../utils/api/pageApi';
-import AppAlert from '../components/AppAlert';
 import { colors } from '../constants/Colors';
 import { appStyles, htmlDetailWithCss } from '../constants/Styles';
 import AppButton from '../components/AppButton';
@@ -28,7 +26,9 @@ import Analytics from 'appcenter-analytics'
 import KakaoSDK from '@actbase/react-native-kakaosdk';
 import { windowWidth } from '../constants/SliderEntry.style';
 import * as toastActions from '../redux/modules/toast'
+import * as productActions from '../redux/modules/product'
 import { Toast } from '../constants/CustomTypes'
+import AppIcon from '../components/AppIcon';
 
 const { channelId } = getEnvVars()
 
@@ -45,12 +45,15 @@ const tabList = ['ProdInfo','Tip','Caution','Ask with KakaoTalk']
 const script = `<script>
 window.onload = function () {
   window.location.hash = 1;
-  var dimension = document.body.clientWidth + ',' + document.documentElement.clientHeight + ',' + 
-    ['prodInfo', 'tip', 'caution'].map(item => {
-      var rect = document.getElementById(item).getBoundingClientRect();
-      return rect.y;
-    }).join(',');
-  window.ReactNativeWebView.postMessage('size:' + dimension);
+  var cmd = {
+    key: 'dimension',
+    value: document.body.clientWidth + ',' + document.documentElement.clientHeight + ',' + 
+      ['prodInfo', 'tip', 'caution'].map(item => {
+        var rect = document.getElementById(item).getBoundingClientRect();
+        return rect.y;
+      }).join(',')
+    };
+  window.ReactNativeWebView.postMessage(JSON.stringify(cmd));
 }
 function copy() {
   var copyTxt = document.getElementById('copyTxt').firstChild.innerHTML;
@@ -60,10 +63,18 @@ function copy() {
   txtArea.select();
   document.execCommand("copy");
   document.body.removeChild(txtArea);
-  }
+
+  var cmd = {
+    key: 'copy'
+  }  
+  window.ReactNativeWebView.postMessage(JSON.stringify(cmd));
+}
 function go(){
-  var moveTo = document.getElementsByClassName('moveToBox')[0].getAttribute('value');
-  window.ReactNativeWebView.postMessage(moveTo);
+  var cmd = {
+    key: 'move',
+    value: document.getElementsByClassName('moveToBox')[0].getAttribute('value')
+  };
+  window.ReactNativeWebView.postMessage(JSON.stringify(cmd));
 }
 function send() {
   window.ReactNativeWebView.postMessage('APN Value have to insert into this', '*');
@@ -73,18 +84,18 @@ function send() {
 
 
 class ProductDetailScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={navigation.getParam('title')} />,
-  })
-
   constructor(props) {
     super(props)
     
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={this.props.route.params && this.props.route.params.title} />)
+    })
+
     this.state = {
       scrollY: new Animated.Value(0),
       tabIdx : 0,
       querying : true,
-      prodInfo : ''
     }
     
     this._toastRef = React.createRef()
@@ -103,29 +114,15 @@ class ProductDetailScreen extends Component {
   }
 
   shouldComponentUpdate(preProps,preState){
-    const {tabIdx, height2, prodInfo} = this.state
-    return preState.tabIdx != tabIdx || preState.prodInfo != prodInfo || preState.height2 != height2 
+    const {tabIdx, height2} = this.state
+    const {detail} = this.props.product
+
+    return preState.tabIdx != tabIdx || preState.height2 != height2 || preProps.detail != detail || preProps.localOpDetails != this.props.localOpDetails
   }
 
   componentDidMount() {
     //todo : 상세 HTML을 가져오도록 변경 필요
-    pageApi.getProductDetails(this.controller).then(resp =>{
-      if ( resp.result == 0 && resp.objects.length > 0) {
-        this.setState({
-          prodInfo: resp.objects,
-          disable: false
-        })
-      }
-      else throw Error('Failed to get contract')
-    }).catch( err => {
-      console.log('failed', err)
-      AppAlert.error(i18n.t('set:fail'))
-    }).finally(_ => {
-      this.setState({
-        querying: false
-      })
-    })
-
+    this.props.action.product.getProdDetail(this.controller)
   }
 
   _checkWindowSize(sizeString = '') {
@@ -197,30 +194,34 @@ class ProductDetailScreen extends Component {
 
       <Text style={styles.kakaoPlus}>{i18n.t("prodDetail:KakaoPlus")}</Text>
       <AppButton iconName="openKakao" onPress={this._openKTalk} style={{flex:1}}/>
-      <AppToast ref={this._toastRef} text={i18n.t('set:failedOpenKakao')}/>
     </View>)
   }
 
   _onMessage(event) {
-    const {data} = event.nativeEvent
-    
-    const moveTo = data.split('/')
+    const cmd = JSON.parse(event.nativeEvent.data)
 
-    // console.log("@@@ on Message : ", data, moveTo)
-
-    if ( data.startsWith('size:')) {
-      this._checkWindowSize( data.substring(5))
-    }
-    else if( moveTo.length > 1){
-      this.props.navigation.navigate('Faq', {key: moveTo[0], num: moveTo[1]})
-    }
-    else {
-      Clipboard.setString(data)
+    switch ( cmd.key ) {
+      case 'dimension':
+        this._checkWindowSize( cmd.value)
+        break
+      case 'move':
+        if ( cmd.value) {
+          var moveTo = cmd.value.split('/')
+          this.props.navigation.navigate('Faq', {key: moveTo[0], num: moveTo[1]})
+        }
+        break
+      case 'copy' :
+        this.props.action.toast.push(Toast.COPY_SUCCESS)
+        break
+      default:
+        Clipboard.setString(cmd.value)
     }
   }
 
   renderWebView() {
-    const {height3, prodInfo} = this.state
+    const {height3} = this.state,
+      localOpDetails = this.props.route.params && this.props.route.params.localOpDetails,
+      detail = _.isEmpty(localOpDetails) ? this.props.product.detail : localOpDetails
 
     return <WebView
       automaticallyAdjustContentInsets={false}
@@ -234,19 +235,18 @@ class ProductDetailScreen extends Component {
       scrollEnabled = {true}
       // source={{html: body + html + script} }
       onMessage={this._onMessage}
-      source={{html: htmlDetailWithCss(prodInfo, script), baseUrl} }
+      source={{html: htmlDetailWithCss( detail, script), baseUrl} }
       style={{height: height3 || 1000}}
     />
   }
 
   render() {
-    const {querying = false, tabIdx} = this.state
-    const {navigation} = this.props
+    const {tabIdx} = this.state
+    const {navigation, pending, route} = this.props
 
     return (
       <SafeAreaView style={styles.screen}>
-        <AppActivityIndicator visible={querying} />
-
+        <AppActivityIndicator visible={pending} />
         <ScrollView style={{backgroundColor:colors.whiteTwo}}
           ref={this.scrollView}
           stickyHeaderIndices={[1]} //탭 버튼 고정
@@ -256,7 +256,7 @@ class ProductDetailScreen extends Component {
           
           {
           <View style={{height:HEADER_IMG_HEIGHT}}>
-            <Image style={{height:HEADER_IMG_HEIGHT}} source={{uri:api.httpImageUrl(navigation.getParam('img'))}}/>
+            <Image style={{height:HEADER_IMG_HEIGHT}} source={{uri:api.httpImageUrl(route.params && route.params.img)}}/>
           </View>
           }
 
@@ -331,8 +331,12 @@ const styles = StyleSheet.create({
 
 });
 
-export default connect(undefined, (dispatch) => ({
+export default connect((state) => ({
+  product: state.product.toObject(),
+  pending: state.pender.pending[productActions.GET_PROD_DETAIL] || false,
+}), (dispatch) => ({
   action : {
+    product: bindActionCreators(productActions, dispatch),
     toast: bindActionCreators(toastActions, dispatch)
   }
 }))(ProductDetailScreen)

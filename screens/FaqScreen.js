@@ -42,12 +42,13 @@ class FaqList extends Component {
 }
 
 class FaqScreen extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerLeft: <AppBackButton navigation={navigation} title={i18n.t('contact:faq')} />
-  })
-
   constructor(props) {
     super(props)
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('contact:faq')} />)
+    })
 
     this.state = {
       querying: false,
@@ -71,11 +72,15 @@ class FaqScreen extends Component {
   } 
 
   componentDidMount() {
-    const index = this.state.routes.findIndex(item => item.key === this.props.navigation.getParam('key'))
+    const {params} = this.props.route
+    const key = params && params.key ? params.key : undefined
+    const num = params && params.num ? params.num : undefined
+
+    const index = this.state.routes.findIndex(item => item.key === key)
     if(index > 0){
       this.setState({
         index,
-        selectedTitleNo: this.props.navigation.getParam('num')
+        selectedTitleNo: num
       })
     }
 
@@ -157,6 +162,7 @@ class FaqScreen extends Component {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor:colors.white,
     flex: 1,
     alignItems: 'stretch'
   },
