@@ -25,6 +25,7 @@ import VersionCheck from 'react-native-version-check';
 import getEnvVars from '../environment'
 import Analytics from 'appcenter-analytics'
 import _ from 'underscore'
+import PushNotificationIOS from '@react-native-community/push-notification-ios'
 
 const { label } = getEnvVars();
 
@@ -169,6 +170,15 @@ class SettingsScreen extends Component {
     this.props.action.account.logout()
     
     this.props.navigation.reset({index: 0, routes: [{ name: 'Home' }] });
+
+    if(Platform.OS == 'android'){
+      const firebase = require('react-native-firebase')
+      
+      firebase.notifications().setBadge(0)
+    }
+    else if(Platform.OS == 'ios'){
+      PushNotificationIOS.setApplicationIconBadgeNumber(0)
+    }
 
     this._showModal(false)
   }
