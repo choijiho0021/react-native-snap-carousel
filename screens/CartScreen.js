@@ -192,9 +192,8 @@ class CartScreen extends Component {
 
   _renderItem = ({item}) => {
     const { qty, checked } = this.state
-    const prod = (item.type == 'sim_card') ?
-      this.props.sim.simList.find(sim => sim.uuid == item.key) : 
-      this.props.product.get('prodList').get(item.key)
+    const partnerId = (this.props.product.get('prodList').get(item.key) || {}).partnerId
+    const imageUrl = (this.props.product.get('localOpList').get(partnerId) || {}).imageUrl
 
     return <CartItem checked={checked.get(item.key) || false}
       onChange={(value) => this._onChangeQty(item.key, item.orderItemId, value)} 
@@ -202,7 +201,7 @@ class CartScreen extends Component {
       onChecked={() => this._onChecked(item.key)}
       name={item.title}
       price={item.price}
-      image={prod && prod.imageUrl}
+      image={imageUrl}
       qty={qty.get(item.key)} />
 
   }
