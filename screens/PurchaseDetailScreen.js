@@ -140,23 +140,38 @@ class PurchaseDetailScreen extends Component {
       ok: () => 
         {
           this.props.action.order.cancelOrder(this.state.orderId, this.props.auth).then(resp =>{
-            if (resp.result == 0){
-              this.setState({cancelPressed: true})
-              this.props.action.order.getOrderById(auth, this.state.orderId).then(
-                resp => {
-                  if(resp.result == 0) {
-                    this.props.action.account.getAccount(iccid, auth)
+
+            // 결제취소요청 후 order 및 로깨비캐시 (잔액) 가져오기
+            this.props.action.order.getOrderById(auth, this.state.orderId).then(
+              val => {
+                if(val.result == 0) {
+                  var { state, shipmentState } = val.objects[0],
+                  isCanceled = shipmentState == orderApi.shipmentState.CANCEL || state == 'canceled'
+                  this.setState({
+                    ... state, 
+                    shipmentState,
+                    isCanceled
+                  })
+                  this.props.action.account.getAccount(iccid, auth)
+                  
+                  if (resp.result == 0){
+                    this.setState({cancelPressed: true})
+                  }else{
+                    if(isCanceled){
+                      AppAlert.info(i18n.t("his:alreadyCanceled"))
+                    }else{
+                      AppAlert.info(i18n.t("his:cancelFail"))
+                    }
                   }
+
                 }
-              )
-            }else{
-              AppAlert.info(i18n.t("his:cancelFail"))
-              this.props.action.order.getOrderById(auth, this.state.orderId)
-              this.props.action.account.getAccount(iccid, auth)
-            }},
-            err =>{
-              AppAlert.info(i18n.t("his:cancelError"))
+              }
+            )
+            
+          },err =>{
+            AppAlert.info(i18n.t("his:cancelError"))
           })
+
           this.setState({borderBlue: false})
         }
       ,cancel: ()=> {
@@ -193,17 +208,18 @@ class PurchaseDetailScreen extends Component {
   _deliveryInfo(){
 
     const { trackingCompany, trackingCode, shipmentState, isCanceled, memo } = this.state || {}
+    const ship = orderApi.shipmentState
 
     return(
       <View>
         <View style={styles.thickBar}/>
         <Text style={styles.deliveryTitle}>{i18n.t('his:shipmentState')}</Text>
         <View style={{flex:1, flexDirection: 'row', justifyContent: 'flex-start', marginHorizontal: 20}}>
-          <Text style={[styles.deliveryStatus, (_.isEmpty(shipmentState)|| shipmentState == 'draft' )&& {color: colors.clearBlue}]}>{i18n.t('his:paymentCompleted')}</Text>
+          <Text style={[styles.deliveryStatus, (_.isEmpty(shipmentState)|| shipmentState == ship.DRAFT )&& {color: colors.clearBlue}]}>{i18n.t('his:paymentCompleted')}</Text>
           <AppIcon name="iconArrowRight" style={styles.arrowIcon}/>
-          <Text style={[styles.deliveryStatus, shipmentState == ('ready') && {color: colors.clearBlue}]}>{i18n.t('his:ready')}</Text>
+          <Text style={[styles.deliveryStatus, shipmentState == ship.READY && {color: colors.clearBlue}]}>{i18n.t('his:ready')}</Text>
           <AppIcon name="iconArrowRight" style={styles.arrowIcon}/>
-          <Text style={[styles.deliveryStatus, shipmentState == ('shipped') && {color: colors.clearBlue}]}>{i18n.t('his:shipped')}</Text>
+          <Text style={[styles.deliveryStatus, shipmentState == ship.SHIP && {color: colors.clearBlue}]}>{i18n.t('his:shipped')}</Text>
         </View>
         
         <View style={styles.bar}/>
@@ -223,7 +239,7 @@ class PurchaseDetailScreen extends Component {
         </View>
 
         {
-          !isCanceled && shipmentState == ('shipped') &&
+          !isCanceled && shipmentState == orderApi.shipmentState.SHIP &&
           <View style={{marginBottom: 40}}>
             <View style={[styles.bar, {marginTop: 0}]}/>
             <Text style={styles.deliveryTitle}>{i18n.t('his:companyInfo')}</Text>
@@ -260,7 +276,7 @@ class PurchaseDetailScreen extends Component {
       const isRecharge = orderItems.find(item => item.title.includes(i18n.t('sim:rechargeBalance')) ) || false
       const isUsed = !_.isEmpty(usageList) && usageList.find(value => value.status != 'R' && value.status != 'I') || false
       const usedOrExpired = isUsed || elapsedDay > 7
-      const activateCancelBtn = orderType == 'physical' ? shipmentState == 'draft' : (state == 'draft' || state == 'validation') && !isUsed
+      const activateCancelBtn = orderType == 'physical' ? shipmentState == orderApi.shipmentState.DRAFT : (state == 'draft' || state == 'validation') && !isUsed
       const disableBtn = isCanceled || !activateCancelBtn || this.state.cancelPressed || (elapsedDay > 7)
       const infoText = isCanceled ? i18n.t('his:afterCancelInfo') 
                 : (orderType == 'physical' ? i18n.t('his:simCancelInfo') : usedOrExpired ? i18n.t('his:usedOrExpiredInfo') : i18n.t('his:dataCancelInfo'))
@@ -367,13 +383,14 @@ class PurchaseDetailScreen extends Component {
 
     const { orderItems, orderType, isCanceled, shipmentState, billingAmt,
           showPayment, showDelivery, cancelPressed, totalCnt } = this.state || {}
+    const ship = orderApi.shipmentState
 
     if ( _.isEmpty(orderItems) ) return <View></View>
 
     // [physical] shipmentState : draft(취소 가능) / ready shipped (취소 불가능)
     // [draft] state = validation && status = inactive , reserved (취소 가능)
-    const shipStatus = (_.isEmpty(shipmentState) || shipmentState == 'draft') ? 
-                    i18n.t('his:paymentCompleted') : (shipmentState == ('ready') ? i18n.t('his:ready') : i18n.t('his:shipped'))
+    const shipStatus = (_.isEmpty(shipmentState) || shipmentState == ship.DRAFT) ? 
+                    i18n.t('his:paymentCompleted') : (shipmentState == ship.READY ? i18n.t('his:ready') : i18n.t('his:shipped'))
 
     return (
       <ScrollView style={styles.container}
@@ -438,7 +455,7 @@ class PurchaseDetailScreen extends Component {
               <View style={styles.divider}/>
             </View>
           }
-          <AppActivityIndicator visible={this.props.pending} />      
+          <AppActivityIndicator visible={this.props.pending} />
         </SafeAreaView>
       </ScrollView>
     )
