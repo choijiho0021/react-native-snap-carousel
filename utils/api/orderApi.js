@@ -32,6 +32,13 @@ class OrderAPI {
         value: i18n.t("pym:input")
     }]
 
+    shipmentState = {
+        DRAFT: 'draft',
+        READY: 'ready',
+        SHIP: 'shipped',
+        CANCEL: 'canceled'
+    }
+
     toOrder = (data, page) => {
 
         if ( _.isArray(data) && data.length > 0) {
