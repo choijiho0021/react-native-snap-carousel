@@ -129,8 +129,9 @@ class UsageItem extends Component {
 
   shouldComponentUpdate(nextProps, nextState){
 
-    return (this.props.item.statusCd != nextProps.item.statusCd || this.state.disableBtn != nextState.disableBtn)
+    return (!_.isEqual(nextProps.item,this.props.item) || this.state.disableBtn != nextState.disableBtn)
   }
+
 
   componentDidMount() {
     this.setStatusColor()
@@ -370,7 +371,6 @@ class UsimScreen extends Component {
       routeName = this.props.route.name,
       isFocusedToUsimTab = (lastTab[0] || '').startsWith( routeName ) && lastTab[0] !== prevProps.lastTab[0]
 
-      
     if ( (isFocusedToUsimTab && ! loginPending)
       || iccid !== prevProps.account.iccid ) {
       if(lastTab[0] != this.props.route.name) this.props.navigation.popToTop()
@@ -392,8 +392,6 @@ class UsimScreen extends Component {
     //   // })
     // }
 
-
-
     if(this.state.cancelPressed){
       setTimeout(()=>{
         this.setState({
@@ -414,7 +412,6 @@ class UsimScreen extends Component {
       this.props.navigation.navigate('Auth')
     }else{
       if (iccid && auth) {
-        console.log("init getSubsWithToast -aaaaa")
         this.props.action.order.getSubsWithToast(iccid, auth)
       }else{
         this.props.navigation.navigate('RegisterSim')
@@ -487,6 +484,7 @@ class UsimScreen extends Component {
             renderItem={this._renderUsage}
             // onRefresh={this._onRefresh}
             // refreshing={refreshing}
+            extraData={usage}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
