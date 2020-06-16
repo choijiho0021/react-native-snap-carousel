@@ -143,7 +143,7 @@ export default handleActions({
   // set last tab
   // 2개 리스트를 유지한다. 
   [PUSH_LAST_TAB]: (state,action) => {
-    if(state.get('lastTab').first() == action.payload) return 
+    if(state.get('lastTab').first() == action.payload) return state
 
     return state.update('lastTab', value => {
       return (value.unshift(action.payload).setSize(2))})
