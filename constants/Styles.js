@@ -484,6 +484,9 @@ export const htmlDetailWithCss = (body, script = '') => {
         border: solid 1px ${colors.whiteThree};
         background-color: ${colors.whiteTwo};
     }
+    .copyBtn:active{
+        background-color: ${colors.whiteThree};
+    }
     .copyTextLine {
         margin: 20px;
     }
@@ -501,8 +504,12 @@ export const htmlDetailWithCss = (body, script = '') => {
     .moveToBox button{
         width: 100%; 
         height: 100%;
+        background-color: ${colors.white};
         font-size: 16px;
         border: none;
+    }
+    .moveToBox button:active{
+        background-color: ${colors.whiteThree};
     }
     .moveToBox img {
         width: 4%;
