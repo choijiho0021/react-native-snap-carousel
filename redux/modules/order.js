@@ -34,12 +34,11 @@ export const checkAndGetOrderById = (auth, orderId) => {
   }
 }
 
-export const getOrders = (auth) => {
+export const getOrders = (auth, page) => {
   return (dispatch, getState) => {
     const { order } = getState()
-    const isPageZero = order.get('page') <= 0 || typeof order.get('page') === 'undefined'
 
-    if ( isPageZero ) return dispatch( getNextOrders(auth, 0))
+    if ( typeof page !== 'undefined' ) return dispatch( getNextOrders(auth, page))
     else if ( order.get('next')) return dispatch( getNextOrders(auth, order.get('page') +1))
     else return new Promise.resolve()
   }

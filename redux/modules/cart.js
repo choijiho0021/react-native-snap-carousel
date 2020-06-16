@@ -70,7 +70,7 @@ export const payNorder = (result) => {
     return dispatch(makeOrder( purchaseItems, result, auth)).then(
       resp => {
         if ( resp.result == 0 ) {
-          dispatch(getOrders( auth ))
+          dispatch(getOrders( auth, 0 ))
           // cart에서 item 삭제 
           orderItems.forEach(item => {
             if ( purchaseItems.findIndex(o => o.orderItemId == item.orderItemId) >= 0) {
