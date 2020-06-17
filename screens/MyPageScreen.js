@@ -5,7 +5,8 @@ import {
   View,
   TouchableOpacity,
   FlatList,
-  Platform
+  Platform,
+  RefreshControl
 } from 'react-native';
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
@@ -89,6 +90,7 @@ class MyPageScreen extends Component {
       showEmailModal: false,
       isReloaded: false,
       isFocused: false,
+      refreshing: false,
       page: 0
     }
 
@@ -101,6 +103,7 @@ class MyPageScreen extends Component {
     this._recharge = this._recharge.bind(this)
     this._didMount = this._didMount.bind(this)
     this._getNextOrder = this._getNextOrder.bind(this)
+    this._onRefresh = this._onRefresh.bind(this)
 
     this.flatListRef = React.createRef()
   }
@@ -305,8 +308,23 @@ class MyPageScreen extends Component {
     this.props.action.order.getOrders(this.props.auth)
   }
 
+  _onRefresh() {
+    this.setState({
+      refreshing: true
+    })
+
+    this.props.action.order.getOrders(this.props.auth, 0).then(resp => {
+      if(resp.result == 0){
+        this.setState({
+          refreshing: false
+        })
+      }
+    })
+
+  }
+
   render() {
-    const { showEmailModal } = this.state
+    const { showEmailModal, refreshing = false } = this.state
     const { orders, ordersIdx } = this.props.order
 
     return (
@@ -318,7 +336,16 @@ class MyPageScreen extends Component {
           ListEmptyComponent={this._empty()}
           renderItem={this._renderOrder} 
           onEndReachedThreshold={0.4}
-          onEndReached={this._getNextOrder} />
+          onEndReached={this._getNextOrder}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={this._onRefresh}
+              colors={[colors.clearBlue]} //android 전용
+              tintColor={colors.clearBlue} //ios 전용
+            />
+          }
+          />
 
         <AppActivityIndicator visible={this.props.pending}/>
 
