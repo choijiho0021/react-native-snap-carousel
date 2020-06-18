@@ -336,6 +336,7 @@ const en = {
   "cart:pymAmount" : "Payment Amount",
   "cart:purchase" : "Purchase",
   "cart:empty" : "Cart is Empty",
+  "cart:remove" : "The Discontinued products have been removed from the list.",
 
   "usim:toRokebiCash" : "Conversion amount\n",
   "usim:balance" : "Rokebi Cash",
@@ -797,6 +798,7 @@ const ko = {
   "cart:pymAmount" : "결제 금액",
   "cart:purchase" : "구매하기",
   "cart:empty" : "카트가 비어있습니다.",
+  "cart:remove" : "판매 중지된 상품이 목록에서 삭제되었습니다.",
 
   "usim:toRokebiCash" : "전환금액",
   "usim:balance" : "로깨비캐시",

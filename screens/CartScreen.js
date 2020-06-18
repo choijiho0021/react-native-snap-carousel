@@ -21,6 +21,8 @@ import ChargeSummary from '../components/ChargeSummary';
 import utils from '../utils/utils';
 import {Map} from 'immutable'
 import _ from 'underscore'
+import SnackBar from 'react-native-snackbar-component';
+import { windowHeight } from '../constants/SliderEntry.style';
 import AppBackButton from '../components/AppBackButton';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 
@@ -41,11 +43,14 @@ class CartScreen extends Component {
       checked: new Map(),
       qty: new Map(),
       total: {cnt:0, price:0},
+      showSnackBar: false,
     }
+    this.snackRef = React.createRef();
 
     this._onPurchase = this._onPurchase.bind(this)
     this._onChangeQty = this._onChangeQty.bind(this)
     this._removeItem = this._removeItem.bind(this)
+    this._checkDeletedItem = this._checkDeletedItem.bind(this)
     this._calculate = this._calculate.bind(this)
     this._init = this._init.bind(this)
     this._isEmptyList = this._isEmptyList.bind(this)
@@ -63,6 +68,14 @@ class CartScreen extends Component {
     if ( cart && cart != prevProps.cart && cart.orderItems && ! pending ) {
       this._init()
     }
+
+    if(this.state.showSnackBar){
+      setTimeout(()=>{
+        this.setState({
+          showSnackBar: false,
+        })
+      }, 3000)
+    }
   }
 
   _section( ... args) {
@@ -74,6 +87,9 @@ class CartScreen extends Component {
 
   _init() {
     const { orderItems } = this.props.cart
+
+    this._checkDeletedItem(orderItems)
+    
     let {qty, checked, section} = this.state
     const total = this._calculate( checked, qty),
       list = orderItems.reduce((acc,cur) => {
@@ -135,7 +151,7 @@ class CartScreen extends Component {
     const { section, qty, checked, total } = this.state,
       dlvCost = this._dlvCost( checked, qty, total, section),
       {loggedIn, balance} = this.props.account
-      
+
     if(!loggedIn){
       this.props.navigation.navigate('Auth')
     }
@@ -169,6 +185,19 @@ class CartScreen extends Component {
             .map(item=> item.totalPrice).reduce((accumulator, currentValue) => accumulator + currentValue, 0)
   }
 
+  _checkDeletedItem(items){
+    const prodList = this.props.product.get('prodList'),
+        toRemove = (items||{}).filter( item => typeof prodList.get(item.key) == 'undefined')
+  
+    if( !_.isEmpty(toRemove)) {
+
+      toRemove.forEach(item => this._removeItem(item.key, item.orderItemId))
+      this.setState({
+        showSnackBar: true
+      })
+    }
+  }
+
   _removeItem(key, orderItemId) {
     const section = this.state.section.map(item => ({
         title: item.title,
@@ -195,6 +224,7 @@ class CartScreen extends Component {
     const partnerId = (this.props.product.get('prodList').get(item.key) || {}).partnerId
     const imageUrl = (this.props.product.get('localOpList').get(partnerId) || {}).imageUrl
 
+    // return  item.key && <CartItem checked={checked.get(item.key) || false}
     return <CartItem checked={checked.get(item.key) || false}
       onChange={(value) => this._onChangeQty(item.key, item.orderItemId, value)} 
       onDelete={() => this._removeItem(item.key, item.orderItemId)}
@@ -246,7 +276,7 @@ class CartScreen extends Component {
 
   render() {
 
-    const { qty, checked, section, total} = this.state,
+    const { qty, checked, section, total, showSnackBar} = this.state,
       { iccid } = this.props.account,
       dlvCost = this._dlvCost( checked, qty, total, section),
       balance = this.props.account.balance || 0,
@@ -254,7 +284,7 @@ class CartScreen extends Component {
       pymPrice = amount > balance ? amount - balance : 0
 
       const data = this.props.cart.orderItems
-                  .find(item => item.prod.type == 'roaming_product' && this.state.checked.get(item.key))
+                  .find(item => (item.prod||{}).type == 'roaming_product' && this.state.checked.get(item.key))
 
       return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
@@ -269,6 +299,16 @@ class CartScreen extends Component {
                                               totalPrice={total.price} 
                                               balance={balance} 
                                               dlvCost={dlvCost}/>} />
+        <SnackBar ref={this.snackRef}
+          visible={showSnackBar} backgroundColor={colors.clearBlue} 
+          textMessage={i18n.t("cart:remove")} messageColor={colors.white}
+          position={'top'}
+          top={windowHeight/2}
+          containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 10}}
+          actionText={'X'}
+          actionStyle={{paddingHorizontal: 20}}
+          accentColor={colors.white}
+          actionHandler={()=>{this.snackRef.current.hideSnackbar()}}/>
         <View style={styles.buttonBox}>
           <View style={styles.sumBox}>
             <Text style={[styles.btnBuyText, {color:colors.black}]}>{i18n.t('cart:pymAmount') + ': '}</Text>
