@@ -1,5 +1,6 @@
 import React, {Component, PureComponent} from 'react';
 import {
+  Platform,
   StyleSheet,
   Text,
   View,
@@ -9,7 +10,6 @@ import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux'
 import i18n from '../utils/i18n'
 import * as profileActions from '../redux/modules/profile'
-import { Platform } from '@unimodules/core';
 import { TextField } from 'react-native-material-textfield'
 import Icon from 'react-native-vector-icons/Ionicons';
 import AppButton from '../components/AppButton';

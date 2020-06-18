@@ -1,5 +1,6 @@
 import React, {Component, PureComponent} from 'react';
 import {
+  Platform,
   StyleSheet,
   View,
   Text,
@@ -22,7 +23,6 @@ import * as notiActions from '../redux/modules/noti'
 import * as boardActions from '../redux/modules/board'
 import * as accountActions from '../redux/modules/account'
 import AppBackButton from '../components/AppBackButton';
-import { Platform } from '@unimodules/core';
 import PushNotificationIOS from '@react-native-community/push-notification-ios'
 
 const MODE_NOTIFICATION = 'info'

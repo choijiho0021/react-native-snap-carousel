@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import { createAction, handleActions } from 'redux-actions';
 import { Map } from 'immutable';
 import { pender } from 'redux-pender'
@@ -6,7 +7,6 @@ import accountApi from '../../utils/api/accountApi';
 import _ from 'underscore'
 import utils from '../../utils/utils';
 import { batch } from 'react-redux';
-import { Platform } from '@unimodules/core';
 import * as ToastActions from './toast'
 import { Toast } from '../../constants/CustomTypes'
 

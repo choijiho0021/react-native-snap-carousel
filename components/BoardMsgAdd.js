@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {
+  Platform,
   StyleSheet,
   View,
   Text,
@@ -28,7 +29,6 @@ import {List} from 'immutable'
 import { attachmentSize } from '../constants/SliderEntry.style'
 import AppAlert from './AppAlert'
 import AppIcon from './AppIcon';
-import { Platform } from '@unimodules/core';
 import { openSettings, check, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 
