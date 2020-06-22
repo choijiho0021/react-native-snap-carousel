@@ -255,7 +255,7 @@ class PurchaseDetailScreen extends Component {
                 labelStyle={styles.companyInfoTitle}
                 value={utils.toPhoneNumber('12341234')} // 택배사 전화번호
                 valueStyle={styles.labelValue}/>
-            <LabelTextTouchable onPress={() => this.props.navigation.navigate('SimpleText', {mode:'uri', text:orderApi.deliveryTrackingUrl('CJ', '341495229094')})}
+            <LabelTextTouchable onPress={() => this.props.navigation.navigate('SimpleText', {mode:'uri', text:orderApi.deliveryTrackingUrl('CJ', trackingCode)})}
                 label={i18n.t('his:trackingCode')}
                 labelStyle={[styles.companyInfoTitle, {marginLeft: 20, width: '20%'}]}
                 format="shortDistance"
