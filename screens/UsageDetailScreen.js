@@ -76,6 +76,7 @@ class UsageDetailScreen extends Component {
 
     let deact_prod_uuid = []
 
+    console.log('@@@2torokebi', modal, targetStatus, statusCd, uuid, usage )
     if(targetStatus) {
       if(targetStatus == STATUS.ACTIVE){
         usage.map(elm => {
@@ -93,7 +94,7 @@ class UsageDetailScreen extends Component {
       else if(statusCd == STATUS.INACTIVE && targetStatus == STATUS.USED ){
         // 로깨비캐시로 전환
         if(showModal[modal]){
-            this.props.action.order.updateSubsToCash(uuid, auth, targetStatus).then(resp =>
+            this.props.action.order.updateUsageStatus( uuid, targetStatus, auth, deact_prod_uuid).then(resp =>
               {
                 // 업데이트 후 정렬된 usage list 가져오기
                 if(resp.result == 0){
@@ -107,6 +108,7 @@ class UsageDetailScreen extends Component {
         }
       } 
       else {
+        // 상태 전환
         this.props.action.order.updateUsageStatus( uuid, targetStatus, auth, deact_prod_uuid).then(resp =>
           {
             if(resp.result == 0){
