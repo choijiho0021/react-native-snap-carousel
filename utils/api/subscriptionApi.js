@@ -77,7 +77,7 @@ class SubscriptionAPI {
                 activationDate: item.field_subs_activation_date,
                 expireDate: item.field_subs_expiration_date,
                 statusCd: item.field_status,
-                staus: item.field_status,
+                status: item.field_status,
             })).sort(this.sortSubs), data.links)
         }
 
@@ -191,21 +191,22 @@ class SubscriptionAPI {
         }, this.toSubsUpdate)
     }
 
-    toRokebiCash = ( uuid, {token}, status ) => {
-        if ( _.isEmpty(uuid) || _.isEmpty(token) || _.isEmpty(status) ) return api.reject( api.E_INVALID_ARGUMENT)
+    // toRokebiCash = ( uuid, {token}, status ) => {
+    //     if ( _.isEmpty(uuid) || _.isEmpty(token) || _.isEmpty(status) ) return api.reject( api.E_INVALID_ARGUMENT)
 
-        const url = `${api.httpUrl(api.path.rokApi.rokebi.subs,'')}/${uuid}?_format=json`
-        const headers = api.withToken(token, 'json')
-        const body = {
-            status : status,
-        }
+    //     console.log('to Rokebi uuid', uuid,  token, status)
+    //     const url = `${api.httpUrl(api.path.rokApi.rokebi.subs,'')}/${uuid}?_format=json`
+    //     const headers = api.withToken(token, 'json')
+    //     const body = {
+    //         status : status,
+    //     }
         
-        return api.callHttp(url, {
-            method: 'PATCH',
-            headers,
-            body: JSON.stringify(body)
-        }, this.toSubscription)
-    }
+    //     return api.callHttp(url, {
+    //         method: 'PATCH',
+    //         headers,
+    //         body: JSON.stringify(body)
+    //     }, this.toSubsUpdate)
+    // }
 
     //그래프를 그리기 위해서 가져올 데이터
     getSubsUsage = (id, {token}) => {

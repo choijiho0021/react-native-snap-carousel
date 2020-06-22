@@ -11,7 +11,6 @@ export const CANCEL_ORDER = 'rokebi/order/CANCEL_ORDER'
 export const GET_SUBS = 'rokebi/order/GET_SUBS'
 export const GET_SUBS_USAGE = 'rokebi/usage/subs' 
 export const UPDATE_USAGE = 'rokebi/order/UPDATE_USAGE'
-export const UPDATE_SUBS_TO_CASH = 'rokebi/subs/UPDATE_SUBS_TO_CASH'
 const  RESET = 'rokebi/order/RESET'
 
 const getNextOrders = createAction(GET_ORDERS, orderApi.getOrders)
@@ -20,7 +19,6 @@ export const cancelOrder = createAction(CANCEL_ORDER, orderApi.cancelOrder)
 export const getSubs = createAction(GET_SUBS, subscriptionApi.getSubscription)
 export const getSubsUsage = createAction(GET_SUBS_USAGE, subscriptionApi.getSubsUsage)
 export const updateUsageStatus = createAction(UPDATE_USAGE, subscriptionApi.updateSubscriptionStatus)
-export const updateSubsToCash = createAction(UPDATE_SUBS_TO_CASH, subscriptionApi.toRokebiCash)
 export const reset = createAction(RESET)
 
 export const getSubsWithToast = utils.reflectWithToast(getSubs)
@@ -119,15 +117,15 @@ export default handleActions({
       const {result, objects} = action.payload
     
       let usage = state.get('usage')
-      
-      objects.map(elm => {
-        const idx = usage.findIndex(item => item.uuid == elm.uuid)
 
-        usage[idx].status = elm.status
-        usage[idx].statusCd = elm.statusCd
-      })
+      // objects.map(elm => {
+      //   const idx = usage.findIndex(item => item.uuid == elm.uuid)
 
-      if (result == 0) {
+      //   usage[idx].status = elm.status
+      //   usage[idx].statusCd = elm.statusCd
+      // })
+
+    if (result == 0) {
         return state.set('usage', usage)
       }
       return state
@@ -156,15 +154,5 @@ export default handleActions({
     }
   }),
 
-  ... pender({
-    type: UPDATE_SUBS_TO_CASH,
-    onSuccess: (state, action) => {
-      const {result, objects} = action.payload
-      if (result == 0) {
-        return state.set('usage', objects)
-      }
-      return state
-    }
-  }),
 
 }, initialState)
