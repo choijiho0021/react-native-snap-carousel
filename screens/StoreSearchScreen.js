@@ -95,12 +95,6 @@ class StoreSearchScreen extends Component {
   
     const {params = {}} = this.props.route
 
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft : null,
-      headerTitle : () => (<HeaderTitle search={params.search} searchWord={params.searchWord} navigation={this.props.navigation}/>)
-    })
-
     this.state = {
       querying: true,
       searching : false,
@@ -133,12 +127,13 @@ class StoreSearchScreen extends Component {
 
     Analytics.trackEvent('Page_View_Count', {page : 'Country Search'})
     
-    this.setState({allData : this.props.route.params && this.props.route.params.allData  })
+    this.setState({allData : this.props.product.get('sortedProdList') })
     this.getSearchHist()
 
-    this.props.navigation.setParams({
-      searchWord : this.state.searchWord,
-      search: this._search
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft : null,
+      headerTitle : () => (<HeaderTitle search={this._search} searchWord={this.state.searchWord} navigation={this.props.navigation}/>)
     })
   }
 
@@ -151,8 +146,10 @@ class StoreSearchScreen extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if ( this.state.searchWord && this.state.searchWord != prevState.searchWord) {
-      this.props.navigation.setParams({
-        searchWord : this.state.searchWord
+      this.props.navigation.setOptions({
+        title: null,
+        headerLeft : null,
+        headerTitle : () => (<HeaderTitle search={this._search} searchWord={this.state.searchWord} navigation={this.props.navigation}/>)
       })
     }
 
@@ -182,7 +179,7 @@ class StoreSearchScreen extends Component {
   _onPressItem = (prodOfCountry) => {
     if ( this.state.searchWord.length > 0) Analytics.trackEvent('Page_View_Count', {page : 'Move To Country with Searching'})
 
-    this.props.navigation.navigate('Country',{prodOfCountry})
+    this.props.navigation.navigate('Country')
   }
 
 

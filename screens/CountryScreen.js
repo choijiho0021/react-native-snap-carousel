@@ -70,7 +70,7 @@ class CountryBackButton extends PureComponent {
   render() {
     const {navigation, product} = this.props,
       {localOpList} = product,
-      prodOfCountry = this.props.route.params && this.props.route.params.prodOfCountry,
+      prodOfCountry = this.props.product.prodOfCountry,
       title = prodOfCountry && prodOfCountry.length > 0 ? productApi.getTitle( prodOfCountry[0].categoryId, localOpList.get(prodOfCountry[0].partnerId)) : ''
 
     return <AppBackButton navigation={navigation} title={title} />
@@ -103,7 +103,7 @@ class CountryScreen extends Component {
   }
 
   componentDidMount() {
-    const prodOfCountry = this.props.route.params && this.props.route.params.prodOfCountry,
+    const prodOfCountry = this.props.product.prodOfCountry,
       {localOpList} = this.props.product,
       localOp = localOpList.get(prodOfCountry[0].partnerId) || {}
 

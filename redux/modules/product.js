@@ -7,11 +7,15 @@ import pageApi from '../../utils/api/pageApi';
 
 const  GET_PROD_LIST=      "rokebi/product/GET_PROD_LIST"
 const  GET_LOCAL_OP_LIST=      "rokebi/product/GET_LOCAL_OP_LIST"
+export const  GET_PROD_OF_COUNTRY=      "rokebi/product/GET_PROD_OF_COUNTRY"
+export const  GET_SORTED_PROD_LIST=      "rokebi/product/GET_SORTED_PROD_LIST"
 export const  GET_PROD_DETAIL=      "rokebi/product/GET_PROD_DETAIL"
 
 const getProd = createAction(GET_PROD_LIST, productApi.getProduct)
 const getLocalOp = createAction(GET_LOCAL_OP_LIST, productApi.getLocalOp)
 const getProdDetailPage = createAction(GET_PROD_DETAIL, pageApi.getProductDetails)
+export const getProdOfCountry = createAction(GET_PROD_OF_COUNTRY)
+export const getSortedProdList = createAction(GET_SORTED_PROD_LIST)
 
 export const getProdDetail = (controller) => {
   return (dispatch, getState) => {
@@ -36,6 +40,8 @@ export const getProdListWithToast = utils.reflectWithToast(getProdList)
 const initialState = Map({
     prodList: Map(),
     localOpList: Map(),
+    prodOfCountry:[],
+    sortedProdList:[],
     detail: ''
 })
 
@@ -75,6 +81,13 @@ export default handleActions({
       }
       return state
     }
-  })
+  }),
 
+  [GET_SORTED_PROD_LIST] : (state, action) => {
+    return state.set('sortedProdList', action.payload)
+  },
+
+  [GET_PROD_OF_COUNTRY] : (state, action) => {
+    return state.set('prodOfCountry', action.payload)
+  },
 }, initialState)

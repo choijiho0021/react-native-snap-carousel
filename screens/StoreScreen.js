@@ -26,17 +26,6 @@ class StoreScreen extends Component {
   constructor(props) {
     super(props)
 
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft : () =>  (<Text style={styles.title}>{i18n.t('store')}</Text>),
-      headerRight: () => (
-        <AppButton key="search" 
-          style={styles.showSearchBar} 
-          onPress={() => this.props.navigation.navigate('StoreSearch',{allData:this.props.route.params && this.props.route.params.allData})} 
-          iconName="btnSearchTop" />
-      )
-    })
-
     this.state = {
       index: 0,
       routes: [
@@ -122,9 +111,18 @@ class StoreScreen extends Component {
       return weightA == weightB ? (a[0].search < b[0].search ? -1 : 1) : weightB - weightA
     })
 
-    this.props.navigation.setParams({
-      allData: sorted
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft : () =>  (<Text style={styles.title}>{i18n.t('store')}</Text>),
+      headerRight: () => (
+        <AppButton key="search" 
+          style={styles.showSearchBar} 
+          onPress={() => this.props.navigation.navigate('StoreSearch')} 
+          iconName="btnSearchTop" />
+      )
     })
+
+    this.props.action.product.getSortedProdList(sorted)
 
     this.setState({
       allData: sorted,
@@ -142,7 +140,8 @@ class StoreScreen extends Component {
   }
 
   _onPressItem = (prodOfCountry) => {
-    this.props.navigation.navigate('Country',{prodOfCountry})
+    this.props.action.product.getProdOfCountry(prodOfCountry)
+    this.props.navigation.navigate('Country')
   }
 
   renderScene = (props) => {
