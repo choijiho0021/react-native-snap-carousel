@@ -371,26 +371,12 @@ class UsimScreen extends Component {
       routeName = this.props.route.name,
       isFocusedToUsimTab = (lastTab[0] || '').startsWith( routeName ) && lastTab[0] !== prevProps.lastTab[0]
 
-    if ( (isFocusedToUsimTab && ! loginPending)
-      || iccid !== prevProps.account.iccid ) {
-      if(lastTab[0] != this.props.route.name) this.props.navigation.popToTop()
+    if ( (isFocusedToUsimTab && ! loginPending )
+      || (prevProps.account.iccid && iccid !== prevProps.account.iccid) ) {
+      if(lastTab[0] != this.props.route.name ) this.props.navigation.popToTop()
       
       this._init(loggedIn, iccid, auth)
     }
-
-    // const {account:{loggedIn, iccid}, auth} = this.props
-    
-    // if(loggedIn != prevProps.account.loggedIn || auth != prevProps.auth){
-    //   this._init(loggedIn, iccid, auth)
-    //   // return true
-    // }
-
-
-    // if(prevProps.account.loggedIn != this.props.loggedIn) {
-    //   // this.setState({
-    //   //   afterLoginTest: !this.state.afterLoginTest
-    //   // })
-    // }
 
     if(this.state.cancelPressed){
       setTimeout(()=>{
@@ -401,12 +387,6 @@ class UsimScreen extends Component {
     }
   }
 
-  componentWillUnmount(){
-    // this.setState({
-    //   isIccidChanged: false,
-    // })
-  }
-
   _init(loggedIn, iccid, auth){
     if(!loggedIn){
       this.props.navigation.navigate('Auth')
@@ -414,7 +394,7 @@ class UsimScreen extends Component {
       if (iccid && auth) {
         this.props.action.order.getSubsWithToast(iccid, auth)
       }else{
-        this.props.navigation.navigate('RegisterSim')
+        this.props.navigation.navigate('RegisterSim',{back:'home'})
       }
     }
   }

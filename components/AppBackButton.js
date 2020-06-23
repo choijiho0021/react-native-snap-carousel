@@ -32,6 +32,8 @@ class AppBackButton extends PureComponent {
       return
     }
 
+    if ( back == 'home') return navigation.navigate('Home')
+    // if ( back == 'home') return navigation.reset({routes: [{ name: 'Home' }] });
     if ( back == 'top') return navigation.popToTop()
     if ( back == 'lastTab') return navigation.navigate(lastTab[1])
 

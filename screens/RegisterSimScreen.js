@@ -49,7 +49,7 @@ class RegisterSimScreen extends Component {
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={this.props.route.params && this.props.route.params.title || i18n.t('sim:reg')} />)
+      headerLeft: () => (<AppBackButton navigation={this.props.navigation} back = {props.route.params && props.route.params.back} title={this.props.route.params && this.props.route.params.title || i18n.t('sim:reg')} />)
     })
 
     
@@ -116,7 +116,7 @@ class RegisterSimScreen extends Component {
         if ( resp.result === 0 ) {
           this.props.action.order.getSubs(iccid, this.props.auth)
 
-          AppAlert.info(i18n.t('reg:success'), i18n.t('appTitle'), () => this.props.navigation.popToTop())
+          AppAlert.info(i18n.t('reg:success'), i18n.t('appTitle'), () => this.props.navigation.canGoBack() && this.props.navigation.goBack())
           return resp
         }
         return new Promise.reject({msg: i18n.t( this.err[resp.result] || 'reg:fail')})
