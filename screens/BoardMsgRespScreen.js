@@ -137,6 +137,7 @@ const styles = StyleSheet.create({
     color: colors.warmGrey,
   },
   container: {
+    backgroundColor:colors.white,
     flex: 1
   },
   inputBox: {
