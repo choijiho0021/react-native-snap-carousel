@@ -20,6 +20,11 @@ import AppAlert from '../components/AppAlert';
 class CodePushScreen extends Component {
     constructor(props) {
         super(props);
+
+        this.props.navigation.setOptions({
+            title: null
+          })
+
         this.state = {
             syncMessage : '',
             syncStatus : undefined,
