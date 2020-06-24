@@ -49,7 +49,7 @@ class OrderAPI {
 
                 return {
                     key: item.order_id,
-                    orderId: item.order_id,
+                    orderId: utils.stringToNumber( item.order_id),
                     orderNo: item.order_number,
                     orderDate: item.placed,
                     orderType: item.type,
