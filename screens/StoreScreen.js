@@ -122,7 +122,7 @@ class StoreScreen extends Component {
       )
     })
 
-    this.props.action.product.getSortedProdList(sorted)
+    this.props.action.product.setSortedProdList(sorted)
 
     this.setState({
       allData: sorted,
@@ -140,7 +140,7 @@ class StoreScreen extends Component {
   }
 
   _onPressItem = (prodOfCountry) => {
-    this.props.action.product.getProdOfCountry(prodOfCountry)
+    this.props.action.product.setProdOfCountry(prodOfCountry)
     this.props.navigation.navigate('Country')
   }
 
