@@ -96,7 +96,6 @@ class PurchaseDetailScreen extends Component {
     if(this.state.cancelPressed){
       setTimeout(()=>{
         this.setState({
-          cancelPressed: false,
           disableBtn: true,
           isCanceled: true,
         })
@@ -406,6 +405,8 @@ class PurchaseDetailScreen extends Component {
                   actionText={'X'}
                   actionStyle={{paddingHorizontal: 20}}
                   accentColor={colors.white}
+                  autoHidingTime={3000}
+                  onClose={() => this.setState({cancelPressed: false})}
                   // distanceCallback={(distance) => {console.log('distance', distance)}}
                   actionHandler={()=>{this.snackRef.current.hideSnackbar()}}/>
           {

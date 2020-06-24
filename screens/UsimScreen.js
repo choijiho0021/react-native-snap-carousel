@@ -294,9 +294,9 @@ class UsageItem extends Component {
                 <View style={styles.endDateContainer}>
                   <Text style={appStyles.normal12Text}>{i18n.t('usim:usingTime')}</Text>
                   <Text style={styles.usageUntil}>{`${utils.toDateString(item.endDate,'YYYY-MM-DD h:mm')} ${i18n.t('usim:until')}`}</Text>
-                </View> 
+                </View>
               </View>
-            </View> : 
+            </View> :
             <View style={styles.inactiveContainer}>
               <Text style={appStyles.normal12Text}>{i18n.t('usim:usablePeriod')}</Text>
               <Text style={styles.usagePeriod}>{`${utils.toDateString(item.purchaseDate,'YYYY-MM-DD')} ~ ${item.expireDate}`}</Text>
@@ -331,38 +331,11 @@ class UsimScreen extends Component {
     this.showSnackBar = this.showSnackBar.bind(this)
   }
 
-  // shouldComponentUpdate(nextProps){
-  //   const {account:{loggedIn, iccid}, auth} = nextProps
-
-    
-  //   // if(loggedIn != prevProps.account.loggedIn || auth != prevProps.auth){
-  //   //   this._init(loggedIn, iccid, auth)
-  //   //   // return true
-  //   // }
-  //   console.log('@@shouldcomponent loggedIn', this.props.account.loggedIn, loggedIn)
-  //   console.log('@@shouldcomponent iccid', this.props.account.iccid, iccid)
-  //   console.log('@@shouldcomponent auth', this.props.auth, auth)
-  //   if(!(loggedIn == this.props.account.loggedIn && auth == this.props.auth && iccid == this.props.account.iccid)){
-  //     this._init(loggedIn, iccid, auth)
-  //     // return true
-  //   }
-  //   return false
-    
-  // }
   componentDidMount() {
     const { account: {iccid, loggedIn}, auth } = this.props
 
     this._init(loggedIn, iccid, auth)
 
-    // if(!loggedIn){
-    //   this.props.navigation.navigate('RegisterMobile')
-    // }else{
-    //   if (iccid && auth) {
-    //     this.props.action.order.getSubs(iccid, auth)
-    //   }else{
-    //     this.props.navigation.navigate('RegisterSim', {back:'lastTab'})eme u rokrok rok my wao
-    //   }
-    // }
   }
 
   componentDidUpdate(prevProps) {
@@ -378,13 +351,6 @@ class UsimScreen extends Component {
       this._init(loggedIn, iccid, auth)
     }
 
-    if(this.state.cancelPressed){
-      setTimeout(()=>{
-        this.setState({
-          cancelPressed: false
-        })
-      }, 3000)
-    }
   }
 
   _init(loggedIn, iccid, auth){
@@ -420,7 +386,7 @@ class UsimScreen extends Component {
   }
 
   _renderUsage({item}) {
-    return (<UsageItem item={item} auth={this.props.auth} showSnackBar={this.showSnackBar} onPress={this._onPressUsageDetail(item.key)}/>)
+    return (<UsageItem key={item.key} item={item} auth={this.props.auth} showSnackBar={this.showSnackBar} onPress={this._onPressUsageDetail(item.key)}/>)
   }
 
   _onRefresh() {
@@ -459,6 +425,7 @@ class UsimScreen extends Component {
         <View style={{backgroundColor:colors.whiteTwo}}>
           <FlatList 
             data={usage}
+            keyExtractor={(item)=> item.key.toString()}
             ListHeaderComponent={this._info}
             ListEmptyComponent={this._empty}
             renderItem={this._renderUsage}
@@ -478,10 +445,10 @@ class UsimScreen extends Component {
         </View>
         <SnackBar visible={cancelPressed} backgroundColor={colors.clearBlue} messageColor={colors.white}
                   position={'bottom'}
-                  // top={this.state.scrollHeight + windowHeight/2}
                   top={0}
                   containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 0}}
-                  // distanceCallback={(distance) => {console.log(distance)}}
+                  autoHidingTime={3000}
+                  onClose={() => this.setState({cancelPressed: false})}
                   textMessage={i18n.t("usim:failSnackBar")}/>  
       </View>
     );
