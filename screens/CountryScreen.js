@@ -118,17 +118,6 @@ class CountryScreen extends Component {
     }
   }
 
-  componentDidUpdate(){
-    if(this.state.addToCart){
-      setTimeout(()=>{
-        this.setState({
-          addToCart: false,
-          // disableCart: false
-        })
-      }, 3000)
-    }
-  }
-
   _onPress = (uuid) => () => {
     this.setState({selected: uuid})
   }
@@ -215,6 +204,8 @@ class CountryScreen extends Component {
                   actionText={'X'}
                   actionStyle={{paddingHorizontal: 20}}
                   accentColor={colors.white}
+                  autoHidingTime={3000}
+                  onClose={() => this.setState({addToCart: false})}
                   actionHandler={()=>{this.snackRef.current.hideSnackbar()}}
                   textMessage={i18n.t('country:addCart')}/>  
         { iccid ? 

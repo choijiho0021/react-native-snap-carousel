@@ -68,14 +68,6 @@ class CartScreen extends Component {
     if ( cart && cart != prevProps.cart && cart.orderItems && ! pending ) {
       this._init()
     }
-
-    if(this.state.showSnackBar){
-      setTimeout(()=>{
-        this.setState({
-          showSnackBar: false,
-        })
-      }, 3000)
-    }
   }
 
   _section( ... args) {
@@ -300,15 +292,17 @@ class CartScreen extends Component {
                                               balance={balance} 
                                               dlvCost={dlvCost}/>} />
         <SnackBar ref={this.snackRef}
-          visible={showSnackBar} backgroundColor={colors.clearBlue} 
-          textMessage={i18n.t("cart:remove")} messageColor={colors.white}
-          position={'top'}
-          top={windowHeight/2}
-          containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 10}}
-          actionText={'X'}
-          actionStyle={{paddingHorizontal: 20}}
-          accentColor={colors.white}
-          actionHandler={()=>{this.snackRef.current.hideSnackbar()}}/>
+                  visible={showSnackBar} backgroundColor={colors.clearBlue} 
+                  textMessage={i18n.t("cart:remove")} messageColor={colors.white}
+                  position={'top'}
+                  top={windowHeight/2}
+                  containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 10}}
+                  actionText={'X'}
+                  actionStyle={{paddingHorizontal: 20}}
+                  accentColor={colors.white}
+                  autoHidingTime={3000}
+                  onClose={() => this.setState({showSnackBar: false})}
+                  actionHandler={()=>{this.snackRef.current.hideSnackbar()}}/>
         <View style={styles.buttonBox}>
           <View style={styles.sumBox}>
             <Text style={[styles.btnBuyText, {color:colors.black}]}>{i18n.t('cart:pymAmount') + ': '}</Text>
