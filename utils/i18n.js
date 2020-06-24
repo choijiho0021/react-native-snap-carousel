@@ -542,7 +542,7 @@ const ko = {
   'reg:phone' : '일반전화',
   'reg:noEmail' : '^E-mail 주소를 입력하세요',
   'reg:invalidEmail' : '^E-mail 주소가 아닙니다',
-  'reg:noICCID' : '^ICCID 카드 등록 후 \n데이터상품 구매가 가능합니다.\n카드등록화면으로 이동하시겠습니까?',
+  'reg:noICCID' : 'ICCID 카드 등록 후 \n데이터상품 구매가 가능합니다.\n카드등록화면으로 이동하시겠습니까?',
   'reg:noActCode' : '^Activation Code를 입력하세요',
   'reg:noMobile' : '^휴대전화 번호를 입력하세요',
   'reg:invalidMobile' : '^휴대전화 번호 11자리를 입력하세요',
