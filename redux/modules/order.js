@@ -76,7 +76,10 @@ function updateOrders( state, action) {
   const {result, objects} = action.payload
 
   if (result == 0 && objects.length > 0) {
-    const orders = state.get('orders')
+    const isPageZero = (objects[0]||[]).key >= (state.get('orders')[0]||[]).key,
+      orders = isPageZero ? [] : state.get('orders'),
+      page = isPageZero ? -1 : state.get('page')
+
     let ordersIdx = state.get('ordersIdx')
 
     // add to the order list if not exist
@@ -91,7 +94,7 @@ function updateOrders( state, action) {
     });
 
     ordersIdx = Map(orders.sort((a, b) => b.orderId - a.orderId).map((a,idx)=>[String(a.orderId), idx]))
-    return state.set('orders', orders).set('ordersIdx', ordersIdx)
+    return state.set('orders', orders).set('ordersIdx', ordersIdx).set('page', page)
   }
 
   return state
