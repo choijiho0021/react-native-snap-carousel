@@ -318,8 +318,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.black
   },
   searchText : {
-    ... appStyles.normal14Text,
-    flex:1
+    //React Native 6.3버전 미만에서 한글로 글을 쓰는 경우 글씨 크기가 오락가락하는 이슈가 발생
+    // 글씨크기의 기본값 17로 설정하는 경우 어느정도 해결할 수 있으므로 설정 변경
+    // ... appStyles.normal14Text,
+    fontSize: 17,
+    flex:1,
   },
   searchList :{
     alignContent : "flex-start",
