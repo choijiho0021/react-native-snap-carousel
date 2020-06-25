@@ -5,6 +5,7 @@ import { pender } from 'redux-pender'
 import notiAPI from '../../utils/api/notiApi';
 import api from '../../utils/api/api';
 import moment from 'moment'
+import PushNotificationIOS from '@react-native-community/push-notification-ios'
 
 export const  GET_NOTI_LIST =  "rokebi/noti/GET_NOTI_LIST"
 const  READ_NOTI = "rokebi/noti/READ_NOTI"
@@ -28,6 +29,18 @@ export const NOTI_TYPE_PYM = 'pym'
 export const NOTI_TYPE_ACCOUNT = 'account'
 export const NOTI_TYPE_USIM = 'usim'
 export const NOTI_TYPE_NOTI = 'noti'
+
+const setAppBadge = (notiCount) => {
+  if(Platform.OS == 'android'){
+    const firebase = require('react-native-firebase')
+    
+    firebase.notifications().setBadge(notiCount)
+  }
+  else if(Platform.OS == 'ios'){
+    PushNotificationIOS.setApplicationIconBadgeNumber(notiCount)
+  }
+}
+
 
 export const notiReadAndGet = (uuid,mobile,auth) => {
   return (dispatch,getState) => {
@@ -70,6 +83,10 @@ export default handleActions({
     onSuccess: (state, action) => {
       const {result, objects} = action.payload
       if (result == 0 && objects.length > 0) {
+        //appBadge 업데이트
+        const badgeCnt = objects.filter(elm => elm.isRead == 'F').length
+        setAppBadge(badgeCnt)
+
         return state.set('notiList', objects)
           .set('lastRefresh', moment())
       }
@@ -106,6 +123,9 @@ export default handleActions({
       const notiList = state.toJS().notiList.map(elm => elm.uuid == objects[0].uuid ? {...elm, isRead:'T'} : elm)
       
       if (state && result == 0) {
+        //appBadge 업데이트
+        const badgeCnt = notiList.filter(elm => elm.isRead == 'F').length
+        setAppBadge(badgeCnt)
         return state.set('notiList',notiList)
       }
       return state

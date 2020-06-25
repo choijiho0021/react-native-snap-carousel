@@ -1,6 +1,5 @@
-import React, {Component, PureComponent} from 'react';
+import React, {Component} from 'react';
 import {
-  Platform,
   StyleSheet,
   View,
   Text,
@@ -23,7 +22,6 @@ import * as notiActions from '../redux/modules/noti'
 import * as boardActions from '../redux/modules/board'
 import * as accountActions from '../redux/modules/account'
 import AppBackButton from '../components/AppBackButton';
-import PushNotificationIOS from '@react-native-community/push-notification-ios'
 
 const MODE_NOTIFICATION = 'info'
 
@@ -92,15 +90,6 @@ class NotiScreen extends Component {
     if ( ! this.props.pending && this.props.pending != prevProps.pending) {
       const { notiList } = this.props.noti
       const notiCount = notiList.filter(item => item.isRead == 'F').length
-
-      if(Platform.OS == 'android'){
-        const firebase = require('react-native-firebase')
-        
-        firebase.notifications().setBadge(notiCount)
-      }
-      else if(Platform.OS == 'ios'){
-        PushNotificationIOS.setApplicationIconBadgeNumber(notiCount)
-      }
       
       this.setState({
         refreshing: false

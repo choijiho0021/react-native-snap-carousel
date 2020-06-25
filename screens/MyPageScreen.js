@@ -108,6 +108,11 @@ class MyPageScreen extends Component {
     this.flatListRef = React.createRef()
   }
 
+  shouldComponentUpdate(nextProps){
+    const { ordersIdx, account = {} } = this.props.order
+    return ((account.userPictureUrl != nextProps.account.userPictureUrl) || ordersIdx != nextProps.order.ordersIdx)
+  }
+
   componentDidMount() {
     //Logout시에 mount가 새로 되는데 login 페이지로 안가기 위해서 isFocused 조건 추가
     if(!this.props.account.loggedIn && this.props.navigation.isFocused()){

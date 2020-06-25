@@ -268,7 +268,7 @@ class StoreSearchScreen extends Component {
     const {querying,searching,searchWord} = this.state
 
     return (
-      <View style={[appStyles.container,{marginTop:15}]}>
+      <View style={styles.mainContainer}>
         <AppActivityIndicator visible={querying} />
         { 
           searching ? this.renderStoreList() :
@@ -287,6 +287,15 @@ const styles = StyleSheet.create({
   container: {
     flex:1
   },
+  mainContainer: {
+    flex: 1,
+    width:'100%',
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    paddingTop:15,
+    backgroundColor:colors.white
+  },
   width100: {
     width:'100%'
   },
@@ -298,19 +307,22 @@ const styles = StyleSheet.create({
     flex : 1
   },
   showSearchBar : {
-    marginRight:20,
+    marginRight:30,
     justifyContent:"flex-end",
     backgroundColor:colors.white
   },
   titleBottom :{
     height: 1,
     marginHorizontal:20,
+    marginTop:10,
     backgroundColor: colors.black
   },
   searchText : {
-    ... appStyles.normal14Text,
+    //React Native 6.3버전 미만에서 한글로 글을 쓰는 경우 글씨 크기가 오락가락하는 이슈가 발생
+    // 글씨크기의 기본값 17로 설정하는 경우 어느정도 해결할 수 있으므로 설정 변경
+    // ... appStyles.normal14Text,
+    fontSize: 17,
     flex:1,
-    marginLeft:20
   },
   searchList :{
     alignContent : "flex-start",

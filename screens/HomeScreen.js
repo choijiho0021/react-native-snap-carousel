@@ -219,7 +219,7 @@ class HomeScreen extends Component {
     }
   }
 
-  _notification(type, data) {
+  _notification(type, data, isForeground = true) {
     const {mobile, loggedIn} = this.props.account
 
     if ( loggedIn ) {
@@ -233,11 +233,11 @@ class HomeScreen extends Component {
         })
         break;
       case 'notification':
-        this._handleNotification( data )
+        this._handleNotification( data, isForeground )
     }
   }
 
-  _handleNotification( payload ) {
+  _handleNotification( payload, isForeground) {
     const type = (payload.data || {}).notiType
     const target = (payload.data || {}).iccid
     const { mobile, iccid } = this.props.account
@@ -258,12 +258,12 @@ class HomeScreen extends Component {
           }
         }
         else {
-          this.props.navigation.navigate('Noti')
+          !isForeground && this.props.navigation.navigate('Noti')
         }
 
         break;
       default:
-        this.props.navigation.navigate('Noti')
+        !isForeground && this.props.navigation.navigate('Noti')
     }
   }
 
