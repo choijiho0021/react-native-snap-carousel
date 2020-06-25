@@ -138,35 +138,32 @@ class PurchaseDetailScreen extends Component {
     {
       ok: () => 
         {
-          this.props.action.order.cancelOrder(this.state.orderId, this.props.auth).then(resp =>{
+          this.props.action.order.cancelAndGetOrder(this.state.orderId, auth).then(resp => {
+            // getOrderById 에 대한 결과 확인
+            // 기존에 취소했는데, 처리가 안되어 다시 취소버튼을 누르게 된 경우
+            // 배송상태가 변화되었는데 refresh 되지 않아 취소버튼을 누른 경우 등
+            if(!_.isEmpty(resp.objects)) {
+              var { state, shipmentState } = resp.objects[0],
+              isCanceled = shipmentState == orderApi.shipmentState.CANCEL || state == 'canceled',
+              disableBtn = shipmentState == orderApi.shipmentState.READY || shipmentState == orderApi.shipmentState.SHIP
+              this.setState({
+                ... state,
+                shipmentState,
+                isCanceled,
+                disableBtn
+              })
+            }
 
-            // 결제취소요청 후 order 및 로깨비캐시 (잔액) 가져오기
-            this.props.action.order.getOrderById(auth, this.state.orderId).then(
-              val => {
-                if(val.result == 0) {
-                  var { state, shipmentState } = val.objects[0],
-                  isCanceled = shipmentState == orderApi.shipmentState.CANCEL || state == 'canceled'
-                  this.setState({
-                    ... state, 
-                    shipmentState,
-                    isCanceled
-                  })
-                  this.props.action.account.getAccount(iccid, auth)
-                  
-                  if (resp.result == 0){
-                    this.setState({cancelPressed: true})
-                  }else{
-                    if(isCanceled){
-                      AppAlert.info(i18n.t("his:alreadyCanceled"))
-                    }else{
-                      AppAlert.info(i18n.t("his:cancelFail"))
-                    }
-                  }
-
-                }
+            // cancelOrder에 대한 결과
+            if (resp.cancelResult == 0){
+              this.setState({cancelPressed: true})
+            }else{
+              if(isCanceled){
+                AppAlert.info(i18n.t("his:alreadyCanceled"))
+              }else{
+                AppAlert.info(i18n.t("his:cancelFail"))
               }
-            )
-            
+            }
           },err =>{
             AppAlert.info(i18n.t("his:cancelError"))
           })
@@ -359,7 +356,7 @@ class PurchaseDetailScreen extends Component {
         <Text style={styles.date}>{utils.toDateString(orderDate)}</Text>
         <View style={styles.productTitle}>
           {
-            (isCanceled || disableBtn) &&
+            (isCanceled) &&
             <Text style={[appStyles.bold18Text, {color: colors.tomato}]}>{`(${i18n.t("his:cancel")})`} </Text>
           }
           <Text style={appStyles.bold18Text}>{label}</Text>

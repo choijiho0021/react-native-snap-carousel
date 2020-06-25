@@ -4,6 +4,7 @@ import { Map } from 'immutable';
 import orderApi from '../../utils/api/orderApi'
 import subscriptionApi from '../../utils/api/subscriptionApi';
 import utils from '../../utils/utils';
+import { getAccount } from './account'
 
 export const GET_ORDERS = 'rokebi/order/GET_ORDERS'
 export const GET_ORDER_BY_ID = 'rokebi/order/GET_ORDER_BY_ID'
@@ -42,6 +43,26 @@ export const getOrders = (auth, page) => {
   }
 }
 
+export const cancelAndGetOrder = ( orderId, auth ) => {
+  return (dispatch, getState) => {
+    const { account } = getState(),
+      iccid = account.get('iccid')
+
+    return dispatch(cancelOrder( orderId, auth )).then(resp => {
+        // 결제취소요청 후 항상 order를 가져온다
+        return dispatch(getOrderById(auth, orderId)).then(val => {
+          if(val.result == 0) {
+            dispatch(getAccount(iccid, auth))
+            return {
+              ... val,
+              cancelResult: resp.result
+            }
+          }else return resp
+        })
+    })
+  }
+}
+
 const initialState = Map({
   orders: [],
   ordersIdx: Map(),
@@ -69,9 +90,7 @@ function updateOrders( state, action) {
       }
     });
 
-    orders.sort((a, b) => b.orderId - a.orderId).forEach((item, idx) => {
-      ordersIdx = ordersIdx.set(String(item.orderId), idx)
-    })
+    ordersIdx = Map(orders.sort((a, b) => b.orderId - a.orderId).map((a,idx)=>[String(a.orderId), idx]))
     return state.set('orders', orders).set('ordersIdx', ordersIdx)
   }
 
@@ -117,13 +136,6 @@ export default handleActions({
       const {result, objects} = action.payload
     
       let usage = state.get('usage')
-
-      // objects.map(elm => {
-      //   const idx = usage.findIndex(item => item.uuid == elm.uuid)
-
-      //   usage[idx].status = elm.status
-      //   usage[idx].statusCd = elm.statusCd
-      // })
 
     if (result == 0) {
         return state.set('usage', usage)
