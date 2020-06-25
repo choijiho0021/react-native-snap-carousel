@@ -90,7 +90,7 @@ function updateOrders( state, action) {
       }
     });
 
-    ordersIdx = Map(orders.sort((a, b) => b.orderId - a.orderId).map((a,idx)=>[a.orderId, idx]))
+    ordersIdx = Map(orders.sort((a, b) => b.orderId - a.orderId).map((a,idx)=>[String(a.orderId), idx]))
     return state.set('orders', orders).set('ordersIdx', ordersIdx)
   }
 
