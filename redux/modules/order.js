@@ -70,7 +70,7 @@ function updateOrders( state, action) {
     });
 
     orders.sort((a, b) => b.orderId - a.orderId).forEach((item, idx) => {
-      ordersIdx = ordersIdx.set(item.orderId, idx)
+      ordersIdx = ordersIdx.set(String(item.orderId), idx)
     })
     return state.set('orders', orders).set('ordersIdx', ordersIdx)
   }
