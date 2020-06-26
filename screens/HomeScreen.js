@@ -169,7 +169,7 @@ class HomeScreen extends Component {
 
     // 공지 사항 가져오기 
     this.props.action.info.getInfoList('info')
-
+    this.props.action.info.getHomeInfoList('info:home')
     // 로그인 여부에 따라 달라지는 부분
     this._init()
   }
@@ -431,7 +431,7 @@ class HomeScreen extends Component {
       <View style={{flexDirection: 'row', marginHorizontal: 20}}>
         <AppIcon name="iconNotice" size={36} />
         <Carousel
-          data={this.props.info.infoList}
+          data={this.props.info.homeInfoList}
           renderItem={this._renderInfo}
           autoplay={true}
           vertical={true}

@@ -62,7 +62,7 @@ class ContactScreen extends Component {
           value: i18n.t('contact:notice'), 
           page : 'Notice',
           onPress:() => {
-            this.props.navigation.navigate('Noti', {mode: 'info', title:i18n.t('notice'), info: this.props.info.infoList})
+            this.props.navigation.navigate('Noti', {mode: 'info', title:i18n.t('contact:noticeDetail'), info: this.props.info.infoList})
           }
         },
         { 
