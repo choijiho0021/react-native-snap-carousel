@@ -1,9 +1,9 @@
 import { Platform } from 'react-native';
 
 const impId = "imp53913318"
-const codePushiOSStagLabel = "v108"
+const codePushiOSStagLabel = "v110"
 const codePushiOSProdLabel = "v0"
-const codePushAndStagLabel = "v101"
+const codePushAndStagLabel = "v103"
 const codePushAndProdLabel = "v0"
 const channelId = "_nzQhxb"
 
@@ -44,7 +44,7 @@ const ENV = {
 export default function() {
   if ( process.env.NODE_ENV == 'production') return ENV.prod
   if ( process.env.NODE_ENV == 'staging') return ENV.staging
-  return ENV.dev
+  return ENV.prod
 }
 
 
