@@ -112,6 +112,7 @@ function cartStack() {
       <CartStack.Screen name="PaymentResult" component={PaymentResultScreen} />
       <CartStack.Screen name="CustomerProfile" component={CustomerProfileScreen} />
       <CartStack.Screen name="AddProfile" component={AddProfileScreen} />
+      <CartStack.Screen name="RegisterSim" component={RegisterSimScreen} />
     </CartStack.Navigator>
   );
 }
