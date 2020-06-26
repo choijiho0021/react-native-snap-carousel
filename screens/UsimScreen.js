@@ -360,7 +360,7 @@ class UsimScreen extends Component {
       if (iccid && auth) {
         this.props.action.order.getSubsWithToast(iccid, auth)
       }else{
-        this.props.navigation.navigate('RegisterSim',{back:'home'})
+        this.props.navigation.navigate('RegisterSim',{back:'Home'})
       }
     }
   }
