@@ -20,10 +20,10 @@ import { colors } from '../constants/Colors';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import AppIcon from '../components/AppIcon';
 import utils from '../utils/utils';
-import api from '../utils/api/api';
 import { attachmentSize } from '../constants/SliderEntry.style'
 import AppButton from '../components/AppButton';
 import { windowWidth } from '../constants/SliderEntry.style';
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 class BoardMsgRespScreen extends Component {
   constructor(props) {
@@ -70,7 +70,7 @@ class BoardMsgRespScreen extends Component {
       <View style={styles.attachBox}>
         {
           images && images.filter(item => ! _.isEmpty(item))
-            .map((url, idx) => <Image key={url+idx} source={{uri: api.httpImageUrl(url).toString()}} style={styles.attach}/>)
+            .map((url, idx) => <Image key={url+idx} source={{uri: API.default.httpImageUrl(url).toString()}} style={styles.attach}/>)
         }
       </View>
     )

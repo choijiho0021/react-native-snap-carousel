@@ -9,13 +9,12 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux'
 import {appStyles} from "../constants/Styles"
-import productApi from '../utils/api/productApi';
 import i18n from '../utils/i18n';
 import utils from '../utils/utils';
-import api from '../utils/api/api'
 import _ from 'underscore'
 import { colors } from '../constants/Colors';
 import { isDeviceSize } from '../constants/SliderEntry.style';
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 class CountryItem extends PureComponent {
 
@@ -33,8 +32,8 @@ class CountryItem extends PureComponent {
 
               return <View key={elm[0].key} style={{flex:1, marginLeft:idx == 1 ? 14 : 0}}>
                 <TouchableOpacity onPress={() => this.props.onPress && this.props.onPress(elm)}>
-                  <Image key={"img"} source={{uri:api.httpImageUrl(localOp.imageUrl)}} style={styles.image}/>
-                  <Text key={"cntry"} style={styles.cntry}>{productApi.getTitle(elm[0].categoryId, localOp)}</Text>
+                  <Image key={"img"} source={{uri:API.default.httpImageUrl(localOp.imageUrl)}} style={styles.image}/>
+                  <Text key={"cntry"} style={styles.cntry}>{API.Product.getTitle(elm[0].categoryId, localOp)}</Text>
                   <View style={styles.priceRow}>
                     <View style={styles.price}>
                       <Text key={"price"} style={styles.priceNumber}>{utils.numberToCommaString(bestPrice)}</Text> 

@@ -11,7 +11,6 @@ import { createLogger } from 'redux-logger'
 
 import MyAppLoading from './components/MyAppLoading'
 import Video from 'react-native-video'
-import userApi from './utils/api/userApi';
 import utils from './utils/utils';
 import * as accountActions from './redux/modules/account'
 import * as productActions from './redux/modules/product'
@@ -22,6 +21,7 @@ import codePush from 'react-native-code-push'
 import AppAlert from './components/AppAlert'
 import i18n from './utils/i18n'
 import AppToast from './components/AppToast'
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 const logger = createLogger()
 const composeEnhancers = (process.env.NODE_ENV == 'development' ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ : null) || compose;
@@ -80,9 +80,9 @@ export default codePush(codePushOptions)(function App(props) {
 })
 
 async function login() {
-    const iccid = await utils.retrieveData( userApi.KEY_ICCID)
-    const mobile = await utils.retrieveData( userApi.KEY_MOBILE)
-    const pin = await utils.retrieveData( userApi.KEY_PIN)
+    const iccid = await utils.retrieveData( API.User.KEY_ICCID)
+    const mobile = await utils.retrieveData( API.User.KEY_MOBILE)
+    const pin = await utils.retrieveData( API.User.KEY_PIN)
 
     if ( mobile && pin ) {
       store.dispatch(accountActions.logInAndGetAccount( mobile, pin, iccid))

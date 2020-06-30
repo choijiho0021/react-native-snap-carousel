@@ -10,7 +10,7 @@ import {appStyles} from '../constants/Styles'
 import i18n from '../utils/i18n';
 import {colors} from '../constants/Colors'
 import AppIcon from './AppIcon';
-import api from '../utils/api/api'
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 const styles = StyleSheet.create({
   button: {
@@ -52,7 +52,7 @@ export default class AppButton extends PureComponent {
 
         <View style={[styles.container, align]}>
           {
-            uri ? <Image source={{uri:api.httpImageUrl(uri)}}/> :
+            uri ? <Image source={{uri:API.default.httpImageUrl(uri)}}/> :
             iconName &&  <AppIcon name={iconName} size={size} checked={checked} style={iconStyle}/> 
           }
           {

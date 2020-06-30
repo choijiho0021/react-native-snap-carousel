@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Image, TouchableOpacity } from 'react-native'
-import api from '../utils/api/api'
 import AppIcon from './AppIcon';
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 export default function AppUserPic({style, url, icon, onPress}) {
   return ( 
@@ -9,7 +9,7 @@ export default function AppUserPic({style, url, icon, onPress}) {
       <TouchableOpacity onPress={onPress}>
         {
           url ?
-          <Image source={{uri:api.httpImageUrl(url)}} style={[style, {borderRadius: style.width/2}]}/> :
+          <Image source={{uri:API.default.httpImageUrl(url)}} style={[style, {borderRadius: style.width/2}]}/> :
           <AppIcon name={icon}/>
         }
       </TouchableOpacity>

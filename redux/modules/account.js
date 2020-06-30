@@ -2,13 +2,12 @@ import { Platform } from 'react-native';
 import { createAction, handleActions } from 'redux-actions';
 import { Map } from 'immutable';
 import { pender } from 'redux-pender'
-import userApi from '../../utils/api/userApi';
-import accountApi from '../../utils/api/accountApi';
 import _ from 'underscore'
 import utils from '../../utils/utils';
 import { batch } from 'react-redux';
 import * as ToastActions from './toast'
 import { Toast } from '../../constants/CustomTypes'
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 const SIGN_UP =        'rokebi/account/SIGN_UP'
 export const UPDATE_ACCOUNT = 'rokebi/account/UPDATE_ACCOUNT'
@@ -26,20 +25,20 @@ export const CHANGE_ATTR = 'rokebi/account/CHANGE_ATTR'
 const REGISTER_MOBILE = 'rokebi/account/REGISTER_MOBILE'
 const CLEAR_ACCOUNT = 'rokebi/account/CLEAR_ACCOUNT'
 
-export const getToken = createAction(GET_TOKEN, userApi.getToken)
+export const getToken = createAction(GET_TOKEN, API.User.getToken)
 export const updateAccount = createAction(UPDATE_ACCOUNT)
 const resetAccount = createAction(RESET_ACCOUNT)
 export const signUp = createAction(SIGN_UP)
-const logIn = createAction(LOGIN, userApi.logIn)
-export const getUserId = createAction(GET_USER_ID, userApi.getByName)
-export const getAccount = createAction(GET_ACCOUNT, accountApi.getAccount)
-const getAccountByUser = createAction(GET_ACCOUNT_BY_USER, accountApi.getByUser)
-export const getAccountByUUID = createAction(GET_ACCOUNT_BY_UUID, accountApi.getByUUID)
-export const activateAccount = createAction(ACTIVATE_ACCOUNT, accountApi.update)
-const registerMobile0 = createAction(REGISTER_MOBILE, accountApi.registerMobile)
-const uploadPicture = createAction(UPLOAD_PICTURE, accountApi.uploadPicture)
-const changePicture = createAction(CHANGE_PICTURE, userApi.changePicture)
-const changeUserAttr = createAction(CHANGE_ATTR, userApi.update)
+const logIn = createAction(LOGIN, API.User.logIn)
+export const getUserId = createAction(GET_USER_ID, API.User.getByName)
+export const getAccount = createAction(GET_ACCOUNT, API.Account.getAccount)
+const getAccountByUser = createAction(GET_ACCOUNT_BY_USER, API.Account.getByUser)
+export const getAccountByUUID = createAction(GET_ACCOUNT_BY_UUID, API.Account.getByUUID)
+export const activateAccount = createAction(ACTIVATE_ACCOUNT, API.Account.update)
+const registerMobile0 = createAction(REGISTER_MOBILE, API.Account.registerMobile)
+const uploadPicture = createAction(UPLOAD_PICTURE, API.Account.uploadPicture)
+const changePicture = createAction(CHANGE_PICTURE, API.User.changePicture)
+const changeUserAttr = createAction(CHANGE_ATTR, API.User.update)
 const clearAccount = createAction(CLEAR_ACCOUNT)
 
 const changeUserAttrWithToast = utils.reflectWithToast(changeUserAttr, Toast.NOT_UPDATED)
@@ -48,9 +47,9 @@ const changePictureWithToast = utils.reflectWithToast(changePicture, Toast.NOT_U
 
 export const logout = () => {
   return (dispatch) => {
-    utils.removeData( userApi.KEY_ICCID)
-    utils.removeData( userApi.KEY_MOBILE)
-    utils.removeData( userApi.KEY_PIN)
+    utils.removeData( API.User.KEY_ICCID)
+    utils.removeData( API.User.KEY_MOBILE)
+    utils.removeData( API.User.KEY_PIN)
 
     batch(() => {
       dispatch(resetAccount())
@@ -158,8 +157,8 @@ export const logInAndGetAccount = (mobile, pin, iccid) => {
           const obj = resp.objects[0],
             token = {token: obj.csrf_token}
 
-          utils.storeData( userApi.KEY_MOBILE, obj.current_user.name)
-          utils.storeData( userApi.KEY_PIN, pin)
+          utils.storeData( API.User.KEY_MOBILE, obj.current_user.name)
+          utils.storeData( API.User.KEY_PIN, pin)
 
           // get ICCID account info
           if ( iccid) {
@@ -171,7 +170,7 @@ export const logInAndGetAccount = (mobile, pin, iccid) => {
             // 가장 최근 사용한 SIM 카드 번호를 조회한다. 
             dispatch(getAccountByUser(mobile, token)).then(resp => {
               if ( resp.result == 0 && resp.objects.length > 0 && resp.objects[0].status == 'A') {
-                utils.storeData( userApi.KEY_ICCID, resp.objects[0].iccid)
+                utils.storeData( API.User.KEY_ICCID, resp.objects[0].iccid)
                 dispatch(getAccount(resp.objects[0].iccid, token))
               }
             })
@@ -212,7 +211,7 @@ export const uploadAndChangePicture = (image) => {
 
 export const clearCurrentAccount = () => {
   return (dispatch) => {
-    utils.removeData( userApi.KEY_ICCID)
+    utils.removeData( API.User.KEY_ICCID)
 
     batch(() => {
       dispatch(clearAccount())
@@ -350,7 +349,7 @@ export default handleActions({
     onSuccess: (state, action) => {
       const {result, objects} = action.payload
       if (result == 0 && objects.length > 0) {
-        utils.storeData( userApi.KEY_ICCID, objects[0].iccid)
+        utils.storeData( API.User.KEY_ICCID, objects[0].iccid)
         return updateAccountState(state, objects[0])
       }
       return state
@@ -369,12 +368,12 @@ export default handleActions({
             // mobile 번호가 다르면, ICCID는 다른 단말에 할당된 것이므로 무시한다.
             return state.set('isUsedByOther', true)
           }
-          utils.storeData( userApi.KEY_ICCID, objects[0].iccid)
+          utils.storeData( API.User.KEY_ICCID, objects[0].iccid)
           return updateAccountState(state, objects[0])
         }
 
         // invalid status
-        utils.removeData( userApi.KEY_ICCID)
+        utils.removeData( API.User.KEY_ICCID)
       }
       return state
     }

@@ -2,15 +2,15 @@ import { createAction, handleActions } from 'redux-actions';
 import { Map, List } from 'immutable';
 import _ from 'underscore'
 import { pender } from 'redux-pender'
-import simCardApi from '../../utils/api/simCardApi';
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 const  ADD_ICCID =          "rokebi/sim/ADD_ICCID"
 export const  UPDATE_SIM_PARTNER = "rokebi/sim/UPDATE_SIM_PARTNER"
 export const  GET_SIM_CARD_LIST =  "rokebi/sim/GET_SIM_CARD_LIST"
 
 export const addIccid = createAction(ADD_ICCID)
-export const updateSimPartner = createAction(UPDATE_SIM_PARTNER, simCardApi.getSimPartnerByID)
-export const getSimCardList = createAction(GET_SIM_CARD_LIST, simCardApi.get)
+export const updateSimPartner = createAction(UPDATE_SIM_PARTNER, API.SimCard.getSimPartnerByID)
+export const getSimCardList = createAction(GET_SIM_CARD_LIST, API.SimCard.get)
 
 
 const initialState = Map({

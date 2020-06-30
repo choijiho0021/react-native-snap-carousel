@@ -14,7 +14,6 @@ import {appStyles} from "../constants/Styles"
 import i18n from '../utils/i18n'
 import * as accountActions from '../redux/modules/account'
 import * as cartActions from '../redux/modules/cart'
-import userApi from '../utils/api/userApi';
 import _ from 'underscore'
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import AppButton from '../components/AppButton';
@@ -28,7 +27,7 @@ import { colors } from '../constants/Colors';
 import { Map } from 'immutable'
 import validationUtil from '../utils/validationUtil';
 import InputPinInTime from '../components/InputPinInTime';
-import api from '../utils/api/api';
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 
 class RegisterMobileListItem extends PureComponent {
@@ -186,11 +185,11 @@ class RegisterMobileScreen extends Component {
         this.setState({ emailValidation: { isValid, error: error.email[0] } })
       }
       else {
-        let resp = await userApi.confirmEmail({ email: `${email}@${domain}` })
+        let resp = await API.User.confirmEmail({ email: `${email}@${domain}` })
 
         if (! this._isMounted) return;
 
-        if ( resp.result !== 0 && resp.result !== api.E_INVALID_ARGUMENT ) {
+        if ( resp.result !== 0 && resp.result !== API.default.E_INVALID_ARGUMENT ) {
           console.log('confirm email failed', resp)
           throw new Error('failed to confirm email')
         }
@@ -200,7 +199,7 @@ class RegisterMobileScreen extends Component {
       }
 
       if ( isValid && this._isMounted ) {
-        let resp = await userApi.signUp({ user: mobile, pass: pin, email: `${email}@${domain}`, mktgOptIn: confirm.get('2')})
+        let resp = await API.User.signUp({ user: mobile, pass: pin, email: `${email}@${domain}`, mktgOptIn: confirm.get('2')})
 
         if (resp.result === 0 && ! _.isEmpty(resp.objects) ) {
           this._signIn({ mobile, pin })
@@ -254,7 +253,7 @@ class RegisterMobileScreen extends Component {
           timeout: true
         })
 
-        userApi.sendSms({ user: value, abortController: this.controller })
+        API.User.sendSms({ user: value, abortController: this.controller })
           .then( resp => {
             if (resp.result === 0) {
               this.setState({
@@ -288,7 +287,7 @@ class RegisterMobileScreen extends Component {
 
     this.setState({ loading: true })
 
-    return userApi.confirmSmsCode({ user: mobile, pass: pin, abortController: this.controller })
+    return API.User.confirmSmsCode({ user: mobile, pass: pin, abortController: this.controller })
       .then( resp => {
         if (this._isMounted) {
           this.setState({ loading: false })

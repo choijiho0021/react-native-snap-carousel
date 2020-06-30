@@ -25,11 +25,11 @@ import _ from 'underscore'
 import AppUserPic from '../components/AppUserPic';
 import AppModal from '../components/AppModal';
 import validationUtil from '../utils/validationUtil';
-import userApi from '../utils/api/userApi';
 import LabelTextTouchable from '../components/LabelTextTouchable';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import { openSettings, check, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import Analytics from 'appcenter-analytics';
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 let ImagePicker 
 ImagePicker = require('react-native-image-crop-picker').default
@@ -269,7 +269,7 @@ class MyPageScreen extends Component {
 
     if(email !== value){
       // check duplicated email
-      const resp = await userApi.getByMail(value, this.props.auth)
+      const resp = await API.User.getByMail(value, this.props.auth)
       if (resp.result == 0 && resp.objects.length > 0) {
         // duplicated email
         return [ i18n.t('acc:duplicatedEmail')]

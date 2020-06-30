@@ -15,7 +15,6 @@ import i18n from '../utils/i18n'
 import * as productActions from '../redux/modules/product'
 import * as cartActions from '../redux/modules/cart'
 import * as accountActions from '../redux/modules/account'
-import api from '../utils/api/api';
 import { bindActionCreators } from 'redux'
 import AppButton from '../components/AppButton'
 import AppIcon from '../components/AppIcon';
@@ -27,8 +26,8 @@ import { windowWidth, device, windowHeight } from '../constants/SliderEntry.styl
 import Analytics from 'appcenter-analytics'
 import _ from 'underscore'
 import AppActivityIndicator from '../components/AppActivityIndicator';
-import productApi from '../utils/api/productApi';
 import SnackBar from 'react-native-snackbar-component';
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 
 
@@ -71,7 +70,7 @@ class CountryBackButton extends PureComponent {
     const {navigation, product} = this.props,
       {localOpList} = product,
       prodOfCountry = this.props.product.prodOfCountry,
-      title = prodOfCountry && prodOfCountry.length > 0 ? productApi.getTitle( prodOfCountry[0].categoryId, localOpList.get(prodOfCountry[0].partnerId)) : ''
+      title = prodOfCountry && prodOfCountry.length > 0 ? API.Product.getTitle( prodOfCountry[0].categoryId, localOpList.get(prodOfCountry[0].partnerId)) : ''
 
     return <AppBackButton navigation={navigation} title={title} />
   }
@@ -113,7 +112,7 @@ class CountryScreen extends Component {
         imageUrl: localOp.imageUrl,
         localOpDetails: localOp.detail,
         selected: prodOfCountry[0].uuid,
-        title : productApi.getTitle(prodOfCountry[0], localOp)
+        title : API.Product.getTitle(prodOfCountry[0], localOp)
       })
     }
   }
@@ -178,7 +177,7 @@ class CountryScreen extends Component {
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
-        <Image style={styles.box} source={{uri:api.httpImageUrl(imageUrl)}}/>
+        <Image style={styles.box} source={{uri:API.default.httpImageUrl(imageUrl)}}/>
         
         <TouchableOpacity onPress={() => this.props.navigation.navigate('ProductDetail', {title:title, img:imageUrl, localOpDetails})}>
           <View style={styles.detail}>

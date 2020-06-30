@@ -3,9 +3,6 @@ import i18n from 'i18n-js'
 
 const locales = RNLocalize.getLocales();
 
-// import * as Localization from 'expo-localization';
-// import i18n from 'i18n-js';
-
 const en = {
   'select': 'Select',
   'store': 'Store',
@@ -925,6 +922,4 @@ if (Array.isArray(locales)) {
 
 i18n.fallbacks = true;
 i18n.translations = { ko, en };
-// i18n.locale = Localization.locale || 'ko_KR';
-// i18n.lang = i18n.locale.substr(0,2);
 export default i18n;

@@ -1,14 +1,11 @@
 import { createAction, handleActions } from 'redux-actions'
 import { Map, List } from 'immutable';
 import { pender } from 'redux-pender'
-import cartApi from '../../utils/api/cartApi'
-import rechargeApi from '../../utils/api/rechargeApi'
-import api from '../../utils/api/api';
 import i18n from '../../utils/i18n';
 import utils from '../../utils/utils';
 import { getOrders } from './order'
-
 import {getAccount} from './account'
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 
 const SET_CART_TOKEN = 'rokebi/cart/SET_CART_TOKEN'
@@ -32,17 +29,17 @@ export const setCartToken = createAction((SET_CART_TOKEN))
 export const cartFlyoutOpen = createAction(CART_FLYOUT_OPEN);
 export const cartFlyoutClose = createAction(CART_FLYOUT_CLOSE);
 
-export const cartFetch = createAction(CART_FETCH, cartApi.get) 
-export const cartAdd = createAction(CART_ADD, cartApi.add) 
-export const cartRemove = createAction(CART_REMOVE, cartApi.remove) 
-export const cartUpdateQty = createAction(CART_UPDATE, cartApi.updateQty, (... args) => ({abortController:args.abortController})) 
+export const cartFetch = createAction(CART_FETCH, API.Cart.get) 
+export const cartAdd = createAction(CART_ADD, API.Cart.add) 
+export const cartRemove = createAction(CART_REMOVE, API.Cart.remove) 
+export const cartUpdateQty = createAction(CART_UPDATE, API.Cart.updateQty, (... args) => ({abortController:args.abortController})) 
 
 export const purchase = createAction(PURCHASE)
-export const makeOrder = createAction(MAKE_ORDER, cartApi.makeOrder) 
+export const makeOrder = createAction(MAKE_ORDER, API.Cart.makeOrder) 
 export const pymResult = createAction(PYM_RESULT)
 export const empty = createAction(EMPTY)
 export const reset = createAction(RESET)
-export const rechargeAccount = createAction(RECHARGE_ACCOUNT, rechargeApi.add)
+export const rechargeAccount = createAction(RECHARGE_ACCOUNT, API.Recharge.add)
 
 export const pushLastTab = createAction(PUSH_LAST_TAB)
 
@@ -120,7 +117,7 @@ const onSuccess = (state, action) => {
 
 const onFailure = (state, action) => {
   console.log('failed')
-  return state.set('result', Api.FAILED)
+  return state.set('result', API.default.FAILED)
 }
 
 const initialState = Map({

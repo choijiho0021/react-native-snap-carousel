@@ -12,7 +12,6 @@ import i18n from '../utils/i18n'
 import AppBackButton from '../components/AppBackButton';
 import _ from 'underscore'
 import AppActivityIndicator from '../components/AppActivityIndicator';
-import pageApi from '../utils/api/pageApi';
 import AppAlert from '../components/AppAlert';
 import { colors } from '../constants/Colors';
 import { appStyles, htmlWithCss } from '../constants/Styles';
@@ -21,6 +20,7 @@ import WebView from 'react-native-webview';
 import utils from '../utils/utils';
 import getEnvVars from '../environment'
 const { baseUrl } = getEnvVars();
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 class SimpleTextScreen extends Component {
   constructor(props) {
@@ -67,7 +67,7 @@ class SimpleTextScreen extends Component {
         querying: true
       })
 
-      pageApi.getPageByCategory(key, this.controller).then(resp => { 
+      API.Page.getPageByCategory(key, this.controller).then(resp => { 
         if ( resp.result == 0 && resp.objects.length > 0 && this._isMounted) {
           this.setState({
             body: resp.objects[0].body,

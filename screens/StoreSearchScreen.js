@@ -9,9 +9,7 @@ import {
   Dimensions
 } from 'react-native';
 import {connect} from 'react-redux'
-import country from '../utils/country'
 import {appStyles} from "../constants/Styles"
-import productApi from '../utils/api/productApi';
 import * as productActions from '../redux/modules/product'
 import i18n from '../utils/i18n';
 import utils from '../utils/utils';
@@ -25,7 +23,7 @@ import { sliderWidth, windowHeight } from '../constants/SliderEntry.style'
 import Analytics from 'appcenter-analytics'
 import AppBackButton from '../components/AppBackButton';
 import { isDeviceSize } from '../constants/SliderEntry.style';
-import pageApi from '../utils/api/pageApi';
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 const MAX_HISTORY_LENGTH = 7
 class HeaderTitle extends Component {
@@ -106,7 +104,7 @@ class StoreSearchScreen extends Component {
   }
 
   getRecommendation(){
-    pageApi.getPageByCategory('store:search_key').then(resp => {
+    API.Page.getPageByCategory('store:search_key').then(resp => {
       if ( resp.result == 0 && resp.objects.length > 0) {
         const recommendation = resp.objects[0].body.replace(/<\/p>/ig, '').replace(/<p>/ig, '').split(',')
         this.setState({
@@ -240,7 +238,7 @@ class StoreSearchScreen extends Component {
         {searchResult.map((elm,idx) => 
           <TouchableOpacity key={elm.uuid} onPress={() => this._search(elm.country,true)}>
             <View key={idx+''} style={styles.autoList}>
-              <Text key="text" style={styles.autoText}>{elm.categoryId == productApi.category.multi ? elm.name : elm.country}</Text>
+              <Text key="text" style={styles.autoText}>{elm.categoryId == API.Product.category.multi ? elm.name : elm.country}</Text>
             </View>
           </TouchableOpacity>
         )}
@@ -253,7 +251,7 @@ class StoreSearchScreen extends Component {
     const {allData, searchWord = ''} = this.state
     const filtered = allData.filter(elm => _.isEmpty(searchWord) || elm[0].search.match(searchWord))
 
-    const list = productApi.toColumnList(filtered)
+    const list = API.Product.toColumnList(filtered)
 
 
 

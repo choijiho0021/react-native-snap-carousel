@@ -10,11 +10,11 @@ import {appStyles} from '../constants/Styles'
 import i18n from '../utils/i18n';
 import utils from '../utils/utils'
 import { colors } from '../constants/Colors';
-import api from '../utils/api/api';
 import AppIcon from './AppIcon';
 import AppButton from './AppButton';
 import InputNumber from './InputNumber';
 import { isDeviceSize } from '../constants/SliderEntry.style';
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 const styles = StyleSheet.create({
   container: {
@@ -85,7 +85,7 @@ class CartItem extends React.PureComponent {
           </View>
 
           <View style={styles.slide}>
-            <Image source={{uri:api.httpImageUrl(image)}} style={styles.slide} resizeMode='stretch'/>
+            <Image source={{uri:API.default.httpImageUrl(image)}} style={styles.slide} resizeMode='stretch'/>
           </View>
           
         </TouchableOpacity>

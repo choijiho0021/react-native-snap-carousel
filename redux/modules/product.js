@@ -1,9 +1,8 @@
 import { createAction, handleActions } from 'redux-actions';
 import { Map } from 'immutable';
 import { pender } from 'redux-pender/lib/utils';
-import productApi from '../../utils/api/productApi'
 import utils from '../../utils/utils'
-import pageApi from '../../utils/api/pageApi';
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 const  GET_PROD_LIST=      "rokebi/product/GET_PROD_LIST"
 const  GET_LOCAL_OP_LIST=      "rokebi/product/GET_LOCAL_OP_LIST"
@@ -11,9 +10,9 @@ export const  SET_PROD_OF_COUNTRY=      "rokebi/product/SET_PROD_OF_COUNTRY"
 export const  SET_SORTED_PROD_LIST=      "rokebi/product/SET_SORTED_PROD_LIST"
 export const  GET_PROD_DETAIL=      "rokebi/product/GET_PROD_DETAIL"
 
-const getProd = createAction(GET_PROD_LIST, productApi.getProduct)
-const getLocalOp = createAction(GET_LOCAL_OP_LIST, productApi.getLocalOp)
-const getProdDetailPage = createAction(GET_PROD_DETAIL, pageApi.getProductDetails)
+const getProd = createAction(GET_PROD_LIST, API.Product.getProduct)
+const getLocalOp = createAction(GET_LOCAL_OP_LIST, API.Product.getLocalOp)
+const getProdDetailPage = createAction(GET_PROD_DETAIL, API.Page.getProductDetails)
 export const setProdOfCountry = createAction(SET_PROD_OF_COUNTRY)
 export const setSortedProdList = createAction(SET_SORTED_PROD_LIST)
 
@@ -25,7 +24,7 @@ export const getProdDetail = (controller) => {
   }
 }
 
-createAction(GET_PROD_DETAIL, pageApi.getProductDetails)
+createAction(GET_PROD_DETAIL, API.Page.getProductDetails)
 
 export const getProdList = () => {
   return (dispatch) => {

@@ -2,10 +2,9 @@ import { createAction, handleActions } from 'redux-actions';
 import { Map, List } from 'immutable';
 import _ from 'underscore'
 import { pender } from 'redux-pender'
-import notiAPI from '../../utils/api/notiApi';
-import api from '../../utils/api/api';
 import moment from 'moment'
 import PushNotificationIOS from '@react-native-community/push-notification-ios'
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 export const  GET_NOTI_LIST =  "rokebi/noti/GET_NOTI_LIST"
 const  READ_NOTI = "rokebi/noti/READ_NOTI"
@@ -16,13 +15,13 @@ const  INIT_ALIM_TALK = "rokebi/noti/INIT_ALIM_TALK"
 const  SEND_ALIM_TALK = "rokebi/noti/SEND_ALIM_TALK"
 const  SEND_LOG = "rokebi/noti/SEND_LOG"
 
-export const getNotiList = createAction(GET_NOTI_LIST, notiAPI.getNoti)
-export const readNoti = createAction(READ_NOTI, notiAPI.read)
-export const updateNoti = createAction(UPDATE_NOTI, notiAPI.update)
+export const getNotiList = createAction(GET_NOTI_LIST, API.Noti.getNoti)
+export const readNoti = createAction(READ_NOTI, API.Noti.read)
+export const updateNoti = createAction(UPDATE_NOTI, API.Noti.update)
 export const init = createAction(INIT)
 const initAlimTalk = createAction(INIT_ALIM_TALK)
-const sendAlimTalk = createAction(SEND_ALIM_TALK, notiAPI.sendAlimTalk, (... args) => ({abortController:args.abortController}))
-export const sendLog = createAction(SEND_LOG, notiAPI.sendLog)
+const sendAlimTalk = createAction(SEND_ALIM_TALK, API.Noti.sendAlimTalk, (... args) => ({abortController:args.abortController}))
+export const sendLog = createAction(SEND_LOG, API.Noti.sendLog)
 
 export const NOTI_TYPE_REPLY = 'reply'
 export const NOTI_TYPE_PYM = 'pym'
@@ -106,10 +105,10 @@ export default handleActions({
         return state.set('lastSent', new Date())
             .set('result', result)
       }
-      return state.set('result', Api.FAILED)
+      return state.set('result', API.default.FAILED)
     },
     onFailure: (state, action) => {
-      return state.set('result', Api.FAILED)
+      return state.set('result', API.default.FAILED)
     },
     onCancel: (state, action) => {
       return state

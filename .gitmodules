@@ -1,0 +1,3 @@
+[submodule "submodules/rokebi-utils"]
+	path = submodules/rokebi-utils
+	url = https://github.com/jisonglee/rokebi-utils.git

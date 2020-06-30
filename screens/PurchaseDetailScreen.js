@@ -18,8 +18,6 @@ import _ from 'underscore';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import LabelTextTouchable from '../components/LabelTextTouchable';
-import orderApi from '../utils/api/orderApi';
-import profileApi from '../utils/api/profileApi';
 import {connect} from 'react-redux'
 import * as orderActions from '../redux/modules/order'
 import * as accountActions from '../redux/modules/account'
@@ -31,6 +29,7 @@ import SnackBar from 'react-native-snackbar-component';
 import { windowHeight } from '../constants/SliderEntry.style';
 import Analytics from 'appcenter-analytics'
 import AppActivityIndicator from '../components/AppActivityIndicator';
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 
 class PurchaseDetailScreen extends Component {
@@ -83,7 +82,7 @@ class PurchaseDetailScreen extends Component {
 
     // load Profile by profile_id
     if(detail.orderType == 'physical'){
-      profileApi.getCustomerProfileById(detail.profileId, this.props.auth).then(resp => {
+      API.Profile.getCustomerProfileById(detail.profileId, this.props.auth).then(resp => {
         if(resp.result == 0) this._profile(resp)
       },
       err => {
@@ -144,8 +143,8 @@ class PurchaseDetailScreen extends Component {
             // 배송상태가 변화되었는데 refresh 되지 않아 취소버튼을 누른 경우 등
             if(!_.isEmpty(resp.objects)) {
               var { state, shipmentState } = resp.objects[0],
-              isCanceled = shipmentState == orderApi.shipmentState.CANCEL || state == 'canceled',
-              disableBtn = shipmentState == orderApi.shipmentState.READY || shipmentState == orderApi.shipmentState.SHIP
+              isCanceled = shipmentState == API.Order.shipmentState.CANCEL || state == 'canceled',
+              disableBtn = shipmentState == API.Order.shipmentState.READY || shipmentState == API.Order.shipmentState.SHIP
               this.setState({
                 ... state,
                 shipmentState,
@@ -204,7 +203,7 @@ class PurchaseDetailScreen extends Component {
   _deliveryInfo(){
 
     const { trackingCompany, trackingCode, shipmentState, isCanceled, memo } = this.state || {}
-    const ship = orderApi.shipmentState
+    const ship = API.Order.shipmentState
 
     return(
       <View>
@@ -228,14 +227,14 @@ class PurchaseDetailScreen extends Component {
         <Text style={styles.deliveryTitle}>{i18n.t('his:memo')}</Text>
         <View style={{marginHorizontal: 20, marginBottom: 40}}>
           {
-            !_.isEmpty(memo) && _.isEmpty(orderApi.deliveryText.find(item => item.value == memo)) && 
+            !_.isEmpty(memo) && _.isEmpty(API.Order.deliveryText.find(item => item.value == memo)) && 
             <Text style={[styles.label2, {marginBottom: 5, lineHeight: 24}]}>{i18n.t('his:input')}</Text>
           }
           <Text style={appStyles.normal16Text}>{_.isEmpty(memo) ? i18n.t('his:notSelected') : memo}</Text>
         </View>
 
         {
-          !isCanceled && shipmentState == orderApi.shipmentState.SHIP &&
+          !isCanceled && shipmentState == API.Order.shipmentState.SHIP &&
           <View style={{marginBottom: 40}}>
             <View style={[styles.bar, {marginTop: 0}]}/>
             <Text style={styles.deliveryTitle}>{i18n.t('his:companyInfo')}</Text>
@@ -251,7 +250,7 @@ class PurchaseDetailScreen extends Component {
                 labelStyle={styles.companyInfoTitle}
                 value={utils.toPhoneNumber('12341234')} // 택배사 전화번호
                 valueStyle={styles.labelValue}/>
-            <LabelTextTouchable onPress={() => this.props.navigation.navigate('SimpleText', {mode:'uri', text:orderApi.deliveryTrackingUrl('CJ', trackingCode)})}
+            <LabelTextTouchable onPress={() => this.props.navigation.navigate('SimpleText', {mode:'uri', text:API.Order.deliveryTrackingUrl('CJ', trackingCode)})}
                 label={i18n.t('his:trackingCode')}
                 labelStyle={[styles.companyInfoTitle, {marginLeft: 20, width: '20%'}]}
                 format="shortDistance"
@@ -272,7 +271,7 @@ class PurchaseDetailScreen extends Component {
       const isRecharge = orderItems.find(item => item.title.includes(i18n.t('sim:rechargeBalance')) ) || false
       const isUsed = !_.isEmpty(usageList) && usageList.find(value => value.status != 'R' && value.status != 'I') || false
       const usedOrExpired = isUsed || elapsedDay > 7
-      const activateCancelBtn = orderType == 'physical' ? shipmentState == orderApi.shipmentState.DRAFT : (state == 'draft' || state == 'validation') && !isUsed
+      const activateCancelBtn = orderType == 'physical' ? shipmentState == API.Order.shipmentState.DRAFT : (state == 'draft' || state == 'validation') && !isUsed
       const disableBtn = isCanceled || !activateCancelBtn || this.state.cancelPressed || (elapsedDay > 7)
       const infoText = isCanceled ? i18n.t('his:afterCancelInfo') 
                 : (orderType == 'physical' ? i18n.t('his:simCancelInfo') : usedOrExpired ? i18n.t('his:usedOrExpiredInfo') : i18n.t('his:dataCancelInfo'))
@@ -379,7 +378,7 @@ class PurchaseDetailScreen extends Component {
 
     const { orderItems, orderType, isCanceled, shipmentState, billingAmt,
           showPayment, showDelivery, cancelPressed, totalCnt } = this.state || {}
-    const ship = orderApi.shipmentState
+    const ship = API.Order.shipmentState
 
     if ( _.isEmpty(orderItems) ) return <View></View>
 
