@@ -560,12 +560,13 @@ const styles = StyleSheet.create({
       borderStyle: "solid",
       borderRightWidth: 1,
       borderBottomWidth: 1,
-      borderColor: colors.lightGrey,
       borderLeftWidth: idx == 0 ? 1 : 0,
       borderTopWidth: key == 0 ? 1 : 0 ,
+      borderLeftColor: idx == 0 ? colors.lightGrey : colors.clearBlue,
+      borderTopColor: row == 0 && idx == column ? colors.clearBlue : colors.lightGrey,
       borderRightColor: ( idx == column  || idx == column - 1) && (key == row) ? colors.clearBlue : colors.lightGrey,
       borderBottomColor: ( key == row || key == row -1 ) && (idx == column) ? colors.clearBlue : colors.lightGrey
-  }),  
+    }),
   container: {
     flex: 1,
     justifyContent: "flex-start",
