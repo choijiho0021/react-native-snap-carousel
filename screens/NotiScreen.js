@@ -119,7 +119,7 @@ class NotiScreen extends Component {
         case notiActions.NOTI_TYPE_PYM:
           // read orders if not read before
           this.props.action.order.checkAndGetOrderById(auth, id).then(_ => {
-            this.props.navigation.navigate('PurchaseDetail', {detail: this.props.order.orders[ this.props.order.ordersIdx.get(id) ], auth})
+            this.props.navigation.navigate('PurchaseDetail', {detail: this.props.order.orders[ this.props.order.ordersIdx.get(Number(id)) ], auth})
           })
           break;
         case notiActions.NOTI_TYPE_USIM:
