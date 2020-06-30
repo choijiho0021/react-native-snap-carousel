@@ -168,9 +168,9 @@ const TabNavigator = createBottomTabNavigator();
 
 function tabNavigator() {
   return (
-    <TabNavigator.Navigator>
+    <TabNavigator.Navigator initialRouteName="HomeStack" backBehavior="initialRoute">
       <TabNavigator.Screen 
-        name="Home" 
+        name="HomeStack" 
         component={homeStack} 
         options={({route}) => ({
           tabBarVisible: route.state && route.state.index == 0,
@@ -182,7 +182,7 @@ function tabNavigator() {
         })}
       />
       <TabNavigator.Screen 
-        name="Store" 
+        name="StoreStack" 
         component={storeStack}
         options={({route}) => ({
           tabBarVisible: route.state && route.state.index == 0,
@@ -192,7 +192,7 @@ function tabNavigator() {
         )})}
       />
       <TabNavigator.Screen 
-        name="Cart" 
+        name="CartStack" 
         component={cartStack}
         options={({route}) => ({
           tabBarVisible: false,
@@ -202,7 +202,7 @@ function tabNavigator() {
           )})}
         />
       <TabNavigator.Screen 
-        name="Usim" 
+        name="UsimStack" 
         component={usimStack}
         options={({route}) => ({
           tabBarVisible: route.state && route.state.index == 0,
@@ -212,7 +212,7 @@ function tabNavigator() {
           )})}
         />
       <TabNavigator.Screen 
-        name="MyPage" 
+        name="MyPageStack" 
         component={myPageStack}
         options={({route}) => ({
           tabBarVisible: route.state && route.state.index == 0,
