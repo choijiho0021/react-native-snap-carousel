@@ -169,7 +169,7 @@ class SettingsScreen extends Component {
     this.props.action.order.reset()
     this.props.action.account.logout()
     
-    this.props.navigation.reset({index: 0, routes: [{ name: 'Home' }] });
+    this.props.navigation.reset({index: 0, routes: [{ name: 'HomeStack' }] });
 
     if(Platform.OS == 'android'){
       const firebase = require('react-native-firebase')
