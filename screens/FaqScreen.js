@@ -11,10 +11,10 @@ import _ from 'underscore'
 import AppBackButton from '../components/AppBackButton';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import AppActivityIndicator from '../components/AppActivityIndicator';
-import pageApi from '../utils/api/pageApi';
 import { colors } from '../constants/Colors';
 import { appStyles } from '../constants/Styles';
 import AppFlatListItem from '../components/AppFlatListItem';
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 
 class FaqList extends Component {
@@ -97,7 +97,7 @@ class FaqScreen extends Component {
       querying: true
     })
 
-    pageApi.getPageByCategory('faq:' + key).then(resp => {
+    API.Page.getPageByCategory('faq:' + key).then(resp => {
       if ( resp.result == 0 && resp.objects.length > 0) {
         this.setState({
           [key]: resp.objects

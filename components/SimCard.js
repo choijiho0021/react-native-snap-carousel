@@ -10,11 +10,11 @@ import {appStyles} from '../constants/Styles'
 import i18n from '../utils/i18n';
 import utils from '../utils/utils'
 import { colors } from '../constants/Colors';
-import api from '../utils/api/api';
 import AppIcon from './AppIcon';
 import LabelText from './LabelText';
 import InputNumber from './InputNumber';
 import { isDeviceSize } from '../constants/SliderEntry.style';
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 const styles = StyleSheet.create({
   container: {
@@ -82,7 +82,7 @@ export default class SimCard extends PureComponent {
           <View style={styles.checker}>
             <AppIcon name="btnCheck" checked={checked}/>
           </View>
-          <Image source={{uri:api.httpImageUrl(imageUrl)}} resizeMode={'contain'} style={[styles.slide, {marginRight: 0}]}/>
+          <Image source={{uri:API.default.httpImageUrl(imageUrl)}} resizeMode={'contain'} style={[styles.slide, {marginRight: 0}]}/>
         </TouchableOpacity>
 
         <View style={styles.desc}>

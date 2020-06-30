@@ -13,7 +13,6 @@ import * as profileActions from '../redux/modules/profile'
 import { TextField } from 'react-native-material-textfield'
 import Icon from 'react-native-vector-icons/Ionicons';
 import AppButton from '../components/AppButton';
-import addressApi from '../utils/api/addressApi';
 import { FlatList } from 'react-native-gesture-handler';
 import { TouchableOpacity } from 'react-native';
 import Address from '../components/Address'
@@ -23,6 +22,7 @@ import { appStyles } from '../constants/Styles';
 import AppBackButton from '../components/AppBackButton';
 import AppIcon from '../components/AppIcon';
 import { isDeviceSize } from '../constants/SliderEntry.style';
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 
 class FindAddressListItem extends PureComponent {
@@ -77,7 +77,7 @@ class FindAddressScreen extends Component {
   _findAddr = (page=1) => () => {
     const { addr } = this.state
 
-    addressApi.find(addr, page).then( resp => {
+    API.Address.find(addr, page).then( resp => {
       this.setState({
         links: resp.links,
         data : resp.objects

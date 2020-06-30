@@ -25,15 +25,13 @@ import { isDeviceSize } from '../constants/SliderEntry.style';
 import getEnvVars from '../environment';
 import RNPickerSelect from 'react-native-picker-select';
 import Triangle from '../components/Triangle';
-import paymentApi from '../utils/api/paymentApi';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AppIcon from '../components/AppIcon';
 import Video from 'react-native-video';
-import orderApi from '../utils/api/orderApi';
 import Analytics from 'appcenter-analytics'
-import pageApi from '../utils/api/pageApi';
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
-const deliveryText = orderApi.deliveryText
+const deliveryText = API.Order.deliveryText
 
 class PymMethodScreen extends Component {
   constructor(props) {
@@ -416,7 +414,7 @@ class PymMethodScreen extends Component {
           <View style={styles.beforeDrop}>
             <View style={styles.thickBar}/>
             {
-              paymentApi.method.map((v,idx) => this._button(idx+"", v))
+              API.Payment.method.map((v,idx) => this._button(idx+"", v))
             }
             <Text style={{marginVertical: 20, color: colors.clearBlue}}>{i18n.t('pym:tossInfo')}</Text>
             {
@@ -448,7 +446,7 @@ class PymMethodScreen extends Component {
   }
 
   _benefit(){
-    pageApi.getPageByCategory('pym:benefit').then(resp => {
+    API.Page.getPageByCategory('pym:benefit').then(resp => {
       if ( resp.result == 0 && resp.objects.length > 0) {
         console.log('benefit resp', resp)
           this.setState({

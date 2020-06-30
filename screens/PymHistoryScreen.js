@@ -6,10 +6,10 @@ import AppActivityIndicator from '../components/AppActivityIndicator';
 import AppAlert from '../components/AppAlert';
 import { appStyles } from "../constants/Styles";
 import * as accountActions from '../redux/modules/account'
-import paymentApi from '../utils/api/paymentApi';
 import i18n from '../utils/i18n';
 import utils from '../utils/utils';
 import { bindActionCreators } from 'redux'
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 
 class PymHistoryListItem extends PureComponent {
@@ -79,7 +79,7 @@ class PymHistoryScreen extends Component {
       querying: true
     })
 
-    paymentApi.getHistory( userId, auth, link).then( resp => {
+    API.Payment.getHistory( userId, auth, link).then( resp => {
       const {data} = this.state
       if ( resp.result == 0) {
         console.log('payment history', resp)

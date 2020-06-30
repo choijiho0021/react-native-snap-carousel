@@ -15,13 +15,13 @@ import * as accountActions from '../redux/modules/account'
 import * as orderActions from '../redux/modules/order'
 import _ from 'underscore'
 import AppBackButton from '../components/AppBackButton';
-import pageApi from '../utils/api/pageApi';
 import AppFlatListItem from '../components/AppFlatListItem';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import { sliderWidth } from '../constants/SliderEntry.style'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Analytics from 'appcenter-analytics'
 import AppActivityIndicator from '../components/AppActivityIndicator';
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 const guideImages = {
   step1: require('../assets/images/guide/step1/img.png'),
@@ -65,7 +65,7 @@ class GuideScreen extends Component {
       querying: true
     })
 
-    pageApi.getPageByCategory('faq:tip').then(resp => {
+    API.Page.getPageByCategory('faq:tip').then(resp => {
       if ( resp.result == 0 && resp.objects.length > 0) {
         this.setState({
           data: resp.objects

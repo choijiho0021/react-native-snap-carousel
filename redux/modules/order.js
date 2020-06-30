@@ -1,10 +1,9 @@
 import { createAction, handleActions } from 'redux-actions';
 import { pender } from 'redux-pender'
 import { Map } from 'immutable';
-import orderApi from '../../utils/api/orderApi'
-import subscriptionApi from '../../utils/api/subscriptionApi';
 import utils from '../../utils/utils';
 import { getAccount } from './account'
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 export const GET_ORDERS = 'rokebi/order/GET_ORDERS'
 export const GET_ORDER_BY_ID = 'rokebi/order/GET_ORDER_BY_ID'
@@ -14,12 +13,12 @@ export const GET_SUBS_USAGE = 'rokebi/usage/subs'
 export const UPDATE_USAGE = 'rokebi/order/UPDATE_USAGE'
 const  RESET = 'rokebi/order/RESET'
 
-const getNextOrders = createAction(GET_ORDERS, orderApi.getOrders)
-export const getOrderById = createAction(GET_ORDER_BY_ID, orderApi.getOrderById)
-export const cancelOrder = createAction(CANCEL_ORDER, orderApi.cancelOrder)
-export const getSubs = createAction(GET_SUBS, subscriptionApi.getSubscription)
-export const getSubsUsage = createAction(GET_SUBS_USAGE, subscriptionApi.getSubsUsage)
-export const updateUsageStatus = createAction(UPDATE_USAGE, subscriptionApi.updateSubscriptionStatus)
+const getNextOrders = createAction(GET_ORDERS, API.Order.getOrders)
+export const getOrderById = createAction(GET_ORDER_BY_ID, API.Order.getOrderById)
+export const cancelOrder = createAction(CANCEL_ORDER, API.Order.cancelOrder)
+export const getSubs = createAction(GET_SUBS, API.Subscription.getSubscription)
+export const getSubsUsage = createAction(GET_SUBS_USAGE, API.Subscription.getSubsUsage)
+export const updateUsageStatus = createAction(UPDATE_USAGE, API.Subscription.updateSubscriptionStatus)
 export const reset = createAction(RESET)
 
 export const getSubsWithToast = utils.reflectWithToast(getSubs)
@@ -111,7 +110,7 @@ export default handleActions({
       const {objects, links} = action.payload
 
       return updateOrders(state, action)
-        .set('next', objects && objects.length == orderApi.ORDER_PAGE_ITEMS)
+        .set('next', objects && objects.length == API.Order.ORDER_PAGE_ITEMS)
         .update('page', page => links && (typeof links[0] !== 'undefined') ? links[0] : page)
     }
   }),

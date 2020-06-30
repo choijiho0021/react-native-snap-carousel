@@ -1,9 +1,9 @@
 import { createAction, handleActions } from 'redux-actions';
 import { Map } from 'immutable';
 import { pender } from 'redux-pender'
-import boardApi from '../../utils/api/boardApi';
 import _ from 'underscore'
 import {auth} from './account'
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 export const POST_ISSUE =   'rokebi/board/POST_ISSUE'
 export const POST_ATTACH =   'rokebi/board/POST_ATTACH'
@@ -14,10 +14,10 @@ const RESET_ISSUE_LIST =   'rokebi/board/RESET_ISSUE_LIST'
 const NEXT_ISSUE_LIST =   'rokebi/board/NEXT_ISSUE_LIST'
 const RESET_ISSUE_COMMENT = 'rokebi/board/RESET_ISSUE_COMMENT'
 
-export const postIssue = createAction(POST_ISSUE, boardApi.post)
-export const postAttach = createAction(GET_ISSUE_RESP, boardApi.uploadAttachment)
-export const fetchIssueList = createAction(FETCH_ISSUE_LIST, boardApi.getIssueList)
-export const getIssueResp = createAction(GET_ISSUE_RESP, boardApi.getComments)
+export const postIssue = createAction(POST_ISSUE, API.Board.post)
+export const postAttach = createAction(GET_ISSUE_RESP, API.Board.uploadAttachment)
+export const fetchIssueList = createAction(FETCH_ISSUE_LIST, API.Board.getIssueList)
+export const getIssueResp = createAction(GET_ISSUE_RESP, API.Board.getComments)
 const resetIssueList = createAction(RESET_ISSUE_LIST)
 export const resetIssueComment = createAction(RESET_ISSUE_COMMENT)
 const nextIssueList = createAction(NEXT_ISSUE_LIST)

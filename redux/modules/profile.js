@@ -1,7 +1,7 @@
 import { createAction, handleActions } from 'redux-actions';
 import { pender } from 'redux-pender'
 import { Map} from 'immutable';
-import profileApi from '../../utils/api/profileApi'
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 const  UPDATE_PROFILE_ADDRESS = 'rokebi/order/UPDATE_PROFILE_ADDRESS'
 const  GET_CUSTOMER_PROFILE = 'rokebi/order/GET_CUSTOMER_PROFILE'
@@ -12,10 +12,10 @@ const  SELECTED_ADDR = 'rokebi/order/SELECTED_ADDR'
 
   // add address list
 export const updateProfileAddress = createAction(UPDATE_PROFILE_ADDRESS)
-export const getCustomerProfile = createAction(GET_CUSTOMER_PROFILE, profileApi.getCustomerProfile)
-export const addCustomerProfile = createAction(ADD_CUSTOMER_PROFILE, profileApi.addCustomerProfile)
-export const updateCustomerProfile = createAction(UPDATE_CUSTOMER_PROFILE, profileApi.updateCustomerProfile)
-export const delCustomerProfile = createAction(DELETE_CUSTOMER_PROFILE, profileApi.delCustomerProfile)
+export const getCustomerProfile = createAction(GET_CUSTOMER_PROFILE, API.Profile.getCustomerProfile)
+export const addCustomerProfile = createAction(ADD_CUSTOMER_PROFILE, API.Profile.addCustomerProfile)
+export const updateCustomerProfile = createAction(UPDATE_CUSTOMER_PROFILE, API.Profile.updateCustomerProfile)
+export const delCustomerProfile = createAction(DELETE_CUSTOMER_PROFILE, API.Profile.delCustomerProfile)
 export const selectedAddr = createAction(SELECTED_ADDR)
 
 const initialState = Map({

@@ -16,7 +16,6 @@ import i18n from '../utils/i18n'
 import AppBackButton from '../components/AppBackButton';
 import _ from 'underscore'
 import AppActivityIndicator from '../components/AppActivityIndicator';
-import api from '../utils/api/api';
 import { colors } from '../constants/Colors';
 import { appStyles, htmlDetailWithCss } from '../constants/Styles';
 import AppButton from '../components/AppButton';
@@ -29,6 +28,7 @@ import * as toastActions from '../redux/modules/toast'
 import * as productActions from '../redux/modules/product'
 import { Toast } from '../constants/CustomTypes'
 import AppIcon from '../components/AppIcon';
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 const { channelId } = getEnvVars()
 
@@ -256,7 +256,7 @@ class ProductDetailScreen extends Component {
           
           {
           <View style={{height:HEADER_IMG_HEIGHT}}>
-            <Image style={{height:HEADER_IMG_HEIGHT}} source={{uri:api.httpImageUrl(route.params && route.params.img)}}/>
+            <Image style={{height:HEADER_IMG_HEIGHT}} source={{uri:API.default.httpImageUrl(route.params && route.params.img)}}/>
           </View>
           }
 

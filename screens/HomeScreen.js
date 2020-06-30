@@ -25,8 +25,6 @@ import AppActivityIndicator from '../components/AppActivityIndicator'
 import AppButton from '../components/AppButton';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import { sliderWidth, windowHeight } from '../constants/SliderEntry.style'
-import api from '../utils/api/api';
-import promotionApi from '../utils/api/promotionApi';
 import { colors } from '../constants/Colors';
 import AppIcon from '../components/AppIcon';
 import AppUserPic from '../components/AppUserPic';
@@ -40,6 +38,7 @@ import { PERMISSIONS, request } from 'react-native-permissions';
 import AppAlert from './../components/AppAlert';
 import appStateHandler from '../utils/appState'
 import Analytics from 'appcenter-analytics'
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 // windowHeight
 // iphone 8 - 375x667
@@ -77,7 +76,7 @@ class PromotionImage extends PureComponent {
         {
           _.isEmpty(item.imageUrl) ?
             <Text style={styles.text}>{item.title}</Text> :
-            <Image source={{uri:api.httpImageUrl(item.imageUrl)}} style={{height:size.carouselHeight}} resizeMode='contain'/>
+            <Image source={{uri:API.default.httpImageUrl(item.imageUrl)}} style={{height:size.carouselHeight}} resizeMode='contain'/>
         }
       </TouchableOpacity>
     )
@@ -157,7 +156,7 @@ class HomeScreen extends Component {
     appStateHandler.add(this._appStateHandler)
     
     // get promotion list
-    promotionApi.getPromotion().then(resp => {
+    API.Promotion.getPromotion().then(resp => {
       if (resp.result == 0) {
         this.setState({
           promotions: resp.objects

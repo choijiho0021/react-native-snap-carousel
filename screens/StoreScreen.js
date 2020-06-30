@@ -7,10 +7,8 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux'
 import {appStyles} from "../constants/Styles"
-import productApi from '../utils/api/productApi';
 import i18n from '../utils/i18n';
 import * as productActions from '../redux/modules/product'
-import country from '../utils/country'
 import _ from 'underscore'
 import { bindActionCreators } from 'redux'
 import { TabView, TabBar } from 'react-native-tab-view';
@@ -21,6 +19,7 @@ import moment from 'moment'
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import Analytics from 'appcenter-analytics'
 import { Set } from 'immutable';
+import { API, Country } from 'Rokebi/submodules/rokebi-utils'
 
 class StoreScreen extends Component {
   constructor(props) {
@@ -73,7 +72,7 @@ class StoreScreen extends Component {
   }
 
   _refresh() {
-    const { asia, europe, usaAu, multi } = productApi.category,
+    const { asia, europe, usaAu, multi } = API.Product.category,
       {prodList, localOpList} = this.props.product,
       list = []
 
@@ -81,7 +80,7 @@ class StoreScreen extends Component {
       if ( localOpList.has(item.partnerId)) {
         const localOp = localOpList.get(item.partnerId)
         item.ccodeStr = (localOp.ccode || []).join(',')
-        item.cntry = Set(country.getName(localOp.ccode))
+        item.cntry = Set(Country.getName(localOp.ccode))
         item.search = [... item.cntry].join(',')
         item.pricePerDay = Math.round(item.price / item.days)
         
@@ -136,7 +135,7 @@ class StoreScreen extends Component {
   filterByCategory( list, key) {
     const filtered = list.filter(elm => elm.length > 0 && elm[0].categoryId.includes(key))
 
-    return productApi.toColumnList(filtered)
+    return API.Product.toColumnList(filtered)
   }
 
   _onPressItem = (prodOfCountry) => {

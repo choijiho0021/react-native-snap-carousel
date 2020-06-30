@@ -24,12 +24,12 @@ import * as cartActions from '../redux/modules/cart'
 import * as orderActions from '../redux/modules/order'
 import _ from 'underscore'
 import AppButton from '../components/AppButton';
-import subscriptionApi from '../utils/api/subscriptionApi';
 import LabelText from '../components/LabelText';
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import Analytics from 'appcenter-analytics'
 import Svg, {Line} from 'react-native-svg';
+import { API } from 'Rokebi/submodules/rokebi-utils'
 
 const STATUS_ACTIVE = 'A'     //사용중
 const STATUS_INACTIVE = 'I'   //미사용
@@ -178,7 +178,7 @@ class UsageItem extends Component {
 
     //그래프 테스트 nid = 1616
     if(item.statusCd == 'A') {
-      subscriptionApi.getSubsUsage(item.nid, auth).then(
+      API.Subscription.getSubsUsage(item.nid, auth).then(
         resp => {
           this.setState({disableBtn: true})
           if(resp.result == 0){
