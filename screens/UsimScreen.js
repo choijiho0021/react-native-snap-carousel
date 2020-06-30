@@ -337,7 +337,7 @@ class UsimScreen extends Component {
     this._init(loggedIn, iccid, auth)
 
   }
-
+  
   componentDidUpdate(prevProps) {
     const focus = this.props.navigation.isFocused()
     const { account: {iccid, loggedIn}, auth, lastTab, loginPending } = this.props,
@@ -346,8 +346,6 @@ class UsimScreen extends Component {
 
     if ( (isFocusedToUsimTab && ! loginPending )
       || (prevProps.account.iccid && iccid !== prevProps.account.iccid) ) {
-      if(lastTab[0] != this.props.route.name ) this.props.navigation.popToTop()
-      
       this._init(loggedIn, iccid, auth)
     }
 
@@ -360,7 +358,7 @@ class UsimScreen extends Component {
       if (iccid && auth) {
         this.props.action.order.getSubsWithToast(iccid, auth)
       }else{
-        this.props.navigation.navigate('RegisterSim',{back:'home'})
+        this.props.navigation.navigate('RegisterSim',{back:'Home'})
       }
     }
   }

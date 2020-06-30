@@ -11,18 +11,6 @@ class AppBackButton extends PureComponent {
     this._goBack = this._goBack.bind(this)
     this.backHandler = undefined
   }
-  
-  componentDidMount(){
-    const {back} = this.props
-
-    if(back){
-      this.backHandler = BackHandler.addEventListener('hardwareBackPress', this._goBack)
-    }
-  }
-
-  componentWillUnmount(){
-    if(this.backHandler) this.backHandler.remove()
-  }
 
   _goBack() {
     const {navigation, back, lastTab=[0,1]} = this.props
@@ -32,7 +20,7 @@ class AppBackButton extends PureComponent {
       return
     }
 
-    if ( back == 'home') return navigation.navigate('Home')
+    if ( back == 'Home') return navigation.navigate('Home')
     // if ( back == 'home') return navigation.reset({routes: [{ name: 'Home' }] });
     if ( back == 'top') return navigation.popToTop()
     if ( back == 'lastTab') return navigation.navigate(lastTab[1])

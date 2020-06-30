@@ -30,7 +30,7 @@ import { isDeviceSize } from '../constants/SliderEntry.style';
 import { openSettings, check, PERMISSIONS } from 'react-native-permissions';
 import Analytics from 'appcenter-analytics'
 import api from '../utils/api/api';
-
+import BackbuttonHandler from '../components/BackbuttonHandler';
 
 const initState = {
   scan: false,
@@ -210,8 +210,11 @@ class RegisterSimScreen extends Component {
     let iccidIdx = iccid.findIndex(elm => _.size(elm) !== 5)
     if (iccidIdx < 0) iccidIdx = 3
 
+    const back = this.props.route.params && this.props.route.params.back
+
     return (
       <SafeAreaView style={{flex:1}}>
+        <BackbuttonHandler navigation ={this.props.navigation} back={back}/>
         <AppActivityIndicator visible={querying}/>
 
         <KeyboardAwareScrollView
