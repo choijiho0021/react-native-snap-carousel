@@ -70,7 +70,7 @@ function homeStack() {
       <HomeStack.Screen name="BoardMsgResp" component={BoardMsgRespScreen} />
       <HomeStack.Screen name="Faq" component={FaqScreen} />
       <HomeStack.Screen name="Guide" component={GuideScreen} />
-
+      <HomeStack.Screen name="Store" component={StoreScreen} />
       <HomeStack.Screen name="Country" component={CountryScreen} />
       <HomeStack.Screen name="Payment" component={PaymentScreen} />
       <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
