@@ -131,10 +131,10 @@ class PaymentResultScreen extends Component {
     this.backHandler.remove()
 
     if(key == 'MyPage') {
-      this.props.navigation.reset({routes: [{ name: 'MyPage' }] });
+      this.props.navigation.reset({routes: [{ name: 'MyPageStack' }] });
     }
     else {
-      this.props.navigation.reset({routes: [{ name: 'Home' }] });
+      this.props.navigation.reset({routes: [{ name: 'HomeStack' }] });
     }
   }
 
