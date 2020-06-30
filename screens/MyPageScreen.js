@@ -133,7 +133,7 @@ class MyPageScreen extends Component {
         if(!this.props.account.loggedIn){
           this.props.navigation.navigate('Auth')
         }else{
-          this.props.action.order.getOrders(this.props.auth)
+          this.props.action.order.getOrders(this.props.auth, 0)
         }
       }
     }
