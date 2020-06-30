@@ -86,6 +86,7 @@ function storeStack() {
   return (
     <StoreStack.Navigator screenOptions={{animationEnabled:false}}>
       <StoreStack.Screen name="Store" component={StoreScreen} />
+      <StoreStack.Screen name="Cart" component={CartScreen} />
       <StoreStack.Screen name="StoreSearch" component={StoreSearchScreen} />
       <StoreStack.Screen name="RegisterSim" component={RegisterSimScreen} />
       <StoreStack.Screen name="Country" component={CountryScreen} />
