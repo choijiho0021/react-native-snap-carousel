@@ -511,6 +511,9 @@ export const htmlDetailWithCss = (body, script = '') => {
     .moveToBox button:active{
         background-color: ${colors.whiteThree};
     }
+    .moveToBox button:focus{
+        outline: none;
+    }    
     .moveToBox img {
         width: 4%;
         margin-left: 5px;
