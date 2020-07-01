@@ -60,21 +60,24 @@ class PaymentScreen extends Component{
     const isImpSuccess = typeof(response.imp_success) === 'boolean' ? response.imp_success  : response.imp_success === 'true'
 
     if(isSuccess || isImpSuccess || false){
-      await this.props.navigation.setParams({isPaid:true})
 
-      const params = this.props.route.params && this.props.route.params.params
-      const orderResult = await this.props.action.cart.payNorder({
-        ... response,
-        pg_provider: params.pg,
-        payment_type: params.pay_method,
-        amount: params.amount,
-        profile_uuid: params.profile_uuid,
-        rokebi_cash: params.rokebi_cash,
-        dlvCost: params.dlvCost,
-        memo: params.memo,
-      })
+      // 결제완료시 '다음' 버튼 연속클릭 방지 - 연속클릭시 추가 결제 없이 order 계속 생성
+      if(!this.props.route.params.isPaid){
+        await this.props.navigation.setParams({isPaid:true})
+        const params = this.props.route.params && this.props.route.params.params
+        const orderResult = await this.props.action.cart.payNorder({
+          ... response,
+          pg_provider: params.pg,
+          payment_type: params.pay_method,
+          amount: params.amount,
+          profile_uuid: params.profile_uuid,
+          rokebi_cash: params.rokebi_cash,
+          dlvCost: params.dlvCost,
+          memo: params.memo,
+        })
+        this.props.navigation.replace('PaymentResult', {pymResult:response, orderResult})  
+      }
 
-      this.props.navigation.replace('PaymentResult', {pymResult:response, orderResult})  
     }
     else{
       this.props.navigation.goBack()
