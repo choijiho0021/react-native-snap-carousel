@@ -562,7 +562,7 @@ const styles = StyleSheet.create({
       borderBottomWidth: 1,
       borderLeftWidth: idx == 0 ? 1 : 0,
       borderTopWidth: key == 0 ? 1 : 0 ,
-      borderLeftColor: idx == 0 ? colors.lightGrey : colors.clearBlue,
+      borderLeftColor: column == 0 && key == row ? colors.clearBlue : colors.lightGrey,
       borderTopColor: row == 0 && idx == column ? colors.clearBlue : colors.lightGrey,
       borderRightColor: ( idx == column  || idx == column - 1) && (key == row) ? colors.clearBlue : colors.lightGrey,
       borderBottomColor: ( key == row || key == row -1 ) && (idx == column) ? colors.clearBlue : colors.lightGrey
