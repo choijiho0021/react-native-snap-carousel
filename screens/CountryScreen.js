@@ -95,7 +95,8 @@ class CountryScreen extends Component {
       imageUrl: undefined,
       title: undefined,
       addToCart: false,
-      localOpDetails: undefined
+      localOpDetails: undefined,
+      pending: false,
     }
 
     this.snackRef = React.createRef()
@@ -125,6 +126,11 @@ class CountryScreen extends Component {
     const {selected} = this.state
     const {loggedIn, balance} = this.props.account
 
+    // 다른 버튼 클릭으로 스낵바 종료될 경우, 재출력 안되는 부분이 있어 추가
+    this.setState({
+      addToCart: false
+    })
+
     Analytics.trackEvent( 'Click_' + key)
 
     if(!loggedIn){
@@ -147,12 +153,21 @@ class CountryScreen extends Component {
   
         switch (key) {
           case 'cart':
+            this.setState({
+              pending: true
+            })
             this.props.action.cart.cartAddAndGet( [ addProduct ]).then(resp=>{
               if(resp.result == 0){
                 this.setState({
                   addToCart: true
                 })
               }
+            }).catch(err => {
+              console.log('failed to get page', key, err)
+            }).finally(_ => {
+              this.setState({
+                pending: false
+              })
             })
             break
           case 'purchase':
@@ -211,7 +226,7 @@ class CountryScreen extends Component {
         <View style={styles.buttonBox}>
           <AppButton style={styles.btnCart} title={i18n.t('cart:toCart')} 
             titleStyle={styles.btnCartText}
-            disabled={this.props.pending}
+            disabled={this.state.pending}
             disableColor={colors.black}
             disableBackgroundColor={colors.whiteTwo}
             onPress={this._onPressBtn('cart')}/>
@@ -227,7 +242,7 @@ class CountryScreen extends Component {
           <Text style={styles.regCard}>{i18n.t('reg:card')}</Text>
         </View>
         }
-        <AppActivityIndicator visible={this.props.pending}/>
+        <AppActivityIndicator visible={this.state.pending}/>
       </SafeAreaView>
     )
   }
@@ -399,7 +414,6 @@ const mapStateToProps = (state) => ({
   product: state.product.toObject(),
   cart: state.cart.toJS(),
   account : state.account.toJS(),
-  pending: state.pender.pending[cartActions.CART_ADD] || false,
 })
 
 export default connect(mapStateToProps, 
