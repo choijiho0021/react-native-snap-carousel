@@ -25,6 +25,7 @@ import SnackBar from 'react-native-snackbar-component';
 import { windowHeight } from '../constants/SliderEntry.style';
 import AppBackButton from '../components/AppBackButton';
 import { isDeviceSize } from '../constants/SliderEntry.style';
+import { snackBarHidingTime } from '../environment';
 
 const sectionTitle = ['sim', 'product']
 
@@ -300,7 +301,7 @@ class CartScreen extends Component {
                   actionText={'X'}
                   actionStyle={{paddingHorizontal: 20}}
                   accentColor={colors.white}
-                  autoHidingTime={3000}
+                  autoHidingTime={snackBarHidingTime}
                   onClose={() => this.setState({showSnackBar: false})}
                   actionHandler={()=>{this.snackRef.current.hideSnackbar()}}/>
         <View style={styles.buttonBox}>

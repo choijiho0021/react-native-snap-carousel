@@ -30,6 +30,7 @@ import AppActivityIndicator from '../components/AppActivityIndicator';
 import Analytics from 'appcenter-analytics'
 import Svg, {Line} from 'react-native-svg';
 import { API } from 'Rokebi/submodules/rokebi-utils'
+import { snackBarHidingTime } from '../environment';
 
 const STATUS_ACTIVE = 'A'     //사용중
 const STATUS_INACTIVE = 'I'   //미사용
@@ -267,8 +268,8 @@ class UsageItem extends Component {
         <View style ={styles.usageListContainer}>
           <View style={{backgroundColor: colors.white}}>
             <View style={styles.titleAndStatus}>
-              <Text style={[styles.usageTitleNormal, { fontWeight: isActive ? "bold" : "normal" }]}>{item.prodName}</Text>
-              <Text style={[styles.usageStatus,{color:statusColor}]}> • {item.status}</Text>
+              <Text key={item.key} style={[styles.usageTitleNormal, { fontWeight: isActive ? "bold" : "normal" }]}>{item.prodName}</Text>
+              <Text key={item.nid} style={[styles.usageStatus,{color:statusColor}]}> • {item.status}</Text>
             </View>
           </View>
           {
@@ -319,7 +320,7 @@ class UsimScreen extends Component {
 
     this.state = {
       refreshing: false,
-      cancelPressed: false,
+      showSnackBar: false,
       isFocused: false,
       // afterLogin: false,
     }
@@ -379,7 +380,7 @@ class UsimScreen extends Component {
   
   showSnackBar () {
     this.setState({
-      cancelPressed:true
+      showSnackBar:true
     })
   }
 
@@ -416,7 +417,7 @@ class UsimScreen extends Component {
 
   render() {
     const { usage } = this.props.order
-    const {refreshing, cancelPressed} = this.state
+    const {refreshing, showSnackBar} = this.state
 
     return(
       <View style={styles.container}>
@@ -441,12 +442,12 @@ class UsimScreen extends Component {
             />
           <AppActivityIndicator visible={this.props.pending || this.props.loginPending}/>
         </View>
-        <SnackBar visible={cancelPressed} backgroundColor={colors.clearBlue} messageColor={colors.white}
+        <SnackBar visible={showSnackBar} backgroundColor={colors.clearBlue} messageColor={colors.white}
                   position={'bottom'}
                   top={0}
                   containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 0}}
-                  autoHidingTime={3000}
-                  onClose={() => this.setState({cancelPressed: false})}
+                  autoHidingTime={snackBarHidingTime}
+                  onClose={() => this.setState({showSnackBar: false})}
                   textMessage={i18n.t("usim:failSnackBar")}/>  
       </View>
     );

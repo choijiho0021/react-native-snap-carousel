@@ -28,6 +28,7 @@ import _ from 'underscore'
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import SnackBar from 'react-native-snackbar-component';
 import { API } from 'Rokebi/submodules/rokebi-utils'
+import { snackBarHidingTime } from '../environment';
 
 
 
@@ -218,7 +219,7 @@ class CountryScreen extends Component {
                   actionText={'X'}
                   actionStyle={{paddingHorizontal: 20}}
                   accentColor={colors.white}
-                  autoHidingTime={3000}
+                  autoHidingTime={snackBarHidingTime}
                   onClose={() => this.setState({showSnackBar: false})}
                   actionHandler={()=>{this.snackRef.current.hideSnackbar()}}
                   textMessage={i18n.t('country:addCart')}/>  
