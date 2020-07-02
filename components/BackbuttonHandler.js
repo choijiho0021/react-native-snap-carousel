@@ -12,7 +12,6 @@ export default function BackbuttonHandler({ navigation, back }) {
 
       const onBackPress = () => {
         if(back){
-          console.log("aaaaa log",back)
           navigation.navigate(back)
         }
         else {
