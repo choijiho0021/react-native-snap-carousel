@@ -23,16 +23,14 @@ const getActiveRouteName = state => {
 
 function mainStack() {
   return (
-    <MainStack.Navigator screenOptions={{animationEnabled: false}}>
+    <MainStack.Navigator screenOptions={{animationEnabled: false, headerShown: false}}>
       <MainStack.Screen
         name="Main"
         component={MainTabNavigator}
-        options={{headerShown: false}}
       />
       <MainStack.Screen
         name="Auth"
         component={AuthStackNavigator}
-        options={{headerShown: false}}
       />
     </MainStack.Navigator>
   );
