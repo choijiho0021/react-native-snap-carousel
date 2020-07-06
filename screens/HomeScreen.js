@@ -126,7 +126,6 @@ class HomeScreen extends Component {
     this.state = {
       darkMode: Appearance.getColorScheme(),
       activeSlide: 0,
-      promotions: [],
       firstLaunch: undefined,
     };
 
@@ -172,22 +171,6 @@ class HomeScreen extends Component {
     pushNoti.add(this._notification);
     appStateHandler.add(this._appStateHandler);
 
-    // get promotion list
-    API.Promotion.getPromotion()
-      .then(resp => {
-        if (resp.result == 0) {
-          this.setState({
-            promotions: resp.objects,
-          });
-        }
-      })
-      .catch(err => {
-        console.log('failed to load promotion list', err);
-      });
-
-    // 공지 사항 가져오기
-    this.props.action.info.getInfoList('info');
-    this.props.action.info.getHomeInfoList('info:home');
     // 로그인 여부에 따라 달라지는 부분
     this._init();
   }
@@ -212,6 +195,7 @@ class HomeScreen extends Component {
         this._login(mobile, pin, iccid);
       }
     }
+
     //자동로그인의 경우 device token update
     if (prevProps.account.deviceToken != deviceToken && loggedIn) {
       this.props.action.account.changeNotiToken();
@@ -241,8 +225,6 @@ class HomeScreen extends Component {
     if (loggedIn) {
       this.props.action.noti.getNotiList(mobile);
       this.props.action.cart.cartFetch();
-    } else {
-      this.props.action.noti.init();
     }
   }
 
@@ -322,12 +304,13 @@ class HomeScreen extends Component {
   }
 
   _pagination() {
-    const {promotions, activeSlide} = this.state;
+    const {activeSlide} = this.state,
+      {promotion} = this.props;
 
     return (
       <View style={styles.pagination}>
         <Pagination
-          dotsLength={promotions.length}
+          dotsLength={promotion.length}
           activeDotIndex={activeSlide}
           containerStyle={styles.paginationContainer}
           renderDots={this._renderDots}
@@ -337,7 +320,7 @@ class HomeScreen extends Component {
   }
 
   _renderDots(activeIndex) {
-    const {promotions} = this.state,
+    const {promotion} = this.props,
       duration = 200,
       width = new Animated.Value(INACTIVE_DOT_WIDTH),
       margin = width.interpolate({
@@ -352,7 +335,7 @@ class HomeScreen extends Component {
     }).start();
 
     if (activeIndex == 0) {
-      return promotions.map((_, idx) =>
+      return promotion.map((_, idx) =>
         idx == 0 ? (
           <Animated.View key={idx + ''} style={styles.dot(width, margin)} />
         ) : (
@@ -361,13 +344,13 @@ class HomeScreen extends Component {
       );
     }
 
-    return promotions.map((_, idx) =>
+    return promotion.map((_, idx) =>
       activeIndex == idx ? (
         <Animated.View
           key={idx + ''}
           style={styles.dot(width, DOT_MARGIN, colors.clearBlue)}
         />
-      ) : activeIndex == (idx + 1) % promotions.length ? (
+      ) : activeIndex == (idx + 1) % promotion.length ? (
         <Animated.View
           key={idx + ''}
           style={styles.dot(margin, DOT_MARGIN, colors.lightGrey)}
@@ -572,11 +555,11 @@ class HomeScreen extends Component {
         <AppActivityIndicator visible={this.props.loginPending} />
         <View style={styles.carousel}>
           <Carousel
-            data={this.state.promotions}
+            data={this.props.promotion}
             renderItem={this._renderPromotion}
             autoplay={true}
             loop={true}
-            loopClonesPerSide={10}
+            // loopClonesPerSide={10}
             lockScrollWhileSnapping={true}
             onSnapToItem={index => this.setState({activeSlide: index})}
             sliderWidth={sliderWidth}
@@ -785,6 +768,7 @@ const mapStateToProps = state => ({
   info: state.info.toJS(),
   loginPending: state.pender.pending[accountActions.LOGIN] || false,
   product: state.product,
+  promotion: state.promotion.get('promotion'),
 });
 
 export default connect(
