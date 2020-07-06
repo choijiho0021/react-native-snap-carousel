@@ -28,6 +28,7 @@ import _ from 'underscore'
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import SnackBar from 'react-native-snackbar-component';
 import { API } from 'Rokebi/submodules/rokebi-utils'
+import { snackBarHidingTime } from '../environment';
 
 
 
@@ -94,7 +95,7 @@ class CountryScreen extends Component {
       selected: undefined,
       imageUrl: undefined,
       title: undefined,
-      addToCart: false,
+      showSnackBar: false,
       localOpDetails: undefined,
       pending: false,
     }
@@ -128,7 +129,7 @@ class CountryScreen extends Component {
 
     // 다른 버튼 클릭으로 스낵바 종료될 경우, 재출력 안되는 부분이 있어 추가
     this.setState({
-      addToCart: false
+      showSnackBar: false
     })
 
     Analytics.trackEvent( 'Click_' + key)
@@ -159,7 +160,7 @@ class CountryScreen extends Component {
             this.props.action.cart.cartAddAndGet( [ addProduct ]).then(resp=>{
               if(resp.result == 0){
                 this.setState({
-                  addToCart: true
+                  showSnackBar: true
                 })
               }
             }).catch(err => {
@@ -188,7 +189,7 @@ class CountryScreen extends Component {
 
   render() {
     const { iccid,loggedIn } = this.props.account
-    const { prodData, imageUrl, localOpDetails, title, selected, addToCart } = this.state
+    const { prodData, imageUrl, localOpDetails, title, selected, showSnackBar } = this.state
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
@@ -211,15 +212,15 @@ class CountryScreen extends Component {
         </View>
         {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
         <SnackBar ref={this.snackRef}
-                  visible={addToCart} backgroundColor={colors.clearBlue} messageColor={colors.white}
+                  visible={showSnackBar} backgroundColor={colors.clearBlue} messageColor={colors.white}
                   position={'top'}
                   top={windowHeight /2}
                   containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 0}}
                   actionText={'X'}
                   actionStyle={{paddingHorizontal: 20}}
                   accentColor={colors.white}
-                  autoHidingTime={3000}
-                  onClose={() => this.setState({addToCart: false})}
+                  autoHidingTime={snackBarHidingTime}
+                  onClose={() => this.setState({showSnackBar: false})}
                   actionHandler={()=>{this.snackRef.current.hideSnackbar()}}
                   textMessage={i18n.t('country:addCart')}/>  
         { iccid ? 

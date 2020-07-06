@@ -1,11 +1,13 @@
 import { Platform } from 'react-native';
 
 const impId = "imp53913318"
-const codePushiOSStagLabel = "v115"
+const codePushiOSStagLabel = "v118"
 const codePushiOSProdLabel = "v0"
-const codePushAndStagLabel = "v108"
+const codePushAndStagLabel = "v111"
 const codePushAndProdLabel = "v0"
 const channelId = "_nzQhxb"
+
+export const snackBarHidingTime = 3000
 
 const ENV = {
   dev: {
@@ -46,5 +48,3 @@ export default function() {
   if ( process.env.NODE_ENV == 'staging') return ENV.staging
   return ENV.dev
 }
-
-

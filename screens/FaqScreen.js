@@ -24,6 +24,10 @@ class FaqList extends Component {
     this._renderItem = this._renderItem.bind(this)
   }
 
+  shouldComponentUpdate(nextProps) {
+    return nextProps.data != this.props.data
+  }
+
   _renderItem({item}) {
     return (<AppFlatListItem key={item.key} item={item} checked={item.title.startsWith(this.props.titleNo)}/>)
   }
