@@ -1,13 +1,10 @@
 import React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
-import { createStackNavigator } from '@react-navigation/stack';
-import {createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {connect} from 'react-redux'
-import * as cartActions from '../redux/modules/cart'
-import { bindActionCreators } from 'redux'
+import {Platform, StyleSheet, Text, View} from 'react-native';
+import {createStackNavigator} from '@react-navigation/stack';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
-import {appStyles} from '../constants/Styles'
-import AppButton from '../components/AppButton'
+import {appStyles} from '../constants/Styles';
+import AppButton from '../components/AppButton';
 import AppIcon from '../components/AppIcon';
 
 import HomeScreen from '../screens/HomeScreen';
@@ -19,10 +16,10 @@ import RegisterSimScreen from '../screens/RegisterSimScreen';
 import ProductDetailScreen from '../screens/ProductDetailScreen';
 
 import SettingsScreen from '../screens/SettingsScreen';
-import i18n from '../utils/i18n'
+import i18n from '../utils/i18n';
 import RechargeScreen from '../screens/RechargeScreen';
 import CartScreen from '../screens/CartScreen';
-import withBadge from '../components/withBadge'
+import withBadge from '../components/withBadge';
 import NewSimScreen from '../screens/NewSimScreen';
 import MyPageScreen from '../screens/MyPageScreen';
 import NotiScreen from '../screens/NotiScreen';
@@ -41,10 +38,9 @@ import SimpleTextScreen from '../screens/SimpleTextScreen';
 import UsimScreen from '../screens/UsimScreen';
 import FaqScreen from '../screens/FaqScreen';
 import GuideScreen from '../screens/GuideScreen';
-import { colors } from '../constants/Colors';
 import UsageDetailScreen from '../screens/UsageDetailScreen';
-
-import Analytics from 'appcenter-analytics'
+import AuthStack from './AuthStackNavigator';
+import {connect} from 'react-redux';
 
 const HomeStack = createStackNavigator();
 const StoreStack = createStackNavigator();
@@ -52,18 +48,23 @@ const CartStack = createStackNavigator();
 const UsimStack = createStackNavigator();
 const MyPageStack = createStackNavigator();
 
-const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti, 
-  {badgeStyle:{right:-3,top:0}},
-  (state) => ({notReadNoti: state.noti.get('notiList').filter(elm=> elm.isRead == 'F').length }))(AppButton)
+const BadgeAppButton = withBadge(
+  ({notReadNoti}) => notReadNoti,
+  {badgeStyle: {right: -3, top: 0}},
+  state => ({
+    notReadNoti: state.noti.get('notiList').filter(elm => elm.isRead == 'F')
+      .length,
+  }),
+)(AppButton);
 
 function homeStack() {
   return (
-    <HomeStack.Navigator screenOptions={{animationEnabled:false}}>
-      <HomeStack.Screen name="Home" component={HomeScreen}/>
+    <HomeStack.Navigator screenOptions={{animationEnabled: false}}>
+      <HomeStack.Screen name="Home" component={HomeScreen} />
       <HomeStack.Screen name="Recharge" component={RechargeScreen} />
       <HomeStack.Screen name="RegisterSim" component={RegisterSimScreen} />
       <HomeStack.Screen name="NewSim" component={NewSimScreen} />
-      <HomeStack.Screen name="Noti" component={NotiScreen}/>
+      <HomeStack.Screen name="Noti" component={NotiScreen} />
       <HomeStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <HomeStack.Screen name="Contact" component={ContactScreen} />
       <HomeStack.Screen name="ContactBoard" component={ContactBoardScreen} />
@@ -74,17 +75,23 @@ function homeStack() {
       <HomeStack.Screen name="Payment" component={PaymentScreen} />
       <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
       <HomeStack.Screen name="FindAddress" component={FindAddressScreen} />
-      <HomeStack.Screen name="PaymentResult" component={PaymentResultScreen}/>
-      <HomeStack.Screen name="CustomerProfile" component={CustomerProfileScreen} />
+      <HomeStack.Screen name="PaymentResult" component={PaymentResultScreen} />
+      <HomeStack.Screen
+        name="CustomerProfile"
+        component={CustomerProfileScreen}
+      />
       <HomeStack.Screen name="AddProfile" component={AddProfileScreen} />
-      <HomeStack.Screen name="PurchaseDetail" component={PurchaseDetailScreen} />
+      <HomeStack.Screen
+        name="PurchaseDetail"
+        component={PurchaseDetailScreen}
+      />
     </HomeStack.Navigator>
   );
 }
 
 function storeStack() {
   return (
-    <StoreStack.Navigator screenOptions={{animationEnabled:false}}>
+    <StoreStack.Navigator screenOptions={{animationEnabled: false}}>
       <StoreStack.Screen name="Store" component={StoreScreen} />
       <StoreStack.Screen name="Cart" component={CartScreen} />
       <StoreStack.Screen name="StoreSearch" component={StoreSearchScreen} />
@@ -103,14 +110,17 @@ function storeStack() {
 
 function cartStack() {
   return (
-    <CartStack.Navigator screenOptions={{animationEnabled:false}}>
+    <CartStack.Navigator screenOptions={{animationEnabled: false}}>
       <CartStack.Screen name="Cart" component={CartScreen} />
       <CartStack.Screen name="Payment" component={PaymentScreen} />
       <CartStack.Screen name="PymMethod" component={PymMethodScreen} />
       <CartStack.Screen name="FindAddress" component={FindAddressScreen} />
       <CartStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <CartStack.Screen name="PaymentResult" component={PaymentResultScreen} />
-      <CartStack.Screen name="CustomerProfile" component={CustomerProfileScreen} />
+      <CartStack.Screen
+        name="CustomerProfile"
+        component={CustomerProfileScreen}
+      />
       <CartStack.Screen name="AddProfile" component={AddProfileScreen} />
       <CartStack.Screen name="RegisterSim" component={RegisterSimScreen} />
     </CartStack.Navigator>
@@ -119,7 +129,7 @@ function cartStack() {
 
 function usimStack() {
   return (
-    <UsimStack.Navigator screenOptions={{animationEnabled:false}}>
+    <UsimStack.Navigator screenOptions={{animationEnabled: false}}>
       <UsimStack.Screen name="Usim" component={UsimScreen} />
       <UsimStack.Screen name="UsageDetail" component={UsageDetailScreen} />
 
@@ -136,9 +146,12 @@ function usimStack() {
 
 function myPageStack() {
   return (
-    <MyPageStack.Navigator screenOptions={{animationEnabled:false}}>
+    <MyPageStack.Navigator screenOptions={{animationEnabled: false}}>
       <MyPageStack.Screen name="MyPage" component={MyPageScreen} />
-      <MyPageStack.Screen name="PurchaseDetail" component={PurchaseDetailScreen} />
+      <MyPageStack.Screen
+        name="PurchaseDetail"
+        component={PurchaseDetailScreen}
+      />
       <MyPageStack.Screen name="SimpleText" component={SimpleTextScreen} />
 
       <MyPageStack.Screen name="ContactBoard" component={ContactBoardScreen} />
@@ -147,7 +160,10 @@ function myPageStack() {
       <MyPageStack.Screen name="Recharge" component={RechargeScreen} />
       <MyPageStack.Screen name="Payment" component={PaymentScreen} />
       <MyPageStack.Screen name="PymMethod" component={PymMethodScreen} />
-      <MyPageStack.Screen name="PaymentResult" component={PaymentResultScreen} />
+      <MyPageStack.Screen
+        name="PaymentResult"
+        component={PaymentResultScreen}
+      />
 
       <MyPageStack.Screen name="RegisterSim" component={RegisterSimScreen} />
 
@@ -159,68 +175,100 @@ function myPageStack() {
 
 // redux store에서 cart에 추가된 상품 개수를 읽어서 배지에 표시한다.
 //
-const BadgedIcon = withBadge(({cartItems}) => cartItems, {badgeStyle : {top:4, left:8}}, 
-  (state) => ({
-    cartItems: (state.cart.get('orderItems') || []).reduce((acc,cur) => acc + cur.qty, 0)
-  }))(AppIcon)
+const BadgedIcon = withBadge(
+  ({cartItems}) => cartItems,
+  {badgeStyle: {top: 4, left: 8}},
+  state => ({
+    cartItems: (state.cart.get('orderItems') || []).reduce(
+      (acc, cur) => acc + cur.qty,
+      0,
+    ),
+  }),
+)(AppIcon);
 
 const TabNavigator = createBottomTabNavigator();
 
-function tabNavigator() {
+function tabNavigator({loggedIn}) {
   return (
-    <TabNavigator.Navigator initialRouteName="HomeStack" backBehavior="initialRoute">
-      <TabNavigator.Screen 
-        name="HomeStack" 
-        component={homeStack} 
+    <TabNavigator.Navigator
+      initialRouteName="HomeStack"
+      backBehavior="initialRoute">
+      <TabNavigator.Screen
+        name="HomeStack"
+        component={homeStack}
         options={({route}) => ({
           tabBarVisible: route.state && route.state.index == 0,
           tabBarLabel: i18n.t('home'),
           animationEnabled: false,
-          tabBarIcon: ({ focused }) => (
-            <AppIcon focused={focused} name="btnHome" style={styles.tabBarIcon}/>
-          )
+          tabBarIcon: ({focused}) => (
+            <AppIcon
+              focused={focused}
+              name="btnHome"
+              style={styles.tabBarIcon}
+            />
+          ),
         })}
       />
-      <TabNavigator.Screen 
-        name="StoreStack" 
+      <TabNavigator.Screen
+        name="StoreStack"
         component={storeStack}
         options={({route}) => ({
           tabBarVisible: route.state && route.state.index == 0,
           tabBarLabel: i18n.t('store'),
-          tabBarIcon: ({ focused }) => (
-            <AppIcon focused={focused} name="btnStore" style={styles.tabBarIcon}/>
-        )})}
+          tabBarIcon: ({focused}) => (
+            <AppIcon
+              focused={focused}
+              name="btnStore"
+              style={styles.tabBarIcon}
+            />
+          ),
+        })}
       />
-      <TabNavigator.Screen 
-        name="CartStack" 
+      <TabNavigator.Screen
+        name="CartStack"
         component={cartStack}
         options={({route}) => ({
           tabBarVisible: false,
           tabBarLabel: i18n.t('cart'),
-          tabBarIcon: ({ focused }) => (
-            <BadgedIcon focused={focused} name="btnCart" style={styles.tabBarIcon}/>
-          )})}
-        />
-      <TabNavigator.Screen 
-        name="UsimStack" 
+          tabBarIcon: ({focused}) => (
+            <BadgedIcon
+              focused={focused}
+              name="btnCart"
+              style={styles.tabBarIcon}
+            />
+          ),
+        })}
+      />
+      <TabNavigator.Screen
+        name="UsimStack"
         component={usimStack}
         options={({route}) => ({
           tabBarVisible: route.state && route.state.index == 0,
           tabBarLabel: i18n.t('usim'),
-          tabBarIcon: ({ focused }) => (
-            <AppIcon focused={focused} name="btnUsim" style={styles.tabBarIcon}/>
-          )})}
-        />
-      <TabNavigator.Screen 
-        name="MyPageStack" 
-        component={myPageStack}
+          tabBarIcon: ({focused}) => (
+            <AppIcon
+              focused={focused}
+              name="btnUsim"
+              style={styles.tabBarIcon}
+            />
+          ),
+        })}
+      />
+      <TabNavigator.Screen
+        name="MyPageStack"
+        component={loggedIn ? myPageStack : AuthStack}
         options={({route}) => ({
           tabBarVisible: route.state && route.state.index == 0,
           tabBarLabel: i18n.t('mypage'),
-          tabBarIcon: ({ focused }) => (
-            <AppIcon focused={focused} name="btnMypage" style={styles.tabBarIcon}/>
-          )})}
-        />
+          tabBarIcon: ({focused}) => (
+            <AppIcon
+              focused={focused}
+              name="btnMypage"
+              style={styles.tabBarIcon}
+            />
+          ),
+        })}
+      />
     </TabNavigator.Navigator>
   );
 }
@@ -230,51 +278,21 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   title: {
-    ... appStyles.title,
+    ...appStyles.title,
     marginLeft: 20,
   },
   btnAlarm: {
-    width: 40, 
+    width: 40,
     height: 40,
     marginRight: 10,
   },
   btnCnter: {
-    width:40,
+    width: 40,
     height: 40,
-    marginHorizontal: 18
+    marginHorizontal: 18,
   },
-})
- 
-// class AppTabNavigator extends React.Component {
-//   static router = TabNavigator.router
+});
 
-//   componentDidUpdate(prevProps) {
-//     if ( prevProps.navigation.state != this.props.navigation.state) {
-//       const {navigation} = this.props,
-//         lastTab = navigation.state.routes[navigation.state.index].routeName
-
-//       if ( lastTab != this.props.lastTab[0]) {
-//         Analytics.trackEvent('Page_View_Count', {page : lastTab.substring(0,lastTab.length-5)})
-//         this.props.action.cart.pushLastTab(lastTab)
-//       }
-//     }
-//   }
-
-//   render() {
-//     const { navigation } = this.props
-
-//     return <TabNavigator navigation={navigation} />
-//   }
-// }
-
-// export default connect((state) => ({
-//   lastTab : state.cart.get('lastTab').toJS()
-// }),
-//   (dispatch) => ({
-//     action:{
-//       cart: bindActionCreators(cartActions, dispatch),
-//     }
-//   })
-// )(AppTabNavigator)
-
-export default tabNavigator
+export default connect(state => ({
+  loggedIn: state.account.get('loggedIn'),
+}))(tabNavigator);

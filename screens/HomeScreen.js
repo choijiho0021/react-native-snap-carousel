@@ -8,270 +8,301 @@ import {
   StatusBar,
   ScrollView,
   Platform,
-  Appearance
+  Appearance,
 } from 'react-native';
-import {bindActionCreators} from 'redux'
-import {connect} from 'react-redux'
-import i18n from '../utils/i18n'
-import {appStyles} from '../constants/Styles'
-import * as simActions from '../redux/modules/sim'
-import * as accountActions from '../redux/modules/account'
-import * as notiActions from '../redux/modules/noti'
-import * as infoActions from '../redux/modules/info'
-import * as cartActions from '../redux/modules/cart'
-import * as productActions from '../redux/modules/product'
-import _ from 'underscore'
-import AppActivityIndicator from '../components/AppActivityIndicator'
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import i18n from '../utils/i18n';
+import {appStyles} from '../constants/Styles';
+import * as simActions from '../redux/modules/sim';
+import * as accountActions from '../redux/modules/account';
+import * as notiActions from '../redux/modules/noti';
+import * as infoActions from '../redux/modules/info';
+import * as cartActions from '../redux/modules/cart';
+import * as productActions from '../redux/modules/product';
+import _ from 'underscore';
+import AppActivityIndicator from '../components/AppActivityIndicator';
 import AppButton from '../components/AppButton';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
-import { sliderWidth, windowHeight } from '../constants/SliderEntry.style'
-import { colors } from '../constants/Colors';
+import {sliderWidth, windowHeight} from '../constants/SliderEntry.style';
+import {colors} from '../constants/Colors';
 import AppIcon from '../components/AppIcon';
 import AppUserPic from '../components/AppUserPic';
 import withBadge from '../components/withBadge';
 import AppPrice from '../components/AppPrice';
-import pushNoti from '../utils/pushNoti'
-import { Animated } from 'react-native';
+import pushNoti from '../utils/pushNoti';
+import {Animated} from 'react-native';
 import TutorialScreen from './TutorialScreen';
 import AsyncStorage from '@react-native-community/async-storage';
-import { PERMISSIONS, request } from 'react-native-permissions';
+import {PERMISSIONS, request} from 'react-native-permissions';
 import AppAlert from './../components/AppAlert';
-import appStateHandler from '../utils/appState'
-import Analytics from 'appcenter-analytics'
-import { API } from 'Rokebi/submodules/rokebi-utils'
+import appStateHandler from '../utils/appState';
+import Analytics from 'appcenter-analytics';
+import {API} from 'Rokebi/submodules/rokebi-utils';
 
 // windowHeight
 // iphone 8 - 375x667
 // iphone 11 pro  - 375x812, 2436×1125
 // iphone 11 pro max - 414x896, 2688×1242
-// 190 ~ 210 사이의 크기로 정리됨 
-const size = windowHeight > 810 ? {
-  userInfoHeight : 110,
-  userInfoMarginTop: 30,
-  userPic: 60,
-  carouselHeight : 225,
-  carouselMargin : 0
-} : {
-  userInfoHeight : 96,
-  userInfoMarginTop: 20,
-  userPic: 50,
-  carouselHeight : 190,
-  carouselMargin : 20
-}
+// 190 ~ 210 사이의 크기로 정리됨
+const size =
+  windowHeight > 810
+    ? {
+        userInfoHeight: 110,
+        userInfoMarginTop: 30,
+        userPic: 60,
+        carouselHeight: 225,
+        carouselMargin: 0,
+      }
+    : {
+        userInfoHeight: 96,
+        userInfoMarginTop: 20,
+        userPic: 50,
+        carouselHeight: 190,
+        carouselMargin: 20,
+      };
 
-const DOT_MARGIN = 6
-const INACTIVE_DOT_WIDTH = 6
-const ACTIVE_DOT_WIDTH = 20
+const DOT_MARGIN = 6;
+const INACTIVE_DOT_WIDTH = 6;
+const ACTIVE_DOT_WIDTH = 20;
 
-const BadgeAppButton = withBadge(({notReadNoti}) => notReadNoti, 
-  {badgeStyle:{right:-3,top:0}},
-  (state) => ({notReadNoti: state.noti.get('notiList').filter(elm=> elm.isRead == 'F').length }))(AppButton)
-  
+const BadgeAppButton = withBadge(
+  ({notReadNoti}) => notReadNoti,
+  {badgeStyle: {right: -3, top: 0}},
+  state => ({
+    notReadNoti: state.noti.get('notiList').filter(elm => elm.isRead == 'F')
+      .length,
+  }),
+)(AppButton);
+
 class PromotionImage extends PureComponent {
-
   render() {
-  const {item} = this.props
+    const {item} = this.props;
     return (
-      <TouchableOpacity style={styles.overlay} onPress={() => this.props.onPress(item)}>
-        {
-          _.isEmpty(item.imageUrl) ?
-            <Text style={styles.text}>{item.title}</Text> :
-            <Image source={{uri:API.default.httpImageUrl(item.imageUrl)}} style={{height:size.carouselHeight}} resizeMode='contain'/>
-        }
+      <TouchableOpacity
+        style={styles.overlay}
+        onPress={() => this.props.onPress(item)}>
+        {_.isEmpty(item.imageUrl) ? (
+          <Text style={styles.text}>{item.title}</Text>
+        ) : (
+          <Image
+            source={{uri: API.default.httpImageUrl(item.imageUrl)}}
+            style={{height: size.carouselHeight}}
+            resizeMode="contain"
+          />
+        )}
       </TouchableOpacity>
-    )
+    );
   }
-} 
+}
 
 class HomeScreen extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft : () =>  (<Text style={styles.title}>{i18n.t('appTitle')}</Text>),
+      headerLeft: () => <Text style={styles.title}>{i18n.t('appTitle')}</Text>,
       headerRight: () => (
         <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
-          <AppButton key="cnter" style={styles.btnCnter} 
-            onPress={() => props.navigation.navigate('Contact')} 
-            iconName="btnCnter" />
-  
+          <AppButton
+            key="cnter"
+            style={styles.btnCnter}
+            onPress={() => props.navigation.navigate('Contact')}
+            iconName="btnCnter"
+          />
+
           {/* //BadgeAppButton을 사용했을 때 위치가 변동됨 수정이 필요함 */}
-          <BadgeAppButton key="alarm" style={styles.btnAlarm} 
-            onPress={() => props.navigation.navigate('Noti', {mode:'noti'})} 
-            iconName="btnAlarm" />
-        </View> 
-      )
-    })
+          <BadgeAppButton
+            key="alarm"
+            style={styles.btnAlarm}
+            onPress={() => props.navigation.navigate('Noti', {mode: 'noti'})}
+            iconName="btnAlarm"
+          />
+        </View>
+      ),
+    });
 
     this.state = {
-      darkMode: Appearance.getColorScheme() ,
+      darkMode: Appearance.getColorScheme(),
       activeSlide: 0,
       promotions: [],
       firstLaunch: undefined,
-    }
+    };
 
-    this._login = this._login.bind(this)
-    this._init = this._init.bind(this)
-    this._renderPromotion = this._renderPromotion.bind(this)
-    this._navigate = this._navigate.bind(this)
-    this._userInfo = this._userInfo.bind(this)
-    this._notification = this._notification.bind(this)
-    this._handleNotification = this._handleNotification.bind(this)
-    this._clearAccount = this._clearAccount.bind(this)
-    this._appStateHandler = this._appStateHandler.bind(this)
-    this._onPressPromotion = this._onPressPromotion.bind(this)
-    this._renderDots = this._renderDots.bind(this)
-    this._renderInfo = this._renderInfo.bind(this)
+    this._login = this._login.bind(this);
+    this._init = this._init.bind(this);
+    this._renderPromotion = this._renderPromotion.bind(this);
+    this._navigate = this._navigate.bind(this);
+    this._userInfo = this._userInfo.bind(this);
+    this._notification = this._notification.bind(this);
+    this._handleNotification = this._handleNotification.bind(this);
+    this._clearAccount = this._clearAccount.bind(this);
+    this._appStateHandler = this._appStateHandler.bind(this);
+    this._onPressPromotion = this._onPressPromotion.bind(this);
+    this._renderDots = this._renderDots.bind(this);
+    this._renderInfo = this._renderInfo.bind(this);
 
-    this._isNoticed = null
+    this._isNoticed = null;
   }
 
   async componentDidMount() {
-    Analytics.trackEvent('Page_View_Count', {page : 'Home'})
+    Analytics.trackEvent('Page_View_Count', {page: 'Home'});
     // 로그인 여부와 관련 없이 항상 처리할 부분
-      if(Platform.OS == 'ios'){
-        await request(PERMISSIONS.IOS.PHOTO_LIBRARY)
-        await request(PERMISSIONS.IOS.CAMERA)
-      }
-      else if(Platform.OS == 'android'){
-        await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE)
-        await request(PERMISSIONS.ANDROID.CAMERA)
-      }
+    if (Platform.OS == 'ios') {
+      await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
+      await request(PERMISSIONS.IOS.CAMERA);
+    } else if (Platform.OS == 'android') {
+      await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+      await request(PERMISSIONS.ANDROID.CAMERA);
+    }
 
     // 앱 첫 실행 여부 확인
-    AsyncStorage.getItem("alreadyLaunched").then(value => {
-      if(value == null){
-        AsyncStorage.setItem('alreadyLaunched', 'true')
-        this.setState({firstLaunch: true})        
+    AsyncStorage.getItem('alreadyLaunched').then(value => {
+      if (value == null) {
+        AsyncStorage.setItem('alreadyLaunched', 'true');
+        this.setState({firstLaunch: true});
+      } else {
+        this.setState({firstLaunch: false});
       }
-      else{
-        this.setState({firstLaunch: false})
-      }
-    })
+    });
     // AsyncStorage.removeItem('alreadyLaunched')
 
     // config push notification
-    pushNoti.add(this._notification)
-    appStateHandler.add(this._appStateHandler)
-    
-    // get promotion list
-    API.Promotion.getPromotion().then(resp => {
-      if (resp.result == 0) {
-        this.setState({
-          promotions: resp.objects
-        })
-      }
-    }).catch(err => {
-      console.log('failed to load promotion list', err)
-    })
+    pushNoti.add(this._notification);
+    appStateHandler.add(this._appStateHandler);
 
-    // 공지 사항 가져오기 
-    this.props.action.info.getInfoList('info')
-    this.props.action.info.getHomeInfoList('info:home')
+    // get promotion list
+    API.Promotion.getPromotion()
+      .then(resp => {
+        if (resp.result == 0) {
+          this.setState({
+            promotions: resp.objects,
+          });
+        }
+      })
+      .catch(err => {
+        console.log('failed to load promotion list', err);
+      });
+
+    // 공지 사항 가져오기
+    this.props.action.info.getInfoList('info');
+    this.props.action.info.getHomeInfoList('info:home');
     // 로그인 여부에 따라 달라지는 부분
-    this._init()
+    this._init();
   }
 
   componentWillUnmount() {
-    pushNoti.remove()
-    appStateHandler.remove()
+    pushNoti.remove();
+    appStateHandler.remove();
   }
 
-  componentDidUpdate( prevProps) {
-    const {mobile, pin, iccid, loggedIn, deviceToken, isUsedByOther} = this.props.account
+  componentDidUpdate(prevProps) {
+    const {
+      mobile,
+      pin,
+      iccid,
+      loggedIn,
+      deviceToken,
+      isUsedByOther,
+    } = this.props.account;
 
-    if ( mobile != prevProps.account.mobile || pin != prevProps.account.pin) {
-
-      if ( ! _.isEmpty(mobile) && ! loggedIn) {
-        this._login(mobile, pin, iccid)
+    if (mobile != prevProps.account.mobile || pin != prevProps.account.pin) {
+      if (!_.isEmpty(mobile) && !loggedIn) {
+        this._login(mobile, pin, iccid);
       }
     }
     //자동로그인의 경우 device token update
-    if(prevProps.account.deviceToken != deviceToken && loggedIn){
-      this.props.action.account.changeNotiToken()
+    if (prevProps.account.deviceToken != deviceToken && loggedIn) {
+      this.props.action.account.changeNotiToken();
     }
 
     if (prevProps.account.loggedIn != loggedIn) {
-      this._init()
+      this._init();
     }
 
-    if ( this.props.sync.progress ) {
-      this.props.navigation.navigate('CodePush')
-    }
-
-    if ( isUsedByOther && prevProps.account.isUsedByOther != isUsedByOther && ! this._isNoticed) {
-      this._isNoticed = true
-      AppAlert.info( i18n.t('acc:disconnectSim'), i18n.t('noti'), this._clearAccount )
+    if (
+      isUsedByOther &&
+      prevProps.account.isUsedByOther != isUsedByOther &&
+      !this._isNoticed
+    ) {
+      this._isNoticed = true;
+      AppAlert.info(
+        i18n.t('acc:disconnectSim'),
+        i18n.t('noti'),
+        this._clearAccount,
+      );
     }
   }
 
   _init() {
-    const {mobile, loggedIn} = this.props.account
+    const {mobile, loggedIn} = this.props.account;
 
-    if ( loggedIn ) {
-      this.props.action.noti.getNotiList(mobile)
-      this.props.action.cart.cartFetch()
-    }
-    else {
-      this.props.action.noti.init()
+    if (loggedIn) {
+      this.props.action.noti.getNotiList(mobile);
+      this.props.action.cart.cartFetch();
+    } else {
+      this.props.action.noti.init();
     }
   }
 
   _notification(type, data, isForeground = true) {
-    const {mobile, loggedIn} = this.props.account
+    const {mobile, loggedIn} = this.props.account;
 
-    if ( loggedIn ) {
-      this.props.action.noti.getNotiList(mobile)
+    if (loggedIn) {
+      this.props.action.noti.getNotiList(mobile);
     }
 
-    switch(type) {
-      case 'register' :
+    switch (type) {
+      case 'register':
         this.props.action.account.updateAccount({
-          deviceToken: data
-        })
+          deviceToken: data,
+        });
         break;
       case 'notification':
-        this._handleNotification( data, isForeground )
+        this._handleNotification(data, isForeground);
     }
   }
 
-  _handleNotification( payload, isForeground) {
-    const type = (payload.data || {}).notiType
-    const target = (payload.data || {}).iccid
-    const { mobile, iccid } = this.props.account
+  _handleNotification(payload, isForeground) {
+    const type = (payload.data || {}).notiType;
+    const target = (payload.data || {}).iccid;
+    const {mobile, iccid} = this.props.account;
 
     if (mobile && _.size(payload) > 0) {
-      if(Platform.OS === 'ios') {
-        let msg = JSON.stringify(payload)
-        this.props.action.noti.sendLog(mobile, msg)
+      if (Platform.OS === 'ios') {
+        let msg = JSON.stringify(payload);
+        this.props.action.noti.sendLog(mobile, msg);
       }
     }
-    
-    switch(type) {
+
+    switch (type) {
       case 'account':
-        if ( typeof iccid !== 'undefined' && iccid === target ) {
-          if (! this._isNoticed) {
-            this._isNoticed = true
-            AppAlert.info( i18n.t('acc:disconnectSim'), i18n.t('noti'), this._clearAccount )
+        if (typeof iccid !== 'undefined' && iccid === target) {
+          if (!this._isNoticed) {
+            this._isNoticed = true;
+            AppAlert.info(
+              i18n.t('acc:disconnectSim'),
+              i18n.t('noti'),
+              this._clearAccount,
+            );
           }
-        }
-        else {
-          !isForeground && this.props.navigation.navigate('Noti')
+        } else {
+          !isForeground && this.props.navigation.navigate('Noti');
         }
 
         break;
       default:
-        !isForeground && this.props.navigation.navigate('Noti')
+        !isForeground && this.props.navigation.navigate('Noti');
     }
   }
 
   _appStateHandler(state) {
-    const { iccid, token } = this.props.account
-    switch(state) {
-      case 'active': 
-        if ( ! _.isEmpty(iccid) && ! this._isNoticed ) {
-          this.props.action.account.getAccount( iccid, {token} )
+    const {iccid, token} = this.props.account;
+    switch (state) {
+      case 'active':
+        if (!_.isEmpty(iccid) && !this._isNoticed) {
+          this.props.action.account.getAccount(iccid, {token});
         }
         break;
 
@@ -280,139 +311,188 @@ class HomeScreen extends Component {
   }
 
   _clearAccount() {
-    this.props.action.account.clearCurrentAccount()
-    this._isNoticed = null
+    this.props.action.account.clearCurrentAccount();
+    this._isNoticed = null;
   }
 
   _login(mobile, pin, iccid) {
-    this.props.action.account.logInAndGetAccount( mobile, pin, iccid)
-    this.props.action.sim.getSimCardList()
-    this.props.action.noti.getNotiList(mobile)
+    this.props.action.account.logInAndGetAccount(mobile, pin, iccid);
+    this.props.action.sim.getSimCardList();
+    this.props.action.noti.getNotiList(mobile);
   }
 
-  _pagination () {
-    const { promotions, activeSlide } = this.state
+  _pagination() {
+    const {promotions, activeSlide} = this.state;
 
     return (
       <View style={styles.pagination}>
-        <Pagination 
+        <Pagination
           dotsLength={promotions.length}
           activeDotIndex={activeSlide}
           containerStyle={styles.paginationContainer}
           renderDots={this._renderDots}
         />
       </View>
-    )
+    );
   }
 
-  _renderDots( activeIndex) {
-    const { promotions } = this.state,
+  _renderDots(activeIndex) {
+    const {promotions} = this.state,
       duration = 200,
       width = new Animated.Value(INACTIVE_DOT_WIDTH),
       margin = width.interpolate({
-        inputRange: [ INACTIVE_DOT_WIDTH, ACTIVE_DOT_WIDTH],
-        outputRange: [ ACTIVE_DOT_WIDTH, INACTIVE_DOT_WIDTH]
-      })
+        inputRange: [INACTIVE_DOT_WIDTH, ACTIVE_DOT_WIDTH],
+        outputRange: [ACTIVE_DOT_WIDTH, INACTIVE_DOT_WIDTH],
+      });
 
-    Animated.timing ( width, { toValue : ACTIVE_DOT_WIDTH, duration, useNativeDriver: false }).start()
+    Animated.timing(width, {
+      toValue: ACTIVE_DOT_WIDTH,
+      duration,
+      useNativeDriver: false,
+    }).start();
 
-    if ( activeIndex == 0) {
+    if (activeIndex == 0) {
       return promotions.map((_, idx) =>
-        idx == 0 ?
-          <Animated.View key={idx+""} style={styles.dot(width, margin)}/> :
-          <View key={idx+""} style={styles.inactiveDot}/> 
-        )
+        idx == 0 ? (
+          <Animated.View key={idx + ''} style={styles.dot(width, margin)} />
+        ) : (
+          <View key={idx + ''} style={styles.inactiveDot} />
+        ),
+      );
     }
 
-    return promotions.map((_,idx) =>
-      activeIndex == idx ?
-        <Animated.View key={idx+""} style={styles.dot(width, DOT_MARGIN, colors.clearBlue)}/> :
-      (activeIndex == (idx+1)%promotions.length) ?
-        <Animated.View key={idx+""} style={styles.dot(margin, DOT_MARGIN, colors.lightGrey)}/> :
-        <View key={idx+""} style={styles.inactiveDot}/>
-    )
+    return promotions.map((_, idx) =>
+      activeIndex == idx ? (
+        <Animated.View
+          key={idx + ''}
+          style={styles.dot(width, DOT_MARGIN, colors.clearBlue)}
+        />
+      ) : activeIndex == (idx + 1) % promotions.length ? (
+        <Animated.View
+          key={idx + ''}
+          style={styles.dot(margin, DOT_MARGIN, colors.lightGrey)}
+        />
+      ) : (
+        <View key={idx + ''} style={styles.inactiveDot} />
+      ),
+    );
   }
 
-  _navigate = (key,params = {}) => () => {
+  _navigate = (key, params = {}) => () => {
+    const {mobile, iccid} = this.props.account;
 
-    const { mobile, iccid } = this.props.account
-
-    if ( key.includes('RegisterSim') ) {
-      if ( _.isEmpty(mobile)) key = 'Auth' 
-      else if ( _.isEmpty(iccid)) key = 'RegisterSim'
-      else key.indexOf('_') > 0 ? key = 'Recharge' : 'RegisterSim'
+    if (key.includes('RegisterSim')) {
+      if (_.isEmpty(mobile)) key = 'Auth';
+      else if (_.isEmpty(iccid)) key = 'RegisterSim';
+      else key.indexOf('_') > 0 ? (key = 'Recharge') : 'RegisterSim';
     }
 
-    this.props.navigation.navigate(key,params)
-  }
+    this.props.navigation.navigate(key, params);
+  };
 
   _userInfo() {
-    const { mobile, loggedIn, iccid, balance = 0, userPictureUrl } = this.props.account
+    const {
+      mobile,
+      loggedIn,
+      iccid,
+      balance = 0,
+      userPictureUrl,
+    } = this.props.account;
 
     return (
-      <TouchableOpacity style={styles.userInfo} onPress={this._navigate('RegisterSim_user',{mode:'Home'})}>
-        <AppUserPic url={userPictureUrl} icon="imgPeople" style={styles.userPicture} onPress={this._navigate('RegisterSim_user',{mode:'Home'})}/>
-        <View style={{marginLeft:20, justifyContent:'space-around', flex:1}}>
-          {
-            loggedIn ? [
-              <Text key="mobile" style={appStyles.mobileNo}>{i18n.t('acc:remain')}</Text>,
-              iccid ? <AppPrice key="price" price={balance} /> :
-                <Text key="sim" style={[appStyles.normal14Text, {color:colors.warmGrey}]}>{i18n.t('reg:card')}</Text>
-            ] : 
-            <Text key="reg" style={appStyles.normal14Text}>{i18n.t('reg:guide')}</Text>
-          }
+      <TouchableOpacity
+        style={styles.userInfo}
+        onPress={this._navigate('RegisterSim_user', {mode: 'Home'})}>
+        <AppUserPic
+          url={userPictureUrl}
+          icon="imgPeople"
+          style={styles.userPicture}
+          onPress={this._navigate('RegisterSim_user', {mode: 'Home'})}
+        />
+        <View style={{marginLeft: 20, justifyContent: 'space-around', flex: 1}}>
+          {loggedIn ? (
+            [
+              <Text key="mobile" style={appStyles.mobileNo}>
+                {i18n.t('acc:remain')}
+              </Text>,
+              iccid ? (
+                <AppPrice key="price" price={balance} />
+              ) : (
+                <Text
+                  key="sim"
+                  style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
+                  {i18n.t('reg:card')}
+                </Text>
+              ),
+            ]
+          ) : (
+            <Text key="reg" style={appStyles.normal14Text}>
+              {i18n.t('reg:guide')}
+            </Text>
+          )}
         </View>
-        <AppIcon style={{alignSelf:'center'}} name="iconArrowRight"/>
+        <AppIcon style={{alignSelf: 'center'}} name="iconArrowRight" />
       </TouchableOpacity>
-    )
+    );
   }
 
   _menu() {
-
-    const { mobile, iccid } = this.props.account
-    const title = iccid ? i18n.t('menu:change') : i18n.t('menu:card')
+    const {mobile, iccid} = this.props.account;
+    const title = iccid ? i18n.t('menu:change') : i18n.t('menu:card');
 
     return (
       <View style={styles.menu}>
-        <AppButton iconName="imgCard1" 
+        <AppButton
+          iconName="imgCard1"
           style={styles.menuBox}
-          title={i18n.t('menu:purchase')} 
+          title={i18n.t('menu:purchase')}
           onPress={this._navigate('NewSim')}
-          titleStyle={styles.menuText} />
+          titleStyle={styles.menuText}
+        />
 
-        <View style={styles.bar}/>
+        <View style={styles.bar} />
 
-        <AppButton iconName="imgCard2"
+        <AppButton
+          iconName="imgCard2"
           style={styles.menuBox}
           title={title}
-          onPress={this._navigate('RegisterSim',{title: title})}
-          titleStyle={styles.menuText} />  
+          onPress={this._navigate('RegisterSim', {title: title})}
+          titleStyle={styles.menuText}
+        />
 
-        <View style={styles.bar}/>
+        <View style={styles.bar} />
 
-        <AppButton iconName="imgCard3"
+        <AppButton
+          iconName="imgCard3"
           style={styles.menuBox}
           title={i18n.t('store')}
           onPress={this._navigate('StoreStack')}
-          titleStyle={styles.menuText} />
+          titleStyle={styles.menuText}
+        />
       </View>
-    )
+    );
   }
 
   _guide() {
     return (
       <TouchableOpacity style={styles.guide} onPress={this._navigate('Guide')}>
-        <View style={{flex:1, justifyContent: 'space-between'}}>
-          <Text style={[appStyles.normal16Text, {marginLeft:30}]}>{i18n.t('home:guide')}</Text> 
-          <View style={{flexDirection:'row', marginTop:9, marginLeft:30}}>
-            <Text style={styles.checkGuide}>{i18n.t('home:checkGuide')}</Text> 
-            <AppIcon name="iconArrowRightBlue"/>
+        <View style={{flex: 1, justifyContent: 'space-between'}}>
+          <Text style={[appStyles.normal16Text, {marginLeft: 30}]}>
+            {i18n.t('home:guide')}
+          </Text>
+          <View style={{flexDirection: 'row', marginTop: 9, marginLeft: 30}}>
+            <Text style={styles.checkGuide}>{i18n.t('home:checkGuide')}</Text>
+            <AppIcon name="iconArrowRightBlue" />
           </View>
         </View>
-        <AppButton iconName="imgDokebi" style={{marginRight:30}} iconStyle={{height:'100%', justifyContent:'flex-end'}}
-          onPress={this._navigate('Guide')}/>
+        <AppButton
+          iconName="imgDokebi"
+          style={{marginRight: 30}}
+          iconStyle={{height: '100%', justifyContent: 'flex-end'}}
+          onPress={this._navigate('Guide')}
+        />
       </TouchableOpacity>
-    )
+    );
   }
 
   _renderInfo({item}) {
@@ -422,7 +502,7 @@ class HomeScreen extends Component {
           <Text style={styles.infoText}>{item.title}</Text>
         </View>
       </TouchableOpacity>
-    )
+    );
   }
 
   _info() {
@@ -438,51 +518,58 @@ class HomeScreen extends Component {
           useScrollView={true}
           lockScrollWhileSnapping={true}
           sliderHeight={60}
-          itemHeight={60} />
+          itemHeight={60}
+        />
       </View>
-    )
+    );
   }
 
-  // 공지 사항 상세 페이지로 이동 
+  // 공지 사항 상세 페이지로 이동
   _onPressInfo = ({title, body}) => () => {
     this.props.navigation.navigate('SimpleText', {
-      key:'noti', 
-      title: i18n.t('contact:noticeDetail'), 
-      bodyTitle:title, 
-      text:body, 
-      mode:'text'
-    })
-  }
+      key: 'noti',
+      title: i18n.t('contact:noticeDetail'),
+      bodyTitle: title,
+      text: body,
+      mode: 'text',
+    });
+  };
 
   _onPressPromotion(item) {
-    if ( item.product_uuid) {
+    if (item.product_uuid) {
       const prodList = this.props.product.get('prodList'),
-        prod = prodList.get(item.product_uuid)
-        
-      if ( prod) {
-        const prodOfCountry = prodList.filter( item => _.isEqual(item.partnerId, prod.partnerId)).toList().toArray()
-        this.props.navigation.navigate('Country', {prodOfCountry})
+        prod = prodList.get(item.product_uuid);
+
+      if (prod) {
+        const prodOfCountry = prodList
+          .filter(item => _.isEqual(item.partnerId, prod.partnerId))
+          .toList()
+          .toArray();
+        this.props.navigation.navigate('Country', {prodOfCountry});
       }
-    }
-    else if ( item.notice) {
-      this.props.navigation.navigate('SimpleText', {key:'noti', title:i18n.t('set:noti'), bodyTitle:item.notice.title, text:item.notice.body, mode:'text'})
+    } else if (item.notice) {
+      this.props.navigation.navigate('SimpleText', {
+        key: 'noti',
+        title: i18n.t('set:noti'),
+        bodyTitle: item.notice.title,
+        text: item.notice.body,
+        mode: 'text',
+      });
     }
   }
 
   _renderPromotion({item}) {
-    return <PromotionImage item={item} onPress={this._onPressPromotion}/>
+    return <PromotionImage item={item} onPress={this._onPressPromotion} />;
   }
 
   render() {
-    const { darkMode } = this.state
+    const {darkMode} = this.state;
 
-    return(
+    return (
       <ScrollView style={styles.container}>
-        {
-          this.state.firstLaunch && <TutorialScreen/>
-        }
-        <StatusBar barStyle={darkMode ? "dark-content" : 'light-content'} />
-        <AppActivityIndicator visible={this.props.loginPending}/>
+        {this.state.firstLaunch && <TutorialScreen />}
+        <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
+        <AppActivityIndicator visible={this.props.loginPending} />
         <View style={styles.carousel}>
           <Carousel
             data={this.state.promotions}
@@ -491,24 +578,17 @@ class HomeScreen extends Component {
             loop={true}
             loopClonesPerSide={10}
             lockScrollWhileSnapping={true}
-            onSnapToItem={(index) => this.setState({ activeSlide: index }) }
+            onSnapToItem={index => this.setState({activeSlide: index})}
             sliderWidth={sliderWidth}
-            itemWidth={sliderWidth} />
-          { this._pagination() }
+            itemWidth={sliderWidth}
+          />
+          {this._pagination()}
         </View>
-        {
-          this._userInfo()
-        }
-        {
-          this._menu()
-        }
-        {
-          this._guide()
-        }
-        <View style={styles.divider}/>
-        {
-          this._info()
-        }
+        {this._userInfo()}
+        {this._menu()}
+        {this._guide()}
+        <View style={styles.divider} />
+        {this._info()}
       </ScrollView>
     );
   }
@@ -516,7 +596,7 @@ class HomeScreen extends Component {
 
 const styles = StyleSheet.create({
   infoText: {
-    ... appStyles.normal14Text,
+    ...appStyles.normal14Text,
     color: colors.black,
     marginLeft: 8,
   },
@@ -524,30 +604,30 @@ const styles = StyleSheet.create({
     height: 60,
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   divider: {
     marginTop: 40,
     marginHorizontal: 20,
     borderBottomColor: colors.lightGrey,
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
   },
   userPicture: {
     width: size.userPic,
-    height: size.userPic
+    height: size.userPic,
   },
   bar: {
     width: 1,
     height: 20,
     borderRadius: 2,
-    backgroundColor: colors.lightGrey
+    backgroundColor: colors.lightGrey,
   },
   rightArrow1: {
     width: 15,
     height: 6,
     borderBottomWidth: 1,
     borderBottomColor: colors.clearBlue,
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
   rightArrow2: {
     width: 0,
@@ -556,75 +636,75 @@ const styles = StyleSheet.create({
     borderRightColor: 'transparent',
     borderBottomWidth: 6,
     borderBottomColor: colors.clearBlue,
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
   checkGuide: {
-    ... appStyles.normal14Text,
-    color:colors.clearBlue,
-    textAlign: 'left'
+    ...appStyles.normal14Text,
+    color: colors.clearBlue,
+    textAlign: 'left',
   },
   roundBox: {
     width: 128,
     height: 40,
     borderRadius: 26,
-    backgroundColor: "#ffffff",
+    backgroundColor: '#ffffff',
     paddingVertical: 13,
     paddingHorizontal: 25,
     flexDirection: 'row',
-    justifyContent: 'space-around'
+    justifyContent: 'space-around',
   },
   guide: {
     marginTop: 40,
     marginHorizontal: 20,
     height: 100,
-    backgroundColor: "#f5f5f5",
-    flexDirection: "row",
+    backgroundColor: '#f5f5f5',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderRadius: 5
+    borderRadius: 5,
   },
   menu: {
     marginHorizontal: 20,
     marginTop: 30,
-    flexDirection: "row",
+    flexDirection: 'row',
     justifyContent: 'space-around',
-    alignItems:'center',
+    alignItems: 'center',
   },
   menuBox: {
     height: 70,
     width: 70,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   menuText: {
-    ... appStyles.normal15Text,
+    ...appStyles.normal15Text,
     marginTop: 8,
     textAlign: 'center',
-    color: colors.black
+    color: colors.black,
   },
   userInfo: {
     height: size.userInfoHeight,
     borderRadius: 5,
     backgroundColor: colors.white,
-    shadowColor: "rgba(0, 0, 0, 0.1)",
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
     shadowOffset: {
       width: 0,
-      height: 5
+      height: 5,
     },
     elevation: 3,
     shadowRadius: 14,
     shadowOpacity: 1,
-    borderStyle: "solid",
+    borderStyle: 'solid',
     borderWidth: 1,
-    borderColor: "#ebebeb",
+    borderColor: '#ebebeb',
     marginHorizontal: 20,
     marginTop: size.userInfoMarginTop,
-    flexDirection: "row",
+    flexDirection: 'row',
     paddingHorizontal: 30,
-    paddingVertical: 23
+    paddingVertical: 23,
   },
   container: {
     backgroundColor: colors.white,
-    flex: 1
+    flex: 1,
   },
   overlay: {
     marginLeft: size.carouselMargin,
@@ -632,7 +712,11 @@ const styles = StyleSheet.create({
   carousel: {
     alignItems: 'flex-end',
   },
-  dot: (width = ACTIVE_DOT_WIDTH, marginLeft = DOT_MARGIN, backgroundColor = colors.clearBlue) => ({
+  dot: (
+    width = ACTIVE_DOT_WIDTH,
+    marginLeft = DOT_MARGIN,
+    backgroundColor = colors.clearBlue,
+  ) => ({
     height: 6,
     borderRadius: 3.5,
     width,
@@ -644,23 +728,23 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 3,
     backgroundColor: colors.lightGrey,
-    marginLeft: DOT_MARGIN
+    marginLeft: DOT_MARGIN,
   },
   pagination: {
     marginRight: 30,
     marginTop: 10,
   },
   paginationContainer: {
-    paddingVertical:5, 
-    paddingHorizontal:0, 
-    justifyContent:'flex-start'
+    paddingVertical: 5,
+    paddingHorizontal: 0,
+    justifyContent: 'flex-start',
   },
   cardLayer: {
     flexDirection: 'row',
-    justifyContent: 'space-around'
+    justifyContent: 'space-around',
   },
   button: {
-    ... appStyles.button
+    ...appStyles.button,
   },
   image: {
     width: 60,
@@ -668,51 +752,51 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   text: {
-    fontSize: 18, 
+    fontSize: 18,
     padding: 12,
     color: 'white',
-    textAlign: "center",
+    textAlign: 'center',
   },
   btnAlarm: {
-    width: 40, 
+    width: 40,
     height: 40,
     marginRight: 10,
   },
   btnCnter: {
-    width:40,
+    width: 40,
     height: 40,
-    marginHorizontal: 18
+    marginHorizontal: 18,
   },
   title: {
-    ... appStyles.title,
+    ...appStyles.title,
     marginLeft: 20,
   },
   row: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between'
-  }
+    justifyContent: 'space-between',
+  },
 });
 
-const mapStateToProps = (state) => ({
-  account : state.account.toJS(),
+const mapStateToProps = state => ({
+  account: state.account.toJS(),
   auth: accountActions.auth(state.account),
-  noti : state.noti.toJS(),
-  info : state.info.toJS(),
+  noti: state.noti.toJS(),
+  info: state.info.toJS(),
   loginPending: state.pender.pending[accountActions.LOGIN] || false,
-  sync : state.sync.toJS(),
-  product: state.product
-})
+  product: state.product,
+});
 
-export default connect(mapStateToProps, 
-  (dispatch) => ({
-    action : {
+export default connect(
+  mapStateToProps,
+  dispatch => ({
+    action: {
       sim: bindActionCreators(simActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
       noti: bindActionCreators(notiActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
       info: bindActionCreators(infoActions, dispatch),
-      product: bindActionCreators(productActions, dispatch)
-    }
-  })
-)(HomeScreen)
+      product: bindActionCreators(productActions, dispatch),
+    },
+  }),
+)(HomeScreen);

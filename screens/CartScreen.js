@@ -5,401 +5,488 @@ import {
   Text,
   SectionList,
   Alert,
-  SafeAreaView
+  SafeAreaView,
 } from 'react-native';
-import {connect} from 'react-redux'
+import {connect} from 'react-redux';
 
-import {appStyles} from "../constants/Styles"
-import i18n from '../utils/i18n'
-import * as cartActions from '../redux/modules/cart'
-import * as accountActions from '../redux/modules/account'
-import AppButton from '../components/AppButton'
-import { bindActionCreators } from 'redux'
-import { colors } from '../constants/Colors';
+import {appStyles} from '../constants/Styles';
+import i18n from '../utils/i18n';
+import * as cartActions from '../redux/modules/cart';
+import * as accountActions from '../redux/modules/account';
+import AppButton from '../components/AppButton';
+import {bindActionCreators} from 'redux';
+import {colors} from '../constants/Colors';
 import CartItem from '../components/CartItem';
 import ChargeSummary from '../components/ChargeSummary';
 import utils from '../utils/utils';
-import {Map} from 'immutable'
-import _ from 'underscore'
+import {Map} from 'immutable';
+import _ from 'underscore';
 import SnackBar from 'react-native-snackbar-component';
-import { windowHeight } from '../constants/SliderEntry.style';
+import {windowHeight} from '../constants/SliderEntry.style';
 import AppBackButton from '../components/AppBackButton';
-import { isDeviceSize } from '../constants/SliderEntry.style';
-import { snackBarHidingTime } from '../environment';
+import {isDeviceSize} from '../constants/SliderEntry.style';
+import {snackBarHidingTime} from '../environment';
 
-const sectionTitle = ['sim', 'product']
+const sectionTitle = ['sim', 'product'];
 
 class CartScreen extends Component {
-
   constructor(props) {
-    super(props)
+    super(props);
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('cart')} />)
-    })
+      headerLeft: () => (
+        <AppBackButton
+          navigation={this.props.navigation}
+          title={i18n.t('cart')}
+        />
+      ),
+    });
 
     this.state = {
       section: this._section([], []),
       checked: new Map(),
       qty: new Map(),
-      total: {cnt:0, price:0},
+      total: {cnt: 0, price: 0},
       showSnackBar: false,
-    }
+    };
     this.snackRef = React.createRef();
 
-    this._onPurchase = this._onPurchase.bind(this)
-    this._onChangeQty = this._onChangeQty.bind(this)
-    this._removeItem = this._removeItem.bind(this)
-    this._checkDeletedItem = this._checkDeletedItem.bind(this)
-    this._calculate = this._calculate.bind(this)
-    this._init = this._init.bind(this)
-    this._isEmptyList = this._isEmptyList.bind(this)
-    this._sim = this._sim.bind(this)
-    this._registerSimAlert = this._registerSimAlert.bind(this)
+    this._onPurchase = this._onPurchase.bind(this);
+    this._onChangeQty = this._onChangeQty.bind(this);
+    this._removeItem = this._removeItem.bind(this);
+    this._checkDeletedItem = this._checkDeletedItem.bind(this);
+    this._calculate = this._calculate.bind(this);
+    this._init = this._init.bind(this);
+    this._isEmptyList = this._isEmptyList.bind(this);
+    this._sim = this._sim.bind(this);
+    this._registerSimAlert = this._registerSimAlert.bind(this);
   }
 
   componentDidMount() {
-    this._init()
+    this._init();
   }
 
   componentDidUpdate(prevProps) {
-    const { cart, pending } = this.props
+    const {cart, pending} = this.props;
 
-    if ( cart && cart != prevProps.cart && cart.orderItems && ! pending ) {
-      this._init()
+    if (cart && cart != prevProps.cart && cart.orderItems && !pending) {
+      this._init();
     }
   }
 
-  _section( ... args) {
-    return args.map((item,idx) => ({
-      title: sectionTitle[idx],
-      data: item
-    })).filter(item => item.data.length > 0)
+  _section(...args) {
+    return args
+      .map((item, idx) => ({
+        title: sectionTitle[idx],
+        data: item,
+      }))
+      .filter(item => item.data.length > 0);
   }
 
   _init() {
-    const { orderItems } = this.props.cart
+    const {orderItems} = this.props.cart;
 
-    this._checkDeletedItem(orderItems)
-    
-    let {qty, checked, section} = this.state
-    const total = this._calculate( checked, qty),
-      list = orderItems.reduce((acc,cur) => {
-        return cur.type == 'sim_card' ? [ acc[0].concat([cur]), acc[1] ] : [ acc[0], acc[1].concat([cur])]
-      }, [[], []])
+    this._checkDeletedItem(orderItems);
+
+    let {qty, checked, section} = this.state;
+    const total = this._calculate(checked, qty),
+      list = orderItems.reduce(
+        (acc, cur) => {
+          return cur.type == 'sim_card'
+            ? [acc[0].concat([cur]), acc[1]]
+            : [acc[0], acc[1].concat([cur])];
+        },
+        [[], []],
+      );
 
     this.setState({
       total,
-      section : this._section( list[0], list[1])
-    })
+      section: this._section(list[0], list[1]),
+    });
 
     orderItems.forEach(item => {
-      qty = qty.set(item.key, item.qty)
-      checked = checked.update(item.key, value => (typeof value === 'undefined') ? true : value)
-    })
+      qty = qty.set(item.key, item.qty);
+      checked = checked.update(item.key, value =>
+        typeof value === 'undefined' ? true : value,
+      );
+    });
 
     this.setState({
-      qty, checked
-    })
-    
+      qty,
+      checked,
+    });
   }
 
-  _dlvCost( checked, qty, total, section) {
-    const simList = section.find(item => item.title == 'sim')
-    return simList && simList.data.findIndex(item => checked.get(item.key) && qty.get(item.key) > 0) >= 0 ? 
-      utils.dlvCost(total.price) : 0
+  _dlvCost(checked, qty, total, section) {
+    const simList = section.find(item => item.title == 'sim');
+    return simList &&
+      simList.data.findIndex(
+        item => checked.get(item.key) && qty.get(item.key) > 0,
+      ) >= 0
+      ? utils.dlvCost(total.price)
+      : 0;
   }
 
   _onChangeQty(key, orderItemId, cnt) {
     const qty = this.state.qty.set(key, cnt),
       checked = this.state.checked.set(key, true),
-      total = this._calculate( checked, qty)
+      total = this._calculate(checked, qty);
 
     this.setState({
-      qty, checked, total
-    })
+      qty,
+      checked,
+      total,
+    });
 
-    if ( orderItemId) {
-      if ( this.cancelUpdate) {
-        this.cancelUpdate()
-        this.cancelUpdate = null
+    if (orderItemId) {
+      if (this.cancelUpdate) {
+        this.cancelUpdate();
+        this.cancelUpdate = null;
       }
 
       const cartUpdateQty = this.props.action.cart.cartUpdateQty({
-        orderId: this.props.cart.orderId, 
+        orderId: this.props.cart.orderId,
         orderItemId,
-        qty: cnt, 
-        abortController: new AbortController()
-      })
+        qty: cnt,
+        abortController: new AbortController(),
+      });
 
-      this.cancelUpdate = cartUpdateQty.cancel
-      cartUpdateQty.catch( err => {
-        console.log('cancel2', err)
-      })
+      this.cancelUpdate = cartUpdateQty.cancel;
+      cartUpdateQty.catch(err => {
+        console.log('cancel2', err);
+      });
     }
   }
 
   _onPurchase() {
-    const { section, qty, checked, total } = this.state,
-      dlvCost = this._dlvCost( checked, qty, total, section),
-      {loggedIn, balance} = this.props.account
+    const {section, qty, checked, total} = this.state,
+      dlvCost = this._dlvCost(checked, qty, total, section),
+      {loggedIn, balance} = this.props.account;
 
-    if(!loggedIn){
-      this.props.navigation.navigate('Auth')
-    }
-    else {
-      const purchaseItems = section.reduce((acc,cur) => acc.concat(cur.data.filter(item => checked.get(item.key) && qty.get(item.key) > 0)), [])
+    if (!loggedIn) {
+      this.props.navigation.navigate('Auth');
+    } else {
+      const purchaseItems = section
+        .reduce(
+          (acc, cur) =>
+            acc.concat(
+              cur.data.filter(
+                item => checked.get(item.key) && qty.get(item.key) > 0,
+              ),
+            ),
+          [],
+        )
         .map(item => ({
-          ... item,
+          ...item,
           sku: item.prod.sku,
-          qty: qty.get(item.key)
-        }))
+          qty: qty.get(item.key),
+        }));
 
-      this.props.action.cart.purchase({purchaseItems, dlvCost: dlvCost > 0, balance})
-      this.props.navigation.navigate('PymMethod',{mode : 'Cart'})
-
+      this.props.action.cart.purchase({
+        purchaseItems,
+        dlvCost: dlvCost > 0,
+        balance,
+      });
+      this.props.navigation.navigate('PymMethod', {mode: 'Cart'});
     }
   }
 
   _onChecked(key) {
+    const checked = this.state.checked.update(key, value => !value),
+      {qty, section} = this.state,
+      total = this._calculate(checked, qty);
 
-    const checked = this.state.checked.update( key, value => ! value),
-      { qty, section } = this.state,
-      total = this._calculate( checked, qty)
-
-      this.setState({
-        total, checked
-      })
+    this.setState({
+      total,
+      checked,
+    });
   }
 
-  _sim(){
-    return this.props.cart.orderItems.filter(item => item.prod.type == 'sim_card' && this.state.checked.get(item.key) && this.state.qty.get(item.key))
-            .map(item=> item.totalPrice).reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+  _sim() {
+    return this.props.cart.orderItems
+      .filter(
+        item =>
+          item.prod.type == 'sim_card' &&
+          this.state.checked.get(item.key) &&
+          this.state.qty.get(item.key),
+      )
+      .map(item => item.totalPrice)
+      .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
   }
 
-  _checkDeletedItem(items){
+  _checkDeletedItem(items) {
     const prodList = this.props.product.get('prodList'),
-        toRemove = (items||{}).filter( item => typeof prodList.get(item.key) == 'undefined')
-  
-    if( !_.isEmpty(toRemove)) {
+      toRemove = (items || {}).filter(
+        item => typeof prodList.get(item.key) == 'undefined',
+      );
 
-      toRemove.forEach(item => this._removeItem(item.key, item.orderItemId))
+    if (!_.isEmpty(toRemove)) {
+      toRemove.forEach(item => this._removeItem(item.key, item.orderItemId));
       this.setState({
-        showSnackBar: true
-      })
+        showSnackBar: true,
+      });
     }
   }
 
   _removeItem(key, orderItemId) {
     const section = this.state.section.map(item => ({
         title: item.title,
-        data: item.data.filter(i => i.orderItemId != orderItemId)
+        data: item.data.filter(i => i.orderItemId != orderItemId),
       })),
-      checked = this.state.checked.remove( key),
+      checked = this.state.checked.remove(key),
       qty = this.state.qty.remove(key),
-      total = this._calculate( checked, qty, section)
+      total = this._calculate(checked, qty, section);
 
     this.setState({
-      total, checked, qty, section
-    })
+      total,
+      checked,
+      qty,
+      section,
+    });
 
-    if ( orderItemId) {
+    if (orderItemId) {
       this.props.action.cart.cartRemove({
-        orderId: this.props.cart.orderId, 
+        orderId: this.props.cart.orderId,
         orderItemId,
-      })
+      });
     }
   }
 
   _renderItem = ({item}) => {
-    const { qty, checked } = this.state
-    const partnerId = (this.props.product.get('prodList').get(item.key) || {}).partnerId
-    const imageUrl = (this.props.product.get('localOpList').get(partnerId) || {}).imageUrl
+    const {qty, checked} = this.state;
+    const partnerId = (this.props.product.get('prodList').get(item.key) || {})
+      .partnerId;
+    const imageUrl = (
+      this.props.product.get('localOpList').get(partnerId) || {}
+    ).imageUrl;
 
     // return  item.key && <CartItem checked={checked.get(item.key) || false}
-    return <CartItem checked={checked.get(item.key) || false}
-      onChange={(value) => this._onChangeQty(item.key, item.orderItemId, value)} 
-      onDelete={() => this._removeItem(item.key, item.orderItemId)}
-      onChecked={() => this._onChecked(item.key)}
-      name={item.title}
-      price={item.price}
-      image={imageUrl}
-      qty={qty.get(item.key)} />
+    return (
+      <CartItem
+        checked={checked.get(item.key) || false}
+        onChange={value => this._onChangeQty(item.key, item.orderItemId, value)}
+        onDelete={() => this._removeItem(item.key, item.orderItemId)}
+        onChecked={() => this._onChecked(item.key)}
+        name={item.title}
+        price={item.price}
+        image={imageUrl}
+        qty={qty.get(item.key)}
+      />
+    );
+  };
 
-  }
-
-  _calculate( checked, qty, section = this.state.section) {
+  _calculate(checked, qty, section = this.state.section) {
     // 초기 기동시에는 checked = new Map() 으로 선언되어 있어서
-    // checked.get() == undefined를 반환할 수 있다. 
-    // 따라서, checked.get() 값이 false인 경우(사용자가 명확히 uncheck 한 경우)에만 계산에서 제외한다. 
+    // checked.get() == undefined를 반환할 수 있다.
+    // 따라서, checked.get() 값이 false인 경우(사용자가 명확히 uncheck 한 경우)에만 계산에서 제외한다.
 
-    return section.reduce((acc,cur) => acc.concat(cur.data.filter(item => checked.get(item.key) !== false)), [])
+    return section
+      .reduce(
+        (acc, cur) =>
+          acc.concat(cur.data.filter(item => checked.get(item.key) !== false)),
+        [],
+      )
       .map(item => ({
         qty: Math.max(0, qty.get(item.key)),
-        price: item.price
-      })).reduce((acc,cur) => ({
-        cnt: acc.cnt+ cur.qty, 
-        price: acc.price + cur.qty * cur.price
-      }), {cnt: 0, price:0})
+        price: item.price,
+      }))
+      .reduce(
+        (acc, cur) => ({
+          cnt: acc.cnt + cur.qty,
+          price: acc.price + cur.qty * cur.price,
+        }),
+        {cnt: 0, price: 0},
+      );
   }
 
-  _isEmptyList(){
-      return <View style={styles.emptyView}>
-                <Text style={[styles.emptyText, {color:colors.black}]}>{i18n.t('cart:empty')}</Text>
-            </View>
+  _isEmptyList() {
+    return (
+      <View style={styles.emptyView}>
+        <Text style={[styles.emptyText, {color: colors.black}]}>
+          {i18n.t('cart:empty')}
+        </Text>
+      </View>
+    );
   }
 
-  _registerSimAlert(){
-    Alert.alert(
-      i18n.t('reg:ICCID'),
-      i18n.t('reg:noICCID'),
-      [
-        {
-          text: i18n.t('cancel'),
-          // style: 'cancel',
-        },
-        {
-          text: i18n.t('ok'),
-          onPress: () => this.props.navigation.navigate('RegisterSim')
-        }
-      ],
-    )
+  _registerSimAlert() {
+    Alert.alert(i18n.t('reg:ICCID'), i18n.t('reg:noICCID'), [
+      {
+        text: i18n.t('cancel'),
+        // style: 'cancel',
+      },
+      {
+        text: i18n.t('ok'),
+        onPress: () => this.props.navigation.navigate('RegisterSim'),
+      },
+    ]);
   }
 
   render() {
-
-    const { qty, checked, section, total, showSnackBar} = this.state,
-      { iccid } = this.props.account,
-      dlvCost = this._dlvCost( checked, qty, total, section),
+    const {qty, checked, section, total, showSnackBar} = this.state,
+      {iccid} = this.props.account,
+      dlvCost = this._dlvCost(checked, qty, total, section),
       balance = this.props.account.balance || 0,
       amount = total.price + dlvCost,
-      pymPrice = amount > balance ? amount - balance : 0
+      pymPrice = amount > balance ? amount - balance : 0;
 
-      const data = this.props.cart.orderItems
-                  .find(item => (item.prod||{}).type == 'roaming_product' && this.state.checked.get(item.key))
+    const data = this.props.cart.orderItems.find(
+      item =>
+        (item.prod || {}).type == 'roaming_product' &&
+        this.state.checked.get(item.key),
+    );
 
-      return (
-      <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
-
-        <SectionList 
+    return (
+      <SafeAreaView
+        style={styles.container}
+        forceInset={{top: 'never', bottom: 'always'}}>
+        <SectionList
           sections={section}
-          renderItem={this._renderItem} 
+          renderItem={this._renderItem}
           extraData={[qty, checked]}
           stickySectionHeadersEnabled={false}
           ListEmptyComponent={this._isEmptyList}
-          ListFooterComponent={ <ChargeSummary totalCnt={total.cnt} 
-                                              totalPrice={total.price} 
-                                              balance={balance} 
-                                              dlvCost={dlvCost}/>} />
-        <SnackBar ref={this.snackRef}
-                  visible={showSnackBar} backgroundColor={colors.clearBlue} 
-                  textMessage={i18n.t("cart:remove")} messageColor={colors.white}
-                  position={'top'}
-                  top={windowHeight/2}
-                  containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 10}}
-                  actionText={'X'}
-                  actionStyle={{paddingHorizontal: 20}}
-                  accentColor={colors.white}
-                  autoHidingTime={snackBarHidingTime}
-                  onClose={() => this.setState({showSnackBar: false})}
-                  actionHandler={()=>{this.snackRef.current.hideSnackbar()}}/>
+          ListFooterComponent={
+            <ChargeSummary
+              totalCnt={total.cnt}
+              totalPrice={total.price}
+              balance={balance}
+              dlvCost={dlvCost}
+            />
+          }
+        />
+        <SnackBar
+          ref={this.snackRef}
+          visible={showSnackBar}
+          backgroundColor={colors.clearBlue}
+          textMessage={i18n.t('cart:remove')}
+          messageColor={colors.white}
+          position={'top'}
+          top={windowHeight / 2}
+          containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 10}}
+          actionText={'X'}
+          actionStyle={{paddingHorizontal: 20}}
+          accentColor={colors.white}
+          autoHidingTime={snackBarHidingTime}
+          onClose={() => this.setState({showSnackBar: false})}
+          actionHandler={() => {
+            this.snackRef.current.hideSnackbar();
+          }}
+        />
         <View style={styles.buttonBox}>
           <View style={styles.sumBox}>
-            <Text style={[styles.btnBuyText, {color:colors.black}]}>{i18n.t('cart:pymAmount') + ': '}</Text>
-            <Text style={[styles.btnBuyText, {color:colors.black}]}>{utils.numberToCommaString(pymPrice)}</Text>
-            <Text style={[styles.btnBuyText, {color:colors.black}]}>{i18n.t('won')}</Text>
+            <Text style={[styles.btnBuyText, {color: colors.black}]}>
+              {i18n.t('cart:pymAmount') + ': '}
+            </Text>
+            <Text style={[styles.btnBuyText, {color: colors.black}]}>
+              {utils.numberToCommaString(pymPrice)}
+            </Text>
+            <Text style={[styles.btnBuyText, {color: colors.black}]}>
+              {i18n.t('won')}
+            </Text>
           </View>
-          <AppButton style={styles.btnBuy} 
-            title={i18n.t('cart:purchase') + `(${total.cnt})`} 
-            titleStyle={{fontSize: isDeviceSize('small') ? 16 : 18,
-                          ... appStyles.normal18Text,
-                          color: colors.white,
-                          textAlign: "center",
-                          margin: 5}}
+          <AppButton
+            style={styles.btnBuy}
+            title={i18n.t('cart:purchase') + `(${total.cnt})`}
+            titleStyle={{
+              fontSize: isDeviceSize('small') ? 16 : 18,
+              ...appStyles.normal18Text,
+              color: colors.white,
+              textAlign: 'center',
+              margin: 5,
+            }}
             checkedColor={colors.white}
             disabled={total.price == 0}
-            onPress={!_.isEmpty(!iccid && data) ? this._registerSimAlert : this._onPurchase}/>
+            onPress={
+              !_.isEmpty(!iccid && data)
+                ? this._registerSimAlert
+                : this._onPurchase
+            }
+          />
         </View>
       </SafeAreaView>
-    )
+    );
   }
 }
 
 const styles = StyleSheet.create({
   header: {
-    ... appStyles.bold18Text,
+    ...appStyles.bold18Text,
     color: colors.black,
     marginTop: 30,
-    marginLeft: 20
+    marginLeft: 20,
   },
-  sumBox : {
-    flexDirection:'row', 
-    justifyContent:'center',
-    marginHorizontal: 30
+  sumBox: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginHorizontal: 30,
   },
   sectionTitle: {
-    ... appStyles.subTitle,
+    ...appStyles.subTitle,
     padding: 20,
   },
   container: {
     flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "stretch",
-    backgroundColor:colors.white
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+    backgroundColor: colors.white,
   },
   btnBuy: {
     flex: 1,
-    backgroundColor: colors.clearBlue
+    backgroundColor: colors.clearBlue,
   },
   btnBuyText: {
-    ... appStyles.normal16Text,
-    textAlign: "center",
+    ...appStyles.normal16Text,
+    textAlign: 'center',
   },
-  delete : {
+  delete: {
     paddingVertical: 12,
-    width: "10%"
+    width: '10%',
   },
   buttonBox: {
-    flexDirection: "row",
+    flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     height: 52,
     borderTopColor: colors.lightGrey,
-    borderTopWidth: 1
+    borderTopWidth: 1,
   },
   button: {
-    ... appStyles.button,
+    ...appStyles.button,
     width: 100,
-    alignSelf: "center"
+    alignSelf: 'center',
   },
   emptyView: {
-    flex: 1, 
-    flexDirection: 'row', 
-    justifyContent: 'center', 
-    height: isDeviceSize('small') ? 200 : 450
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    height: isDeviceSize('small') ? 200 : 450,
   },
   emptyText: {
-    alignSelf: 'center'
-  }
+    alignSelf: 'center',
+  },
 });
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   lastTab: state.cart.get('lastTab').toJS(),
   sim: state.sim.toJS(),
   product: state.product,
   cart: state.cart.toJS(),
-  account : state.account.toJS(),
-  pending: state.pender.pending[cartActions.CART_ADD] || 
-    state.pender.pending[cartActions.CART_UPDATE] || 
-    state.pender.pending[cartActions.CART_REMOVE] || false,
-})
+  account: state.account.toJS(),
+  pending:
+    state.pender.pending[cartActions.CART_ADD] ||
+    state.pender.pending[cartActions.CART_UPDATE] ||
+    state.pender.pending[cartActions.CART_REMOVE] ||
+    false,
+});
 
-export default connect(mapStateToProps, 
-  (dispatch) => ({
-    action:{
+export default connect(
+  mapStateToProps,
+  dispatch => ({
+    action: {
       cart: bindActionCreators(cartActions, dispatch),
-      account: bindActionCreators(accountActions, dispatch)
-    }
-  })
-)(CartScreen)
+      account: bindActionCreators(accountActions, dispatch),
+    },
+  }),
+)(CartScreen);
