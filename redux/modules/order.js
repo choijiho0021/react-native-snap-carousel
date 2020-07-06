@@ -74,6 +74,24 @@ export const cancelAndGetOrder = ( orderId, auth ) => {
   }
 }
 
+// usage status 변환 후
+export const updateStatusAndGetSubs = ( uuid, targetStatus, auth, deact_prod_uuid ) => {
+  return (dispatch, getState) => {
+    const { account } = getState(),
+      iccid = account.get('iccid')
+
+    return dispatch(updateUsageStatus( uuid, targetStatus, auth, deact_prod_uuid )).then(resp => {
+        // 결제취소요청 후 항상 order를 가져온다
+        if(resp.result == 0) {
+          return dispatch(getSubs(iccid, auth))
+        }else {
+          return resp
+        }
+
+    })
+  }
+}
+
 const initialState = Map({
   orders: [],
   ordersIdx: Map(),
