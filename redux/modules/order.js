@@ -50,13 +50,25 @@ export const cancelAndGetOrder = ( orderId, auth ) => {
     return dispatch(cancelOrder( orderId, auth )).then(resp => {
         // 결제취소요청 후 항상 order를 가져온다
         return dispatch(getOrderById(auth, orderId)).then(val => {
-          if(val.result == 0) {
-            dispatch(getAccount(iccid, auth))
-            return {
-              ... val,
-              cancelResult: resp.result
+          if(resp.result == 0){
+            if(val.result == 0) {
+              dispatch(getAccount(iccid, auth))
+              return val
+            }else {
+              
+              return {
+                ... val,
+                result: 1
+              }
             }
-          }else return resp
+          }else {
+            if(val.result == 0) {
+              return {
+                ... val,
+                result: 1
+              }
+            }else return resp
+          }
         })
     })
   }
