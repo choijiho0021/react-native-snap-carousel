@@ -1,13 +1,13 @@
-import { Platform } from 'react-native';
+import {Platform} from 'react-native';
 
-const impId = "imp53913318"
-const codePushiOSStagLabel = "v118"
-const codePushiOSProdLabel = "v0"
-const codePushAndStagLabel = "v111"
-const codePushAndProdLabel = "v0"
-const channelId = "_nzQhxb"
+const impId = 'imp53913318';
+const codePushiOSStagLabel = 'v123';
+const codePushiOSProdLabel = 'v0';
+const codePushAndStagLabel = 'v116';
+const codePushAndProdLabel = 'v0';
+const channelId = '_nzQhxb';
 
-export const snackBarHidingTime = 3000
+export const snackBarHidingTime = 3000;
 
 const ENV = {
   dev: {
@@ -16,35 +16,35 @@ const ENV = {
     // apiUrl: "api.rokebi.com",
     // baseUrl: "https://www.rokebi.com",
     scheme: 'http',
-    rokApiUrl: "tb.service.rokebi.com",
-    apiUrl: "esim2-tb-v3.ap-northeast-2.elasticbeanstalk.com",
-    baseUrl: "http://esim2-tb-v3.ap-northeast-2.elasticbeanstalk.com",
+    rokApiUrl: 'tb.service.rokebi.com',
+    apiUrl: 'esim2-tb-v3.ap-northeast-2.elasticbeanstalk.com',
+    baseUrl: 'http://esim2-tb-v3.ap-northeast-2.elasticbeanstalk.com',
     impId: impId,
     label: Platform.OS === 'ios' ? codePushiOSStagLabel : codePushAndStagLabel,
-    channelId
+    channelId,
   },
   staging: {
     scheme: 'http',
-    rokApiUrl: "tb.service.rokebi.com",
-    apiUrl: "esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com",
-    baseUrl: "http://esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com",
+    rokApiUrl: 'tb.service.rokebi.com',
+    apiUrl: 'esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com',
+    baseUrl: 'http://esim2-tb-v1.ap-northeast-2.elasticbeanstalk.com',
     impId: impId,
     label: Platform.OS === 'ios' ? codePushiOSStagLabel : codePushAndStagLabel,
-    channelId
+    channelId,
   },
   prod: {
     scheme: 'https',
-    rokApiUrl: "service.rokebi.com",
-    apiUrl: "api.rokebi.com",
-    baseUrl: "https://www.rokebi.com",
+    rokApiUrl: 'service.rokebi.com',
+    apiUrl: 'api.rokebi.com',
+    baseUrl: 'https://www.rokebi.com',
     impId: impId,
     label: Platform.OS === 'ios' ? codePushiOSProdLabel : codePushAndProdLabel,
-    channelId
-  }
+    channelId,
+  },
 };
 
 export default function() {
-  if ( process.env.NODE_ENV == 'production') return ENV.prod
-  if ( process.env.NODE_ENV == 'staging') return ENV.staging
-  return ENV.dev
+  if (process.env.NODE_ENV == 'production') return ENV.prod;
+  if (process.env.NODE_ENV == 'staging') return ENV.staging;
+  return ENV.dev;
 }
