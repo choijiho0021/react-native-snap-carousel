@@ -205,6 +205,10 @@ class HomeScreen extends Component {
       this._init();
     }
 
+    if (this.props.sync.progress) {
+      this.props.navigation.navigate('CodePush');
+    }
+
     if (
       isUsedByOther &&
       prevProps.account.isUsedByOther != isUsedByOther &&
@@ -559,7 +563,6 @@ class HomeScreen extends Component {
             renderItem={this._renderPromotion}
             autoplay={true}
             loop={true}
-            // loopClonesPerSide={10}
             lockScrollWhileSnapping={true}
             onSnapToItem={index => this.setState({activeSlide: index})}
             sliderWidth={sliderWidth}
@@ -768,6 +771,7 @@ const mapStateToProps = state => ({
   info: state.info.toJS(),
   loginPending: state.pender.pending[accountActions.LOGIN] || false,
   product: state.product,
+  sync: state.sync.toJS(),
   promotion: state.promotion.get('promotion'),
 });
 

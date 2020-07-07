@@ -35,6 +35,7 @@ import AddProfileScreen from '../screens/AddProfileScreen';
 import StoreSearchScreen from '../screens/StoreSearchScreen';
 import BoardMsgRespScreen from '../screens/BoardMsgRespScreen';
 import SimpleTextScreen from '../screens/SimpleTextScreen';
+import CodePushScreen from '../screens/CodePushScreen';
 import UsimScreen from '../screens/UsimScreen';
 import FaqScreen from '../screens/FaqScreen';
 import GuideScreen from '../screens/GuideScreen';
@@ -76,6 +77,7 @@ function homeStack() {
       <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
       <HomeStack.Screen name="FindAddress" component={FindAddressScreen} />
       <HomeStack.Screen name="PaymentResult" component={PaymentResultScreen} />
+      <HomeStack.Screen name="CodePush" component={CodePushScreen} />
       <HomeStack.Screen
         name="CustomerProfile"
         component={CustomerProfileScreen}

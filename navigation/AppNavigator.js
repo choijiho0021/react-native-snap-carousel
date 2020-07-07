@@ -23,21 +23,15 @@ const getActiveRouteName = state => {
 
 function mainStack() {
   return (
-    <MainStack.Navigator screenOptions={{animationEnabled: false, headerShown: false}}>
-      <MainStack.Screen
-        name="Main"
-        component={MainTabNavigator}
-      />
-      <MainStack.Screen
-        name="Auth"
-        component={AuthStackNavigator}
-      />
+    <MainStack.Navigator
+      screenOptions={{animationEnabled: false, headerShown: false}}>
+      <MainStack.Screen name="Main" component={MainTabNavigator} />
+      <MainStack.Screen name="Auth" component={AuthStackNavigator} />
     </MainStack.Navigator>
   );
 }
 
 function createAppContainer({store}) {
-  const {sync} = store.getState();
   const navigationRef = React.useRef();
   return (
     <NavigationContainer
@@ -47,7 +41,7 @@ function createAppContainer({store}) {
         Analytics.trackEvent('Page_View_Count', {page: lastTab});
         store.dispatch(cartActions.pushLastTab(lastTab));
       }}>
-      {sync.get('progress') ? <CodePushStack /> : mainStack()}
+      {mainStack()}
     </NavigationContainer>
   );
 }
