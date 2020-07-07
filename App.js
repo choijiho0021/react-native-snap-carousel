@@ -14,6 +14,8 @@ import Video from 'react-native-video';
 import utils from './utils/utils';
 import * as accountActions from './redux/modules/account';
 import * as productActions from './redux/modules/product';
+import * as promotionActions from './redux/modules/promotion';
+import * as infoActions from './redux/modules/info';
 import * as simActions from './redux/modules/sim';
 import * as syncActions from './redux/modules/sync';
 import CodePushModal from './components/CodePushModal';
@@ -102,6 +104,10 @@ async function loadResourcesAsync() {
   // load product list
   store.dispatch(productActions.getProdListWithToast());
   store.dispatch(simActions.getSimCardList());
+  store.dispatch(promotionActions.getPromotion());
+  // 공지 사항 가져오기
+  store.dispatch(infoActions.getInfoList('info'));
+  store.dispatch(infoActions.getHomeInfoList('info:home'));
 }
 
 function handleLoadingError(error: Error) {

@@ -50,14 +50,44 @@ export const cancelAndGetOrder = ( orderId, auth ) => {
     return dispatch(cancelOrder( orderId, auth )).then(resp => {
         // 결제취소요청 후 항상 order를 가져온다
         return dispatch(getOrderById(auth, orderId)).then(val => {
-          if(val.result == 0) {
-            dispatch(getAccount(iccid, auth))
-            return {
-              ... val,
-              cancelResult: resp.result
+          if(resp.result == 0){
+            if(val.result == 0) {
+              dispatch(getAccount(iccid, auth))
+              return val
+            }else {
+              
+              return {
+                ... val,
+                result: 1
+              }
             }
-          }else return resp
+          }else {
+            if(val.result == 0) {
+              return {
+                ... val,
+                result: 1
+              }
+            }else return resp
+          }
         })
+    })
+  }
+}
+
+// usage status 변환 후
+export const updateStatusAndGetSubs = ( uuid, targetStatus, auth, deact_prod_uuid ) => {
+  return (dispatch, getState) => {
+    const { account } = getState(),
+      iccid = account.get('iccid')
+
+    return dispatch(updateUsageStatus( uuid, targetStatus, auth, deact_prod_uuid )).then(resp => {
+        // 결제취소요청 후 항상 order를 가져온다
+        if(resp.result == 0) {
+          return dispatch(getSubs(iccid, auth))
+        }else {
+          return resp
+        }
+
     })
   }
 }

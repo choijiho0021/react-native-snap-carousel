@@ -15,6 +15,7 @@ import i18n from '../utils/i18n'
 import _ from 'underscore'
 import utils from '../utils/utils';
 import AppBackButton from '../components/AppBackButton';
+import AppActivityIndicator from '../components/AppActivityIndicator';
 import { colors } from '../constants/Colors';
 import LabelText from '../components/LabelText';
 import AppButton from '../components/AppButton';
@@ -69,52 +70,51 @@ class UsageDetailScreen extends Component {
     this.setState({activatable, price, ... detail})
   }
 
-  _onSubmit(modal, targetStatus) {
+  async _onSubmit(modal, targetStatus) {
     const { account:{iccid}, auth } = this.props
     const { uuid, statusCd, showModal, country } = this.state
     const { usage } = this.props.order
 
     let deact_prod_uuid = []
+    // registerToUse: 사용 등록
+    // 사용등록(A, R)/사용예약취소(I, R)/사용예약(target: R, I)/로깨비캐시 전환(U, I)/
+    const registerToUse = targetStatus == STATUS.ACTIVE && statusCd == STATUS.RESERVED
+    const toRokebiCash = targetStatus == STATUS.USED && statusCd == STATUS.INACTIVE
 
-    console.log('@@@2torokebi', modal, targetStatus, statusCd, uuid, usage )
     if(targetStatus) {
-      if(targetStatus == STATUS.ACTIVE){
+
+      if(targetStatus == STATUS.ACTIVE || targetStatus == STATUS.USED){
+        if(targetStatus == STATUS.ACTIVE){
         usage.map(elm => {
           if(elm.statusCd == STATUS.ACTIVE && utils.compareArr(elm.country, country).length > 0){
             deact_prod_uuid.push(elm.uuid)
-          }
-        })
-      }
-  
-      // 사용 등록 시 한번 더 물어보도록 한다.
-      if(statusCd == STATUS.RESERVED && !showModal[modal] && targetStatus == STATUS.ACTIVE ){
-        !_.isEmpty(modal) && this._showModal(modal,true)
-        return
-      }
-      else if(statusCd == STATUS.INACTIVE && targetStatus == STATUS.USED ){
-        // 로깨비캐시로 전환
-        if(showModal[modal]){
-            this.props.action.order.updateUsageStatus( uuid, targetStatus, auth, deact_prod_uuid).then(resp =>
-              {
-                // 업데이트 후 정렬된 usage list 가져오기
-                if(resp.result == 0){
-                  this.props.action.order.getSubs(iccid, auth)
-                  this.props.action.account.getAccount(iccid, auth)
-                }
-              })
-        }else{
-          !_.isEmpty(modal) && this._showModal(modal, true)
-          return
-        }
-      } 
-      else {
-        // 상태 전환
-        this.props.action.order.updateUsageStatus( uuid, targetStatus, auth, deact_prod_uuid).then(resp =>
-          {
-            if(resp.result == 0){
-              this.props.action.order.getSubs(iccid, auth)
             }
           })
+        }
+        // 로깨비캐시, 사용등록에 대해서 모달 유무에 따라 출력해주면 됨.
+        if(showModal[modal]){
+          if(toRokebiCash){
+            this.props.action.order.updateStatusAndGetSubs( uuid, targetStatus, auth, deact_prod_uuid).then(resp => {
+              // 업데이트 후 정렬된 usage list 가져오기
+              if(resp.result == 0){
+                this.props.action.account.getAccount(iccid, auth)
+              }
+            })
+          }
+          if(registerToUse){
+            // 상태 전환 - 사용등록
+            await this.props.action.order.updateStatusAndGetSubs( uuid, targetStatus, auth, deact_prod_uuid)
+          }
+        }else{
+          if(registerToUse || toRokebiCash){
+            !_.isEmpty(modal) && this._showModal(modal,true)
+            return
+          }
+        }
+      }else{
+        // targetStatus - I, R 인 경우
+        // 상태 전환 - 사용 예약 취소(I, R), 사용 예약(target: R, I)
+        await this.props.action.order.updateStatusAndGetSubs( uuid, targetStatus, auth, deact_prod_uuid)
       }
     }
     this.props.navigation.goBack()
@@ -168,6 +168,7 @@ class UsageDetailScreen extends Component {
 
     return (
       <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
+        <AppActivityIndicator visible={this.props.pending}/>
         <View style={styles.container}>
           <Text style={styles.notice}>{i18n.t('his:timeStd')}</Text>
           <Text style={styles.title}>{prodName}</Text>
@@ -267,7 +268,9 @@ const mapStateToProps = (state) => ({
   product: state.product,
   account : state.account.toJS(),
   auth: accountActions.auth(state.account),
-  order: state.order.toObject()
+  order: state.order.toObject(),
+  pending: state.pender.pending[orderActions.GET_SUBS] || 
+          state.pender.pending[orderActions.UPDATE_USAGE] || false,
 })
 
 export default connect(mapStateToProps, 
