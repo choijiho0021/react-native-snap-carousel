@@ -3,7 +3,7 @@ import {Map} from 'immutable';
 import {pender} from 'redux-pender/lib/utils';
 import {API} from 'Rokebi/submodules/rokebi-utils';
 
-const GET_PROMOTION_LIST = 'rokebi/product/GET_PROD_LIST';
+const GET_PROMOTION_LIST = 'rokebi/product/GET_PROMOTION_LIST';
 
 export const getPromotion = createAction(
   GET_PROMOTION_LIST,
