@@ -34,7 +34,11 @@ import pushNoti from '../utils/pushNoti';
 import {Animated} from 'react-native';
 import TutorialScreen from './TutorialScreen';
 import AsyncStorage from '@react-native-community/async-storage';
-import {PERMISSIONS, request} from 'react-native-permissions';
+import {
+  requestNotifications,
+  PERMISSIONS,
+  request,
+} from 'react-native-permissions';
 import AppAlert from './../components/AppAlert';
 import appStateHandler from '../utils/appState';
 import Analytics from 'appcenter-analytics';
@@ -151,6 +155,7 @@ class HomeScreen extends Component {
     if (Platform.OS == 'ios') {
       await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
       await request(PERMISSIONS.IOS.CAMERA);
+      await requestNotifications(['alert', 'sound', 'badge']);
     } else if (Platform.OS == 'android') {
       await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
       await request(PERMISSIONS.ANDROID.CAMERA);

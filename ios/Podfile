@@ -117,6 +117,7 @@ target 'Rokebi' do
   pod 'RNPermissions', :path => '../node_modules/react-native-permissions'
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
   pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary.podspec"
+  pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications.podspec"
   
   pod 'RNSVG', :path => '../node_modules/react-native-svg'
 
