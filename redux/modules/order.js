@@ -105,8 +105,8 @@ function updateOrders( state, action) {
   const {result, objects} = action.payload
 
   if (result == 0 && objects.length > 0) {
-    const isPageZero = (objects[0]||[]).key >= (state.get('orders')[0]||[]).key,
-      orders = isPageZero ? [] : state.get('orders'),
+    const isPageZero = (objects[0]||[]).key >= ((state.get('orders')[0]||[]).key || -1),
+      orders = isPageZero ? state.get('orders').slice(0, API.Order.ORDER_PAGE_ITEMS) : state.get('orders'),
       page = isPageZero ? -1 : state.get('page')
 
     let ordersIdx = state.get('ordersIdx')
@@ -119,6 +119,7 @@ function updateOrders( state, action) {
       }
       else {
         orders.push(item)
+        ordersIdx = ordersIdx.set(item.orderId, orders.length-1)
       }
     });
 
