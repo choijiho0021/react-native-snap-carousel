@@ -109,11 +109,11 @@ class PaymentResultScreen extends Component {
   componentDidMount() {
     const {params} = this.props.route;
 
-    const {success = false} = (params && params.pymResult) || {};
+    const {success} = (params && params.pymResult) || {};
     const {result} = params && params.orderResult;
     const mode = params && params.mode;
 
-    const isSuccess = success && result == 0;
+    const isSuccess = _.isEmpty(success) ? result == 0 : success && result == 0;
 
     Analytics.trackEvent('Payment', {
       payment: mode + ' Payment' + (isSuccess ? ' Success' : ' Fail'),
@@ -183,7 +183,7 @@ class PaymentResultScreen extends Component {
     // [WARNING: 이해를 돕기 위한 것일 뿐, imp_success 또는 success 파라미터로 결제 성공 여부를 장담할 수 없습니다.]
     // 아임포트 서버로 결제내역 조회(GET /payments/${imp_uid})를 통해 그 응답(status)에 따라 결제 성공 여부를 판단하세요.
 
-    const isSuccess = success && result == 0;
+    const isSuccess = _.isEmpty(success) ? result == 0 : success && result == 0;
 
     return (
       <SafeAreaView style={{flex: 1}}>

@@ -66,7 +66,8 @@ class PaymentScreen extends Component {
   }
 
   async _callback(response) {
-    if (response.success) {
+    const success = _.isEmpty(response.success) ? true : response.success;
+    if (success) {
       // 결제완료시 '다음' 버튼 연속클릭 방지 - 연속클릭시 추가 결제 없이 order 계속 생성
       if (!this.props.route.params.isPaid) {
         await this.props.navigation.setParams({isPaid: true});
