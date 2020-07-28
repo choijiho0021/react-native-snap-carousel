@@ -31,13 +31,7 @@ import Analytics from 'appcenter-analytics';
 import Svg, {Line} from 'react-native-svg';
 import {API} from 'Rokebi/submodules/rokebi-utils';
 import {snackBarHidingTime} from '../environment';
-
-const STATUS_ACTIVE = 'A'; //사용중
-const STATUS_INACTIVE = 'I'; //미사용
-const STATUS_RESERVED = 'R'; //사용 대기중
-const STATUS_CANCELED = 'C'; //취소
-const STATUS_EXPIRED = 'E'; //사용 기간 종료
-const STATUS_USED = 'U'; //사용 완료
+import subsApi from '../submodules/rokebi-utils/api/subscriptionApi';
 
 class CardInfo extends Component {
   constructor(props) {
@@ -154,7 +148,6 @@ class UsageItem extends Component {
       isShowUsage: false,
       disableBtn: false,
     };
-    this.setStatusColor = this.setStatusColor.bind(this);
     this.usageRender = this.usageRender.bind(this);
     this.getUsage = this.getUsage.bind(this);
 
@@ -168,10 +161,6 @@ class UsageItem extends Component {
     );
   }
 
-  componentDidMount() {
-    this.setStatusColor();
-  }
-
   componentDidUpdate() {
     if (this.state.disableBtn) {
       setTimeout(() => {
@@ -180,31 +169,23 @@ class UsageItem extends Component {
         });
       }, 5000);
     }
-
-    this.setStatusColor();
   }
 
-  setStatusColor() {
-    const {item} = this.props;
+  getStatusColor(statusCd) {
     let statusColor = colors.warmGrey;
     let isActive = false;
 
-    switch (item.statusCd) {
-      case STATUS_ACTIVE:
-        statusColor = colors.tomato;
-        isActive = true;
-        break;
-      case STATUS_RESERVED:
-        statusColor = colors.clearBlue;
-        break;
-      case STATUS_INACTIVE:
-        statusColor = colors.black;
-        break;
-      default:
-        statusColor = colors.warmGrey;
-        break;
+    if (statusCd === subsApi.STATUS_ACTIVE) {
+      statusColor = colors.tomato;
+      isActive = true;
+    } else if (statusCd === subsApi.STATUS_RESERVED) {
+      statusColor = colors.clearBlue;
+    } else if (statusCd === subsApi.STATUS_INACTIVE) {
+      statusColor = colors.black;
+    } else {
+      statusColor = colors.warmGrey;
     }
-    return {statusColor: statusColor, isActive: isActive};
+    return {statusColor, isActive};
   }
 
   getUsage() {
@@ -315,7 +296,7 @@ class UsageItem extends Component {
     const {
       statusColor = colors.warmGrey,
       isActive = false,
-    } = this.setStatusColor();
+    } = this.getStatusColor(item.statusCd);
 
     return (
       <TouchableOpacity onPress={onPress}>
@@ -477,24 +458,26 @@ class UsimScreen extends Component {
   }
 
   _onRefresh() {
-    this.setState({
-      refreshing: true,
-    });
-
     const {
       account: {iccid},
       auth,
     } = this.props;
+
     if (iccid) {
-      this.props.action.order.getSubsWithToast(iccid, auth).then(resp => {
-        this.props.action.account.getAccount(iccid, auth).then(res => {
-          if (resp.result == 0 && res.result == 0) {
-            this.setState({
-              refreshing: false,
-            });
-          }
-        });
+      this.setState({
+        refreshing: true,
       });
+
+      this.props.action.order
+        .getSubsWithToast(iccid, auth)
+        .then(_ => {
+          this.props.action.account.getAccount(iccid, auth);
+        })
+        .finally(() => {
+          this.setState({
+            refreshing: false,
+          });
+        });
     }
   }
 
