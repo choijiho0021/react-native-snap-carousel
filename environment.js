@@ -3,7 +3,7 @@ import {Platform} from 'react-native';
 const impId = 'imp53913318';
 
 // rokebi esim App
-const appId = 'esim';
+const appId = 'rokebi';
 const codePushiOSStagLabel = 'v123';
 const codePushiOSProdLabel = 'v0';
 const codePushAndStagLabel = 'v116';
