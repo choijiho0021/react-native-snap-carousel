@@ -7,8 +7,6 @@ const codePushAndStagLabel = 'v116';
 const codePushAndProdLabel = 'v0';
 const channelId = '_nzQhxb';
 
-export const snackBarHidingTime = 3000;
-
 const ENV = {
   dev: {
     // scheme: 'https',
