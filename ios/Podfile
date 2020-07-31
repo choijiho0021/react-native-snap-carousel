@@ -154,7 +154,7 @@ target 'Rokebi' do
 
 
 
-  pod 'appcenter', :path => '../node_modules/appcenter/ios'
+  pod 'appcenter-core', :path => '../node_modules/appcenter/ios'
 
   pod 'appcenter-crashes', :path => '../node_modules/appcenter-crashes/ios'
 

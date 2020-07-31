@@ -40,7 +40,7 @@
 		0C3366E7360846E782A22905 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		0D19ADD4239112C900EAEAAB /* Rokebi.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Rokebi.entitlements; path = Rokebi/Rokebi.entitlements; sourceTree = "<group>"; };
 		0D75258D2393BEBB000D9C77 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../assets/fonts; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* 로깨비.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "로깨비.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* 로깨비ESIM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "로깨비ESIM.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Rokebi/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = Rokebi/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -169,7 +169,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* 로깨비.app */,
+				13B07F961A680F5B00A75B9A /* 로깨비ESIM.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -186,9 +186,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		13B07F861A680F5B00A75B9A /* Rokebi */ = {
+		13B07F861A680F5B00A75B9A /* RokebiESIM */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Rokebi" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "RokebiESIM" */;
 			buildPhases = (
 				83F353DA531F5D7165EABE4D /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
@@ -203,9 +203,9 @@
 			);
 			dependencies = (
 			);
-			name = Rokebi;
+			name = RokebiESIM;
 			productName = Rokebi;
-			productReference = 13B07F961A680F5B00A75B9A /* 로깨비.app */;
+			productReference = 13B07F961A680F5B00A75B9A /* 로깨비ESIM.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -224,7 +224,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Rokebi" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "RokebiESIM" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -238,7 +238,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* Rokebi */,
+				13B07F861A680F5B00A75B9A /* RokebiESIM */,
 			);
 		};
 /* End PBXProject section */
@@ -438,21 +438,98 @@
 				CODE_SIGN_ENTITLEMENTS = Rokebi/Rokebi.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 30;
+				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/ARNKakaoChannel\"",
+					"\"${PODS_ROOT}/Headers/Public/Base64\"",
+					"\"${PODS_ROOT}/Headers/Public/CocoaAsyncSocket\"",
+					"\"${PODS_ROOT}/Headers/Public/CocoaLibEvent\"",
+					"\"${PODS_ROOT}/Headers/Public/CodePush\"",
+					"\"${PODS_ROOT}/Headers/Public/DoubleConversion\"",
+					"\"${PODS_ROOT}/Headers/Public/EXConstants\"",
+					"\"${PODS_ROOT}/Headers/Public/EXFileSystem\"",
+					"\"${PODS_ROOT}/Headers/Public/EXImageLoader\"",
+					"\"${PODS_ROOT}/Headers/Public/EXPermissions\"",
+					"\"${PODS_ROOT}/Headers/Public/FBLazyVector\"",
+					"\"${PODS_ROOT}/Headers/Public/FBReactNativeSpec\"",
+					"\"${PODS_ROOT}/Headers/Public/Flipper\"",
+					"\"${PODS_ROOT}/Headers/Public/Flipper-DoubleConversion\"",
+					"\"${PODS_ROOT}/Headers/Public/Flipper-Folly\"",
+					"\"${PODS_ROOT}/Headers/Public/Flipper-Glog\"",
+					"\"${PODS_ROOT}/Headers/Public/Flipper-PeerTalk\"",
+					"\"${PODS_ROOT}/Headers/Public/Flipper-RSocket\"",
+					"\"${PODS_ROOT}/Headers/Public/FlipperKit\"",
+					"\"${PODS_ROOT}/Headers/Public/JWT\"",
+					"\"${PODS_ROOT}/Headers/Public/OpenSSL-Universal\"",
+					"\"${PODS_ROOT}/Headers/Public/Permission-Camera\"",
+					"\"${PODS_ROOT}/Headers/Public/Permission-Notifications\"",
+					"\"${PODS_ROOT}/Headers/Public/Permission-PhotoLibrary\"",
+					"\"${PODS_ROOT}/Headers/Public/QBImagePickerController\"",
+					"\"${PODS_ROOT}/Headers/Public/RCTRequired\"",
+					"\"${PODS_ROOT}/Headers/Public/RCTTypeSafety\"",
+					"\"${PODS_ROOT}/Headers/Public/RNCAsyncStorage\"",
+					"\"${PODS_ROOT}/Headers/Public/RNCPushNotificationIOS\"",
+					"\"${PODS_ROOT}/Headers/Public/RNGestureHandler\"",
+					"\"${PODS_ROOT}/Headers/Public/RNImageCropPicker\"",
+					"\"${PODS_ROOT}/Headers/Public/RNLocalize\"",
+					"\"${PODS_ROOT}/Headers/Public/RNPermissions\"",
+					"\"${PODS_ROOT}/Headers/Public/RNReanimated\"",
+					"\"${PODS_ROOT}/Headers/Public/RNSVG\"",
+					"\"${PODS_ROOT}/Headers/Public/RNScreens\"",
+					"\"${PODS_ROOT}/Headers/Public/RNVectorIcons\"",
+					"\"${PODS_ROOT}/Headers/Public/RSKImageCropper\"",
+					"\"${PODS_ROOT}/Headers/Public/React-Core\"",
+					"\"${PODS_ROOT}/Headers/Public/React-RCTText\"",
+					"\"${PODS_ROOT}/Headers/Public/React-cxxreact\"",
+					"\"${PODS_ROOT}/Headers/Public/React-jsi\"",
+					"\"${PODS_ROOT}/Headers/Public/React-jsiexecutor\"",
+					"\"${PODS_ROOT}/Headers/Public/React-jsinspector\"",
+					"\"${PODS_ROOT}/Headers/Public/ReactCommon\"",
+					"\"${PODS_ROOT}/Headers/Public/SSZipArchive\"",
+					"\"${PODS_ROOT}/Headers/Public/UMAppLoader\"",
+					"\"${PODS_ROOT}/Headers/Public/UMBarCodeScannerInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMCameraInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMConstantsInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMCore\"",
+					"\"${PODS_ROOT}/Headers/Public/UMFaceDetectorInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMFileSystemInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMFontInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMImageLoaderInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMPermissionsInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMReactNativeAdapter\"",
+					"\"${PODS_ROOT}/Headers/Public/UMSensorsInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMTaskManagerInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/Yoga\"",
+					"\"${PODS_ROOT}/Headers/Public/YogaKit\"",
+					"\"${PODS_ROOT}/Headers/Public/appcenter-analytics\"",
+					"\"${PODS_ROOT}/Headers/Public/appcenter-core\"",
+					"\"${PODS_ROOT}/Headers/Public/appcenter-crashes\"",
+					"\"${PODS_ROOT}/Headers/Public/glog\"",
+					"\"${PODS_ROOT}/Headers/Public/react-native-camera\"",
+					"\"${PODS_ROOT}/Headers/Public/react-native-safe-area-context\"",
+					"\"${PODS_ROOT}/Headers/Public/react-native-splash-screen\"",
+					"\"${PODS_ROOT}/Headers/Public/react-native-version-check\"",
+					"\"${PODS_ROOT}/Headers/Public/react-native-video\"",
+					"\"${PODS_ROOT}/Headers/Public/react-native-webview\"",
+					"\"$(PODS_ROOT)/Headers/Private/React-Core\"",
+					"\"$(PODS_ROOT)/Headers/Public/LinkingIOS\"",
+				);
 				INFOPLIST_FILE = Rokebi/Development.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.6.8;
+				MARKETING_VERSION = 0.1.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.uangel.esim;
-				PRODUCT_NAME = "로깨비";
-				PROVISIONING_PROFILE_SPECIFIER = Esim_profile;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.uangel.rokebi-ESIM";
+				PRODUCT_NAME = "로깨비ESIM";
+				PROVISIONING_PROFILE_SPECIFIER = RokebiESIM_Development;
 				SWIFT_OBJC_BRIDGING_HEADER = "Rokebi-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -469,20 +546,97 @@
 				CODE_SIGN_ENTITLEMENTS = Rokebi/Rokebi.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 30;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/ARNKakaoChannel\"",
+					"\"${PODS_ROOT}/Headers/Public/Base64\"",
+					"\"${PODS_ROOT}/Headers/Public/CocoaAsyncSocket\"",
+					"\"${PODS_ROOT}/Headers/Public/CocoaLibEvent\"",
+					"\"${PODS_ROOT}/Headers/Public/CodePush\"",
+					"\"${PODS_ROOT}/Headers/Public/DoubleConversion\"",
+					"\"${PODS_ROOT}/Headers/Public/EXConstants\"",
+					"\"${PODS_ROOT}/Headers/Public/EXFileSystem\"",
+					"\"${PODS_ROOT}/Headers/Public/EXImageLoader\"",
+					"\"${PODS_ROOT}/Headers/Public/EXPermissions\"",
+					"\"${PODS_ROOT}/Headers/Public/FBLazyVector\"",
+					"\"${PODS_ROOT}/Headers/Public/FBReactNativeSpec\"",
+					"\"${PODS_ROOT}/Headers/Public/Flipper\"",
+					"\"${PODS_ROOT}/Headers/Public/Flipper-DoubleConversion\"",
+					"\"${PODS_ROOT}/Headers/Public/Flipper-Folly\"",
+					"\"${PODS_ROOT}/Headers/Public/Flipper-Glog\"",
+					"\"${PODS_ROOT}/Headers/Public/Flipper-PeerTalk\"",
+					"\"${PODS_ROOT}/Headers/Public/Flipper-RSocket\"",
+					"\"${PODS_ROOT}/Headers/Public/FlipperKit\"",
+					"\"${PODS_ROOT}/Headers/Public/JWT\"",
+					"\"${PODS_ROOT}/Headers/Public/OpenSSL-Universal\"",
+					"\"${PODS_ROOT}/Headers/Public/Permission-Camera\"",
+					"\"${PODS_ROOT}/Headers/Public/Permission-Notifications\"",
+					"\"${PODS_ROOT}/Headers/Public/Permission-PhotoLibrary\"",
+					"\"${PODS_ROOT}/Headers/Public/QBImagePickerController\"",
+					"\"${PODS_ROOT}/Headers/Public/RCTRequired\"",
+					"\"${PODS_ROOT}/Headers/Public/RCTTypeSafety\"",
+					"\"${PODS_ROOT}/Headers/Public/RNCAsyncStorage\"",
+					"\"${PODS_ROOT}/Headers/Public/RNCPushNotificationIOS\"",
+					"\"${PODS_ROOT}/Headers/Public/RNGestureHandler\"",
+					"\"${PODS_ROOT}/Headers/Public/RNImageCropPicker\"",
+					"\"${PODS_ROOT}/Headers/Public/RNLocalize\"",
+					"\"${PODS_ROOT}/Headers/Public/RNPermissions\"",
+					"\"${PODS_ROOT}/Headers/Public/RNReanimated\"",
+					"\"${PODS_ROOT}/Headers/Public/RNSVG\"",
+					"\"${PODS_ROOT}/Headers/Public/RNScreens\"",
+					"\"${PODS_ROOT}/Headers/Public/RNVectorIcons\"",
+					"\"${PODS_ROOT}/Headers/Public/RSKImageCropper\"",
+					"\"${PODS_ROOT}/Headers/Public/React-Core\"",
+					"\"${PODS_ROOT}/Headers/Public/React-RCTText\"",
+					"\"${PODS_ROOT}/Headers/Public/React-cxxreact\"",
+					"\"${PODS_ROOT}/Headers/Public/React-jsi\"",
+					"\"${PODS_ROOT}/Headers/Public/React-jsiexecutor\"",
+					"\"${PODS_ROOT}/Headers/Public/React-jsinspector\"",
+					"\"${PODS_ROOT}/Headers/Public/ReactCommon\"",
+					"\"${PODS_ROOT}/Headers/Public/SSZipArchive\"",
+					"\"${PODS_ROOT}/Headers/Public/UMAppLoader\"",
+					"\"${PODS_ROOT}/Headers/Public/UMBarCodeScannerInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMCameraInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMConstantsInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMCore\"",
+					"\"${PODS_ROOT}/Headers/Public/UMFaceDetectorInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMFileSystemInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMFontInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMImageLoaderInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMPermissionsInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMReactNativeAdapter\"",
+					"\"${PODS_ROOT}/Headers/Public/UMSensorsInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMTaskManagerInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/Yoga\"",
+					"\"${PODS_ROOT}/Headers/Public/YogaKit\"",
+					"\"${PODS_ROOT}/Headers/Public/appcenter-analytics\"",
+					"\"${PODS_ROOT}/Headers/Public/appcenter-core\"",
+					"\"${PODS_ROOT}/Headers/Public/appcenter-crashes\"",
+					"\"${PODS_ROOT}/Headers/Public/glog\"",
+					"\"${PODS_ROOT}/Headers/Public/react-native-camera\"",
+					"\"${PODS_ROOT}/Headers/Public/react-native-safe-area-context\"",
+					"\"${PODS_ROOT}/Headers/Public/react-native-splash-screen\"",
+					"\"${PODS_ROOT}/Headers/Public/react-native-version-check\"",
+					"\"${PODS_ROOT}/Headers/Public/react-native-video\"",
+					"\"${PODS_ROOT}/Headers/Public/react-native-webview\"",
+					"\"$(PODS_ROOT)/Headers/Private/React-Core\"",
+					"\"$(PODS_ROOT)/Headers/Public/LinkingIOS\"",
+				);
 				INFOPLIST_FILE = Rokebi/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.6.8;
+				MARKETING_VERSION = 0.1.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.uangel.esim;
-				PRODUCT_NAME = "로깨비";
-				PROVISIONING_PROFILE_SPECIFIER = Esim_distribution_appstore;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.uangel.rokebi-ESIM";
+				PRODUCT_NAME = "로깨비ESIM";
+				PROVISIONING_PROFILE_SPECIFIER = RokebiESIM_distribution_appstore;
 				SWIFT_OBJC_BRIDGING_HEADER = "Rokebi-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -593,7 +747,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Rokebi" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "RokebiESIM" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -602,7 +756,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Rokebi" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "RokebiESIM" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
