@@ -66,6 +66,8 @@ function homeStack() {
     <HomeStack.Navigator screenOptions={{animationEnabled: false}}>
       <HomeStack.Screen name="Home" component={HomeScreen_esim} />
       <HomeStack.Screen name="StoreSearch" component={StoreSearchScreen} />
+      <HomeStack.Screen name="Cart" component={CartScreen} />
+      <HomeStack.Screen name="ProductDetail" component={ProductDetailScreen} />
 
       {/* <HomeStack.Screen name="Recharge" component={RechargeScreen} /> */}
       <HomeStack.Screen name="RegisterSim" component={RegisterSimScreen} />
