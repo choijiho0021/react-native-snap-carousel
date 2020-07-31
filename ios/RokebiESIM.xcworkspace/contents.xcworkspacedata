@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:RokebiESIM.xcodeproj">
+      location = "group:/Users/soojeong/ESIM/esim/ios/RokebiESIM.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
