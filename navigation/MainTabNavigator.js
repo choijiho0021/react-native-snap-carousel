@@ -7,7 +7,7 @@ import {appStyles} from '../constants/Styles';
 import AppButton from '../components/AppButton';
 import AppIcon from '../components/AppIcon';
 
-import HomeScreen_esim from '../screens/HomeScreen_esim';
+import HomeScreenEsim from '../screens/HomeScreenEsim';
 import HomeScreen from '../screens/HomeScreen';
 import MySimScreen from '../screens/MySimScreen';
 
@@ -64,7 +64,7 @@ const BadgeAppButton = withBadge(
 function homeStack() {
   return (
     <HomeStack.Navigator screenOptions={{animationEnabled: false}}>
-      <HomeStack.Screen name="Home" component={HomeScreen_esim} />
+      <HomeStack.Screen name="Home" component={HomeScreenEsim} />
       <HomeStack.Screen name="StoreSearch" component={StoreSearchScreen} />
       <HomeStack.Screen name="Cart" component={CartScreen} />
       <HomeStack.Screen name="ProductDetail" component={ProductDetailScreen} />
