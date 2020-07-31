@@ -7,6 +7,7 @@ import {appStyles} from '../constants/Styles';
 import AppButton from '../components/AppButton';
 import AppIcon from '../components/AppIcon';
 
+import HomeScreen_esim from '../screens/HomeScreen_esim';
 import HomeScreen from '../screens/HomeScreen';
 import MySimScreen from '../screens/MySimScreen';
 
@@ -63,10 +64,12 @@ const BadgeAppButton = withBadge(
 function homeStack() {
   return (
     <HomeStack.Navigator screenOptions={{animationEnabled: false}}>
-      <HomeStack.Screen name="Home" component={HomeScreen} />
-      <HomeStack.Screen name="Recharge" component={RechargeScreen} />
+      <HomeStack.Screen name="Home" component={HomeScreen_esim} />
+      <HomeStack.Screen name="StoreSearch" component={StoreSearchScreen} />
+
+      {/* <HomeStack.Screen name="Recharge" component={RechargeScreen} /> */}
       <HomeStack.Screen name="RegisterSim" component={RegisterSimScreen} />
-      <HomeStack.Screen name="NewSim" component={NewSimScreen} />
+      {/* <HomeStack.Screen name="NewSim" component={NewSimScreen} /> */}
       <HomeStack.Screen name="Noti" component={NotiScreen} />
       <HomeStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <HomeStack.Screen name="Contact" component={ContactScreen} />
@@ -77,7 +80,7 @@ function homeStack() {
       <HomeStack.Screen name="Country" component={CountryScreen} />
       <HomeStack.Screen name="Payment" component={PaymentScreen} />
       <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
-      <HomeStack.Screen name="FindAddress" component={FindAddressScreen} />
+      {/* <HomeStack.Screen name="FindAddress" component={FindAddressScreen} /> */}
       <HomeStack.Screen name="PaymentResult" component={PaymentResultScreen} />
       <HomeStack.Screen name="CodePush" component={CodePushScreen} />
       <HomeStack.Screen
