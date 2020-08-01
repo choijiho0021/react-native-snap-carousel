@@ -8,6 +8,8 @@ import {batch} from 'react-redux';
 import * as ToastActions from './toast';
 import {Toast} from '../../constants/CustomTypes';
 import {API} from 'Rokebi/submodules/rokebi-utils';
+import getEnvVars from '../../environment';
+const {esimApp} = getEnvVars();
 
 const SIGN_UP = 'rokebi/account/SIGN_UP';
 export const UPDATE_ACCOUNT = 'rokebi/account/UPDATE_ACCOUNT';
@@ -189,17 +191,21 @@ export const logInAndGetAccount = (mobile, pin, iccid) => {
               console.log('resp register', resp);
             });
           } else {
-            // 가장 최근 사용한 SIM 카드 번호를 조회한다.
-            dispatch(getAccountByUser(mobile, token)).then(resp => {
-              if (
-                resp.result == 0 &&
-                resp.objects.length > 0 &&
-                resp.objects[0].status == 'A'
-              ) {
-                utils.storeData(API.User.KEY_ICCID, resp.objects[0].iccid);
-                dispatch(getAccount(resp.objects[0].iccid, token));
-              }
-            });
+            if (esimApp) {
+              dispatch(registerMobile('esim', pin, mobile));
+            } else {
+              // 가장 최근 사용한 SIM 카드 번호를 조회한다.
+              dispatch(getAccountByUser(mobile, token)).then(resp => {
+                if (
+                  resp.result == 0 &&
+                  resp.objects.length > 0 &&
+                  resp.objects[0].status == 'A'
+                ) {
+                  utils.storeData(API.User.KEY_ICCID, resp.objects[0].iccid);
+                  dispatch(getAccount(resp.objects[0].iccid, token));
+                }
+              });
+            }
           }
 
           //iccid 상관 없이 로그인마다 토큰 업데이트

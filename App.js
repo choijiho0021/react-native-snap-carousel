@@ -24,6 +24,8 @@ import AppAlert from './components/AppAlert';
 import i18n from './utils/i18n';
 import AppToast from './components/AppToast';
 import {API} from 'Rokebi/submodules/rokebi-utils';
+import getEnvVars from './environment';
+const {esimApp} = getEnvVars();
 
 const logger = createLogger();
 const composeEnhancers =
@@ -103,8 +105,11 @@ async function login() {
 async function loadResourcesAsync() {
   // load product list
   store.dispatch(productActions.getProdListWithToast());
-  store.dispatch(simActions.getSimCardList());
   store.dispatch(promotionActions.getPromotion());
+
+  if (!esimApp) {
+    store.dispatch(simActions.getSimCardList());
+  }
   // 공지 사항 가져오기
   store.dispatch(infoActions.getInfoList('info'));
   store.dispatch(infoActions.getHomeInfoList('info:home'));
