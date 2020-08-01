@@ -29,7 +29,7 @@
 		A39B6F392485F35C00EDBBB6 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39B6F382485F35C00EDBBB6 /* File.swift */; };
 		B17B8F9232B1453792F6EC90 /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8A5627E20C514F48AB67FB9D /* Fontisto.ttf */; };
 		BE19BB741F6F4643B4034DE9 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C25FD7BA1ACD4C91845B58B5 /* MaterialCommunityIcons.ttf */; };
-		CC71A4880D5CCCA4D6E90E9E /* libPods-Rokebi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BD7D7B3A0A31A5A07F9F8F5 /* libPods-Rokebi.a */; };
+		CA247217DB91291F5572BECD /* libPods-RokebiESIM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D4C1139AB353FAA1E71792B /* libPods-RokebiESIM.a */; };
 		E168FDC3B0614F70ADECBCC0 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0C3366E7360846E782A22905 /* FontAwesome.ttf */; };
 		F879C47F7617473B93208A4F /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5B47FC0EFC7348AE92F80F75 /* Feather.ttf */; };
 		FFBC012D75F941389E5666D9 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 66877FDA2CA449A1949D9700 /* SimpleLineIcons.ttf */; };
@@ -47,10 +47,10 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Rokebi/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Rokebi/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Rokebi/main.m; sourceTree = "<group>"; };
-		1BD7D7B3A0A31A5A07F9F8F5 /* libPods-Rokebi.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rokebi.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		21343FD7414C4DF1AC30C20A /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
 		2B724F71607F42C9984B056F /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; };
 		2BEE59007ECDE64E2F11A26D /* Pods-Rokebi.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rokebi.release.xcconfig"; path = "Target Support Files/Pods-Rokebi/Pods-Rokebi.release.xcconfig"; sourceTree = "<group>"; };
+		2D4C1139AB353FAA1E71792B /* libPods-RokebiESIM.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RokebiESIM.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		387414320DF943A8A94F8F41 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		39EF1D8F28994FC5BAC96019 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		3EF6740ADCE34419ACC078ED /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
@@ -58,9 +58,11 @@
 		40B508C724B80F9900213190 /* AppDelegate+Iamport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AppDelegate+Iamport.h"; sourceTree = "<group>"; };
 		40B508C824B8102B00213190 /* AppDelegate+Iamport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "AppDelegate+Iamport.m"; sourceTree = "<group>"; };
 		5B47FC0EFC7348AE92F80F75 /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
+		659ECFDF5F53C8EDDC768F8A /* Pods-RokebiESIM.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.release.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.release.xcconfig"; sourceTree = "<group>"; };
 		66877FDA2CA449A1949D9700 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
 		8A5627E20C514F48AB67FB9D /* Fontisto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Fontisto.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; };
 		97EAF1666BB34E349694FF33 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
+		A1E96F7525452CA020116551 /* Pods-RokebiESIM.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.debug.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.debug.xcconfig"; sourceTree = "<group>"; };
 		A36D7FCD23D526C500552A3B /* ios */ = {isa = PBXFileReference; lastKnownFileType = folder; path = ios; sourceTree = "<group>"; };
 		A36D7FD223D575EA00552A3B /* AppCenter-Config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "AppCenter-Config.plist"; sourceTree = "<group>"; };
 		A39B6F372485F35C00EDBBB6 /* Rokebi-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Rokebi-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -81,7 +83,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CC71A4880D5CCCA4D6E90E9E /* libPods-Rokebi.a in Frameworks */,
+				CA247217DB91291F5572BECD /* libPods-RokebiESIM.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,7 +137,7 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
-				1BD7D7B3A0A31A5A07F9F8F5 /* libPods-Rokebi.a */,
+				2D4C1139AB353FAA1E71792B /* libPods-RokebiESIM.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -179,6 +181,8 @@
 			children = (
 				E897C4652D1B0C27AB63709D /* Pods-Rokebi.debug.xcconfig */,
 				2BEE59007ECDE64E2F11A26D /* Pods-Rokebi.release.xcconfig */,
+				A1E96F7525452CA020116551 /* Pods-RokebiESIM.debug.xcconfig */,
+				659ECFDF5F53C8EDDC768F8A /* Pods-RokebiESIM.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -295,7 +299,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Rokebi/Pods-Rokebi-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/QBImagePickerController/QBImagePicker.bundle",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Entypo.ttf",
@@ -338,7 +342,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Rokebi/Pods-Rokebi-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		40965D2B23E3B646003E8249 /* Increment Build */ = {
@@ -374,7 +378,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Rokebi-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-RokebiESIM-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -431,7 +435,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E897C4652D1B0C27AB63709D /* Pods-Rokebi.debug.xcconfig */;
+			baseConfigurationReference = A1E96F7525452CA020116551 /* Pods-RokebiESIM.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -539,7 +543,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2BEE59007ECDE64E2F11A26D /* Pods-Rokebi.release.xcconfig */;
+			baseConfigurationReference = 659ECFDF5F53C8EDDC768F8A /* Pods-RokebiESIM.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
