@@ -7,10 +7,9 @@ import {appStyles} from '../constants/Styles';
 import AppButton from '../components/AppButton';
 import AppIcon from '../components/AppIcon';
 
-import HomeScreen from '../screens/HomeScreen';
+import HomeScreenEsim from '../screens/HomeScreenEsim';
 import MySimScreen from '../screens/MySimScreen';
 
-import StoreScreen from '../screens/StoreScreen';
 import CountryScreen from '../screens/CountryScreen';
 import RegisterSimScreen from '../screens/RegisterSimScreen';
 import ProductDetailScreen from '../screens/ProductDetailScreen';
@@ -36,7 +35,7 @@ import StoreSearchScreen from '../screens/StoreSearchScreen';
 import BoardMsgRespScreen from '../screens/BoardMsgRespScreen';
 import SimpleTextScreen from '../screens/SimpleTextScreen';
 import CodePushScreen from '../screens/CodePushScreen';
-import UsimScreen from '../screens/UsimScreen';
+import EsimScreen from '../screens/EsimScreen';
 import FaqScreen from '../screens/FaqScreen';
 import GuideScreen from '../screens/GuideScreen';
 import UsageDetailScreen from '../screens/UsageDetailScreen';
@@ -44,9 +43,8 @@ import AuthStack from './AuthStackNavigator';
 import {connect} from 'react-redux';
 
 const HomeStack = createStackNavigator();
-const StoreStack = createStackNavigator();
 const CartStack = createStackNavigator();
-const UsimStack = createStackNavigator();
+const EsimStack = createStackNavigator();
 const MyPageStack = createStackNavigator();
 
 const BadgeAppButton = withBadge(
@@ -61,7 +59,7 @@ const BadgeAppButton = withBadge(
 function homeStack() {
   return (
     <HomeStack.Navigator screenOptions={{animationEnabled: false}}>
-      <HomeStack.Screen name="Home" component={HomeScreen} />
+      <HomeStack.Screen name="Home" component={HomeScreenEsim} />
       <HomeStack.Screen name="StoreSearch" component={StoreSearchScreen} />
       <HomeStack.Screen name="Cart" component={CartScreen} />
       <HomeStack.Screen name="ProductDetail" component={ProductDetailScreen} />
@@ -95,25 +93,6 @@ function homeStack() {
   );
 }
 
-function storeStack() {
-  return (
-    <StoreStack.Navigator screenOptions={{animationEnabled: false}}>
-      <StoreStack.Screen name="Store" component={StoreScreen} />
-      <StoreStack.Screen name="Cart" component={CartScreen} />
-      <StoreStack.Screen name="StoreSearch" component={StoreSearchScreen} />
-      <StoreStack.Screen name="RegisterSim" component={RegisterSimScreen} />
-      <StoreStack.Screen name="Country" component={CountryScreen} />
-      <StoreStack.Screen name="NewSim" component={NewSimScreen} />
-      <StoreStack.Screen name="SimpleText" component={SimpleTextScreen} />
-      <StoreStack.Screen name="ProductDetail" component={ProductDetailScreen} />
-      <StoreStack.Screen name="Faq" component={FaqScreen} />
-      <StoreStack.Screen name="Payment" component={PaymentScreen} />
-      <StoreStack.Screen name="PymMethod" component={PymMethodScreen} />
-      <StoreStack.Screen name="PaymentResult" component={PaymentResultScreen} />
-    </StoreStack.Navigator>
-  );
-}
-
 function cartStack() {
   return (
     <CartStack.Navigator screenOptions={{animationEnabled: false}}>
@@ -133,20 +112,12 @@ function cartStack() {
   );
 }
 
-function usimStack() {
+function esimStack() {
   return (
-    <UsimStack.Navigator screenOptions={{animationEnabled: false}}>
-      <UsimStack.Screen name="Usim" component={UsimScreen} />
-      <UsimStack.Screen name="UsageDetail" component={UsageDetailScreen} />
-
-      {/* // 충전 관련 화면 */}
-      <UsimStack.Screen name="Recharge" component={RechargeScreen} />
-      <UsimStack.Screen name="Payment" component={PaymentScreen} />
-      <UsimStack.Screen name="PymMethod" component={PymMethodScreen} />
-      <UsimStack.Screen name="SimpleText" component={SimpleTextScreen} />
-      <UsimStack.Screen name="PaymentResult" component={PaymentResultScreen} />
-      <UsimStack.Screen name="RegisterSim" component={RegisterSimScreen} />
-    </UsimStack.Navigator>
+    <EsimStack.Navigator screenOptions={{animationEnabled: false}}>
+      <EsimStack.Screen name="Esim" component={EsimScreen} />
+      <EsimStack.Screen name="UsageDetail" component={UsageDetailScreen} />
+    </EsimStack.Navigator>
   );
 }
 
@@ -216,21 +187,6 @@ function tabNavigator({loggedIn}) {
         })}
       />
       <TabNavigator.Screen
-        name="StoreStack"
-        component={storeStack}
-        options={({route}) => ({
-          tabBarVisible: route.state && route.state.index == 0,
-          tabBarLabel: i18n.t('store'),
-          tabBarIcon: ({focused}) => (
-            <AppIcon
-              focused={focused}
-              name="btnStore"
-              style={styles.tabBarIcon}
-            />
-          ),
-        })}
-      />
-      <TabNavigator.Screen
         name="CartStack"
         component={cartStack}
         options={({route}) => ({
@@ -246,11 +202,11 @@ function tabNavigator({loggedIn}) {
         })}
       />
       <TabNavigator.Screen
-        name="UsimStack"
-        component={usimStack}
+        name="EsimStack"
+        component={esimStack}
         options={({route}) => ({
           tabBarVisible: route.state && route.state.index == 0,
-          tabBarLabel: i18n.t('usim'),
+          tabBarLabel: i18n.t('esim'),
           tabBarIcon: ({focused}) => (
             <AppIcon
               focused={focused}

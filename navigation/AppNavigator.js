@@ -5,8 +5,11 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 
 import MainTabNavigator from './MainTabNavigator';
+import EsimMainTabNavigator from './EsimMainTabNavigator';
 import CodePushStack from './CodePushStackNavigator';
 import AuthStackNavigator from './AuthStackNavigator';
+import getEnvVars from '../environment';
+const {esimApp} = getEnvVars();
 
 const MainStack = createStackNavigator();
 
@@ -25,7 +28,10 @@ function mainStack() {
   return (
     <MainStack.Navigator
       screenOptions={{animationEnabled: false, headerShown: false}}>
-      <MainStack.Screen name="Main" component={MainTabNavigator} />
+      <MainStack.Screen
+        name="Main"
+        component={esimApp ? EsimMainTabNavigator : MainTabNavigator}
+      />
       <MainStack.Screen name="Auth" component={AuthStackNavigator} />
     </MainStack.Navigator>
   );
