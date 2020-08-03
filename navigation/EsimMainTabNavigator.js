@@ -63,28 +63,20 @@ function homeStack() {
       <HomeStack.Screen name="StoreSearch" component={StoreSearchScreen} />
       <HomeStack.Screen name="Cart" component={CartScreen} />
       <HomeStack.Screen name="ProductDetail" component={ProductDetailScreen} />
-
-      {/* <HomeStack.Screen name="Recharge" component={RechargeScreen} /> */}
       <HomeStack.Screen name="RegisterSim" component={RegisterSimScreen} />
-      {/* <HomeStack.Screen name="NewSim" component={NewSimScreen} /> */}
       <HomeStack.Screen name="Noti" component={NotiScreen} />
       <HomeStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <HomeStack.Screen name="Contact" component={ContactScreen} />
       <HomeStack.Screen name="ContactBoard" component={ContactBoardScreen} />
+
       <HomeStack.Screen name="BoardMsgResp" component={BoardMsgRespScreen} />
       <HomeStack.Screen name="Faq" component={FaqScreen} />
       <HomeStack.Screen name="Guide" component={GuideScreen} />
       <HomeStack.Screen name="Country" component={CountryScreen} />
       <HomeStack.Screen name="Payment" component={PaymentScreen} />
       <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
-      {/* <HomeStack.Screen name="FindAddress" component={FindAddressScreen} /> */}
       <HomeStack.Screen name="PaymentResult" component={PaymentResultScreen} />
       <HomeStack.Screen name="CodePush" component={CodePushScreen} />
-      <HomeStack.Screen
-        name="CustomerProfile"
-        component={CustomerProfileScreen}
-      />
-      <HomeStack.Screen name="AddProfile" component={AddProfileScreen} />
       <HomeStack.Screen
         name="PurchaseDetail"
         component={PurchaseDetailScreen}
@@ -99,14 +91,8 @@ function cartStack() {
       <CartStack.Screen name="Cart" component={CartScreen} />
       <CartStack.Screen name="Payment" component={PaymentScreen} />
       <CartStack.Screen name="PymMethod" component={PymMethodScreen} />
-      <CartStack.Screen name="FindAddress" component={FindAddressScreen} />
       <CartStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <CartStack.Screen name="PaymentResult" component={PaymentResultScreen} />
-      <CartStack.Screen
-        name="CustomerProfile"
-        component={CustomerProfileScreen}
-      />
-      <CartStack.Screen name="AddProfile" component={AddProfileScreen} />
       <CartStack.Screen name="RegisterSim" component={RegisterSimScreen} />
     </CartStack.Navigator>
   );
