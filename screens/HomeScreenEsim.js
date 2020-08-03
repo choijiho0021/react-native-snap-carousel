@@ -129,6 +129,10 @@ class HomeScreenEsim extends Component {
     if (prevProps.product.prodList != this.props.product.prodList) {
       this._refresh();
     }
+
+    if (this.props.sync.progress) {
+      this.props.navigation.navigate('CodePush');
+    }
   }
 
   _refresh() {
@@ -472,6 +476,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => ({
   product: state.product.toObject(),
   promotion: state.promotion.get('promotion'),
+  sync: state.sync.toJS(),
 });
 
 export default connect(
