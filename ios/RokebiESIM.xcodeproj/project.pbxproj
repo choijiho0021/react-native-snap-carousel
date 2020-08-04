@@ -18,6 +18,7 @@
 		194A544668EF491C93036E90 /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2B724F71607F42C9984B056F /* FontAwesome5_Regular.ttf */; };
 		39C76941ABAF4DF292B19EC7 /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AFE9936F560A412CABB40AFE /* AntDesign.ttf */; };
 		3B68A3E48ED042039892C148 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AE9F849D96DE44A5AAF4084C /* Ionicons.ttf */; };
+		405C1E9524D945870016B43C /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 405C1E9424D945870016B43C /* AppCenter-Config.plist */; };
 		40965D2923E3AAEF003E8249 /* Development.plist in Resources */ = {isa = PBXBuildFile; fileRef = 40965D2823E3AAEF003E8249 /* Development.plist */; };
 		40B508C924B8102B00213190 /* AppDelegate+Iamport.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B508C824B8102B00213190 /* AppDelegate+Iamport.m */; };
 		46194724760D4369B79788A5 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 21343FD7414C4DF1AC30C20A /* Foundation.ttf */; };
@@ -54,6 +55,7 @@
 		387414320DF943A8A94F8F41 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		39EF1D8F28994FC5BAC96019 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		3EF6740ADCE34419ACC078ED /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
+		405C1E9424D945870016B43C /* AppCenter-Config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "AppCenter-Config.plist"; path = "RokebiESIM/AppCenter-Config.plist"; sourceTree = "<group>"; };
 		40965D2823E3AAEF003E8249 /* Development.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Development.plist; path = Rokebi/Development.plist; sourceTree = "<group>"; };
 		40B508C724B80F9900213190 /* AppDelegate+Iamport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AppDelegate+Iamport.h"; sourceTree = "<group>"; };
 		40B508C824B8102B00213190 /* AppDelegate+Iamport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "AppDelegate+Iamport.m"; sourceTree = "<group>"; };
@@ -152,6 +154,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				405C1E9424D945870016B43C /* AppCenter-Config.plist */,
 				A39B6F382485F35C00EDBBB6 /* File.swift */,
 				A36D7FCD23D526C500552A3B /* ios */,
 				0D75258D2393BEBB000D9C77 /* fonts */,
@@ -261,6 +264,7 @@
 				F879C47F7617473B93208A4F /* Feather.ttf in Resources */,
 				E168FDC3B0614F70ADECBCC0 /* FontAwesome.ttf in Resources */,
 				064FD3B473B24FA49C2DB2C0 /* FontAwesome5_Brands.ttf in Resources */,
+				405C1E9524D945870016B43C /* AppCenter-Config.plist in Resources */,
 				194A544668EF491C93036E90 /* FontAwesome5_Regular.ttf in Resources */,
 				05BE80D4EB094AB2B9ADE691 /* FontAwesome5_Solid.ttf in Resources */,
 				B17B8F9232B1453792F6EC90 /* Fontisto.ttf in Resources */,
@@ -442,7 +446,7 @@
 				CODE_SIGN_ENTITLEMENTS = Rokebi/Rokebi.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 38;
+				CURRENT_PROJECT_VERSION = 39;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
@@ -550,7 +554,7 @@
 				CODE_SIGN_ENTITLEMENTS = Rokebi/Rokebi.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 38;
+				CURRENT_PROJECT_VERSION = 39;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
