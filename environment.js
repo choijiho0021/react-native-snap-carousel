@@ -5,8 +5,8 @@ const impId = 'imp53913318';
 // rokebi esim App
 const appId = 'esim';
 const codePushLabel = {
-  stagingIOS: 'v3',
-  stagingAndroid: 'v3',
+  stagingIOS: "v8",
+  stagingAndroid: "v8",
   productionIOS: 'v0',
   productionAndroid: 'v0',
 };
