@@ -350,7 +350,7 @@ class HomeScreenEsim extends Component {
     return (
       <ScrollView
         // contentContainerStyle={appStyles.container}
-        style={{flex: 1}}
+        style={styles.scrollView}
         stickyHeaderIndices={[1]}>
         <View style={styles.carousel}>
           <Carousel
@@ -473,6 +473,10 @@ const styles = StyleSheet.create({
   boldClearBlue: {
     color: colors.clearBlue,
     fontWeight: 'bold',
+  },
+  scrollView: {
+    flex: 1,
+    backgroundColor: colors.white,
   },
 });
 
