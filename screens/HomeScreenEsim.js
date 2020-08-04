@@ -253,8 +253,6 @@ class HomeScreenEsim extends Component {
   };
 
   _onIndexChange(index) {
-    Analytics.trackEvent('Page_View_Count', {page: 'Store'});
-
     this.setState({
       index,
     });
@@ -388,9 +386,15 @@ class HomeScreenEsim extends Component {
             ))}
           </View>
         </View>
-        <StoreList
-          data={this.state[routes[index].key]}
-          onPress={this._onPressItem}
+        <TabView
+          style={styles.container}
+          navigationState={this.state}
+          renderScene={this.renderScene}
+          onIndexChange={this._onIndexChange}
+          initialLayout={{width: Dimensions.get('window').width, height: 10}}
+          titleStyle={appStyles.normal16Text}
+          indicatorStyle={{backgroundColor: 'white'}}
+          renderTabBar={() => null}
         />
       </ScrollView>
     );
