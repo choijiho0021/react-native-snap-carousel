@@ -370,6 +370,7 @@ const en = {
 
   'esim:showQR': 'Show QR',
   'esim:showQR:title': 'QR Code',
+  'esim:showQR:nothing': 'QR Code is missing',
   'esim:showQR:body': 'Show QR Code',
   'esim:smdp': 'SM-DP+ Address',
   'esim:actCode': 'Activation code',
@@ -867,6 +868,7 @@ const ko = {
   'esim:showQR': 'QR 코드 보기',
   'esim:manualInput': '수동 입력 정보',
   'esim:showQR:title': 'QR 코드 보기',
+  'esim:showQR:nothing': 'QR 코드가 없습니다.',
   'esim:showQR:body':
     '설정>셀룰러>셀룰러요금제 추가에서 화면에 다음 QR코드를 캡쳐하여 비춰주세요.',
   'esim:smdp': 'SM-DP+ 주소',

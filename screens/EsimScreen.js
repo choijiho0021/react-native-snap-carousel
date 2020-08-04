@@ -257,10 +257,18 @@ class EsimScreen extends Component {
     if (modal === 'showQR') {
       return (
         <View>
-          <Text style={styles.body}>{i18n.t('esim:showQR:body')}</Text>
-          <View style={styles.center}>
-            <QRCode value={subs.smdpAddr + subs.actCode} />
-          </View>
+          {_.isEmpty(subs.smdpAddr + subs.actCode) ? (
+            <View style={styles.center}>
+              <Text>{i18n.t('esim:showQR:nothing')}</Text>
+            </View>
+          ) : (
+            <View>
+              <Text style={styles.body}>{i18n.t('esim:showQR:body')}</Text>
+              <View style={styles.center}>
+                <QRCode value={subs.smdpAddr + subs.actCode} />
+              </View>
+            </View>
+          )}
         </View>
       );
     }
