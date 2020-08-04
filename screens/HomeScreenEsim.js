@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
   Animated,
+  ScrollView,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {appStyles} from '../constants/Styles';
@@ -14,13 +15,11 @@ import i18n from '../utils/i18n';
 import * as productActions from '../redux/modules/product';
 import _ from 'underscore';
 import {bindActionCreators} from 'redux';
-import {TabView, TabBar} from 'react-native-tab-view';
+import {TabView} from 'react-native-tab-view';
 import {colors} from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import StoreList from '../components/StoreList';
 import moment from 'moment';
-import {isDeviceSize} from '../constants/SliderEntry.style';
-import Analytics from 'appcenter-analytics';
 import {Set} from 'immutable';
 import {API, Country} from 'Rokebi/submodules/rokebi-utils';
 import {sliderWidth, windowHeight} from '../constants/SliderEntry.style';
@@ -104,6 +103,7 @@ class HomeScreenEsim extends Component {
     this._onPressPromotion = this._onPressPromotion.bind(this);
     this._renderPromotion = this._renderPromotion.bind(this);
     this._renderDots = this._renderDots.bind(this);
+    this._clickTab = this._clickTab.bind(this);
 
     this.offset = 0;
     this.controller = new AbortController();
@@ -245,15 +245,12 @@ class HomeScreenEsim extends Component {
     return (
       <StoreList
         data={this.state[props.route.key]}
-        jumpTp={props.jumpTo}
         onPress={this._onPressItem}
       />
     );
   };
 
   _onIndexChange(index) {
-    Analytics.trackEvent('Page_View_Count', {page: 'Store'});
-
     this.setState({
       index,
     });
@@ -344,9 +341,17 @@ class HomeScreenEsim extends Component {
     }
   }
 
+  _clickTab = idx => () => {
+    this.setState({index: idx});
+  };
+
   render() {
+    const {index, routes} = this.state;
     return (
-      <View style={appStyles.container}>
+      <ScrollView
+        // contentContainerStyle={appStyles.container}
+        style={styles.scrollView}
+        stickyHeaderIndices={[1]}>
         <View style={styles.carousel}>
           <Carousel
             data={this.props.promotion}
@@ -354,36 +359,42 @@ class HomeScreenEsim extends Component {
             autoplay={true}
             loop={true}
             lockScrollWhileSnapping={true}
-            useScrollView={true}
+            useScrollView={false}
             onSnapToItem={index => this.setState({activeSlide: index})}
             sliderWidth={sliderWidth}
             itemWidth={sliderWidth}
           />
           {this._pagination()}
         </View>
-        <View style={appStyles.container}>
-          <TabView
-            style={styles.container}
-            navigationState={this.state}
-            renderScene={this.renderScene}
-            onIndexChange={this._onIndexChange}
-            initialLayout={{width: Dimensions.get('window').width, height: 10}}
-            titleStyle={appStyles.normal16Text}
-            indicatorStyle={{backgroundColor: 'white'}}
-            renderTabBar={props => (
-              <TabBar
-                {...props}
-                tabStyle={styles.tabStyle}
-                activeColor={colors.clearBlue} // 활성화 라벨 색
-                inactiveColor={colors.warmGrey} //비활성화 탭 라벨 색
-                style={styles.tabBarStyle} // 라벨 TEXT 선택 시 보이는 배경 색
-                labelStyle={styles.tabBarLabel} // 라벨 TEXT에 관한 스타일
-                indicatorStyle={{backgroundColor: colors.whiteTwo}} //tabbar 선택시 하단의 줄 색
+        {/* ScrollView  stickyHeaderIndices로 상단 탭을 고정하기 위해서 View한번 더 사용*/}
+        <View style={styles.whiteBackground}>
+          <View style={styles.tabView}>
+            {routes.map((elm, idx) => (
+              <AppButton
+                key={elm.key + idx}
+                style={styles.whiteBackground}
+                titleStyle={[
+                  styles.normal16WarmGrey,
+                  idx == index ? styles.boldClearBlue : {},
+                ]}
+                title={elm.category}
+                // title={i18n.t(`prodDetail:${elm}`)}
+                onPress={this._clickTab(idx)}
               />
-            )}
-          />
+            ))}
+          </View>
         </View>
-      </View>
+        <TabView
+          style={styles.container}
+          navigationState={this.state}
+          renderScene={this.renderScene}
+          onIndexChange={this._onIndexChange}
+          initialLayout={{width: Dimensions.get('window').width, height: 10}}
+          titleStyle={appStyles.normal16Text}
+          indicatorStyle={{backgroundColor: 'white'}}
+          renderTabBar={() => null}
+        />
+      </ScrollView>
     );
   }
 }
@@ -398,36 +409,10 @@ const styles = StyleSheet.create({
     ...appStyles.title,
     marginLeft: 20,
   },
-  tabBar: {
-    // height: 52,
-    backgroundColor: colors.whiteTwo,
-  },
-  tabBarLabel: {
-    // height: 17,
-    // fontFamily: "AppleSDGothicNeo",
-    fontSize: isDeviceSize('small') ? 12 : 14,
-    fontWeight: '500',
-    fontStyle: 'normal',
-    letterSpacing: 0.17,
-  },
   btnSearchBar: {
     width: 40,
     height: 40,
     backgroundColor: colors.white,
-  },
-  tabStyle: {
-    backgroundColor: colors.whiteTwo,
-    height: isDeviceSize('small') ? 40 : 60,
-  },
-  tabBarStyle: {
-    backgroundColor: colors.whiteTwo,
-    shadowColor: 'transparent',
-    shadowOpacity: 0,
-    elevation: 0,
-  },
-  price: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
   carousel: {
     alignItems: 'flex-end',
@@ -470,6 +455,28 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: colors.lightGrey,
     marginLeft: DOT_MARGIN,
+  },
+  whiteBackground: {
+    backgroundColor: colors.white,
+  },
+  tabView: {
+    height: 60,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: 20,
+  },
+  normal16WarmGrey: {
+    ...appStyles.normal16Text,
+    color: colors.warmGrey,
+  },
+  boldClearBlue: {
+    color: colors.clearBlue,
+    fontWeight: 'bold',
+  },
+  scrollView: {
+    flex: 1,
+    backgroundColor: colors.white,
   },
 });
 
