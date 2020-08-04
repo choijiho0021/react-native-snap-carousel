@@ -13,6 +13,7 @@ const codePushLabel = {
 const channelId = '_nzQhxb';
 
 const env = {
+  appId,
   impId,
   channelId,
   esimApp: appId === 'esim',
