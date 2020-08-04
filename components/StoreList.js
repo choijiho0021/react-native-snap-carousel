@@ -94,7 +94,13 @@ class StoreList extends Component {
   }
 
   _renderItem = item => {
-    return <CountryItemConnected onPress={this.props.onPress} item={item} />;
+    return (
+      <CountryItemConnected
+        key={item.key}
+        onPress={this.props.onPress}
+        item={item}
+      />
+    );
   };
 
   render() {
