@@ -63,8 +63,8 @@ fi
 sed -i '' -E 's/CODEPUSH_KEY ?= ?.+/CODEPUSH_KEY = '"${CODEPUSH_IOS_KEY}"';/g' $_dir/ios/RokebiESIM.xcodeproj/project.pbxproj
 sed -i '' -E 's/buildConfigField "String", "CODEPUSH_KEY", '\''".+"'\''/buildConfigField "String", "CODEPUSH_KEY", '\'\"''"$CODEPUSH_ANDROID_KEY"''\"\''/' $_dir/android/app/build.gradle
 
-sed -i '' -E 's/\$\(CODEPUSH_KEY\)/'"${CODEPUSH_IOS_KEY}"'/g' $_dir/ios/Rokebi/Info.plist
-sed -i '' -E 's/\$\(CODEPUSH_KEY\)/'"${CODEPUSH_IOS_KEY}"'/g' $_dir/ios/Rokebi/Development.plist
+sed -i '' -E 's/\$\(CODEPUSH_KEY\)/'"${CODEPUSH_IOS_KEY}"'/g' $_dir/ios/RokebiESIM/Info.plist
+sed -i '' -E 's/\$\(CODEPUSH_KEY\)/'"${CODEPUSH_IOS_KEY}"'/g' $_dir/ios/RokebiESIM/Development.plist
 
 # 버전 변경 (수동으로 진행 필요)
 
@@ -118,8 +118,8 @@ echo "\033[32m"[Info]"\033[0m" "Current $environment Android version: $newAndroi
 
 # 소스 롤백
 
-sed -i '' -E 's/'"${CODEPUSH_IOS_KEY}"'/\$\(CODEPUSH_KEY\)/g' ./ios/Rokebi/Info.plist
-sed -i '' -E 's/'"${CODEPUSH_IOS_KEY}"'/\$\(CODEPUSH_KEY\)/g' ./ios/Rokebi/Development.plist
+sed -i '' -E 's/'"${CODEPUSH_IOS_KEY}"'/\$\(CODEPUSH_KEY\)/g' ./ios/RokebiESIM/Info.plist
+sed -i '' -E 's/'"${CODEPUSH_IOS_KEY}"'/\$\(CODEPUSH_KEY\)/g' ./ios/RokebiESIM/Development.plist
 
 if [ "$environment" = "Production" ]; then
 	sed -i '' -E 's/  productionAndroid: ?.+/  productionAndroid: "'"${newAndroidVersion}"'",/g'  $_dir/environment.js
