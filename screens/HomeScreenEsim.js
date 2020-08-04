@@ -15,13 +15,11 @@ import i18n from '../utils/i18n';
 import * as productActions from '../redux/modules/product';
 import _ from 'underscore';
 import {bindActionCreators} from 'redux';
-import {TabView, TabBar} from 'react-native-tab-view';
+import {TabView} from 'react-native-tab-view';
 import {colors} from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import StoreList from '../components/StoreList';
 import moment from 'moment';
-import {isDeviceSize} from '../constants/SliderEntry.style';
-import Analytics from 'appcenter-analytics';
 import {Set} from 'immutable';
 import {API, Country} from 'Rokebi/submodules/rokebi-utils';
 import {sliderWidth, windowHeight} from '../constants/SliderEntry.style';
@@ -411,36 +409,10 @@ const styles = StyleSheet.create({
     ...appStyles.title,
     marginLeft: 20,
   },
-  tabBar: {
-    // height: 52,
-    backgroundColor: colors.whiteTwo,
-  },
-  tabBarLabel: {
-    // height: 17,
-    // fontFamily: "AppleSDGothicNeo",
-    fontSize: isDeviceSize('small') ? 12 : 14,
-    fontWeight: '500',
-    fontStyle: 'normal',
-    letterSpacing: 0.17,
-  },
   btnSearchBar: {
     width: 40,
     height: 40,
     backgroundColor: colors.white,
-  },
-  tabStyle: {
-    backgroundColor: colors.whiteTwo,
-    height: isDeviceSize('small') ? 40 : 60,
-  },
-  tabBarStyle: {
-    backgroundColor: colors.whiteTwo,
-    shadowColor: 'transparent',
-    shadowOpacity: 0,
-    elevation: 0,
-  },
-  price: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
   carousel: {
     alignItems: 'flex-end',
