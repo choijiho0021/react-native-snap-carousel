@@ -25,7 +25,9 @@ import SnackBar from 'react-native-snackbar-component';
 import {windowHeight} from '../constants/SliderEntry.style';
 import AppBackButton from '../components/AppBackButton';
 import {isDeviceSize} from '../constants/SliderEntry.style';
-import {snackBarHidingTime} from '../constants/Timer';
+import {timer} from '../constants/Timer';
+import AppAlert from '../components/AppAlert';
+import api from '../submodules/rokebi-utils/api/api';
 
 const sectionTitle = ['sim', 'product'];
 
@@ -180,15 +182,28 @@ class CartScreen extends Component {
         .map(item => ({
           ...item,
           sku: item.prod.sku,
+          variationId: item.prod.variationId,
           qty: qty.get(item.key),
         }));
 
-      this.props.action.cart.purchase({
-        purchaseItems,
-        dlvCost: dlvCost > 0,
-        balance,
-      });
-      this.props.navigation.navigate('PymMethod', {mode: 'Cart'});
+      this.props.action.cart
+        .checkStock(purchaseItems)
+        .then(resp => {
+          if (resp.result === api.E_RESOURCE_NOT_FOUND) {
+            AppAlert.info(i18n.t('cart:soldOut'));
+          } else if (resp.result == 0) {
+            // 구매 품목을 갱신한다.
+            this.props.action.cart.purchase({
+              purchaseItems,
+              dlvCost: dlvCost > 0,
+              balance,
+            });
+            this.props.navigation.navigate('PymMethod', {mode: 'Cart'});
+          }
+        })
+        .catch(err => {
+          console.log('failed to check stock', err);
+        });
     }
   }
 
@@ -368,7 +383,7 @@ class CartScreen extends Component {
           actionText={'X'}
           actionStyle={{paddingHorizontal: 20}}
           accentColor={colors.white}
-          autoHidingTime={snackBarHidingTime}
+          autoHidingTime={timer.snackBarHidingTime}
           onClose={() => this.setState({showSnackBar: false})}
           actionHandler={() => {
             this.snackRef.current.hideSnackbar();

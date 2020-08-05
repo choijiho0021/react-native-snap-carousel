@@ -350,6 +350,9 @@ const en = {
   'cart:purchase': 'Purchase',
   'cart:empty': 'Cart is Empty',
   'cart:remove': 'The Discontinued products have been removed from the list.',
+  'cart:soldOut':
+    'Inventory is exhausted and cannot be purchased at this time.',
+  'cart:notToCart': 'Inventory is exhausted and cannot be added to the cart.',
 
   'usim:toRokebiCash': 'Conversion amount\n',
   'usim:balance': 'Rokebi Cash',
@@ -853,6 +856,8 @@ const ko = {
   'cart:purchase': '구매하기',
   'cart:empty': '카트가 비어있습니다.',
   'cart:remove': '판매 중지된 상품이 목록에서 삭제되었습니다.',
+  'cart:soldOut': '재고가 모두 소진되어 \n현재 구매할 수 없습니다.',
+  'cart:notToCart': '재고가 모두 소진되어 \n카트에 담을 수 없습니다.',
 
   'usim:toRokebiCash': '전환금액',
   'usim:balance': '로깨비캐시',
