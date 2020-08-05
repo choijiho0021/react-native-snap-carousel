@@ -100,6 +100,18 @@ export const payNorder = result => {
   };
 };
 
+export const checkStock = prodList => {
+  return (dispatch, getState) => {
+    const {account} = getState(),
+      token = {token: account.get('token')},
+      stock = esimApp
+        ? dispatch(cartCheckStock(prodList, token))
+        : new Promise.resolve({result: 0});
+
+    return stock;
+  };
+};
+
 export const cartAddAndGet = prodList => {
   return (dispatch, getState) => {
     const {account} = getState(),
@@ -109,6 +121,7 @@ export const cartAddAndGet = prodList => {
         : new Promise.resolve({result: 0});
 
     return stock.then(resp => {
+      console.log('@@stock', resp);
       if (resp.result == 0) {
         return dispatch(cartAdd(prodList)).then(
           resp => {
