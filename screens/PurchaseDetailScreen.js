@@ -24,7 +24,7 @@ import {windowHeight} from '../constants/SliderEntry.style';
 import Analytics from 'appcenter-analytics';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import {API} from 'Rokebi/submodules/rokebi-utils';
-import {snackBarHidingTime} from '../constants/Timer';
+import {timer} from '../constants/Timer';
 
 class PurchaseDetailScreen extends Component {
   constructor(props) {
@@ -559,7 +559,7 @@ class PurchaseDetailScreen extends Component {
             actionText={'X'}
             actionStyle={{paddingHorizontal: 20}}
             accentColor={colors.white}
-            autoHidingTime={snackBarHidingTime}
+            autoHidingTime={timer.snackBarHidingTime}
             onClose={() => this.setState({cancelPressed: false})}
             // distanceCallback={(distance) => {console.log('distance', distance)}}
             actionHandler={() => {

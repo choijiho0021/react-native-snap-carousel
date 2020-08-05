@@ -30,7 +30,7 @@ import AppActivityIndicator from '../components/AppActivityIndicator';
 import Analytics from 'appcenter-analytics';
 import Svg, {Line} from 'react-native-svg';
 import {API} from 'Rokebi/submodules/rokebi-utils';
-import {snackBarHidingTime} from '../constants/Timer';
+import {timer} from '../constants/Timer';
 import subsApi from '../submodules/rokebi-utils/api/subscriptionApi';
 
 class CardInfo extends Component {
@@ -532,7 +532,7 @@ class UsimScreen extends Component {
           position={'bottom'}
           top={0}
           containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 0}}
-          autoHidingTime={snackBarHidingTime}
+          autoHidingTime={timer.snackBarHidingTime}
           onClose={() => this.setState({showSnackBar: false})}
           textMessage={i18n.t('usim:failSnackBar')}
         />

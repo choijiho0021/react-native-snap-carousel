@@ -17,7 +17,7 @@ import _ from 'underscore';
 import AppButton from '../components/AppButton';
 import {isDeviceSize} from '../constants/SliderEntry.style';
 import AppActivityIndicator from '../components/AppActivityIndicator';
-import {snackBarHidingTime} from '../constants/Timer';
+import {timer} from '../constants/Timer';
 import subsApi from '../submodules/rokebi-utils/api/subscriptionApi';
 import AppModal from '../components/AppModal';
 import QRCode from 'react-native-qrcode-svg';
@@ -341,7 +341,7 @@ class EsimScreen extends Component {
           position={'bottom'}
           top={0}
           containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 0}}
-          autoHidingTime={snackBarHidingTime}
+          autoHidingTime={timer.snackBarHidingTime}
           onClose={() => this.setState({showSnackBar: false})}
           textMessage={i18n.t('usim:failSnackBar')}
         />
