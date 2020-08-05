@@ -7,7 +7,6 @@ import {
   FlatList,
   Platform,
   RefreshControl,
-  Clipboard,
 } from 'react-native';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
@@ -36,6 +35,7 @@ import {
 } from 'react-native-permissions';
 import Analytics from 'appcenter-analytics';
 import {API} from 'Rokebi/submodules/rokebi-utils';
+import Clipboard from '@react-native-community/clipboard';
 import getEnvVars from '../environment';
 const {esimApp} = getEnvVars();
 
