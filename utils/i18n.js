@@ -486,6 +486,12 @@ const en = {
     'Failed to load the data.\nPlease check your network connection.',
   'toast:failedToOpen': 'Failed to open the KakaoTalk Channel.',
   'toast:copySuccess': 'Copied Successfully.',
+
+  'mypage:idCheck': 'Check the \n RokebiTalk ID',
+  'mypage:idCheckTitle': 'Check the \n RokebiTalk ID',
+  'mypage:manualInput:body': 'You can use below ID to login RokebiTalk service',
+  'mypage:iccid': 'ICCID',
+  'mypage:activationCode': 'Activation Code',
 };
 
 const ko = {
@@ -984,6 +990,13 @@ const ko = {
     '데이터 로딩에 실패했습니다.\n네트워크 연결 상태를 확인해주세요.',
   'toast:failedToOpen': '카카오톡 채널에 연결할 수 없습니다.',
   'toast:copySuccess': '복사되었습니다.',
+
+  'mypage:idCheck': '로깨비톡 ID \n 확인하기',
+  'mypage:idCheckTitle': '로깨비톡 ID 확인',
+  'mypage:manualInput:body':
+    '로밍도깨비 eSM 사용 중 로깨비톡 사용 시 다음 ID를 사용하여 로그인할 수 있습니다',
+  'mypage:iccid': 'ICCID',
+  'mypage:activationCode': 'Activation Code',
 };
 
 if (Array.isArray(locales)) {

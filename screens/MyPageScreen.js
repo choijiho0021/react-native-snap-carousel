@@ -7,6 +7,7 @@ import {
   FlatList,
   Platform,
   RefreshControl,
+  Clipboard,
 } from 'react-native';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
@@ -35,6 +36,8 @@ import {
 } from 'react-native-permissions';
 import Analytics from 'appcenter-analytics';
 import {API} from 'Rokebi/submodules/rokebi-utils';
+import getEnvVars from '../environment';
+const {esimApp} = getEnvVars();
 
 let ImagePicker;
 ImagePicker = require('react-native-image-crop-picker').default;
@@ -106,6 +109,7 @@ class MyPageScreen extends Component {
     this.state = {
       hasPhotoPermission: false,
       showEmailModal: false,
+      showIdModal: false,
       isReloaded: false,
       isFocused: false,
       refreshing: false,
@@ -116,6 +120,7 @@ class MyPageScreen extends Component {
     this._renderOrder = this._renderOrder.bind(this);
     this._changePhoto = this._changePhoto.bind(this);
     this._showEmailModal = this._showEmailModal.bind(this);
+    this._showIdModal = this._showIdModal.bind(this);
     this._validEmail = this._validEmail.bind(this);
     this._changeEmail = this._changeEmail.bind(this);
     this._recharge = this._recharge.bind(this);
@@ -197,6 +202,10 @@ class MyPageScreen extends Component {
     this.setState({
       showEmailModal: flag,
     });
+  }
+
+  _showIdModal(flag = false) {
+    this.setState({showIdModal: flag});
   }
 
   async _changePhoto() {
@@ -295,21 +304,26 @@ class MyPageScreen extends Component {
             />
           </View>
         </View>
-        <TouchableOpacity
-          style={{
-            marginHorizontal: 20,
-            borderColor: colors.lightGrey,
-            borderWidth: 1,
-            height: 40,
-            justifyContent: 'center',
-          }}
-          onPress={() =>
-            this.props.navigation.navigate('ContactBoard', {index: 2})
-          }>
-          <Text style={[appStyles.normal16Text, {textAlign: 'center'}]}>
-            {i18n.t('board:mylist')}
-          </Text>
-        </TouchableOpacity>
+        <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+          {esimApp && (
+            <TouchableOpacity
+              style={styles.btnIdCheck}
+              onPress={() => this._showIdModal(true)}>
+              <Text style={[appStyles.normal16Text, {textAlign: 'center'}]}>
+                {i18n.t('mypage:idCheck')}
+              </Text>
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity
+            style={styles.btnContactBoard}
+            onPress={() =>
+              this.props.navigation.navigate('ContactBoard', {index: 2})
+            }>
+            <Text style={[appStyles.normal16Text, {textAlign: 'center'}]}>
+              {i18n.t('board:mylist')}
+            </Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.divider} />
         <Text style={styles.subTitle}>{i18n.t('acc:purchaseHistory')}</Text>
         <View style={styles.dividerSmall} />
@@ -390,8 +404,37 @@ class MyPageScreen extends Component {
     });
   }
 
+  _modalBody = () => () => {
+    const {iccid, pin} = this.props.account;
+    return (
+      <View>
+        <Text style={styles.body}>{i18n.t('mypage:manualInput:body')}</Text>
+        <View style={styles.titleAndStatus}>
+          <View>
+            <Text>{i18n.t('mypage:iccid')}</Text>
+            <Text>{iccid}</Text>
+          </View>
+          <AppButton
+            title={i18n.t('copy')}
+            onPress={() => Clipboard.setString(iccid)}
+          />
+        </View>
+        <View style={styles.titleAndStatus}>
+          <View>
+            <Text>{i18n.t('mypage:activationCode')}</Text>
+            <Text>{pin}</Text>
+          </View>
+          <AppButton
+            title={i18n.t('copy')}
+            onPress={() => Clipboard.setString(pin)}
+          />
+        </View>
+      </View>
+    );
+  };
+
   render() {
-    const {showEmailModal, refreshing = false} = this.state;
+    const {showEmailModal, showIdModal, refreshing = false} = this.state;
     const {orders, ordersIdx} = this.props.order;
 
     return (
@@ -425,6 +468,15 @@ class MyPageScreen extends Component {
           onCancelClose={() => this._showEmailModal(false)}
           validateAsync={this._validEmail}
           visible={showEmailModal}
+        />
+
+        <AppModal
+          // type="info"
+          title={i18n.t('mypage:idCheckTitle')}
+          body={this._modalBody()}
+          onOkClose={() => this._showIdModal(false)}
+          onCancelClose={() => this._showIdModal(false)}
+          visible={showIdModal}
         />
       </View>
     );
@@ -508,6 +560,37 @@ const styles = StyleSheet.create({
   settings: {
     marginRight: 20,
     justifyContent: 'flex-end',
+    backgroundColor: colors.white,
+  },
+  btnContactBoard: {
+    marginRight: 20,
+    marginLeft: esimApp ? 3 : 20,
+    flex: 1,
+    borderColor: colors.lightGrey,
+    borderWidth: 1,
+    height: esimApp ? 60 : 30,
+    justifyContent: 'center',
+  },
+  btnIdCheck: {
+    marginLeft: 20,
+    marginRight: 3,
+    flex: 1,
+    borderColor: colors.lightGrey,
+    borderWidth: 1,
+    height: 60,
+    justifyContent: 'center',
+  },
+  body: {
+    ...appStyles.normal16Text,
+    marginHorizontal: 30,
+    marginTop: 10,
+  },
+  titleAndStatus: {
+    flexDirection: 'row',
+    marginHorizontal: 20,
+    marginVertical: 20,
+    alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: colors.white,
   },
 });
