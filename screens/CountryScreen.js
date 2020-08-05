@@ -32,7 +32,9 @@ import _ from 'underscore';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import SnackBar from 'react-native-snackbar-component';
 import {API} from 'Rokebi/submodules/rokebi-utils';
-import {snackBarHidingTime} from '../constants/Timer';
+import {timer} from '../constants/Timer';
+import api from '../submodules/rokebi-utils/api/api';
+import AppAlert from '../components/AppAlert';
 
 class CountryListItem extends PureComponent {
   render() {
@@ -195,6 +197,8 @@ class CountryScreen extends Component {
                   this.setState({
                     showSnackBar: true,
                   });
+                } else if (resp.result === api.E_RESOURCE_NOT_FOUND) {
+                  AppAlert.info(i18n.t('cart:notToCart'));
                 }
               })
               .catch(err => {
@@ -207,14 +211,25 @@ class CountryScreen extends Component {
               });
             break;
           case 'purchase':
-            // 구매 품목을 갱신한다.
-            this.props.action.cart.purchase({
-              purchaseItems: [addProduct],
-              balance,
-            });
-            this.props.navigation.navigate('PymMethod', {
-              mode: 'Roaming Product',
-            });
+            this.props.action.cart
+              .checkStock([addProduct])
+              .then(resp => {
+                if (resp.result === api.E_RESOURCE_NOT_FOUND) {
+                  AppAlert.info(i18n.t('cart:soldOut'));
+                } else if (resp.result == 0) {
+                  // 구매 품목을 갱신한다.
+                  this.props.action.cart.purchase({
+                    purchaseItems: [addProduct],
+                    balance,
+                  });
+                  this.props.navigation.navigate('PymMethod', {
+                    mode: 'Roaming Product',
+                  });
+                }
+              })
+              .catch(err => {
+                console.log('failed to check stock', err);
+              });
             break;
           case 'regCard':
             this.props.navigation.navigate('RegisterSim');
@@ -299,7 +314,7 @@ class CountryScreen extends Component {
           actionText={'X'}
           actionStyle={{paddingHorizontal: 20}}
           accentColor={colors.white}
-          autoHidingTime={snackBarHidingTime}
+          autoHidingTime={timer.snackBarHidingTime}
           onClose={() => this.setState({showSnackBar: false})}
           actionHandler={() => {
             this.snackRef.current.hideSnackbar();
