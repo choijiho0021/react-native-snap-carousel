@@ -7,6 +7,7 @@ import {
   FlatList,
   Platform,
   RefreshControl,
+  Linking,
 } from 'react-native';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
@@ -34,7 +35,7 @@ import {
   RESULTS,
 } from 'react-native-permissions';
 import Analytics from 'appcenter-analytics';
-import {API} from 'Rokebi/submodules/rokebi-utils';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import Clipboard from '@react-native-community/clipboard';
 import getEnvVars from '../environment';
 const {esimApp} = getEnvVars();
@@ -404,6 +405,31 @@ class MyPageScreen extends Component {
     });
   }
 
+  // RokebiSIm에서 RokebiTalk 호출
+  openRokebiTalk = async () => {
+    const {iccid, pin} = this.props.account;
+
+    let isRokebiInstalled = undefined;
+
+    if (Platform.OS === 'ios') {
+      isRokebiInstalled = await Linking.canOpenURL(
+        `RokebiTalk://?actCode=${pin}&iccidStr=${iccid}`,
+      );
+      isRokebiInstalled
+        ? Linking.openURL(`RokebiTalk://?actCode=${pin}&iccidStr=${iccid}`)
+        : Linking.openURL(`appstore url 추가 필요`);
+    } else {
+      isRokebiInstalled = await Linking.canOpenURL(
+        `rokebi://rokebitalk.com?actCode=${pin}&iccidStr=${iccid}`,
+      );
+      isRokebiInstalled
+        ? Linking.openURL(
+            `rokebi://rokebitalk.com?actCode=${pin}&iccidStr=${iccid}`,
+          )
+        : Linking.openURL(`playstoreurl 추가 필요`);
+    }
+  };
+
   _modalBody = () => () => {
     const {iccid, pin} = this.props.account;
     return (
@@ -428,6 +454,10 @@ class MyPageScreen extends Component {
             title={i18n.t('copy')}
             onPress={() => Clipboard.setString(pin)}
           />
+        </View>
+        {/* todo: 디자인이 나오면 변경필요 */}
+        <View style={styles.titleAndStatus}>
+          <Text> 로깨비톡 앱으로 바로 이동하시겠습니까?</Text>
         </View>
       </View>
     );
@@ -474,7 +504,10 @@ class MyPageScreen extends Component {
           // type="info"
           title={i18n.t('mypage:idCheckTitle')}
           body={this._modalBody()}
-          onOkClose={() => this._showIdModal(false)}
+          onOkClose={() => {
+            this._showIdModal(false);
+            this.openRokebiTalk();
+          }}
           onCancelClose={() => this._showIdModal(false)}
           visible={showIdModal}
         />
