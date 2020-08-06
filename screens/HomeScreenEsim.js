@@ -126,7 +126,10 @@ class HomeScreenEsim extends Component {
       this.props.action.product.getProdList();
     }
 
-    if (prevProps.product.prodList != this.props.product.prodList) {
+    if (
+      prevProps.product.prodList != this.props.product.prodList ||
+      this.state.allData.length == 0
+    ) {
       this._refresh();
     }
 
