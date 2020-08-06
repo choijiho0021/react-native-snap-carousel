@@ -1,7 +1,7 @@
 import { createAction, handleActions } from 'redux-actions';
 import { pender } from 'redux-pender'
 import { Map} from 'immutable';
-import { API } from 'Rokebi/submodules/rokebi-utils'
+import { API } from 'RokebiESIM/submodules/rokebi-utils'
 
 const  UPDATE_PROFILE_ADDRESS = 'rokebi/order/UPDATE_PROFILE_ADDRESS'
 const  GET_CUSTOMER_PROFILE = 'rokebi/order/GET_CUSTOMER_PROFILE'

@@ -2,7 +2,7 @@ import { createAction, handleActions } from 'redux-actions';
 import { Map, List } from 'immutable';
 import _ from 'underscore'
 import { pender } from 'redux-pender'
-import { API } from 'Rokebi/submodules/rokebi-utils'
+import { API } from 'RokebiESIM/submodules/rokebi-utils'
 
 const  GET_INFO_LIST =  "rokebi/info/GET_INFO_LIST"
 const  GET_HOME_INFO_LIST = "rokebi/info/GET_HOME_INFO_LIST"

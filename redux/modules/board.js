@@ -3,7 +3,7 @@ import { Map } from 'immutable';
 import { pender } from 'redux-pender'
 import _ from 'underscore'
 import {auth} from './account'
-import { API } from 'Rokebi/submodules/rokebi-utils'
+import { API } from 'RokebiESIM/submodules/rokebi-utils'
 
 export const POST_ISSUE =   'rokebi/board/POST_ISSUE'
 export const POST_ATTACH =   'rokebi/board/POST_ATTACH'

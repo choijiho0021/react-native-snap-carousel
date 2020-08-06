@@ -29,7 +29,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import { openSettings, check, PERMISSIONS } from 'react-native-permissions';
 import Analytics from 'appcenter-analytics'
-import { API } from 'Rokebi/submodules/rokebi-utils'
+import { API } from 'RokebiESIM/submodules/rokebi-utils'
 import BackbuttonHandler from '../components/BackbuttonHandler';
 
 const initState = {

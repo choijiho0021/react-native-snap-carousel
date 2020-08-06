@@ -23,7 +23,7 @@ import utils from '../utils/utils';
 import { attachmentSize } from '../constants/SliderEntry.style'
 import AppButton from '../components/AppButton';
 import { windowWidth } from '../constants/SliderEntry.style';
-import { API } from 'Rokebi/submodules/rokebi-utils'
+import { API } from 'RokebiESIM/submodules/rokebi-utils'
 
 class BoardMsgRespScreen extends Component {
   constructor(props) {

@@ -31,7 +31,7 @@ import Analytics from 'appcenter-analytics';
 import _ from 'underscore';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import SnackBar from 'react-native-snackbar-component';
-import {API} from 'Rokebi/submodules/rokebi-utils';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import {timer} from '../constants/Timer';
 import api from '../submodules/rokebi-utils/api/api';
 import AppAlert from '../components/AppAlert';

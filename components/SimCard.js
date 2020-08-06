@@ -14,7 +14,7 @@ import AppIcon from './AppIcon';
 import LabelText from './LabelText';
 import InputNumber from './InputNumber';
 import { isDeviceSize } from '../constants/SliderEntry.style';
-import { API } from 'Rokebi/submodules/rokebi-utils'
+import { API } from 'RokebiESIM/submodules/rokebi-utils'
 
 const styles = StyleSheet.create({
   container: {

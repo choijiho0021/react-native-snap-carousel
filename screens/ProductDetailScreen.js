@@ -28,7 +28,7 @@ import * as toastActions from '../redux/modules/toast'
 import * as productActions from '../redux/modules/product'
 import { Toast } from '../constants/CustomTypes'
 import AppIcon from '../components/AppIcon';
-import { API } from 'Rokebi/submodules/rokebi-utils'
+import { API } from 'RokebiESIM/submodules/rokebi-utils'
 
 const { channelId } = getEnvVars()
 

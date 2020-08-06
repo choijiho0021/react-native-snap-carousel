@@ -22,7 +22,7 @@ import { appStyles } from '../constants/Styles';
 import AppBackButton from '../components/AppBackButton';
 import AppIcon from '../components/AppIcon';
 import { isDeviceSize } from '../constants/SliderEntry.style';
-import { API } from 'Rokebi/submodules/rokebi-utils'
+import { API } from 'RokebiESIM/submodules/rokebi-utils'
 
 
 class FindAddressListItem extends PureComponent {

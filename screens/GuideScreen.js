@@ -21,7 +21,7 @@ import { sliderWidth } from '../constants/SliderEntry.style'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Analytics from 'appcenter-analytics'
 import AppActivityIndicator from '../components/AppActivityIndicator';
-import { API } from 'Rokebi/submodules/rokebi-utils'
+import { API } from 'RokebiESIM/submodules/rokebi-utils'
 
 const guideImages = {
   step1: require('../assets/images/guide/step1/img.png'),

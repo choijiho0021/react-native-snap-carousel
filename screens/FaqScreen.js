@@ -14,7 +14,7 @@ import AppActivityIndicator from '../components/AppActivityIndicator';
 import { colors } from '../constants/Colors';
 import { appStyles } from '../constants/Styles';
 import AppFlatListItem from '../components/AppFlatListItem';
-import { API } from 'Rokebi/submodules/rokebi-utils'
+import { API } from 'RokebiESIM/submodules/rokebi-utils'
 
 
 class FaqList extends Component {

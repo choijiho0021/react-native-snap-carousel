@@ -9,7 +9,7 @@ import * as accountActions from '../redux/modules/account'
 import i18n from '../utils/i18n';
 import utils from '../utils/utils';
 import { bindActionCreators } from 'redux'
-import { API } from 'Rokebi/submodules/rokebi-utils'
+import { API } from 'RokebiESIM/submodules/rokebi-utils'
 
 
 class PymHistoryListItem extends PureComponent {

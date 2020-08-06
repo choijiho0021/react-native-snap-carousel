@@ -19,7 +19,7 @@ import moment from 'moment'
 import { isDeviceSize } from '../constants/SliderEntry.style';
 import Analytics from 'appcenter-analytics'
 import { Set } from 'immutable';
-import { API, Country } from 'Rokebi/submodules/rokebi-utils'
+import { API, Country } from 'RokebiESIM/submodules/rokebi-utils'
 
 class StoreScreen extends Component {
   constructor(props) {

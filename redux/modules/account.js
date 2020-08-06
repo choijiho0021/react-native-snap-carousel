@@ -7,7 +7,7 @@ import utils from '../../utils/utils';
 import {batch} from 'react-redux';
 import * as ToastActions from './toast';
 import {Toast} from '../../constants/CustomTypes';
-import {API} from 'Rokebi/submodules/rokebi-utils';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import getEnvVars from '../../environment';
 const {esimApp} = getEnvVars();
 

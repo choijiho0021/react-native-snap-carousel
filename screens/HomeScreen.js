@@ -42,7 +42,7 @@ import {
 import AppAlert from './../components/AppAlert';
 import appStateHandler from '../utils/appState';
 import Analytics from 'appcenter-analytics';
-import {API} from 'Rokebi/submodules/rokebi-utils';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
 // windowHeight
 // iphone 8 - 375x667

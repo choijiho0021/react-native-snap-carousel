@@ -2,7 +2,7 @@ import { createAction, handleActions } from 'redux-actions';
 import { Map, List } from 'immutable';
 import _ from 'underscore'
 import { pender } from 'redux-pender'
-import { API } from 'Rokebi/submodules/rokebi-utils'
+import { API } from 'RokebiESIM/submodules/rokebi-utils'
 
 const  ADD_ICCID =          "rokebi/sim/ADD_ICCID"
 export const  UPDATE_SIM_PARTNER = "rokebi/sim/UPDATE_SIM_PARTNER"

@@ -10,7 +10,7 @@ import {appStyles} from '../constants/Styles'
 import i18n from '../utils/i18n';
 import {colors} from '../constants/Colors'
 import AppIcon from './AppIcon';
-import { API } from 'Rokebi/submodules/rokebi-utils'
+import { API } from 'RokebiESIM/submodules/rokebi-utils'
 
 const styles = StyleSheet.create({
   button: {

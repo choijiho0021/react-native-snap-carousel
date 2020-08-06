@@ -23,7 +23,7 @@ import SnackBar from 'react-native-snackbar-component';
 import {windowHeight} from '../constants/SliderEntry.style';
 import Analytics from 'appcenter-analytics';
 import AppActivityIndicator from '../components/AppActivityIndicator';
-import {API} from 'Rokebi/submodules/rokebi-utils';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import {timer} from '../constants/Timer';
 
 class PurchaseDetailScreen extends Component {

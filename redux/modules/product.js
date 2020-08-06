@@ -2,7 +2,7 @@ import { createAction, handleActions } from 'redux-actions';
 import { Map } from 'immutable';
 import { pender } from 'redux-pender/lib/utils';
 import utils from '../../utils/utils'
-import { API } from 'Rokebi/submodules/rokebi-utils'
+import { API } from 'RokebiESIM/submodules/rokebi-utils'
 
 const  GET_PROD_LIST=      "rokebi/product/GET_PROD_LIST"
 const  GET_LOCAL_OP_LIST=      "rokebi/product/GET_LOCAL_OP_LIST"

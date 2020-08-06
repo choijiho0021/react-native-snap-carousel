@@ -4,7 +4,7 @@ import _ from 'underscore';
 import {pender} from 'redux-pender';
 import moment from 'moment';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import {API} from 'Rokebi/submodules/rokebi-utils';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
 export const GET_NOTI_LIST = 'rokebi/noti/GET_NOTI_LIST';
 const READ_NOTI = 'rokebi/noti/READ_NOTI';

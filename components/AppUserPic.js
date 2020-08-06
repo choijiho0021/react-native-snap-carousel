@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Image, TouchableOpacity } from 'react-native'
 import AppIcon from './AppIcon';
-import { API } from 'Rokebi/submodules/rokebi-utils'
+import { API } from 'RokebiESIM/submodules/rokebi-utils'
 
 export default function AppUserPic({style, url, icon, onPress}) {
   return ( 

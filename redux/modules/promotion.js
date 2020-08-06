@@ -1,7 +1,7 @@
 import {createAction, handleActions} from 'redux-actions';
 import {Map} from 'immutable';
 import {pender} from 'redux-pender/lib/utils';
-import {API} from 'Rokebi/submodules/rokebi-utils';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
 const GET_PROMOTION_LIST = 'rokebi/product/GET_PROMOTION_LIST';
 
