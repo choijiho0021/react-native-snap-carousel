@@ -632,7 +632,7 @@
 					"\"$(PODS_ROOT)/Headers/Private/React-Core\"",
 					"\"$(PODS_ROOT)/Headers/Public/LinkingIOS\"",
 				);
-				INFOPLIST_FILE = Rokebi/Info.plist;
+				INFOPLIST_FILE = RokebiESIM/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 0.1.1;
 				ONLY_ACTIVE_ARCH = NO;

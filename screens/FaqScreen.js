@@ -1,35 +1,35 @@
 import React, {Component} from 'react';
-import {
-  StyleSheet,
-  View,
-  Dimensions,
-  FlatList,
-} from 'react-native';
+import {StyleSheet, View, Dimensions, FlatList} from 'react-native';
 
-import i18n from '../utils/i18n'
-import _ from 'underscore'
+import i18n from '../utils/i18n';
+import _ from 'underscore';
 import AppBackButton from '../components/AppBackButton';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import AppActivityIndicator from '../components/AppActivityIndicator';
-import { colors } from '../constants/Colors';
-import { appStyles } from '../constants/Styles';
+import {colors} from '../constants/Colors';
+import {appStyles} from '../constants/Styles';
 import AppFlatListItem from '../components/AppFlatListItem';
-import { API } from 'RokebiESIM/submodules/rokebi-utils'
-
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
 class FaqList extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
-    this._renderItem = this._renderItem.bind(this)
+    this._renderItem = this._renderItem.bind(this);
   }
 
   shouldComponentUpdate(nextProps) {
-    return nextProps.data != this.props.data
+    return nextProps.data != this.props.data;
   }
 
   _renderItem({item}) {
-    return (<AppFlatListItem key={item.key} item={item} checked={item.title.startsWith(this.props.titleNo)}/>)
+    return (
+      <AppFlatListItem
+        key={item.key}
+        item={item}
+        checked={item.title.startsWith(this.props.titleNo)}
+      />
+    );
   }
 
   render() {
@@ -37,169 +37,183 @@ class FaqList extends Component {
       <View style={styles.container}>
         <FlatList renderItem={this._renderItem} data={this.props.data} />
       </View>
-    )
+    );
   }
 }
 
 class FaqScreen extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('contact:faq')} />)
-    })
+      headerLeft: () => (
+        <AppBackButton
+          navigation={this.props.navigation}
+          title={i18n.t('contact:faq')}
+        />
+      ),
+    });
 
     this.state = {
       querying: false,
       index: 0,
       routes: [
-        { key: 'general', title: i18n.t('faq:general') },
-        { key: 'config', title: i18n.t('faq:config') },
-        { key: 'payment', title: i18n.t('faq:payment') },
-        { key: 'etc', title: i18n.t('faq:etc') },
+        {key: 'general', title: i18n.t('faq:general')},
+        {key: 'config', title: i18n.t('faq:config')},
+        {key: 'payment', title: i18n.t('faq:payment')},
+        {key: 'etc', title: i18n.t('faq:etc')},
       ],
-      general: [], 
+      general: [],
       payment: [],
-      config: [], 
-      etc: []
-    }
+      config: [],
+      etc: [],
+    };
 
-    this._onPress = this._onPress.bind(this)
-    this._onIndexChange = this._onIndexChange.bind(this)
-    this._refreshData = this._refreshData.bind(this)
-    this._renderScene = this._renderScene.bind(this)
-  } 
-
-  componentDidMount() {
-    const {params} = this.props.route
-    const key = params && params.key ? params.key : undefined
-    const num = params && params.num ? params.num : undefined
-
-    const index = this.state.routes.findIndex(item => item.key === key)
-    if(index > 0){
-      this.setState({
-        index,
-        selectedTitleNo: num
-      })
-    }
-
-    this._refreshData(index > 0 ? index : 0)
+    this._onPress = this._onPress.bind(this);
+    this._onIndexChange = this._onIndexChange.bind(this);
+    this._refreshData = this._refreshData.bind(this);
+    this._renderScene = this._renderScene.bind(this);
   }
 
-  shouldComponentUpdate(){
-    const key = (this.props.route.params || {}).key
-    return _.isEmpty(key) ? true : !_.isEmpty(this.state[key])
+  componentDidMount() {
+    const {params} = this.props.route;
+    const key = params && params.key ? params.key : undefined;
+    const num = params && params.num ? params.num : undefined;
+
+    const index = this.state.routes.findIndex(item => item.key === key);
+    if (index > 0) {
+      this.setState({
+        index,
+        selectedTitleNo: num,
+      });
+    }
+
+    this._refreshData(index > 0 ? index : 0);
+  }
+
+  shouldComponentUpdate() {
+    const key = (this.props.route.params || {}).key;
+    return _.isEmpty(key) ? true : !_.isEmpty(this.state[key]);
   }
 
   _refreshData(index) {
-    if ( index < 0 || index >= this.state.routes.length) return 
+    if (index < 0 || index >= this.state.routes.length) return;
 
-    const {key} = this.state.routes[index]
-    if ( this.state[key].length > 0) return
+    const {key} = this.state.routes[index];
+    if (this.state[key].length > 0) return;
 
     this.setState({
-      querying: true
-    })
+      querying: true,
+    });
 
-    API.Page.getPageByCategory('faq:' + key).then(resp => {
-      if ( resp.result == 0 && resp.objects.length > 0) {
-        this.setState({
-          [key]: resp.objects
-        })
-      }
-      else throw new Error('failed to get page:' + key)
-    }).catch(err => {
-      console.log('failed to get page', key, err)
-    }).finally(_ => {
-      this.setState({
-        querying: false
+    API.Page.getPageByCategory('faq:' + key)
+      .then(resp => {
+        if (resp.result == 0 && resp.objects.length > 0) {
+          this.setState({
+            [key]: resp.objects,
+          });
+        } else throw new Error('failed to get page:' + key);
       })
-    })
-
+      .catch(err => {
+        console.log('failed to get page', key, err);
+      })
+      .finally(_ => {
+        this.setState({
+          querying: false,
+        });
+      });
   }
 
-  _onPress = (key) => {
-    console.log('goto screen', key)
-    this.props.navigation.navigate('BoardMsgResp', {key})
-  }
+  _onPress = key => {
+    console.log('goto screen', key);
+    this.props.navigation.navigate('BoardMsgResp', {key});
+  };
 
   _onIndexChange(index) {
-    this._refreshData(index)
+    this._refreshData(index);
 
     this.setState({
       index,
-      selectedTitleNo: undefined
-    })
+      selectedTitleNo: undefined,
+    });
   }
 
-  _renderScene = ({ route, jumpTo }) => {
-    return <FaqList data={this.state[route.key]} jumpTp={jumpTo} titleNo={this.state.selectedTitleNo}/>
-  }
+  _renderScene = ({route, jumpTo}) => {
+    return (
+      <FaqList
+        data={this.state[route.key]}
+        jumpTp={jumpTo}
+        titleNo={this.state.selectedTitleNo}
+      />
+    );
+  };
 
-  _renderTabBar = (props) => {
-    return <TabBar
-      {...props}
-      tabStyle={{backgroundColor:colors.whiteTwo}}
-      activeColor={colors.clearBlue}
-      inactiveColor={colors.warmGrey}
-      pressColor={colors.white}
-      style={styles.tabBar}
-    />
-  }
+  _renderTabBar = props => {
+    return (
+      <TabBar
+        {...props}
+        tabStyle={{backgroundColor: colors.whiteTwo}}
+        activeColor={colors.clearBlue}
+        inactiveColor={colors.warmGrey}
+        pressColor={colors.white}
+        style={styles.tabBar}
+      />
+    );
+  };
 
   render() {
-
     return (
       <View style={styles.container}>
         <AppActivityIndicator visible={this.state.querying} />
-        <TabView style={styles.container} 
+        <TabView
+          style={styles.container}
           navigationState={this.state}
           renderScene={this._renderScene}
           onIndexChange={this._onIndexChange}
-          initialLayout={{ width: Dimensions.get('window').width }}
+          initialLayout={{width: Dimensions.get('window').width}}
           renderTabBar={this._renderTabBar}
         />
       </View>
-    )
+    );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor:colors.white,
+    backgroundColor: colors.white,
     flex: 1,
-    alignItems: 'stretch'
+    alignItems: 'stretch',
   },
   row: {
     height: 60,
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: colors.whiteTwo
+    borderBottomColor: colors.whiteTwo,
   },
   title: {
-    ... appStyles.normal16Text,
+    ...appStyles.normal16Text,
     flex: 1,
-    marginLeft: 20
+    marginLeft: 20,
   },
   body: {
-    ... appStyles.normal14Text,
+    ...appStyles.normal14Text,
     color: colors.warmGrey,
     backgroundColor: colors.whiteTwo,
-    padding: 20
+    padding: 20,
   },
   button: {
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
   },
   tabBarLabel: {
-    ... appStyles.normal14Text
+    ...appStyles.normal14Text,
   },
-  tabBar : {
+  tabBar: {
     shadowColor: 'transparent',
     shadowOpacity: 0,
     elevation: 0,
-  }
+  },
 });
 
-export default FaqScreen
+export default FaqScreen;

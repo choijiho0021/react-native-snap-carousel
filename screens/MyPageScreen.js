@@ -50,7 +50,7 @@ class OrderItem extends Component {
 
   render() {
     const {item, onPress} = this.props;
-    if (_.isEmpty(item.orderItems)) return <View></View>;
+    if (_.isEmpty(item.orderItems)) return <View />;
 
     var label = item.orderItems[0].title;
     if (item.orderItems.length > 1)
