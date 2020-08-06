@@ -14,7 +14,7 @@ import utils from '../utils/utils';
 import _ from 'underscore';
 import {colors} from '../constants/Colors';
 import {isDeviceSize} from '../constants/SliderEntry.style';
-import {API} from 'Rokebi/submodules/rokebi-utils';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
 class CountryItem extends PureComponent {
   render() {

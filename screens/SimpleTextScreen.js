@@ -20,7 +20,7 @@ import WebView from 'react-native-webview';
 import utils from '../utils/utils';
 import getEnvVars from '../environment';
 const {baseUrl} = getEnvVars();
-import {API} from 'Rokebi/submodules/rokebi-utils';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
 class SimpleTextScreen extends Component {
   constructor(props) {

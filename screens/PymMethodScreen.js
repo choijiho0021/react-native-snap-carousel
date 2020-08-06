@@ -23,7 +23,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import AppIcon from '../components/AppIcon';
 import Video from 'react-native-video';
 import Analytics from 'appcenter-analytics';
-import {API} from 'Rokebi/submodules/rokebi-utils';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
 const deliveryText = API.Order.deliveryText;
 

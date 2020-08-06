@@ -21,7 +21,7 @@ import AppButton from '../components/AppButton';
 import StoreList from '../components/StoreList';
 import moment from 'moment';
 import {Set} from 'immutable';
-import {API, Country} from 'Rokebi/submodules/rokebi-utils';
+import {API, Country} from 'RokebiESIM/submodules/rokebi-utils';
 import {sliderWidth, windowHeight} from '../constants/SliderEntry.style';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import withBadge from '../components/withBadge';

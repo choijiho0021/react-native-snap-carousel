@@ -29,7 +29,7 @@ import {isDeviceSize} from '../constants/SliderEntry.style';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import Analytics from 'appcenter-analytics';
 import Svg, {Line} from 'react-native-svg';
-import {API} from 'Rokebi/submodules/rokebi-utils';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import {timer} from '../constants/Timer';
 import subsApi from '../submodules/rokebi-utils/api/subscriptionApi';
 

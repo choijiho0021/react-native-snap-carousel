@@ -34,7 +34,7 @@ import {
   RESULTS,
 } from 'react-native-permissions';
 import Analytics from 'appcenter-analytics';
-import {API} from 'Rokebi/submodules/rokebi-utils';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import Clipboard from '@react-native-community/clipboard';
 import getEnvVars from '../environment';
 const {esimApp} = getEnvVars();
@@ -49,7 +49,7 @@ class OrderItem extends Component {
 
   render() {
     const {item, onPress} = this.props;
-    if (_.isEmpty(item.orderItems)) return <View></View>;
+    if (_.isEmpty(item.orderItems)) return <View />;
 
     var label = item.orderItems[0].title;
     if (item.orderItems.length > 1)

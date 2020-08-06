@@ -23,7 +23,7 @@ import {sliderWidth, windowHeight} from '../constants/SliderEntry.style';
 import Analytics from 'appcenter-analytics';
 import AppBackButton from '../components/AppBackButton';
 import {isDeviceSize} from '../constants/SliderEntry.style';
-import {API} from 'Rokebi/submodules/rokebi-utils';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
 const MAX_HISTORY_LENGTH = 7;
 class HeaderTitle extends Component {

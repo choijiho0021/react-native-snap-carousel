@@ -27,7 +27,7 @@ import {colors} from '../constants/Colors';
 import {Map} from 'immutable';
 import validationUtil from '../utils/validationUtil';
 import InputPinInTime from '../components/InputPinInTime';
-import {API} from 'Rokebi/submodules/rokebi-utils';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
 class RegisterMobileListItem extends PureComponent {
   render() {

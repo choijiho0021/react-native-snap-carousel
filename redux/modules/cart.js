@@ -5,7 +5,7 @@ import i18n from '../../utils/i18n';
 import utils from '../../utils/utils';
 import {getOrders} from './order';
 import {getAccount} from './account';
-import {API} from 'Rokebi/submodules/rokebi-utils';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import getEnvVars from '../../environment';
 import api from '../../submodules/rokebi-utils/api/api';
 const {esimApp} = getEnvVars();

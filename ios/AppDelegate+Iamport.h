@@ -11,7 +11,7 @@
 
 #import "AppDelegate.h"
 
-@interface AppDelegate ( Rokebi)
+@interface AppDelegate ( RokebiESIM)
 
 @end
 

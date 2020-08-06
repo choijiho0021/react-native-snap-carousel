@@ -1,114 +1,132 @@
 import React, {Component} from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import {
   StyleSheet,
   View,
   Text,
   ScrollView,
   SafeAreaView,
-  Image
+  Image,
 } from 'react-native';
 
-import i18n from '../utils/i18n'
-import _ from 'underscore'
+import i18n from '../utils/i18n';
+import _ from 'underscore';
 import AppBackButton from '../components/AppBackButton';
-import * as boardActions from '../redux/modules/board'
-import * as accountActions from '../redux/modules/account'
-import {bindActionCreators} from 'redux'
-import { appStyles } from '../constants/Styles';
-import { colors } from '../constants/Colors';
+import * as boardActions from '../redux/modules/board';
+import * as accountActions from '../redux/modules/account';
+import {bindActionCreators} from 'redux';
+import {appStyles} from '../constants/Styles';
+import {colors} from '../constants/Colors';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import AppIcon from '../components/AppIcon';
 import utils from '../utils/utils';
-import { attachmentSize } from '../constants/SliderEntry.style'
+import {attachmentSize} from '../constants/SliderEntry.style';
 import AppButton from '../components/AppButton';
-import { windowWidth } from '../constants/SliderEntry.style';
-import { API } from 'Rokebi/submodules/rokebi-utils'
+import {windowWidth} from '../constants/SliderEntry.style';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
 class BoardMsgRespScreen extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => (<AppBackButton navigation={this.props.navigation} title={i18n.t('board:title')} />)
-    })
+      headerLeft: () => (
+        <AppBackButton
+          navigation={this.props.navigation}
+          title={i18n.t('board:title')}
+        />
+      ),
+    });
 
     this.state = {
       idx: undefined,
       uuid: undefined,
-    }
-  } 
+    };
+  }
 
   componentDidMount() {
-    const {params} = this.props.route
+    const {params} = this.props.route;
 
-    const uuid = params && params.key
-    const status = params && params.status
+    const uuid = params && params.key;
+    const status = params && params.status;
 
-    if ( uuid ) {
-      // issue list를 아직 가져오지 않은 경우에는, 먼저 가져와서 처리한다. 
+    if (uuid) {
+      // issue list를 아직 가져오지 않은 경우에는, 먼저 가져와서 처리한다.
       this.props.action.board.getIssueList(false).then(_ => {
         this.setState({
-          idx : this.props.board.list.findIndex(item => item.uuid == uuid),
+          idx: this.props.board.list.findIndex(item => item.uuid == uuid),
           uuid,
-          status
-        })
+          status,
+        });
 
-        if(status == 'Closed'){
-          this.props.action.board.getIssueResp(uuid, this.props.auth)
+        if (status == 'Closed') {
+          this.props.action.board.getIssueResp(uuid, this.props.auth);
+        } else {
+          this.props.action.board.resetIssueComment();
         }
-        else {
-          this.props.action.board.resetIssueComment()
-        }
-      })
+      });
     }
   }
 
   _renderAttachment(images) {
     return (
       <View style={styles.attachBox}>
-        {
-          images && images.filter(item => ! _.isEmpty(item))
-            .map((url, idx) => <Image key={url+idx} source={{uri: API.default.httpImageUrl(url).toString()}} style={styles.attach}/>)
-        }
+        {images &&
+          images
+            .filter(item => !_.isEmpty(item))
+            .map((url, idx) => (
+              <Image
+                key={url + idx}
+                source={{uri: API.default.httpImageUrl(url).toString()}}
+                style={styles.attach}
+              />
+            ))}
       </View>
-    )
+    );
   }
 
   render() {
     const {idx} = this.state,
       {list = [], comment = []} = this.props.board,
-      issue = ( idx >=0 ) ? list[idx] : {},
-      resp = comment[0] || {}
+      issue = idx >= 0 ? list[idx] : {},
+      resp = comment[0] || {};
 
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView style={styles.container}>
-          <View style={{flex:1}}>
-            <Text style={[styles.inputBox, {marginTop:30}]}>{issue.title}</Text>
-            <Text style={[styles.inputBox, {marginTop:15, paddingBottom:72}]}>{utils.htmlToString(issue.msg)}</Text>
-            {
-              this._renderAttachment(issue.images)
-            }
-            {
-              ! _.isEmpty(resp) && <View style={styles.resp}>
-                <AppIcon name="btnReply" style={{justifyContent:'flex-start'}}/>
-                <View style={{marginLeft:10, marginRight:30}}>
+          <View style={{flex: 1}}>
+            <Text style={[styles.inputBox, {marginTop: 30}]}>
+              {issue.title}
+            </Text>
+            <Text style={[styles.inputBox, {marginTop: 15, paddingBottom: 72}]}>
+              {utils.htmlToString(issue.msg)}
+            </Text>
+            {this._renderAttachment(issue.images)}
+            {!_.isEmpty(resp) && (
+              <View style={styles.resp}>
+                <AppIcon
+                  name="btnReply"
+                  style={{justifyContent: 'flex-start'}}
+                />
+                <View style={{marginLeft: 10, marginRight: 30}}>
                   <Text style={styles.replyTitle}>{i18n.t('board:resp')}</Text>
                   <Text style={styles.reply}>{resp.body}</Text>
                 </View>
               </View>
-            }
+            )}
           </View>
 
           <AppActivityIndicator visible={this.props.pending} />
         </ScrollView>
 
-        <AppButton style={styles.button} title={i18n.t('ok')} 
-          onPress={() => this.props.navigation.goBack()}/>
+        <AppButton
+          style={styles.button}
+          title={i18n.t('ok')}
+          onPress={() => this.props.navigation.goBack()}
+        />
       </SafeAreaView>
-    )
+    );
   }
 }
 
@@ -118,7 +136,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     width: windowWidth - 20,
     marginTop: 10,
-    marginHorizontal: 20
+    marginHorizontal: 20,
   },
   attach: {
     // flex: 1,
@@ -127,25 +145,25 @@ const styles = StyleSheet.create({
     height: attachmentSize,
   },
   reply: {
-    ... appStyles.normal14Text,
-    color: colors.black
+    ...appStyles.normal14Text,
+    color: colors.black,
   },
   replyTitle: {
-    ... appStyles.normal12Text,
-    textAlign: "left",
+    ...appStyles.normal12Text,
+    textAlign: 'left',
     marginBottom: 10,
     color: colors.warmGrey,
   },
   container: {
-    backgroundColor:colors.white,
-    flex: 1
+    backgroundColor: colors.white,
+    flex: 1,
   },
   inputBox: {
-    ... appStyles.normal14Text,
+    ...appStyles.normal14Text,
     marginHorizontal: 20,
     borderRadius: 3,
     backgroundColor: colors.whiteTwo,
-    borderStyle: "solid",
+    borderStyle: 'solid',
     borderWidth: 1,
     borderColor: colors.lightGrey,
     color: colors.greyish,
@@ -159,30 +177,31 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 3,
     backgroundColor: colors.white,
-    borderStyle: "solid",
+    borderStyle: 'solid',
     borderWidth: 1,
     borderColor: colors.black,
-    justifyContent: 'flex-start'
+    justifyContent: 'flex-start',
   },
   button: {
-    ... appStyles.normal16Text,
+    ...appStyles.normal16Text,
     height: 52,
     backgroundColor: colors.clearBlue,
-    textAlign: "center",
-    color: "#ffffff"
+    textAlign: 'center',
+    color: '#ffffff',
   },
 });
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   board: state.board.toJS(),
   auth: accountActions.auth(state.account),
-  pending: state.pender.pending[boardActions.GET_ISSUE_RESP] || false
-})
+  pending: state.pender.pending[boardActions.GET_ISSUE_RESP] || false,
+});
 
-export default connect(mapStateToProps,
-  (dispatch) => ({
+export default connect(
+  mapStateToProps,
+  dispatch => ({
     action: {
-      board : bindActionCreators(boardActions, dispatch)
-    }
-  })
-)(BoardMsgRespScreen)
+      board: bindActionCreators(boardActions, dispatch),
+    },
+  }),
+)(BoardMsgRespScreen);
