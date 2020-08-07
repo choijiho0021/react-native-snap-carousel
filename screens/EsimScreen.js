@@ -156,31 +156,9 @@ class EsimScreen extends Component {
     this._init(iccid, auth);
   }
 
-  componentDidUpdate(prevProps) {
-    const {
-        account: {iccid},
-        auth,
-        lastTab,
-        loginPending,
-      } = this.props,
-      routeName = this.props.route.name,
-      isFocusedToUsimTab =
-        (lastTab[0] || '').startsWith(routeName) &&
-        lastTab[0] !== prevProps.lastTab[0];
-
-    if (
-      (isFocusedToUsimTab && !loginPending) ||
-      (prevProps.account.iccid && iccid !== prevProps.account.iccid)
-    ) {
-      this._init(iccid, auth);
-    }
-  }
-
   _init(iccid, auth) {
     if (iccid && auth) {
       this.props.action.order.getSubsWithToast(iccid, auth);
-    } else {
-      this.props.navigation.navigate('RegisterSim', {back: 'Home'});
     }
   }
 

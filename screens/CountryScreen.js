@@ -35,7 +35,8 @@ import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import {timer} from '../constants/Timer';
 import api from '../submodules/rokebi-utils/api/api';
 import AppAlert from '../components/AppAlert';
-
+import getEnvVars from '../environment';
+const {esimApp} = getEnvVars();
 class CountryListItem extends PureComponent {
   render() {
     const {item, selected, onPress} = this.props;
@@ -320,7 +321,7 @@ class CountryScreen extends Component {
           }}
           textMessage={i18n.t('country:addCart')}
         />
-        {iccid ? (
+        {iccid || (esimApp && loggedIn) ? (
           <View style={styles.buttonBox}>
             <AppButton
               style={styles.btnCart}
