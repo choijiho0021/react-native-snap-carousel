@@ -114,6 +114,7 @@ class MyPageScreen extends Component {
       isReloaded: false,
       isFocused: false,
       refreshing: false,
+      isRokebiInstalled: false,
       page: 0,
     };
 
@@ -411,22 +412,27 @@ class MyPageScreen extends Component {
 
     let isRokebiInstalled = undefined;
 
+    // 네이버URL -> Store URL 변경필요
     if (Platform.OS === 'ios') {
-      isRokebiInstalled = await Linking.canOpenURL(
-        `RokebiTalk://?actCode=${pin}&iccidStr=${iccid}`,
+      setTimeout(() => {
+        if (!this.state.isRokebiInstalled) {
+          Linking.openURL(`http://naver.com`);
+        }
+      }, 1000);
+
+      isRokebiInstalled = await Linking.openURL(
+        `rokebitalk://?actCode=${pin}&iccidStr=${iccid}`,
       );
-      isRokebiInstalled
-        ? Linking.openURL(`RokebiTalk://?actCode=${pin}&iccidStr=${iccid}`)
-        : Linking.openURL(`appstore url 추가 필요`);
+      this.setState({isRokebiInstalled: true});
     } else {
       isRokebiInstalled = await Linking.canOpenURL(
-        `rokebi://rokebitalk.com?actCode=${pin}&iccidStr=${iccid}`,
+        `rokebitalk://rokebitalk.com?actCode=${pin}&iccidStr=${iccid}`,
       );
       isRokebiInstalled
         ? Linking.openURL(
-            `rokebi://rokebitalk.com?actCode=${pin}&iccidStr=${iccid}`,
+            `rokebitalk://rokebitalk.com?actCode=${pin}&iccidStr=${iccid}`,
           )
-        : Linking.openURL(`playstoreurl 추가 필요`);
+        : Linking.openURL(`http://naver.com`);
     }
   };
 
