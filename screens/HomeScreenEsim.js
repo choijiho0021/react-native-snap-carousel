@@ -138,10 +138,7 @@ class HomeScreenEsim extends Component {
       this.props.action.product.getProdList();
     }
 
-    if (
-      prevProps.product.prodList != this.props.product.prodList ||
-      this.state.allData.length == 0
-    ) {
+    if (prevProps.product.prodList != this.props.product.prodList) {
       this._refresh();
     }
 
@@ -257,7 +254,7 @@ class HomeScreenEsim extends Component {
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => <Text style={styles.title}>{i18n.t('appTitle')}</Text>,
+      headerLeft: () => <Text style={styles.title}>{i18n.t('esim')}</Text>,
       headerRight: () => (
         <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
           <AppButton
@@ -446,12 +443,12 @@ class HomeScreenEsim extends Component {
           {this._pagination()}
         </View>
         {/* ScrollView  stickyHeaderIndices로 상단 탭을 고정하기 위해서 View한번 더 사용*/}
-        <View style={styles.whiteBackground}>
+        <View style={styles.whiteTwoBackground}>
           <View style={styles.tabView}>
             {routes.map((elm, idx) => (
               <AppButton
                 key={elm.key + idx}
-                style={styles.whiteBackground}
+                style={styles.whiteTwoBackground}
                 titleStyle={[
                   styles.normal16WarmGrey,
                   idx == index ? styles.boldClearBlue : {},
@@ -535,8 +532,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightGrey,
     marginLeft: DOT_MARGIN,
   },
-  whiteBackground: {
-    backgroundColor: colors.white,
+  whiteTwoBackground: {
+    backgroundColor: colors.whiteTwo,
   },
   tabView: {
     height: 60,
