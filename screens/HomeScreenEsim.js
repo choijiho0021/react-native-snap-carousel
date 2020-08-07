@@ -13,6 +13,9 @@ import {connect} from 'react-redux';
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
 import * as productActions from '../redux/modules/product';
+import * as accountActions from '../redux/modules/account';
+import * as notiActions from '../redux/modules/noti';
+import * as cartActions from '../redux/modules/cart';
 import _ from 'underscore';
 import {bindActionCreators} from 'redux';
 import {TabView} from 'react-native-tab-view';
@@ -25,6 +28,7 @@ import {API, Country} from 'RokebiESIM/submodules/rokebi-utils';
 import {sliderWidth, windowHeight} from '../constants/SliderEntry.style';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import withBadge from '../components/withBadge';
+import pushNoti from '../utils/pushNoti';
 
 const size =
   windowHeight > 810
@@ -104,6 +108,9 @@ class HomeScreenEsim extends Component {
     this._renderPromotion = this._renderPromotion.bind(this);
     this._renderDots = this._renderDots.bind(this);
     this._clickTab = this._clickTab.bind(this);
+    this._notification = this._notification.bind(this);
+    this._init = this._init.bind(this);
+    this._handleNotification = this._handleNotification.bind(this);
 
     this.offset = 0;
     this.controller = new AbortController();
@@ -112,8 +119,13 @@ class HomeScreenEsim extends Component {
   componentDidMount() {
     const now = moment();
 
+    pushNoti.add(this._notification);
+
     this.setState({time: now});
     this._refresh();
+
+    // 로그인 여부에 따라 달라지는 부분
+    this._init();
   }
 
   componentDidUpdate(prevProps) {
@@ -133,8 +145,63 @@ class HomeScreenEsim extends Component {
       this._refresh();
     }
 
+    if (prevProps.account.iccid != this.props.account.iccid) {
+      this._init();
+    }
+
     if (this.props.sync.progress) {
       this.props.navigation.navigate('CodePush');
+    }
+  }
+
+  _notification(type, data, isForeground = true) {
+    const {mobile, loggedIn} = this.props.account;
+
+    if (loggedIn) {
+      this.props.action.noti.getNotiList(mobile);
+    }
+
+    switch (type) {
+      case 'register':
+        this.props.action.account.updateAccount({
+          deviceToken: data,
+        });
+        break;
+      case 'notification':
+        this._handleNotification(data, isForeground);
+    }
+  }
+
+  _handleNotification(payload, isForeground) {
+    const type = (payload.data || {}).notiType;
+    const target = (payload.data || {}).iccid;
+    const {mobile, iccid} = this.props.account;
+
+    if (mobile && _.size(payload) > 0) {
+      if (Platform.OS === 'ios') {
+        let msg = JSON.stringify(payload);
+        this.props.action.noti.sendLog(mobile, msg);
+      }
+    }
+
+    switch (type) {
+      case 'account':
+        if (typeof iccid !== 'undefined' && iccid === target) {
+          if (!this._isNoticed) {
+            this._isNoticed = true;
+            AppAlert.info(
+              i18n.t('acc:disconnectSim'),
+              i18n.t('noti'),
+              this._clearAccount,
+            );
+          }
+        } else {
+          !isForeground && this.props.navigation.navigate('Noti');
+        }
+
+        break;
+      default:
+        !isForeground && this.props.navigation.navigate('Noti');
     }
   }
 
@@ -243,6 +310,15 @@ class HomeScreenEsim extends Component {
     this.props.action.product.setProdOfCountry(prodOfCountry);
     this.props.navigation.navigate('Country');
   };
+
+  _init() {
+    const {mobile, loggedIn} = this.props.account;
+
+    if (loggedIn) {
+      this.props.action.noti.getNotiList(mobile);
+      this.props.action.cart.cartFetch();
+    }
+  }
 
   renderScene = props => {
     return (
@@ -484,7 +560,9 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = state => ({
+  account: state.account.toJS(),
   product: state.product.toObject(),
+  info: state.info.toJS(),
   promotion: state.promotion.get('promotion'),
   sync: state.sync.toJS(),
 });
@@ -494,6 +572,9 @@ export default connect(
   dispatch => ({
     action: {
       product: bindActionCreators(productActions, dispatch),
+      account: bindActionCreators(accountActions, dispatch),
+      noti: bindActionCreators(notiActions, dispatch),
+      cart: bindActionCreators(cartActions, dispatch),
     },
   }),
 )(HomeScreenEsim);
