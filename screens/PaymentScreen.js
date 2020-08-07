@@ -9,6 +9,8 @@ import i18n from '../utils/i18n';
 import AppBackButton from '../components/AppBackButton';
 import IMP from 'iamport-react-native';
 import _ from 'underscore';
+import api from '../submodules/rokebi-utils/api/api';
+import AppAlert from '../components/AppAlert';
 
 // const IMP = require('iamport-react-native').default;
 
@@ -73,20 +75,33 @@ class PaymentScreen extends Component {
         await this.props.navigation.setParams({isPaid: true});
         const params =
           this.props.route.params && this.props.route.params.params;
-        const orderResult = await this.props.action.cart.payNorder({
-          ...response,
-          pg_provider: params.pg,
-          payment_type: params.pay_method,
-          amount: params.amount,
-          profile_uuid: params.profile_uuid,
-          rokebi_cash: params.rokebi_cash,
-          dlvCost: params.dlvCost,
-          memo: params.memo,
-        });
-        this.props.navigation.replace('PaymentResult', {
-          pymResult: response,
-          orderResult,
-        });
+        this.props.action.cart
+          .payNorder({
+            ...response,
+            pg_provider: params.pg,
+            payment_type: params.pay_method,
+            amount: params.amount,
+            profile_uuid: params.profile_uuid,
+            rokebi_cash: params.rokebi_cash,
+            dlvCost: params.dlvCost,
+            memo: params.memo,
+          })
+          .then(resp => {
+            if (resp.result == 0) {
+              this.props.navigation.replace('PaymentResult', {
+                pymResult: response,
+                orderResult: resp,
+              });
+            } else {
+              if (resp.result === api.E_RESOURCE_NOT_FOUND) {
+                AppAlert.info(i18n.t('cart:soldOut'));
+              } else {
+                AppAlert.info(i18n.t('pym:systemError'));
+              }
+
+              this.props.navigation.goBack();
+            }
+          });
       }
     } else {
       this.props.navigation.goBack();

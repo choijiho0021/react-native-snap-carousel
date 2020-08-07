@@ -212,19 +212,18 @@ class CountryScreen extends Component {
             break;
           case 'purchase':
             this.props.action.cart
-              .checkStock([addProduct])
+              .checkStockAndPurchase([addProduct], balance)
               .then(resp => {
-                if (resp.result === api.E_RESOURCE_NOT_FOUND) {
-                  AppAlert.info(i18n.t('cart:soldOut'));
-                } else if (resp.result == 0) {
-                  // 구매 품목을 갱신한다.
-                  this.props.action.cart.purchase({
-                    purchaseItems: [addProduct],
-                    balance,
-                  });
+                if (resp.result == 0) {
                   this.props.navigation.navigate('PymMethod', {
                     mode: 'Roaming Product',
                   });
+                } else {
+                  if (resp.result === api.E_RESOURCE_NOT_FOUND) {
+                    AppAlert.info(i18n.t('cart:soldOut'));
+                  } else {
+                    AppAlert.info(i18n.t('cart:systemError'));
+                  }
                 }
               })
               .catch(err => {
