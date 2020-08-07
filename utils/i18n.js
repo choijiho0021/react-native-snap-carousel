@@ -353,6 +353,8 @@ const en = {
   'cart:soldOut':
     'Inventory is exhausted and cannot be purchased at this time.',
   'cart:notToCart': 'Inventory is exhausted and cannot be added to the cart.',
+  'cart:systemError':
+    'The service is not smooth due to system circumstances. \nPlease try again later.',
 
   'usim:toRokebiCash': 'Conversion amount\n',
   'usim:balance': 'Rokebi Cash',
@@ -423,6 +425,7 @@ const en = {
   'pym:paymentAgency': 'Terms of use of payment agency service',
   'pym:mandatory': ' (Mandatory)',
   'pym:detail': 'Check Details',
+  'pym:systemError': 'Payment failed due to system circumstances',
 
   'err:login': 'Please login first',
   'err:body': 'There is no body to show',
@@ -858,6 +861,8 @@ const ko = {
   'cart:remove': '판매 중지된 상품이 목록에서 삭제되었습니다.',
   'cart:soldOut': '재고가 모두 소진되어 \n현재 구매할 수 없습니다.',
   'cart:notToCart': '재고가 모두 소진되어 \n카트에 담을 수 없습니다.',
+  'cart:systemError':
+    '시스템 사정으로 서비스가 원활하지 않습니다. \n잠시 후 다시 시도 하십시요.',
 
   'usim:toRokebiCash': '전환금액',
   'usim:balance': '로깨비캐시',
@@ -930,6 +935,7 @@ const ko = {
   'pym:paymentAgency': '결제대행 서비스 이용약관',
   'pym:mandatory': ' (필수)',
   'pym:detail': '자세히 보기',
+  'pym:systemError': '시스템 사정으로 결제에 실패하였습니다.',
 
   'err:login': '로그인 후 이용해 주세요',
   'err:body': '본문이 없습니다',
