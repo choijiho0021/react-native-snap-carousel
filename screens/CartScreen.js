@@ -187,18 +187,16 @@ class CartScreen extends Component {
         }));
 
       this.props.action.cart
-        .checkStock(purchaseItems)
+        .checkStockAndPurchase(purchaseItems, dlvCost > 0, balance)
         .then(resp => {
-          if (resp.result === api.E_RESOURCE_NOT_FOUND) {
-            AppAlert.info(i18n.t('cart:soldOut'));
-          } else if (resp.result == 0) {
-            // 구매 품목을 갱신한다.
-            this.props.action.cart.purchase({
-              purchaseItems,
-              dlvCost: dlvCost > 0,
-              balance,
-            });
+          if (resp.result == 0) {
             this.props.navigation.navigate('PymMethod', {mode: 'Cart'});
+          } else {
+            if (resp.result === api.E_RESOURCE_NOT_FOUND) {
+              AppAlert.info(i18n.t('cart:soldOut'));
+            } else {
+              AppAlert.info(i18n.t('cart:systemError'));
+            }
           }
         })
         .catch(err => {
