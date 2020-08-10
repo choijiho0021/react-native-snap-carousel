@@ -55,7 +55,7 @@ class UsageItem extends Component {
     return (
       <View
         style={[styles.usageListContainer, expired && styles.cardExpiredBg]}>
-        <View style={styles.titleAndStatus}>
+        <View style={styles.prodTitle}>
           <Text
             key={item.key}
             style={expired ? styles.usageTitleNormal : styles.usageTitleBold}>
@@ -386,10 +386,20 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     padding: 20,
   },
-  titleAndStatus: {
+  prodTitle: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  titleAndStatus: {
+    flexDirection: 'row',
+    marginHorizontal: 30,
+    marginVertical: 20,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.whiteTwo,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
   },
   inactiveContainer: {
     paddingTop: 10,
