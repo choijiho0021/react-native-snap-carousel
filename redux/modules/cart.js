@@ -106,12 +106,26 @@ export const payNorder = result => {
   };
 };
 
-export const checkStock = prodList => {
+const checkStock = prodList => {
   return (dispatch, getState) => {
     const {account} = getState(),
       token = {token: account.get('token')};
     return esimApp
-      ? dispatch(cartCheckStock(prodList, token))
+      ? dispatch(cartCheckStock(prodList, token)).then(resp => {
+          let soldOut = [];
+          (resp.message || {}).forEach(item => {
+            soldOut.push({
+              prod: prodList.find(
+                value => value.variationId == item.purchased_entity_id,
+              ),
+              lack: item.quantity - item.stock,
+            });
+          });
+
+          resp.message = soldOut;
+
+          return resp;
+        })
       : new Promise.resolve({result: 0});
   };
 };
