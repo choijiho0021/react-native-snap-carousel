@@ -57,6 +57,7 @@ const en = {
   sale: 'Sale',
   hot: 'Hot',
   copy: 'Copy',
+  close: 'Close',
 
   'home:guide': 'User Guide',
   'home:checkGuide': 'Check',
@@ -553,6 +554,7 @@ const ko = {
   sale: '할인',
   hot: '추천',
   copy: '복사',
+  close: '닫기',
 
   'home:guide': '로밍도깨비 사용가이드 !',
   'home:checkGuide': '확인하기',
