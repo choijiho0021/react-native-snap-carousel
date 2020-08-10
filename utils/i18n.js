@@ -57,6 +57,7 @@ const en = {
   sale: 'Sale',
   hot: 'Hot',
   copy: 'Copy',
+  close: 'Close',
 
   'home:guide': 'User Guide',
   'home:checkGuide': 'Check',
@@ -373,15 +374,20 @@ const en = {
   'usim:usingTime': 'Service active time',
   'usim:until': 'until',
 
+  'esim:purchaseList': 'eSIM List',
   'esim:showQR': 'Show QR',
   'esim:showQR:title': 'QR Code',
   'esim:showQR:nothing': 'QR Code is missing',
-  'esim:showQR:body': 'Show QR Code',
+  'esim:showQR:frontBody': 'Show QR code',
+  'esim:showQR:endBody': '',
   'esim:smdp': 'SM-DP+ Address',
   'esim:actCode': 'Activation code',
   'esim:manualInput': 'Manual Input',
   'esim:manualInput:title': 'eSIM Info',
-  'esim:manualInput:body': 'eSIM Info',
+  'esim:manualInput:bodyPart1': '',
+  'esim:manualInput:bodyPart2': '',
+  'esim:manualInput:bodyPart3': '',
+  'esim:manualInput:bodyPart4': 'eSIM info insert manually',
 
   'pym:title': 'Payment Info',
   'pym:delivery': 'Shipping Info',
@@ -493,8 +499,7 @@ const en = {
   'toast:failedToOpen': 'Failed to open the KakaoTalk Channel.',
   'toast:copySuccess': 'Copied Successfully.',
 
-  'mypage:idCheck': 'Check the \n RokebiTalk ID',
-  'mypage:idCheckTitle': 'Check the \n RokebiTalk ID',
+  'mypage:idCheckTitle': 'Check the RokebiTalk ID',
   'mypage:manualInput:body': 'You can use below ID to login RokebiTalk service',
   'mypage:iccid': 'ICCID',
   'mypage:activationCode': 'Activation Code',
@@ -553,6 +558,7 @@ const ko = {
   sale: '할인',
   hot: '추천',
   copy: '복사',
+  close: '닫기',
 
   'home:guide': '로밍도깨비 사용가이드 !',
   'home:checkGuide': '확인하기',
@@ -879,19 +885,23 @@ const ko = {
   'usim:failSnackBar':
     '일시적으로 사용량을 조회할 수 없습니다. 잠시 후 다시 시도해주세요.',
   'usim:usingTime': '서비스 이용 시간',
+
   'usim:until': '까지',
 
+  'esim:purchaseList': '구매 eSIM 목록',
   'esim:showQR': 'QR 코드 보기',
   'esim:manualInput': '수동 입력 정보',
   'esim:showQR:title': 'QR 코드 보기',
   'esim:showQR:nothing': 'QR 코드가 없습니다.',
-  'esim:showQR:body':
-    '설정>셀룰러>셀룰러요금제 추가에서 화면에 다음 QR코드를 캡쳐하여 비춰주세요.',
+  'esim:showQR:frontBody': '설정>셀룰러>셀룰러요금제 추가',
+  'esim:showQR:endBody': '에서 화면에 다음 QR코드를 캡쳐하여 비춰주세요.',
   'esim:smdp': 'SM-DP+ 주소',
   'esim:actCode': '활성화 코드',
   'esim:manualInput:title': 'eSIM 정보 수동 입력',
-  'esim:manualInput:body':
-    '설정>셀룰러>셀룰러요금제 추가에서 세부사항 직접 입력을 선택하여 다음 내용을 붙여넣기 해 주세요.',
+  'esim:manualInput:bodyPart1': '설정>셀룰러>셀룰러요금제 추가',
+  'esim:manualInput:bodyPart2': '에서 ',
+  'esim:manualInput:bodyPart3': '세부사항 직접 입력',
+  'esim:manualInput:bodyPart4': '을 선택하여 다음 내용을 붙여넣기 해 주세요',
 
   'pym:title': '결제 정보',
   'pym:delivery': '배송 정보',
@@ -1002,7 +1012,6 @@ const ko = {
   'toast:failedToOpen': '카카오톡 채널에 연결할 수 없습니다.',
   'toast:copySuccess': '복사되었습니다.',
 
-  'mypage:idCheck': '로깨비톡 ID \n 확인하기',
   'mypage:idCheckTitle': '로깨비톡 ID 확인',
   'mypage:manualInput:body':
     '로밍도깨비 eSM 사용 중 로깨비톡 사용 시 다음 ID를 사용하여 로그인할 수 있습니다',

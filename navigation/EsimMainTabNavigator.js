@@ -11,7 +11,6 @@ import HomeScreenEsim from '../screens/HomeScreenEsim';
 import MySimScreen from '../screens/MySimScreen';
 
 import CountryScreen from '../screens/CountryScreen';
-import RegisterSimScreen from '../screens/RegisterSimScreen';
 import ProductDetailScreen from '../screens/ProductDetailScreen';
 
 import SettingsScreen from '../screens/SettingsScreen';
@@ -63,7 +62,6 @@ function homeStack() {
       <HomeStack.Screen name="StoreSearch" component={StoreSearchScreen} />
       <HomeStack.Screen name="Cart" component={CartScreen} />
       <HomeStack.Screen name="ProductDetail" component={ProductDetailScreen} />
-      <HomeStack.Screen name="RegisterSim" component={RegisterSimScreen} />
       <HomeStack.Screen name="Noti" component={NotiScreen} />
       <HomeStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <HomeStack.Screen name="Contact" component={ContactScreen} />
@@ -93,7 +91,6 @@ function cartStack() {
       <CartStack.Screen name="PymMethod" component={PymMethodScreen} />
       <CartStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <CartStack.Screen name="PaymentResult" component={PaymentResultScreen} />
-      <CartStack.Screen name="RegisterSim" component={RegisterSimScreen} />
     </CartStack.Navigator>
   );
 }
@@ -125,7 +122,6 @@ function myPageStack() {
         name="PaymentResult"
         component={PaymentResultScreen}
       />
-      <MyPageStack.Screen name="RegisterSim" component={RegisterSimScreen} />
       <MyPageStack.Screen name="Settings" component={SettingsScreen} />
       <MyPageStack.Screen name="MySim" component={MySimScreen} />
     </MyPageStack.Navigator>
@@ -147,7 +143,7 @@ const BadgedIcon = withBadge(
 
 const TabNavigator = createBottomTabNavigator();
 
-function tabNavigator({loggedIn}) {
+function tabNavigator({loggedIn, iccid}) {
   return (
     <TabNavigator.Navigator
       initialRouteName="HomeStack"
@@ -170,7 +166,7 @@ function tabNavigator({loggedIn}) {
       />
       <TabNavigator.Screen
         name="CartStack"
-        component={cartStack}
+        component={iccid && loggedIn ? cartStack : AuthStack}
         options={({route}) => ({
           tabBarVisible: false,
           tabBarLabel: i18n.t('cart'),
@@ -185,7 +181,7 @@ function tabNavigator({loggedIn}) {
       />
       <TabNavigator.Screen
         name="EsimStack"
-        component={esimStack}
+        component={iccid && loggedIn ? esimStack : AuthStack}
         options={({route}) => ({
           tabBarVisible: route.state && route.state.index == 0,
           tabBarLabel: i18n.t('esim'),
@@ -200,7 +196,7 @@ function tabNavigator({loggedIn}) {
       />
       <TabNavigator.Screen
         name="MyPageStack"
-        component={loggedIn ? myPageStack : AuthStack}
+        component={iccid && loggedIn ? myPageStack : AuthStack}
         options={({route}) => ({
           tabBarVisible: route.state && route.state.index == 0,
           tabBarLabel: i18n.t('mypage'),
@@ -239,4 +235,5 @@ const styles = StyleSheet.create({
 
 export default connect(state => ({
   loggedIn: state.account.get('loggedIn'),
+  iccid: state.account.get('iccid'),
 }))(tabNavigator);

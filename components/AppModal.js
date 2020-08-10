@@ -5,6 +5,8 @@ import i18n from '../utils/i18n';
 import {colors} from '../constants/Colors';
 import AppButton from './AppButton';
 import validationUtil from '../utils/validationUtil';
+import AppIcon from './AppIcon';
+
 import _ from 'underscore';
 
 class AppModal extends PureComponent {
@@ -91,21 +93,25 @@ class AppModal extends PureComponent {
     const {value, error} = this.state;
     const {
       title,
+      titleStyle,
+      titleIcon,
       body,
-      type,
+      type = 'normal',
       maxLength = undefined,
       keyboardType = 'default',
       toRokebiCash = undefined,
+      closeButtonTitle = i18n.t('close'),
     } = this.props;
 
     return (
       <Modal
         animationType="fade"
-        transparent={false}
+        transparent={true}
         visible={this.props.visible}>
         <View style={appStyles.modal}>
           <View style={styles.inner}>
-            {title && <Text style={styles.title}>{title}</Text>}
+            {titleIcon && <AppIcon name={titleIcon} style={styles.icon} />}
+            {title && <Text style={titleStyle || styles.title}>{title}</Text>}
             {!_.isUndefined(toRokebiCash) && (
               <View style={{marginTop: 30}}>
                 <Text style={styles.blueCenter}>
@@ -142,29 +148,43 @@ class AppModal extends PureComponent {
             )}
             {this._renderError()}
 
-            <View style={styles.row}>
-              {type !== 'info' && (
+            {type == 'close' && (
+              <View style={{marginHorizontal: 30}}>
+                <AppButton
+                  style={styles.closeButton}
+                  onPress={this._onSubmit}
+                  title={closeButtonTitle}
+                  titleStyle={styles.closeButtonTitle}
+                />
+              </View>
+            )}
+
+            {['normal', 'info'].includes(type) && (
+              <View style={styles.row}>
+                {type == 'normal' && (
+                  <AppButton
+                    style={styles.button}
+                    onPress={() => this._onCancelClose()}
+                    title={i18n.t('cancel')}
+                    titleStyle={styles.buttonTitle}
+                  />
+                )}
                 <AppButton
                   style={styles.button}
-                  onPress={() => this._onCancelClose()}
-                  title={i18n.t('cancel')}
-                  titleStyle={styles.buttonTitle}
+                  disabled={!_.isEmpty(error)}
+                  onPress={this._onSubmit}
+                  title={i18n.t('ok')}
+                  disableBackgroundColor={colors.white}
+                  disableColor={colors.warmGrey}
+                  titleStyle={{
+                    ...styles.buttonTitle,
+                    color: _.isEmpty(error)
+                      ? colors.clearBlue
+                      : colors.warmGrey,
+                  }}
                 />
-              )}
-
-              <AppButton
-                style={styles.button}
-                disabled={!_.isEmpty(error)}
-                onPress={this._onSubmit}
-                title={i18n.t('ok')}
-                disableBackgroundColor={colors.white}
-                disableColor={colors.warmGrey}
-                titleStyle={{
-                  ...styles.buttonTitle,
-                  color: _.isEmpty(error) ? colors.clearBlue : colors.warmGrey,
-                }}
-              />
-            </View>
+              </View>
+            )}
           </View>
         </View>
       </Modal>
@@ -188,6 +208,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     width: 65,
     height: 36,
+  },
+  closeButton: {
+    width: '100%',
+    height: 50,
+    backgroundColor: colors.white,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: colors.black,
+  },
+  closeButtonTitle: {
+    ...appStyles.normal16Text,
+    textAlign: 'center',
+    width: '100%',
   },
   buttonTitle: {
     ...appStyles.normal16Text,
@@ -227,6 +260,10 @@ const styles = StyleSheet.create({
   inner: {
     ...appStyles.modalInner,
     paddingVertical: 25,
+  },
+  icon: {
+    marginVertical: 15,
+    marginHorizontal: 30,
   },
 });
 

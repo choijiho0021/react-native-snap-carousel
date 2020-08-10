@@ -1,5 +1,12 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, Text, FlatList, RefreshControl} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  FlatList,
+  RefreshControl,
+  TouchableOpacity,
+} from 'react-native';
 
 import SnackBar from 'react-native-snackbar-component';
 import {bindActionCreators} from 'redux';
@@ -13,6 +20,7 @@ import * as notiActions from '../redux/modules/noti';
 import * as infoActions from '../redux/modules/info';
 import * as cartActions from '../redux/modules/cart';
 import * as orderActions from '../redux/modules/order';
+import * as toastActions from '../redux/modules/toast';
 import _ from 'underscore';
 import AppButton from '../components/AppButton';
 import {isDeviceSize} from '../constants/SliderEntry.style';
@@ -21,6 +29,9 @@ import {timer} from '../constants/Timer';
 import subsApi from '../submodules/rokebi-utils/api/subscriptionApi';
 import AppModal from '../components/AppModal';
 import QRCode from 'react-native-qrcode-svg';
+import AppIcon from '../components/AppIcon';
+import {Toast} from '../constants/CustomTypes';
+import Clipboard from '@react-native-community/clipboard';
 
 class CardInfo extends Component {
   render() {
@@ -102,18 +113,35 @@ class UsageItem extends Component {
           )} ~ ${item.expireDate}`}</Text>
         </View>
         <View style={styles.activeBottomBox}>
-          <AppButton
+          <TouchableOpacity
+            onPress={() => onPress(true, 'showQR', item)}
+            style={{alignItems: 'center', flex: 1}}>
+            <AppIcon key="btnQr" name="btnQr" />
+            <Text style={{marginVertical: 10}}>{i18n.t('esim:showQR')}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => onPress(true, 'manual', item)}
+            style={{alignItems: 'center', flex: 1}}>
+            <AppIcon key="btnPen" name="btnPen" />
+            <Text style={{marginVertical: 10}}>
+              {i18n.t('esim:manualInput')}
+            </Text>
+          </TouchableOpacity>
+
+          {/* <AppButton
             style={styles.btn}
             onPress={() => onPress(true, 'showQR', item)}
             title={i18n.t('esim:showQR')}
             titleStyle={styles.btnTitle}
-          />
-          <AppButton
+          /> */}
+
+          {/* <AppButton
             style={styles.btn}
             onPress={() => onPress(true, 'manual', item)}
             title={i18n.t('esim:manualInput')}
             titleStyle={styles.btnTitle}
-          />
+          /> */}
         </View>
       </View>
     );
@@ -126,7 +154,9 @@ class EsimScreen extends Component {
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => <Text style={styles.title}>{i18n.t('usim')}</Text>,
+      headerLeft: () => (
+        <Text style={styles.title}>{i18n.t('esim:purchaseList')}</Text>
+      ),
     });
 
     this.state = {
@@ -145,6 +175,7 @@ class EsimScreen extends Component {
     this.showSnackBar = this.showSnackBar.bind(this);
     this._showModal = this._showModal.bind(this);
     this._modalBody = this._modalBody.bind(this);
+    this.copyToClipboard = this.copyToClipboard.bind(this);
   }
 
   componentDidMount() {
@@ -156,31 +187,9 @@ class EsimScreen extends Component {
     this._init(iccid, auth);
   }
 
-  componentDidUpdate(prevProps) {
-    const {
-        account: {iccid},
-        auth,
-        lastTab,
-        loginPending,
-      } = this.props,
-      routeName = this.props.route.name,
-      isFocusedToUsimTab =
-        (lastTab[0] || '').startsWith(routeName) &&
-        lastTab[0] !== prevProps.lastTab[0];
-
-    if (
-      (isFocusedToUsimTab && !loginPending) ||
-      (prevProps.account.iccid && iccid !== prevProps.account.iccid)
-    ) {
-      this._init(iccid, auth);
-    }
-  }
-
   _init(iccid, auth) {
     if (iccid && auth) {
       this.props.action.order.getSubsWithToast(iccid, auth);
-    } else {
-      this.props.navigation.navigate('RegisterSim', {back: 'Home'});
     }
   }
 
@@ -263,7 +272,12 @@ class EsimScreen extends Component {
             </View>
           ) : (
             <View>
-              <Text style={styles.body}>{i18n.t('esim:showQR:body')}</Text>
+              <Text style={styles.body}>
+                <Text style={[styles.body, {color: colors.clearBlue}]}>
+                  {i18n.t('esim:showQR:frontBody')}
+                </Text>
+                {i18n.t('esim:showQR:endBody')}
+              </Text>
               <View style={styles.center}>
                 <QRCode value={subs.smdpAddr + subs.actCode} />
               </View>
@@ -275,23 +289,49 @@ class EsimScreen extends Component {
 
     return (
       <View>
-        <Text style={styles.body}>{i18n.t('esim:manualInput:body')}</Text>
+        <Text style={styles.body}>
+          <Text style={[styles.body, {color: colors.clearBlue}]}>
+            {i18n.t('esim:manualInput:bodyPart1')}
+          </Text>
+          <Text style={styles.body}>
+            {i18n.t('esim:manualInput:bodyPart2')}
+          </Text>
+          <Text style={[styles.body, {color: colors.clearBlue}]}>
+            {i18n.t('esim:manualInput:bodyPart3')}
+          </Text>
+          {i18n.t('esim:manualInput:bodyPart4')}
+        </Text>
         <View style={styles.titleAndStatus}>
           <View>
-            <Text>{i18n.t('esim:smdp')}</Text>
-            <Text>{subs.smdpAddr}</Text>
+            <Text style={styles.esimInfoKey}>{i18n.t('esim:smdp')}</Text>
+            <Text style={appStyles.normal16Text}>{subs.smdpAddr}</Text>
           </View>
-          <AppButton title={i18n.t('copy')} />
+          <AppButton
+            title={i18n.t('copy')}
+            titleStyle={{color: colors.black}}
+            style={styles.btnCopy}
+            onPress={this.copyToClipboard(subs.smdpAddr)}
+          />
         </View>
         <View style={styles.titleAndStatus}>
           <View>
-            <Text>{i18n.t('esim:actCode')}</Text>
-            <Text>{subs.actCode}</Text>
+            <Text style={styles.esimInfoKey}>{i18n.t('esim:actCode')}</Text>
+            <Text style={appStyles.normal16Text}>{subs.actCode}</Text>
           </View>
-          <AppButton title={i18n.t('copy')} />
+          <AppButton
+            title={i18n.t('copy')}
+            titleStyle={{color: colors.black}}
+            style={styles.btnCopy}
+            onPress={this.copyToClipboard(subs.actCode)}
+          />
         </View>
       </View>
     );
+  };
+
+  copyToClipboard = value => () => {
+    Clipboard.setString(value);
+    this.props.action.toast.push(Toast.COPY_SUCCESS);
   };
 
   render() {
@@ -324,7 +364,9 @@ class EsimScreen extends Component {
           />
         </View>
         <AppModal
-          type="info"
+          type="close"
+          titleIcon={modal == 'showQR' ? 'btnQr' : 'btnPen'}
+          titleStyle={styles.titleStyle}
           title={
             modal == 'showQR'
               ? i18n.t('esim:showQR:title')
@@ -358,6 +400,12 @@ const styles = StyleSheet.create({
   center: {
     marginTop: 20,
     alignSelf: 'center',
+    marginVertical: 20,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: colors.clearBlue,
+    paddingVertical: 13,
+    paddingHorizontal: 13,
   },
   nolist: {
     marginVertical: '40%',
@@ -378,11 +426,13 @@ const styles = StyleSheet.create({
   },
   titleAndStatus: {
     flexDirection: 'row',
-    marginHorizontal: 20,
+    marginHorizontal: 30,
     marginVertical: 20,
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.white,
+    backgroundColor: colors.whiteTwo,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
   },
   inactiveContainer: {
     paddingHorizontal: 20,
@@ -427,6 +477,22 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
     marginTop: 10,
   },
+  titleStyle: {
+    marginHorizontal: 30,
+    fontSize: 20,
+  },
+  esimInfoKey: {
+    ...appStyles.normal16Text,
+    color: colors.warmGrey,
+  },
+  btnCopy: {
+    backgroundColor: colors.white,
+    width: 62,
+    height: 40,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: colors.whiteTwo,
+  },
 });
 
 const mapStateToProps = state => ({
@@ -453,6 +519,7 @@ export default connect(
       noti: bindActionCreators(notiActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
       info: bindActionCreators(infoActions, dispatch),
+      toast: bindActionCreators(toastActions, dispatch),
     },
   }),
 )(EsimScreen);
