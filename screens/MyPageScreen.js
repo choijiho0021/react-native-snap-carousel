@@ -315,7 +315,7 @@ class MyPageScreen extends Component {
               style={styles.btnIdCheck}
               onPress={() => this._showIdModal(true)}>
               <Text style={[appStyles.normal16Text, {textAlign: 'center'}]}>
-                {i18n.t('mypage:idCheck')}
+                {i18n.t('mypage:idCheckTitle')}
               </Text>
             </TouchableOpacity>
           )}
