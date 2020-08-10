@@ -197,8 +197,8 @@ class CountryScreen extends Component {
                   this.setState({
                     showSnackBar: true,
                   });
-                } else if (resp.result === api.E_RESOURCE_NOT_FOUND) {
-                  AppAlert.info(i18n.t('cart:notToCart'));
+                } else {
+                  this._soldOut(resp, 'cart:notToCart');
                 }
               })
               .catch(err => {
@@ -212,18 +212,14 @@ class CountryScreen extends Component {
             break;
           case 'purchase':
             this.props.action.cart
-              .checkStockAndPurchase([addProduct], balance)
+              .checkStockAndPurchase([addProduct], false, balance)
               .then(resp => {
                 if (resp.result == 0) {
                   this.props.navigation.navigate('PymMethod', {
                     mode: 'Roaming Product',
                   });
                 } else {
-                  if (resp.result === api.E_RESOURCE_NOT_FOUND) {
-                    AppAlert.info(i18n.t('cart:soldOut'));
-                  } else {
-                    AppAlert.info(i18n.t('cart:systemError'));
-                  }
+                  this._soldOut(resp, 'cart:soldOut');
                 }
               })
               .catch(err => {
@@ -236,6 +232,18 @@ class CountryScreen extends Component {
       }
     }
   };
+
+  _soldOut(resp, message) {
+    if (resp.result === api.E_RESOURCE_NOT_FOUND) {
+      let prod = '';
+      (resp.message || {}).forEach(item => {
+        prod += '* ' + item.prod.title + '\n';
+      });
+      AppAlert.info(prod + i18n.t(message));
+    } else {
+      AppAlert.info(i18n.t('cart:systemError'));
+    }
+  }
 
   _renderItem = ({item}) => {
     return (
