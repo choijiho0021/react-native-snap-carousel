@@ -5,6 +5,7 @@ const tabbarPath = '../assets/images/tabbar/';
 const mainPath = '../assets/images/main/';
 const headerPath = '../assets/images/header/';
 const paymentPath = '../assets/images/payment/';
+const esimPath = '../assets/images/esim/';
 const guidePath = '../assets/images/guide/';
 const images = {
   btnHome: [
@@ -22,6 +23,10 @@ const images = {
   btnUsim: [
     require(tabbarPath + 'btnUsim.png'),
     require(tabbarPath + 'btnUsimSel.png'),
+  ],
+  btnEsim: [
+    require(tabbarPath + 'btnEsim.png'),
+    require(tabbarPath + 'btnEsimSel.png'),
   ],
   btnMypage: [
     require(tabbarPath + 'btnMypage.png'),
@@ -63,8 +68,6 @@ const images = {
   imgMark: [require(mainPath + 'imgMark.png')],
   btnReply: [require(mainPath + 'btnReply.png')],
   btnId: [require(mainPath + 'btnId.png')],
-  btnQr: [require(mainPath + 'btnQr.png')],
-  btnPen: [require(mainPath + 'btnPen.png')],
   btnAlarm: [require(headerPath + 'btnAlarm.png')],
   btnCnter: [require(headerPath + 'btnCnter.png')],
   btnSearchTop: [require(headerPath + 'btnSearchTop.png')],
@@ -81,6 +84,9 @@ const images = {
   ssgpay: [require(paymentPath + 'logoSsg.png')],
   lpay: [require(paymentPath + 'logoLpay.png')],
   specialTip: [require(guidePath + 'iconHoney.png')],
+  imgAlarm: [require(esimPath + 'imgAlarm.png')],
+  btnQr: [require(esimPath + 'btnQr.png')],
+  btnPen: [require(esimPath + 'btnPen.png')],
 };
 export default class AppIcon extends PureComponent {
   render() {
