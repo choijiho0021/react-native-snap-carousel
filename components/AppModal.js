@@ -148,28 +148,27 @@ class AppModal extends PureComponent {
             )}
             {this._renderError()}
 
-            <View style={{marginHorizontal: 30}}>
-              {type == 'close' && (
+            {type == 'close' && (
+              <View style={{marginHorizontal: 30}}>
                 <AppButton
                   style={styles.closeButton}
                   onPress={this._onSubmit}
                   title={closeButtonTitle}
                   titleStyle={styles.closeButtonTitle}
                 />
-              )}
-            </View>
+              </View>
+            )}
 
-            <View style={styles.row}>
-              {type == 'normal' && (
-                <AppButton
-                  style={styles.button}
-                  onPress={() => this._onCancelClose()}
-                  title={i18n.t('cancel')}
-                  titleStyle={styles.buttonTitle}
-                />
-              )}
-
-              {['normal', 'info'].includes(type) && (
+            {['normal', 'info'].includes(type) && (
+              <View style={styles.row}>
+                {type == 'normal' && (
+                  <AppButton
+                    style={styles.button}
+                    onPress={() => this._onCancelClose()}
+                    title={i18n.t('cancel')}
+                    titleStyle={styles.buttonTitle}
+                  />
+                )}
                 <AppButton
                   style={styles.button}
                   disabled={!_.isEmpty(error)}
@@ -184,8 +183,8 @@ class AppModal extends PureComponent {
                       : colors.warmGrey,
                   }}
                 />
-              )}
-            </View>
+              </View>
+            )}
           </View>
         </View>
       </Modal>

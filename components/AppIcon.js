@@ -63,6 +63,8 @@ const images = {
   imgMark: [require(mainPath + 'imgMark.png')],
   btnReply: [require(mainPath + 'btnReply.png')],
   btnId: [require(mainPath + 'btnId.png')],
+  btnQr: [require(mainPath + 'btnQr.png')],
+  btnPen: [require(mainPath + 'btnPen.png')],
   btnAlarm: [require(headerPath + 'btnAlarm.png')],
   btnCnter: [require(headerPath + 'btnCnter.png')],
   btnSearchTop: [require(headerPath + 'btnSearchTop.png')],
