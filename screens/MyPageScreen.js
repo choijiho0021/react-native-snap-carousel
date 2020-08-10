@@ -20,6 +20,7 @@ import {colors} from '../constants/Colors';
 import AppIcon from '../components/AppIcon';
 import * as orderActions from '../redux/modules/order';
 import * as accountActions from '../redux/modules/account';
+import * as toastActions from '../redux/modules/toast';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import AppAlert from '../components/AppAlert';
 import _ from 'underscore';
@@ -36,6 +37,7 @@ import {
 } from 'react-native-permissions';
 import Analytics from 'appcenter-analytics';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import {Toast} from '../constants/CustomTypes';
 import Clipboard from '@react-native-community/clipboard';
 import getEnvVars from '../environment';
 const {esimApp} = getEnvVars();
@@ -129,6 +131,7 @@ class MyPageScreen extends Component {
     this._didMount = this._didMount.bind(this);
     this._getNextOrder = this._getNextOrder.bind(this);
     this._onRefresh = this._onRefresh.bind(this);
+    this.copyToClipboard = this.copyToClipboard.bind(this);
 
     this.flatListRef = React.createRef();
   }
@@ -436,6 +439,11 @@ class MyPageScreen extends Component {
     }
   };
 
+  copyToClipboard = value => () => {
+    Clipboard.setString(value);
+    this.props.action.toast.push(Toast.COPY_SUCCESS);
+  };
+
   _modalBody = () => () => {
     const {iccid, pin} = this.props.account;
     return (
@@ -443,27 +451,29 @@ class MyPageScreen extends Component {
         <Text style={styles.body}>{i18n.t('mypage:manualInput:body')}</Text>
         <View style={styles.titleAndStatus}>
           <View>
-            <Text>{i18n.t('mypage:iccid')}</Text>
-            <Text>{iccid}</Text>
+            <Text style={styles.keyTitle}>{i18n.t('mypage:iccid')}</Text>
+            <Text style={appStyles.normal18Text}>{iccid}</Text>
           </View>
           <AppButton
             title={i18n.t('copy')}
-            onPress={() => Clipboard.setString(iccid)}
+            titleStyle={{color: colors.black}}
+            style={styles.btnCopy}
+            onPress={this.copyToClipboard(iccid)}
           />
         </View>
         <View style={styles.titleAndStatus}>
           <View>
-            <Text>{i18n.t('mypage:activationCode')}</Text>
-            <Text>{pin}</Text>
+            <Text style={styles.keyTitle}>
+              {i18n.t('mypage:activationCode')}
+            </Text>
+            <Text style={appStyles.normal18Text}>{pin}</Text>
           </View>
           <AppButton
             title={i18n.t('copy')}
-            onPress={() => Clipboard.setString(pin)}
+            titleStyle={{color: colors.black}}
+            style={styles.btnCopy}
+            onPress={this.copyToClipboard(pin)}
           />
-        </View>
-        {/* todo: 디자인이 나오면 변경필요 */}
-        <View style={styles.titleAndStatus}>
-          <Text> 로깨비톡 앱으로 바로 이동하시겠습니까?</Text>
         </View>
       </View>
     );
@@ -507,12 +517,14 @@ class MyPageScreen extends Component {
         />
 
         <AppModal
-          // type="info"
+          type="close"
           title={i18n.t('mypage:idCheckTitle')}
+          titleStyle={styles.titleStyle}
+          titleIcon={'btnId'}
           body={this._modalBody()}
           onOkClose={() => {
             this._showIdModal(false);
-            this.openRokebiTalk();
+            // this.openRokebiTalk();
           }}
           onCancelClose={() => this._showIdModal(false)}
           visible={showIdModal}
@@ -622,15 +634,35 @@ const styles = StyleSheet.create({
   body: {
     ...appStyles.normal16Text,
     marginHorizontal: 30,
+    marginVertical: 20,
     marginTop: 10,
   },
   titleAndStatus: {
     flexDirection: 'row',
-    marginHorizontal: 20,
-    marginVertical: 20,
+    marginHorizontal: 30,
+    marginVertical: 10,
     alignItems: 'center',
     justifyContent: 'space-between',
+    backgroundColor: colors.whiteTwo,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+  },
+  btnCopy: {
     backgroundColor: colors.white,
+    width: 62,
+    height: 40,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: colors.whiteTwo,
+  },
+  titleStyle: {
+    marginHorizontal: 30,
+    fontSize: 20,
+  },
+  keyTitle: {
+    ...appStyles.normal18Text,
+    marginBottom: 10,
+    color: colors.warmGrey,
   },
 });
 
@@ -654,6 +686,7 @@ export default connect(
     action: {
       order: bindActionCreators(orderActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
+      toast: bindActionCreators(toastActions, dispatch),
     },
   }),
 )(MyPageScreen);
