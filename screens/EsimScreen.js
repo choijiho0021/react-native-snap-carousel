@@ -30,119 +30,76 @@ import subsApi from '../submodules/rokebi-utils/api/subscriptionApi';
 import AppModal from '../components/AppModal';
 import QRCode from 'react-native-qrcode-svg';
 import AppIcon from '../components/AppIcon';
-import {Toast} from '../constants/CustomTypes';
-import Clipboard from '@react-native-community/clipboard';
 
 class CardInfo extends Component {
   render() {
     return (
       <View
-        style={{backgroundColor: colors.whiteTwo, margin: 20, marginTop: 30}}>
-        <Text style={{...appStyles.bold18Text}}>{i18n.t('usim:esimList')}</Text>
+        style={{
+          backgroundColor: colors.whiteThree,
+          padding: 20,
+          marginBottom: 20,
+          flexDirection: 'row',
+        }}>
+        <AppIcon style={{marginRight: 10}} name={'imgAlarm'} />
+        <Text style={styles.normal14WarmGrey}>{i18n.t('esim:notice')}</Text>
       </View>
     );
   }
 }
-const colorMap = {
-  [subsApi.STATUS_ACTIVE]: [colors.tomato, true],
-  [subsApi.STATUS_RESERVED]: [colors.clearBlue, false],
-  [subsApi.STATUS_INACTIVE]: [colors.black, false],
-};
 
 class UsageItem extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      statusColor: colors.warmGrey,
-      isActive: false,
-      disableBtn: false,
-    };
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return (
-      !_.isEqual(nextProps.item, this.props.item) ||
-      this.state.disableBtn != nextState.disableBtn
-    );
-  }
-
-  componentDidUpdate() {
-    if (this.state.disableBtn) {
-      setTimeout(() => {
-        this.setState({
-          disableBtn: false,
-        });
-      }, 5000);
-    }
   }
 
   render() {
-    const {item, onPress} = this.props;
-    const [statusColor, isActive] = colorMap.hasOwnProperty(item.statusCd)
-      ? colorMap[item.statusCd]
-      : [colors.warmGrey, false];
+    const {item, onPress, expired} = this.props;
 
     return (
-      <View style={styles.usageListContainer}>
-        <View style={{backgroundColor: colors.white}}>
-          <View style={styles.titleAndStatus}>
-            <Text
-              key={item.key}
-              style={[
-                styles.usageTitleNormal,
-                {fontWeight: isActive ? 'bold' : 'normal'},
-              ]}>
-              {item.prodName}
-            </Text>
-            <Text
-              key={item.nid}
-              style={[styles.usageStatus, {color: statusColor}]}>
-              {' '}
-              • {item.status}
-            </Text>
-          </View>
+      <View
+        style={[styles.usageListContainer, expired && styles.cardExpiredBg]}>
+        <View style={styles.titleAndStatus}>
+          <Text
+            key={item.key}
+            style={expired ? styles.usageTitleNormal : styles.usageTitleBold}>
+            {item.prodName}
+          </Text>
+          {expired && (
+            <View style={styles.expiredBg}>
+              <Text key={item.nid} style={appStyles.normal12Text}>
+                {i18n.t('esim:expired')}
+              </Text>
+            </View>
+          )}
         </View>
         <View style={styles.inactiveContainer}>
-          <Text style={appStyles.normal12Text}>
-            {i18n.t('usim:usablePeriod')}
+          <Text style={styles.normal12WarmGrey}>
+            {i18n.t('esim:usablePeriod')}
           </Text>
-          <Text style={styles.usagePeriod}>{`${utils.toDateString(
+          <Text style={styles.normal14WarmGrey}>{`${utils.toDateString(
             item.purchaseDate,
             'YYYY-MM-DD',
           )} ~ ${item.expireDate}`}</Text>
         </View>
-        <View style={styles.activeBottomBox}>
-          <TouchableOpacity
-            onPress={() => onPress(true, 'showQR', item)}
-            style={{alignItems: 'center', flex: 1}}>
-            <AppIcon key="btnQr" name="btnQr" />
-            <Text style={{marginVertical: 10}}>{i18n.t('esim:showQR')}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => onPress(true, 'manual', item)}
-            style={{alignItems: 'center', flex: 1}}>
-            <AppIcon key="btnPen" name="btnPen" />
-            <Text style={{marginVertical: 10}}>
-              {i18n.t('esim:manualInput')}
-            </Text>
-          </TouchableOpacity>
-
-          {/* <AppButton
-            style={styles.btn}
-            onPress={() => onPress(true, 'showQR', item)}
-            title={i18n.t('esim:showQR')}
-            titleStyle={styles.btnTitle}
-          /> */}
-
-          {/* <AppButton
-            style={styles.btn}
-            onPress={() => onPress(true, 'manual', item)}
-            title={i18n.t('esim:manualInput')}
-            titleStyle={styles.btnTitle}
-          /> */}
-        </View>
+        {!expired && (
+          <View style={styles.activeBottomBox}>
+            <AppButton
+              style={styles.btn}
+              onPress={() => onPress(true, 'showQR', item)}
+              title={i18n.t('esim:showQR')}
+              titleStyle={styles.btnTitle}
+              iconName={'btnQr'}
+            />
+            <AppButton
+              style={styles.btn}
+              onPress={() => onPress(true, 'manual', item)}
+              title={i18n.t('esim:manualInput')}
+              titleStyle={styles.btnTitle}
+              iconName={'btnPen'}
+            />
+          </View>
+        )}
       </View>
     );
   }
@@ -154,9 +111,7 @@ class EsimScreen extends Component {
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => (
-        <Text style={styles.title}>{i18n.t('esim:purchaseList')}</Text>
-      ),
+      headerLeft: () => <Text style={styles.title}>{i18n.t('esimList')}</Text>,
     });
 
     this.state = {
@@ -211,6 +166,7 @@ class EsimScreen extends Component {
         key={item.key}
         item={item}
         auth={this.props.auth}
+        expired={new Date(item.expireDate) <= new Date()}
         showSnackBar={this.showSnackBar}
         onPress={this._showModal}
       />
@@ -412,34 +368,31 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginHorizontal: 20,
   },
+  cardExpiredBg: {
+    backgroundColor: colors.whiteTwo,
+    borderColor: colors.lightGrey,
+    borderWidth: 1,
+  },
   activeBottomBox: {
-    height: 50,
-    backgroundColor: colors.white,
-    paddingHorizontal: 20,
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
   },
   usageListContainer: {
+    backgroundColor: colors.white,
     marginHorizontal: 20,
     marginBottom: 20,
+    borderRadius: 3,
+    padding: 20,
   },
   titleAndStatus: {
     flexDirection: 'row',
-    marginHorizontal: 30,
-    marginVertical: 20,
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.whiteTwo,
-    paddingHorizontal: 20,
-    paddingVertical: 15,
   },
   inactiveContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingTop: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.white,
     width: '100%',
     justifyContent: 'space-between',
   },
@@ -447,30 +400,37 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     fontSize: isDeviceSize('small') ? 14 : 16,
     maxWidth: '70%',
+    color: colors.warmGrey,
   },
-  usageStatus: {
-    ...appStyles.bold14Text,
-    fontSize: isDeviceSize('small') ? 12 : 14,
+  usageTitleBold: {
+    ...appStyles.normal16Text,
+    fontSize: isDeviceSize('small') ? 14 : 16,
+    maxWidth: '70%',
+    fontWeight: 'bold',
   },
-  usagePeriod: {
+  normal12WarmGrey: {
+    ...appStyles.normal12Text,
+    color: colors.warmGrey,
+  },
+  expiredBg: {
+    backgroundColor: colors.whiteThree,
+    borderRadius: 3,
+    padding: 5,
+    height: '90%',
+  },
+  normal14WarmGrey: {
     ...appStyles.normal14Text,
     color: colors.warmGrey,
     fontSize: isDeviceSize('small') ? 12 : 14,
   },
   btn: {
-    width: 160,
-    height: 50,
-    justifyContent: 'center',
-    alignSelf: 'center',
-    backgroundColor: colors.lightGray,
-    borderRadius: 24,
-    marginBottom: 40,
-    marginTop: 25,
+    width: '45%',
+    paddingTop: 25,
   },
   btnTitle: {
-    ...appStyles.bold16Text,
+    ...appStyles.normal14Text,
     textAlign: 'center',
-    color: colors.clearBlue,
+    marginTop: 10,
   },
   body: {
     ...appStyles.normal16Text,
