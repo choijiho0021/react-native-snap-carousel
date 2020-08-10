@@ -20,6 +20,7 @@ import * as notiActions from '../redux/modules/noti';
 import * as infoActions from '../redux/modules/info';
 import * as cartActions from '../redux/modules/cart';
 import * as orderActions from '../redux/modules/order';
+import * as toastActions from '../redux/modules/toast';
 import _ from 'underscore';
 import AppButton from '../components/AppButton';
 import {isDeviceSize} from '../constants/SliderEntry.style';
@@ -29,6 +30,9 @@ import subsApi from '../submodules/rokebi-utils/api/subscriptionApi';
 import AppModal from '../components/AppModal';
 import QRCode from 'react-native-qrcode-svg';
 import AppIcon from '../components/AppIcon';
+import {Toast} from '../constants/CustomTypes';
+import Clipboard from '@react-native-community/clipboard';
+
 class CardInfo extends Component {
   render() {
     return (
@@ -171,6 +175,7 @@ class EsimScreen extends Component {
     this.showSnackBar = this.showSnackBar.bind(this);
     this._showModal = this._showModal.bind(this);
     this._modalBody = this._modalBody.bind(this);
+    this.copyToClipboard = this.copyToClipboard.bind(this);
   }
 
   componentDidMount() {
@@ -305,6 +310,7 @@ class EsimScreen extends Component {
             title={i18n.t('copy')}
             titleStyle={{color: colors.black}}
             style={styles.btnCopy}
+            onPress={this.copyToClipboard(subs.smdpAddr)}
           />
         </View>
         <View style={styles.titleAndStatus}>
@@ -316,10 +322,16 @@ class EsimScreen extends Component {
             title={i18n.t('copy')}
             titleStyle={{color: colors.black}}
             style={styles.btnCopy}
+            onPress={this.copyToClipboard(subs.actCode)}
           />
         </View>
       </View>
     );
+  };
+
+  copyToClipboard = value => () => {
+    Clipboard.setString(value);
+    this.props.action.toast.push(Toast.COPY_SUCCESS);
   };
 
   render() {
@@ -507,6 +519,7 @@ export default connect(
       noti: bindActionCreators(notiActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
       info: bindActionCreators(infoActions, dispatch),
+      toast: bindActionCreators(toastActions, dispatch),
     },
   }),
 )(EsimScreen);
