@@ -30,17 +30,13 @@ import subsApi from '../submodules/rokebi-utils/api/subscriptionApi';
 import AppModal from '../components/AppModal';
 import QRCode from 'react-native-qrcode-svg';
 import AppIcon from '../components/AppIcon';
+import {Toast} from '../constants/CustomTypes';
+import Clipboard from '@react-native-community/clipboard';
 
 class CardInfo extends Component {
   render() {
     return (
-      <View
-        style={{
-          backgroundColor: colors.whiteThree,
-          padding: 20,
-          marginBottom: 20,
-          flexDirection: 'row',
-        }}>
+      <View style={styles.notice}>
         <AppIcon style={{marginRight: 10}} name={'imgAlarm'} />
         <Text style={styles.normal14WarmGrey}>{i18n.t('esim:notice')}</Text>
       </View>
@@ -349,6 +345,12 @@ class EsimScreen extends Component {
 }
 
 const styles = StyleSheet.create({
+  notice: {
+    backgroundColor: colors.whiteThree,
+    padding: 20,
+    marginBottom: 20,
+    flexDirection: 'row',
+  },
   title: {
     ...appStyles.title,
     marginLeft: 20,
