@@ -61,6 +61,15 @@ const en = {
 
   'home:guide': 'User Guide',
   'home:checkGuide': 'Check',
+  'home:unsupportedTitle': 'eSIM cannot be unsupported',
+  'home:supportedDevice': 'Supported Device',
+  'home:supportedDeviceBody': '',
+  'home:unsupportedBody1': '',
+  'home:unsupportedBody2': '',
+  'home:unsupportedBody3':
+    'This service is only available on supported devices.',
+  'home:unsupportedBody4':
+    'For devices that do not support eSIM, please use the roaming goblin USIM service, which will be serviced later.',
 
   'store:dest': 'Destination',
   'store:partnerName': 'Local Operator',
@@ -562,6 +571,14 @@ const ko = {
 
   'home:guide': '로밍도깨비 사용가이드 !',
   'home:checkGuide': '확인하기',
+  'home:unsupportedTitle': 'eSIM 미지원 단말',
+  'home:supportedDevice': '서비스 이용 가능 단말',
+  'home:supportedDeviceBody': '이외 해외 구매한 eSIM 사용가능 단말',
+  'home:unsupportedBody1': '로밍도깨비 ',
+  'home:unsupportedBody2': 'eSIM은 eSIM 지원 단말에서만 이용할 수 있는 서비스 ',
+  'home:unsupportedBody3': '입니다',
+  'home:unsupportedBody4':
+    'eSIM 미지원단말은 추후 서비스 될 로밍도깨비 USIM 서비스를 이용해주세요.',
 
   'store:dest': '목적지',
   'store:partnerName': '로컬 사업자',

@@ -8,6 +8,8 @@ import {
   Image,
   Animated,
   ScrollView,
+  BackHandler,
+  Platform,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {appStyles} from '../constants/Styles';
@@ -29,6 +31,11 @@ import {sliderWidth, windowHeight} from '../constants/SliderEntry.style';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import withBadge from '../components/withBadge';
 import pushNoti from '../utils/pushNoti';
+import AsyncStorage from '@react-native-community/async-storage';
+import AppModal from '../components/AppModal';
+import RNExitApp from 'react-native-exit-app';
+import api from '../submodules/rokebi-utils/api/api';
+import DeviceInfo from 'react-native-device-info';
 
 const size =
   windowHeight > 810
@@ -86,6 +93,7 @@ class HomeScreenEsim extends Component {
     super(props);
 
     this.state = {
+      isSupportDev: true,
       index: 0,
       activeSlide: 0,
       routes: [
@@ -111,7 +119,7 @@ class HomeScreenEsim extends Component {
     this._notification = this._notification.bind(this);
     this._init = this._init.bind(this);
     this._handleNotification = this._handleNotification.bind(this);
-
+    this._modalBody = this._modalBody.bind(this);
     this.offset = 0;
     this.controller = new AbortController();
   }
@@ -123,6 +131,18 @@ class HomeScreenEsim extends Component {
 
     this.setState({time: now});
     this._refresh();
+
+    API.Device.getDevList().then(resp => {
+      if (resp.result == 0) {
+        DeviceInfo.getDeviceName().then(deviceName => {
+          console.log('aaaaa deviceName', deviceName);
+          this.setState({
+            deviceList: resp.objects,
+            isSupportDev: resp.objects.includes(deviceName),
+          });
+        });
+      }
+    });
 
     // 로그인 여부에 따라 달라지는 부분
     this._init();
@@ -421,8 +441,51 @@ class HomeScreenEsim extends Component {
     this.setState({index: idx});
   };
 
+  _modalBody = () => () => {
+    const {deviceList} = this.state;
+
+    return (
+      <View style={{marginHorizontal: 30, marginVertical: 30}}>
+        <View style={{marginVertical: 10}}>
+          <Text style={styles.text}>
+            {i18n.t('home:unsupportedBody1')}
+            <Text style={[styles.body, {color: colors.clearBlue}]}>
+              {i18n.t('home:unsupportedBody2')}
+            </Text>
+            <Text style={styles.body}>{i18n.t('home:unsupportedBody3')}</Text>
+          </Text>
+        </View>
+        <Text style={styles.body}>{i18n.t('home:unsupportedBody4')}</Text>
+        <Text
+          style={{...appStyles.bold18Text, marginTop: 30, marginBottom: 10}}>
+          {i18n.t('home:supportedDevice')}
+        </Text>
+
+        <View
+          style={{
+            backgroundColor: colors.whiteTwo,
+            paddingVertical: 15,
+            paddingHorizontal: 15,
+          }}>
+          <Text style={[appStyles.normal16Text, {lineHeight: 24}]}>
+            {deviceList && deviceList.join(', ')}
+            {i18n.t('home:supportedDeviceBody')}
+          </Text>
+        </View>
+      </View>
+    );
+  };
+
+  exitApp = () => {
+    if (Platform.OS === 'ios') {
+      RNExitApp.exitApp();
+    } else {
+      BackHandler.exitApp();
+    }
+  };
+
   render() {
-    const {index, routes} = this.state;
+    const {index, routes, isSupportDev} = this.state;
     return (
       <ScrollView
         // contentContainerStyle={appStyles.container}
@@ -469,6 +532,15 @@ class HomeScreenEsim extends Component {
           titleStyle={appStyles.normal16Text}
           indicatorStyle={{backgroundColor: 'white'}}
           renderTabBar={() => null}
+        />
+
+        <AppModal
+          title={i18n.t('home:unsupportedTitle')}
+          titleStyle={{...appStyles.normal20Text, marginHorizontal: 30}}
+          type="close"
+          body={this._modalBody()}
+          onOkClose={this.exitApp}
+          visible={!isSupportDev}
         />
       </ScrollView>
     );
@@ -553,6 +625,9 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     backgroundColor: colors.white,
+  },
+  text: {
+    ...appStyles.normal16Text,
   },
 });
 
