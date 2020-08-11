@@ -10,6 +10,7 @@ const en = {
   setting: 'Setting',
   usim: 'Usim',
   esim: 'eSIM',
+  esimList: 'eSIM Purchase List',
   product: 'Roaming Product',
   sim: 'SIM Card',
   setDate: 'Set Date',
@@ -383,7 +384,9 @@ const en = {
   'usim:usingTime': 'Service active time',
   'usim:until': 'until',
 
-  'esim:purchaseList': 'eSIM List',
+  'esim:usablePeriod': 'Usable Period',
+  'esim:expired': 'Expired',
+  'esim:notice': 'Products for call can be used in the RokkaebiTalk app.',
   'esim:showQR': 'Show QR',
   'esim:showQR:title': 'QR Code',
   'esim:showQR:nothing': 'QR Code is missing',
@@ -521,6 +524,7 @@ const ko = {
   setting: '설정',
   usim: '유심',
   esim: 'eSIM',
+  esimList: '구매 eSIM 목록',
   product: '로밍 상품',
   sim: 'SIM 카드',
   setDate: '날짜 선택',
@@ -905,7 +909,9 @@ const ko = {
 
   'usim:until': '까지',
 
-  'esim:purchaseList': '구매 eSIM 목록',
+  'esim:usablePeriod': '사용기한',
+  'esim:expired': '기한만료',
+  'esim:notice': '통화 상품은 로깨비톡 앱에서 사용할 수 있습니다.',
   'esim:showQR': 'QR 코드 보기',
   'esim:manualInput': '수동 입력 정보',
   'esim:showQR:title': 'QR 코드 보기',

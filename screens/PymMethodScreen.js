@@ -169,7 +169,6 @@ class PymMethodScreen extends Component {
       this.setState({
         loading: true,
       });
-      await this.props.navigation.setParams({isPaid: true});
       const {impId} = getEnvVars();
       const response = {
         success: true,
@@ -187,6 +186,7 @@ class PymMethodScreen extends Component {
       // payNorder에서 재고 확인 - resp.result값으로 비교
       this.props.action.cart.payNorder(response).then(resp => {
         if (resp.result == 0) {
+          this.props.navigation.setParams({isPaid: true});
           this.props.navigation.replace('PaymentResult', {
             pymResult: response,
             orderResult: resp,
@@ -198,9 +198,13 @@ class PymMethodScreen extends Component {
             clickable: true,
           });
           if (resp.result === api.E_RESOURCE_NOT_FOUND) {
-            AppAlert.info(i18n.t('cart:soldOut'));
+            let prod = '';
+            (resp.message || {}).forEach(item => {
+              prod += '* ' + item.prod.title + '\n';
+            });
+            AppAlert.info(prod + i18n.t('cart:soldOut'));
           } else {
-            AppAlert.info(i18n.t('pym:systemError'));
+            AppAlert.info(i18n.t('cart:systemError'));
           }
         }
       });

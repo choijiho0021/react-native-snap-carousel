@@ -188,7 +188,7 @@ function tabNavigator({loggedIn, iccid}) {
           tabBarIcon: ({focused}) => (
             <AppIcon
               focused={focused}
-              name="btnUsim"
+              name="btnEsim"
               style={styles.tabBarIcon}
             />
           ),
