@@ -135,7 +135,6 @@ class HomeScreenEsim extends Component {
     API.Device.getDevList().then(resp => {
       if (resp.result == 0) {
         DeviceInfo.getDeviceName().then(deviceName => {
-          console.log('aaaaa deviceName', deviceName);
           this.setState({
             deviceList: resp.objects,
             isSupportDev: resp.objects.includes(deviceName),
