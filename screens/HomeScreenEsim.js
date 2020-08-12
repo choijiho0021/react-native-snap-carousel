@@ -543,8 +543,7 @@ class HomeScreenEsim extends Component {
           type="close"
           body={this._modalBody()}
           onOkClose={this.exitApp}
-          // visible={!isSupportDev}
-          visible={true}
+          visible={!isSupportDev}
         />
       </ScrollView>
     );
