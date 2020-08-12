@@ -14,6 +14,7 @@ import {
 import {connect} from 'react-redux';
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
+import TutorialScreen from './TutorialScreen';
 import * as productActions from '../redux/modules/product';
 import * as accountActions from '../redux/modules/account';
 import * as notiActions from '../redux/modules/noti';
@@ -131,6 +132,16 @@ class HomeScreenEsim extends Component {
 
     this.setState({time: now});
     this._refresh();
+
+    // 앱 첫 실행 여부 확인
+    AsyncStorage.getItem('alreadyLaunched').then(value => {
+      if (value == null) {
+        AsyncStorage.setItem('alreadyLaunched', 'true');
+        this.setState({firstLaunch: true});
+      } else {
+        this.setState({firstLaunch: false});
+      }
+    });
 
     API.Device.getDevList().then(resp => {
       if (resp.result == 0) {
@@ -493,6 +504,7 @@ class HomeScreenEsim extends Component {
         // contentContainerStyle={appStyles.container}
         style={styles.scrollView}
         stickyHeaderIndices={[1]}>
+        {this.state.firstLaunch && <TutorialScreen />}
         <View style={styles.carousel}>
           <Carousel
             data={this.props.promotion}
@@ -583,6 +595,7 @@ const styles = StyleSheet.create({
   pagination: {
     marginRight: 30,
     marginTop: 10,
+    justifyContent: 'flex-end',
   },
   paginationContainer: {
     paddingVertical: 5,
