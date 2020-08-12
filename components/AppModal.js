@@ -212,13 +212,11 @@ const styles = StyleSheet.create({
   closeButton: {
     width: '100%',
     height: 50,
-    backgroundColor: colors.white,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: colors.black,
+    backgroundColor: colors.clearBlue,
   },
   closeButtonTitle: {
-    ...appStyles.normal16Text,
+    ...appStyles.normal18Text,
+    color: colors.white,
     textAlign: 'center',
     width: '100%',
   },

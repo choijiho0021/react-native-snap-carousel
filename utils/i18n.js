@@ -60,6 +60,7 @@ const en = {
   copy: 'Copy',
   close: 'Close',
 
+  'home:exitApp': 'Exit App',
   'home:guide': 'User Guide',
   'home:checkGuide': 'Check',
   'home:unsupportedTitle': 'eSIM cannot be unsupported',
@@ -573,6 +574,7 @@ const ko = {
   copy: '복사',
   close: '닫기',
 
+  'home:exitApp': '앱 종료',
   'home:guide': '로밍도깨비 사용가이드 !',
   'home:checkGuide': '확인하기',
   'home:unsupportedTitle': 'eSIM 미지원 단말',

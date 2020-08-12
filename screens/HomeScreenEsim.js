@@ -75,7 +75,7 @@ class PromotionImage extends PureComponent {
         style={styles.overlay}
         onPress={() => this.props.onPress(item)}>
         {_.isEmpty(item.imageUrl) ? (
-          <Text style={styles.text}>{item.title}</Text>
+          <Text style={appStyles.normal16Text}>{item.title}</Text>
         ) : (
           <Image
             source={{uri: API.default.httpImageUrl(item.imageUrl)}}
@@ -444,19 +444,22 @@ class HomeScreenEsim extends Component {
     const {deviceList} = this.state;
 
     return (
-      <View style={{marginHorizontal: 30, marginVertical: 30}}>
-        <View style={{marginVertical: 10}}>
-          <Text style={styles.text}>
+      <View style={styles.modalBody}>
+        <View style={{marginBottom: 10}}>
+          <Text style={appStyles.normal16Text}>
             {i18n.t('home:unsupportedBody1')}
-            <Text style={[styles.body, {color: colors.clearBlue}]}>
+            <Text style={styles.normal16BlueText}>
               {i18n.t('home:unsupportedBody2')}
             </Text>
-            <Text style={styles.body}>{i18n.t('home:unsupportedBody3')}</Text>
+            <Text style={appStyles.normal16Text}>
+              {i18n.t('home:unsupportedBody3')}
+            </Text>
           </Text>
         </View>
-        <Text style={styles.body}>{i18n.t('home:unsupportedBody4')}</Text>
-        <Text
-          style={{...appStyles.bold18Text, marginTop: 30, marginBottom: 10}}>
+        <Text style={appStyles.normal16Text}>
+          {i18n.t('home:unsupportedBody4')}
+        </Text>
+        <Text style={styles.supportDevTitle}>
           {i18n.t('home:supportedDevice')}
         </Text>
 
@@ -535,11 +538,13 @@ class HomeScreenEsim extends Component {
 
         <AppModal
           title={i18n.t('home:unsupportedTitle')}
-          titleStyle={{...appStyles.normal20Text, marginHorizontal: 30}}
+          closeButtonTitle={i18n.t('home:exitApp')}
+          titleStyle={styles.modalTitle}
           type="close"
           body={this._modalBody()}
           onOkClose={this.exitApp}
-          visible={!isSupportDev}
+          // visible={!isSupportDev}
+          visible={true}
         />
       </ScrollView>
     );
@@ -625,8 +630,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  text: {
+  normal16BlueText: {
     ...appStyles.normal16Text,
+    color: colors.clearBlue,
+  },
+  modalTitle: {
+    ...appStyles.normal20Text,
+    marginHorizontal: 20,
+  },
+  modalBody: {
+    marginHorizontal: 20,
+    marginVertical: 20,
+  },
+  supportDevTitle: {
+    ...appStyles.bold16Text,
+    marginTop: 30,
+    marginBottom: 10,
   },
 });
 
