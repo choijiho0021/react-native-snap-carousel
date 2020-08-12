@@ -117,6 +117,7 @@ class MyPageScreen extends Component {
       isFocused: false,
       refreshing: false,
       isRokebiInstalled: false,
+      copyString: '',
       page: 0,
     };
 
@@ -441,11 +442,14 @@ class MyPageScreen extends Component {
 
   copyToClipboard = value => () => {
     Clipboard.setString(value);
+    this.setState({copyString: value});
     this.props.action.toast.push(Toast.COPY_SUCCESS);
   };
 
   _modalBody = () => () => {
     const {iccid, pin} = this.props.account;
+    const {copyString} = this.state;
+
     return (
       <View style={styles.modalBody}>
         <Text style={[appStyles.normal16Text, {marginBottom: 20}]}>
@@ -458,8 +462,8 @@ class MyPageScreen extends Component {
           </View>
           <AppButton
             title={i18n.t('copy')}
-            titleStyle={{color: colors.black}}
-            style={styles.btnCopy}
+            titleStyle={styles.btnCopyTitle(copyString == iccid)}
+            style={styles.btnCopy(copyString == iccid)}
             onPress={this.copyToClipboard(iccid)}
           />
         </View>
@@ -472,8 +476,8 @@ class MyPageScreen extends Component {
           </View>
           <AppButton
             title={i18n.t('copy')}
-            titleStyle={{color: colors.black}}
-            style={styles.btnCopy}
+            titleStyle={styles.btnCopyTitle(copyString == pin)}
+            style={styles.btnCopy(copyString == pin)}
             onPress={this.copyToClipboard(pin)}
           />
         </View>
@@ -651,14 +655,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15,
   },
-  btnCopy: {
+  btnCopy: selected => ({
     backgroundColor: colors.white,
     width: 62,
     height: 40,
     borderStyle: 'solid',
     borderWidth: 1,
-    borderColor: colors.whiteTwo,
-  },
+    borderColor: selected ? colors.clearBlue : colors.whiteTwo,
+  }),
+  btnCopyTitle: selected => ({
+    ...appStyles.normal14Text,
+    color: selected ? colors.clearBlue : colors.black,
+  }),
   titleStyle: {
     marginHorizontal: 20,
     fontSize: 20,

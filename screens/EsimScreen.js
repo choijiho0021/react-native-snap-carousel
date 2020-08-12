@@ -117,6 +117,7 @@ class EsimScreen extends Component {
       showModal: false,
       modal: undefined,
       subs: undefined,
+      copyString: '',
     };
 
     this._init = this._init.bind(this);
@@ -213,6 +214,7 @@ class EsimScreen extends Component {
   }
 
   _modalBody = (modal, subs) => () => {
+    const {copyString} = this.state;
     if (!subs) return null;
 
     if (modal === 'showQR') {
@@ -262,8 +264,8 @@ class EsimScreen extends Component {
           </View>
           <AppButton
             title={i18n.t('copy')}
-            titleStyle={{color: colors.black}}
-            style={styles.btnCopy}
+            titleStyle={styles.btnCopyTitle(copyString == subs.smdpAddr)}
+            style={styles.btnCopy(copyString == subs.smdpAddr)}
             onPress={this.copyToClipboard(subs.smdpAddr)}
           />
         </View>
@@ -274,8 +276,8 @@ class EsimScreen extends Component {
           </View>
           <AppButton
             title={i18n.t('copy')}
-            titleStyle={{color: colors.black}}
-            style={styles.btnCopy}
+            titleStyle={styles.btnCopyTitle(copyString == subs.actCode)}
+            style={styles.btnCopy(copyString == subs.actCode)}
             onPress={this.copyToClipboard(subs.actCode)}
           />
         </View>
@@ -285,6 +287,7 @@ class EsimScreen extends Component {
 
   copyToClipboard = value => () => {
     Clipboard.setString(value);
+    this.setState({copyString: value});
     this.props.action.toast.push(Toast.COPY_SUCCESS);
   };
 
@@ -454,14 +457,18 @@ const styles = StyleSheet.create({
     color: colors.warmGrey,
     marginBottom: 6,
   },
-  btnCopy: {
+  btnCopy: selected => ({
     backgroundColor: colors.white,
     width: 62,
     height: 40,
     borderStyle: 'solid',
     borderWidth: 1,
-    borderColor: colors.whiteTwo,
-  },
+    borderColor: selected ? colors.clearBlue : colors.whiteTwo,
+  }),
+  btnCopyTitle: selected => ({
+    ...appStyles.normal14Text,
+    color: selected ? colors.clearBlue : colors.black,
+  }),
   modalBody: {
     marginVertical: 20,
     marginHorizontal: 20,
