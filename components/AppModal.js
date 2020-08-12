@@ -149,7 +149,7 @@ class AppModal extends PureComponent {
             {this._renderError()}
 
             {type == 'close' && (
-              <View style={{marginHorizontal: 30}}>
+              <View style={{marginHorizontal: 20}}>
                 <AppButton
                   style={styles.closeButton}
                   onPress={this._onSubmit}
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   buttonTitle: {
-    ...appStyles.normal16Text,
+    ...appStyles.normal18Text,
     textAlign: 'right',
     width: '100%',
   },
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginVertical: 15,
-    marginHorizontal: 30,
+    marginHorizontal: 20,
   },
 });
 

@@ -447,8 +447,10 @@ class MyPageScreen extends Component {
   _modalBody = () => () => {
     const {iccid, pin} = this.props.account;
     return (
-      <View>
-        <Text style={styles.body}>{i18n.t('mypage:manualInput:body')}</Text>
+      <View style={styles.modalBody}>
+        <Text style={[appStyles.normal16Text, {marginBottom: 20}]}>
+          {i18n.t('mypage:manualInput:body')}
+        </Text>
         <View style={styles.titleAndStatus}>
           <View>
             <Text style={styles.keyTitle}>{i18n.t('mypage:iccid')}</Text>
@@ -475,6 +477,14 @@ class MyPageScreen extends Component {
             onPress={this.copyToClipboard(pin)}
           />
         </View>
+        <TouchableOpacity
+          style={styles.openRokebiTalk}
+          onPress={() => this.openRokebiTalk()}>
+          <Text style={styles.openRokebiTalkText}>
+            {i18n.t('mypage:openRokebiTalk')}
+          </Text>
+          <AppIcon name="imgDokebi2" style={{marginRight: 20}} />
+        </TouchableOpacity>
       </View>
     );
   };
@@ -524,9 +534,7 @@ class MyPageScreen extends Component {
           body={this._modalBody()}
           onOkClose={() => {
             this._showIdModal(false);
-            // this.openRokebiTalk();
           }}
-          onCancelClose={() => this._showIdModal(false)}
           visible={showIdModal}
         />
       </View>
@@ -633,14 +641,10 @@ const styles = StyleSheet.create({
   },
   body: {
     ...appStyles.normal16Text,
-    marginHorizontal: 30,
-    marginVertical: 20,
-    marginTop: 10,
   },
   titleAndStatus: {
     flexDirection: 'row',
-    marginHorizontal: 30,
-    marginVertical: 10,
+    marginBottom: 10,
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: colors.whiteTwo,
@@ -656,13 +660,35 @@ const styles = StyleSheet.create({
     borderColor: colors.whiteTwo,
   },
   titleStyle: {
-    marginHorizontal: 30,
+    marginHorizontal: 20,
     fontSize: 20,
   },
   keyTitle: {
     ...appStyles.normal18Text,
     marginBottom: 10,
     color: colors.warmGrey,
+  },
+  modalBody: {
+    marginVertical: 20,
+    marginHorizontal: 20,
+  },
+  openRokebiTalk: {
+    flexDirection: 'row',
+    height: 70,
+    marginBottom: 10,
+    marginTop: 5,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.white,
+    borderRadius: 1,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+  },
+  openRokebiTalkText: {
+    ...appStyles.normal16Text,
+    color: colors.clearBlue,
+    marginLeft: 20,
   },
 });
 

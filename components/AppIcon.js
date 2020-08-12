@@ -87,6 +87,7 @@ const images = {
   imgAlarm: [require(esimPath + 'imgAlarm.png')],
   btnQr: [require(esimPath + 'btnQr.png')],
   btnPen: [require(esimPath + 'btnPen.png')],
+  imgDokebi2: [require(esimPath + 'imgDokebi2.png')],
 };
 export default class AppIcon extends PureComponent {
   render() {

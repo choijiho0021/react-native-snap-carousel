@@ -516,6 +516,7 @@ const en = {
   'mypage:manualInput:body': 'You can use below ID to login RokebiTalk service',
   'mypage:iccid': 'ICCID',
   'mypage:activationCode': 'Activation Code',
+  'mypage:openRokebiTalk': 'Open RokebiTalk ＞',
 };
 
 const ko = {
@@ -1042,6 +1043,7 @@ const ko = {
     '로밍도깨비 eSM 사용 중 로깨비톡 사용 시 다음 ID를 사용하여 로그인할 수 있습니다',
   'mypage:iccid': 'ICCID',
   'mypage:activationCode': 'Activation Code',
+  'mypage:openRokebiTalk': '로깨비톡 바로가기 ＞',
 };
 
 if (Array.isArray(locales)) {

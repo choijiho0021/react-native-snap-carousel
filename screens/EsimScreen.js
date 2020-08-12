@@ -217,15 +217,15 @@ class EsimScreen extends Component {
 
     if (modal === 'showQR') {
       return (
-        <View>
+        <View style={styles.modalBody}>
           {_.isEmpty(subs.smdpAddr + subs.actCode) ? (
             <View style={styles.center}>
               <Text>{i18n.t('esim:showQR:nothing')}</Text>
             </View>
           ) : (
             <View>
-              <Text style={styles.body}>
-                <Text style={[styles.body, {color: colors.clearBlue}]}>
+              <Text style={appStyles.normal16Text}>
+                <Text style={styles.normal16BlueText}>
                   {i18n.t('esim:showQR:frontBody')}
                 </Text>
                 {i18n.t('esim:showQR:endBody')}
@@ -240,19 +240,21 @@ class EsimScreen extends Component {
     }
 
     return (
-      <View>
-        <Text style={styles.body}>
-          <Text style={[styles.body, {color: colors.clearBlue}]}>
-            {i18n.t('esim:manualInput:bodyPart1')}
+      <View style={styles.modalBody}>
+        <View style={{marginBottom: 20}}>
+          <Text style={appStyles.normal16Text}>
+            <Text style={styles.normal16BlueText}>
+              {i18n.t('esim:manualInput:bodyPart1')}
+            </Text>
+            <Text style={appStyles.normal16Text}>
+              {i18n.t('esim:manualInput:bodyPart2')}
+            </Text>
+            <Text style={styles.normal16BlueText}>
+              {i18n.t('esim:manualInput:bodyPart3')}
+            </Text>
+            {i18n.t('esim:manualInput:bodyPart4')}
           </Text>
-          <Text style={styles.body}>
-            {i18n.t('esim:manualInput:bodyPart2')}
-          </Text>
-          <Text style={[styles.body, {color: colors.clearBlue}]}>
-            {i18n.t('esim:manualInput:bodyPart3')}
-          </Text>
-          {i18n.t('esim:manualInput:bodyPart4')}
-        </Text>
+        </View>
         <View style={styles.titleAndStatus}>
           <View>
             <Text style={styles.esimInfoKey}>{i18n.t('esim:smdp')}</Text>
@@ -357,8 +359,8 @@ const styles = StyleSheet.create({
   },
   center: {
     marginTop: 20,
+    marginBottom: 30,
     alignSelf: 'center',
-    marginVertical: 20,
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor: colors.clearBlue,
@@ -393,8 +395,7 @@ const styles = StyleSheet.create({
   },
   titleAndStatus: {
     flexDirection: 'row',
-    marginHorizontal: 30,
-    marginVertical: 20,
+    marginBottom: 10,
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: colors.whiteTwo,
@@ -444,18 +445,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
   },
-  body: {
-    ...appStyles.normal16Text,
-    marginHorizontal: 30,
-    marginTop: 10,
-  },
   titleStyle: {
-    marginHorizontal: 30,
+    marginHorizontal: 20,
     fontSize: 20,
   },
   esimInfoKey: {
     ...appStyles.normal16Text,
     color: colors.warmGrey,
+    marginBottom: 6,
   },
   btnCopy: {
     backgroundColor: colors.white,
@@ -464,6 +461,14 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor: colors.whiteTwo,
+  },
+  modalBody: {
+    marginVertical: 20,
+    marginHorizontal: 20,
+  },
+  normal16BlueText: {
+    ...appStyles.normal16Text,
+    color: colors.clearBlue,
   },
 });
 
