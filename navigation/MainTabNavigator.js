@@ -42,6 +42,8 @@ import GuideScreen from '../screens/GuideScreen';
 import UsageDetailScreen from '../screens/UsageDetailScreen';
 import AuthStack from './AuthStackNavigator';
 import {connect} from 'react-redux';
+import getEnvVars from '../environment';
+const {esimApp} = getEnvVars();
 
 const HomeStack = createStackNavigator();
 const StoreStack = createStackNavigator();
@@ -190,7 +192,8 @@ const BadgedIcon = withBadge(
 
 const TabNavigator = createBottomTabNavigator();
 
-function tabNavigator({loggedIn}) {
+function tabNavigator({loggedIn, iccid}) {
+  console.log('esimApp', esimApp);
   return (
     <TabNavigator.Navigator
       initialRouteName="HomeStack"
@@ -211,21 +214,23 @@ function tabNavigator({loggedIn}) {
           ),
         })}
       />
-      <TabNavigator.Screen
-        name="StoreStack"
-        component={storeStack}
-        options={({route}) => ({
-          tabBarVisible: route.state && route.state.index == 0,
-          tabBarLabel: i18n.t('store'),
-          tabBarIcon: ({focused}) => (
-            <AppIcon
-              focused={focused}
-              name="btnStore"
-              style={styles.tabBarIcon}
-            />
-          ),
-        })}
-      />
+      {!esimApp && (
+        <TabNavigator.Screen
+          name="StoreStack"
+          component={storeStack}
+          options={({route}) => ({
+            tabBarVisible: route.state && route.state.index == 0,
+            tabBarLabel: i18n.t('store'),
+            tabBarIcon: ({focused}) => (
+              <AppIcon
+                focused={focused}
+                name="btnStore"
+                style={styles.tabBarIcon}
+              />
+            ),
+          })}
+        />
+      )}
       <TabNavigator.Screen
         name="CartStack"
         component={cartStack}
@@ -243,7 +248,9 @@ function tabNavigator({loggedIn}) {
       />
       <TabNavigator.Screen
         name="UsimStack"
-        component={loggedIn ? usimStack : AuthStack}
+        component={
+          loggedIn ? (iccid ? usimStack : RegisterSimScreen) : AuthStack
+        }
         options={({route}) => ({
           tabBarVisible: route.state && route.state.index == 0,
           tabBarLabel: i18n.t('usim'),
@@ -297,4 +304,5 @@ const styles = StyleSheet.create({
 
 export default connect(state => ({
   loggedIn: state.account.get('loggedIn'),
+  iccid: state.account.get('iccid'),
 }))(tabNavigator);

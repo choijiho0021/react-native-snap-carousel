@@ -25,7 +25,7 @@ import SnackBar from 'react-native-snackbar-component';
 import {windowHeight} from '../constants/SliderEntry.style';
 import AppBackButton from '../components/AppBackButton';
 import {isDeviceSize} from '../constants/SliderEntry.style';
-import {snackBarHidingTime} from '../environment';
+import {snackBarHidingTime} from '../constants/Timer';
 
 const sectionTitle = ['sim', 'product'];
 

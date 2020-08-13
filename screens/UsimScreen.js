@@ -30,7 +30,7 @@ import AppActivityIndicator from '../components/AppActivityIndicator';
 import Analytics from 'appcenter-analytics';
 import Svg, {Line} from 'react-native-svg';
 import {API} from 'Rokebi/submodules/rokebi-utils';
-import {snackBarHidingTime} from '../environment';
+import {snackBarHidingTime} from '../constants/Timer';
 import subsApi from '../submodules/rokebi-utils/api/subscriptionApi';
 
 class CardInfo extends Component {
@@ -430,8 +430,6 @@ class UsimScreen extends Component {
   _init(iccid, auth) {
     if (iccid && auth) {
       this.props.action.order.getSubsWithToast(iccid, auth);
-    } else {
-      this.props.navigation.navigate('RegisterSim', {back: 'Home'});
     }
   }
 
