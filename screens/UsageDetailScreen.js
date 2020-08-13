@@ -58,6 +58,9 @@ class UsageDetailScreen extends Component {
 
     this._onSubmit = this._onSubmit.bind(this);
     this._onSubmitModal = this._onSubmitModal.bind(this);
+    this._info = this._info.bind(this);
+    this._callProd = this._callProd.bind(this);
+    this._dataProd = this._dataProd.bind(this);
   }
 
   componentDidMount() {
@@ -123,20 +126,71 @@ class UsageDetailScreen extends Component {
     }
 
     this.setState({showModal: false, modal});
+    this.props.navigation.goBack();
   }
 
-  render() {
+  _info() {
     const {
       prodName,
       activationDate,
       endDate,
       expireDate,
       purchaseDate,
-      statusCd,
-      showModal,
-      modal,
-      price,
-    } = this.state || {};
+    } = this.state;
+
+    return (
+      <View style={styles.container}>
+        <Text style={styles.notice}>{i18n.t('his:timeStd')}</Text>
+        <Text style={styles.title}>{prodName}</Text>
+        <View style={styles.divider} />
+
+        <LabelText
+          style={styles.info}
+          valueStyle={{color: colors.black}}
+          label={i18n.t('his:purchaseDate')}
+          value={utils.toDateString(purchaseDate)}
+        />
+        <LabelText
+          style={styles.info}
+          valueStyle={{color: colors.black}}
+          label={i18n.t('his:activationDate')}
+          value={
+            activationDate
+              ? utils.toDateString(activationDate)
+              : i18n.t('his:inactive')
+          }
+        />
+        <LabelText
+          style={styles.info}
+          valueStyle={{color: colors.black}}
+          label={i18n.t('his:termDate')}
+          value={endDate ? utils.toDateString(endDate) : i18n.t('his:inactive')}
+        />
+        <LabelText
+          style={styles.info}
+          valueStyle={{color: colors.black}}
+          label={i18n.t('his:expireDate')}
+          value={utils.toDateString(expireDate, 'LL')}
+        />
+      </View>
+    );
+  }
+
+  _callProd() {
+    return (
+      <View style={{flexDirection: 'row'}}>
+        <AppButton
+          style={styles.confirm}
+          title={i18n.t('ok')}
+          titleStyle={appStyles.confirmText}
+          onPress={() => this.props.navigation.goBack()}
+        />
+      </View>
+    );
+  }
+
+  _dataProd() {
+    const {statusCd} = this.state;
     const [buttonTitle, targetStatus, disable] = this.statusMap.hasOwnProperty(
       statusCd,
     )
@@ -144,76 +198,52 @@ class UsageDetailScreen extends Component {
       : [i18n.t('ok'), undefined, false];
 
     return (
+      <View style={{flexDirection: 'row'}}>
+        {statusCd == subsApi.STATUS_RESERVED && (
+          <AppButton
+            style={[styles.confirm, {backgroundColor: colors.white}]}
+            title={i18n.t('reg:cancelReservation')}
+            titleStyle={[appStyles.confirmText, {color: colors.black}]}
+            style={{borderWidth: 1, borderColor: colors.lightGrey, flex: 1}}
+            onPress={() => this._onSubmit(subsApi.STATUS_INACTIVE)}
+          />
+        )}
+        {statusCd == subsApi.STATUS_INACTIVE && (
+          <AppButton
+            style={[styles.confirm, {backgroundColor: colors.white}]}
+            title={i18n.t('reg:toRokebiCash')}
+            titleStyle={[appStyles.confirmText, {color: colors.black}]}
+            style={{borderWidth: 1, borderColor: colors.lightGrey, flex: 1}}
+            onPress={() => this._showModal(true, deactivateBtn)}
+          />
+        )}
+        <AppButton
+          style={styles.confirm}
+          title={buttonTitle}
+          titleStyle={appStyles.confirmText}
+          disabled={disable}
+          onPress={() =>
+            targetStatus == subsApi.STATUS_ACTIVE
+              ? this._showModal(true, activateBtn)
+              : this._onSubmit(targetStatus)
+          }
+        />
+      </View>
+    );
+  }
+
+  render() {
+    const {showModal, modal, price, type} = this.state || {};
+
+    const isCallProduct = type === subsApi.CALL_PRODUCT;
+
+    return (
       <SafeAreaView
         style={styles.container}
         forceInset={{top: 'never', bottom: 'always'}}>
         <AppActivityIndicator visible={this.props.pending} />
-        <View style={styles.container}>
-          <Text style={styles.notice}>{i18n.t('his:timeStd')}</Text>
-          <Text style={styles.title}>{prodName}</Text>
-          <View style={styles.divider} />
-          <LabelText
-            style={styles.info}
-            valueStyle={{color: colors.black}}
-            label={i18n.t('his:purchaseDate')}
-            value={utils.toDateString(purchaseDate)}
-          />
-          <LabelText
-            style={styles.info}
-            valueStyle={{color: colors.black}}
-            label={i18n.t('his:activationDate')}
-            value={
-              activationDate
-                ? utils.toDateString(activationDate)
-                : i18n.t('his:inactive')
-            }
-          />
-          <LabelText
-            style={styles.info}
-            valueStyle={{color: colors.black}}
-            label={i18n.t('his:termDate')}
-            value={
-              endDate ? utils.toDateString(endDate) : i18n.t('his:inactive')
-            }
-          />
-          <LabelText
-            style={styles.info}
-            valueStyle={{color: colors.black}}
-            label={i18n.t('his:expireDate')}
-            value={utils.toDateString(expireDate, 'LL')}
-          />
-        </View>
-        <View style={{flexDirection: 'row'}}>
-          {statusCd == subsApi.STATUS_RESERVED && (
-            <AppButton
-              style={[styles.confirm, {backgroundColor: colors.white}]}
-              title={i18n.t('reg:cancelReservation')}
-              titleStyle={[appStyles.confirmText, {color: colors.black}]}
-              style={{borderWidth: 1, borderColor: colors.lightGrey, flex: 1}}
-              onPress={() => this._onSubmit(subsApi.STATUS_INACTIVE)}
-            />
-          )}
-          {statusCd == subsApi.STATUS_INACTIVE && (
-            <AppButton
-              style={[styles.confirm, {backgroundColor: colors.white}]}
-              title={i18n.t('reg:toRokebiCash')}
-              titleStyle={[appStyles.confirmText, {color: colors.black}]}
-              style={{borderWidth: 1, borderColor: colors.lightGrey, flex: 1}}
-              onPress={() => this._showModal(true, deactivateBtn)}
-            />
-          )}
-          <AppButton
-            style={styles.confirm}
-            title={buttonTitle}
-            titleStyle={appStyles.confirmText}
-            disabled={disable}
-            onPress={() =>
-              targetStatus == subsApi.STATUS_ACTIVE
-                ? this._showModal(true, activateBtn)
-                : this._onSubmit(targetStatus)
-            }
-          />
-        </View>
+        {this._info()}
+        {isCallProduct ? this._callProd() : this._dataProd()}
         <AppModal
           title={
             modal == activateBtn
@@ -222,7 +252,9 @@ class UsageDetailScreen extends Component {
           }
           onOkClose={() => this._onSubmitModal(modal)}
           onCancelClose={() => this._showModal(false)}
-          toRokebiCash={utils.numberToCommaString(price)}
+          toRokebiCash={
+            modal == deactivateBtn && utils.numberToCommaString(price)
+          }
           visible={showModal}
         />
       </SafeAreaView>
@@ -276,9 +308,8 @@ const mapStateToProps = state => ({
   auth: accountActions.auth(state.account),
   order: state.order.toObject(),
   pending:
-    state.pender.pending[orderActions.GET_SUBS] ||
-    state.pender.pending[orderActions.UPDATE_USAGE] ||
-    false,
+    // state.pender.pending[orderActions.GET_SUBS] ||
+    state.pender.pending[orderActions.UPDATE_USAGE] || false,
 });
 
 export default connect(
