@@ -1,9 +1,9 @@
 import {Platform} from 'react-native';
 
 const impId = 'imp53913318';
-const codePushiOSStagLabel = 'v123';
+const codePushiOSStagLabel = 'v125';
 const codePushiOSProdLabel = 'v0';
-const codePushAndStagLabel = 'v116';
+const codePushAndStagLabel = 'v118';
 const codePushAndProdLabel = 'v0';
 const channelId = '_nzQhxb';
 
@@ -12,9 +12,9 @@ export const snackBarHidingTime = 3000;
 const ENV = {
   dev: {
     // scheme: 'https',
-    // rokApiUrl: "service.rokebi.com",
-    // apiUrl: "api.rokebi.com",
-    // baseUrl: "https://www.rokebi.com",
+    // rokApiUrl: 'service.rokebi.com',
+    // apiUrl: 'api.rokebi.com',
+    // baseUrl: 'https://www.rokebi.com',
     scheme: 'http',
     rokApiUrl: 'tb.service.rokebi.com',
     apiUrl: 'esim2-tb-v3.ap-northeast-2.elasticbeanstalk.com',
