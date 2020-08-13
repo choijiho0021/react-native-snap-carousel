@@ -243,7 +243,7 @@ function tabNavigator({loggedIn}) {
       />
       <TabNavigator.Screen
         name="UsimStack"
-        component={usimStack}
+        component={loggedIn ? usimStack : AuthStack}
         options={({route}) => ({
           tabBarVisible: route.state && route.state.index == 0,
           tabBarLabel: i18n.t('usim'),
