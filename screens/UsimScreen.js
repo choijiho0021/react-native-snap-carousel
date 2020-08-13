@@ -392,6 +392,7 @@ class UsimScreen extends Component {
     this.state = {
       refreshing: false,
       showSnackBar: false,
+      updatePending: undefined,
       // isFocused: false,
       // afterLogin: false,
     };
@@ -413,14 +414,17 @@ class UsimScreen extends Component {
         account: {iccid, token},
         lastTab,
         loginPending,
+        updatePending,
       } = this.props,
       routeName = this.props.route.name,
       isFocusedToUsimTab =
         (lastTab[0] || '').startsWith(routeName) &&
-        lastTab[0] !== prevProps.lastTab[0];
+        lastTab[0] !== prevProps.lastTab[0],
+      updateSubs = !updatePending && prevProps.updatePending != updatePending;
 
     if (
-      (isFocusedToUsimTab && !loginPending) ||
+      updateSubs ||
+      (isFocusedToUsimTab && !loginPending && !updatePending) ||
       (prevProps.account.iccid && iccid !== prevProps.account.iccid)
     ) {
       this._init(iccid, {token});
@@ -731,6 +735,7 @@ const mapStateToProps = state => ({
     state.pender.pending[accountActions.GET_ACCOUNT] ||
     false,
   pending: state.pender.pending[orderActions.GET_SUBS] || false,
+  updatePending: state.pender.pending[orderActions.UPDATE_USAGE] || false,
   sync: state.sync.toJS(),
   lastTab: state.cart.get('lastTab').toJS(),
 });
