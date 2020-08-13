@@ -390,18 +390,13 @@ class UsimScreen extends Component {
   }
 
   componentDidMount() {
-    const {
-      account: {iccid},
-      auth,
-    } = this.props;
-
-    this._init(iccid, auth);
+    const {iccid, token} = this.props.account;
+    this._init(iccid, {token});
   }
 
   componentDidUpdate(prevProps) {
     const {
-        account: {iccid},
-        auth,
+        account: {iccid, token},
         lastTab,
         loginPending,
       } = this.props,
@@ -414,15 +409,13 @@ class UsimScreen extends Component {
       (isFocusedToUsimTab && !loginPending) ||
       (prevProps.account.iccid && iccid !== prevProps.account.iccid)
     ) {
-      this._init(iccid, auth);
+      this._init(iccid, {token});
     }
   }
 
   _init(iccid, auth) {
     if (iccid && auth) {
       this.props.action.order.getSubsWithToast(iccid, auth);
-    } else {
-      this.props.navigation.navigate('RegisterSim', {back: 'Home'});
     }
   }
 
