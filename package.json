@@ -53,7 +53,7 @@
     "react-native-gesture-handler": "^1.6.1",
     "react-native-image-crop-picker": "^0.26.2",
     "react-native-keyboard-aware-scroll-view": "^0.9.1",
-    "react-native-localize": "^1.4.0",
+    "react-native-localize": "^1.4.1",
     "react-native-material-textfield": "git+https://github.com/javarahulsharma/react-native-material-textfield.git",
     "react-native-pagination": "^1.5.5",
     "react-native-permissions": "^2.1.5",
