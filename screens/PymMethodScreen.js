@@ -26,7 +26,7 @@ import Analytics from 'appcenter-analytics';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import api from '../submodules/rokebi-utils/api/api';
 import AppAlert from '../components/AppAlert';
-
+import PaymentResult from '../submodules/rokebi-utils/models/paymentResult';
 const deliveryText = API.Order.deliveryText;
 
 class PymMethodScreen extends Component {
@@ -178,7 +178,7 @@ class PymMethodScreen extends Component {
         dlvCost,
         memo,
         payment_type: 'rokebi_cash',
-      };
+      });
 
       // payNorder에서 재고 확인 - resp.result값으로 비교
       this.props.action.cart.payNorder(response).then(resp => {

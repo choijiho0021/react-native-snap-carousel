@@ -213,27 +213,8 @@ class CountryScreen extends Component {
                   pending: false,
                 });
               });
-            break;
-          case 'purchase':
-            this.props.action.cart
-              .checkStockAndPurchase([addProduct], false, balance)
-              .then(resp => {
-                if (resp.result == 0) {
-                  this.props.navigation.navigate('PymMethod', {
-                    mode: 'Roaming Product',
-                  });
-                } else {
-                  this._soldOut(resp, 'cart:soldOut');
-                }
-              })
-              .catch(err => {
-                console.log('failed to check stock', err);
-              });
-            break;
-          case 'regCard':
-            this.props.navigation.navigate('RegisterSim');
-        }
-      }
+          }
+        });
     }
   };
 
