@@ -1,6 +1,4 @@
-import promotionApi from '../submodules/rokebi-utils/api/promotionApi';
-import notiApi from '../submodules/rokebi-utils/api/notiApi';
-import userApi from '../submodules/rokebi-utils/api/userApi';
+import {API} from '../submodules/rokebi-utils';
 import 'isomorphic-fetch';
 
 /*
@@ -42,14 +40,22 @@ HomeScreen Test
         Check Result
 */
 
-const mobile = '01030327602';
-const password = '000000';
 let token = '';
+let unreadNotiIdx = 0;
+
+const auth = {
+  token,
+  iccid: '1111111111111111112',
+  mail: 'test@test.com',
+  user: '01030327602',
+  pass: '000000',
+  cookie: '',
+};
 
 describe('HomeScreen Test', () => {
   describe('Promotion Banner', () => {
     it(`Get Promotion`, () => {
-      return promotionApi.getPromotion().then(resp => {
+      return API.Promotion.getPromotion().then(resp => {
         // console.log('Promotion ', resp);
         expect(resp.result).toEqual(0);
         expect(resp.objects.length).toBeGreaterThan(0);
@@ -59,31 +65,34 @@ describe('HomeScreen Test', () => {
 
   //로그인필요
   describe('Title Menu', () => {
-    it(`Log in`, () => {
-      return userApi.logIn(mobile, password).then(resp => {
-        token = resp.objects[0].csrf_token;
-        console.log('Noti List ', resp);
-        // expect(resp.objects.length).toBeGreaterThan(0);
-        // expect(noti.name).toEqual(iccid);
-        expect('1').toEqual('1');
-      });
+    it('010-1000-2000번으로 로그인 성공', async () => {
+      const resp = await API.User.logIn(auth.user, auth.pass, false);
+      expect(resp.result).toEqual(0);
+      expect(resp.objects.length).toBeGreaterThan(0);
+      expect(resp.objects[0]).toHaveProperty('csrf_token');
+      expect(resp.objects[0]).toHaveProperty('current_user');
+      expect(resp.objects[0]).toHaveProperty('cookie');
+      const cookie = resp.objects[0].cookie;
+      auth.cookie = cookie.substr(0, cookie.indexOf(';'));
+      auth.token = resp.objects[0].csrf_token;
     });
 
-    it(`Get noti`, () => {
-      return notiApi.getNoti(mobile).then(resp => {
-        console.log('Noti List ', resp);
+    it(`Get noti`, async () => {
+      const resp = await API.Noti.getNoti(auth.user, auth);
+
+      console.log('Noti List ', resp);
+      expect(resp.result).toEqual(0);
+      expect(resp.objects.length).toBeGreaterThan(0);
+      unreadNotiIdx = resp.objects.findIndex(elm => elm.isRead == 'F');
+    });
+
+    it(`Read Noti`, () => {
+      return notiApi.read().then(resp => {
         // expect(resp.objects.length).toBeGreaterThan(0);
         // expect(noti.name).toEqual(iccid);
         expect('1').toEqual('1');
       });
     });
-    // it(`Read Noti`, () => {
-    //   return notiApi.read().then(resp => {
-    //     // expect(resp.objects.length).toBeGreaterThan(0);
-    //     // expect(noti.name).toEqual(iccid);
-    //     expect('1').toEqual('1');
-    //   });
-    // });
   });
 });
 

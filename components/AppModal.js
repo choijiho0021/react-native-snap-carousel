@@ -5,11 +5,8 @@ import i18n from '../utils/i18n';
 import {colors} from '../constants/Colors';
 import AppButton from './AppButton';
 import validationUtil from '../utils/validationUtil';
-<<<<<<< HEAD
 import AppIcon from './AppIcon';
 
-=======
->>>>>>> 9e291d5c8901135a13b0a882452e5f65b7830aed
 import _ from 'underscore';
 
 class AppModal extends PureComponent {
@@ -96,7 +93,6 @@ class AppModal extends PureComponent {
     const {value, error} = this.state;
     const {
       title,
-<<<<<<< HEAD
       titleStyle,
       titleIcon,
       body,
@@ -105,18 +101,11 @@ class AppModal extends PureComponent {
       keyboardType = 'default',
       toRokebiCash = undefined,
       closeButtonTitle = i18n.t('close'),
-=======
-      type,
-      maxLength = undefined,
-      keyboardType = 'default',
-      toRokebiCash = undefined,
->>>>>>> 9e291d5c8901135a13b0a882452e5f65b7830aed
     } = this.props;
 
     return (
       <Modal
         animationType="fade"
-<<<<<<< HEAD
         transparent={true}
         visible={this.props.visible}>
         <View style={appStyles.modal}>
@@ -124,14 +113,6 @@ class AppModal extends PureComponent {
             {titleIcon && <AppIcon name={titleIcon} style={styles.icon} />}
             {title && <Text style={titleStyle || styles.title}>{title}</Text>}
             {!_.isUndefined(toRokebiCash) && (
-=======
-        transparent={false}
-        visible={this.props.visible}>
-        <View style={appStyles.modal}>
-          <View style={styles.inner}>
-            {title && <Text style={styles.title}>{title}</Text>}
-            {!_.isEmpty(toRokebiCash) && (
->>>>>>> 9e291d5c8901135a13b0a882452e5f65b7830aed
               <View style={{marginTop: 30}}>
                 <Text style={styles.blueCenter}>
                   {i18n.t('usim:toRokebiCash')}
@@ -141,14 +122,11 @@ class AppModal extends PureComponent {
                 </Text>
               </View>
             )}
-<<<<<<< HEAD
             {typeof body === 'string' ? (
               <Text style={styles.body}>{body}</Text>
             ) : typeof body === 'function' ? (
               body()
             ) : null}
-=======
->>>>>>> 9e291d5c8901135a13b0a882452e5f65b7830aed
             {this.props.mode == 'edit' && (
               <View style={styles.inputBox}>
                 <TextInput
@@ -170,7 +148,6 @@ class AppModal extends PureComponent {
             )}
             {this._renderError()}
 
-<<<<<<< HEAD
             {type == 'close' && (
               <View style={{marginHorizontal: 20}}>
                 <AppButton
@@ -208,31 +185,6 @@ class AppModal extends PureComponent {
                 />
               </View>
             )}
-=======
-            <View style={styles.row}>
-              {type === 'info' ? null : (
-                <AppButton
-                  style={styles.button}
-                  onPress={() => this._onCancelClose()}
-                  title={i18n.t('cancel')}
-                  titleStyle={styles.buttonTitle}
-                />
-              )}
-
-              <AppButton
-                style={styles.button}
-                disabled={!_.isEmpty(error)}
-                onPress={this._onSubmit}
-                title={i18n.t('ok')}
-                disableBackgroundColor={colors.white}
-                disableColor={colors.warmGrey}
-                titleStyle={{
-                  ...styles.buttonTitle,
-                  color: _.isEmpty(error) ? colors.clearBlue : colors.warmGrey,
-                }}
-              />
-            </View>
->>>>>>> 9e291d5c8901135a13b0a882452e5f65b7830aed
           </View>
         </View>
       </Modal>
@@ -256,7 +208,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     width: 65,
     height: 36,
-<<<<<<< HEAD
   },
   closeButton: {
     width: '100%',
@@ -271,11 +222,6 @@ const styles = StyleSheet.create({
   },
   buttonTitle: {
     ...appStyles.normal18Text,
-=======
-  },
-  buttonTitle: {
-    ...appStyles.normal16Text,
->>>>>>> 9e291d5c8901135a13b0a882452e5f65b7830aed
     textAlign: 'right',
     width: '100%',
   },
@@ -313,13 +259,10 @@ const styles = StyleSheet.create({
     ...appStyles.modalInner,
     paddingVertical: 25,
   },
-<<<<<<< HEAD
   icon: {
     marginVertical: 15,
     marginHorizontal: 20,
   },
-=======
->>>>>>> 9e291d5c8901135a13b0a882452e5f65b7830aed
 });
 
 export default AppModal;

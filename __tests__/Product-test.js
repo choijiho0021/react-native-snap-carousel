@@ -1,13 +1,16 @@
 import {API} from '../submodules/rokebi-utils';
 import 'isomorphic-fetch';
+import PaymentResult from '../submodules/rokebi-utils/models/paymentResult';
 
 let prod = null;
 const sku = 'rm-kr-3-1g';
 const auth = {
   token,
-  iccid: '1234512345123451234',
+  iccid: '1111111111111111112',
   mail: 'test@test.com',
-  user: '01010002000',
+  user: '01030327602',
+  pass: '000000',
+  cookie: '',
 };
 
 describe('로그인 안 한 상태에서의 테스트', () => {
@@ -40,25 +43,35 @@ let token = '';
 
 describe('로그인 후 테스트', () => {
   it('010-1000-2000번으로 로그인 성공', async () => {
-    const user = '01010002000';
-    const pass = '000000';
-    const resp = await API.User.logIn(user, pass, false);
+    const resp = await API.User.logIn(auth.user, auth.pass, false);
     expect(resp.result).toEqual(0);
     expect(resp.objects.length).toBeGreaterThan(0);
     expect(resp.objects[0]).toHaveProperty('csrf_token');
     expect(resp.objects[0]).toHaveProperty('current_user');
-    token = resp.objects[0].csrf_token;
+    expect(resp.objects[0]).toHaveProperty('cookie');
+    const cookie = resp.objects[0].cookie;
+    auth.cookie = cookie.substr(0, cookie.indexOf(';'));
+    auth.token = resp.objects[0].csrf_token;
   });
 
   it('check variables', () => {
-    console.log('token', token);
-    console.log('prod', prod);
-    expect(token).not.toEqual('');
+    expect(auth.token).not.toEqual('');
     expect(prod).not.toBeNull();
   });
 
   it('상품을 구매한다:' + sku, async () => {
     const purchaseItem = API.Product.toPurchaseItem(prod);
-    const resp = await API.Cart.makeOrder([purchaseItem], [], auth);
+    const paymentResult = PaymentResult.createForRokebiCash({
+      impId: 'test',
+      mobile: auth.user,
+      profileId: '0',
+      deduct: 1,
+      dlvCost: 0,
+      memo: 'test',
+      digital: true,
+    });
+    const resp = await API.Cart.makeOrder([purchaseItem], paymentResult, auth);
+    console.log('purchase', auth, resp);
+    expect(resp.result).toEqual(0);
   });
 });
