@@ -24,6 +24,7 @@ import AppIcon from '../components/AppIcon';
 import Video from 'react-native-video';
 import Analytics from 'appcenter-analytics';
 import {API} from 'Rokebi/submodules/rokebi-utils';
+import PaymentResult from '../submodules/rokebi-utils/models/paymentResult';
 
 const deliveryText = API.Order.deliveryText;
 
@@ -169,18 +170,15 @@ class PymMethodScreen extends Component {
       });
       await this.props.navigation.setParams({isPaid: true});
       const {impId} = getEnvVars();
-      const response = {
-        success: true,
-        imp_uid: impId,
-        merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
-        profile_uuid: profileId,
-        amount: 0,
-        rokebi_cash: deduct,
+      const response = PaymentResult.createForRokebiCash({
+        impId,
+        mobile,
+        profileId,
+        deduct,
         dlvCost,
-        digital: !simIncluded,
         memo,
-        payment_type: 'rokebi_cash',
-      };
+        digital: !simIncluded,
+      });
       const orderResult = await this.props.action.cart.payNorder(response);
       // 최종 결제 처리 과정에서 실패할 수 있다. pymResult.result 값이 0인지 다시 확인한다.
       this.props.navigation.replace('PaymentResult', {
