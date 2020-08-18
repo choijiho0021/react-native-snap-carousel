@@ -41,7 +41,7 @@ HomeScreen Test
 */
 
 let token = '';
-let unreadNotiIdx = 0;
+let unreadNoti = {};
 
 const auth = {
   token,
@@ -56,15 +56,13 @@ describe('HomeScreen Test', () => {
   describe('Promotion Banner', () => {
     it(`Get Promotion`, () => {
       return API.Promotion.getPromotion().then(resp => {
-        // console.log('Promotion ', resp);
         expect(resp.result).toEqual(0);
         expect(resp.objects.length).toBeGreaterThan(0);
       });
     });
   });
 
-  //로그인필요
-  describe('Title Menu', () => {
+  describe('Title Noti Menu', () => {
     it('010-1000-2000번으로 로그인 성공', async () => {
       const resp = await API.User.logIn(auth.user, auth.pass, false);
       expect(resp.result).toEqual(0);
@@ -80,74 +78,54 @@ describe('HomeScreen Test', () => {
     it(`Get noti`, async () => {
       const resp = await API.Noti.getNoti(auth.user, auth);
 
-      console.log('Noti List ', resp);
       expect(resp.result).toEqual(0);
       expect(resp.objects.length).toBeGreaterThan(0);
-      unreadNotiIdx = resp.objects.findIndex(elm => elm.isRead == 'F');
+      unreadNoti = resp.objects.find(elm => elm.isRead == 'F') || {};
     });
 
-    it(`Read Noti`, () => {
-      return notiApi.read().then(resp => {
-        // expect(resp.objects.length).toBeGreaterThan(0);
-        // expect(noti.name).toEqual(iccid);
-        expect('1').toEqual('1');
-      });
+    it(`Read Noti`, async () => {
+      const resp = await API.Noti.read(unreadNoti.uuid, auth);
+      expect(resp.result).toEqual(0);
+      expect(resp.objects.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Title Contact Menu', () => {
+    it(`Get notification`, async () => {
+      const resp = await API.Page.getPageByCategory('info');
+      expect(resp.result).toEqual(0);
+      expect(resp.objects.length).toBeGreaterThan(0);
+    });
+
+    it(`FAQ config`, async () => {
+      const resp = await API.Page.getPageByCategory('faq:config');
+      expect(resp.result).toEqual(0);
+      expect(resp.objects.length).toBeGreaterThan(0);
+    });
+
+    it(`FAQ payment`, async () => {
+      const resp = await API.Page.getPageByCategory('faq:payment');
+      expect(resp.result).toEqual(0);
+      expect(resp.objects.length).toBeGreaterThan(0);
+    });
+
+    it(`FAQ etc`, async () => {
+      const resp = await API.Page.getPageByCategory('faq:etc');
+      expect(resp.result).toEqual(0);
+      expect(resp.objects.length).toBeGreaterThan(0);
+    });
+
+    it(`FAQ tip`, async () => {
+      const resp = await API.Page.getPageByCategory('faq:tip');
+      expect(resp.result).toEqual(0);
+      expect(resp.objects.length).toBeGreaterThan(0);
+    });
+
+    it(`Add 1:1 Request`, async () => {
+      const resp = await API.Page.getPageByCategory('faq:tip');
+      console.log('aaaaa resp', resp);
+      expect(resp.result).toEqual(0);
+      expect(resp.objects.length).toBeGreaterThan(0);
     });
   });
 });
-
-// describe('Contact Menu', () => {
-// it(`Get Notification`, () => {
-//   return promotionApi.getPromotion().then(resp => {
-//     // expect(resp.objects.length).toBeGreaterThan(0);
-//     // expect(noti.name).toEqual(iccid);
-//     expect('1').toEqual('1');
-//   });
-// });
-
-// it(`Get FAQ List`, () => {
-//   return promotionApi.getPromotion().then(resp => {
-//     // expect(resp.objects.length).toBeGreaterThan(0);
-//     // expect(noti.name).toEqual(iccid);
-//     expect('1').toEqual('1');
-//   });
-// });
-
-// it(`1:1 request`, () => {
-//   return promotionApi.getPromotion().then(resp => {
-//     // expect(resp.objects.length).toBeGreaterThan(0);
-//     // expect(noti.name).toEqual(iccid);
-//     expect('1').toEqual('1');
-//   });
-// });
-
-// it(`1:1 request`, () => {
-//   return promotionApi.getPromotion().then(resp => {
-//     // expect(resp.objects.length).toBeGreaterThan(0);
-//     // expect(noti.name).toEqual(iccid);
-//     expect('1').toEqual('1');
-//   });
-// });
-//   });
-// });
-
-// describe('Product TabView', () => {
-// it('Get Product List', () => {
-//   return promotionApi.getPromotion().then(resp => {
-//     expect('1').toEqual('1');
-//   });
-// });
-
-// it('Get Product Detail info', () => {
-//   return promotionApi.getPromotion().then(resp => {
-//     expect('1').toEqual('1');
-//   });
-// });
-
-// it('Log in', () => {
-//   return promotionApi.getPromotion().then(resp => {
-//     expect('1').toEqual('1');
-//   });
-// });
-// });
-// });
