@@ -150,6 +150,8 @@ class UsageItem extends Component {
     };
     this.usageRender = this.usageRender.bind(this);
     this.getUsage = this.getUsage.bind(this);
+    this._expire = this._expire.bind(this);
+    this._expireBeforeUse = this._expireBeforeUse.bind(this);
 
     this.circularProgress = React.createRef();
   }
@@ -290,6 +292,31 @@ class UsageItem extends Component {
     );
   }
 
+  _expire(item) {
+    return (
+      <View style={styles.endDateContainer}>
+        <Text style={appStyles.normal12Text}>{i18n.t('usim:usingTime')}</Text>
+        <Text style={styles.usageUntil}>{`${utils.toDateString(
+          item.endDate,
+        )} ${i18n.t('usim:until')}`}</Text>
+      </View>
+    );
+  }
+
+  _expireBeforeUse(item) {
+    return (
+      <View style={styles.inactiveContainer}>
+        <Text style={appStyles.normal12Text}>
+          {i18n.t('usim:usablePeriod')}
+        </Text>
+        <Text style={styles.usagePeriod}>{`${utils.toDateString(
+          item.purchaseDate,
+          'YYYY-MM-DD',
+        )} ~ ${item.expireDate}`}</Text>
+      </View>
+    );
+  }
+
   render() {
     const {item, onPress} = this.props;
     const {isShowUsage = false} = this.state;
@@ -297,6 +324,7 @@ class UsageItem extends Component {
       statusColor = colors.warmGrey,
       isActive = false,
     } = this.getStatusColor(item.statusCd);
+    const isCallProduct = item.type === subsApi.CALL_PRODUCT;
 
     return (
       <TouchableOpacity onPress={onPress}>
@@ -321,44 +349,30 @@ class UsageItem extends Component {
           </View>
           {item.statusCd == 'A' ? (
             <View>
-              <View style={styles.topOfActiveContainer}>
-                {isShowUsage ? this.usageRender() : this.checkUsageButton()}
-                <Text style={styles.warning}>{i18n.t('usim:warning')}</Text>
-              </View>
-              <View style={styles.bottomOfActiveContainer}>
-                <Svg height={2} width={'100%'}>
-                  <Line
-                    style={{marginLeft: 2}}
-                    stroke={colors.warmGrey}
-                    strokeWidth="2"
-                    strokeDasharray="5, 5"
-                    x1={'2%'}
-                    y1={'0'}
-                    x2={'98%'}
-                    y2={'0'}
-                  />
-                </Svg>
-                <View style={styles.endDateContainer}>
-                  <Text style={appStyles.normal12Text}>
-                    {i18n.t('usim:usingTime')}
-                  </Text>
-                  <Text style={styles.usageUntil}>{`${utils.toDateString(
-                    item.endDate,
-                    'YYYY-MM-DD h:mm',
-                  )} ${i18n.t('usim:until')}`}</Text>
+              {!isCallProduct && (
+                <View style={styles.topOfActiveContainer}>
+                  {isShowUsage ? this.usageRender() : this.checkUsageButton()}
+                  <Text style={styles.warning}>{i18n.t('usim:warning')}</Text>
+                  <Svg height={2} width={'100%'}>
+                    <Line
+                      style={{marginLeft: 2}}
+                      stroke={colors.warmGrey}
+                      strokeWidth="2"
+                      strokeDasharray="5, 5"
+                      x1={'2%'}
+                      y1={'0'}
+                      x2={'98%'}
+                      y2={'0'}
+                    />
+                  </Svg>
                 </View>
+              )}
+              <View style={styles.bottomOfActiveContainer}>
+                {this._expire(item)}
               </View>
             </View>
           ) : (
-            <View style={styles.inactiveContainer}>
-              <Text style={appStyles.normal12Text}>
-                {i18n.t('usim:usablePeriod')}
-              </Text>
-              <Text style={styles.usagePeriod}>{`${utils.toDateString(
-                item.purchaseDate,
-                'YYYY-MM-DD',
-              )} ~ ${item.expireDate}`}</Text>
-            </View>
+            this._expireBeforeUse(item)
           )}
         </View>
       </TouchableOpacity>
@@ -378,7 +392,8 @@ class UsimScreen extends Component {
     this.state = {
       refreshing: false,
       showSnackBar: false,
-      isFocused: false,
+      updatePending: undefined,
+      // isFocused: false,
       // afterLogin: false,
     };
 
@@ -390,39 +405,35 @@ class UsimScreen extends Component {
   }
 
   componentDidMount() {
-    const {
-      account: {iccid},
-      auth,
-    } = this.props;
-
-    this._init(iccid, auth);
+    const {iccid, token} = this.props.account;
+    this._init(iccid, {token});
   }
 
   componentDidUpdate(prevProps) {
     const {
-        account: {iccid},
-        auth,
+        account: {iccid, token},
         lastTab,
         loginPending,
+        updatePending,
       } = this.props,
       routeName = this.props.route.name,
       isFocusedToUsimTab =
         (lastTab[0] || '').startsWith(routeName) &&
-        lastTab[0] !== prevProps.lastTab[0];
+        lastTab[0] !== prevProps.lastTab[0],
+      updateSubs = !updatePending && prevProps.updatePending != updatePending;
 
     if (
-      (isFocusedToUsimTab && !loginPending) ||
+      updateSubs ||
+      (isFocusedToUsimTab && !loginPending && !updatePending) ||
       (prevProps.account.iccid && iccid !== prevProps.account.iccid)
     ) {
-      this._init(iccid, auth);
+      this._init(iccid, {token});
     }
   }
 
   _init(iccid, auth) {
     if (iccid && auth) {
       this.props.action.order.getSubsWithToast(iccid, auth);
-    } else {
-      this.props.navigation.navigate('RegisterSim', {back: 'Home'});
     }
   }
 
@@ -724,6 +735,7 @@ const mapStateToProps = state => ({
     state.pender.pending[accountActions.GET_ACCOUNT] ||
     false,
   pending: state.pender.pending[orderActions.GET_SUBS] || false,
+  updatePending: state.pender.pending[orderActions.UPDATE_USAGE] || false,
   sync: state.sync.toJS(),
   lastTab: state.cart.get('lastTab').toJS(),
 });

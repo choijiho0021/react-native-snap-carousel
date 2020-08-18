@@ -5,8 +5,8 @@ const impId = 'imp53913318';
 // rokebi esim App
 const appId = 'esim';
 const codePushLabel = {
-  stagingIOS: "v9",
-  stagingAndroid: "v9",
+  stagingIOS: 'v9',
+  stagingAndroid: 'v9',
   productionIOS: 'v0',
   productionAndroid: 'v0',
 };
@@ -103,5 +103,5 @@ const ENV = {
 export default function() {
   if (process.env.NODE_ENV == 'production') return ENV[appId].prod;
   if (process.env.NODE_ENV == 'staging') return ENV[appId].staging;
-  return ENV[appId].dev;
+  return ENV[appId].prod;
 }

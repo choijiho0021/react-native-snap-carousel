@@ -1,12 +1,12 @@
 const getLocales = () => [
   // you can choose / add the locales you want
-  {countryCode: 'KR', languageTag: 'ko-KR', languageCode: 'ko', isRTL: false},
   {countryCode: 'US', languageTag: 'en-US', languageCode: 'en', isRTL: false},
+  {countryCode: 'KR', languageTag: 'ko-KR', languageCode: 'ko', isRTL: false},
 ];
 
 // use a provided translation, or return undefined to test your fallback
 const findBestAvailableLanguage = () => ({
-  languageTag: 'en-US',
+  languageTag: 'ko-KR',
   isRTL: false,
 });
 
@@ -17,7 +17,7 @@ const getNumberFormatSettings = () => ({
 
 const getCalendar = () => 'gregorian'; // or "japanese", "buddhist"
 const getCountry = () => 'KR'; // the country code you want
-const getCurrencies = () => ['USD', 'EUR']; // can be empty array
+const getCurrencies = () => ['USD', 'KRW']; // can be empty array
 const getTemperatureUnit = () => 'celsius'; // or "fahrenheit"
 const getTimeZone = () => 'Asia/Seoul'; // the timezone you want
 const uses24HourClock = () => true;

@@ -247,7 +247,9 @@ function tabNavigator({loggedIn}) {
       />
       <TabNavigator.Screen
         name="UsimStack"
-        component={usimStack}
+        component={
+          loggedIn ? (iccid ? usimStack : RegisterSimScreen) : AuthStack
+        }
         options={({route}) => ({
           tabBarVisible: route.state && route.state.index == 0,
           tabBarLabel: i18n.t('usim'),
@@ -301,4 +303,5 @@ const styles = StyleSheet.create({
 
 export default connect(state => ({
   loggedIn: state.account.get('loggedIn'),
+  iccid: state.account.get('iccid'),
 }))(tabNavigator);
