@@ -85,25 +85,17 @@ export const cancelAndGetOrder = (orderId, auth) => {
 };
 
 // usage status 변환 후
-export const updateStatusAndGetSubs = (
-  uuid,
-  targetStatus,
-  auth,
-  deact_prod_uuid,
-) => {
+export const updateStatusAndGetSubs = (uuid, targetStatus, auth) => {
   return (dispatch, getState) => {
     const {account} = getState(),
       iccid = account.get('iccid');
 
-    return dispatch(
-      updateSubsStatus(uuid, targetStatus, auth, deact_prod_uuid),
-    ).then(resp => {
+    return dispatch(updateSubsStatus(uuid, targetStatus, auth)).then(resp => {
       // 결제취소요청 후 항상 order를 가져온다
       if (resp.result == 0) {
         return dispatch(getSubs(iccid, auth));
-      } else {
-        return resp;
       }
+      return resp;
     });
   };
 };
