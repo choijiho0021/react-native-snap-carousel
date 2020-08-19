@@ -24,6 +24,8 @@ import AppIcon from '../components/AppIcon';
 import Video from 'react-native-video';
 import Analytics from 'appcenter-analytics';
 import {API} from 'Rokebi/submodules/rokebi-utils';
+import api from '../submodules/rokebi-utils/api/api';
+import AppAlert from '../components/AppAlert';
 import PaymentResult from '../submodules/rokebi-utils/models/paymentResult';
 
 const deliveryText = API.Order.deliveryText;
@@ -168,7 +170,6 @@ class PymMethodScreen extends Component {
       this.setState({
         loading: true,
       });
-      await this.props.navigation.setParams({isPaid: true});
       const {impId} = getEnvVars();
       const response = PaymentResult.createForRokebiCash({
         impId,
@@ -179,12 +180,30 @@ class PymMethodScreen extends Component {
         memo,
         digital: !simIncluded,
       });
-      const orderResult = await this.props.action.cart.payNorder(response);
-      // 최종 결제 처리 과정에서 실패할 수 있다. pymResult.result 값이 0인지 다시 확인한다.
-      this.props.navigation.replace('PaymentResult', {
-        pymResult: response,
-        orderResult,
-        mode: mode,
+      // payNorder에서 재고 확인 - resp.result값으로 비교
+      this.props.action.cart.payNorder(response).then(resp => {
+        if (resp.result == 0) {
+          this.props.navigation.setParams({isPaid: true});
+          this.props.navigation.replace('PaymentResult', {
+            pymResult: response,
+            orderResult: resp,
+            mode: mode,
+          });
+        } else {
+          this.setState({
+            loading: false,
+            clickable: true,
+          });
+          if (resp.result === api.E_RESOURCE_NOT_FOUND) {
+            let prod = '';
+            (resp.message || {}).forEach(item => {
+              prod += '* ' + item.prod.title + '\n';
+            });
+            AppAlert.info(prod + i18n.t('cart:soldOut'));
+          } else {
+            AppAlert.info(i18n.t('cart:systemError'));
+          }
+        }
       });
     } else {
       const params = {

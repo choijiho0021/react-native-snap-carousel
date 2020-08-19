@@ -6,7 +6,8 @@ import utils from '../../utils/utils';
 import {getOrders} from './order';
 import {getAccount} from './account';
 import {API} from 'Rokebi/submodules/rokebi-utils';
-
+import getEnvVars from '../../environment';
+const {esimApp} = getEnvVars();
 const SET_CART_TOKEN = 'rokebi/cart/SET_CART_TOKEN';
 const CART_FLYOUT_CLOSE = 'rokebi/cart/CART_FLYOUT_CLOSE';
 const CART_FLYOUT_OPEN = 'rokebi/cart/CART_FLYOUT_OPEN';
@@ -31,6 +32,7 @@ export const cartFlyoutClose = createAction(CART_FLYOUT_CLOSE);
 export const cartFetch = createAction(CART_FETCH, API.Cart.get);
 export const cartAdd = createAction(CART_ADD, API.Cart.add);
 export const cartRemove = createAction(CART_REMOVE, API.Cart.remove);
+export const cartCheckStock = createAction(CART_REMOVE, API.Cart.checkStock);
 export const cartUpdateQty = createAction(
   CART_UPDATE,
   API.Cart.updateQty,
@@ -68,47 +70,104 @@ export const payNorder = result => {
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
-    return dispatch(makeOrder(purchaseItems, result, auth)).then(resp => {
-      if (resp.result == 0) {
-        dispatch(getOrders(auth, 0));
-        // cart에서 item 삭제
-        orderItems.forEach(item => {
-          if (
-            purchaseItems.findIndex(o => o.orderItemId == item.orderItemId) >= 0
-          ) {
-            // remove ordered item
-            dispatch(cartRemove({orderId, orderItemId: item.orderItemId}));
+    return dispatch(checkStock(purchaseItems)).then(res => {
+      if (res.result == 0) {
+        return dispatch(makeOrder(purchaseItems, result, auth)).then(resp => {
+          if (resp.result == 0) {
+            dispatch(getOrders(auth, 0));
+            // cart에서 item 삭제
+            orderItems.forEach(item => {
+              if (
+                purchaseItems.findIndex(
+                  o => o.orderItemId == item.orderItemId,
+                ) >= 0
+              ) {
+                // remove ordered item
+                dispatch(cartRemove({orderId, orderItemId: item.orderItemId}));
+              }
+            });
+
+            if (
+              purchaseItems.findIndex(item => item.type == 'rch') >= 0 ||
+              result.rokebi_cash > 0
+            ) {
+              // 충전을 한 경우에는 account를 다시 읽어들인다.
+              // balance에서 차감한 경우에도 다시 읽어들인다.
+              return dispatch(getAccount(iccid, {token}));
+            }
           }
+          return resp;
         });
-
-        if (
-          purchaseItems.findIndex(item => item.type == 'rch') >= 0 ||
-          result.rokebi_cash > 0
-        ) {
-          // 충전을 한 경우에는 account를 다시 읽어들인다.
-          // balance에서 차감한 경우에도 다시 읽어들인다.
-          return dispatch(getAccount(iccid, {token}));
-        }
       }
+      return res;
+    });
+  };
+};
 
+const checkStock = prodList => {
+  return (dispatch, getState) => {
+    const {account} = getState(),
+      token = {token: account.get('token')};
+    return esimApp
+      ? dispatch(cartCheckStock(prodList, token)).then(resp => {
+          let soldOut = [];
+          (resp.message || {}).forEach(item => {
+            soldOut.push({
+              prod: prodList.find(
+                value => value.variationId == item.purchased_entity_id,
+              ),
+              lack: item.quantity - item.stock,
+            });
+          });
+
+          resp.message = soldOut;
+
+          return resp;
+        })
+      : new Promise.resolve({result: 0});
+  };
+};
+
+export const checkStockAndPurchase = (
+  purchaseItems,
+  dlvCost = false,
+  balance,
+) => {
+  return (dispatch, getState) => {
+    const {account} = getState(),
+      token = {token: account.get('token')};
+    console.log('checkstock bal', balance);
+    return dispatch(checkStock(purchaseItems)).then(resp => {
+      if (resp.result == 0) {
+        dispatch(purchase({purchaseItems, dlvCost, balance}));
+      }
       return resp;
     });
   };
 };
 
 export const cartAddAndGet = prodList => {
-  return dispatch => {
-    return dispatch(cartAdd(prodList)).then(
-      resp => {
-        if (resp.result == 0 && resp.objects.length > 0) {
-          return dispatch(cartFetch());
-        }
-        throw new Error('Failed to add products');
-      },
-      err => {
-        throw err;
-      },
-    );
+  return (dispatch, getState) => {
+    const {account} = getState(),
+      token = {token: account.get('token')};
+
+    return dispatch(checkStock(prodList)).then(resp => {
+      if (resp.result == 0) {
+        return dispatch(cartAdd(prodList)).then(
+          resp => {
+            if (resp.result == 0 && resp.objects.length > 0) {
+              return dispatch(cartFetch());
+            }
+            throw new Error('Failed to add products');
+          },
+          err => {
+            throw err;
+          },
+        );
+      } else {
+        return resp;
+      }
+    });
   };
 };
 
@@ -230,7 +289,7 @@ export default handleActions(
     ...pender({
       type: CART_REMOVE,
       onSuccess: (state, action) => {
-        const {result, objects} = action.payload;
+        const {result, objects = []} = action.payload;
         if (
           result == 0 &&
           objects.length > 0 &&

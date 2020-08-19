@@ -32,8 +32,11 @@ import _ from 'underscore';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import SnackBar from 'react-native-snackbar-component';
 import {API} from 'Rokebi/submodules/rokebi-utils';
-import {snackBarHidingTime} from '../constants/Timer';
-
+import {timer} from '../constants/Timer';
+import api from '../submodules/rokebi-utils/api/api';
+import AppAlert from '../components/AppAlert';
+import getEnvVars from '../environment';
+const {esimApp} = getEnvVars();
 class CountryListItem extends PureComponent {
   render() {
     const {item, selected, onPress} = this.props;
@@ -191,6 +194,8 @@ class CountryScreen extends Component {
             this.setState({
               showSnackBar: true,
             });
+          } else {
+            this._soldOut(resp, 'cart:notToCart');
           }
         })
         .finally(_ => {
@@ -201,6 +206,17 @@ class CountryScreen extends Component {
     }
   };
 
+  _soldOut(resp, message) {
+    if (resp.result === api.E_RESOURCE_NOT_FOUND) {
+      let prod = '';
+      (resp.message || []).forEach(item => {
+        prod += '* ' + item.prod.title + '\n';
+      });
+      AppAlert.info(prod + i18n.t(message));
+    } else {
+      AppAlert.info(i18n.t('cart:systemError'));
+    }
+  }
   _onPressBtnPurchase = () => {
     const {selected} = this.state;
     const {loggedIn, balance} = this.props.account;
@@ -218,14 +234,24 @@ class CountryScreen extends Component {
 
     if (selected) {
       // 구매 품목을 갱신한다.
-      this.props.action.cart.purchase({
-        purchaseItems: [this._selectedProduct(selected)],
-        balance,
-      });
-
-      this.props.navigation.navigate('PymMethod', {
-        mode: 'Roaming Product',
-      });
+      this.props.action.cart
+        .checkStockAndPurchase(
+          [this._selectedProduct(selected)],
+          false,
+          balance,
+        )
+        .then(resp => {
+          if (resp.result == 0) {
+            this.props.navigation.navigate('PymMethod', {
+              mode: 'Roaming Product',
+            });
+          } else {
+            this._soldOut(resp, 'cart:soldOut');
+          }
+        })
+        .catch(err => {
+          console.log('failed to check stock', err);
+        });
     }
   };
 
@@ -317,14 +343,14 @@ class CountryScreen extends Component {
           actionText={'X'}
           actionStyle={{paddingHorizontal: 20}}
           accentColor={colors.white}
-          autoHidingTime={snackBarHidingTime}
+          autoHidingTime={timer.snackBarHidingTime}
           onClose={() => this.setState({showSnackBar: false})}
           actionHandler={() => {
             this.snackRef.current.hideSnackbar();
           }}
           textMessage={i18n.t('country:addCart')}
         />
-        {iccid ? (
+        {iccid || (esimApp && loggedIn) ? (
           <View style={styles.buttonBox}>
             <AppButton
               style={styles.btnCart}
