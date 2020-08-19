@@ -15,7 +15,6 @@ HomeScreen Test
     Get FAQ
     Add 1:1 Request
     Get 1:1 Request List
-    Change Request Status
   Search
     Product Search
   Product TabView
@@ -42,6 +41,8 @@ HomeScreen Test
 
 let token = '';
 let unreadNoti = {};
+let addNotiKey = '';
+const accountUid = '118';
 
 const auth = {
   token,
@@ -50,6 +51,13 @@ const auth = {
   user: '01030327602',
   pass: '000000',
   cookie: '',
+};
+
+const issue = {
+  title: 'Test',
+  msg: 'test',
+  mobile: '01030327602',
+  pin: '0000',
 };
 
 describe('HomeScreen Test', () => {
@@ -83,11 +91,11 @@ describe('HomeScreen Test', () => {
       unreadNoti = resp.objects.find(elm => elm.isRead == 'F') || {};
     });
 
-    it(`Read Noti`, async () => {
-      const resp = await API.Noti.read(unreadNoti.uuid, auth);
-      expect(resp.result).toEqual(0);
-      expect(resp.objects.length).toBeGreaterThan(0);
-    });
+    // it(`Read Noti`, async () => {
+    //   const resp = await API.Noti.read(unreadNoti.uuid, auth);
+    //   expect(resp.result).toEqual(0);
+    //   expect(resp.objects.length).toBeGreaterThan(0);
+    // });
   });
 
   describe('Title Contact Menu', () => {
@@ -122,10 +130,35 @@ describe('HomeScreen Test', () => {
     });
 
     it(`Add 1:1 Request`, async () => {
-      const resp = await API.Page.getPageByCategory('faq:tip');
-      console.log('aaaaa resp', resp);
+      const resp = await API.Board.post(issue, null, auth);
+      addNotiKey = resp.objects[0].key;
       expect(resp.result).toEqual(0);
       expect(resp.objects.length).toBeGreaterThan(0);
+    });
+
+    it(`Get 1:1 Request List`, async () => {
+      const resp = await API.Board.getIssueList(accountUid, auth);
+      expect(resp.result).toEqual(0);
+      expect(resp.objects.length).toBeGreaterThan(0);
+    });
+
+    //답글이 달려야만 코멘트를 조회할 수 있으므로 직접 조작필요
+    it(`Get 1:1 Request Comment`, async () => {
+      const resp = await API.Board.getComments(
+        'c1985e2c-c4cb-42a5-a133-2413c61592d3',
+        auth,
+      );
+      expect(resp.result).toEqual(0);
+      expect(resp.objects.length).toBeGreaterThan(0);
+    });
+
+    describe('TabView', () => {
+      it(`Get Product`, async () => {
+        const resp = await API.Product.getProduct();
+        console.log('aaaaa get product', resp);
+        expect(resp.result).toEqual(0);
+        expect(resp.objects.length).toBeGreaterThan(0);
+      });
     });
   });
 });

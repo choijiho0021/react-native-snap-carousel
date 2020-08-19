@@ -35,7 +35,6 @@ import pushNoti from '../utils/pushNoti';
 import AsyncStorage from '@react-native-community/async-storage';
 import AppModal from '../components/AppModal';
 import RNExitApp from 'react-native-exit-app';
-import api from '../submodules/rokebi-utils/api/api';
 import DeviceInfo from 'react-native-device-info';
 
 const size =
