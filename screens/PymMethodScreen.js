@@ -177,7 +177,7 @@ class PymMethodScreen extends Component {
         deduct,
         dlvCost,
         memo,
-        payment_type: 'rokebi_cash',
+        digital: !simIncluded,
       });
 
       // payNorder에서 재고 확인 - resp.result값으로 비교

@@ -194,7 +194,7 @@ const BadgedIcon = withBadge(
 
 const TabNavigator = createBottomTabNavigator();
 
-function tabNavigator({loggedIn}) {
+function tabNavigator({loggedIn, iccid}) {
   return (
     <TabNavigator.Navigator
       initialRouteName="HomeStack"

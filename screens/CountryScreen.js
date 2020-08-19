@@ -194,29 +194,42 @@ class CountryScreen extends Component {
             this.setState({
               showSnackBar: true,
             });
-            this.props.action.cart
-              .cartAddAndGet([addProduct])
-              .then(resp => {
-                if (resp.result == 0) {
-                  this.setState({
-                    showSnackBar: true,
-                  });
-                } else {
-                  this._soldOut(resp, 'cart:notToCart');
-                }
-              })
-              .catch(err => {
-                console.log('failed to get page', key, err);
-              })
-              .finally(_ => {
-                this.setState({
-                  pending: false,
-                });
-              });
+          } else {
+            this._soldOut(resp, 'cart:notToCart');
           }
+        })
+        .finally(_ => {
+          this.setState({
+            pending: false,
+          });
         });
     }
   };
+
+  /*
+          case 'purchase':
+            this.props.action.cart
+              .checkStockAndPurchase([addProduct], false, balance)
+              .then(resp => {
+                if (resp.result == 0) {
+                  this.props.navigation.navigate('PymMethod', {
+                    mode: 'Roaming Product',
+                  });
+                } else {
+                  this._soldOut(resp, 'cart:soldOut');
+                }
+              })
+              .catch(err => {
+                console.log('failed to check stock', err);
+              });
+            break;
+          case 'regCard':
+            this.props.navigation.navigate('RegisterSim');
+        }
+      }
+    }
+  };
+  */
 
   _soldOut(resp, message) {
     if (resp.result === api.E_RESOURCE_NOT_FOUND) {
@@ -229,6 +242,55 @@ class CountryScreen extends Component {
       AppAlert.info(i18n.t('cart:systemError'));
     }
   }
+  _onPressBtnPurchase = () => {
+    const {selected} = this.state;
+    const {loggedIn, balance} = this.props.account;
+
+    // 다른 버튼 클릭으로 스낵바 종료될 경우, 재출력 안되는 부분이 있어 추가
+    this.setState({
+      showSnackBar: false,
+    });
+
+    Analytics.trackEvent('Click_purchase');
+
+    if (!loggedIn) {
+      return this.props.navigation.navigate('Auth');
+    }
+
+    if (selected) {
+      // 구매 품목을 갱신한다.
+      this.props.action.cart
+        .checkStockAndPurchase(
+          [this._selectedProduct(selected)],
+          false,
+          balance,
+        )
+        .then(resp => {
+          if (resp.result == 0) {
+            this.props.navigation.navigate('PymMethod', {
+              mode: 'Roaming Product',
+            });
+          } else {
+            this._soldOut(resp, 'cart:soldOut');
+          }
+        })
+        .catch(err => {
+          console.log('failed to check stock', err);
+        });
+    }
+  };
+
+  _onPressBtnRegCard = () => {
+    const {loggedIn} = this.props.account;
+
+    Analytics.trackEvent('Click_regCard');
+
+    if (!loggedIn) {
+      return this.props.navigation.navigate('Auth');
+    }
+
+    this.props.navigation.navigate('RegisterSim');
+  };
 
   _renderItem = ({item}) => {
     return (
