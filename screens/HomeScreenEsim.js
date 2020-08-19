@@ -1,4 +1,4 @@
-import React, {Component, PureComponent} from 'react';
+import React, {Component, PureComponent, createFactory} from 'react';
 import {
   StyleSheet,
   Text,
@@ -37,6 +37,7 @@ import AppModal from '../components/AppModal';
 import RNExitApp from 'react-native-exit-app';
 import api from '../submodules/rokebi-utils/api/api';
 import DeviceInfo from 'react-native-device-info';
+import {Alert} from 'react-native';
 
 const size =
   windowHeight > 810
@@ -497,6 +498,24 @@ class HomeScreenEsim extends Component {
     }
   };
 
+  renderCarousel() {
+    return (
+      <View style={styles.carousel}>
+        <Carousel
+          data={this.props.promotion}
+          renderItem={this._renderPromotion}
+          autoplay={true}
+          loop={true}
+          lockScrollWhileSnapping={true}
+          useScrollView={false}
+          onSnapToItem={index => this.setState({activeSlide: index})}
+          sliderWidth={sliderWidth}
+          itemWidth={sliderWidth}
+        />
+        {this._pagination()}
+      </View>
+    );
+  }
   render() {
     const {index, routes, isSupportDev} = this.state;
     return (
@@ -505,20 +524,7 @@ class HomeScreenEsim extends Component {
         style={styles.scrollView}
         stickyHeaderIndices={[1]}>
         {this.state.firstLaunch && <TutorialScreen />}
-        <View style={styles.carousel}>
-          <Carousel
-            data={this.props.promotion}
-            renderItem={this._renderPromotion}
-            autoplay={true}
-            loop={true}
-            lockScrollWhileSnapping={true}
-            useScrollView={false}
-            onSnapToItem={index => this.setState({activeSlide: index})}
-            sliderWidth={sliderWidth}
-            itemWidth={sliderWidth}
-          />
-          {this._pagination()}
-        </View>
+        {}
         {/* ScrollView  stickyHeaderIndices로 상단 탭을 고정하기 위해서 View한번 더 사용*/}
         <View style={styles.whiteTwoBackground}>
           <View style={styles.tabView}>

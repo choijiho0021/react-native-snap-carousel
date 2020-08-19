@@ -3,7 +3,7 @@ import {pender} from 'redux-pender';
 import {Map} from 'immutable';
 import utils from '../../utils/utils';
 import {getAccount} from './account';
-import {API} from 'Rokebi/submodules/rokebi-utils';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import _ from 'underscore';
 
 export const GET_ORDERS = 'rokebi/order/GET_ORDERS';

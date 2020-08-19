@@ -178,7 +178,7 @@ class PymMethodScreen extends Component {
         dlvCost,
         memo,
         digital: !simIncluded,
-      };
+      });
 
       // payNorder에서 재고 확인 - resp.result값으로 비교
       this.props.action.cart.payNorder(response).then(resp => {
