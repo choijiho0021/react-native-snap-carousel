@@ -170,17 +170,14 @@ class PymMethodScreen extends Component {
         loading: true,
       });
       const {impId} = getEnvVars();
-      const response = {
-        success: true,
-        imp_uid: impId,
-        merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
-        profile_uuid: profileId,
-        amount: 0,
-        rokebi_cash: deduct,
+      const response = PaymentResult.createForRokebiCash({
+        impId,
+        mobile,
+        profileId,
+        deduct,
         dlvCost,
-        digital: !simIncluded,
         memo,
-        payment_type: 'rokebi_cash',
+        digital: !simIncluded,
       };
 
       // payNorder에서 재고 확인 - resp.result값으로 비교

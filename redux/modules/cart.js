@@ -7,7 +7,6 @@ import {getOrders} from './order';
 import {getAccount} from './account';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import getEnvVars from '../../environment';
-import api from '../../submodules/rokebi-utils/api/api';
 const {esimApp} = getEnvVars();
 
 const SET_CART_TOKEN = 'rokebi/cart/SET_CART_TOKEN';

@@ -246,7 +246,7 @@ class RegisterSimScreen extends Component {
     return (
       <SafeAreaView style={{flex: 1}}>
         <BackbuttonHandler navigation={this.props.navigation} back={back} />
-        <AppActivityIndicator visible={querying} />
+        <AppActivityIndicator visible={querying || this.props.pending} />
 
         <KeyboardAwareScrollView
           innerRef={ref => (this.scroll = ref)}
@@ -458,6 +458,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => ({
   account: state.account.toJS(),
   auth: accountActions.auth(state.account),
+  pending: state.pender.pending[accountActions.GET_ACCOUNT] || false,
 });
 
 export default connect(
