@@ -18,7 +18,6 @@ import i18n from '../utils/i18n';
 import RechargeScreen from '../screens/RechargeScreen';
 import CartScreen from '../screens/CartScreen';
 import withBadge from '../components/withBadge';
-import NewSimScreen from '../screens/NewSimScreen';
 import MyPageScreen from '../screens/MyPageScreen';
 import NotiScreen from '../screens/NotiScreen';
 import PaymentScreen from '../screens/PaymentScreen';
@@ -27,9 +26,6 @@ import PurchaseDetailScreen from '../screens/PurchaseDetailScreen';
 import ContactScreen from '../screens/ContactScreen';
 import ContactBoardScreen from '../screens/ContactBoardScreen';
 import PymMethodScreen from '../screens/PymMethodScreen';
-import FindAddressScreen from '../screens/FindAddressScreen';
-import CustomerProfileScreen from '../screens/CustomerProfileScreen';
-import AddProfileScreen from '../screens/AddProfileScreen';
 import StoreSearchScreen from '../screens/StoreSearchScreen';
 import BoardMsgRespScreen from '../screens/BoardMsgRespScreen';
 import SimpleTextScreen from '../screens/SimpleTextScreen';
@@ -45,15 +41,6 @@ const HomeStack = createStackNavigator();
 const CartStack = createStackNavigator();
 const EsimStack = createStackNavigator();
 const MyPageStack = createStackNavigator();
-
-const BadgeAppButton = withBadge(
-  ({notReadNoti}) => notReadNoti,
-  {badgeStyle: {right: -3, top: 0}},
-  state => ({
-    notReadNoti: state.noti.get('notiList').filter(elm => elm.isRead == 'F')
-      .length,
-  }),
-)(AppButton);
 
 function homeStack() {
   return (
