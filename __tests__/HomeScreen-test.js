@@ -155,7 +155,13 @@ describe('HomeScreen Test', () => {
     describe('TabView', () => {
       it(`Get Product`, async () => {
         const resp = await API.Product.getProduct();
-        console.log('aaaaa get product', resp);
+        expect(resp.result).toEqual(0);
+        expect(resp.objects.length).toBeGreaterThan(0);
+      });
+
+      it(`Get Product Detail info`, async () => {
+        const resp = await API.Page.getProductDetails();
+        console.log('aaaaa detail', resp);
         expect(resp.result).toEqual(0);
         expect(resp.objects.length).toBeGreaterThan(0);
       });
