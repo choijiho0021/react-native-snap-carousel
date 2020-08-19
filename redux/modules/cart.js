@@ -25,6 +25,7 @@ const RECHARGE_ACCOUNT = 'rokebi/cart/RECHARGE_ACCOUNT';
 export const CART_ADD = 'rokebi/cart/CART_ADD';
 export const CART_REMOVE = 'rokebi/cart/CART_REMOVE';
 export const CART_UPDATE = 'rokebi/cart/CART_UPDATE';
+export const CART_CHECK_STOCK = 'rokebi/cart/CART_CHECK_STOCK';
 
 export const setCartToken = createAction(SET_CART_TOKEN);
 export const cartFlyoutOpen = createAction(CART_FLYOUT_OPEN);
@@ -33,7 +34,7 @@ export const cartFlyoutClose = createAction(CART_FLYOUT_CLOSE);
 export const cartFetch = createAction(CART_FETCH, API.Cart.get);
 export const cartAdd = createAction(CART_ADD, API.Cart.add);
 export const cartRemove = createAction(CART_REMOVE, API.Cart.remove);
-export const cartCheckStock = createAction(CART_REMOVE, API.Cart.checkStock);
+const cartCheckStock = createAction(CART_CHECK_STOCK, API.Cart.checkStock);
 export const cartUpdateQty = createAction(
   CART_UPDATE,
   API.Cart.updateQty,
@@ -78,18 +79,14 @@ export const payNorder = result => {
             dispatch(getOrders(auth, 0));
             // cart에서 item 삭제
             orderItems.forEach(item => {
-              if (
-                purchaseItems.findIndex(
-                  o => o.orderItemId == item.orderItemId,
-                ) >= 0
-              ) {
+              if (purchaseItems.find(o => o.orderItemId == item.orderItemId)) {
                 // remove ordered item
                 dispatch(cartRemove({orderId, orderItemId: item.orderItemId}));
               }
             });
 
             if (
-              purchaseItems.findIndex(item => item.type == 'rch') >= 0 ||
+              purchaseItems.find(item => item.type == 'rch') ||
               result.rokebi_cash > 0
             ) {
               // 충전을 한 경우에는 account를 다시 읽어들인다.
@@ -109,35 +106,19 @@ const checkStock = prodList => {
   return (dispatch, getState) => {
     const {account} = getState(),
       token = {token: account.get('token')};
+
     return esimApp
-      ? dispatch(cartCheckStock(prodList, token)).then(resp => {
-          let soldOut = [];
-          (resp.message || {}).forEach(item => {
-            soldOut.push({
-              prod: prodList.find(
-                value => value.variationId == item.purchased_entity_id,
-              ),
-              lack: item.quantity - item.stock,
-            });
-          });
-
-          resp.message = soldOut;
-
-          return resp;
-        })
+      ? dispatch(cartCheckStock(prodList, token))
       : new Promise.resolve({result: 0});
   };
 };
 
 export const checkStockAndPurchase = (
   purchaseItems,
-  dlvCost = false,
   balance,
+  dlvCost = false,
 ) => {
-  return (dispatch, getState) => {
-    const {account} = getState(),
-      token = {token: account.get('token')};
-
+  return dispatch => {
     return dispatch(checkStock(purchaseItems)).then(resp => {
       if (resp.result == 0) {
         dispatch(purchase({purchaseItems, dlvCost, balance}));
@@ -148,10 +129,7 @@ export const checkStockAndPurchase = (
 };
 
 export const cartAddAndGet = prodList => {
-  return (dispatch, getState) => {
-    const {account} = getState(),
-      token = {token: account.get('token')};
-
+  return dispatch => {
     return dispatch(checkStock(prodList)).then(resp => {
       if (resp.result == 0) {
         return dispatch(cartAdd(prodList)).then(

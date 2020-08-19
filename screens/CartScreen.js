@@ -187,7 +187,7 @@ class CartScreen extends Component {
         }));
 
       this.props.action.cart
-        .checkStockAndPurchase(purchaseItems, dlvCost > 0, balance)
+        .checkStockAndPurchase(purchaseItems, balance, dlvCost > 0)
         .then(resp => {
           if (resp.result == 0) {
             this.props.navigation.navigate('PymMethod', {mode: 'Cart'});
