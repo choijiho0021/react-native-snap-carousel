@@ -193,11 +193,7 @@ class CartScreen extends Component {
             this.props.navigation.navigate('PymMethod', {mode: 'Cart'});
           } else {
             if (resp.result === api.E_RESOURCE_NOT_FOUND) {
-              let prod = '';
-              (resp.message || {}).forEach(item => {
-                prod += '* ' + item.prod.title + '\n';
-              });
-              AppAlert.info(prod + i18n.t('cart:soldOut'));
+              AppAlert.info(resp.title + i18n.t('cart:soldOut'));
             } else {
               AppAlert.info(i18n.t('cart:systemError'));
             }
