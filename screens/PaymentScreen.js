@@ -75,6 +75,7 @@ class PaymentScreen extends Component {
         await this.props.navigation.setParams({isPaid: true});
         const params =
           this.props.route.params && this.props.route.params.params;
+
         this.props.action.cart
           .payNorder({
             ...response,

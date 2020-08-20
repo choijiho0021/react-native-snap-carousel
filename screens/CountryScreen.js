@@ -206,31 +206,6 @@ class CountryScreen extends Component {
     }
   };
 
-  /*
-          case 'purchase':
-            this.props.action.cart
-              .checkStockAndPurchase([addProduct], false, balance)
-              .then(resp => {
-                if (resp.result == 0) {
-                  this.props.navigation.navigate('PymMethod', {
-                    mode: 'Roaming Product',
-                  });
-                } else {
-                  this._soldOut(resp, 'cart:soldOut');
-                }
-              })
-              .catch(err => {
-                console.log('failed to check stock', err);
-              });
-            break;
-          case 'regCard':
-            this.props.navigation.navigate('RegisterSim');
-        }
-      }
-    }
-  };
-  */
-
   _soldOut(resp, message) {
     if (resp.result === api.E_RESOURCE_NOT_FOUND) {
       let prod = '';
@@ -242,6 +217,7 @@ class CountryScreen extends Component {
       AppAlert.info(i18n.t('cart:systemError'));
     }
   }
+
   _onPressBtnPurchase = () => {
     const {selected} = this.state;
     const {loggedIn, balance} = this.props.account;
@@ -260,11 +236,7 @@ class CountryScreen extends Component {
     if (selected) {
       // 구매 품목을 갱신한다.
       this.props.action.cart
-        .checkStockAndPurchase(
-          [this._selectedProduct(selected)],
-          false,
-          balance,
-        )
+        .checkStockAndPurchase([this._selectedProduct(selected)], balance)
         .then(resp => {
           if (resp.result == 0) {
             this.props.navigation.navigate('PymMethod', {
