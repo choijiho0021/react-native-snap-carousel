@@ -4,9 +4,9 @@ const impId = 'imp53913318';
 
 // rokebi esim App
 const appId = 'rokebi';
-const codePushiOSStagLabel = 'v125';
+const codePushiOSStagLabel = "v127"
 const codePushiOSProdLabel = 'v0';
-const codePushAndStagLabel = 'v118';
+const codePushAndStagLabel = "v120"
 const codePushAndProdLabel = 'v0';
 const channelId = '_nzQhxb';
 
@@ -38,8 +38,10 @@ const ENV = {
       rokApiUrl: 'tb.service.rokebi.com',
       apiUrl: 'esim-tb-v1.ap-northeast-2.elasticbeanstalk.com',
       baseUrl: 'http://esim-tb-v1.ap-northeast-2.elasticbeanstalk.com',
+      impId: impId,
       label:
         Platform.OS === 'ios' ? codePushiOSStagLabel : codePushAndStagLabel,
+      channelId,
     },
     prod: {
       ...env,
@@ -47,8 +49,10 @@ const ENV = {
       rokApiUrl: 'service.rokebi.com',
       apiUrl: 'esim.rokebi.com',
       baseUrl: 'https://esim.rokebi.com',
+      impId: impId,
       label:
-        Platform.OS === 'ios' ? codePushiOSProdLabel : codePushAndProdLabel,
+        Platform.OS === 'ios' ? codePushiOSStagLabel : codePushAndStagLabel,
+      channelId,
     },
   },
   rokebi: {

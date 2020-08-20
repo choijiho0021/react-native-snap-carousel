@@ -4,6 +4,7 @@ import {Map} from 'immutable';
 import utils from '../../utils/utils';
 import {getAccount} from './account';
 import {API} from 'Rokebi/submodules/rokebi-utils';
+import _ from 'underscore';
 
 export const GET_ORDERS = 'rokebi/order/GET_ORDERS';
 export const GET_ORDER_BY_ID = 'rokebi/order/GET_ORDER_BY_ID';
@@ -84,25 +85,17 @@ export const cancelAndGetOrder = (orderId, auth) => {
 };
 
 // usage status 변환 후
-export const updateStatusAndGetSubs = (
-  uuid,
-  targetStatus,
-  auth,
-  deact_prod_uuid,
-) => {
+export const updateStatusAndGetSubs = (uuid, targetStatus, auth) => {
   return (dispatch, getState) => {
     const {account} = getState(),
       iccid = account.get('iccid');
 
-    return dispatch(
-      updateSubsStatus(uuid, targetStatus, auth, deact_prod_uuid),
-    ).then(resp => {
+    return dispatch(updateSubsStatus(uuid, targetStatus, auth)).then(resp => {
       // 결제취소요청 후 항상 order를 가져온다
       if (resp.result == 0) {
         return dispatch(getSubs(iccid, auth));
-      } else {
-        return resp;
       }
+      return resp;
     });
   };
 };
@@ -198,6 +191,14 @@ export default handleActions(
         let usage = state.get('usage');
 
         if (result == 0) {
+          const idx = usage.findIndex(
+            item => item.key == (objects[0] || {}).key,
+          );
+
+          if (!_.isEmpty(idx)) {
+            usage[idx].statusCd = objects[0].statusCd;
+            usage[idx].status = objects[0].status;
+          }
           return state.set('usage', usage);
         }
         return state;
@@ -209,6 +210,7 @@ export default handleActions(
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
         if (result == 0) {
+          console.log('@@get_subs', result, objects);
           return state.set('usage', objects);
         }
         return state;

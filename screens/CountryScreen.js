@@ -32,8 +32,11 @@ import _ from 'underscore';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import SnackBar from 'react-native-snackbar-component';
 import {API} from 'Rokebi/submodules/rokebi-utils';
-import {snackBarHidingTime} from '../constants/Timer';
-
+import {timer} from '../constants/Timer';
+import api from '../submodules/rokebi-utils/api/api';
+import AppAlert from '../components/AppAlert';
+import getEnvVars from '../environment';
+const {esimApp} = getEnvVars();
 class CountryListItem extends PureComponent {
   render() {
     const {item, selected, onPress} = this.props;
@@ -132,6 +135,10 @@ class CountryScreen extends Component {
     };
 
     this.snackRef = React.createRef();
+    this._onPressBtnCart = this._onPressBtnCart.bind(this);
+    this._onPressBtnPurchase = this._onPressBtnPurchase.bind(this);
+    this._onPressBtnRegCard = this._onPressBtnRegCard.bind(this);
+    this._selectedProduct = this._selectedProduct.bind(this);
   }
 
   componentDidMount() {
@@ -154,7 +161,63 @@ class CountryScreen extends Component {
     this.setState({selected: uuid});
   };
 
-  _onPressBtn = key => () => {
+  _selectedProduct = selected => {
+    return API.Product.toPurchaseItem(
+      this.props.product.prodList.get(selected),
+    );
+  };
+
+  _onPressBtnCart = () => {
+    const {selected} = this.state;
+    const {loggedIn} = this.props.account;
+
+    // 다른 버튼 클릭으로 스낵바 종료될 경우, 재출력 안되는 부분이 있어 추가
+    this.setState({
+      showSnackBar: false,
+    });
+
+    Analytics.trackEvent('Click_cart');
+
+    if (!loggedIn) {
+      return this.props.navigation.navigate('Auth');
+    }
+
+    if (selected) {
+      this.setState({
+        pending: true,
+      });
+
+      this.props.action.cart
+        .cartAddAndGet([this._selectedProduct(selected)])
+        .then(resp => {
+          if (resp.result == 0) {
+            this.setState({
+              showSnackBar: true,
+            });
+          } else {
+            this._soldOut(resp, 'cart:notToCart');
+          }
+        })
+        .finally(_ => {
+          this.setState({
+            pending: false,
+          });
+        });
+    }
+  };
+
+  _soldOut(resp, message) {
+    if (resp.result === api.E_RESOURCE_NOT_FOUND) {
+      let prod = '';
+      (resp.message || []).forEach(item => {
+        prod += '* ' + item.prod.title + '\n';
+      });
+      AppAlert.info(prod + i18n.t(message));
+    } else {
+      AppAlert.info(i18n.t('cart:systemError'));
+    }
+  }
+  _onPressBtnPurchase = () => {
     const {selected} = this.state;
     const {loggedIn, balance} = this.props.account;
 
@@ -163,64 +226,45 @@ class CountryScreen extends Component {
       showSnackBar: false,
     });
 
-    Analytics.trackEvent('Click_' + key);
+    Analytics.trackEvent('Click_purchase');
 
     if (!loggedIn) {
-      this.props.navigation.navigate('Auth');
-    } else {
-      if (selected) {
-        const prod = this.props.product.prodList.get(selected),
-          addProduct = prod
-            ? {
-                title: prod.name,
-                variationId: prod.variationId,
-                price: prod.price,
-                qty: 1,
-                key: prod.uuid,
-                sku: prod.sku,
-                imageUrl: prod.imageUrl,
-                type: 'product',
-              }
-            : {};
+      return this.props.navigation.navigate('Auth');
+    }
 
-        switch (key) {
-          case 'cart':
-            this.setState({
-              pending: true,
-            });
-            this.props.action.cart
-              .cartAddAndGet([addProduct])
-              .then(resp => {
-                if (resp.result == 0) {
-                  this.setState({
-                    showSnackBar: true,
-                  });
-                }
-              })
-              .catch(err => {
-                console.log('failed to get page', key, err);
-              })
-              .finally(_ => {
-                this.setState({
-                  pending: false,
-                });
-              });
-            break;
-          case 'purchase':
-            // 구매 품목을 갱신한다.
-            this.props.action.cart.purchase({
-              purchaseItems: [addProduct],
-              balance,
-            });
+    if (selected) {
+      // 구매 품목을 갱신한다.
+      this.props.action.cart
+        .checkStockAndPurchase(
+          [this._selectedProduct(selected)],
+          false,
+          balance,
+        )
+        .then(resp => {
+          if (resp.result == 0) {
             this.props.navigation.navigate('PymMethod', {
               mode: 'Roaming Product',
             });
-            break;
-          case 'regCard':
-            this.props.navigation.navigate('RegisterSim');
-        }
-      }
+          } else {
+            this._soldOut(resp, 'cart:soldOut');
+          }
+        })
+        .catch(err => {
+          console.log('failed to check stock', err);
+        });
     }
+  };
+
+  _onPressBtnRegCard = () => {
+    const {loggedIn} = this.props.account;
+
+    Analytics.trackEvent('Click_regCard');
+
+    if (!loggedIn) {
+      return this.props.navigation.navigate('Auth');
+    }
+
+    this.props.navigation.navigate('RegisterSim');
   };
 
   _renderItem = ({item}) => {
@@ -299,14 +343,14 @@ class CountryScreen extends Component {
           actionText={'X'}
           actionStyle={{paddingHorizontal: 20}}
           accentColor={colors.white}
-          autoHidingTime={snackBarHidingTime}
+          autoHidingTime={timer.snackBarHidingTime}
           onClose={() => this.setState({showSnackBar: false})}
           actionHandler={() => {
             this.snackRef.current.hideSnackbar();
           }}
           textMessage={i18n.t('country:addCart')}
         />
-        {iccid ? (
+        {iccid || (esimApp && loggedIn) ? (
           <View style={styles.buttonBox}>
             <AppButton
               style={styles.btnCart}
@@ -315,13 +359,13 @@ class CountryScreen extends Component {
               disabled={this.state.pending}
               disableColor={colors.black}
               disableBackgroundColor={colors.whiteTwo}
-              onPress={this._onPressBtn('cart')}
+              onPress={this._onPressBtnCart}
             />
             <AppButton
               style={styles.btnBuy}
               title={i18n.t('cart:buy')}
               titleStyle={styles.btnBuyText}
-              onPress={this._onPressBtn('purchase')}
+              onPress={this._onPressBtnPurchase}
             />
           </View>
         ) : (
@@ -330,7 +374,7 @@ class CountryScreen extends Component {
               style={styles.regCardView}
               title={loggedIn ? i18n.t('reg:card') : i18n.t('err:login')}
               titleStyle={styles.regCard}
-              onPress={this._onPressBtn('regCard')}
+              onPress={this._onPressBtnRegCard}
             />
             <Text style={styles.regCard}>{i18n.t('reg:card')}</Text>
           </View>

@@ -30,7 +30,7 @@ import AppActivityIndicator from '../components/AppActivityIndicator';
 import Analytics from 'appcenter-analytics';
 import Svg, {Line} from 'react-native-svg';
 import {API} from 'Rokebi/submodules/rokebi-utils';
-import {snackBarHidingTime} from '../constants/Timer';
+import {timer} from '../constants/Timer';
 import subsApi from '../submodules/rokebi-utils/api/subscriptionApi';
 
 class CardInfo extends Component {
@@ -392,6 +392,7 @@ class UsimScreen extends Component {
     this.state = {
       refreshing: false,
       showSnackBar: false,
+      updatePending: undefined,
       // isFocused: false,
       // afterLogin: false,
     };
@@ -413,14 +414,17 @@ class UsimScreen extends Component {
         account: {iccid, token},
         lastTab,
         loginPending,
+        updatePending,
       } = this.props,
       routeName = this.props.route.name,
       isFocusedToUsimTab =
         (lastTab[0] || '').startsWith(routeName) &&
-        lastTab[0] !== prevProps.lastTab[0];
+        lastTab[0] !== prevProps.lastTab[0],
+      updateSubs = !updatePending && prevProps.updatePending != updatePending;
 
     if (
-      (isFocusedToUsimTab && !loginPending) ||
+      updateSubs ||
+      (isFocusedToUsimTab && !loginPending && !updatePending) ||
       (prevProps.account.iccid && iccid !== prevProps.account.iccid)
     ) {
       this._init(iccid, {token});
@@ -539,7 +543,7 @@ class UsimScreen extends Component {
           position={'bottom'}
           top={0}
           containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 0}}
-          autoHidingTime={snackBarHidingTime}
+          autoHidingTime={timer.snackBarHidingTime}
           onClose={() => this.setState({showSnackBar: false})}
           textMessage={i18n.t('usim:failSnackBar')}
         />
@@ -731,6 +735,7 @@ const mapStateToProps = state => ({
     state.pender.pending[accountActions.GET_ACCOUNT] ||
     false,
   pending: state.pender.pending[orderActions.GET_SUBS] || false,
+  updatePending: state.pender.pending[orderActions.UPDATE_USAGE] || false,
   sync: state.sync.toJS(),
   lastTab: state.cart.get('lastTab').toJS(),
 });
