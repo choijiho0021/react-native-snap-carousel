@@ -20,7 +20,7 @@ import subsApi from '../submodules/rokebi-utils/api/subscriptionApi';
 const activateBtn = 'activateBtn';
 const deactivateBtn = 'deactivateBtn';
 
-class UsageDetailScreen extends Component {
+class SubsDetailScreen extends Component {
   statusMap = {
     [subsApi.STATUS_RESERVED]: [
       i18n.t('reg:registerToUse'),
@@ -68,11 +68,12 @@ class UsageDetailScreen extends Component {
       {country, uuid} = detail,
       prodList = this.props.product.get('prodList'),
       {price} = prodList.get(detail.prodId) || {},
-      {usage} = this.props.order;
+      {subs} = this.props.order;
 
+    console.log('prodList', detail, prodList, price);
     let activatable = false;
 
-    usage.map(elm => {
+    subs.map(elm => {
       if (elm.country == country && elm.statusCd == subsApi.STATUS_ACTIVE) {
         activatable = true;
       }
@@ -102,6 +103,7 @@ class UsageDetailScreen extends Component {
   }
 
   _onSubmitModal(modal) {
+    // 사용등록 / 로깨비캐시 전환
     const {
         account: {iccid},
         auth,
@@ -235,6 +237,7 @@ class UsageDetailScreen extends Component {
   render() {
     const {showModal, modal, price, type} = this.state || {};
 
+    console.log('@@@@type', type);
     const isCallProduct = type === subsApi.CALL_PRODUCT;
 
     return (
@@ -309,7 +312,7 @@ const mapStateToProps = state => ({
   order: state.order.toObject(),
   pending:
     // state.pender.pending[orderActions.GET_SUBS] ||
-    state.pender.pending[orderActions.UPDATE_USAGE] || false,
+    state.pender.pending[orderActions.UPDATE_SUBS_STATUS] || false,
 });
 
 export default connect(
@@ -321,4 +324,4 @@ export default connect(
       order: bindActionCreators(orderActions, dispatch),
     },
   }),
-)(UsageDetailScreen);
+)(SubsDetailScreen);
