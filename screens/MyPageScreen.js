@@ -401,6 +401,10 @@ class MyPageScreen extends Component {
       refreshing: true,
     });
 
+    this.props.action.account.getUserId(
+      this.props.account.mobile,
+      this.props.auth,
+    );
     this.props.action.order.getOrders(this.props.auth, 0).then(resp => {
       if (resp.result == 0) {
         this.setState({
