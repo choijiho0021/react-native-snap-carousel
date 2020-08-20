@@ -108,7 +108,10 @@ const checkStock = prodList => {
       token = {token: account.get('token')};
 
     return esimApp
-      ? dispatch(cartCheckStock(prodList, token))
+      ? dispatch(cartCheckStock(prodList, token)).then(resp => {
+          resp.title = resp.objects.map(i => i.title).join('');
+          return resp;
+        })
       : new Promise.resolve({result: 0});
   };
 };
