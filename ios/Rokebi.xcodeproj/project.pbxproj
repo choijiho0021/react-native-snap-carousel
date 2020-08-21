@@ -27,6 +27,7 @@
 		9D96DA7E4C474BD2B332FC90 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3EF6740ADCE34419ACC078ED /* Zocial.ttf */; };
 		A36D7FD323D575EA00552A3B /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = A36D7FD223D575EA00552A3B /* AppCenter-Config.plist */; };
 		A39B6F392485F35C00EDBBB6 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39B6F382485F35C00EDBBB6 /* File.swift */; };
+		A3DAD91424EE0FF8008E7187 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A3DAD91324EE0FF8008E7187 /* GoogleService-Info.plist */; };
 		B17B8F9232B1453792F6EC90 /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8A5627E20C514F48AB67FB9D /* Fontisto.ttf */; };
 		BE19BB741F6F4643B4034DE9 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C25FD7BA1ACD4C91845B58B5 /* MaterialCommunityIcons.ttf */; };
 		CC71A4880D5CCCA4D6E90E9E /* libPods-Rokebi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BD7D7B3A0A31A5A07F9F8F5 /* libPods-Rokebi.a */; };
@@ -65,6 +66,7 @@
 		A36D7FD223D575EA00552A3B /* AppCenter-Config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "AppCenter-Config.plist"; sourceTree = "<group>"; };
 		A39B6F372485F35C00EDBBB6 /* Rokebi-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Rokebi-Bridging-Header.h"; sourceTree = "<group>"; };
 		A39B6F382485F35C00EDBBB6 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		A3DAD91324EE0FF8008E7187 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../GoogleService-Info.plist"; sourceTree = "<group>"; };
 		AE9F849D96DE44A5AAF4084C /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		AFE9936F560A412CABB40AFE /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
 		B24BE2798E19486C971F7C80 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
@@ -98,6 +100,7 @@
 				0D19ADD4239112C900EAEAAB /* Rokebi.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
+				A3DAD91324EE0FF8008E7187 /* GoogleService-Info.plist */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
@@ -267,6 +270,7 @@
 				A36D7FD323D575EA00552A3B /* AppCenter-Config.plist in Resources */,
 				5C4D2A6C2E07423DA90E8228 /* Octicons.ttf in Resources */,
 				FFBC012D75F941389E5666D9 /* SimpleLineIcons.ttf in Resources */,
+				A3DAD91424EE0FF8008E7187 /* GoogleService-Info.plist in Resources */,
 				9D96DA7E4C474BD2B332FC90 /* Zocial.ttf in Resources */,
 				40965D2923E3AAEF003E8249 /* Development.plist in Resources */,
 			);

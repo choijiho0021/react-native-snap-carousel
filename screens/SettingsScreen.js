@@ -25,7 +25,6 @@ import VersionCheck from 'react-native-version-check';
 import getEnvVars from '../environment';
 import Analytics from 'appcenter-analytics';
 import _ from 'underscore';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
 
 const {label} = getEnvVars();
 
@@ -242,7 +241,7 @@ class SettingsScreen extends Component {
 
       firebase.notifications().setBadge(0);
     } else if (Platform.OS == 'ios') {
-      PushNotificationIOS.setApplicationIconBadgeNumber(0);
+      // PushNotificationIOS.setApplicationIconBadgeNumber(0);
     }
 
     this._showModal(false);

@@ -44,6 +44,8 @@ import appStateHandler from '../utils/appState';
 import Analytics from 'appcenter-analytics';
 import {API} from 'Rokebi/submodules/rokebi-utils';
 
+import firebase from 'react-native-firebase';
+
 // windowHeight
 // iphone 8 - 375x667
 // iphone 11 pro  - 375x812, 2436×1125

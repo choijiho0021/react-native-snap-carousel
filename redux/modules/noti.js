@@ -3,7 +3,6 @@ import {Map, List} from 'immutable';
 import _ from 'underscore';
 import {pender} from 'redux-pender';
 import moment from 'moment';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {API} from 'Rokebi/submodules/rokebi-utils';
 
 export const GET_NOTI_LIST = 'rokebi/noti/GET_NOTI_LIST';
@@ -39,7 +38,7 @@ const setAppBadge = notiCount => {
 
     firebase.notifications().setBadge(notiCount);
   } else if (Platform.OS == 'ios') {
-    PushNotificationIOS.setApplicationIconBadgeNumber(notiCount);
+    // PushNotificationIOS.setApplicationIconBadgeNumber(notiCount);
   }
 };
 

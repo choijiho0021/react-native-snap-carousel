@@ -8,6 +8,7 @@
 #import "AppDelegate.h"
 
 #import <React/RCTBridge.h>
+#import <React/RCTLinkingManager.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 
@@ -16,7 +17,7 @@
 #import <UMReactNativeAdapter/UMModuleRegistryAdapter.h>
 
 #import "RNSplashScreen.h"  // here
-#import <RNCPushNotificationIOS.h>
+//#import <RNCPushNotificationIOS.h>
 
 #import <CodePush/CodePush.h>
 
@@ -33,7 +34,10 @@
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 
 #import <UserNotifications/UserNotifications.h>
-#import <React/RCTLinkingManager.h>
+
+#import <RNFirebaseMessaging.h>
+#import <RNFirebaseNotifications.h>
+@import Firebase;
 
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];
@@ -60,36 +64,37 @@ static void InitializeFlipper(UIApplication *application) {
 // Required to register for notifications
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
 {
-  [RNCPushNotificationIOS didRegisterUserNotificationSettings:notificationSettings];
+  [[RNFirebaseMessaging instance] didRegisterUserNotificationSettings:notificationSettings];
 }
 // Required for the register event.
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-  [RNCPushNotificationIOS didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
 }
 // Required for the notification event. You must call the completion handler after handling the remote notification.
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-  [RNCPushNotificationIOS didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+  completionHandler(UIBackgroundFetchResultNewData);
 }
 // Required for the registrationError event.
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-  [RNCPushNotificationIOS didFailToRegisterForRemoteNotificationsWithError:error];
 }
 // IOS 10+ Required for localNotification event
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
 didReceiveNotificationResponse:(UNNotificationResponse *)response
          withCompletionHandler:(void (^)(void))completionHandler
 {
-  [RNCPushNotificationIOS didReceiveNotificationResponse:response];
+  NSDictionary *userInfo = response.notification.request.content.userInfo;
+  // With swizzling disabled you must let Messaging know about the message, for Analytics
+   [[FIRMessaging messaging] appDidReceiveMessage:userInfo];
+  
   completionHandler();
 }
 // IOS 4-10 Required for the localNotification event.
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
-  [RNCPushNotificationIOS didReceiveLocalNotification:notification];
+  [[RNFirebaseNotifications instance] didReceiveLocalNotification:notification];
 }
 
 
@@ -99,6 +104,10 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
     InitializeFlipper(application);
   #endif
 
+  /// Firebase configuration
+  [FIRApp configure];
+//  [RNFirebaseNotifications configure];
+  
   [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
 
   [AppCenterReactNative register];
@@ -122,8 +131,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   [RNSplashScreen show];
 
   // Define UNUserNotificationCenter
-  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-  center.delegate = self;
+//  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+//  center.delegate = self;
+  [FIRMessaging messaging].delegate = self;
   
   return YES;
 }
@@ -152,11 +162,14 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 {
   // Still call the JS onNotification handler so it can display the new message right away
   NSDictionary *userInfo = notification.request.content.userInfo;
-  [RNCPushNotificationIOS didReceiveRemoteNotification:userInfo
-                                fetchCompletionHandler:^void (UIBackgroundFetchResult result){}];
+  
+  // With swizzling disabled you must let Messaging know about the message, for Analytics
+   [[FIRMessaging messaging] appDidReceiveMessage:userInfo];
+  
+  [[RNFirebaseNotifications instance] didReceiveRemoteNotification:userInfo fetchCompletionHandler:^void (UIBackgroundFetchResult result){}];
 
   // hide push notification
-  completionHandler(UNNotificationPresentationOptionNone);
+  completionHandler(UNNotificationPresentationOptionBadge | UNNotificationPresentationOptionAlert);
 }
 
 @end
