@@ -78,10 +78,13 @@ describe('로그인 후 테스트', () => {
 
   it('ICCID Account 확인 : ' + auth.iccid, async () => {
     const resp = await API.Account.getAccount(auth.iccid, auth);
+    console.log('account', resp);
     expect(resp.result).toEqual(0);
     expect(resp.objects.length).toBeGreaterThan(0);
     expect(resp.objects[0]).toHaveProperty('iccid', auth.iccid);
     expect(resp.objects[0]).toHaveProperty('mobile', auth.user);
+    expect(resp.objects[0]).toHaveProperty('balance');
+    expect(resp.objects[0].balance).toBeGreaterThan(100);
   });
 
   it('check variables', () => {
