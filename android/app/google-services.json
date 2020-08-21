@@ -42,6 +42,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:709736045062:android:7d7b78d41ea7a36c058187",
+        "android_client_info": {
+          "package_name": "com.rokebiesim"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "709736045062-jqtosfdqco0pgr620es7a4fgq9emokr9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeA5WqW-1krqvpu9850ThvJFKVfrS6eck"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "709736045062-jqtosfdqco0pgr620es7a4fgq9emokr9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"
