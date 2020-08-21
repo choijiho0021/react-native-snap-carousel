@@ -88,85 +88,110 @@ describe('로그인 후 테스트', () => {
     expect(prod).not.toBeNull();
   });
 
-  it.skip('상품을 구매한다:' + sku, async () => {
-    const purchaseItem = API.Product.toPurchaseItem(prod);
-    const paymentResult = PaymentResult.createForRokebiCash({
-      impId: 'test',
-      mobile: auth.user,
-      deduct: 1,
-      dlvCost: 0,
-      memo: 'test',
-      digital: true,
+  [
+    //    {partner: 'Quadcell', sku: 'rm-kr-3-1g'},
+    {partner: 'Telna', sku: 'KR-D-1-500-256'},
+  ].forEach(ts => {
+    describe(ts.partner + ' 상품 시험', () => {
+      it('SKU로 상품을 조회한다:' + ts.sku, async () => {
+        const resp = await API.Product.getProductBySku(ts.sku);
+        console.log('sku', resp);
+        expect(resp.result).toEqual(0);
+        expect(resp.objects.length).toEqual(1);
+
+        prod = resp.objects[0];
+      });
+
+      it.skip('상품을 구매한다:' + ts.sku, async () => {
+        const purchaseItem = API.Product.toPurchaseItem(prod);
+        const paymentResult = PaymentResult.createForRokebiCash({
+          impId: 'test',
+          mobile: auth.user,
+          deduct: 1,
+          dlvCost: 0,
+          memo: 'test',
+          digital: true,
+        });
+        const resp = await API.Cart.makeOrder(
+          [purchaseItem],
+          paymentResult,
+          auth,
+        );
+        expect(resp.result).toEqual(0);
+      });
+
+      it('구매한 상품을 조회한다.', async () => {
+        const resp = await API.Order.getOrders(auth);
+        console.log('resp', prod, resp.objects[0].orderItems);
+
+        expect(resp.result).toEqual(0);
+        expect(resp.objects.length).toBeGreaterThan(0);
+        expect(resp.objects[0]).toHaveProperty('orderItems');
+        expect(resp.objects[0].orderItems.length).toBeGreaterThan(0);
+        expect(resp.objects[0].orderItems[0]).toHaveProperty(
+          'title',
+          prod.name,
+        );
+      });
+
+      it('Subscription List를 조회한다.', async () => {
+        const resp = await API.Subscription.getSubscription(auth.iccid, auth);
+
+        expect(resp.result).toEqual(0);
+        expect(resp.objects.length).toBeGreaterThan(0);
+
+        // status = 'R'
+        subs = resp.objects.find(item => item.prodName === prod.name);
+        expect(subs).not.toBeNull();
+        expect(subs.statusCd).toEqual('R');
+        expect(subs.purchaseDate.substr(0, 10)).toEqual(
+          moment().format('YYYY-MM-DD'),
+        );
+      });
+
+      it('OTA로 가입을 활성화 시킨다.', async () => {
+        const resp = await API.Subscription.otaSubscription(
+          auth.iccid,
+          mccmnc,
+          auth,
+        );
+
+        expect(resp.result).toEqual(0);
+        expect(resp.objects.length).toBeGreaterThan(0);
+      });
+
+      it('현재 사용중인 상품을 조회한다.', async () => {
+        const resp = await API.Subscription.getOtaSubscription(
+          auth.iccid,
+          mccmnc,
+          auth,
+        );
+
+        expect(resp.result).toEqual(0);
+        expect(resp.objects.length).toBeGreaterThan(0);
+        expect(resp.objects[0]).toHaveProperty('uuid');
+        expect(resp.objects[0]).toHaveProperty('statusCd', 'A');
+        expect(resp.objects[0]).toHaveProperty('endDate');
+        expect(resp.objects[0].endDate > moment().format('YYYY-MM-DD')).toBe(
+          true,
+        );
+
+        console.log('OTA', resp);
+
+        uuid = resp.objects[0].uuid;
+      });
+
+      it.skip('상품 상태를 "사용 완료"로 변경한다.', async () => {
+        const resp = await API.Subscription.updateSubscriptionStatus(
+          uuid,
+          'U',
+          auth,
+        );
+
+        console.log('update status', resp);
+        expect(resp.result).toEqual(0);
+        expect(resp.objects.length).toBeGreaterThan(0);
+      });
     });
-    const resp = await API.Cart.makeOrder([purchaseItem], paymentResult, auth);
-    expect(resp.result).toEqual(0);
-  });
-
-  it('구매한 상품을 조회한다.', async () => {
-    const resp = await API.Order.getOrders(auth);
-    console.log('resp', prod, resp.objects[0].orderItems);
-
-    expect(resp.result).toEqual(0);
-    expect(resp.objects.length).toBeGreaterThan(0);
-    expect(resp.objects[0]).toHaveProperty('orderItems');
-    expect(resp.objects[0].orderItems.length).toBeGreaterThan(0);
-    expect(resp.objects[0].orderItems[0]).toHaveProperty('title', prod.name);
-  });
-
-  it('Subscription List를 조회한다.', async () => {
-    const resp = await API.Subscription.getSubscription(auth.iccid, auth);
-
-    expect(resp.result).toEqual(0);
-    expect(resp.objects.length).toBeGreaterThan(0);
-
-    // status = 'R'
-    subs = resp.objects.find(item => item.prodName === prod.name);
-    expect(subs).not.toBeNull();
-    expect(subs.statusCd).toEqual('R');
-    expect(subs.purchaseDate.substr(0, 10)).toEqual(
-      moment().format('YYYY-MM-DD'),
-    );
-  });
-
-  it.skip('OTA로 가입을 활성화 시킨다.', async () => {
-    const resp = await API.Subscription.otaSubscription(
-      auth.iccid,
-      mccmnc,
-      auth,
-    );
-
-    expect(resp.result).toEqual(0);
-    expect(resp.objects.length).toBeGreaterThan(0);
-  });
-
-  it('현재 사용중인 상품을 조회한다.', async () => {
-    const resp = await API.Subscription.getOtaSubscription(
-      auth.iccid,
-      mccmnc,
-      auth,
-    );
-
-    expect(resp.result).toEqual(0);
-    expect(resp.objects.length).toBeGreaterThan(0);
-    expect(resp.objects[0]).toHaveProperty('uuid');
-    expect(resp.objects[0]).toHaveProperty('statusCd', 'A');
-    expect(resp.objects[0]).toHaveProperty('endDate');
-    expect(resp.objects[0].endDate > moment().format('YYYY-MM-DD')).toBe(true);
-
-    console.log('OTA', resp);
-
-    uuid = resp.objects[0].uuid;
-  });
-
-  it('상품 상태를 "사용 완료"로 변경한다.', async () => {
-    const resp = await API.Subscription.updateSubscriptionStatus(
-      uuid,
-      'U',
-      auth,
-    );
-
-    console.log('update status', resp);
-    expect(resp.result).toEqual(0);
-    expect(resp.objects.length).toBeGreaterThan(0);
   });
 });

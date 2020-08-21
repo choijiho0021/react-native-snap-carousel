@@ -72,3 +72,4 @@ android/.project
 android/app/.project
 .swn
 .swo
+.vscode/settings.json

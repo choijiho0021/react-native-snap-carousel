@@ -4,9 +4,9 @@ const impId = 'imp53913318';
 
 // rokebi esim App
 const appId = 'rokebi';
-const codePushiOSStagLabel = "v127"
+const codePushiOSStagLabel = 'v127';
 const codePushiOSProdLabel = 'v0';
-const codePushAndStagLabel = "v120"
+const codePushAndStagLabel = 'v120';
 const codePushAndProdLabel = 'v0';
 const channelId = '_nzQhxb';
 
@@ -58,14 +58,14 @@ const ENV = {
   rokebi: {
     dev: {
       ...env,
-      // scheme: 'https',
-      // rokApiUrl: "service.rokebi.com",
-      // apiUrl: "api.rokebi.com",
-      // baseUrl: "https://www.rokebi.com",
-      scheme: 'http',
-      rokApiUrl: 'tb.service.rokebi.com',
-      apiUrl: 'esim2-tb-v3.ap-northeast-2.elasticbeanstalk.com',
-      baseUrl: 'http://esim-tb-v3.ap-northeast-2.elasticbeanstalk.com',
+      scheme: 'https',
+      rokApiUrl: 'service.rokebi.com',
+      apiUrl: 'api.rokebi.com',
+      baseUrl: 'https://www.rokebi.com',
+      // scheme: 'http',
+      // rokApiUrl: 'tb.service.rokebi.com',
+      // apiUrl: 'esim2-tb-v3.ap-northeast-2.elasticbeanstalk.com',
+      // baseUrl: 'http://esim-tb-v3.ap-northeast-2.elasticbeanstalk.com',
       label:
         Platform.OS === 'ios' ? codePushiOSStagLabel : codePushAndStagLabel,
     },
@@ -93,5 +93,5 @@ const ENV = {
 export default function() {
   if (process.env.NODE_ENV == 'production') return ENV[appId].prod;
   if (process.env.NODE_ENV == 'staging') return ENV[appId].staging;
-  return ENV[appId].prod;
+  return ENV[appId].dev;
 }
