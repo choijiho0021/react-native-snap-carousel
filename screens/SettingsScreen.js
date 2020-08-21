@@ -25,6 +25,7 @@ import VersionCheck from 'react-native-version-check';
 import getEnvVars from '../environment';
 import Analytics from 'appcenter-analytics';
 import _ from 'underscore';
+import firebase from 'react-native-firebase';
 
 const {label} = getEnvVars();
 
@@ -236,13 +237,7 @@ class SettingsScreen extends Component {
 
     this.props.navigation.reset({index: 0, routes: [{name: 'HomeStack'}]});
 
-    if (Platform.OS == 'android') {
-      const firebase = require('react-native-firebase');
-
-      firebase.notifications().setBadge(0);
-    } else if (Platform.OS == 'ios') {
-      // PushNotificationIOS.setApplicationIconBadgeNumber(0);
-    }
+    firebase.notifications().setBadge(0);
 
     this._showModal(false);
   }
