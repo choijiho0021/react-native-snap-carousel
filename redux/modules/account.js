@@ -175,7 +175,7 @@ export const registerMobile = (iccid, code, mobile) => {
 };
 
 export const logInAndGetAccount = (mobile, pin, iccid) => {
-  return (dispatch, getState) => {
+  return dispatch => {
     return dispatch(logIn(mobile, pin)).then(
       resp => {
         if (resp.result == 0 && resp.objects.length > 0) {
