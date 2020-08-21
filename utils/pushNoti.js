@@ -1,17 +1,6 @@
-import {Platform} from 'react-native';
 import Analytics from 'appcenter-analytics';
-import i18n from '../utils/i18n';
 import _ from 'underscore';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
-
-let PushNotification = undefined;
-let firebase = undefined;
-
-PushNotification = require('react-native-push-notification');
-
-if (Platform.OS !== 'ios') {
-  firebase = require('react-native-firebase');
-}
+import firebase from 'react-native-firebase';
 
 class PushNoti {
   constructor() {
@@ -22,7 +11,7 @@ class PushNoti {
     this.onMessage = undefined;
     this._onRegister = this._onRegister.bind(this);
     this._onNotification = this._onNotification.bind(this);
-    this.AndroidOnNoti = this.AndroidOnNoti.bind(this);
+    this.onNoti = this.onNoti.bind(this);
   }
 
   _onRegister(token) {
@@ -34,7 +23,7 @@ class PushNoti {
   }
 
   _onNotification(notification, isForeground = true) {
-    console.log('NOTIFICATION:', notification, PushNotificationIOS);
+    console.log('NOTIFICATION:', notification);
 
     if (_.isFunction(this.callback))
       this.callback('notification', notification, isForeground);
@@ -50,20 +39,9 @@ class PushNoti {
       sound: undefined,
       finish: [Function: finish] }
       */
-
-    // process the notification
-
-    // required on iOS only (see fetchCompletionHandler docs: https://github.com/react-native-community/react-native-push-notification-ios)
-    if (Platform.OS === 'ios') {
-      notification.finish(PushNotificationIOS.FetchResult.NoData);
-    }
   }
 
-  remove() {
-    PushNotification && PushNotification.unregister();
-  }
-
-  async _configureForAndroid({
+  async _configure({
     onRegister = ({token}) => {},
     onNotification = notification => {},
   }) {
@@ -85,18 +63,18 @@ class PushNoti {
 
     //App이 foreground상태, push noti를 클릭하는 경우
     this.notificationListener = notifications.onNotification(
-      this.AndroidOnNoti('onNotification', onNotification),
+      this.onNoti('onNotification', onNotification),
     );
 
     //App이 background상태, push noti를 클릭하는 경우
     this.notificationOpenedListener = notifications.onNotificationOpened(
-      this.AndroidOnNoti('onNotificationOpened', onNotification),
+      this.onNoti('onNotificationOpened', onNotification),
     );
 
     //App이 Killed상태, push noti를 클릭하고 앱을 실행하는 경우
     this.notificationInitListener = notifications
       .getInitialNotification()
-      .then(this.AndroidOnNoti('getInitialNotification', onNotification));
+      .then(this.onNoti('getInitialNotification', onNotification));
 
     //foreground 상태에서 data만 받아서 처리 (foreground badge 수 변경 전용)
     this.onMessage = firebase.messaging().onMessage(message => {
@@ -111,7 +89,7 @@ class PushNoti {
     });
   }
 
-  AndroidOnNoti = (key, onNotification) => notification => {
+  onNoti = (key, onNotification) => notification => {
     console.log('key & notification', key, notification);
     if (notification && _.isFunction(onNotification)) {
       if (key == 'onNotification') onNotification(notification);
@@ -124,43 +102,13 @@ class PushNoti {
     }
   };
 
-  add(callback) {
+  async add(callback) {
     this.callback = callback;
 
-    if (Platform.OS === 'ios') {
-      PushNotification &&
-        PushNotification.configure({
-          // (optional) Called when Token is generated (iOS and Android)
-          onRegister: this._onRegister,
-
-          // (required) Called when a remote or local notification is opened or received
-          onNotification: this._onNotification,
-
-          // ANDROID ONLY: GCM or FCM Sender ID (product_number) (optional - not required for local notifications, but is need to receive remote push notifications)
-          senderID: '709736045062',
-
-          // IOS ONLY (optional): default: all - Permissions to register.
-          permissions: {
-            alert: true,
-            badge: true,
-            sound: true,
-          },
-
-          // Should the initial notification be popped automatically
-          // default: true
-          popInitialNotification: true,
-
-          //(optional) default: true
-          //- Specified if permissions (ios) and token (android and ios) will requested or not,
-          //- if not, you must call PushNotificationsHandler.requestPermissions() later
-          requestPermissions: false,
-        });
-    } else {
-      this._configureForAndroid({
-        onRegister: this._onRegister,
-        onNotification: this._onNotification,
-      });
-    }
+    this._configure({
+      onRegister: this._onRegister,
+      onNotification: this._onNotification,
+    });
   }
 }
 

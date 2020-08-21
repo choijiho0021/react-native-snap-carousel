@@ -251,6 +251,9 @@ function tabNavigator({loggedIn, iccid}) {
           loggedIn ? (iccid ? usimStack : RegisterSimScreen) : AuthStack
         }
         options={({route}) => ({
+          // tabBarOnPress: e => {
+          //   console.log('tab bar', e);
+          // },
           tabBarVisible: route.state && route.state.index == 0,
           tabBarLabel: i18n.t('usim'),
           tabBarIcon: ({focused}) => (

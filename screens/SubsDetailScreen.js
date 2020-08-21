@@ -70,6 +70,7 @@ class SubsDetailScreen extends Component {
       {price} = prodList.get(detail.prodId) || {},
       {subs} = this.props.order;
 
+    console.log('prodList', detail, prodList, price);
     let activatable = false;
 
     subs.map(elm => {
@@ -102,6 +103,7 @@ class SubsDetailScreen extends Component {
   }
 
   _onSubmitModal(modal) {
+    // 사용등록 / 로깨비캐시 전환
     const {
         account: {iccid},
         auth,
@@ -235,6 +237,7 @@ class SubsDetailScreen extends Component {
   render() {
     const {showModal, modal, price, type} = this.state || {};
 
+    console.log('@@@@type', type);
     const isCallProduct = type === subsApi.CALL_PRODUCT;
 
     return (

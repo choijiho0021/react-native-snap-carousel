@@ -3,8 +3,8 @@ import {Map, List} from 'immutable';
 import _ from 'underscore';
 import {pender} from 'redux-pender';
 import moment from 'moment';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import firebase from 'react-native-firebase';
 
 export const GET_NOTI_LIST = 'rokebi/noti/GET_NOTI_LIST';
 const READ_NOTI = 'rokebi/noti/READ_NOTI';
@@ -34,13 +34,7 @@ export const NOTI_TYPE_USIM = 'usim';
 export const NOTI_TYPE_NOTI = 'noti';
 
 const setAppBadge = notiCount => {
-  if (Platform.OS == 'android') {
-    const firebase = require('react-native-firebase');
-
-    firebase.notifications().setBadge(notiCount);
-  } else if (Platform.OS == 'ios') {
-    PushNotificationIOS.setApplicationIconBadgeNumber(notiCount);
-  }
+  firebase.notifications().setBadge(notiCount);
 };
 
 export const notiReadAndGet = (uuid, mobile, auth) => {

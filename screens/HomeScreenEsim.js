@@ -36,7 +36,11 @@ import AsyncStorage from '@react-native-community/async-storage';
 import AppModal from '../components/AppModal';
 import RNExitApp from 'react-native-exit-app';
 import DeviceInfo from 'react-native-device-info';
-import {Alert} from 'react-native';
+import {
+  requestNotifications,
+  PERMISSIONS,
+  request,
+} from 'react-native-permissions';
 
 const size =
   windowHeight > 810
@@ -121,6 +125,7 @@ class HomeScreenEsim extends Component {
     this._init = this._init.bind(this);
     this._handleNotification = this._handleNotification.bind(this);
     this._modalBody = this._modalBody.bind(this);
+    this.requestPermission = this.requestPermission.bind(this);
     this.offset = 0;
     this.controller = new AbortController();
   }
@@ -133,6 +138,7 @@ class HomeScreenEsim extends Component {
     this.setState({time: now});
     this._refresh();
 
+    this.requestPermission();
     // 앱 첫 실행 여부 확인
     AsyncStorage.getItem('alreadyLaunched').then(value => {
       if (value == null) {
@@ -158,6 +164,14 @@ class HomeScreenEsim extends Component {
     this._init();
   }
 
+  async requestPermission() {
+    if (Platform.OS == 'ios') {
+      await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
+      await requestNotifications(['alert', 'sound', 'badge']);
+    } else if (Platform.OS == 'android') {
+      await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+    }
+  }
   componentDidUpdate(prevProps) {
     const focus = this.props.navigation.isFocused();
     const now = moment();
@@ -605,7 +619,7 @@ const styles = StyleSheet.create({
   paginationContainer: {
     paddingVertical: 5,
     paddingHorizontal: 0,
-    justifyContent: 'flex-start',
+    justifyContent: 'flex-end',
   },
   dot: (
     width = ACTIVE_DOT_WIDTH,
