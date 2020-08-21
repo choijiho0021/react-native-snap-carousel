@@ -105,6 +105,11 @@
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>
+			<key>svcapp.rokebi.com</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
 			<key>esim2-tb-v3.ap-northeast-2.elasticbeanstalk.com</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
