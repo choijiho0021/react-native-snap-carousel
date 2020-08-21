@@ -5,8 +5,8 @@ const impId = 'imp53913318';
 // rokebi esim App
 const appId = 'esim';
 const codePushLabel = {
-  stagingIOS: 'v9',
-  stagingAndroid: 'v9',
+  stagingIOS: 'v10',
+  stagingAndroid: 'v10',
   productionIOS: 'v0',
   productionAndroid: 'v0',
 };
@@ -23,10 +23,10 @@ const ENV = {
   esim: {
     dev: {
       ...env,
-      scheme: 'https',
-      rokApiUrl: 'service.rokebi.com',
+      scheme: 'http',
+      rokApiUrl: 'svcapp.rokebi.com',
       apiUrl: 'esim.rokebi.com',
-      baseUrl: 'https://esim.rokebi.com',
+      baseUrl: 'http://esim.rokebi.com',
       // scheme: 'http',
       // rokApiUrl: 'tb.service.rokebi.com',
       // apiUrl: 'esim-tb-v1.ap-northeast-2.elasticbeanstalk.com',
@@ -103,5 +103,5 @@ const ENV = {
 export default function() {
   if (process.env.NODE_ENV == 'production') return ENV[appId].prod;
   if (process.env.NODE_ENV == 'staging') return ENV[appId].staging;
-  return ENV[appId].prod;
+  return ENV[appId].dev;
 }

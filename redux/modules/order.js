@@ -11,7 +11,7 @@ export const GET_ORDER_BY_ID = 'rokebi/order/GET_ORDER_BY_ID';
 export const CANCEL_ORDER = 'rokebi/order/CANCEL_ORDER';
 export const GET_SUBS = 'rokebi/order/GET_SUBS';
 export const GET_SUBS_USAGE = 'rokebi/usage/subs';
-export const UPDATE_USAGE = 'rokebi/order/UPDATE_USAGE';
+export const UPDATE_SUBS_STATUS = 'rokebi/order/UPDATE_SUBS_STATUS';
 const RESET = 'rokebi/order/RESET';
 
 const getNextOrders = createAction(GET_ORDERS, API.Order.getOrders);
@@ -26,7 +26,7 @@ export const getSubsUsage = createAction(
   API.Subscription.getSubsUsage,
 );
 export const updateSubsStatus = createAction(
-  UPDATE_USAGE,
+  UPDATE_SUBS_STATUS,
   API.Subscription.updateSubscriptionStatus,
 );
 export const reset = createAction(RESET);
@@ -84,7 +84,7 @@ export const cancelAndGetOrder = (orderId, auth) => {
   };
 };
 
-// usage status 변환 후
+// subs status 변환 후
 export const updateStatusAndGetSubs = (uuid, targetStatus, auth) => {
   return (dispatch, getState) => {
     const {account} = getState(),
@@ -103,7 +103,7 @@ export const updateStatusAndGetSubs = (uuid, targetStatus, auth) => {
 const initialState = Map({
   orders: [],
   ordersIdx: Map(),
-  usage: [],
+  subs: [],
   usageProgress: {},
   next: true,
   page: -1,
@@ -184,22 +184,22 @@ export default handleActions(
     }),
 
     ...pender({
-      type: UPDATE_USAGE,
+      type: UPDATE_SUBS_STATUS,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
 
-        let usage = state.get('usage');
+        let subs = state.get('subs');
 
         if (result == 0) {
-          const idx = usage.findIndex(
+          const idx = subs.findIndex(
             item => item.key == (objects[0] || {}).key,
           );
 
           if (!_.isEmpty(idx)) {
-            usage[idx].statusCd = objects[0].statusCd;
-            usage[idx].status = objects[0].status;
+            subs[idx].statusCd = objects[0].statusCd;
+            subs[idx].status = objects[0].status;
           }
-          return state.set('usage', usage);
+          return state.set('subs', subs);
         }
         return state;
       },
@@ -210,8 +210,7 @@ export default handleActions(
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
         if (result == 0) {
-          console.log('@@get_subs', result, objects);
-          return state.set('usage', objects);
+          return state.set('subs', objects);
         }
         return state;
       },

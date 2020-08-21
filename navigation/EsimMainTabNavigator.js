@@ -33,7 +33,7 @@ import CodePushScreen from '../screens/CodePushScreen';
 import EsimScreen from '../screens/EsimScreen';
 import FaqScreen from '../screens/FaqScreen';
 import GuideScreen from '../screens/GuideScreen';
-import UsageDetailScreen from '../screens/UsageDetailScreen';
+import SubsDetailScreen from '../screens/SubsDetailScreen';
 import AuthStack from './AuthStackNavigator';
 import {connect} from 'react-redux';
 
@@ -86,7 +86,7 @@ function esimStack() {
   return (
     <EsimStack.Navigator screenOptions={{animationEnabled: false}}>
       <EsimStack.Screen name="Esim" component={EsimScreen} />
-      <EsimStack.Screen name="UsageDetail" component={UsageDetailScreen} />
+      {/* <EsimStack.Screen name="SubsDetail" component={SubsDetailScreen} /> */}
     </EsimStack.Navigator>
   );
 }

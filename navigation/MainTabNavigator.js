@@ -39,7 +39,7 @@ import CodePushScreen from '../screens/CodePushScreen';
 import UsimScreen from '../screens/UsimScreen';
 import FaqScreen from '../screens/FaqScreen';
 import GuideScreen from '../screens/GuideScreen';
-import UsageDetailScreen from '../screens/UsageDetailScreen';
+import SubsDetailScreen from '../screens/SubsDetailScreen';
 import AuthStack from './AuthStackNavigator';
 import {connect} from 'react-redux';
 
@@ -137,7 +137,7 @@ function usimStack() {
   return (
     <UsimStack.Navigator screenOptions={{animationEnabled: false}}>
       <UsimStack.Screen name="Usim" component={UsimScreen} />
-      <UsimStack.Screen name="UsageDetail" component={UsageDetailScreen} />
+      <UsimStack.Screen name="SubsDetail" component={SubsDetailScreen} />
 
       {/* // 충전 관련 화면 */}
       <UsimStack.Screen name="Recharge" component={RechargeScreen} />
