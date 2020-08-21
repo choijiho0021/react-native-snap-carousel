@@ -398,7 +398,7 @@ class UsimScreen extends Component {
     };
 
     this._init = this._init.bind(this);
-    this._renderUsage = this._renderUsage.bind(this);
+    this._renderSubs = this._renderSubs.bind(this);
     this._onRefresh = this._onRefresh.bind(this);
     this._info = this._info.bind(this);
     this.showSnackBar = this.showSnackBar.bind(this);
@@ -443,10 +443,10 @@ class UsimScreen extends Component {
     return <Text style={styles.nolist}>{i18n.t('his:noUsage')}</Text>;
   };
 
-  _onPressUsageDetail = key => () => {
-    const {usage} = this.props.order;
-    this.props.navigation.navigate('UsageDetail', {
-      detail: usage.find(item => item.key == key),
+  _onPressSubsDetail = key => () => {
+    const {subs} = this.props.order;
+    this.props.navigation.navigate('SubsDetail', {
+      detail: subs.find(item => item.key == key),
     });
   };
 
@@ -456,14 +456,14 @@ class UsimScreen extends Component {
     });
   }
 
-  _renderUsage({item}) {
+  _renderSubs({item}) {
     return (
       <UsageItem
         key={item.key}
         item={item}
         auth={this.props.auth}
         showSnackBar={this.showSnackBar}
-        onPress={this._onPressUsageDetail(item.key)}
+        onPress={this._onPressSubsDetail(item.key)}
       />
     );
   }
@@ -508,21 +508,21 @@ class UsimScreen extends Component {
   }
 
   render() {
-    const {usage} = this.props.order;
+    const {subs} = this.props.order;
     const {refreshing, showSnackBar} = this.state;
 
     return (
       <View style={styles.container}>
         <View style={{backgroundColor: colors.whiteTwo}}>
           <FlatList
-            data={usage}
+            data={subs}
             keyExtractor={item => item.key.toString()}
             ListHeaderComponent={this._info}
             ListEmptyComponent={this._empty}
-            renderItem={this._renderUsage}
+            renderItem={this._renderSubs}
             // onRefresh={this._onRefresh}
             // refreshing={refreshing}
-            extraData={usage}
+            extraData={subs}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
@@ -735,7 +735,7 @@ const mapStateToProps = state => ({
     state.pender.pending[accountActions.GET_ACCOUNT] ||
     false,
   pending: state.pender.pending[orderActions.GET_SUBS] || false,
-  updatePending: state.pender.pending[orderActions.UPDATE_USAGE] || false,
+  updatePending: state.pender.pending[orderActions.UPDATE_SUBS_STATUS] || false,
   sync: state.sync.toJS(),
   lastTab: state.cart.get('lastTab').toJS(),
 });

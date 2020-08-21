@@ -149,5 +149,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+  <key>FirebaseScreenReportingEnabled</key>
+  <true/>
+  <key>FirebaseAppDelegateProxyEnabled</key>
+  <true/>
 </dict>
 </plist>

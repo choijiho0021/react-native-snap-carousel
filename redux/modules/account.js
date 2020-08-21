@@ -111,12 +111,10 @@ export const changeEmail = mail => {
 export const changeNotiToken = () => {
   return async (dispatch, getState) => {
     const {account} = getState();
-    const fcmToken = Platform.OS == 'android' ? account.get('deviceToken') : '';
-    const deviceToken = Platform.OS == 'ios' ? account.get('deviceToken') : '';
+    const fcmToken = account.get('fcmToken');
 
     const authObj = auth(account),
       attr = {
-        field_device_token: deviceToken,
         field_fcm_token: fcmToken,
       };
 
@@ -282,7 +280,7 @@ const updateAccountState = (state, payload) => {
     pin,
     email,
     token,
-    deviceToken,
+    fcmToken,
     isPushNotiEnabled,
   } = payload;
 
@@ -300,7 +298,7 @@ const updateAccountState = (state, payload) => {
   if (!_.isEmpty(pin)) state = state.set('pin', pin);
   if (!_.isEmpty(email)) state = state.set('email', email);
   if (!_.isEmpty(token)) state = state.set('token', token);
-  if (!_.isEmpty(deviceToken)) state = state.set('deviceToken', deviceToken);
+  if (!_.isEmpty(fcmToken)) state = state.set('fcmToken', fcmToken);
   if (!_.isEmpty(simCardName)) state = state.set('simCardName', simCardName);
   if (!_.isEmpty(simCardImage)) state = state.set('simCardImage', simCardImage);
   if (!_.isUndefined(isPushNotiEnabled))
@@ -329,7 +327,7 @@ const initialState = Map({
   loggedIn: false,
   userPicture: undefined,
   userPictureUrl: undefined,
-  deviceToken: undefined,
+  fcmToken: undefined,
   simCardName: undefined,
   simCardImage: undefined,
   isUsedByOther: undefined,

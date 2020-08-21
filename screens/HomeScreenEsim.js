@@ -605,7 +605,7 @@ const styles = StyleSheet.create({
   paginationContainer: {
     paddingVertical: 5,
     paddingHorizontal: 0,
-    justifyContent: 'flex-start',
+    justifyContent: 'flex-end',
   },
   dot: (
     width = ACTIVE_DOT_WIDTH,

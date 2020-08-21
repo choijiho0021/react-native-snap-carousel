@@ -177,7 +177,6 @@ export default handleActions(
       type: CANCEL_ORDER,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
-        console.log('CANCEL_ORDER', result, objects, state, action);
 
         return state;
       },

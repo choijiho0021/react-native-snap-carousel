@@ -44,6 +44,8 @@ import appStateHandler from '../utils/appState';
 import Analytics from 'appcenter-analytics';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
+import firebase from 'react-native-firebase';
+
 // windowHeight
 // iphone 8 - 375x667
 // iphone 11 pro  - 375x812, 2436×1125
@@ -181,7 +183,6 @@ class HomeScreen extends Component {
   }
 
   componentWillUnmount() {
-    pushNoti.remove();
     appStateHandler.remove();
   }
 
@@ -191,7 +192,7 @@ class HomeScreen extends Component {
       pin,
       iccid,
       loggedIn,
-      deviceToken,
+      fcmToken,
       isUsedByOther,
     } = this.props.account;
 
@@ -202,7 +203,7 @@ class HomeScreen extends Component {
     }
 
     //자동로그인의 경우 device token update
-    if (prevProps.account.deviceToken != deviceToken && loggedIn) {
+    if (prevProps.account.fcmToken != fcmToken && loggedIn) {
       this.props.action.account.changeNotiToken();
     }
 
@@ -244,10 +245,11 @@ class HomeScreen extends Component {
       this.props.action.noti.getNotiList(mobile);
     }
 
+    console.log('aaaaa data', data);
     switch (type) {
       case 'register':
         this.props.action.account.updateAccount({
-          deviceToken: data,
+          fcmToken: data,
         });
         break;
       case 'notification':
@@ -260,9 +262,10 @@ class HomeScreen extends Component {
     const target = (payload.data || {}).iccid;
     const {mobile, iccid} = this.props.account;
 
+    //무슨코드인지 확인필요
     if (mobile && _.size(payload) > 0) {
       if (Platform.OS === 'ios') {
-        let msg = JSON.stringify(payload);
+        let msg = JSON.stringify(payload._data);
         this.props.action.noti.sendLog(mobile, msg);
       }
     }
