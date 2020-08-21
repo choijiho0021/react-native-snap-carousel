@@ -121,7 +121,7 @@ class EsimScreen extends Component {
     };
 
     this._init = this._init.bind(this);
-    this._renderUsage = this._renderUsage.bind(this);
+    this._renderSubs = this._renderSubs.bind(this);
     this._onRefresh = this._onRefresh.bind(this);
     this._info = this._info.bind(this);
     this.showSnackBar = this.showSnackBar.bind(this);
@@ -157,7 +157,7 @@ class EsimScreen extends Component {
     });
   }
 
-  _renderUsage({item}) {
+  _renderSubs({item}) {
     return (
       <UsageItem
         key={item.key}
@@ -292,21 +292,21 @@ class EsimScreen extends Component {
   };
 
   render() {
-    const {usage} = this.props.order;
-    const {refreshing, showSnackBar, showModal, modal, subs} = this.state;
+    const {subs} = this.props.order;
+    const {refreshing, showSnackBar, showModal, modal} = this.state;
 
     return (
       <View style={styles.container}>
         <View style={{backgroundColor: colors.whiteTwo}}>
           <FlatList
-            data={usage}
+            data={subs}
             keyExtractor={item => item.key.toString()}
             ListHeaderComponent={this._info}
             ListEmptyComponent={this._empty}
-            renderItem={this._renderUsage}
+            renderItem={this._renderSubs}
             // onRefresh={this._onRefresh}
             // refreshing={refreshing}
-            extraData={usage}
+            extraData={subs}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}

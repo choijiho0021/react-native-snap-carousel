@@ -20,7 +20,7 @@ import subsApi from '../submodules/rokebi-utils/api/subscriptionApi';
 const activateBtn = 'activateBtn';
 const deactivateBtn = 'deactivateBtn';
 
-class UsageDetailScreen extends Component {
+class SubsDetailScreen extends Component {
   statusMap = {
     [subsApi.STATUS_RESERVED]: [
       i18n.t('reg:registerToUse'),
@@ -68,11 +68,11 @@ class UsageDetailScreen extends Component {
       {country, uuid} = detail,
       prodList = this.props.product.get('prodList'),
       {price} = prodList.get(detail.prodId) || {},
-      {usage} = this.props.order;
+      {subs} = this.props.order;
 
     let activatable = false;
 
-    usage.map(elm => {
+    subs.map(elm => {
       if (elm.country == country && elm.statusCd == subsApi.STATUS_ACTIVE) {
         activatable = true;
       }
@@ -309,7 +309,7 @@ const mapStateToProps = state => ({
   order: state.order.toObject(),
   pending:
     // state.pender.pending[orderActions.GET_SUBS] ||
-    state.pender.pending[orderActions.UPDATE_USAGE] || false,
+    state.pender.pending[orderActions.UPDATE_SUBS_STATUS] || false,
 });
 
 export default connect(
@@ -321,4 +321,4 @@ export default connect(
       order: bindActionCreators(orderActions, dispatch),
     },
   }),
-)(UsageDetailScreen);
+)(SubsDetailScreen);
