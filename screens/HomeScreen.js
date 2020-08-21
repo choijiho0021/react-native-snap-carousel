@@ -183,7 +183,6 @@ class HomeScreen extends Component {
   }
 
   componentWillUnmount() {
-    pushNoti.remove();
     appStateHandler.remove();
   }
 
@@ -246,6 +245,7 @@ class HomeScreen extends Component {
       this.props.action.noti.getNotiList(mobile);
     }
 
+    console.log('aaaaa data', data);
     switch (type) {
       case 'register':
         this.props.action.account.updateAccount({
@@ -262,9 +262,10 @@ class HomeScreen extends Component {
     const target = (payload.data || {}).iccid;
     const {mobile, iccid} = this.props.account;
 
+    //무슨코드인지 확인필요
     if (mobile && _.size(payload) > 0) {
       if (Platform.OS === 'ios') {
-        let msg = JSON.stringify(payload);
+        let msg = JSON.stringify(payload._data);
         this.props.action.noti.sendLog(mobile, msg);
       }
     }
