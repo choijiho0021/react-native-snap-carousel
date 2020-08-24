@@ -245,7 +245,6 @@ class HomeScreen extends Component {
       this.props.action.noti.getNotiList(mobile);
     }
 
-    console.log('aaaaa data', data);
     switch (type) {
       case 'register':
         this.props.action.account.updateAccount({
