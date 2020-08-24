@@ -15,7 +15,7 @@ class PushNoti {
   }
 
   _onRegister(token) {
-    console.log('PushNotification TOKEN:', token);
+    console.log('PushNotification TOKEN:', token.token);
 
     if (_.isFunction(this.callback)) {
       this.callback('register', token.token);

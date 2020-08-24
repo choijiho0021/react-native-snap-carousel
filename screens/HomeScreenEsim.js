@@ -126,6 +126,8 @@ class HomeScreenEsim extends Component {
     this._handleNotification = this._handleNotification.bind(this);
     this._modalBody = this._modalBody.bind(this);
     this.requestPermission = this.requestPermission.bind(this);
+    this.checkFistLaunch = this.checkFistLaunch.bind(this);
+    this.getSupportDev = this.getSupportDev.bind(this);
     this.offset = 0;
     this.controller = new AbortController();
   }
@@ -136,19 +138,20 @@ class HomeScreenEsim extends Component {
     pushNoti.add(this._notification);
 
     this.setState({time: now});
+
     this._refresh();
 
     this.requestPermission();
-    // 앱 첫 실행 여부 확인
-    AsyncStorage.getItem('alreadyLaunched').then(value => {
-      if (value == null) {
-        AsyncStorage.setItem('alreadyLaunched', 'true');
-        this.setState({firstLaunch: true});
-      } else {
-        this.setState({firstLaunch: false});
-      }
-    });
 
+    this.checkFistLaunch();
+
+    this.getSupportDev();
+
+    // 로그인 여부에 따라 달라지는 부분
+    this._init();
+  }
+
+  getSupportDev() {
     API.Device.getDevList().then(resp => {
       if (resp.result == 0) {
         DeviceInfo.getDeviceName().then(deviceName => {
@@ -159,9 +162,17 @@ class HomeScreenEsim extends Component {
         });
       }
     });
-
-    // 로그인 여부에 따라 달라지는 부분
-    this._init();
+  }
+  checkFistLaunch() {
+    // 앱 첫 실행 여부 확인
+    AsyncStorage.getItem('alreadyLaunched').then(value => {
+      if (value == null) {
+        AsyncStorage.setItem('alreadyLaunched', 'true');
+        this.setState({firstLaunch: true});
+      } else {
+        this.setState({firstLaunch: false});
+      }
+    });
   }
 
   async requestPermission() {
@@ -172,6 +183,7 @@ class HomeScreenEsim extends Component {
       await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
     }
   }
+
   componentDidUpdate(prevProps) {
     const focus = this.props.navigation.isFocused();
     const now = moment();

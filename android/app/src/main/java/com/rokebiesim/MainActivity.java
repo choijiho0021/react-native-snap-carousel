@@ -1,4 +1,4 @@
-package com.rokebi;
+package com.rokebiesim;
 
 import com.facebook.react.ReactActivity;
 
