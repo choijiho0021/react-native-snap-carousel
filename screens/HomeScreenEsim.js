@@ -1,4 +1,4 @@
-import React, {Component, PureComponent, createFactory} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   StyleSheet,
   Text,
@@ -41,7 +41,7 @@ import {
   PERMISSIONS,
   request,
 } from 'react-native-permissions';
-
+import HandlePushNoti from '../submodules/rokebi-utils/models/handlePushNoti';
 const size =
   windowHeight > 810
     ? {
@@ -115,6 +115,9 @@ class HomeScreenEsim extends Component {
     };
 
     this._refresh = this._refresh.bind(this);
+    this.renderTitleBtn = this.renderTitleBtn.bind(this);
+    this.getProdGroup = this.getProdGroup.bind(this);
+    this.sortProdGroup = this.sortProdGroup.bind(this);
     this._onIndexChange = this._onIndexChange.bind(this);
     this._onPressItem = this._onPressItem.bind(this);
     this._onPressPromotion = this._onPressPromotion.bind(this);
@@ -123,7 +126,6 @@ class HomeScreenEsim extends Component {
     this._clickTab = this._clickTab.bind(this);
     this._notification = this._notification.bind(this);
     this._init = this._init.bind(this);
-    this._handleNotification = this._handleNotification.bind(this);
     this._modalBody = this._modalBody.bind(this);
     this.requestPermission = this.requestPermission.bind(this);
     this.checkFistLaunch = this.checkFistLaunch.bind(this);
@@ -133,11 +135,9 @@ class HomeScreenEsim extends Component {
   }
 
   componentDidMount() {
-    const now = moment();
+    this.setState({time: moment()});
 
     pushNoti.add(this._notification);
-
-    this.setState({time: now});
 
     this._refresh();
 
@@ -162,6 +162,7 @@ class HomeScreenEsim extends Component {
       }
     });
   }
+
   checkFistLaunch() {
     // 앱 첫 실행 여부 확인
     AsyncStorage.getItem('alreadyLaunched').then(value => {
@@ -206,138 +207,38 @@ class HomeScreenEsim extends Component {
     }
   }
 
-  _notification(type, data, isForeground = true) {
-    const {mobile, loggedIn} = this.props.account;
+  _notification(type, payload, isForeground = true) {
+    const {mobile, iccid, loggedIn} = this.props.account;
+    const {navigation} = this.props;
 
     if (loggedIn) {
       this.props.action.noti.getNotiList(mobile);
     }
 
-    switch (type) {
-      case 'register':
-        this.props.action.account.updateAccount({
-          deviceToken: data,
-        });
-        break;
-      case 'notification':
-        this._handleNotification(data, isForeground);
-    }
-  }
-
-  _handleNotification(payload, isForeground) {
-    const type = (payload.data || {}).notiType;
-    const target = (payload.data || {}).iccid;
-    const {mobile, iccid} = this.props.account;
-
-    if (mobile && _.size(payload) > 0) {
-      if (Platform.OS === 'ios') {
-        let msg = JSON.stringify(payload);
-        this.props.action.noti.sendLog(mobile, msg);
-      }
-    }
-
-    switch (type) {
-      case 'account':
-        if (typeof iccid !== 'undefined' && iccid === target) {
-          if (!this._isNoticed) {
-            this._isNoticed = true;
-            AppAlert.info(
-              i18n.t('acc:disconnectSim'),
-              i18n.t('noti'),
-              this._clearAccount,
-            );
-          }
-        } else {
-          !isForeground && this.props.navigation.navigate('Noti');
-        }
-
-        break;
-      default:
-        !isForeground && this.props.navigation.navigate('Noti');
-    }
+    const pushNotiHandler = HandlePushNoti.createHandlePushNoti(
+      navigation,
+      payload,
+      {
+        mobile,
+        iccid,
+        isForeground,
+        isRegister: type == 'register',
+        updateAccount: this.props.action.account.updateAccount,
+        clearCurrentAccount: this.props.action.account.clearCurrentAccount,
+      },
+    );
+    pushNotiHandler.sendLog();
+    pushNotiHandler.handleNoti();
   }
 
   _refresh() {
-    const {asia, europe, usaAu, multi} = API.Product.category,
-      {prodList, localOpList} = this.props.product,
-      list = [];
+    const {asia, europe, usaAu, multi} = API.Product.category;
 
-    for (let item of prodList.values()) {
-      if (localOpList.has(item.partnerId)) {
-        const localOp = localOpList.get(item.partnerId);
-        item.ccodeStr = (localOp.ccode || []).join(',');
-        item.cntry = Set(Country.getName(localOp.ccode));
-        item.search = [...item.cntry].join(',');
-        item.pricePerDay = Math.round(item.price / item.days);
+    const list = this.getProdGroup();
 
-        const idxCcode = list.findIndex(
-          elm => elm.length > 0 && elm[0].ccodeStr == item.ccodeStr,
-        );
+    const sorted = this.sortProdGroup(list);
 
-        if (idxCcode < 0) {
-          // new item, insert it
-          list.push([item]);
-        } else {
-          // 이미 같은 country code를 갖는 데이터가 존재하면, 그 아래에 추가한다. (2차원 배열)
-          list[idxCcode].push(item);
-        }
-      }
-    }
-
-    const getMaxWeight = list =>
-      Math.max(...list.map(p => (localOpList.get(p.partnerId) || {}).weight));
-
-    const sorted = list
-      .map(item =>
-        item.sort((a, b) => {
-          // 동일 국가내의 상품을 정렬한다.
-          // field_daily == true 인 무제한 상품 우선, 사용 날짜는 오름차순
-          if (a.field_daily) return b.field_daily ? a.days - b.days : -1;
-          return b.field_daily ? 1 : a.days - b.days;
-        }),
-      )
-      .sort((a, b) => {
-        // 국가는 weight 값이 높은 순서가 우선, weight 값이 같으면 이름 순서
-        const weightA = getMaxWeight(a),
-          weightB = getMaxWeight(b);
-        return weightA == weightB
-          ? a[0].search < b[0].search
-            ? -1
-            : 1
-          : weightB - weightA;
-      });
-
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => <Text style={styles.title}>{i18n.t('esim')}</Text>,
-      headerRight: () => (
-        <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
-          <AppButton
-            key="search"
-            style={styles.btnSearchBar}
-            onPress={() => this.props.navigation.navigate('StoreSearch')}
-            iconName="btnSearchTop"
-          />
-
-          <AppButton
-            key="cnter"
-            style={styles.btnCnter}
-            onPress={() => this.props.navigation.navigate('Contact')}
-            iconName="btnCnter"
-          />
-
-          {/* //BadgeAppButton을 사용했을 때 위치가 변동됨 수정이 필요함 */}
-          <BadgeAppButton
-            key="alarm"
-            style={styles.btnAlarm}
-            onPress={() =>
-              this.props.navigation.navigate('Noti', {mode: 'noti'})
-            }
-            iconName="btnAlarm"
-          />
-        </View>
-      ),
-    });
+    this.renderTitleBtn();
 
     this.props.action.product.setSortedProdList(sorted);
 
@@ -370,6 +271,94 @@ class HomeScreenEsim extends Component {
       this.props.action.noti.getNotiList(mobile);
       this.props.action.cart.cartFetch();
     }
+  }
+  sortProdGroup(list) {
+    const {localOpList} = this.props.product;
+
+    const getMaxWeight = list =>
+      Math.max(...list.map(p => (localOpList.get(p.partnerId) || {}).weight));
+
+    return list
+      .map(item =>
+        item.sort((a, b) => {
+          // 동일 국가내의 상품을 정렬한다.
+          // field_daily == true 인 무제한 상품 우선, 사용 날짜는 오름차순
+          if (a.field_daily) return b.field_daily ? a.days - b.days : -1;
+          return b.field_daily ? 1 : a.days - b.days;
+        }),
+      )
+      .sort((a, b) => {
+        // 국가는 weight 값이 높은 순서가 우선, weight 값이 같으면 이름 순서
+        const weightA = getMaxWeight(a),
+          weightB = getMaxWeight(b);
+        return weightA == weightB
+          ? a[0].search < b[0].search
+            ? -1
+            : 1
+          : weightB - weightA;
+      });
+  }
+
+  getProdGroup() {
+    const {prodList, localOpList} = this.props.product,
+      list = [];
+
+    for (let item of prodList.values()) {
+      if (localOpList.has(item.partnerId)) {
+        const localOp = localOpList.get(item.partnerId);
+        item.ccodeStr = (localOp.ccode || []).join(',');
+        item.cntry = Set(Country.getName(localOp.ccode));
+        item.search = [...item.cntry].join(',');
+        item.pricePerDay = Math.round(item.price / item.days);
+
+        const idxCcode = list.findIndex(
+          elm => elm.length > 0 && elm[0].ccodeStr == item.ccodeStr,
+        );
+
+        if (idxCcode < 0) {
+          // new item, insert it
+          list.push([item]);
+        } else {
+          // 이미 같은 country code를 갖는 데이터가 존재하면, 그 아래에 추가한다. (2차원 배열)
+          list[idxCcode].push(item);
+        }
+      }
+    }
+    return list;
+  }
+
+  renderTitleBtn() {
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => <Text style={styles.title}>{i18n.t('esim')}</Text>,
+      headerRight: () => (
+        <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+          <AppButton
+            key="search"
+            style={styles.btnSearchBar}
+            onPress={() => this.props.navigation.navigate('StoreSearch')}
+            iconName="btnSearchTop"
+          />
+
+          <AppButton
+            key="cnter"
+            style={styles.btnCnter}
+            onPress={() => this.props.navigation.navigate('Contact')}
+            iconName="btnCnter"
+          />
+
+          {/* //BadgeAppButton을 사용했을 때 위치가 변동됨 수정이 필요함 */}
+          <BadgeAppButton
+            key="alarm"
+            style={styles.btnAlarm}
+            onPress={() =>
+              this.props.navigation.navigate('Noti', {mode: 'noti'})
+            }
+            iconName="btnAlarm"
+          />
+        </View>
+      ),
+    });
   }
 
   renderScene = props => {
