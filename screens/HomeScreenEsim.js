@@ -41,7 +41,7 @@ import {
   PERMISSIONS,
   request,
 } from 'react-native-permissions';
-
+import HandlePushNoti from '../submodules/rokebi-utils/models/handlePushNoti';
 const size =
   windowHeight > 810
     ? {
@@ -123,7 +123,6 @@ class HomeScreenEsim extends Component {
     this._clickTab = this._clickTab.bind(this);
     this._notification = this._notification.bind(this);
     this._init = this._init.bind(this);
-    this._handleNotification = this._handleNotification.bind(this);
     this._modalBody = this._modalBody.bind(this);
     this.requestPermission = this.requestPermission.bind(this);
     this.checkFistLaunch = this.checkFistLaunch.bind(this);
@@ -206,55 +205,28 @@ class HomeScreenEsim extends Component {
     }
   }
 
-  _notification(type, data, isForeground = true) {
-    const {mobile, loggedIn} = this.props.account;
+  _notification(type, payload, isForeground = true) {
+    const {mobile, iccid, loggedIn} = this.props.account;
+    const {navigation} = this.props;
 
     if (loggedIn) {
       this.props.action.noti.getNotiList(mobile);
     }
 
-    switch (type) {
-      case 'register':
-        this.props.action.account.updateAccount({
-          deviceToken: data,
-        });
-        break;
-      case 'notification':
-        this._handleNotification(data, isForeground);
-    }
-  }
-
-  _handleNotification(payload, isForeground) {
-    const type = (payload.data || {}).notiType;
-    const target = (payload.data || {}).iccid;
-    const {mobile, iccid} = this.props.account;
-
-    if (mobile && _.size(payload) > 0) {
-      if (Platform.OS === 'ios') {
-        let msg = JSON.stringify(payload);
-        this.props.action.noti.sendLog(mobile, msg);
-      }
-    }
-
-    switch (type) {
-      case 'account':
-        if (typeof iccid !== 'undefined' && iccid === target) {
-          if (!this._isNoticed) {
-            this._isNoticed = true;
-            AppAlert.info(
-              i18n.t('acc:disconnectSim'),
-              i18n.t('noti'),
-              this._clearAccount,
-            );
-          }
-        } else {
-          !isForeground && this.props.navigation.navigate('Noti');
-        }
-
-        break;
-      default:
-        !isForeground && this.props.navigation.navigate('Noti');
-    }
+    const pushNotiHandler = HandlePushNoti.createHandlePushNoti(
+      navigation,
+      payload,
+      {
+        mobile,
+        iccid,
+        isForeground,
+        isRegister: type == 'register',
+        updateAccount: this.props.action.account.updateAccount,
+        clearCurrentAccount: this.props.action.account.clearCurrentAccount,
+      },
+    );
+    pushNotiHandler.sendLog();
+    pushNotiHandler.handleNoti();
   }
 
   _refresh() {
