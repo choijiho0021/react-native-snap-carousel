@@ -394,6 +394,7 @@ const styles = StyleSheet.create({
     // ... appStyles.normal14Text,
     fontSize: 17,
     flex: 1,
+    color: colors.black,
   },
   searchList: {
     alignContent: 'flex-start',
