@@ -213,74 +213,79 @@ class EsimScreen extends Component {
     this.setState({showModal: flag, modal, subs});
   }
 
-  _modalBody = (modal, subs) => () => {
+  _showQR(subs) {
+    return (
+      <View style={styles.modalBody}>
+        {_.isEmpty(subs.smdpAddr + subs.actCode) ? (
+          <View style={styles.center}>
+            <Text>{i18n.t('esim:showQR:nothing')}</Text>
+          </View>
+        ) : (
+          <View>
+            <Text style={appStyles.normal16Text}>
+              <Text style={styles.normal16BlueText}>
+                {i18n.t('esim:showQR:frontBody')}
+              </Text>
+              {i18n.t('esim:showQR:endBody')}
+            </Text>
+            <View style={styles.center}>
+              <QRCode value={subs.smdpAddr + subs.actCode} />
+            </View>
+          </View>
+        )}
+      </View>
+    );
+  }
+
+  _esimManualInputInfo() {
+    return (
+      <View style={{marginBottom: 20}}>
+        <Text style={appStyles.normal16Text}>
+          <Text style={styles.normal16BlueText}>
+            {i18n.t('esim:manualInput:bodyPart1')}
+          </Text>
+          <Text style={appStyles.normal16Text}>
+            {i18n.t('esim:manualInput:bodyPart2')}
+          </Text>
+          <Text style={styles.normal16BlueText}>
+            {i18n.t('esim:manualInput:bodyPart3')}
+          </Text>
+          {i18n.t('esim:manualInput:bodyPart4')}
+        </Text>
+      </View>
+    );
+  }
+
+  _copyInfo(valToCopy, title) {
     const {copyString} = this.state;
+    return (
+      <View style={styles.titleAndStatus}>
+        <View>
+          <Text style={styles.esimInfoKey}>{i18n.t(`esim:${title}`)}</Text>
+          <Text style={appStyles.normal16Text}>{valToCopy}</Text>
+        </View>
+        <AppButton
+          title={i18n.t('copy')}
+          titleStyle={styles.btnCopyTitle(copyString == valToCopy)}
+          style={styles.btnCopy(copyString == valToCopy)}
+          onPress={this.copyToClipboard(valToCopy)}
+        />
+      </View>
+    );
+  }
+
+  _modalBody = (modal, subs) => () => {
     if (!subs) return null;
 
     if (modal === 'showQR') {
-      return (
-        <View style={styles.modalBody}>
-          {_.isEmpty(subs.smdpAddr + subs.actCode) ? (
-            <View style={styles.center}>
-              <Text>{i18n.t('esim:showQR:nothing')}</Text>
-            </View>
-          ) : (
-            <View>
-              <Text style={appStyles.normal16Text}>
-                <Text style={styles.normal16BlueText}>
-                  {i18n.t('esim:showQR:frontBody')}
-                </Text>
-                {i18n.t('esim:showQR:endBody')}
-              </Text>
-              <View style={styles.center}>
-                <QRCode value={subs.smdpAddr + subs.actCode} />
-              </View>
-            </View>
-          )}
-        </View>
-      );
+      return this._showQR(subs);
     }
 
     return (
       <View style={styles.modalBody}>
-        <View style={{marginBottom: 20}}>
-          <Text style={appStyles.normal16Text}>
-            <Text style={styles.normal16BlueText}>
-              {i18n.t('esim:manualInput:bodyPart1')}
-            </Text>
-            <Text style={appStyles.normal16Text}>
-              {i18n.t('esim:manualInput:bodyPart2')}
-            </Text>
-            <Text style={styles.normal16BlueText}>
-              {i18n.t('esim:manualInput:bodyPart3')}
-            </Text>
-            {i18n.t('esim:manualInput:bodyPart4')}
-          </Text>
-        </View>
-        <View style={styles.titleAndStatus}>
-          <View>
-            <Text style={styles.esimInfoKey}>{i18n.t('esim:smdp')}</Text>
-            <Text style={appStyles.normal16Text}>{subs.smdpAddr}</Text>
-          </View>
-          <AppButton
-            title={i18n.t('copy')}
-            titleStyle={styles.btnCopyTitle(copyString == subs.smdpAddr)}
-            style={styles.btnCopy(copyString == subs.smdpAddr)}
-            onPress={this.copyToClipboard(subs.smdpAddr)}
-          />
-        </View>
-        <View style={styles.titleAndStatus}>
-          <View>
-            <Text style={styles.esimInfoKey}>{i18n.t('esim:actCode')}</Text>
-            <Text style={appStyles.normal16Text}>{subs.actCode}</Text>
-          </View>
-          <AppButton
-            title={i18n.t('copy')}
-            titleStyle={styles.btnCopyTitle(copyString == subs.actCode)}
-            style={styles.btnCopy(copyString == subs.actCode)}
-            onPress={this.copyToClipboard(subs.actCode)}
-          />
-        </View>
+        {this._esimManualInputInfo()}
+        {this._copyInfo(subs.smdpAddr, 'smdp')}
+        {this._copyInfo(subs.actCode, 'actCode')}
       </View>
     );
   };
