@@ -26,6 +26,7 @@ export const CART_ADD = 'rokebi/cart/CART_ADD';
 export const CART_REMOVE = 'rokebi/cart/CART_REMOVE';
 export const CART_UPDATE = 'rokebi/cart/CART_UPDATE';
 export const CART_CHECK_STOCK = 'rokebi/cart/CART_CHECK_STOCK';
+const GET_OUT_OF_STOCK_TITLE = 'rokebi/cart/GET_OUT_OF_STOCK_TITLE';
 
 export const setCartToken = createAction(SET_CART_TOKEN);
 export const cartFlyoutOpen = createAction(CART_FLYOUT_OPEN);
@@ -35,6 +36,10 @@ export const cartFetch = createAction(CART_FETCH, API.Cart.get);
 export const cartAdd = createAction(CART_ADD, API.Cart.add);
 export const cartRemove = createAction(CART_REMOVE, API.Cart.remove);
 const cartCheckStock = createAction(CART_CHECK_STOCK, API.Cart.checkStock);
+const getOutOfStockTitle = createAction(
+  GET_OUT_OF_STOCK_TITLE,
+  API.Cart.getStockTitle,
+);
 export const cartUpdateQty = createAction(
   CART_UPDATE,
   API.Cart.updateQty,
@@ -109,8 +114,8 @@ const checkStock = prodList => {
 
     return esimApp
       ? dispatch(cartCheckStock(prodList, token)).then(resp => {
-          resp.title = resp.objects.map(i => i.title).join('');
-          return resp;
+          if (resp.result == 0) return resp;
+          return dispatch(getOutOfStockTitle(resp)).payload;
         })
       : new Promise.resolve({result: 0});
   };
