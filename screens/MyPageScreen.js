@@ -527,6 +527,7 @@ const mapStateToProps = state => ({
     state.pender.pending[orderActions.GET_SUBS] ||
     state.pender.pending[accountActions.CHANGE_EMAIL] ||
     state.pender.pending[accountActions.UPLOAD_PICTURE] ||
+    state.pender.pending[accountActions.CHANGE_PICTURE] ||
     false,
 });
 
