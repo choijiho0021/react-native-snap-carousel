@@ -192,7 +192,7 @@ class HomeScreen extends Component {
       pin,
       iccid,
       loggedIn,
-      fcmToken,
+      deviceToken,
       isUsedByOther,
     } = this.props.account;
 
@@ -203,7 +203,7 @@ class HomeScreen extends Component {
     }
 
     //자동로그인의 경우 device token update
-    if (prevProps.account.fcmToken != fcmToken && loggedIn) {
+    if (prevProps.account.deviceToken != deviceToken && loggedIn) {
       this.props.action.account.changeNotiToken();
     }
 
@@ -248,7 +248,7 @@ class HomeScreen extends Component {
     switch (type) {
       case 'register':
         this.props.action.account.updateAccount({
-          fcmToken: data,
+          deviceToken: data,
         });
         break;
       case 'notification':
