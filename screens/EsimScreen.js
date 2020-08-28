@@ -216,7 +216,7 @@ class EsimScreen extends Component {
   _showQR(subs) {
     return (
       <View style={styles.modalBody}>
-        {_.isEmpty(subs.smdpAddr + subs.actCode) ? (
+        {_.isEmpty(subs.qrCode) ? (
           <View style={styles.center}>
             <Text>{i18n.t('esim:showQR:nothing')}</Text>
           </View>
@@ -229,7 +229,7 @@ class EsimScreen extends Component {
               {i18n.t('esim:showQR:endBody')}
             </Text>
             <View style={styles.center}>
-              <QRCode value={subs.smdpAddr + subs.actCode} />
+              <QRCode value={subs.qrCode} />
             </View>
           </View>
         )}
@@ -274,7 +274,9 @@ class EsimScreen extends Component {
     );
   }
 
-  _modalBody = (modal, subs) => () => {
+  _modalBody = () => {
+    const {modal, subs} = this.state;
+
     if (!subs) return null;
 
     if (modal === 'showQR') {
@@ -334,7 +336,7 @@ class EsimScreen extends Component {
               ? i18n.t('esim:showQR:title')
               : i18n.t('esim:manualInput:title')
           }
-          body={this._modalBody(modal, subs)}
+          body={this._modalBody}
           onOkClose={() => this._showModal(false)}
           visible={showModal}
         />
