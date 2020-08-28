@@ -260,7 +260,7 @@ class EsimScreen extends Component {
     const {copyString} = this.state;
     return (
       <View style={styles.titleAndStatus}>
-        <View>
+        <View style={{flex: 1}}>
           <Text style={styles.esimInfoKey}>{i18n.t(`esim:${title}`)}</Text>
           <Text style={appStyles.normal16Text}>{valToCopy}</Text>
         </View>
