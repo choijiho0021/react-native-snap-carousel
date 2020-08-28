@@ -133,6 +133,7 @@ class MyPageScreen extends Component {
     this._getNextOrder = this._getNextOrder.bind(this);
     this._onRefresh = this._onRefresh.bind(this);
     this.copyToClipboard = this.copyToClipboard.bind(this);
+    this.checkPhotoPermission = this.checkPhotoPermission.bind(this);
 
     this.flatListRef = React.createRef();
   }
@@ -181,21 +182,12 @@ class MyPageScreen extends Component {
     ) {
       this.flatListRef.current.scrollToOffset({animated: false, y: 0});
     }
-
-    // if(this.props.account.loggedIn != prevProps.account.loggedIn && ){
-    //   console.log("goto login page - aa",this.props.account.loggedIn,prevProps.account.loggedIn)
-    //   this.props.navigation.navigate('RegisterMobile')
-    // }
   }
 
   async _didMount() {
-    const permission =
-      Platform.OS == 'ios'
-        ? PERMISSIONS.IOS.PHOTO_LIBRARY
-        : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
-    const result = await check(permission);
+    const hasPhotoPermission = this.checkPhotoPermission();
 
-    this.setState({hasPhotoPermission: result === 'granted'});
+    this.setState({hasPhotoPermission});
 
     // if (this.props.uid) this.props.action.order.getOrders(this.props.auth)
   }
@@ -214,9 +206,7 @@ class MyPageScreen extends Component {
     this.setState({showIdModal: flag});
   }
 
-  async _changePhoto() {
-    let checkNewPermission = false;
-
+  async checkPhotoPermission() {
     if (!this.state.hasPhotoPermission) {
       const permission =
         Platform.OS == 'ios'
@@ -224,8 +214,12 @@ class MyPageScreen extends Component {
           : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
       const result = await check(permission);
 
-      checkNewPermission = result === RESULTS.GRANTED;
+      return result === RESULTS.GRANTED;
     }
+  }
+
+  _changePhoto() {
+    const checkNewPermission = this.checkPhotoPermission();
 
     if (!this.props.uid) {
       return this.props.navigation.navigate('Auth');

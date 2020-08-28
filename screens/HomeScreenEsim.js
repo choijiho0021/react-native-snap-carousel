@@ -530,13 +530,13 @@ class HomeScreenEsim extends Component {
     );
   }
   render() {
-    const {index, routes, isSupportDev} = this.state;
+    const {index, routes, isSupportDev, firstLaunch} = this.state;
     return (
       <ScrollView
         // contentContainerStyle={appStyles.container}
         style={styles.scrollView}
         stickyHeaderIndices={[1]}>
-        {this.state.firstLaunch && <TutorialScreen />}
+        {firstLaunch && <TutorialScreen />}
         {this.renderCarousel()}
         {/* ScrollView  stickyHeaderIndices로 상단 탭을 고정하기 위해서 View한번 더 사용*/}
         <View style={styles.whiteTwoBackground}>
