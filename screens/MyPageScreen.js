@@ -406,7 +406,7 @@ class MyPageScreen extends Component {
       this.props.auth,
     );
     this.props.action.order.getOrders(this.props.auth, 0).then(resp => {
-      if (resp.result == 0) {
+      if (resp) {
         this.setState({
           refreshing: false,
         });
@@ -715,6 +715,7 @@ const mapStateToProps = state => ({
     state.pender.pending[orderActions.GET_SUBS] ||
     state.pender.pending[accountActions.CHANGE_EMAIL] ||
     state.pender.pending[accountActions.UPLOAD_PICTURE] ||
+    state.pender.pending[accountActions.CHANGE_PICTURE] ||
     false,
 });
 
