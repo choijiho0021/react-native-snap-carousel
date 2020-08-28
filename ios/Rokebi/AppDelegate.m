@@ -5,7 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@import Firebase;
 #import "AppDelegate.h"
+#import <RNFirebaseMessaging.h>
+#import <RNFirebaseNotifications.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTLinkingManager.h>
@@ -34,10 +37,6 @@
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 
 #import <UserNotifications/UserNotifications.h>
-
-#import <RNFirebaseMessaging.h>
-#import <RNFirebaseNotifications.h>
-@import Firebase;
 
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];
