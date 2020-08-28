@@ -59,9 +59,9 @@ const ENV = {
     dev: {
       ...env,
       scheme: 'https',
-      rokApiUrl: 'service.rokebi.com',
-      apiUrl: 'api.rokebi.com',
-      baseUrl: 'https://www.rokebi.com',
+      rokApiUrl: 'svcapp.rokebi.com',
+      apiUrl: 'usim.rokebi.com',
+      baseUrl: 'https://usim.rokebi.com',
       // scheme: 'http',
       // rokApiUrl: 'tb.service.rokebi.com',
       // apiUrl: 'esim2-tb-v3.ap-northeast-2.elasticbeanstalk.com',
@@ -81,9 +81,9 @@ const ENV = {
     prod: {
       ...env,
       scheme: 'https',
-      rokApiUrl: 'service.rokebi.com',
-      apiUrl: 'api.rokebi.com',
-      baseUrl: 'https://www.rokebi.com',
+      rokApiUrl: 'svcapp.rokebi.com',
+      apiUrl: 'usim.rokebi.com',
+      baseUrl: 'https://usim.rokebi.com',
       label:
         Platform.OS === 'ios' ? codePushiOSProdLabel : codePushAndProdLabel,
     },
