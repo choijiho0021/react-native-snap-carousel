@@ -386,7 +386,7 @@ class MyPageScreen extends Component {
     );
 
     this.props.action.order.getOrders(this.props.auth, 0).then(resp => {
-      if (resp.result == 0) {
+      if (resp) {
         this.setState({
           refreshing: false,
         });
