@@ -588,6 +588,9 @@ class HomeScreen extends Component {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   infoText: {
     ...appStyles.normal14Text,
     color: colors.black,

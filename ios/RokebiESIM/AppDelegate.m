@@ -6,10 +6,10 @@
  */
 
 @import Firebase;
+#import "AppDelegate.h"
 #import <RNFirebaseMessaging.h>
 #import <RNFirebaseNotifications.h>
 
-#import "AppDelegate.h"
 #import <React/RCTBridge.h>
 #import <React/RCTLinkingManager.h>
 #import <React/RCTBundleURLProvider.h>
