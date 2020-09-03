@@ -35,7 +35,7 @@
     "babel-plugin-transform-remove-console": "^6.9.4",
     "buffer": "^5.6.0",
     "i18n-js": "^3.7.0",
-    "iamport-react-native": "^1.4.4",
+    "iamport-react-native": "^1.5.2",
     "immutable": "^4.0.0-rc.12",
     "moment": "^2.26.0",
     "moment-with-locales-es6": "^1.0.1",
