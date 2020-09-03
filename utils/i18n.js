@@ -1040,7 +1040,7 @@ const ko = {
 
   'mypage:idCheckTitle': '로깨비톡 ID 확인',
   'mypage:manualInput:body':
-    '로밍도깨비 eSM 사용 중 로깨비톡 사용 시 다음 ID를 사용하여 로그인할 수 있습니다',
+    '아래의 정보를 사용하여 로깨비톡에 로그인할 수 있습니다',
   'mypage:iccid': 'ICCID',
   'mypage:activationCode': 'Activation Code',
   'mypage:openRokebiTalk': '로깨비톡 바로가기 ＞',
