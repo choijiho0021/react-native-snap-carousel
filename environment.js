@@ -102,8 +102,36 @@ const ENV = {
   },
 };
 
-export default function() {
-  if (process.env.NODE_ENV == 'production') return ENV[appId].prod;
-  if (process.env.NODE_ENV == 'staging') return ENV[appId].staging;
-  return ENV[appId].dev;
+class Env {
+  constructor() {
+    this.env = this.Env('esim');
+  }
+
+  setAppIdByIccid(iccid) {
+    this.env = this.Env(iccid.substr(0, 8) === '00001111' ? 'esim' : 'usim');
+  }
+
+  get() {
+    return this.env;
+  }
+
+  Env(appId) {
+    const env =
+      process.env.NODE_ENV == 'production'
+        ? ENV[appId].prod
+        : process.env.NODE_ENV == 'staging'
+        ? ENV[appId].staging
+        : ENV[appId].dev;
+
+    return {
+      ...env,
+      appId: appId,
+      impId,
+      channelId,
+      esimApp: appId === 'esim',
+      sipServer: '193.122.106.2:35060',
+    };
+  }
 }
+
+export default new Env();

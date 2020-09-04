@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import * as cartActions from '../redux/modules/cart';
 import Video from 'react-native-video';
-import getEnvVars from '../environment';
+import Env from '../environment';
 import i18n from '../utils/i18n';
 import AppBackButton from '../components/AppBackButton';
 import IMP from 'iamport-react-native';
@@ -52,7 +52,7 @@ class PaymentScreen extends Component {
     }
 
     if (params.mode == 'test' || params.amount == 0) {
-      const {impId} = getEnvVars();
+      const {impId} = Env.get();
       const response = {
         success: true,
         imp_uid: impId,
@@ -108,7 +108,7 @@ class PaymentScreen extends Component {
   }
 
   render() {
-    const {impId} = getEnvVars();
+    const {impId} = Env.get();
     const params = this.props.route.params && this.props.route.params.params;
 
     return (

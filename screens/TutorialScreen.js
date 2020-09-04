@@ -17,8 +17,8 @@ import * as accountActions from '../redux/modules/account';
 import _ from 'underscore';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {sliderWidth} from '../constants/SliderEntry.style';
-import getEnvVars from '../environment';
-const {esimApp} = getEnvVars();
+import Env from '../environment';
+const {esimApp} = Env.get();
 
 const {width} = Dimensions.get('window');
 const tutorialImages = esimApp

@@ -22,12 +22,12 @@ import AppModal from '../components/AppModal';
 import AppSwitch from '../components/AppSwitch';
 import AppToast from '../components/AppToast';
 import VersionCheck from 'react-native-version-check';
-import getEnvVars from '../environment';
+import Env from '../environment';
 import Analytics from 'appcenter-analytics';
 import _ from 'underscore';
 import firebase from 'react-native-firebase';
 
-const {label} = getEnvVars();
+const {label} = Env.get();
 
 class SettingsListItem extends PureComponent {
   constructor(props) {

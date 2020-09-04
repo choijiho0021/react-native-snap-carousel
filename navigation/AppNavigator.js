@@ -8,8 +8,8 @@ import MainTabNavigator from './MainTabNavigator';
 import EsimMainTabNavigator from './EsimMainTabNavigator';
 import CodePushStack from './CodePushStackNavigator';
 import AuthStackNavigator from './AuthStackNavigator';
-import getEnvVars from '../environment';
-const {esimApp} = getEnvVars();
+import Env from '../environment';
+const {esimApp} = Env.get();
 
 const MainStack = createStackNavigator();
 

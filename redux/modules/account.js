@@ -8,8 +8,8 @@ import {batch} from 'react-redux';
 import * as ToastActions from './toast';
 import {Toast} from '../../constants/CustomTypes';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
-import getEnvVars from '../../environment';
-const {esimApp} = getEnvVars();
+import Env from '../../environment';
+const {esimApp} = Env.get();
 
 const SIGN_UP = 'rokebi/account/SIGN_UP';
 export const UPDATE_ACCOUNT = 'rokebi/account/UPDATE_ACCOUNT';

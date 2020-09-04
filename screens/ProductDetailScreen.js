@@ -20,7 +20,7 @@ import {colors} from '../constants/Colors';
 import {appStyles, htmlDetailWithCss} from '../constants/Styles';
 import AppButton from '../components/AppButton';
 import WebView from 'react-native-webview';
-import getEnvVars from '../environment';
+import Env from '../environment';
 import Analytics from 'appcenter-analytics';
 import KakaoSDK from '@actbase/react-native-kakaosdk';
 import {windowWidth} from '../constants/SliderEntry.style';
@@ -30,11 +30,11 @@ import {Toast} from '../constants/CustomTypes';
 import AppIcon from '../components/AppIcon';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
-const {channelId} = getEnvVars();
+const {channelId} = Env.get();
 
 const HEADER_IMG_HEIGHT = 200;
 const TAB_IDX_ASK_BY_KAKAO = 3; // KakaoTalk으로 물어보기 Tab의 index
-const {baseUrl} = getEnvVars();
+const {baseUrl} = Env.get();
 
 const tabList = ['ProdInfo', 'Tip', 'Caution', 'Ask with KakaoTalk'];
 

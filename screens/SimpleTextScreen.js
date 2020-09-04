@@ -18,8 +18,8 @@ import {appStyles, htmlWithCss} from '../constants/Styles';
 import AppButton from '../components/AppButton';
 import WebView from 'react-native-webview';
 import utils from '../utils/utils';
-import getEnvVars from '../environment';
-const {baseUrl} = getEnvVars();
+import Env from '../environment';
+const {baseUrl} = Env.get();
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
 class SimpleTextScreen extends Component {

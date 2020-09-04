@@ -16,7 +16,7 @@ import {TouchableOpacity, TextInput} from 'react-native-gesture-handler';
 import PaymentItemInfo from '../components/PaymentItemInfo';
 import {isAndroid} from '../components/SearchBarAnimation/utils';
 import {isDeviceSize} from '../constants/SliderEntry.style';
-import getEnvVars from '../environment';
+import Env from '../environment';
 import RNPickerSelect from 'react-native-picker-select';
 import Triangle from '../components/Triangle';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -169,7 +169,7 @@ class PymMethodScreen extends Component {
       this.setState({
         loading: true,
       });
-      const {impId} = getEnvVars();
+      const {impId} = Env.get();
       const response = PaymentResult.createForRokebiCash({
         impId,
         mobile,

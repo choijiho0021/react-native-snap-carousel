@@ -24,8 +24,8 @@ import AppAlert from './components/AppAlert';
 import i18n from './utils/i18n';
 import AppToast from './components/AppToast';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
-import getEnvVars from './environment';
-const {esimApp} = getEnvVars();
+import Env from './environment';
+const {esimApp} = Env.get();
 
 const logger = createLogger();
 const composeEnhancers =

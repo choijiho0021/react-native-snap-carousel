@@ -35,8 +35,8 @@ import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import {timer} from '../constants/Timer';
 import api from '../submodules/rokebi-utils/api/api';
 import AppAlert from '../components/AppAlert';
-import getEnvVars from '../environment';
-const {esimApp} = getEnvVars();
+import Env from '../environment';
+const {esimApp} = Env.get();
 class CountryListItem extends PureComponent {
   render() {
     const {item, selected, onPress} = this.props;

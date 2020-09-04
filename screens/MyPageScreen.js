@@ -39,8 +39,8 @@ import Analytics from 'appcenter-analytics';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import {Toast} from '../constants/CustomTypes';
 import Clipboard from '@react-native-community/clipboard';
-import getEnvVars from '../environment';
-const {esimApp} = getEnvVars();
+import Env from '../environment';
+const {esimApp} = Env.get();
 
 let ImagePicker;
 ImagePicker = require('react-native-image-crop-picker').default;

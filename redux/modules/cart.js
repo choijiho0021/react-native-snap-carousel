@@ -6,8 +6,8 @@ import utils from '../../utils/utils';
 import {getOrders} from './order';
 import {getAccount} from './account';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
-import getEnvVars from '../../environment';
-const {esimApp} = getEnvVars();
+import Env from '../../environment';
+const {esimApp} = Env.get();
 
 const SET_CART_TOKEN = 'rokebi/cart/SET_CART_TOKEN';
 const CART_FLYOUT_CLOSE = 'rokebi/cart/CART_FLYOUT_CLOSE';
