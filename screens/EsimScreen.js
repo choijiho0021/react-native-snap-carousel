@@ -1,37 +1,29 @@
+import Clipboard from '@react-native-community/clipboard';
 import React, {Component} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  FlatList,
-  RefreshControl,
-  TouchableOpacity,
-} from 'react-native';
-
+import {FlatList, RefreshControl, StyleSheet, Text, View} from 'react-native';
+import QRCode from 'react-native-qrcode-svg';
 import SnackBar from 'react-native-snackbar-component';
-import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import i18n from '../utils/i18n';
-import utils from '../utils/utils';
-import {appStyles} from '../constants/Styles';
+import {bindActionCreators} from 'redux';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import _ from 'underscore';
+import AppActivityIndicator from '../components/AppActivityIndicator';
+import AppButton from '../components/AppButton';
+import AppIcon from '../components/AppIcon';
+import AppModal from '../components/AppModal';
 import {colors} from '../constants/Colors';
+import {Toast} from '../constants/CustomTypes';
+import {isDeviceSize} from '../constants/SliderEntry.style';
+import {appStyles} from '../constants/Styles';
+import {timer} from '../constants/Timer';
 import * as accountActions from '../redux/modules/account';
-import * as notiActions from '../redux/modules/noti';
-import * as infoActions from '../redux/modules/info';
 import * as cartActions from '../redux/modules/cart';
+import * as infoActions from '../redux/modules/info';
+import * as notiActions from '../redux/modules/noti';
 import * as orderActions from '../redux/modules/order';
 import * as toastActions from '../redux/modules/toast';
-import _ from 'underscore';
-import AppButton from '../components/AppButton';
-import {isDeviceSize} from '../constants/SliderEntry.style';
-import AppActivityIndicator from '../components/AppActivityIndicator';
-import {timer} from '../constants/Timer';
-import subsApi from '../submodules/rokebi-utils/api/subscriptionApi';
-import AppModal from '../components/AppModal';
-import QRCode from 'react-native-qrcode-svg';
-import AppIcon from '../components/AppIcon';
-import {Toast} from '../constants/CustomTypes';
-import Clipboard from '@react-native-community/clipboard';
+import i18n from '../utils/i18n';
+import utils from '../utils/utils';
 
 class CardInfo extends Component {
   render() {
@@ -49,53 +41,71 @@ class UsageItem extends Component {
     super(props);
   }
 
+  _title(item, expired) {
+    return (
+      <View style={styles.prodTitle}>
+        <Text
+          key={item.key}
+          style={expired ? styles.usageTitleNormal : styles.usageTitleBold}>
+          {item.prodName}
+        </Text>
+        {expired && (
+          <View style={styles.expiredBg}>
+            <Text key={item.nid} style={appStyles.normal12Text}>
+              {i18n.t('esim:expired')}
+            </Text>
+          </View>
+        )}
+      </View>
+    );
+  }
+
+  _expireDate(item) {
+    return (
+      <View style={styles.inactiveContainer}>
+        <Text style={styles.normal12WarmGrey}>
+          {i18n.t('esim:usablePeriod')}
+        </Text>
+        <Text style={styles.normal14WarmGrey}>{`${utils.toDateString(
+          item.purchaseDate,
+          'YYYY-MM-DD',
+        )} ~ ${item.expireDate}`}</Text>
+      </View>
+    );
+  }
+
+  _QRnCopyInfo(item, onPress) {
+    return (
+      <View style={styles.activeBottomBox}>
+        <AppButton
+          style={styles.btn}
+          onPress={() => onPress(true, 'showQR', item)}
+          title={i18n.t('esim:showQR')}
+          titleStyle={styles.btnTitle}
+          iconName={'btnQr'}
+        />
+        <AppButton
+          style={styles.btn}
+          onPress={() => onPress(true, 'manual', item)}
+          title={i18n.t('esim:manualInput')}
+          titleStyle={styles.btnTitle}
+          iconName={'btnPen'}
+        />
+      </View>
+    );
+  }
+
   render() {
     const {item, onPress, expired} = this.props;
 
     return (
       <View
         style={[styles.usageListContainer, expired && styles.cardExpiredBg]}>
-        <View style={styles.prodTitle}>
-          <Text
-            key={item.key}
-            style={expired ? styles.usageTitleNormal : styles.usageTitleBold}>
-            {item.prodName}
-          </Text>
-          {expired && (
-            <View style={styles.expiredBg}>
-              <Text key={item.nid} style={appStyles.normal12Text}>
-                {i18n.t('esim:expired')}
-              </Text>
-            </View>
-          )}
-        </View>
-        <View style={styles.inactiveContainer}>
-          <Text style={styles.normal12WarmGrey}>
-            {i18n.t('esim:usablePeriod')}
-          </Text>
-          <Text style={styles.normal14WarmGrey}>{`${utils.toDateString(
-            item.purchaseDate,
-            'YYYY-MM-DD',
-          )} ~ ${item.expireDate}`}</Text>
-        </View>
-        {!expired && (
-          <View style={styles.activeBottomBox}>
-            <AppButton
-              style={styles.btn}
-              onPress={() => onPress(true, 'showQR', item)}
-              title={i18n.t('esim:showQR')}
-              titleStyle={styles.btnTitle}
-              iconName={'btnQr'}
-            />
-            <AppButton
-              style={styles.btn}
-              onPress={() => onPress(true, 'manual', item)}
-              title={i18n.t('esim:manualInput')}
-              titleStyle={styles.btnTitle}
-              iconName={'btnPen'}
-            />
-          </View>
-        )}
+        {this._title(item, expired)}
+        {this._expireDate(item)}
+        {!expired &&
+          item.type !== API.Subscription.CALL_PRODUCT &&
+          this._QRnCopyInfo(item, onPress)}
       </View>
     );
   }
