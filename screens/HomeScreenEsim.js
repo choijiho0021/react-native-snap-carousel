@@ -10,6 +10,7 @@ import {
   ScrollView,
   BackHandler,
   Platform,
+  Appearance,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {appStyles} from '../constants/Styles';
@@ -112,6 +113,7 @@ class HomeScreenEsim extends Component {
       europe: [],
       usaAu: [],
       multi: [],
+      darkMode: Appearance.getColorScheme(),
     };
 
     this._refresh = this._refresh.bind(this);
@@ -536,6 +538,7 @@ class HomeScreenEsim extends Component {
         // contentContainerStyle={appStyles.container}
         style={styles.scrollView}
         stickyHeaderIndices={[1]}>
+        <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
         {firstLaunch && <TutorialScreen />}
         {this.renderCarousel()}
         {/* ScrollView  stickyHeaderIndices로 상단 탭을 고정하기 위해서 View한번 더 사용*/}
