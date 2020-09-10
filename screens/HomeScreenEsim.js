@@ -11,6 +11,7 @@ import {
   BackHandler,
   Platform,
   Appearance,
+  StatusBar,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {appStyles} from '../constants/Styles';
@@ -532,7 +533,7 @@ class HomeScreenEsim extends Component {
     );
   }
   render() {
-    const {index, routes, isSupportDev, firstLaunch} = this.state;
+    const {index, routes, isSupportDev, firstLaunch, darkMode} = this.state;
     return (
       <ScrollView
         // contentContainerStyle={appStyles.container}
