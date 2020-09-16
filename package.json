@@ -10,9 +10,9 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",
-    "code_push_release": "sh ./code_push.sh release $1",
-    "code_push_patch": "sh ./code_push.sh patch $1",
-    "code_push_promote": "sh ./code_push.sh promote production"
+    "code_push_release": "sh ./code_push.sh release $1 $2",
+    "code_push_patch": "sh ./code_push.sh patch $1 $2",
+    "code_push_promote": "sh ./code_push.sh promote production $1"
   },
   "dependencies": {
     "@actbase/react-native-kakao-channel": "^1.0.1",
