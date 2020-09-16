@@ -27,6 +27,7 @@ import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import api from '../submodules/rokebi-utils/api/api';
 import AppAlert from '../components/AppAlert';
 import PaymentResult from '../submodules/rokebi-utils/models/paymentResult';
+const {esimApp} = Env.get();
 const deliveryText = API.Order.deliveryText;
 
 class PymMethodScreen extends Component {
@@ -212,7 +213,7 @@ class PymMethodScreen extends Component {
         buyer_name: mobile,
         buyer_email: email,
         escrow: false,
-        app_scheme: 'Rokebi',
+        app_scheme: esimApp ? 'rokebiesim' : 'Rokebi',
         profile_uuid: profileId,
         dlvCost,
         digital: !simIncluded, // 컨텐츠 - 데이터상품일 경우 true
