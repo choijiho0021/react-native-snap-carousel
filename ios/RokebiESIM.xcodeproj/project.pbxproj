@@ -19,7 +19,6 @@
 		39C76941ABAF4DF292B19EC7 /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AFE9936F560A412CABB40AFE /* AntDesign.ttf */; };
 		3B68A3E48ED042039892C148 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AE9F849D96DE44A5AAF4084C /* Ionicons.ttf */; };
 		405C1E9524D945870016B43C /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 405C1E9424D945870016B43C /* AppCenter-Config.plist */; };
-		40965D2923E3AAEF003E8249 /* Development.plist in Resources */ = {isa = PBXBuildFile; fileRef = 40965D2823E3AAEF003E8249 /* Development.plist */; };
 		40B508C924B8102B00213190 /* AppDelegate+Iamport.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B508C824B8102B00213190 /* AppDelegate+Iamport.m */; };
 		46194724760D4369B79788A5 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 21343FD7414C4DF1AC30C20A /* Foundation.ttf */; };
 		5C4D2A6C2E07423DA90E8228 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 387414320DF943A8A94F8F41 /* Octicons.ttf */; };
@@ -277,7 +276,6 @@
 				FFBC012D75F941389E5666D9 /* SimpleLineIcons.ttf in Resources */,
 				A3DAD91A24F3471F008E7187 /* GoogleService-Info.plist in Resources */,
 				9D96DA7E4C474BD2B332FC90 /* Zocial.ttf in Resources */,
-				40965D2923E3AAEF003E8249 /* Development.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -447,7 +445,7 @@
 				CODE_SIGN_ENTITLEMENTS = RokebiESIM/RokebiESIM.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 46;
+				CURRENT_PROJECT_VERSION = 48;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
@@ -556,7 +554,7 @@
 				CODE_SIGN_ENTITLEMENTS = RokebiESIM/RokebiESIM.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 46;
+				CURRENT_PROJECT_VERSION = 48;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
