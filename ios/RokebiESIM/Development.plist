@@ -29,9 +29,13 @@
 			<string></string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>rokebiesim</string>
+				<string>fb452446969513226</string>
 			</array>
 		</dict>
+		<key>FacebookAppID</key>
+		<string>452446969513226</string>
+		<key>FacebookDisplayName</key>
+		<string>로깨비ESIM</string>
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
@@ -45,6 +49,8 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
+	<key>FacebookCodelessDebugLogEnabled</key>
+	<true/>
 	<key>KAKAO_APP_KEY</key>
 	<string>150021eafe4c18d2a51fb5ff97c38d9f</string>
 	<key>LSApplicationCategoryType</key>

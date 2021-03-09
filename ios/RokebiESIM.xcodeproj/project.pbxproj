@@ -3,36 +3,20 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		05BE80D4EB094AB2B9ADE691 /* FontAwesome5_Solid.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B24BE2798E19486C971F7C80 /* FontAwesome5_Solid.ttf */; };
-		064FD3B473B24FA49C2DB2C0 /* FontAwesome5_Brands.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 97EAF1666BB34E349694FF33 /* FontAwesome5_Brands.ttf */; };
 		0D75258E2393BEBB000D9C77 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 0D75258D2393BEBB000D9C77 /* fonts */; };
-		12DFCBBBA5E5481CBE7855CA /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B8109419CCBF4AABBEDD30C8 /* EvilIcons.ttf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		194A544668EF491C93036E90 /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2B724F71607F42C9984B056F /* FontAwesome5_Regular.ttf */; };
-		39C76941ABAF4DF292B19EC7 /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AFE9936F560A412CABB40AFE /* AntDesign.ttf */; };
-		3B68A3E48ED042039892C148 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AE9F849D96DE44A5AAF4084C /* Ionicons.ttf */; };
 		405C1E9524D945870016B43C /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 405C1E9424D945870016B43C /* AppCenter-Config.plist */; };
 		40B508C924B8102B00213190 /* AppDelegate+Iamport.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B508C824B8102B00213190 /* AppDelegate+Iamport.m */; };
-		46194724760D4369B79788A5 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 21343FD7414C4DF1AC30C20A /* Foundation.ttf */; };
-		5C4D2A6C2E07423DA90E8228 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 387414320DF943A8A94F8F41 /* Octicons.ttf */; };
-		76FCC866C94A468B8A808A8B /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 39EF1D8F28994FC5BAC96019 /* Entypo.ttf */; };
-		8BD04D8718D4459F96C6487F /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D10DD61E5B2242D3AE5662E3 /* MaterialIcons.ttf */; };
-		9D96DA7E4C474BD2B332FC90 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3EF6740ADCE34419ACC078ED /* Zocial.ttf */; };
 		A39B6F392485F35C00EDBBB6 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39B6F382485F35C00EDBBB6 /* File.swift */; };
 		A3DAD91A24F3471F008E7187 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A3DAD91924F3471F008E7187 /* GoogleService-Info.plist */; };
-		B17B8F9232B1453792F6EC90 /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8A5627E20C514F48AB67FB9D /* Fontisto.ttf */; };
-		BE19BB741F6F4643B4034DE9 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C25FD7BA1ACD4C91845B58B5 /* MaterialCommunityIcons.ttf */; };
 		CA247217DB91291F5572BECD /* libPods-RokebiESIM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D4C1139AB353FAA1E71792B /* libPods-RokebiESIM.a */; };
-		E168FDC3B0614F70ADECBCC0 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0C3366E7360846E782A22905 /* FontAwesome.ttf */; };
-		F879C47F7617473B93208A4F /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5B47FC0EFC7348AE92F80F75 /* Feather.ttf */; };
-		FFBC012D75F941389E5666D9 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 66877FDA2CA449A1949D9700 /* SimpleLineIcons.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -257,25 +241,9 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
-				39C76941ABAF4DF292B19EC7 /* AntDesign.ttf in Resources */,
 				0D75258E2393BEBB000D9C77 /* fonts in Resources */,
-				76FCC866C94A468B8A808A8B /* Entypo.ttf in Resources */,
-				12DFCBBBA5E5481CBE7855CA /* EvilIcons.ttf in Resources */,
-				F879C47F7617473B93208A4F /* Feather.ttf in Resources */,
-				E168FDC3B0614F70ADECBCC0 /* FontAwesome.ttf in Resources */,
-				064FD3B473B24FA49C2DB2C0 /* FontAwesome5_Brands.ttf in Resources */,
 				405C1E9524D945870016B43C /* AppCenter-Config.plist in Resources */,
-				194A544668EF491C93036E90 /* FontAwesome5_Regular.ttf in Resources */,
-				05BE80D4EB094AB2B9ADE691 /* FontAwesome5_Solid.ttf in Resources */,
-				B17B8F9232B1453792F6EC90 /* Fontisto.ttf in Resources */,
-				46194724760D4369B79788A5 /* Foundation.ttf in Resources */,
-				3B68A3E48ED042039892C148 /* Ionicons.ttf in Resources */,
-				BE19BB741F6F4643B4034DE9 /* MaterialCommunityIcons.ttf in Resources */,
-				8BD04D8718D4459F96C6487F /* MaterialIcons.ttf in Resources */,
-				5C4D2A6C2E07423DA90E8228 /* Octicons.ttf in Resources */,
-				FFBC012D75F941389E5666D9 /* SimpleLineIcons.ttf in Resources */,
 				A3DAD91A24F3471F008E7187 /* GoogleService-Info.plist in Resources */,
-				9D96DA7E4C474BD2B332FC90 /* Zocial.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -303,6 +271,7 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM-resources.sh",
+				"${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/QBImagePickerController/QBImagePicker.bundle",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Entypo.ttf",
@@ -321,9 +290,11 @@
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Zocial.ttf",
 				"${PODS_ROOT}/RSKImageCropper/RSKImageCropper/RSKImageCropperStrings.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FacebookSDKStrings.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/QBImagePicker.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AntDesign.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Entypo.ttf",
@@ -342,6 +313,7 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SimpleLineIcons.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Zocial.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RSKImageCropperStrings.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -449,6 +421,7 @@
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -527,7 +500,10 @@
 					"\"$(PODS_ROOT)/Headers/Public/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = RokebiESIM/Development.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 0.1.2;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
@@ -557,6 +533,7 @@
 				CURRENT_PROJECT_VERSION = 51;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -635,7 +612,10 @@
 					"\"$(PODS_ROOT)/Headers/Public/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = RokebiESIM/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 0.1.2;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (

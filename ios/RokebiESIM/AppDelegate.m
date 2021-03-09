@@ -14,15 +14,14 @@
 #import <React/RCTLinkingManager.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
-#import <React/RCTLinkingManager.h>
 
 #import <UMCore/UMModuleRegistry.h>
 #import <UMReactNativeAdapter/UMNativeModulesProxy.h>
 #import <UMReactNativeAdapter/UMModuleRegistryAdapter.h>
 
 #import "RNSplashScreen.h"  // here
-
 #import <CodePush/CodePush.h>
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
 
 #import <AppCenterReactNative.h>
 #import <AppCenterReactNativeAnalytics.h>
@@ -52,11 +51,18 @@ static void InitializeFlipper(UIApplication *application) {
 @implementation AppDelegate
 
 @synthesize window = _window;
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+  [FBSDKAppEvents activateApp];
+}
 
 - (BOOL)application:(UIApplication *)application
    openURL:(NSURL *)url
    options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
+  if ([[FBSDKApplicationDelegate sharedInstance] application:application
+                                                 openURL:url
+                                                 options:options]) return YES;
+  
   return [RCTLinkingManager application:application openURL:url options:options];
 }
 
@@ -111,6 +117,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   [AppCenterReactNative register];
   [AppCenterReactNativeAnalytics registerWithInitiallyEnabled:true];
   [AppCenterReactNativeCrashes registerWithAutomaticProcessing];
+  [[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
   
   self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
