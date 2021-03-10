@@ -32,10 +32,6 @@
 				<string>fb452446969513226</string>
 			</array>
 		</dict>
-		<key>FacebookAppID</key>
-		<string>452446969513226</string>
-		<key>FacebookDisplayName</key>
-		<string>로깨비ESIM</string>
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
