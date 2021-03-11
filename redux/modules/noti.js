@@ -4,7 +4,7 @@ import _ from 'underscore';
 import {pender} from 'redux-pender';
 import moment from 'moment';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
-import firebase from 'react-native-firebase';
+import firebase from '@react-native-firebase/app';
 
 export const GET_NOTI_LIST = 'rokebi/noti/GET_NOTI_LIST';
 const READ_NOTI = 'rokebi/noti/READ_NOTI';

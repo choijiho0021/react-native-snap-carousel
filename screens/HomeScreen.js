@@ -44,7 +44,6 @@ import appStateHandler from '../utils/appState';
 import Analytics from 'appcenter-analytics';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
-import firebase from 'react-native-firebase';
 
 // windowHeight
 // iphone 8 - 375x667

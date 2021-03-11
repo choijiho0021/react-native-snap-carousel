@@ -251,7 +251,7 @@ dependencies {
     implementation project(':react-native-version-check')
     implementation project(':react-native-code-push')
     implementation project(':react-native-camera')
-    implementation project(':react-native-firebase')
+    implementation project(':react-native-firebase/app')
     implementation project(':react-native-push-notification')
     implementation project(':react-native-video')
     implementation project(':react-native-gesture-handler')

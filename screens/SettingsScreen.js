@@ -25,7 +25,7 @@ import VersionCheck from 'react-native-version-check';
 import Env from '../environment';
 import Analytics from 'appcenter-analytics';
 import _ from 'underscore';
-import firebase from 'react-native-firebase';
+import firebase from '@react-native-firebase/app';
 
 const {label} = Env.get();
 

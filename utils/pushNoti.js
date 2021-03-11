@@ -1,7 +1,7 @@
 import Analytics from 'appcenter-analytics';
 import _ from 'underscore';
-import firebase from 'react-native-firebase';
-
+import firebase from '@react-native-firebase/app';
+// import messaging from '@react-native-firebase/messaging';
 class PushNoti {
   constructor() {
     this.callback = undefined;
@@ -41,6 +41,8 @@ class PushNoti {
       */
   }
 
+
+  
   async _configure({
     onRegister = ({token}) => {},
     onNotification = notification => {},

@@ -169,7 +169,7 @@ target 'RokebiESIM' do
   pod 'RNDeviceInfo', :path => '../node_modules/react-native-device-info'
 
   pod 'Firebase/Core'
-  pod 'RNFirebase', :path => '../node_modules/react-native-firebase/ios'
+  #pod 'RNFirebase', :path => '../node_modules/react-native-firebase/ios'
   pod 'Firebase/Analytics'
   pod 'Firebase/Messaging'
   pod 'FBSDKCoreKit'

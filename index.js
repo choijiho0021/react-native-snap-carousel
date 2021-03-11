@@ -9,7 +9,7 @@ import {name as appName} from './app.json';
 AppRegistry.registerComponent(appName, () => App);
 
 if (Platform.OS == 'android') {
-  const firebase = require('react-native-firebase');
+  const firebase = require('@react-native-firebase/app');
 
   AppRegistry.registerHeadlessTask(
     'RNFirebaseBackgroundMessage',

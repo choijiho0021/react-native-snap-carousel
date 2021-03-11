@@ -7,8 +7,6 @@
 
 @import Firebase;
 #import "AppDelegate.h"
-#import <RNFirebaseMessaging.h>
-#import <RNFirebaseNotifications.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTLinkingManager.h>
@@ -69,7 +67,7 @@ static void InitializeFlipper(UIApplication *application) {
 // Required to register for notifications
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
 {
-  [[RNFirebaseMessaging instance] didRegisterUserNotificationSettings:notificationSettings];
+//  [[RNFirebaseMessaging instance] didRegisterUserNotificationSettings:notificationSettings];
 }
 // Required for the register event.
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -99,7 +97,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 // IOS 4-10 Required for the localNotification event.
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
-  [[RNFirebaseNotifications instance] didReceiveLocalNotification:notification];
+//  [[RNFirebaseNotifications instance] didReceiveLocalNotification:notification];
 }
 
 
@@ -110,7 +108,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   #endif
 
   /// Firebase configuration
-  [FIRApp configure];
+  if ([FIRApp defaultApp] == nil) {
+    [FIRApp configure];
+  }
   
   [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
 
@@ -171,7 +171,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   // With swizzling disabled you must let Messaging know about the message, for Analytics
    [[FIRMessaging messaging] appDidReceiveMessage:userInfo];
   
-  [[RNFirebaseNotifications instance] didReceiveRemoteNotification:userInfo fetchCompletionHandler:^void (UIBackgroundFetchResult result){}];
+//  [[RNFirebaseNotifications instance] didReceiveRemoteNotification:userInfo fetchCompletionHandler:^void (UIBackgroundFetchResult result){}];
 
   // hide push notification
   completionHandler(UNNotificationPresentationOptionBadge | UNNotificationPresentationOptionAlert);
