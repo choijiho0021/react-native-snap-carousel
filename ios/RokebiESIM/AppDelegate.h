@@ -5,16 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UMReactNativeAdapter/UMModuleRegistryAdapter.h>
 #import <React/RCTBridgeDelegate.h>
 #import <UIKit/UIKit.h>
+#import <UMCore/UMAppDelegateWrapper.h>
 #import <UserNotifications/UNUserNotificationCenter.h>
 #import <Firebase.h>
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate, UNUserNotificationCenterDelegate>
+@interface AppDelegate : UMAppDelegateWrapper <UIApplicationDelegate, RCTBridgeDelegate, UNUserNotificationCenterDelegate>
 
-@property (nonatomic, strong) UIWindow *window;
-@property (nonatomic, strong) UMModuleRegistryAdapter *moduleRegistryAdapter;
-
+@property(nonatomic, strong) UIWindow *window;
 
 @end
