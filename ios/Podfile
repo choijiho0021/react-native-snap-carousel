@@ -16,6 +16,9 @@ target 'RokebiESIM' do
   pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary"
   pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
 
+  # for react-native-vector-icons
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+
 	# Enables Flipper.
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
