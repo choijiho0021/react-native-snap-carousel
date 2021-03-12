@@ -12,7 +12,7 @@
     "target": "esnext",
     "paths": {
       "@/*": ["./*"],
-      "@@/*": ["./tmp/*"]
+      "@@/*": ["./submodules/*"]
     },
   },
   "exclude": [
