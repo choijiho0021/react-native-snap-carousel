@@ -4,7 +4,6 @@ import _ from 'underscore';
 
 const IS_IOS = Platform.OS === 'ios';
 const {width: viewportWidth, height: viewportHeight} = Dimensions.get('window');
-console.log('@@@ window', viewportHeight, viewportWidth);
 
 function wp(percentage) {
   const value = (percentage * viewportWidth) / 100;

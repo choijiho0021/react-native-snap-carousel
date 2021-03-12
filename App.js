@@ -121,6 +121,9 @@ async function login() {
 }
 
 async function loadResourcesAsync() {
+  // clear caches
+  await store.dispatch(accountActions.clearCookies());
+
   // load product list
   await store.dispatch(productActions.getProdListWithToast());
   await store.dispatch(promotionActions.getPromotion());
