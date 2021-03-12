@@ -2,8 +2,8 @@ import {createAction, handleActions} from 'redux-actions';
 import {Map} from 'immutable';
 import {pender} from 'redux-pender';
 import _ from 'underscore';
-import {auth} from './account';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import {auth} from './account';
 
 export const POST_ISSUE = 'rokebi/board/POST_ISSUE';
 export const POST_ATTACH = 'rokebi/board/POST_ATTACH';
@@ -30,9 +30,9 @@ const nextIssueList = createAction(NEXT_ISSUE_LIST);
 
 export const getIssueList = (reloadAlways = true) => {
   return (dispatch, getState) => {
-    const {account, board} = getState(),
-      uid = account.get('uid'),
-      token = account.get('token');
+    const {account, board} = getState();
+    const uid = account.get('uid');
+    const token = account.get('token');
 
     if (reloadAlways) {
       dispatch(resetIssueList());
@@ -40,7 +40,7 @@ export const getIssueList = (reloadAlways = true) => {
     }
 
     // reloadAlways == false 이면 list가 비어있는 경우에만 다시 읽는다.
-    if (board.get('list').length == 0)
+    if (board.get('list').length === 0)
       return dispatch(fetchIssueList(uid, {token}, 0));
 
     return new Promise.resolve();
@@ -49,12 +49,12 @@ export const getIssueList = (reloadAlways = true) => {
 
 export const getNextIssueList = () => {
   return (dispatch, getState) => {
-    const {account, board, pender} = getState(),
-      uid = account.get('uid'),
-      token = account.get('token'),
-      next = board.get('next'),
-      page = board.get('page'),
-      pending = pender.pending[FETCH_ISSUE_LIST];
+    const {account, board, pender: pender0} = getState();
+    const uid = account.get('uid');
+    const token = account.get('token');
+    const next = board.get('next');
+    const page = board.get('page');
+    const pending = pender0.pending[FETCH_ISSUE_LIST];
 
     if (next && !pending) {
       dispatch(nextIssueList());
@@ -72,21 +72,21 @@ const PAGE_UPDATE = 0;
 
 export const postAndGetList = (issue, attachment) => {
   return (dispatch, getState) => {
-    const {account} = getState(),
-      uid = account.get('uid'),
-      authObj = auth(account);
+    const {account} = getState();
+    const uid = account.get('uid');
+    const authObj = auth(account);
 
-    return dispatch(postAttach(attachment, authObj)).then(rsp => {
-      const attach = rsp ? rsp.map(item => item.objects[0]) : [];
+    return dispatch(postAttach(attachment, authObj)).then((rsp) => {
+      const attach = rsp ? rsp.map((item) => item.objects[0]) : [];
       console.log('Failed to upload picture', rsp);
       return dispatch(postIssue(issue, attach, authObj)).then(
-        resp => {
-          if (resp.result == 0 && resp.objects.length > 0) {
+        (resp) => {
+          if (resp.result === 0 && resp.objects.length > 0) {
             return dispatch(getIssueList(uid, authObj));
           }
           console.log('Failed to post issue', resp);
         },
-        err => {
+        (err) => {
           console.log('Failed to post issue', err);
         },
       );
@@ -108,14 +108,11 @@ export default handleActions(
     },
 
     [NEXT_ISSUE_LIST]: (state, action) => {
-      return state.update('page', value => value + 1);
+      return state.update('page', (value) => value + 1);
     },
 
     [RESET_ISSUE_LIST]: (state, action) => {
-      return state
-        .set('next', true)
-        .set('page', 0)
-        .set('list', []);
+      return state.set('next', true).set('page', 0).set('list', []);
     },
 
     [RESET_ISSUE_COMMENT]: (state, action) => {
@@ -128,22 +125,22 @@ export default handleActions(
         const {result, objects} = action.payload;
         const list = state.get('list');
 
-        if (result == 0 && objects.length > 0) {
+        if (result === 0 && objects.length > 0) {
           //Status가 변경된 item을 찾아서 변경해 준다.
-          const changedList = list.map(item => {
-            const findObjects = objects.find(org => org.uuid == item.uuid);
+          const changedList = list.map((item) => {
+            const findObjects = objects.find((org) => org.uuid === item.uuid);
             if (
-              findObjects != undefined &&
-              item.statusCode != findObjects.statusCode
+              findObjects !== undefined &&
+              item.statusCode !== findObjects.statusCode
             ) {
               return findObjects;
-            } else {
-              return item;
             }
+            return item;
           });
 
           const newList = objects.filter(
-            item => changedList.findIndex(org => org.uuid == item.uuid) < 0,
+            (item) =>
+              changedList.findIndex((org) => org.uuid === item.uuid) < 0,
           );
 
           return state
@@ -155,7 +152,7 @@ export default handleActions(
             )
             .set(
               'next',
-              newList.length == PAGE_LIMIT || newList.length == PAGE_UPDATE,
+              newList.length === PAGE_LIMIT || newList.length === PAGE_UPDATE,
             );
         }
         return state.set('next', false);
@@ -166,7 +163,7 @@ export default handleActions(
       type: GET_ISSUE_RESP,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
-        if (result == 0) {
+        if (result === 0) {
           // object.length == 0인 경우에도 comment를 overwrite 한다.
           return state.set('comment', objects);
         }

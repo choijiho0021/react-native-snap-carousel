@@ -40,14 +40,14 @@ const initialState = Map({
 export const profileDelAndGet = (uuid, account) => {
   return (dispatch, getState) => {
     const {profile} = getState();
-    const deleted = profile.get('profile').find(item => item.uuid == uuid);
+    const deleted = profile.get('profile').find((item) => item.uuid === uuid);
     const updateProfile = profile
       .get('profile')
-      .find(item => item.uuid != uuid);
+      .find((item) => item.uuid !== uuid);
 
     return dispatch(delCustomerProfile(uuid, account)).then(
-      resp => {
-        if (resp.result == 0) {
+      (resp) => {
+        if (resp.result === 0) {
           if (deleted && deleted.isBasicAddr && updateProfile) {
             return dispatch(
               updateCustomerProfile(
@@ -57,7 +57,7 @@ export const profileDelAndGet = (uuid, account) => {
                 },
                 account,
               ),
-            ).then(res => {
+            ).then((res) => {
               return dispatch(getCustomerProfile(account));
             });
           }
@@ -65,7 +65,7 @@ export const profileDelAndGet = (uuid, account) => {
         }
         throw new Error('Failed to delete Profile');
       },
-      err => {
+      (err) => {
         throw err;
       },
     );
@@ -73,20 +73,23 @@ export const profileDelAndGet = (uuid, account) => {
 };
 
 export const profileAddAndGet = (profile, defaultProfile, account) => {
-  return dispatch => {
+  return (dispatch) => {
     return dispatch(addCustomerProfile(profile, defaultProfile, account)).then(
-      resp => {
+      (resp) => {
         return dispatch(getCustomerProfile(account));
       },
-      err => {
+      (err) => {
         throw err;
       },
     );
   };
 };
 
-const _sortProfile = (a, b) =>
-  a.isBasicAddr ? -1 : b.isBasicAddr ? 1 : a.alias.localeCompare(b.alias);
+const sortProfile = (a, b) => {
+  if (a.isBasicAddr) return -1;
+  if (b.isBasicAddr) return 1;
+  return a.alias.localeCompare(b.alias);
+};
 
 export default handleActions(
   {
@@ -108,7 +111,7 @@ export default handleActions(
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
 
-        if (result == 0 && objects.length >= 0) {
+        if (result === 0 && objects.length >= 0) {
           // const list = state.get('profile')
           // const idx = list.findIndex(item => item.isBasicAddr)
           // if(idx>0){
@@ -121,7 +124,7 @@ export default handleActions(
           // const idx = list.findIndex(item => item.isBasicAddr)
           // if(idx > 0){
 
-          return state.set('profile', objects.sort(_sortProfile));
+          return state.set('profile', objects.sort(sortProfile));
           // }
         }
         return state;
@@ -133,9 +136,9 @@ export default handleActions(
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
 
-        if (result == 0 && objects.length > 0) {
-          return state.update('profile', profile =>
-            objects.concat(profile).sort(_sortProfile),
+        if (result === 0 && objects.length > 0) {
+          return state.update('profile', (profile) =>
+            objects.concat(profile).sort(sortProfile),
           );
         }
         return state;
@@ -147,16 +150,19 @@ export default handleActions(
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
 
-        if (result == 0 && objects.length > 0) {
+        if (result === 0 && objects.length > 0) {
           console.log('pender update', objects);
 
           const profile = state.get('profile');
-          const idx = profile.findIndex(item => item.uuid == objects[0].uuid);
+          const idx = profile.findIndex(
+            (item) => item.uuid === objects[0].uuid,
+          );
+          // TODO : profile[]을 변경하는데, state.update()는 호출이 안됨. 목적이 무엇인지?
           profile[idx] = objects[0];
 
           // 이전 기본배송지 profile IDX
           const prevIdx = profile.findIndex(
-            item => item.uuid != objects[0].uuid && item.isBasicAddr,
+            (item) => item.uuid !== objects[0].uuid && item.isBasicAddr,
           );
 
           // 현재 배송지를 기본배송지로 update할 경우, 이전 것 false로 변경
@@ -164,7 +170,7 @@ export default handleActions(
             profile[prevIdx] = {...profile[prevIdx], isBasicAddr: false};
           }
 
-          return state.update('profile', value => value.sort(_sortProfile));
+          return state.update('profile', (value) => value.sort(sortProfile));
         }
         return state;
       },

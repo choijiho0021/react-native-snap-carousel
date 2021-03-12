@@ -1,5 +1,5 @@
 import {createAction, handleActions} from 'redux-actions';
-import {Map, List} from 'immutable';
+import {Map} from 'immutable';
 import _ from 'underscore';
 import {pender} from 'redux-pender';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
@@ -27,7 +27,7 @@ export default handleActions(
       type: GET_INFO_LIST,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
-        if (result == 0 && objects.length > 0) {
+        if (result === 0 && objects.length > 0) {
           return state.set('infoList', objects);
         }
         return state;
@@ -38,7 +38,7 @@ export default handleActions(
       type: GET_HOME_INFO_LIST,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
-        if (result == 0 && objects.length > 0) {
+        if (result === 0 && objects.length > 0) {
           return state.set('homeInfoList', objects);
         }
         return state;

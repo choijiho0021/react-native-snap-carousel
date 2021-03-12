@@ -1,5 +1,5 @@
 import {createAction, handleActions} from 'redux-actions';
-import {Map, List} from 'immutable';
+import {Map} from 'immutable';
 import _ from 'underscore';
 import {pender} from 'redux-pender';
 import moment from 'moment';
@@ -33,20 +33,20 @@ export const NOTI_TYPE_ACCOUNT = 'account';
 export const NOTI_TYPE_USIM = 'usim';
 export const NOTI_TYPE_NOTI = 'noti';
 
-const setAppBadge = notiCount => {
+const setAppBadge = (notiCount) => {
   firebase.notifications().setBadge(notiCount);
 };
 
 export const notiReadAndGet = (uuid, mobile, auth) => {
   return (dispatch, getState) => {
     return dispatch(readNoti(uuid, auth)).then(
-      resp => {
-        if (resp.result == 0 && resp.objects.length > 0) {
+      (resp) => {
+        if (resp.result === 0 && resp.objects.length > 0) {
           return dispatch(getNotiList(mobile));
         }
         throw new Error('Failed to read Noti and Get notiList');
       },
-      err => {
+      (err) => {
         throw err;
       },
     );
@@ -78,9 +78,9 @@ export default handleActions(
       type: GET_NOTI_LIST,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
-        if (result == 0 && objects.length > 0) {
+        if (result === 0 && objects.length > 0) {
           //appBadge 업데이트
-          const badgeCnt = objects.filter(elm => elm.isRead == 'F').length;
+          const badgeCnt = objects.filter((elm) => elm.isRead === 'F').length;
           setAppBadge(badgeCnt);
 
           return state.set('notiList', objects).set('lastRefresh', moment());
@@ -116,13 +116,13 @@ export default handleActions(
         const {result, objects} = action.payload;
         const notiList = state
           .toJS()
-          .notiList.map(elm =>
-            elm.uuid == objects[0].uuid ? {...elm, isRead: 'T'} : elm,
+          .notiList.map((elm) =>
+            elm.uuid === objects[0].uuid ? {...elm, isRead: 'T'} : elm,
           );
 
-        if (state && result == 0) {
+        if (state && result === 0) {
           //appBadge 업데이트
-          const badgeCnt = notiList.filter(elm => elm.isRead == 'F').length;
+          const badgeCnt = notiList.filter((elm) => elm.isRead === 'F').length;
           setAppBadge(badgeCnt);
           return state.set('notiList', notiList);
         }
@@ -130,7 +130,7 @@ export default handleActions(
       },
     }),
 
-    [SEND_ALIM_TALK + '_CANCEL']: (state, action) => {
+    [`${SEND_ALIM_TALK}_CANCEL`]: (state, action) => {
       if (action.meta.abortController) action.meta.abortController.abort();
       console.log('cancel send alimtalk req', state.toJS(), action);
       return state;

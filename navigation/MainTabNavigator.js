@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {Platform, StyleSheet, Text, View} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -41,22 +42,32 @@ import FaqScreen from '../screens/FaqScreen';
 import GuideScreen from '../screens/GuideScreen';
 import SubsDetailScreen from '../screens/SubsDetailScreen';
 import AuthStack from './AuthStackNavigator';
-import {connect} from 'react-redux';
+
+const styles = StyleSheet.create({
+  tabBarIcon: {
+    marginTop: 5,
+  },
+  title: {
+    ...appStyles.title,
+    marginLeft: 20,
+  },
+  btnAlarm: {
+    width: 40,
+    height: 40,
+    marginRight: 10,
+  },
+  btnCnter: {
+    width: 40,
+    height: 40,
+    marginHorizontal: 18,
+  },
+});
 
 const HomeStack = createStackNavigator();
 const StoreStack = createStackNavigator();
 const CartStack = createStackNavigator();
 const UsimStack = createStackNavigator();
 const MyPageStack = createStackNavigator();
-
-const BadgeAppButton = withBadge(
-  ({notReadNoti}) => notReadNoti,
-  {badgeStyle: {right: -3, top: 0}},
-  state => ({
-    notReadNoti: state.noti.get('notiList').filter(elm => elm.isRead == 'F')
-      .length,
-  }),
-)(AppButton);
 
 function homeStack() {
   return (
@@ -184,7 +195,7 @@ function myPageStack() {
 const BadgedIcon = withBadge(
   ({cartItems}) => cartItems,
   {badgeStyle: {top: 4, left: 8}},
-  state => ({
+  (state) => ({
     cartItems: (state.cart.get('orderItems') || []).reduce(
       (acc, cur) => acc + cur.qty,
       0,
@@ -203,7 +214,7 @@ function tabNavigator({loggedIn, iccid}) {
         name="HomeStack"
         component={homeStack}
         options={({route}) => ({
-          tabBarVisible: route.state && route.state.index == 0,
+          tabBarVisible: route.state && route.state.index === 0,
           tabBarLabel: i18n.t('home'),
           animationEnabled: false,
           tabBarIcon: ({focused}) => (
@@ -219,7 +230,7 @@ function tabNavigator({loggedIn, iccid}) {
         name="StoreStack"
         component={storeStack}
         options={({route}) => ({
-          tabBarVisible: route.state && route.state.index == 0,
+          tabBarVisible: route.state && route.state.index === 0,
           tabBarLabel: i18n.t('store'),
           tabBarIcon: ({focused}) => (
             <AppIcon
@@ -254,7 +265,7 @@ function tabNavigator({loggedIn, iccid}) {
           // tabBarOnPress: e => {
           //   console.log('tab bar', e);
           // },
-          tabBarVisible: route.state && route.state.index == 0,
+          tabBarVisible: route.state && route.state.index === 0,
           tabBarLabel: i18n.t('usim'),
           tabBarIcon: ({focused}) => (
             <AppIcon
@@ -269,7 +280,7 @@ function tabNavigator({loggedIn, iccid}) {
         name="MyPageStack"
         component={loggedIn ? myPageStack : AuthStack}
         options={({route}) => ({
-          tabBarVisible: route.state && route.state.index == 0,
+          tabBarVisible: route.state && route.state.index === 0,
           tabBarLabel: i18n.t('mypage'),
           tabBarIcon: ({focused}) => (
             <AppIcon
@@ -284,27 +295,7 @@ function tabNavigator({loggedIn, iccid}) {
   );
 }
 
-const styles = StyleSheet.create({
-  tabBarIcon: {
-    marginTop: 5,
-  },
-  title: {
-    ...appStyles.title,
-    marginLeft: 20,
-  },
-  btnAlarm: {
-    width: 40,
-    height: 40,
-    marginRight: 10,
-  },
-  btnCnter: {
-    width: 40,
-    height: 40,
-    marginHorizontal: 18,
-  },
-});
-
-export default connect(state => ({
+export default connect((state) => ({
   loggedIn: state.account.get('loggedIn'),
   iccid: state.account.get('iccid'),
 }))(tabNavigator);

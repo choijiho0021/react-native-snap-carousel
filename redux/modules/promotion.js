@@ -21,7 +21,7 @@ export default handleActions(
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
 
-        if (result == 0 && objects.length > 0) {
+        if (result === 0 && objects.length > 0) {
           return state.set('promotion', objects);
         }
         return state;

@@ -47,38 +47,37 @@ export const getOrders = (auth, page) => {
     const {order} = getState();
 
     if (typeof page !== 'undefined') return dispatch(getNextOrders(auth, page));
-    else if (order.get('next'))
+    if (order.get('next'))
       return dispatch(getNextOrders(auth, order.get('page') + 1));
-    else return new Promise.resolve();
+    return new Promise.resolve();
   };
 };
 
 export const cancelAndGetOrder = (orderId, auth) => {
   return (dispatch, getState) => {
-    const {account} = getState(),
-      iccid = account.get('iccid');
+    const {account} = getState();
+    const iccid = account.get('iccid');
 
-    return dispatch(cancelOrder(orderId, auth)).then(resp => {
+    return dispatch(cancelOrder(orderId, auth)).then((resp) => {
       // 결제취소요청 후 항상 order를 가져온다
-      return dispatch(getOrderById(auth, orderId)).then(val => {
-        if (resp.result == 0) {
-          if (val.result == 0) {
+      return dispatch(getOrderById(auth, orderId)).then((val) => {
+        if (resp.result === 0) {
+          if (val.result === 0) {
             dispatch(getAccount(iccid, auth));
             return val;
-          } else {
-            return {
-              ...val,
-              result: 1,
-            };
           }
-        } else {
-          if (val.result == 0) {
-            return {
-              ...val,
-              result: 1,
-            };
-          } else return resp;
+          return {
+            ...val,
+            result: 1,
+          };
         }
+        if (val.result === 0) {
+          return {
+            ...val,
+            result: 1,
+          };
+        }
+        return resp;
       });
     });
   };
@@ -87,12 +86,12 @@ export const cancelAndGetOrder = (orderId, auth) => {
 // subs status 변환 후
 export const updateStatusAndGetSubs = (uuid, targetStatus, auth) => {
   return (dispatch, getState) => {
-    const {account} = getState(),
-      iccid = account.get('iccid');
+    const {account} = getState();
+    const iccid = account.get('iccid');
 
-    return dispatch(updateSubsStatus(uuid, targetStatus, auth)).then(resp => {
+    return dispatch(updateSubsStatus(uuid, targetStatus, auth)).then((resp) => {
       // 결제취소요청 후 항상 order를 가져온다
-      if (resp.result == 0) {
+      if (resp.result === 0) {
         return dispatch(getSubs(iccid, auth));
       }
       return resp;
@@ -112,18 +111,18 @@ const initialState = Map({
 function updateOrders(state, action) {
   const {result, objects} = action.payload;
 
-  if (result == 0 && objects.length > 0) {
+  if (result === 0 && objects.length > 0) {
     const isPageZero =
-        (objects[0] || []).key >= ((state.get('orders')[0] || []).key || -1),
-      orders = isPageZero
-        ? state.get('orders').slice(0, API.Order.ORDER_PAGE_ITEMS)
-        : state.get('orders'),
-      page = isPageZero ? -1 : state.get('page');
+      (objects[0] || []).key >= ((state.get('orders')[0] || []).key || -1);
+    const orders = isPageZero
+      ? state.get('orders').slice(0, API.Order.ORDER_PAGE_ITEMS)
+      : state.get('orders');
+    const page = isPageZero ? -1 : state.get('page');
 
     let ordersIdx = state.get('ordersIdx');
 
     // add to the order list if not exist
-    objects.forEach(item => {
+    objects.forEach((item) => {
       if (ordersIdx.has(item.orderId)) {
         // replace the element
         orders[ordersIdx.get(item.orderId)] = item;
@@ -159,9 +158,9 @@ export default handleActions(
         const {objects, links} = action.payload;
 
         return updateOrders(state, action)
-          .set('next', objects && objects.length == API.Order.ORDER_PAGE_ITEMS)
-          .update('page', page => {
-            links && typeof (links || [])[0] !== 'undefined'
+          .set('next', objects && objects.length === API.Order.ORDER_PAGE_ITEMS)
+          .update('page', (page) => {
+            return links && typeof (links || [])[0] !== 'undefined'
               ? (links || [])[0]
               : page;
           });
@@ -178,8 +177,6 @@ export default handleActions(
     ...pender({
       type: CANCEL_ORDER,
       onSuccess: (state, action) => {
-        const {result, objects} = action.payload;
-
         return state;
       },
     }),
@@ -189,11 +186,11 @@ export default handleActions(
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
 
-        let subs = state.get('subs');
+        const subs = state.get('subs');
 
-        if (result == 0) {
+        if (result === 0) {
           const idx = subs.findIndex(
-            item => item.key == (objects[0] || {}).key,
+            (item) => item.key === (objects[0] || {}).key,
           );
 
           if (!_.isEmpty(idx)) {
@@ -210,7 +207,7 @@ export default handleActions(
       type: GET_SUBS,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
-        if (result == 0) {
+        if (result === 0) {
           return state.set('subs', objects);
         }
         return state;
@@ -221,7 +218,7 @@ export default handleActions(
       type: GET_SUBS_USAGE,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
-        if (result == 0) {
+        if (result === 0) {
           return state.set('usageProgress', objects);
         }
         return state;

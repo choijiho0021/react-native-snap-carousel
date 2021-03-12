@@ -1,5 +1,5 @@
 import {createAction, handleActions} from 'redux-actions';
-import {Map, List} from 'immutable';
+import {Map} from 'immutable';
 import _ from 'underscore';
 import {pender} from 'redux-pender';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
@@ -31,7 +31,7 @@ export default handleActions(
       type: GET_SIM_CARD_LIST,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
-        if (result == 0 && objects.length > 0) {
+        if (result === 0 && objects.length > 0) {
           return state.set('simList', objects);
         }
         return state;
@@ -42,7 +42,7 @@ export default handleActions(
       type: UPDATE_SIM_PARTNER,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
-        if (result == 0 && objects.length > 0) {
+        if (result === 0 && objects.length > 0) {
           return state.set('simPartner', objects[0]);
         }
         return state;
