@@ -1,10 +1,10 @@
 import React, {PureComponent} from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
 import {colors} from '../constants/Colors';
 import AppIcon from './AppIcon';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
 const styles = StyleSheet.create({
   button: {
@@ -46,7 +46,7 @@ export default class AppButton extends PureComponent {
     } = this.props;
 
     const align =
-      direction == 'row'
+      direction === 'row'
         ? {flexDirection: 'row', justifyContent: 'flex-start'}
         : {justifyContent: 'center'};
 

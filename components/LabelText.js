@@ -39,14 +39,14 @@ export default class LabelText extends PureComponent {
       labelStyle,
       valueStyle,
     } = this.props;
-    const isDeduct = label == i18n.t('cart:deductBalance');
+    const isDeduct = label === i18n.t('cart:deductBalance');
 
     return (
       <View
         style={[
           styles.container,
           style,
-          format != 'shortDistance' && {justifyContent: 'space-between'},
+          format !== 'shortDistance' && {justifyContent: 'space-between'},
         ]}>
         <Text style={[labelStyle || styles.label, {maxWidth: '70%'}]}>
           {label}
@@ -55,13 +55,13 @@ export default class LabelText extends PureComponent {
           isDeduct &&
           <Text style={[styles.label, {marginLeft: 18}]}>{`(${i18n.t('cart:currentBalance')}:${utils.numberToCommaString(value) + ' ' + i18n.t('won')}) `}</Text>
         } */}
-        {format == 'price' ? (
+        {format === 'price' ? (
           <View style={styles.value}>
             <Text style={[valueStyle || appStyles.price, {color}]}>
               {isDeduct && '- '}
               {utils.numberToCommaString(isDeduct ? deduct : value)}
             </Text>
-            <Text style={appStyles.normal14Text}>{' ' + i18n.t('won')}</Text>
+            <Text style={appStyles.normal14Text}>{` ${i18n.t('won')}`}</Text>
           </View>
         ) : (
           <Text style={valueStyle || styles.singleValue}>{value}</Text>

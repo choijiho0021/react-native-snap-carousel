@@ -1,14 +1,13 @@
 import React, {PureComponent} from 'react';
 import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import {appStyles} from '../constants/Styles';
-import i18n from '../utils/i18n';
 import utils from '../utils/utils';
 import {colors} from '../constants/Colors';
 import AppIcon from './AppIcon';
 import LabelText from './LabelText';
 import InputNumber from './InputNumber';
 import {isDeviceSize} from '../constants/SliderEntry.style';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
 const styles = StyleSheet.create({
   container: {
@@ -91,7 +90,7 @@ export default class SimCard extends PureComponent {
           </View>
           <Image
             source={{uri: API.default.httpImageUrl(imageUrl)}}
-            resizeMode={'contain'}
+            resizeMode="contain"
             style={[styles.slide, {marginRight: 0}]}
           />
         </TouchableOpacity>

@@ -1,129 +1,18 @@
 import React, {PureComponent} from 'react';
-import { Animated, StyleSheet, Text, TouchableOpacity, Easing } from 'react-native'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import { appStyles } from '../constants/Styles'
-import { colors } from '../constants/Colors'
-import _ from 'underscore'
-import * as toastActions from '../redux/modules/toast'
-import i18n from '../utils/i18n'
-import { Map, List } from 'immutable'
-import { Toast } from '../constants/CustomTypes'
-
-class AppToast extends PureComponent {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      isShown: false,
-      opacity: new Animated.Value(0),
-      text: ''
-    }
-
-    this._onPress = this._onPress.bind(this)
-
-    this._isMounted = null
-    this._timer = null
-    this._isShown = false
-    this._fadeInDuration = 750
-    this._fadeOutDuration = 1000
-    this._duration = 500
-  }
-
-  componentDidMount() {
-    this._isMounted = true
-  }
-
-  componentDidUpdate(prevProps) {
-    if ( this.props.toastMsgBox.size > 0 
-      && prevProps.toastMsgBox.size === 0
-      && ! this._isShown ) {
-        this._show()
-      }
-  }
-
-  componentWillUnmount() {
-    this._isMounted = null
-    this._timer && clearTimeout(this._timer)
-  }
-
-  _show({ duration } = {}) {
-    const { toastMsgBox } = this.props,
-      text = Toast.mapToMessage( toastMsgBox.first() )
-
-    if ( _.isNumber(duration) ) {
-      this._duration = Number(duration)
-    }
-
-    this._isMounted && this.setState({ isShown: true, text })
-
-    Animated.timing(
-      this.state.opacity,
-      {
-        toValue: 1,
-        easing: Easing.ease,
-        duration: this._fadeInDuration,
-        useNativeDriver: false
-      }
-    ).start(() => {
-      this._isShown = true
-      this._timer && clearTimeout(this._timer)
-      this.props.action.toast.remove()
-
-      this._timer = setTimeout(() => {
-        this._close()
-      }, this._duration)
-    })
-  }
-  
-  _close() {
-    const { toastMsgBox } = this.props
-    this._timer && clearTimeout(this._timer)
-
-    if (! this._isShown && ! this.state._isShown ) return;
-
-    Animated.timing(
-      this.state.opacity,
-      {
-        toValue: 0,
-        easing: Easing.ease,
-        duration: this._fadeOutDuration,
-        useNativeDriver: false
-      }
-    ).start(() => {
-      this._isMounted && this.setState({ isShown: false })
-      this._isShown = false
-
-      if (toastMsgBox.size > 0) {
-        this._show()
-      }
-    })
-
-  }
-
-  _onPress() {
-    const { closable } = this.props
-
-    if ( closable ) {
-      this.close()
-    }
-  }
-
-  render() {
-    const props = this.props,
-      { isShown, text } = this.state
-
-    return ( 
-      isShown ?
-      <TouchableOpacity style={[styles.container, props.styles]} activeOpacity={0.5} onPress={this._onPress}>
-        <Animated.View style={[styles.content]}>
-          <Text style={[styles.text]}> {text} </Text>
-        </Animated.View>
-      </TouchableOpacity> :
-      null
-    )
-  }
-}
+import {
+  Animated,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Easing,
+} from 'react-native';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import _ from 'underscore';
+import {appStyles} from '../constants/Styles';
+import {colors} from '../constants/Colors';
+import * as toastActions from '../redux/modules/toast';
+import {Toast} from '../constants/CustomTypes';
 
 const styles = StyleSheet.create({
   container: {
@@ -132,28 +21,138 @@ const styles = StyleSheet.create({
     zIndex: 1000,
     bottom: 100,
     left: 0,
-    right: 0
+    right: 0,
   },
   content: {
     backgroundColor: colors.warmGrey,
     borderRadius: 10,
-    padding: 10
+    padding: 10,
   },
   text: {
     ...appStyles.normal14Text,
     color: colors.white,
-    textAlign: 'center'
-  }
+    textAlign: 'center',
+  },
 });
 
-const mapStateToProps = (state) => ({
-  toastMsgBox : state.toast.get('messages')
-})
+class AppToast extends PureComponent {
+  constructor(props) {
+    super(props);
 
-export default connect(mapStateToProps, 
-  (dispatch) => ({
-      action : {
-          toast: bindActionCreators(toastActions, dispatch),
+    this.state = {
+      isShown: false,
+      opacity: new Animated.Value(0),
+      text: '',
+    };
+
+    this.onPress = this.onPress.bind(this);
+
+    this.isMounted = null;
+    this.timer = null;
+    this.isShown = false;
+    this.fadeInDuration = 750;
+    this.fadeOutDuration = 1000;
+    this.duration = 500;
+  }
+
+  componentDidMount() {
+    this.isMounted = true;
+  }
+
+  componentDidUpdate(prevProps) {
+    if (
+      this.props.toastMsgBox.size > 0 &&
+      prevProps.toastMsgBox.size === 0 &&
+      !this.isShown
+    ) {
+      this.show();
+    }
+  }
+
+  componentWillUnmount() {
+    this.isMounted = null;
+    if (this.timer) clearTimeout(this.timer);
+  }
+
+  onPress() {
+    const {closable} = this.props;
+
+    if (closable) {
+      this.close();
+    }
+  }
+
+  close() {
+    const {toastMsgBox} = this.props;
+    if (this.timer) clearTimeout(this.timer);
+
+    if (!this.isShown && !this.state.isShown) return;
+
+    Animated.timing(this.state.opacity, {
+      toValue: 0,
+      easing: Easing.ease,
+      duration: this.fadeOutDuration,
+      useNativeDriver: false,
+    }).start(() => {
+      if (this.isMounted) this.setState({isShown: false});
+      this.isShown = false;
+
+      if (toastMsgBox.size > 0) {
+        this.show();
       }
-  })
-)(AppToast)
+    });
+  }
+
+  show({duration} = {}) {
+    const {toastMsgBox} = this.props;
+    const text = Toast.mapToMessage(toastMsgBox.first());
+
+    if (_.isNumber(duration)) {
+      this.duration = Number(duration);
+    }
+
+    if (this.isMounted) this.setState({isShown: true, text});
+
+    Animated.timing(this.state.opacity, {
+      toValue: 1,
+      easing: Easing.ease,
+      duration: this.fadeInDuration,
+      useNativeDriver: false,
+    }).start(() => {
+      this.isShown = true;
+      if (this.timer) clearTimeout(this.timer);
+      this.props.action.toast.remove();
+
+      this.timer = setTimeout(() => {
+        this.close();
+      }, this.duration);
+    });
+  }
+
+  render() {
+    const {styles: st} = this.props;
+    const {isShown, text} = this.state;
+
+    return isShown ? (
+      <TouchableOpacity
+        style={[styles.container, st]}
+        activeOpacity={0.5}
+        onPress={this.onPress}>
+        <Animated.View style={[styles.content]}>
+          <Text style={[styles.text]}> {text} </Text>
+        </Animated.View>
+      </TouchableOpacity>
+    ) : null;
+  }
+}
+
+export default connect(
+  (state) => ({
+    toastMsgBox: state.toast.get('messages'),
+  }),
+  (dispatch) => ({
+    action: {
+      toast: bindActionCreators(toastActions, dispatch),
+    },
+  }),
+)(AppToast);

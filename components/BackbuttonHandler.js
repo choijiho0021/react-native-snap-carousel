@@ -1,32 +1,29 @@
-
 import React from 'react';
-import {
-  BackHandler
-} from 'react-native';
-import _ from 'underscore'
-import { useFocusEffect } from '@react-navigation/native';
+import {BackHandler} from 'react-native';
+import _ from 'underscore';
+import {useFocusEffect} from '@react-navigation/native';
 
-export default function BackbuttonHandler({ navigation, back }) {
+export default function BackbuttonHandler({navigation, back}) {
   useFocusEffect(
     React.useCallback(() => {
-
       const onBackPress = () => {
-        if(back){
-          navigation.navigate(back)
+        if (back) {
+          navigation.navigate(back);
+        } else {
+          navigation.goBack();
         }
-        else {
-          navigation.goBack()
-        }
-        return true
+        return true;
       };
-      
-      let backHandler = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        onBackPress,
+      );
 
       return () => {
-        backHandler.remove() 
-      }
-
-    },[navigation,back])
+        backHandler.remove();
+      };
+    }, [navigation, back]),
   );
 
   return null;

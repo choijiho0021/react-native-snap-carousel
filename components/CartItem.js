@@ -1,5 +1,6 @@
-import React, {PureComponent} from 'react';
+import React from 'react';
 import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
 import utils from '../utils/utils';
@@ -8,7 +9,6 @@ import AppIcon from './AppIcon';
 import AppButton from './AppButton';
 import InputNumber from './InputNumber';
 import {isDeviceSize} from '../constants/SliderEntry.style';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
 const styles = StyleSheet.create({
   container: {

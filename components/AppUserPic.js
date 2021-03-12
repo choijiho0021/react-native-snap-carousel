@@ -1,9 +1,9 @@
-import React from 'react';
+import React, {memo} from 'react';
 import {View, Image, TouchableOpacity} from 'react-native';
-import AppIcon from './AppIcon';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import AppIcon from './AppIcon';
 
-export default function AppUserPic({style, url, icon, onPress}) {
+function AppUserPic({style, url, icon, onPress}) {
   return (
     <View style={[style, {alignSelf: 'center'}]}>
       <TouchableOpacity onPress={onPress}>
@@ -19,3 +19,5 @@ export default function AppUserPic({style, url, icon, onPress}) {
     </View>
   );
 }
+
+export default memo(AppUserPic);

@@ -1,29 +1,29 @@
 import React, {PureComponent} from 'react';
 import {Image, TouchableWithoutFeedback, View, Text} from 'react-native';
 import {connect} from 'react-redux';
-import {appStyles} from '../constants/Styles';
 import _ from 'underscore';
+import {appStyles} from '../constants/Styles';
 
 class AppBackButton extends PureComponent {
   constructor(props) {
     super(props);
 
-    this._goBack = this._goBack.bind(this);
+    this.goBack = this.goBack.bind(this);
     this.backHandler = undefined;
   }
 
-  _goBack() {
+  goBack() {
     const {navigation, back, lastTab = [0, 1]} = this.props;
 
-    //활성화 안된 AppBackButton의 핸들러가 작동하지 않도록 추가
+    // 활성화 안된 AppBackButton의 핸들러가 작동하지 않도록 추가
     if (!navigation.isFocused()) {
       return;
     }
 
-    if (back == 'Home') return navigation.navigate('Home');
+    if (back === 'Home') return navigation.navigate('Home');
     // if ( back == 'home') return navigation.reset({routes: [{ name: 'Home' }] });
-    if (back == 'top') return navigation.popToTop();
-    if (back == 'lastTab') return navigation.navigate(lastTab[1]);
+    if (back === 'top') return navigation.popToTop();
+    if (back === 'lastTab') return navigation.navigate(lastTab[1]);
 
     return navigation.goBack();
   }
@@ -33,7 +33,7 @@ class AppBackButton extends PureComponent {
 
     return (
       <TouchableWithoutFeedback
-        onPress={isPaid ? null : this._goBack}
+        onPress={isPaid ? null : this.goBack}
         disabled={isPaid}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           {!isPaid ? (
@@ -51,6 +51,6 @@ class AppBackButton extends PureComponent {
   }
 }
 
-export default connect(state => ({
+export default connect((state) => ({
   lastTab: state.cart.get('lastTab').toJS(),
 }))(AppBackButton);

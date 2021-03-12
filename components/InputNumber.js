@@ -1,14 +1,9 @@
-import React, { PureComponent } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity
-} from 'react-native';
-import {appStyles} from '../constants/Styles'
-import { colors } from '../constants/Colors';
+import React, {PureComponent} from 'react';
+import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
-import { isDeviceSize } from '../constants/SliderEntry.style';
+import {appStyles} from '../constants/Styles';
+import {colors} from '../constants/Colors';
+import {isDeviceSize} from '../constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   container: {
@@ -17,7 +12,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     flexDirection: 'row',
     alignItems: 'stretch',
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
   },
   box: {
     width: isDeviceSize('small') ? 28 : 32,
@@ -27,7 +22,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.lightGrey,
   },
-  boxCenter:{
+  boxCenter: {
     width: isDeviceSize('small') ? 28 : 32,
     height: isDeviceSize('small') ? 28 : 32,
     justifyContent: 'center',
@@ -37,7 +32,7 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey,
   },
   text: {
-    ... appStyles.normal16Text,
+    ...appStyles.normal16Text,
     textAlign: 'center',
   },
   centerBox: {
@@ -47,36 +42,34 @@ const styles = StyleSheet.create({
     borderRightWidth: 1,
   },
   disabled: {
-    color: colors.lightGrey
+    color: colors.lightGrey,
   },
   abled: {
-    color: colors.black
-  }
+    color: colors.black,
+  },
 });
 
 export default class InputNumber extends PureComponent {
-
   render() {
-    const { value, onChange, minValue=1} = this.props,
-      min = value <= minValue
+    const {value, onChange, minValue = 1} = this.props;
+    const min = value <= minValue;
 
     return (
       <View style={styles.container}>
-        <TouchableOpacity onPress={() => onChange(value-1)} disabled={min} >
+        <TouchableOpacity onPress={() => onChange(value - 1)} disabled={min}>
           <View style={styles.box}>
-            <Icon name="minus" style={min ? styles.disabled : styles.abled}/>
-          </View> 
+            <Icon name="minus" style={min ? styles.disabled : styles.abled} />
+          </View>
         </TouchableOpacity>
         <View style={styles.boxCenter}>
           <Text style={styles.text}>{value}</Text>
         </View>
-        <TouchableOpacity onPress={() => onChange(value+1)}>
+        <TouchableOpacity onPress={() => onChange(value + 1)}>
           <View style={styles.box}>
-            <Icon name="plus" style={styles.abled}/>
+            <Icon name="plus" style={styles.abled} />
           </View>
         </TouchableOpacity>
       </View>
-    )
+    );
   }
 }
-
