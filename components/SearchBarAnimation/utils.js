@@ -1,9 +1,8 @@
 //  Created by Artem Bogoslavskiy on 7/5/18.
 
-import { Dimensions, Platform } from 'react-native';
+import {Dimensions, Platform} from 'react-native';
 
-const width = Dimensions.get('window').width;
-const height = Dimensions.get('window').height;
+const {width, height} = Dimensions.get('window');
 
 export function isIphoneX() {
   return (
@@ -22,7 +21,7 @@ export function ifIphoneX(iphoneXStyle, regularStyle) {
 }
 
 export function isAndroid() {
-  return (Platform.OS === 'android');
+  return Platform.OS === 'android';
 }
 
 export function ifAndroid(androidStyle, regularStyle) {
@@ -32,9 +31,12 @@ export function ifAndroid(androidStyle, regularStyle) {
   return regularStyle;
 }
 
-const isFunction = input => typeof input === 'function';
+const isFunction = (input) => typeof input === 'function';
 export function renderIf(predicate) {
-  return function(elemOrThunk) {
-    return predicate ? (isFunction(elemOrThunk) ? elemOrThunk() : elemOrThunk) : null;
-  }
-} 
+  return (elemOrThunk) => {
+    if (predicate) {
+      return isFunction(elemOrThunk) ? elemOrThunk() : elemOrThunk;
+    }
+    return null;
+  };
+}
