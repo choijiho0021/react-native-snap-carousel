@@ -1,16 +1,17 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Platform, StatusBar, StyleSheet, View, BackHandler} from 'react-native';
 import {createStore, applyMiddleware, compose} from 'redux';
 import {Provider} from 'react-redux';
 
-import AppNavigator from './navigation/AppNavigator';
-import reducer from './redux/index';
 import ReduxThunk from 'redux-thunk';
 import penderMiddleware from 'redux-pender';
 import {createLogger} from 'redux-logger';
 
-import MyAppLoading from './components/MyAppLoading';
 import Video from 'react-native-video';
+import codePush from 'react-native-code-push';
+
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
+
 import utils from './utils/utils';
 import * as accountActions from './redux/modules/account';
 import * as productActions from './redux/modules/product';
@@ -19,46 +20,62 @@ import * as infoActions from './redux/modules/info';
 import * as simActions from './redux/modules/sim';
 import * as syncActions from './redux/modules/sync';
 import CodePushModal from './components/CodePushModal';
-import codePush from 'react-native-code-push';
 import AppAlert from './components/AppAlert';
 import i18n from './utils/i18n';
 import AppToast from './components/AppToast';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import AppNavigator from './navigation/AppNavigator';
+import reducer from './redux/index';
 import Env from './environment';
+
 const {esimApp} = Env.get();
 
 const logger = createLogger();
 const composeEnhancers =
-  (process.env.NODE_ENV == 'development'
+  (process.env.NODE_ENV === 'development'
     ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
     : null) || compose;
 const store = createStore(
   reducer,
   composeEnhancers(
     applyMiddleware(logger, ReduxThunk, penderMiddleware()),
-    //applyMiddleware( ReduxThunk, penderMiddleware())
+    // applyMiddleware( ReduxThunk, penderMiddleware())
   ),
 );
 
-let SplashScreen = require('react-native-splash-screen').default;
+const SplashScreen = require('react-native-splash-screen').default;
 
 const codePushOptions = {checkFrequency: codePush.CheckFrequency.MANUAL};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  backgroundVideo: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  },
+});
 
 export default codePush(codePushOptions)(function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
 
-  //아래 코드는 expo doc 참고후 사용 해야함. 아직은 experimental이라고 되어 있음
-  //StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
-  if (!isLoadingComplete && !props.skipLoadingScreen) {
-    return (
-      <MyAppLoading
-        startAsync={loadResourcesAsync}
-        onError={handleLoadingError}
-        onFinish={() => handleFinishLoading(setLoadingComplete)}
-      />
-    );
-  } else {
+  useEffect(() => {
+    if (!isLoadingComplete && !props.skipLoadingScreen) {
+      try {
+        loadResourcesAsync();
+        setLoadingComplete(true);
+      } catch (e) {
+        handleLoadingError(e);
+      }
+    }
+  }, [isLoadingComplete, props.skipLoadingScreen]);
+
+  if (isLoadingComplete || props.skipLoadingScreen) {
     if (SplashScreen) SplashScreen.hide();
 
     setTimeout(() => {
@@ -88,6 +105,7 @@ export default codePush(codePushOptions)(function App(props) {
       </Provider>
     );
   }
+  return null;
 });
 
 async function login() {
@@ -104,18 +122,18 @@ async function login() {
 
 async function loadResourcesAsync() {
   // load product list
-  store.dispatch(productActions.getProdListWithToast());
-  store.dispatch(promotionActions.getPromotion());
+  await store.dispatch(productActions.getProdListWithToast());
+  await store.dispatch(promotionActions.getPromotion());
 
   if (!esimApp) {
-    store.dispatch(simActions.getSimCardList());
+    await store.dispatch(simActions.getSimCardList());
   }
   // 공지 사항 가져오기
-  store.dispatch(infoActions.getInfoList('info'));
-  store.dispatch(infoActions.getHomeInfoList('info:home'));
+  await store.dispatch(infoActions.getInfoList('info'));
+  await store.dispatch(infoActions.getHomeInfoList('info:home'));
 }
 
-function handleLoadingError(error: Error) {
+function handleLoadingError(error) {
   // In this case, you might want to report the error to your error reporting
   // service, for example Sentry
   const errorMsg =
@@ -129,21 +147,3 @@ function handleLoadingError(error: Error) {
   });
   console.warn(error);
 }
-
-function handleFinishLoading(setLoadingComplete) {
-  setLoadingComplete(true);
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  backgroundVideo: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-  },
-});
