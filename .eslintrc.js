@@ -22,7 +22,7 @@ if (!fs.existsSync(path.join(process.env.PWD || '.', './tsconfig.json'))) {
 }
 module.exports = {
   parser: '@typescript-eslint/parser',
-  plugins: ['react-hooks', 'prettier'],
+  plugins: ['@typescript-eslint', 'react-hooks', 'prettier'],
   // plugins: ['eslint-comments', 'jest', 'unicorn', 'react-hooks'],
   extends: [
     'airbnb',
