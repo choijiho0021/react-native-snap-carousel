@@ -19,10 +19,10 @@ const getProdDetailPage = createAction(
 export const setProdOfCountry = createAction(SET_PROD_OF_COUNTRY);
 export const setSortedProdList = createAction(SET_SORTED_PROD_LIST);
 
-export const getProdDetail = controller => {
+export const getProdDetail = (controller) => {
   return (dispatch, getState) => {
     const {product} = getState();
-    if (product.get('detail') == '')
+    if (product.get('detail') === '')
       return dispatch(getProdDetailPage(controller));
     return new Promise.resolve();
   };
@@ -31,8 +31,8 @@ export const getProdDetail = controller => {
 createAction(GET_PROD_DETAIL, API.Page.getProductDetails);
 
 export const getProdList = () => {
-  return dispatch => {
-    return dispatch(getProd()).then(_ => {
+  return (dispatch) => {
+    return dispatch(getProd()).then((_) => {
       return dispatch(getLocalOp());
     });
   };
@@ -55,7 +55,7 @@ export default handleActions(
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
 
-        if (result == 0 && objects.length > 0) {
+        if (result === 0 && objects.length > 0) {
           return state.set('detail', objects);
         }
         return state;
@@ -67,10 +67,10 @@ export default handleActions(
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
 
-        if (result == 0 && objects.length > 0) {
+        if (result === 0 && objects.length > 0) {
           return state.set(
             'prodList',
-            Map(objects.map(item => [item.key, item])),
+            Map(objects.map((item) => [item.key, item])),
           );
         }
         return state;
@@ -82,10 +82,10 @@ export default handleActions(
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
 
-        if (result == 0 && objects.length > 0) {
+        if (result === 0 && objects.length > 0) {
           return state.set(
             'localOpList',
-            Map(objects.map(item => [item.key, item])),
+            Map(objects.map((item) => [item.key, item])),
           );
         }
         return state;

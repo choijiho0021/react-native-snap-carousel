@@ -1,4 +1,4 @@
-import React, {Component, PureComponent} from 'react';
+import React, {Component} from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,13 +9,17 @@ import {
   SafeAreaView,
 } from 'react-native';
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import Analytics from 'appcenter-analytics';
+import _ from 'underscore';
+import SnackBar from 'react-native-snackbar-component';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
 import * as productActions from '../redux/modules/product';
 import * as cartActions from '../redux/modules/cart';
 import * as accountActions from '../redux/modules/account';
-import {bindActionCreators} from 'redux';
 import AppButton from '../components/AppButton';
 import AppIcon from '../components/AppIcon';
 import AppBackButton from '../components/AppBackButton';
@@ -27,356 +31,13 @@ import {
   device,
   windowHeight,
 } from '../constants/SliderEntry.style';
-import Analytics from 'appcenter-analytics';
-import _ from 'underscore';
 import AppActivityIndicator from '../components/AppActivityIndicator';
-import SnackBar from 'react-native-snackbar-component';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import {timer} from '../constants/Timer';
 import api from '../submodules/rokebi-utils/api/api';
 import AppAlert from '../components/AppAlert';
 import Env from '../environment';
+
 const {esimApp} = Env.get();
-class CountryListItem extends PureComponent {
-  render() {
-    const {item, selected, onPress} = this.props;
-    let borderColor = {},
-      color = {};
-
-    if (selected == item.uuid) {
-      borderColor = {borderColor: colors.clearBlue};
-      color = {color: colors.clearBlue};
-    }
-
-    return (
-      <TouchableOpacity onPress={onPress(item.uuid)}>
-        <View>
-          <View key={'product'} style={[styles.card, borderColor]}>
-            <View key={'text'} style={styles.textView}>
-              <Text
-                key={'name'}
-                style={[
-                  windowWidth > device.small.window.width
-                    ? appStyles.bold16Text
-                    : appStyles.bold14Text,
-                  color,
-                ]}>
-                {item.name}
-              </Text>
-            </View>
-            <View key={'priceText'} style={styles.appPrice}>
-              <AppPrice
-                key={'price'}
-                price={item.price}
-                balanceStyle={styles.priceStyle}
-                wonStyle={styles.wonStyle}
-              />
-            </View>
-          </View>
-          {!_.isEmpty(item.promoFlag) && (
-            <View style={styles.badge}>
-              <Text key={'name'} style={styles.badgeText}>
-                {item.promoFlag[0]}
-              </Text>
-            </View>
-          )}
-        </View>
-      </TouchableOpacity>
-    );
-  }
-}
-
-class CountryBackButton extends PureComponent {
-  render() {
-    const {navigation, product} = this.props,
-      {localOpList} = product,
-      prodOfCountry = this.props.product.prodOfCountry,
-      title =
-        prodOfCountry && prodOfCountry.length > 0
-          ? API.Product.getTitle(
-              prodOfCountry[0].categoryId,
-              localOpList.get(prodOfCountry[0].partnerId),
-            )
-          : '';
-
-    return <AppBackButton navigation={navigation} title={title} />;
-  }
-}
-
-let BackButton = connect(state => ({product: state.product.toObject()}))(
-  CountryBackButton,
-);
-
-class CountryScreen extends Component {
-  constructor(props) {
-    super(props);
-
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <BackButton
-          navigation={this.props.navigation}
-          route={this.props.route}
-        />
-      ),
-      headerRight: () => (
-        <AppCartButton onPress={() => this.props.navigation.navigate('Cart')} />
-      ),
-    });
-
-    this.state = {
-      prodData: [],
-      selected: undefined,
-      imageUrl: undefined,
-      title: undefined,
-      showSnackBar: false,
-      localOpDetails: undefined,
-      pending: false,
-    };
-
-    this.snackRef = React.createRef();
-    this._onPressBtnCart = this._onPressBtnCart.bind(this);
-    this._onPressBtnPurchase = this._onPressBtnPurchase.bind(this);
-    this._onPressBtnRegCard = this._onPressBtnRegCard.bind(this);
-    this._selectedProduct = this._selectedProduct.bind(this);
-  }
-
-  componentDidMount() {
-    const prodOfCountry = this.props.product.prodOfCountry,
-      {localOpList} = this.props.product,
-      localOp = localOpList.get(prodOfCountry[0].partnerId) || {};
-
-    if (prodOfCountry) {
-      this.setState({
-        prodData: prodOfCountry,
-        imageUrl: localOp.imageUrl,
-        localOpDetails: localOp.detail,
-        selected: prodOfCountry[0].uuid,
-        title: API.Product.getTitle(prodOfCountry[0], localOp),
-      });
-    }
-  }
-
-  _onPress = uuid => () => {
-    this.setState({selected: uuid});
-  };
-
-  _selectedProduct = selected => {
-    return API.Product.toPurchaseItem(
-      this.props.product.prodList.get(selected),
-    );
-  };
-
-  _onPressBtnCart = () => {
-    const {selected} = this.state;
-    const {loggedIn} = this.props.account;
-
-    // 다른 버튼 클릭으로 스낵바 종료될 경우, 재출력 안되는 부분이 있어 추가
-    this.setState({
-      showSnackBar: false,
-    });
-
-    Analytics.trackEvent('Click_cart');
-
-    if (!loggedIn) {
-      return this.props.navigation.navigate('Auth');
-    }
-
-    if (selected) {
-      this.setState({
-        pending: true,
-      });
-
-      this.props.action.cart
-        .cartAddAndGet([this._selectedProduct(selected)])
-        .then(resp => {
-          if (resp.result == 0) {
-            this.setState({
-              showSnackBar: true,
-            });
-          } else {
-            this._soldOut(resp, 'cart:notToCart');
-          }
-        })
-        .finally(_ => {
-          this.setState({
-            pending: false,
-          });
-        });
-    }
-  };
-
-  _soldOut(resp, message) {
-    if (resp.result === api.E_RESOURCE_NOT_FOUND) {
-      AppAlert.info(resp.title + i18n.t(message));
-    } else {
-      AppAlert.info(i18n.t('cart:systemError'));
-    }
-  }
-
-  _onPressBtnPurchase = () => {
-    const {selected} = this.state;
-    const {loggedIn, balance} = this.props.account;
-
-    // 다른 버튼 클릭으로 스낵바 종료될 경우, 재출력 안되는 부분이 있어 추가
-    this.setState({
-      showSnackBar: false,
-    });
-
-    Analytics.trackEvent('Click_purchase');
-
-    if (!loggedIn) {
-      return this.props.navigation.navigate('Auth');
-    }
-
-    if (selected) {
-      // 구매 품목을 갱신한다.
-      this.props.action.cart
-        .checkStockAndPurchase([this._selectedProduct(selected)], balance)
-        .then(resp => {
-          if (resp.result == 0) {
-            this.props.navigation.navigate('PymMethod', {
-              mode: 'Roaming Product',
-            });
-          } else {
-            this._soldOut(resp, 'cart:soldOut');
-          }
-        })
-        .catch(err => {
-          console.log('failed to check stock', err);
-        });
-    }
-  };
-
-  _onPressBtnRegCard = () => {
-    const {loggedIn} = this.props.account;
-
-    Analytics.trackEvent('Click_regCard');
-
-    if (!loggedIn) {
-      return this.props.navigation.navigate('Auth');
-    }
-
-    this.props.navigation.navigate('RegisterSim');
-  };
-
-  _renderItem = ({item}) => {
-    return (
-      <CountryListItem
-        item={item}
-        selected={this.state.selected}
-        onPress={this._onPress}
-      />
-    );
-  };
-
-  render() {
-    const {iccid, loggedIn} = this.props.account;
-    const {
-      prodData,
-      imageUrl,
-      localOpDetails,
-      title,
-      selected,
-      showSnackBar,
-    } = this.state;
-
-    return (
-      <SafeAreaView
-        style={styles.container}
-        forceInset={{top: 'never', bottom: 'always'}}>
-        <Image
-          style={styles.box}
-          source={{uri: API.default.httpImageUrl(imageUrl)}}
-        />
-
-        <TouchableOpacity
-          onPress={() =>
-            this.props.navigation.navigate('ProductDetail', {
-              title: title,
-              img: imageUrl,
-              localOpDetails,
-            })
-          }>
-          <View style={styles.detail}>
-            <Text
-              style={
-                windowWidth > device.small.window.width
-                  ? appStyles.normal14Text
-                  : appStyles.normal12Text
-              }>
-              {i18n.t('country:detail')}
-            </Text>
-            <AppIcon
-              style={{marginRight: 20}}
-              name="iconArrowRight"
-              size={10}
-            />
-          </View>
-        </TouchableOpacity>
-
-        <View style={styles.divider} />
-
-        <View style={{flex: 1}}>
-          <FlatList
-            data={prodData}
-            renderItem={this._renderItem}
-            extraData={selected}
-          />
-        </View>
-        {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
-        <SnackBar
-          ref={this.snackRef}
-          visible={showSnackBar}
-          backgroundColor={colors.clearBlue}
-          messageColor={colors.white}
-          position={'top'}
-          top={windowHeight / 2}
-          containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 0}}
-          actionText={'X'}
-          actionStyle={{paddingHorizontal: 20}}
-          accentColor={colors.white}
-          autoHidingTime={timer.snackBarHidingTime}
-          onClose={() => this.setState({showSnackBar: false})}
-          actionHandler={() => {
-            this.snackRef.current.hideSnackbar();
-          }}
-          textMessage={i18n.t('country:addCart')}
-        />
-        {iccid || (esimApp && loggedIn) ? (
-          <View style={styles.buttonBox}>
-            <AppButton
-              style={styles.btnCart}
-              title={i18n.t('cart:toCart')}
-              titleStyle={styles.btnCartText}
-              disabled={this.state.pending}
-              disableColor={colors.black}
-              disableBackgroundColor={colors.whiteTwo}
-              onPress={this._onPressBtnCart}
-            />
-            <AppButton
-              style={styles.btnBuy}
-              title={i18n.t('cart:buy')}
-              titleStyle={styles.btnBuyText}
-              onPress={this._onPressBtnPurchase}
-            />
-          </View>
-        ) : (
-          <View style={styles.buttonBox}>
-            <AppButton
-              style={styles.regCardView}
-              title={loggedIn ? i18n.t('reg:card') : i18n.t('err:login')}
-              titleStyle={styles.regCard}
-              onPress={this._onPressBtnRegCard}
-            />
-            <Text style={styles.regCard}>{i18n.t('reg:card')}</Text>
-          </View>
-        )}
-        <AppActivityIndicator visible={this.state.pending} />
-      </SafeAreaView>
-    );
-  }
-}
 
 const styles = StyleSheet.create({
   container: {
@@ -541,15 +202,346 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = state => ({
-  product: state.product.toObject(),
-  cart: state.cart.toJS(),
-  account: state.account.toJS(),
-});
+const CountryListItem = ({item, selected, onPress}) => {
+  let borderColor = {};
+  let color = {};
+
+  if (selected === item.uuid) {
+    borderColor = {borderColor: colors.clearBlue};
+    color = {color: colors.clearBlue};
+  }
+
+  return (
+    <TouchableOpacity onPress={onPress(item.uuid)}>
+      <View>
+        <View key="product" style={[styles.card, borderColor]}>
+          <View key="text" style={styles.textView}>
+            <Text
+              key="name"
+              style={[
+                windowWidth > device.small.window.width
+                  ? appStyles.bold16Text
+                  : appStyles.bold14Text,
+                color,
+              ]}>
+              {item.name}
+            </Text>
+          </View>
+          <View key="priceText" style={styles.appPrice}>
+            <AppPrice
+              key="price"
+              price={item.price}
+              balanceStyle={styles.priceStyle}
+              wonStyle={styles.wonStyle}
+            />
+          </View>
+        </View>
+        {!_.isEmpty(item.promoFlag) && (
+          <View style={styles.badge}>
+            <Text key="name" style={styles.badgeText}>
+              {item.promoFlag[0]}
+            </Text>
+          </View>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+const CountryBackButton = ({navigation, product}) => {
+  const {localOpList, prodOfCountry} = product;
+  const title =
+    prodOfCountry && prodOfCountry.length > 0
+      ? API.Product.getTitle(
+          prodOfCountry[0].categoryId,
+          localOpList.get(prodOfCountry[0].partnerId),
+        )
+      : '';
+
+  return <AppBackButton navigation={navigation} title={title} />;
+};
+
+const BackButton = connect((state) => ({product: state.product.toObject()}))(
+  CountryBackButton,
+);
+
+function soldOut(resp, message) {
+  if (resp.result === api.E_RESOURCE_NOT_FOUND) {
+    AppAlert.info(resp.title + i18n.t(message));
+  } else {
+    AppAlert.info(i18n.t('cart:systemError'));
+  }
+}
+
+class CountryScreen extends Component {
+  constructor(props) {
+    super(props);
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <BackButton
+          navigation={this.props.navigation}
+          route={this.props.route}
+        />
+      ),
+      headerRight: () => (
+        <AppCartButton onPress={() => this.props.navigation.navigate('Cart')} />
+      ),
+    });
+
+    this.state = {
+      prodData: [],
+      selected: undefined,
+      imageUrl: undefined,
+      title: undefined,
+      showSnackBar: false,
+      localOpDetails: undefined,
+      pending: false,
+    };
+
+    this.snackRef = React.createRef();
+    this.onPressBtnCart = this.onPressBtnCart.bind(this);
+    this.onPressBtnPurchase = this.onPressBtnPurchase.bind(this);
+    this.onPressBtnRegCard = this.onPressBtnRegCard.bind(this);
+    this.selectedProduct = this.selectedProduct.bind(this);
+  }
+
+  componentDidMount() {
+    const {localOpList, prodOfCountry} = this.props.product;
+    const localOp = localOpList.get(prodOfCountry[0].partnerId) || {};
+
+    if (prodOfCountry) {
+      this.setState({
+        prodData: prodOfCountry,
+        imageUrl: localOp.imageUrl,
+        localOpDetails: localOp.detail,
+        selected: prodOfCountry[0].uuid,
+        title: API.Product.getTitle(prodOfCountry[0], localOp),
+      });
+    }
+  }
+
+  onPress = (uuid) => () => {
+    this.setState({selected: uuid});
+  };
+
+  selectedProduct = (selected) => {
+    return API.Product.toPurchaseItem(
+      this.props.product.prodList.get(selected),
+    );
+  };
+
+  onPressBtnCart = () => {
+    const {selected} = this.state;
+    const {loggedIn} = this.props.account;
+
+    // 다른 버튼 클릭으로 스낵바 종료될 경우, 재출력 안되는 부분이 있어 추가
+    this.setState({
+      showSnackBar: false,
+    });
+
+    Analytics.trackEvent('Click_cart');
+
+    if (!loggedIn) {
+      return this.props.navigation.navigate('Auth');
+    }
+
+    if (selected) {
+      this.setState({
+        pending: true,
+      });
+
+      this.props.action.cart
+        .cartAddAndGet([this.selectedProduct(selected)])
+        .then((resp) => {
+          if (resp.result === 0) {
+            this.setState({
+              showSnackBar: true,
+            });
+          } else {
+            soldOut(resp, 'cart:notToCart');
+          }
+        })
+        .finally((_) => {
+          this.setState({
+            pending: false,
+          });
+        });
+    }
+  };
+
+  onPressBtnPurchase = () => {
+    const {selected} = this.state;
+    const {loggedIn, balance} = this.props.account;
+
+    // 다른 버튼 클릭으로 스낵바 종료될 경우, 재출력 안되는 부분이 있어 추가
+    this.setState({
+      showSnackBar: false,
+    });
+
+    Analytics.trackEvent('Click_purchase');
+
+    if (!loggedIn) {
+      return this.props.navigation.navigate('Auth');
+    }
+
+    if (selected) {
+      // 구매 품목을 갱신한다.
+      this.props.action.cart
+        .checkStockAndPurchase([this.selectedProduct(selected)], balance)
+        .then((resp) => {
+          if (resp.result === 0) {
+            this.props.navigation.navigate('PymMethod', {
+              mode: 'Roaming Product',
+            });
+          } else {
+            soldOut(resp, 'cart:soldOut');
+          }
+        })
+        .catch((err) => {
+          console.log('failed to check stock', err);
+        });
+    }
+  };
+
+  onPressBtnRegCard = () => {
+    const {loggedIn} = this.props.account;
+
+    Analytics.trackEvent('Click_regCard');
+
+    if (!loggedIn) {
+      return this.props.navigation.navigate('Auth');
+    }
+
+    this.props.navigation.navigate('RegisterSim');
+  };
+
+  renderItem = ({item}) => {
+    return (
+      <CountryListItem
+        item={item}
+        selected={this.state.selected}
+        onPress={this.onPress}
+      />
+    );
+  };
+
+  render() {
+    const {iccid, loggedIn} = this.props.account;
+    const {
+      prodData,
+      imageUrl,
+      localOpDetails,
+      title,
+      selected,
+      showSnackBar,
+    } = this.state;
+
+    return (
+      <SafeAreaView
+        style={styles.container}
+        forceInset={{top: 'never', bottom: 'always'}}>
+        <Image
+          style={styles.box}
+          source={{uri: API.default.httpImageUrl(imageUrl)}}
+        />
+
+        <TouchableOpacity
+          onPress={() =>
+            this.props.navigation.navigate('ProductDetail', {
+              title,
+              img: imageUrl,
+              localOpDetails,
+            })
+          }>
+          <View style={styles.detail}>
+            <Text
+              style={
+                windowWidth > device.small.window.width
+                  ? appStyles.normal14Text
+                  : appStyles.normal12Text
+              }>
+              {i18n.t('country:detail')}
+            </Text>
+            <AppIcon
+              style={{marginRight: 20}}
+              name="iconArrowRight"
+              size={10}
+            />
+          </View>
+        </TouchableOpacity>
+
+        <View style={styles.divider} />
+
+        <View style={{flex: 1}}>
+          <FlatList
+            data={prodData}
+            renderItem={this.renderItem}
+            extraData={selected}
+          />
+        </View>
+        {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
+        <SnackBar
+          ref={this.snackRef}
+          visible={showSnackBar}
+          backgroundColor={colors.clearBlue}
+          messageColor={colors.white}
+          position="top"
+          top={windowHeight / 2}
+          containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 0}}
+          actionText="X"
+          actionStyle={{paddingHorizontal: 20}}
+          accentColor={colors.white}
+          autoHidingTime={timer.snackBarHidingTime}
+          onClose={() => this.setState({showSnackBar: false})}
+          actionHandler={() => {
+            this.snackRef.current.hideSnackbar();
+          }}
+          textMessage={i18n.t('country:addCart')}
+        />
+        {iccid || (esimApp && loggedIn) ? (
+          <View style={styles.buttonBox}>
+            <AppButton
+              style={styles.btnCart}
+              title={i18n.t('cart:toCart')}
+              titleStyle={styles.btnCartText}
+              disabled={this.state.pending}
+              disableColor={colors.black}
+              disableBackgroundColor={colors.whiteTwo}
+              onPress={this.onPressBtnCart}
+            />
+            <AppButton
+              style={styles.btnBuy}
+              title={i18n.t('cart:buy')}
+              titleStyle={styles.btnBuyText}
+              onPress={this.onPressBtnPurchase}
+            />
+          </View>
+        ) : (
+          <View style={styles.buttonBox}>
+            <AppButton
+              style={styles.regCardView}
+              title={loggedIn ? i18n.t('reg:card') : i18n.t('err:login')}
+              titleStyle={styles.regCard}
+              onPress={this.onPressBtnRegCard}
+            />
+            <Text style={styles.regCard}>{i18n.t('reg:card')}</Text>
+          </View>
+        )}
+        <AppActivityIndicator visible={this.state.pending} />
+      </SafeAreaView>
+    );
+  }
+}
 
 export default connect(
-  mapStateToProps,
-  dispatch => ({
+  (state) => ({
+    product: state.product.toObject(),
+    cart: state.cart.toJS(),
+    account: state.account.toJS(),
+  }),
+  (dispatch) => ({
     action: {
       product: bindActionCreators(productActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
