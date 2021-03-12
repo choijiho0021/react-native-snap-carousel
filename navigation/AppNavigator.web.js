@@ -1,5 +1,5 @@
-import { createBrowserApp } from '@react-navigation/web';
-import { createSwitchNavigator } from '@react-navigation/native';
+import {createBrowserApp} from '@react-navigation/web';
+import {createSwitchNavigator} from '@react-navigation/native';
 
 import MainTabNavigator from './MainTabNavigator';
 
@@ -10,4 +10,4 @@ const switchNavigator = createSwitchNavigator({
 });
 switchNavigator.path = '';
 
-export default createBrowserApp(switchNavigator, { history: 'hash' });
+export default createBrowserApp(switchNavigator, {history: 'hash'});

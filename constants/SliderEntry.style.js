@@ -1,6 +1,6 @@
 import {StyleSheet, Dimensions, Platform} from 'react-native';
-import {colors} from './Colors';
 import _ from 'underscore';
+import {colors} from './Colors';
 
 const IS_IOS = Platform.OS === 'ios';
 const {width: viewportWidth, height: viewportHeight} = Dimensions.get('window');

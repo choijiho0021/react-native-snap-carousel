@@ -1,10 +1,10 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {Platform, StyleSheet, Text, View} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 import {appStyles} from '../constants/Styles';
-import AppButton from '../components/AppButton';
 import AppIcon from '../components/AppIcon';
 
 import HomeScreenEsim from '../screens/HomeScreenEsim';
@@ -35,7 +35,26 @@ import FaqScreen from '../screens/FaqScreen';
 import GuideScreen from '../screens/GuideScreen';
 import SubsDetailScreen from '../screens/SubsDetailScreen';
 import AuthStack from './AuthStackNavigator';
-import {connect} from 'react-redux';
+
+const styles = StyleSheet.create({
+  tabBarIcon: {
+    marginTop: 5,
+  },
+  title: {
+    ...appStyles.title,
+    marginLeft: 20,
+  },
+  btnAlarm: {
+    width: 40,
+    height: 40,
+    marginRight: 10,
+  },
+  btnCnter: {
+    width: 40,
+    height: 40,
+    marginHorizontal: 18,
+  },
+});
 
 const HomeStack = createStackNavigator();
 const CartStack = createStackNavigator();
@@ -120,7 +139,7 @@ function myPageStack() {
 const BadgedIcon = withBadge(
   ({cartItems}) => cartItems,
   {badgeStyle: {top: 4, left: 8}},
-  state => ({
+  (state) => ({
     cartItems: (state.cart.get('orderItems') || []).reduce(
       (acc, cur) => acc + cur.qty,
       0,
@@ -200,27 +219,7 @@ function tabNavigator({loggedIn, iccid}) {
   );
 }
 
-const styles = StyleSheet.create({
-  tabBarIcon: {
-    marginTop: 5,
-  },
-  title: {
-    ...appStyles.title,
-    marginLeft: 20,
-  },
-  btnAlarm: {
-    width: 40,
-    height: 40,
-    marginRight: 10,
-  },
-  btnCnter: {
-    width: 40,
-    height: 40,
-    marginHorizontal: 18,
-  },
-});
-
-export default connect(state => ({
+export default connect((state) => ({
   loggedIn: state.account.get('loggedIn'),
   iccid: state.account.get('iccid'),
 }))(tabNavigator);

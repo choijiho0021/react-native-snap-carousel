@@ -1,19 +1,19 @@
-import React from 'react';
+import React, {memo} from 'react';
 import Analytics from 'appcenter-analytics';
-import * as cartActions from '../redux/modules/cart';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 
+import * as cartActions from '../redux/modules/cart';
 import MainTabNavigator from './MainTabNavigator';
 import EsimMainTabNavigator from './EsimMainTabNavigator';
-import CodePushStack from './CodePushStackNavigator';
 import AuthStackNavigator from './AuthStackNavigator';
 import Env from '../environment';
+
 const {esimApp} = Env.get();
 
 const MainStack = createStackNavigator();
 
-const getActiveRouteName = state => {
+const getActiveRouteName = (state) => {
   const route = state.routes[state.index];
 
   if (route.state) {
@@ -37,12 +37,12 @@ function mainStack() {
   );
 }
 
-function createAppContainer({store}) {
+const CreateAppContainer = ({store}) => {
   const navigationRef = React.useRef();
   return (
     <NavigationContainer
       ref={navigationRef}
-      onStateChange={state => {
+      onStateChange={(state) => {
         const lastTab = getActiveRouteName(state);
         Analytics.trackEvent('Page_View_Count', {page: lastTab});
         store.dispatch(cartActions.pushLastTab(lastTab));
@@ -50,6 +50,6 @@ function createAppContainer({store}) {
       {mainStack()}
     </NavigationContainer>
   );
-}
+};
 
-export default createAppContainer;
+export default memo(CreateAppContainer);
