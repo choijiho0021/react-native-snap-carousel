@@ -1,11 +1,10 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 import {appStyles} from '../constants/Styles';
-import AppButton from '../components/AppButton';
 import AppIcon from '../components/AppIcon';
 
 import HomeScreen from '../screens/HomeScreen';
@@ -244,7 +243,7 @@ function tabNavigator({loggedIn, iccid}) {
       <TabNavigator.Screen
         name="CartStack"
         component={cartStack}
-        options={({route}) => ({
+        options={() => ({
           tabBarVisible: false,
           tabBarLabel: i18n.t('cart'),
           tabBarIcon: ({focused}) => (
