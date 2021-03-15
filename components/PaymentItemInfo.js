@@ -6,6 +6,9 @@ import utils from '../utils/utils';
 import i18n from '../utils/i18n';
 import {colors} from '../constants/Colors';
 import {isDeviceSize} from '../constants/SliderEntry.style';
+import Env from '../environment';
+
+const {esimApp} = Env.get();
 
 const styles = StyleSheet.create({
   // container: {
@@ -162,23 +165,25 @@ class PaymentItemInfo extends PureComponent {
                 </Text>
               </View>
             ))}
-            <View style={styles.row} key="balance">
-              <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-                <Text key="title" style={styles.normal14WarmGrey}>
-                  {i18n.t('cart:deductBalance')}
-                </Text>
-                {/* {
+            {!esimApp && (
+              <View style={styles.row} key="balance">
+                <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+                  <Text key="title" style={styles.normal14WarmGrey}>
+                    {i18n.t('cart:deductBalance')}
+                  </Text>
+                  {/* {
                   screen != 'PaymentResult' &&
                   <Text key="currentBal" style={[styles.normal14WarmGrey, {marginLeft: 18}]}>{`(${i18n.t('cart:currentBalance')}:${utils.numberToCommaString(balance) + ' ' + i18n.t('won')}) `}</Text>
                 } */}
+                </View>
+                <Text
+                  key="amount"
+                  style={[
+                    styles.normalText16,
+                    mode === 'result' && styles.colorWarmGrey,
+                  ]}>{`- ${utils.price(deduct)}`}</Text>
               </View>
-              <Text
-                key="amount"
-                style={[
-                  styles.normalText16,
-                  mode === 'result' && styles.colorWarmGrey,
-                ]}>{`- ${utils.price(deduct)}`}</Text>
-            </View>
+            )}
           </View>
         )}
 
