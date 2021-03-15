@@ -100,7 +100,7 @@ export const payNorder = (result) => {
             // cart에서 item 삭제
             orderItems.forEach((item) => {
               if (
-                purchaseItems.find((o) => o.orderItemId == item.orderItemId)
+                purchaseItems.find((o) => o.orderItemId === item.orderItemId)
               ) {
                 // remove ordered item
                 dispatch(cartRemove({orderId, orderItemId: item.orderItemId}));
@@ -172,8 +172,7 @@ const onSuccess = (state, action) => {
   return state.set('result', result);
 };
 
-const onFailure = (state, action) => {
-  console.log('failed');
+const onFailure = (state) => {
   return state.set('result', API.default.FAILED);
 };
 
@@ -190,7 +189,7 @@ const initialState = Map({
 
 export default handleActions(
   {
-    [RESET]: (state, action) => {
+    [RESET]: () => {
       return initialState;
     },
 
@@ -205,7 +204,7 @@ export default handleActions(
     },
 
     // empty cart
-    [EMPTY]: (state, action) => {
+    [EMPTY]: (state) => {
       return state.set('purchaseItems', []);
     },
 
@@ -255,7 +254,7 @@ export default handleActions(
         .set('pymResult', action.payload)
         .update('orderItems', (value) =>
           value.filter(
-            (item) => purchaseItems.findIndex((p) => p.key == item.key) < 0,
+            (item) => purchaseItems.findIndex((p) => p.key === item.key) < 0,
           ),
         );
     },
@@ -295,15 +294,13 @@ export default handleActions(
     ...pender({
       type: CART_UPDATE,
       onSuccess,
-      onCancel: (state, action) => {
-        console.log('cancel update', state.toJS());
+      onCancel: (state) => {
         return state;
       },
     }),
 
     [`${CART_UPDATE}_CANCEL`]: (state, action) => {
       if (action.meta.abortController) action.meta.abortController.abort();
-      console.log('cancel update req', state.toJS(), action);
       return state;
     },
 
