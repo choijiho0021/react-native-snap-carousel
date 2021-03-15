@@ -15,6 +15,7 @@ import {Map} from 'immutable';
 import {bindActionCreators} from 'redux';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
+import utils from '../utils/utils';
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
 import * as accountActions from '../redux/modules/account';
@@ -220,12 +221,20 @@ class RegisterMobileScreen extends Component {
     this.onPress = this.onPress.bind(this);
 
     this.authInputRef = React.createRef();
-    this.isMounted = false;
+    this.mounted = false;
     this.controller = new AbortController();
   }
 
-  componentDidMount() {
-    this.isMounted = true;
+  async componentDidMount() {
+    this.mounted = true;
+
+    const mobile = await utils.retrieveData(API.User.KEY_MOBILE);
+    const pin = await utils.retrieveData(API.User.KEY_PIN);
+    console.log('@@@ login', mobile, pin);
+
+    if (mobile && pin) {
+      this.props.actions.account.logInAndGetAccount(mobile, pin);
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -237,7 +246,7 @@ class RegisterMobileScreen extends Component {
 
     if (!this.props.pending && this.props.pending !== prevProps.pending) {
       if (this.props.loginSuccess && this.props.account.loggedIn) {
-        if (this.isMounted) {
+        if (this.mounted) {
           this.setState({authorized: true});
         }
         this.props.navigation.navigate('Main');
@@ -248,7 +257,7 @@ class RegisterMobileScreen extends Component {
   }
 
   componentWillUnmount() {
-    this.isMounted = false;
+    this.mounted = false;
     this.controller.abort();
   }
 
@@ -270,7 +279,7 @@ class RegisterMobileScreen extends Component {
       } else {
         const resp = await API.User.confirmEmail({email: `${email}@${domain}`});
 
-        if (!this.isMounted) return;
+        if (!this.mounted) return;
 
         if (
           resp.result !== 0 &&
@@ -289,7 +298,7 @@ class RegisterMobileScreen extends Component {
         });
       }
 
-      if (isValid && this.isMounted) {
+      if (isValid && this.mounted) {
         const resp = await API.User.signUp({
           user: mobile,
           pass: pin,
@@ -309,7 +318,7 @@ class RegisterMobileScreen extends Component {
       AppAlert.error(i18n.t('reg:fail'));
     }
 
-    if (this.isMounted) {
+    if (this.mounted) {
       this.setState({loading: false});
     }
   };
@@ -368,7 +377,7 @@ class RegisterMobileScreen extends Component {
     this.setState(val);
   };
 
-  onPressPin(value) {
+  onPressPin = (value) => {
     const {mobile, authorized} = this.state;
     const pin = value;
     // PIN이 맞는지 먼저 확인한다.
@@ -383,11 +392,11 @@ class RegisterMobileScreen extends Component {
       abortController: this.controller,
     })
       .then((resp) => {
-        if (this.isMounted) {
+        if (this.mounted) {
           this.setState({loading: false});
         }
 
-        if (resp.result === 0 && this.isMounted) {
+        if (resp.result === 0 && this.mounted) {
           this.setState({
             authorized: _.isEmpty(resp.objects) ? true : undefined,
             newUser: _.isEmpty(resp.objects),
@@ -407,13 +416,13 @@ class RegisterMobileScreen extends Component {
       .catch((err) => {
         console.log('sms confirmation failed', err);
 
-        if (!this.isMounted) return;
+        if (!this.mounted) return;
 
         this.setState({
           authorized: false,
         });
       });
-  }
+  };
 
   onPress = (key) => {
     const {confirm} = this.state;
@@ -431,9 +440,9 @@ class RegisterMobileScreen extends Component {
   };
 
   signIn = ({mobile, pin}) => {
-    this.props.action.account
+    this.props.actions.account
       .logInAndGetAccount(mobile, pin)
-      .then((_) => this.props.action.cart.cartFetch());
+      .then((_) => this.props.actions.cart.cartFetch());
   };
 
   onTimeout = () => {
@@ -557,7 +566,7 @@ export default connect(
     loginFailure: state.pender.failure[accountActions.LOGIN],
   }),
   (dispatch) => ({
-    action: {
+    actions: {
       account: bindActionCreators(accountActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
     },
