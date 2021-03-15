@@ -18,7 +18,7 @@ import i18n from '../utils/i18n';
 import RechargeScreen from '../screens/RechargeScreen';
 import CartScreen from '../screens/CartScreen';
 import withBadge from '../components/withBadge';
-import MyPageScreen from '../screens/MyPageScreen';
+import MyPageScreen from '../screens/MyPageScreen/index';
 import NotiScreen from '../screens/NotiScreen';
 import PaymentScreen from '../screens/PaymentScreen';
 import PaymentResultScreen from '../screens/PaymentResultScreen';
