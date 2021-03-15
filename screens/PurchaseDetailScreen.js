@@ -265,7 +265,7 @@ class PurchaseDetailScreen extends Component {
     this.deliveryInfo = this.deliveryInfo.bind(this);
     this.profile = this.profile.bind(this);
     this.address = this.address.bind(this);
-    this.cancelOrder = this.cancelOrder.bind(this);
+    // this.cancelOrder = this.cancelOrder.bind(this);
     this.onScroll = this.onScroll.bind(this);
   }
 
@@ -343,64 +343,64 @@ class PurchaseDetailScreen extends Component {
     });
   }
 
-  cancelOrder() {
-    let state;
-    let shipmentState;
-    let isCanceled;
-    let disableBtn;
+  // cancelOrder() {
+  //   let state;
+  //   let shipmentState;
+  //   let isCanceled;
+  //   let disableBtn;
 
-    const {auth} = this.props;
+  //   const {auth} = this.props;
 
-    this.setState({borderBlue: true});
+  //   this.setState({borderBlue: true});
 
-    AppAlert.confirm(i18n.t('his:cancel'), i18n.t('his:cancelAlert'), {
-      ok: () => {
-        this.props.action.order
-          .cancelAndGetOrder(this.state.orderId, auth)
-          .then(
-            (resp) => {
-              // getOrderById 에 대한 결과 확인
-              // 기존에 취소했는데, 처리가 안되어 다시 취소버튼을 누르게 된 경우
-              // 배송상태가 변화되었는데 refresh 되지 않아 취소버튼을 누른 경우 등
-              if (resp.result === 0) this.setState({cancelPressed: true});
-              else if (resp.result > 0) {
-                state = resp.objects[0].state;
-                shipmentState = resp.objects[0].shipmentState;
-                isCanceled =
-                  shipmentState === API.Order.shipmentState.CANCEL ||
-                  state === 'canceled';
-                disableBtn =
-                  shipmentState === API.Order.shipmentState.READY ||
-                  shipmentState === API.Order.shipmentState.SHIP;
-                this.setState({
-                  ...state,
-                  shipmentState,
-                  isCanceled,
-                  disableBtn,
-                });
+  //   AppAlert.confirm(i18n.t('his:cancel'), i18n.t('his:cancelAlert'), {
+  //     ok: () => {
+  //       this.props.action.order
+  //         .cancelAndGetOrder(this.state.orderId, auth)
+  //         .then(
+  //           (resp) => {
+  //             // getOrderById 에 대한 결과 확인
+  //             // 기존에 취소했는데, 처리가 안되어 다시 취소버튼을 누르게 된 경우
+  //             // 배송상태가 변화되었는데 refresh 되지 않아 취소버튼을 누른 경우 등
+  //             if (resp.result === 0) this.setState({cancelPressed: true});
+  //             else if (resp.result > 0) {
+  //               state = resp.objects[0].state;
+  //               shipmentState = resp.objects[0].shipmentState;
+  //               isCanceled =
+  //                 shipmentState === API.Order.shipmentState.CANCEL ||
+  //                 state === 'canceled';
+  //               disableBtn =
+  //                 shipmentState === API.Order.shipmentState.READY ||
+  //                 shipmentState === API.Order.shipmentState.SHIP;
+  //               this.setState({
+  //                 ...state,
+  //                 shipmentState,
+  //                 isCanceled,
+  //                 disableBtn,
+  //               });
 
-                if (isCanceled) AppAlert.info(i18n.t('his:alreadyCanceled'));
-                else {
-                  if (disableBtn) AppAlert.info(i18n.t('his:deliveryProgress'));
-                  AppAlert.info(i18n.t('his:refresh'));
-                }
-              } else {
-                AppAlert.info(i18n.t('his:cancelFail'));
-              }
-            },
-            (err) => {
-              console.log('error', err);
-              AppAlert.info(i18n.t('his:cancelError'));
-            },
-          );
+  //               if (isCanceled) AppAlert.info(i18n.t('his:alreadyCanceled'));
+  //               else {
+  //                 if (disableBtn) AppAlert.info(i18n.t('his:deliveryProgress'));
+  //                 AppAlert.info(i18n.t('his:refresh'));
+  //               }
+  //             } else {
+  //               AppAlert.info(i18n.t('his:cancelFail'));
+  //             }
+  //           },
+  //           (err) => {
+  //             console.log('error', err);
+  //             AppAlert.info(i18n.t('his:cancelError'));
+  //           },
+  //         );
 
-        this.setState({borderBlue: false});
-      },
-      cancel: () => {
-        this.setState({borderBlue: false});
-      },
-    });
-  }
+  //       this.setState({borderBlue: false});
+  //     },
+  //     cancel: () => {
+  //       this.setState({borderBlue: false});
+  //     },
+  //   });
+  // }
 
   address() {
     const profile = !_.isEmpty(this.state.profile) && this.state.profile;
@@ -659,7 +659,7 @@ class PurchaseDetailScreen extends Component {
             </Text>
           </View>
         </View>
-        {!isRecharge ? (
+        {/* {!isRecharge ? (
           <AppButton
             style={[
               styles.cancelBtn,
@@ -676,9 +676,9 @@ class PurchaseDetailScreen extends Component {
             title={i18n.t('his:cancel')}
             titleStyle={styles.normal16BlueTxt}
           />
-        ) : (
-          <View style={{marginBottom: 20}} />
-        )}
+        ) : ( */}
+        <View style={{marginBottom: 20}} />
+        {/* )} */}
         <Text style={styles.cancelInfo}>{!isRecharge && infoText}</Text>
       </View>
     );
