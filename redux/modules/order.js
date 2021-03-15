@@ -159,11 +159,10 @@ export default handleActions(
 
         return updateOrders(state, action)
           .set('next', objects && objects.length === API.Order.ORDER_PAGE_ITEMS)
-          .update('page', (page) => {
-            return links && typeof (links || [])[0] !== 'undefined'
+          .update('page', page => links && typeof (links || [])[0] !== 'undefined'
               ? (links || [])[0]
-              : page;
-          });
+              : page
+          );
       },
     }),
 
