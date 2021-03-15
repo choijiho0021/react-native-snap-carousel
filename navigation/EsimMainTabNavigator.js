@@ -26,7 +26,7 @@ import PurchaseDetailScreen from '../screens/PurchaseDetailScreen';
 import ContactScreen from '../screens/ContactScreen';
 import ContactBoardScreen from '../screens/ContactBoardScreen';
 import PymMethodScreen from '../screens/PymMethodScreen';
-import StoreSearchScreen from '../screens/StoreSearchScreen';
+import StoreSearchScreen from '../screens/StoreSearch';
 import BoardMsgRespScreen from '../screens/BoardMsgRespScreen';
 import SimpleTextScreen from '../screens/SimpleTextScreen';
 import CodePushScreen from '../screens/CodePushScreen';

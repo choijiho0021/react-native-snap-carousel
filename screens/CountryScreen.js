@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import React, {Component, memo} from 'react';
 import {
   StyleSheet,
@@ -13,8 +14,7 @@ import {bindActionCreators} from 'redux';
 import Analytics from 'appcenter-analytics';
 import _ from 'underscore';
 import SnackBar from 'react-native-snackbar-component';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
-
+import {API} from '../submodules/rokebi-utils';
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
 import * as productActions from '../redux/modules/product';

@@ -33,7 +33,7 @@ import PymMethodScreen from '../screens/PymMethodScreen';
 import FindAddressScreen from '../screens/FindAddressScreen';
 import CustomerProfileScreen from '../screens/CustomerProfileScreen';
 import AddProfileScreen from '../screens/AddProfileScreen';
-import StoreSearchScreen from '../screens/StoreSearchScreen';
+import StoreSearchScreen from '../screens/StoreSearch';
 import BoardMsgRespScreen from '../screens/BoardMsgRespScreen';
 import SimpleTextScreen from '../screens/SimpleTextScreen';
 import CodePushScreen from '../screens/CodePushScreen';
