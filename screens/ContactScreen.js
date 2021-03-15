@@ -1,19 +1,19 @@
-import React, {Component, PureComponent} from 'react';
+import React, {Component, memo} from 'react';
 import {
   StyleSheet,
   View,
   FlatList,
-  TouchableOpacity,
   Text,
   Linking,
+  Pressable,
 } from 'react-native';
-
 import Analytics from 'appcenter-analytics';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
+import _ from 'underscore';
+import KakaoSDK from '@actbase/react-native-kakaosdk';
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
-import _ from 'underscore';
 import AppBackButton from '../components/AppBackButton';
 import {colors} from '../constants/Colors';
 import AppIcon from '../components/AppIcon';
@@ -21,31 +21,54 @@ import * as infoActions from '../redux/modules/info';
 import * as notiActions from '../redux/modules/noti';
 import * as toastActions from '../redux/modules/toast';
 import AppModal from '../components/AppModal';
-import KakaoSDK from '@actbase/react-native-kakaosdk';
 import Env from '../environment';
 import {Toast} from '../constants/CustomTypes';
+
 const {channelId} = Env.get();
 
-class ContactListItem extends PureComponent {
-  render() {
-    const {item} = this.props;
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          Analytics.trackEvent('Page_View_Count', {page: item.page});
-          item.onPress();
-        }}>
-        <View style={styles.row}>
-          <Text style={styles.itemTitle}>{item.value}</Text>
-          {item.onPress && (
-            <AppIcon style={{alignSelf: 'center'}} name="iconArrowRight" />
-          )}
-        </View>
-      </TouchableOpacity>
-    );
-  }
-}
+const styles = StyleSheet.create({
+  title: {
+    ...appStyles.title,
+    marginLeft: 20,
+  },
+  container: {
+    backgroundColor: colors.white,
+    flex: 1,
+    alignItems: 'stretch',
+  },
+  row: {
+    height: 60,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    borderBottomColor: colors.whiteTwo,
+    borderBottomWidth: 1,
+  },
+  itemTitle: {
+    ...appStyles.normal16Text,
+    color: colors.black,
+  },
+});
 
+const ContactListItem0 = ({item}) => {
+  return (
+    <Pressable
+      onPress={() => {
+        Analytics.trackEvent('Page_View_Count', {page: item.page});
+        item.onPress();
+      }}>
+      <View style={styles.row}>
+        <Text style={styles.itemTitle}>{item.value}</Text>
+        {item.onPress && (
+          <AppIcon style={{alignSelf: 'center'}} name="iconArrowRight" />
+        )}
+      </View>
+    </Pressable>
+  );
+};
+
+const ContactListItem = memo(ContactListItem0);
 class ContactScreen extends Component {
   constructor(props) {
     super(props);
@@ -95,7 +118,7 @@ class ContactScreen extends Component {
           value: i18n.t('contact:ktalk'),
           page: 'Open Kakao Talk',
           onPress: () => {
-            this._openKTalk();
+            this.openKTalk();
           },
         },
         {
@@ -110,10 +133,14 @@ class ContactScreen extends Component {
       showModal: false,
     };
 
-    this._openKTalk = this._openKTalk.bind(this);
-    this._showModal = this._showModal.bind(this);
+    this.openKTalk = this.openKTalk.bind(this);
+    this.showModal = this.showModal.bind(this);
 
-    this._cancelKtalk = null;
+    this.cancelKtalk = null;
+  }
+
+  componentDidMount() {
+    Analytics.trackEvent('Page_View_Count', {page: 'Service Center'});
   }
 
   componentDidUpdate(prevProps) {
@@ -121,24 +148,20 @@ class ContactScreen extends Component {
       !_.isUndefined(this.props.noti.result) &&
       prevProps.noti.result !== this.props.noti.result
     ) {
-      this._showModal(true);
+      this.showModal(true);
     }
   }
 
-  componentDidMount() {
-    Analytics.trackEvent('Page_View_Count', {page: 'Service Center'});
-  }
-
-  _renderItem = ({item}) => {
+  renderItem = ({item}) => {
     return <ContactListItem item={item} />;
   };
 
-  _showModal = value => {
+  showModal = (value) => {
     this.setState({showModal: value});
   };
 
-  _openKTalk = () => {
-    KakaoSDK.Channel.chat(channelId).catch(_ => {
+  openKTalk = () => {
+    KakaoSDK.Channel.chat(channelId).catch((_) => {
       this.props.action.toast.push(Toast.NOT_OPENED);
     });
 
@@ -152,13 +175,13 @@ class ContactScreen extends Component {
     }
 
     if (this.props.pending || ! resendable ) {
-      this._showModal(true)
+      this.showModal(true)
       return;
     }
 
-    if ( this._cancelKtalk ) {
-      this._cancelKtalk()
-      this._cancelKtalk = null
+    if ( this.cancelKtalk ) {
+      this.cancelKtalk()
+      this.cancelKtalk = null
     }
 
     const sendKtalk = this.props.action.noti.initAndSendAlimTalk({
@@ -166,7 +189,7 @@ class ContactScreen extends Component {
       abortController: new AbortController()
     })
 
-    this._cancelKtalk = sendKtalk.cancel
+    this.cancelKtalk = sendKtalk.cancel
     sendKtalk.catch( err => console.log("failed to send alimtalk", err))
 
     */
@@ -177,7 +200,7 @@ class ContactScreen extends Component {
 
     return (
       <View style={styles.container}>
-        <FlatList data={this.state.data} renderItem={this._renderItem} />
+        <FlatList data={this.state.data} renderItem={this.renderItem} />
 
         <AppModal
           title={
@@ -186,8 +209,8 @@ class ContactScreen extends Component {
               ? i18n.t('set:sendAlimTalk')
               : i18n.t('set:failedToSendAlimTalk')
           }
-          type={'info'}
-          onOkClose={() => this._showModal(false)}
+          type="info"
+          onOkClose={() => this.showModal(false)}
           visible={showModal}
         />
       </View>
@@ -195,45 +218,17 @@ class ContactScreen extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  title: {
-    ...appStyles.title,
-    marginLeft: 20,
-  },
-  container: {
-    backgroundColor: colors.white,
-    flex: 1,
-    alignItems: 'stretch',
-  },
-  row: {
-    height: 60,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    borderBottomColor: colors.whiteTwo,
-    borderBottomWidth: 1,
-  },
-  itemTitle: {
-    ...appStyles.normal16Text,
-    color: colors.black,
-  },
-});
-
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   info: state.info.toJS(),
   account: state.account.toJS(),
   noti: state.noti.toJS(),
   pending: state.pender.pending[notiActions.SEND_ALIM_TALK] || false,
 });
 
-export default connect(
-  mapStateToProps,
-  dispatch => ({
-    action: {
-      info: bindActionCreators(infoActions, dispatch),
-      noti: bindActionCreators(notiActions, dispatch),
-      toast: bindActionCreators(toastActions, dispatch),
-    },
-  }),
-)(ContactScreen);
+export default connect(mapStateToProps, (dispatch) => ({
+  action: {
+    info: bindActionCreators(infoActions, dispatch),
+    noti: bindActionCreators(notiActions, dispatch),
+    toast: bindActionCreators(toastActions, dispatch),
+  },
+}))(ContactScreen);
