@@ -36,7 +36,7 @@ import {sliderWidth, windowHeight} from '../constants/SliderEntry.style';
 import {colors} from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import StoreList from '../components/StoreList';
-import HandlePushNoti from '../submodules/rokebi-utils/models/handlePushNoti';
+import createHandlePushNoti from '../submodules/rokebi-utils/models/createHandlePushNoti';
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
 import TutorialScreen from './TutorialScreen';
@@ -515,18 +515,14 @@ class HomeScreenEsim extends Component {
       this.props.action.noti.getNotiList(mobile);
     }
 
-    const pushNotiHandler = HandlePushNoti.createHandlePushNoti(
-      navigation,
-      payload,
-      {
-        mobile,
-        iccid,
-        isForeground,
-        isRegister: type === 'register',
-        updateAccount: this.props.action.account.updateAccount,
-        clearCurrentAccount: this.props.action.account.clearCurrentAccount,
-      },
-    );
+    const pushNotiHandler = createHandlePushNoti(navigation, payload, {
+      mobile,
+      iccid,
+      isForeground,
+      isRegister: type === 'register',
+      updateAccount: this.props.action.account.updateAccount,
+      clearCurrentAccount: this.props.action.account.clearCurrentAccount,
+    });
     pushNotiHandler.sendLog();
     pushNotiHandler.handleNoti();
   }
