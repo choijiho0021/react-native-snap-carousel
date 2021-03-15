@@ -158,7 +158,8 @@ function tabNavigator({loggedIn, iccid}) {
         name="HomeStack"
         component={homeStack}
         options={({route}) => ({
-          tabBarVisible: getFocusedRouteNameFromRoute(route) === 'Home',
+          tabBarVisible:
+            (getFocusedRouteNameFromRoute(route) || 'Home') === 'Home',
           tabBarLabel: i18n.t('home'),
           animationEnabled: false,
           tabBarIcon: ({focused}) => (
@@ -189,7 +190,8 @@ function tabNavigator({loggedIn, iccid}) {
         name="EsimStack"
         component={iccid && loggedIn ? esimStack : AuthStack}
         options={({route}) => ({
-          tabBarVisible: getFocusedRouteNameFromRoute(route) === 'Esim',
+          tabBarVisible:
+            (getFocusedRouteNameFromRoute(route) || 'Esim') === 'Esim',
           tabBarLabel: i18n.t('esim'),
           tabBarIcon: ({focused}) => (
             <AppIcon
@@ -204,7 +206,8 @@ function tabNavigator({loggedIn, iccid}) {
         name="MyPageStack"
         component={iccid && loggedIn ? myPageStack : AuthStack}
         options={({route}) => ({
-          tabBarVisible: getFocusedRouteNameFromRoute(route) === 'MyPage',
+          tabBarVisible:
+            (getFocusedRouteNameFromRoute(route) || 'MyPage') === 'MyPage',
           tabBarLabel: i18n.t('mypage'),
           tabBarIcon: ({focused}) => (
             <AppIcon
