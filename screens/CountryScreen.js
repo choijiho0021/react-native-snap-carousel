@@ -1,12 +1,12 @@
-import React, {Component} from 'react';
+import React, {Component, memo} from 'react';
 import {
   StyleSheet,
   Text,
   FlatList,
   View,
-  TouchableOpacity,
   Image,
   SafeAreaView,
+  Pressable,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const CountryListItem = ({item, selected, onPress}) => {
+const CountryListItem0 = ({item, selected, onPress}) => {
   let borderColor = {};
   let color = {};
 
@@ -212,7 +212,7 @@ const CountryListItem = ({item, selected, onPress}) => {
   }
 
   return (
-    <TouchableOpacity onPress={onPress(item.uuid)}>
+    <Pressable onPress={onPress(item.uuid)}>
       <View>
         <View key="product" style={[styles.card, borderColor]}>
           <View key="text" style={styles.textView}>
@@ -244,9 +244,11 @@ const CountryListItem = ({item, selected, onPress}) => {
           </View>
         )}
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
+
+const CountryListItem = memo(CountryListItem0);
 
 const CountryBackButton = ({navigation, product}) => {
   const {localOpList, prodOfCountry} = product;
@@ -363,7 +365,7 @@ class CountryScreen extends Component {
             soldOut(resp, 'cart:notToCart');
           }
         })
-        .finally((_) => {
+        .finally(() => {
           this.setState({
             pending: false,
           });
@@ -447,7 +449,7 @@ class CountryScreen extends Component {
           source={{uri: API.default.httpImageUrl(imageUrl)}}
         />
 
-        <TouchableOpacity
+        <Pressable
           onPress={() =>
             this.props.navigation.navigate('ProductDetail', {
               title,
@@ -470,7 +472,7 @@ class CountryScreen extends Component {
               size={10}
             />
           </View>
-        </TouchableOpacity>
+        </Pressable>
 
         <View style={styles.divider} />
 
