@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
   },
 });
 
+Icon.loadFont();
 export default class InputNumber extends PureComponent {
   render() {
     const {value, onChange, minValue = 1} = this.props;
