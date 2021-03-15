@@ -47,7 +47,7 @@ class AppToast extends PureComponent {
 
     this.onPress = this.onPress.bind(this);
 
-    this.isMounted = null;
+    this.mounted = null;
     this.timer = null;
     this.isShown = false;
     this.fadeInDuration = 750;
@@ -56,7 +56,7 @@ class AppToast extends PureComponent {
   }
 
   componentDidMount() {
-    this.isMounted = true;
+    this.mounted = true;
   }
 
   componentDidUpdate(prevProps) {
@@ -70,7 +70,7 @@ class AppToast extends PureComponent {
   }
 
   componentWillUnmount() {
-    this.isMounted = null;
+    this.mounted = null;
     if (this.timer) clearTimeout(this.timer);
   }
 
@@ -94,7 +94,7 @@ class AppToast extends PureComponent {
       duration: this.fadeOutDuration,
       useNativeDriver: false,
     }).start(() => {
-      if (this.isMounted) this.setState({isShown: false});
+      if (this.mounted) this.setState({isShown: false});
       this.isShown = false;
 
       if (toastMsgBox.size > 0) {
@@ -111,7 +111,7 @@ class AppToast extends PureComponent {
       this.duration = Number(duration);
     }
 
-    if (this.isMounted) this.setState({isShown: true, text});
+    if (this.mounted) this.setState({isShown: true, text});
 
     Animated.timing(this.state.opacity, {
       toValue: 1,
