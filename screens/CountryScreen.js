@@ -49,33 +49,6 @@ const styles = StyleSheet.create({
     height: 150,
     // resizeMode: 'cover'
   },
-  rowDirection: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-  },
-  descBox: {
-    marginTop: 15,
-    marginRight: 5,
-    marginLeft: 5,
-  },
-  descKey: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    textAlign: 'left',
-    marginLeft: 15,
-    flex: 3,
-  },
-  descValue: {
-    fontSize: 12,
-    textAlign: 'left',
-    padding: 3,
-    marginLeft: 15,
-    flex: 7,
-  },
-  bottomBtn: {
-    position: 'absolute',
-    bottom: 0,
-  },
   buttonBox: {
     flexDirection: 'row',
     // position:"absolute",
