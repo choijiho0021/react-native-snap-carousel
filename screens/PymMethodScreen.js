@@ -2,6 +2,13 @@ import React, {Component} from 'react';
 import {StyleSheet, Text, View, Platform, SafeAreaView} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import Video from 'react-native-video';
+import Analytics from 'appcenter-analytics';
+import _ from 'underscore';
+import {TouchableOpacity, TextInput} from 'react-native-gesture-handler';
+import RNPickerSelect from 'react-native-picker-select';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import * as accountActions from '../redux/modules/account';
 import * as profileActions from '../redux/modules/profile';
 import * as cartActions from '../redux/modules/cart';
@@ -10,636 +17,19 @@ import i18n from '../utils/i18n';
 import AppBackButton from '../components/AppBackButton';
 import {colors} from '../constants/Colors';
 import AppButton from '../components/AppButton';
-import _ from 'underscore';
 import AddressCard from '../components/AddressCard';
-import {TouchableOpacity, TextInput} from 'react-native-gesture-handler';
 import PaymentItemInfo from '../components/PaymentItemInfo';
 import {isAndroid} from '../components/SearchBarAnimation/utils';
 import {isDeviceSize} from '../constants/SliderEntry.style';
 import Env from '../environment';
-import RNPickerSelect from 'react-native-picker-select';
 import Triangle from '../components/Triangle';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import AppIcon from '../components/AppIcon';
-import Video from 'react-native-video';
-import Analytics from 'appcenter-analytics';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import api from '../submodules/rokebi-utils/api/api';
 import AppAlert from '../components/AppAlert';
 import PaymentResult from '../submodules/rokebi-utils/models/paymentResult';
+
 const {esimApp} = Env.get();
-const deliveryText = API.Order.deliveryText;
-
-class PymMethodScreen extends Component {
-  constructor(props) {
-    super(props);
-
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={i18n.t('payment')}
-          isPaid={this.props.route.params && this.props.route.params.isPaid}
-        />
-      ),
-    });
-
-    this.state = {
-      mode: undefined,
-      selected: {},
-      pymPrice: undefined,
-      deduct: undefined,
-      isRecharge: undefined,
-      clickable: true,
-      loading: undefined,
-      data: {},
-      showModal: {
-        address: true,
-        memo: true,
-        method: true,
-      },
-      label: Platform.OS == 'android' ? undefined : i18n.t('pym:selectMemo'),
-      deliveryMemo:
-        Platform.OS == 'android'
-          ? {
-              directInput: false,
-              header: i18n.t('pym:notSelected'),
-              selected: undefined,
-              content: i18n.t('pym:notSelected'),
-            }
-          : {
-              directInput: false,
-              header: undefined,
-              selected: undefined,
-              content: undefined,
-            },
-      consent: undefined,
-      simIncluded: undefined,
-    };
-
-    this.confirmList = [
-      {
-        key: '1',
-        route: 'SimpleText',
-        param: {key: 'setting:privacy', title: i18n.t('pym:privacy')},
-      },
-      {
-        key: '2',
-        route: 'SimpleText',
-        param: {key: 'pym:agreement', title: i18n.t('pym:paymentAgency')},
-      },
-    ];
-
-    this._onSubmit = this._onSubmit.bind(this);
-    this._onPress = this._onPress.bind(this);
-    this._button = this._button.bind(this);
-    this._address = this._address.bind(this);
-    this._memo = this._memo.bind(this);
-    this._changePlaceHolder = this._changePlaceHolder.bind(this);
-    this._method = this._method.bind(this);
-    this._saveMemo = this._saveMemo.bind(this);
-    this._showModal = this._showModal.bind(this);
-    this._move = this._move.bind(this);
-    this._consentEssential = this._consentEssential.bind(this);
-    this._consentBox = this._consentBox.bind(this);
-    this._dropDownHeader = this._dropDownHeader.bind(this);
-    this._inputMemo = this._inputMemo.bind(this);
-    this._benefit = this._benefit.bind(this);
-  }
-
-  componentDidMount() {
-    this.props.action.profile.getCustomerProfile(this.props.account);
-    const {pymPrice, deduct} = this.props.cart;
-    const content = this.props.profile.content;
-    const mode = this.props.route.param && this.props.route.param.mode;
-
-    Analytics.trackEvent('Page_View_Count', {page: 'Payment - ' + mode});
-
-    this.setState({
-      pymPrice,
-      deduct,
-      isRecharge:
-        this.props.cart.purchaseItems.findIndex(item => item.type == 'rch') >=
-        0,
-      simIncluded:
-        this.props.cart.purchaseItems.findIndex(
-          item => item.type == 'sim_card',
-        ) >= 0,
-      deliveryMemo: {
-        ...this.state.deliveryMemo,
-        content,
-      },
-      mode: mode,
-    });
-    this._benefit();
-  }
-
-  async _onSubmit() {
-    if (!this.state.clickable) return;
-
-    this.setState({
-      clickable: false,
-    });
-
-    const {
-      selected,
-      pymPrice,
-      deduct,
-      deliveryMemo,
-      simIncluded,
-      mode,
-    } = this.state;
-    const memo =
-      deliveryMemo.selected == i18n.t('pym:input')
-        ? deliveryMemo.content
-        : deliveryMemo.selected;
-
-    if (_.isEmpty(selected) && pymPrice != 0) return;
-
-    const {mobile, email} = this.props.account,
-      profileId =
-        this.props.profile.selectedAddr ||
-        (this.props.profile.profile.find(item => item.isBasicAddr) || {}).uuid,
-      dlvCost = (
-        this.props.cart.pymReq.find(item => item.key == 'dlvCost') || {}
-      ).amount;
-
-    // 로깨비캐시 결제
-    if (pymPrice == 0) {
-      this.setState({
-        loading: true,
-      });
-      const {impId} = Env.get();
-      const response = PaymentResult.createForRokebiCash({
-        impId,
-        mobile,
-        profileId,
-        deduct,
-        dlvCost,
-        memo,
-        digital: !simIncluded,
-      });
-      // payNorder에서 재고 확인 - resp.result값으로 비교
-      this.props.action.cart.payNorder(response).then(resp => {
-        if (resp.result == 0) {
-          this.props.navigation.setParams({isPaid: true});
-          this.props.navigation.replace('PaymentResult', {
-            pymResult: response,
-            orderResult: resp,
-            mode: mode,
-          });
-        } else {
-          this.setState({
-            loading: false,
-            clickable: true,
-          });
-          if (resp.result === api.E_RESOURCE_NOT_FOUND) {
-            AppAlert.info(resp.title + i18n.t(message));
-          } else {
-            AppAlert.info(i18n.t('cart:systemError'));
-          }
-        }
-      });
-    } else {
-      const params = {
-        pg: selected.key,
-        pay_method: selected.method,
-        merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
-        name: i18n.t('appTitle'),
-        amount: pymPrice, // 최종 결제 금액
-        rokebi_cash: deduct, // balance 차감 금액
-        buyer_tel: mobile,
-        buyer_name: mobile,
-        buyer_email: email,
-        escrow: false,
-        app_scheme: esimApp ? 'rokebiesim' : 'Rokebi',
-        profile_uuid: profileId,
-        dlvCost,
-        digital: !simIncluded, // 컨텐츠 - 데이터상품일 경우 true
-        memo,
-        // mode: 'test'
-      };
-
-      this.setState({
-        clickable: true,
-      });
-      this.props.navigation.navigate('Payment', {params: params});
-    }
-  }
-
-  _onPress = (method, key, idx) => () => {
-    this.setState({
-      selected: method,
-      row: key,
-      column: idx,
-    });
-  };
-
-  _button(key, value) {
-    const {selected, row, column} = this.state;
-
-    return (
-      <View key={key} style={styles.buttonRow}>
-        {// key: row, idx: column
-        value.map(
-          (v, idx) =>
-            !_.isEmpty(v) && (
-              <AppButton
-                key={v.method}
-                title={_.isEmpty(v.icon) && v.title}
-                style={styles.buttonStyle(idx, column, key, row)}
-                iconName={!_.isEmpty(v.icon) && v.icon}
-                checked={v.method == selected.method}
-                onPress={this._onPress(v, key, idx)}
-                titleStyle={styles.buttonText}
-              />
-            ),
-        )}
-      </View>
-    );
-  }
-
-  _saveMemo(value) {
-    const selectedMemo = deliveryText.find(item => item.value == value) || {};
-
-    if (!_.isEmpty(selectedMemo)) {
-      if (deliveryText.indexOf(selectedMemo) + 1 == deliveryText.length) {
-        this.setState({
-          deliveryMemo: {
-            directInput: true,
-            header: !_.isEmpty(selectedMemo) && selectedMemo.key,
-            selected: value,
-            ...this.state.deliveryMemo.content,
-          },
-        });
-      } else {
-        this.setState({
-          deliveryMemo: {
-            directInput: false,
-            header: !_.isEmpty(selectedMemo) && selectedMemo.key,
-            selected: value,
-          },
-        });
-      }
-    }
-  }
-
-  _showModal(key) {
-    this.setState({
-      showModal: {
-        ...this.state.showModal,
-        [key]: !this.state.showModal[key],
-      },
-    });
-  }
-
-  _dropDownHeader(stateTitle, title, alias) {
-    return (
-      <TouchableOpacity
-        style={styles.spaceBetweenBox}
-        onPress={() => this._showModal(stateTitle)}>
-        <Text style={styles.boldTitle}>{title}</Text>
-        <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
-          {!this.state.showModal[stateTitle] && (
-            <Text style={[styles.alignCenter, styles.normal16BlueTxt]}>
-              {alias}
-            </Text>
-          )}
-          <AppButton
-            style={{backgroundColor: colors.white, height: 70}}
-            iconName={
-              this.state.showModal[stateTitle] ? 'iconArrowUp' : 'iconArrowDown'
-            }
-            iconStyle={styles.dropDownIcon}
-          />
-        </View>
-      </TouchableOpacity>
-    );
-  }
-
-  _inputMemo(val) {
-    this.setState({
-      deliveryMemo: {
-        ...this.state.deliveryMemo,
-        content: val,
-      },
-    });
-  }
-
-  _address() {
-    const selectedAddr = this.props.profile.selectedAddr || undefined;
-    const profile = this.props.profile.profile;
-    const item =
-      profile.find(item => item.uuid == selectedAddr) ||
-      profile.find(item => item.isBasicAddr) ||
-      {};
-
-    return (
-      <View>
-        {this._dropDownHeader('address', i18n.t('pym:delivery'), item.alias)}
-        {this.state.showModal.address && (
-          <View style={styles.beforeDrop}>
-            <View style={styles.thickBar} />
-            {// 주소
-            this.props.profile.profile.length > 0 && (
-              <View>
-                <View style={styles.profileTitle}>
-                  <Text style={styles.profileTitleText}>{item.alias}</Text>
-                  {item.isBasicAddr && (
-                    <View style={styles.basicAddrBox}>
-                      <Text style={styles.basicAddr}>
-                        {i18n.t('addr:basicAddr')}
-                      </Text>
-                    </View>
-                  )}
-                  <View style={{flex: 1, alignItems: 'flex-end'}}>
-                    <AppButton
-                      title={i18n.t('change')}
-                      titleStyle={styles.chgButtonText}
-                      style={[styles.chgButton]}
-                      onPress={() =>
-                        this.props.navigation.navigate('CustomerProfile')
-                      }
-                    />
-                  </View>
-                </View>
-                <AddressCard
-                  textStyle={styles.addrCardText}
-                  mobileStyle={[styles.addrCardText, {color: colors.warmGrey}]}
-                  profile={item}
-                  mobile={this.props.account.mobile}
-                />
-              </View>
-            )}
-            {// 주소 등록
-            // == 0
-            this.props.profile.profile.length == 0 && (
-              <AppButton
-                title={i18n.t('reg:address')}
-                textStyle={appStyles.confirmText}
-                style={[appStyles.confirm, styles.addrBtn]}
-                onPress={() => this.props.navigation.navigate('AddProfile')}
-              />
-            )}
-          </View>
-        )}
-        <View style={styles.divider} />
-      </View>
-    );
-  }
-
-  _changePlaceHolder() {
-    if (_.isEmpty(this.state.deliveryMemo.selected)) {
-      this.setState({
-        label: undefined,
-      });
-      this._saveMemo(deliveryText[0].key);
-    }
-  }
-
-  _memo() {
-    const {label} = this.state;
-    return (
-      <View>
-        {this._dropDownHeader(
-          'memo',
-          i18n.t('pym:deliveryMemo'),
-          this.state.deliveryMemo.header,
-        )}
-        {this.state.showModal.memo && (
-          <View style={styles.beforeDrop}>
-            <View style={styles.thickBar} />
-            <View style={styles.pickerWrapper}>
-              <RNPickerSelect
-                style={{
-                  ...pickerSelectStyles,
-                }}
-                useNativeAndroidPickerStyle={false}
-                placeholder={!_.isEmpty(label) ? {label} : {}}
-                placeholderTextColor={colors.warmGrey}
-                onValueChange={value => {
-                  this._saveMemo(value);
-                }}
-                onOpen={this._changePlaceHolder}
-                items={deliveryText.map(item => ({
-                  label: item.value,
-                  value: item.value,
-                }))}
-                value={this.state.deliveryMemo.selected}
-                Icon={() => {
-                  return (
-                    <Triangle width={8} height={6} color={colors.warmGrey} />
-                  );
-                }}
-              />
-            </View>
-            {this.state.deliveryMemo.directInput && (
-              <TextInput
-                placeholder={i18n.t('pym:IputMemo')}
-                placeholderTextColor={colors.warmGrey}
-                style={styles.textField}
-                // clearTextOnFocus={true}
-                maxLength={50}
-                returnKeyType="done"
-                multiline={true}
-                value={this.state.deliveryMemo.content || ''}
-                enablesReturnKeyAutomatically={true}
-                onChangeText={val => this._inputMemo(val)}
-                // maxFontSizeMultiplier
-              />
-            )}
-          </View>
-        )}
-        <View style={styles.divider} />
-      </View>
-    );
-  }
-
-  _method() {
-    const {selected, data} = this.state,
-      benefit =
-        !_.isEmpty(data) &&
-        !_.isEmpty(selected) &&
-        this.state.data.find(item => item.title.indexOf(selected.title) >= 0);
-
-    return (
-      <View>
-        {this._dropDownHeader(
-          'method',
-          i18n.t('pym:method'),
-          this.state.selected.title,
-        )}
-        {this.state.showModal.method && (
-          <View style={styles.beforeDrop}>
-            <View style={styles.thickBar} />
-            {API.Payment.method.map((v, idx) => this._button(idx + '', v))}
-            <Text style={{marginVertical: 20, color: colors.clearBlue}}>
-              {i18n.t('pym:tossInfo')}
-            </Text>
-            {!_.isEmpty(benefit) && (
-              <View style={{backgroundColor: colors.whiteTwo, padding: 15}}>
-                <Text style={[styles.normal12TxtLeft, {marginBottom: 5}]}>
-                  {benefit.title}
-                </Text>
-                <Text
-                  style={[styles.normal12TxtLeft, {color: colors.warmGrey}]}>
-                  {benefit.body}
-                </Text>
-              </View>
-            )}
-          </View>
-        )}
-        <View style={styles.divider} />
-      </View>
-    );
-  }
-
-  _move(key) {
-    if (!_.isEmpty(key)) {
-      const {route, param} = this.confirmList.find(item => item.key == key);
-      Analytics.trackEvent('Page_View_Count', {page: param.key});
-      this.props.navigation.navigate(route, param);
-    }
-  }
-
-  _consentEssential() {
-    this.setState({
-      consent: !this.state.consent,
-    });
-  }
-
-  _benefit() {
-    API.Page.getPageByCategory('pym:benefit')
-      .then(resp => {
-        if (resp.result == 0 && resp.objects.length > 0) {
-          console.log('benefit resp', resp);
-          this.setState({
-            data: resp.objects,
-          });
-        }
-      })
-      .catch(err => {
-        console.log('failed to get page', err);
-      })
-      .finally(_ => {
-        this.setState({
-          querying: false,
-        });
-      });
-  }
-
-  _consentBox() {
-    return (
-      <View style={{backgroundColor: colors.whiteTwo, paddingBottom: 45}}>
-        <TouchableOpacity
-          style={styles.rowCenter}
-          onPress={() => this._consentEssential()}>
-          <AppIcon name="btnCheck2" checked={this.state.consent} size={22} />
-          <Text
-            style={[
-              appStyles.bold16Text,
-              {color: colors.black, marginLeft: 12},
-            ]}>
-            {i18n.t('pym:consentEssential')}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.spaceBetweenBox]}
-          onPress={() => this._move('1')}>
-          <Text
-            style={[
-              appStyles.normal14Text,
-              {color: colors.warmGrey, lineHeight: 22},
-            ]}>
-            {i18n.t('pym:privacy')}
-            {i18n.t('pym:mandatory')}
-          </Text>
-          <Text style={styles.underlinedClearBlue}>{i18n.t('pym:detail')}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.spaceBetweenBox}
-          onPress={() => this._move('2')}>
-          <Text
-            style={[
-              appStyles.normal14Text,
-              {color: colors.warmGrey, lineHeight: 22},
-            ]}>
-            {i18n.t('pym:paymentAgency')}
-            {i18n.t('pym:mandatory')}
-          </Text>
-          <Text style={styles.underlinedClearBlue}>{i18n.t('pym:detail')}</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  render() {
-    const {
-        selected,
-        pymPrice,
-        deduct,
-        isRecharge,
-        consent,
-        simIncluded,
-      } = this.state,
-      {purchaseItems = [], pymReq} = this.props.cart,
-      noProfile = this.props.profile.profile.length == 0;
-
-    return (
-      <SafeAreaView
-        style={styles.container}
-        forceInset={{top: 'never', bottom: 'always'}}>
-        <KeyboardAwareScrollView
-          resetScrollToCoords={{x: 0, y: 0}}
-          enableOnAndroid={true}>
-          <PaymentItemInfo
-            cart={purchaseItems}
-            pymReq={pymReq}
-            balance={this.props.account.balance}
-            mode={'method'}
-            pymPrice={pymPrice}
-            deduct={deduct}
-            isRecharge={isRecharge}
-          />
-
-          {simIncluded && this._address()}
-          {simIncluded && this._memo()}
-          {pymPrice != 0 ? (
-            this._method()
-          ) : (
-            <View style={styles.result}>
-              <Text style={styles.resultText}>{i18n.t('pym:balPurchase')}</Text>
-            </View>
-          )}
-          {this._consentBox()}
-          <AppButton
-            title={i18n.t('payment')}
-            textStyle={appStyles.confirmText}
-            disabled={
-              (pymPrice != 0 && _.isEmpty(selected)) ||
-              (simIncluded && noProfile) ||
-              !consent
-            }
-            key={i18n.t('payment')}
-            onPress={this._onSubmit}
-            style={appStyles.confirm}
-          />
-        </KeyboardAwareScrollView>
-
-        {// 로깨비캐시 결제시 필요한 로딩처리
-        this.state.loading && (
-          <Video
-            source={require('../assets/images/loading_1.mp4')}
-            resizeMode={'stretch'}
-            repeat={true}
-            style={styles.backgroundVideo}
-          />
-        )}
-      </SafeAreaView>
-    );
-  }
-}
+const {deliveryText} = API.Order;
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
@@ -671,18 +61,18 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderRightWidth: 1,
     borderBottomWidth: 1,
-    borderLeftWidth: idx == 0 ? 1 : 0,
-    borderTopWidth: key == 0 ? 1 : 0,
+    borderLeftWidth: idx === 0 ? 1 : 0,
+    borderTopWidth: key === 0 ? 1 : 0,
     borderLeftColor:
-      column == 0 && key == row ? colors.clearBlue : colors.lightGrey,
+      column === 0 && key === row ? colors.clearBlue : colors.lightGrey,
     borderTopColor:
-      row == 0 && idx == column ? colors.clearBlue : colors.lightGrey,
+      row === 0 && idx === column ? colors.clearBlue : colors.lightGrey,
     borderRightColor:
-      (idx == column || idx == column - 1) && key == row
+      (idx === column || idx === column - 1) && key === row
         ? colors.clearBlue
         : colors.lightGrey,
     borderBottomColor:
-      (key == row || key == row - 1) && idx == column
+      (key === row || key === row - 1) && idx === column
         ? colors.clearBlue
         : colors.lightGrey,
   }),
@@ -694,7 +84,7 @@ const styles = StyleSheet.create({
   },
   title: {
     ...appStyles.bold18Text,
-    //fontFamily: "AppleSDGothicNeo",
+    // fontFamily: "AppleSDGothicNeo",
     marginVertical: 20,
     marginHorizontal: 20,
     color: colors.black,
@@ -872,16 +262,633 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = state => ({
-  account: state.account.toJS(),
-  cart: state.cart.toJS(),
-  auth: accountActions.auth(state.account),
-  profile: state.profile.toJS(),
-});
+class PymMethodScreen extends Component {
+  constructor(props) {
+    super(props);
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <AppBackButton
+          navigation={this.props.navigation}
+          title={i18n.t('payment')}
+          isPaid={this.props.route.params && this.props.route.params.isPaid}
+        />
+      ),
+    });
+
+    this.state = {
+      mode: undefined,
+      selected: {},
+      pymPrice: undefined,
+      deduct: undefined,
+      isRecharge: undefined,
+      clickable: true,
+      loading: undefined,
+      data: {},
+      showModal: {
+        address: true,
+        memo: true,
+        method: true,
+      },
+      label: Platform.OS === 'android' ? undefined : i18n.t('pym:selectMemo'),
+      deliveryMemo:
+        Platform.OS === 'android'
+          ? {
+              directInput: false,
+              header: i18n.t('pym:notSelected'),
+              selected: undefined,
+              content: i18n.t('pym:notSelected'),
+            }
+          : {
+              directInput: false,
+              header: undefined,
+              selected: undefined,
+              content: undefined,
+            },
+      consent: undefined,
+      simIncluded: undefined,
+    };
+
+    this.confirmList = [
+      {
+        key: '1',
+        route: 'SimpleText',
+        param: {key: 'setting:privacy', title: i18n.t('pym:privacy')},
+      },
+      {
+        key: '2',
+        route: 'SimpleText',
+        param: {key: 'pym:agreement', title: i18n.t('pym:paymentAgency')},
+      },
+    ];
+
+    this.onSubmit = this.onSubmit.bind(this);
+    this.onPress = this.onPress.bind(this);
+    this.button = this.button.bind(this);
+    this.address = this.address.bind(this);
+    this.memo = this.memo.bind(this);
+    this.changePlaceHolder = this.changePlaceHolder.bind(this);
+    this.method = this.method.bind(this);
+    this.saveMemo = this.saveMemo.bind(this);
+    this.showModal = this.showModal.bind(this);
+    this.move = this.move.bind(this);
+    this.consentEssential = this.consentEssential.bind(this);
+    this.consentBox = this.consentBox.bind(this);
+    this.dropDownHeader = this.dropDownHeader.bind(this);
+    this.inputMemo = this.inputMemo.bind(this);
+    this.benefit = this.benefit.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.action.profile.getCustomerProfile(this.props.account);
+    const {pymPrice, deduct} = this.props.cart;
+    const {content} = this.props.profile;
+    const mode = this.props.route.param && this.props.route.param.mode;
+
+    Analytics.trackEvent('Page_View_Count', {page: `Payment - ${mode}`});
+
+    this.setState((state) => ({
+      pymPrice,
+      deduct,
+      isRecharge:
+        this.props.cart.purchaseItems.findIndex(
+          (item) => item.type === 'rch',
+        ) >= 0,
+      simIncluded:
+        this.props.cart.purchaseItems.findIndex(
+          (item) => item.type === 'sim_card',
+        ) >= 0,
+      deliveryMemo: {
+        ...state.deliveryMemo,
+        content,
+      },
+      mode,
+    }));
+    this.benefit();
+  }
+
+  async onSubmit() {
+    if (!this.state.clickable) return;
+
+    this.setState({
+      clickable: false,
+    });
+
+    const {
+      selected,
+      pymPrice,
+      deduct,
+      deliveryMemo,
+      simIncluded,
+      mode,
+    } = this.state;
+    const memo =
+      deliveryMemo.selected === i18n.t('pym:input')
+        ? deliveryMemo.content
+        : deliveryMemo.selected;
+
+    if (_.isEmpty(selected) && pymPrice !== 0) return;
+
+    const {mobile, email} = this.props.account;
+    const profileId =
+      this.props.profile.selectedAddr ||
+      (this.props.profile.profile.find((item) => item.isBasicAddr) || {}).uuid;
+    const dlvCost = (
+      this.props.cart.pymReq.find((item) => item.key === 'dlvCost') || {}
+    ).amount;
+
+    // 로깨비캐시 결제
+    if (pymPrice === 0) {
+      this.setState({
+        loading: true,
+      });
+      const {impId} = Env.get();
+      const response = PaymentResult.createForRokebiCash({
+        impId,
+        mobile,
+        profileId,
+        deduct,
+        dlvCost,
+        memo,
+        digital: !simIncluded,
+      });
+      // payNorder에서 재고 확인 - resp.result값으로 비교
+      this.props.action.cart.payNorder(response).then((resp) => {
+        if (resp.result === 0) {
+          this.props.navigation.setParams({isPaid: true});
+          this.props.navigation.replace('PaymentResult', {
+            pymResult: response,
+            orderResult: resp,
+            mode,
+          });
+        } else {
+          this.setState({
+            loading: false,
+            clickable: true,
+          });
+          if (resp.result === api.E_RESOURCE_NOT_FOUND) {
+            AppAlert.info(i18n.t('cart:soldOut'));
+          } else {
+            AppAlert.info(i18n.t('cart:systemError'));
+          }
+        }
+      });
+    } else {
+      const params = {
+        pg: selected.key,
+        pay_method: selected.method,
+        merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
+        name: i18n.t('appTitle'),
+        amount: pymPrice, // 최종 결제 금액
+        rokebi_cash: deduct, // balance 차감 금액
+        buyer_tel: mobile,
+        buyer_name: mobile,
+        buyer_email: email,
+        escrow: false,
+        app_scheme: esimApp ? 'rokebiesim' : 'Rokebi',
+        profile_uuid: profileId,
+        dlvCost,
+        digital: !simIncluded, // 컨텐츠 - 데이터상품일 경우 true
+        memo,
+        // mode: 'test'
+      };
+
+      this.setState({
+        clickable: true,
+      });
+      this.props.navigation.navigate('Payment', {params});
+    }
+  }
+
+  onPress = (method, key, idx) => () => {
+    this.setState({
+      selected: method,
+      row: key,
+      column: idx,
+    });
+  };
+
+  button(key, value) {
+    const {selected, row, column} = this.state;
+
+    return (
+      <View key={key} style={styles.buttonRow}>
+        {
+          // key: row, idx: column
+          value.map(
+            (v, idx) =>
+              !_.isEmpty(v) && (
+                <AppButton
+                  key={v.method}
+                  title={_.isEmpty(v.icon) && v.title}
+                  style={styles.buttonStyle(idx, column, key, row)}
+                  iconName={!_.isEmpty(v.icon) && v.icon}
+                  checked={v.method === selected.method}
+                  onPress={this.onPress(v, key, idx)}
+                  titleStyle={styles.buttonText}
+                />
+              ),
+          )
+        }
+      </View>
+    );
+  }
+
+  saveMemo(value) {
+    const selectedMemo =
+      deliveryText.find((item) => item.value === value) || {};
+
+    if (!_.isEmpty(selectedMemo)) {
+      if (deliveryText.indexOf(selectedMemo) + 1 === deliveryText.length) {
+        this.setState((state) => ({
+          deliveryMemo: {
+            directInput: true,
+            header: !_.isEmpty(selectedMemo) && selectedMemo.key,
+            selected: value,
+            ...state.deliveryMemo.content,
+          },
+        }));
+      } else {
+        this.setState({
+          deliveryMemo: {
+            directInput: false,
+            header: !_.isEmpty(selectedMemo) && selectedMemo.key,
+            selected: value,
+          },
+        });
+      }
+    }
+  }
+
+  showModal(key) {
+    this.setState((state) => ({
+      showModal: {
+        ...state.showModal,
+        [key]: !state.showModal[key],
+      },
+    }));
+  }
+
+  dropDownHeader(stateTitle, title, alias) {
+    return (
+      <TouchableOpacity
+        style={styles.spaceBetweenBox}
+        onPress={() => this.showModal(stateTitle)}>
+        <Text style={styles.boldTitle}>{title}</Text>
+        <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+          {!this.state.showModal[stateTitle] && (
+            <Text style={[styles.alignCenter, styles.normal16BlueTxt]}>
+              {alias}
+            </Text>
+          )}
+          <AppButton
+            style={{backgroundColor: colors.white, height: 70}}
+            iconName={
+              this.state.showModal[stateTitle] ? 'iconArrowUp' : 'iconArrowDown'
+            }
+            iconStyle={styles.dropDownIcon}
+          />
+        </View>
+      </TouchableOpacity>
+    );
+  }
+
+  inputMemo(val) {
+    this.setState((state) => ({
+      deliveryMemo: {
+        ...state.deliveryMemo,
+        content: val,
+      },
+    }));
+  }
+
+  address() {
+    const selectedAddr = this.props.profile.selectedAddr || undefined;
+    const {profile} = this.props.profile;
+    const item =
+      profile.find((i) => i.uuid === selectedAddr) ||
+      profile.find((i) => i.isBasicAddr) ||
+      {};
+
+    return (
+      <View>
+        {this.dropDownHeader('address', i18n.t('pym:delivery'), item.alias)}
+        {this.state.showModal.address && (
+          <View style={styles.beforeDrop}>
+            <View style={styles.thickBar} />
+            {
+              // 주소
+              this.props.profile.profile.length > 0 && (
+                <View>
+                  <View style={styles.profileTitle}>
+                    <Text style={styles.profileTitleText}>{item.alias}</Text>
+                    {item.isBasicAddr && (
+                      <View style={styles.basicAddrBox}>
+                        <Text style={styles.basicAddr}>
+                          {i18n.t('addr:basicAddr')}
+                        </Text>
+                      </View>
+                    )}
+                    <View style={{flex: 1, alignItems: 'flex-end'}}>
+                      <AppButton
+                        title={i18n.t('change')}
+                        titleStyle={styles.chgButtonText}
+                        style={[styles.chgButton]}
+                        onPress={() =>
+                          this.props.navigation.navigate('CustomerProfile')
+                        }
+                      />
+                    </View>
+                  </View>
+                  <AddressCard
+                    textStyle={styles.addrCardText}
+                    mobileStyle={[
+                      styles.addrCardText,
+                      {color: colors.warmGrey},
+                    ]}
+                    profile={item}
+                    mobile={this.props.account.mobile}
+                  />
+                </View>
+              )
+            }
+            {
+              // 주소 등록
+              // == 0
+              this.props.profile.profile.length === 0 && (
+                <AppButton
+                  title={i18n.t('reg:address')}
+                  textStyle={appStyles.confirmText}
+                  style={[appStyles.confirm, styles.addrBtn]}
+                  onPress={() => this.props.navigation.navigate('AddProfile')}
+                />
+              )
+            }
+          </View>
+        )}
+        <View style={styles.divider} />
+      </View>
+    );
+  }
+
+  changePlaceHolder() {
+    if (_.isEmpty(this.state.deliveryMemo.selected)) {
+      this.setState({
+        label: undefined,
+      });
+      this.saveMemo(deliveryText[0].key);
+    }
+  }
+
+  memo() {
+    const {label} = this.state;
+    return (
+      <View>
+        {this.dropDownHeader(
+          'memo',
+          i18n.t('pym:deliveryMemo'),
+          this.state.deliveryMemo.header,
+        )}
+        {this.state.showModal.memo && (
+          <View style={styles.beforeDrop}>
+            <View style={styles.thickBar} />
+            <View style={styles.pickerWrapper}>
+              <RNPickerSelect
+                style={{
+                  ...pickerSelectStyles,
+                }}
+                useNativeAndroidPickerStyle={false}
+                placeholder={!_.isEmpty(label) ? {label} : {}}
+                placeholderTextColor={colors.warmGrey}
+                onValueChange={(value) => {
+                  this.saveMemo(value);
+                }}
+                onOpen={this.changePlaceHolder}
+                items={deliveryText.map((item) => ({
+                  label: item.value,
+                  value: item.value,
+                }))}
+                value={this.state.deliveryMemo.selected}
+                Icon={() => {
+                  return (
+                    <Triangle width={8} height={6} color={colors.warmGrey} />
+                  );
+                }}
+              />
+            </View>
+            {this.state.deliveryMemo.directInput && (
+              <TextInput
+                placeholder={i18n.t('pym:IputMemo')}
+                placeholderTextColor={colors.warmGrey}
+                style={styles.textField}
+                // clearTextOnFocus={true}
+                maxLength={50}
+                returnKeyType="done"
+                multiline
+                value={this.state.deliveryMemo.content || ''}
+                enablesReturnKeyAutomatically
+                onChangeText={(val) => this.inputMemo(val)}
+                // maxFontSizeMultiplier
+              />
+            )}
+          </View>
+        )}
+        <View style={styles.divider} />
+      </View>
+    );
+  }
+
+  method() {
+    const {selected, data} = this.state;
+    const benefit =
+      !_.isEmpty(data) &&
+      !_.isEmpty(selected) &&
+      this.state.data.find((item) => item.title.indexOf(selected.title) >= 0);
+
+    return (
+      <View>
+        {this.dropDownHeader(
+          'method',
+          i18n.t('pym:method'),
+          this.state.selected.title,
+        )}
+        {this.state.showModal.method && (
+          <View style={styles.beforeDrop}>
+            <View style={styles.thickBar} />
+            {API.Payment.method.map((v, idx) => this.button(`${idx}`, v))}
+            <Text style={{marginVertical: 20, color: colors.clearBlue}}>
+              {i18n.t('pym:tossInfo')}
+            </Text>
+            {!_.isEmpty(benefit) && (
+              <View style={{backgroundColor: colors.whiteTwo, padding: 15}}>
+                <Text style={[styles.normal12TxtLeft, {marginBottom: 5}]}>
+                  {benefit.title}
+                </Text>
+                <Text
+                  style={[styles.normal12TxtLeft, {color: colors.warmGrey}]}>
+                  {benefit.body}
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
+        <View style={styles.divider} />
+      </View>
+    );
+  }
+
+  move(key) {
+    if (!_.isEmpty(key)) {
+      const {route, param} = this.confirmList.find((item) => item.key === key);
+      Analytics.trackEvent('Page_View_Count', {page: param.key});
+      this.props.navigation.navigate(route, param);
+    }
+  }
+
+  consentEssential() {
+    this.setState((state) => ({
+      consent: !state.consent,
+    }));
+  }
+
+  benefit() {
+    API.Page.getPageByCategory('pym:benefit')
+      .then((resp) => {
+        if (resp.result === 0 && resp.objects.length > 0) {
+          console.log('benefit resp', resp);
+          this.setState({
+            data: resp.objects,
+          });
+        }
+      })
+      .catch((err) => {
+        console.log('failed to get page', err);
+      });
+  }
+
+  consentBox() {
+    return (
+      <View style={{backgroundColor: colors.whiteTwo, paddingBottom: 45}}>
+        <TouchableOpacity
+          style={styles.rowCenter}
+          onPress={() => this.consentEssential()}>
+          <AppIcon name="btnCheck2" checked={this.state.consent} size={22} />
+          <Text
+            style={[
+              appStyles.bold16Text,
+              {color: colors.black, marginLeft: 12},
+            ]}>
+            {i18n.t('pym:consentEssential')}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.spaceBetweenBox]}
+          onPress={() => this.move('1')}>
+          <Text
+            style={[
+              appStyles.normal14Text,
+              {color: colors.warmGrey, lineHeight: 22},
+            ]}>
+            {i18n.t('pym:privacy')}
+            {i18n.t('pym:mandatory')}
+          </Text>
+          <Text style={styles.underlinedClearBlue}>{i18n.t('pym:detail')}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.spaceBetweenBox}
+          onPress={() => this.move('2')}>
+          <Text
+            style={[
+              appStyles.normal14Text,
+              {color: colors.warmGrey, lineHeight: 22},
+            ]}>
+            {i18n.t('pym:paymentAgency')}
+            {i18n.t('pym:mandatory')}
+          </Text>
+          <Text style={styles.underlinedClearBlue}>{i18n.t('pym:detail')}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  render() {
+    const {
+      selected,
+      pymPrice,
+      deduct,
+      isRecharge,
+      consent,
+      simIncluded,
+    } = this.state;
+    const {purchaseItems = [], pymReq} = this.props.cart;
+    const noProfile = this.props.profile.profile.length === 0;
+
+    return (
+      <SafeAreaView
+        style={styles.container}
+        forceInset={{top: 'never', bottom: 'always'}}>
+        <KeyboardAwareScrollView
+          resetScrollToCoords={{x: 0, y: 0}}
+          enableOnAndroid>
+          <PaymentItemInfo
+            cart={purchaseItems}
+            pymReq={pymReq}
+            balance={this.props.account.balance}
+            mode="method"
+            pymPrice={pymPrice}
+            deduct={deduct}
+            isRecharge={isRecharge}
+          />
+
+          {simIncluded && this.address()}
+          {simIncluded && this.memo()}
+          {pymPrice !== 0 ? (
+            this.method()
+          ) : (
+            <View style={styles.result}>
+              <Text style={styles.resultText}>{i18n.t('pym:balPurchase')}</Text>
+            </View>
+          )}
+          {this.consentBox()}
+          <AppButton
+            title={i18n.t('payment')}
+            textStyle={appStyles.confirmText}
+            disabled={
+              (pymPrice !== 0 && _.isEmpty(selected)) ||
+              (simIncluded && noProfile) ||
+              !consent
+            }
+            key={i18n.t('payment')}
+            onPress={this.onSubmit}
+            style={appStyles.confirm}
+          />
+        </KeyboardAwareScrollView>
+
+        {
+          // 로깨비캐시 결제시 필요한 로딩처리
+          this.state.loading && (
+            <Video
+              source={require('../assets/images/loading_1.mp4')}
+              resizeMode="stretch"
+              repeat
+              style={styles.backgroundVideo}
+            />
+          )
+        }
+      </SafeAreaView>
+    );
+  }
+}
 
 export default connect(
-  mapStateToProps,
-  dispatch => ({
+  (state) => ({
+    account: state.account.toJS(),
+    cart: state.cart.toJS(),
+    auth: accountActions.auth(state.account),
+    profile: state.profile.toJS(),
+  }),
+  (dispatch) => ({
     action: {
       account: bindActionCreators(accountActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),

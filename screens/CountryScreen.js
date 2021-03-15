@@ -237,7 +237,7 @@ const CountryBackButton = ({navigation, product}) => {
 };
 
 const BackButton = connect((state) => ({product: state.product.toObject()}))(
-  CountryBackButton,
+  memo(CountryBackButton),
 );
 
 function soldOut(resp, message) {
