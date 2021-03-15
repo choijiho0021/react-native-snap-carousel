@@ -1,17 +1,13 @@
-import i18n from './i18n';
 import _ from 'underscore';
-import AppAlert from '../components/AppAlert';
-import moment from 'moment-with-locales-es6';
-import * as ToastActions from '../redux/modules/toast';
 import {UtilsBase} from 'RokebiESIM/submodules/rokebi-utils';
+import i18n from './i18n';
+import AppAlert from '../components/AppAlert';
+import * as ToastActions from '../redux/modules/toast';
 
-let UniAsyncStorage = require('@react-native-community/async-storage').default;
+const UniAsyncStorage = require('@react-native-community/async-storage')
+  .default;
 
 class Utils extends UtilsBase {
-  constructor(value) {
-    super(value);
-  }
-
   storeData = async (key, value) => {
     try {
       await UniAsyncStorage.setItem(key, value);
@@ -20,7 +16,7 @@ class Utils extends UtilsBase {
     }
   };
 
-  retrieveData = async key => {
+  retrieveData = async (key) => {
     try {
       return await UniAsyncStorage.getItem(key);
     } catch (error) {
@@ -28,7 +24,7 @@ class Utils extends UtilsBase {
     }
   };
 
-  removeData = async key => {
+  removeData = async (key) => {
     try {
       return await UniAsyncStorage.removeItem(key);
     } catch (error) {
@@ -37,15 +33,15 @@ class Utils extends UtilsBase {
   };
 
   reflectWithToast = (action, toastType) => (...args) => {
-    return (dispatch, getState) => {
+    return (dispatch) => {
       return dispatch(action(...args)).then(
-        resp => {
+        (resp) => {
           if (resp.result !== 0) {
             dispatch(ToastActions.push(toastType));
           }
           return resp;
         },
-        err => {
+        (err) => {
           dispatch(ToastActions.push(toastType));
           return err;
         },

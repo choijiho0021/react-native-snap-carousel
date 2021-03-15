@@ -1,8 +1,7 @@
-import _ from 'underscore'
+import _ from 'underscore';
 
-//동의어 추가 ':'
-const countryList = 
-`GH,가나,Ghana
+// 동의어 추가 ':'
+const countryList = `GH,가나,Ghana
 GA,가봉,Gabon
 GY,가이아나,Guyana
 GM,감비아,Gambia
@@ -250,31 +249,39 @@ PH,필리핀,Philippines
 PN,핏케언 제도,Pitcairn
 HM,허드 맥도널드 제도,#N/A
 HU,헝가리,Hungary
-HK,홍콩,Hong Kong`
+HK,홍콩,Hong Kong`;
 
 class Country {
   constructor(list) {
-    this.ccode = {}
-    list.split('\n').forEach(line => {
-      const seg = line.split(',')
-      this.ccode[seg[0].toLowerCase()] = { 'ko' : seg[1].split(':'), 'en' : seg[2].split(':')}
-    })
+    this.ccode = {};
+    list.split('\n').forEach((line) => {
+      const seg = line.split(',');
+      this.ccode[seg[0].toLowerCase()] = {
+        ko: seg[1].split(':'),
+        en: seg[2].split(':'),
+      };
+    });
   }
 
   getCode(name, lang = 'ko') {
-    return Object.keys(this.ccode).map(k => {
-      return this.ccode[k][lang].includes(name) ? k : ''
-    }).filter(item => item != '').join('+')
+    return Object.keys(this.ccode)
+      .map((k) => {
+        return this.ccode[k][lang].includes(name) ? k : '';
+      })
+      .filter((item) => item !== '')
+      .join('+');
   }
 
-  getName(code = [], lang='ko') {
-    if ( _.isEmpty(code)) return [ 'N/A' ];
+  getName(code = [], lang = 'ko') {
+    if (_.isEmpty(code)) return ['N/A'];
 
-    return code.map(elm => {
-      const cc = elm.toLowerCase()
-      return (typeof this.ccode[cc] === 'undefined') ? 'N/A' : this.ccode[cc][lang][0];
-    })
+    return code.map((elm) => {
+      const cc = elm.toLowerCase();
+      return typeof this.ccode[cc] === 'undefined'
+        ? 'N/A'
+        : this.ccode[cc][lang][0];
+    });
   }
 }
 
-export default new Country(countryList)
+export default new Country(countryList);

@@ -1,10 +1,10 @@
 import {createAction, handleActions} from 'redux-actions';
 import {pender} from 'redux-pender';
 import {Map} from 'immutable';
+import _ from 'underscore';
+import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import utils from '../../utils/utils';
 import {getAccount} from './account';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
-import _ from 'underscore';
 
 export const GET_ORDERS = 'rokebi/order/GET_ORDERS';
 export const GET_ORDER_BY_ID = 'rokebi/order/GET_ORDER_BY_ID';
@@ -159,9 +159,10 @@ export default handleActions(
 
         return updateOrders(state, action)
           .set('next', objects && objects.length === API.Order.ORDER_PAGE_ITEMS)
-          .update('page', page => links && typeof (links || [])[0] !== 'undefined'
+          .update('page', (page) =>
+            links && typeof (links || [])[0] !== 'undefined'
               ? (links || [])[0]
-              : page
+              : page,
           );
       },
     }),
