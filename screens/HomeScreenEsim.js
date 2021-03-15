@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import React, {Component} from 'react';
 import {
   StyleSheet,
@@ -19,7 +20,6 @@ import {bindActionCreators} from 'redux';
 import {TabView} from 'react-native-tab-view';
 import moment from 'moment';
 import {Set} from 'immutable';
-import {API, Country} from 'RokebiESIM/submodules/rokebi-utils';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import AsyncStorage from '@react-native-community/async-storage';
 import RNExitApp from 'react-native-exit-app';
@@ -29,6 +29,7 @@ import {
   PERMISSIONS,
   request,
 } from 'react-native-permissions';
+import {API, Country} from '../submodules/rokebi-utils';
 import AppModal from '../components/AppModal';
 import withBadge from '../components/withBadge';
 import pushNoti from '../utils/pushNoti';
@@ -639,7 +640,7 @@ class HomeScreenEsim extends Component {
         <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
         {firstLaunch && <TutorialScreen />}
         {this.renderCarousel()}
-        {/* ScrollView  stickyHeaderIndices로 상단 탭을 고정하기 위해서 View한번 더 사용*/}
+        {/* ScrollView  stickyHeaderIndices로 상단 탭을 고정하기 위해서 View한번 더 사용 */}
         <View style={styles.whiteTwoBackground}>
           <View style={styles.tabView}>
             {routes.map((elm, idx) => (
