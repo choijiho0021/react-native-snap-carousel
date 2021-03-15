@@ -225,16 +225,8 @@ class RegisterMobileScreen extends Component {
     this.controller = new AbortController();
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     this.mounted = true;
-
-    const mobile = await utils.retrieveData(API.User.KEY_MOBILE);
-    const pin = await utils.retrieveData(API.User.KEY_PIN);
-    console.log('@@@ login', mobile, pin);
-
-    if (mobile && pin) {
-      this.props.actions.account.logInAndGetAccount(mobile, pin);
-    }
   }
 
   componentDidUpdate(prevProps) {
