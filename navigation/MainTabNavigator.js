@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {StyleSheet} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 
 import {appStyles} from '../constants/Styles';
 import AppIcon from '../components/AppIcon';
@@ -213,7 +214,7 @@ function tabNavigator({loggedIn, iccid}) {
         name="HomeStack"
         component={homeStack}
         options={({route}) => ({
-          tabBarVisible: route.state && route.state.index === 0,
+          tabBarVisible: getFocusedRouteNameFromRoute(route) === 'Main',
           tabBarLabel: i18n.t('home'),
           animationEnabled: false,
           tabBarIcon: ({focused}) => (
@@ -229,7 +230,7 @@ function tabNavigator({loggedIn, iccid}) {
         name="StoreStack"
         component={storeStack}
         options={({route}) => ({
-          tabBarVisible: route.state && route.state.index === 0,
+          tabBarVisible: getFocusedRouteNameFromRoute(route) === 'Store',
           tabBarLabel: i18n.t('store'),
           tabBarIcon: ({focused}) => (
             <AppIcon
@@ -264,7 +265,7 @@ function tabNavigator({loggedIn, iccid}) {
           // tabBarOnPress: e => {
           //   console.log('tab bar', e);
           // },
-          tabBarVisible: route.state && route.state.index === 0,
+          tabBarVisible: getFocusedRouteNameFromRoute(route) === 'Usim',
           tabBarLabel: i18n.t('usim'),
           tabBarIcon: ({focused}) => (
             <AppIcon
@@ -279,7 +280,7 @@ function tabNavigator({loggedIn, iccid}) {
         name="MyPageStack"
         component={loggedIn ? myPageStack : AuthStack}
         options={({route}) => ({
-          tabBarVisible: route.state && route.state.index === 0,
+          tabBarVisible: getFocusedRouteNameFromRoute(route) === 'MyPage',
           tabBarLabel: i18n.t('mypage'),
           tabBarIcon: ({focused}) => (
             <AppIcon

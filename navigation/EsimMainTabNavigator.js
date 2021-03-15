@@ -1,8 +1,9 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 
 import {appStyles} from '../constants/Styles';
 import AppIcon from '../components/AppIcon';
@@ -33,7 +34,6 @@ import CodePushScreen from '../screens/CodePushScreen';
 import EsimScreen from '../screens/EsimScreen';
 import FaqScreen from '../screens/FaqScreen';
 import GuideScreen from '../screens/GuideScreen';
-import SubsDetailScreen from '../screens/SubsDetailScreen';
 import AuthStack from './AuthStackNavigator';
 
 const styles = StyleSheet.create({
@@ -158,7 +158,7 @@ function tabNavigator({loggedIn, iccid}) {
         name="HomeStack"
         component={homeStack}
         options={({route}) => ({
-          tabBarVisible: route.state && route.state.index == 0,
+          tabBarVisible: getFocusedRouteNameFromRoute(route) === 'Home',
           tabBarLabel: i18n.t('home'),
           animationEnabled: false,
           tabBarIcon: ({focused}) => (
@@ -173,7 +173,7 @@ function tabNavigator({loggedIn, iccid}) {
       <TabNavigator.Screen
         name="CartStack"
         component={iccid && loggedIn ? cartStack : AuthStack}
-        options={({route}) => ({
+        options={() => ({
           tabBarVisible: false,
           tabBarLabel: i18n.t('cart'),
           tabBarIcon: ({focused}) => (
@@ -189,7 +189,7 @@ function tabNavigator({loggedIn, iccid}) {
         name="EsimStack"
         component={iccid && loggedIn ? esimStack : AuthStack}
         options={({route}) => ({
-          tabBarVisible: route.state && route.state.index == 0,
+          tabBarVisible: getFocusedRouteNameFromRoute(route) === 'Esim',
           tabBarLabel: i18n.t('esim'),
           tabBarIcon: ({focused}) => (
             <AppIcon
@@ -204,7 +204,7 @@ function tabNavigator({loggedIn, iccid}) {
         name="MyPageStack"
         component={iccid && loggedIn ? myPageStack : AuthStack}
         options={({route}) => ({
-          tabBarVisible: route.state && route.state.index == 0,
+          tabBarVisible: getFocusedRouteNameFromRoute(route) === 'MyPage',
           tabBarLabel: i18n.t('mypage'),
           tabBarIcon: ({focused}) => (
             <AppIcon
