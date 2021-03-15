@@ -1,30 +1,32 @@
+import Analytics from 'appcenter-analytics';
 import React, {Component} from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
   BackHandler,
+  Image,
   SafeAreaView,
   ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import * as cartActions from '../redux/modules/cart';
-import * as orderActions from '../redux/modules/order';
-import * as accountActions from '../redux/modules/account';
-import * as notiActions from '../redux/modules/noti';
-
-import utils from '../utils/utils';
-import AppButton from '../components/AppButton';
-import {appStyles} from '../constants/Styles';
-import PaymentItemInfo from '../components/PaymentItemInfo';
-import AppBackButton from '../components/AppBackButton';
-import i18n from '../utils/i18n';
 import _ from 'underscore';
-
+import AppButton from '../components/AppButton';
+import PaymentItemInfo from '../components/PaymentItemInfo';
 import {colors} from '../constants/Colors';
-import Analytics from 'appcenter-analytics';
+import {appStyles} from '../constants/Styles';
+import * as accountActions from '../redux/modules/account';
+import * as cartActions from '../redux/modules/cart';
+import * as notiActions from '../redux/modules/noti';
+import * as orderActions from '../redux/modules/order';
+import i18n from '../utils/i18n';
+import utils from '../submodules/rokebi-utils/utils';
+import Env from '../environment';
+
+const {esimApp} = Env.get();
+
+const imgCheck = require('../assets/images/main/imgCheck.png');
 
 const styles = StyleSheet.create({
   container: {
@@ -92,8 +94,6 @@ class PaymentResultScreen extends Component {
     });
 
     this.state = {
-      result: {},
-      orderResult: {},
       purchaseItems: [],
       pymReq: [],
       pymPrice: undefined,
@@ -101,7 +101,7 @@ class PaymentResultScreen extends Component {
       isRecharge: undefined,
     };
 
-    this._init = this._init.bind(this);
+    this.init = this.init.bind(this);
     this.moveScreen = this.moveScreen.bind(this);
     this.backKeyHandler = this.backKeyHandler.bind(this);
   }
@@ -113,13 +113,15 @@ class PaymentResultScreen extends Component {
     const {result} = params && params.orderResult;
     const mode = params && params.mode;
 
-    const isSuccess = _.isEmpty(success) ? result == 0 : success && result == 0;
+    const isSuccess = _.isEmpty(success)
+      ? result === 0
+      : success && result === 0;
 
     Analytics.trackEvent('Payment', {
-      payment: mode + ' Payment' + (isSuccess ? ' Success' : ' Fail'),
+      payment: `${mode} Payment${isSuccess ? ' Success' : ' Fail'}`,
     });
 
-    this._init();
+    this.init();
     this.props.action.noti.getNotiList(this.props.auth.user);
     this.backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
@@ -127,35 +129,34 @@ class PaymentResultScreen extends Component {
     );
   }
 
-  backKeyHandler() {
+  backKeyHandler = () => {
     console.log('Disabled back key');
     return true;
-  }
+  };
 
   moveScreen(key) {
     this.backHandler.remove();
 
-    if (key == 'MyPage') {
+    if (key === 'MyPage') {
       this.props.navigation.reset({routes: [{name: 'MyPageStack'}]});
     } else {
       this.props.navigation.reset({routes: [{name: 'HomeStack'}]});
     }
   }
 
-  _init() {
+  init() {
     const {pymReq, purchaseItems, pymPrice, deduct} = this.props.cart;
-    const {params, name} = this.props.route;
+    const {name} = this.props.route;
 
     this.setState({
-      result: params && params.pymResult,
-      orderResult: params && params.orderResult,
       purchaseItems,
       pymReq,
       pymPrice,
       deduct,
       isRecharge:
-        this.props.cart.purchaseItems.findIndex(item => item.type == 'rch') >=
-        0,
+        this.props.cart.purchaseItems.findIndex(
+          (item) => item.type === 'rch',
+        ) >= 0,
       screen: name,
     });
 
@@ -170,20 +171,22 @@ class PaymentResultScreen extends Component {
   render() {
     const {params} = this.props.route;
     const {
-        pymReq,
-        purchaseItems,
-        pymPrice,
-        deduct,
-        isRecharge,
-        screen,
-      } = this.state,
-      {success} = params && params.pymResult,
-      {result} = params && params.orderResult;
+      pymReq,
+      purchaseItems,
+      pymPrice,
+      deduct,
+      isRecharge,
+      screen,
+    } = this.state;
+    const {success} = params && params.pymResult;
+    const {result} = params && params.orderResult;
 
     // [WARNING: 이해를 돕기 위한 것일 뿐, imp_success 또는 success 파라미터로 결제 성공 여부를 장담할 수 없습니다.]
     // 아임포트 서버로 결제내역 조회(GET /payments/${imp_uid})를 통해 그 응답(status)에 따라 결제 성공 여부를 판단하세요.
 
-    const isSuccess = _.isEmpty(success) ? result == 0 : success && result == 0;
+    const isSuccess = _.isEmpty(success)
+      ? result === 0
+      : success && result === 0;
 
     return (
       <SafeAreaView style={{flex: 1}}>
@@ -191,7 +194,7 @@ class PaymentResultScreen extends Component {
           <View style={styles.paymentResultView}>
             <Image
               style={styles.image}
-              source={require('../assets/images/main/imgCheck.png')}
+              source={imgCheck}
               resizeMode="contain"
             />
             <Text style={styles.paymentResultText}>
@@ -200,7 +203,7 @@ class PaymentResultScreen extends Component {
             </Text>
             <AppButton
               style={styles.btnOrderList}
-              //MyPage화면 이동 필요
+              // MyPage화면 이동 필요
               onPress={() => this.moveScreen('MyPage')}
               // title={i18n.t('cancel')}
               title={i18n.t('pym:toOrderList')}
@@ -212,21 +215,21 @@ class PaymentResultScreen extends Component {
               cart={purchaseItems}
               pymReq={pymReq}
               balance={this.props.account.balance}
-              mode={'result'}
+              mode="result"
               pymPrice={isSuccess ? pymPrice : 0}
               deduct={isSuccess ? deduct : 0}
               isRecharge={isRecharge}
               screen={screen}
             />
-            {screen == 'PaymentResult' && (
+            {screen === 'PaymentResult' && !esimApp && (
               <View style={styles.result}>
                 <Text style={appStyles.normal16Text}>
                   {i18n.t('cart:afterDeductBalance')}{' '}
                 </Text>
                 <Text style={appStyles.normal16Text}>
-                  {utils.numberToCommaString(this.props.account.balance) +
-                    ' ' +
-                    i18n.t('won')}
+                  {`${utils.numberToCommaString(
+                    this.props.account.balance,
+                  )} ${i18n.t('won')}`}
                 </Text>
               </View>
             )}
@@ -243,20 +246,17 @@ class PaymentResultScreen extends Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   account: state.account.toJS(),
   cart: state.cart.toJS(),
   auth: accountActions.auth(state.account),
   noti: state.noti.toJS(),
 });
 
-export default connect(
-  mapStateToProps,
-  dispatch => ({
-    action: {
-      cart: bindActionCreators(cartActions, dispatch),
-      order: bindActionCreators(orderActions, dispatch),
-      noti: bindActionCreators(notiActions, dispatch),
-    },
-  }),
-)(PaymentResultScreen);
+export default connect(mapStateToProps, (dispatch) => ({
+  action: {
+    cart: bindActionCreators(cartActions, dispatch),
+    order: bindActionCreators(orderActions, dispatch),
+    noti: bindActionCreators(notiActions, dispatch),
+  },
+}))(PaymentResultScreen);
