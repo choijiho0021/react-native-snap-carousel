@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, {Component} from 'react';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import _ from 'underscore';
 import LabelText from '../../../components/LabelText';
-import { colors } from '../../../constants/Colors';
-import { isDeviceSize } from '../../../constants/SliderEntry.style';
-import { appStyles } from '../../../constants/Styles';
+import {colors} from '../../../constants/Colors';
+import {isDeviceSize} from '../../../constants/SliderEntry.style';
+import {appStyles} from '../../../constants/Styles';
 import i18n from '../../../utils/i18n';
 import utils from '../../../utils/utils';
 
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     fontSize: isDeviceSize('small') ? 12 : 14,
     alignSelf: 'flex-start',
     color: colors.warmGrey,
-  }
+  },
 });
 
 class OrderItem extends Component {
@@ -31,7 +31,7 @@ class OrderItem extends Component {
 
   render() {
     const {item, onPress} = this.props;
-    let label = ''
+    let label = '';
     if (_.isEmpty(item.orderItems)) return <View />;
 
     label = item.orderItems[0].title;

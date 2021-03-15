@@ -1,18 +1,26 @@
 import Clipboard from '@react-native-community/clipboard';
 import Analytics from 'appcenter-analytics';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   FlatList,
-  Linking, Platform,
-  RefreshControl, StyleSheet,
+  Linking,
+  Platform,
+  RefreshControl,
+  StyleSheet,
   Text,
-  TouchableOpacity, View
+  Pressable,
+  View,
 } from 'react-native';
-import { check, openSettings, PERMISSIONS, RESULTS } from 'react-native-permissions';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import {
+  check,
+  openSettings,
+  PERMISSIONS,
+  RESULTS,
+} from 'react-native-permissions';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import { API } from '../../submodules/rokebi-utils';
+import {API} from '../../submodules/rokebi-utils';
 import AppActivityIndicator from '../../components/AppActivityIndicator';
 import AppAlert from '../../components/AppAlert';
 import AppButton from '../../components/AppButton';
@@ -20,9 +28,9 @@ import AppIcon from '../../components/AppIcon';
 import AppModal from '../../components/AppModal';
 import AppUserPic from '../../components/AppUserPic';
 import LabelTextTouchable from '../../components/LabelTextTouchable';
-import { colors } from '../../constants/Colors';
-import { Toast } from '../../constants/CustomTypes';
-import { appStyles } from '../../constants/Styles';
+import {colors} from '../../constants/Colors';
+import {Toast} from '../../constants/CustomTypes';
+import {appStyles} from '../../constants/Styles';
 import Env from '../../environment';
 import * as accountActions from '../../redux/modules/account';
 import * as orderActions from '../../redux/modules/order';
@@ -132,7 +140,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15,
   },
-  btnCopy: selected => ({
+  btnCopy: (selected) => ({
     backgroundColor: colors.white,
     width: 62,
     height: 40,
@@ -140,7 +148,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: selected ? colors.clearBlue : colors.whiteTwo,
   }),
-  btnCopyTitle: selected => ({
+  btnCopyTitle: (selected) => ({
     ...appStyles.normal14Text,
     color: selected ? colors.clearBlue : colors.black,
   }),
@@ -222,7 +230,7 @@ class MyPageScreen extends Component {
         />
       ),
     });
-    
+
     // Logout시에 mount가 새로 되는데 login 페이지로 안가기 위해서 isFocused 조건 추가
     if (!this.props.account.loggedIn && this.props.navigation.isFocused()) {
       this.props.navigation.navigate('Auth');
@@ -244,7 +252,7 @@ class MyPageScreen extends Component {
 
     // 구매내역 원래 조건 확인
     if (this.state.isFocused !== focus) {
-      this.setFocus(focus)
+      this.setFocus(focus);
       if (focus) {
         if (!this.props.account.loggedIn) {
           this.props.navigation.navigate('Auth');
@@ -277,7 +285,7 @@ class MyPageScreen extends Component {
       this.props.account.mobile,
       this.props.auth,
     );
-    this.props.action.order.getOrders(this.props.auth, 0).then(resp => {
+    this.props.action.order.getOrders(this.props.auth, 0).then((resp) => {
       if (resp) {
         this.setState({
           refreshing: false,
@@ -286,15 +294,15 @@ class MyPageScreen extends Component {
     });
   }
 
-  setFocus(focus){
-    this.setState({isFocused: focus})
+  setFocus(focus) {
+    this.setState({isFocused: focus});
   }
 
   getNextOrder() {
     this.props.action.order.getOrders(this.props.auth);
   }
 
-  onPressOrderDetail = orderId => () => {
+  onPressOrderDetail = (orderId) => () => {
     const {orders, ordersIdx} = this.props.order;
     this.props.navigation.navigate('PurchaseDetail', {
       detail: orders[ordersIdx.get(orderId)],
@@ -302,12 +310,12 @@ class MyPageScreen extends Component {
     });
   };
 
-  copyToClipboard = value => () => {
+  copyToClipboard = (value) => () => {
     Clipboard.setString(value);
     this.setState({copyString: value});
     this.props.action.toast.push(Toast.COPY_SUCCESS);
   };
-  
+
   // RokebiSIm에서 RokebiTalk 호출
   openRokebiTalk = async () => {
     const {iccid, pin} = this.props.account;
@@ -330,8 +338,11 @@ class MyPageScreen extends Component {
       isRokebiInstalled = await Linking.canOpenURL(
         `rokebitalk://rokebitalk.com?actCode=${pin}&iccidStr=${iccid}`,
       );
-      if(isRokebiInstalled) Linking.openURL( `rokebitalk://rokebitalk.com?actCode=${pin}&iccidStr=${iccid}`)
-        Linking.openURL(`http://naver.com`);
+      if (isRokebiInstalled)
+        Linking.openURL(
+          `rokebitalk://rokebitalk.com?actCode=${pin}&iccidStr=${iccid}`,
+        );
+      Linking.openURL(`http://naver.com`);
     }
   };
 
@@ -370,14 +381,14 @@ class MyPageScreen extends Component {
             onPress={this.copyToClipboard(pin)}
           />
         </View>
-        <TouchableOpacity
+        <Pressable
           style={styles.openRokebiTalk}
           onPress={() => this.openRokebiTalk}>
           <Text style={styles.openRokebiTalkText}>
             {i18n.t('mypage:openRokebiTalk')}
           </Text>
           <AppIcon name="imgDokebi2" style={{marginRight: 20}} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
     );
   };
@@ -425,7 +436,7 @@ class MyPageScreen extends Component {
     }
 
     if (this.state.hasPhotoPermission || checkNewPermission) {
-      if(ImagePicker) {
+      if (ImagePicker) {
         ImagePicker.openPicker({
           width: 76,
           height: 76,
@@ -438,11 +449,13 @@ class MyPageScreen extends Component {
           cropperChooseText: i18n.t('select'),
           cropperCancelText: i18n.t('cancel'),
         })
-          .then(image => {
+          .then((image) => {
             console.log('image', image);
-            return image && this.props.action.account.uploadAndChangePicture(image);
+            return (
+              image && this.props.action.account.uploadAndChangePicture(image)
+            );
           })
-          .catch(err => {
+          .catch((err) => {
             console.log('failed to upload', err);
           });
       }
@@ -478,7 +491,7 @@ class MyPageScreen extends Component {
             height: 76,
             marginBottom: 30,
           }}>
-          <TouchableOpacity
+          <Pressable
             style={{flex: 1, alignSelf: 'center'}}
             onPress={this.changePhoto}>
             <AppUserPic
@@ -491,7 +504,7 @@ class MyPageScreen extends Component {
               name="imgPeoplePlus"
               style={{bottom: 20, right: -29, alignSelf: 'center'}}
             />
-          </TouchableOpacity>
+          </Pressable>
           <View style={{flex: 3, justifyContent: 'center'}}>
             <Text style={styles.label}>{utils.toPhoneNumber(mobile)}</Text>
             <LabelTextTouchable
@@ -506,15 +519,15 @@ class MyPageScreen extends Component {
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'center'}}>
           {esimApp && (
-            <TouchableOpacity
+            <Pressable
               style={styles.btnIdCheck}
               onPress={() => this.showIdModal(true)}>
               <Text style={[appStyles.normal16Text, {textAlign: 'center'}]}>
                 {i18n.t('mypage:idCheckTitle')}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           )}
-          <TouchableOpacity
+          <Pressable
             style={styles.btnContactBoard}
             onPress={() =>
               this.props.navigation.navigate('ContactBoard', {index: 2})
@@ -522,7 +535,7 @@ class MyPageScreen extends Component {
             <Text style={[appStyles.normal16Text, {textAlign: 'center'}]}>
               {i18n.t('board:mylist')}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
         <View style={styles.divider} />
         <Text style={styles.subTitle}>{i18n.t('acc:purchaseHistory')}</Text>
@@ -620,7 +633,7 @@ class MyPageScreen extends Component {
           title={i18n.t('mypage:idCheckTitle')}
           titleStyle={styles.titleStyle}
           titleIcon="btnId"
-          body={()=>this.modalBody()}
+          body={() => this.modalBody()}
           onOkClose={() => {
             this.showIdModal(false);
           }}
@@ -631,7 +644,7 @@ class MyPageScreen extends Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   lastTab: state.cart.get('lastTab').toJS(),
   account: state.account.toJS(),
   order: state.order.toObject(),
@@ -646,13 +659,10 @@ const mapStateToProps = state => ({
     false,
 });
 
-export default connect(
-  mapStateToProps,
-  dispatch => ({
-    action: {
-      order: bindActionCreators(orderActions, dispatch),
-      account: bindActionCreators(accountActions, dispatch),
-      toast: bindActionCreators(toastActions, dispatch),
-    },
-  }),
-)(MyPageScreen);
+export default connect(mapStateToProps, (dispatch) => ({
+  action: {
+    order: bindActionCreators(orderActions, dispatch),
+    account: bindActionCreators(accountActions, dispatch),
+    toast: bindActionCreators(toastActions, dispatch),
+  },
+}))(MyPageScreen);
