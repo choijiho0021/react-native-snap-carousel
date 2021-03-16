@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {
   View,
-  Alert,
   Text,
   AppState,
   StyleSheet,
@@ -10,47 +9,62 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import * as syncActions from '../redux/modules/sync';
 import codePush from 'react-native-code-push';
+import * as syncActions from '../redux/modules/sync';
 import i18n from '../utils/i18n';
 import {appStyles} from '../constants/Styles';
 import {colors} from '../constants/Colors';
 import AppAlert from '../components/AppAlert';
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: colors.white,
+  },
+  text: {
+    ...appStyles.normal14Text,
+    textAlign: 'center',
+    marginBottom: 15,
+  },
+  indicator: {
+    marginBottom: 15,
+  },
+});
+
 class CodePushScreen extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      syncMessage: '',
+      progress: undefined,
+    };
+
+    this.mounted = false;
+  }
+
+  componentDidMount() {
+    this.mounted = true;
 
     this.props.navigation.setOptions({
       title: null,
     });
 
-    this.state = {
-      syncMessage: '',
-      syncStatus: undefined,
-      progress: undefined,
-    };
-
-    this._isMounted = false;
-  }
-
-  componentDidMount() {
-    this._isMounted = true;
-
     this.codePushSync();
-    AppState.addEventListener('change', state => {
-      state === 'active' && this.codePushSync();
+    AppState.addEventListener('change', (state) => {
+      if (state === 'active') this.codePushSync();
     });
   }
 
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
-
-  componentDidUpdate(prevProps) {
+  componentDidUpdate() {
     if (this.props.sync.isCompleted) {
       this.props.navigation.popToTop();
     }
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
   }
 
   codePushSync() {
@@ -64,9 +78,9 @@ class CodePushScreen extends Component {
       codePush.sync(
         {
           updateDialog: false,
-          installMode: codePush.InstallMode.IMMEDIATE, //업데이트 후 바로 재기동
+          installMode: codePush.InstallMode.IMMEDIATE, // 업데이트 후 바로 재기동
         },
-        syncStatus => {
+        (syncStatus) => {
           let syncMessage = '';
 
           switch (syncStatus) {
@@ -104,8 +118,8 @@ class CodePushScreen extends Component {
 
           this.props.action.sync.update({syncStatus});
 
-          if (this._isMounted && !this.props.sync.isCompleted) {
-            this.setState({syncMessage, syncStatus});
+          if (this.mounted && !this.props.sync.isCompleted) {
+            this.setState({syncMessage});
           }
 
           if (
@@ -120,13 +134,13 @@ class CodePushScreen extends Component {
               this.props.action.sync.complete();
             }, 1000);
 
-            if (this._isMounted) {
+            if (this.mounted) {
               this.setState({progress: undefined});
             }
           }
         },
-        progress => {
-          if (this._isMounted && !this.props.sync.isCompleted) {
+        (progress) => {
+          if (this.mounted && !this.props.sync.isCompleted) {
             this.setState({progress});
           }
         },
@@ -140,23 +154,20 @@ class CodePushScreen extends Component {
   }
 
   render() {
-    const {progress, syncStatus, syncMessage} = this.state;
+    const {progress, syncMessage} = this.state;
 
     return (
       <View style={[styles.container, this.props.style]}>
-        {
-          <ActivityIndicator
-            size="large"
-            color={colors.clearBlue}
-            style={styles.indicator}
-          />
-        }
+        <ActivityIndicator
+          size="large"
+          color={colors.clearBlue}
+          style={styles.indicator}
+        />
         {progress && (
           <Text style={styles.text}>
             {' '}
-            {parseInt(
-              (progress.receivedBytes / progress.totalBytes) * 100,
-            )}%{' '}
+            {parseInt((progress.receivedBytes / progress.totalBytes) * 100, 10)}
+            %{' '}
           </Text>
         )}
         <Text style={styles.text}> {syncMessage} </Text>
@@ -165,29 +176,11 @@ class CodePushScreen extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: colors.white,
-  },
-  text: {
-    ...appStyles.normal14Text,
-    textAlign: 'center',
-    marginBottom: 15,
-  },
-  indicator: {
-    marginBottom: 15,
-  },
-});
-
-const mapStateToProps = state => ({
-  sync: state.sync.toJS(),
-});
-
 export default connect(
-  mapStateToProps,
-  dispatch => ({
+  (state) => ({
+    sync: state.sync.toJS(),
+  }),
+  (dispatch) => ({
     action: {
       sync: bindActionCreators(syncActions, dispatch),
     },
