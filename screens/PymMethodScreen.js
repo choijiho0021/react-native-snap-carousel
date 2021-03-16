@@ -321,7 +321,11 @@ class PymMethodScreen extends Component {
       ),
     });
 
-    this.props.action.profile.getCustomerProfile(this.props.account);
+    if (!esimApp) {
+      // ESIM이 아닌 경우에만 주소 정보가 필요하다.
+      this.props.action.profile.getCustomerProfile(this.props.account);
+    }
+
     const {pymPrice, deduct} = this.props.cart;
     const {content} = this.props.profile;
     const mode = this.props.route.param && this.props.route.param.mode;
