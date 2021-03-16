@@ -86,13 +86,6 @@ class PaymentResultScreen extends Component {
   constructor(props) {
     super(props);
 
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <Text style={styles.title}>{i18n.t('his:paymentCompleted')}</Text>
-      ),
-    });
-
     this.state = {
       purchaseItems: [],
       pymReq: [],
@@ -107,6 +100,13 @@ class PaymentResultScreen extends Component {
   }
 
   componentDidMount() {
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <Text style={styles.title}>{i18n.t('his:paymentCompleted')}</Text>
+      ),
+    });
+
     const {params} = this.props.route;
 
     const {success} = (params && params.pymResult) || {};
