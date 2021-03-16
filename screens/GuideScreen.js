@@ -1,162 +1,22 @@
+/* eslint-disable global-require */
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, FlatList, Image} from 'react-native';
 import {connect} from 'react-redux';
+import _ from 'underscore';
+import Carousel, {Pagination} from 'react-native-snap-carousel';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import Analytics from 'appcenter-analytics';
+import {API} from '../submodules/rokebi-utils';
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
 import {colors} from '../constants/Colors';
 import AppIcon from '../components/AppIcon';
 import * as accountActions from '../redux/modules/account';
 import * as orderActions from '../redux/modules/order';
-import _ from 'underscore';
 import AppBackButton from '../components/AppBackButton';
 import AppFlatListItem from '../components/AppFlatListItem';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {sliderWidth} from '../constants/SliderEntry.style';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import Analytics from 'appcenter-analytics';
 import AppActivityIndicator from '../components/AppActivityIndicator';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
-
-const guideImages = {
-  step1: require('../assets/images/guide/step1/img.png'),
-  step2: require('../assets/images/guide/step2/img.png'),
-  step3: require('../assets/images/guide/step3/img.png'),
-  step4: require('../assets/images/guide/step4/img.png'),
-};
-
-class GuideScreen extends Component {
-  constructor(props) {
-    super(props);
-
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={i18n.t('guide:title')}
-        />
-      ),
-    });
-
-    this.state = {
-      querying: false,
-      data: [],
-      activeSlide: 0,
-      images: [{key: 'step1'}, {key: 'step2'}, {key: 'step3'}, {key: 'step4'}],
-    };
-
-    this._header = this._header.bind(this);
-    this._footer = this._footer.bind(this);
-  }
-
-  componentDidMount() {
-    Analytics.trackEvent('Page_View_Count', {page: 'Guide'});
-    this._refreshData();
-  }
-
-  _refreshData() {
-    this.setState({
-      querying: true,
-    });
-
-    API.Page.getPageByCategory('faq:tip')
-      .then(resp => {
-        if (resp.result == 0 && resp.objects.length > 0) {
-          this.setState({
-            data: resp.objects,
-          });
-        }
-      })
-      .catch(err => {
-        console.log('failed to get page', err);
-      })
-      .finally(_ => {
-        this.setState({
-          querying: false,
-        });
-      });
-  }
-
-  _renderGuide({item}) {
-    return (
-      <Image
-        style={styles.image}
-        source={guideImages[item.key]}
-        resizeMode="cover"
-      />
-    );
-  }
-
-  _header() {
-    const {images, activeSlide} = this.state;
-
-    return (
-      <View>
-        <Carousel
-          data={images}
-          renderItem={this._renderGuide}
-          onSnapToItem={index => this.setState({activeSlide: index})}
-          autoplay={false}
-          loop={true}
-          useScrollView={true}
-          lockScrollWhileSnapping={true}
-          sliderWidth={sliderWidth}
-          itemWidth={sliderWidth}
-        />
-
-        <Pagination
-          dotsLength={images.length}
-          activeDotIndex={activeSlide}
-          dotStyle={styles.dotStyle}
-          inactiveDotOpacity={0.4}
-          inactiveDotScale={1.0}
-          containerStyle={styles.pagination}
-        />
-
-        <View style={styles.tipBox}>
-          <AppIcon name="specialTip" />
-          <Text style={styles.tip}>{i18n.t('guide:tip')}</Text>
-        </View>
-      </View>
-    );
-  }
-
-  _footer() {
-    return (
-      <View style={styles.footer}>
-        <View style={styles.divider} />
-        <TouchableOpacity
-          style={styles.faqBox}
-          onPress={() => this.props.navigation.navigate('Faq')}>
-          <Text style={styles.faq}>{i18n.t('guide:detail')}</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  _renderItem({item}) {
-    return <AppFlatListItem key={item.key} item={item} />;
-  }
-
-  render() {
-    const {data, activeSlide} = this.state;
-
-    return (
-      <View style={styles.container}>
-        <FlatList
-          data={data}
-          renderItem={this._renderItem}
-          extraData={activeSlide}
-          ListHeaderComponent={this._header}
-          ListFooterComponent={this._footer}
-        />
-        <AppActivityIndicator
-          visible={this.props.pending || this.state.querying}
-        />
-      </View>
-    );
-  }
-}
 
 const styles = StyleSheet.create({
   pagination: {
@@ -230,7 +90,147 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = state => ({
+const guideImages = {
+  step1: require('../assets/images/guide/step1/img.png'),
+  step2: require('../assets/images/guide/step2/img.png'),
+  step3: require('../assets/images/guide/step3/img.png'),
+  step4: require('../assets/images/guide/step4/img.png'),
+};
+
+const renderGuide = ({item}) => {
+  return (
+    <Image
+      style={styles.image}
+      source={guideImages[item.key]}
+      resizeMode="cover"
+    />
+  );
+};
+
+const renderItem = ({item}) => {
+  return <AppFlatListItem key={item.key} item={item} />;
+};
+class GuideScreen extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      querying: false,
+      data: [],
+      activeSlide: 0,
+      images: [{key: 'step1'}, {key: 'step2'}, {key: 'step3'}, {key: 'step4'}],
+    };
+
+    this.header = this.header.bind(this);
+    this.footer = this.footer.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <AppBackButton
+          navigation={this.props.navigation}
+          title={i18n.t('guide:title')}
+        />
+      ),
+    });
+
+    Analytics.trackEvent('Page_View_Count', {page: 'Guide'});
+    this.refreshData();
+  }
+
+  refreshData() {
+    this.setState({
+      querying: true,
+    });
+
+    API.Page.getPageByCategory('faq:tip')
+      .then((resp) => {
+        if (resp.result === 0 && resp.objects.length > 0) {
+          this.setState({
+            data: resp.objects,
+          });
+        }
+      })
+      .catch((err) => {
+        console.log('failed to get page', err);
+      })
+      .finally(() => {
+        this.setState({
+          querying: false,
+        });
+      });
+  }
+
+  header() {
+    const {images, activeSlide} = this.state;
+
+    return (
+      <View>
+        <Carousel
+          data={images}
+          renderItem={renderGuide}
+          onSnapToItem={(index) => this.setState({activeSlide: index})}
+          autoplay={false}
+          loop
+          useScrollView
+          lockScrollWhileSnapping
+          sliderWidth={sliderWidth}
+          itemWidth={sliderWidth}
+        />
+
+        <Pagination
+          dotsLength={images.length}
+          activeDotIndex={activeSlide}
+          dotStyle={styles.dotStyle}
+          inactiveDotOpacity={0.4}
+          inactiveDotScale={1.0}
+          containerStyle={styles.pagination}
+        />
+
+        <View style={styles.tipBox}>
+          <AppIcon name="specialTip" />
+          <Text style={styles.tip}>{i18n.t('guide:tip')}</Text>
+        </View>
+      </View>
+    );
+  }
+
+  footer() {
+    return (
+      <View style={styles.footer}>
+        <View style={styles.divider} />
+        <TouchableOpacity
+          style={styles.faqBox}
+          onPress={() => this.props.navigation.navigate('Faq')}>
+          <Text style={styles.faq}>{i18n.t('guide:detail')}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  render() {
+    const {data, activeSlide} = this.state;
+
+    return (
+      <View style={styles.container}>
+        <FlatList
+          data={data}
+          renderItem={renderItem}
+          extraData={activeSlide}
+          ListHeaderComponent={this.header}
+          ListFooterComponent={this.footer}
+        />
+        <AppActivityIndicator
+          visible={this.props.pending || this.state.querying}
+        />
+      </View>
+    );
+  }
+}
+
+const mapStateToProps = (state) => ({
   account: state.account.toJS(),
   auth: accountActions.auth(state.account),
   pending:

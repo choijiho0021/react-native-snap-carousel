@@ -29,16 +29,6 @@ class BoardMsgRespScreen extends Component {
   constructor(props) {
     super(props);
 
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={i18n.t('board:title')}
-        />
-      ),
-    });
-
     this.state = {
       idx: undefined,
       uuid: undefined,
@@ -51,11 +41,21 @@ class BoardMsgRespScreen extends Component {
     const uuid = params && params.key;
     const status = params && params.status;
 
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <AppBackButton
+          navigation={this.props.navigation}
+          title={i18n.t('board:title')}
+        />
+      ),
+    });
+
     if (uuid) {
       // issue list를 아직 가져오지 않은 경우에는, 먼저 가져와서 처리한다.
-      this.props.action.board.getIssueList(false).then(_ => {
+      this.props.action.board.getIssueList(false).then((_) => {
         this.setState({
-          idx: this.props.board.list.findIndex(item => item.uuid == uuid),
+          idx: this.props.board.list.findIndex((item) => item.uuid == uuid),
           uuid,
           status,
         });
@@ -74,7 +74,7 @@ class BoardMsgRespScreen extends Component {
       <View style={styles.attachBox}>
         {images &&
           images
-            .filter(item => !_.isEmpty(item))
+            .filter((item) => !_.isEmpty(item))
             .map((url, idx) => (
               <Image
                 key={url + idx}
@@ -191,17 +191,14 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   board: state.board.toJS(),
   auth: accountActions.auth(state.account),
   pending: state.pender.pending[boardActions.GET_ISSUE_RESP] || false,
 });
 
-export default connect(
-  mapStateToProps,
-  dispatch => ({
-    action: {
-      board: bindActionCreators(boardActions, dispatch),
-    },
-  }),
-)(BoardMsgRespScreen);
+export default connect(mapStateToProps, (dispatch) => ({
+  action: {
+    board: bindActionCreators(boardActions, dispatch),
+  },
+}))(BoardMsgRespScreen);

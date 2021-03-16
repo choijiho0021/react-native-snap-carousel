@@ -22,6 +22,21 @@ class NewSimScreen extends Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      querying: false,
+      total: {cnt: 0, price: 0},
+      checked: new Map(),
+      simPrice: new Map(),
+      simQty: new Map(),
+    };
+
+    this.onChangeQty = this.onChangeQty.bind(this);
+    this.onPress = this.onPress.bind(this);
+    this.getTotal = this.getTotal.bind(this);
+    this.init = this.init.bind(this);
+  }
+
+  componentDidMount() {
     this.props.navigation.setOptions({
       title: null,
       headerLeft: () => (
@@ -32,33 +47,12 @@ class NewSimScreen extends Component {
       ),
     });
 
-    this.state = {
-      querying: false,
-      total: {cnt: 0, price: 0},
-      checked: new Map(),
-      simPrice: new Map(),
-      simQty: new Map(),
-    };
-
-    this._onChangeQty = this._onChangeQty.bind(this);
-    this._onPress = this._onPress.bind(this);
-    this._getTotal = this._getTotal.bind(this);
-    this._init = this._init.bind(this);
-  }
-
-  componentDidMount() {
     Analytics.trackEvent('Page_View_Count', {page: 'Purchase New Sim'});
-    this._init();
+    this.init();
   }
 
-  componentDidUpdate(prevProps) {
-    // if ( this.props.sim.simList != prevProps.sim.simList) {
-    //   this._init()
-    // }
-  }
   // key value array로 리턴해서 합쳐야 함 - array로 맵을 초기화 할 수 있음
-
-  _init() {
+  init() {
     const {simList} = this.props.sim;
     this.setState({
       checked: new Map(
@@ -95,12 +89,12 @@ class NewSimScreen extends Component {
     });
   }
 
-  _onChangeQty(key, qty) {
+  onChangeQty(key, qty) {
     const simQty = this.state.simQty.set(key, qty),
       checked = this.state.checked.set(key, qty > 0),
       simPrice = this.state.simPrice.set(
         key,
-        this.props.sim.simList.filter(item => item.key == key || false)[0]
+        this.props.sim.simList.filter((item) => item.key == key || false)[0]
           .price * qty,
       );
 
@@ -109,11 +103,11 @@ class NewSimScreen extends Component {
       checked,
       simQty,
       simPrice,
-      total: this._getTotal(checked, simQty),
+      total: this.getTotal(checked, simQty),
     });
   }
 
-  _onPress = mode => () => {
+  onPress = (mode) => () => {
     const {loggedIn, balance} = this.props.account;
     const {checked, simQty} = this.state;
 
@@ -121,8 +115,8 @@ class NewSimScreen extends Component {
       this.props.navigation.navigate('Auth');
     } else {
       const simList = this.props.sim.simList
-        .filter(item => checked.get(item.uuid) && simQty.get(item.uuid) > 0)
-        .map(item => ({
+        .filter((item) => checked.get(item.uuid) && simQty.get(item.uuid) > 0)
+        .map((item) => ({
           title: item.name,
           key: item.uuid,
           variationId: item.variationId,
@@ -144,13 +138,13 @@ class NewSimScreen extends Component {
   };
 
   _onChecked(key) {
-    const checked = this.state.checked.update(key, value => !value),
-      simQty = this.state.simQty.update(key, value => value || 1),
+    const checked = this.state.checked.update(key, (value) => !value),
+      simQty = this.state.simQty.update(key, (value) => value || 1),
       simPrice = this.state.simPrice.update(
         key,
-        value =>
+        (value) =>
           value ||
-          this.props.sim.simList.filter(item => item.key == key || false)[0]
+          this.props.sim.simList.filter((item) => item.key == key || false)[0]
             .price,
       );
 
@@ -158,7 +152,7 @@ class NewSimScreen extends Component {
       checked,
       simQty,
       simPrice,
-      total: this._getTotal(checked, simQty),
+      total: this.getTotal(checked, simQty),
     });
   }
 
@@ -167,7 +161,7 @@ class NewSimScreen extends Component {
 
     return (
       <SimCard
-        onChange={value => this._onChangeQty(item.key, value)}
+        onChange={(value) => this.onChangeQty(item.key, value)}
         checked={this.state.checked.get(item.key) || false}
         onChecked={() => this._onChecked(item.key)}
         qty={simQty.get(item.uuid)}
@@ -178,10 +172,10 @@ class NewSimScreen extends Component {
     );
   };
 
-  _getTotal(checked, simQty) {
+  getTotal(checked, simQty) {
     return this.props.sim.simList
-      .filter(item => checked.get(item.key) || false)
-      .map(item => ({
+      .filter((item) => checked.get(item.key) || false)
+      .map((item) => ({
         qty: simQty.get(item.key) || 0,
         checked: checked.get(item.key) || false,
         price: item.price,
@@ -200,7 +194,7 @@ class NewSimScreen extends Component {
       {simList} = this.props.sim,
       selected =
         simList.findIndex(
-          item => checked.get(item.key) && simQty.get(item.key) > 0,
+          (item) => checked.get(item.key) && simQty.get(item.key) > 0,
         ) >= 0;
 
     return (
@@ -227,7 +221,7 @@ class NewSimScreen extends Component {
           style={styles.btnBuy}
           title={i18n.t('cart:buy')}
           disabled={!selected}
-          onPress={this._onPress('purchase')}
+          onPress={this.onPress('purchase')}
         />
       </SafeAreaView>
     );
@@ -246,18 +240,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   sim: state.sim.toJS(),
   account: state.account.toJS(),
 });
 
-export default connect(
-  mapStateToProps,
-  dispatch => ({
-    action: {
-      sim: bindActionCreators(simActions, dispatch),
-      cart: bindActionCreators(cartActions, dispatch),
-      account: bindActionCreators(accountActions, dispatch),
-    },
-  }),
-)(NewSimScreen);
+export default connect(mapStateToProps, (dispatch) => ({
+  action: {
+    sim: bindActionCreators(simActions, dispatch),
+    cart: bindActionCreators(cartActions, dispatch),
+    account: bindActionCreators(accountActions, dispatch),
+  },
+}))(NewSimScreen);

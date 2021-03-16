@@ -73,16 +73,6 @@ class ContactScreen extends Component {
   constructor(props) {
     super(props);
 
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={i18n.t('contact:title')}
-        />
-      ),
-    });
-
     this.state = {
       data: [
         {
@@ -140,6 +130,16 @@ class ContactScreen extends Component {
   }
 
   componentDidMount() {
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <AppBackButton
+          navigation={this.props.navigation}
+          title={i18n.t('contact:title')}
+        />
+      ),
+    });
+
     Analytics.trackEvent('Page_View_Count', {page: 'Service Center'});
   }
 
