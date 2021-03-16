@@ -145,16 +145,6 @@ class RegisterMobileScreen extends Component {
   constructor(props) {
     super(props);
 
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={i18n.t('mobile:header')}
-        />
-      ),
-    });
-
     this.state = {
       loading: false,
       pin: undefined,
@@ -226,6 +216,16 @@ class RegisterMobileScreen extends Component {
   }
 
   componentDidMount() {
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <AppBackButton
+          navigation={this.props.navigation}
+          title={i18n.t('mobile:header')}
+        />
+      ),
+    });
+
     this.mounted = true;
   }
 
