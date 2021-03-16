@@ -266,29 +266,6 @@ class HomeScreen extends Component {
   constructor(props) {
     super(props);
 
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => <Text style={styles.title}>{i18n.t('appTitle')}</Text>,
-      headerRight: () => (
-        <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
-          <AppButton
-            key="cnter"
-            style={styles.btnCnter}
-            onPress={() => props.navigation.navigate('Contact')}
-            iconName="btnCnter"
-          />
-
-          {/* //BadgeAppButton을 사용했을 때 위치가 변동됨 수정이 필요함 */}
-          <BadgeAppButton
-            key="alarm"
-            style={styles.btnAlarm}
-            onPress={() => props.navigation.navigate('Noti', {mode: 'noti'})}
-            iconName="btnAlarm"
-          />
-        </View>
-      ),
-    });
-
     this.state = {
       darkMode: Appearance.getColorScheme(),
       activeSlide: 0,
@@ -311,6 +288,31 @@ class HomeScreen extends Component {
   }
 
   async componentDidMount() {
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => <Text style={styles.title}>{i18n.t('appTitle')}</Text>,
+      headerRight: () => (
+        <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+          <AppButton
+            key="cnter"
+            style={styles.btnCnter}
+            onPress={() => this.props.navigation.navigate('Contact')}
+            iconName="btnCnter"
+          />
+
+          {/* //BadgeAppButton을 사용했을 때 위치가 변동됨 수정이 필요함 */}
+          <BadgeAppButton
+            key="alarm"
+            style={styles.btnAlarm}
+            onPress={() =>
+              this.props.navigation.navigate('Noti', {mode: 'noti'})
+            }
+            iconName="btnAlarm"
+          />
+        </View>
+      ),
+    });
+
     Analytics.trackEvent('Page_View_Count', {page: 'Home'});
     // 로그인 여부와 관련 없이 항상 처리할 부분
     if (Platform.OS === 'ios') {
