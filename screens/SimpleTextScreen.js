@@ -1,146 +1,25 @@
 import React, {Component} from 'react';
 import {
-  StyleSheet,
-  View,
+  Platform,
   SafeAreaView,
   ScrollView,
+  StyleSheet,
   Text,
-  Platform,
+  View,
 } from 'react-native';
-
-import i18n from '../utils/i18n';
-import AppBackButton from '../components/AppBackButton';
-import _ from 'underscore';
+import WebView from 'react-native-webview';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import AppAlert from '../components/AppAlert';
+import AppBackButton from '../components/AppBackButton';
+import AppButton from '../components/AppButton';
 import {colors} from '../constants/Colors';
 import {appStyles, htmlWithCss} from '../constants/Styles';
-import AppButton from '../components/AppButton';
-import WebView from 'react-native-webview';
-import utils from '../utils/utils';
 import Env from '../environment';
+import {API} from '../submodules/rokebi-utils';
+import i18n from '../utils/i18n';
+import utils from '../utils/utils';
+
 const {baseUrl} = Env.get();
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
-
-class SimpleTextScreen extends Component {
-  constructor(props) {
-    super(props);
-
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={this.props.route.params && this.props.route.params.title}
-        />
-      ),
-    });
-
-    this.state = {
-      querying: false,
-      body: '',
-      markAsRead: false,
-      disable: true,
-      mode: undefined,
-    };
-
-    this._isMounted = false;
-    this.controller = new AbortController();
-  }
-
-  componentDidMount() {
-    const {params} = this.props.route;
-    let key, body, bodyTitle, mode;
-
-    if (params) {
-      key = params.key;
-      body = params.text;
-      bodyTitle = params.bodyTitle;
-      mode = params.mode;
-    }
-
-    this.setState({mode});
-
-    this._isMounted = true;
-
-    if (body) {
-      this.setState({body, bodyTitle});
-    } else if (key) {
-      this.setState({
-        querying: true,
-      });
-
-      API.Page.getPageByCategory(key, this.controller)
-        .then(resp => {
-          if (resp.result == 0 && resp.objects.length > 0 && this._isMounted) {
-            this.setState({
-              body: resp.objects[0].body,
-              disable: false,
-            });
-          } else throw Error('Failed to get contract');
-        })
-        .catch(err => {
-          console.log('failed', err);
-          AppAlert.error(i18n.t('set:fail'));
-        })
-        .finally(_ => {
-          if (this._isMounted) {
-            this.setState({
-              querying: false,
-            });
-          }
-        });
-    } else {
-      this.setState({body: i18n.t('err:body')});
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.route.params != prevProps.route.params) {
-      this.setState(this.props.route.params);
-    }
-  }
-
-  componentWillUnmount() {
-    this._isMounted = false;
-    this.controller.abort();
-  }
-
-  render() {
-    const {querying, body, bodyTitle, mode = 'html'} = this.state;
-
-    return (
-      <SafeAreaView style={styles.screen}>
-        <AppActivityIndicator visible={querying} />
-        {mode == 'text' ? (
-          <ScrollView style={styles.scrollContainer}>
-            <View style={styles.container}>
-              {bodyTitle && (
-                <Text style={styles.bodyTitle}>{bodyTitle + '\n\n'}</Text>
-              )}
-              <Text style={styles.text}>{utils.htmlToString(body)}</Text>
-            </View>
-          </ScrollView>
-        ) : mode == 'uri' ? (
-          <WebView source={{uri: body}} style={styles.container} />
-        ) : (
-          <WebView
-            style={styles.container}
-            originWhitelist={['*']}
-            source={{html: htmlWithCss(bodyTitle, body), baseUrl}}
-          />
-        )}
-        {Platform.OS === 'ios' && (
-          <AppButton
-            style={styles.button}
-            title={i18n.t('ok')}
-            onPress={() => this.props.navigation.goBack()}
-          />
-        )}
-      </SafeAreaView>
-    );
-  }
-}
 
 const styles = StyleSheet.create({
   screen: {
@@ -164,19 +43,6 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     color: colors.black,
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 20,
-    backgroundColor: colors.white,
-    width: '100%',
-    height: 80,
-  },
-  titleStyle: {
-    ...appStyles.normal18Text,
-    textAlign: 'center',
-    color: colors.white,
-  },
   buttonStyle: {
     width: '48%',
     height: 40,
@@ -191,5 +57,140 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
 });
+class SimpleTextScreen extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      querying: false,
+      body: '',
+      mode: undefined,
+      isMounted: false,
+    };
+
+    this.controller = new AbortController();
+  }
+
+  componentDidMount() {
+    const {params} = this.props.route;
+    let key;
+    let body;
+    let bodyTitle;
+    let mode;
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <AppBackButton
+          navigation={this.props.navigation}
+          title={params && params.title}
+        />
+      ),
+    });
+
+    if (params) {
+      key = params.key;
+      body = params.text;
+      bodyTitle = params.bodyTitle;
+      mode = params.mode;
+    }
+
+    this.setState({mode});
+    this.stateSet({isMounted: true});
+
+    if (body) {
+      this.setState({body, bodyTitle});
+    } else if (key) {
+      this.setState({
+        querying: true,
+      });
+
+      API.Page.getPageByCategory(key, this.controller)
+        .then((resp) => {
+          if (
+            resp.result === 0 &&
+            resp.objects.length > 0 &&
+            this.state.isMounted
+          ) {
+            this.setState({
+              body: resp.objects[0].body,
+            });
+          } else throw Error('Failed to get contract');
+        })
+        .catch((err) => {
+          console.log('failed', err);
+          AppAlert.error(i18n.t('set:fail'));
+        })
+        .finally(() => {
+          if (this.state.isMounted) {
+            this.setState({
+              querying: false,
+            });
+          }
+        });
+    } else {
+      this.setState({body: i18n.t('err:body')});
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.route.params !== prevProps.route.params) {
+      this.stateSet(this.props.route.params);
+    }
+  }
+
+  componentWillUnmount() {
+    this.stateSet({isMounted: false});
+    this.controller.abort();
+  }
+
+  defineSource = (mode) => {
+    const {body, bodyTitle} = this.state;
+    if (mode === 'text')
+      return (
+        <ScrollView style={styles.scrollContainer}>
+          <View style={styles.container}>
+            {bodyTitle && (
+              <Text style={styles.bodyTitle}>{`${bodyTitle}\n\n`}</Text>
+            )}
+            <Text style={styles.text}>{utils.htmlToString(body)}</Text>
+          </View>
+        </ScrollView>
+      );
+    if (mode === 'uri')
+      return <WebView source={{uri: body}} style={styles.container} />;
+    return (
+      <WebView
+        style={styles.container}
+        originWhitelist={['*']}
+        source={{html: htmlWithCss(bodyTitle, body), baseUrl}}
+      />
+    );
+  };
+
+  stateSet(val) {
+    this.setState({
+      ...val,
+    });
+  }
+
+  render() {
+    const {querying, mode = 'html'} = this.state;
+
+    return (
+      <SafeAreaView style={styles.screen}>
+        <AppActivityIndicator visible={querying} />
+        {this.defineSource(mode)}
+        {Platform.OS === 'ios' && (
+          <AppButton
+            style={styles.button}
+            title={i18n.t('ok')}
+            onPress={() => this.props.navigation.goBack()}
+          />
+        )}
+      </SafeAreaView>
+    );
+  }
+}
 
 export default SimpleTextScreen;
