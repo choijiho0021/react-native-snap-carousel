@@ -100,6 +100,13 @@ const styles = StyleSheet.create({
     height: 10,
     backgroundColor: colors.whiteTwo,
   },
+  esimInfo: {
+    ...appStyles.normal14Text,
+    color: colors.clearBlue,
+    marginHorizontal: 20,
+    marginTop: 20,
+    lineHeight: 20,
+  },
 });
 
 class PaymentItemInfo extends PureComponent {
@@ -206,7 +213,9 @@ class PaymentItemInfo extends PureComponent {
             {`${utils.numberToCommaString(pymPrice)} ${i18n.t('won')}`}
           </Text>
         </View>
-
+        {mode !== 'result' && (
+          <Text style={styles.esimInfo}>{i18n.t('pym:esimInfo')}</Text>
+        )}
         <View
           style={[styles.divider, screen === 'PaymentResult' && {marginTop: 0}]}
         />

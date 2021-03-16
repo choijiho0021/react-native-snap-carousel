@@ -5,6 +5,9 @@ import {colors} from '../constants/Colors';
 import i18n from '../utils/i18n';
 import LabelText from './LabelText';
 import {appStyles} from '../constants/Styles';
+import Env from '../environment';
+
+const {esimApp} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -77,13 +80,15 @@ class ChargeSummary extends PureComponent {
           />
         )}
 
-        <LabelText
-          label={i18n.t('cart:deductBalance')}
-          style={styles.summary}
-          format="price"
-          value={balance}
-          deduct={deduct}
-        />
+        {!esimApp && (
+          <LabelText
+            label={i18n.t('cart:deductBalance')}
+            style={styles.summary}
+            format="price"
+            value={balance}
+            deduct={deduct}
+          />
+        )}
 
         <LabelText
           label={i18n.t('cart:totalCost')}
