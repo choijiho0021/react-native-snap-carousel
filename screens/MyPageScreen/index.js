@@ -383,10 +383,16 @@ class MyPageScreen extends Component {
         </View>
         <Pressable
           style={styles.openRokebiTalk}
-          onPress={() => this.openRokebiTalk}>
-          <Text style={styles.openRokebiTalkText}>
-            {i18n.t('mypage:openRokebiTalk')}
-          </Text>
+          // onPress={() => this.openRokebiTalk} // 로깨비톡으로 이동 X
+        >
+          <View>
+            <Text style={[styles.openRokebiTalkText, {color: colors.warmGrey}]}>
+              {i18n.t('mypage:openRokebiTalk')}
+            </Text>
+            <Text style={[styles.openRokebiTalkText, {fontWeight: 'bold'}]}>
+              {i18n.t('mypage:preparing')}
+            </Text>
+          </View>
           <AppIcon name="imgDokebi2" style={{marginRight: 20}} />
         </Pressable>
       </View>
@@ -515,6 +521,9 @@ class MyPageScreen extends Component {
               onPress={() => this.showEmailModal(true)}
               arrow="iconArrowRight"
             />
+            <Text style={[styles.label, {color: colors.clearBlue}]}>
+              {i18n.t('mypage:mailInfo')}
+            </Text>
           </View>
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'center'}}>
