@@ -91,16 +91,6 @@ class CartScreen extends Component {
   constructor(props) {
     super(props);
 
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={i18n.t('cart')}
-        />
-      ),
-    });
-
     this.state = {
       section: this.section([], []),
       checked: new Map(),
@@ -121,6 +111,16 @@ class CartScreen extends Component {
   }
 
   componentDidMount() {
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <AppBackButton
+          navigation={this.props.navigation}
+          title={i18n.t('cart')}
+        />
+      ),
+    });
+
     this.init();
   }
 
@@ -133,13 +133,15 @@ class CartScreen extends Component {
   }
 
   onChecked(key) {
-    const checked = this.state.checked.update(key, (value) => !value);
-    const {qty} = this.state;
-    const total = this.calculate(checked, qty);
+    this.setState((state) => {
+      const checked = state.checked.update(key, (value) => !value);
+      const {qty} = state;
+      const total = this.calculate(checked, qty);
 
-    this.setState({
-      total,
-      checked,
+      return {
+        total,
+        checked,
+      };
     });
   }
 
@@ -186,14 +188,15 @@ class CartScreen extends Component {
   }
 
   onChangeQty(key, orderItemId, cnt) {
-    const qty = this.state.qty.set(key, cnt);
-    const checked = this.state.checked.set(key, true);
-    const total = this.calculate(checked, qty);
-
-    this.setState({
-      qty,
-      checked,
-      total,
+    this.setState((state) => {
+      const qty = state.qty.set(key, cnt);
+      const checked = state.checked.set(key, true);
+      const total = this.calculate(checked, qty);
+      return {
+        qty,
+        checked,
+        total,
+      };
     });
 
     if (orderItemId) {
@@ -308,19 +311,21 @@ class CartScreen extends Component {
   }
 
   removeItem(key, orderItemId) {
-    const section = this.state.section.map((item) => ({
-      title: item.title,
-      data: item.data.filter((i) => i.orderItemId !== orderItemId),
-    }));
-    const checked = this.state.checked.remove(key);
-    const qty = this.state.qty.remove(key);
-    const total = this.calculate(checked, qty, section);
+    this.setState((state) => {
+      const section = state.section.map((item) => ({
+        title: item.title,
+        data: item.data.filter((i) => i.orderItemId !== orderItemId),
+      }));
+      const checked = state.checked.remove(key);
+      const qty = state.qty.remove(key);
+      const total = this.calculate(checked, qty, section);
 
-    this.setState({
-      total,
-      checked,
-      qty,
-      section,
+      return {
+        total,
+        checked,
+        qty,
+        section,
+      };
     });
 
     if (orderItemId) {
