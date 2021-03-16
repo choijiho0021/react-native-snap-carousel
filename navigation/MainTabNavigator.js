@@ -214,7 +214,8 @@ function tabNavigator({loggedIn, iccid}) {
         name="HomeStack"
         component={homeStack}
         options={({route}) => ({
-          tabBarVisible: getFocusedRouteNameFromRoute(route) === 'Main',
+          tabBarVisible:
+            (getFocusedRouteNameFromRoute(route) || 'Main') === 'Main',
           tabBarLabel: i18n.t('home'),
           animationEnabled: false,
           tabBarIcon: ({focused}) => (
@@ -230,7 +231,8 @@ function tabNavigator({loggedIn, iccid}) {
         name="StoreStack"
         component={storeStack}
         options={({route}) => ({
-          tabBarVisible: getFocusedRouteNameFromRoute(route) === 'Store',
+          tabBarVisible:
+            (getFocusedRouteNameFromRoute(route) || 'Store') === 'Store',
           tabBarLabel: i18n.t('store'),
           tabBarIcon: ({focused}) => (
             <AppIcon
@@ -265,7 +267,8 @@ function tabNavigator({loggedIn, iccid}) {
           // tabBarOnPress: e => {
           //   console.log('tab bar', e);
           // },
-          tabBarVisible: getFocusedRouteNameFromRoute(route) === 'Usim',
+          tabBarVisible:
+            (getFocusedRouteNameFromRoute(route) || 'Usim') === 'Usim',
           tabBarLabel: i18n.t('usim'),
           tabBarIcon: ({focused}) => (
             <AppIcon
@@ -280,7 +283,8 @@ function tabNavigator({loggedIn, iccid}) {
         name="MyPageStack"
         component={loggedIn ? myPageStack : AuthStack}
         options={({route}) => ({
-          tabBarVisible: getFocusedRouteNameFromRoute(route) === 'MyPage',
+          tabBarVisible:
+            (getFocusedRouteNameFromRoute(route) === 'MyPage') === 'MyPage',
           tabBarLabel: i18n.t('mypage'),
           tabBarIcon: ({focused}) => (
             <AppIcon
