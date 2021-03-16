@@ -42,22 +42,6 @@ class PaymentScreen extends Component {
   constructor(props) {
     super(props);
 
-    const {params = {}} = this.props.route;
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={
-            params.isPaid ? i18n.t('his:paymentCompleted') : i18n.t('payment')
-          }
-          isPaid={params.isPaid}
-          pymResult={params.pymResult}
-          orderResult={params.orderResult}
-        />
-      ),
-    });
-
     this.state = {
       isPaid: true,
     };
@@ -68,6 +52,24 @@ class PaymentScreen extends Component {
 
   componentDidMount() {
     const params = this.props.route.params && this.props.route.params.params;
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <AppBackButton
+          navigation={this.props.navigation}
+          title={
+            (params || {}).isPaid
+              ? i18n.t('his:paymentCompleted')
+              : i18n.t('payment')
+          }
+          isPaid={params.isPaid}
+          pymResult={params.pymResult}
+          orderResult={params.orderResult}
+        />
+      ),
+    });
+
     if (this.state.isPaid) {
       this.setState({
         isPaid: false,
