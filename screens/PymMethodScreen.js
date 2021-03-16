@@ -30,6 +30,7 @@ import PaymentResult from '../submodules/rokebi-utils/models/paymentResult';
 
 const {esimApp} = Env.get();
 const {deliveryText} = API.Order;
+const loadingImg = require('../assets/images/loading_1.mp4');
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
@@ -853,7 +854,7 @@ class PymMethodScreen extends Component {
           // 로깨비캐시 결제시 필요한 로딩처리
           this.state.loading && (
             <Video
-              source={require('../assets/images/loading_1.mp4')}
+              source={loadingImg}
               resizeMode="stretch"
               repeat
               style={styles.backgroundVideo}
