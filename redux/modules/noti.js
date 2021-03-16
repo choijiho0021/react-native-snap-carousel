@@ -4,7 +4,7 @@ import _ from 'underscore';
 import {pender} from 'redux-pender';
 import moment from 'moment';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
-import firebase from '@react-native-firebase/app';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 
 export const GET_NOTI_LIST = 'rokebi/noti/GET_NOTI_LIST';
 const READ_NOTI = 'rokebi/noti/READ_NOTI';
@@ -33,8 +33,9 @@ export const NOTI_TYPE_ACCOUNT = 'account';
 export const NOTI_TYPE_USIM = 'usim';
 export const NOTI_TYPE_NOTI = 'noti';
 
-const setAppBadge = (notiCount) => {
-  firebase.notifications().setBadge(notiCount);
+const setAppBadge = async (notiCount) => {
+  PushNotificationIOS.setApplicationIconBadgeNumber(notiCount);
+  // messaging().setBadge(notiCount);
 };
 
 export const notiReadAndGet = (uuid, mobile, auth) => {
@@ -79,7 +80,7 @@ export default handleActions(
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
         if (result === 0 && objects.length > 0) {
-          //appBadge 업데이트
+          // appBadge 업데이트
           const badgeCnt = objects.filter((elm) => elm.isRead === 'F').length;
           setAppBadge(badgeCnt);
 
@@ -121,7 +122,7 @@ export default handleActions(
           );
 
         if (state && result === 0) {
-          //appBadge 업데이트
+          // appBadge 업데이트
           const badgeCnt = notiList.filter((elm) => elm.isRead === 'F').length;
           setAppBadge(badgeCnt);
           return state.set('notiList', notiList);
