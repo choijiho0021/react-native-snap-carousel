@@ -402,6 +402,8 @@ const en = {
   'esim:manualInput:bodyPart3': '',
   'esim:manualInput:bodyPart4': 'eSIM info insert manually',
 
+  'pym:esimInfo':
+    '* Please note that eSIM products cannot be canceled as the product Info is sent to the customer via email and app at the same time as payment.',
   'pym:title': 'Payment Info',
   'pym:delivery': 'Shipping Info',
   'pym:deliveryMemo': 'Shipping Memo',
@@ -929,6 +931,8 @@ const ko = {
   'esim:manualInput:bodyPart3': '세부사항 직접 입력',
   'esim:manualInput:bodyPart4': '을 선택하여 다음 내용을 붙여넣기 해 주세요',
 
+  'pym:esimInfo':
+    '* eSIM 상품은 결제와 동시에 상품이 이메일과 앱으로 고객님께 전송되는 관계로 결제 취소가 불가하오니, 유의하시기 바랍니다.',
   'pym:title': '결제 정보',
   'pym:delivery': '배송 정보',
   'pym:deliveryMemo': '배송 메모',
