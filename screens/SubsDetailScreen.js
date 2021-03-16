@@ -7,7 +7,6 @@ import * as accountActions from '../redux/modules/account';
 import * as orderActions from '../redux/modules/order';
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
-import _ from 'underscore';
 import utils from '../utils/utils';
 import AppBackButton from '../components/AppBackButton';
 import AppActivityIndicator from '../components/AppActivityIndicator';
@@ -19,6 +18,46 @@ import subsApi from '../submodules/rokebi-utils/api/subscriptionApi';
 
 const activateBtn = 'activateBtn';
 const deactivateBtn = 'deactivateBtn';
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  notice: {
+    ...appStyles.normal14Text,
+    marginTop: 40,
+    marginLeft: 20,
+    color: colors.warmGrey,
+  },
+  title: {
+    ...appStyles.normal20Text,
+    marginTop: 10,
+    marginHorizontal: 20,
+  },
+  divider: {
+    marginTop: 40,
+    marginBottom: 40,
+    height: 10,
+    backgroundColor: colors.whiteTwo,
+  },
+  value: {
+    ...appStyles.normal16Text,
+    color: colors.black,
+  },
+  label: {
+    ...appStyles.normal14Text,
+    color: colors.warmGrey,
+  },
+  info: {
+    height: 36,
+    marginHorizontal: 20,
+  },
+  confirm: {
+    height: 52,
+    flex: 1,
+    backgroundColor: colors.clearBlue,
+  },
+});
 
 class SubsDetailScreen extends Component {
   statusMap = {
@@ -40,6 +79,19 @@ class SubsDetailScreen extends Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      showModal: false,
+      modal: undefined,
+    };
+
+    this.onSubmit = this.onSubmit.bind(this);
+    this.onSubmitModal = this.onSubmitModal.bind(this);
+    this.info = this.info.bind(this);
+    this.callProd = this.callProd.bind(this);
+    this.dataProd = this.dataProd.bind(this);
+  }
+
+  componentDidMount() {
     this.props.navigation.setOptions({
       title: null,
       headerLeft: () => (
@@ -50,38 +102,14 @@ class SubsDetailScreen extends Component {
       ),
     });
 
-    this.state = {
-      activatable: false,
-      showModal: false,
-      modal: undefined,
-    };
+    const detail = this.props.route.params && this.props.route.params.detail;
+    const prodList = this.props.product.get('prodList');
+    const {price} = prodList.get(detail.prodId) || {};
 
-    this._onSubmit = this._onSubmit.bind(this);
-    this._onSubmitModal = this._onSubmitModal.bind(this);
-    this._info = this._info.bind(this);
-    this._callProd = this._callProd.bind(this);
-    this._dataProd = this._dataProd.bind(this);
+    this.setState({price, ...detail});
   }
 
-  componentDidMount() {
-    const detail = this.props.route.params && this.props.route.params.detail,
-      {country, uuid} = detail,
-      prodList = this.props.product.get('prodList'),
-      {price} = prodList.get(detail.prodId) || {},
-      {subs} = this.props.order;
-
-    console.log('prodList', detail, prodList, price);
-    let activatable = false;
-
-    subs.map(elm => {
-      if (elm.country == country && elm.statusCd == subsApi.STATUS_ACTIVE) {
-        activatable = true;
-      }
-    });
-    this.setState({activatable, price, ...detail});
-  }
-
-  _onSubmit(targetStatus) {
+  onSubmit(targetStatus) {
     const {auth} = this.props;
     const {uuid} = this.state;
 
@@ -95,22 +123,15 @@ class SubsDetailScreen extends Component {
     this.props.navigation.goBack();
   }
 
-  _showModal(value, modal) {
-    this.setState({
-      showModal: value,
-      modal,
-    });
-  }
-
-  _onSubmitModal(modal) {
+  onSubmitModal(modal) {
     // 사용등록 / 로깨비캐시 전환
     const {
-        account: {iccid},
-        auth,
-      } = this.props,
-      {uuid} = this.state;
+      account: {iccid},
+      auth,
+    } = this.props;
+    const {uuid} = this.state;
 
-    if (modal == activateBtn) {
+    if (modal === activateBtn) {
       this.props.action.order.updateSubsStatus(
         uuid,
         subsApi.STATUS_ACTIVE,
@@ -119,9 +140,9 @@ class SubsDetailScreen extends Component {
     } else {
       this.props.action.order
         .updateSubsStatus(uuid, subsApi.STATUS_USED, auth)
-        .then(resp => {
+        .then((resp) => {
           // 업데이트 후 정렬된 usage list 가져오기
-          if (resp.result == 0) {
+          if (resp.result === 0) {
             this.props.action.account.getAccount(iccid, auth);
           }
         });
@@ -131,7 +152,14 @@ class SubsDetailScreen extends Component {
     this.props.navigation.goBack();
   }
 
-  _info() {
+  showModal(value, modal) {
+    this.setState({
+      showModal: value,
+      modal,
+    });
+  }
+
+  info() {
     const {
       prodName,
       activationDate,
@@ -178,7 +206,7 @@ class SubsDetailScreen extends Component {
     );
   }
 
-  _callProd() {
+  callProd() {
     return (
       <View style={{flexDirection: 'row'}}>
         <AppButton
@@ -191,7 +219,7 @@ class SubsDetailScreen extends Component {
     );
   }
 
-  _dataProd() {
+  dataProd() {
     const {statusCd} = this.state;
     const [buttonTitle, targetStatus, disable] = this.statusMap.hasOwnProperty(
       statusCd,
@@ -201,22 +229,28 @@ class SubsDetailScreen extends Component {
 
     return (
       <View style={{flexDirection: 'row'}}>
-        {statusCd == subsApi.STATUS_RESERVED && (
+        {statusCd === subsApi.STATUS_RESERVED && (
           <AppButton
-            style={[styles.confirm, {backgroundColor: colors.white}]}
+            style={[
+              styles.confirm,
+              {
+                backgroundColor: colors.white,
+                borderWidth: 1,
+                borderColor: colors.lightGrey,
+                flex: 1,
+              },
+            ]}
             title={i18n.t('reg:cancelReservation')}
             titleStyle={[appStyles.confirmText, {color: colors.black}]}
-            style={{borderWidth: 1, borderColor: colors.lightGrey, flex: 1}}
-            onPress={() => this._onSubmit(subsApi.STATUS_INACTIVE)}
+            onPress={() => this.onSubmit(subsApi.STATUS_INACTIVE)}
           />
         )}
-        {statusCd == subsApi.STATUS_INACTIVE && (
+        {statusCd === subsApi.STATUS_INACTIVE && (
           <AppButton
-            style={[styles.confirm, {backgroundColor: colors.white}]}
             title={i18n.t('reg:toRokebiCash')}
             titleStyle={[appStyles.confirmText, {color: colors.black}]}
             style={{borderWidth: 1, borderColor: colors.lightGrey, flex: 1}}
-            onPress={() => this._showModal(true, deactivateBtn)}
+            onPress={() => this.showModal(true, deactivateBtn)}
           />
         )}
         <AppButton
@@ -225,9 +259,9 @@ class SubsDetailScreen extends Component {
           titleStyle={appStyles.confirmText}
           disabled={disable}
           onPress={() =>
-            targetStatus == subsApi.STATUS_ACTIVE
-              ? this._showModal(true, activateBtn)
-              : this._onSubmit(targetStatus)
+            targetStatus === subsApi.STATUS_ACTIVE
+              ? this.showModal(true, activateBtn)
+              : this.onSubmit(targetStatus)
           }
         />
       </View>
@@ -235,9 +269,8 @@ class SubsDetailScreen extends Component {
   }
 
   render() {
-    const {showModal, modal, price, type} = this.state || {};
+    const {showModal, modal, price, type} = this.state;
 
-    console.log('@@@@type', type);
     const isCallProduct = type === subsApi.CALL_PRODUCT;
 
     return (
@@ -245,18 +278,18 @@ class SubsDetailScreen extends Component {
         style={styles.container}
         forceInset={{top: 'never', bottom: 'always'}}>
         <AppActivityIndicator visible={this.props.pending} />
-        {this._info()}
-        {isCallProduct ? this._callProd() : this._dataProd()}
+        {this.info()}
+        {isCallProduct ? this.callProd() : this.dataProd()}
         <AppModal
           title={
-            modal == activateBtn
+            modal === activateBtn
               ? i18n.t('reg:activateProduct')
               : i18n.t('reg:toCash')
           }
-          onOkClose={() => this._onSubmitModal(modal)}
-          onCancelClose={() => this._showModal(false)}
+          onOkClose={() => this.onSubmitModal(modal)}
+          onCancelClose={() => this.showModal(false)}
           toRokebiCash={
-            modal == deactivateBtn && utils.numberToCommaString(price)
+            modal === deactivateBtn && utils.numberToCommaString(price)
           }
           visible={showModal}
         />
@@ -265,59 +298,17 @@ class SubsDetailScreen extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  notice: {
-    ...appStyles.normal14Text,
-    marginTop: 40,
-    marginLeft: 20,
-    color: colors.warmGrey,
-  },
-  title: {
-    ...appStyles.normal20Text,
-    marginTop: 10,
-    marginHorizontal: 20,
-  },
-  divider: {
-    marginTop: 40,
-    marginBottom: 40,
-    height: 10,
-    backgroundColor: colors.whiteTwo,
-  },
-  value: {
-    ...appStyles.normal16Text,
-    color: colors.black,
-  },
-  label: {
-    ...appStyles.normal14Text,
-    color: colors.warmGrey,
-  },
-  info: {
-    height: 36,
-    marginHorizontal: 20,
-  },
-  confirm: {
-    height: 52,
-    flex: 1,
-    backgroundColor: colors.clearBlue,
-  },
-});
-
-const mapStateToProps = state => ({
-  product: state.product,
-  account: state.account.toJS(),
-  auth: accountActions.auth(state.account),
-  order: state.order.toObject(),
-  pending:
-    // state.pender.pending[orderActions.GET_SUBS] ||
-    state.pender.pending[orderActions.UPDATE_SUBS_STATUS] || false,
-});
-
 export default connect(
-  mapStateToProps,
-  dispatch => ({
+  (state) => ({
+    product: state.product,
+    account: state.account.toJS(),
+    auth: accountActions.auth(state.account),
+    order: state.order.toObject(),
+    pending:
+      // state.pender.pending[orderActions.GET_SUBS] ||
+      state.pender.pending[orderActions.UPDATE_SUBS_STATUS] || false,
+  }),
+  (dispatch) => ({
     action: {
       product: bindActionCreators(productActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
