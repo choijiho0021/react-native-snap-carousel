@@ -212,7 +212,7 @@ const CountryListItem0 = ({item, selected, onPress}) => {
         {!_.isEmpty(item.promoFlag) && (
           <View style={styles.badge}>
             <Text key="name" style={styles.badgeText}>
-              {item.promoFlag[0]}
+              {i18n.t(item.promoFlag[0])}
             </Text>
           </View>
         )}
@@ -252,19 +252,6 @@ class CountryScreen extends Component {
   constructor(props) {
     super(props);
 
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <BackButton
-          navigation={this.props.navigation}
-          route={this.props.route}
-        />
-      ),
-      headerRight: () => (
-        <AppCartButton onPress={() => this.props.navigation.navigate('Cart')} />
-      ),
-    });
-
     this.state = {
       prodData: [],
       selected: undefined,
@@ -283,6 +270,19 @@ class CountryScreen extends Component {
   }
 
   componentDidMount() {
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <BackButton
+          navigation={this.props.navigation}
+          route={this.props.route}
+        />
+      ),
+      headerRight: () => (
+        <AppCartButton onPress={() => this.props.navigation.navigate('Cart')} />
+      ),
+    });
+
     const {localOpList, prodOfCountry} = this.props.product;
     const localOp = localOpList.get(prodOfCountry[0].partnerId) || {};
 

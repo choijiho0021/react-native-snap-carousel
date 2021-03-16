@@ -175,11 +175,9 @@ class CartScreen extends Component {
         .then((resp) => {
           if (resp.result === 0) {
             this.props.navigation.navigate('PymMethod', {mode: 'Cart'});
-          } else {
-            if (resp.result === api.E_RESOURCE_NOT_FOUND)
-              AppAlert.info(`${resp.title} ${i18n.t('cart:soldOut')}`);
-            AppAlert.info(i18n.t('cart:systemError'));
-          }
+          } else if (resp.result === api.E_RESOURCE_NOT_FOUND)
+            AppAlert.info(`${resp.title} ${i18n.t('cart:soldOut')}`);
+          else AppAlert.info(i18n.t('cart:systemError'));
         })
         .catch((err) => {
           console.log('failed to check stock', err);
