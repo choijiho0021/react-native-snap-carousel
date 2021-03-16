@@ -82,24 +82,10 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     backgroundColor: colors.white,
   },
-  title: {
-    ...appStyles.bold18Text,
-    // fontFamily: "AppleSDGothicNeo",
-    marginVertical: 20,
-    marginHorizontal: 20,
-    color: colors.black,
-  },
   rowCenter: {
     flexDirection: 'row',
     alignItems: 'center',
     margin: 20,
-  },
-  row: {
-    ...appStyles.itemRow,
-    height: 36,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottomWidth: 0,
   },
   divider: {
     // marginTop: 20,
@@ -121,12 +107,6 @@ const styles = StyleSheet.create({
     ...appStyles.normal14Text,
     color: colors.black,
     lineHeight: 24,
-  },
-  mrgBottom5: {
-    marginBottom: 5,
-  },
-  mrgBottom33: {
-    marginBottom: 33,
   },
   addrBtn: {
     height: 48,
@@ -266,17 +246,6 @@ class PymMethodScreen extends Component {
   constructor(props) {
     super(props);
 
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={i18n.t('payment')}
-          isPaid={this.props.route.params && this.props.route.params.isPaid}
-        />
-      ),
-    });
-
     this.state = {
       mode: undefined,
       selected: {},
@@ -341,6 +310,17 @@ class PymMethodScreen extends Component {
   }
 
   componentDidMount() {
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <AppBackButton
+          navigation={this.props.navigation}
+          title={i18n.t('payment')}
+          isPaid={this.props.route.params && this.props.route.params.isPaid}
+        />
+      ),
+    });
+
     this.props.action.profile.getCustomerProfile(this.props.account);
     const {pymPrice, deduct} = this.props.cart;
     const {content} = this.props.profile;
