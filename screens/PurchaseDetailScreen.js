@@ -236,16 +236,6 @@ class PurchaseDetailScreen extends Component {
   constructor(props) {
     super(props);
 
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={i18n.t('his:detail')}
-        />
-      ),
-    });
-
     this.state = {
       showPayment: true,
       showDelivery: true,
@@ -270,6 +260,16 @@ class PurchaseDetailScreen extends Component {
   }
 
   componentDidMount() {
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <AppBackButton
+          navigation={this.props.navigation}
+          title={i18n.t('his:detail')}
+        />
+      ),
+    });
+
     const {params} = this.props.route;
 
     const detail = params && params.detail ? params.detail : {};

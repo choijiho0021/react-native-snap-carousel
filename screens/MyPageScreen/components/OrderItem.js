@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, Pressable, View} from 'react-native';
 import _ from 'underscore';
 import LabelText from '../../../components/LabelText';
 import {colors} from '../../../constants/Colors';
@@ -42,7 +42,7 @@ class OrderItem extends Component {
     const billingAmt = item.totalPrice + item.dlvCost;
 
     return (
-      <TouchableOpacity onPress={onPress}>
+      <Pressable onPress={onPress}>
         <View key={item.orderId} style={styles.order}>
           <LabelText
             style={styles.orderValue}
@@ -66,7 +66,7 @@ class OrderItem extends Component {
             format="price"
           />
         </View>
-      </TouchableOpacity>
+      </Pressable>
     );
   }
 }
