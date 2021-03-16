@@ -1,274 +1,24 @@
-import React, {Component, PureComponent} from 'react';
-import {
-  StyleSheet,
-  Text,
-  FlatList,
-  View,
-  TouchableOpacity,
-  Platform,
-} from 'react-native';
+import firebase from '@react-native-firebase/app';
+import Analytics from 'appcenter-analytics';
+import React, {Component, memo} from 'react';
+import {FlatList, StyleSheet, Text, Pressable, View} from 'react-native';
+import VersionCheck from 'react-native-version-check';
 import {connect} from 'react-redux';
-
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import AppBackButton from '../components/AppBackButton';
+import AppIcon from '../components/AppIcon';
+import AppModal from '../components/AppModal';
+import AppSwitch from '../components/AppSwitch';
+import {colors} from '../constants/Colors';
 import {appStyles} from '../constants/Styles';
-import i18n from '../utils/i18n';
+import Env from '../environment';
 import * as accountActions from '../redux/modules/account';
 import * as cartActions from '../redux/modules/cart';
 import * as orderActions from '../redux/modules/order';
-import {bindActionCreators} from 'redux';
-import AppIcon from '../components/AppIcon';
-import {colors} from '../constants/Colors';
-import AppModal from '../components/AppModal';
-import AppSwitch from '../components/AppSwitch';
-import AppToast from '../components/AppToast';
-import VersionCheck from 'react-native-version-check';
-import Env from '../environment';
-import Analytics from 'appcenter-analytics';
-import _ from 'underscore';
-import firebase from '@react-native-firebase/app';
+import i18n from '../utils/i18n';
 
 const {label} = Env.get();
-
-class SettingsListItem extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.child = React.createRef();
-  }
-
-  render() {
-    const {item, onPress} = this.props;
-
-    return (
-      <TouchableOpacity
-        onPress={
-          _.isFunction((this.child.current || {}).onPress)
-            ? this.child.current.onPress
-            : onPress(item.key, item.value, item.route)
-        }>
-        <View style={styles.row}>
-          <Text style={styles.itemTitle}>{item.value}</Text>
-          {item.desc ? (
-            <Text style={styles.itemDesc}>{item.desc}</Text>
-          ) : item.hasOwnProperty('toggle') ? (
-            <AppSwitch
-              value={item.toggle}
-              ref={this.child}
-              onPress={onPress(item.key, item.value, item.route)}
-              waitFor={1000}
-            />
-          ) : (
-            <AppIcon style={{alignSelf: 'center'}} name="iconArrowRight" />
-          )}
-        </View>
-      </TouchableOpacity>
-    );
-  }
-}
-
-class SettingsScreen extends Component {
-  constructor(props) {
-    super(props);
-
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={i18n.t('settings')}
-        />
-      ),
-    });
-
-    this.state = {
-      showModal: false,
-      data: [
-        {
-          key: 'setting:pushnoti',
-          value: i18n.t('set:pushnoti'),
-          toggle: props.isPushNotiEnabled,
-          route: undefined,
-        },
-        // { "key": "info", "value": i18n.t('set:info'), route: 'MySim'},
-        {
-          key: 'setting:contract',
-          value: i18n.t('set:contract'),
-          route: 'SimpleText',
-        },
-        {
-          key: 'setting:privacy',
-          value: i18n.t('set:privacy'),
-          route: 'SimpleText',
-        },
-        {
-          key: 'setting:version',
-          value: i18n.t('set:version'),
-          desc:
-            i18n.t('now') +
-            ' ' +
-            VersionCheck.getCurrentVersion() +
-            '/' +
-            label.replace(/v/g, ''),
-          route: undefined,
-        },
-        {
-          key: 'setting:aboutus',
-          value: i18n.t('set:aboutus'),
-          route: 'SimpleText',
-        },
-        {
-          key: 'setting:logout',
-          value: i18n.t(props.loggedIn ? 'set:logout' : 'set:login'),
-          route: undefined,
-        },
-      ],
-      isPushNotiEnabled: props.isPushNotiEnabled,
-    };
-
-    this._onPress = this._onPress.bind(this);
-    this._showModal = this._showModal.bind(this);
-    this._logout = this._logout.bind(this);
-
-    this._isMounted = null;
-  }
-
-  componentDidUpdate(prevProps) {
-    const {loggedIn, isPushNotiEnabled} = this.props,
-      statePushNoti = (
-        this.state.data.find(item => item.key == 'setting:pushnoti') || {}
-      ).toggle;
-
-    if (loggedIn != prevProps.loggedIn) {
-      this.setState({
-        data: this.state.data.map(item =>
-          item.key == 'setting:logout'
-            ? {
-                ...item,
-                value: i18n.t(loggedIn ? 'set:logout' : 'set:login'),
-              }
-            : item,
-        ),
-      });
-    }
-
-    if (
-      isPushNotiEnabled !== prevProps.isPushNotiEnabled &&
-      isPushNotiEnabled !== statePushNoti
-    ) {
-      this.setState({
-        data: this.state.data.map(item =>
-          item.key == 'setting:pushnoti'
-            ? {
-                ...item,
-                toggle: isPushNotiEnabled,
-              }
-            : item,
-        ),
-      });
-    }
-  }
-
-  componentDidMount() {
-    const {loggedIn} = this.props;
-    this._isMounted = true;
-
-    if (loggedIn) {
-      this.props.action.cart.cartFetch();
-    } else {
-      this.props.navigation.navigate('Auth');
-    }
-  }
-
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
-
-  _onPress = (key, title, route) => () => {
-    switch (key) {
-      case 'setting:logout':
-        if (this.props.loggedIn) this._showModal(true);
-        else this.props.navigation.navigate('Auth');
-
-        break;
-
-      case 'setting:pushnoti':
-        const isEnabled = (
-          this.state.data.find(item => item.key == 'setting:pushnoti') || {}
-        ).toggle;
-        this.setState({
-          data: this.state.data.map(item =>
-            item.key == 'setting:pushnoti'
-              ? {
-                  ...item,
-                  toggle: !isEnabled,
-                }
-              : item,
-          ),
-        });
-        this.props.action.account
-          .changePushNoti({isPushNotiEnabled: !isEnabled})
-          .catch(_ => {
-            this._isMounted &&
-              this.setState({
-                data: this.state.data.map(item =>
-                  item.key == 'setting:pushnoti'
-                    ? {
-                        ...item,
-                        toggle: this.props.isPushNotiEnabled,
-                      }
-                    : item,
-                ),
-              });
-          });
-
-        break;
-
-      default:
-        if (route) {
-          Analytics.trackEvent('Page_View_Count', {page: 'MyPage' + key});
-          this.props.navigation.navigate(route, {key, title});
-        }
-    }
-  };
-
-  _logout() {
-    this.props.action.cart.reset();
-    this.props.action.order.reset();
-    this.props.action.account.logout();
-
-    this.props.navigation.reset({index: 0, routes: [{name: 'HomeStack'}]});
-
-    firebase.notifications().setBadge(0);
-
-    this._showModal(false);
-  }
-
-  _showModal(value) {
-    this.setState({
-      showModal: value,
-    });
-  }
-
-  _renderItem = ({item}) => {
-    return <SettingsListItem item={item} onPress={this._onPress} />;
-  };
-
-  render() {
-    const {showModal} = this.state;
-
-    return (
-      <View style={styles.container}>
-        <FlatList data={this.state.data} renderItem={this._renderItem} />
-
-        <AppModal
-          title={i18n.t('set:confirmLogout')}
-          onOkClose={this._logout}
-          onCancelClose={() => this._showModal(false)}
-          visible={showModal}
-        />
-      </View>
-    );
-  }
-}
 
 const styles = StyleSheet.create({
   title: {
@@ -302,18 +52,251 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = state => ({
+const button = (item, child, onPress) => {
+  if (item.desc) {
+    return <Text style={styles.itemDesc}>{item.desc}</Text>;
+  }
+  if (item.hasOwnProperty('toggle')) {
+    return (
+      <AppSwitch
+        value={item.toggle}
+        ref={child}
+        onPress={onPress(item.key, item.value, item.route)}
+        waitFor={1000}
+      />
+    );
+  }
+  return <AppIcon style={{alignSelf: 'center'}} name="iconArrowRight" />;
+};
+
+const SettingsListItem0 = ({item, onPress}) => {
+  const child = React.createRef();
+
+  return (
+    <Pressable
+      onPress={
+        _.isFunction((child.current || {}).onPress)
+          ? child.current.onPress
+          : onPress(item.key, item.value, item.route)
+      }>
+      <View style={styles.row}>
+        <Text style={styles.itemTitle}>{item.value}</Text>
+        {button(item, child, onPress)}
+      </View>
+    </Pressable>
+  );
+};
+
+const SettingsListItem = memo(SettingsListItem0);
+
+class SettingsScreen extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      showModal: false,
+      data: [
+        {
+          key: 'setting:pushnoti',
+          value: i18n.t('set:pushnoti'),
+          toggle: props.isPushNotiEnabled,
+          route: undefined,
+        },
+        // { "key": "info", "value": i18n.t('set:info'), route: 'MySim'},
+        {
+          key: 'setting:contract',
+          value: i18n.t('set:contract'),
+          route: 'SimpleText',
+        },
+        {
+          key: 'setting:privacy',
+          value: i18n.t('set:privacy'),
+          route: 'SimpleText',
+        },
+        {
+          key: 'setting:version',
+          value: i18n.t('set:version'),
+          desc: `${i18n.t(
+            'now',
+          )} ${VersionCheck.getCurrentVersion()}/${label.replace(/v/g, '')}`,
+          route: undefined,
+        },
+        {
+          key: 'setting:aboutus',
+          value: i18n.t('set:aboutus'),
+          route: 'SimpleText',
+        },
+        {
+          key: 'setting:logout',
+          value: i18n.t(props.loggedIn ? 'set:logout' : 'set:login'),
+          route: undefined,
+        },
+      ],
+      isPushNotiEnabled: props.isPushNotiEnabled,
+      isMounted: false,
+    };
+
+    this.onPress = this.onPress.bind(this);
+    this.showModal = this.showModal.bind(this);
+    this.logout = this.logout.bind(this);
+    this.renderItem = this.renderItem.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <AppBackButton
+          navigation={this.props.navigation}
+          title={i18n.t('settings')}
+        />
+      ),
+    });
+
+    const {loggedIn} = this.props;
+    this.setMount();
+
+    if (loggedIn) {
+      this.props.action.cart.cartFetch();
+    } else {
+      this.props.navigation.navigate('Auth');
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    const {loggedIn, isPushNotiEnabled} = this.props;
+    const statePushNoti = (
+      this.state.data.find((item) => item.key === 'setting:pushnoti') || {}
+    ).toggle;
+
+    if (loggedIn !== prevProps.loggedIn) {
+      this.setData('setting:logout', {
+        value: i18n.t(loggedIn ? 'set:logout' : 'set:login'),
+      });
+    }
+
+    if (
+      isPushNotiEnabled !== prevProps.isPushNotiEnabled &&
+      isPushNotiEnabled !== statePushNoti
+    ) {
+      this.setData('setting:pushnoti', {toggle: isPushNotiEnabled});
+    }
+  }
+
+  componentWillUnmount() {
+    this.setMount();
+  }
+
+  setMount() {
+    this.setState((prevState) => ({
+      isMounted: !prevState.isMounted,
+    }));
+  }
+
+  setData(key, obj) {
+    this.setState((prevState) => ({
+      data: prevState.data.map((item) =>
+        item.key === key
+          ? {
+              ...item,
+              ...obj,
+            }
+          : item,
+      ),
+    }));
+  }
+
+  onPress = (key, title, route) => () => {
+    let isEnabled;
+    switch (key) {
+      case 'setting:logout':
+        if (this.props.loggedIn) this.showModal(true);
+        else this.props.navigation.navigate('Auth');
+
+        break;
+
+      case 'setting:pushnoti':
+        isEnabled = (
+          this.state.data.find((item) => item.key === 'setting:pushnoti') || {}
+        ).toggle;
+        this.setState((prevState) => ({
+          data: prevState.data.map((item) =>
+            item.key === 'setting:pushnoti'
+              ? {
+                  ...item,
+                  toggle: !isEnabled,
+                }
+              : item,
+          ),
+        }));
+        this.props.action.account
+          .changePushNoti({isPushNotiEnabled: !isEnabled})
+          .catch(() => {
+            if (this.state.isMounted)
+              this.setData('setting:pushnoti', {
+                toggle: this.props.isPushNotiEnabled,
+              });
+          });
+
+        break;
+
+      default:
+        if (route) {
+          Analytics.trackEvent('Page_View_Count', {page: `MyPage${key}`});
+          this.props.navigation.navigate(route, {key, title});
+        }
+    }
+  };
+
+  logout() {
+    this.props.action.cart.reset();
+    this.props.action.order.reset();
+    this.props.action.account.logout();
+
+    this.props.navigation.reset({index: 0, routes: [{name: 'HomeStack'}]});
+
+    firebase.notifications().setBadge(0);
+
+    this.showModal(false);
+  }
+
+  showModal(value) {
+    this.setState({
+      showModal: value,
+    });
+  }
+
+  renderItem({item}) {
+    return <SettingsListItem item={item} onPress={this.onPress} />;
+  }
+
+  render() {
+    const {showModal} = this.state;
+
+    return (
+      <View style={styles.container}>
+        <FlatList data={this.state.data} renderItem={this.renderItem} />
+
+        <AppModal
+          title={i18n.t('set:confirmLogout')}
+          onOkClose={this.logout}
+          onCancelClose={() => this.showModal(false)}
+          visible={showModal}
+        />
+      </View>
+    );
+  }
+}
+
+const mapStateToProps = (state) => ({
   loggedIn: state.account.get('loggedIn'),
   isPushNotiEnabled: state.account.get('isPushNotiEnabled'),
 });
 
-export default connect(
-  mapStateToProps,
-  dispatch => ({
-    action: {
-      account: bindActionCreators(accountActions, dispatch),
-      cart: bindActionCreators(cartActions, dispatch),
-      order: bindActionCreators(orderActions, dispatch),
-    },
-  }),
-)(SettingsScreen);
+export default connect(mapStateToProps, (dispatch) => ({
+  action: {
+    account: bindActionCreators(accountActions, dispatch),
+    cart: bindActionCreators(cartActions, dispatch),
+    order: bindActionCreators(orderActions, dispatch),
+  },
+}))(SettingsScreen);
