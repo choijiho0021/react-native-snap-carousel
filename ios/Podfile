@@ -16,6 +16,10 @@ target 'RokebiESIM' do
   pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary"
   pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
 
+  pod 'FBSDKCoreKit'
+  pod 'FBSDKLoginKit'
+  pod 'FBSDKShareKit'
+
 	# Enables Flipper.
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
