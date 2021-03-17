@@ -8,7 +8,7 @@ import _ from 'underscore';
 import {TouchableOpacity, TextInput} from 'react-native-gesture-handler';
 import RNPickerSelect from 'react-native-picker-select';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import {API} from '../submodules/rokebi-utils';
 import * as accountActions from '../redux/modules/account';
 import * as profileActions from '../redux/modules/profile';
 import * as cartActions from '../redux/modules/cart';
@@ -54,29 +54,31 @@ const pickerSelectStyles = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
-  buttonStyle: (idx, column, key, row) => ({
-    // key, idx => 현위치 / row, column -> selected
-    width: '33.3%',
-    height: 62,
-    backgroundColor: colors.white,
-    borderStyle: 'solid',
-    borderRightWidth: 1,
-    borderBottomWidth: 1,
-    borderLeftWidth: idx === 0 ? 1 : 0,
-    borderTopWidth: key === 0 ? 1 : 0,
-    borderLeftColor:
-      column === 0 && key === row ? colors.clearBlue : colors.lightGrey,
-    borderTopColor:
-      row === 0 && idx === column ? colors.clearBlue : colors.lightGrey,
-    borderRightColor:
-      (idx === column || idx === column - 1) && key === row
-        ? colors.clearBlue
-        : colors.lightGrey,
-    borderBottomColor:
-      (key === row || key === row - 1) && idx === column
-        ? colors.clearBlue
-        : colors.lightGrey,
-  }),
+  buttonStyle: (idx, column, key, row) => {
+    return {
+      // key, idx => 현위치 / row, column -> selected
+      width: '33.3%',
+      height: 62,
+      backgroundColor: colors.white,
+      borderStyle: 'solid',
+      borderRightWidth: 1,
+      borderBottomWidth: 1,
+      borderLeftWidth: idx === 0 ? 1 : 0,
+      borderTopWidth: key === 0 ? 1 : 0,
+      borderLeftColor:
+        column === 0 && key === row ? colors.clearBlue : colors.lightGrey,
+      borderTopColor:
+        row === 0 && idx === column ? colors.clearBlue : colors.lightGrey,
+      borderRightColor:
+        (idx === column || idx === column - 1) && key === row
+          ? colors.clearBlue
+          : colors.lightGrey,
+      borderBottomColor:
+        (key === row || key === row - 1) && idx === column
+          ? colors.clearBlue
+          : colors.lightGrey,
+    };
+  },
   container: {
     flex: 1,
     justifyContent: 'flex-start',
@@ -467,7 +469,12 @@ class PymMethodScreen extends Component {
                 <AppButton
                   key={v.method}
                   title={_.isEmpty(v.icon) && v.title}
-                  style={styles.buttonStyle(idx, column, key, row)}
+                  style={styles.buttonStyle(
+                    idx,
+                    column,
+                    parseInt(key, 10),
+                    parseInt(row, 10),
+                  )}
                   iconName={!_.isEmpty(v.icon) && v.icon}
                   checked={v.method === selected.method}
                   onPress={this.onPress(v, key, idx)}
