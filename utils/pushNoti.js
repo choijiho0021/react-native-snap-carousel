@@ -1,6 +1,7 @@
 import Analytics from 'appcenter-analytics';
 import _ from 'underscore';
 import messaging from '@react-native-firebase/messaging';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 
 class PushNoti {
   constructor() {
@@ -75,7 +76,8 @@ class PushNoti {
     // // foreground 상태에서 data만 받아서 처리 (foreground badge 수 변경 전용)
     this.onMessage = messaging().onMessage((message) => {
       const {badge = 0, notiType, iccid} = message.data;
-      messaging().setBadge(Number(badge));
+      // messaging().setBadge(Number(badge));
+      PushNotificationIOS.setApplicationIconBadgeNumber(Number(badge));
       // sim 카드 해지 알림이 왓을 때 백그라운드
       if (notiType && iccid) {
         onNotification({data: {notiType, iccid}});
@@ -84,14 +86,13 @@ class PushNoti {
   }
 
   onNoti = (key, onNotification) => (notification) => {
-    console.log('key & notification', key, notification);
     if (notification && _.isFunction(onNotification)) {
       if (key === 'onNotification') onNotification(notification);
       else {
-        const notiType = notification.notification._data.notiType.split('/');
+        const notiType = notification.data.notiType.split('/');
         // push noti를 클릭하여 앱으로 진입한 경우에만 카운트
         Analytics.trackEvent('Touch_Noti', {type: notiType[0]});
-        onNotification(notification.notification, false);
+        onNotification(notification, false);
       }
     }
   };
