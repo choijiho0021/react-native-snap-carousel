@@ -116,7 +116,7 @@ class ContactScreen extends Component {
           value: i18n.t('contact:call'),
           page: 'Call Center',
           onPress: () => {
-            Linking.openURL(`tel:114`);
+            Linking.openURL(`tel:0317103969`);
           },
         },
       ],
