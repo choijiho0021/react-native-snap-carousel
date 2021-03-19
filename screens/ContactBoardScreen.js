@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
 import React, {Component} from 'react';
@@ -46,14 +47,15 @@ class ContactBoardScreen extends Component {
     });
   }
 
-  renderScene({route, jumpTo}) {
+  renderScene = (onPress) => ({route, jumpTo}) => {
     if (route.key === 'new') {
       return <BoardMsgAdd jumpTo={jumpTo} />;
     }
     if (route.key === 'list') {
-      return <BoardMsgList jumpTo={jumpTo} onPress={this.onPress} />;
+      return <BoardMsgList jumpTo={jumpTo} onPress={onPress} />;
     }
-  }
+    return null;
+  };
 
   onPress = (key, status = 'O') => {
     this.props.navigation.navigate('BoardMsgResp', {key, status});
@@ -80,7 +82,7 @@ class ContactBoardScreen extends Component {
         <TabView
           style={styles.container}
           navigationState={this.state}
-          renderScene={this.renderScene}
+          renderScene={this.renderScene(this.onPress)}
           onIndexChange={(index) => this.setState({index})}
           initialLayout={{width: Dimensions.get('window').width}}
           renderTabBar={this.renderTabBar}
