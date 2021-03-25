@@ -848,8 +848,8 @@ const ko = {
   'contact:call': '고객 센터 전화 연결',
 
   'faq:general': '사용방법',
-  'faq:config': '로밍설정',
-  'faq:payment': '결제/환불',
+  'faq:config': '설정',
+  'faq:payment': '결제',
   'faq:etc': '기타',
 
   'board:title': '1:1 문의',
