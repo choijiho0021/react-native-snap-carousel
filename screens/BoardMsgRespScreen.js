@@ -9,126 +9,20 @@ import {
   Image,
 } from 'react-native';
 
-import i18n from '../utils/i18n';
 import _ from 'underscore';
+import {bindActionCreators} from 'redux';
+import {API} from '../submodules/rokebi-utils';
+import i18n from '../utils/i18n';
 import AppBackButton from '../components/AppBackButton';
 import * as boardActions from '../redux/modules/board';
 import * as accountActions from '../redux/modules/account';
-import {bindActionCreators} from 'redux';
 import {appStyles} from '../constants/Styles';
 import {colors} from '../constants/Colors';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import AppIcon from '../components/AppIcon';
 import utils from '../utils/utils';
-import {attachmentSize} from '../constants/SliderEntry.style';
+import {attachmentSize, windowWidth} from '../constants/SliderEntry.style';
 import AppButton from '../components/AppButton';
-import {windowWidth} from '../constants/SliderEntry.style';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
-
-class BoardMsgRespScreen extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      idx: undefined,
-      uuid: undefined,
-    };
-  }
-
-  componentDidMount() {
-    const {params} = this.props.route;
-
-    const uuid = params && params.key;
-    const status = params && params.status;
-
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={i18n.t('board:title')}
-        />
-      ),
-    });
-
-    if (uuid) {
-      // issue list를 아직 가져오지 않은 경우에는, 먼저 가져와서 처리한다.
-      this.props.action.board.getIssueList(false).then((_) => {
-        this.setState({
-          idx: this.props.board.list.findIndex((item) => item.uuid == uuid),
-          uuid,
-          status,
-        });
-
-        if (status == 'Closed') {
-          this.props.action.board.getIssueResp(uuid, this.props.auth);
-        } else {
-          this.props.action.board.resetIssueComment();
-        }
-      });
-    }
-  }
-
-  _renderAttachment(images) {
-    return (
-      <View style={styles.attachBox}>
-        {images &&
-          images
-            .filter((item) => !_.isEmpty(item))
-            .map((url, idx) => (
-              <Image
-                key={url + idx}
-                source={{uri: API.default.httpImageUrl(url).toString()}}
-                style={styles.attach}
-              />
-            ))}
-      </View>
-    );
-  }
-
-  render() {
-    const {idx} = this.state,
-      {list = [], comment = []} = this.props.board,
-      issue = idx >= 0 ? list[idx] : {},
-      resp = comment[0] || {};
-
-    return (
-      <SafeAreaView style={styles.container}>
-        <ScrollView style={styles.container}>
-          <View style={{flex: 1}}>
-            <Text style={[styles.inputBox, {marginTop: 30}]}>
-              {issue.title}
-            </Text>
-            <Text style={[styles.inputBox, {marginTop: 15, paddingBottom: 72}]}>
-              {utils.htmlToString(issue.msg)}
-            </Text>
-            {this._renderAttachment(issue.images)}
-            {!_.isEmpty(resp) && (
-              <View style={styles.resp}>
-                <AppIcon
-                  name="btnReply"
-                  style={{justifyContent: 'flex-start'}}
-                />
-                <View style={{marginLeft: 10, marginRight: 30}}>
-                  <Text style={styles.replyTitle}>{i18n.t('board:resp')}</Text>
-                  <Text style={styles.reply}>{resp.body}</Text>
-                </View>
-              </View>
-            )}
-          </View>
-
-          <AppActivityIndicator visible={this.props.pending} />
-        </ScrollView>
-
-        <AppButton
-          style={styles.button}
-          title={i18n.t('ok')}
-          onPress={() => this.props.navigation.goBack()}
-        />
-      </SafeAreaView>
-    );
-  }
-}
 
 const styles = StyleSheet.create({
   attachBox: {
@@ -190,6 +84,110 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
 });
+class BoardMsgRespScreen extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      idx: undefined,
+      uuid: undefined,
+    };
+  }
+
+  componentDidMount() {
+    const {params} = this.props.route;
+
+    const uuid = params && params.key;
+    const status = params && params.status;
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <AppBackButton
+          navigation={this.props.navigation}
+          title={i18n.t('board:title')}
+        />
+      ),
+    });
+
+    if (uuid) {
+      // issue list를 아직 가져오지 않은 경우에는, 먼저 가져와서 처리한다.
+      this.props.action.board.getIssueList(false).then(() => {
+        this.setState({
+          idx: this.props.board.list.findIndex((item) => item.uuid === uuid),
+          uuid,
+          status,
+        });
+
+        if (status === 'Closed') {
+          this.props.action.board.getIssueResp(uuid, this.props.auth);
+        } else {
+          this.props.action.board.resetIssueComment();
+        }
+      });
+    }
+  }
+
+  renderAttachment(images) {
+    return (
+      <View style={styles.attachBox}>
+        {images &&
+          images
+            .filter((item) => !_.isEmpty(item))
+            .map((url, idx) => (
+              <Image
+                key={url + idx}
+                source={{uri: API.default.httpImageUrl(url).toString()}}
+                style={styles.attach}
+              />
+            ))}
+      </View>
+    );
+  }
+
+  render() {
+    const {idx} = this.state,
+      {list = [], comment = []} = this.props.board,
+      issue = idx >= 0 ? list[idx] : {},
+      resp = comment[0] || {};
+
+    return (
+      <SafeAreaView style={styles.container}>
+        <ScrollView style={styles.container}>
+          <View style={{flex: 1}}>
+            <Text style={[styles.inputBox, {marginTop: 30}]}>
+              {issue.title}
+            </Text>
+            <Text style={[styles.inputBox, {marginTop: 15, paddingBottom: 72}]}>
+              {utils.htmlToString(issue.msg)}
+            </Text>
+            {this.renderAttachment(issue.images)}
+            {!_.isEmpty(resp) && (
+              <View style={styles.resp}>
+                <AppIcon
+                  name="btnReply"
+                  style={{justifyContent: 'flex-start'}}
+                />
+                <View style={{marginLeft: 10, marginRight: 30}}>
+                  <Text style={styles.replyTitle}>{i18n.t('board:resp')}</Text>
+                  <Text style={styles.reply}>{resp.body}</Text>
+                </View>
+              </View>
+            )}
+          </View>
+
+          <AppActivityIndicator visible={this.props.pending} />
+        </ScrollView>
+
+        <AppButton
+          style={styles.button}
+          title={i18n.t('ok')}
+          onPress={() => this.props.navigation.goBack()}
+        />
+      </SafeAreaView>
+    );
+  }
+}
 
 const mapStateToProps = (state) => ({
   board: state.board.toJS(),
