@@ -79,6 +79,12 @@ const styles = StyleSheet.create({
     marginVertical: 15,
     marginHorizontal: 20,
   },
+  label: {
+    ...appStyles.normal14Text,
+    marginLeft: 30,
+    marginTop: 10,
+    color: colors.clearBlue,
+  },
 });
 
 function renderBody(body) {
@@ -175,6 +181,7 @@ class AppModal extends PureComponent {
       keyboardType = 'default',
       toRokebiCash = undefined,
       closeButtonTitle = i18n.t('close'),
+      infoText,
     } = this.props;
 
     return (
@@ -195,22 +202,25 @@ class AppModal extends PureComponent {
             )}
             {renderBody(body)}
             {this.props.mode === 'edit' && (
-              <View style={styles.inputBox}>
-                <TextInput
-                  style={styles.textInput}
-                  returnKeyType="done"
-                  enablesReturnKeyAutomatically
-                  onChangeText={this.onChangeText('value')}
-                  maxLength={maxLength}
-                  keyboardType={keyboardType}
-                  value={value}
-                />
+              <View>
+                <View style={styles.inputBox}>
+                  <TextInput
+                    style={styles.textInput}
+                    returnKeyType="done"
+                    enablesReturnKeyAutomatically
+                    onChangeText={this.onChangeText('value')}
+                    maxLength={maxLength}
+                    keyboardType={keyboardType}
+                    value={value}
+                  />
 
-                <AppButton
-                  style={styles.cancelButton}
-                  iconName="btnCancel"
-                  onPress={() => this.onChangeText('value')('')}
-                />
+                  <AppButton
+                    style={styles.cancelButton}
+                    iconName="btnCancel"
+                    onPress={() => this.onChangeText('value')('')}
+                  />
+                </View>
+                {infoText && <Text style={styles.label}>{infoText}</Text>}
               </View>
             )}
             {this.renderError()}

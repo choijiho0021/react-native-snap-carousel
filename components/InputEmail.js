@@ -85,6 +85,10 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingVertical: 8,
   },
+  infoText: {
+    marginTop: 15,
+    color: colors.clearBlue,
+  },
 });
 
 class InputEmail extends Component {
@@ -138,100 +142,105 @@ class InputEmail extends Component {
     const {domain, email, domainIdx} = this.state;
 
     return (
-      <View style={[styles.container, this.props.style]}>
-        <TouchableOpacity
-          style={[
-            styles.textInputWrapper,
-            email ? {} : styles.emptyInput,
-            {flex: 1},
-          ]}
-          onPress={this.focusInput}
-          activeOpacity={1}>
-          <TextInput
-            style={[styles.textInput, email ? {} : styles.emptyInput]}
-            placeholder={i18n.t('reg:email')}
-            placeholderTextColor={colors.greyish}
-            returnKeyType="next"
-            enablesReturnKeyAutomatically
-            onChangeText={this.onChangeText('email')}
-            autoCapitalize="none"
-            ref={this.emailRef}
-            value={email}
-          />
-        </TouchableOpacity>
+      <View style={this.props.style}>
+        <View style={styles.container}>
+          <TouchableOpacity
+            style={[
+              styles.textInputWrapper,
+              email ? {} : styles.emptyInput,
+              {flex: 1},
+            ]}
+            onPress={this.focusInput}
+            activeOpacity={1}>
+            <TextInput
+              style={[styles.textInput, email ? {} : styles.emptyInput]}
+              placeholder={i18n.t('reg:email')}
+              placeholderTextColor={colors.greyish}
+              returnKeyType="next"
+              enablesReturnKeyAutomatically
+              onChangeText={this.onChangeText('email')}
+              autoCapitalize="none"
+              ref={this.emailRef}
+              value={email}
+            />
+          </TouchableOpacity>
 
-        <Text
-          style={[
-            appStyles.normal12Text,
-            styles.textInput,
-            email ? {} : styles.emptyInput,
-          ]}>
-          @
-        </Text>
+          <Text
+            style={[
+              appStyles.normal12Text,
+              styles.textInput,
+              email ? {} : styles.emptyInput,
+            ]}>
+            @
+          </Text>
 
-        <TouchableOpacity
-          style={[
-            styles.textInputWrapper,
-            domain ? {} : styles.emptyInput,
-            {flex: 1, marginLeft: 10},
-          ]}
-          onPress={() => {
-            if (this.domainRef.current) this.domainRef.current.focus();
-          }}
-          activeOpacity={1}>
-          <TextInput
-            style={[styles.textInput, domain ? {} : styles.emptyInput]}
-            returnKeyType="next"
-            enablesReturnKeyAutomatically
-            editable={domainIdx === DIRECT_INPUT}
-            onChangeText={this.onChangeText('domain')}
-            autoCapitalize="none"
-            ref={this.domainRef}
-            value={domain}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[
-            styles.pickerWrapper,
-            domainIdx === DIRECT_INPUT ? styles.emptyInput : {},
-          ]}
-          onPress={this.openPicker}
-          activeOpacity={1}>
-          <RNPickerSelect
-            style={{
-              placeholder: styles.placeholder,
-              inputIOS: [
-                styles.inputIOS,
-                domainIdx === DIRECT_INPUT
-                  ? styles.directInput
-                  : styles.noDirectInput,
-              ],
-              inputAndroid: [
-                styles.placeholder,
-                domainIdx === DIRECT_INPUT
-                  ? styles.directInput
-                  : styles.noDirectInput,
-              ],
-              iconContainer: {
-                bottom: 14,
-                right: 10,
-              },
-              inputAndroidContainer: {
-                bottom: -1,
-              },
+          <TouchableOpacity
+            style={[
+              styles.textInputWrapper,
+              domain ? {} : styles.emptyInput,
+              {flex: 1, marginLeft: 10},
+            ]}
+            onPress={() => {
+              if (this.domainRef.current) this.domainRef.current.focus();
             }}
-            placeholder={{}}
-            onValueChange={this.onChangeText('domainIdx')}
-            items={domains}
-            value={domainIdx}
-            useNativeAndroidPickerStyle={false}
-            ref={this.pickerRef}
-            Icon={() => {
-              return <Triangle width={8} height={6} color={colors.warmGrey} />;
-            }}
-          />
-        </TouchableOpacity>
+            activeOpacity={1}>
+            <TextInput
+              style={[styles.textInput, domain ? {} : styles.emptyInput]}
+              returnKeyType="next"
+              enablesReturnKeyAutomatically
+              editable={domainIdx === DIRECT_INPUT}
+              onChangeText={this.onChangeText('domain')}
+              autoCapitalize="none"
+              ref={this.domainRef}
+              value={domain}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.pickerWrapper,
+              domainIdx === DIRECT_INPUT ? styles.emptyInput : {},
+            ]}
+            onPress={this.openPicker}
+            activeOpacity={1}>
+            <RNPickerSelect
+              style={{
+                placeholder: styles.placeholder,
+                inputIOS: [
+                  styles.inputIOS,
+                  domainIdx === DIRECT_INPUT
+                    ? styles.directInput
+                    : styles.noDirectInput,
+                ],
+                inputAndroid: [
+                  styles.placeholder,
+                  domainIdx === DIRECT_INPUT
+                    ? styles.directInput
+                    : styles.noDirectInput,
+                ],
+                iconContainer: {
+                  bottom: 14,
+                  right: 10,
+                },
+                inputAndroidContainer: {
+                  bottom: -1,
+                },
+              }}
+              placeholder={{}}
+              onValueChange={this.onChangeText('domainIdx')}
+              items={domains}
+              value={domainIdx}
+              useNativeAndroidPickerStyle={false}
+              ref={this.pickerRef}
+              Icon={() => {
+                return (
+                  <Triangle width={8} height={6} color={colors.warmGrey} />
+                );
+              }}
+            />
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.infoText}>{i18n.t('mypage:mailInfo')}</Text>
       </View>
     );
   }

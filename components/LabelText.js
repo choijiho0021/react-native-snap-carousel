@@ -48,7 +48,10 @@ export default class LabelText extends PureComponent {
           style,
           format !== 'shortDistance' && {justifyContent: 'space-between'},
         ]}>
-        <Text style={[labelStyle || styles.label, {maxWidth: '70%'}]}>
+        <Text
+          numberOfLines={1}
+          ellipsizeMode="tail"
+          style={[{maxWidth: '70%'}, labelStyle || styles.label]}>
           {label}
         </Text>
         {/* {

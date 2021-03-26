@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   value: {
     ...appStyles.roboto16Text,
     marginLeft: 20,
-    width: '100%',
+    maxWidth: '100%',
     lineHeight: 40,
     color: colors.black,
   },
@@ -521,9 +521,6 @@ class MyPageScreen extends Component {
               onPress={() => this.showEmailModal(true)}
               arrow="iconArrowRight"
             />
-            <Text style={[styles.label, {color: colors.clearBlue}]}>
-              {i18n.t('mypage:mailInfo')}
-            </Text>
           </View>
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'center'}}>
@@ -635,6 +632,7 @@ class MyPageScreen extends Component {
           onCancelClose={() => this.showEmailModal(false)}
           validateAsync={this.validEmail}
           visible={showEmailModal}
+          infoText={i18n.t('mypage:mailInfo')}
         />
 
         <AppModal
