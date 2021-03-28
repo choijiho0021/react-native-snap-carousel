@@ -155,7 +155,7 @@ class PaymentItemInfo extends PureComponent {
           })}
         </View>
 
-        {!isRecharge && (
+        {!isRecharge && !esimApp && (
           <View style={styles.priceInfo}>
             {pymReq.map((item) => (
               <View style={styles.row} key={item.title}>
