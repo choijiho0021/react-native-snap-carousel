@@ -50,14 +50,16 @@ export default class HeaderTitle extends Component {
     return (
       nextState.searchWord !== this.state.searchWord ||
       this.props.searchWord !== nextProps.searchWord ||
+      this.props.searchWord !== this.state.searchWord ||
       this.props.navigation !== nextProps.navigation
     );
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (
-      this.props.searchWord &&
-      this.props.searchWord !== prevProps.searchWord
+      (this.props.searchWord &&
+        this.props.searchWord !== prevProps.searchWord) ||
+      _.isEmpty(prevState.searchWord)
     ) {
       this.setState({
         searchWord: this.props.searchWord,
