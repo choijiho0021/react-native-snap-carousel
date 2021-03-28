@@ -1,50 +1,50 @@
 /* eslint-disable no-param-reassign */
+import AsyncStorage from '@react-native-community/async-storage';
+import {Set} from 'immutable';
+import moment from 'moment';
 import React, {Component} from 'react';
 import {
+  Animated,
+  Appearance,
+  BackHandler,
+  Dimensions,
+  Image,
+  Platform,
+  ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
-  View,
-  Dimensions,
   TouchableOpacity,
-  Image,
-  Animated,
-  ScrollView,
-  BackHandler,
-  Platform,
-  Appearance,
-  StatusBar,
+  View,
 } from 'react-native';
-import {connect} from 'react-redux';
-import _ from 'underscore';
-import {bindActionCreators} from 'redux';
-import {TabView} from 'react-native-tab-view';
-import moment from 'moment';
-import {Set} from 'immutable';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
-import AsyncStorage from '@react-native-community/async-storage';
-import RNExitApp from 'react-native-exit-app';
 import DeviceInfo from 'react-native-device-info';
+import RNExitApp from 'react-native-exit-app';
 import {
-  requestNotifications,
   PERMISSIONS,
   request,
+  requestNotifications,
 } from 'react-native-permissions';
-import {API, Country} from '../submodules/rokebi-utils';
-import AppModal from '../components/AppModal';
-import withBadge from '../components/withBadge';
-import pushNoti from '../utils/pushNoti';
-import {sliderWidth, windowHeight} from '../constants/SliderEntry.style';
-import {colors} from '../constants/Colors';
+import Carousel, {Pagination} from 'react-native-snap-carousel';
+import {TabView} from 'react-native-tab-view';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import AppButton from '../components/AppButton';
+import AppModal from '../components/AppModal';
 import StoreList from '../components/StoreList';
-import createHandlePushNoti from '../submodules/rokebi-utils/models/createHandlePushNoti';
+import withBadge from '../components/withBadge';
+import {colors} from '../constants/Colors';
+import {sliderWidth, windowHeight} from '../constants/SliderEntry.style';
 import {appStyles} from '../constants/Styles';
-import i18n from '../utils/i18n';
-import TutorialScreen from './TutorialScreen';
-import * as productActions from '../redux/modules/product';
 import * as accountActions from '../redux/modules/account';
-import * as notiActions from '../redux/modules/noti';
 import * as cartActions from '../redux/modules/cart';
+import * as notiActions from '../redux/modules/noti';
+import * as productActions from '../redux/modules/product';
+import {API, Country} from '../submodules/rokebi-utils';
+import createHandlePushNoti from '../submodules/rokebi-utils/models/createHandlePushNoti';
+import i18n from '../utils/i18n';
+import pushNoti from '../utils/pushNoti';
+import TutorialScreen from './TutorialScreen';
 
 const size =
   windowHeight > 810
@@ -52,14 +52,14 @@ const size =
         userInfoHeight: 110,
         userInfoMarginTop: 30,
         userPic: 60,
-        carouselHeight: 225,
+        carouselHeight: 150,
         carouselMargin: 0,
       }
     : {
         userInfoHeight: 96,
         userInfoMarginTop: 20,
         userPic: 50,
-        carouselHeight: 190,
+        carouselHeight: 130,
         carouselMargin: 20,
       };
 
@@ -92,7 +92,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   carousel: {
-    alignItems: 'flex-end',
+    marginBottom: 15,
+    alignItems: 'center',
+    width: '100%',
     height: size.carouselHeight,
     backgroundColor: colors.white,
   },
@@ -108,8 +110,7 @@ const styles = StyleSheet.create({
   },
   pagination: {
     marginRight: 30,
-    marginTop: 10,
-    justifyContent: 'flex-end',
+    alignSelf: 'flex-end',
   },
   paginationContainer: {
     paddingVertical: 5,
@@ -153,7 +154,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   scrollView: {
-    flex: 1,
     backgroundColor: colors.white,
   },
   normal16BlueText: {
@@ -173,18 +173,29 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginBottom: 10,
   },
+  whiteBackground: {
+    flex: 1,
+    backgroundColor: colors.white,
+  },
+  imgRatio: {
+    width: '100%',
+    // figure out your image aspect ratio
+    aspectRatio: 335 / size.carouselHeight,
+  },
 });
 
 const PromotionImage = ({item, onPress}) => {
   return (
-    <TouchableOpacity style={styles.overlay} onPress={() => onPress(item)}>
+    <TouchableOpacity
+      style={{paddingHorizontal: 20}}
+      onPress={() => onPress(item)}>
       {_.isEmpty(item.imageUrl) ? (
         <Text style={appStyles.normal16Text}>{item.title}</Text>
       ) : (
         <Image
           source={{uri: API.default.httpImageUrl(item.imageUrl)}}
-          style={{height: size.carouselHeight}}
-          resizeMode="contain"
+          style={styles.imgRatio}
+          resizeMode="stretch"
         />
       )}
     </TouchableOpacity>
@@ -247,6 +258,7 @@ class HomeScreenEsim extends Component {
     this.getSupportDev = this.getSupportDev.bind(this);
     this.offset = 0;
     this.controller = new AbortController();
+    this.tabHeader = this.tabHeader.bind(this);
   }
 
   componentDidMount() {
@@ -528,6 +540,29 @@ class HomeScreenEsim extends Component {
     pushNotiHandler.handleNoti();
   }
 
+  tabHeader() {
+    const {index, routes} = this.state;
+    return (
+      <View style={styles.whiteTwoBackground}>
+        <View style={styles.tabView}>
+          {routes.map((elm, idx) => (
+            <AppButton
+              key={elm.key + idx}
+              style={styles.whiteTwoBackground}
+              titleStyle={[
+                styles.normal16WarmGrey,
+                idx === index ? styles.boldClearBlue : {},
+              ]}
+              title={elm.category}
+              // title={i18n.t(`prodDetail:${elm}`)}
+              onPress={this.clickTab(idx)}
+            />
+          ))}
+        </View>
+      </View>
+    );
+  }
+
   renderDots(activeIndex) {
     const {promotion} = this.props;
     const duration = 200;
@@ -631,54 +666,40 @@ class HomeScreenEsim extends Component {
   }
 
   render() {
-    const {index, routes, isSupportDev, firstLaunch, darkMode} = this.state;
+    const {isSupportDev, firstLaunch, darkMode} = this.state;
     return (
-      <ScrollView
-        // contentContainerStyle={appStyles.container}
-        style={styles.scrollView}
-        stickyHeaderIndices={[1]}>
-        <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
+      <View style={styles.whiteBackground}>
         {firstLaunch && <TutorialScreen />}
         {this.renderCarousel()}
-        {/* ScrollView  stickyHeaderIndices로 상단 탭을 고정하기 위해서 View한번 더 사용 */}
-        <View style={styles.whiteTwoBackground}>
-          <View style={styles.tabView}>
-            {routes.map((elm, idx) => (
-              <AppButton
-                key={elm.key + idx}
-                style={styles.whiteTwoBackground}
-                titleStyle={[
-                  styles.normal16WarmGrey,
-                  idx === index ? styles.boldClearBlue : {},
-                ]}
-                title={elm.category}
-                // title={i18n.t(`prodDetail:${elm}`)}
-                onPress={this.clickTab(idx)}
-              />
-            ))}
-          </View>
-        </View>
-        <TabView
-          style={styles.container}
-          navigationState={this.state}
-          renderScene={this.renderScene}
-          onIndexChange={this.onIndexChange}
-          initialLayout={{width: Dimensions.get('window').width, height: 10}}
-          titleStyle={appStyles.normal16Text}
-          indicatorStyle={{backgroundColor: 'white'}}
-          renderTabBar={() => null}
-        />
+        <ScrollView
+          // contentContainerStyle={appStyles.container}
+          style={styles.scrollView}
+          stickyHeaderIndices={[1]}>
+          <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
+          {/* ScrollView  stickyHeaderIndices로 상단 탭을 고정하기 위해서 View한번 더 사용 */}
+          {this.tabHeader()}
+          <TabView
+            style={styles.container}
+            navigationState={this.state}
+            renderScene={this.renderScene}
+            onIndexChange={this.onIndexChange}
+            initialLayout={{width: Dimensions.get('window').width, height: 10}}
+            titleStyle={appStyles.normal16Text}
+            indicatorStyle={{backgroundColor: 'white'}}
+            renderTabBar={() => null}
+          />
 
-        <AppModal
-          title={i18n.t('home:unsupportedTitle')}
-          closeButtonTitle={i18n.t('home:exitApp')}
-          titleStyle={styles.modalTitle}
-          type="close"
-          body={this.modalBody()}
-          onOkClose={this.exitApp}
-          visible={!isSupportDev}
-        />
-      </ScrollView>
+          <AppModal
+            title={i18n.t('home:unsupportedTitle')}
+            closeButtonTitle={i18n.t('home:exitApp')}
+            titleStyle={styles.modalTitle}
+            type="close"
+            body={this.modalBody()}
+            onOkClose={this.exitApp}
+            visible={!isSupportDev}
+          />
+        </ScrollView>
+      </View>
     );
   }
 }
