@@ -1,26 +1,25 @@
 /* eslint-disable no-param-reassign */
+import Analytics from 'appcenter-analytics';
 import React, {Component} from 'react';
 import {
+  ScrollView,
   StyleSheet,
   Text,
-  View,
   TouchableOpacity,
-  ScrollView,
-  Dimensions,
+  View,
 } from 'react-native';
 import {connect} from 'react-redux';
-import _ from 'underscore';
 import {bindActionCreators} from 'redux';
-import Analytics from 'appcenter-analytics';
-import {API} from '../../submodules/rokebi-utils';
-import {appStyles} from '../../constants/Styles';
-import * as productActions from '../../redux/modules/product';
-import i18n from '../../utils/i18n';
-import utils from '../../utils/utils';
-import {colors} from '../../constants/Colors';
+import _ from 'underscore';
 import AppActivityIndicator from '../../components/AppActivityIndicator';
 import StoreList from '../../components/StoreList';
+import {colors} from '../../constants/Colors';
 import {isDeviceSize} from '../../constants/SliderEntry.style';
+import {appStyles} from '../../constants/Styles';
+import * as productActions from '../../redux/modules/product';
+import {API} from '../../submodules/rokebi-utils';
+import i18n from '../../utils/i18n';
+import utils from '../../utils/utils';
 import HeaderTitle from './components/HeaderTitle';
 
 const styles = StyleSheet.create({
@@ -37,24 +36,22 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   searchList: {
-    alignContent: 'flex-start',
-    justifyContent: 'flex-start',
-    marginHorizontal: 20,
-    marginBottom: 25,
+    flex: 1,
+    height: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
   },
   searchListHeader: {
-    alignContent: 'flex-start',
-    justifyContent: 'flex-start',
     marginHorizontal: 20,
-    marginBottom: 25,
-    marginTop: 30,
+    marginVertical: 20,
   },
   recommendHeader: {
     alignContent: 'flex-start',
     justifyContent: 'flex-start',
     marginHorizontal: 20,
     marginBottom: 20,
-    marginTop: 15,
+    marginTop: 40,
   },
   recommendRow: {
     marginLeft: 20,
@@ -276,15 +273,14 @@ class StoreSearchScreen extends Component {
             <Text style={styles.searchListText}> {i18n.t('search:err')} </Text>
           </View>
         ) : (
-          searchList.map((elm, idx) => (
+          searchList.map((elm) => (
             <TouchableOpacity
-              key={`${idx}`}
+              key={elm}
+              style={styles.searchList}
               onPress={() => this.search(elm, true)}>
-              <View key={elm} style={styles.searchList}>
-                <Text key="Text" style={styles.searchListText}>
-                  {elm}
-                </Text>
-              </View>
+              <Text key="Text" style={styles.searchListText}>
+                {elm}
+              </Text>
             </TouchableOpacity>
           ))
         )}
