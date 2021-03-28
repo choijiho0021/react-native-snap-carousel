@@ -607,16 +607,21 @@ class PurchaseDetailScreen extends Component {
               value={item.price}
             />
           ))}
-        <View style={styles.bar} />
-        <LabelText
-          key="productAmount"
-          style={styles.item}
-          label={i18n.t('his:productAmount')}
-          labelStyle={styles.label2}
-          format="price"
-          valueStyle={appStyles.roboto16Text}
-          value={totalPrice}
-        />
+        {!esimApp && (
+          <View>
+            <View style={styles.bar} />
+            <LabelText
+              key="productAmount"
+              style={styles.item}
+              label={i18n.t('his:productAmount')}
+              labelStyle={styles.label2}
+              format="price"
+              valueStyle={appStyles.roboto16Text}
+              value={totalPrice}
+            />
+          </View>
+        )}
+
         {orderType === 'physical' && (
           <LabelText
             key="dvlCost"
@@ -682,7 +687,9 @@ class PurchaseDetailScreen extends Component {
         ) : (
           <View style={{marginBottom: 20}} />
         )}
-        <Text style={styles.cancelInfo}>{!isRecharge && infoText}</Text>
+        <Text style={styles.cancelInfo}>
+          {!isRecharge && !esimApp && infoText}
+        </Text>
       </View>
     );
   }
