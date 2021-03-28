@@ -521,7 +521,7 @@ const en = {
   'mypage:openRokebiTalk': 'Open RokebiTalk ＞',
   'mypage:preparing': 'Preparing for Service',
   'mypage:mailInfo':
-    'The eSIM product you have purchased will be sent to this email.',
+    '* The eSIM product you have purchased will be sent to this email.',
 };
 
 const ko = {
@@ -1052,7 +1052,7 @@ const ko = {
   'mypage:activationCode': 'Activation Code',
   'mypage:openRokebiTalk': '로깨비톡 바로가기 ＞',
   'mypage:preparing': '서비스 준비중',
-  'mypage:mailInfo': '구매하신 eSIM 상품이 본 이메일로 발송됩니다.',
+  'mypage:mailInfo': '* 구매하신 eSIM 상품은 본 이메일로 발송됩니다.',
 };
 
 if (Array.isArray(locales)) {
