@@ -63,14 +63,14 @@ class ChargeSummary extends PureComponent {
           valueStyle={{...appStyles.normal14Text, color: colors.black}}
           value={i18n.t('cart:totalCntX').replace('%%', totalCnt)}
         />
-
-        <LabelText
-          label={i18n.t('cart:totalPrice')}
-          style={styles.summary}
-          format="price"
-          value={totalPrice}
-        />
-
+        {!esimApp && (
+          <LabelText
+            label={i18n.t('cart:totalPrice')}
+            style={styles.summary}
+            format="price"
+            value={totalPrice}
+          />
+        )}
         {!_.isEmpty(simList) && (
           <LabelText
             label={i18n.t('cart:dlvCost')}
