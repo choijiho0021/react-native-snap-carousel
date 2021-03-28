@@ -41,6 +41,7 @@ const styles = StyleSheet.create({
   title: {
     ...appStyles.h1,
     paddingHorizontal: 20,
+    paddingTop: 30,
   },
   confirmList: {
     flexDirection: 'row',
