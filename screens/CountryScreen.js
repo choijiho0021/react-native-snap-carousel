@@ -228,7 +228,7 @@ const CountryBackButton = ({navigation, product}) => {
   const title =
     prodOfCountry && prodOfCountry.length > 0
       ? API.Product.getTitle(
-          prodOfCountry[0].categoryId,
+          prodOfCountry[0].categoryId[0],
           localOpList.get(prodOfCountry[0].partnerId),
         )
       : '';
