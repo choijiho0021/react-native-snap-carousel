@@ -129,7 +129,7 @@ class PaymentItemInfo extends PureComponent {
         <View
           style={[
             styles.productPriceInfo,
-            !isRecharge && styles.borderBottomGrey,
+            !isRecharge && !esimApp && styles.borderBottomGrey,
           ]}>
           {cart.map((item) => {
             const [qty, price] = _.isUndefined(item.qty)
