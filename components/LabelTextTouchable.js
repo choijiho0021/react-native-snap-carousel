@@ -13,6 +13,7 @@ export default class LabelTextTouchable extends PureComponent {
       disabled,
       format,
       labelStyle,
+      arrowStyle,
       ...props
     } = this.props;
 
@@ -27,7 +28,7 @@ export default class LabelTextTouchable extends PureComponent {
           />
           {!_.isEmpty(arrow) && (
             <AppIcon
-              style={{alignSelf: 'center', marginLeft: 10}}
+              style={[arrowStyle, {alignSelf: 'center', marginLeft: 10}]}
               name={arrow}
             />
           )}

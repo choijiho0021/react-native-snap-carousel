@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   },
   label: {
     ...appStyles.normal14Text,
-    marginLeft: 20,
+    marginHorizontal: 20,
     color: colors.warmGrey,
   },
   value: {
@@ -493,7 +493,7 @@ class MyPageScreen extends Component {
             marginTop: 35,
             flex: 1,
             flexDirection: 'row',
-            marginHorizontal: 20,
+            marginLeft: 20,
             height: 76,
             marginBottom: 30,
           }}>
@@ -518,6 +518,7 @@ class MyPageScreen extends Component {
               label={email}
               labelStyle={styles.value}
               value=""
+              arrowStyle={{paddingRight: 20}}
               onPress={() => this.showEmailModal(true)}
               arrow="iconArrowRight"
             />
