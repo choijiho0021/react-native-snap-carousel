@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   dropDownBox: {
-    marginHorizontal: 20,
+    paddingHorizontal: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -815,6 +815,7 @@ class PurchaseDetailScreen extends Component {
                 style={{backgroundColor: colors.white, height: 70}}
                 iconName={showPayment ? 'iconArrowUp' : 'iconArrowDown'}
                 iconStyle={styles.dropDownIcon}
+                onPress={this.onPressPayment}
               />
             </View>
           </Pressable>
