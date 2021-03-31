@@ -166,7 +166,7 @@ class ProductDetailScreen extends Component {
     });
 
     // todo : 상세 HTML을 가져오도록 변경 필요
-    this.props.action.product.getProdDetail(this.controller);
+    this.props.action.product.getProdDetail(this.controller); //ysjoung
   }
 
   shouldComponentUpdate(preProps, preState) {
@@ -228,9 +228,7 @@ class ProductDetailScreen extends Component {
     const sz = sizeString.split(',');
     const scale = windowWidth / Number(sz[0]);
 
-    // console.log('@@@ height', sizeString, scale)
-
-    for (let i = 2; i < sz.length; i++) {
+    for (var i = 3; i < sz.length; i++) {
       // 각 tab별로 시작 위치를 설정한다.
       this.setState({
         [`height${i - 2}`]: Math.ceil(Number(sz[i]) * scale),
