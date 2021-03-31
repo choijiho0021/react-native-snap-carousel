@@ -146,7 +146,7 @@ class TutorialScreen extends Component {
               renderItem={this.renderTutorial}
               onSnapToItem={(index) => this.setState({activeSlide: index})}
               autoplay={false}
-              loop
+              // loop
               useScrollView
               lockScrollWhileSnapping
               // resizeMode='stretch'
