@@ -78,6 +78,8 @@ const styles = StyleSheet.create({
   btnHome: {
     width: '100%',
     height: 52,
+    position: 'absolute',
+    bottom: 30,
     backgroundColor: colors.clearBlue,
   },
 });
@@ -189,7 +191,9 @@ class PaymentResultScreen extends Component {
       : success && result === 0;
 
     return (
-      <SafeAreaView style={{flex: 1}}>
+      <SafeAreaView
+        style={{flex: 1}}
+        forceInset={{top: 'never', bottom: 'always'}}>
         <ScrollView style={{backgroundColor: colors.whiteTwo}}>
           <View style={styles.paymentResultView}>
             <Image
@@ -198,8 +202,7 @@ class PaymentResultScreen extends Component {
               resizeMode="contain"
             />
             <Text style={styles.paymentResultText}>
-              {' '}
-              {i18n.t(isSuccess ? 'pym:success' : 'pym:fail')}
+              {` ${i18n.t(isSuccess ? 'pym:success' : 'pym:fail')}`}
             </Text>
             <AppButton
               style={styles.btnOrderList}
@@ -234,13 +237,13 @@ class PaymentResultScreen extends Component {
               </View>
             )}
           </View>
-          <AppButton
-            style={styles.btnHome}
-            title={i18n.t('pym:toHome')}
-            titleStyle={styles.btnHomeText}
-            onPress={() => this.moveScreen('Home')}
-          />
         </ScrollView>
+        <AppButton
+          style={styles.btnHome}
+          title={i18n.t('pym:toHome')}
+          titleStyle={styles.btnHomeText}
+          onPress={() => this.moveScreen('Home')}
+        />
       </SafeAreaView>
     );
   }
