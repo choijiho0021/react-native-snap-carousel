@@ -485,6 +485,8 @@ class HomeScreenEsim extends Component {
     if (loggedIn) {
       this.props.action.noti.getNotiList(mobile);
       this.props.action.cart.cartFetch();
+    } else {
+      this.props.action.noti.init();
     }
   }
 
