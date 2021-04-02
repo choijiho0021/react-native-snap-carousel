@@ -360,7 +360,7 @@ class HomeScreenEsim extends Component {
           item.ccodeStr = (localOp.ccode || []).join(',');
           item.cntry = Set(Country.getName(localOp.ccode));
           item.search = [...item.cntry].join(',');
-          item.pricePerDay = Math.round(item.price / item.days);
+          item.pricePerDay = Math.round(item.price / item.days / 10) * 10;
           const idxCcode = list.findIndex(
             (elm) => elm.length > 0 && elm[0].ccodeStr === item.ccodeStr,
           );
