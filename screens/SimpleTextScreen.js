@@ -13,7 +13,7 @@ import AppAlert from '../components/AppAlert';
 import AppBackButton from '../components/AppBackButton';
 import AppButton from '../components/AppButton';
 import {colors} from '../constants/Colors';
-import {appStyles, htmlWithCss} from '../constants/Styles';
+import {appStyles, htmlDetailWithCss} from '../constants/Styles';
 import Env from '../environment';
 import {API} from '../submodules/rokebi-utils';
 import i18n from '../utils/i18n';
@@ -105,29 +105,57 @@ class SimpleTextScreen extends Component {
         querying: true,
       });
 
-      API.Page.getPageByCategory(key, this.controller)
-        .then((resp) => {
-          if (
-            resp.result === 0 &&
-            resp.objects.length > 0 &&
-            this.state.isMounted
-          ) {
-            this.setState({
-              body: resp.objects[0].body,
-            });
-          } else throw Error('Failed to get contract');
-        })
-        .catch((err) => {
-          console.log('failed', err);
-          AppAlert.error(i18n.t('set:fail'));
-        })
-        .finally(() => {
-          if (this.state.isMounted) {
-            this.setState({
-              querying: false,
-            });
-          }
-        });
+      if (key === 'noti') {
+        API.Page.getPageByTitle(params.bodyTitle, this.controller)
+          .then((resp) => {
+            console.log('aaaaa body', resp.objects[0].body);
+            if (
+              resp.result === 0 &&
+              resp.objects.length > 0 &&
+              this.state.isMounted
+            ) {
+              this.setState({
+                body: resp.objects[0].body,
+              });
+            } else throw Error('Failed to get contract');
+          })
+          .catch((err) => {
+            console.log('failed', err);
+            AppAlert.error(i18n.t('set:fail'));
+          })
+          .finally(() => {
+            if (this.state.isMounted) {
+              this.setState({
+                querying: false,
+              });
+            }
+          });
+      } else {
+        API.Page.getPageByCategory(key, this.controller)
+          .then((resp) => {
+            console.log('aaaaa body2', resp.objects[0].body);
+            if (
+              resp.result === 0 &&
+              resp.objects.length > 0 &&
+              this.state.isMounted
+            ) {
+              this.setState({
+                body: resp.objects[0].body,
+              });
+            } else throw Error('Failed to get contract');
+          })
+          .catch((err) => {
+            console.log('failed', err);
+            AppAlert.error(i18n.t('set:fail'));
+          })
+          .finally(() => {
+            if (this.state.isMounted) {
+              this.setState({
+                querying: false,
+              });
+            }
+          });
+      }
     } else {
       this.setState({body: i18n.t('err:body')});
     }
@@ -163,7 +191,7 @@ class SimpleTextScreen extends Component {
       <WebView
         style={styles.container}
         originWhitelist={['*']}
-        source={{html: htmlWithCss(bodyTitle, body), baseUrl}}
+        source={{html: htmlDetailWithCss(bodyTitle, body), baseUrl}}
       />
     );
   };

@@ -234,7 +234,7 @@ class NotiScreen extends Component {
                 : i18n.t('contact:noticeDetail'),
             bodyTitle,
             text: body,
-            mode: format,
+            mode: 'info',
           });
       }
     }
