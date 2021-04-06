@@ -179,8 +179,9 @@ const styles = StyleSheet.create({
   },
   imgRatio: {
     width: '100%',
+    height: size.carouselHeight,
     // figure out your image aspect ratio
-    aspectRatio: 335 / size.carouselHeight,
+    // aspectRatio: 335 / size.carouselHeight,
   },
 });
 
