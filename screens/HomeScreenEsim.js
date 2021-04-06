@@ -397,6 +397,7 @@ class HomeScreenEsim extends Component {
 
   clickTab = (idx) => () => {
     this.setState({index: idx});
+    this.scrollListReftop.scrollTo({x: 0, y: 0, animated: false});
   };
 
   modalBody = () => () => {
@@ -674,6 +675,9 @@ class HomeScreenEsim extends Component {
         {firstLaunch && <TutorialScreen />}
         {this.renderCarousel()}
         <ScrollView
+          ref={(ref) => {
+            this.scrollListReftop = ref;
+          }}
           // contentContainerStyle={appStyles.container}
           style={styles.scrollView}
           stickyHeaderIndices={[1]}>
