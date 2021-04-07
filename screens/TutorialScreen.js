@@ -12,6 +12,7 @@ import {
 import {connect} from 'react-redux';
 import _ from 'underscore';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
+import {AppEventsLogger} from 'react-native-fbsdk';
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
 import {colors} from '../constants/Colors';
@@ -112,6 +113,8 @@ class TutorialScreen extends Component {
     };
 
     this.renderTutorial = this.renderTutorial.bind(this);
+    this.skip = this.skip.bind(this);
+    this.completed = this.completed.bind(this);
   }
 
   componentDidMount() {}
@@ -124,6 +127,16 @@ class TutorialScreen extends Component {
         resizeMode="cover"
       />
     );
+  };
+
+  skip = () => {
+    this.setState({modalVisible: false});
+    AppEventsLogger.logEvent('Tutorial Skip');
+  };
+
+  completed = () => {
+    this.setState({modalVisible: false});
+    AppEventsLogger.logEvent('fb_mobile_tutorial_completion');
   };
 
   render() {
@@ -182,7 +195,7 @@ class TutorialScreen extends Component {
                     styles.touchableOpacity,
                     {flex: 1, alignItems: 'center'},
                   ]}
-                  onPress={() => this.setState({modalVisible: false})}>
+                  onPress={() => this.completed()}>
                   <Text style={styles.bottomText}>
                     {i18n.t('tutorial:close')}
                   </Text>
@@ -192,7 +205,7 @@ class TutorialScreen extends Component {
               <View style={[styles.bottom, {justifyContent: 'space-between'}]}>
                 <TouchableOpacity
                   style={styles.touchableOpacity}
-                  onPress={() => this.setState({modalVisible: false})}>
+                  onPress={() => this.skip()}>
                   <Text style={styles.bottomText}>
                     {i18n.t('tutorial:skip')}
                   </Text>
