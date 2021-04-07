@@ -108,7 +108,6 @@ class SimpleTextScreen extends Component {
       if (key === 'noti') {
         API.Page.getPageByTitle(params.bodyTitle, this.controller)
           .then((resp) => {
-            console.log('aaaaa body', resp.objects[0].body);
             if (
               resp.result === 0 &&
               resp.objects.length > 0 &&
@@ -173,7 +172,8 @@ class SimpleTextScreen extends Component {
   }
 
   defineSource = (mode) => {
-    const {body, bodyTitle} = this.state;
+    const {body = '', bodyTitle = ''} = this.state;
+
     if (mode === 'text')
       return (
         <ScrollView style={styles.scrollContainer}>
