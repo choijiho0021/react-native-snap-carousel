@@ -36,6 +36,8 @@
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 
+#import <AVFoundation/AVFoundation.h>
+
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];
   SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
@@ -120,6 +122,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   if ([FIRApp defaultApp] == nil) {
     [FIRApp configure];
   }
+  
+  
+  [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
   
   // TODO - 호출 순서 확인 필요 
   self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
