@@ -85,6 +85,7 @@ const images = {
   payco: [require(`${paymentPath}logoPayco.png`)],
   samsung: [require(`${paymentPath}logoSamsung.png`)],
   ssgpay: [require(`${paymentPath}logoSsg.png`)],
+  toss: [require(`${paymentPath}logoToss.png`)],
   lpay: [require(`${paymentPath}logoLpay.png`)],
   specialTip: [require(`${guidePath}iconHoney.png`)],
   imgAlarm: [require(`${esimPath}imgAlarm.png`)],

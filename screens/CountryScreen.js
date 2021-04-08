@@ -38,6 +38,7 @@ import AppAlert from '../components/AppAlert';
 import Env from '../environment';
 
 const {esimApp} = Env.get();
+const PURCHASE_LIMIT = 10;
 
 const styles = StyleSheet.create({
   container: {
@@ -260,6 +261,8 @@ class CountryScreen extends Component {
       showSnackBar: false,
       localOpDetails: undefined,
       pending: false,
+      disabled: false,
+      isFocused: true,
     };
 
     this.snackRef = React.createRef();
@@ -267,6 +270,8 @@ class CountryScreen extends Component {
     this.onPressBtnPurchase = this.onPressBtnPurchase.bind(this);
     this.onPressBtnRegCard = this.onPressBtnRegCard.bind(this);
     this.selectedProduct = this.selectedProduct.bind(this);
+    this.onPress = this.onPress.bind(this);
+    this.setValue = this.setValue.bind(this);
   }
 
   componentDidMount() {
@@ -297,8 +302,35 @@ class CountryScreen extends Component {
     }
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return this.props !== nextProps || this.state !== nextState;
+  }
+
+  componentDidUpdate() {
+    if (this.props.navigation.isFocused() !== this.state.isFocused) {
+      this.setValue('isFocused', this.props.navigation.isFocused());
+      if (this.props.navigation.isFocused()) {
+        this.onPress(this.state.selected);
+      }
+    }
+  }
+
+  setValue = (key, value) => {
+    this.setState({
+      [key]: value,
+    });
+  };
+
   onPress = (uuid) => () => {
     this.setState({selected: uuid});
+    if (
+      (this.props.cart.orderItems || []).find((v) => v.key === uuid)?.qty >=
+      PURCHASE_LIMIT
+    ) {
+      this.setState({disabled: true});
+    } else {
+      this.setState({disabled: false});
+    }
   };
 
   selectedProduct = (selected) => {
@@ -334,6 +366,12 @@ class CountryScreen extends Component {
             this.setState({
               showSnackBar: true,
             });
+            if (
+              resp.objects[0].orderItems.find((v) => v.key === selected).qty >=
+              PURCHASE_LIMIT
+            ) {
+              this.setState({disabled: true});
+            }
           } else {
             soldOut(resp, 'cart:notToCart');
           }
@@ -481,7 +519,7 @@ class CountryScreen extends Component {
               style={styles.btnCart}
               title={i18n.t('cart:toCart')}
               titleStyle={styles.btnCartText}
-              disabled={this.state.pending}
+              disabled={this.state.pending || this.state.disabled}
               disableColor={colors.black}
               disableBackgroundColor={colors.whiteTwo}
               onPress={this.onPressBtnCart}
