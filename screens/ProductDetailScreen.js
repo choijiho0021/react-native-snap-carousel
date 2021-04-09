@@ -165,8 +165,7 @@ class ProductDetailScreen extends Component {
       ),
     });
 
-    // todo : 상세 HTML을 가져오도록 변경 필요
-    this.props.action.product.getProdDetail(this.controller); //ysjoung
+    this.props.action.product.getProdDetail(this.controller);
   }
 
   shouldComponentUpdate(preProps, preState) {
