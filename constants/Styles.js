@@ -441,13 +441,14 @@ export const htmlDetailWithCss = (body, script = '') => {
     }
     .tab {
         line-height: 1.6;
+        margin-bottom: 30px;
     }
     .tab div:not(.noMargin) {
         margin-left: 20px;
         margin-right: 20px;
     }
     .noMargin {
-        margin-bottom: 66px;
+        margin-bottom: 30px;
     }
     .blueBox, .copyBox, .moveToBox {
         text-align: center;
@@ -494,11 +495,12 @@ export const htmlDetailWithCss = (body, script = '') => {
         background-color: ${colors.whiteThree};
     }
     .copyTextLine {
-        margin: 20px;
+        margin-right: 20px;
     }
-    // .copyTextLine font{
-    //     line-height: 60px;
-    // }
+    .copyTextLine font{
+        line-height: 60px;
+        font-size: 14px;
+    }
     .moveToBox {
         font-size: 24px;
         height: 56px;
