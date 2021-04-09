@@ -243,6 +243,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginBottom: 45,
   },
+  benefit: {
+    backgroundColor: colors.whiteTwo,
+    padding: 15,
+    marginTop: 20,
+  },
 });
 
 class PymMethodScreen extends Component {
@@ -709,11 +714,14 @@ class PymMethodScreen extends Component {
           <View style={styles.beforeDrop}>
             <View style={styles.thickBar} />
             {API.Payment.method.map((v, idx) => this.button(`${idx}`, v))}
+            {/* 
+            // 토스 간편결제 추가로 현재 불필요
             <Text style={{marginVertical: 20, color: colors.clearBlue}}>
               {i18n.t('pym:tossInfo')}
-            </Text>
+            </Text> 
+            */}
             {!_.isEmpty(benefit) && (
-              <View style={{backgroundColor: colors.whiteTwo, padding: 15}}>
+              <View style={styles.benefit}>
                 <Text style={[styles.normal12TxtLeft, {marginBottom: 5}]}>
                   {benefit.title}
                 </Text>
