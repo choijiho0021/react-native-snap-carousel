@@ -292,6 +292,13 @@ class CountryScreen extends Component {
 
     const {localOpList, prodOfCountry} = this.props.product;
     const localOp = localOpList.get(prodOfCountry[0].partnerId) || {};
+    const title =
+      prodOfCountry && prodOfCountry.length > 0
+        ? API.Product.getTitle(
+            prodOfCountry[0].categoryId[0],
+            localOpList.get(prodOfCountry[0].partnerId),
+          )
+        : '';
 
     if (prodOfCountry) {
       this.setState({
@@ -299,7 +306,7 @@ class CountryScreen extends Component {
         imageUrl: localOp.imageUrl,
         localOpDetails: localOp.detail,
         selected: prodOfCountry[0].uuid,
-        title: API.Product.getTitle(prodOfCountry[0], localOp),
+        title,
       });
     }
   }
