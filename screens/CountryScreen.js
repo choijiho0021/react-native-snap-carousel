@@ -86,10 +86,7 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey,
     marginVertical: 7,
     marginHorizontal: 20,
-    flexDirection: 'row',
-    // justifyContent:'space-between',
     padding: 15,
-    alignItems: 'center',
   },
   detail: {
     height: windowWidth > device.small.window.width ? 48 : 36,
@@ -189,26 +186,31 @@ const CountryListItem0 = ({item, selected, onPress}) => {
     <Pressable onPress={onPress(item.uuid)}>
       <View>
         <View key="product" style={[styles.card, borderColor]}>
-          <View key="text" style={styles.textView}>
-            <Text
-              key="name"
-              style={[
-                windowWidth > device.small.window.width
-                  ? appStyles.bold16Text
-                  : appStyles.bold14Text,
-                color,
-              ]}>
-              {item.name}
-            </Text>
+          <View style={{flexDirection: 'row'}}>
+            <View key="text" style={styles.textView}>
+              <Text
+                key="name"
+                style={[
+                  windowWidth > device.small.window.width
+                    ? appStyles.bold16Text
+                    : appStyles.bold14Text,
+                  color,
+                ]}>
+                {item.name}
+              </Text>
+            </View>
+            <View key="priceText" style={styles.appPrice}>
+              <AppPrice
+                key="price"
+                price={item.price}
+                balanceStyle={styles.priceStyle}
+                wonStyle={styles.wonStyle}
+              />
+            </View>
           </View>
-          <View key="priceText" style={styles.appPrice}>
-            <AppPrice
-              key="price"
-              price={item.price}
-              balanceStyle={styles.priceStyle}
-              wonStyle={styles.wonStyle}
-            />
-          </View>
+          <Text key="desc" style={{}}>
+            {item.field_description}
+          </Text>
         </View>
         {!_.isEmpty(item.promoFlag) && (
           <View style={styles.badge}>
