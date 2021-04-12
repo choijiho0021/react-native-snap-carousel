@@ -69,6 +69,7 @@ class SimpleTextScreen extends Component {
     };
 
     this.controller = new AbortController();
+    this.onMessage = this.onMessage.bind(this);
   }
 
   componentDidMount() {
@@ -132,7 +133,6 @@ class SimpleTextScreen extends Component {
       } else {
         API.Page.getPageByCategory(key, this.controller)
           .then((resp) => {
-            console.log('aaaaa body2', resp.objects[0].body);
             if (
               resp.result === 0 &&
               resp.objects.length > 0 &&
@@ -171,6 +171,23 @@ class SimpleTextScreen extends Component {
     this.controller.abort();
   }
 
+  onMessage(event) {
+    const cmd = JSON.parse(event.nativeEvent.data);
+
+    switch (cmd.key) {
+      case 'move':
+        if (cmd.value) {
+          const moveTo = cmd.value.split('/');
+          this.props.navigation.navigate('Faq', {
+            key: moveTo[0],
+            num: undefined,
+          });
+        }
+        break;
+      default:
+    }
+  }
+
   defineSource = (mode) => {
     const {body = '', bodyTitle = ''} = this.state;
 
@@ -186,12 +203,20 @@ class SimpleTextScreen extends Component {
         </ScrollView>
       );
     if (mode === 'uri')
-      return <WebView source={{uri: body}} style={styles.container} />;
+      return (
+        <WebView
+          source={{uri: body}}
+          style={styles.container}
+          onMessage={this.onMessage}
+        />
+      );
+
     return (
       <WebView
         style={styles.container}
         originWhitelist={['*']}
-        source={{html: htmlDetailWithCss(bodyTitle, body), baseUrl}}
+        onMessage={this.onMessage}
+        source={{html: htmlDetailWithCss(body), baseUrl}}
       />
     );
   };

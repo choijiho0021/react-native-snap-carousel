@@ -306,6 +306,50 @@ export const appStyles = StyleSheet.create({
   },
 });
 
+// document.body.clientWidth : 화면의 너비
+// document.documentElement.clientHeight : 문서의 총 높이
+// getBoundingClientRect().y : 각 div의 시작 위치 y position
+
+const basicScript = `<script>
+window.onload = function () {
+  window.location.hash = 1;
+  var cmd = {
+    key: 'dimension',
+    value: document.body.clientWidth + ',' + document.documentElement.clientHeight + ',' + 
+      ['prodInfo', 'tip', 'caution'].map(item => {
+        var rect = document.getElementById(item).getBoundingClientRect();
+        return rect.y;
+      }).join(',')
+    };
+  window.ReactNativeWebView.postMessage(JSON.stringify(cmd));
+}
+function copy() {
+  var copyTxt = document.getElementById('copyTxt').firstChild.innerHTML;
+  var txtArea = document.createElement("textarea");
+  document.body.appendChild(txtArea);
+  txtArea.value = copyTxt;
+  txtArea.select();
+  document.execCommand("copy");
+  document.body.removeChild(txtArea);
+
+  var cmd = {
+    key: 'copy'
+  }  
+  window.ReactNativeWebView.postMessage(JSON.stringify(cmd));
+}
+function go(className){
+  var cmd = {
+    key: 'move',
+    value: document.getElementsByClassName(className)[0].getAttribute('value')
+  };
+  window.ReactNativeWebView.postMessage(JSON.stringify(cmd));
+}
+function send() {
+  window.ReactNativeWebView.postMessage('APN Value have to insert into this', '*');
+  window.alert('copy');
+}
+</script>`;
+
 export const htmlWithCss = (title, body) => {
   return `
 <html>
@@ -349,7 +393,7 @@ ${body}
 `;
 };
 
-export const htmlDetailWithCss = (body, script = '') => {
+export const htmlDetailWithCss = (body, script = basicScript) => {
   return `
     <html>
     <head>

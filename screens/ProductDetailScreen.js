@@ -85,50 +85,6 @@ const styles = StyleSheet.create({
   },
 });
 
-// document.body.clientWidth : 화면의 너비
-// document.documentElement.clientHeight : 문서의 총 높이
-// getBoundingClientRect().y : 각 div의 시작 위치 y position
-
-const script = `<script>
-window.onload = function () {
-  window.location.hash = 1;
-  var cmd = {
-    key: 'dimension',
-    value: document.body.clientWidth + ',' + document.documentElement.clientHeight + ',' + 
-      ['prodInfo', 'tip', 'caution'].map(item => {
-        var rect = document.getElementById(item).getBoundingClientRect();
-        return rect.y;
-      }).join(',')
-    };
-  window.ReactNativeWebView.postMessage(JSON.stringify(cmd));
-}
-function copy() {
-  var copyTxt = document.getElementById('copyTxt').firstChild.innerHTML;
-  var txtArea = document.createElement("textarea");
-  document.body.appendChild(txtArea);
-  txtArea.value = copyTxt;
-  txtArea.select();
-  document.execCommand("copy");
-  document.body.removeChild(txtArea);
-
-  var cmd = {
-    key: 'copy'
-  }  
-  window.ReactNativeWebView.postMessage(JSON.stringify(cmd));
-}
-function go(){
-  var cmd = {
-    key: 'move',
-    value: document.getElementsByClassName('moveToBox')[0].getAttribute('value')
-  };
-  window.ReactNativeWebView.postMessage(JSON.stringify(cmd));
-}
-function send() {
-  window.ReactNativeWebView.postMessage('APN Value have to insert into this', '*');
-  window.alert('copy');
-}
-</script>`;
-
 class ProductDetailScreen extends Component {
   constructor(props) {
     super(props);
@@ -309,7 +265,7 @@ class ProductDetailScreen extends Component {
         scrollEnabled
         // source={{html: body + html + script} }
         onMessage={this.onMessage}
-        source={{html: htmlDetailWithCss(detail, script), baseUrl}}
+        source={{html: htmlDetailWithCss(detail), baseUrl}}
         style={{height: height3 || 1000}}
       />
     );
