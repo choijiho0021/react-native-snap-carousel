@@ -1,5 +1,5 @@
 import {StyleSheet, Platform} from 'react-native';
-
+import {isDeviceSize} from '../constants/SliderEntry.style';
 import {colors} from './Colors';
 
 export const appStyles = StyleSheet.create({
@@ -498,12 +498,13 @@ export const htmlDetailWithCss = (body, script = basicScript) => {
         text-align: center;
         display: flex;
         justify-content: center;
-        align-items: center;   
+        align-items: center;
     }
     .blueBox {
         height: 50px;
         border-radius: 5px 5px 0px 0px;
         background-color: ${colors.clearBlue};
+        padding-right: 10px;
         color: ${colors.white};
     }
     .blueBox font{
@@ -527,7 +528,7 @@ export const htmlDetailWithCss = (body, script = basicScript) => {
     }
     .copyBtn{
         display: flex;
-        justify-content: center;
+        justify-content: flex-end;
         align-items: center;
         height: 40px;
         width: 55px;
@@ -543,7 +544,7 @@ export const htmlDetailWithCss = (body, script = basicScript) => {
     }
     .copyTextLine font{
         line-height: 60px;
-        font-size: 14px;
+        font-size: ${isDeviceSize('small') ? '12px' : '14px'};
     }
     .moveToBox {
         font-size: 24px;
@@ -551,7 +552,7 @@ export const htmlDetailWithCss = (body, script = basicScript) => {
         border-radius: 0px 0px 5px 5px;
         background-color: ${colors.white};
         border: 1px solid ${colors.greyish};
-        border-top-width: 0px;
+        // border-top-width: 0px;
     }
     .moveToBox button{
         width: 100%; 
