@@ -7,6 +7,8 @@ import {
   Text,
   View,
 } from 'react-native';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
 import WebView from 'react-native-webview';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import AppAlert from '../components/AppAlert';
@@ -18,6 +20,7 @@ import Env from '../environment';
 import {API} from '../submodules/rokebi-utils';
 import i18n from '../utils/i18n';
 import utils from '../utils/utils';
+import * as infoActions from '../redux/modules/info';
 
 const {baseUrl} = Env.get();
 
@@ -175,12 +178,18 @@ class SimpleTextScreen extends Component {
     const cmd = JSON.parse(event.nativeEvent.data);
 
     switch (cmd.key) {
+      // uuid를 받아서 해당 페이지로 이동 추가
       case 'move':
         if (cmd.value) {
-          const moveTo = cmd.value.split('/');
-          this.props.navigation.navigate('Faq', {
-            key: moveTo[0],
-            num: undefined,
+          const item = this.props.info.infoList.find(
+            (elm) => elm.uuid === cmd.value,
+          );
+          this.props.navigation.navigate('SimpleText', {
+            key: 'noti',
+            title: i18n.t('set:noti'),
+            bodyTitle: item.title,
+            body: item.body,
+            mode: 'noti',
           });
         }
         break;
@@ -246,4 +255,13 @@ class SimpleTextScreen extends Component {
   }
 }
 
-export default SimpleTextScreen;
+// export default SimpleTextScreen;
+const mapStateToProps = (state) => ({
+  info: state.info.toJS(),
+});
+
+export default connect(mapStateToProps, (dispatch) => ({
+  action: {
+    info: bindActionCreators(infoActions, dispatch),
+  },
+}))(SimpleTextScreen);
