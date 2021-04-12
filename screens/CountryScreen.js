@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
     marginVertical: 7,
     marginHorizontal: 20,
     padding: 15,
+    flexDirection: 'row',
   },
   detail: {
     height: windowWidth > device.small.window.width ? 48 : 36,
@@ -145,6 +146,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     marginLeft: 10,
     width: 80,
+    justifyContent: 'center',
   },
   textView: {
     flex: 1,
@@ -186,31 +188,29 @@ const CountryListItem0 = ({item, selected, onPress}) => {
     <Pressable onPress={onPress(item.uuid)}>
       <View>
         <View key="product" style={[styles.card, borderColor]}>
-          <View style={{flexDirection: 'row'}}>
-            <View key="text" style={styles.textView}>
-              <Text
-                key="name"
-                style={[
-                  windowWidth > device.small.window.width
-                    ? appStyles.bold16Text
-                    : appStyles.bold14Text,
-                  color,
-                ]}>
-                {item.name}
-              </Text>
-            </View>
-            <View key="priceText" style={styles.appPrice}>
-              <AppPrice
-                key="price"
-                price={item.price}
-                balanceStyle={styles.priceStyle}
-                wonStyle={styles.wonStyle}
-              />
-            </View>
+          <View key="text" style={styles.textView}>
+            <Text
+              key="name"
+              style={[
+                windowWidth > device.small.window.width
+                  ? appStyles.bold16Text
+                  : appStyles.bold14Text,
+                color,
+              ]}>
+              {item.name}
+            </Text>
+            <Text key="desc" style={[appStyles.normal14Text, {marginTop: 5}]}>
+              {item.field_description}
+            </Text>
           </View>
-          <Text key="desc" style={{}}>
-            {item.field_description}
-          </Text>
+          <View key="priceText" style={styles.appPrice}>
+            <AppPrice
+              key="price"
+              price={item.price}
+              balanceStyle={styles.priceStyle}
+              wonStyle={styles.wonStyle}
+            />
+          </View>
         </View>
         {!_.isEmpty(item.promoFlag) && (
           <View style={styles.badge}>
