@@ -6,6 +6,7 @@
  */
 
 @import Firebase;
+@import AVFoundation;
 #import "AppDelegate.h"
 
 #import <React/RCTBridge.h>
@@ -36,7 +37,6 @@
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 
-#import <AVFoundation/AVFoundation.h>
 
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];

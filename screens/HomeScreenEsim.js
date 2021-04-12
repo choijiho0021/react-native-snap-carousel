@@ -95,7 +95,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     alignItems: 'center',
     width: '100%',
-    height: size.carouselHeight,
     backgroundColor: colors.white,
   },
   btnAlarm: {
@@ -115,7 +114,6 @@ const styles = StyleSheet.create({
   paginationContainer: {
     paddingVertical: 5,
     paddingHorizontal: 0,
-    justifyContent: 'flex-end',
   },
   dot: (
     width = ACTIVE_DOT_WIDTH,
@@ -178,10 +176,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   imgRatio: {
-    width: '100%',
-    height: size.carouselHeight,
     // figure out your image aspect ratio
-    // aspectRatio: 335 / size.carouselHeight,
+    aspectRatio: 335 / 100,
+    width: '100%',
   },
 });
 
@@ -196,7 +193,7 @@ const PromotionImage = ({item, onPress}) => {
         <Image
           source={{uri: API.default.httpImageUrl(item.imageUrl)}}
           style={styles.imgRatio}
-          resizeMode="stretch"
+          resizeMode="contain"
         />
       )}
     </TouchableOpacity>
