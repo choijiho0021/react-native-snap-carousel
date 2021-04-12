@@ -516,6 +516,7 @@ export const htmlDetailWithCss = (body, script = basicScript) => {
         background-color: ${colors.white};
         border: 1px solid ${colors.greyish};
         border-top-width: 0px;
+        border-bottom-width:0px;
         padding: 0px 20px;
     }
     .copyImg {
@@ -544,7 +545,7 @@ export const htmlDetailWithCss = (body, script = basicScript) => {
     }
     .copyTextLine font{
         line-height: 60px;
-        font-size: ${isDeviceSize('small') ? '12px' : '14px'};
+        font-size: ${isDeviceSize('small') ? '10px' : '14px'};
     }
     .moveToBox {
         font-size: 24px;
