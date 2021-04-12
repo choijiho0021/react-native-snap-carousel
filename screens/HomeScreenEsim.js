@@ -330,6 +330,8 @@ class HomeScreenEsim extends Component {
         body: item.notice.body,
         mode: 'noti',
       });
+    } else {
+      this.props.navigation.navigate('Faq');
     }
   }
 
