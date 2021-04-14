@@ -97,7 +97,7 @@ const CountryItem = ({item, localOpList, onPress}) => {
                   style={styles.image}
                 />
                 <Text key="cntry" style={styles.cntry}>
-                  {API.Product.getTitle(elm[0].categoryId[0], localOp)}
+                  {API.Product.getTitle(localOp)}
                 </Text>
                 <View style={styles.priceRow}>
                   <View style={styles.price}>

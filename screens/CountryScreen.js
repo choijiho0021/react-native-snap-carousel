@@ -230,10 +230,7 @@ const CountryBackButton = ({navigation, product}) => {
   const {localOpList, prodOfCountry} = product;
   const title =
     prodOfCountry && prodOfCountry.length > 0
-      ? API.Product.getTitle(
-          prodOfCountry[0].categoryId[0],
-          localOpList.get(prodOfCountry[0].partnerId),
-        )
+      ? API.Product.getTitle(localOpList.get(prodOfCountry[0].partnerId))
       : '';
 
   return <AppBackButton navigation={navigation} title={title} />;
@@ -294,10 +291,7 @@ class CountryScreen extends Component {
     const localOp = localOpList.get(prodOfCountry[0].partnerId) || {};
     const title =
       prodOfCountry && prodOfCountry.length > 0
-        ? API.Product.getTitle(
-            prodOfCountry[0].categoryId[0],
-            localOpList.get(prodOfCountry[0].partnerId),
-          )
+        ? API.Product.getTitle(localOpList.get(prodOfCountry[0].partnerId))
         : '';
 
     if (prodOfCountry) {
