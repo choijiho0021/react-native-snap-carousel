@@ -27,12 +27,13 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   prodTitle: {
+    paddingBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   inactiveContainer: {
-    paddingTop: 10,
+    // paddingTop: 10,
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
@@ -95,14 +96,24 @@ const title = (item, expired) => {
   );
 };
 
-const expireDate = (item) => {
+const topInfo = (item) => {
   return (
-    <View style={styles.inactiveContainer}>
-      <Text style={styles.normal12WarmGrey}>{i18n.t('esim:usablePeriod')}</Text>
-      <Text style={styles.normal14WarmGrey}>{`${utils.toDateString(
-        item.purchaseDate,
-        'YYYY-MM-DD',
-      )} ~ ${item.expireDate}`}</Text>
+    <View>
+      {item.type !== API.Subscription.CALL_PRODUCT && (
+        <View style={styles.inactiveContainer}>
+          <Text style={styles.normal12WarmGrey}>{i18n.t('esim:iccid')}</Text>
+          <Text style={styles.normal14WarmGrey}>{item.subsIccid}</Text>
+        </View>
+      )}
+      <View style={styles.inactiveContainer}>
+        <Text style={styles.normal12WarmGrey}>
+          {i18n.t('esim:usablePeriod')}
+        </Text>
+        <Text style={styles.normal14WarmGrey}>{`${utils.toDateString(
+          item.purchaseDate,
+          'YYYY-MM-DD',
+        )} ~ ${item.expireDate}`}</Text>
+      </View>
     </View>
   );
 };
@@ -136,7 +147,7 @@ export default class UsageItem extends PureComponent {
       <View
         style={[styles.usageListContainer, expired && styles.cardExpiredBg]}>
         {title(item, expired)}
-        {expireDate(item)}
+        {topInfo(item)}
         {!expired &&
           item.type !== API.Subscription.CALL_PRODUCT &&
           QRnCopyInfo(item, onPress)}
