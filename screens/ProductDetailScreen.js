@@ -126,12 +126,13 @@ class ProductDetailScreen extends Component {
 
   shouldComponentUpdate(preProps, preState) {
     const {tabIdx, height2} = this.state;
-    const {detail} = this.props.product;
+    const {detailInfo, detailCommon} = this.props.product;
 
     return (
       preState.tabIdx !== tabIdx ||
       preState.height2 !== height2 ||
-      preProps.detail !== detail ||
+      preProps.detailInfo !== detailInfo ||
+      preProps.detailCommon !== detailCommon ||
       preProps.localOpDetails !== this.props.localOpDetails
     );
   }
@@ -246,11 +247,11 @@ class ProductDetailScreen extends Component {
 
   renderWebView() {
     const {height3} = this.state;
-    const localOpDetails =
-      this.props.route.params && this.props.route.params.localOpDetails;
+    const {route, product} = this.props;
+    const localOpDetails = route.params && route.params.localOpDetails;
     const detail = _.isEmpty(localOpDetails)
-      ? this.props.product.detail
-      : localOpDetails;
+      ? product.detailInfo + product.detailCommon
+      : localOpDetails + product.detailCommon;
 
     return (
       <WebView

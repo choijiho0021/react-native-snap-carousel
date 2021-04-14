@@ -22,7 +22,7 @@ export const setSortedProdList = createAction(SET_SORTED_PROD_LIST);
 export const getProdDetail = (controller) => {
   return (dispatch, getState) => {
     const {product} = getState();
-    if (product.get('detail') === '')
+    if (product.get('detailInfo') === '')
       return dispatch(getProdDetailPage(controller));
     return new Promise.resolve();
   };
@@ -45,7 +45,8 @@ const initialState = Map({
   localOpList: Map(),
   prodOfCountry: [],
   sortedProdList: [],
-  detail: '',
+  detailInfo: '',
+  detailCommon: '',
 });
 
 export default handleActions(
@@ -54,9 +55,11 @@ export default handleActions(
       type: GET_PROD_DETAIL,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
-
-        if (result === 0 && objects.length > 0) {
-          return state.set('detail', objects);
+        const details = objects.map((item) => item.body);
+        if (result === 0 && details.length > 0) {
+          return state
+            .set('detailInfo', details[0])
+            .set('detailCommon', details.slice(1, details.length).join(''));
         }
         return state;
       },
