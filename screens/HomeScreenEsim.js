@@ -248,7 +248,6 @@ class HomeScreenEsim extends Component {
     this.onPressPromotion = this.onPressPromotion.bind(this);
     this.renderPromotion = this.renderPromotion.bind(this);
     this.renderDots = this.renderDots.bind(this);
-    this.clickTab = this.clickTab.bind(this);
     this.notification = this.notification.bind(this);
     this.init = this.init.bind(this);
     this.modalBody = this.modalBody.bind(this);
@@ -257,6 +256,8 @@ class HomeScreenEsim extends Component {
     this.offset = 0;
     this.controller = new AbortController();
     this.tabHeader = this.tabHeader.bind(this);
+
+    this.scrollRef = React.createRef();
   }
 
   componentDidMount() {
@@ -304,11 +305,12 @@ class HomeScreenEsim extends Component {
     this.props.navigation.navigate('Country');
   };
 
-  onIndexChange(index) {
+  onIndexChange = (index) => {
     this.setState({
       index,
     });
-  }
+    this.scrollRef.scrollTo({x: 0, y: 0, animated: false});
+  };
 
   onPressPromotion(item) {
     if (item.product_uuid) {
@@ -393,11 +395,6 @@ class HomeScreenEsim extends Component {
         onPress={this.onPressItem}
       />
     );
-  };
-
-  clickTab = (idx) => () => {
-    this.setState({index: idx});
-    this.scrollListReftop.scrollTo({x: 0, y: 0, animated: false});
   };
 
   modalBody = () => () => {
@@ -558,7 +555,7 @@ class HomeScreenEsim extends Component {
               ]}
               title={elm.category}
               // title={i18n.t(`prodDetail:${elm}`)}
-              onPress={this.clickTab(idx)}
+              onPress={() => this.onIndexChange(idx)}
             />
           ))}
         </View>
@@ -676,7 +673,7 @@ class HomeScreenEsim extends Component {
         {this.renderCarousel()}
         <ScrollView
           ref={(ref) => {
-            this.scrollListReftop = ref;
+            this.scrollRef = ref;
           }}
           // contentContainerStyle={appStyles.container}
           style={styles.scrollView}
