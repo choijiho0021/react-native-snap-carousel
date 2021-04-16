@@ -400,7 +400,7 @@ class MyPageScreen extends Component {
   };
 
   async didMount() {
-    const hasPhotoPermission = this.checkPhotoPermission();
+    const hasPhotoPermission = await this.checkPhotoPermission();
 
     this.setState({hasPhotoPermission});
 
@@ -434,8 +434,8 @@ class MyPageScreen extends Component {
     return true;
   }
 
-  changePhoto() {
-    const checkNewPermission = this.checkPhotoPermission();
+  async changePhoto() {
+    const checkNewPermission = await this.checkPhotoPermission();
 
     if (!this.props.uid) {
       this.props.navigation.navigate('Auth');
