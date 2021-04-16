@@ -1,10 +1,11 @@
 import IMP from 'iamport-react-native';
 import React, {Component} from 'react';
-import {SafeAreaView, StyleSheet} from 'react-native';
+import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import Video from 'react-native-video';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import {colors} from '../constants/Colors';
 import AppAlert from '../components/AppAlert';
 import AppBackButton from '../components/AppBackButton';
 import Env from '../environment';
@@ -36,6 +37,16 @@ const styles = StyleSheet.create({
     left: 0,
     bottom: 0,
     right: 0,
+  },
+  infoText: {
+    position: 'absolute',
+    left: 0,
+    bottom: 0,
+    right: 0,
+    marginBottom: 30,
+    color: colors.clearBlue,
+    textAlign: 'center',
+    fontSize: 14,
   },
 });
 class PaymentScreen extends Component {
@@ -150,12 +161,15 @@ class PaymentScreen extends Component {
         <IMP.Payment
           userCode={impId}
           loading={
-            <Video
-              source={loading}
-              repeat
-              style={styles.backgroundVideo}
-              resizeMode="cover"
-            />
+            <View style={{flex: 1, alignItems: 'stretch'}}>
+              <Video
+                source={loading}
+                repeat
+                style={styles.backgroundVideo}
+                resizeMode="cover"
+              />
+              <Text style={styles.infoText}>{i18n.t('pym:loadingInfo')}</Text>
+            </View>
           }
           startInLoadingState
           data={params} // 결제 데이터
