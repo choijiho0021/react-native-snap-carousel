@@ -131,7 +131,7 @@ class TutorialScreen extends Component {
 
   skip = () => {
     this.setState({modalVisible: false});
-    AppEventsLogger.logEvent('Tutorial Skip');
+    AppEventsLogger.logEvent('튜토리얼 SKIP');
   };
 
   completed = () => {
