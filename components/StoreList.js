@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
 import {connect} from 'react-redux';
 import _ from 'underscore';
@@ -130,7 +130,12 @@ const CountryItem = ({item, localOpList, onPress}) => {
 
 class StoreList extends Component {
   shouldComponentUpdate(nextProps) {
-    return this.props.data !== nextProps.data;
+    const {data, refreshTrigger} = this.props;
+
+    return (
+      data !== nextProps.data ||
+      (data === [] && refreshTrigger !== nextProps.refreshTrigger)
+    );
   }
 
   render() {
@@ -146,12 +151,6 @@ class StoreList extends Component {
             localOpList={localOpList}
           />
         ))}
-        {/* <FlatList
-          style={styles.container}
-          data={data}
-          renderItem={this._renderItem}
-          windowSize={6}
-        /> */}
       </View>
     );
   }

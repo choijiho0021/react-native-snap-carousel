@@ -494,7 +494,7 @@ export const htmlDetailWithCss = (body, script = basicScript) => {
     .noMargin {
         margin-bottom: 30px;
     }
-    .blueBox, .copyBox, .moveToBox {
+    .blueBox, .copyBox,  .moveToBox {
         text-align: center;
         display: flex;
         justify-content: center;
@@ -517,7 +517,7 @@ export const htmlDetailWithCss = (body, script = basicScript) => {
         border: 1px solid ${colors.greyish};
         border-top-width: 0px;
         border-bottom-width:0px;
-        padding: 0px 20px;
+        justify-content: space-between;
     }
     .copyImg {
         width: 7%;
@@ -528,7 +528,8 @@ export const htmlDetailWithCss = (body, script = basicScript) => {
         line-height: normal;
     }
     .copyBtn{
-        display: flex;
+        // display: flex;
+        margin-right: 20px;
         justify-content: flex-end;
         align-items: center;
         height: 40px;
@@ -541,11 +542,12 @@ export const htmlDetailWithCss = (body, script = basicScript) => {
         background-color: ${colors.whiteThree};
     }
     .copyTextLine {
-        margin-right: 20px;
+        // margin-right: 20px;
+        justify-content: flex-start;
     }
     .copyTextLine font{
         line-height: 60px;
-        font-size: ${isDeviceSize('small') ? '10px' : '14px'};
+        font-size: ${isDeviceSize('small') ? '9px' : '14px'};
     }
     .moveToBox {
         font-size: 24px;

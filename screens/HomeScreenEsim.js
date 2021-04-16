@@ -389,10 +389,13 @@ class HomeScreenEsim extends Component {
   };
 
   renderScene = (props) => {
+    const data = this.state[props.route.key];
+
     return (
       <StoreList
-        data={this.state[props.route.key]}
+        data={data}
         onPress={this.onPressItem}
+        refreshTrigger={this.state.activeSlide}
       />
     );
   };
