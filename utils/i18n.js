@@ -448,6 +448,8 @@ const en = {
   'pym:mandatory': ' (Mandatory)',
   'pym:detail': 'Check Details',
   'pym:systemError': 'Payment failed due to system circumstances',
+  'pym:loadingInfo':
+    '* There may be a delay of 3-4 seconds due to network effects.',
 
   'err:login': 'Please login first',
   'err:body': 'There is no body to show',
@@ -981,6 +983,8 @@ const ko = {
   'pym:mandatory': ' (필수)',
   'pym:detail': '자세히 보기',
   'pym:systemError': '시스템 사정으로 결제에 실패하였습니다.',
+  'pym:loadingInfo':
+    '* 결제 시, 네트워크 영향으로 3~4초 간의 지연이 발생할 수 있습니다.',
 
   'err:login': '로그인 후 이용해 주세요',
   'err:body': '본문이 없습니다',
