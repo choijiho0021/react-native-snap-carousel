@@ -45,6 +45,7 @@ import createHandlePushNoti from '../submodules/rokebi-utils/models/createHandle
 import i18n from '../utils/i18n';
 import pushNoti from '../utils/pushNoti';
 import TutorialScreen from './TutorialScreen';
+import AppActivityIndicator from '../components/AppActivityIndicator';
 
 const size =
   windowHeight > 810
@@ -392,7 +393,12 @@ class HomeScreenEsim extends Component {
   };
 
   renderScene = (props) => {
+    const {index, routes} = this.state;
     const data = this.state[props.route.key];
+
+    if (props.route.key !== routes[index].key) {
+      return <AppActivityIndicator style={{top: 100}} />;
+    }
 
     return (
       <StoreList
