@@ -287,7 +287,10 @@ class HomeScreenEsim extends Component {
       this.props.action.product.getProdList();
     }
 
-    if (prevProps.product.prodList !== this.props.product.prodList) {
+    if (
+      prevProps.product.prodList !== this.props.product.prodList ||
+      (diff > 0.2 && this.props.product.sortedProdList.length === 0)
+    ) {
       this.refresh();
     }
 
