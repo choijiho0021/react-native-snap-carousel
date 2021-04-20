@@ -396,7 +396,10 @@ class HomeScreenEsim extends Component {
     const {index, routes} = this.state;
     const data = this.state[props.route.key];
 
-    if (props.route.key !== routes[index].key) {
+    if (
+      props.route.key !== routes[index].key ||
+      this.props.product.sortedProdList.length === 0
+    ) {
       return <AppActivityIndicator style={{top: 100}} />;
     }
 
