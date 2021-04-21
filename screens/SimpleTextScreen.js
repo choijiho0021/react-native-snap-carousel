@@ -179,7 +179,7 @@ class SimpleTextScreen extends Component {
 
     switch (cmd.key) {
       // uuid를 받아서 해당 페이지로 이동 추가
-      case 'move':
+      case 'moveToPage':
         if (cmd.value) {
           const item = this.props.info.infoList.find(
             (elm) => elm.uuid === cmd.value,
@@ -190,6 +190,16 @@ class SimpleTextScreen extends Component {
             bodyTitle: item.title,
             body: item.body,
             mode: 'noti',
+          });
+        }
+        break;
+      // Faq로 이동
+      case 'moveToFaq':
+        if (cmd.value) {
+          const moveTo = cmd.value.split('/');
+          this.props.navigation.navigate('Faq', {
+            key: moveTo[0],
+            num: moveTo[1],
           });
         }
         break;

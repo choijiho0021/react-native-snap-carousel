@@ -30,6 +30,7 @@ import * as toastActions from '../redux/modules/toast';
 import * as productActions from '../redux/modules/product';
 import {Toast} from '../constants/CustomTypes';
 import AppIcon from '../components/AppIcon';
+import * as infoActions from '../redux/modules/info';
 
 const {channelId} = Env.get();
 
@@ -144,7 +145,21 @@ class ProductDetailScreen extends Component {
       case 'dimension':
         this.checkWindowSize(cmd.value);
         break;
-      case 'move':
+      case 'moveToPage':
+        if (cmd.value) {
+          const item = this.props.info.infoList.find(
+            (elm) => elm.uuid === cmd.value,
+          );
+          this.props.navigation.navigate('SimpleText', {
+            key: 'noti',
+            title: i18n.t('set:noti'),
+            bodyTitle: item.title,
+            body: item.body,
+            mode: 'noti',
+          });
+        }
+        break;
+      case 'moveToFaq':
         if (cmd.value) {
           const moveTo = cmd.value.split('/');
           this.props.navigation.navigate('Faq', {
@@ -327,11 +342,13 @@ export default connect(
   (state) => ({
     product: state.product.toObject(),
     pending: state.pender.pending[productActions.GET_PROD_DETAIL] || false,
+    info: state.info.toJS(),
   }),
   (dispatch) => ({
     action: {
       product: bindActionCreators(productActions, dispatch),
       toast: bindActionCreators(toastActions, dispatch),
+      info: bindActionCreators(infoActions, dispatch),
     },
   }),
 )(ProductDetailScreen);

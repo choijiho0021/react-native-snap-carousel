@@ -323,8 +323,8 @@ window.onload = function () {
     };
   window.ReactNativeWebView.postMessage(JSON.stringify(cmd));
 }
-function copy() {
-  var copyTxt = document.getElementById('copyTxt').firstChild.innerHTML;
+function copy(CopyTxtNumber) {
+  var copyTxt = document.getElementById('copyTxt' + CopyTxtNumber).firstChild.innerHTML;
   var txtArea = document.createElement("textarea");
   document.body.appendChild(txtArea);
   txtArea.value = copyTxt;
@@ -337,9 +337,9 @@ function copy() {
   }  
   window.ReactNativeWebView.postMessage(JSON.stringify(cmd));
 }
-function go(className){
+function go(key , className){
   var cmd = {
-    key: 'move',
+    key: key,
     value: document.getElementsByClassName(className)[0].getAttribute('value')
   };
   window.ReactNativeWebView.postMessage(JSON.stringify(cmd));
