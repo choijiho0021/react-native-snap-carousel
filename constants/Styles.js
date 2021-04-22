@@ -455,6 +455,10 @@ export const htmlDetailWithCss = (body, script = basicScript) => {
         url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Black.otf) format('opentype');
     }
 
+    li {
+      color: ${colors.warmGrey};
+    }
+
     .main-title {
         font-family: NotoSansKR;
         font-size: 24px;
@@ -614,6 +618,11 @@ export const htmlDetailWithCss = (body, script = basicScript) => {
     }
     .settings.${Platform.OS == 'ios' ? 'android' : 'ios'} {
         display: none;
+    }
+    .horizontalLine {
+      border-bottom: 1px solid black;
+      border-top: 1px solid black;
+      border-collapse: collapse;
     }
     </style>
     ${script}
