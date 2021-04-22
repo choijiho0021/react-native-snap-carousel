@@ -12,6 +12,7 @@ import Env from '../environment';
 import * as cartActions from '../redux/modules/cart';
 import api from '../submodules/rokebi-utils/api/api';
 import i18n from '../utils/i18n';
+import {API} from '../submodules/rokebi-utils';
 
 // const IMP = require('iamport-react-native').default;
 const loading = require('../assets/images/loading_1.mp4');
@@ -22,6 +23,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     height: '100%',
     width: '100%',
+    backgroundColor: colors.white,
   },
   webview: {
     flex: 1,
@@ -35,7 +37,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    bottom: 0,
+    bottom: 80,
     right: 0,
   },
   infoText: {
@@ -55,10 +57,12 @@ class PaymentScreen extends Component {
 
     this.state = {
       isPaid: true,
+      token: undefined,
     };
 
     this.callback = this.callback.bind(this);
     this.isTrue = this.isTrue.bind(this);
+    this.setToken = this.setToken.bind(this);
   }
 
   componentDidMount() {
@@ -87,6 +91,11 @@ class PaymentScreen extends Component {
       });
       this.props.navigation.setParams({isPaid: false});
     }
+    API.Payment.getImpToken().then((resp) => {
+      if (resp.code === 0) {
+        this.setToken(resp.response.access_token);
+      }
+    });
 
     if (params.mode === 'test' || params.amount === 0) {
       const {impId} = Env.get();
@@ -104,17 +113,22 @@ class PaymentScreen extends Component {
     }
   }
 
+  setToken = (token) => {
+    this.setState({token});
+  };
+
   isTrue = (val) => {
     return val === 'true';
   };
 
   async callback(response) {
-    const success =
-      Array.isArray(response.success) || _.isUndefined(response.success)
-        ? this.isTrue(response.imp_success)
-        : response.success;
+    let rsp = {};
 
-    if (success) {
+    await API.Payment.getUid(response.imp_uid, this.state.token).then((res) => {
+      rsp = res;
+    });
+
+    if (rsp[0].success) {
       // 결제완료시 '다음' 버튼 연속클릭 방지 - 연속클릭시 추가 결제 없이 order 계속 생성
       if (!this.props.route.params.isPaid) {
         await this.props.navigation.setParams({isPaid: true});
@@ -122,7 +136,8 @@ class PaymentScreen extends Component {
           this.props.route.params && this.props.route.params.params;
         this.props.action.cart
           .payNorder({
-            ...response,
+            imp_uid: rsp[0].imp_uid,
+            merchant_uid: rsp[0].merchant_uid,
             pg_provider: params.pg,
             payment_type: params.pay_method,
             amount: params.amount,
@@ -134,7 +149,7 @@ class PaymentScreen extends Component {
           .then((resp) => {
             if (resp.result === 0) {
               this.props.navigation.replace('PaymentResult', {
-                pymResult: response,
+                pymResult: rsp[0],
                 orderResult: resp,
               });
             } else {
