@@ -15,7 +15,6 @@ import {Map} from 'immutable';
 import {bindActionCreators} from 'redux';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
-import utils from '../utils/utils';
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
 import * as accountActions from '../redux/modules/account';

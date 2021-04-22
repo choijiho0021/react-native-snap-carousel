@@ -66,6 +66,7 @@ class InputMobile extends Component {
 
     this.ref = React.createRef();
     this.mounted = null;
+    this.timer = null;
   }
 
   componentDidMount() {
@@ -79,6 +80,10 @@ class InputMobile extends Component {
 
   componentWillUnmount() {
     this.mounted = false;
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
   }
 
   onChangeText = (key) => (value) => {
@@ -94,7 +99,7 @@ class InputMobile extends Component {
   onPress() {
     const {mobile} = this.state;
 
-    if (typeof this.props.onPress === 'function') {
+    if (typeof this.props.onPress === 'function' && !this.timer) {
       this.props.onPress(mobile.replace(/-/g, ''));
     }
     this.onTimer();
@@ -121,11 +126,12 @@ class InputMobile extends Component {
 
   onTimer = () => {
     this.setState({waiting: true});
-    setTimeout(() => {
+    this.timer = setTimeout(() => {
       if (this.mounted) {
         this.setState({waiting: false});
       }
-    }, 3000);
+      this.timer = null;
+    }, 15000);
   };
 
   error(key) {
