@@ -38,14 +38,14 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>kakao150021eafe4c18d2a51fb5ff97c38d9f</string>
+				<string>kakao48e28ca0768702895194b5612db75cf4</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>64</string>
+	<string>67</string>
 	<key>CodePushDeploymentKey</key>
-	<string>$(CODEPUSH_KEY)</string>
+	<string>pIbLXtxfL7vV7b6HJbgpBzp6gtN593MHEG54f</string>
 	<key>FacebookAppID</key>
 	<string>147522690488197</string>
 	<key>FacebookDisplayName</key>
@@ -57,7 +57,7 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>KAKAO_APP_KEY</key>
-	<string>150021eafe4c18d2a51fb5ff97c38d9f</string>
+	<string>48e28ca0768702895194b5612db75cf4</string>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -66,7 +66,7 @@
 		<string>kakaotalk-5.9.7</string>
 		<string>kakaolink</string>
 		<string>kakaokompassauth</string>
-		<string>kakao150021eafe4c18d2a51fb5ff97c38d9f</string>
+		<string>kakao48e28ca0768702895194b5612db75cf4</string>
 		<string>kftc-bankpay</string>
 		<string>ispmobile</string>
 		<string>itms-apps</string>

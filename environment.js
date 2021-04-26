@@ -5,8 +5,8 @@ const impId = 'imp53913318';
 // rokebi esim App
 const appId = 'esim';
 const codePushLabel = {
-  stagingIOS: 'v38',
-  stagingAndroid: 'v38',
+  stagingIOS: 'v50',
+  stagingAndroid: 'v49',
   productionIOS: 'v0',
   productionAndroid: 'v0',
 };
@@ -22,7 +22,6 @@ const env = {
 const ENV = {
   esim: {
     dev: {
-      ...env,
       // scheme: 'http',
       // rokApiUrl: 'svcapp.rokebi.com',
       // apiUrl: 'esim.rokebi.com',
@@ -37,24 +36,22 @@ const ENV = {
           : codePushLabel.stagingAndroid,
     },
     staging: {
-      ...env,
       scheme: 'http',
       rokApiUrl: 'tb.service.rokebi.com',
       apiUrl: 'esim-tb-v1.ap-northeast-2.elasticbeanstalk.com',
       baseUrl: 'http://esim-tb-v1.ap-northeast-2.elasticbeanstalk.com',
-      impId: impId,
+      impId,
       label:
         Platform.OS === 'ios'
           ? codePushLabel.stagingIOS
           : codePushLabel.stagingAndroid,
     },
     prod: {
-      ...env,
       scheme: 'https',
       rokApiUrl: 'svcapp.rokebi.com',
       apiUrl: 'esim.rokebi.com',
       baseUrl: 'https://esim.rokebi.com',
-      impId: impId,
+      impId,
       label:
         Platform.OS === 'ios'
           ? codePushLabel.productionIOS
@@ -63,7 +60,6 @@ const ENV = {
   },
   rokebi: {
     dev: {
-      ...env,
       scheme: 'https',
       rokApiUrl: 'svcapp.rokebi.com',
       apiUrl: 'usim.rokebi.com',
@@ -78,7 +74,6 @@ const ENV = {
           : codePushLabel.stagingAndroid,
     },
     staging: {
-      ...env,
       scheme: 'http',
       rokApiUrl: 'tb.service.rokebi.com',
       apiUrl: 'esim2-tb-v3.ap-northeast-2.elasticbeanstalk.com',
@@ -89,7 +84,6 @@ const ENV = {
           : codePushLabel.stagingAndroid,
     },
     prod: {
-      ...env,
       scheme: 'https',
       rokApiUrl: 'svcapp.rokebi.com',
       apiUrl: 'usim.rokebi.com',
@@ -104,33 +98,36 @@ const ENV = {
 
 class Env {
   constructor() {
-    this.env = this.Env('esim');
+    this.env = Env.appEnv('esim');
   }
 
   setAppIdByIccid(iccid) {
-    this.env = this.Env(iccid.substr(0, 8) === '00001111' ? 'esim' : 'usim');
+    this.env = Env.appEnv(iccid.substr(0, 8) === '00001111' ? 'esim' : 'usim');
   }
 
   get() {
     return this.env;
   }
 
-  Env(appId) {
-    const env =
-      process.env.NODE_ENV == 'production'
-        ? ENV[appId].prod
-        : process.env.NODE_ENV == 'staging'
-        ? ENV[appId].staging
-        : ENV[appId].dev;
+  static appEnv(app) {
+    if (ENV[app]) {
+      const appEnv =
+        ENV[app][
+          // eslint-disable-next-line no-nested-ternary
+          process.env.NODE_ENV === 'production'
+            ? 'prod'
+            : process.env.NODE_ENV === 'staging'
+            ? 'staging'
+            : 'dev'
+        ];
 
-    return {
-      ...env,
-      appId: appId,
-      impId,
-      channelId,
-      esimApp: appId === 'esim',
-      sipServer: '193.122.106.2:35060',
-    };
+      return {
+        ...appEnv,
+        ...env,
+        sipServer: '193.122.106.2:35060',
+      };
+    }
+    return env;
   }
 }
 
