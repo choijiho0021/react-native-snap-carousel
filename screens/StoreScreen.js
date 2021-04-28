@@ -94,6 +94,12 @@ class StoreScreen extends Component {
     this.refresh();
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.props !== nextProps || this.state.index !== nextState.index)
+      return true;
+    return false;
+  }
+
   componentDidUpdate(prevProps) {
     const focus = this.props.navigation.isFocused();
     const now = moment();
@@ -210,7 +216,7 @@ class StoreScreen extends Component {
   render() {
     return (
       // AppTextInput
-      <View style={appStyles.container}>
+      <View style={[appStyles.container, {flexGrow: 1}]}>
         <TabView
           style={styles.container}
           navigationState={this.state}
