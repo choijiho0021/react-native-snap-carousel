@@ -43,7 +43,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>67</string>
+	<string>70</string>
 	<key>CodePushDeploymentKey</key>
 	<string>pIbLXtxfL7vV7b6HJbgpBzp6gtN593MHEG54f</string>
 	<key>FacebookAppID</key>
@@ -114,6 +114,8 @@
 	<string>카메라 접근을 허용해 주세요</string>
 	<key>NSContactsUsageDescription</key>
 	<string>연락처 접근을 허용해 주세요</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>맞춤 상품 추천을 위해 허용해 주세요</string>
 	<key>NSMainNibFile</key>
 	<string>LaunchScreen</string>
 	<key>NSMicrophoneUsageDescription</key>

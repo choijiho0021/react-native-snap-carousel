@@ -1,31 +1,28 @@
 import React, {useEffect, useState} from 'react';
-import {Platform, StatusBar, StyleSheet, View, BackHandler} from 'react-native';
-import {createStore, applyMiddleware, compose} from 'redux';
-import {Provider} from 'react-redux';
-
-import ReduxThunk from 'redux-thunk';
-import penderMiddleware from 'redux-pender';
-import {createLogger} from 'redux-logger';
-
-import Video from 'react-native-video';
+import {BackHandler, Platform, StatusBar, StyleSheet, View} from 'react-native';
 import codePush from 'react-native-code-push';
-
+import {requestTrackingPermission} from 'react-native-tracking-transparency';
+import Video from 'react-native-video';
+import {Provider} from 'react-redux';
+import {applyMiddleware, compose, createStore} from 'redux';
+import {createLogger} from 'redux-logger';
+import penderMiddleware from 'redux-pender';
+import ReduxThunk from 'redux-thunk';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
-
-import utils from './utils/utils';
-import * as accountActions from './redux/modules/account';
-import * as productActions from './redux/modules/product';
-import * as promotionActions from './redux/modules/promotion';
-import * as infoActions from './redux/modules/info';
-import * as simActions from './redux/modules/sim';
-import * as syncActions from './redux/modules/sync';
-import CodePushModal from './components/CodePushModal';
 import AppAlert from './components/AppAlert';
-import i18n from './utils/i18n';
 import AppToast from './components/AppToast';
+import CodePushModal from './components/CodePushModal';
+import Env from './environment';
 import AppNavigator from './navigation/AppNavigator';
 import reducer from './redux/index';
-import Env from './environment';
+import * as accountActions from './redux/modules/account';
+import * as infoActions from './redux/modules/info';
+import * as productActions from './redux/modules/product';
+import * as promotionActions from './redux/modules/promotion';
+import * as simActions from './redux/modules/sim';
+import * as syncActions from './redux/modules/sync';
+import i18n from './utils/i18n';
+import utils from './utils/utils';
 
 const {esimApp} = Env.get();
 
@@ -123,6 +120,7 @@ async function login() {
 async function loadResourcesAsync() {
   // clear caches
   await store.dispatch(accountActions.clearCookies());
+  await requestTrackingPermission();
 
   // load product list
   await store.dispatch(productActions.getProdListWithToast());
