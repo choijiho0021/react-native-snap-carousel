@@ -43,7 +43,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>70</string>
+	<string>68</string>
 	<key>CodePushDeploymentKey</key>
 	<string>pIbLXtxfL7vV7b6HJbgpBzp6gtN593MHEG54f</string>
 	<key>FacebookAppID</key>
@@ -114,14 +114,14 @@
 	<string>카메라 접근을 허용해 주세요</string>
 	<key>NSContactsUsageDescription</key>
 	<string>연락처 접근을 허용해 주세요</string>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>맞춤 상품 추천을 위해 허용해 주세요</string>
 	<key>NSMainNibFile</key>
 	<string>LaunchScreen</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow esim to access your microphone</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>프로필 등록을 위해 사진 앨범 접근을 허용해 주세요</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>맞춤 상품 추천을 위해 허용해 주세요</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Ionicons.ttf</string>
