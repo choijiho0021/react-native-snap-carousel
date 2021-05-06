@@ -1,25 +1,26 @@
 /* eslint-disable global-require */
 import React, {Component} from 'react';
 import {
+  Dimensions,
+  Image,
+  Modal,
   StyleSheet,
   Text,
-  View,
-  Image,
-  Dimensions,
-  Modal,
   TouchableOpacity,
+  View,
 } from 'react-native';
+import {AppEventsLogger} from 'react-native-fbsdk';
+import Carousel, {Pagination} from 'react-native-snap-carousel';
+import {getTrackingStatus} from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';
 import _ from 'underscore';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
-import {AppEventsLogger} from 'react-native-fbsdk';
-import {appStyles} from '../constants/Styles';
-import i18n from '../utils/i18n';
 import {colors} from '../constants/Colors';
-import * as orderActions from '../redux/modules/order';
-import * as accountActions from '../redux/modules/account';
 import {sliderWidth} from '../constants/SliderEntry.style';
+import {appStyles} from '../constants/Styles';
 import Env from '../environment';
+import * as accountActions from '../redux/modules/account';
+import * as orderActions from '../redux/modules/order';
+import i18n from '../utils/i18n';
 
 const {esimApp} = Env.get();
 
@@ -131,12 +132,14 @@ class TutorialScreen extends Component {
 
   skip = () => {
     this.setState({modalVisible: false});
-    AppEventsLogger.logEvent('튜토리얼 SKIP');
+    if (getTrackingStatus === 'authorized')
+      AppEventsLogger.logEvent('튜토리얼 SKIP');
   };
 
   completed = () => {
     this.setState({modalVisible: false});
-    AppEventsLogger.logEvent('fb_mobile_tutorial_completion');
+    if (getTrackingStatus === 'authorized')
+      AppEventsLogger.logEvent('fb_mobile_tutorial_completion');
   };
 
   render() {

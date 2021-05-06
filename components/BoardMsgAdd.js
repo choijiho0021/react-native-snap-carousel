@@ -113,14 +113,17 @@ const styles = StyleSheet.create({
     color: colors.black,
     paddingHorizontal: 10,
   },
-  noti: {
-    ...appStyles.normal12Text,
+  notiView: {
     flex: 1,
+    flexDirection: 'row',
     marginTop: 20,
-    paddingVertical: 15,
     paddingHorizontal: 20,
     backgroundColor: colors.whiteTwo,
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noti: {
+    ...appStyles.normal12Text,
     textAlign: 'left',
   },
   container: {
@@ -455,8 +458,9 @@ class BoardMsgAdd extends Component {
             this.scrollRef = ref;
           }}>
           {this.props.isLoggedIn === false && this.renderContact()}
-
-          <Text style={styles.noti}>{i18n.t('board:noti')}</Text>
+          <View style={styles.notiView}>
+            <Text style={styles.noti}>{i18n.t('board:noti')}</Text>
+          </View>
 
           <View style={{flex: 1}}>
             <TextInput
