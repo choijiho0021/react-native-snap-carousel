@@ -589,11 +589,11 @@ const ko = {
   'home:unsupportedTitle': 'eSIM 미지원 단말',
   'home:supportedDevice': '서비스 이용 가능 단말',
   'home:supportedDeviceBody': '이외 해외 구매한 eSIM 사용가능 단말',
-  'home:unsupportedBody1': '로밍도깨비 ',
-  'home:unsupportedBody2': 'eSIM은 eSIM 지원 단말에서만 이용할 수 있는 서비스 ',
-  'home:unsupportedBody3': '입니다',
+  'home:unsupportedBody1': '로밍도깨비 eSIM 서비스는 ',
+  'home:unsupportedBody2': 'eSIM 모듈이 탑재된 eSIM 지원 단말에서 이용 가능',
+  'home:unsupportedBody3': '합니다',
   'home:unsupportedBody4':
-    'eSIM 미지원단말은 추후 서비스 될 로밍도깨비 USIM 서비스를 이용해주세요.',
+    'eSIM 미지원단말(일반 스마트폰) 사용자께서는 추후 서비스 될 로밍도깨비 유심서비스를 이용해주세요.',
 
   'store:dest': '목적지',
   'store:partnerName': '로컬 사업자',
