@@ -29,6 +29,7 @@ import {TabView} from 'react-native-tab-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import {requestTrackingPermission} from 'react-native-tracking-transparency';
 import AppButton from '../components/AppButton';
 import AppModal from '../components/AppModal';
 import StoreList from '../components/StoreList';
@@ -202,6 +203,7 @@ const PromotionImage = ({item, onPress}) => {
 };
 
 async function requestPermission() {
+  await requestTrackingPermission();
   if (Platform.OS === 'ios') {
     await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
     await requestNotifications(['alert', 'sound', 'badge']);
@@ -253,7 +255,6 @@ class HomeScreenEsim extends Component {
     this.init = this.init.bind(this);
     this.modalBody = this.modalBody.bind(this);
     this.checkFistLaunch = this.checkFistLaunch.bind(this);
-    this.getSupportDev = this.getSupportDev.bind(this);
     this.offset = 0;
     this.controller = new AbortController();
     this.tabHeader = this.tabHeader.bind(this);
@@ -264,15 +265,25 @@ class HomeScreenEsim extends Component {
   componentDidMount() {
     this.setState({time: moment()});
 
-    pushNoti.add(this.notification);
+    API.Device.getDevList().then((resp) => {
+      if (resp.result === 0) {
+        const deviceName = DeviceInfo.getModel();
+        const isSupportDev = resp.objects.includes(deviceName);
+        this.setState({
+          deviceList: resp.objects,
+          isSupportDev,
+        });
+        if (isSupportDev) {
+          pushNoti.add(this.notification);
 
-    this.refresh();
+          this.refresh();
 
-    requestPermission();
+          requestPermission();
 
-    this.checkFistLaunch();
-
-    this.getSupportDev();
+          this.checkFistLaunch();
+        }
+      }
+    });
 
     // 로그인 여부에 따라 달라지는 부분
     this.init();
@@ -339,18 +350,6 @@ class HomeScreenEsim extends Component {
     } else {
       this.props.navigation.navigate('Faq');
     }
-  }
-
-  getSupportDev() {
-    API.Device.getDevList().then((resp) => {
-      if (resp.result === 0) {
-        const deviceName = DeviceInfo.getModel();
-        this.setState({
-          deviceList: resp.objects,
-          isSupportDev: resp.objects.includes(deviceName),
-        });
-      }
-    });
   }
 
   getProdGroup() {

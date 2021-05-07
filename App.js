@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {BackHandler, Platform, StatusBar, StyleSheet, View} from 'react-native';
 import codePush from 'react-native-code-push';
-import {requestTrackingPermission} from 'react-native-tracking-transparency';
 import Video from 'react-native-video';
 import {Provider} from 'react-redux';
 import {applyMiddleware, compose, createStore} from 'redux';
@@ -120,7 +119,6 @@ async function login() {
 async function loadResourcesAsync() {
   // clear caches
   await store.dispatch(accountActions.clearCookies());
-  await requestTrackingPermission();
 
   // load product list
   await store.dispatch(productActions.getProdListWithToast());
