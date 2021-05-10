@@ -45,7 +45,7 @@
 	<key>CFBundleVersion</key>
 	<string>68</string>
 	<key>CodePushDeploymentKey</key>
-	<string>pIbLXtxfL7vV7b6HJbgpBzp6gtN593MHEG54f</string>
+	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
 	<string>147522690488197</string>
 	<key>FacebookDisplayName</key>
@@ -145,7 +145,6 @@
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
-		<string>audio</string>
 		<string>fetch</string>
 		<string>remote-notification</string>
 	</array>
