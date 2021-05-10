@@ -58,7 +58,7 @@ curiOSVersion=`appcenter codepush deployment list -a $account/$appnameios | grep
 curAndroidVersion=`appcenter codepush deployment list -a $account/$appnameandroid | grep $environment | grep 'Label' | awk -F " " '{print $5}'`
 
 if [[ ! "$curiOSVersion" =~ ^v[0-9]+$ ]] || [[ ! "$curAndroidVersion" =~ ^v[0-9]+$ ]]; then
-	echo "\033[31m"[Error]"\033[0m" "Please check appcenter-cli first"
+	echo "\033[31m"[Error]"\033[0m" "Please check appcenter-cli first: $curiOSVersion $curAndroidVersion"
 	exit 1
 fi
 
