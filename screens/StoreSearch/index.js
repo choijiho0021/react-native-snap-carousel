@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {AppEventsLogger} from 'react-native-fbsdk';
+import {getTrackingStatus} from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
@@ -219,10 +221,24 @@ class StoreSearchScreen extends Component {
   }
 
   onPressItem = (prodOfCountry) => {
-    if (this.state.searchWord.length > 0)
+    if (this.state.searchWord.length > 0) {
       Analytics.trackEvent('Page_View_Count', {
         page: 'Move To Country with Searching',
       });
+
+      // * logEvent(eventName: string, valueToSum: number, parameters: {[key:string]:string|number});
+
+      if (getTrackingStatus === 'authorized') {
+        const params = {
+          _valueToSum: 1,
+          fb_search_string: this.state.searchWord,
+          fb_content_type: 'Country',
+          success: 1,
+        };
+        AppEventsLogger.logEvent('fb_mobile_search', params);
+        console.log('@@ search events', prodOfCountry, this.state.searchWord);
+      }
+    }
 
     this.props.action.product.setProdOfCountry(prodOfCountry);
     this.props.navigation.navigate('Country');
