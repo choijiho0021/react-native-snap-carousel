@@ -273,15 +273,20 @@ class RegisterMobileScreen extends Component {
 
         if (!this.mounted) return;
 
-        if (
-          resp.result !== 0 &&
-          resp.result !== API.default.E_INVALID_ARGUMENT
-        ) {
-          console.log('confirm email failed', resp);
-          throw new Error('failed to confirm email');
+        isValid = resp.result === 0;
+        if (resp.result !== 0) {
+          // duplicated email error
+          if (
+            resp.result !== API.default.E_RESOURCE_NOT_FOUND ||
+            !resp.message?.includes('Duplicate')
+          ) {
+            // dulicated email 이외의 에러인 경우, throw error
+            console.log('confirm email failed', resp);
+            throw new Error('failed to confirm email');
+          }
         }
 
-        isValid = resp.result === 0;
+        // 정상이거나, duplicated email 인 경우는 화면 상태 갱신 필요
         this.setState({
           emailValidation: {
             isValid,
