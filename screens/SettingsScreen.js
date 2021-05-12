@@ -132,7 +132,6 @@ class SettingsScreen extends Component {
           route: undefined,
         },
       ],
-      isPushNotiEnabled: props.isPushNotiEnabled,
       isMounted: false,
     };
 
