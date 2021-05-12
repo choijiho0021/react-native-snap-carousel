@@ -21,7 +21,9 @@ const GET_ACCOUNT_BY_USER = 'rokebi/account/GET_ACCOUNT_BY_USER';
 const GET_ACCOUNT_BY_UUID = 'rokebi/account/GET_ACCOUNT_BY_UUID';
 const ACTIVATE_ACCOUNT = 'rokebi/account/ACTIVATE_ACCOUNT';
 export const LOGIN = 'rokebi/account/LOGIN';
+export const LOGOUT = 'rokebi/account/LOGOUT';
 export const CLEAR_COOKIES = 'rokebi/account/CLEAR_COOKIES';
+export const GET_ALL_COOKIES = 'rokebi/account/GET_ALL_COOKIES';
 export const UPLOAD_PICTURE = 'rokebi/account/UPLOAD_PICTURE';
 export const CHANGE_PICTURE = 'rokebi/account/CHANGE_PICTURE';
 const GET_TOKEN = 'rokebi/account/GET_TOKEN';
@@ -34,7 +36,9 @@ export const updateAccount = createAction(UPDATE_ACCOUNT);
 const resetAccount = createAction(RESET_ACCOUNT);
 export const signUp = createAction(SIGN_UP);
 const logIn = createAction(LOGIN, API.User.logIn);
+const logOut = createAction(LOGOUT, API.User.logOut);
 const clearCookies0 = createAction(CLEAR_COOKIES, API.User.clearCookies);
+const getAllCookies0 = createAction(GET_ALL_COOKIES, API.User.getAllCookies);
 export const getUserId = createAction(GET_USER_ID, API.User.getByName);
 export const getAccount = createAction(GET_ACCOUNT, API.Account.getAccount);
 const getAccountByUser = createAction(
@@ -79,11 +83,17 @@ export const auth = (state) => ({
 
 export const logout = () => {
   return (dispatch) => {
+    const token = utils.retrieveData(API.User.KEY_TOKEN);
+
     utils.removeData(API.User.KEY_ICCID);
     utils.removeData(API.User.KEY_MOBILE);
     utils.removeData(API.User.KEY_PIN);
+    utils.removeData(API.User.KEY_TOKEN);
 
     batch(() => {
+      // 먼저 로그아웃 한다.
+      dispatch(logOut(token));
+
       dispatch(resetAccount());
       // reset 한 후에 token을 다시 읽어 온다.
       dispatch(getToken());
@@ -185,6 +195,12 @@ export const registerMobile = (iccid, code, mobile) => {
   };
 };
 
+export const getAllCookies = () => {
+  return (dispatch) => {
+    return dispatch(getAllCookies0());
+  };
+};
+
 export const clearCookies = () => {
   return (dispatch) => {
     return dispatch(clearCookies0());
@@ -201,6 +217,7 @@ export const logInAndGetAccount = (mobile, pin, iccid) => {
 
           utils.storeData(API.User.KEY_MOBILE, obj.current_user.name);
           utils.storeData(API.User.KEY_PIN, pin);
+          utils.storeData(API.User.KEY_TOKEN, obj.csrf_token);
 
           // get ICCID account info
           if (iccid) {
