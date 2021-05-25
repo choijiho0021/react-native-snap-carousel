@@ -95,7 +95,7 @@ export default codePush(codePushOptions)(function App(props) {
           ) : (
             <AppNavigator store={store} />
           )}
-          <CodePushModal />
+          {!showSplash && <CodePushModal />}
           <AppToast />
         </View>
       </Provider>
