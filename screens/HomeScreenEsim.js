@@ -311,6 +311,10 @@ class HomeScreenEsim extends Component {
     }
 
     if (this.props.sync.progress) {
+      if (this.state.firstLaunch) {
+        AsyncStorage.removeItem('alreadyLaunched');
+        this.setState({firstLaunch: false});
+      }
       this.props.navigation.navigate('CodePush');
     }
   }
