@@ -1,5 +1,6 @@
 import React, {PureComponent} from 'react';
 import {StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
+import _ from 'underscore';
 import {API} from '../submodules/rokebi-utils';
 import {windowHeight} from '../constants/SliderEntry.style';
 
