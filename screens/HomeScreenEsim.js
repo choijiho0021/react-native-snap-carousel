@@ -267,8 +267,11 @@ class HomeScreenEsim extends Component {
 
     API.Device.getDevList().then((resp) => {
       if (resp.result === 0) {
-        const deviceName = DeviceInfo.getModel();
-        const isSupportDev = resp.objects.includes(deviceName);
+        const deviceModel = DeviceInfo.getModel();
+        const deviceName = DeviceInfo.getDeviceId();
+
+        const isSupportDev =
+          resp.objects.includes(deviceModel) || deviceName === 'iPhone12,8'; // (2nd Generation iPhone SE)
         this.setState({
           deviceList: resp.objects,
           isSupportDev,
