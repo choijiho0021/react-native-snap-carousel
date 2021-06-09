@@ -46,10 +46,6 @@ class PushNoti {
     onRegister = ({token}) => {},
     onNotification = (notification) => {},
   }) {
-    const enabled = messaging().hasPermission();
-    if (enabled) {
-      await messaging().requestPermission();
-    }
     messaging()
       .getToken()
       .then((token) => {

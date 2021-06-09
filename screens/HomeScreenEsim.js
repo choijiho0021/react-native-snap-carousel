@@ -19,17 +19,14 @@ import {
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import RNExitApp from 'react-native-exit-app';
-import {
-  PERMISSIONS,
-  request,
-  requestNotifications,
-} from 'react-native-permissions';
+import {PERMISSIONS, request} from 'react-native-permissions';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {TabView} from 'react-native-tab-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import {requestTrackingPermission} from 'react-native-tracking-transparency';
+import messaging from '@react-native-firebase/messaging';
 import AppButton from '../components/AppButton';
 import AppModal from '../components/AppModal';
 import StoreList from '../components/StoreList';
@@ -203,12 +200,13 @@ const PromotionImage = ({item, onPress}) => {
 };
 
 async function requestPermission() {
-  await requestTrackingPermission();
   if (Platform.OS === 'ios') {
     await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
-    await requestNotifications(['alert', 'sound', 'badge']);
+    await messaging().requestPermission();
+    await requestTrackingPermission();
   } else if (Platform.OS === 'android') {
     await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+    await requestTrackingPermission();
   }
 }
 
