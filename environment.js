@@ -7,8 +7,8 @@ const appId = 'esim';
 const codePushLabel = {
   stagingIOS: 'v56',
   stagingAndroid: 'v55',
-  productionIOS: "v10",
-  productionAndroid: "v3",
+  productionIOS: "v13",
+  productionAndroid: "v6",
 };
 const channelId = '_nzQhxb';
 
