@@ -237,6 +237,7 @@ class HomeScreenEsim extends Component {
       europe: [],
       usaAu: [],
       multi: [],
+      firstLaunch: false,
       darkMode: Appearance.getColorScheme(),
     };
 
