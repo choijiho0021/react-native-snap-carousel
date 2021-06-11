@@ -109,7 +109,6 @@ class TutorialScreen extends Component {
     this.carousel = React.createRef();
     this.state = {
       activeSlide: 0,
-      modalVisible: true,
       images: [{key: 'step1'}, {key: 'step2'}, {key: 'step3'}, {key: 'step4'}],
     };
 
@@ -131,13 +130,13 @@ class TutorialScreen extends Component {
   };
 
   skip = () => {
-    this.setState({modalVisible: false});
+    this.props.onOkClose();
     if (getTrackingStatus === 'authorized')
       AppEventsLogger.logEvent('튜토리얼 SKIP');
   };
 
   completed = () => {
-    this.setState({modalVisible: false});
+    this.props.onOkClose();
     if (getTrackingStatus === 'authorized')
       AppEventsLogger.logEvent('fb_mobile_tutorial_completion');
   };
@@ -146,85 +145,78 @@ class TutorialScreen extends Component {
     const {images, activeSlide} = this.state;
 
     return (
-      <View style={styles.container}>
-        <Modal
-          animationType="slide"
-          transparent={false}
-          visible={this.state.modalVisible}
-          // onRequestClose={() => {
-          //   Alert.alert('Modal has been closed.');
-          // }}
-        >
-          <View style={{flex: 1}}>
-            <Carousel
-              ref={this.carousel}
-              data={images}
-              renderItem={this.renderTutorial}
-              onSnapToItem={(index) => this.setState({activeSlide: index})}
-              autoplay={false}
-              // loop
-              useScrollView
-              lockScrollWhileSnapping
-              // resizeMode='stretch'
-              // overflow='hidden'
-              sliderWidth={sliderWidth}
-              itemWidth={sliderWidth}
-              // itemHeight={sliderHeight*0.5}
-            />
+      <Modal
+        style={styles.container}
+        animationType="slide"
+        transparent={false}
+        visible={this.props.visible}>
+        <View style={{flex: 1}}>
+          <Carousel
+            ref={this.carousel}
+            data={images}
+            renderItem={this.renderTutorial}
+            onSnapToItem={(index) => this.setState({activeSlide: index})}
+            autoplay={false}
+            // loop
+            useScrollView
+            lockScrollWhileSnapping
+            // resizeMode='stretch'
+            // overflow='hidden'
+            sliderWidth={sliderWidth}
+            itemWidth={sliderWidth}
+            // itemHeight={sliderHeight*0.5}
+          />
 
-            <Pagination
-              dotsLength={images.length}
-              activeDotIndex={activeSlide}
-              dotContainerStyle={{width: 10, height: 15}}
-              dotStyle={styles.dotStyle}
-              inactiveDotStyle={styles.inactiveDotStyle}
-              inactiveDotOpacity={0.4}
-              inactiveDotScale={1.0}
-              carouselRef={this.carousel.current}
-              tappableDots={!_.isEmpty(this.carousel.current)}
-              containerStyle={styles.pagination}
-            />
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              height: 52,
-            }}>
-            {this.state.activeSlide === this.state.images.length - 1 ? (
-              <View style={styles.bottom}>
-                <TouchableOpacity
-                  style={[
-                    styles.touchableOpacity,
-                    {flex: 1, alignItems: 'center'},
-                  ]}
-                  onPress={() => this.completed()}>
-                  <Text style={styles.bottomText}>
-                    {i18n.t('tutorial:close')}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <View style={[styles.bottom, {justifyContent: 'space-between'}]}>
-                <TouchableOpacity
-                  style={styles.touchableOpacity}
-                  onPress={() => this.skip()}>
-                  <Text style={styles.bottomText}>
-                    {i18n.t('tutorial:skip')}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.touchableOpacity}
-                  onPress={() => this.carousel.current.snapToNext()}>
-                  <Text style={[styles.bottomText, {color: colors.clearBlue}]}>
-                    {i18n.t('tutorial:next')}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
-        </Modal>
-      </View>
+          <Pagination
+            dotsLength={images.length}
+            activeDotIndex={activeSlide}
+            dotContainerStyle={{width: 10, height: 15}}
+            dotStyle={styles.dotStyle}
+            inactiveDotStyle={styles.inactiveDotStyle}
+            inactiveDotOpacity={0.4}
+            inactiveDotScale={1.0}
+            carouselRef={this.carousel.current}
+            tappableDots={!_.isEmpty(this.carousel.current)}
+            containerStyle={styles.pagination}
+          />
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            height: 52,
+          }}>
+          {this.state.activeSlide === this.state.images.length - 1 ? (
+            <View style={styles.bottom}>
+              <TouchableOpacity
+                style={[
+                  styles.touchableOpacity,
+                  {flex: 1, alignItems: 'center'},
+                ]}
+                onPress={() => this.completed()}>
+                <Text style={styles.bottomText}>
+                  {i18n.t('tutorial:close')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={[styles.bottom, {justifyContent: 'space-between'}]}>
+              <TouchableOpacity
+                style={styles.touchableOpacity}
+                onPress={() => this.skip()}>
+                <Text style={styles.bottomText}>{i18n.t('tutorial:skip')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.touchableOpacity}
+                onPress={() => this.carousel.current.snapToNext()}>
+                <Text style={[styles.bottomText, {color: colors.clearBlue}]}>
+                  {i18n.t('tutorial:next')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      </Modal>
     );
   }
 }

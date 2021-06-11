@@ -274,6 +274,8 @@ class HomeScreenEsim extends Component {
           deviceList: resp.objects,
           isSupportDev,
         });
+
+        this.renderTitleBtn();
         if (isSupportDev) {
           pushNoti.add(this.notification);
 
@@ -688,7 +690,10 @@ class HomeScreenEsim extends Component {
     const {isSupportDev, firstLaunch, darkMode} = this.state;
     return (
       <View style={styles.whiteBackground}>
-        {firstLaunch && <TutorialScreen />}
+        <TutorialScreen
+          visible={firstLaunch}
+          onOkClose={() => this.setState({firstLaunch: false})}
+        />
         {this.renderCarousel()}
         <ScrollView
           ref={(ref) => {
