@@ -44,7 +44,7 @@ import i18n from '../utils/i18n';
 import pushNoti from '../utils/pushNoti';
 import TutorialScreen from './TutorialScreen';
 import AppActivityIndicator from '../components/AppActivityIndicator';
-import {PromotionModelState} from '@/redux/modules/promotion';
+import {RootState} from '@/redux';
 
 const DOT_MARGIN = 6;
 const INACTIVE_DOT_WIDTH = 6;
@@ -53,9 +53,8 @@ const ACTIVE_DOT_WIDTH = 20;
 const BadgeAppButton = withBadge(
   ({notReadNoti}) => notReadNoti,
   {badgeStyle: {right: -3, top: 0}},
-  (state) => ({
-    notReadNoti: state.noti.get('notiList').filter((elm) => elm.isRead === 'F')
-      .length,
+  ({noti}: RootState) => ({
+    notReadNoti: noti.notiList.filter((elm) => elm.isRead === 'F').length,
   }),
 )(AppButton);
 
@@ -719,21 +718,12 @@ class HomeScreenEsim extends Component {
 }
 
 export default connect(
-  ({
+  ({account, product, info, promotion, sync}: RootState) => ({
     account,
     product,
     info,
-    promotion,
-    sync,
-  }: {
-    account: accountActions.AccountModelState;
-    promotion: PromotionModelState;
-  }) => ({
-    account,
-    product: product.toObject(),
-    info: info.toJS(),
     promotion: promotion.promotion,
-    sync: sync.toJS(),
+    sync,
   }),
   (dispatch) => ({
     action: {

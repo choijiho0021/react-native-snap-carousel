@@ -23,7 +23,7 @@ import * as toastActions from '../redux/modules/toast';
 import AppModal from '../components/AppModal';
 import Env from '../environment';
 import {Toast} from '../constants/CustomTypes';
-import {AccountModelState} from '@/redux/modules/account';
+import {RootState} from '@/redux';
 
 const {channelId} = Env.get();
 
@@ -220,10 +220,10 @@ class ContactScreen extends Component {
 }
 
 export default connect(
-  ({info, account, noti, pender}: {account: AccountModelState}) => ({
-    info: info.toJS(),
+  ({info, account, noti, pender}: RootState) => ({
+    info,
     account,
-    noti: noti.toJS(),
+    noti,
     pending: pender.pending[notiActions.SEND_ALIM_TALK] || false,
   }),
   (dispatch) => ({

@@ -12,7 +12,7 @@ import _ from 'underscore';
 import LabelText from '../components/LabelText';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import AppButton from '../components/AppButton';
-import {AccountModelState} from '@/redux/modules/account';
+import {RootState} from '@/redux';
 
 class MySimListItem extends PureComponent {
   render() {
@@ -113,8 +113,8 @@ const styles = StyleSheet.create({
 });
 
 export default connect(
-  ({sim, account, pender}: {account: AccountModelState}) => ({
-    sim: sim.toJS(),
+  ({sim, account, pender}: RootState) => ({
+    sim,
     account,
     pending: pender.pending[simActions.UPDATE_SIM_PARTNER],
   }),

@@ -1,4 +1,5 @@
 /* eslint-disable global-require */
+import {RootState} from '@/redux';
 import React, {Component} from 'react';
 import {
   Dimensions,
@@ -221,13 +222,11 @@ class TutorialScreen extends Component {
   }
 }
 
-export default connect(
-  ({account, pender}: {account: accountActions.AccountModelState}) => ({
-    account,
-    auth: accountActions.auth(account),
-    pending:
-      pender.pending[orderActions.GET_ORDERS] ||
-      pender.pending[accountActions.UPLOAD_PICTURE] ||
-      false,
-  }),
-)(TutorialScreen);
+export default connect(({account, pender}: RootState) => ({
+  account,
+  auth: accountActions.auth(account),
+  pending:
+    pender.pending[orderActions.GET_ORDERS] ||
+    pender.pending[accountActions.UPLOAD_PICTURE] ||
+    false,
+}))(TutorialScreen);

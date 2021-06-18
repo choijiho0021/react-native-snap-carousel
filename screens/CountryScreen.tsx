@@ -36,6 +36,7 @@ import {timer} from '../constants/Timer';
 import api from '../submodules/rokebi-utils/api/api';
 import AppAlert from '../components/AppAlert';
 import Env from '../environment';
+import {RootState} from '@/redux';
 
 const {esimApp} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -236,7 +237,7 @@ const CountryBackButton = ({navigation, product}) => {
   return <AppBackButton navigation={navigation} title={title} />;
 };
 
-const BackButton = connect((state) => ({product: state.product.toObject()}))(
+const BackButton = connect(({product}: RootState) => ({product}))(
   memo(CountryBackButton),
 );
 
@@ -552,11 +553,7 @@ class CountryScreen extends Component {
 }
 
 export default connect(
-  ({account, cart, product}: {account: accountActions.AccountModelState}) => ({
-    product: product.toObject(),
-    cart: cart.toJS(),
-    account,
-  }),
+  ({account, cart, product}: RootState) => ({product, cart, account}),
   (dispatch) => ({
     action: {
       product: bindActionCreators(productActions, dispatch),

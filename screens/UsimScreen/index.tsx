@@ -18,6 +18,7 @@ import AppActivityIndicator from '../../components/AppActivityIndicator';
 import {timer} from '../../constants/Timer';
 import CardInfo from './components/CardInfo';
 import UsageItem from './components/UsageItem';
+import {RootState} from '@/redux';
 
 const styles = StyleSheet.create({
   title: {
@@ -204,30 +205,20 @@ class UsimScreen extends Component {
 }
 
 export default connect(
-  ({
+  ({order, account, noti, info, pender, sync, cart}: RootState) => ({
     order,
     account,
+    auth: accountActions.auth(account),
     noti,
     info,
-    pender,
-    sync,
-    cart,
-  }: {
-    account: accountActions.AccountModelState;
-  }) => ({
-    order: order.toObject(),
-    account,
-    auth: accountActions.auth(account),
-    noti: noti.toJS(),
-    info: info.toJS(),
     loginPending:
       pender.pending[accountActions.LOGIN] ||
       pender.pending[accountActions.GET_ACCOUNT] ||
       false,
     pending: pender.pending[orderActions.GET_SUBS] || false,
     updatePending: pender.pending[orderActions.UPDATE_SUBS_STATUS] || false,
-    sync: sync.toJS(),
-    lastTab: cart.get('lastTab').toJS(),
+    sync,
+    lastTab: cart.lastTab.toJS(),
   }),
   (dispatch) => ({
     action: {

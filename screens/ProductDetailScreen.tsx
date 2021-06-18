@@ -31,6 +31,7 @@ import * as productActions from '../redux/modules/product';
 import {Toast} from '../constants/CustomTypes';
 import AppIcon from '../components/AppIcon';
 import * as infoActions from '../redux/modules/info';
+import {RootState} from '@/redux';
 
 const {channelId} = Env.get();
 
@@ -339,10 +340,10 @@ class ProductDetailScreen extends Component {
 }
 
 export default connect(
-  (state) => ({
-    product: state.product.toObject(),
-    pending: state.pender.pending[productActions.GET_PROD_DETAIL] || false,
-    info: state.info.toJS(),
+  ({product, pender, info}: RootState) => ({
+    product,
+    pending: pender.pending[productActions.GET_PROD_DETAIL] || false,
+    info,
   }),
   (dispatch) => ({
     action: {

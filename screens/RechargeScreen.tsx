@@ -24,6 +24,7 @@ import _ from 'underscore';
 import AppBackButton from '../components/AppBackButton';
 import {isDeviceSize} from '../constants/SliderEntry.style';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import {RootState} from '@/redux';
 
 class RechargeScreen extends Component {
   constructor(props) {
@@ -249,10 +250,7 @@ const styles = StyleSheet.create({
 });
 
 export default connect(
-  ({account}: {account: accountActions.AccountModelState}) => ({
-    account,
-    auth: accountActions.auth(account),
-  }),
+  ({account}: RootState) => ({account, auth: accountActions.auth(account)}),
   (dispatch) => ({
     action: {
       cart: bindActionCreators(cartActions, dispatch),

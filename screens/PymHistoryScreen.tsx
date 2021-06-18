@@ -10,6 +10,7 @@ import i18n from '../utils/i18n';
 import utils from '../utils/utils';
 import {bindActionCreators} from 'redux';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import {RootState} from '@/redux';
 
 class PymHistoryListItem extends PureComponent {
   _toPurchaseCnt(value) {
@@ -201,9 +202,7 @@ const styles = StyleSheet.create({
 });
 
 export default connect(
-  ({account}: {account: accountActions.AccountModelState}) => ({
-    account,
-  }),
+  ({account}: RootState) => ({account}),
   (dispatch) => ({
     AccountActions: bindActionCreators(accountActions, dispatch),
   }),

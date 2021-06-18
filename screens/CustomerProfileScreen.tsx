@@ -22,6 +22,7 @@ import AppIcon from '../components/AppIcon';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import {isAndroid} from '../components/SearchBarAnimation/utils';
 import {isDeviceSize} from '../constants/SliderEntry.style';
+import {RootState} from '@/redux';
 
 class Profile extends PureComponent {
   constructor(props) {
@@ -322,16 +323,10 @@ const styles = StyleSheet.create({
 });
 
 export default connect(
-  ({
-    account,
-    profile,
-    pender,
-  }: {
-    account: accountActions.AccountModelState;
-  }) => ({
+  ({account, profile, pender}: RootState) => ({
     account,
     auth: accountActions.auth(account),
-    profile: profile.toJS(),
+    profile,
     pending:
       pender.pending[profileActions.profileAddAndGet] ||
       pender.pending[profileActions.updateCustomerProfile] ||

@@ -3,6 +3,7 @@ import {Image, TouchableWithoutFeedback, View, Text} from 'react-native';
 import {connect} from 'react-redux';
 import _ from 'underscore';
 import {appStyles} from '../constants/Styles';
+import {RootState} from '../redux';
 
 class AppBackButton extends PureComponent {
   constructor(props) {
@@ -51,6 +52,6 @@ class AppBackButton extends PureComponent {
   }
 }
 
-export default connect((state) => ({
-  lastTab: state.cart.get('lastTab').toJS(),
+export default connect(({cart}: RootState) => ({
+  lastTab: cart.lastTab.toJS(),
 }))(AppBackButton);

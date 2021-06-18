@@ -1,3 +1,4 @@
+import {RootState} from '@/redux';
 import Clipboard from '@react-native-community/clipboard';
 import React, {Component} from 'react';
 import {FlatList, RefreshControl, StyleSheet, Text, View} from 'react-native';
@@ -342,29 +343,19 @@ class EsimScreen extends Component {
 }
 
 export default connect(
-  ({
-    account,
+  ({account, order, noti, info, pender, sync, cart}: RootState) => ({
     order,
-    noti,
-    info,
-    pender,
-    sync,
-    cart,
-  }: {
-    account: accountActions.AccountModelState;
-  }) => ({
-    order: order.toObject(),
     account,
     auth: accountActions.auth(account),
-    noti: noti.toJS(),
-    info: info.toJS(),
+    noti,
+    info,
     loginPending:
       pender.pending[accountActions.LOGIN] ||
       pender.pending[accountActions.GET_ACCOUNT] ||
       false,
     pending: pender.pending[orderActions.GET_SUBS] || false,
-    sync: sync.toJS(),
-    lastTab: cart.get('lastTab').toJS(),
+    sync,
+    lastTab: cart.lastTab.toJS(),
   }),
   (dispatch) => ({
     action: {

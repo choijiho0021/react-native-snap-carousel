@@ -17,6 +17,7 @@ import AppBackButton from '../components/AppBackButton';
 import AppFlatListItem from '../components/AppFlatListItem';
 import {sliderWidth} from '../constants/SliderEntry.style';
 import AppActivityIndicator from '../components/AppActivityIndicator';
+import {RootState} from '@/redux';
 
 const styles = StyleSheet.create({
   pagination: {
@@ -230,13 +231,11 @@ class GuideScreen extends Component {
   }
 }
 
-export default connect(
-  ({account, pender}: {account: accountActions.AccountModelState}) => ({
-    account,
-    auth: accountActions.auth(account),
-    pending:
-      pender.pending[orderActions.GET_ORDERS] ||
-      pender.pending[accountActions.UPLOAD_PICTURE] ||
-      false,
-  }),
-)(GuideScreen);
+export default connect(({account, pender}: RootState) => ({
+  account,
+  auth: accountActions.auth(account),
+  pending:
+    pender.pending[orderActions.GET_ORDERS] ||
+    pender.pending[accountActions.UPLOAD_PICTURE] ||
+    false,
+}))(GuideScreen);

@@ -15,6 +15,7 @@ import LabelText from '../components/LabelText';
 import AppButton from '../components/AppButton';
 import AppModal from '../components/AppModal';
 import subsApi from '../submodules/rokebi-utils/api/subscriptionApi';
+import {RootState} from '@/redux';
 
 const activateBtn = 'activateBtn';
 const deactivateBtn = 'deactivateBtn';
@@ -103,7 +104,7 @@ class SubsDetailScreen extends Component {
     });
 
     const detail = this.props.route.params && this.props.route.params.detail;
-    const prodList = this.props.product.get('prodList');
+    const {prodList} = this.props.product;
     const {price} = prodList.get(detail.prodId) || {};
 
     this.setState({price, ...detail});
@@ -299,18 +300,11 @@ class SubsDetailScreen extends Component {
 }
 
 export default connect(
-  ({
-    account,
-    product,
-    order,
-    pender,
-  }: {
-    account: accountActions.AccountModelState;
-  }) => ({
+  ({account, product, order, pender}: RootState) => ({
     product,
     account,
     auth: accountActions.auth(account),
-    order: order.toObject(),
+    order,
     pending:
       // state.pender.pending[orderActions.GET_SUBS] ||
       pender.pending[orderActions.UPDATE_SUBS_STATUS] || false,

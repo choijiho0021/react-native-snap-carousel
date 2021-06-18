@@ -23,6 +23,7 @@ import AppIcon from '../components/AppIcon';
 import utils from '../utils/utils';
 import {attachmentSize, windowWidth} from '../constants/SliderEntry.style';
 import AppButton from '../components/AppButton';
+import {RootState} from '@/redux';
 
 const styles = StyleSheet.create({
   attachBox: {
@@ -189,14 +190,15 @@ class BoardMsgRespScreen extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  board: state.board.toJS(),
-  auth: accountActions.auth(state.account),
-  pending: state.pender.pending[boardActions.GET_ISSUE_RESP] || false,
-});
-
-export default connect(mapStateToProps, (dispatch) => ({
-  action: {
-    board: bindActionCreators(boardActions, dispatch),
-  },
-}))(BoardMsgRespScreen);
+export default connect(
+  ({board, account, pender}: RootState) => ({
+    board,
+    auth: accountActions.auth(account),
+    pending: pender.pending[boardActions.GET_ISSUE_RESP] || false,
+  }),
+  (dispatch) => ({
+    action: {
+      board: bindActionCreators(boardActions, dispatch),
+    },
+  }),
+)(BoardMsgRespScreen);

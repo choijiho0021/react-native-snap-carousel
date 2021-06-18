@@ -35,7 +35,7 @@ import EsimScreen from '../screens/EsimScreen';
 import FaqScreen from '../screens/FaqScreen';
 import GuideScreen from '../screens/GuideScreen';
 import AuthStack from './AuthStackNavigator';
-import {AccountModelState} from '@/redux/modules/account';
+import {RootState} from '@/redux';
 
 const styles = StyleSheet.create({
   tabBarIcon: {
@@ -140,11 +140,8 @@ function myPageStack() {
 const BadgedIcon = withBadge(
   ({cartItems}) => cartItems,
   {badgeStyle: {top: 4, left: 8}},
-  (state) => ({
-    cartItems: (state.cart.get('orderItems') || []).reduce(
-      (acc, cur) => acc + cur.qty,
-      0,
-    ),
+  ({cart}: RootState) => ({
+    cartItems: (cart.orderItems || []).reduce((acc, cur) => acc + cur.qty, 0),
   }),
 )(AppIcon);
 
@@ -223,7 +220,7 @@ function tabNavigator({loggedIn, iccid}) {
   );
 }
 
-export default connect(({account}: {account: AccountModelState}) => ({
+export default connect(({account}: RootState) => ({
   loggedIn: account.loggedIn,
   iccid: account.iccid,
 }))(tabNavigator);

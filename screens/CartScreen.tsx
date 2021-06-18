@@ -26,6 +26,7 @@ import * as cartActions from '../redux/modules/cart';
 import api from '../submodules/rokebi-utils/api/api';
 import i18n from '../utils/i18n';
 import utils from '../submodules/rokebi-utils/utils';
+import {RootState} from '@/redux';
 
 const sectionTitle = ['sim', 'product'];
 
@@ -295,7 +296,7 @@ class CartScreen extends Component {
   }
 
   checkDeletedItem(items) {
-    const prodList = this.props.product.get('prodList');
+    const {prodList} = this.props.product;
     const toRemove = (items || {}).filter(
       (item) => typeof prodList.get(item.key) === 'undefined',
     );
@@ -336,9 +337,8 @@ class CartScreen extends Component {
 
   renderItem = ({item}) => {
     const {qty, checked} = this.state;
-    const {partnerId} = this.props.product.get('prodList').get(item.key) || {};
-    const {imageUrl} =
-      this.props.product.get('localOpList').get(partnerId) || {};
+    const {partnerId} = this.props.product.prodList.get(item.key) || {};
+    const {imageUrl} = this.props.product.localOpList.get(partnerId) || {};
 
     // return  item.key && <CartItem checked={checked.get(item.key) || false}
     return (
@@ -484,19 +484,11 @@ class CartScreen extends Component {
 }
 
 export default connect(
-  ({
-    account,
-    cart,
+  ({account, cart, sim, product, pender}: RootState) => ({
+    lastTab: cart.lastTab.toJS(),
     sim,
     product,
-    pender,
-  }: {
-    account: accountActions.AccountModelState;
-  }) => ({
-    lastTab: cart.get('lastTab').toJS(),
-    sim: sim.toJS(),
-    product,
-    cart: cart.toJS(),
+    cart,
     account,
     pending:
       pender.pending[cartActions.CART_ADD] ||

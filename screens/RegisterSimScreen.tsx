@@ -31,6 +31,7 @@ import {openSettings, check, PERMISSIONS} from 'react-native-permissions';
 import Analytics from 'appcenter-analytics';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import BackbuttonHandler from '../components/BackbuttonHandler';
+import {RootState} from '@/redux';
 
 const initState = {
   scan: false,
@@ -456,7 +457,7 @@ const styles = StyleSheet.create({
 });
 
 export default connect(
-  ({account, pender}: {account: accountActions.AccountModelState}) => ({
+  ({account, pender}: RootState) => ({
     account,
     auth: accountActions.auth(account),
     pending: pender.pending[accountActions.GET_ACCOUNT] || false,

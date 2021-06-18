@@ -39,6 +39,7 @@ import i18n from '../../utils/i18n';
 import utils from '../../utils/utils';
 import validationUtil from '../../utils/validationUtil';
 import OrderItem from './components/OrderItem';
+import {RootState} from '@/redux';
 
 const {esimApp} = Env.get();
 
@@ -653,17 +654,10 @@ class MyPageScreen extends Component {
 }
 
 export default connect(
-  ({
-    cart,
+  ({cart, account, order, pender}: RootState) => ({
     account,
+    lastTab: cart.lastTab.toJS(),
     order,
-    pender,
-  }: {
-    account: accountActions.AccountModelState;
-  }) => ({
-    account,
-    lastTab: cart.get('lastTab').toJS(),
-    order: order.toObject(),
     auth: accountActions.auth(account),
     uid: account.uid,
     pending:

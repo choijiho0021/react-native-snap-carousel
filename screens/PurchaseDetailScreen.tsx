@@ -31,6 +31,7 @@ import AddressCard from '../components/AddressCard';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import {timer} from '../constants/Timer';
 import Env from '../environment';
+import {RootState} from '@/redux';
 
 const {esimApp} = Env.get();
 
@@ -857,7 +858,7 @@ class PurchaseDetailScreen extends Component {
 }
 
 export default connect(
-  ({account, pender}: {account: accountActions.AccountModelState}) => ({
+  ({account, pender}: RootState) => ({
     account,
     auth: accountActions.auth(account),
     uid: account.uid,

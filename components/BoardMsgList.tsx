@@ -24,6 +24,7 @@ import AppButton from './AppButton';
 import AppIcon from './AppIcon';
 import BoardMsg from './BoardMsg';
 import {AccountModelState} from '../redux/modules/account';
+import {RootState} from '@/redux';
 
 const styles = StyleSheet.create({
   noList: {
@@ -294,8 +295,8 @@ class BoardMsgList extends Component {
 }
 
 export default connect(
-  ({board, account}: {account: AccountModelState}) => ({
-    board: board.toJS(),
+  ({board, account, pender}: RootState) => ({
+    board,
     account,
     auth: accountActions.auth(account),
     uid: account.uid || 0,

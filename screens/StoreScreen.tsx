@@ -17,6 +17,7 @@ import {colors} from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import StoreList from '../components/StoreList';
 import {isDeviceSize} from '../constants/SliderEntry.style';
+import {RootState} from '@/redux';
 
 const styles = StyleSheet.create({
   container: {
@@ -242,12 +243,11 @@ class StoreScreen extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  product: state.product.toObject(),
-});
-
-export default connect(mapStateToProps, (dispatch) => ({
-  action: {
-    product: bindActionCreators(productActions, dispatch),
-  },
-}))(StoreScreen);
+export default connect(
+  ({product}: RootState) => ({product}),
+  (dispatch) => ({
+    action: {
+      product: bindActionCreators(productActions, dispatch),
+    },
+  }),
+)(StoreScreen);

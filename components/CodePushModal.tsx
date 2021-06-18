@@ -6,6 +6,7 @@ import {bindActionCreators} from 'redux';
 import codePush from 'react-native-code-push';
 import * as syncActions from '../redux/modules/sync';
 import i18n from '../utils/i18n';
+import {RootState} from '@/redux';
 
 class CodePushModal extends Component {
   componentDidMount() {
@@ -69,9 +70,7 @@ class CodePushModal extends Component {
 }
 
 export default connect(
-  (state) => ({
-    sync: state.sync.toJS(),
-  }),
+  ({sync}: RootState) => ({sync}),
   (dispatch) => ({
     action: {
       sync: bindActionCreators(syncActions, dispatch),

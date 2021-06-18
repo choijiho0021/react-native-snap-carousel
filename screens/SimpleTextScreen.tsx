@@ -21,6 +21,7 @@ import {API} from '../submodules/rokebi-utils';
 import i18n from '../utils/i18n';
 import utils from '../utils/utils';
 import * as infoActions from '../redux/modules/info';
+import {RootState} from '@/redux';
 
 const {baseUrl} = Env.get();
 
@@ -266,12 +267,11 @@ class SimpleTextScreen extends Component {
 }
 
 // export default SimpleTextScreen;
-const mapStateToProps = (state) => ({
-  info: state.info.toJS(),
-});
-
-export default connect(mapStateToProps, (dispatch) => ({
-  action: {
-    info: bindActionCreators(infoActions, dispatch),
-  },
-}))(SimpleTextScreen);
+export default connect(
+  ({info}: RootState) => ({info}),
+  (dispatch) => ({
+    action: {
+      info: bindActionCreators(infoActions, dispatch),
+    },
+  }),
+)(SimpleTextScreen);

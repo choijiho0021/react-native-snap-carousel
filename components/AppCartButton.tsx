@@ -2,6 +2,7 @@ import React, {PureComponent} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {connect} from 'react-redux';
 import {Badge} from 'react-native-elements';
+import {RootState} from '../redux';
 import AppIcon from './AppIcon';
 
 const styles = StyleSheet.create({
@@ -52,9 +53,6 @@ class AppCartButton extends PureComponent {
   }
 }
 
-export default connect((state) => ({
-  cartItems: (state.cart.get('orderItems') || []).reduce(
-    (acc, cur) => acc + cur.qty,
-    0,
-  ),
+export default connect(({cart}: RootState) => ({
+  cartItems: (cart.orderItems || []).reduce((acc, cur) => acc + cur.qty, 0),
 }))(AppCartButton);

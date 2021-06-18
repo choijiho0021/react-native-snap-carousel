@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+import {RootState} from '@/redux';
 import Analytics from 'appcenter-analytics';
 import React, {Component} from 'react';
 import {
@@ -149,7 +150,7 @@ class StoreSearchScreen extends Component {
 
     Analytics.trackEvent('Page_View_Count', {page: 'Country Search'});
 
-    this.setState({allData: this.props.product.get('sortedProdList')});
+    this.setState({allData: this.props.product.sortedProdList});
     this.getSearchHist();
 
     this.props.navigation.setOptions({
@@ -397,12 +398,11 @@ class StoreSearchScreen extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  product: state.product,
-});
-
-export default connect(mapStateToProps, (dispatch) => ({
-  action: {
-    product: bindActionCreators(productActions, dispatch),
-  },
-}))(StoreSearchScreen);
+export default connect(
+  ({product}: RootState) => ({product}),
+  (dispatch) => ({
+    action: {
+      product: bindActionCreators(productActions, dispatch),
+    },
+  }),
+)(StoreSearchScreen);

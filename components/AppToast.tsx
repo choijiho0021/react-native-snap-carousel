@@ -9,9 +9,10 @@ import {
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import _ from 'underscore';
+import {RootState} from '../redux';
+import * as toastActions from '../redux/modules/toast';
 import {appStyles} from '../constants/Styles';
 import {colors} from '../constants/Colors';
-import * as toastActions from '../redux/modules/toast';
 import {Toast} from '../constants/CustomTypes';
 
 const styles = StyleSheet.create({
@@ -147,8 +148,8 @@ class AppToast extends PureComponent {
 }
 
 export default connect(
-  (state) => ({
-    toastMsgBox: state.toast.get('messages'),
+  ({toast}: RootState) => ({
+    toastMsgBox: toast.messages,
   }),
   (dispatch) => ({
     action: {

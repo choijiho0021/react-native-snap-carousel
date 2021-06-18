@@ -23,6 +23,7 @@ import * as orderActions from '../redux/modules/order';
 import i18n from '../utils/i18n';
 import utils from '../submodules/rokebi-utils/utils';
 import Env from '../environment';
+import {RootState} from '@/redux';
 
 const {esimApp} = Env.get();
 
@@ -250,11 +251,11 @@ class PaymentResultScreen extends Component {
 }
 
 export default connect(
-  ({account, cart, noti}: {account: accountActions.AccountModelState}) => ({
+  ({account, cart, noti}: RootState) => ({
     account,
-    cart: cart.toJS(),
+    cart,
     auth: accountActions.auth(account),
-    noti: noti.toJS(),
+    noti,
   }),
   (dispatch) => ({
     action: {

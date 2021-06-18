@@ -21,6 +21,7 @@ import {isAndroid} from '../components/SearchBarAnimation/utils';
 import utils from '../utils/utils';
 import i18n from '../utils/i18n';
 import {appStyles} from '../constants/Styles';
+import {RootState} from '@/redux';
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
@@ -593,10 +594,7 @@ class AddProfileScreen extends Component {
   }
 }
 export default connect(
-  ({account, profile}: {account: accountActions.AccountModelState}) => ({
-    account,
-    profile: profile.toJS(),
-  }),
+  ({account, profile}: RootState) => ({account, profile}),
   (dispatch) => ({
     action: {
       account: bindActionCreators(accountActions, dispatch),

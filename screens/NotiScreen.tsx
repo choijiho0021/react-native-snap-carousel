@@ -21,6 +21,7 @@ import * as notiActions from '../redux/modules/noti';
 import * as boardActions from '../redux/modules/board';
 import * as accountActions from '../redux/modules/account';
 import AppBackButton from '../components/AppBackButton';
+import {RootState} from '@/redux';
 
 const MODE_NOTIFICATION = 'info';
 
@@ -281,20 +282,12 @@ class NotiScreen extends Component {
 }
 
 export default connect(
-  ({
+  ({account, order, board, noti, pender}: RootState) => ({
     account,
+    auth: accountActions.auth(account),
     order,
     board,
     noti,
-    pender,
-  }: {
-    account: accountActions.AccountModelState;
-  }) => ({
-    account,
-    auth: accountActions.auth(account),
-    order: order.toObject(),
-    board: board.toJS(),
-    noti: noti.toJS(),
     pending: pender.pending[notiActions.GET_NOTI_LIST] || false,
     // pending: state.pender.pending
   }),

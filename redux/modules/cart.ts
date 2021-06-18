@@ -94,9 +94,7 @@ export const payNorder = (result): AppThunk => (dispatch, getState) => {
   dispatch(pymResult(result));
 
   // remove ordered items from the cart
-  const orderId = cart.get('orderId');
-  const orderItems = cart.get('orderItems');
-  const purchaseItems = cart.get('purchaseItems');
+  const {orderId, orderItems, purchaseItems} = cart;
 
   // make order in the server
   // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음

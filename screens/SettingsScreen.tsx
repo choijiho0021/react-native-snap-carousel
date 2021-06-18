@@ -288,7 +288,7 @@ class SettingsScreen extends Component {
 }
 
 export default connect(
-  ({account}: {account: accountActions.AccountModelState}) => ({
+  ({account}: RootState) => ({
     loggedIn: account.loggedIn,
     isPushNotiEnabled: account.isPushNotiEnabled,
   }),

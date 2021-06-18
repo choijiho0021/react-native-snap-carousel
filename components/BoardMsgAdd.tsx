@@ -36,6 +36,7 @@ import {attachmentSize} from '../constants/SliderEntry.style';
 import AppAlert from './AppAlert';
 import AppIcon from './AppIcon';
 import {AccountModelState} from '../redux/modules/account';
+import {RootState} from '@/redux';
 
 const ImagePicker = require('react-native-image-crop-picker').default;
 
@@ -538,7 +539,7 @@ class BoardMsgAdd extends Component {
 }
 
 export default connect(
-  ({account, pender}: {account: AccountModelState}) => ({
+  ({account, pender}: RootState) => ({
     account,
     auth: accountActions.auth(account),
     isLoggedIn: account.loggedIn || false,

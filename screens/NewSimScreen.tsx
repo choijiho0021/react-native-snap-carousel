@@ -18,6 +18,7 @@ import {colors} from '../constants/Colors';
 import ChargeSummary from '../components/ChargeSummary';
 import utils from '../utils/utils';
 import Analytics from 'appcenter-analytics';
+import {RootState} from '@/redux';
 class NewSimScreen extends Component {
   constructor(props) {
     super(props);
@@ -241,10 +242,7 @@ const styles = StyleSheet.create({
 });
 
 export default connect(
-  ({account, sim}: {account: accountActions.AccountModelState}) => ({
-    sim: sim.toJS(),
-    account,
-  }),
+  ({account, sim}: RootState) => ({sim, account}),
   (dispatch) => ({
     action: {
       sim: bindActionCreators(simActions, dispatch),

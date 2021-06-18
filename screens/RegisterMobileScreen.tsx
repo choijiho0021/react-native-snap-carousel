@@ -29,6 +29,7 @@ import InputEmail from '../components/InputEmail';
 import {colors} from '../constants/Colors';
 import validationUtil from '../utils/validationUtil';
 import InputPinInTime from '../components/InputPinInTime';
+import {RootState} from '@/redux';
 
 const styles = StyleSheet.create({
   helpText: {
@@ -556,7 +557,7 @@ class RegisterMobileScreen extends Component {
 }
 
 export default connect(
-  ({account, pender}: {account: accountActions.AccountModelState}) => ({
+  ({account, pender}: RootState) => ({
     account,
     pending: pender.pending[accountActions.LOGIN] || false,
     loginSuccess: pender.success[accountActions.LOGIN],

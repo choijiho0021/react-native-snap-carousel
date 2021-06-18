@@ -27,6 +27,7 @@ import AppIcon from '../components/AppIcon';
 import api from '../submodules/rokebi-utils/api/api';
 import AppAlert from '../components/AppAlert';
 import PaymentResult from '../submodules/rokebi-utils/models/paymentResult';
+import {RootState} from '@/redux';
 
 const {esimApp} = Env.get();
 const {deliveryText} = API.Order;
@@ -882,11 +883,11 @@ class PymMethodScreen extends Component {
 }
 
 export default connect(
-  ({account, cart, profile}: {account: accountActions.AccountModelState}) => ({
+  ({account, cart, profile}: RootState) => ({
     account,
-    cart: cart.toJS(),
+    cart,
     auth: accountActions.auth(account),
-    profile: profile.toJS(),
+    profile,
   }),
   (dispatch) => ({
     action: {

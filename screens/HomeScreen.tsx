@@ -43,6 +43,7 @@ import TutorialScreen from './TutorialScreen';
 import AppAlert from '../components/AppAlert';
 import appStateHandler from '../utils/appState';
 import PromotionImage from '../components/PromotionImage';
+import {RootState} from '@/redux';
 
 // windowHeight
 // iphone 8 - 375x667
@@ -257,9 +258,8 @@ const dotStyle = (
 const BadgeAppButton = withBadge(
   ({notReadNoti}) => notReadNoti,
   {badgeStyle: {right: -3, top: 0}},
-  (state) => ({
-    notReadNoti: state.noti.get('notiList').filter((elm) => elm.isRead === 'F')
-      .length,
+  ({noti}: RootState) => ({
+    notReadNoti: noti.notiList.filter((elm) => elm.isRead === 'F').length,
   }),
 )(AppButton);
 
@@ -448,7 +448,7 @@ class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
 
   onPressPromotion(item) {
     if (item.product_uuid) {
-      const prodList = this.props.product.get('prodList');
+      const {prodList} = this.props.product;
       const prod = prodList.get(item.product_uuid);
 
       if (prod) {
@@ -762,24 +762,14 @@ class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
 }
 
 export default connect(
-  ({
-    account,
-    noti,
-    info,
-    pender,
-    product,
-    sync,
-    promotion,
-  }: {
-    account: accountActions.AccountModelState;
-  }) => ({
+  ({account, noti, info, pender, product, sync, promotion}: RootState) => ({
     account,
     auth: accountActions.auth(account),
-    noti: noti.toJS(),
-    info: info.toJS(),
+    noti,
+    info,
     loginPending: pender.pending[accountActions.LOGIN] || false,
     product,
-    sync: sync.toJS(),
+    sync,
     promotion: promotion.promotion,
   }),
   (dispatch) => ({

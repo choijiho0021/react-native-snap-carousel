@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default codePush(codePushOptions)(function App(props) {
+const App = (props) => {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
 
@@ -102,7 +102,7 @@ export default codePush(codePushOptions)(function App(props) {
     );
   }
   return null;
-});
+};
 
 async function login() {
   const iccid = await utils.retrieveData(API.User.KEY_ICCID);
@@ -146,3 +146,5 @@ function handleLoadingError(error) {
   });
   console.warn(error);
 }
+
+export default codePush(codePushOptions)(App);

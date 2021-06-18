@@ -8,6 +8,7 @@ import i18n from '../utils/i18n';
 import utils from '../utils/utils';
 import {colors} from '../constants/Colors';
 import {isDeviceSize} from '../constants/SliderEntry.style';
+import {RootState} from '@/redux';
 
 const styles = StyleSheet.create({
   container: {
@@ -156,6 +157,6 @@ class StoreList extends Component {
   }
 }
 
-export default connect((state) => ({
-  localOpList: state.product.get('localOpList'),
+export default connect(({product}: RootState) => ({
+  localOpList: product.localOpList,
 }))(StoreList);

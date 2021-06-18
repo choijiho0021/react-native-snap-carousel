@@ -15,6 +15,7 @@ import i18n from '../utils/i18n';
 import {appStyles} from '../constants/Styles';
 import {colors} from '../constants/Colors';
 import AppAlert from '../components/AppAlert';
+import {RootState} from '@/redux';
 
 const styles = StyleSheet.create({
   container: {
@@ -177,9 +178,7 @@ class CodePushScreen extends Component {
 }
 
 export default connect(
-  (state) => ({
-    sync: state.sync.toJS(),
-  }),
+  ({sync}: RootState) => ({sync}),
   (dispatch) => ({
     action: {
       sync: bindActionCreators(syncActions, dispatch),

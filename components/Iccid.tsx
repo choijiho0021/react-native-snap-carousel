@@ -7,6 +7,7 @@ import {TextField} from 'react-native-material-textfield';
 import * as simActions from '../redux/modules/sim';
 import * as accountActions from '../redux/modules/account';
 import i18n from '../utils/i18n';
+import {RootState} from '@/redux';
 
 const styles = StyleSheet.create({
   container: {
@@ -146,8 +147,8 @@ class Iccid extends PureComponent {
 }
 
 export default connect(
-  (state) => ({
-    iccid: state.sim.get('iccid'),
+  ({sim}: RootState) => ({
+    iccid: sim.iccid,
   }),
   (dispatch) => ({
     SimActions: bindActionCreators(simActions, dispatch),
