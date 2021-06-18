@@ -1,6 +1,5 @@
 import {Platform} from 'react-native';
 import {createAction, handleActions} from 'redux-actions';
-import {Map} from 'immutable';
 import {pender} from 'redux-pender';
 import _ from 'underscore';
 import {batch} from 'react-redux';
@@ -75,10 +74,35 @@ const changePictureWithToast = utils.reflectWithToast(
   Toast.NOT_UPDATED,
 );
 
-export const auth = (state) => ({
-  user: state.get('mobile'),
-  pass: state.get('pin'),
-  token: state.get('token'),
+export interface AccountModelState {
+  expDate?: string;
+  balance?: number;
+  email?: string;
+  mobile?: string;
+  token?: string;
+  simPartnerId?: number;
+  actDate?: string;
+  firstActDate?: string;
+  userId?: string;
+  uid?: number;
+  uuid?: string;
+  iccid?: string;
+  nid?: number;
+  pin?: string;
+  loggedIn?: boolean;
+  userPicture?: string;
+  userPictureUrl?: string;
+  deviceToken?: string;
+  simCardName?: string;
+  simCardImage?: string;
+  isUsedByOther?: boolean;
+  isPushNotiEnabled?: boolean;
+}
+
+export const auth = (state: AccountModelState) => ({
+  user: state.mobile,
+  pass: state.pin,
+  token: state.token,
 });
 
 export const logout = () => {
@@ -113,7 +137,7 @@ export const changeEmail = (mail) => {
     };
 
     return dispatch(
-      changeUserAttrWithToast(account.get('userId'), authObj, attr),
+      changeUserAttrWithToast(account.userId, authObj, attr),
     ).then(
       (resp) => {
         if (resp.result === 0) {
@@ -130,9 +154,8 @@ export const changeEmail = (mail) => {
 export const changeNotiToken = () => {
   return async (dispatch, getState) => {
     const {account} = getState();
-    const fcmToken =
-      Platform.OS === 'android' ? account.get('deviceToken') : '';
-    const deviceToken = Platform.OS === 'ios' ? account.get('deviceToken') : '';
+    const fcmToken = Platform.OS === 'android' ? account.deviceToken : '';
+    const deviceToken = Platform.OS === 'ios' ? account.deviceToken : '';
 
     const authObj = auth(account);
     const attr = {
@@ -140,7 +163,7 @@ export const changeNotiToken = () => {
       field_fcm_token: fcmToken,
     };
 
-    return dispatch(changeUserAttr(account.get('userId'), authObj, attr)).then(
+    return dispatch(changeUserAttr(account.userId, authObj, attr)).then(
       (resp) => {
         if (resp.result === 0) {
           console.log('Token is updated');
@@ -162,7 +185,7 @@ export const changePushNoti = ({isPushNotiEnabled}) => {
     };
 
     return dispatch(
-      changeUserAttrWithToast(account.get('userId'), authObj, attr),
+      changeUserAttrWithToast(account.userId, authObj, attr),
     ).then((resp) => {
       if (resp.result === 0) {
         return dispatch(updateAccount({isPushNotiEnabled}));
@@ -265,7 +288,7 @@ export const uploadAndChangePicture = (image) => {
         if (resp.result === 0 && resp.objects.length > 0) {
           return dispatch(
             changePictureWithToast(
-              account.get('userId'),
+              account.userId,
               resp.objects[0],
               auth(account),
             ),
@@ -290,8 +313,8 @@ export const clearCurrentAccount = () => {
   };
 };
 
-const updateAccountState = (state, payload) => {
-  let newState = state;
+const updateAccountState = (state: AccountModelState, payload) => {
+  let newState = _.clone(state);
 
   [
     'expDate',
@@ -308,53 +331,36 @@ const updateAccountState = (state, payload) => {
     'simCardName',
     'simCardImage',
   ].forEach((key) => {
-    if (!_.isEmpty(payload[key])) newState = newState.set(key, payload[key]);
+    if (!_.isEmpty(payload[key])) newState[key] = payload[key];
   });
 
   ['balance', 'simPartnerId', 'nid', 'uid'].forEach((key) => {
-    if (_.isNumber(payload[key])) newState = newState.set(key, payload[key]);
+    if (_.isNumber(payload[key])) newState[key] = payload[key];
   });
 
   ['isPushNotiEnabled'].forEach((key) => {
-    if (payload[key]) newState = newState.set(key, payload[key]);
+    if (payload[key]) newState[key] = payload[key];
   });
 
-  return newState.set('isUsedByOther', undefined);
+  newState.isUsedByOther = undefined;
+  return newState;
 };
 
-const initialState = Map({
-  expDate: undefined,
-  balance: undefined,
-  email: undefined,
-  mobile: undefined,
-  token: undefined,
-  simPartnerId: undefined,
-  actDate: undefined,
-  firstActDate: undefined,
-  userId: undefined,
-  uid: undefined,
-  uuid: undefined,
-  iccid: undefined,
-  nid: undefined,
-  pin: undefined,
+const initialState: AccountModelState = {
   loggedIn: false,
-  userPicture: undefined,
-  userPictureUrl: undefined,
-  deviceToken: undefined,
-  simCardName: undefined,
-  simCardImage: undefined,
-  isUsedByOther: undefined,
-  isPushNotiEnabled: undefined,
-});
+};
 
-export default handleActions(
+export default handleActions<AccountModelState>(
   {
-    [SIGN_UP]: (state, action) => {
-      return state.set('email', action.payload.email);
+    [SIGN_UP]: (state, {payload}) => {
+      return {
+        ...state,
+        email: payload.email,
+      };
     },
 
-    [UPDATE_ACCOUNT]: (state, action) => {
-      return updateAccountState(state, action.payload);
+    [UPDATE_ACCOUNT]: (state, {payload}) => {
+      return updateAccountState(state, payload);
     },
 
     [RESET_ACCOUNT]: (state, action) => {
@@ -362,40 +368,51 @@ export default handleActions(
     },
 
     [CLEAR_ACCOUNT]: (state, action) => {
-      return state
-        .set('expDate', undefined)
-        .set('balance', undefined)
-        .set('expDate', undefined)
-        .set('simPartnerId', undefined)
-        .set('actDate', undefined)
-        .set('firstActDate', undefined)
-        .set('userId', undefined)
-        .set('uid', undefined)
-        .set('uuid', undefined)
-        .set('iccid', undefined)
-        .set('nid', undefined)
-        .set('simCardName', undefined)
-        .set('simCardImage', undefined)
-        .set('isUsedByOther', undefined);
+      return {
+        ...state,
+        expDate: undefined,
+        balance: undefined,
+        simPartnerId: undefined,
+        actDate: undefined,
+        firstActDate: undefined,
+        userId: undefined,
+        uid: undefined,
+        uuid: undefined,
+        iccid: undefined,
+        nid: undefined,
+        simCardName: undefined,
+        simCardImage: undefined,
+        isUsedByOther: undefined,
+      };
     },
 
-    ...pender({
+    ...pender<AccountModelState>({
       type: LOGIN,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
         if (result === 0 && objects.length > 0) {
           const obj = objects[0];
-          return state
-            .set('token', obj.csrf_token)
-            .set('mobile', obj.current_user.name)
-            .set('uid', obj.current_user.uid)
-            .set('pin', obj.pass)
-            .set('loggedIn', true);
+          return {
+            ...state,
+            token: obj.csrf_token,
+            mobile: obj.current_user.name,
+            uid: obj.current_user.uid,
+            pin: obj.pass,
+            loggedIn: true,
+          };
         }
-        return state.set('token', undefined).set('loggedIn', false);
+        return {
+          ...state,
+          token: undefined,
+          loggedIn: false,
+        };
       },
       onFailure: (state, action) => {
-        return state.set('token', undefined).set('loggedIn', false);
+        return {
+          ...state,
+          token: undefined,
+          loggedIn: false,
+        };
       },
     }),
 
@@ -404,11 +421,13 @@ export default handleActions(
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
         if (result === 0 && objects.length > 0) {
-          return state
-            .set('userId', objects[0].id)
-            .set('email', objects[0].mail)
-            .set('isPushNotiEnabled', objects[0].isPushNotiEnabled)
-            .set('userPictureUrl', objects[0].userPictureUrl);
+          return {
+            ...state,
+            userId: objects[0].id,
+            email: objects[0].mail,
+            isPushNotiEnabled: objects[0].isPushNotiEnabled,
+            userPictureUrl: objects[0].userPictureUrl,
+          };
         }
         return state;
       },
@@ -433,10 +452,13 @@ export default handleActions(
         if (result === 0 && objects.length > 0) {
           if (objects[0].status === 'A') {
             // Active status
-            const mobile = state.get('mobile');
+            const {mobile} = state;
             if (!_.isEmpty(mobile) && mobile !== objects[0].mobile) {
               // mobile 번호가 다르면, ICCID는 다른 단말에 할당된 것이므로 무시한다.
-              return state.set('isUsedByOther', true);
+              return {
+                ...state,
+                isUsedByOther: true,
+              };
             }
             utils.storeData(API.User.KEY_ICCID, objects[0].iccid);
             return updateAccountState(state, objects[0]);
@@ -455,7 +477,10 @@ export default handleActions(
         const {result, objects} = action.payload;
         if (result === 0 && objects.length > 0) {
           // update picture file id
-          return state.set('userPicture', objects[0]);
+          return {
+            ...state,
+            userPicture: objects[0],
+          };
         }
         return state;
       },
@@ -466,7 +491,10 @@ export default handleActions(
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
         if (result === 0 && objects.length > 0) {
-          return state.set('userPictureUrl', objects[0].userPictureUrl);
+          return {
+            ...state,
+            userPictureUrl: objects[0].userPictureUrl,
+          };
         }
         return state;
       },
@@ -475,7 +503,10 @@ export default handleActions(
     ...pender({
       type: GET_TOKEN,
       onSuccess: (state, action) => {
-        return state.set('token', action.payload);
+        return {
+          ...state,
+          token: action.payload,
+        };
       },
     }),
   },

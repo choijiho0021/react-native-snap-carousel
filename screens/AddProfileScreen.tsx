@@ -592,14 +592,15 @@ class AddProfileScreen extends Component {
     );
   }
 }
-const mapStateToProps = (state) => ({
-  account: state.account.toJS(),
-  profile: state.profile.toJS(),
-});
-
-export default connect(mapStateToProps, (dispatch) => ({
-  action: {
-    account: bindActionCreators(accountActions, dispatch),
-    profile: bindActionCreators(profileActions, dispatch),
-  },
-}))(AddProfileScreen);
+export default connect(
+  ({account, profile}: {account: accountActions.AccountModelState}) => ({
+    account,
+    profile: profile.toJS(),
+  }),
+  (dispatch) => ({
+    action: {
+      account: bindActionCreators(accountActions, dispatch),
+      profile: bindActionCreators(profileActions, dispatch),
+    },
+  }),
+)(AddProfileScreen);

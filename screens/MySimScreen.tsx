@@ -12,6 +12,7 @@ import _ from 'underscore';
 import LabelText from '../components/LabelText';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import AppButton from '../components/AppButton';
+import {AccountModelState} from '@/redux/modules/account';
 
 class MySimListItem extends PureComponent {
   render() {
@@ -111,14 +112,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state) => ({
-  sim: state.sim.toJS(),
-  account: state.account.toJS(),
-  pending: state.pender.pending[simActions.UPDATE_SIM_PARTNER],
-});
-
-export default connect(mapStateToProps, (dispatch) => ({
-  action: {
-    sim: bindActionCreators(simActions, dispatch),
-  },
-}))(MySimScreen);
+export default connect(
+  ({sim, account, pender}: {account: AccountModelState}) => ({
+    sim: sim.toJS(),
+    account,
+    pending: pender.pending[simActions.UPDATE_SIM_PARTNER],
+  }),
+  (dispatch) => ({
+    action: {
+      sim: bindActionCreators(simActions, dispatch),
+    },
+  }),
+)(MySimScreen);

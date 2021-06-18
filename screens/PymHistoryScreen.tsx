@@ -95,7 +95,7 @@ class PymHistoryScreen extends Component {
     });
 
     API.Payment.getHistory(userId, auth, link)
-      .then(resp => {
+      .then((resp) => {
         const {data} = this.state;
         if (resp.result == 0) {
           console.log('payment history', resp);
@@ -104,8 +104,10 @@ class PymHistoryScreen extends Component {
             ? undefined
             : resp.links.next.href;
           const list = resp.objects
-            .filter(item => data.findIndex(org => org.uuid == item.uuid) < 0)
-            .map(item => ({
+            .filter(
+              (item) => data.findIndex((org) => org.uuid == item.uuid) < 0,
+            )
+            .map((item) => ({
               ...item,
               key: item.uuid,
             }));
@@ -125,7 +127,7 @@ class PymHistoryScreen extends Component {
           throw new Error('Failed to get payment history');
         }
       })
-      .catch(err => {
+      .catch((err) => {
         this.setState({
           querying: false,
         });
@@ -139,8 +141,8 @@ class PymHistoryScreen extends Component {
     if (next) this._getHistory(next);
   }
 
-  _onPressItem = key => () => {
-    const obj = this.state.data.find(item => item.key === key);
+  _onPressItem = (key) => () => {
+    const obj = this.state.data.find((item) => item.key === key);
     if (obj) {
       this.props.navigation.navigate('PurchaseDetail', {detail: obj});
     }
@@ -198,13 +200,11 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = state => ({
-  account: state.account.toJS(),
-});
-
 export default connect(
-  mapStateToProps,
-  dispatch => ({
+  ({account}: {account: accountActions.AccountModelState}) => ({
+    account,
+  }),
+  (dispatch) => ({
     AccountActions: bindActionCreators(accountActions, dispatch),
   }),
 )(PymHistoryScreen);

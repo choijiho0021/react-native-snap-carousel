@@ -230,13 +230,13 @@ class GuideScreen extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  account: state.account.toJS(),
-  auth: accountActions.auth(state.account),
-  pending:
-    state.pender.pending[orderActions.GET_ORDERS] ||
-    state.pender.pending[accountActions.UPLOAD_PICTURE] ||
-    false,
-});
-
-export default connect(mapStateToProps)(GuideScreen);
+export default connect(
+  ({account, pender}: {account: accountActions.AccountModelState}) => ({
+    account,
+    auth: accountActions.auth(account),
+    pending:
+      pender.pending[orderActions.GET_ORDERS] ||
+      pender.pending[accountActions.UPLOAD_PICTURE] ||
+      false,
+  }),
+)(GuideScreen);

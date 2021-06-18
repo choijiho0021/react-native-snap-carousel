@@ -652,25 +652,33 @@ class MyPageScreen extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  lastTab: state.cart.get('lastTab').toJS(),
-  account: state.account.toJS(),
-  order: state.order.toObject(),
-  auth: accountActions.auth(state.account),
-  uid: state.account.get('uid'),
-  pending:
-    state.pender.pending[orderActions.GET_ORDERS] ||
-    state.pender.pending[orderActions.GET_SUBS] ||
-    state.pender.pending[accountActions.CHANGE_EMAIL] ||
-    state.pender.pending[accountActions.UPLOAD_PICTURE] ||
-    state.pender.pending[accountActions.CHANGE_PICTURE] ||
-    false,
-});
-
-export default connect(mapStateToProps, (dispatch) => ({
-  action: {
-    order: bindActionCreators(orderActions, dispatch),
-    account: bindActionCreators(accountActions, dispatch),
-    toast: bindActionCreators(toastActions, dispatch),
-  },
-}))(MyPageScreen);
+export default connect(
+  ({
+    cart,
+    account,
+    order,
+    pender,
+  }: {
+    account: accountActions.AccountModelState;
+  }) => ({
+    account,
+    lastTab: cart.get('lastTab').toJS(),
+    order: order.toObject(),
+    auth: accountActions.auth(account),
+    uid: account.uid,
+    pending:
+      pender.pending[orderActions.GET_ORDERS] ||
+      pender.pending[orderActions.GET_SUBS] ||
+      pender.pending[accountActions.CHANGE_EMAIL] ||
+      pender.pending[accountActions.UPLOAD_PICTURE] ||
+      pender.pending[accountActions.CHANGE_PICTURE] ||
+      false,
+  }),
+  (dispatch) => ({
+    action: {
+      order: bindActionCreators(orderActions, dispatch),
+      account: bindActionCreators(accountActions, dispatch),
+      toast: bindActionCreators(toastActions, dispatch),
+    },
+  }),
+)(MyPageScreen);

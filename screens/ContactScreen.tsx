@@ -23,6 +23,7 @@ import * as toastActions from '../redux/modules/toast';
 import AppModal from '../components/AppModal';
 import Env from '../environment';
 import {Toast} from '../constants/CustomTypes';
+import {AccountModelState} from '@/redux/modules/account';
 
 const {channelId} = Env.get();
 
@@ -218,17 +219,18 @@ class ContactScreen extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  info: state.info.toJS(),
-  account: state.account.toJS(),
-  noti: state.noti.toJS(),
-  pending: state.pender.pending[notiActions.SEND_ALIM_TALK] || false,
-});
-
-export default connect(mapStateToProps, (dispatch) => ({
-  action: {
-    info: bindActionCreators(infoActions, dispatch),
-    noti: bindActionCreators(notiActions, dispatch),
-    toast: bindActionCreators(toastActions, dispatch),
-  },
-}))(ContactScreen);
+export default connect(
+  ({info, account, noti, pender}: {account: AccountModelState}) => ({
+    info: info.toJS(),
+    account,
+    noti: noti.toJS(),
+    pending: pender.pending[notiActions.SEND_ALIM_TALK] || false,
+  }),
+  (dispatch) => ({
+    action: {
+      info: bindActionCreators(infoActions, dispatch),
+      noti: bindActionCreators(notiActions, dispatch),
+      toast: bindActionCreators(toastActions, dispatch),
+    },
+  }),
+)(ContactScreen);

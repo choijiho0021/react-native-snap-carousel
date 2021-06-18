@@ -341,28 +341,39 @@ class EsimScreen extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  order: state.order.toObject(),
-  account: state.account.toJS(),
-  auth: accountActions.auth(state.account),
-  noti: state.noti.toJS(),
-  info: state.info.toJS(),
-  loginPending:
-    state.pender.pending[accountActions.LOGIN] ||
-    state.pender.pending[accountActions.GET_ACCOUNT] ||
-    false,
-  pending: state.pender.pending[orderActions.GET_SUBS] || false,
-  sync: state.sync.toJS(),
-  lastTab: state.cart.get('lastTab').toJS(),
-});
-
-export default connect(mapStateToProps, (dispatch) => ({
-  action: {
-    order: bindActionCreators(orderActions, dispatch),
-    account: bindActionCreators(accountActions, dispatch),
-    noti: bindActionCreators(notiActions, dispatch),
-    cart: bindActionCreators(cartActions, dispatch),
-    info: bindActionCreators(infoActions, dispatch),
-    toast: bindActionCreators(toastActions, dispatch),
-  },
-}))(EsimScreen);
+export default connect(
+  ({
+    account,
+    order,
+    noti,
+    info,
+    pender,
+    sync,
+    cart,
+  }: {
+    account: accountActions.AccountModelState;
+  }) => ({
+    order: order.toObject(),
+    account,
+    auth: accountActions.auth(account),
+    noti: noti.toJS(),
+    info: info.toJS(),
+    loginPending:
+      pender.pending[accountActions.LOGIN] ||
+      pender.pending[accountActions.GET_ACCOUNT] ||
+      false,
+    pending: pender.pending[orderActions.GET_SUBS] || false,
+    sync: sync.toJS(),
+    lastTab: cart.get('lastTab').toJS(),
+  }),
+  (dispatch) => ({
+    action: {
+      order: bindActionCreators(orderActions, dispatch),
+      account: bindActionCreators(accountActions, dispatch),
+      noti: bindActionCreators(notiActions, dispatch),
+      cart: bindActionCreators(cartActions, dispatch),
+      info: bindActionCreators(infoActions, dispatch),
+      toast: bindActionCreators(toastActions, dispatch),
+    },
+  }),
+)(EsimScreen);

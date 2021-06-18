@@ -287,15 +287,16 @@ class SettingsScreen extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  loggedIn: state.account.get('loggedIn'),
-  isPushNotiEnabled: state.account.get('isPushNotiEnabled'),
-});
-
-export default connect(mapStateToProps, (dispatch) => ({
-  action: {
-    account: bindActionCreators(accountActions, dispatch),
-    cart: bindActionCreators(cartActions, dispatch),
-    order: bindActionCreators(orderActions, dispatch),
-  },
-}))(SettingsScreen);
+export default connect(
+  ({account}: {account: accountActions.AccountModelState}) => ({
+    loggedIn: account.loggedIn,
+    isPushNotiEnabled: account.isPushNotiEnabled,
+  }),
+  (dispatch) => ({
+    action: {
+      account: bindActionCreators(accountActions, dispatch),
+      cart: bindActionCreators(cartActions, dispatch),
+      order: bindActionCreators(orderActions, dispatch),
+    },
+  }),
+)(SettingsScreen);

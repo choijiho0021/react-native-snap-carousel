@@ -856,19 +856,20 @@ class PurchaseDetailScreen extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  account: state.account.toJS(),
-  auth: accountActions.auth(state.account),
-  uid: state.account.get('uid'),
-  pending:
-    state.pender.pending[orderActions.GET_ORDERS] ||
-    state.pender.pending[orderActions.CANCEL_ORDER] ||
-    false,
-});
-
-export default connect(mapStateToProps, (dispatch) => ({
-  action: {
-    order: bindActionCreators(orderActions, dispatch),
-    account: bindActionCreators(accountActions, dispatch),
-  },
-}))(PurchaseDetailScreen);
+export default connect(
+  ({account, pender}: {account: accountActions.AccountModelState}) => ({
+    account,
+    auth: accountActions.auth(account),
+    uid: account.uid,
+    pending:
+      pender.pending[orderActions.GET_ORDERS] ||
+      pender.pending[orderActions.CANCEL_ORDER] ||
+      false,
+  }),
+  (dispatch) => ({
+    action: {
+      order: bindActionCreators(orderActions, dispatch),
+      account: bindActionCreators(accountActions, dispatch),
+    },
+  }),
+)(PurchaseDetailScreen);

@@ -23,6 +23,7 @@ import AppModal from './AppModal';
 import AppButton from './AppButton';
 import AppIcon from './AppIcon';
 import BoardMsg from './BoardMsg';
+import {AccountModelState} from '../redux/modules/account';
 
 const styles = StyleSheet.create({
   noList: {
@@ -293,12 +294,12 @@ class BoardMsgList extends Component {
 }
 
 export default connect(
-  (state) => ({
-    board: state.board.toJS(),
-    account: state.account.toJS(),
-    auth: accountActions.auth(state.account),
-    uid: state.account.get('uid') || 0,
-    pending: state.pender.pending[boardActions.FETCH_ISSUE_LIST] || false,
+  ({board, account}: {account: AccountModelState}) => ({
+    board: board.toJS(),
+    account,
+    auth: accountActions.auth(account),
+    uid: account.uid || 0,
+    pending: pender.pending[boardActions.FETCH_ISSUE_LIST] || false,
   }),
   (dispatch) => ({
     action: {

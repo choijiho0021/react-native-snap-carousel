@@ -552,10 +552,10 @@ class CountryScreen extends Component {
 }
 
 export default connect(
-  (state) => ({
-    product: state.product.toObject(),
-    cart: state.cart.toJS(),
-    account: state.account.toJS(),
+  ({account, cart, product}: {account: accountActions.AccountModelState}) => ({
+    product: product.toObject(),
+    cart: cart.toJS(),
+    account,
   }),
   (dispatch) => ({
     action: {

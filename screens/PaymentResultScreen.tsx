@@ -249,17 +249,18 @@ class PaymentResultScreen extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  account: state.account.toJS(),
-  cart: state.cart.toJS(),
-  auth: accountActions.auth(state.account),
-  noti: state.noti.toJS(),
-});
-
-export default connect(mapStateToProps, (dispatch) => ({
-  action: {
-    cart: bindActionCreators(cartActions, dispatch),
-    order: bindActionCreators(orderActions, dispatch),
-    noti: bindActionCreators(notiActions, dispatch),
-  },
-}))(PaymentResultScreen);
+export default connect(
+  ({account, cart, noti}: {account: accountActions.AccountModelState}) => ({
+    account,
+    cart: cart.toJS(),
+    auth: accountActions.auth(account),
+    noti: noti.toJS(),
+  }),
+  (dispatch) => ({
+    action: {
+      cart: bindActionCreators(cartActions, dispatch),
+      order: bindActionCreators(orderActions, dispatch),
+      noti: bindActionCreators(notiActions, dispatch),
+    },
+  }),
+)(PaymentResultScreen);

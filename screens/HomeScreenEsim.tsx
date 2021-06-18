@@ -2,7 +2,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import {Set} from 'immutable';
 import moment from 'moment';
-import React, {Component} from 'react';
+import React, {Component, memo} from 'react';
 import {
   Animated,
   Appearance,
@@ -32,7 +32,7 @@ import AppModal from '../components/AppModal';
 import StoreList from '../components/StoreList';
 import withBadge from '../components/withBadge';
 import {colors} from '../constants/Colors';
-import {sliderWidth, windowHeight} from '../constants/SliderEntry.style';
+import {sliderWidth} from '../constants/SliderEntry.style';
 import {appStyles} from '../constants/Styles';
 import * as accountActions from '../redux/modules/account';
 import * as cartActions from '../redux/modules/cart';
@@ -44,23 +44,7 @@ import i18n from '../utils/i18n';
 import pushNoti from '../utils/pushNoti';
 import TutorialScreen from './TutorialScreen';
 import AppActivityIndicator from '../components/AppActivityIndicator';
-
-const size =
-  windowHeight > 810
-    ? {
-        userInfoHeight: 110,
-        userInfoMarginTop: 30,
-        userPic: 60,
-        carouselHeight: 150,
-        carouselMargin: 0,
-      }
-    : {
-        userInfoHeight: 96,
-        userInfoMarginTop: 20,
-        userPic: 50,
-        carouselHeight: 130,
-        carouselMargin: 20,
-      };
+import {PromotionModelState} from '@/redux/modules/promotion';
 
 const DOT_MARGIN = 6;
 const INACTIVE_DOT_WIDTH = 6;
@@ -74,6 +58,18 @@ const BadgeAppButton = withBadge(
       .length,
   }),
 )(AppButton);
+
+const dotStyle = (
+  width: Animated.Value | Animated.AnimatedInterpolation,
+  marginLeft: number | Animated.AnimatedInterpolation,
+  backgroundColor: string = colors.clearBlue,
+) => ({
+  height: 6,
+  borderRadius: 3.5,
+  width,
+  marginLeft,
+  backgroundColor,
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -114,17 +110,6 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 0,
   },
-  dot: (
-    width = ACTIVE_DOT_WIDTH,
-    marginLeft = DOT_MARGIN,
-    backgroundColor = colors.clearBlue,
-  ) => ({
-    height: 6,
-    borderRadius: 3.5,
-    width,
-    marginLeft,
-    backgroundColor,
-  }),
   inactiveDot: {
     width: INACTIVE_DOT_WIDTH,
     height: 6,
@@ -181,7 +166,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const PromotionImage = ({item, onPress}) => {
+const PromotionImage0 = ({item, onPress}: {item: any; onPress: () => void}) => {
   return (
     <TouchableOpacity
       style={{paddingHorizontal: 20}}
@@ -198,6 +183,7 @@ const PromotionImage = ({item, onPress}) => {
     </TouchableOpacity>
   );
 };
+const PromotionImage = memo(PromotionImage0);
 
 async function requestPermission() {
   if (Platform.OS === 'ios') {
@@ -603,7 +589,7 @@ class HomeScreenEsim extends Component {
     if (activeIndex === 0) {
       return promotion.map((_, idx) =>
         idx === 0 ? (
-          <Animated.View key={`${idx}`} style={styles.dot(width, margin)} />
+          <Animated.View key={`${idx}`} style={dotStyle(width, margin)} />
         ) : (
           <View key={`${idx}`} style={styles.inactiveDot} />
         ),
@@ -615,14 +601,14 @@ class HomeScreenEsim extends Component {
         return (
           <Animated.View
             key={`${idx}`}
-            style={styles.dot(width, DOT_MARGIN, colors.clearBlue)}
+            style={dotStyle(width, DOT_MARGIN, colors.clearBlue)}
           />
         );
 
       return activeIndex === (idx + 1) % promotion.length ? (
         <Animated.View
           key={`${idx}`}
-          style={styles.dot(margin, DOT_MARGIN, colors.lightGrey)}
+          style={dotStyle(margin, DOT_MARGIN, colors.lightGrey)}
         />
       ) : (
         <View key={`${idx}`} style={styles.inactiveDot} />
@@ -733,12 +719,21 @@ class HomeScreenEsim extends Component {
 }
 
 export default connect(
-  (state) => ({
-    account: state.account.toJS(),
-    product: state.product.toObject(),
-    info: state.info.toJS(),
-    promotion: state.promotion.get('promotion'),
-    sync: state.sync.toJS(),
+  ({
+    account,
+    product,
+    info,
+    promotion,
+    sync,
+  }: {
+    account: accountActions.AccountModelState;
+    promotion: PromotionModelState;
+  }) => ({
+    account,
+    product: product.toObject(),
+    info: info.toJS(),
+    promotion: promotion.promotion,
+    sync: sync.toJS(),
   }),
   (dispatch) => ({
     action: {

@@ -42,6 +42,7 @@ import FaqScreen from '../screens/FaqScreen';
 import GuideScreen from '../screens/GuideScreen';
 import SubsDetailScreen from '../screens/SubsDetailScreen';
 import AuthStack from './AuthStackNavigator';
+import {AccountModelState} from '@/redux/modules/account';
 
 const styles = StyleSheet.create({
   tabBarIcon: {
@@ -299,7 +300,7 @@ function tabNavigator({loggedIn, iccid}) {
   );
 }
 
-export default connect((state) => ({
-  loggedIn: state.account.get('loggedIn'),
-  iccid: state.account.get('iccid'),
+export default connect(({account}: {account: AccountModelState}) => ({
+  loggedIn: account.loggedIn,
+  iccid: account.iccid,
 }))(tabNavigator);

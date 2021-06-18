@@ -9,6 +9,7 @@ import {
   Platform,
   Appearance,
   Animated,
+  ColorSchemeName,
 } from 'react-native';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
@@ -187,17 +188,6 @@ const styles = StyleSheet.create({
   carousel: {
     alignItems: 'flex-end',
   },
-  dot: (
-    width = ACTIVE_DOT_WIDTH,
-    marginLeft = DOT_MARGIN,
-    backgroundColor = colors.clearBlue,
-  ) => ({
-    height: 6,
-    borderRadius: 3.5,
-    width,
-    marginLeft,
-    backgroundColor,
-  }),
   inactiveDot: {
     width: INACTIVE_DOT_WIDTH,
     height: 6,
@@ -252,6 +242,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 });
+const dotStyle = (
+  width: number = ACTIVE_DOT_WIDTH,
+  marginLeft: number = DOT_MARGIN,
+  backgroundColor: string = colors.clearBlue,
+) => ({
+  height: 6,
+  borderRadius: 3.5,
+  width,
+  marginLeft,
+  backgroundColor,
+});
 
 const BadgeAppButton = withBadge(
   ({notReadNoti}) => notReadNoti,
@@ -262,7 +263,15 @@ const BadgeAppButton = withBadge(
   }),
 )(AppButton);
 
-class HomeScreen extends Component {
+type HomeScreenProps = {
+  navigation: any;
+};
+type HomeScreenState = {
+  darkMode: ColorSchemeName;
+  activeSlide: number;
+  firstLaunch?: boolean;
+};
+class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
   constructor(props) {
     super(props);
 
@@ -284,6 +293,7 @@ class HomeScreen extends Component {
     this.onPressPromotion = this.onPressPromotion.bind(this);
     this.renderDots = this.renderDots.bind(this);
     this.renderInfo = this.renderInfo.bind(this);
+
     this.isNoticed = null;
   }
 
@@ -688,7 +698,7 @@ class HomeScreen extends Component {
     if (activeIndex === 0) {
       return promotion.map((_, idx) =>
         idx === 0 ? (
-          <Animated.View key={`${idx}`} style={styles.dot(width, margin)} />
+          <Animated.View key={`${idx}`} style={dotStyle(width, margin)} />
         ) : (
           <View key={`${idx}`} style={styles.inactiveDot} />
         ),
@@ -700,7 +710,7 @@ class HomeScreen extends Component {
         return (
           <Animated.View
             key={`${idx}`}
-            style={styles.dot(width, DOT_MARGIN, colors.clearBlue)}
+            style={dotStyle(width, DOT_MARGIN, colors.clearBlue)}
           />
         );
       }
@@ -708,7 +718,7 @@ class HomeScreen extends Component {
         return (
           <Animated.View
             key={`${idx}`}
-            style={styles.dot(margin, DOT_MARGIN, colors.lightGrey)}
+            style={dotStyle(margin, DOT_MARGIN, colors.lightGrey)}
           />
         );
       }
@@ -751,24 +761,35 @@ class HomeScreen extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  account: state.account.toJS(),
-  auth: accountActions.auth(state.account),
-  noti: state.noti.toJS(),
-  info: state.info.toJS(),
-  loginPending: state.pender.pending[accountActions.LOGIN] || false,
-  product: state.product,
-  sync: state.sync.toJS(),
-  promotion: state.promotion.get('promotion'),
-});
-
-export default connect(mapStateToProps, (dispatch) => ({
-  action: {
-    sim: bindActionCreators(simActions, dispatch),
-    account: bindActionCreators(accountActions, dispatch),
-    noti: bindActionCreators(notiActions, dispatch),
-    cart: bindActionCreators(cartActions, dispatch),
-    info: bindActionCreators(infoActions, dispatch),
-    product: bindActionCreators(productActions, dispatch),
-  },
-}))(HomeScreen);
+export default connect(
+  ({
+    account,
+    noti,
+    info,
+    pender,
+    product,
+    sync,
+    promotion,
+  }: {
+    account: accountActions.AccountModelState;
+  }) => ({
+    account,
+    auth: accountActions.auth(account),
+    noti: noti.toJS(),
+    info: info.toJS(),
+    loginPending: pender.pending[accountActions.LOGIN] || false,
+    product,
+    sync: sync.toJS(),
+    promotion: promotion.promotion,
+  }),
+  (dispatch) => ({
+    action: {
+      sim: bindActionCreators(simActions, dispatch),
+      account: bindActionCreators(accountActions, dispatch),
+      noti: bindActionCreators(notiActions, dispatch),
+      cart: bindActionCreators(cartActions, dispatch),
+      info: bindActionCreators(infoActions, dispatch),
+      product: bindActionCreators(productActions, dispatch),
+    },
+  }),
+)(HomeScreen);

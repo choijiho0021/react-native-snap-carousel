@@ -5,45 +5,46 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  SafeAreaView
+  SafeAreaView,
 } from 'react-native';
-import i18n from '../utils/i18n'
-import {appStyles} from '../constants/Styles'
-import {connect} from 'react-redux'
-import { bindActionCreators } from 'redux'
-import * as accountActions from '../redux/modules/account'
-import * as profileActions from '../redux/modules/profile'
-import _ from 'underscore'
+import i18n from '../utils/i18n';
+import {appStyles} from '../constants/Styles';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import * as accountActions from '../redux/modules/account';
+import * as profileActions from '../redux/modules/profile';
+import _ from 'underscore';
 import AppBackButton from '../components/AppBackButton';
 import AddressCard from '../components/AddressCard';
-import { colors } from '../constants/Colors';
+import {colors} from '../constants/Colors';
 import AppButton from '../components/AppButton';
 import AppIcon from '../components/AppIcon';
 import AppActivityIndicator from '../components/AppActivityIndicator';
-import { isAndroid } from '../components/SearchBarAnimation/utils';
-import { isDeviceSize } from '../constants/SliderEntry.style';
-  
+import {isAndroid} from '../components/SearchBarAnimation/utils';
+import {isDeviceSize} from '../constants/SliderEntry.style';
 
 class Profile extends PureComponent {
- 
   constructor(props) {
-    super(props)
-    this._onChecked = this._onChecked.bind(this)
-    this._deleteProfile = this._deleteProfile.bind(this)    
+    super(props);
+    this._onChecked = this._onChecked.bind(this);
+    this._deleteProfile = this._deleteProfile.bind(this);
   }
 
   _onChecked(uuid) {
     this.setState({
-      checked: uuid
-    })
+      checked: uuid,
+    });
 
     // profile.updateCustomerProfile(this.state.profile.toJS(), this.props.account)
-    this.props.props.action.profile.selectedAddr(uuid)
-    this.props.props.navigation.goBack()
+    this.props.props.action.profile.selectedAddr(uuid);
+    this.props.props.navigation.goBack();
   }
 
   _deleteProfile(uuid) {
-    this.props.props.action.profile.profileDelAndGet(uuid, this.props.props.account)
+    this.props.props.action.profile.profileDelAndGet(
+      uuid,
+      this.props.props.account,
+    );
 
     //AppAlert.confirm(i18n.t('purchase:delAddr'))
     //AppAlert.error( i18n.t('purchase:failedToDelete'))
@@ -51,165 +52,216 @@ class Profile extends PureComponent {
 
   render() {
     // props profile
-    const {checked, item} = this.props
+    const {checked, item} = this.props;
 
-      return (
-        <View style={[styles.cardSize, checked == item.uuid && styles.checkedBorder]}>
-          <View>
-            <View style={styles.profileTitle}>
-              <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '100%'}}>
-                <View style={{flexDirection: 'row', alignSelf:'flex-start', paddingTop: 19}}>
-                  <Text style={[styles.profileTitleText, 
-                              checked == item.uuid && styles.checkedColor]}>{item.alias}</Text>    
-                  { 
-                    item.isBasicAddr &&
-                    <View style={styles.basicAddrBox}>
-                      <Text style={styles.basicAddr}>{i18n.t('addr:basicAddr')}</Text>
-                    </View>
-                  }     
-                </View>                                               
-                <View style={{flexDirection: 'row'}}>
-                  <AppButton title={i18n.t('modify')}
-                            style={styles.updateOrDeleteBtn}
-                            titleStyle={styles.chgButtonText}
-                            onPress={() => this.props.props.navigation.navigate('AddProfile', {update:item})}/>
-                  <View style={styles.buttonBorder}/>                        
-                  <AppButton title={i18n.t('delete')} 
-                            style={styles.updateOrDeleteBtn}
-                            titleStyle={[styles.chgButtonText, {paddingRight: 20}]}
-                            onPress={()=>this._deleteProfile(item.uuid)}/>
-                </View>     
+    return (
+      <View
+        style={[styles.cardSize, checked == item.uuid && styles.checkedBorder]}>
+        <View>
+          <View style={styles.profileTitle}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                width: '100%',
+              }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignSelf: 'flex-start',
+                  paddingTop: 19,
+                }}>
+                <Text
+                  style={[
+                    styles.profileTitleText,
+                    checked == item.uuid && styles.checkedColor,
+                  ]}>
+                  {item.alias}
+                </Text>
+                {item.isBasicAddr && (
+                  <View style={styles.basicAddrBox}>
+                    <Text style={styles.basicAddr}>
+                      {i18n.t('addr:basicAddr')}
+                    </Text>
+                  </View>
+                )}
+              </View>
+              <View style={{flexDirection: 'row'}}>
+                <AppButton
+                  title={i18n.t('modify')}
+                  style={styles.updateOrDeleteBtn}
+                  titleStyle={styles.chgButtonText}
+                  onPress={() =>
+                    this.props.props.navigation.navigate('AddProfile', {
+                      update: item,
+                    })
+                  }
+                />
+                <View style={styles.buttonBorder} />
+                <AppButton
+                  title={i18n.t('delete')}
+                  style={styles.updateOrDeleteBtn}
+                  titleStyle={[styles.chgButtonText, {paddingRight: 20}]}
+                  onPress={() => this._deleteProfile(item.uuid)}
+                />
               </View>
             </View>
-            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
-              <AddressCard textStyle={styles.addrCardText}
-                          mobileStyle={[styles.addrCardText, styles.colorWarmGrey]}
-                          style={styles.addrCard}
-                          key={item.uuid}
-                          profile={item}/>
-              <TouchableOpacity style={styles.checkButton}
-                                onPress={()=>this._onChecked(item.uuid)}>
-                <AppIcon name="btnCheck" key={item.uuid} checked={checked == item.uuid || false}/>
-              </TouchableOpacity>
-            </View>
           </View>
-        </View> 
-      )
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <AddressCard
+              textStyle={styles.addrCardText}
+              mobileStyle={[styles.addrCardText, styles.colorWarmGrey]}
+              style={styles.addrCard}
+              key={item.uuid}
+              profile={item}
+            />
+            <TouchableOpacity
+              style={styles.checkButton}
+              onPress={() => this._onChecked(item.uuid)}>
+              <AppIcon
+                name="btnCheck"
+                key={item.uuid}
+                checked={checked == item.uuid || false}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    );
   }
 }
 
 class CustomerProfileScreen extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft : () =>  (<AppBackButton navigation={this.props.navigation} title={i18n.t('pym:delivery')}/>)
-    })
+      headerLeft: () => (
+        <AppBackButton
+          navigation={this.props.navigation}
+          title={i18n.t('pym:delivery')}
+        />
+      ),
+    });
 
     this.state = {
       checked: undefined,
       profile: undefined,
-    }    
+    };
 
-    this._isEmptyList = this._isEmptyList.bind(this)
-
+    this._isEmptyList = this._isEmptyList.bind(this);
   }
 
   componentDidMount() {
-
-    this.props.action.profile.getCustomerProfile(this.props.account)
+    this.props.action.profile.getCustomerProfile(this.props.account);
     this.setState({
-      checked: this.props.profile.selectedAddr || this.props.profile.profile.find(item => item.isBasicAddr).uuid
-    })
+      checked:
+        this.props.profile.selectedAddr ||
+        this.props.profile.profile.find((item) => item.isBasicAddr).uuid,
+    });
   }
 
-  componentDidUpdate(prevProps){
-
-    if(_.isUndefined(this.props.profile.selectedAddr)) {
-      if(prevProps.profile.profile != this.props.profile.profile){
-        const profile = this.props.profile.profile.find(item => item.isBasicAddr)
-        if(profile){
+  componentDidUpdate(prevProps) {
+    if (_.isUndefined(this.props.profile.selectedAddr)) {
+      if (prevProps.profile.profile != this.props.profile.profile) {
+        const profile = this.props.profile.profile.find(
+          (item) => item.isBasicAddr,
+        );
+        if (profile) {
           this.setState({
-            checked: profile.uuid
-          })
+            checked: profile.uuid,
+          });
         }
       }
     }
-    
   }
 
   _renderItem = ({item}) => {
-    return <Profile item={item} checked={this.state.checked} props={this.props}/>
-  }
+    return (
+      <Profile item={item} checked={this.state.checked} props={this.props} />
+    );
+  };
 
-  _isEmptyList(){
-    return <View style={styles.emptyView}>
-            <Text style={styles.emptyText}>{i18n.t('addr:noProfile')}</Text>
-          </View>
+  _isEmptyList() {
+    return (
+      <View style={styles.emptyView}>
+        <Text style={styles.emptyText}>{i18n.t('addr:noProfile')}</Text>
+      </View>
+    );
   }
 
   render() {
- 
     return (
-      <SafeAreaView style={styles.container} forceInset={{ top: 'never', bottom:"always"}}>
+      <SafeAreaView
+        style={styles.container}
+        forceInset={{top: 'never', bottom: 'always'}}>
         <AppActivityIndicator visible={this.props.pending} />
-        <FlatList data={this.props.profile.profile} 
-                  keyExtractor={item => item.uuid}
-                  renderItem={this._renderItem} 
-                  ListEmptyComponent={this._isEmptyList}
-                  extraData={this.state.checked}/>
+        <FlatList
+          data={this.props.profile.profile}
+          keyExtractor={(item) => item.uuid}
+          renderItem={this._renderItem}
+          ListEmptyComponent={this._isEmptyList}
+          extraData={this.state.checked}
+        />
 
-        <AppButton title={i18n.t('add')} 
-                  textStyle={appStyles.confirmText}
-                  onPress={()=>this.props.navigation.navigate('AddProfile')}
-                  style={[appStyles.confirm, {marginTop:20}]}/>                  
+        <AppButton
+          title={i18n.t('add')}
+          textStyle={appStyles.confirmText}
+          onPress={() => this.props.navigation.navigate('AddProfile')}
+          style={[appStyles.confirm, {marginTop: 20}]}
+        />
       </SafeAreaView>
-    )
+    );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    ... appStyles.container,
-    alignItems: 'stretch'
+    ...appStyles.container,
+    alignItems: 'stretch',
   },
   cardSize: {
     marginHorizontal: 20,
     marginTop: 20,
-    borderRadius:3,
+    borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: 'solid',
     borderWidth: 1,
-    borderColor: colors.lightGrey
+    borderColor: colors.lightGrey,
   },
   addrCard: {
     marginLeft: 20,
     marginBottom: 17,
-    width: '65%'
+    width: '65%',
   },
   addrCardText: {
-    ... appStyles.normal14Text,
+    ...appStyles.normal14Text,
     color: colors.black,
-    lineHeight: 24
+    lineHeight: 24,
   },
   profileTitle: {
-    marginBottom: 6, 
-    flex: 1, 
+    marginBottom: 6,
+    flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   profileTitleText: {
     color: colors.black,
-    height: 19, 
-    marginHorizontal: 20, 
-    fontSize: 16, 
-    fontWeight: 'bold'
+    height: 19,
+    marginHorizontal: 20,
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   chgButtonText: {
-    fontSize: 12, 
-    lineHeight: 19, 
-    fontWeight: 'normal', 
+    fontSize: 12,
+    lineHeight: 19,
+    fontWeight: 'normal',
     color: colors.warmGrey,
     paddingHorizontal: 15,
   },
@@ -220,18 +272,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightGrey,
   },
   colorWarmGrey: {
-    color: colors.warmGrey
+    color: colors.warmGrey,
   },
   checkedBorder: {
-    borderColor: colors.clearBlue
+    borderColor: colors.clearBlue,
   },
   checkedColor: {
-    color: colors.clearBlue
+    color: colors.clearBlue,
   },
   basicAddr: {
-    ... appStyles.normal12Text,
+    ...appStyles.normal12Text,
     width: 52,
-    height: isAndroid() ? 15: 12,
+    height: isAndroid() ? 15 : 12,
     lineHeight: isAndroid() ? 15 : 12,
     fontSize: isAndroid() ? 11 : 12,
     color: colors.clearBlue,
@@ -242,7 +294,7 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 10,
     backgroundColor: colors.white,
-    borderStyle: "solid",
+    borderStyle: 'solid',
     borderWidth: 1,
     borderColor: colors.clearBlue,
     justifyContent: 'center',
@@ -250,41 +302,48 @@ const styles = StyleSheet.create({
   },
   updateOrDeleteBtn: {
     paddingTop: 19,
-    paddingBottom: 9
+    paddingBottom: 9,
   },
   checkButton: {
-    width: 62, 
-    height: 56, 
-    justifyContent:'flex-end', 
-    alignSelf: 'flex-end', 
-    padding: 20
+    width: 62,
+    height: 56,
+    justifyContent: 'flex-end',
+    alignSelf: 'flex-end',
+    padding: 20,
   },
   emptyView: {
-    flex: 1, 
-    justifyContent: 'center', 
+    flex: 1,
+    justifyContent: 'center',
     height: isDeviceSize('small') ? 400 : 710,
   },
   emptyText: {
-    alignSelf: 'center'
-  }  
+    alignSelf: 'center',
+  },
 });
 
-const mapStateToProps = (state) => ({
-  account: state.account.toJS(),
-  auth: accountActions.auth(state.account),
-  profile: state.profile.toJS(),
-  pending: state.pender.pending[profileActions.profileAddAndGet] || 
-          state.pender.pending[profileActions.updateCustomerProfile] ||   
-          state.pender.pending[profileActions.getCustomerProfile] ||
-          state.pender.pending[profileActions.profileDelAndGet] || false
-})
-
-// export default CustomerProfileScreen
-export default connect(mapStateToProps, 
+export default connect(
+  ({
+    account,
+    profile,
+    pender,
+  }: {
+    account: accountActions.AccountModelState;
+  }) => ({
+    account,
+    auth: accountActions.auth(account),
+    profile: profile.toJS(),
+    pending:
+      pender.pending[profileActions.profileAddAndGet] ||
+      pender.pending[profileActions.updateCustomerProfile] ||
+      pender.pending[profileActions.getCustomerProfile] ||
+      pender.pending[profileActions.profileDelAndGet] ||
+      false,
+  }),
+  // export default CustomerProfileScreen
   (dispatch) => ({
     action: {
-      account : bindActionCreators(accountActions, dispatch),
-      profile : bindActionCreators(profileActions, dispatch),
-    }
-  })
-)(CustomerProfileScreen)
+      account: bindActionCreators(accountActions, dispatch),
+      profile: bindActionCreators(profileActions, dispatch),
+    },
+  }),
+)(CustomerProfileScreen);

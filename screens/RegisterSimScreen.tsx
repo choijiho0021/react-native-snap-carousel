@@ -122,7 +122,7 @@ class RegisterSimScreen extends Component {
 
     this.props.action.account
       .registerMobile(iccid, actCode, this.props.account.mobile)
-      .then(resp => {
+      .then((resp) => {
         if (resp.result === 0) {
           this.props.action.order.getSubs(iccid, this.props.auth);
 
@@ -139,7 +139,7 @@ class RegisterSimScreen extends Component {
           msg: i18n.t(this.err[resp.result] || 'reg:fail'),
         });
       })
-      .catch(err => {
+      .catch((err) => {
         AppAlert.error(err.msg || i18n.t('reg:fail'));
         this.setState(initState);
       })
@@ -181,12 +181,12 @@ class RegisterSimScreen extends Component {
     this._updateIccid(data);
   };
 
-  _scrolll = event => {
+  _scrolll = (event) => {
     if (this.scroll)
       this.scroll.props.scrollToFocusedInput(findNodeHandle(event.target));
   };
 
-  _onChangeText = (key, idx) => value => {
+  _onChangeText = (key, idx) => (value) => {
     //if (key == 'iccid') value = value.replace(/[ -]/g, '')
 
     if (key == 'iccid') {
@@ -238,7 +238,7 @@ class RegisterSimScreen extends Component {
       _.isEmpty(actCode) ||
       actCode.length < 6 ||
       querying;
-    let iccidIdx = iccid.findIndex(elm => _.size(elm) !== 5);
+    let iccidIdx = iccid.findIndex((elm) => _.size(elm) !== 5);
     if (iccidIdx < 0) iccidIdx = 3;
 
     const back = this.props.route.params && this.props.route.params.back;
@@ -249,7 +249,7 @@ class RegisterSimScreen extends Component {
         <AppActivityIndicator visible={querying || this.props.pending} />
 
         <KeyboardAwareScrollView
-          innerRef={ref => (this.scroll = ref)}
+          innerRef={(ref) => (this.scroll = ref)}
           resetScrollToCoords={{x: 0, y: 0}}
           contentContainerStyle={styles.container}
           enableOnAndroid={true}
@@ -455,15 +455,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = state => ({
-  account: state.account.toJS(),
-  auth: accountActions.auth(state.account),
-  pending: state.pender.pending[accountActions.GET_ACCOUNT] || false,
-});
-
 export default connect(
-  mapStateToProps,
-  dispatch => ({
+  ({account, pender}: {account: accountActions.AccountModelState}) => ({
+    account,
+    auth: accountActions.auth(account),
+    pending: pender.pending[accountActions.GET_ACCOUNT] || false,
+  }),
+  (dispatch) => ({
     action: {
       sim: bindActionCreators(simActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),

@@ -4,7 +4,7 @@ import {Map} from 'immutable';
 import _ from 'underscore';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import utils from '../../utils/utils';
-import {getAccount} from './account';
+import {AccountModelState, getAccount} from './account';
 
 export const GET_ORDERS = 'rokebi/order/GET_ORDERS';
 export const GET_ORDER_BY_ID = 'rokebi/order/GET_ORDER_BY_ID';
@@ -55,8 +55,8 @@ export const getOrders = (auth, page) => {
 
 export const cancelAndGetOrder = (orderId, auth) => {
   return (dispatch, getState) => {
-    const {account} = getState();
-    const iccid = account.get('iccid');
+    const {account}: {account: AccountModelState} = getState();
+    const {iccid} = account;
 
     return dispatch(cancelOrder(orderId, auth)).then((resp) => {
       // 결제취소요청 후 항상 order를 가져온다
@@ -86,8 +86,8 @@ export const cancelAndGetOrder = (orderId, auth) => {
 // subs status 변환 후
 export const updateStatusAndGetSubs = (uuid, targetStatus, auth) => {
   return (dispatch, getState) => {
-    const {account} = getState();
-    const iccid = account.get('iccid');
+    const {account}: {account: AccountModelState} = getState();
+    const {iccid} = account;
 
     return dispatch(updateSubsStatus(uuid, targetStatus, auth)).then((resp) => {
       // 결제취소요청 후 항상 order를 가져온다

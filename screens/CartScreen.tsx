@@ -25,7 +25,7 @@ import * as accountActions from '../redux/modules/account';
 import * as cartActions from '../redux/modules/cart';
 import api from '../submodules/rokebi-utils/api/api';
 import i18n from '../utils/i18n';
-import utils from '../submodules/rokebi-utils/utils.js';
+import utils from '../submodules/rokebi-utils/utils';
 
 const sectionTitle = ['sim', 'product'];
 
@@ -483,22 +483,31 @@ class CartScreen extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  lastTab: state.cart.get('lastTab').toJS(),
-  sim: state.sim.toJS(),
-  product: state.product,
-  cart: state.cart.toJS(),
-  account: state.account.toJS(),
-  pending:
-    state.pender.pending[cartActions.CART_ADD] ||
-    state.pender.pending[cartActions.CART_UPDATE] ||
-    state.pender.pending[cartActions.CART_REMOVE] ||
-    false,
-});
-
-export default connect(mapStateToProps, (dispatch) => ({
-  action: {
-    cart: bindActionCreators(cartActions, dispatch),
-    account: bindActionCreators(accountActions, dispatch),
-  },
-}))(CartScreen);
+export default connect(
+  ({
+    account,
+    cart,
+    sim,
+    product,
+    pender,
+  }: {
+    account: accountActions.AccountModelState;
+  }) => ({
+    lastTab: cart.get('lastTab').toJS(),
+    sim: sim.toJS(),
+    product,
+    cart: cart.toJS(),
+    account,
+    pending:
+      pender.pending[cartActions.CART_ADD] ||
+      pender.pending[cartActions.CART_UPDATE] ||
+      pender.pending[cartActions.CART_REMOVE] ||
+      false,
+  }),
+  (dispatch) => ({
+    action: {
+      cart: bindActionCreators(cartActions, dispatch),
+      account: bindActionCreators(accountActions, dispatch),
+    },
+  }),
+)(CartScreen);

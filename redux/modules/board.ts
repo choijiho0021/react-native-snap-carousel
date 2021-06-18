@@ -3,7 +3,7 @@ import {Map} from 'immutable';
 import {pender} from 'redux-pender';
 import _ from 'underscore';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
-import {auth} from './account';
+import {AccountModelState, auth} from './account';
 
 export const POST_ISSUE = 'rokebi/board/POST_ISSUE';
 export const POST_ATTACH = 'rokebi/board/POST_ATTACH';
@@ -30,9 +30,8 @@ const nextIssueList = createAction(NEXT_ISSUE_LIST);
 
 export const getIssueList = (reloadAlways = true) => {
   return (dispatch, getState) => {
-    const {account, board} = getState();
-    const uid = account.get('uid');
-    const token = account.get('token');
+    const {account, board}: {account: AccountModelState} = getState();
+    const {uid, token} = account;
 
     if (reloadAlways) {
       dispatch(resetIssueList());
@@ -49,9 +48,12 @@ export const getIssueList = (reloadAlways = true) => {
 
 export const getNextIssueList = () => {
   return (dispatch, getState) => {
-    const {account, board, pender: pender0} = getState();
-    const uid = account.get('uid');
-    const token = account.get('token');
+    const {
+      account,
+      board,
+      pender: pender0,
+    }: {account: AccountModelState} = getState();
+    const {uid, token} = account;
     const next = board.get('next');
     const page = board.get('page');
     const pending = pender0.pending[FETCH_ISSUE_LIST];
@@ -72,8 +74,8 @@ const PAGE_UPDATE = 0;
 
 export const postAndGetList = (issue, attachment) => {
   return (dispatch, getState) => {
-    const {account} = getState();
-    const uid = account.get('uid');
+    const {account}: {account: AccountModelState} = getState();
+    const {uid} = account;
     const authObj = auth(account);
 
     return dispatch(postAttach(attachment, authObj)).then((rsp) => {

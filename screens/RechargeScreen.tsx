@@ -81,7 +81,7 @@ class RechargeScreen extends Component {
     });
   }
 
-  _onPress = key => () => {
+  _onPress = (key) => () => {
     this.setState({
       selected: key,
     });
@@ -92,7 +92,7 @@ class RechargeScreen extends Component {
 
     return (
       <View key={value[0] + ''} style={styles.row}>
-        {value.map(v => {
+        {value.map((v) => {
           const key = `rch-${v}`,
             checked = key == selected,
             color = checked ? colors.clearBlue : colors.warmGrey;
@@ -123,8 +123,12 @@ class RechargeScreen extends Component {
   render() {
     const {iccid = '', balance, simCardImage} = this.props.account;
     const {selected} = this.state;
-    const seg = [0, 5, 10, 15].map(v => iccid.substring(v, v + 5));
-    const amount = [[5000, 10000], [15000, 20000], [25000, 30000]];
+    const seg = [0, 5, 10, 15].map((v) => iccid.substring(v, v + 5));
+    const amount = [
+      [5000, 10000],
+      [15000, 20000],
+      [25000, 30000],
+    ];
 
     console.log('image22222', API.default.httpImageUrl(simCardImage));
     return (
@@ -158,7 +162,7 @@ class RechargeScreen extends Component {
           <View style={styles.divider} />
           <View style={{flex: 1}} />
           <View style={{marginBottom: 40}}>
-            {amount.map(v => this._rechargeButton(v))}
+            {amount.map((v) => this._rechargeButton(v))}
           </View>
         </ScrollView>
         <AppButton
@@ -244,14 +248,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = state => ({
-  account: state.account.toJS(),
-  auth: accountActions.auth(state.account),
-});
-
 export default connect(
-  mapStateToProps,
-  dispatch => ({
+  ({account}: {account: accountActions.AccountModelState}) => ({
+    account,
+    auth: accountActions.auth(account),
+  }),
+  (dispatch) => ({
     action: {
       cart: bindActionCreators(cartActions, dispatch),
       order: bindActionCreators(orderActions, dispatch),

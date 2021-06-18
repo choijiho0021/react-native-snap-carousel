@@ -240,15 +240,16 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state) => ({
-  sim: state.sim.toJS(),
-  account: state.account.toJS(),
-});
-
-export default connect(mapStateToProps, (dispatch) => ({
-  action: {
-    sim: bindActionCreators(simActions, dispatch),
-    cart: bindActionCreators(cartActions, dispatch),
-    account: bindActionCreators(accountActions, dispatch),
-  },
-}))(NewSimScreen);
+export default connect(
+  ({account, sim}: {account: accountActions.AccountModelState}) => ({
+    sim: sim.toJS(),
+    account,
+  }),
+  (dispatch) => ({
+    action: {
+      sim: bindActionCreators(simActions, dispatch),
+      cart: bindActionCreators(cartActions, dispatch),
+      account: bindActionCreators(accountActions, dispatch),
+    },
+  }),
+)(NewSimScreen);

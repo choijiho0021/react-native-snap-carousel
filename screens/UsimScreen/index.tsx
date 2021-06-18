@@ -203,31 +203,31 @@ class UsimScreen extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  order: state.order.toObject(),
+export default connect(
+  ({order, account, noti, info, pender, sync, cart}) => ({
+    order: order.toObject(),
+    account,
+    auth: accountActions.auth(account),
+    noti: noti.toJS(),
+    info: info.toJS(),
+    loginPending:
+      pender.pending[accountActions.LOGIN] ||
+      pender.pending[accountActions.GET_ACCOUNT] ||
+      false,
+    pending: pender.pending[orderActions.GET_SUBS] || false,
+    updatePending: pender.pending[orderActions.UPDATE_SUBS_STATUS] || false,
+    sync: sync.toJS(),
+    lastTab: cart.get('lastTab').toJS(),
+  }),
+  (dispatch) => ({
+    action: {
+      order: bindActionCreators(orderActions, dispatch),
 
-  account: state.account.toJS(),
-  auth: accountActions.auth(state.account),
-  noti: state.noti.toJS(),
-  info: state.info.toJS(),
-  loginPending:
-    state.pender.pending[accountActions.LOGIN] ||
-    state.pender.pending[accountActions.GET_ACCOUNT] ||
-    false,
-  pending: state.pender.pending[orderActions.GET_SUBS] || false,
-  updatePending: state.pender.pending[orderActions.UPDATE_SUBS_STATUS] || false,
-  sync: state.sync.toJS(),
-  lastTab: state.cart.get('lastTab').toJS(),
-});
-
-export default connect(mapStateToProps, (dispatch) => ({
-  action: {
-    order: bindActionCreators(orderActions, dispatch),
-
-    sim: bindActionCreators(simActions, dispatch),
-    account: bindActionCreators(accountActions, dispatch),
-    noti: bindActionCreators(notiActions, dispatch),
-    cart: bindActionCreators(cartActions, dispatch),
-    info: bindActionCreators(infoActions, dispatch),
-  },
-}))(UsimScreen);
+      sim: bindActionCreators(simActions, dispatch),
+      account: bindActionCreators(accountActions, dispatch),
+      noti: bindActionCreators(notiActions, dispatch),
+      cart: bindActionCreators(cartActions, dispatch),
+      info: bindActionCreators(infoActions, dispatch),
+    },
+  }),
+)(UsimScreen);

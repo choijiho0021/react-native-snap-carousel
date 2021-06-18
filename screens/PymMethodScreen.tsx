@@ -882,11 +882,11 @@ class PymMethodScreen extends Component {
 }
 
 export default connect(
-  (state) => ({
-    account: state.account.toJS(),
-    cart: state.cart.toJS(),
-    auth: accountActions.auth(state.account),
-    profile: state.profile.toJS(),
+  ({account, cart, profile}: {account: accountActions.AccountModelState}) => ({
+    account,
+    cart: cart.toJS(),
+    auth: accountActions.auth(account),
+    profile: profile.toJS(),
   }),
   (dispatch) => ({
     action: {

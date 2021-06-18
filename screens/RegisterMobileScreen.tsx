@@ -556,11 +556,11 @@ class RegisterMobileScreen extends Component {
 }
 
 export default connect(
-  (state) => ({
-    account: state.account.toJS(),
-    pending: state.pender.pending[accountActions.LOGIN] || false,
-    loginSuccess: state.pender.success[accountActions.LOGIN],
-    loginFailure: state.pender.failure[accountActions.LOGIN],
+  ({account, pender}: {account: accountActions.AccountModelState}) => ({
+    account,
+    pending: pender.pending[accountActions.LOGIN] || false,
+    loginSuccess: pender.success[accountActions.LOGIN],
+    loginFailure: pender.failure[accountActions.LOGIN],
   }),
   (dispatch) => ({
     actions: {

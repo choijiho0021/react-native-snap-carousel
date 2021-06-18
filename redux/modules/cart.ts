@@ -5,7 +5,7 @@ import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import i18n from '../../utils/i18n';
 import utils from '../../utils/utils';
 import {getOrders} from './order';
-import {getAccount} from './account';
+import {AccountModelState, getAccount} from './account';
 import Env from '../../environment';
 
 const {esimApp} = Env.get();
@@ -58,11 +58,11 @@ export const pushLastTab = createAction(PUSH_LAST_TAB);
 
 const checkStock = (prodList) => {
   return (dispatch, getState) => {
-    const {account} = getState();
-    const token = {token: account.get('token')};
+    const {account}: {account: AccountModelState} = getState();
+    const {token} = account;
 
     return esimApp
-      ? dispatch(cartCheckStock(prodList, token)).then((resp) => {
+      ? dispatch(cartCheckStock(prodList, {token})).then((resp) => {
           if (resp.result === 0) return resp;
           return dispatch(getOutOfStockTitle(resp)).payload;
         })
@@ -72,14 +72,13 @@ const checkStock = (prodList) => {
 
 export const payNorder = (result) => {
   return (dispatch, getState) => {
-    const {account, cart} = getState();
-    const token = account.get('token');
-    const iccid = account.get('iccid');
+    const {account, cart}: {account: AccountModelState} = getState();
+    const {token, iccid, email, mobile} = account;
     const auth = {
       token,
       iccid,
-      mail: account.get('email'),
-      user: account.get('mobile'),
+      mail: email,
+      user: mobile,
     };
 
     // update payment result

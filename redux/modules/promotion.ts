@@ -1,5 +1,4 @@
 import {createAction, handleActions} from 'redux-actions';
-import {Map} from 'immutable';
 import {pender} from 'redux-pender/lib/utils';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
 
@@ -10,19 +9,27 @@ export const getPromotion = createAction(
   API.Promotion.getPromotion,
 );
 
-const initialState = Map({
+interface Promotion {}
+export interface PromotionModelState {
+  promotion: Promotion[];
+}
+
+const initialState: PromotionModelState = {
   promotion: [],
-});
+};
 
 export default handleActions(
   {
-    ...pender({
+    ...pender<PromotionModelState>({
       type: GET_PROMOTION_LIST,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
 
         if (result === 0 && objects.length > 0) {
-          return state.set('promotion', objects);
+          return {
+            ...state,
+            promotion: objects,
+          };
         }
         return state;
       },

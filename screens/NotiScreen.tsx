@@ -280,21 +280,30 @@ class NotiScreen extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  account: state.account.toJS(),
-  auth: accountActions.auth(state.account),
-  order: state.order.toObject(),
-  board: state.board.toJS(),
-  noti: state.noti.toJS(),
-  pending: state.pender.pending[notiActions.GET_NOTI_LIST] || false,
-  // pending: state.pender.pending
-});
-
-export default connect(mapStateToProps, (dispatch) => ({
-  action: {
-    order: bindActionCreators(orderActions, dispatch),
-    board: bindActionCreators(boardActions, dispatch),
-    account: bindActionCreators(accountActions, dispatch),
-    noti: bindActionCreators(notiActions, dispatch),
-  },
-}))(NotiScreen);
+export default connect(
+  ({
+    account,
+    order,
+    board,
+    noti,
+    pender,
+  }: {
+    account: accountActions.AccountModelState;
+  }) => ({
+    account,
+    auth: accountActions.auth(account),
+    order: order.toObject(),
+    board: board.toJS(),
+    noti: noti.toJS(),
+    pending: pender.pending[notiActions.GET_NOTI_LIST] || false,
+    // pending: state.pender.pending
+  }),
+  (dispatch) => ({
+    action: {
+      order: bindActionCreators(orderActions, dispatch),
+      board: bindActionCreators(boardActions, dispatch),
+      account: bindActionCreators(accountActions, dispatch),
+      noti: bindActionCreators(notiActions, dispatch),
+    },
+  }),
+)(NotiScreen);
