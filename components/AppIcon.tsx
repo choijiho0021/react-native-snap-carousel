@@ -1,7 +1,7 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
-import React, {PureComponent} from 'react';
-import {View, Image} from 'react-native';
+import React, {memo} from 'react';
+import {View, Image, ViewStyle} from 'react-native';
 
 const tabbarPath = '../assets/images/tabbar/';
 const mainPath = '../assets/images/main/';
@@ -9,7 +9,7 @@ const headerPath = '../assets/images/header/';
 const paymentPath = '../assets/images/payment/';
 const esimPath = '../assets/images/esim/';
 const guidePath = '../assets/images/guide/';
-const images = {
+const images: Record<string, any[]> = {
   btnHome: [
     require(`${tabbarPath}btnHome.png`),
     require(`${tabbarPath}btnHomeSel.png`),
@@ -93,23 +93,37 @@ const images = {
   btnPen: [require(`${esimPath}btnPen.png`)],
   imgDokebi2: [require(`${esimPath}imgDokebi2.png`)],
 };
-export default class AppIcon extends PureComponent {
-  render() {
-    const {name, focused, style, size, checked} = this.props;
-    const source = images[name];
 
-    return source ? (
-      <View
-        style={[
-          style || {justifyContent: 'center', alignItems: 'center'},
-          size && {width: size, heigth: size},
-        ]}>
-        <Image
-          source={
-            (focused || checked) && source.length > 1 ? source[1] : source[0]
-          }
-        />
-      </View>
-    ) : null;
-  }
+interface AppIconProps {
+  name: string;
+  focused?: boolean;
+  style?: ViewStyle;
+  size?: number;
+  checked?: boolean;
 }
+
+const AppIcon: React.FC<AppIconProps> = ({
+  name,
+  focused,
+  style,
+  size,
+  checked,
+}) => {
+  const source = images[name];
+
+  return source ? (
+    <View
+      style={[
+        style || {justifyContent: 'center', alignItems: 'center'},
+        size && {width: size, heigth: size},
+      ]}>
+      <Image
+        source={
+          (focused || checked) && source.length > 1 ? source[1] : source[0]
+        }
+      />
+    </View>
+  ) : null;
+};
+
+export default memo(AppIcon);
