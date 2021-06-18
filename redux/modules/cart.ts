@@ -1,12 +1,13 @@
 import {createAction, handleActions} from 'redux-actions';
-import {Map, List} from 'immutable';
+import {List} from 'immutable';
 import {pender} from 'redux-pender';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import i18n from '../../utils/i18n';
 import utils from '../../utils/utils';
 import {getOrders} from './order';
-import {AccountModelState, getAccount} from './account';
+import {getAccount} from './account';
 import Env from '../../environment';
+import {AppThunk} from '..';
 
 const {esimApp} = Env.get();
 
@@ -56,126 +57,135 @@ export const rechargeAccount = createAction(RECHARGE_ACCOUNT, API.Recharge.add);
 
 export const pushLastTab = createAction(PUSH_LAST_TAB);
 
-const checkStock = (prodList) => {
-  return (dispatch, getState) => {
-    const {account}: {account: AccountModelState} = getState();
-    const {token} = account;
+interface CartModelState {
+  result: number;
+  orderId?: number;
+  orderItems: object[];
+  uuid?: string;
+  purchaseItems: object[];
+  pymReq?: object;
+  pymResult?: object;
+  lastTab: List<string>;
+}
 
-    return esimApp
-      ? dispatch(cartCheckStock(prodList, {token})).then((resp) => {
-          if (resp.result === 0) return resp;
-          return dispatch(getOutOfStockTitle(resp)).payload;
-        })
-      : new Promise.resolve({result: 0});
-  };
+const checkStock = (prodList): AppThunk => (dispatch, getState) => {
+  const {account} = getState();
+  const {token} = account;
+
+  return esimApp
+    ? dispatch(cartCheckStock(prodList, {token})).then((resp) => {
+        if (resp.result === 0) return resp;
+        return dispatch(getOutOfStockTitle(resp)).payload;
+      })
+    : new Promise.resolve({result: 0});
 };
 
-export const payNorder = (result) => {
-  return (dispatch, getState) => {
-    const {account, cart}: {account: AccountModelState} = getState();
-    const {token, iccid, email, mobile} = account;
-    const auth = {
-      token,
-      iccid,
-      mail: email,
-      user: mobile,
-    };
-
-    // update payment result
-    dispatch(pymResult(result));
-
-    // remove ordered items from the cart
-    const orderId = cart.get('orderId');
-    const orderItems = cart.get('orderItems');
-    const purchaseItems = cart.get('purchaseItems');
-
-    // make order in the server
-    // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
-    return dispatch(checkStock(purchaseItems)).then((res) => {
-      if (res.result === 0) {
-        return dispatch(makeOrder(purchaseItems, result, auth)).then((resp) => {
-          if (resp.result === 0) {
-            dispatch(getOrders(auth, 0));
-            // cart에서 item 삭제
-            orderItems.forEach((item) => {
-              if (
-                purchaseItems.find((o) => o.orderItemId === item.orderItemId)
-              ) {
-                // remove ordered item
-                dispatch(cartRemove({orderId, orderItemId: item.orderItemId}));
-              }
-            });
-
-            if (
-              purchaseItems.find((item) => item.type === 'rch') ||
-              result.rokebi_cash > 0
-            ) {
-              // 충전을 한 경우에는 account를 다시 읽어들인다.
-              // balance에서 차감한 경우에도 다시 읽어들인다.
-              return dispatch(getAccount(iccid, {token}));
-            }
-          }
-          return resp;
-        });
-      }
-      return res;
-    });
+export const payNorder = (result): AppThunk => (dispatch, getState) => {
+  const {account, cart} = getState();
+  const {token, iccid, email, mobile} = account;
+  const auth = {
+    token,
+    iccid,
+    mail: email,
+    user: mobile,
   };
+
+  // update payment result
+  dispatch(pymResult(result));
+
+  // remove ordered items from the cart
+  const orderId = cart.get('orderId');
+  const orderItems = cart.get('orderItems');
+  const purchaseItems = cart.get('purchaseItems');
+
+  // make order in the server
+  // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
+  return dispatch(checkStock(purchaseItems)).then((res) => {
+    if (res.result === 0) {
+      return dispatch(makeOrder(purchaseItems, result, auth)).then((resp) => {
+        if (resp.result === 0) {
+          dispatch(getOrders(auth, 0));
+          // cart에서 item 삭제
+          orderItems.forEach((item) => {
+            if (purchaseItems.find((o) => o.orderItemId === item.orderItemId)) {
+              // remove ordered item
+              dispatch(cartRemove({orderId, orderItemId: item.orderItemId}));
+            }
+          });
+
+          if (
+            purchaseItems.find((item) => item.type === 'rch') ||
+            result.rokebi_cash > 0
+          ) {
+            // 충전을 한 경우에는 account를 다시 읽어들인다.
+            // balance에서 차감한 경우에도 다시 읽어들인다.
+            return dispatch(getAccount(iccid, {token}));
+          }
+        }
+        return resp;
+      });
+    }
+    return res;
+  });
 };
 
 export const checkStockAndPurchase = (
   purchaseItems,
   balance,
   dlvCost = false,
-) => {
-  return (dispatch) => {
-    return dispatch(checkStock(purchaseItems)).then((resp) => {
-      if (resp.result === 0) {
-        dispatch(purchase({purchaseItems, dlvCost, balance}));
-      }
-      return resp;
-    });
-  };
+): AppThunk => (dispatch) => {
+  return dispatch(checkStock(purchaseItems)).then((resp) => {
+    if (resp.result === 0) {
+      dispatch(purchase({purchaseItems, dlvCost, balance}));
+    }
+    return resp;
+  });
 };
 
-export const cartAddAndGet = (prodList) => {
-  return (dispatch) => {
-    return dispatch(checkStock(prodList)).then((resp) => {
-      if (resp.result === 0) {
-        return dispatch(cartAdd(prodList)).then(
-          (rsp) => {
-            if (rsp.result === 0 && rsp.objects.length > 0) {
-              return dispatch(cartFetch());
-            }
-            throw new Error('Failed to add products');
-          },
-          (err) => {
-            throw err;
-          },
-        );
-      }
-      return resp;
-    });
-  };
+export const cartAddAndGet = (prodList): AppThunk => (dispatch) => {
+  return dispatch(checkStock(prodList)).then((resp) => {
+    if (resp.result === 0) {
+      return dispatch(cartAdd(prodList)).then(
+        (rsp) => {
+          if (rsp.result === 0 && rsp.objects.length > 0) {
+            return dispatch(cartFetch());
+          }
+          throw new Error('Failed to add products');
+        },
+        (err) => {
+          throw err;
+        },
+      );
+    }
+    return resp;
+  });
 };
 
-const onSuccess = (state, action) => {
+const onSuccess = (state: CartModelState, action) => {
   const {result, objects} = action.payload;
   if (result === 0 && objects.length > 0) {
-    return state
-      .set('result', result)
-      .set('orderId', objects[0].orderId)
-      .set('orderItems', objects[0].orderItems)
-      .set('uuid', objects[0].uuid);
+    return {
+      ...state,
+      result,
+      orderId: objects[0].orderId,
+      orderItems: objects[0].orderItems,
+      uuid: objects[0].uuid,
+    };
   }
-  return state.set('result', result);
+  return {
+    ...state,
+    result,
+  };
 };
 
-const onFailure = (state) => {
-  return state.set('result', API.default.FAILED);
+const onFailure = (state: CartModelState) => {
+  return {
+    ...state,
+    result: API.default.FAILED,
+  };
 };
 
-const initialState = Map({
+const initialState: CartModelState = {
   result: 0,
   orderId: undefined,
   orderItems: [],
@@ -184,7 +194,7 @@ const initialState = Map({
   pymReq: undefined,
   pymResult: undefined,
   lastTab: List(['Home']),
-});
+};
 
 export default handleActions(
   {
@@ -195,16 +205,21 @@ export default handleActions(
     // set last tab
     // 2개 리스트를 유지한다.
     [PUSH_LAST_TAB]: (state, action) => {
-      if (state.get('lastTab').first() === action.payload) return state;
+      const {lastTab} = state;
+      if (lastTab.first() === action.payload) return state;
 
-      return state.update('lastTab', (value) => {
-        return value.unshift(action.payload).setSize(2);
-      });
+      return {
+        ...state,
+        lastTab: lastTab.unshift(action.payload).setSize(2),
+      };
     },
 
     // empty cart
     [EMPTY]: (state) => {
-      return state.set('purchaseItems', []);
+      return {
+        ...state,
+        purchaseItems: [],
+      };
     },
 
     // 구매할 품목을 저장한다.
@@ -237,25 +252,27 @@ export default handleActions(
       const deduct = totalPrice > balance ? balance : totalPrice;
 
       // purchaseItems에는 key, qty, price, title 정보 필요
-      return state
-        .set('purchaseItems', purchaseItems)
-        .set('pymReq', pymReq)
-        .set('pymPrice', pymPrice)
-        .set('deduct', deduct);
+      return {
+        ...state,
+        purchaseItems,
+        pymReq,
+        pymPrice,
+        deduct,
+      };
     },
 
     // 결제 결과를 저장한다.
     [PYM_RESULT]: (state, action) => {
-      const purchaseItems = state.get('purchaseItems');
+      const {purchaseItems, orderItems} = state;
 
       // orderItems에서 purchaseItem에 포함된 상품은 모두 제거한다.
-      return state
-        .set('pymResult', action.payload)
-        .update('orderItems', (value) =>
-          value.filter(
-            (item) => purchaseItems.findIndex((p) => p.key === item.key) < 0,
-          ),
-        );
+      return {
+        ...state,
+        pymResult: action.payload,
+        orderItems: orderItems.filter(
+          (item) => purchaseItems.findIndex((p) => p.key === item.key) < 0,
+        ),
+      };
     },
 
     ...pender({
@@ -269,28 +286,35 @@ export default handleActions(
       onFailure,
       onSuccess: (state, action) => {
         const {result} = action.payload;
-        return state.set('result', result);
+        return {
+          ...state,
+          result,
+        };
       },
     }),
 
-    ...pender({
+    ...pender<CartModelState>({
       type: CART_REMOVE,
       onSuccess: (state, action) => {
         const {result, objects = []} = action.payload;
+        const {orderId, orderItems} = state;
         if (
           result === 0 &&
           objects.length > 0 &&
-          objects[0].orderId === state.get('orderId')
+          objects[0].orderId === orderId
         ) {
-          return state.update('orderItems', (items) =>
-            items.filter((item) => item.orderItemId !== objects[0].orderItemId),
-          );
+          return {
+            ...state,
+            orderItems: orderItems.filter(
+              (item) => item.orderItemId !== objects[0].orderItemId,
+            ),
+          };
         }
         return state;
       },
     }),
 
-    ...pender({
+    ...pender<CartModelState>({
       type: CART_UPDATE,
       onSuccess,
       onCancel: (state) => {

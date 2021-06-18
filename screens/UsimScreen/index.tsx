@@ -204,7 +204,17 @@ class UsimScreen extends Component {
 }
 
 export default connect(
-  ({order, account, noti, info, pender, sync, cart}) => ({
+  ({
+    order,
+    account,
+    noti,
+    info,
+    pender,
+    sync,
+    cart,
+  }: {
+    account: accountActions.AccountModelState;
+  }) => ({
     order: order.toObject(),
     account,
     auth: accountActions.auth(account),

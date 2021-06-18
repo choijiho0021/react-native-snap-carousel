@@ -1,9 +1,9 @@
 import {createAction, handleActions} from 'redux-actions';
-import {Map} from 'immutable';
 import {pender} from 'redux-pender';
 import _ from 'underscore';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
-import {AccountModelState, auth} from './account';
+import {auth} from './account';
+import {AppThunk} from '..';
 
 export const POST_ISSUE = 'rokebi/board/POST_ISSUE';
 export const POST_ATTACH = 'rokebi/board/POST_ATTACH';
@@ -28,104 +28,116 @@ const resetIssueList = createAction(RESET_ISSUE_LIST);
 export const resetIssueComment = createAction(RESET_ISSUE_COMMENT);
 const nextIssueList = createAction(NEXT_ISSUE_LIST);
 
-export const getIssueList = (reloadAlways = true) => {
-  return (dispatch, getState) => {
-    const {account, board}: {account: AccountModelState} = getState();
-    const {uid, token} = account;
+interface BoardModelState {
+  next: boolean;
+  page: number;
+  list: any[];
+  comment?: string;
+}
 
-    if (reloadAlways) {
-      dispatch(resetIssueList());
-      return dispatch(fetchIssueList(uid, {token}, 0));
-    }
+export const getIssueList = (reloadAlways = true): AppThunk => (
+  dispatch,
+  getState,
+) => {
+  const {account, board} = getState();
+  const {uid, token} = account;
 
-    // reloadAlways == false 이면 list가 비어있는 경우에만 다시 읽는다.
-    if (board.get('list').length === 0)
-      return dispatch(fetchIssueList(uid, {token}, 0));
+  if (reloadAlways) {
+    dispatch(resetIssueList());
+    return dispatch(fetchIssueList(uid, {token}, 0));
+  }
 
-    return new Promise.resolve();
-  };
+  // reloadAlways == false 이면 list가 비어있는 경우에만 다시 읽는다.
+  if (board.list.length === 0) return dispatch(fetchIssueList(uid, {token}, 0));
+
+  return new Promise.resolve();
 };
 
-export const getNextIssueList = () => {
-  return (dispatch, getState) => {
-    const {
-      account,
-      board,
-      pender: pender0,
-    }: {account: AccountModelState} = getState();
-    const {uid, token} = account;
-    const next = board.get('next');
-    const page = board.get('page');
-    const pending = pender0.pending[FETCH_ISSUE_LIST];
+export const getNextIssueList = (): AppThunk => (dispatch, getState) => {
+  const {account, board, pender: pender0} = getState();
+  const {uid, token} = account;
+  const {next, page} = board;
+  const pending = pender0.pending[FETCH_ISSUE_LIST];
 
-    if (next && !pending) {
-      dispatch(nextIssueList());
-      return dispatch(fetchIssueList(uid, {token}, page + 1));
-    }
+  if (next && !pending) {
+    dispatch(nextIssueList());
+    return dispatch(fetchIssueList(uid, {token}, page + 1));
+  }
 
-    // no more list
-    return dispatch({type: NO_MORE_ISSUES});
-  };
+  // no more list
+  return dispatch({type: NO_MORE_ISSUES});
 };
 
 // 10 items per page
 const PAGE_LIMIT = 10;
 const PAGE_UPDATE = 0;
 
-export const postAndGetList = (issue, attachment) => {
-  return (dispatch, getState) => {
-    const {account}: {account: AccountModelState} = getState();
-    const {uid} = account;
-    const authObj = auth(account);
+export const postAndGetList = (issue, attachment): AppThunk => (
+  dispatch,
+  getState,
+) => {
+  const {account} = getState();
+  const {uid} = account;
+  const authObj = auth(account);
 
-    return dispatch(postAttach(attachment, authObj)).then((rsp) => {
-      const attach = rsp ? rsp.map((item) => item.objects[0]) : [];
-      console.log('Failed to upload picture', rsp);
-      return dispatch(postIssue(issue, attach, authObj)).then(
-        (resp) => {
-          if (resp.result === 0 && resp.objects.length > 0) {
-            return dispatch(getIssueList(uid, authObj));
-          }
-          console.log('Failed to post issue', resp);
-        },
-        (err) => {
-          console.log('Failed to post issue', err);
-        },
-      );
-    });
-  };
+  return dispatch(postAttach(attachment, authObj)).then((rsp) => {
+    const attach = rsp ? rsp.map((item) => item.objects[0]) : [];
+    console.log('Failed to upload picture', rsp);
+    return dispatch(postIssue(issue, attach, authObj)).then(
+      (resp) => {
+        if (resp.result === 0 && resp.objects.length > 0) {
+          return dispatch(getIssueList(uid, authObj));
+        }
+        console.log('Failed to post issue', resp);
+      },
+      (err) => {
+        console.log('Failed to post issue', err);
+      },
+    );
+  });
 };
 
-const initialState = Map({
+const initialState: BoardModelState = {
   next: true,
   page: 0,
   list: [],
-  comment: undefined,
-});
+};
 
 export default handleActions(
   {
-    [NO_MORE_ISSUES]: (state, action) => {
+    [NO_MORE_ISSUES]: (state) => {
       return state;
     },
 
-    [NEXT_ISSUE_LIST]: (state, action) => {
-      return state.update('page', (value) => value + 1);
+    [NEXT_ISSUE_LIST]: (state) => {
+      const {page} = state;
+      return {
+        ...state,
+        page: page + 1,
+      };
     },
 
-    [RESET_ISSUE_LIST]: (state, action) => {
-      return state.set('next', true).set('page', 0).set('list', []);
+    [RESET_ISSUE_LIST]: (state) => {
+      return {
+        ...state,
+        next: true,
+        page: 0,
+        list: [],
+      };
     },
 
-    [RESET_ISSUE_COMMENT]: (state, action) => {
-      return state.set('comment', undefined);
+    [RESET_ISSUE_COMMENT]: (state) => {
+      return {
+        ...state,
+        comment: undefined,
+      };
     },
 
-    ...pender({
+    ...pender<BoardModelState>({
       type: FETCH_ISSUE_LIST,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
-        const list = state.get('list');
+        const {list} = state;
 
         if (result === 0 && objects.length > 0) {
           //Status가 변경된 item을 찾아서 변경해 준다.
@@ -145,29 +157,32 @@ export default handleActions(
               changedList.findIndex((org) => org.uuid === item.uuid) < 0,
           );
 
-          return state
-            .set(
-              'list',
-              changedList
-                .concat(newList)
-                .sort((a, b) => (a.created < b.created ? 1 : -1)),
-            )
-            .set(
-              'next',
+          return {
+            ...state,
+            list: changedList
+              .concat(newList)
+              .sort((a, b) => (a.created < b.created ? 1 : -1)),
+            next:
               newList.length === PAGE_LIMIT || newList.length === PAGE_UPDATE,
-            );
+          };
         }
-        return state.set('next', false);
+        return {
+          ...state,
+          next: false,
+        };
       },
     }),
 
-    ...pender({
+    ...pender<BoardModelState>({
       type: GET_ISSUE_RESP,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
         if (result === 0) {
           // object.length == 0인 경우에도 comment를 overwrite 한다.
-          return state.set('comment', objects);
+          return {
+            ...state,
+            comment: objects,
+          };
         }
         return state;
       },

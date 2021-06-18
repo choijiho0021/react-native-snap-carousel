@@ -1,10 +1,11 @@
 import {createAction, handleActions} from 'redux-actions';
 import {pender} from 'redux-pender';
-import {Map} from 'immutable';
+import {Map as ImmutableMap} from 'immutable';
 import _ from 'underscore';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import utils from '../../utils/utils';
-import {AccountModelState, getAccount} from './account';
+import {AccountAuthType, getAccount} from './account';
+import {AppThunk} from '..';
 
 export const GET_ORDERS = 'rokebi/order/GET_ORDERS';
 export const GET_ORDER_BY_ID = 'rokebi/order/GET_ORDER_BY_ID';
@@ -33,93 +34,106 @@ export const reset = createAction(RESET);
 
 export const getSubsWithToast = utils.reflectWithToast(getSubs);
 
-export const checkAndGetOrderById = (auth, orderId) => {
-  return (dispatch, getState) => {
-    const {order} = getState();
+interface OrderModelState {
+  orders: object[];
+  ordersIdx: ImmutableMap<string, number>;
+  subs: object[];
+  usageProgress: object;
+  next: boolean;
+  page: number;
+}
 
-    if (order.get('ordersIdx').has(orderId)) return new Promise.resolve();
-    return dispatch(getOrderById(auth, orderId));
-  };
+export const checkAndGetOrderById = (
+  auth: AccountAuthType,
+  orderId: string,
+): AppThunk => (dispatch, getState) => {
+  const {order} = getState();
+
+  if (order.ordersIdx.has(orderId)) return new Promise.resolve();
+  return dispatch(getOrderById(auth, orderId));
 };
 
-export const getOrders = (auth, page) => {
-  return (dispatch, getState) => {
-    const {order} = getState();
+export const getOrders = (auth: AccountAuthType, page: number): AppThunk => (
+  dispatch,
+  getState,
+) => {
+  const {order} = getState();
 
-    if (typeof page !== 'undefined') return dispatch(getNextOrders(auth, page));
-    if (order.get('next'))
-      return dispatch(getNextOrders(auth, order.get('page') + 1));
-    return new Promise.resolve();
-  };
+  if (typeof page !== 'undefined') return dispatch(getNextOrders(auth, page));
+  if (order.next) return dispatch(getNextOrders(auth, order.page + 1));
+  return new Promise.resolve();
 };
 
-export const cancelAndGetOrder = (orderId, auth) => {
-  return (dispatch, getState) => {
-    const {account}: {account: AccountModelState} = getState();
-    const {iccid} = account;
+export const cancelAndGetOrder = (
+  orderId: string,
+  auth: AccountAuthType,
+): AppThunk => (dispatch, getState) => {
+  const {account} = getState();
+  const {iccid} = account;
 
-    return dispatch(cancelOrder(orderId, auth)).then((resp) => {
-      // 결제취소요청 후 항상 order를 가져온다
-      return dispatch(getOrderById(auth, orderId)).then((val) => {
-        if (resp.result === 0) {
-          if (val.result === 0) {
-            dispatch(getAccount(iccid, auth));
-            return val;
-          }
-          return {
-            ...val,
-            result: 1,
-          };
-        }
-        if (val.result === 0) {
-          return {
-            ...val,
-            result: 1,
-          };
-        }
-        return resp;
-      });
-    });
-  };
-};
-
-// subs status 변환 후
-export const updateStatusAndGetSubs = (uuid, targetStatus, auth) => {
-  return (dispatch, getState) => {
-    const {account}: {account: AccountModelState} = getState();
-    const {iccid} = account;
-
-    return dispatch(updateSubsStatus(uuid, targetStatus, auth)).then((resp) => {
-      // 결제취소요청 후 항상 order를 가져온다
+  return dispatch(cancelOrder(orderId, auth)).then((resp) => {
+    // 결제취소요청 후 항상 order를 가져온다
+    return dispatch(getOrderById(auth, orderId)).then((val) => {
       if (resp.result === 0) {
-        return dispatch(getSubs(iccid, auth));
+        if (val.result === 0) {
+          dispatch(getAccount(iccid, auth));
+          return val;
+        }
+        return {
+          ...val,
+          result: 1,
+        };
+      }
+      if (val.result === 0) {
+        return {
+          ...val,
+          result: 1,
+        };
       }
       return resp;
     });
-  };
+  });
 };
 
-const initialState = Map({
+// subs status 변환 후
+export const updateStatusAndGetSubs = (
+  uuid: string,
+  targetStatus: string,
+  auth: AccountAuthType,
+): AppThunk => (dispatch, getState) => {
+  const {account} = getState();
+  const {iccid} = account;
+
+  return dispatch(updateSubsStatus(uuid, targetStatus, auth)).then((resp) => {
+    // 결제취소요청 후 항상 order를 가져온다
+    if (resp.result === 0) {
+      return dispatch(getSubs(iccid, auth));
+    }
+    return resp;
+  });
+};
+
+const initialState: OrderModelState = {
   orders: [],
-  ordersIdx: Map(),
+  ordersIdx: ImmutableMap(),
   subs: [],
   usageProgress: {},
   next: true,
   page: -1,
-});
+};
 
-function updateOrders(state, action) {
-  const {result, objects} = action.payload;
+function updateOrders(state: OrderModelState, {payload}) {
+  const {result, objects} = payload;
 
   if (result === 0 && objects.length > 0) {
     const isPageZero =
-      (objects[0] || []).key >= ((state.get('orders')[0] || []).key || -1);
+      (objects[0] || []).key >= ((state.orders[0] || []).key || -1);
     const orders = isPageZero
-      ? state.get('orders').slice(0, API.Order.ORDER_PAGE_ITEMS)
-      : state.get('orders');
-    const page = isPageZero ? -1 : state.get('page');
+      ? state.orders.slice(0, API.Order.ORDER_PAGE_ITEMS)
+      : state.orders;
+    const page = isPageZero ? -1 : state.page;
 
-    let ordersIdx = state.get('ordersIdx');
+    let {ordersIdx} = state;
 
     // add to the order list if not exist
     objects.forEach((item) => {
@@ -132,15 +146,17 @@ function updateOrders(state, action) {
       }
     });
 
-    ordersIdx = Map(
+    ordersIdx = ImmutableMap(
       orders
         .sort((a, b) => b.orderId - a.orderId)
         .map((a, idx) => [a.orderId, idx]),
     );
-    return state
-      .set('orders', orders)
-      .set('ordersIdx', ordersIdx)
-      .set('page', page);
+    return {
+      ...state,
+      orders,
+      ordersIdx,
+      page,
+    };
   }
 
   return state;
@@ -152,41 +168,43 @@ export default handleActions(
       return initialState;
     },
 
-    ...pender({
+    ...pender<OrderModelState>({
       type: GET_ORDERS,
       onSuccess: (state, action) => {
         const {objects, links} = action.payload;
 
-        return updateOrders(state, action)
-          .set('next', objects && objects.length === API.Order.ORDER_PAGE_ITEMS)
-          .update('page', (page) =>
+        const newState = updateOrders(state, action);
+        return {
+          ...newState,
+          next: objects && objects.length === API.Order.ORDER_PAGE_ITEMS,
+          page:
             links && typeof (links || [])[0] !== 'undefined'
               ? (links || [])[0]
-              : page,
-          );
+              : newState.page,
+        };
       },
     }),
 
-    ...pender({
+    ...pender<OrderModelState>({
       type: GET_ORDER_BY_ID,
       onSuccess: (state, action) => {
         return updateOrders(state, action);
       },
     }),
 
-    ...pender({
+    ...pender<OrderModelState>({
       type: CANCEL_ORDER,
       onSuccess: (state, action) => {
         return state;
       },
     }),
 
-    ...pender({
+    ...pender<OrderModelState>({
       type: UPDATE_SUBS_STATUS,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
 
-        const subs = state.get('subs');
+        const {subs} = state;
 
         if (result === 0) {
           const idx = subs.findIndex(
@@ -197,29 +215,38 @@ export default handleActions(
             subs[idx].statusCd = objects[0].statusCd;
             subs[idx].status = objects[0].status;
           }
-          return state.set('subs', subs);
+          return {
+            ...state,
+            subs,
+          };
         }
         return state;
       },
     }),
 
-    ...pender({
+    ...pender<OrderModelState>({
       type: GET_SUBS,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
         if (result === 0) {
-          return state.set('subs', objects);
+          return {
+            ...state,
+            subs: objects,
+          };
         }
         return state;
       },
     }),
 
-    ...pender({
+    ...pender<OrderModelState>({
       type: GET_SUBS_USAGE,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
         if (result === 0) {
-          return state.set('usageProgress', objects);
+          return {
+            ...state,
+            usageProgress: objects,
+          };
         }
         return state;
       },

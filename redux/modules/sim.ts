@@ -1,5 +1,4 @@
 import {createAction, handleActions} from 'redux-actions';
-import {Map} from 'immutable';
 import _ from 'underscore';
 import {pender} from 'redux-pender';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
@@ -15,35 +14,48 @@ export const updateSimPartner = createAction(
 );
 export const getSimCardList = createAction(GET_SIM_CARD_LIST, API.SimCard.get);
 
-const initialState = Map({
-  iccid: undefined,
-  simPartner: undefined,
+interface SimModelState {
+  iccid?: string;
+  simPartner?: string;
+  simList: object[];
+}
+
+const initialState: SimModelState = {
   simList: [],
-});
+};
 
 export default handleActions(
   {
     [ADD_ICCID]: (state, action) => {
-      return state.set('iccid', action.payload.iccid);
+      return {
+        ...state,
+        iccid: action.payload.iccid,
+      };
     },
 
-    ...pender({
+    ...pender<SimModelState>({
       type: GET_SIM_CARD_LIST,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
         if (result === 0 && objects.length > 0) {
-          return state.set('simList', objects);
+          return {
+            ...state,
+            simList: objects,
+          };
         }
         return state;
       },
     }),
 
-    ...pender({
+    ...pender<SimModelState>({
       type: UPDATE_SIM_PARTNER,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
         if (result === 0 && objects.length > 0) {
-          return state.set('simPartner', objects[0]);
+          return {
+            ...state,
+            simPartner: objects[0],
+          };
         }
         return state;
       },

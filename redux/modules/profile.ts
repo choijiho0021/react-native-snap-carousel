@@ -1,7 +1,7 @@
 import {createAction, handleActions} from 'redux-actions';
 import {pender} from 'redux-pender';
-import {Map} from 'immutable';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import {AppThunk} from '..';
 
 const UPDATE_PROFILE_ADDRESS = 'rokebi/order/UPDATE_PROFILE_ADDRESS';
 const GET_CUSTOMER_PROFILE = 'rokebi/order/GET_CUSTOMER_PROFILE';
@@ -30,59 +30,68 @@ export const delCustomerProfile = createAction(
 );
 export const selectedAddr = createAction(SELECTED_ADDR);
 
-const initialState = Map({
+interface ProfileModelState {
   // selectedAddrIdx: undefined,
-  selectedAddr: undefined,
+  selectedAddr?: string;
+  profile: object[];
+  addr: object;
+}
+
+const initialState: ProfileModelState = {
+  // selectedAddrIdx: undefined,
   profile: [],
   addr: {},
-});
-
-export const profileDelAndGet = (uuid, account) => {
-  return (dispatch, getState) => {
-    const {profile} = getState();
-    const deleted = profile.get('profile').find((item) => item.uuid === uuid);
-    const updateProfile = profile
-      .get('profile')
-      .find((item) => item.uuid !== uuid);
-
-    return dispatch(delCustomerProfile(uuid, account)).then(
-      (resp) => {
-        if (resp.result === 0) {
-          if (deleted && deleted.isBasicAddr && updateProfile) {
-            return dispatch(
-              updateCustomerProfile(
-                {
-                  ...updateProfile,
-                  isBasicAddr: true,
-                },
-                account,
-              ),
-            ).then((res) => {
-              return dispatch(getCustomerProfile(account));
-            });
-          }
-          return dispatch(getCustomerProfile(account));
-        }
-        throw new Error('Failed to delete Profile');
-      },
-      (err) => {
-        throw err;
-      },
-    );
-  };
 };
 
-export const profileAddAndGet = (profile, defaultProfile, account) => {
-  return (dispatch) => {
-    return dispatch(addCustomerProfile(profile, defaultProfile, account)).then(
-      (resp) => {
+export const profileDelAndGet = (uuid: string, account): AppThunk => (
+  dispatch,
+  getState,
+) => {
+  const {
+    profile: {profile: pf},
+  } = getState();
+  const deleted = pf.find((item) => item.uuid === uuid);
+  const updateProfile = pf.find((item) => item.uuid !== uuid);
+
+  return dispatch(delCustomerProfile(uuid, account)).then(
+    (resp) => {
+      if (resp.result === 0) {
+        if (deleted && deleted.isBasicAddr && updateProfile) {
+          return dispatch(
+            updateCustomerProfile(
+              {
+                ...updateProfile,
+                isBasicAddr: true,
+              },
+              account,
+            ),
+          ).then((res) => {
+            return dispatch(getCustomerProfile(account));
+          });
+        }
         return dispatch(getCustomerProfile(account));
-      },
-      (err) => {
-        throw err;
-      },
-    );
-  };
+      }
+      throw new Error('Failed to delete Profile');
+    },
+    (err) => {
+      throw err;
+    },
+  );
+};
+
+export const profileAddAndGet = (
+  profile,
+  defaultProfile,
+  account,
+): AppThunk => (dispatch) => {
+  return dispatch(addCustomerProfile(profile, defaultProfile, account)).then(
+    (resp) => {
+      return dispatch(getCustomerProfile(account));
+    },
+    (err) => {
+      throw err;
+    },
+  );
 };
 
 const sortProfile = (a, b) => {
@@ -95,18 +104,24 @@ export default handleActions(
   {
     // addr uuid
     [SELECTED_ADDR]: (state, action) => {
-      return state.set('selectedAddr', action.payload);
+      return {
+        ...state,
+        selectedAddr: action.payload,
+      };
     },
 
     [UPDATE_PROFILE_ADDRESS]: (state, action) => {
       console.log('update profile address!! action', action);
-      return state.set('addr', {
-        ...action.payload,
-        // provinceCd : findEngAddress.city[provinceNumber]
-      });
+      return {
+        ...state,
+        addr: {
+          ...action.payload,
+          // provinceCd : findEngAddress.city[provinceNumber]
+        },
+      };
     },
 
-    ...pender({
+    ...pender<ProfileModelState>({
       type: GET_CUSTOMER_PROFILE,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
@@ -124,28 +139,33 @@ export default handleActions(
           // const idx = list.findIndex(item => item.isBasicAddr)
           // if(idx > 0){
 
-          return state.set('profile', objects.sort(sortProfile));
+          return {
+            ...state,
+            profile: objects.sort(sortProfile),
+          };
           // }
         }
         return state;
       },
     }),
 
-    ...pender({
+    ...pender<ProfileModelState>({
       type: ADD_CUSTOMER_PROFILE,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
+        const {profile} = state;
 
         if (result === 0 && objects.length > 0) {
-          return state.update('profile', (profile) =>
-            objects.concat(profile).sort(sortProfile),
-          );
+          return {
+            ...state,
+            profile: objects.concat(profile).sort(sortProfile),
+          };
         }
         return state;
       },
     }),
 
-    ...pender({
+    ...pender<ProfileModelState>({
       type: UPDATE_CUSTOMER_PROFILE,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
@@ -153,7 +173,7 @@ export default handleActions(
         if (result === 0 && objects.length > 0) {
           console.log('pender update', objects);
 
-          const profile = state.get('profile');
+          const {profile} = state;
           const idx = profile.findIndex(
             (item) => item.uuid === objects[0].uuid,
           );
@@ -170,7 +190,10 @@ export default handleActions(
             profile[prevIdx] = {...profile[prevIdx], isBasicAddr: false};
           }
 
-          return state.update('profile', (value) => value.sort(sortProfile));
+          return {
+            ...state,
+            profile: profile.sort(sortProfile),
+          };
         }
         return state;
       },

@@ -1,8 +1,9 @@
 import {createAction, handleActions} from 'redux-actions';
-import {Map} from 'immutable';
+import {Map as ImmutableMap} from 'immutable';
 import {pender} from 'redux-pender/lib/utils';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import utils from '../../utils/utils';
+import {AppThunk} from '..';
 
 const GET_PROD_LIST = 'rokebi/product/GET_PROD_LIST';
 const GET_LOCAL_OP_LIST = 'rokebi/product/GET_LOCAL_OP_LIST';
@@ -19,88 +20,102 @@ const getProdDetailPage = createAction(
 export const setProdOfCountry = createAction(SET_PROD_OF_COUNTRY);
 export const setSortedProdList = createAction(SET_SORTED_PROD_LIST);
 
-export const getProdDetail = (controller) => {
-  return (dispatch, getState) => {
-    const {product} = getState();
-    if (product.get('detailInfo') === '')
-      return dispatch(getProdDetailPage(controller));
-    return new Promise.resolve();
-  };
+interface ProductModelState {
+  prodList: ImmutableMap<string, object>;
+  localOpList: ImmutableMap<string, object>;
+  prodOfCountry: object[];
+  sortedProdList: object[];
+  detailInfo: string;
+  detailCommon: string;
+}
+
+export const getProdDetail = (controller): AppThunk => (dispatch, getState) => {
+  const {product} = getState();
+  if (product.detailInfo === '') return dispatch(getProdDetailPage(controller));
+  return new Promise.resolve();
 };
 
 createAction(GET_PROD_DETAIL, API.Page.getProductDetails);
 
-export const getProdList = () => {
-  return (dispatch) => {
-    return dispatch(getProd()).then((_) => {
-      return dispatch(getLocalOp());
-    });
-  };
+export const getProdList = (): AppThunk => (dispatch) => {
+  return dispatch(getProd()).then((_) => {
+    return dispatch(getLocalOp());
+  });
 };
 
 export const getProdListWithToast = utils.reflectWithToast(getProdList);
 
-const initialState = Map({
-  prodList: Map(),
-  localOpList: Map(),
+const initialState = {
+  prodList: ImmutableMap(),
+  localOpList: ImmutableMap(),
   prodOfCountry: [],
   sortedProdList: [],
   detailInfo: '',
   detailCommon: '',
-});
+};
 
 export default handleActions(
   {
-    ...pender({
+    ...pender<ProductModelState>({
       type: GET_PROD_DETAIL,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
         const details = objects.map((item) => item.body);
         if (result === 0 && details.length > 0) {
-          return state
-            .set('detailInfo', details[0])
-            .set('detailCommon', details.slice(1, details.length).join(''));
+          return {
+            ...state,
+            detailInfo: details[0],
+            detailCommon: details.slice(1, details.length).join(''),
+          };
         }
         return state;
       },
     }),
 
-    ...pender({
+    ...pender<ProductModelState>({
       type: GET_PROD_LIST,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
 
         if (result === 0 && objects.length > 0) {
-          return state.set(
-            'prodList',
-            Map(objects.map((item) => [item.key, item])),
-          );
+          return {
+            ...state,
+            prodList: ImmutableMap(objects.map((item) => [item.key, item])),
+          };
         }
         return state;
       },
     }),
 
-    ...pender({
+    ...pender<ProductModelState>({
       type: GET_LOCAL_OP_LIST,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
 
         if (result === 0 && objects.length > 0) {
-          return state.set(
-            'localOpList',
-            Map(objects.map((item) => [item.key, item])),
-          );
+          return {
+            ...state,
+            localOpList: ImmutableMap(objects.map((item) => [item.key, item])),
+          };
         }
         return state;
       },
     }),
 
+    // bhtak
+    // payload type 정의 필요
     [SET_SORTED_PROD_LIST]: (state, action) => {
-      return state.set('sortedProdList', action.payload);
+      return {
+        ...state,
+        sortedProdList: action.payload,
+      };
     },
 
     [SET_PROD_OF_COUNTRY]: (state, action) => {
-      return state.set('prodOfCountry', action.payload);
+      return {
+        ...state,
+        prodOfCountry: action.payload,
+      };
     },
   },
   initialState,

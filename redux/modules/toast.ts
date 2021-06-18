@@ -1,5 +1,5 @@
 import {createAction, handleActions} from 'redux-actions';
-import {Map, List} from 'immutable';
+import {List} from 'immutable';
 import _ from 'underscore';
 import {Toast} from '../../constants/CustomTypes';
 
@@ -11,9 +11,13 @@ export const init = createAction(INIT);
 export const push = createAction(PUSH);
 export const remove = createAction(REMOVE);
 
-const initialState = Map({
+interface ToastModelState {
+  messages: List<string>;
+}
+
+const initialState: ToastModelState = {
   messages: List(),
-});
+};
 
 export default handleActions(
   {
@@ -21,17 +25,23 @@ export default handleActions(
       return initialState;
     },
     [PUSH]: (state, action) => {
-      const messages = state.get('messages');
+      const {messages} = state;
       const newMsg = action.payload || Toast.NOT_LOADED;
 
       if (!messages.contains(newMsg)) {
-        return state.set('messages', messages.push(newMsg));
+        return {
+          ...state,
+          messages: messages.push(newMsg),
+        };
       }
       return state;
     },
     [REMOVE]: (state, action) => {
-      const messages = state.get('messages');
-      return state.set('messages', messages.remove(0));
+      const {messages} = state;
+      return {
+        ...state,
+        messages: messages.remove(0),
+      };
     },
   },
   initialState,

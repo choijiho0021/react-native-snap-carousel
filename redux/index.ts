@@ -1,4 +1,5 @@
-import {combineReducers} from 'redux';
+import {AnyAction, combineReducers} from 'redux';
+import {ThunkAction} from 'redux-thunk';
 import {penderReducer} from 'redux-pender';
 import account from './modules/account';
 import product from './modules/product';
@@ -13,7 +14,7 @@ import sync from './modules/sync';
 import toast from './modules/toast';
 import promotion from './modules/promotion';
 
-export default combineReducers({
+const reducers = {
   account,
   product,
   sim,
@@ -27,4 +28,21 @@ export default combineReducers({
   toast,
   promotion,
   pender: penderReducer,
-});
+};
+
+type BaseReducerMap<S> = {
+  [K in keyof S]: (state: S[K], action: any) => S;
+};
+
+export type InferRootState<ReducerMap extends BaseReducerMap<S>, S = any> = {
+  [K in keyof ReducerMap]: ReturnType<ReducerMap[K]>;
+};
+export type RootState = InferRootState<typeof reducers>;
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  RootState,
+  unknown,
+  AnyAction
+>;
+
+export default combineReducers(reducers);

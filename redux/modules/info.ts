@@ -1,5 +1,4 @@
 import {createAction, handleActions} from 'redux-actions';
-import {Map} from 'immutable';
 import _ from 'underscore';
 import {pender} from 'redux-pender';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
@@ -16,30 +15,41 @@ export const getHomeInfoList = createAction(
   API.Page.getPageByCategory,
 );
 
-const initialState = Map({
+interface InfoModelState {
+  infoList: object[];
+  homeInfoList: object[];
+}
+
+const initialState: InfoModelState = {
   infoList: [],
   homeInfoList: [],
-});
+};
 
 export default handleActions(
   {
-    ...pender({
+    ...pender<InfoModelState>({
       type: GET_INFO_LIST,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
         if (result === 0 && objects.length > 0) {
-          return state.set('infoList', objects);
+          return {
+            ...state,
+            infoList: objects,
+          };
         }
         return state;
       },
     }),
 
-    ...pender({
+    ...pender<InfoModelState>({
       type: GET_HOME_INFO_LIST,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
         if (result === 0 && objects.length > 0) {
-          return state.set('homeInfoList', objects);
+          return {
+            ...state,
+            homeInfoList: objects,
+          };
         }
         return state;
       },

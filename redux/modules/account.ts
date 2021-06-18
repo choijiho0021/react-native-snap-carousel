@@ -8,6 +8,7 @@ import utils from '../../utils/utils';
 import * as ToastActions from './toast';
 import {Toast} from '../../constants/CustomTypes';
 import Env from '../../environment';
+import {AppThunk} from '..';
 
 const {esimApp} = Env.get();
 
@@ -99,222 +100,219 @@ export interface AccountModelState {
   isPushNotiEnabled?: boolean;
 }
 
-export const auth = (state: AccountModelState) => ({
+export type AccountAuthType = {
+  user?: string;
+  pass?: string;
+  token?: string;
+};
+
+export const auth = (state: AccountModelState): AccountAuthType => ({
   user: state.mobile,
   pass: state.pin,
   token: state.token,
 });
 
-export const logout = () => {
-  return (dispatch) => {
-    const token = utils.retrieveData(API.User.KEY_TOKEN);
+export const logout = (): AppThunk => (dispatch) => {
+  const token = utils.retrieveData(API.User.KEY_TOKEN);
 
-    utils.removeData(API.User.KEY_ICCID);
-    utils.removeData(API.User.KEY_MOBILE);
-    utils.removeData(API.User.KEY_PIN);
-    utils.removeData(API.User.KEY_TOKEN);
+  utils.removeData(API.User.KEY_ICCID);
+  utils.removeData(API.User.KEY_MOBILE);
+  utils.removeData(API.User.KEY_PIN);
+  utils.removeData(API.User.KEY_TOKEN);
 
-    batch(() => {
-      // 먼저 로그아웃 한다.
-      dispatch(logOut(token));
+  batch(() => {
+    // 먼저 로그아웃 한다.
+    dispatch(logOut(token));
 
-      dispatch(resetAccount());
-      // reset 한 후에 token을 다시 읽어 온다.
-      dispatch(getToken());
-    });
-  };
+    dispatch(resetAccount());
+    // reset 한 후에 token을 다시 읽어 온다.
+    dispatch(getToken());
+  });
 };
 
-export const changeEmail = (mail) => {
-  return (dispatch, getState) => {
-    const {account} = getState();
-    const authObj = auth(account);
-    const attr = {
-      mail,
-      pass: {
-        existing: authObj.pass,
-      },
-    };
-
-    return dispatch(
-      changeUserAttrWithToast(account.userId, authObj, attr),
-    ).then(
-      (resp) => {
-        if (resp.result === 0) {
-          return dispatch(updateAccount({email: mail}));
-        }
-      },
-      (err) => {
-        console.log('failed to update email', err);
-      },
-    );
+export const changeEmail = (mail: string): AppThunk => (dispatch, getState) => {
+  const {account} = getState();
+  const authObj = auth(account);
+  const attr = {
+    mail,
+    pass: {
+      existing: authObj.pass,
+    },
   };
+
+  return dispatch(changeUserAttrWithToast(account.userId, authObj, attr)).then(
+    (resp) => {
+      if (resp.result === 0) {
+        return dispatch(updateAccount({email: mail}));
+      }
+    },
+    (err) => {
+      console.log('failed to update email', err);
+    },
+  );
 };
 
-export const changeNotiToken = () => {
-  return async (dispatch, getState) => {
-    const {account} = getState();
-    const fcmToken = Platform.OS === 'android' ? account.deviceToken : '';
-    const deviceToken = Platform.OS === 'ios' ? account.deviceToken : '';
+export const changeNotiToken = (): AppThunk => async (dispatch, getState) => {
+  const {account} = getState();
+  const fcmToken = Platform.OS === 'android' ? account.deviceToken : '';
+  const deviceToken = Platform.OS === 'ios' ? account.deviceToken : '';
 
-    const authObj = auth(account);
-    const attr = {
-      field_device_token: deviceToken,
-      field_fcm_token: fcmToken,
-    };
-
-    return dispatch(changeUserAttr(account.userId, authObj, attr)).then(
-      (resp) => {
-        if (resp.result === 0) {
-          console.log('Token is updated');
-        }
-      },
-      (err) => {
-        console.log('failed to update noti token', err);
-      },
-    );
+  const authObj = auth(account);
+  const attr = {
+    field_device_token: deviceToken,
+    field_fcm_token: fcmToken,
   };
+
+  return dispatch(changeUserAttr(account.userId, authObj, attr)).then(
+    (resp) => {
+      if (resp.result === 0) {
+        console.log('Token is updated');
+      }
+    },
+    (err) => {
+      console.log('failed to update noti token', err);
+    },
+  );
 };
 
-export const changePushNoti = ({isPushNotiEnabled}) => {
-  return (dispatch, getState) => {
-    const {account} = getState();
-    const authObj = auth(account);
-    const attr = {
-      field_is_notification_enabled: isPushNotiEnabled,
-    };
+export const changePushNoti = ({
+  isPushNotiEnabled,
+}: {
+  isPushNotiEnabled: boolean;
+}): AppThunk => (dispatch, getState) => {
+  const {account} = getState();
+  const authObj = auth(account);
+  const attr = {
+    field_is_notification_enabled: isPushNotiEnabled,
+  };
 
-    return dispatch(
-      changeUserAttrWithToast(account.userId, authObj, attr),
-    ).then((resp) => {
+  return dispatch(changeUserAttrWithToast(account.userId, authObj, attr)).then(
+    (resp) => {
       if (resp.result === 0) {
         return dispatch(updateAccount({isPushNotiEnabled}));
       }
       return Promise.reject();
-    });
-  };
+    },
+  );
 };
 
-export const registerMobile = (iccid, code, mobile) => {
-  return (dispatch, getState) => {
-    const {account} = getState();
-    const authObj = auth(account);
+export const registerMobile = (
+  iccid: string,
+  code: string,
+  mobile: string,
+): AppThunk => (dispatch, getState) => {
+  const {account} = getState();
+  const authObj = auth(account);
 
-    return dispatch(registerMobile0(iccid, code, mobile, authObj)).then(
-      (resp) => {
-        if (resp.result === 0) {
-          return dispatch(getAccount(iccid, authObj));
+  return dispatch(registerMobile0(iccid, code, mobile, authObj)).then(
+    (resp) => {
+      if (resp.result === 0) {
+        return dispatch(getAccount(iccid, authObj));
+      }
+      console.log('failed to register mobile resp:', resp);
+      return resp;
+    },
+    (err) => {
+      console.log('failed to register mobile', err);
+      return {
+        result: -1,
+      };
+    },
+  );
+};
+
+export const getAllCookies = (): AppThunk => (dispatch) => {
+  return dispatch(getAllCookies0());
+};
+
+export const clearCookies = (): AppThunk => (dispatch) => {
+  return dispatch(clearCookies0());
+};
+
+export const logInAndGetAccount = (
+  mobile: string,
+  pin: string,
+  iccid: string,
+): AppThunk => (dispatch) => {
+  return dispatch(logIn(mobile, pin)).then(
+    (resp) => {
+      if (resp.result === 0 && resp.objects.length > 0) {
+        const obj = resp.objects[0];
+        const token = {token: obj.csrf_token};
+
+        utils.storeData(API.User.KEY_MOBILE, obj.current_user.name);
+        utils.storeData(API.User.KEY_PIN, pin);
+        utils.storeData(API.User.KEY_TOKEN, obj.csrf_token);
+
+        // get ICCID account info
+        if (iccid) {
+          dispatch(getAccount(iccid, token)).then((rsp) => {
+            console.log('resp register', rsp);
+          });
+        } else if (esimApp) {
+          dispatch(registerMobile('esim', pin, mobile));
+        } else {
+          // 가장 최근 사용한 SIM 카드 번호를 조회한다.
+          dispatch(getAccountByUser(mobile, token)).then((rsp) => {
+            if (
+              rsp.result === 0 &&
+              rsp.objects.length > 0 &&
+              rsp.objects[0].status === 'A'
+            ) {
+              utils.storeData(API.User.KEY_ICCID, rsp.objects[0].iccid);
+              dispatch(getAccount(rsp.objects[0].iccid, token));
+            }
+          });
         }
-        console.log('failed to register mobile resp:', resp);
-        return resp;
-      },
-      (err) => {
-        console.log('failed to register mobile', err);
-        return {
-          result: -1,
-        };
-      },
-    );
-  };
+
+        // iccid 상관 없이 로그인마다 토큰 업데이트
+        return dispatch(getUserId(obj.current_user.name, token)).then((rsp) => {
+          console.log('user resp', rsp);
+          dispatch(changeNotiToken());
+        });
+      }
+    },
+    (err) => {
+      dispatch(ToastActions.push());
+      console.log('login failed', err);
+    },
+  );
 };
 
-export const getAllCookies = () => {
-  return (dispatch) => {
-    return dispatch(getAllCookies0());
-  };
+export const uploadAndChangePicture = (image: string): AppThunk => (
+  dispatch,
+  getState,
+) => {
+  const {account} = getState();
+  return dispatch(uploadPictureWithToast(image, auth(account))).then(
+    (resp) => {
+      if (resp.result === 0 && resp.objects.length > 0) {
+        return dispatch(
+          changePictureWithToast(
+            account.userId,
+            resp.objects[0],
+            auth(account),
+          ),
+        );
+      }
+      console.log('Failed to upload picture', resp);
+    },
+    (err) => {
+      console.log('Failed to upload picture', err);
+    },
+  );
 };
 
-export const clearCookies = () => {
-  return (dispatch) => {
-    return dispatch(clearCookies0());
-  };
+export const clearCurrentAccount = (): AppThunk => (dispatch) => {
+  utils.removeData(API.User.KEY_ICCID);
+
+  batch(() => {
+    dispatch(clearAccount());
+  });
 };
 
-export const logInAndGetAccount = (mobile, pin, iccid) => {
-  return (dispatch) => {
-    return dispatch(logIn(mobile, pin)).then(
-      (resp) => {
-        if (resp.result === 0 && resp.objects.length > 0) {
-          const obj = resp.objects[0];
-          const token = {token: obj.csrf_token};
-
-          utils.storeData(API.User.KEY_MOBILE, obj.current_user.name);
-          utils.storeData(API.User.KEY_PIN, pin);
-          utils.storeData(API.User.KEY_TOKEN, obj.csrf_token);
-
-          // get ICCID account info
-          if (iccid) {
-            dispatch(getAccount(iccid, token)).then((rsp) => {
-              console.log('resp register', rsp);
-            });
-          } else if (esimApp) {
-            dispatch(registerMobile('esim', pin, mobile));
-          } else {
-            // 가장 최근 사용한 SIM 카드 번호를 조회한다.
-            dispatch(getAccountByUser(mobile, token)).then((rsp) => {
-              if (
-                rsp.result === 0 &&
-                rsp.objects.length > 0 &&
-                rsp.objects[0].status === 'A'
-              ) {
-                utils.storeData(API.User.KEY_ICCID, rsp.objects[0].iccid);
-                dispatch(getAccount(rsp.objects[0].iccid, token));
-              }
-            });
-          }
-
-          // iccid 상관 없이 로그인마다 토큰 업데이트
-          return dispatch(getUserId(obj.current_user.name, token)).then(
-            (rsp) => {
-              console.log('user resp', rsp);
-              dispatch(changeNotiToken());
-            },
-          );
-        }
-      },
-      (err) => {
-        dispatch(ToastActions.push());
-        console.log('login failed', err);
-      },
-    );
-  };
-};
-
-export const uploadAndChangePicture = (image) => {
-  return (dispatch, getState) => {
-    const {account} = getState();
-    return dispatch(uploadPictureWithToast(image, auth(account))).then(
-      (resp) => {
-        if (resp.result === 0 && resp.objects.length > 0) {
-          return dispatch(
-            changePictureWithToast(
-              account.userId,
-              resp.objects[0],
-              auth(account),
-            ),
-          );
-        }
-        console.log('Failed to upload picture', resp);
-      },
-      (err) => {
-        console.log('Failed to upload picture', err);
-      },
-    );
-  };
-};
-
-export const clearCurrentAccount = () => {
-  return (dispatch) => {
-    utils.removeData(API.User.KEY_ICCID);
-
-    batch(() => {
-      dispatch(clearAccount());
-    });
-  };
-};
-
-const updateAccountState = (state: AccountModelState, payload) => {
-  let newState = _.clone(state);
+const updateAccountState = (state: AccountModelState, payload: object) => {
+  const newState = _.clone(state);
 
   [
     'expDate',
@@ -363,11 +361,11 @@ export default handleActions<AccountModelState>(
       return updateAccountState(state, payload);
     },
 
-    [RESET_ACCOUNT]: (state, action) => {
+    [RESET_ACCOUNT]: () => {
       return initialState;
     },
 
-    [CLEAR_ACCOUNT]: (state, action) => {
+    [CLEAR_ACCOUNT]: (state) => {
       return {
         ...state,
         expDate: undefined,
@@ -407,7 +405,7 @@ export default handleActions<AccountModelState>(
           loggedIn: false,
         };
       },
-      onFailure: (state, action) => {
+      onFailure: (state) => {
         return {
           ...state,
           token: undefined,

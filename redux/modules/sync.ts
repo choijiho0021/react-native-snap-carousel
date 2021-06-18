@@ -1,5 +1,4 @@
 import {createAction, handleActions} from 'redux-actions';
-import {Map} from 'immutable';
 import _ from 'underscore';
 import codePush from 'react-native-code-push';
 
@@ -15,39 +14,56 @@ export const complete = createAction(COMPLETE);
 export const skip = createAction(SKIP);
 export const progress = createAction(PROGRESS);
 
-const initialState = Map({
-  syncStatus: undefined,
+interface SyncModelState {
+  syncStatus?: codePush.SyncStatus;
+  isCompleted: boolean;
+  isUpdating: boolean;
+  isSkipped: boolean;
+  progress: boolean;
+}
+
+const initialState: SyncModelState = {
   isCompleted: false,
   isUpdating: false,
   isSkipped: false,
   progress: false,
-});
+};
 
 export default handleActions(
   {
     [INIT]: (state, action) => {
       return initialState;
     },
+
     [UPDATE]: (state, action) => {
       const {syncStatus} = action.payload || {};
-      return state
-        .set('syncStatus', syncStatus)
-        .set(
-          'isUpdating',
-          [
-            codePush.SyncStatus.DOWNLOADING_PACKAGE,
-            codePush.SyncStatus.INSTALLING_UPDATE,
-          ].includes(syncStatus),
-        );
+      return {
+        ...state,
+        syncStatus,
+        isUpdating: [
+          codePush.SyncStatus.DOWNLOADING_PACKAGE,
+          codePush.SyncStatus.INSTALLING_UPDATE,
+        ].includes(syncStatus),
+      };
     },
     [COMPLETE]: (state, action) => {
-      return state.set('isCompleted', true).set('progress', false);
+      return {
+        ...state,
+        isCompleted: true,
+        progress: false,
+      };
     },
     [SKIP]: (state, action) => {
-      return state.set('isSkipped', true);
+      return {
+        ...state,
+        isSkipped: true,
+      };
     },
     [PROGRESS]: (state, action) => {
-      return state.set('progress', true);
+      return {
+        ...state,
+        progress: true,
+      };
     },
   },
   initialState,

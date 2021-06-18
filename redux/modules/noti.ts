@@ -1,10 +1,11 @@
 import {createAction, handleActions} from 'redux-actions';
-import {Map} from 'immutable';
 import _ from 'underscore';
 import {pender} from 'redux-pender';
 import moment from 'moment';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import {AppThunk} from '..';
+import {AccountAuthType} from './account';
 
 export const GET_NOTI_LIST = 'rokebi/noti/GET_NOTI_LIST';
 const READ_NOTI = 'rokebi/noti/READ_NOTI';
@@ -38,44 +39,50 @@ const setAppBadge = async (notiCount) => {
   // messaging().setBadge(notiCount);
 };
 
-export const notiReadAndGet = (uuid, mobile, auth) => {
-  return (dispatch, getState) => {
-    return dispatch(readNoti(uuid, auth)).then(
-      (resp) => {
-        if (resp.result === 0 && resp.objects.length > 0) {
-          return dispatch(getNotiList(mobile));
-        }
-        throw new Error('Failed to read Noti and Get notiList');
-      },
-      (err) => {
-        throw err;
-      },
-    );
-  };
+export const notiReadAndGet = (
+  uuid: string,
+  mobile: string,
+  auth: AccountAuthType,
+): AppThunk => (dispatch) => {
+  return dispatch(readNoti(uuid, auth)).then(
+    (resp) => {
+      if (resp.result === 0 && resp.objects.length > 0) {
+        return dispatch(getNotiList(mobile));
+      }
+      throw new Error('Failed to read Noti and Get notiList');
+    },
+    (err) => {
+      throw err;
+    },
+  );
 };
 
-export const initAndSendAlimTalk = ({mobile, abortController}) => {
-  return (dispatch, getState) => {
-    dispatch(initAlimTalk());
+export const initAndSendAlimTalk = ({mobile, abortController}): AppThunk => (
+  dispatch,
+) => {
+  dispatch(initAlimTalk());
 
-    return dispatch(sendAlimTalk(mobile, abortController));
-  };
+  return dispatch(sendAlimTalk(mobile, abortController));
 };
 
-const initialState = Map({
+interface NotiModelState {
+  notiList: object[];
+  lastSent?: Date;
+  result?: number;
+  lastRefresh?: moment.Moment;
+}
+
+const initialState: NotiModelState = {
   notiList: [],
-  lastSent: undefined,
-  result: undefined,
-  lastRefresh: undefined,
-});
+};
 
 export default handleActions(
   {
-    [INIT]: (state, action) => {
+    [INIT]: () => {
       return initialState;
     },
 
-    ...pender({
+    ...pender<NotiModelState>({
       type: GET_NOTI_LIST,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
@@ -84,48 +91,67 @@ export default handleActions(
           const badgeCnt = objects.filter((elm) => elm.isRead === 'F').length;
           setAppBadge(badgeCnt);
 
-          return state.set('notiList', objects).set('lastRefresh', moment());
+          return {
+            ...state,
+            notiList: objects,
+            lastRefresh: moment(),
+          };
         }
         return state;
       },
     }),
 
-    [INIT_ALIM_TALK]: (state, action) => {
-      return state.set('result', undefined);
+    [INIT_ALIM_TALK]: (state) => {
+      return {
+        ...state,
+        result: undefined,
+      };
     },
 
-    ...pender({
+    ...pender<NotiModelState>({
       type: SEND_ALIM_TALK,
       onSuccess: (state, action) => {
         const {result} = action.payload || {};
         if (result === 0) {
-          return state.set('lastSent', new Date()).set('result', result);
+          return {
+            ...state,
+            lastSent: new Date(),
+            result,
+          };
         }
-        return state.set('result', API.default.FAILED);
+        return {
+          ...state,
+          result: API.default.FAILED,
+        };
       },
-      onFailure: (state, action) => {
-        return state.set('result', API.default.FAILED);
+      onFailure: (state) => {
+        return {
+          ...state,
+          result: API.default.FAILED,
+        };
       },
-      onCancel: (state, action) => {
+      onCancel: (state) => {
         return state;
       },
     }),
 
-    ...pender({
+    ...pender<NotiModelState>({
       type: READ_NOTI,
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
-        const notiList = state
-          .toJS()
-          .notiList.map((elm) =>
-            elm.uuid === objects[0].uuid ? {...elm, isRead: 'T'} : elm,
-          );
+
+        const notiList = state.notiList.map((elm) =>
+          elm.uuid === objects[0].uuid ? {...elm, isRead: 'T'} : elm,
+        );
 
         if (state && result === 0) {
           // appBadge 업데이트
           const badgeCnt = notiList.filter((elm) => elm.isRead === 'F').length;
           setAppBadge(badgeCnt);
-          return state.set('notiList', notiList);
+          return {
+            ...state,
+            notiList,
+          };
         }
         return state;
       },
@@ -133,7 +159,7 @@ export default handleActions(
 
     [`${SEND_ALIM_TALK}_CANCEL`]: (state, action) => {
       if (action.meta.abortController) action.meta.abortController.abort();
-      console.log('cancel send alimtalk req', state.toJS(), action);
+      console.log('cancel send alimtalk req', state, action);
       return state;
     },
   },
