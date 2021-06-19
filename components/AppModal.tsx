@@ -1,5 +1,13 @@
 import React, {PureComponent} from 'react';
-import {StyleSheet, Text, View, Modal, TextInput} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Modal,
+  TextInput,
+  TextStyle,
+  KeyboardTypeOptions,
+} from 'react-native';
 import _ from 'underscore';
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
@@ -87,13 +95,29 @@ const styles = StyleSheet.create({
   },
 });
 
-function renderBody(body) {
-  if (typeof body === 'string') return <Text style={styles.body}>{body}</Text>;
-  if (typeof body === 'function') return body();
-  return null;
+interface AppModalProps {
+  visible: boolean;
+  type?: string;
+  title: string;
+  titleStyle?: TextStyle;
+  titleIcon?: string;
+  maxLength?: number;
+  keyboardType?: KeyboardTypeOptions;
+  toRokebiCash?: boolean;
+  closeButtonTitle?: string;
+  infoText?: string;
+  validate?: (v: string) => string;
+  validateAsync?: (v: string) => Promise<string[] | undefined>;
+  onOkClose?: (v: string) => void;
+  onCancelClose?: () => void;
 }
 
-class AppModal extends PureComponent {
+interface AppModalState {
+  value: string;
+  error?: object;
+}
+
+class AppModal extends PureComponent<AppModalProps, AppModalState> {
   constructor(props) {
     super(props);
 
@@ -115,7 +139,7 @@ class AppModal extends PureComponent {
     }
   }
 
-  onChangeText = (key) => (value) => {
+  onChangeText = (key: string) => (value: string) => {
     const val = {
       [key]: value,
     };
@@ -129,14 +153,13 @@ class AppModal extends PureComponent {
 
   async onSubmit() {
     const {value} = this.state;
+    const {validate, validateAsync, onOkClose = () => {}} = this.props;
     const validated =
-      (this.props.validate && this.props.validate(value)) ||
-      (this.props.validateAsync && (await this.props.validateAsync(value)));
-
-    console.log('validated', validated);
+      (validate && validate(value)) ||
+      (validateAsync && (await validateAsync(value)));
 
     if (_.isUndefined(validated)) {
-      this.props.onOkClose(value);
+      onOkClose(value);
     } else {
       this.setState({
         error: validated,
@@ -145,14 +168,16 @@ class AppModal extends PureComponent {
   }
 
   onCancelClose() {
-    this.props.onCancelClose();
+    const {onCancelClose = () => {}} = this.props;
+    onCancelClose();
     this.setState({error: undefined});
   }
 
   renderError() {
     const {error} = this.state;
+    const {type} = this.props;
 
-    if (this.props.mode === 'edit') {
+    if (type === 'edit') {
       if (_.isArray(error))
         return (
           <View>
@@ -175,7 +200,7 @@ class AppModal extends PureComponent {
       title,
       titleStyle,
       titleIcon,
-      body,
+      children,
       type = 'normal',
       maxLength = undefined,
       keyboardType = 'default',
@@ -200,8 +225,8 @@ class AppModal extends PureComponent {
                 </Text>
               </View>
             )}
-            {renderBody(body)}
-            {this.props.mode === 'edit' && (
+            {children}
+            {type === 'edit' && (
               <View>
                 <View style={styles.inputBox}>
                   <TextInput
@@ -213,7 +238,6 @@ class AppModal extends PureComponent {
                     keyboardType={keyboardType}
                     value={value}
                   />
-
                   <AppButton
                     style={styles.cancelButton}
                     iconName="btnCancel"

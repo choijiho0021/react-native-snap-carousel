@@ -322,10 +322,10 @@ class EsimScreen extends Component {
               ? i18n.t('esim:showQR:title')
               : i18n.t('esim:manualInput:title')
           }
-          body={this.modalBody}
           onOkClose={() => this.showModal(false)}
-          visible={showModal}
-        />
+          visible={showModal}>
+          {this.modalBody()}
+        </AppModal>
         <SnackBar
           visible={showSnackBar}
           backgroundColor={colors.clearBlue}

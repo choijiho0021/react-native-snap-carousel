@@ -282,7 +282,7 @@ class BoardMsgList extends Component {
         <AppModal
           visible={showModal}
           title={i18n.t('board:inputPass')}
-          mode="edit"
+          type="edit"
           maxLength={4}
           keyboardType="numeric"
           onOkClose={this.onSubmitPin}

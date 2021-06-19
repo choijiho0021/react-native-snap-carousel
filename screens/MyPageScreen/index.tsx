@@ -552,7 +552,7 @@ class MyPageScreen extends Component {
     );
   }
 
-  async validEmail(value) {
+  async validEmail(value: string): Promise<string[] | undefined> {
     const err = validationUtil.validate('email', value);
     if (!_.isEmpty(err)) return err.email;
 
@@ -574,7 +574,7 @@ class MyPageScreen extends Component {
     return undefined;
   }
 
-  changeEmail(mail) {
+  changeEmail(mail: string) {
     const {email} = this.props.account;
 
     if (email !== mail) {
@@ -628,7 +628,7 @@ class MyPageScreen extends Component {
 
         <AppModal
           title={i18n.t('acc:changeEmail')}
-          mode="edit"
+          type="edit"
           default={this.props.account.email}
           onOkClose={this.changeEmail}
           onCancelClose={() => this.showEmailModal(false)}
@@ -642,12 +642,12 @@ class MyPageScreen extends Component {
           title={i18n.t('mypage:idCheckTitle')}
           titleStyle={styles.titleStyle}
           titleIcon="btnId"
-          body={() => this.modalBody()}
           onOkClose={() => {
             this.showIdModal(false);
           }}
-          visible={showIdModal}
-        />
+          visible={showIdModal}>
+          {this.modalBody()}
+        </AppModal>
       </View>
     );
   }

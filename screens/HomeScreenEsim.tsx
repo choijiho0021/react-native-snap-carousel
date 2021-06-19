@@ -404,7 +404,7 @@ class HomeScreenEsim extends Component {
     );
   };
 
-  modalBody = () => () => {
+  modalBody = () => {
     const {deviceList} = this.state;
 
     return (
@@ -707,10 +707,10 @@ class HomeScreenEsim extends Component {
             closeButtonTitle={i18n.t('home:exitApp')}
             titleStyle={styles.modalTitle}
             type="close"
-            body={this.modalBody()}
             onOkClose={this.exitApp}
-            visible={!isSupportDev}
-          />
+            visible={!isSupportDev}>
+            {this.modalBody()}
+          </AppModal>
         </ScrollView>
       </View>
     );
