@@ -13,7 +13,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@@/*": ["./submodules/*"]
+      "@redux/*": ["./redux/*"],
+      "@components/*": ["./components/*"],
+      "@constants/*": ["./constants/*"]
     }
   },
   "exclude": [
