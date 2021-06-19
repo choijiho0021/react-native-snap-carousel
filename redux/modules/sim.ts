@@ -14,7 +14,7 @@ export const updateSimPartner = createAction(
 );
 export const getSimCardList = createAction(GET_SIM_CARD_LIST, API.SimCard.get);
 
-interface SimModelState {
+export interface SimModelState {
   iccid?: string;
   simPartner?: string;
   simList: object[];
