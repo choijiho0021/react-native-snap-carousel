@@ -6,7 +6,7 @@ import {colors} from '../../../constants/Colors';
 import {isDeviceSize} from '../../../constants/SliderEntry.style';
 import {appStyles} from '../../../constants/Styles';
 import i18n from '../../../utils/i18n';
-import utils from '../../../utils/utils';
+import {utils} from '../../../utils/utils';
 
 const styles = StyleSheet.create({
   order: {

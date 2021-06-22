@@ -21,9 +21,9 @@ import * as cartActions from '../redux/modules/cart';
 import * as notiActions from '../redux/modules/noti';
 import * as orderActions from '../redux/modules/order';
 import i18n from '../utils/i18n';
-import utils from '../submodules/rokebi-utils/utils';
 import Env from '../environment';
 import {RootState} from '@/redux';
+import utils from '@/submodules/rokebi-utils/utils';
 
 const {esimApp} = Env.get();
 

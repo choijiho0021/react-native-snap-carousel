@@ -18,12 +18,11 @@ import {colors} from '../constants/Colors';
 import * as boardActions from '../redux/modules/board';
 import * as accountActions from '../redux/modules/account';
 import AppActivityIndicator from './AppActivityIndicator';
-import utils from '../utils/utils';
+import utils from '@/submodules/rokebi-utils/utils';
 import AppModal from './AppModal';
 import AppButton from './AppButton';
 import AppIcon from './AppIcon';
 import BoardMsg from './BoardMsg';
-import {AccountModelState} from '../redux/modules/account';
 import {RootState} from '@/redux';
 
 const styles = StyleSheet.create({

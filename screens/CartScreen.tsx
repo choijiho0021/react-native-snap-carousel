@@ -25,8 +25,8 @@ import * as accountActions from '../redux/modules/account';
 import * as cartActions from '../redux/modules/cart';
 import api from '../submodules/rokebi-utils/api/api';
 import i18n from '../utils/i18n';
-import utils from '../submodules/rokebi-utils/utils';
 import {RootState} from '@/redux';
+import utils from '@/submodules/rokebi-utils/utils';
 
 const sectionTitle = ['sim', 'product'];
 

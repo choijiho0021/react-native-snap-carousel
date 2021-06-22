@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 
 import _ from 'underscore';
-import utils from '../utils/utils';
+import utils from '@/submodules/rokebi-utils/utils';
 import AppIcon from './AppIcon';
 import {colors} from '../constants/Colors';
 import {appStyles} from '../constants/Styles';

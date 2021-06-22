@@ -2,7 +2,7 @@ import React, {PureComponent} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import _ from 'underscore';
 import {appStyles} from '../constants/Styles';
-import utils from '../utils/utils';
+import utils from '@/submodules/rokebi-utils/utils';
 import i18n from '../utils/i18n';
 import {colors} from '../constants/Colors';
 import {isDeviceSize} from '../constants/SliderEntry.style';

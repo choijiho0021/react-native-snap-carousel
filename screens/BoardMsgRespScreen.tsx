@@ -20,7 +20,7 @@ import {appStyles} from '../constants/Styles';
 import {colors} from '../constants/Colors';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import AppIcon from '../components/AppIcon';
-import utils from '../utils/utils';
+import utils from '@/submodules/rokebi-utils/utils';
 import {attachmentSize, windowWidth} from '../constants/SliderEntry.style';
 import AppButton from '../components/AppButton';
 import {RootState} from '@/redux';

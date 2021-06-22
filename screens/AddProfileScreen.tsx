@@ -18,7 +18,7 @@ import AppIcon from '../components/AppIcon';
 import validationUtil from '../utils/validationUtil';
 import {isDeviceSize} from '../constants/SliderEntry.style';
 import {isAndroid} from '../components/SearchBarAnimation/utils';
-import utils from '../utils/utils';
+import utils from '@/submodules/rokebi-utils/utils';
 import i18n from '../utils/i18n';
 import {appStyles} from '../constants/Styles';
 import {RootState} from '@/redux';

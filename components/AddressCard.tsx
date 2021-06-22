@@ -1,7 +1,7 @@
+import utils from '@/submodules/rokebi-utils/utils';
 import React, {memo} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import _ from 'underscore';
-import utils from '../utils/utils';
 
 const styles = StyleSheet.create({
   container: {

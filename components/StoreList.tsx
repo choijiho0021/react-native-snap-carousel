@@ -5,7 +5,7 @@ import _ from 'underscore';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
-import utils from '../utils/utils';
+import utils from '@/submodules/rokebi-utils/utils';
 import {colors} from '../constants/Colors';
 import {isDeviceSize} from '../constants/SliderEntry.style';
 import {RootState} from '@/redux';

@@ -4,7 +4,7 @@ import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import _ from 'underscore';
 import {appStyles} from '../constants/Styles';
 import {colors} from '../constants/Colors';
-import utils from '../utils/utils';
+import utils from '@/submodules/rokebi-utils/utils';
 
 const styles = StyleSheet.create({
   list: {

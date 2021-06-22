@@ -3,7 +3,7 @@ import {pender} from 'redux-pender';
 import {Map as ImmutableMap} from 'immutable';
 import _ from 'underscore';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
-import utils from '../../utils/utils';
+import {reflectWithToast} from '../../utils/utils';
 import {AccountAuthType, getAccount} from './account';
 import {AppThunk} from '..';
 
@@ -32,7 +32,7 @@ export const updateSubsStatus = createAction(
 );
 export const reset = createAction(RESET);
 
-export const getSubsWithToast = utils.reflectWithToast(getSubs);
+export const getSubsWithToast = reflectWithToast(getSubs);
 
 interface OrderModelState {
   orders: object[];

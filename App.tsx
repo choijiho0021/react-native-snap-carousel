@@ -7,7 +7,7 @@ import {applyMiddleware, compose, createStore} from 'redux';
 import {createLogger} from 'redux-logger';
 import penderMiddleware from 'redux-pender';
 import ReduxThunk from 'redux-thunk';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import {API} from '@/submodules/rokebi-utils';
 import AppAlert from './components/AppAlert';
 import AppToast from './components/AppToast';
 import CodePushModal from './components/CodePushModal';
@@ -21,7 +21,7 @@ import * as promotionActions from './redux/modules/promotion';
 import * as simActions from './redux/modules/sim';
 import * as syncActions from './redux/modules/sync';
 import i18n from './utils/i18n';
-import utils from './utils/utils';
+import {retrieveData} from './utils/utils';
 
 const {esimApp} = Env.get();
 
@@ -105,9 +105,9 @@ const App = (props) => {
 };
 
 async function login() {
-  const iccid = await utils.retrieveData(API.User.KEY_ICCID);
-  const mobile = await utils.retrieveData(API.User.KEY_MOBILE);
-  const pin = await utils.retrieveData(API.User.KEY_PIN);
+  const iccid = await retrieveData(API.User.KEY_ICCID);
+  const mobile = await retrieveData(API.User.KEY_MOBILE);
+  const pin = await retrieveData(API.User.KEY_PIN);
 
   if (mobile && pin) {
     store.dispatch(accountActions.logInAndGetAccount(mobile, pin, iccid));

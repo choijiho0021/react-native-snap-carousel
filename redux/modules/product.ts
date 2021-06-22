@@ -1,9 +1,10 @@
-import {createAction, handleActions} from 'redux-actions';
+import {createAction} from 'redux-actions';
 import {Map as ImmutableMap} from 'immutable';
 import {pender} from 'redux-pender/lib/utils';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
-import utils from '../../utils/utils';
+import {API} from '@/submodules/rokebi-utils';
+import {reflectWithToast} from '../../utils/utils';
 import {AppThunk} from '..';
+import handleActions from '../handleActions';
 
 const GET_PROD_LIST = 'rokebi/product/GET_PROD_LIST';
 const GET_LOCAL_OP_LIST = 'rokebi/product/GET_LOCAL_OP_LIST';
@@ -29,25 +30,27 @@ interface ProductModelState {
   detailCommon: string;
 }
 
-export const getProdDetail = (controller): AppThunk => (dispatch, getState) => {
+export const getProdDetail = (controller: AbortController): AppThunk => (
+  dispatch,
+  getState,
+) => {
   const {product} = getState();
   if (product.detailInfo === '') return dispatch(getProdDetailPage(controller));
-  return new Promise.resolve();
+  return Promise.resolve();
 };
 
 createAction(GET_PROD_DETAIL, API.Page.getProductDetails);
 
-export const getProdList = (): AppThunk => (dispatch) => {
-  return dispatch(getProd()).then((_) => {
-    return dispatch(getLocalOp());
-  });
+export const getProdList = (): AppThunk => async (dispatch) => {
+  await Promise.resolve(dispatch(getProd()));
+  return dispatch(getLocalOp());
 };
 
-export const getProdListWithToast = utils.reflectWithToast(getProdList);
+export const getProdListWithToast = reflectWithToast(getProdList);
 
 const initialState = {
-  prodList: ImmutableMap(),
-  localOpList: ImmutableMap(),
+  prodList: ImmutableMap<string, object>(),
+  localOpList: ImmutableMap<string, object>(),
   prodOfCountry: [],
   sortedProdList: [],
   detailInfo: '',

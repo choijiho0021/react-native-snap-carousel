@@ -4,7 +4,7 @@ import {StyleSheet, View, Text} from 'react-native';
 import _ from 'underscore';
 import Analytics from 'appcenter-analytics';
 import i18n from '../../../utils/i18n';
-import utils from '../../../utils/utils';
+import {utils} from '../../../utils/utils';
 import {appStyles} from '../../../constants/Styles';
 import {colors} from '../../../constants/Colors';
 import AppButton from '../../../components/AppButton';

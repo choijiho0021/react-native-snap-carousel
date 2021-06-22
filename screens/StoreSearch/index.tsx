@@ -22,7 +22,7 @@ import {appStyles} from '../../constants/Styles';
 import * as productActions from '../../redux/modules/product';
 import {API} from '../../submodules/rokebi-utils';
 import i18n from '../../utils/i18n';
-import utils from '../../utils/utils';
+import {retrieveData, storeData} from '../../utils/utils';
 import HeaderTitle from './components/HeaderTitle';
 
 const styles = StyleSheet.create({
@@ -190,7 +190,7 @@ class StoreSearchScreen extends Component {
   }
 
   async getSearchHist() {
-    const searchHist = await utils.retrieveData('searchHist');
+    const searchHist = await retrieveData('searchHist');
     // searchHist 저장 형식 : ex) 대만,중국,일본
     const searchList = _.isNull(searchHist)
       ? []
@@ -250,7 +250,7 @@ class StoreSearchScreen extends Component {
 
     if (searching) {
       // 최근 검색 기록
-      const oldsearchHist = await utils.retrieveData('searchHist');
+      const oldsearchHist = await retrieveData('searchHist');
 
       if (searchWord && !searchWord.match(',')) {
         // 중복 제거 후 최대 7개까지 저장한다. 저장 형식 : ex) 대만,중국,일본
@@ -262,7 +262,7 @@ class StoreSearchScreen extends Component {
                 .slice(0, MAX_HISTORY_LENGTH - 1)
                 .join(',')}`;
         }
-        utils.storeData('searchHist', searchWord);
+        storeData('searchHist', searchWord);
       }
     }
   }

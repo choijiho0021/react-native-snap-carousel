@@ -5,7 +5,7 @@ import i18n from '../utils/i18n';
 import AppTextInput from './AppTextInput';
 import {colors} from '../constants/Colors';
 import {appStyles} from '../constants/Styles';
-import utils from '../utils/utils';
+import utils from '@/submodules/rokebi-utils/utils';
 import validationUtil from '../utils/validationUtil';
 
 const styles = StyleSheet.create({

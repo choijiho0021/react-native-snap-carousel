@@ -6,7 +6,7 @@ import i18n from '../../../utils/i18n';
 import AppButton from '../../../components/AppButton';
 import {appStyles} from '../../../constants/Styles';
 import {isDeviceSize} from '../../../constants/SliderEntry.style';
-import utils from '../../../utils/utils';
+import {utils} from '../../../utils/utils';
 import {API} from '../../../submodules/rokebi-utils';
 
 const styles = StyleSheet.create({

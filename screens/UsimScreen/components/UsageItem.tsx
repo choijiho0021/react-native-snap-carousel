@@ -8,7 +8,7 @@ import Svg, {Line} from 'react-native-svg';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import subsApi from 'RokebiESIM/submodules/rokebi-utils/api/subscriptionApi';
 import i18n from '../../../utils/i18n';
-import utils from '../../../utils/utils';
+import {utils} from '../../../utils/utils';
 import {appStyles} from '../../../constants/Styles';
 import {colors} from '../../../constants/Colors';
 import AppButton from '../../../components/AppButton';

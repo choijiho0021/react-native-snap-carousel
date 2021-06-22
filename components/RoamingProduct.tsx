@@ -3,7 +3,6 @@ import {StyleSheet, Text, View} from 'react-native';
 import Flag from 'react-native-flags';
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
-import utils from '../utils/utils';
 import InputNumber from './InputNumber';
 
 const styles = StyleSheet.create({

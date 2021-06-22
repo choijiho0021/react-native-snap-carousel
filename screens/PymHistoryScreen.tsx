@@ -10,7 +10,7 @@ import AppAlert from '@/components/AppAlert';
 import {appStyles} from '@/constants/Styles';
 import * as accountActions from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
-import utils from '@/utils/utils';
+import {utils} from '@/utils/utils';
 
 const styles = StyleSheet.create({
   container: {

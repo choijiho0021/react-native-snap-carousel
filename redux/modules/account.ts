@@ -5,7 +5,12 @@ import _ from 'underscore';
 import {batch} from 'react-redux';
 import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import * as ToastActions from './toast';
-import utils from '../../utils/utils';
+import {
+  reflectWithToast,
+  removeData,
+  retrieveData,
+  storeData,
+} from '../../utils/utils';
 import {Toast} from '../../constants/CustomTypes';
 import Env from '../../environment';
 import {AppThunk} from '..';
@@ -62,15 +67,15 @@ const changePicture = createAction(CHANGE_PICTURE, API.User.changePicture);
 const changeUserAttr = createAction(CHANGE_ATTR, API.User.update);
 const clearAccount = createAction(CLEAR_ACCOUNT);
 
-const changeUserAttrWithToast = utils.reflectWithToast(
+const changeUserAttrWithToast = reflectWithToast(
   changeUserAttr,
   Toast.NOT_UPDATED,
 );
-const uploadPictureWithToast = utils.reflectWithToast(
+const uploadPictureWithToast = reflectWithToast(
   uploadPicture,
   Toast.NOT_UPDATED,
 );
-const changePictureWithToast = utils.reflectWithToast(
+const changePictureWithToast = reflectWithToast(
   changePicture,
   Toast.NOT_UPDATED,
 );
@@ -113,12 +118,12 @@ export const auth = (state: AccountModelState): AccountAuthType => ({
 });
 
 export const logout = (): AppThunk => (dispatch) => {
-  const token = utils.retrieveData(API.User.KEY_TOKEN);
+  const token = retrieveData(API.User.KEY_TOKEN);
 
-  utils.removeData(API.User.KEY_ICCID);
-  utils.removeData(API.User.KEY_MOBILE);
-  utils.removeData(API.User.KEY_PIN);
-  utils.removeData(API.User.KEY_TOKEN);
+  removeData(API.User.KEY_ICCID);
+  removeData(API.User.KEY_MOBILE);
+  removeData(API.User.KEY_PIN);
+  removeData(API.User.KEY_TOKEN);
 
   batch(() => {
     // 먼저 로그아웃 한다.
@@ -240,9 +245,9 @@ export const logInAndGetAccount = (
         const obj = resp.objects[0];
         const token = {token: obj.csrf_token};
 
-        utils.storeData(API.User.KEY_MOBILE, obj.current_user.name);
-        utils.storeData(API.User.KEY_PIN, pin);
-        utils.storeData(API.User.KEY_TOKEN, obj.csrf_token);
+        storeData(API.User.KEY_MOBILE, obj.current_user.name);
+        storeData(API.User.KEY_PIN, pin);
+        storeData(API.User.KEY_TOKEN, obj.csrf_token);
 
         // get ICCID account info
         if (iccid) {
@@ -259,7 +264,7 @@ export const logInAndGetAccount = (
               rsp.objects.length > 0 &&
               rsp.objects[0].status === 'A'
             ) {
-              utils.storeData(API.User.KEY_ICCID, rsp.objects[0].iccid);
+              storeData(API.User.KEY_ICCID, rsp.objects[0].iccid);
               dispatch(getAccount(rsp.objects[0].iccid, token));
             }
           });
@@ -304,7 +309,7 @@ export const uploadAndChangePicture = (image: string): AppThunk => (
 };
 
 export const clearCurrentAccount = (): AppThunk => (dispatch) => {
-  utils.removeData(API.User.KEY_ICCID);
+  removeData(API.User.KEY_ICCID);
 
   batch(() => {
     dispatch(clearAccount());
@@ -436,7 +441,7 @@ export default handleActions<AccountModelState>(
       onSuccess: (state, action) => {
         const {result, objects} = action.payload;
         if (result === 0 && objects.length > 0) {
-          utils.storeData(API.User.KEY_ICCID, objects[0].iccid);
+          storeData(API.User.KEY_ICCID, objects[0].iccid);
           return updateAccountState(state, objects[0]);
         }
         return state;
@@ -458,12 +463,12 @@ export default handleActions<AccountModelState>(
                 isUsedByOther: true,
               };
             }
-            utils.storeData(API.User.KEY_ICCID, objects[0].iccid);
+            storeData(API.User.KEY_ICCID, objects[0].iccid);
             return updateAccountState(state, objects[0]);
           }
 
           // invalid status
-          utils.removeData(API.User.KEY_ICCID);
+          removeData(API.User.KEY_ICCID);
         }
         return state;
       },

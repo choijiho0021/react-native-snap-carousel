@@ -19,7 +19,7 @@ import {appStyles, htmlDetailWithCss} from '../constants/Styles';
 import Env from '../environment';
 import {API} from '../submodules/rokebi-utils';
 import i18n from '../utils/i18n';
-import utils from '../utils/utils';
+import utils from '@/submodules/rokebi-utils/utils';
 import * as infoActions from '../redux/modules/info';
 import {RootState} from '@/redux';
 

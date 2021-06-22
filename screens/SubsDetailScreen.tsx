@@ -7,7 +7,7 @@ import * as accountActions from '../redux/modules/account';
 import * as orderActions from '../redux/modules/order';
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
-import utils from '../utils/utils';
+import utils from '@/submodules/rokebi-utils/utils';
 import AppBackButton from '../components/AppBackButton';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import {colors} from '../constants/Colors';

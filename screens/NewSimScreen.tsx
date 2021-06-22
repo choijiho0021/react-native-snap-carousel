@@ -17,7 +17,7 @@ import SimCard from '../components/SimCard';
 import AppBackButton from '../components/AppBackButton';
 import {colors} from '../constants/Colors';
 import ChargeSummary from '../components/ChargeSummary';
-import utils from '../utils/utils';
+import utils from '@/submodules/rokebi-utils/utils';
 
 interface NewSimScreenProps {
   account: accountActions.AccountModelState;

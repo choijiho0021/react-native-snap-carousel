@@ -36,7 +36,7 @@ import * as accountActions from '../../redux/modules/account';
 import * as orderActions from '../../redux/modules/order';
 import * as toastActions from '../../redux/modules/toast';
 import i18n from '../../utils/i18n';
-import utils from '../../utils/utils';
+import {utils} from '../../utils/utils';
 import validationUtil from '../../utils/validationUtil';
 import OrderItem from './components/OrderItem';
 import {RootState} from '@/redux';

@@ -15,7 +15,7 @@ import i18n from '../utils/i18n';
 import {appStyles} from '../constants/Styles';
 import {colors} from '../constants/Colors';
 import AppIcon from '../components/AppIcon';
-import utils from '../utils/utils';
+import utils from '@/submodules/rokebi-utils/utils';
 import * as orderActions from '../redux/modules/order';
 import * as notiActions from '../redux/modules/noti';
 import * as boardActions from '../redux/modules/board';

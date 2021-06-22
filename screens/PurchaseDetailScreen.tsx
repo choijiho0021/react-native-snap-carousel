@@ -15,7 +15,7 @@ import {
 import {API} from '../submodules/rokebi-utils';
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
-import utils from '../submodules/rokebi-utils/utils';
+import {utils} from '../submodules/rokebi-utils/utils';
 import AppAlert from '../components/AppAlert';
 import AppButton from '../components/AppButton';
 import AppBackButton from '../components/AppBackButton';

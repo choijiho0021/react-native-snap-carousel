@@ -1,8 +1,8 @@
 import React, {memo} from 'react';
 import {StyleSheet, View, Text} from 'react-native';
 import {appStyles} from '../constants/Styles';
-import utils from '../utils/utils';
 import i18n from '../utils/i18n';
+import utils from '@/submodules/rokebi-utils/utils';
 
 const styles = StyleSheet.create({
   container: {
