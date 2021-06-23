@@ -1,48 +1,58 @@
+import {createAction} from 'redux-actions';
+import handleActions from '../handleActions';
+
+const UPDATE_ISREAD = 'rokebi/noti/UPDATE_ISREAD';
+const GET_NOTI_LIST = 'rokebi/noti/GET_NOTI_LIST';
+const SELECT_NOTI = 'rokebi/noti/SELECT_NOTI';
+
+const getNotiList = createAction(GET_NOTI_LIST, (notiList) => ({
+  notiList,
+}));
+const updateIsRead = createAction(UPDATE_ISREAD, (isread) => ({
+  isread,
+}));
+
+const selectNoti = createAction(SELECT_NOTI, (uuid) => ({
+  uuid,
+}));
+
 const actions = {
-  UPDATE_ISREAD: 'UPDATE_ISREAD',
-  GET_NOTI_LIST: 'GET_NOTI_LIST',
-  SELECT_NOTI: 'SELECT_NOTI',
-
-  getNotiList: (notiList) => ({
-    type: actions.GET_NOTI_LIST,
-    notiList,
-  }),
-  updateIsRead: (isread) => ({
-    type: actions.UPDATE_ISREAD,
-    isread,
-  }),
-
-  selectNoti: (uuid) => ({
-    type: actions.SELECT_NOTI,
-    uuid,
-  }),
+  getNotiList,
+  updateIsRead,
+  selectNoti,
 };
 
-export const initialNoti = () => ({
+export type NotiAction = typeof actions;
+
+const initialNoti = {
   notiList: [],
   uuid: undefined,
   isread: undefined,
-});
-
-export const notiReducer = (state = initialNoti(), action) => {
-  switch (action.type) {
-    case actions.GET_NOTI_LIST:
-      return {
-        ...state,
-        notiList: action.notiList,
-      };
-    case actions.SELECT_NOTI:
-      return {
-        ...state,
-        uuid: action.uuid,
-      };
-
-    case actions.UPDATE_ISREAD:
-      return {
-        ...state,
-        isread: action.isread,
-      };
-  }
-
-  return state;
 };
+
+export type NotiModelState = typeof initialNoti;
+
+export default handleActions(
+  {
+    [GET_NOTI_LIST]: (state, {payload}) => {
+      return {
+        ...state,
+        notiList: payload.notiList,
+      };
+    },
+    [SELECT_NOTI]: (state, {payload}) => {
+      return {
+        ...state,
+        uuid: payload.uuid,
+      };
+    },
+
+    [UPDATE_ISREAD]: (state, {payload}) => {
+      return {
+        ...state,
+        isread: payload.isread,
+      };
+    },
+  },
+  initialNoti,
+);

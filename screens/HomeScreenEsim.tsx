@@ -35,7 +35,11 @@ import StoreList from '@/components/StoreList';
 import withBadge from '@/components/withBadge';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import * as accountActions from '@/redux/modules/account';
+import {
+  AccountAction,
+  AccountModelState,
+  action as accountActions,
+} from '@/redux/modules/account';
 import * as cartActions from '@/redux/modules/cart';
 import * as notiActions from '@/redux/modules/noti';
 import * as productActions from '@/redux/modules/product';
@@ -45,8 +49,11 @@ import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {RkbPromotion} from '@/submodules/rokebi-utils/api/promotionApi';
+import {ProductAction, ProductModelState} from '@/redux/modules/product';
+import {SyncModelState} from '@/redux/modules/sync';
+import {RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
+import {NotiAction} from '@/redux/noti/noti';
 import TutorialScreen from './TutorialScreen';
-import {ProductAction} from '@/redux/modules/product';
 
 const DOT_MARGIN = 6;
 const INACTIVE_DOT_WIDTH = 6;
@@ -167,7 +174,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const PromotionImage0 = ({item, onPress}: {item: any; onPress: () => void}) => {
+const PromotionImage0 = ({
+  item,
+  onPress,
+}: {
+  item: RkbPromotion;
+  onPress: (i: RkbPromotion) => void;
+}) => {
   return (
     <TouchableOpacity
       style={{paddingHorizontal: 20}}
@@ -197,7 +210,7 @@ async function requestPermission() {
   }
 }
 
-function filterByCategory(list, key) {
+function filterByCategory(list: RkbProduct[][], key: string) {
   const filtered = list.filter(
     (elm) => elm.length > 0 && elm[0].categoryId.includes(key),
   );
@@ -207,32 +220,60 @@ function filterByCategory(list, key) {
 
 type HomeScreenEsimProps = {
   promotion: RkbPromotion[];
+  product: ProductModelState;
+  account: AccountModelState;
+  sync: SyncModelState;
   action: {
     product: ProductAction;
+    account: AccountAction;
+    noti: NotiAction;
   };
 };
-class HomeScreenEsim extends Component<HomeScreenEsimProps> {
+
+type ProductByCategory = {
+  key: string;
+  data: RkbProduct[][];
+};
+
+const initialState = {
+  isSupportDev: true,
+  index: 0,
+  activeSlide: 0,
+  routes: [
+    {key: 'asia', title: i18n.t('store:asia'), category: '아시아'},
+    {key: 'europe', title: i18n.t('store:europe'), category: '유럽'},
+    {key: 'usaAu', title: i18n.t('store:usa/au'), category: '미주/호주'},
+    {key: 'multi', title: i18n.t('store:multi'), category: '복수 국가'},
+  ],
+  allData: [] as RkbProduct[][],
+  asia: [] as ProductByCategory[],
+  europe: [] as ProductByCategory[],
+  usaAu: [] as ProductByCategory[],
+  multi: [] as ProductByCategory[],
+  firstLaunch: false,
+  darkMode: Appearance.getColorScheme(),
+  time: moment(),
+};
+
+type HomeScreenEsimState = typeof initialState & {
+  deviceList?: string[];
+  firstLaunch?: boolean;
+};
+
+class HomeScreenEsim extends Component<
+  HomeScreenEsimProps,
+  HomeScreenEsimState
+> {
+  offset: number;
+
+  controller: AbortController;
+
+  scrollRef: React.RefObject<ScrollView>;
+
   constructor(props) {
     super(props);
 
-    this.state = {
-      isSupportDev: true,
-      index: 0,
-      activeSlide: 0,
-      routes: [
-        {key: 'asia', title: i18n.t('store:asia'), category: '아시아'},
-        {key: 'europe', title: i18n.t('store:europe'), category: '유럽'},
-        {key: 'usaAu', title: i18n.t('store:usa/au'), category: '미주/호주'},
-        {key: 'multi', title: i18n.t('store:multi'), category: '복수 국가'},
-      ],
-      allData: [],
-      asia: [],
-      europe: [],
-      usaAu: [],
-      multi: [],
-      firstLaunch: false,
-      darkMode: Appearance.getColorScheme(),
-    };
+    this.state = initialState;
 
     this.refresh = this.refresh.bind(this);
     this.renderTitleBtn = this.renderTitleBtn.bind(this);
@@ -246,11 +287,11 @@ class HomeScreenEsim extends Component<HomeScreenEsimProps> {
     this.init = this.init.bind(this);
     this.modalBody = this.modalBody.bind(this);
     this.checkFistLaunch = this.checkFistLaunch.bind(this);
-    this.offset = 0;
-    this.controller = new AbortController();
     this.tabHeader = this.tabHeader.bind(this);
 
-    this.scrollRef = React.createRef();
+    this.offset = 0;
+    this.controller = new AbortController();
+    this.scrollRef = React.createRef<ScrollView>();
   }
 
   componentDidMount() {
@@ -285,7 +326,7 @@ class HomeScreenEsim extends Component<HomeScreenEsimProps> {
     this.init();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: HomeScreenEsimProps) {
     const focus = this.props.navigation.isFocused();
     const now = moment();
     const diff = moment.duration(now.diff(this.state.time)).asMinutes();
@@ -315,19 +356,19 @@ class HomeScreenEsim extends Component<HomeScreenEsimProps> {
     }
   }
 
-  onPressItem = (prodOfCountry) => {
+  onPressItem = (prodOfCountry: RkbProduct[]) => {
     this.props.action.product.setProdOfCountry(prodOfCountry);
     this.props.navigation.navigate('Country');
   };
 
-  onIndexChange = (index) => {
+  onIndexChange = (index: number) => {
     this.setState({
       index,
     });
-    this.scrollRef.scrollTo({x: 0, y: 0, animated: false});
+    this.scrollRef.current?.scrollTo({x: 0, y: 0, animated: false});
   };
 
-  onPressPromotion(item) {
+  onPressPromotion(item: RkbPromotion) {
     if (item.product_uuid) {
       const {prodList} = this.props.product;
       const prod = prodList.get(item.product_uuid);
@@ -354,7 +395,7 @@ class HomeScreenEsim extends Component<HomeScreenEsimProps> {
 
   getProdGroup() {
     const {prodList, localOpList} = this.props.product;
-    const list = [];
+    const list: RkbProduct[][] = [];
 
     prodList
       .valueSeq()
@@ -362,10 +403,14 @@ class HomeScreenEsim extends Component<HomeScreenEsimProps> {
       .forEach((item) => {
         if (localOpList.has(item.partnerId)) {
           const localOp = localOpList.get(item.partnerId);
-          item.ccodeStr = (localOp.ccode || []).join(',');
-          item.cntry = Set(Country.getName(localOp.ccode));
+          item.ccodeStr = (localOp?.ccode || []).join(',');
+          item.cntry = Set(Country.getName(localOp?.ccode));
           item.search = [...item.cntry].join(',');
-          item.pricePerDay = Math.round(item.price / item.days / 10) * 10;
+          item.pricePerDay =
+            item.price && item.days
+              ? Math.round(item.price / item.days / 10) * 10
+              : 0;
+
           const idxCcode = list.findIndex(
             (elm) => elm.length > 0 && elm[0].ccodeStr === item.ccodeStr,
           );
@@ -391,12 +436,12 @@ class HomeScreenEsim extends Component<HomeScreenEsimProps> {
     }
   };
 
-  renderScene = (props) => {
-    const {index, routes} = this.state;
-    const data = this.state[props.route.key];
+  renderScene = ({route: {key}}) => {
+    const {index, routes, activeSlide} = this.state;
+    const data = this.state[key];
 
     if (
-      props.route.key !== routes[index].key ||
+      key !== routes[index].key ||
       this.props.product.sortedProdList.length === 0
     ) {
       return <AppActivityIndicator style={{top: 100}} />;
@@ -406,7 +451,7 @@ class HomeScreenEsim extends Component<HomeScreenEsimProps> {
       <StoreList
         data={data}
         onPress={this.onPressItem}
-        refreshTrigger={this.state.activeSlide}
+        refreshTrigger={activeSlide}
       />
     );
   };
@@ -465,11 +510,11 @@ class HomeScreenEsim extends Component<HomeScreenEsimProps> {
     );
   }
 
-  sortProdGroup(list) {
+  sortProdGroup(list: RkbProduct[][]) {
     const {localOpList} = this.props.product;
 
-    const getMaxWeight = (item) =>
-      Math.max(...item.map((p) => (localOpList.get(p.partnerId) || {}).weight));
+    const getMaxWeight = (item: RkbProduct[]) =>
+      Math.max(...item.map((p) => localOpList.get(p.partnerId)?.weight || 0));
 
     return list
       .map((item) =>
@@ -534,7 +579,7 @@ class HomeScreenEsim extends Component<HomeScreenEsimProps> {
     });
   }
 
-  notification(type, payload, isForeground = true) {
+  notification(type: string, payload, isForeground = true) {
     const {mobile, iccid, loggedIn} = this.props.account;
     const {navigation} = this.props;
 
@@ -577,7 +622,7 @@ class HomeScreenEsim extends Component<HomeScreenEsimProps> {
     );
   }
 
-  renderDots(activeIndex) {
+  renderDots(activeIndex: number) {
     const {promotion} = this.props;
     const duration = 200;
     const width = new Animated.Value(INACTIVE_DOT_WIDTH);
@@ -595,9 +640,9 @@ class HomeScreenEsim extends Component<HomeScreenEsimProps> {
     if (activeIndex === 0) {
       return promotion.map((_, idx) =>
         idx === 0 ? (
-          <Animated.View key={`${idx}`} style={dotStyle(width, margin)} />
+          <Animated.View key={idx.toString()} style={dotStyle(width, margin)} />
         ) : (
-          <View key={`${idx}`} style={styles.inactiveDot} />
+          <View key={idx.toString()} style={styles.inactiveDot} />
         ),
       );
     }
@@ -606,18 +651,18 @@ class HomeScreenEsim extends Component<HomeScreenEsimProps> {
       if (activeIndex === idx)
         return (
           <Animated.View
-            key={`${idx}`}
+            key={idx.toString()}
             style={dotStyle(width, DOT_MARGIN, colors.clearBlue)}
           />
         );
 
       return activeIndex === (idx + 1) % promotion.length ? (
         <Animated.View
-          key={`${idx}`}
+          key={idx.toString()}
           style={dotStyle(margin, DOT_MARGIN, colors.lightGrey)}
         />
       ) : (
-        <View key={`${idx}`} style={styles.inactiveDot} />
+        <View key={idx.toString()} style={styles.inactiveDot} />
       );
     });
   }
@@ -687,9 +732,7 @@ class HomeScreenEsim extends Component<HomeScreenEsimProps> {
         />
         {this.renderCarousel()}
         <ScrollView
-          ref={(ref) => {
-            this.scrollRef = ref;
-          }}
+          ref={this.scrollRef}
           // contentContainerStyle={appStyles.container}
           style={styles.scrollView}
           stickyHeaderIndices={[1]}>

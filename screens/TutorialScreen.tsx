@@ -103,7 +103,22 @@ const styles = StyleSheet.create({
   },
 });
 
-class TutorialScreen extends Component {
+type TutorialScreenProps = {
+  visible: boolean;
+  onOkClose: () => void;
+};
+
+type TutorialScreenState = {
+  activeSlide: number;
+  images: {key: string}[];
+};
+
+class TutorialScreen extends Component<
+  TutorialScreenProps,
+  TutorialScreenState
+> {
+  carousel: React.RefObject<unknown>;
+
   constructor(props) {
     super(props);
 
@@ -130,15 +145,16 @@ class TutorialScreen extends Component {
     );
   };
 
-  skip = () => {
+  skip = async () => {
     this.props.onOkClose();
-    if (getTrackingStatus === 'authorized')
-      AppEventsLogger.logEvent('튜토리얼 SKIP');
+    const status = await getTrackingStatus();
+    if (status === 'authorized') AppEventsLogger.logEvent('튜토리얼 SKIP');
   };
 
-  completed = () => {
+  completed = async () => {
     this.props.onOkClose();
-    if (getTrackingStatus === 'authorized')
+    const status = await getTrackingStatus();
+    if (status === 'authorized')
       AppEventsLogger.logEvent('fb_mobile_tutorial_completion');
   };
 
@@ -209,7 +225,7 @@ class TutorialScreen extends Component {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.touchableOpacity}
-                onPress={() => this.carousel.current.snapToNext()}>
+                onPress={() => this.carousel.current?.snapToNext()}>
                 <Text style={[styles.bottomText, {color: colors.clearBlue}]}>
                   {i18n.t('tutorial:next')}
                 </Text>

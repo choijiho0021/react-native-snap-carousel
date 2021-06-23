@@ -3,6 +3,7 @@ import {Map as ImmutableMap} from 'immutable';
 import {pender} from 'redux-pender/lib/utils';
 import {API} from '@/submodules/rokebi-utils';
 import {reflectWithToast} from '@/utils/utils';
+import {RkbLocalOp, RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
 import {AppThunk} from '..';
 import handleActions from '../handleActions';
 
@@ -21,11 +22,11 @@ const getProdDetailPage = createAction(
 export const setProdOfCountry = createAction(SET_PROD_OF_COUNTRY);
 export const setSortedProdList = createAction(SET_SORTED_PROD_LIST);
 
-interface ProductModelState {
-  prodList: ImmutableMap<string, object>;
-  localOpList: ImmutableMap<string, object>;
-  prodOfCountry: object[];
-  sortedProdList: object[];
+export interface ProductModelState {
+  prodList: ImmutableMap<string, RkbProduct>;
+  localOpList: ImmutableMap<string, RkbLocalOp>;
+  prodOfCountry: RkbProduct[];
+  sortedProdList: RkbProduct[];
   detailInfo: string;
   detailCommon: string;
 }
@@ -48,17 +49,17 @@ export const getProdList = (): AppThunk => async (dispatch) => {
 
 export const getProdListWithToast = reflectWithToast(getProdList);
 
-const action = {
+const actions = {
   setProdOfCountry,
   setSortedProdList,
   getProdDetail,
   getProdList,
 };
-export type ProductAction = typeof action;
+export type ProductAction = typeof actions;
 
 const initialState = {
-  prodList: ImmutableMap<string, object>(),
-  localOpList: ImmutableMap<string, object>(),
+  prodList: ImmutableMap<string, RkbProduct>(),
+  localOpList: ImmutableMap<string, RkbLocalOp>(),
   prodOfCountry: [],
   sortedProdList: [],
   detailInfo: '',

@@ -349,6 +349,19 @@ const updateAccountState = (state: AccountModelState, payload: object) => {
   return newState;
 };
 
+export const action = {
+  changeNotiToken,
+  getAccount,
+  clearCurrentAccount,
+  logInAndGetAccount,
+  updateAccount,
+  logout,
+  getUserId,
+  uploadAndChangePicture,
+  changeEmail,
+};
+export type AccountAction = typeof action;
+
 const initialState: AccountModelState = {
   loggedIn: false,
 };

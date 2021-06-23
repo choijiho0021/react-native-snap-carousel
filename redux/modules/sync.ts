@@ -1,5 +1,4 @@
 import {createAction, handleActions} from 'redux-actions';
-import _ from 'underscore';
 import codePush from 'react-native-code-push';
 
 const INIT = 'rokebi/sync/INIT';
@@ -14,7 +13,16 @@ export const complete = createAction(COMPLETE);
 export const skip = createAction(SKIP);
 export const progress = createAction(PROGRESS);
 
-interface SyncModelState {
+export const actions = {
+  init,
+  update,
+  complete,
+  skip,
+  progress,
+};
+export type SyncAction = typeof actions;
+
+export interface SyncModelState {
   syncStatus?: codePush.SyncStatus;
   isCompleted: boolean;
   isUpdating: boolean;
