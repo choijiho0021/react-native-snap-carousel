@@ -150,12 +150,12 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   [self.window makeKeyAndVisible];
   [super application:application didFinishLaunchingWithOptions:launchOptions];
   
-  [RNSplashScreen show];
-
   // Define UNUserNotificationCenter
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;
   [FIRMessaging messaging].delegate = self;
+
+  [RNSplashScreen show];
   
   return YES;
 }
