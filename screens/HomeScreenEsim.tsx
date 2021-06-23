@@ -27,24 +27,24 @@ import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import {requestTrackingPermission} from 'react-native-tracking-transparency';
 import messaging from '@react-native-firebase/messaging';
-import {RootState} from '@redux';
-import AppButton from '@components/AppButton';
-import AppModal from '@components/AppModal';
-import StoreList from '../components/StoreList';
-import withBadge from '../components/withBadge';
-import {colors} from '../constants/Colors';
-import {sliderWidth} from '../constants/SliderEntry.style';
-import {appStyles} from '../constants/Styles';
-import * as accountActions from '../redux/modules/account';
-import * as cartActions from '../redux/modules/cart';
-import * as notiActions from '../redux/modules/noti';
-import * as productActions from '../redux/modules/product';
-import {API, Country} from '../submodules/rokebi-utils';
-import createHandlePushNoti from '../submodules/rokebi-utils/models/createHandlePushNoti';
-import i18n from '../utils/i18n';
-import pushNoti from '../utils/pushNoti';
+import {RootState} from '@/redux';
+import AppButton from '@/components/AppButton';
+import AppModal from '@/components/AppModal';
+import {sliderWidth} from '@/constants/SliderEntry.style';
+import StoreList from '@/components/StoreList';
+import withBadge from '@/components/withBadge';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import * as accountActions from '@/redux/modules/account';
+import * as cartActions from '@/redux/modules/cart';
+import * as notiActions from '@/redux/modules/noti';
+import * as productActions from '@/redux/modules/product';
+import {API, Country} from '@/submodules/rokebi-utils';
+import createHandlePushNoti from '@/submodules/rokebi-utils/models/createHandlePushNoti';
+import i18n from '@/utils/i18n';
+import pushNoti from '@/utils/pushNoti';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
 import TutorialScreen from './TutorialScreen';
-import AppActivityIndicator from '../components/AppActivityIndicator';
 
 const DOT_MARGIN = 6;
 const INACTIVE_DOT_WIDTH = 6;
@@ -203,7 +203,10 @@ function filterByCategory(list, key) {
   return API.Product.toColumnList(filtered);
 }
 
-class HomeScreenEsim extends Component {
+type HomeScreenEsimProps = {
+  promotion: any[];
+};
+class HomeScreenEsim extends Component<HomeScreenEsimProps> {
   constructor(props) {
     super(props);
 

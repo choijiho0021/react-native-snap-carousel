@@ -3,7 +3,7 @@ import {createAction, handleActions} from 'redux-actions';
 import {pender} from 'redux-pender';
 import _ from 'underscore';
 import {batch} from 'react-redux';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import {API} from '@/submodules/rokebi-utils';
 import * as ToastActions from './toast';
 import {
   reflectWithToast,
