@@ -12,10 +12,7 @@
     "target": "esnext",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"],
-      "@redux/*": ["./redux/*"],
-      "@components/*": ["./components/*"],
-      "@constants/*": ["./constants/*"]
+      "@/*": ["./*"]
     }
   },
   "exclude": [
