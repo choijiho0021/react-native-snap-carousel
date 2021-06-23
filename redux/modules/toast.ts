@@ -1,7 +1,7 @@
-import {createAction, handleActions} from 'redux-actions';
+import {createAction} from 'redux-actions';
 import {List} from 'immutable';
-import _ from 'underscore';
-import {Toast} from '../../constants/CustomTypes';
+import {Toast} from '@/constants/CustomTypes';
+import handleActions from '../handleActions';
 
 const INIT = 'rokebi/toast/INIT';
 const PUSH = 'rokebi/toast/PUSH';
@@ -26,7 +26,7 @@ export default handleActions(
     },
     [PUSH]: (state, action) => {
       const {messages} = state;
-      const newMsg = action.payload || Toast.NOT_LOADED;
+      const newMsg: string = action.payload || Toast.NOT_LOADED;
 
       if (!messages.contains(newMsg)) {
         return {

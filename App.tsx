@@ -56,12 +56,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const App = (props) => {
+const App = ({skipLoadingScreen}: {skipLoadingScreen: boolean}) => {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
-    if (!isLoadingComplete && !props.skipLoadingScreen) {
+    if (!isLoadingComplete && !skipLoadingScreen) {
       try {
         loadResourcesAsync();
         setLoadingComplete(true);
@@ -69,9 +69,9 @@ const App = (props) => {
         handleLoadingError(e);
       }
     }
-  }, [isLoadingComplete, props.skipLoadingScreen]);
+  }, [isLoadingComplete, skipLoadingScreen]);
 
-  if (isLoadingComplete || props.skipLoadingScreen) {
+  if (isLoadingComplete || skipLoadingScreen) {
     if (SplashScreen) SplashScreen.hide();
 
     setTimeout(() => {

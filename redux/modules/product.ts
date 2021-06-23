@@ -2,7 +2,7 @@ import {createAction} from 'redux-actions';
 import {Map as ImmutableMap} from 'immutable';
 import {pender} from 'redux-pender/lib/utils';
 import {API} from '@/submodules/rokebi-utils';
-import {reflectWithToast} from '../../utils/utils';
+import {reflectWithToast} from '@/utils/utils';
 import {AppThunk} from '..';
 import handleActions from '../handleActions';
 

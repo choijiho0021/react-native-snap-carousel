@@ -5,15 +5,17 @@ import {
   Text,
   TouchableOpacity,
   Easing,
+  ViewStyle,
 } from 'react-native';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import _ from 'underscore';
-import {RootState} from '../redux';
-import * as toastActions from '../redux/modules/toast';
-import {appStyles} from '../constants/Styles';
-import {colors} from '../constants/Colors';
-import {Toast} from '../constants/CustomTypes';
+import {List} from 'immutable';
+import {RootState} from '@/redux';
+import * as toastActions from '@/redux/modules/toast';
+import {appStyles} from '@/constants/Styles';
+import {colors} from '@/constants/Colors';
+import {Toast} from '@/constants/CustomTypes';
 
 const styles = StyleSheet.create({
   container: {
@@ -36,8 +38,32 @@ const styles = StyleSheet.create({
   },
 });
 
-class AppToast extends PureComponent {
-  constructor(props) {
+type AppToastProps = {
+  toastMsgBox: List<string>;
+  closable: boolean;
+  style?: ViewStyle;
+};
+
+type AppToastState = {
+  isShown: boolean;
+  opacity: Animated.Value;
+  text: string;
+};
+
+class AppToast extends PureComponent<AppToastProps, AppToastState> {
+  isShown: boolean;
+
+  mounted: boolean;
+
+  timer: NodeJS.Timeout | undefined;
+
+  fadeInDuration: number;
+
+  fadeOutDuration: number;
+
+  duration: number;
+
+  constructor(props: AppToastProps) {
     super(props);
 
     this.state = {
@@ -48,9 +74,9 @@ class AppToast extends PureComponent {
 
     this.onPress = this.onPress.bind(this);
 
-    this.mounted = null;
-    this.timer = null;
     this.isShown = false;
+    this.mounted = false;
+    this.timer = undefined;
     this.fadeInDuration = 750;
     this.fadeOutDuration = 1000;
     this.duration = 500;
@@ -60,18 +86,18 @@ class AppToast extends PureComponent {
     this.mounted = true;
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: AppToastProps) {
     if (
       this.props.toastMsgBox.size > 0 &&
       prevProps.toastMsgBox.size === 0 &&
-      !this.isShown
+      !this.state.isShown
     ) {
       this.show();
     }
   }
 
   componentWillUnmount() {
-    this.mounted = null;
+    this.mounted = false;
     if (this.timer) clearTimeout(this.timer);
   }
 
@@ -131,12 +157,12 @@ class AppToast extends PureComponent {
   }
 
   render() {
-    const {styles: st} = this.props;
+    const {style} = this.props;
     const {isShown, text} = this.state;
 
     return isShown ? (
       <TouchableOpacity
-        style={[styles.container, st]}
+        style={[styles.container, style]}
         activeOpacity={0.5}
         onPress={this.onPress}>
         <Animated.View style={[styles.content]}>
