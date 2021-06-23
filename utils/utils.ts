@@ -1,8 +1,8 @@
 import _ from 'underscore';
 import utils from '@/submodules/rokebi-utils/utils';
+import AppAlert from '@/components/AppAlert';
+import * as ToastActions from '@/redux/modules/toast';
 import i18n from './i18n';
-import AppAlert from '../components/AppAlert';
-import * as ToastActions from '../redux/modules/toast';
 
 const UniAsyncStorage = require('@react-native-community/async-storage')
   .default;
