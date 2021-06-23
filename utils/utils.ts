@@ -3,6 +3,7 @@ import utils from '@/submodules/rokebi-utils/utils';
 import AppAlert from '@/components/AppAlert';
 import * as ToastActions from '@/redux/modules/toast';
 import i18n from './i18n';
+import {AppThunk} from '../redux';
 
 const UniAsyncStorage = require('@react-native-community/async-storage')
   .default;
@@ -33,7 +34,9 @@ const removeData = async (key: string) => {
   }
 };
 
-const reflectWithToast = (action, toastType) => (...args) => (dispatch) =>
+const reflectWithToast = (action: () => AppThunk, toastType?: string) => (
+  ...args
+) => (dispatch) =>
   dispatch(action(...args)).then(
     (resp) => {
       if (resp.result !== 0) {

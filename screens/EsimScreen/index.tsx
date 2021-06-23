@@ -7,20 +7,21 @@ import SnackBar from 'react-native-snackbar-component';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import AppActivityIndicator from '../../components/AppActivityIndicator';
-import AppButton from '../../components/AppButton';
-import AppModal from '../../components/AppModal';
-import {colors} from '../../constants/Colors';
-import {Toast} from '../../constants/CustomTypes';
-import {appStyles} from '../../constants/Styles';
-import {timer} from '../../constants/Timer';
-import * as accountActions from '../../redux/modules/account';
-import * as cartActions from '../../redux/modules/cart';
-import * as infoActions from '../../redux/modules/info';
-import * as notiActions from '../../redux/modules/noti';
-import * as orderActions from '../../redux/modules/order';
-import * as toastActions from '../../redux/modules/toast';
-import i18n from '../../utils/i18n';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppButton from '@/components/AppButton';
+import AppModal from '@/components/AppModal';
+import {colors} from '@/constants/Colors';
+import {Toast} from '@/constants/CustomTypes';
+import {appStyles} from '@/constants/Styles';
+import {timer} from '@/constants/Timer';
+import * as accountActions from '@/redux/modules/account';
+import * as cartActions from '@/redux/modules/cart';
+import * as infoActions from '@/redux/modules/info';
+import * as notiActions from '@/redux/modules/noti';
+import * as orderActions from '@/redux/modules/order';
+import * as toastActions from '@/redux/modules/toast';
+import i18n from '@/utils/i18n';
+import {ToastAction} from '@/redux/modules/toast';
 import CardInfo from './components/CardInfo';
 import UsageItem from './components/UsageItem';
 
@@ -130,7 +131,14 @@ const esimManualInputInfo = () => {
     </View>
   );
 };
-class EsimScreen extends Component {
+
+type EsimScreenProps = {
+  action: {
+    toast: ToastAction;
+  };
+};
+
+class EsimScreen extends Component<EsimScreenProps> {
   constructor(props) {
     super(props);
 

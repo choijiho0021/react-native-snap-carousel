@@ -4,16 +4,16 @@ import {pender} from 'redux-pender';
 import _ from 'underscore';
 import {batch} from 'react-redux';
 import {API} from '@/submodules/rokebi-utils';
-import * as ToastActions from './toast';
 import {
   reflectWithToast,
   removeData,
   retrieveData,
   storeData,
-} from '../../utils/utils';
-import {Toast} from '../../constants/CustomTypes';
-import Env from '../../environment';
+} from '@/utils/utils';
+import {Toast} from '@/constants/CustomTypes';
+import Env from '@/environment';
 import {AppThunk} from '..';
+import * as ToastActions from './toast';
 
 const {esimApp} = Env.get();
 

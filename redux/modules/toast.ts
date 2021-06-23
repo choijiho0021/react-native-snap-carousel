@@ -11,12 +11,15 @@ export const init = createAction(INIT);
 export const push = createAction(PUSH);
 export const remove = createAction(REMOVE);
 
+const actions = {init, push, remove};
+export type ToastAction = typeof actions;
+
 interface ToastModelState {
   messages: List<string>;
 }
 
 const initialState: ToastModelState = {
-  messages: List(),
+  messages: List<string>(),
 };
 
 export default handleActions(

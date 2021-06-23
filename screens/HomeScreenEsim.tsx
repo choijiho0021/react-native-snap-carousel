@@ -44,7 +44,9 @@ import createHandlePushNoti from '@/submodules/rokebi-utils/models/createHandleP
 import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
+import {RkbPromotion} from '@/submodules/rokebi-utils/api/promotionApi';
 import TutorialScreen from './TutorialScreen';
+import {ProductAction} from '@/redux/modules/product';
 
 const DOT_MARGIN = 6;
 const INACTIVE_DOT_WIDTH = 6;
@@ -204,7 +206,10 @@ function filterByCategory(list, key) {
 }
 
 type HomeScreenEsimProps = {
-  promotion: any[];
+  promotion: RkbPromotion[];
+  action: {
+    product: ProductAction;
+  };
 };
 class HomeScreenEsim extends Component<HomeScreenEsimProps> {
   constructor(props) {
@@ -236,7 +241,6 @@ class HomeScreenEsim extends Component<HomeScreenEsimProps> {
     this.onIndexChange = this.onIndexChange.bind(this);
     this.onPressItem = this.onPressItem.bind(this);
     this.onPressPromotion = this.onPressPromotion.bind(this);
-    this.renderPromotion = this.renderPromotion.bind(this);
     this.renderDots = this.renderDots.bind(this);
     this.notification = this.notification.bind(this);
     this.init = this.init.bind(this);
@@ -618,10 +622,6 @@ class HomeScreenEsim extends Component<HomeScreenEsimProps> {
     });
   }
 
-  renderPromotion({item}) {
-    return <PromotionImage item={item} onPress={this.onPressPromotion} />;
-  }
-
   renderTitleBtn() {
     this.props.navigation.setOptions({
       title: null,
@@ -661,7 +661,9 @@ class HomeScreenEsim extends Component<HomeScreenEsimProps> {
       <View style={styles.carousel}>
         <Carousel
           data={this.props.promotion}
-          renderItem={this.renderPromotion}
+          renderItem={({item}) => (
+            <PromotionImage item={item} onPress={this.onPressPromotion} />
+          )}
           autoplay
           loop
           lockScrollWhileSnapping

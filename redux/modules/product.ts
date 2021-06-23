@@ -6,11 +6,11 @@ import {reflectWithToast} from '@/utils/utils';
 import {AppThunk} from '..';
 import handleActions from '../handleActions';
 
-const GET_PROD_LIST = 'rokebi/product/GET_PROD_LIST';
-const GET_LOCAL_OP_LIST = 'rokebi/product/GET_LOCAL_OP_LIST';
-export const SET_PROD_OF_COUNTRY = 'rokebi/product/SET_PROD_OF_COUNTRY';
-export const SET_SORTED_PROD_LIST = 'rokebi/product/SET_SORTED_PROD_LIST';
-export const GET_PROD_DETAIL = 'rokebi/product/GET_PROD_DETAIL';
+const GET_PROD_LIST = 'rokebi/product/GET_PROD_LIST' as const;
+const GET_LOCAL_OP_LIST = 'rokebi/product/GET_LOCAL_OP_LIST' as const;
+export const SET_PROD_OF_COUNTRY = 'rokebi/product/SET_PROD_OF_COUNTRY' as const;
+export const SET_SORTED_PROD_LIST = 'rokebi/product/SET_SORTED_PROD_LIST' as const;
+export const GET_PROD_DETAIL = 'rokebi/product/GET_PROD_DETAIL' as const;
 
 const getProd = createAction(GET_PROD_LIST, API.Product.getProduct);
 const getLocalOp = createAction(GET_LOCAL_OP_LIST, API.Product.getLocalOp);
@@ -47,6 +47,14 @@ export const getProdList = (): AppThunk => async (dispatch) => {
 };
 
 export const getProdListWithToast = reflectWithToast(getProdList);
+
+const action = {
+  setProdOfCountry,
+  setSortedProdList,
+  getProdDetail,
+  getProdList,
+};
+export type ProductAction = typeof action;
 
 const initialState = {
   prodList: ImmutableMap<string, object>(),

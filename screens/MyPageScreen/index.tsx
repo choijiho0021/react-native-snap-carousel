@@ -20,26 +20,27 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import {API} from '../../submodules/rokebi-utils';
-import AppActivityIndicator from '../../components/AppActivityIndicator';
-import AppAlert from '../../components/AppAlert';
-import AppButton from '../../components/AppButton';
-import AppIcon from '../../components/AppIcon';
-import AppModal from '../../components/AppModal';
-import AppUserPic from '../../components/AppUserPic';
-import LabelTextTouchable from '../../components/LabelTextTouchable';
-import {colors} from '../../constants/Colors';
-import {Toast} from '../../constants/CustomTypes';
-import {appStyles} from '../../constants/Styles';
-import Env from '../../environment';
-import * as accountActions from '../../redux/modules/account';
-import * as orderActions from '../../redux/modules/order';
-import * as toastActions from '../../redux/modules/toast';
-import i18n from '../../utils/i18n';
-import {utils} from '../../utils/utils';
-import validationUtil from '../../utils/validationUtil';
-import OrderItem from './components/OrderItem';
+import {API} from '@/submodules/rokebi-utils';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppAlert from '@/components/AppAlert';
+import AppButton from '@/components/AppButton';
+import AppIcon from '@/components/AppIcon';
+import AppModal from '@/components/AppModal';
+import AppUserPic from '@/components/AppUserPic';
+import LabelTextTouchable from '@/components/LabelTextTouchable';
+import {colors} from '@/constants/Colors';
+import {Toast} from '@/constants/CustomTypes';
+import {appStyles} from '@/constants/Styles';
+import Env from '@/environment';
+import * as accountActions from '@/redux/modules/account';
+import * as orderActions from '@/redux/modules/order';
+import * as toastActions from '@/redux/modules/toast';
+import i18n from '@/utils/i18n';
+import {utils} from '@/utils/utils';
+import validationUtil from '@/utils/validationUtil';
 import {RootState} from '@/redux';
+import {ToastAction} from '@/redux/modules/toast';
+import OrderItem from './components/OrderItem';
 
 const {esimApp} = Env.get();
 
@@ -186,7 +187,12 @@ const styles = StyleSheet.create({
   },
 });
 
-class MyPageScreen extends Component {
+type MyPageScreenProps = {
+  action: {
+    toast: ToastAction;
+  };
+};
+class MyPageScreen extends Component<MyPageScreenProps> {
   constructor(props) {
     super(props);
 

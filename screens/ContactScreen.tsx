@@ -12,18 +12,19 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import _ from 'underscore';
 import KakaoSDK from '@actbase/react-native-kakaosdk';
-import {appStyles} from '../constants/Styles';
-import i18n from '../utils/i18n';
-import AppBackButton from '../components/AppBackButton';
-import {colors} from '../constants/Colors';
-import AppIcon from '../components/AppIcon';
-import * as infoActions from '../redux/modules/info';
-import * as notiActions from '../redux/modules/noti';
-import * as toastActions from '../redux/modules/toast';
-import AppModal from '../components/AppModal';
-import Env from '../environment';
-import {Toast} from '../constants/CustomTypes';
+import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
+import AppBackButton from '@/components/AppBackButton';
+import {colors} from '@/constants/Colors';
+import AppIcon from '@/components/AppIcon';
+import * as infoActions from '@/redux/modules/info';
+import * as notiActions from '@/redux/modules/noti';
+import * as toastActions from '@/redux/modules/toast';
+import AppModal from '@/components/AppModal';
+import Env from '@/environment';
+import {Toast} from '@/constants/CustomTypes';
 import {RootState} from '@/redux';
+import {ToastAction} from '@/redux/modules/toast';
 
 const {channelId} = Env.get();
 
@@ -70,7 +71,14 @@ const ContactListItem0 = ({item}) => {
 };
 
 const ContactListItem = memo(ContactListItem0);
-class ContactScreen extends Component {
+
+type ContactScreenProps = {
+  action: {
+    toast: ToastAction;
+  };
+};
+
+class ContactScreen extends Component<ContactScreenProps> {
   constructor(props) {
     super(props);
 

@@ -1,6 +1,7 @@
 import {createAction, handleActions} from 'redux-actions';
 import {pender} from 'redux-pender/lib/utils';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import {API} from '@/submodules/rokebi-utils';
+import {RkbPromotion} from '@/submodules/rokebi-utils/api/promotionApi';
 
 const GET_PROMOTION_LIST = 'rokebi/product/GET_PROMOTION_LIST';
 
@@ -9,9 +10,10 @@ export const getPromotion = createAction(
   API.Promotion.getPromotion,
 );
 
-interface Promotion {}
+export type PromotionAction = ReturnType<typeof getPromotion>;
+
 export interface PromotionModelState {
-  promotion: Promotion[];
+  promotion: RkbPromotion[];
 }
 
 const initialState: PromotionModelState = {

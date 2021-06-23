@@ -17,21 +17,22 @@ import _ from 'underscore';
 import WebView from 'react-native-webview';
 import Analytics from 'appcenter-analytics';
 import KakaoSDK from '@actbase/react-native-kakaosdk';
-import {API} from '../submodules/rokebi-utils';
-import i18n from '../utils/i18n';
-import AppBackButton from '../components/AppBackButton';
-import AppActivityIndicator from '../components/AppActivityIndicator';
-import {colors} from '../constants/Colors';
-import {appStyles, htmlDetailWithCss} from '../constants/Styles';
-import AppButton from '../components/AppButton';
-import Env from '../environment';
-import {windowWidth} from '../constants/SliderEntry.style';
-import * as toastActions from '../redux/modules/toast';
-import * as productActions from '../redux/modules/product';
-import {Toast} from '../constants/CustomTypes';
-import AppIcon from '../components/AppIcon';
-import * as infoActions from '../redux/modules/info';
+import {API} from '@/submodules/rokebi-utils';
+import i18n from '@/utils/i18n';
+import AppBackButton from '@/components/AppBackButton';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import {colors} from '@/constants/Colors';
+import {appStyles, htmlDetailWithCss} from '@/constants/Styles';
+import AppButton from '@/components/AppButton';
+import Env from '@/environment';
+import {windowWidth} from '@/constants/SliderEntry.style';
+import * as toastActions from '@/redux/modules/toast';
+import * as productActions from '@/redux/modules/product';
+import {Toast} from '@/constants/CustomTypes';
+import AppIcon from '@/components/AppIcon';
+import * as infoActions from '@/redux/modules/info';
 import {RootState} from '@/redux';
+import {ToastAction} from '@/redux/modules/toast';
 
 const {channelId} = Env.get();
 
@@ -87,7 +88,13 @@ const styles = StyleSheet.create({
   },
 });
 
-class ProductDetailScreen extends Component {
+type ProductDetailScreenProps = {
+  action: {
+    toast: ToastAction;
+  };
+};
+
+class ProductDetailScreen extends Component<ProductDetailScreenProps> {
   constructor(props) {
     super(props);
 
