@@ -237,7 +237,7 @@ export const clearCookies = (): AppThunk => (dispatch) => {
 export const logInAndGetAccount = (
   mobile: string,
   pin: string,
-  iccid: string,
+  iccid?: string,
 ): AppThunk => (dispatch) => {
   return dispatch(logIn(mobile, pin)).then(
     (resp) => {

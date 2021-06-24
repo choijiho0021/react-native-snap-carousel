@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, View, Text, ViewStyle, StyleProp} from 'react-native';
 import _ from 'underscore';
-import i18n from '../utils/i18n';
-import AppTextInput from './AppTextInput';
-import {colors} from '../constants/Colors';
-import {appStyles} from '../constants/Styles';
+import i18n from '@/utils/i18n';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
 import utils from '@/submodules/rokebi-utils/utils';
-import validationUtil from '../utils/validationUtil';
+import validationUtil from '@/utils/validationUtil';
+import AppTextInput from './AppTextInput';
 
 const styles = StyleSheet.create({
   button: {
@@ -47,8 +47,24 @@ const styles = StyleSheet.create({
   },
 });
 
-class InputMobile extends Component {
-  constructor(props) {
+type InputMobileProps = {
+  onPress?: (v: string) => void;
+  authNoti: boolean;
+  authorized: boolean;
+  disabled: boolean;
+  style?: StyleProp<ViewStyle>;
+};
+type InputMobileState = {
+  mobile: string;
+  waiting: boolean;
+  errors?: object;
+};
+class InputMobile extends Component<InputMobileProps, InputMobileState> {
+  mounted: boolean;
+
+  timer?: NodeJS.Timeout;
+
+  constructor(props: InputMobileProps) {
     super(props);
 
     this.state = {
@@ -61,32 +77,26 @@ class InputMobile extends Component {
     this.onChangeText = this.onChangeText.bind(this);
     this.validate = this.validate.bind(this);
     this.onPress = this.onPress.bind(this);
-    this.onClick = this.onClick.bind(this);
     this.onTimer = this.onTimer.bind(this);
 
-    this.ref = React.createRef();
-    this.mounted = null;
-    this.timer = null;
+    this.mounted = false;
+    this.timer = undefined;
   }
 
   componentDidMount() {
     this.mounted = true;
     this.validate();
-
-    if (this.props.onRef) {
-      this.props.onRef(this);
-    }
   }
 
   componentWillUnmount() {
     this.mounted = false;
     if (this.timer) {
       clearTimeout(this.timer);
-      this.timer = null;
+      this.timer = undefined;
     }
   }
 
-  onChangeText = (key) => (value) => {
+  onChangeText = (key: keyof InputMobileState) => (value) => {
     this.setState({
       [key]: value,
     });
@@ -105,11 +115,7 @@ class InputMobile extends Component {
     this.onTimer();
   }
 
-  onClick() {
-    if (this.ref.current) this.ref.current.focus();
-  }
-
-  validate = (key, value) => {
+  validate = (key: keyof InputMobileState, value) => {
     const {mobile} = this.state;
     const val = {
       mobile,
@@ -130,18 +136,18 @@ class InputMobile extends Component {
       if (this.mounted) {
         this.setState({waiting: false});
       }
-      this.timer = null;
+      this.timer = undefined;
     }, 15000);
   };
 
-  error(key) {
+  error(key: keyof InputMobileState) {
     const {errors} = this.state;
     return !_.isEmpty(errors) && errors[key] ? errors[key][0] : '';
   }
 
   render() {
     const {mobile, waiting} = this.state;
-    const {authNoti, authorized} = this.props;
+    const {authNoti, authorized, style} = this.props;
 
     const disabled = this.props.disabled || waiting;
     const clickable =
@@ -151,28 +157,7 @@ class InputMobile extends Component {
 
     return (
       <View>
-        <View style={[styles.container, this.props.style]}>
-          {/*
-          <View style={styles.pickerWrapper}>
-            <RNPickerSelect style={{
-              ... pickerSelectStyles,
-              iconContainer: {
-                bottom: 5,
-                right: 10,
-              },}}
-              placeholder={{}}
-              onValueChange={this._onChangeText("prefix")}
-              items={["010", "011", "017", "018", "019"].map(item => ({
-                label: item, value: item
-              }))}
-              value={prefix}
-              Icon={() => {
-                return (<Triangle width={8} height={6} color={colors.warmGrey}/>)
-              }}
-            />
-          </View>
-          */}
-
+        <View style={[styles.container, style]}>
           <View style={{flex: 1}}>
             <AppTextInput
               placeholder={i18n.t('mobile:input')}
@@ -194,7 +179,6 @@ class InputMobile extends Component {
               clickable={clickable}
               titleStyle={styles.text}
               inputStyle={[styles.inputStyle, mobile ? {} : styles.emptyInput]}
-              ref={this.ref}
               value={utils.toPhoneNumber(mobile)}
             />
           </View>

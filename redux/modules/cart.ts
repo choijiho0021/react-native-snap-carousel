@@ -1,13 +1,13 @@
 import {createAction, handleActions} from 'redux-actions';
 import {List} from 'immutable';
 import {pender} from 'redux-pender';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
-import i18n from '../../utils/i18n';
-import {utils} from '../../utils/utils';
+import {API} from '@/submodules/rokebi-utils';
+import i18n from '@/utils/i18n';
+import {utils} from '@/utils/utils';
+import Env from '@/environment';
+import {AppThunk} from '..';
 import {getOrders} from './order';
 import {getAccount} from './account';
-import Env from '../../environment';
-import {AppThunk} from '..';
 
 const {esimApp} = Env.get();
 
@@ -56,6 +56,11 @@ export const reset = createAction(RESET);
 export const rechargeAccount = createAction(RECHARGE_ACCOUNT, API.Recharge.add);
 
 export const pushLastTab = createAction(PUSH_LAST_TAB);
+
+export const actions = {
+  cartFetch,
+};
+export type CartAction = typeof actions;
 
 interface CartModelState {
   result: number;

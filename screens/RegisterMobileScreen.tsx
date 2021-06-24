@@ -8,16 +8,18 @@ import {
   StatusBar,
   SafeAreaView,
   Appearance,
+  TextInput,
 } from 'react-native';
 import {connect} from 'react-redux';
 import _ from 'underscore';
-import {Map} from 'immutable';
+import {Map as ImmutableMap} from 'immutable';
 import {bindActionCreators} from 'redux';
 import {API} from '@/submodules/rokebi-utils';
 
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import {
+  AccountAction,
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
@@ -33,6 +35,7 @@ import {colors} from '@/constants/Colors';
 import validationUtil from '@/utils/validationUtil';
 import InputPinInTime from '@/components/InputPinInTime';
 import {RootState} from '@/redux';
+import {CartAction} from '@/redux/modules/cart';
 
 const styles = StyleSheet.create({
   helpText: {
@@ -49,7 +52,7 @@ const styles = StyleSheet.create({
   confirmList: {
     flexDirection: 'row',
     height: 46,
-    borderBottomColor: colors.ligtyGrey,
+    borderBottomColor: colors.lightGrey,
     borderBottomWidth: 0.5,
     // paddingVertical: 13,
   },
@@ -105,7 +108,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const RegisterMobileListItem0 = ({item, confirm, onPress, onMove}) => {
+const RegisterMobileListItem0 = ({
+  item,
+  confirm,
+  onPress,
+  onMove,
+}: {
+  onPress: () => void;
+  confirm: ImmutableMap<string, boolean>;
+}) => {
   const confirmed = confirm.get(item.key);
   const navi = item.navi || {};
 
@@ -145,14 +156,42 @@ const RegisterMobileListItem0 = ({item, confirm, onPress, onMove}) => {
 
 const RegisterMobileListItem = memo(RegisterMobileListItem0);
 
-const initialState = {
+type RegisterMobileScreenProps = {
+  account: AccountModelState;
+  pending: boolean;
+  loginSuccess: boolean;
+  loginFailure: boolean;
+  onSubmit: () => void;
+
+  actions: {
+    account: AccountAction;
+    cart: CartAction;
+  };
+};
+type RegisterMobileScreenState = {
+  loading: boolean;
+  pin?: string;
+  mobile?: string;
+  authorized?: boolean;
+  authNoti: boolean;
+  timeout: boolean;
+  confirm: ImmutableMap<string, boolean>;
+  newUser: boolean;
+  emailValidation: {
+    isValid: boolean;
+    error: any;
+  };
+  darkMode: boolean;
+};
+
+const initialState: RegisterMobileScreenState = {
   loading: false,
   pin: undefined,
   mobile: undefined,
   authorized: undefined,
   authNoti: false,
   timeout: false,
-  confirm: Map({
+  confirm: ImmutableMap({
     0: false,
     1: false,
     2: false,
@@ -165,11 +204,6 @@ const initialState = {
   darkMode: Appearance.getColorScheme() === 'dark',
 };
 
-type RegisterMobileScreenProps = {
-  account: AccountModelState;
-};
-type RegisterMobileScreenState = typeof initialState;
-
 class RegisterMobileScreen extends Component<
   RegisterMobileScreenProps,
   RegisterMobileScreenState
@@ -180,9 +214,9 @@ class RegisterMobileScreen extends Component<
     navi: {route: string; param: {key: string; title: string}};
   }[];
 
-  email: React.RefObject<unknown>;
+  email: React.RefObject<TextInput>;
 
-  authInputRef: React.RefObject<unknown>;
+  authInputRef: React.RefObject<TextInput>;
 
   mounted: boolean;
 
@@ -277,7 +311,7 @@ class RegisterMobileScreen extends Component<
   }
 
   onSubmit = async () => {
-    const {email, domain} = this.email.current.state;
+    const {email, domain} = this.email.current?.state;
     const {pin, mobile, confirm, loading} = this.state;
 
     const error = validationUtil.validate('email', `${email}@${domain}`);
@@ -347,7 +381,7 @@ class RegisterMobileScreen extends Component<
     this.props.onSubmit();
   };
 
-  onChangeText = (key) => (value) => {
+  onChangeText = (key: keyof RegisterMobileScreenState) => (value: string) => {
     const {authorized} = this.state;
 
     const val = {
@@ -397,7 +431,7 @@ class RegisterMobileScreen extends Component<
     this.setState(val);
   };
 
-  onPressPin = (value) => {
+  onPressPin = (value: string) => {
     const {mobile, authorized} = this.state;
     const pin = value;
     // PIN이 맞는지 먼저 확인한다.
@@ -444,22 +478,21 @@ class RegisterMobileScreen extends Component<
       });
   };
 
-  onPress = (key) => {
+  onPress = (key: string) => {
     const {confirm} = this.state;
 
-    console.log('confirm', key);
     this.setState({
       confirm: confirm.update(key, (value) => !value),
     });
   };
 
-  onMove = (key, route, param) => () => {
+  onMove = (key: string, route: string, param: object) => () => {
     if (!_.isEmpty(route)) {
       this.props.navigation.navigate(route, param);
     }
   };
 
-  signIn = ({mobile, pin}) => {
+  signIn = ({mobile, pin}: {mobile: string; pin: string}) => {
     this.props.actions.account
       .logInAndGetAccount(mobile, pin)
       .then((_) => this.props.actions.cart.cartFetch());
@@ -472,11 +505,11 @@ class RegisterMobileScreen extends Component<
   };
 
   focusAuthInput() {
-    if (this.authInputRef.current) this.authInputRef.current.focus();
+    this.authInputRef.current.focus();
   }
 
   focusEmailInput() {
-    if (this.email.current) this.email.current.focusInput();
+    this.email.current?.focusInput();
   }
 
   renderItem({item}) {

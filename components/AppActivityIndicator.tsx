@@ -25,14 +25,14 @@ const AppActivityIndicator: React.FC<AppActivityIndicatorProps> = ({
   size = 'large',
   style,
 }) => {
-  return (
+  return visible ? (
     <ActivityIndicator
       style={[styles.indicator, style]}
       size={size}
       color={colors.clearBlue}
       animating={visible}
     />
-  );
+  ) : null;
 };
 
 export default memo(AppActivityIndicator);
