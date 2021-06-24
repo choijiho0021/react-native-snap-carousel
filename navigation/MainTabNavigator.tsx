@@ -43,6 +43,9 @@ import GuideScreen from '@/screens/GuideScreen';
 import SubsDetailScreen from '@/screens/SubsDetailScreen';
 import {RootState} from '@/redux';
 import {RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
+import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
+import {RkbOrder} from '@/submodules/rokebi-utils/api/orderApi';
+import {AccountAuth} from '@/redux/modules/account';
 import AuthStack from './AuthStackNavigator';
 
 const styles = StyleSheet.create({
@@ -74,17 +77,19 @@ export type HomeStackParamList = {
   Recharge: undefined;
   RegisterSim: undefined;
   NewSim: undefined;
-  Noti: {mode: 'noti'};
+  Usim: undefined;
+  Noti: {mode: 'noti'; info?: RkbInfo[]; title?: string};
   SimpleText: {
     key: string;
     title: string;
-    bodyTitle: string;
-    body: string;
-    mode: 'noti';
+    mode: 'noti' | 'info';
+    body?: string;
+    bodyTitle?: string;
+    text?: string;
   };
   Contact: undefined;
   ContactBoard: undefined;
-  BoardMsgResp: undefined;
+  BoardMsgResp: {key: string; status: 'Closed'};
   Faq: undefined;
   Guide: undefined;
   Country: {prodOfCountry: RkbProduct[]};
@@ -95,7 +100,7 @@ export type HomeStackParamList = {
   CodePush: undefined;
   CustomerProfile: undefined;
   AddProfile: undefined;
-  PurchaseDetail: undefined;
+  PurchaseDetail: {detail: RkbOrder; auth: AccountAuth};
 };
 const HomeStack = createStackNavigator<HomeStackParamList>();
 const StoreStack = createStackNavigator();

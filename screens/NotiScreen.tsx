@@ -15,14 +15,21 @@ import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
 import AppIcon from '@/components/AppIcon';
 import utils from '@/submodules/rokebi-utils/utils';
-import {actions as orderActions} from '@/redux/modules/order';
+import {
+  actions as orderActions,
+  OrderAction,
+  OrderModelState,
+} from '@/redux/modules/order';
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
-import {actions as boardActions} from '@/redux/modules/board';
-import {actions as accountActions} from '@/redux/modules/account';
+import {actions as boardActions, BoardAction} from '@/redux/modules/board';
+import {AccountAuth, actions as accountActions} from '@/redux/modules/account';
 import AppBackButton from '@/components/AppBackButton';
 import {RootState} from '@/redux';
-
-const MODE_NOTIFICATION = 'info';
+import {RkbNoti} from '@/submodules/rokebi-utils/api/notiApi';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RouteProp} from '@react-navigation/native';
+import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
+import {HomeStackParamList} from '../navigation/MainTabNavigator';
 
 const styles = StyleSheet.create({
   container: {
@@ -93,11 +100,18 @@ const renderEmptyContainer = () => {
   return <Text style={styles.emptyPage}>{i18n.t('noti:empty')}</Text>;
 };
 
-const areEqual = (prevProps, nextProps) => {
-  return prevProps.item.isRead === nextProps.item.isRead;
-};
+const areEqual = (
+  {item: prevItem}: {item: RkbNoti},
+  {item: nextItem}: {item: RkbNoti},
+) => prevItem.isRead === nextItem.isRead;
 
-const NotiListItem0 = ({item, onPress}) => {
+const NotiListItem0 = ({
+  item,
+  onPress,
+}: {
+  item: RkbNoti;
+  onPress: (n: RkbNoti) => void;
+}) => {
   return (
     <TouchableOpacity onPress={() => onPress(item)}>
       <View
@@ -136,17 +150,32 @@ const NotiListItem0 = ({item, onPress}) => {
 
 const NotiListItem = memo(NotiListItem0, areEqual);
 
+type NotiScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Noti'>;
+type NotiScreenRouteProp = RouteProp<HomeStackParamList, 'Noti'>;
+
 type NotiScreenProps = {
+  navigation: NotiScreenNavigationProp;
+  route: NotiScreenRouteProp;
+  pending: boolean;
+  auth: AccountAuth;
+  order: OrderModelState;
   action: {
     noti: NotiAction;
+    board: BoardAction;
+    order: OrderAction;
   };
 };
-class NotiScreen extends Component<NotiScreenProps> {
-  constructor(props) {
+
+type NotiScreenState = {
+  mode: 'noti' | 'info';
+  info?: RkbInfo[];
+};
+
+class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
+  constructor(props: NotiScreenProps) {
     super(props);
 
     this.state = {
-      refreshing: false,
       mode: 'noti',
     };
 
@@ -155,18 +184,13 @@ class NotiScreen extends Component<NotiScreenProps> {
 
   componentDidMount() {
     const {params} = this.props.route;
-    const mode = params && params.mode ? params.mode : 'noti';
-    const info = params && params.info;
+    const mode = params?.mode || 'noti';
+    const info = params?.info;
 
     this.props.navigation.setOptions({
       title: null,
       headerLeft: () => (
-        <AppBackButton
-          title={
-            (this.props.route.params && this.props.route.params.title) ||
-            i18n.t('set:noti')
-          }
-        />
+        <AppBackButton title={params?.title || i18n.t('set:noti')} />
       ),
     });
 
@@ -176,14 +200,6 @@ class NotiScreen extends Component<NotiScreenProps> {
     this.setState({mode, info});
   }
 
-  componentDidUpdate(prevProps) {
-    if (!this.props.pending && this.props.pending !== prevProps.pending) {
-      this.setState({
-        refreshing: false,
-      });
-    }
-  }
-
   // 공지사항의 경우 notiType이 없으므로 Notice/0으로 기본값 설정
   onPress = ({
     uuid,
@@ -191,10 +207,8 @@ class NotiScreen extends Component<NotiScreenProps> {
     bodyTitle,
     body,
     notiType = 'Notice/0',
-    format = 'text',
-  }) => {
-    const {auth} = this.props;
-
+  }: RkbNoti) => {
+    const {auth, navigation, order} = this.props;
     const {mode} = this.state;
     const split = notiType.split('/');
     const type = split[0];
@@ -204,33 +218,34 @@ class NotiScreen extends Component<NotiScreenProps> {
 
     if (uuid) {
       // if ( mode != MODE_NOTIFICATION) this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
-      if (mode !== MODE_NOTIFICATION && isRead === 'F')
-        this.props.action.noti.readNoti(uuid, this.props.auth);
+      if (mode !== 'info' && isRead === 'F')
+        this.props.action.noti.readNoti(uuid, {token: auth.token});
 
       switch (type) {
         case notiActions.NOTI_TYPE_REPLY:
-          this.props.navigation.navigate('BoardMsgResp', {
+          navigation.navigate('BoardMsgResp', {
             key: id,
             status: 'Closed',
           });
           break;
+
         case notiActions.NOTI_TYPE_PYM:
           // read orders if not read before
           this.props.action.order.checkAndGetOrderById(auth, id).then(() => {
-            this.props.navigation.navigate('PurchaseDetail', {
-              detail: this.props.order.orders[
-                this.props.order.ordersIdx.get(Number(id))
-              ],
+            navigation.navigate('PurchaseDetail', {
+              detail: order.orders[order.ordersIdx.get(Number(id))],
               auth,
             });
           });
           break;
+
         case notiActions.NOTI_TYPE_USIM:
-          this.props.navigation.navigate('Usim');
+          navigation.navigate('Usim');
           break;
+
         default:
           // 아직 일반 Noti 알림은 없으므로 공지사항 용으로만 사용, 후에 일반 Noti 상세페이지(notitype = noti)가 사용될 수 있도록 함
-          this.props.navigation.navigate('SimpleText', {
+          navigation.navigate('SimpleText', {
             key: 'noti',
             title:
               type === notiActions.NOTI_TYPE_NOTI
@@ -245,9 +260,6 @@ class NotiScreen extends Component<NotiScreenProps> {
   };
 
   onRefresh() {
-    this.setState({
-      refreshing: true,
-    });
     this.props.action.noti.getNotiList(this.props.account.mobile);
   }
 
@@ -256,23 +268,23 @@ class NotiScreen extends Component<NotiScreenProps> {
   };
 
   render() {
-    const {notiList} = this.props.noti;
-    const {mode, info, refreshing} = this.state;
-
-    const data = mode === MODE_NOTIFICATION ? info : notiList;
+    const {
+      noti: {notiList},
+      pending,
+    } = this.props;
+    const {mode, info} = this.state;
+    const data = mode === 'info' ? info : notiList;
 
     return (
       <View key="container" style={styles.container}>
         <FlatList
           data={data}
           renderItem={this.renderItem}
-          // refreshing={refreshing}
-          // onRefresh={this.onRefresh}
           ListEmptyComponent={renderEmptyContainer()}
           tintColor={colors.clearBlue}
           refreshControl={
             <RefreshControl
-              refreshing={refreshing}
+              refreshing={pending}
               onRefresh={this.onRefresh}
               colors={[colors.clearBlue]} // android 전용
               tintColor={colors.clearBlue} // ios 전용

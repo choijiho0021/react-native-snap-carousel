@@ -1,6 +1,7 @@
 import {createAction, handleActions} from 'redux-actions';
 import {pender} from 'redux-pender';
 import {API} from '@/submodules/rokebi-utils';
+import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
 
 const GET_INFO_LIST = 'rokebi/info/GET_INFO_LIST';
 const GET_HOME_INFO_LIST = 'rokebi/info/GET_HOME_INFO_LIST';
@@ -22,8 +23,8 @@ export const actions = {
 export type InfoAction = typeof actions;
 
 interface InfoModelState {
-  infoList: object[];
-  homeInfoList: object[];
+  infoList: RkbInfo[];
+  homeInfoList: RkbInfo[];
 }
 
 const initialState: InfoModelState = {

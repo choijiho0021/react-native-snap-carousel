@@ -5,7 +5,7 @@ import moment from 'moment';
 import {API} from '@/submodules/rokebi-utils';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {AppThunk} from '..';
-import {AccountAuthType} from './account';
+import {AccountAuth} from './account';
 
 export const GET_NOTI_LIST = 'rokebi/noti/GET_NOTI_LIST';
 const READ_NOTI = 'rokebi/noti/READ_NOTI';
@@ -42,7 +42,7 @@ const setAppBadge = async (notiCount) => {
 export const notiReadAndGet = (
   uuid: string,
   mobile: string,
-  auth: AccountAuthType,
+  auth: AccountAuth,
 ): AppThunk => (dispatch) => {
   return dispatch(readNoti(uuid, auth)).then(
     (resp) => {

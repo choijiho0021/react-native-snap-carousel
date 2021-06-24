@@ -4,7 +4,8 @@ import {Map as ImmutableMap} from 'immutable';
 import _ from 'underscore';
 import {API} from '@/submodules/rokebi-utils';
 import {reflectWithToast} from '@/utils/utils';
-import {AccountAuthType, getAccount} from './account';
+import {RkbOrder} from '@/submodules/rokebi-utils/api/orderApi';
+import {AccountAuth, getAccount} from './account';
 import {AppThunk} from '..';
 
 export const GET_ORDERS = 'rokebi/order/GET_ORDERS';
@@ -34,9 +35,9 @@ export const reset = createAction(RESET);
 
 export const getSubsWithToast = reflectWithToast(getSubs);
 
-interface OrderModelState {
-  orders: object[];
-  ordersIdx: ImmutableMap<string, number>;
+export interface OrderModelState {
+  orders: RkbOrder[];
+  ordersIdx: ImmutableMap<number, number>;
   subs: object[];
   usageProgress: object;
   next: boolean;
@@ -44,16 +45,16 @@ interface OrderModelState {
 }
 
 export const checkAndGetOrderById = (
-  auth: AccountAuthType,
-  orderId: string,
+  auth: AccountAuth,
+  orderId: number,
 ): AppThunk => (dispatch, getState) => {
   const {order} = getState();
 
-  if (order.ordersIdx.has(orderId)) return new Promise.resolve();
+  if (order.ordersIdx.has(orderId)) return Promise.resolve();
   return dispatch(getOrderById(auth, orderId));
 };
 
-export const getOrders = (auth: AccountAuthType, page: number): AppThunk => (
+export const getOrders = (auth: AccountAuth, page: number): AppThunk => (
   dispatch,
   getState,
 ) => {
@@ -66,7 +67,7 @@ export const getOrders = (auth: AccountAuthType, page: number): AppThunk => (
 
 export const cancelAndGetOrder = (
   orderId: string,
-  auth: AccountAuthType,
+  auth: AccountAuth,
 ): AppThunk => (dispatch, getState) => {
   const {account} = getState();
   const {iccid} = account;
@@ -99,7 +100,7 @@ export const cancelAndGetOrder = (
 export const updateStatusAndGetSubs = (
   uuid: string,
   targetStatus: string,
-  auth: AccountAuthType,
+  auth: AccountAuth,
 ): AppThunk => (dispatch, getState) => {
   const {account} = getState();
   const {iccid} = account;
@@ -161,6 +162,7 @@ export const actions = {
   updateStatusAndGetSubs,
   updateSubsStatus,
   cancelAndGetOrder,
+  checkAndGetOrderById,
 };
 
 export type OrderAction = typeof actions;

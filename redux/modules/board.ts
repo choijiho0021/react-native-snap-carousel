@@ -28,23 +28,6 @@ const resetIssueList = createAction(RESET_ISSUE_LIST);
 export const resetIssueComment = createAction(RESET_ISSUE_COMMENT);
 const nextIssueList = createAction(NEXT_ISSUE_LIST);
 
-export const actions = {
-  getIssueResp,
-  resetIssueComment,
-  fetchIssueList,
-  postAttach,
-  postIssue,
-};
-
-export type BoardAction = typeof actions;
-
-interface BoardModelState {
-  next: boolean;
-  page: number;
-  list: any[];
-  comment?: string;
-}
-
 export const getIssueList = (reloadAlways = true): AppThunk => (
   dispatch,
   getState,
@@ -60,7 +43,7 @@ export const getIssueList = (reloadAlways = true): AppThunk => (
   // reloadAlways == false 이면 list가 비어있는 경우에만 다시 읽는다.
   if (board.list.length === 0) return dispatch(fetchIssueList(uid, {token}, 0));
 
-  return new Promise.resolve();
+  return Promise.resolve();
 };
 
 export const getNextIssueList = (): AppThunk => (dispatch, getState) => {
@@ -106,6 +89,24 @@ export const postAndGetList = (issue, attachment): AppThunk => (
     );
   });
 };
+
+export const actions = {
+  getIssueResp,
+  resetIssueComment,
+  fetchIssueList,
+  getIssueList,
+  postAttach,
+  postIssue,
+};
+
+export type BoardAction = typeof actions;
+
+interface BoardModelState {
+  next: boolean;
+  page: number;
+  list: any[];
+  comment?: string;
+}
 
 const initialState: BoardModelState = {
   next: true,

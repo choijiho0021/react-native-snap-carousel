@@ -104,13 +104,13 @@ export interface AccountModelState {
   isPushNotiEnabled?: boolean;
 }
 
-export type AccountAuthType = {
+export type AccountAuth = {
   user?: string;
   pass?: string;
   token?: string;
 };
 
-export const auth = (state: AccountModelState): AccountAuthType => ({
+export const auth = (state: AccountModelState): AccountAuth => ({
   user: state.mobile,
   pass: state.pin,
   token: state.token,
