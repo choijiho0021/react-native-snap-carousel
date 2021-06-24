@@ -1,3 +1,4 @@
+import {RkbNoti} from '@/submodules/rokebi-utils/api/notiApi';
 import {createAction} from 'redux-actions';
 import handleActions from '../handleActions';
 
@@ -24,13 +25,17 @@ const actions = {
 
 export type NotiAction = typeof actions;
 
-const initialNoti = {
+export type NotiModelState = {
+  notiList: RkbNoti[];
+  uuid?: string;
+  isread?: string;
+};
+
+const initialNoti: NotiModelState = {
   notiList: [],
   uuid: undefined,
   isread: undefined,
 };
-
-export type NotiModelState = typeof initialNoti;
 
 export default handleActions(
   {
