@@ -49,11 +49,12 @@ export const getProdList = (): AppThunk => async (dispatch) => {
 
 export const getProdListWithToast = reflectWithToast(getProdList);
 
-const actions = {
+export const actions = {
   setProdOfCountry,
   setSortedProdList,
   getProdDetail,
   getProdList,
+  getProdListWithToast,
 };
 export type ProductAction = typeof actions;
 

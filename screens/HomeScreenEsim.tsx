@@ -668,7 +668,8 @@ class HomeScreenEsim extends Component<
   }
 
   renderTitleBtn() {
-    this.props.navigation.setOptions({
+    const {navigation} = this.props;
+    navigation?.setOptions({
       title: null,
       headerLeft: () => <Text style={styles.title}>{i18n.t('esim')}</Text>,
       headerRight: () => (
@@ -676,14 +677,14 @@ class HomeScreenEsim extends Component<
           <AppButton
             key="search"
             style={styles.btnSearchBar}
-            onPress={() => this.props.navigation.navigate('StoreSearch')}
+            onPress={() => navigation?.navigate('StoreSearch')}
             iconName="btnSearchTop"
           />
 
           <AppButton
             key="cnter"
             style={styles.btnCnter}
-            onPress={() => this.props.navigation.navigate('Contact')}
+            onPress={() => navigation?.navigate('Contact')}
             iconName="btnCnter"
           />
 
@@ -691,9 +692,7 @@ class HomeScreenEsim extends Component<
           <BadgeAppButton
             key="alarm"
             style={styles.btnAlarm}
-            onPress={() =>
-              this.props.navigation.navigate('Noti', {mode: 'noti'})
-            }
+            onPress={() => navigation?.navigate('Noti', {mode: 'noti'})}
             iconName="btnAlarm"
           />
         </View>

@@ -10,7 +10,9 @@ export const getPromotion = createAction(
   API.Promotion.getPromotion,
 );
 
-export type PromotionAction = ReturnType<typeof getPromotion>;
+export const actions = {getPromotion};
+
+export type PromotionAction = typeof actions;
 
 export interface PromotionModelState {
   promotion: RkbPromotion[];
