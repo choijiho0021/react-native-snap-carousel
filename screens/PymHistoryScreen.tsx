@@ -8,7 +8,10 @@ import {RootState} from '@/redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import {appStyles} from '@/constants/Styles';
-import * as accountActions from '@/redux/modules/account';
+import {
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 
@@ -93,7 +96,7 @@ const PymHistoryListItem0 = ({item, onPressItem}) => {
 const PymHistoryListItem = memo(PymHistoryListItem0);
 
 interface PymHistoryScreenProps {
-  account: accountActions.AccountModelState;
+  account: AccountModelState;
   navigation: any;
 }
 

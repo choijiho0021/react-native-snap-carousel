@@ -14,7 +14,7 @@ import CodePushModal from '@/components/CodePushModal';
 import Env from '@/environment';
 import AppNavigator from '@/navigation/AppNavigator';
 import reducer from '@/redux/index';
-import * as accountActions from '@/redux/modules/account';
+import {actions as accountActions} from '@/redux/modules/account';
 import * as infoActions from '@/redux/modules/info';
 import {actions as productActions} from '@/redux/modules/product';
 import {actions as promotionActions} from '@/redux/modules/promotion';

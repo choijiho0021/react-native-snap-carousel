@@ -13,7 +13,7 @@ import AppSwitch from '../components/AppSwitch';
 import {colors} from '../constants/Colors';
 import {appStyles} from '../constants/Styles';
 import Env from '../environment';
-import * as accountActions from '../redux/modules/account';
+import {actions as accountActions} from '../redux/modules/account';
 import * as cartActions from '../redux/modules/cart';
 import * as orderActions from '../redux/modules/order';
 import i18n from '../utils/i18n';

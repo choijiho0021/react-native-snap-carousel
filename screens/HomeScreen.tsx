@@ -25,7 +25,7 @@ import Carousel, {Pagination} from 'react-native-snap-carousel';
 import i18n from '../utils/i18n';
 import {appStyles} from '../constants/Styles';
 import * as simActions from '../redux/modules/sim';
-import * as accountActions from '../redux/modules/account';
+import {actions as accountActions} from '../redux/modules/account';
 import * as notiActions from '../redux/modules/noti';
 import * as infoActions from '../redux/modules/info';
 import * as cartActions from '../redux/modules/cart';

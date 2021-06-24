@@ -20,7 +20,7 @@ import {API} from 'RokebiESIM/submodules/rokebi-utils';
 import {RootState} from '@/redux';
 import i18n from '../utils/i18n';
 import * as simActions from '../redux/modules/sim';
-import * as accountActions from '../redux/modules/account';
+import {actions as accountActions} from '../redux/modules/account';
 import * as orderActions from '../redux/modules/order';
 import ScanSim from '../components/ScanSim';
 import AppActivityIndicator from '../components/AppActivityIndicator';

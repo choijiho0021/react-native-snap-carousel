@@ -19,7 +19,7 @@ import utils from '@/submodules/rokebi-utils/utils';
 import * as orderActions from '../redux/modules/order';
 import * as notiActions from '../redux/modules/noti';
 import * as boardActions from '../redux/modules/board';
-import * as accountActions from '../redux/modules/account';
+import {actions as accountActions} from '../redux/modules/account';
 import AppBackButton from '../components/AppBackButton';
 import {RootState} from '@/redux';
 

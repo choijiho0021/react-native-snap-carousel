@@ -7,7 +7,7 @@ import {Map} from 'immutable';
 import _ from 'underscore';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import RNPickerSelect from 'react-native-picker-select';
-import * as accountActions from '../redux/modules/account';
+import {actions as accountActions} from '../redux/modules/account';
 import * as profileActions from '../redux/modules/profile';
 import AppBackButton from '../components/AppBackButton';
 import {colors} from '../constants/Colors';

@@ -24,7 +24,7 @@ import LabelText from '../components/LabelText';
 import {isDeviceSize, windowHeight} from '../constants/SliderEntry.style';
 import LabelTextTouchable from '../components/LabelTextTouchable';
 import * as orderActions from '../redux/modules/order';
-import * as accountActions from '../redux/modules/account';
+import {actions as accountActions} from '../redux/modules/account';
 import AppIcon from '../components/AppIcon';
 import {isAndroid} from '../components/SearchBarAnimation/utils';
 import AddressCard from '../components/AddressCard';

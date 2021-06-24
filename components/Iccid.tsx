@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 import Icon from 'react-native-vector-icons/Feather';
 import {TextField} from 'react-native-material-textfield';
 import * as simActions from '../redux/modules/sim';
-import * as accountActions from '../redux/modules/account';
+import {actions as accountActions} from '../redux/modules/account';
 import i18n from '../utils/i18n';
 import {RootState} from '@/redux';
 

@@ -21,7 +21,7 @@ import {colors} from '../constants/Colors';
 import {isDeviceSize, windowHeight} from '../constants/SliderEntry.style';
 import {appStyles} from '../constants/Styles';
 import {timer} from '../constants/Timer';
-import * as accountActions from '../redux/modules/account';
+import {actions as accountActions} from '../redux/modules/account';
 import * as cartActions from '../redux/modules/cart';
 import api from '../submodules/rokebi-utils/api/api';
 import i18n from '../utils/i18n';

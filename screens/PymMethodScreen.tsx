@@ -9,7 +9,7 @@ import {TouchableOpacity, TextInput} from 'react-native-gesture-handler';
 import RNPickerSelect from 'react-native-picker-select';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {API} from '../submodules/rokebi-utils';
-import * as accountActions from '../redux/modules/account';
+import {actions as accountActions} from '../redux/modules/account';
 import * as profileActions from '../redux/modules/profile';
 import * as cartActions from '../redux/modules/cart';
 import {appStyles} from '../constants/Styles';

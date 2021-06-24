@@ -19,7 +19,7 @@ import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
 import * as productActions from '../redux/modules/product';
 import * as cartActions from '../redux/modules/cart';
-import * as accountActions from '../redux/modules/account';
+import {actions as accountActions} from '../redux/modules/account';
 import AppButton from '../components/AppButton';
 import AppIcon from '../components/AppIcon';
 import AppBackButton from '../components/AppBackButton';

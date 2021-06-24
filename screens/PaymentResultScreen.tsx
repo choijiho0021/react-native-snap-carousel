@@ -16,7 +16,7 @@ import AppButton from '../components/AppButton';
 import PaymentItemInfo from '../components/PaymentItemInfo';
 import {colors} from '../constants/Colors';
 import {appStyles} from '../constants/Styles';
-import * as accountActions from '../redux/modules/account';
+import {actions as accountActions} from '../redux/modules/account';
 import * as cartActions from '../redux/modules/cart';
 import * as notiActions from '../redux/modules/noti';
 import * as orderActions from '../redux/modules/order';

@@ -14,7 +14,7 @@ import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
 import * as cartActions from '../redux/modules/cart';
 import * as orderActions from '../redux/modules/order';
-import * as accountActions from '../redux/modules/account';
+import {actions as accountActions} from '../redux/modules/account';
 import utils from '@/submodules/rokebi-utils/utils';
 import {bindActionCreators} from 'redux';
 import {colors} from '../constants/Colors';

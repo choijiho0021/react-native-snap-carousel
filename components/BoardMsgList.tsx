@@ -16,7 +16,7 @@ import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
 import {colors} from '../constants/Colors';
 import * as boardActions from '../redux/modules/board';
-import * as accountActions from '../redux/modules/account';
+import {actions as accountActions} from '../redux/modules/account';
 import AppActivityIndicator from './AppActivityIndicator';
 import utils from '@/submodules/rokebi-utils/utils';
 import AppModal from './AppModal';

@@ -349,7 +349,7 @@ const updateAccountState = (state: AccountModelState, payload: object) => {
   return newState;
 };
 
-export const action = {
+export const actions = {
   changeNotiToken,
   getAccount,
   clearCurrentAccount,
@@ -359,8 +359,10 @@ export const action = {
   getUserId,
   uploadAndChangePicture,
   changeEmail,
+  auth,
+  clearCookies,
 };
-export type AccountAction = typeof action;
+export type AccountAction = typeof actions;
 
 const initialState: AccountModelState = {
   loggedIn: false,

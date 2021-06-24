@@ -38,7 +38,7 @@ import {appStyles} from '@/constants/Styles';
 import {
   AccountAction,
   AccountModelState,
-  action as accountActions,
+  actions as accountActions,
 } from '@/redux/modules/account';
 import * as cartActions from '@/redux/modules/cart';
 import * as notiActions from '@/redux/modules/noti';

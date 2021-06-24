@@ -11,7 +11,10 @@ import i18n from '../utils/i18n';
 import AppActivityIndicator from '../components/AppActivityIndicator';
 import AppButton from '../components/AppButton';
 import * as simActions from '../redux/modules/sim';
-import * as accountActions from '../redux/modules/account';
+import {
+  AccountModelState,
+  actions as accountActions,
+} from '../redux/modules/account';
 import * as cartActions from '../redux/modules/cart';
 import SimCard from '../components/SimCard';
 import AppBackButton from '../components/AppBackButton';
@@ -20,7 +23,7 @@ import ChargeSummary from '../components/ChargeSummary';
 import utils from '@/submodules/rokebi-utils/utils';
 
 interface NewSimScreenProps {
-  account: accountActions.AccountModelState;
+  account: AccountModelState;
   sim: simActions.SimModelState;
   navigation: any;
 }

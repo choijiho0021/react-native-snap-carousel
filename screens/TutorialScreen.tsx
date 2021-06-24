@@ -19,7 +19,7 @@ import {colors} from '../constants/Colors';
 import {sliderWidth} from '../constants/SliderEntry.style';
 import {appStyles} from '../constants/Styles';
 import Env from '../environment';
-import * as accountActions from '../redux/modules/account';
+import {actions as accountActions} from '../redux/modules/account';
 import * as orderActions from '../redux/modules/order';
 import i18n from '../utils/i18n';
 

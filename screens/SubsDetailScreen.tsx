@@ -3,7 +3,7 @@ import {StyleSheet, Text, View, SafeAreaView} from 'react-native';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import * as productActions from '../redux/modules/product';
-import * as accountActions from '../redux/modules/account';
+import {actions as accountActions} from '../redux/modules/account';
 import * as orderActions from '../redux/modules/order';
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';

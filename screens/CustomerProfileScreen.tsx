@@ -11,7 +11,7 @@ import i18n from '../utils/i18n';
 import {appStyles} from '../constants/Styles';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import * as accountActions from '../redux/modules/account';
+import {actions as accountActions} from '../redux/modules/account';
 import * as profileActions from '../redux/modules/profile';
 import _ from 'underscore';
 import AppBackButton from '../components/AppBackButton';

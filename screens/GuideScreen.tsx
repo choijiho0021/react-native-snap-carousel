@@ -11,7 +11,7 @@ import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
 import {colors} from '../constants/Colors';
 import AppIcon from '../components/AppIcon';
-import * as accountActions from '../redux/modules/account';
+import {actions as accountActions} from '../redux/modules/account';
 import * as orderActions from '../redux/modules/order';
 import AppBackButton from '../components/AppBackButton';
 import AppFlatListItem from '../components/AppFlatListItem';

@@ -13,22 +13,25 @@ import {connect} from 'react-redux';
 import _ from 'underscore';
 import {Map} from 'immutable';
 import {bindActionCreators} from 'redux';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import {API} from '@/submodules/rokebi-utils';
 
-import {appStyles} from '../constants/Styles';
-import i18n from '../utils/i18n';
-import * as accountActions from '../redux/modules/account';
-import * as cartActions from '../redux/modules/cart';
-import AppActivityIndicator from '../components/AppActivityIndicator';
-import AppButton from '../components/AppButton';
-import AppBackButton from '../components/AppBackButton';
-import AppAlert from '../components/AppAlert';
-import AppIcon from '../components/AppIcon';
-import InputMobile from '../components/InputMobile';
-import InputEmail from '../components/InputEmail';
-import {colors} from '../constants/Colors';
-import validationUtil from '../utils/validationUtil';
-import InputPinInTime from '../components/InputPinInTime';
+import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
+import {
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
+import * as cartActions from '@/redux/modules/cart';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppButton from '@/components/AppButton';
+import AppBackButton from '@/components/AppBackButton';
+import AppAlert from '@/components/AppAlert';
+import AppIcon from '@/components/AppIcon';
+import InputMobile from '@/components/InputMobile';
+import InputEmail from '@/components/InputEmail';
+import {colors} from '@/constants/Colors';
+import validationUtil from '@/utils/validationUtil';
+import InputPinInTime from '@/components/InputPinInTime';
 import {RootState} from '@/redux';
 
 const styles = StyleSheet.create({
@@ -142,29 +145,53 @@ const RegisterMobileListItem0 = ({item, confirm, onPress, onMove}) => {
 
 const RegisterMobileListItem = memo(RegisterMobileListItem0);
 
-class RegisterMobileScreen extends Component {
-  constructor(props) {
+const initialState = {
+  loading: false,
+  pin: undefined,
+  mobile: undefined,
+  authorized: undefined,
+  authNoti: false,
+  timeout: false,
+  confirm: Map({
+    0: false,
+    1: false,
+    2: false,
+  }),
+  newUser: false,
+  emailValidation: {
+    isValid: false,
+    error: undefined,
+  },
+  darkMode: Appearance.getColorScheme() === 'dark',
+};
+
+type RegisterMobileScreenProps = {
+  account: AccountModelState;
+};
+type RegisterMobileScreenState = typeof initialState;
+
+class RegisterMobileScreen extends Component<
+  RegisterMobileScreenProps,
+  RegisterMobileScreenState
+> {
+  confirmList: {
+    key: string;
+    list: {color: string; text: string}[];
+    navi: {route: string; param: {key: string; title: string}};
+  }[];
+
+  email: React.RefObject<unknown>;
+
+  authInputRef: React.RefObject<unknown>;
+
+  mounted: boolean;
+
+  controller: AbortController;
+
+  constructor(props: RegisterMobileScreenProps) {
     super(props);
 
-    this.state = {
-      loading: false,
-      pin: undefined,
-      mobile: undefined,
-      authorized: undefined,
-      authNoti: false,
-      timeout: false,
-      confirm: Map({
-        0: false,
-        1: false,
-        2: false,
-      }),
-      newUser: false,
-      emailValidation: {
-        isValid: false,
-        error: undefined,
-      },
-      darkMode: Appearance.getColorScheme() === 'dark',
-    };
+    this.state = initialState;
 
     this.confirmList = [
       {
@@ -219,18 +246,13 @@ class RegisterMobileScreen extends Component {
   componentDidMount() {
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={i18n.t('mobile:header')}
-        />
-      ),
+      headerLeft: () => <AppBackButton title={i18n.t('mobile:header')} />,
     });
 
     this.mounted = true;
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: RegisterMobileScreenProps) {
     if (this.props.account !== prevProps.account) {
       if (this.props.account.loggedIn) {
         this.props.navigation.navigate('Main');

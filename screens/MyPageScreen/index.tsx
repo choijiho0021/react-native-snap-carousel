@@ -32,7 +32,7 @@ import {colors} from '@/constants/Colors';
 import {Toast} from '@/constants/CustomTypes';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import * as accountActions from '@/redux/modules/account';
+import {actions as accountActions} from '@/redux/modules/account';
 import * as orderActions from '@/redux/modules/order';
 import * as toastActions from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
