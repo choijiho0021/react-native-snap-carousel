@@ -13,7 +13,7 @@ import {
 import {Toast} from '@/constants/CustomTypes';
 import Env from '@/environment';
 import {AppThunk} from '..';
-import * as ToastActions from './toast';
+import {actions as toastActions} from './toast';
 
 const {esimApp} = Env.get();
 
@@ -278,7 +278,7 @@ export const logInAndGetAccount = (
       }
     },
     (err) => {
-      dispatch(ToastActions.push());
+      dispatch(toastActions.push());
       console.log('login failed', err);
     },
   );
@@ -361,6 +361,7 @@ export const actions = {
   changeEmail,
   auth,
   clearCookies,
+  getToken,
 };
 export type AccountAction = typeof actions;
 

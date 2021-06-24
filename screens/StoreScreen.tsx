@@ -9,14 +9,14 @@ import {TabView, TabBar} from 'react-native-tab-view';
 import moment from 'moment';
 import Analytics from 'appcenter-analytics';
 import {Set} from 'immutable';
-import {API, Country} from '../submodules/rokebi-utils';
-import {appStyles} from '../constants/Styles';
-import i18n from '../utils/i18n';
-import * as productActions from '../redux/modules/product';
-import {colors} from '../constants/Colors';
-import AppButton from '../components/AppButton';
-import StoreList from '../components/StoreList';
-import {isDeviceSize} from '../constants/SliderEntry.style';
+import {API, Country} from '@/submodules/rokebi-utils';
+import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
+import {actions as productActions} from '@/redux/modules/product';
+import {colors} from '@/constants/Colors';
+import AppButton from '@/components/AppButton';
+import StoreList from '@/components/StoreList';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {RootState} from '@/redux';
 
 const styles = StyleSheet.create({

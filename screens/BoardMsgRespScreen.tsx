@@ -11,18 +11,18 @@ import {
 
 import _ from 'underscore';
 import {bindActionCreators} from 'redux';
-import {API} from '../submodules/rokebi-utils';
-import i18n from '../utils/i18n';
-import AppBackButton from '../components/AppBackButton';
-import * as boardActions from '../redux/modules/board';
-import {actions as accountActions} from '../redux/modules/account';
-import {appStyles} from '../constants/Styles';
-import {colors} from '../constants/Colors';
-import AppActivityIndicator from '../components/AppActivityIndicator';
-import AppIcon from '../components/AppIcon';
+import {API} from '@/submodules/rokebi-utils';
+import i18n from '@/utils/i18n';
+import AppBackButton from '@/components/AppBackButton';
+import {actions as boardActions} from '@/redux/modules/board';
+import {actions as accountActions} from '@/redux/modules/account';
+import {appStyles} from '@/constants/Styles';
+import {colors} from '@/constants/Colors';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppIcon from '@/components/AppIcon';
 import utils from '@/submodules/rokebi-utils/utils';
-import {attachmentSize, windowWidth} from '../constants/SliderEntry.style';
-import AppButton from '../components/AppButton';
+import {attachmentSize, windowWidth} from '@/constants/SliderEntry.style';
+import AppButton from '@/components/AppButton';
 import {RootState} from '@/redux';
 
 const styles = StyleSheet.create({

@@ -14,28 +14,24 @@ import {bindActionCreators} from 'redux';
 import Analytics from 'appcenter-analytics';
 import _ from 'underscore';
 import SnackBar from 'react-native-snackbar-component';
-import {API} from '../submodules/rokebi-utils';
-import {appStyles} from '../constants/Styles';
-import i18n from '../utils/i18n';
-import * as productActions from '../redux/modules/product';
-import * as cartActions from '../redux/modules/cart';
-import {actions as accountActions} from '../redux/modules/account';
-import AppButton from '../components/AppButton';
-import AppIcon from '../components/AppIcon';
-import AppBackButton from '../components/AppBackButton';
-import {colors} from '../constants/Colors';
-import AppPrice from '../components/AppPrice';
-import AppCartButton from '../components/AppCartButton';
-import {
-  windowWidth,
-  device,
-  windowHeight,
-} from '../constants/SliderEntry.style';
-import AppActivityIndicator from '../components/AppActivityIndicator';
-import {timer} from '../constants/Timer';
-import api from '../submodules/rokebi-utils/api/api';
-import AppAlert from '../components/AppAlert';
-import Env from '../environment';
+import {API} from '@/submodules/rokebi-utils';
+import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
+import {actions as productActions} from '@/redux/modules/product';
+import {actions as cartActions} from '@/redux/modules/cart';
+import {actions as accountActions} from '@/redux/modules/account';
+import AppButton from '@/components/AppButton';
+import AppIcon from '@/components/AppIcon';
+import AppBackButton from '@/components/AppBackButton';
+import {colors} from '@/constants/Colors';
+import AppPrice from '@/components/AppPrice';
+import AppCartButton from '@/components/AppCartButton';
+import {windowWidth, device, windowHeight} from '@/constants/SliderEntry.style';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import {timer} from '@/constants/Timer';
+import api from '@/submodules/rokebi-utils/api/api';
+import AppAlert from '@/components/AppAlert';
+import Env from '@/environment';
 import {RootState} from '@/redux';
 
 const {esimApp} = Env.get();

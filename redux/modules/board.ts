@@ -1,7 +1,7 @@
 import {createAction, handleActions} from 'redux-actions';
 import {pender} from 'redux-pender';
 import _ from 'underscore';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import {API} from '@/submodules/rokebi-utils';
 import {auth} from './account';
 import {AppThunk} from '..';
 
@@ -27,6 +27,16 @@ export const getIssueResp = createAction(GET_ISSUE_RESP, API.Board.getComments);
 const resetIssueList = createAction(RESET_ISSUE_LIST);
 export const resetIssueComment = createAction(RESET_ISSUE_COMMENT);
 const nextIssueList = createAction(NEXT_ISSUE_LIST);
+
+export const actions = {
+  getIssueResp,
+  resetIssueComment,
+  fetchIssueList,
+  postAttach,
+  postIssue,
+};
+
+export type BoardAction = typeof actions;
 
 interface BoardModelState {
   next: boolean;

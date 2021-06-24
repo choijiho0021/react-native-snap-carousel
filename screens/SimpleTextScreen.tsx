@@ -10,17 +10,17 @@ import {
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import WebView from 'react-native-webview';
-import AppActivityIndicator from '../components/AppActivityIndicator';
-import AppAlert from '../components/AppAlert';
-import AppBackButton from '../components/AppBackButton';
-import AppButton from '../components/AppButton';
-import {colors} from '../constants/Colors';
-import {appStyles, htmlDetailWithCss} from '../constants/Styles';
-import Env from '../environment';
-import {API} from '../submodules/rokebi-utils';
-import i18n from '../utils/i18n';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppAlert from '@/components/AppAlert';
+import AppBackButton from '@/components/AppBackButton';
+import AppButton from '@/components/AppButton';
+import {colors} from '@/constants/Colors';
+import {appStyles, htmlDetailWithCss} from '@/constants/Styles';
+import Env from '@/environment';
+import {API} from '@/submodules/rokebi-utils';
+import i18n from '@/utils/i18n';
 import utils from '@/submodules/rokebi-utils/utils';
-import * as infoActions from '../redux/modules/info';
+import {actions as infoActions} from '@/redux/modules/info';
 import {RootState} from '@/redux';
 
 const {baseUrl} = Env.get();

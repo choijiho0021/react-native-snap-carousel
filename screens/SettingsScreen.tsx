@@ -5,18 +5,19 @@ import {FlatList, StyleSheet, Text, Pressable, View} from 'react-native';
 import VersionCheck from 'react-native-version-check';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {RootState} from '@/redux';
 import _ from 'underscore';
-import AppBackButton from '../components/AppBackButton';
-import AppIcon from '../components/AppIcon';
-import AppModal from '../components/AppModal';
-import AppSwitch from '../components/AppSwitch';
-import {colors} from '../constants/Colors';
-import {appStyles} from '../constants/Styles';
-import Env from '../environment';
-import {actions as accountActions} from '../redux/modules/account';
-import * as cartActions from '../redux/modules/cart';
-import * as orderActions from '../redux/modules/order';
-import i18n from '../utils/i18n';
+import AppBackButton from '@/components/AppBackButton';
+import AppIcon from '@/components/AppIcon';
+import AppModal from '@/components/AppModal';
+import AppSwitch from '@/components/AppSwitch';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import Env from '@/environment';
+import {actions as accountActions} from '@/redux/modules/account';
+import {actions as cartActions, CartAction} from '@/redux/modules/cart';
+import {actions as orderActions} from '@/redux/modules/order';
+import i18n from '@/utils/i18n';
 
 const {label} = Env.get();
 
@@ -90,8 +91,11 @@ const SettingsListItem0 = ({item, onPress}) => {
 const SettingsListItem = memo(SettingsListItem0);
 
 type SettingsScreenProps = {
-  isPushNotiEnabled: boolean;
-  loggedIn: boolean;
+  isPushNotiEnabled?: boolean;
+  loggedIn?: boolean;
+  action: {
+    cart: CartAction;
+  };
 };
 
 type SettingsScreenState = {

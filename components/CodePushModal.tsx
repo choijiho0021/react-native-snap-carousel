@@ -1,11 +1,10 @@
-import React, {Component} from 'react';
+import {Component} from 'react';
 import {Alert, AppState} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-
 import codePush from 'react-native-code-push';
-import * as syncActions from '../redux/modules/sync';
-import i18n from '../utils/i18n';
+import {actions as syncActions} from '@/redux/modules/sync';
+import i18n from '@/utils/i18n';
 import {RootState} from '@/redux';
 
 class CodePushModal extends Component {

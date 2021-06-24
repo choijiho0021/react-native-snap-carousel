@@ -2,29 +2,28 @@ import React, {Component} from 'react';
 import {StyleSheet, FlatList, SafeAreaView} from 'react-native';
 import {connect} from 'react-redux';
 import {Map as ImmutableMap} from 'immutable';
-
 import _ from 'underscore';
 import {bindActionCreators} from 'redux';
 import Analytics from 'appcenter-analytics';
 import {RootState} from '@/redux';
-import i18n from '../utils/i18n';
-import AppActivityIndicator from '../components/AppActivityIndicator';
-import AppButton from '../components/AppButton';
-import * as simActions from '../redux/modules/sim';
+import i18n from '@/utils/i18n';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppButton from '@/components/AppButton';
+import {actions as simActions, SimModelState} from '@/redux/modules/sim';
 import {
   AccountModelState,
   actions as accountActions,
-} from '../redux/modules/account';
-import * as cartActions from '../redux/modules/cart';
-import SimCard from '../components/SimCard';
-import AppBackButton from '../components/AppBackButton';
-import {colors} from '../constants/Colors';
-import ChargeSummary from '../components/ChargeSummary';
+} from '@/redux/modules/account';
+import {actions as cartActions} from '@/redux/modules/cart';
+import SimCard from '@/components/SimCard';
+import AppBackButton from '@/components/AppBackButton';
+import {colors} from '@/constants/Colors';
+import ChargeSummary from '@/components/ChargeSummary';
 import utils from '@/submodules/rokebi-utils/utils';
 
 interface NewSimScreenProps {
   account: AccountModelState;
-  sim: simActions.SimModelState;
+  sim: SimModelState;
   navigation: any;
 }
 

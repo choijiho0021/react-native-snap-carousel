@@ -1,7 +1,6 @@
 import {createAction, handleActions} from 'redux-actions';
-import _ from 'underscore';
 import {pender} from 'redux-pender';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import {API} from '@/submodules/rokebi-utils';
 
 const GET_INFO_LIST = 'rokebi/info/GET_INFO_LIST';
 const GET_HOME_INFO_LIST = 'rokebi/info/GET_HOME_INFO_LIST';
@@ -14,6 +13,13 @@ export const getHomeInfoList = createAction(
   GET_HOME_INFO_LIST,
   API.Page.getPageByCategory,
 );
+
+export const actions = {
+  getInfoList,
+  getHomeInfoList,
+};
+
+export type InfoAction = typeof actions;
 
 interface InfoModelState {
   infoList: object[];

@@ -10,20 +10,20 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 
-import {appStyles} from '../constants/Styles';
-import i18n from '../utils/i18n';
-import * as cartActions from '../redux/modules/cart';
-import * as orderActions from '../redux/modules/order';
-import {actions as accountActions} from '../redux/modules/account';
+import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
+import {actions as cartActions} from '@/redux/modules/cart';
+import {actions as orderActions} from '@/redux/modules/order';
+import {actions as accountActions} from '@/redux/modules/account';
 import utils from '@/submodules/rokebi-utils/utils';
 import {bindActionCreators} from 'redux';
-import {colors} from '../constants/Colors';
-import LabelText from '../components/LabelText';
-import AppButton from '../components/AppButton';
+import {colors} from '@/constants/Colors';
+import LabelText from '@/components/LabelText';
+import AppButton from '@/components/AppButton';
 import _ from 'underscore';
-import AppBackButton from '../components/AppBackButton';
-import {isDeviceSize} from '../constants/SliderEntry.style';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import AppBackButton from '@/components/AppBackButton';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {API} from '@/submodules/rokebi-utils';
 import {RootState} from '@/redux';
 
 class RechargeScreen extends Component {

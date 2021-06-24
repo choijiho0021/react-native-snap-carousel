@@ -14,15 +14,15 @@ import {getTrackingStatus} from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import AppActivityIndicator from '../../components/AppActivityIndicator';
-import StoreList from '../../components/StoreList';
-import {colors} from '../../constants/Colors';
-import {isDeviceSize} from '../../constants/SliderEntry.style';
-import {appStyles} from '../../constants/Styles';
-import * as productActions from '../../redux/modules/product';
-import {API} from '../../submodules/rokebi-utils';
-import i18n from '../../utils/i18n';
-import {retrieveData, storeData} from '../../utils/utils';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import StoreList from '@/components/StoreList';
+import {colors} from '@/constants/Colors';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
+import {actions as productActions} from '@/redux/modules/product';
+import {API} from '@/submodules/rokebi-utils';
+import i18n from '@/utils/i18n';
+import {retrieveData, storeData} from '@/utils/utils';
 import HeaderTitle from './components/HeaderTitle';
 
 const styles = StyleSheet.create({

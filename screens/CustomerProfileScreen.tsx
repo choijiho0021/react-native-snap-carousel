@@ -1,4 +1,4 @@
-import React, {Component, PureComponent} from 'react';
+import React, {Component, memo} from 'react';
 import {
   StyleSheet,
   View,
@@ -7,215 +7,22 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
-import i18n from '../utils/i18n';
-import {appStyles} from '../constants/Styles';
+import i18n from '@/utils/i18n';
+import {appStyles} from '@/constants/Styles';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {actions as accountActions} from '../redux/modules/account';
-import * as profileActions from '../redux/modules/profile';
+import {actions as accountActions} from '@/redux/modules/account';
+import {actions as profileActions} from '@/redux/modules/profile';
 import _ from 'underscore';
-import AppBackButton from '../components/AppBackButton';
-import AddressCard from '../components/AddressCard';
-import {colors} from '../constants/Colors';
-import AppButton from '../components/AppButton';
-import AppIcon from '../components/AppIcon';
-import AppActivityIndicator from '../components/AppActivityIndicator';
-import {isAndroid} from '../components/SearchBarAnimation/utils';
-import {isDeviceSize} from '../constants/SliderEntry.style';
+import AppBackButton from '@/components/AppBackButton';
+import AddressCard from '@/components/AddressCard';
+import {colors} from '@/constants/Colors';
+import AppButton from '@/components/AppButton';
+import AppIcon from '@/components/AppIcon';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import {isAndroid} from '@/components/SearchBarAnimation/utils';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {RootState} from '@/redux';
-
-class Profile extends PureComponent {
-  constructor(props) {
-    super(props);
-    this._onChecked = this._onChecked.bind(this);
-    this._deleteProfile = this._deleteProfile.bind(this);
-  }
-
-  _onChecked(uuid) {
-    this.setState({
-      checked: uuid,
-    });
-
-    // profile.updateCustomerProfile(this.state.profile.toJS(), this.props.account)
-    this.props.props.action.profile.selectedAddr(uuid);
-    this.props.props.navigation.goBack();
-  }
-
-  _deleteProfile(uuid) {
-    this.props.props.action.profile.profileDelAndGet(
-      uuid,
-      this.props.props.account,
-    );
-
-    //AppAlert.confirm(i18n.t('purchase:delAddr'))
-    //AppAlert.error( i18n.t('purchase:failedToDelete'))
-  }
-
-  render() {
-    // props profile
-    const {checked, item} = this.props;
-
-    return (
-      <View
-        style={[styles.cardSize, checked == item.uuid && styles.checkedBorder]}>
-        <View>
-          <View style={styles.profileTitle}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                width: '100%',
-              }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignSelf: 'flex-start',
-                  paddingTop: 19,
-                }}>
-                <Text
-                  style={[
-                    styles.profileTitleText,
-                    checked == item.uuid && styles.checkedColor,
-                  ]}>
-                  {item.alias}
-                </Text>
-                {item.isBasicAddr && (
-                  <View style={styles.basicAddrBox}>
-                    <Text style={styles.basicAddr}>
-                      {i18n.t('addr:basicAddr')}
-                    </Text>
-                  </View>
-                )}
-              </View>
-              <View style={{flexDirection: 'row'}}>
-                <AppButton
-                  title={i18n.t('modify')}
-                  style={styles.updateOrDeleteBtn}
-                  titleStyle={styles.chgButtonText}
-                  onPress={() =>
-                    this.props.props.navigation.navigate('AddProfile', {
-                      update: item,
-                    })
-                  }
-                />
-                <View style={styles.buttonBorder} />
-                <AppButton
-                  title={i18n.t('delete')}
-                  style={styles.updateOrDeleteBtn}
-                  titleStyle={[styles.chgButtonText, {paddingRight: 20}]}
-                  onPress={() => this._deleteProfile(item.uuid)}
-                />
-              </View>
-            </View>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-            }}>
-            <AddressCard
-              textStyle={styles.addrCardText}
-              mobileStyle={[styles.addrCardText, styles.colorWarmGrey]}
-              style={styles.addrCard}
-              key={item.uuid}
-              profile={item}
-            />
-            <TouchableOpacity
-              style={styles.checkButton}
-              onPress={() => this._onChecked(item.uuid)}>
-              <AppIcon
-                name="btnCheck"
-                key={item.uuid}
-                checked={checked == item.uuid || false}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    );
-  }
-}
-
-class CustomerProfileScreen extends Component {
-  constructor(props) {
-    super(props);
-
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('pym:delivery')} />,
-    });
-
-    this.state = {
-      checked: undefined,
-      profile: undefined,
-    };
-
-    this._isEmptyList = this._isEmptyList.bind(this);
-  }
-
-  componentDidMount() {
-    this.props.action.profile.getCustomerProfile(this.props.account);
-    this.setState({
-      checked:
-        this.props.profile.selectedAddr ||
-        this.props.profile.profile.find((item) => item.isBasicAddr).uuid,
-    });
-  }
-
-  componentDidUpdate(prevProps) {
-    if (_.isUndefined(this.props.profile.selectedAddr)) {
-      if (prevProps.profile.profile != this.props.profile.profile) {
-        const profile = this.props.profile.profile.find(
-          (item) => item.isBasicAddr,
-        );
-        if (profile) {
-          this.setState({
-            checked: profile.uuid,
-          });
-        }
-      }
-    }
-  }
-
-  _renderItem = ({item}) => {
-    return (
-      <Profile item={item} checked={this.state.checked} props={this.props} />
-    );
-  };
-
-  _isEmptyList() {
-    return (
-      <View style={styles.emptyView}>
-        <Text style={styles.emptyText}>{i18n.t('addr:noProfile')}</Text>
-      </View>
-    );
-  }
-
-  render() {
-    return (
-      <SafeAreaView
-        style={styles.container}
-        forceInset={{top: 'never', bottom: 'always'}}>
-        <AppActivityIndicator visible={this.props.pending} />
-        <FlatList
-          data={this.props.profile.profile}
-          keyExtractor={(item) => item.uuid}
-          renderItem={this._renderItem}
-          ListEmptyComponent={this._isEmptyList}
-          extraData={this.state.checked}
-        />
-
-        <AppButton
-          title={i18n.t('add')}
-          textStyle={appStyles.confirmText}
-          onPress={() => this.props.navigation.navigate('AddProfile')}
-          style={[appStyles.confirm, {marginTop: 20}]}
-        />
-      </SafeAreaView>
-    );
-  }
-}
 
 const styles = StyleSheet.create({
   container: {
@@ -316,6 +123,193 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 });
+
+const Profile0 = ({
+  checked,
+  item,
+  onChecked,
+  deleteProfile,
+  addProfile,
+}: {
+  checked: string;
+  item: object;
+  onChecked: (v: string) => void;
+  deleteProfile: (v: string) => void;
+  addProfile: () => void;
+}) => {
+  return (
+    <View
+      style={[styles.cardSize, checked === item.uuid && styles.checkedBorder]}>
+      <View>
+        <View style={styles.profileTitle}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              width: '100%',
+            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignSelf: 'flex-start',
+                paddingTop: 19,
+              }}>
+              <Text
+                style={[
+                  styles.profileTitleText,
+                  checked === item.uuid && styles.checkedColor,
+                ]}>
+                {item.alias}
+              </Text>
+              {item.isBasicAddr && (
+                <View style={styles.basicAddrBox}>
+                  <Text style={styles.basicAddr}>
+                    {i18n.t('addr:basicAddr')}
+                  </Text>
+                </View>
+              )}
+            </View>
+            <View style={{flexDirection: 'row'}}>
+              <AppButton
+                title={i18n.t('modify')}
+                style={styles.updateOrDeleteBtn}
+                titleStyle={styles.chgButtonText}
+                onPress={addProfile}
+              />
+              <View style={styles.buttonBorder} />
+              <AppButton
+                title={i18n.t('delete')}
+                style={styles.updateOrDeleteBtn}
+                titleStyle={[styles.chgButtonText, {paddingRight: 20}]}
+                onPress={() => deleteProfile(item.uuid)}
+              />
+            </View>
+          </View>
+        </View>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}>
+          <AddressCard
+            textStyle={styles.addrCardText}
+            mobileStyle={[styles.addrCardText, styles.colorWarmGrey]}
+            style={styles.addrCard}
+            key={item.uuid}
+            profile={item}
+          />
+          <TouchableOpacity
+            style={styles.checkButton}
+            onPress={() => onChecked(item.uuid)}>
+            <AppIcon
+              name="btnCheck"
+              key={item.uuid}
+              checked={checked === item.uuid || false}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+};
+const Profile = memo(Profile0);
+
+class CustomerProfileScreen extends Component {
+  constructor(props) {
+    super(props);
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => <AppBackButton title={i18n.t('pym:delivery')} />,
+    });
+
+    this.state = {
+      checked: undefined,
+      profile: undefined,
+    };
+
+    this._isEmptyList = this._isEmptyList.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.action.profile.getCustomerProfile(this.props.account);
+    this.setState({
+      checked:
+        this.props.profile.selectedAddr ||
+        this.props.profile.profile.find((item) => item.isBasicAddr).uuid,
+    });
+  }
+
+  componentDidUpdate(prevProps) {
+    if (_.isUndefined(this.props.profile.selectedAddr)) {
+      if (prevProps.profile.profile != this.props.profile.profile) {
+        const profile = this.props.profile.profile.find(
+          (item) => item.isBasicAddr,
+        );
+        if (profile) {
+          this.setState({
+            checked: profile.uuid,
+          });
+        }
+      }
+    }
+  }
+
+  _renderItem = ({item}) => {
+    const {account, action, navigation} = this.props;
+    return (
+      <Profile
+        item={item}
+        checked={this.state.checked}
+        onChecked={(uuid: string) => {
+          action.profile.selectedAddr(uuid);
+          navigation.goBack();
+        }}
+        deleteProfile={(uuid: string) => {
+          action.profile.profileDelAndGet(uuid, account);
+        }}
+        addProfile={() =>
+          navigation.navigate('AddProfile', {
+            update: item,
+          })
+        }
+      />
+    );
+  };
+
+  _isEmptyList() {
+    return (
+      <View style={styles.emptyView}>
+        <Text style={styles.emptyText}>{i18n.t('addr:noProfile')}</Text>
+      </View>
+    );
+  }
+
+  render() {
+    return (
+      <SafeAreaView
+        style={styles.container}
+        forceInset={{top: 'never', bottom: 'always'}}>
+        <AppActivityIndicator visible={this.props.pending} />
+        <FlatList
+          data={this.props.profile.profile}
+          keyExtractor={(item) => item.uuid}
+          renderItem={this._renderItem}
+          ListEmptyComponent={this._isEmptyList}
+          extraData={this.state.checked}
+        />
+
+        <AppButton
+          title={i18n.t('add')}
+          textStyle={appStyles.confirmText}
+          onPress={() => this.props.navigation.navigate('AddProfile')}
+          style={[appStyles.confirm, {marginTop: 20}]}
+        />
+      </SafeAreaView>
+    );
+  }
+}
 
 export default connect(
   ({account, profile, pender}: RootState) => ({

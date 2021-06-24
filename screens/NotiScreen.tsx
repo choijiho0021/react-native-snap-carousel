@@ -10,17 +10,16 @@ import {
 import {bindActionCreators} from 'redux';
 import Analytics from 'appcenter-analytics';
 import {connect} from 'react-redux';
-import _ from 'underscore';
-import i18n from '../utils/i18n';
-import {appStyles} from '../constants/Styles';
-import {colors} from '../constants/Colors';
-import AppIcon from '../components/AppIcon';
+import i18n from '@/utils/i18n';
+import {appStyles} from '@/constants/Styles';
+import {colors} from '@/constants/Colors';
+import AppIcon from '@/components/AppIcon';
 import utils from '@/submodules/rokebi-utils/utils';
-import * as orderActions from '../redux/modules/order';
-import {actions as notiActions, NotiAction} from '../redux/modules/noti';
-import * as boardActions from '../redux/modules/board';
-import {actions as accountActions} from '../redux/modules/account';
-import AppBackButton from '../components/AppBackButton';
+import {actions as orderActions} from '@/redux/modules/order';
+import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
+import {actions as boardActions} from '@/redux/modules/board';
+import {actions as accountActions} from '@/redux/modules/account';
+import AppBackButton from '@/components/AppBackButton';
 import {RootState} from '@/redux';
 
 const MODE_NOTIFICATION = 'info';

@@ -2,8 +2,8 @@ import {createAction, handleActions} from 'redux-actions';
 import {pender} from 'redux-pender';
 import {Map as ImmutableMap} from 'immutable';
 import _ from 'underscore';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
-import {reflectWithToast} from '../../utils/utils';
+import {API} from '@/submodules/rokebi-utils';
+import {reflectWithToast} from '@/utils/utils';
 import {AccountAuthType, getAccount} from './account';
 import {AppThunk} from '..';
 
@@ -33,6 +33,13 @@ export const updateSubsStatus = createAction(
 export const reset = createAction(RESET);
 
 export const getSubsWithToast = reflectWithToast(getSubs);
+
+export const actions = {
+  reset,
+  getSubsWithToast,
+};
+
+export type OrderAction = typeof actions;
 
 interface OrderModelState {
   orders: object[];

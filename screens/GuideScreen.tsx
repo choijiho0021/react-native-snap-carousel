@@ -6,17 +6,17 @@ import _ from 'underscore';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import Analytics from 'appcenter-analytics';
-import {API} from '../submodules/rokebi-utils';
-import {appStyles} from '../constants/Styles';
-import i18n from '../utils/i18n';
-import {colors} from '../constants/Colors';
-import AppIcon from '../components/AppIcon';
-import {actions as accountActions} from '../redux/modules/account';
-import * as orderActions from '../redux/modules/order';
-import AppBackButton from '../components/AppBackButton';
-import AppFlatListItem from '../components/AppFlatListItem';
-import {sliderWidth} from '../constants/SliderEntry.style';
-import AppActivityIndicator from '../components/AppActivityIndicator';
+import {API} from '@/submodules/rokebi-utils';
+import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
+import {colors} from '@/constants/Colors';
+import AppIcon from '@/components/AppIcon';
+import {actions as accountActions} from '@/redux/modules/account';
+import {actions as orderActions} from '@/redux/modules/order';
+import AppBackButton from '@/components/AppBackButton';
+import AppFlatListItem from '@/components/AppFlatListItem';
+import {sliderWidth} from '@/constants/SliderEntry.style';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {RootState} from '@/redux';
 
 const styles = StyleSheet.create({

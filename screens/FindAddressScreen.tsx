@@ -1,33 +1,128 @@
-import React, {Component, PureComponent} from 'react';
-import {Platform, StyleSheet, Text, View, SafeAreaView} from 'react-native';
+import React, {Component, memo} from 'react';
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  TouchableOpacity,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import i18n from '../utils/i18n';
-import * as profileActions from '../redux/modules/profile';
+import i18n from '@/utils/i18n';
+import {actions as profileActions} from '@/redux/modules/profile';
 import {TextField} from 'react-native-material-textfield';
 import Icon from 'react-native-vector-icons/Ionicons';
-import AppButton from '../components/AppButton';
+import AppButton from '@/components/AppButton';
 import {FlatList} from 'react-native-gesture-handler';
-import {TouchableOpacity} from 'react-native';
-import Address from '../components/Address';
+import Address from '@/components/Address';
 import _ from 'underscore';
-import {colors} from '../constants/Colors';
-import {appStyles} from '../constants/Styles';
-import AppBackButton from '../components/AppBackButton';
-import AppIcon from '../components/AppIcon';
-import {isDeviceSize} from '../constants/SliderEntry.style';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import AppBackButton from '@/components/AppBackButton';
+import AppIcon from '@/components/AppIcon';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {API} from '@/submodules/rokebi-utils';
 
-class FindAddressListItem extends PureComponent {
-  render() {
-    const {item, onPress} = this.props;
-    return (
-      <TouchableOpacity style={styles.dataCard} onPress={onPress(item)}>
-        <Address item={item} />
-      </TouchableOpacity>
-    );
-  }
-}
+const styles = StyleSheet.create({
+  container: {
+    ...appStyles.container,
+    alignItems: 'stretch',
+  },
+  field: {
+    height: 46,
+  },
+  showSearchBar: {
+    position: 'absolute',
+    top: 10,
+    right: isDeviceSize('small') ? -10 : 0,
+    alignSelf: 'flex-end',
+    width: 50,
+    height: 50,
+  },
+  searchIcon: {
+    width: 15,
+    height: 16,
+  },
+  modal: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    backgroundColor: 'white',
+  },
+  divider: {
+    marginHorizontal: 0,
+    marginTop: 20,
+    height: 10,
+    backgroundColor: colors.whiteTwo,
+  },
+  pagination: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  textFieldBox: {
+    borderBottomColor: colors.black,
+    marginHorizontal: 20,
+    height: 50,
+  },
+  searchEx: {
+    ...appStyles.normal14Text,
+    letterSpacing: 0.15,
+    lineHeight: 30,
+  },
+  mrgLeft40Top20: {
+    marginLeft: 40,
+    marginTop: 20,
+  },
+  boldText16: {
+    fontSize: 16,
+    lineHeight: 30,
+    fontWeight: 'bold',
+    color: colors.black,
+  },
+  paginationBox: {
+    width: 44,
+    height: 44,
+    flexDirection: 'row',
+    backgroundColor: colors.clearBlue,
+  },
+  paginationButton: {
+    width: '100%',
+    height: 10,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  paginationText: {
+    color: colors.black,
+    height: 19,
+    fontSize: 14,
+    fontWeight: 'bold',
+    alignSelf: 'center',
+  },
+  dataCard: {
+    flex: 1,
+    flexDirection: 'row',
+    borderBottomColor: colors.lightGrey,
+    borderBottomWidth: 1,
+    marginHorizontal: 20,
+  },
+  disabledButton: {
+    backgroundColor: colors.disabled,
+  },
+});
+
+const FindAddressListItem0 = ({item, onPress}) => {
+  return (
+    <TouchableOpacity style={styles.dataCard} onPress={onPress(item)}>
+      <Address item={item} />
+    </TouchableOpacity>
+  );
+};
+
+const FindAddressListItem = memo(FindAddressListItem0);
 
 class FindAddressScreen extends Component {
   constructor(props) {
@@ -182,96 +277,6 @@ class FindAddressScreen extends Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    ...appStyles.container,
-    alignItems: 'stretch',
-  },
-  field: {
-    height: 46,
-  },
-  showSearchBar: {
-    position: 'absolute',
-    top: 10,
-    right: isDeviceSize('small') ? -10 : 0,
-    alignSelf: 'flex-end',
-    width: 50,
-    height: 50,
-  },
-  searchIcon: {
-    width: 15,
-    height: 16,
-  },
-  modal: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    backgroundColor: 'white',
-  },
-  divider: {
-    marginHorizontal: 0,
-    marginTop: 20,
-    height: 10,
-    backgroundColor: colors.whiteTwo,
-  },
-  pagination: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  textFieldBox: {
-    borderBottomColor: colors.black,
-    marginHorizontal: 20,
-    height: 50,
-  },
-  searchEx: {
-    ...appStyles.normal14Text,
-    letterSpacing: 0.15,
-    lineHeight: 30,
-  },
-  mrgLeft40Top20: {
-    marginLeft: 40,
-    marginTop: 20,
-  },
-  boldText16: {
-    fontSize: 16,
-    lineHeight: 30,
-    fontWeight: 'bold',
-    color: colors.black,
-  },
-  paginationBox: {
-    width: 44,
-    height: 44,
-    flexDirection: 'row',
-    backgroundColor: colors.clearBlue,
-  },
-  paginationButton: {
-    width: '100%',
-    height: 10,
-    alignSelf: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  paginationText: {
-    color: colors.black,
-    height: 19,
-    fontSize: 14,
-    fontWeight: 'bold',
-    alignSelf: 'center',
-  },
-  dataCard: {
-    flex: 1,
-    flexDirection: 'row',
-    borderBottomColor: colors.lightGrey,
-    borderBottomWidth: 1,
-    marginHorizontal: 20,
-  },
-  disabledButton: {
-    backgroundColor: colors.disabled,
-  },
-});
 
 // export default FindAddressScreen
 export default connect(undefined, (dispatch) => ({

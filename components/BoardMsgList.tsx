@@ -10,20 +10,18 @@ import {
   RefreshControl,
 } from 'react-native';
 import {bindActionCreators} from 'redux';
-
-import _ from 'underscore';
-import {appStyles} from '../constants/Styles';
-import i18n from '../utils/i18n';
-import {colors} from '../constants/Colors';
-import * as boardActions from '../redux/modules/board';
-import {actions as accountActions} from '../redux/modules/account';
-import AppActivityIndicator from './AppActivityIndicator';
+import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
+import {colors} from '@/constants/Colors';
+import {actions as boardActions} from '@/redux/modules/board';
+import {actions as accountActions} from '@/redux/modules/account';
 import utils from '@/submodules/rokebi-utils/utils';
+import {RootState} from '@/redux';
+import AppActivityIndicator from './AppActivityIndicator';
 import AppModal from './AppModal';
 import AppButton from './AppButton';
 import AppIcon from './AppIcon';
 import BoardMsg from './BoardMsg';
-import {RootState} from '@/redux';
 
 const styles = StyleSheet.create({
   noList: {

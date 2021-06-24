@@ -16,21 +16,21 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {bindActionCreators} from 'redux';
 import {openSettings, check, PERMISSIONS} from 'react-native-permissions';
 import Analytics from 'appcenter-analytics';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import {API} from '@/submodules/rokebi-utils';
 import {RootState} from '@/redux';
-import i18n from '../utils/i18n';
-import * as simActions from '../redux/modules/sim';
-import {actions as accountActions} from '../redux/modules/account';
-import * as orderActions from '../redux/modules/order';
-import ScanSim from '../components/ScanSim';
-import AppActivityIndicator from '../components/AppActivityIndicator';
-import AppButton from '../components/AppButton';
-import AppAlert from '../components/AppAlert';
-import AppBackButton from '../components/AppBackButton';
-import {colors} from '../constants/Colors';
-import {appStyles} from '../constants/Styles';
-import {isDeviceSize} from '../constants/SliderEntry.style';
-import BackbuttonHandler from '../components/BackbuttonHandler';
+import i18n from '@/utils/i18n';
+import {actions as simActions} from '@/redux/modules/sim';
+import {actions as accountActions} from '@/redux/modules/account';
+import {actions as orderActions} from '@/redux/modules/order';
+import ScanSim from '@/components/ScanSim';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppButton from '@/components/AppButton';
+import AppAlert from '@/components/AppAlert';
+import AppBackButton from '@/components/AppBackButton';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
+import BackbuttonHandler from '@/components/BackbuttonHandler';
 
 const initState = {
   scan: false,

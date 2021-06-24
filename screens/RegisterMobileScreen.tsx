@@ -23,7 +23,7 @@ import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
-import * as cartActions from '@/redux/modules/cart';
+import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppButton from '@/components/AppButton';
 import AppBackButton from '@/components/AppBackButton';
@@ -35,7 +35,6 @@ import {colors} from '@/constants/Colors';
 import validationUtil from '@/utils/validationUtil';
 import InputPinInTime from '@/components/InputPinInTime';
 import {RootState} from '@/redux';
-import {CartAction} from '@/redux/modules/cart';
 
 const styles = StyleSheet.create({
   helpText: {

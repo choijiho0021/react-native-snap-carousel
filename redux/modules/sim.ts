@@ -1,7 +1,6 @@
 import {createAction, handleActions} from 'redux-actions';
-import _ from 'underscore';
 import {pender} from 'redux-pender';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import {API} from '@/submodules/rokebi-utils';
 
 const ADD_ICCID = 'rokebi/sim/ADD_ICCID';
 export const UPDATE_SIM_PARTNER = 'rokebi/sim/UPDATE_SIM_PARTNER';
@@ -13,6 +12,14 @@ export const updateSimPartner = createAction(
   API.SimCard.getSimPartnerByID,
 );
 export const getSimCardList = createAction(GET_SIM_CARD_LIST, API.SimCard.get);
+
+export const actions = {
+  addIccid,
+  updateSimPartner,
+  getSimCardList,
+};
+
+export type SimAction = typeof actions;
 
 export interface SimModelState {
   iccid?: string;

@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import utils from '@/submodules/rokebi-utils/utils';
 import AppAlert from '@/components/AppAlert';
-import * as ToastActions from '@/redux/modules/toast';
+import {actions as toastActions} from '@/redux/modules/toast';
 import i18n from './i18n';
 import {AppThunk} from '../redux';
 
@@ -40,12 +40,12 @@ const reflectWithToast = (action: () => AppThunk, toastType?: string) => (
   dispatch(action(...args)).then(
     (resp) => {
       if (resp.result !== 0) {
-        dispatch(ToastActions.push(toastType));
+        dispatch(toastActions.push(toastType));
       }
       return resp;
     },
     (err) => {
-      dispatch(ToastActions.push(toastType));
+      dispatch(toastActions.push(toastType));
       return err;
     },
   );

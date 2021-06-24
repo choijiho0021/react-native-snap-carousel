@@ -1,6 +1,6 @@
 import {createAction, handleActions} from 'redux-actions';
 import {pender} from 'redux-pender';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import {API} from '@/submodules/rokebi-utils';
 import {AppThunk} from '..';
 
 const UPDATE_PROFILE_ADDRESS = 'rokebi/order/UPDATE_PROFILE_ADDRESS';
@@ -29,6 +29,17 @@ export const delCustomerProfile = createAction(
   API.Profile.delCustomerProfile,
 );
 export const selectedAddr = createAction(SELECTED_ADDR);
+
+export const actions = {
+  updateProfileAddress,
+  getCustomerProfile,
+  addCustomerProfile,
+  updateCustomerProfile,
+  delCustomerProfile,
+  selectedAddr,
+};
+
+export type ProfileAction = typeof actions;
 
 interface ProfileModelState {
   // selectedAddrIdx: undefined,

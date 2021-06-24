@@ -23,19 +23,19 @@ import {
   RESULTS,
 } from 'react-native-permissions';
 
-import {appStyles} from '../constants/Styles';
-import i18n from '../utils/i18n';
-import {actions as accountActions} from '../redux/modules/account';
-import * as boardActions from '../redux/modules/board';
+import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
+import {actions as accountActions} from '@/redux/modules/account';
+import {actions as boardActions} from '@/redux/modules/board';
 import utils from '@/submodules/rokebi-utils/utils';
+import validationUtil from '@/utils/validationUtil';
+import {colors} from '@/constants/Colors';
+import {attachmentSize} from '@/constants/SliderEntry.style';
+import {RootState} from '@/redux';
 import AppActivityIndicator from './AppActivityIndicator';
 import AppButton from './AppButton';
-import validationUtil from '../utils/validationUtil';
-import {colors} from '../constants/Colors';
-import {attachmentSize} from '../constants/SliderEntry.style';
 import AppAlert from './AppAlert';
 import AppIcon from './AppIcon';
-import {RootState} from '@/redux';
 
 const ImagePicker = require('react-native-image-crop-picker').default;
 

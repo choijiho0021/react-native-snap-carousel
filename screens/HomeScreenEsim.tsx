@@ -40,19 +40,21 @@ import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
-import * as cartActions from '@/redux/modules/cart';
-import {actions as notiActions} from '@/redux/modules/noti';
-import * as productActions from '@/redux/modules/product';
+import {actions as cartActions} from '@/redux/modules/cart';
+import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
+import {
+  actions as productActions,
+  ProductAction,
+  ProductModelState,
+} from '@/redux/modules/product';
 import {API, Country} from '@/submodules/rokebi-utils';
 import createHandlePushNoti from '@/submodules/rokebi-utils/models/createHandlePushNoti';
 import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {RkbPromotion} from '@/submodules/rokebi-utils/api/promotionApi';
-import {ProductAction, ProductModelState} from '@/redux/modules/product';
 import {SyncModelState} from '@/redux/modules/sync';
 import {RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
-import {NotiAction} from '@/redux/noti/noti';
 import TutorialScreen from './TutorialScreen';
 
 const DOT_MARGIN = 6;

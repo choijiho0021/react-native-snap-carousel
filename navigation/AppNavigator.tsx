@@ -2,12 +2,11 @@ import React, {memo} from 'react';
 import Analytics from 'appcenter-analytics';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-
-import * as cartActions from '../redux/modules/cart';
+import {actions as cartActions} from '@/redux/modules/cart';
+import Env from '@/environment';
 import MainTabNavigator from './MainTabNavigator';
 import EsimMainTabNavigator from './EsimMainTabNavigator';
 import AuthStackNavigator from './AuthStackNavigator';
-import Env from '../environment';
 
 const {esimApp} = Env.get();
 

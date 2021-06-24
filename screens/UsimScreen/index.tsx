@@ -4,21 +4,20 @@ import {StyleSheet, View, Text, FlatList, RefreshControl} from 'react-native';
 import SnackBar from 'react-native-snackbar-component';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import _ from 'underscore';
-import i18n from '../../utils/i18n';
-import {appStyles} from '../../constants/Styles';
-import {colors} from '../../constants/Colors';
-import * as simActions from '../../redux/modules/sim';
-import {actions as accountActions} from '../../redux/modules/account';
-import {actions as notiActions} from '../../redux/modules/noti';
-import * as infoActions from '../../redux/modules/info';
-import * as cartActions from '../../redux/modules/cart';
-import * as orderActions from '../../redux/modules/order';
-import AppActivityIndicator from '../../components/AppActivityIndicator';
-import {timer} from '../../constants/Timer';
+import i18n from '@/utils/i18n';
+import {appStyles} from '@/constants/Styles';
+import {colors} from '@/constants/Colors';
+import {actions as simActions} from '@/redux/modules/sim';
+import {actions as accountActions} from '@/redux/modules/account';
+import {actions as notiActions} from '@/redux/modules/noti';
+import {actions as infoActions} from '@/redux/modules/info';
+import {actions as cartActions} from '@/redux/modules/cart';
+import {actions as orderActions} from '@/redux/modules/order';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import {timer} from '@/constants/Timer';
+import {RootState} from '@/redux';
 import CardInfo from './components/CardInfo';
 import UsageItem from './components/UsageItem';
-import {RootState} from '@/redux';
 
 const styles = StyleSheet.create({
   title: {

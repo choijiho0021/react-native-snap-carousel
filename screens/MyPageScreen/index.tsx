@@ -33,13 +33,12 @@ import {Toast} from '@/constants/CustomTypes';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {actions as accountActions} from '@/redux/modules/account';
-import * as orderActions from '@/redux/modules/order';
-import * as toastActions from '@/redux/modules/toast';
+import {actions as orderActions} from '@/redux/modules/order';
+import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import validationUtil from '@/utils/validationUtil';
 import {RootState} from '@/redux';
-import {ToastAction} from '@/redux/modules/toast';
 import OrderItem from './components/OrderItem';
 
 const {esimApp} = Env.get();

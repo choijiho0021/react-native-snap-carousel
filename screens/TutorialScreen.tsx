@@ -15,13 +15,13 @@ import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {getTrackingStatus} from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';
 import _ from 'underscore';
-import {colors} from '../constants/Colors';
-import {sliderWidth} from '../constants/SliderEntry.style';
-import {appStyles} from '../constants/Styles';
-import Env from '../environment';
-import {actions as accountActions} from '../redux/modules/account';
-import * as orderActions from '../redux/modules/order';
-import i18n from '../utils/i18n';
+import {colors} from '@/constants/Colors';
+import {sliderWidth} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
+import Env from '@/environment';
+import {actions as accountActions} from '@/redux/modules/account';
+import {actions as orderActions} from '@/redux/modules/order';
+import i18n from '@/utils/i18n';
 
 const {esimApp} = Env.get();
 

@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-
 import _ from 'underscore';
 import WebView from 'react-native-webview';
 import Analytics from 'appcenter-analytics';
@@ -26,13 +25,12 @@ import {appStyles, htmlDetailWithCss} from '@/constants/Styles';
 import AppButton from '@/components/AppButton';
 import Env from '@/environment';
 import {windowWidth} from '@/constants/SliderEntry.style';
-import * as toastActions from '@/redux/modules/toast';
-import * as productActions from '@/redux/modules/product';
+import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
+import {actions as productActions} from '@/redux/modules/product';
 import {Toast} from '@/constants/CustomTypes';
 import AppIcon from '@/components/AppIcon';
-import * as infoActions from '@/redux/modules/info';
+import {actions as infoActions} from '@/redux/modules/info';
 import {RootState} from '@/redux';
-import {ToastAction} from '@/redux/modules/toast';
 
 const {channelId} = Env.get();
 

@@ -8,13 +8,12 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-
 import codePush from 'react-native-code-push';
-import * as syncActions from '../redux/modules/sync';
-import i18n from '../utils/i18n';
-import {appStyles} from '../constants/Styles';
-import {colors} from '../constants/Colors';
-import AppAlert from '../components/AppAlert';
+import {actions as syncActions} from '@/redux/modules/sync';
+import i18n from '@/utils/i18n';
+import {appStyles} from '@/constants/Styles';
+import {colors} from '@/constants/Colors';
+import AppAlert from '@/components/AppAlert';
 import {RootState} from '@/redux';
 
 const styles = StyleSheet.create({

@@ -12,26 +12,26 @@ import {
   ScrollView,
   Pressable,
 } from 'react-native';
-import {API} from '../submodules/rokebi-utils';
-import {appStyles} from '../constants/Styles';
-import i18n from '../utils/i18n';
-import {utils} from '../submodules/rokebi-utils/utils';
-import AppAlert from '../components/AppAlert';
-import AppButton from '../components/AppButton';
-import AppBackButton from '../components/AppBackButton';
-import {colors} from '../constants/Colors';
-import LabelText from '../components/LabelText';
-import {isDeviceSize, windowHeight} from '../constants/SliderEntry.style';
-import LabelTextTouchable from '../components/LabelTextTouchable';
-import * as orderActions from '../redux/modules/order';
-import {actions as accountActions} from '../redux/modules/account';
-import AppIcon from '../components/AppIcon';
-import {isAndroid} from '../components/SearchBarAnimation/utils';
-import AddressCard from '../components/AddressCard';
-import AppActivityIndicator from '../components/AppActivityIndicator';
-import {timer} from '../constants/Timer';
-import Env from '../environment';
+import {API} from '@/submodules/rokebi-utils';
+import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
+import AppAlert from '@/components/AppAlert';
+import AppButton from '@/components/AppButton';
+import AppBackButton from '@/components/AppBackButton';
+import {colors} from '@/constants/Colors';
+import LabelText from '@/components/LabelText';
+import {isDeviceSize, windowHeight} from '@/constants/SliderEntry.style';
+import LabelTextTouchable from '@/components/LabelTextTouchable';
+import {actions as orderActions} from '@/redux/modules/order';
+import {actions as accountActions} from '@/redux/modules/account';
+import AppIcon from '@/components/AppIcon';
+import {isAndroid} from '@/components/SearchBarAnimation/utils';
+import AddressCard from '@/components/AddressCard';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import {timer} from '@/constants/Timer';
+import Env from '@/environment';
 import {RootState} from '@/redux';
+import utils from '@/submodules/rokebi-utils/utils';
 
 const {esimApp} = Env.get();
 

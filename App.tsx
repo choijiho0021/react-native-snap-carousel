@@ -15,11 +15,11 @@ import Env from '@/environment';
 import AppNavigator from '@/navigation/AppNavigator';
 import reducer from '@/redux/index';
 import {actions as accountActions} from '@/redux/modules/account';
-import * as infoActions from '@/redux/modules/info';
+import {actions as infoActions} from '@/redux/modules/info';
 import {actions as productActions} from '@/redux/modules/product';
 import {actions as promotionActions} from '@/redux/modules/promotion';
-import * as simActions from '@/redux/modules/sim';
-import * as syncActions from '@/redux/modules/sync';
+import {actions as simActions} from '@/redux/modules/sim';
+import {actions as syncActions} from '@/redux/modules/sync';
 import i18n from '@/utils/i18n';
 import {retrieveData} from '@/utils/utils';
 

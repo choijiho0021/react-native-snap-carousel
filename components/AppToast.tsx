@@ -12,11 +12,10 @@ import {connect} from 'react-redux';
 import _ from 'underscore';
 import {List} from 'immutable';
 import {RootState} from '@/redux';
-import * as toastActions from '@/redux/modules/toast';
+import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
 import {mapToMessage} from '@/constants/CustomTypes';
-import {ToastAction} from '@/redux/modules/toast';
 
 const styles = StyleSheet.create({
   container: {
