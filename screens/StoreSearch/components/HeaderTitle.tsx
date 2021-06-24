@@ -85,7 +85,7 @@ export default class HeaderTitle extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.headerTitle}>
-          <AppBackButton navigation={navigation} />
+          <AppBackButton />
           <TextInput
             style={styles.searchText}
             placeholder={i18n.t('store:search')}

@@ -85,12 +85,7 @@ class SimpleTextScreen extends Component {
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={params && params.title}
-        />
-      ),
+      headerLeft: () => <AppBackButton title={params && params.title} />,
     });
 
     if (params) {

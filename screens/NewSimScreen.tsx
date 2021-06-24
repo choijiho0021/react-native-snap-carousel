@@ -56,12 +56,7 @@ class NewSimScreen extends Component<NewSimScreenProps, NewSimScreenState> {
   componentDidMount() {
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={i18n.t('sim:purchase')}
-        />
-      ),
+      headerLeft: () => <AppBackButton title={i18n.t('sim:purchase')} />,
     });
 
     Analytics.trackEvent('Page_View_Count', {page: 'Purchase New Sim'});

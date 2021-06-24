@@ -163,7 +163,6 @@ class NotiScreen extends Component<NotiScreenProps> {
       title: null,
       headerLeft: () => (
         <AppBackButton
-          navigation={this.props.navigation}
           title={
             (this.props.route.params && this.props.route.params.title) ||
             i18n.t('set:noti')

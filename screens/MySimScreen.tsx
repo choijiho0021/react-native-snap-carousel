@@ -46,12 +46,7 @@ class MySimScreen extends Component {
   componentDidMount() {
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={i18n.t('acc:mysim')}
-        />
-      ),
+      headerLeft: () => <AppBackButton title={i18n.t('acc:mysim')} />,
     });
 
     if (_.isEmpty(this.props.sim.simPartner)) {

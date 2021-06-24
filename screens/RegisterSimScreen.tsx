@@ -148,7 +148,6 @@ class RegisterSimScreen extends Component {
       title: null,
       headerLeft: () => (
         <AppBackButton
-          navigation={this.props.navigation}
           back={props.route.params && props.route.params.back}
           title={
             (this.props.route.params && this.props.route.params.title) ||

@@ -89,8 +89,28 @@ const SettingsListItem0 = ({item, onPress}) => {
 
 const SettingsListItem = memo(SettingsListItem0);
 
-class SettingsScreen extends Component {
-  constructor(props) {
+type SettingsScreenProps = {
+  isPushNotiEnabled: boolean;
+  loggedIn: boolean;
+};
+
+type SettingsScreenState = {
+  showModal: boolean;
+  data: {
+    key: string;
+    value: string;
+    toggle?: boolean;
+    route?: string;
+    desc?: string;
+  }[];
+  isMounted: boolean;
+};
+
+class SettingsScreen extends Component<
+  SettingsScreenProps,
+  SettingsScreenState
+> {
+  constructor(props: SettingsScreenProps) {
     super(props);
 
     this.state = {
@@ -144,12 +164,7 @@ class SettingsScreen extends Component {
   componentDidMount() {
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={i18n.t('settings')}
-        />
-      ),
+      headerLeft: () => <AppBackButton title={i18n.t('settings')} />,
     });
 
     const {loggedIn} = this.props;

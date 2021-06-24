@@ -143,12 +143,7 @@ class CustomerProfileScreen extends Component {
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={i18n.t('pym:delivery')}
-        />
-      ),
+      headerLeft: () => <AppBackButton title={i18n.t('pym:delivery')} />,
     });
 
     this.state = {

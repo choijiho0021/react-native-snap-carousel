@@ -129,12 +129,7 @@ class GuideScreen extends Component {
   componentDidMount() {
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={i18n.t('guide:title')}
-        />
-      ),
+      headerLeft: () => <AppBackButton title={i18n.t('guide:title')} />,
     });
 
     Analytics.trackEvent('Page_View_Count', {page: 'Guide'});

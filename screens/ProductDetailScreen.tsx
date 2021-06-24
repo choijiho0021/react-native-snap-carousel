@@ -124,7 +124,6 @@ class ProductDetailScreen extends Component<ProductDetailScreenProps> {
       title: null,
       headerLeft: () => (
         <AppBackButton
-          navigation={this.props.navigation}
           title={this.props.route.params && this.props.route.params.title}
         />
       ),

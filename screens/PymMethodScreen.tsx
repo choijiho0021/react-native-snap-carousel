@@ -323,7 +323,6 @@ class PymMethodScreen extends Component {
       title: null,
       headerLeft: () => (
         <AppBackButton
-          navigation={this.props.navigation}
           title={i18n.t('payment')}
           isPaid={this.props.route.params && this.props.route.params.isPaid}
         />

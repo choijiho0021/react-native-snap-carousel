@@ -35,12 +35,7 @@ class FindAddressScreen extends Component {
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={i18n.t('purchase:address')}
-        />
-      ),
+      headerLeft: () => <AppBackButton title={i18n.t('purchase:address')} />,
     });
 
     this.state = {
@@ -54,7 +49,7 @@ class FindAddressScreen extends Component {
     this._renderItem = this._renderItem.bind(this);
   }
 
-  _onChangeText = key => value => {
+  _onChangeText = (key) => (value) => {
     this.setState({
       [key]: value,
     });
@@ -77,7 +72,7 @@ class FindAddressScreen extends Component {
   _findAddr = (page = 1) => () => {
     const {addr} = this.state;
 
-    API.Address.find(addr, page).then(resp => {
+    API.Address.find(addr, page).then((resp) => {
       this.setState({
         links: resp.links,
         data: resp.objects,
@@ -85,7 +80,7 @@ class FindAddressScreen extends Component {
     });
   };
 
-  _onPress = addr => () => {
+  _onPress = (addr) => () => {
     //리덕스 저장
     this.props.action.profile.updateProfileAddress(addr);
     this.props.navigation.goBack();
@@ -161,7 +156,7 @@ class FindAddressScreen extends Component {
               <FlatList
                 data={data}
                 renderItem={this._renderItem}
-                keyExtractor={item => item.bdMgtSn}
+                keyExtractor={(item) => item.bdMgtSn}
                 scroll
               />
             ) : (
@@ -279,11 +274,8 @@ const styles = StyleSheet.create({
 });
 
 // export default FindAddressScreen
-export default connect(
-  undefined,
-  dispatch => ({
-    action: {
-      profile: bindActionCreators(profileActions, dispatch),
-    },
-  }),
-)(FindAddressScreen);
+export default connect(undefined, (dispatch) => ({
+  action: {
+    profile: bindActionCreators(profileActions, dispatch),
+  },
+}))(FindAddressScreen);

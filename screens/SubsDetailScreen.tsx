@@ -95,12 +95,7 @@ class SubsDetailScreen extends Component {
   componentDidMount() {
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={i18n.t('his:detail')}
-        />
-      ),
+      headerLeft: () => <AppBackButton title={i18n.t('his:detail')} />,
     });
 
     const detail = this.props.route.params && this.props.route.params.detail;

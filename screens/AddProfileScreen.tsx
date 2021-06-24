@@ -195,12 +195,7 @@ class AddProfileScreen extends Component {
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={i18n.t('purchase:address')}
-        />
-      ),
+      headerLeft: () => <AppBackButton title={i18n.t('purchase:address')} />,
     });
 
     this.setState({

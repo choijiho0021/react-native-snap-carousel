@@ -72,7 +72,6 @@ class PaymentScreen extends Component {
       title: null,
       headerLeft: () => (
         <AppBackButton
-          navigation={this.props.navigation}
           title={
             (params || {}).isPaid
               ? i18n.t('his:paymentCompleted')

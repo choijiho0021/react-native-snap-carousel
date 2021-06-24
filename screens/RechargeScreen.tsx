@@ -32,12 +32,7 @@ class RechargeScreen extends Component {
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => (
-        <AppBackButton
-          navigation={this.props.navigation}
-          title={i18n.t('recharge')}
-        />
-      ),
+      headerLeft: () => <AppBackButton title={i18n.t('recharge')} />,
     });
 
     // recharge 상품의 SKU는 'rch-{amount}' 형식을 갖는다.
