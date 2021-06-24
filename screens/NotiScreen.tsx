@@ -29,7 +29,10 @@ import {RkbNoti} from '@/submodules/rokebi-utils/api/notiApi';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
+import Env from '@/environment';
 import {HomeStackParamList} from '../navigation/MainTabNavigator';
+
+const {esimApp} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -239,22 +242,22 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
           });
           break;
 
-        case notiActions.NOTI_TYPE_USIM:
-          navigation.navigate('Usim');
-          break;
-
         default:
-          // 아직 일반 Noti 알림은 없으므로 공지사항 용으로만 사용, 후에 일반 Noti 상세페이지(notitype = noti)가 사용될 수 있도록 함
-          navigation.navigate('SimpleText', {
-            key: 'noti',
-            title:
-              type === notiActions.NOTI_TYPE_NOTI
-                ? i18n.t('set:noti')
-                : i18n.t('contact:noticeDetail'),
-            bodyTitle,
-            text: body,
-            mode: 'info',
-          });
+          if (esimApp || type !== notiActions.NOTI_TYPE_USIM) {
+            // 아직 일반 Noti 알림은 없으므로 공지사항 용으로만 사용, 후에 일반 Noti 상세페이지(notitype = noti)가 사용될 수 있도록 함
+            navigation.navigate('SimpleText', {
+              key: 'noti',
+              title:
+                type === notiActions.NOTI_TYPE_NOTI
+                  ? i18n.t('set:noti')
+                  : i18n.t('contact:noticeDetail'),
+              bodyTitle,
+              text: body,
+              mode: 'info',
+            });
+          } else {
+            navigation.navigate('Usim');
+          }
       }
     }
   };
