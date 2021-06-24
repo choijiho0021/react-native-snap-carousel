@@ -14,9 +14,12 @@ import AppSwitch from '@/components/AppSwitch';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {actions as accountActions} from '@/redux/modules/account';
+import {
+  AccountAction,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
-import {actions as orderActions} from '@/redux/modules/order';
+import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 
 const {label} = Env.get();
@@ -95,6 +98,8 @@ type SettingsScreenProps = {
   loggedIn?: boolean;
   action: {
     cart: CartAction;
+    order: OrderAction;
+    account: AccountAction;
   };
 };
 

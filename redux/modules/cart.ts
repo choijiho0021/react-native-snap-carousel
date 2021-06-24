@@ -57,22 +57,6 @@ export const rechargeAccount = createAction(RECHARGE_ACCOUNT, API.Recharge.add);
 
 export const pushLastTab = createAction(PUSH_LAST_TAB);
 
-export const actions = {
-  cartFetch,
-};
-export type CartAction = typeof actions;
-
-interface CartModelState {
-  result: number;
-  orderId?: number;
-  orderItems: object[];
-  uuid?: string;
-  purchaseItems: object[];
-  pymReq?: object;
-  pymResult?: object;
-  lastTab: List<string>;
-}
-
 const checkStock = (prodList): AppThunk => (dispatch, getState) => {
   const {account} = getState();
   const {token} = account;
@@ -163,6 +147,29 @@ export const cartAddAndGet = (prodList): AppThunk => (dispatch) => {
     return resp;
   });
 };
+
+export const actions = {
+  cartFetch,
+  reset,
+  cartUpdateQty,
+  cartRemove,
+  purchase,
+  empty,
+  payNorder,
+  pushLastTab,
+};
+export type CartAction = typeof actions;
+
+interface CartModelState {
+  result: number;
+  orderId?: number;
+  orderItems: object[];
+  uuid?: string;
+  purchaseItems: object[];
+  pymReq?: object;
+  pymResult?: object;
+  lastTab: List<string>;
+}
 
 const onSuccess = (state: CartModelState, action) => {
   const {result, objects} = action.payload;

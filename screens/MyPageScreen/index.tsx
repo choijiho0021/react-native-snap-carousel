@@ -33,7 +33,7 @@ import {Toast} from '@/constants/CustomTypes';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {actions as accountActions} from '@/redux/modules/account';
-import {actions as orderActions} from '@/redux/modules/order';
+import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
@@ -189,6 +189,7 @@ const styles = StyleSheet.create({
 type MyPageScreenProps = {
   action: {
     toast: ToastAction;
+    order: OrderAction;
   };
 };
 class MyPageScreen extends Component<MyPageScreenProps> {

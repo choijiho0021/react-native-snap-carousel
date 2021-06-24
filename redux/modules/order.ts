@@ -34,13 +34,6 @@ export const reset = createAction(RESET);
 
 export const getSubsWithToast = reflectWithToast(getSubs);
 
-export const actions = {
-  reset,
-  getSubsWithToast,
-};
-
-export type OrderAction = typeof actions;
-
 interface OrderModelState {
   orders: object[];
   ordersIdx: ImmutableMap<string, number>;
@@ -120,15 +113,6 @@ export const updateStatusAndGetSubs = (
   });
 };
 
-const initialState: OrderModelState = {
-  orders: [],
-  ordersIdx: ImmutableMap(),
-  subs: [],
-  usageProgress: {},
-  next: true,
-  page: -1,
-};
-
 function updateOrders(state: OrderModelState, {payload}) {
   const {result, objects} = payload;
 
@@ -168,6 +152,27 @@ function updateOrders(state: OrderModelState, {payload}) {
 
   return state;
 }
+
+export const actions = {
+  reset,
+  getSubsWithToast,
+  getOrders,
+  updateOrders,
+  updateStatusAndGetSubs,
+  updateSubsStatus,
+  cancelAndGetOrder,
+};
+
+export type OrderAction = typeof actions;
+
+const initialState: OrderModelState = {
+  orders: [],
+  ordersIdx: ImmutableMap(),
+  subs: [],
+  usageProgress: {},
+  next: true,
+  page: -1,
+};
 
 export default handleActions(
   {

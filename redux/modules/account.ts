@@ -43,7 +43,6 @@ export const signUp = createAction(SIGN_UP);
 const logIn = createAction(LOGIN, API.User.logIn);
 const logOut = createAction(LOGOUT, API.User.logOut);
 const clearCookies0 = createAction(CLEAR_COOKIES, API.User.clearCookies);
-const getAllCookies0 = createAction(GET_ALL_COOKIES, API.User.getAllCookies);
 export const getUserId = createAction(GET_USER_ID, API.User.getByName);
 export const getAccount = createAction(GET_ACCOUNT, API.Account.getAccount);
 const getAccountByUser = createAction(
@@ -117,8 +116,8 @@ export const auth = (state: AccountModelState): AccountAuthType => ({
   token: state.token,
 });
 
-export const logout = (): AppThunk => (dispatch) => {
-  const token = retrieveData(API.User.KEY_TOKEN);
+export const logout = (): AppThunk => async (dispatch) => {
+  const token = await retrieveData(API.User.KEY_TOKEN);
 
   removeData(API.User.KEY_ICCID);
   removeData(API.User.KEY_MOBILE);
@@ -224,10 +223,6 @@ export const registerMobile = (
       };
     },
   );
-};
-
-export const getAllCookies = (): AppThunk => (dispatch) => {
-  return dispatch(getAllCookies0());
 };
 
 export const clearCookies = (): AppThunk => (dispatch) => {
