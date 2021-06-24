@@ -40,7 +40,7 @@ import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
-import {actions as cartActions} from '@/redux/modules/cart';
+import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
 import {
   actions as productActions,
@@ -55,7 +55,9 @@ import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {RkbPromotion} from '@/submodules/rokebi-utils/api/promotionApi';
 import {SyncModelState} from '@/redux/modules/sync';
 import {RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
+import {StackNavigationProp} from '@react-navigation/stack';
 import TutorialScreen from './TutorialScreen';
+import {HomeStackParamList} from '../navigation/MainTabNavigator';
 
 const DOT_MARGIN = 6;
 const INACTIVE_DOT_WIDTH = 6;
@@ -219,7 +221,10 @@ function filterByCategory(list: RkbProduct[][], key: string) {
   return API.Product.toColumnList(filtered);
 }
 
+type HomeScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Home'>;
+
 type HomeScreenEsimProps = {
+  navigation: HomeScreenNavigationProp;
   promotion: RkbPromotion[];
   product: ProductModelState;
   account: AccountModelState;
@@ -228,6 +233,7 @@ type HomeScreenEsimProps = {
     product: ProductAction;
     account: AccountAction;
     noti: NotiAction;
+    cart: CartAction;
   };
 };
 

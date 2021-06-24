@@ -42,6 +42,7 @@ import FaqScreen from '@/screens/FaqScreen';
 import GuideScreen from '@/screens/GuideScreen';
 import SubsDetailScreen from '@/screens/SubsDetailScreen';
 import {RootState} from '@/redux';
+import {RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
 import AuthStack from './AuthStackNavigator';
 
 const styles = StyleSheet.create({
@@ -64,7 +65,39 @@ const styles = StyleSheet.create({
   },
 });
 
-const HomeStack = createStackNavigator();
+export type HomeStackParamList = {
+  Home: undefined;
+  StoreSearch: undefined;
+  Cart: undefined;
+  ProductDetail: undefined;
+
+  Recharge: undefined;
+  RegisterSim: undefined;
+  NewSim: undefined;
+  Noti: {mode: 'noti'};
+  SimpleText: {
+    key: string;
+    title: string;
+    bodyTitle: string;
+    body: string;
+    mode: 'noti';
+  };
+  Contact: undefined;
+  ContactBoard: undefined;
+  BoardMsgResp: undefined;
+  Faq: undefined;
+  Guide: undefined;
+  Country: {prodOfCountry: RkbProduct[]};
+  Payment: undefined;
+  PymMethod: undefined;
+  FindAddress: undefined;
+  PaymentResult: undefined;
+  CodePush: undefined;
+  CustomerProfile: undefined;
+  AddProfile: undefined;
+  PurchaseDetail: undefined;
+};
+const HomeStack = createStackNavigator<HomeStackParamList>();
 const StoreStack = createStackNavigator();
 const CartStack = createStackNavigator();
 const UsimStack = createStackNavigator();
