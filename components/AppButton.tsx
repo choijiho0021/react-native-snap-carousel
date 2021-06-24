@@ -9,10 +9,10 @@ import {
   TextStyle,
   StyleProp,
 } from 'react-native';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
-import {appStyles} from '../constants/Styles';
-import i18n from '../utils/i18n';
-import {colors} from '../constants/Colors';
+import {API} from '@/submodules/rokebi-utils';
+import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
+import {colors} from '@/constants/Colors';
 import AppIcon from './AppIcon';
 
 const styles = StyleSheet.create({
@@ -42,7 +42,7 @@ interface AppButtonProps {
   iconName?: string;
   uri?: string;
   onPress?: () => void;
-  titleStyle?: TextStyle;
+  titleStyle?: StyleProp<TextStyle>;
   checkedStyle?: ViewStyle;
   checked?: boolean;
   disableColor?: string;
@@ -69,11 +69,6 @@ const AppButton: React.FC<AppButtonProps> = ({
   checkedColor,
   iconStyle,
 }) => {
-  const align =
-    direction === 'row'
-      ? {flexDirection: 'row', justifyContent: 'flex-start'}
-      : {justifyContent: 'center'};
-
   return (
     <TouchableOpacity
       style={[
@@ -86,7 +81,13 @@ const AppButton: React.FC<AppButtonProps> = ({
       ]}
       disabled={disabled}
       onPress={onPress}>
-      <View style={[styles.container, align]}>
+      <View
+        style={[
+          styles.container,
+          direction === 'row'
+            ? {flexDirection: 'row', justifyContent: 'flex-start'}
+            : {justifyContent: 'center'},
+        ]}>
         {uri ? (
           <Image source={{uri: API.default.httpImageUrl(uri)}} />
         ) : (

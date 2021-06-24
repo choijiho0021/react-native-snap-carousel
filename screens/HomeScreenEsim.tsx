@@ -270,7 +270,7 @@ class HomeScreenEsim extends Component<
 
   scrollRef: React.RefObject<ScrollView>;
 
-  constructor(props) {
+  constructor(props: HomeScreenEsimProps) {
     super(props);
 
     this.state = initialState;

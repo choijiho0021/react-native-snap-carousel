@@ -22,12 +22,21 @@ const styles = StyleSheet.create({
   },
 });
 
-const withBadge = (value, options = {}, stateToProps = () => ({})) => (
-  WrappedComponent,
-) => {
-  return connect(stateToProps)(
-    class extends React.PureComponent {
-      /*
+type WithBadgeOption = {
+  top: number;
+  right: number;
+  left: number;
+  bottom: number;
+  hidden?: boolean;
+};
+
+const withBadge = (
+  value: any | ((x: any) => any),
+  options: WithBadgeOption,
+  stateToProps = () => ({}),
+) => (WrappedComponent: React.ReactNode) => {
+  const badge = (props) => {
+    /*
     shouldComponentUpdate(nextProps, nextState){
 
       if(nextProps.onPress != this.props.onPress){
@@ -41,60 +50,50 @@ const withBadge = (value, options = {}, stateToProps = () => ({})) => (
     }
     */
 
-      render() {
-        const {
-          top = -4,
-          right = -4,
-          left = 0,
-          bottom = 0,
-          ...badgeProps
-        } = options;
-        const badgeValue =
-          typeof value === 'function' ? value(this.props) : value;
-        const {hidden = !badgeValue} = options;
+    const {top = -4, right = -4, left = 0, bottom = 0, ...badgeProps} =
+      options || {};
+    const badgeValue = typeof value === 'function' ? value(props) : value;
+    const {hidden = !badgeValue} = options;
 
-        return !_.isUndefined(this.props.onPress) ? (
-          <TouchableOpacity onPress={this.props.onPress}>
-            <View>
-              <WrappedComponent {...this.props} />
-              {!hidden && (
-                <Badge
-                  badgeStyle={styles.badge}
-                  textStyle={styles.badgeText}
-                  value={badgeValue}
-                  status="error"
-                  // onPress={this.props.onPress}
-                  containerStyle={[
-                    styles.badgeContainer,
-                    {top, right, left, bottom},
-                  ]}
-                  {...badgeProps}
-                />
-              )}
-            </View>
-          </TouchableOpacity>
-        ) : (
-          <View>
-            <WrappedComponent {...this.props} />
-            {!hidden && (
-              <Badge
-                badgeStyle={styles.badge}
-                textStyle={styles.badgeText}
-                value={badgeValue}
-                status="error"
-                onPress={this.props.onPress}
-                containerStyle={[
-                  styles.badgeContainer,
-                  {top, right, left, bottom},
-                ]}
-                {...badgeProps}
-              />
-            )}
-          </View>
-        );
-      }
-    },
-  );
+    return !_.isUndefined(props.onPress) ? (
+      <TouchableOpacity onPress={props.onPress}>
+        <View>
+          <WrappedComponent {...props} />
+          {!hidden && (
+            <Badge
+              badgeStyle={styles.badge}
+              textStyle={styles.badgeText}
+              value={badgeValue}
+              status="error"
+              // onPress={this.props.onPress}
+              containerStyle={[
+                styles.badgeContainer,
+                {top, right, left, bottom},
+              ]}
+              {...badgeProps}
+            />
+          )}
+        </View>
+      </TouchableOpacity>
+    ) : (
+      <View>
+        <WrappedComponent {...props} />
+        {!hidden && (
+          <Badge
+            badgeStyle={styles.badge}
+            textStyle={styles.badgeText}
+            value={badgeValue}
+            status="error"
+            onPress={props.onPress}
+            containerStyle={[styles.badgeContainer, {top, right, left, bottom}]}
+            {...badgeProps}
+          />
+        )}
+      </View>
+    );
+  };
+
+  return connect(stateToProps)(badge);
 };
 
 export default withBadge;
