@@ -12,16 +12,16 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import AppButton from '../components/AppButton';
-import PaymentItemInfo from '../components/PaymentItemInfo';
-import {colors} from '../constants/Colors';
-import {appStyles} from '../constants/Styles';
-import {actions as accountActions} from '../redux/modules/account';
-import * as cartActions from '../redux/modules/cart';
-import * as notiActions from '../redux/modules/noti';
-import * as orderActions from '../redux/modules/order';
-import i18n from '../utils/i18n';
-import Env from '../environment';
+import AppButton from '@/components/AppButton';
+import PaymentItemInfo from '@/components/PaymentItemInfo';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import {actions as accountActions} from '@/redux/modules/account';
+import * as cartActions from '@/redux/modules/cart';
+import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
+import * as orderActions from '@/redux/modules/order';
+import i18n from '@/utils/i18n';
+import Env from '@/environment';
 import {RootState} from '@/redux';
 import utils from '@/submodules/rokebi-utils/utils';
 
@@ -85,7 +85,13 @@ const styles = StyleSheet.create({
   },
 });
 
-class PaymentResultScreen extends Component {
+type PaymentResultScreenProps = {
+  action: {
+    noti: NotiAction;
+  };
+};
+
+class PaymentResultScreen extends Component<PaymentResultScreenProps> {
   constructor(props) {
     super(props);
 

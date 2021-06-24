@@ -18,7 +18,7 @@ import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
 import AppIcon from '@/components/AppIcon';
 import * as infoActions from '@/redux/modules/info';
-import * as notiActions from '@/redux/modules/noti';
+import {actions as notiActions} from '@/redux/modules/noti';
 import * as toastActions from '@/redux/modules/toast';
 import AppModal from '@/components/AppModal';
 import Env from '@/environment';

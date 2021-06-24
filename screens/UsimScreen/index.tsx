@@ -10,7 +10,7 @@ import {appStyles} from '../../constants/Styles';
 import {colors} from '../../constants/Colors';
 import * as simActions from '../../redux/modules/sim';
 import {actions as accountActions} from '../../redux/modules/account';
-import * as notiActions from '../../redux/modules/noti';
+import {actions as notiActions} from '../../redux/modules/noti';
 import * as infoActions from '../../redux/modules/info';
 import * as cartActions from '../../redux/modules/cart';
 import * as orderActions from '../../redux/modules/order';

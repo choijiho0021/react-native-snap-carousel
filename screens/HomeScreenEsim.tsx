@@ -41,7 +41,7 @@ import {
   actions as accountActions,
 } from '@/redux/modules/account';
 import * as cartActions from '@/redux/modules/cart';
-import * as notiActions from '@/redux/modules/noti';
+import {actions as notiActions} from '@/redux/modules/noti';
 import * as productActions from '@/redux/modules/product';
 import {API, Country} from '@/submodules/rokebi-utils';
 import createHandlePushNoti from '@/submodules/rokebi-utils/models/createHandlePushNoti';
@@ -60,11 +60,10 @@ const INACTIVE_DOT_WIDTH = 6;
 const ACTIVE_DOT_WIDTH = 20;
 
 const BadgeAppButton = withBadge(
-  ({notReadNoti}) => notReadNoti,
-  {badgeStyle: {right: -3, top: 0}},
   ({noti}: RootState) => ({
     notReadNoti: noti.notiList.filter((elm) => elm.isRead === 'F').length,
   }),
+  'notReadNoti',
 )(AppButton);
 
 const dotStyle = (

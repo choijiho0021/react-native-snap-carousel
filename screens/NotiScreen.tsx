@@ -17,7 +17,7 @@ import {colors} from '../constants/Colors';
 import AppIcon from '../components/AppIcon';
 import utils from '@/submodules/rokebi-utils/utils';
 import * as orderActions from '../redux/modules/order';
-import * as notiActions from '../redux/modules/noti';
+import {actions as notiActions, NotiAction} from '../redux/modules/noti';
 import * as boardActions from '../redux/modules/board';
 import {actions as accountActions} from '../redux/modules/account';
 import AppBackButton from '../components/AppBackButton';
@@ -137,7 +137,12 @@ const NotiListItem0 = ({item, onPress}) => {
 
 const NotiListItem = memo(NotiListItem0, areEqual);
 
-class NotiScreen extends Component {
+type NotiScreenProps = {
+  action: {
+    noti: NotiAction;
+  };
+};
+class NotiScreen extends Component<NotiScreenProps> {
   constructor(props) {
     super(props);
 

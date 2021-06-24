@@ -22,28 +22,28 @@ import {
 import Analytics from 'appcenter-analytics';
 import _ from 'underscore';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
-import i18n from '../utils/i18n';
-import {appStyles} from '../constants/Styles';
-import * as simActions from '../redux/modules/sim';
-import {actions as accountActions} from '../redux/modules/account';
-import * as notiActions from '../redux/modules/noti';
-import * as infoActions from '../redux/modules/info';
-import * as cartActions from '../redux/modules/cart';
-import * as productActions from '../redux/modules/product';
-import AppActivityIndicator from '../components/AppActivityIndicator';
-import AppButton from '../components/AppButton';
-import {sliderWidth, windowHeight} from '../constants/SliderEntry.style';
-import {colors} from '../constants/Colors';
-import AppIcon from '../components/AppIcon';
-import AppUserPic from '../components/AppUserPic';
-import withBadge from '../components/withBadge';
-import AppPrice from '../components/AppPrice';
-import pushNoti from '../utils/pushNoti';
-import TutorialScreen from './TutorialScreen';
-import AppAlert from '../components/AppAlert';
-import appStateHandler from '../utils/appState';
-import PromotionImage from '../components/PromotionImage';
+import i18n from '@/utils/i18n';
+import {appStyles} from '@/constants/Styles';
+import * as simActions from '@/redux/modules/sim';
+import {actions as accountActions} from '@/redux/modules/account';
+import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
+import * as infoActions from '@/redux/modules/info';
+import * as cartActions from '@/redux/modules/cart';
+import * as productActions from '@/redux/modules/product';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppButton from '@/components/AppButton';
+import {sliderWidth, windowHeight} from '@/constants/SliderEntry.style';
+import {colors} from '@/constants/Colors';
+import AppIcon from '@/components/AppIcon';
+import AppUserPic from '@/components/AppUserPic';
+import withBadge from '@/components/withBadge';
+import AppPrice from '@/components/AppPrice';
+import pushNoti from '@/utils/pushNoti';
+import AppAlert from '@/components/AppAlert';
+import appStateHandler from '@/utils/appState';
+import PromotionImage from '@/components/PromotionImage';
 import {RootState} from '@/redux';
+import TutorialScreen from './TutorialScreen';
 
 // windowHeight
 // iphone 8 - 375x667
@@ -256,15 +256,17 @@ const dotStyle = (
 });
 
 const BadgeAppButton = withBadge(
-  ({notReadNoti}) => notReadNoti,
-  {badgeStyle: {right: -3, top: 0}},
   ({noti}: RootState) => ({
     notReadNoti: noti.notiList.filter((elm) => elm.isRead === 'F').length,
   }),
+  'notReadNoti',
 )(AppButton);
 
 type HomeScreenProps = {
   navigation: any;
+  action: {
+    noti: NotiAction;
+  };
 };
 type HomeScreenState = {
   darkMode: ColorSchemeName;

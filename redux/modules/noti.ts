@@ -2,7 +2,7 @@ import {createAction, handleActions} from 'redux-actions';
 import _ from 'underscore';
 import {pender} from 'redux-pender';
 import moment from 'moment';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import {API} from '@/submodules/rokebi-utils';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {AppThunk} from '..';
 import {AccountAuthType} from './account';
@@ -64,6 +64,20 @@ export const initAndSendAlimTalk = ({mobile, abortController}): AppThunk => (
 
   return dispatch(sendAlimTalk(mobile, abortController));
 };
+
+export const actions = {
+  NOTI_TYPE_ACCOUNT,
+  NOTI_TYPE_NOTI,
+  NOTI_TYPE_PYM,
+  NOTI_TYPE_REPLY,
+  NOTI_TYPE_USIM,
+  sendLog,
+  getNotiList,
+  init,
+  readNoti,
+};
+
+export type NotiAction = typeof actions;
 
 interface NotiModelState {
   notiList: object[];

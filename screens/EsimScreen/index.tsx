@@ -17,7 +17,7 @@ import {timer} from '@/constants/Timer';
 import {actions as accountActions} from '@/redux/modules/account';
 import * as cartActions from '@/redux/modules/cart';
 import * as infoActions from '@/redux/modules/info';
-import * as notiActions from '@/redux/modules/noti';
+import {actions as notiActions} from '@/redux/modules/noti';
 import * as orderActions from '@/redux/modules/order';
 import * as toastActions from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';

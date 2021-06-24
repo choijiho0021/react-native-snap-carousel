@@ -5,44 +5,44 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 
-import {appStyles} from '../constants/Styles';
-import AppIcon from '../components/AppIcon';
+import {appStyles} from '@/constants/Styles';
+import AppIcon from '@/components/AppIcon';
 
-import HomeScreen from '../screens/HomeScreen';
-import MySimScreen from '../screens/MySimScreen';
+import HomeScreen from '@/screens/HomeScreen';
+import MySimScreen from '@/screens/MySimScreen';
 
-import StoreScreen from '../screens/StoreScreen';
-import CountryScreen from '../screens/CountryScreen';
-import RegisterSimScreen from '../screens/RegisterSimScreen';
-import ProductDetailScreen from '../screens/ProductDetailScreen';
+import StoreScreen from '@/screens/StoreScreen';
+import CountryScreen from '@/screens/CountryScreen';
+import RegisterSimScreen from '@/screens/RegisterSimScreen';
+import ProductDetailScreen from '@/screens/ProductDetailScreen';
 
-import SettingsScreen from '../screens/SettingsScreen';
-import i18n from '../utils/i18n';
-import RechargeScreen from '../screens/RechargeScreen';
-import CartScreen from '../screens/CartScreen';
-import withBadge from '../components/withBadge';
-import NewSimScreen from '../screens/NewSimScreen';
-import MyPageScreen from '../screens/MyPageScreen';
-import NotiScreen from '../screens/NotiScreen';
-import PaymentScreen from '../screens/PaymentScreen';
-import PaymentResultScreen from '../screens/PaymentResultScreen';
-import PurchaseDetailScreen from '../screens/PurchaseDetailScreen';
-import ContactScreen from '../screens/ContactScreen';
-import ContactBoardScreen from '../screens/ContactBoardScreen';
-import PymMethodScreen from '../screens/PymMethodScreen';
-import FindAddressScreen from '../screens/FindAddressScreen';
-import CustomerProfileScreen from '../screens/CustomerProfileScreen';
-import AddProfileScreen from '../screens/AddProfileScreen';
-import StoreSearchScreen from '../screens/StoreSearch';
-import BoardMsgRespScreen from '../screens/BoardMsgRespScreen';
-import SimpleTextScreen from '../screens/SimpleTextScreen';
-import CodePushScreen from '../screens/CodePushScreen';
-import UsimScreen from '../screens/UsimScreen';
-import FaqScreen from '../screens/FaqScreen';
-import GuideScreen from '../screens/GuideScreen';
-import SubsDetailScreen from '../screens/SubsDetailScreen';
-import AuthStack from './AuthStackNavigator';
+import SettingsScreen from '@/screens/SettingsScreen';
+import i18n from '@/utils/i18n';
+import RechargeScreen from '@/screens/RechargeScreen';
+import CartScreen from '@/screens/CartScreen';
+import withBadge from '@/components/withBadge';
+import NewSimScreen from '@/screens/NewSimScreen';
+import MyPageScreen from '@/screens/MyPageScreen';
+import NotiScreen from '@/screens/NotiScreen';
+import PaymentScreen from '@/screens/PaymentScreen';
+import PaymentResultScreen from '@/screens/PaymentResultScreen';
+import PurchaseDetailScreen from '@/screens/PurchaseDetailScreen';
+import ContactScreen from '@/screens/ContactScreen';
+import ContactBoardScreen from '@/screens/ContactBoardScreen';
+import PymMethodScreen from '@/screens/PymMethodScreen';
+import FindAddressScreen from '@/screens/FindAddressScreen';
+import CustomerProfileScreen from '@/screens/CustomerProfileScreen';
+import AddProfileScreen from '@/screens/AddProfileScreen';
+import StoreSearchScreen from '@/screens/StoreSearch';
+import BoardMsgRespScreen from '@/screens/BoardMsgRespScreen';
+import SimpleTextScreen from '@/screens/SimpleTextScreen';
+import CodePushScreen from '@/screens/CodePushScreen';
+import UsimScreen from '@/screens/UsimScreen';
+import FaqScreen from '@/screens/FaqScreen';
+import GuideScreen from '@/screens/GuideScreen';
+import SubsDetailScreen from '@/screens/SubsDetailScreen';
 import {RootState} from '@/redux';
+import AuthStack from './AuthStackNavigator';
 
 const styles = StyleSheet.create({
   tabBarIcon: {
@@ -194,11 +194,10 @@ function myPageStack() {
 // redux store에서 cart에 추가된 상품 개수를 읽어서 배지에 표시한다.
 //
 const BadgedIcon = withBadge(
-  ({cartItems}) => cartItems,
-  {badgeStyle: {top: 4, left: 8}},
   ({cart}: RootState) => ({
     cartItems: (cart.orderItems || []).reduce((acc, cur) => acc + cur.qty, 0),
   }),
+  'cartItems',
 )(AppIcon);
 
 const TabNavigator = createBottomTabNavigator();
