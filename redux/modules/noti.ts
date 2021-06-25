@@ -79,7 +79,7 @@ export const actions = {
 
 export type NotiAction = typeof actions;
 
-interface NotiModelState {
+export interface NotiModelState {
   notiList: object[];
   lastSent?: Date;
   result?: number;

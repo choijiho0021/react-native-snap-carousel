@@ -18,7 +18,7 @@ export const actions = {
 
 export type InfoAction = typeof actions;
 
-interface InfoModelState {
+export interface InfoModelState {
   infoList: RkbInfo[];
   homeInfoList: RkbInfo[];
 }

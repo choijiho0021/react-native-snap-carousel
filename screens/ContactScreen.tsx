@@ -17,21 +17,19 @@ import i18n from '@/utils/i18n';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
 import AppIcon from '@/components/AppIcon';
-import {actions as infoActions} from '@/redux/modules/info';
-import {actions as notiActions} from '@/redux/modules/noti';
+import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
+import {actions as notiActions, NotiModelState} from '@/redux/modules/noti';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import AppModal from '@/components/AppModal';
 import Env from '@/environment';
 import {Toast} from '@/constants/CustomTypes';
 import {RootState} from '@/redux';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/MainTabNavigator';
 
 const {channelId} = Env.get();
 
 const styles = StyleSheet.create({
-  title: {
-    ...appStyles.title,
-    marginLeft: 20,
-  },
   container: {
     backgroundColor: colors.white,
     flex: 1,
@@ -52,12 +50,19 @@ const styles = StyleSheet.create({
   },
 });
 
-const ContactListItem0 = ({item}) => {
+type MenuItem = {
+  key: string;
+  value: string;
+  page: string;
+  onPress?: () => void;
+};
+
+const ContactListItem0 = ({item}: {item: MenuItem}) => {
   return (
     <Pressable
       onPress={() => {
         Analytics.trackEvent('Page_View_Count', {page: item.page});
-        item.onPress();
+        if (item.onPress) item.onPress();
       }}>
       <View style={styles.row}>
         <Text style={styles.itemTitle}>{item.value}</Text>
@@ -71,14 +76,27 @@ const ContactListItem0 = ({item}) => {
 
 const ContactListItem = memo(ContactListItem0);
 
+type ContactScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'Contact'
+>;
+
 type ContactScreenProps = {
+  navigation: ContactScreenNavigationProp;
+  info: InfoModelState;
+  noti: NotiModelState;
   action: {
     toast: ToastAction;
   };
 };
 
-class ContactScreen extends Component<ContactScreenProps> {
-  constructor(props) {
+type ContactScreenState = {
+  data: MenuItem[];
+  showModal: boolean;
+};
+
+class ContactScreen extends Component<ContactScreenProps, ContactScreenState> {
+  constructor(props: ContactScreenProps) {
     super(props);
 
     this.state = {
@@ -133,8 +151,6 @@ class ContactScreen extends Component<ContactScreenProps> {
 
     this.openKTalk = this.openKTalk.bind(this);
     this.showModal = this.showModal.bind(this);
-
-    this.cancelKtalk = null;
   }
 
   componentDidMount() {
@@ -146,7 +162,7 @@ class ContactScreen extends Component<ContactScreenProps> {
     Analytics.trackEvent('Page_View_Count', {page: 'Service Center'});
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: ContactScreenProps) {
     if (
       !_.isUndefined(this.props.noti.result) &&
       prevProps.noti.result !== this.props.noti.result
@@ -155,11 +171,11 @@ class ContactScreen extends Component<ContactScreenProps> {
     }
   }
 
-  renderItem = ({item}) => {
+  renderItem = ({item}: {item: MenuItem}) => {
     return <ContactListItem item={item} />;
   };
 
-  showModal = (value) => {
+  showModal = (value: boolean) => {
     this.setState({showModal: value});
   };
 
@@ -199,11 +215,11 @@ class ContactScreen extends Component<ContactScreenProps> {
   };
 
   render() {
-    const {showModal} = this.state;
+    const {showModal, data} = this.state;
 
     return (
       <View style={styles.container}>
-        <FlatList data={this.state.data} renderItem={this.renderItem} />
+        <FlatList data={data} renderItem={this.renderItem} />
 
         <AppModal
           title={

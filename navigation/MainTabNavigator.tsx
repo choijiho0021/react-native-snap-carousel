@@ -78,7 +78,11 @@ export type HomeStackParamList = {
   RegisterSim: undefined;
   NewSim: undefined;
   Usim: undefined;
-  Noti: {mode: 'noti'; info?: RkbInfo[]; title?: string};
+  Noti: {
+    mode: 'noti' | 'info';
+    info?: RkbInfo[];
+    title?: string;
+  };
   SimpleText: {
     key: string;
     title: string;
