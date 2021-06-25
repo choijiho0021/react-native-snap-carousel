@@ -3,17 +3,12 @@ import {BackHandler, Platform, StatusBar, StyleSheet, View} from 'react-native';
 import codePush from 'react-native-code-push';
 import Video from 'react-native-video';
 import {Provider} from 'react-redux';
-import {applyMiddleware, compose, createStore} from 'redux';
-import {createLogger} from 'redux-logger';
-import penderMiddleware from 'redux-pender';
-import ReduxThunk from 'redux-thunk';
 import {API} from '@/submodules/rokebi-utils';
 import AppAlert from '@/components/AppAlert';
 import AppToast from '@/components/AppToast';
 import CodePushModal from '@/components/CodePushModal';
 import Env from '@/environment';
 import AppNavigator from '@/navigation/AppNavigator';
-import reducer from '@/redux/index';
 import {actions as accountActions} from '@/redux/modules/account';
 import {actions as infoActions} from '@/redux/modules/info';
 import {actions as productActions} from '@/redux/modules/product';
@@ -22,21 +17,9 @@ import {actions as simActions} from '@/redux/modules/sim';
 import {actions as syncActions} from '@/redux/modules/sync';
 import i18n from '@/utils/i18n';
 import {retrieveData} from '@/utils/utils';
+import store from './store';
 
 const {esimApp} = Env.get();
-
-const logger = createLogger();
-const composeEnhancers =
-  (process.env.NODE_ENV === 'development'
-    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-    : null) || compose;
-const store = createStore(
-  reducer,
-  composeEnhancers(
-    applyMiddleware(logger, ReduxThunk, penderMiddleware()),
-    // applyMiddleware( ReduxThunk, penderMiddleware())
-  ),
-);
 
 const SplashScreen = require('react-native-splash-screen').default;
 

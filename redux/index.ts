@@ -1,4 +1,5 @@
-import {AnyAction, combineReducers} from 'redux';
+import {AnyAction} from 'redux';
+import {combineReducers} from '@reduxjs/toolkit';
 import {ThunkAction} from 'redux-thunk';
 import {penderReducer} from 'redux-pender';
 import account from './modules/account';
