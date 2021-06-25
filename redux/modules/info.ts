@@ -1,17 +1,13 @@
-import {createAction, handleActions} from 'redux-actions';
-import {pender} from 'redux-pender';
 import {API} from '@/submodules/rokebi-utils';
 import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
-const GET_INFO_LIST = 'rokebi/info/GET_INFO_LIST';
-const GET_HOME_INFO_LIST = 'rokebi/info/GET_HOME_INFO_LIST';
-
-export const getInfoList = createAction(
-  GET_INFO_LIST,
+export const getInfoList = createAsyncThunk(
+  'info/getInfoList',
   API.Page.getPageByCategory,
 );
-export const getHomeInfoList = createAction(
-  GET_HOME_INFO_LIST,
+export const getHomeInfoList = createAsyncThunk(
+  'info/getHomeInfoList',
   API.Page.getPageByCategory,
 );
 
@@ -32,35 +28,26 @@ const initialState: InfoModelState = {
   homeInfoList: [],
 };
 
-export default handleActions(
-  {
-    ...pender<InfoModelState>({
-      type: GET_INFO_LIST,
-      onSuccess: (state, action) => {
-        const {result, objects} = action.payload;
-        if (result === 0 && objects.length > 0) {
-          return {
-            ...state,
-            infoList: objects,
-          };
-        }
-        return state;
-      },
-    }),
-
-    ...pender<InfoModelState>({
-      type: GET_HOME_INFO_LIST,
-      onSuccess: (state, action) => {
-        const {result, objects} = action.payload;
-        if (result === 0 && objects.length > 0) {
-          return {
-            ...state,
-            homeInfoList: objects,
-          };
-        }
-        return state;
-      },
-    }),
-  },
+const slice = createSlice({
+  name: 'info',
   initialState,
-);
+  reducers: {},
+  extraReducers: (builder) => {
+    builder.addCase(getInfoList.fulfilled, (state, {payload}) => {
+      const {result, objects} = payload;
+
+      if (result === 0) {
+        state.infoList = objects || [];
+      }
+    });
+    builder.addCase(getHomeInfoList.fulfilled, (state, {payload}) => {
+      const {result, objects} = payload;
+
+      if (result === 0) {
+        state.homeInfoList = objects || [];
+      }
+    });
+  },
+});
+
+export default slice.reducer;
