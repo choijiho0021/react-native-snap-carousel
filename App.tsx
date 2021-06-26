@@ -93,7 +93,7 @@ async function login() {
   const pin = await retrieveData(API.User.KEY_PIN);
 
   if (mobile && pin) {
-    store.dispatch(accountActions.logInAndGetAccount(mobile, pin, iccid));
+    store.dispatch(accountActions.logInAndGetAccount({mobile, pin, iccid}));
   } else {
     store.dispatch(accountActions.getToken());
   }

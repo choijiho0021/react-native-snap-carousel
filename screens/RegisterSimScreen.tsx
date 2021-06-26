@@ -217,7 +217,7 @@ class RegisterSimScreen extends Component {
       });
 
     this.props.action.account
-      .registerMobile(iccid, actCode, this.props.account.mobile)
+      .registerMobile({iccid, code: actCode, mobile: this.props.account.mobile})
       .then((resp) => {
         if (resp.result === 0) {
           this.props.action.order.getSubs(iccid, this.props.auth);

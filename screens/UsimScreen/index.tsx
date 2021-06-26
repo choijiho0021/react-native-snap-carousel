@@ -96,7 +96,7 @@ class UsimScreen extends Component {
       this.props.action.order
         .getSubsWithToast(iccid, auth)
         .then((_) => {
-          this.props.action.account.getAccount(iccid, auth);
+          this.props.action.account.getAccount({iccid, ...auth});
         })
         .finally(() => {
           this.setState({

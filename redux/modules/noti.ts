@@ -1,53 +1,48 @@
-import {createAction, handleActions} from 'redux-actions';
-import _ from 'underscore';
-import {pender} from 'redux-pender';
+/* eslint-disable no-param-reassign */
+import {createAsyncThunk, createAction, createSlice} from '@reduxjs/toolkit';
 import moment from 'moment';
 import {API} from '@/submodules/rokebi-utils';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import {AppDispatch} from '@/store';
+import {RkbNoti} from '@/submodules/rokebi-utils/api/notiApi';
 import {AppThunk} from '..';
-import {AccountAuth} from './account';
 
-export const GET_NOTI_LIST = 'rokebi/noti/GET_NOTI_LIST';
-const READ_NOTI = 'rokebi/noti/READ_NOTI';
-const UPDATE_NOTI = 'rokebi/noti/UPDATE_NOTI';
-const INIT = 'rokebi/noti/INIT';
-
-const INIT_ALIM_TALK = 'rokebi/noti/INIT_ALIM_TALK';
-const SEND_ALIM_TALK = 'rokebi/noti/SEND_ALIM_TALK';
-const SEND_LOG = 'rokebi/noti/SEND_LOG';
-
-export const getNotiList = createAction(GET_NOTI_LIST, API.Noti.getNoti);
-export const readNoti = createAction(READ_NOTI, API.Noti.read);
-export const updateNoti = createAction(UPDATE_NOTI, API.Noti.update);
-export const init = createAction(INIT);
-const initAlimTalk = createAction(INIT_ALIM_TALK);
-const sendAlimTalk = createAction(
-  SEND_ALIM_TALK,
+const getNotiList = createAsyncThunk('noti/getNotiList', API.Noti.getNoti);
+const readNoti = createAsyncThunk('noti/readNoti', API.Noti.read);
+// export const updateNoti = createAsyncThunk(UPDATE_NOTI, API.Noti.update);
+const init = createAction('init');
+const initAlimTalk = createAction('initAlimTalk');
+const sendAlimTalk = createAsyncThunk(
+  'noti/sendAlimTalk',
   API.Noti.sendAlimTalk,
-  (...args) => ({abortController: args.abortController}),
+  // (...args) => ({abortController: args.abortController}),
 );
-export const sendLog = createAction(SEND_LOG, API.Noti.sendLog);
+const sendLog = createAsyncThunk('noti/sendLog', API.Noti.sendLog);
 
-export const NOTI_TYPE_REPLY = 'reply';
-export const NOTI_TYPE_PYM = 'pym';
-export const NOTI_TYPE_ACCOUNT = 'account';
-export const NOTI_TYPE_USIM = 'usim';
-export const NOTI_TYPE_NOTI = 'noti';
+const NOTI_TYPE_REPLY = 'reply';
+const NOTI_TYPE_PYM = 'pym';
+const NOTI_TYPE_ACCOUNT = 'account';
+const NOTI_TYPE_USIM = 'usim';
+const NOTI_TYPE_NOTI = 'noti';
 
-const setAppBadge = async (notiCount) => {
+const setAppBadge = (notiCount: number) => {
   PushNotificationIOS.setApplicationIconBadgeNumber(notiCount);
   // messaging().setBadge(notiCount);
 };
 
-export const notiReadAndGet = (
-  uuid: string,
-  mobile: string,
-  auth: AccountAuth,
-): AppThunk => (dispatch) => {
-  return dispatch(readNoti(uuid, auth)).then(
+const notiReadAndGet = ({
+  uuid,
+  mobile,
+  token,
+}: {
+  uuid: string;
+  mobile: string;
+  token: string;
+}): AppThunk => (dispatch: AppDispatch) => {
+  return dispatch(readNoti({uuid, token})).then(
     (resp) => {
       if (resp.result === 0 && resp.objects.length > 0) {
-        return dispatch(getNotiList(mobile));
+        return dispatch(getNotiList({mobile}));
       }
       throw new Error('Failed to read Noti and Get notiList');
     },
@@ -57,12 +52,16 @@ export const notiReadAndGet = (
   );
 };
 
-export const initAndSendAlimTalk = ({mobile, abortController}): AppThunk => (
-  dispatch,
-) => {
+const initAndSendAlimTalk = ({
+  mobile,
+  abortController,
+}: {
+  mobile: string;
+  abortController: AbortController;
+}): AppThunk => (dispatch) => {
   dispatch(initAlimTalk());
 
-  return dispatch(sendAlimTalk(mobile, abortController));
+  return dispatch(sendAlimTalk({mobile, abortController}));
 };
 
 export const actions = {
@@ -75,12 +74,14 @@ export const actions = {
   getNotiList,
   init,
   readNoti,
+  initAndSendAlimTalk,
+  notiReadAndGet,
 };
 
 export type NotiAction = typeof actions;
 
 export interface NotiModelState {
-  notiList: object[];
+  notiList: RkbNoti[];
   lastSent?: Date;
   result?: number;
   lastRefresh?: moment.Moment;
@@ -90,92 +91,57 @@ const initialState: NotiModelState = {
   notiList: [],
 };
 
-export default handleActions(
-  {
-    [INIT]: () => {
-      return initialState;
+const slice = createSlice({
+  name: 'noti',
+  initialState,
+  reducers: {
+    init: () => initialState,
+    initAlimTalk: (state) => {
+      state.result = undefined;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(getNotiList.fulfilled, (state, {payload}) => {
+      const {result, objects} = payload;
+      if (result === 0 && objects && objects.length > 0) {
+        // appBadge 업데이트
+        const badgeCnt = objects.filter((elm) => elm.isRead === 'F').length;
+        setAppBadge(badgeCnt);
 
-    ...pender<NotiModelState>({
-      type: GET_NOTI_LIST,
-      onSuccess: (state, action) => {
-        const {result, objects} = action.payload;
-        if (result === 0 && objects.length > 0) {
-          // appBadge 업데이트
-          const badgeCnt = objects.filter((elm) => elm.isRead === 'F').length;
-          setAppBadge(badgeCnt);
+        state.notiList = objects;
+        state.lastRefresh = moment();
+      }
+    });
 
-          return {
-            ...state,
-            notiList: objects,
-            lastRefresh: moment(),
-          };
-        }
-        return state;
-      },
-    }),
+    builder.addCase(sendAlimTalk.fulfilled, (state, {payload}) => {
+      const {result} = payload || {};
+      if (result === 0) {
+        state.lastSent = new Date();
+        state.result = result;
+      } else {
+        state.result = API.default.FAILED;
+      }
+    });
 
-    [INIT_ALIM_TALK]: (state) => {
-      return {
-        ...state,
-        result: undefined,
-      };
-    },
+    builder.addCase(sendAlimTalk.rejected, (state) => {
+      state.result = API.default.FAILED;
+    });
 
-    ...pender<NotiModelState>({
-      type: SEND_ALIM_TALK,
-      onSuccess: (state, action) => {
-        const {result} = action.payload || {};
-        if (result === 0) {
-          return {
-            ...state,
-            lastSent: new Date(),
-            result,
-          };
-        }
-        return {
-          ...state,
-          result: API.default.FAILED,
-        };
-      },
-      onFailure: (state) => {
-        return {
-          ...state,
-          result: API.default.FAILED,
-        };
-      },
-      onCancel: (state) => {
-        return state;
-      },
-    }),
+    builder.addCase(readNoti.fulfilled, (state, {payload}) => {
+      const {result, objects} = payload;
 
-    ...pender<NotiModelState>({
-      type: READ_NOTI,
-      onSuccess: (state, action) => {
-        const {result, objects} = action.payload;
-
+      if (result === 0 && objects) {
         const notiList = state.notiList.map((elm) =>
           elm.uuid === objects[0].uuid ? {...elm, isRead: 'T'} : elm,
         );
 
-        if (state && result === 0) {
-          // appBadge 업데이트
-          const badgeCnt = notiList.filter((elm) => elm.isRead === 'F').length;
-          setAppBadge(badgeCnt);
-          return {
-            ...state,
-            notiList,
-          };
-        }
-        return state;
-      },
-    }),
-
-    [`${SEND_ALIM_TALK}_CANCEL`]: (state, action) => {
-      if (action.meta.abortController) action.meta.abortController.abort();
-      console.log('cancel send alimtalk req', state, action);
-      return state;
-    },
+        // appBadge 업데이트
+        const badgeCnt = notiList.filter((elm) => elm.isRead === 'F').length;
+        setAppBadge(badgeCnt);
+        state.notiList = notiList;
+      }
+    });
   },
-  initialState,
-);
+});
+
+export default slice.reducer;

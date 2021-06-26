@@ -288,10 +288,15 @@ class MyPageScreen extends Component<MyPageScreenProps> {
       refreshing: true,
     });
 
-    this.props.action.account.getUserId(
-      this.props.account.mobile,
-      this.props.auth,
-    );
+    const {
+      account: {mobile},
+      auth,
+    } = this.props;
+
+    this.props.action.account.getUserId({
+      mobile,
+      ...auth,
+    });
     this.props.action.order.getOrders(this.props.auth, 0).then((resp) => {
       if (resp) {
         this.setState({

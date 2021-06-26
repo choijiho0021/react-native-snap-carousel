@@ -547,7 +547,7 @@ class HomeScreenEsim extends Component<
     const {mobile, loggedIn} = this.props.account;
 
     if (loggedIn) {
-      this.props.action.noti.getNotiList(mobile);
+      this.props.action.noti.getNotiList({mobile});
       this.props.action.cart.cartFetch();
     } else {
       this.props.action.noti.init();
@@ -591,7 +591,7 @@ class HomeScreenEsim extends Component<
     const {navigation} = this.props;
 
     if (loggedIn) {
-      this.props.action.noti.getNotiList(mobile);
+      this.props.action.noti.getNotiList({mobile});
     }
 
     const pushNotiHandler = createHandlePushNoti(navigation, payload, {

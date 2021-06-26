@@ -22,17 +22,18 @@ import {
 } from '@/redux/modules/order';
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
 import {actions as boardActions, BoardAction} from '@/redux/modules/board';
-import {AccountAuth, actions as accountActions} from '@/redux/modules/account';
+import {
+  AccountAuth,
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import AppBackButton from '@/components/AppBackButton';
 import {RootState} from '@/redux';
 import {RkbNoti} from '@/submodules/rokebi-utils/api/notiApi';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
-import Env from '@/environment';
-import {HomeStackParamList} from '../navigation/MainTabNavigator';
-
-const {esimApp} = Env.get();
+import {HomeStackParamList} from '@/navigation/MainTabNavigator';
 
 const styles = StyleSheet.create({
   container: {
@@ -63,17 +64,6 @@ const styles = StyleSheet.create({
   titleText: {
     ...appStyles.normal16Text,
   },
-  titleHead: {
-    fontSize: 8,
-    color: colors.tomato,
-    marginRight: 6,
-  },
-  renderItem: {
-    height: 98,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-  },
   notiText: {
     width: '90%',
     height: 98,
@@ -86,7 +76,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.23,
     color: colors.warmGrey,
   },
-  Icon: {
+  icon: {
     justifyContent: 'center',
     alignItems: 'flex-end',
     height: 98,
@@ -98,10 +88,6 @@ const styles = StyleSheet.create({
     color: colors.black,
   },
 });
-
-const renderEmptyContainer = () => {
-  return <Text style={styles.emptyPage}>{i18n.t('noti:empty')}</Text>;
-};
 
 const areEqual = (
   {item: prevItem}: {item: RkbNoti},
@@ -143,7 +129,7 @@ const NotiListItem0 = ({
             {utils.htmlToString(item.summary || item.body)}
           </Text>
         </View>
-        <View key="iconview" style={styles.Icon}>
+        <View key="iconview" style={styles.icon}>
           <AppIcon key="icon" name="iconArrowRight" size={10} />
         </View>
       </View>
@@ -162,6 +148,7 @@ type NotiScreenProps = {
   pending: boolean;
   auth: AccountAuth;
   order: OrderModelState;
+  account: AccountModelState;
   action: {
     noti: NotiAction;
     board: BoardAction;
@@ -204,7 +191,7 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
   }
 
   // 공지사항의 경우 notiType이 없으므로 Notice/0으로 기본값 설정
-  onPress = ({
+  onPress = async ({
     uuid,
     isRead,
     bodyTitle,
@@ -222,7 +209,7 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
     if (uuid) {
       // if ( mode != MODE_NOTIFICATION) this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
       if (mode !== 'info' && isRead === 'F')
-        this.props.action.noti.readNoti(uuid, {token: auth.token});
+        this.props.action.noti.readNoti({uuid, token: auth.token});
 
       switch (type) {
         case notiActions.NOTI_TYPE_REPLY:
@@ -234,39 +221,46 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
 
         case notiActions.NOTI_TYPE_PYM:
           // read orders if not read before
-          this.props.action.order.checkAndGetOrderById(auth, id).then(() => {
-            navigation.navigate('PurchaseDetail', {
-              detail: order.orders[order.ordersIdx.get(Number(id))],
-              auth,
-            });
+          Promise.resolve(
+            this.props.action.order.checkAndGetOrderById(auth, id),
+          ).then(() => {
+            const idx = order.ordersIdx.get(Number(id));
+            if (idx && idx >= 0) {
+              navigation.navigate('PurchaseDetail', {
+                detail: order.orders[idx],
+                auth,
+              });
+            }
           });
           break;
 
+        case notiActions.NOTI_TYPE_USIM:
+          navigation.navigate('Usim');
+          break;
+
         default:
-          if (esimApp || type !== notiActions.NOTI_TYPE_USIM) {
-            // 아직 일반 Noti 알림은 없으므로 공지사항 용으로만 사용, 후에 일반 Noti 상세페이지(notitype = noti)가 사용될 수 있도록 함
-            navigation.navigate('SimpleText', {
-              key: 'noti',
-              title:
-                type === notiActions.NOTI_TYPE_NOTI
-                  ? i18n.t('set:noti')
-                  : i18n.t('contact:noticeDetail'),
-              bodyTitle,
-              text: body,
-              mode: 'info',
-            });
-          } else {
-            navigation.navigate('Usim');
-          }
+          // 아직 일반 Noti 알림은 없으므로 공지사항 용으로만 사용, 후에 일반 Noti 상세페이지(notitype = noti)가 사용될 수 있도록 함
+          navigation.navigate('SimpleText', {
+            key: 'noti',
+            title:
+              type === notiActions.NOTI_TYPE_NOTI
+                ? i18n.t('set:noti')
+                : i18n.t('contact:noticeDetail'),
+            bodyTitle,
+            text: body,
+            mode: 'info',
+          });
+          break;
       }
     }
   };
 
   onRefresh() {
-    this.props.action.noti.getNotiList(this.props.account.mobile);
+    const {mobile} = this.props.account;
+    this.props.action.noti.getNotiList({mobile});
   }
 
-  renderItem = ({item}) => {
+  renderItem = ({item}: {item: RkbNoti}) => {
     return <NotiListItem item={item} onPress={this.onPress} />;
   };
 
@@ -283,7 +277,9 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
         <FlatList
           data={data}
           renderItem={this.renderItem}
-          ListEmptyComponent={renderEmptyContainer()}
+          ListEmptyComponent={
+            <Text style={styles.emptyPage}>{i18n.t('noti:empty')}</Text>
+          }
           tintColor={colors.clearBlue}
           refreshControl={
             <RefreshControl

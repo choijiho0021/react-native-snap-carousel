@@ -493,7 +493,7 @@ class RegisterMobileScreen extends Component<
 
   signIn = ({mobile, pin}: {mobile: string; pin: string}) => {
     this.props.actions.account
-      .logInAndGetAccount(mobile, pin)
+      .logInAndGetAccount({mobile, pin})
       .then((_) => this.props.actions.cart.cartFetch());
   };
 

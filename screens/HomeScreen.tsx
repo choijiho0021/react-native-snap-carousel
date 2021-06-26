@@ -410,8 +410,8 @@ class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
     //  무슨코드인지 확인필요
     if (mobile && _.size(payload) > 0) {
       if (Platform.OS === 'ios') {
-        const msg = JSON.stringify(payload._data);
-        this.props.action.noti.sendLog(mobile, msg);
+        const message = JSON.stringify(payload._data);
+        this.props.action.noti.sendLog({mobile, message});
       }
     }
 
@@ -489,7 +489,7 @@ class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
     switch (state) {
       case 'active':
         if (!_.isEmpty(iccid) && !this.isNoticed) {
-          this.props.action.account.getAccount(iccid, {token});
+          this.props.action.account.getAccount({iccid, token});
         }
         break;
 
@@ -503,9 +503,9 @@ class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
   }
 
   login(mobile, pin, iccid) {
-    this.props.action.account.logInAndGetAccount(mobile, pin, iccid);
+    this.props.action.account.logInAndGetAccount({mobile, pin, iccid});
     this.props.action.sim.getSimCardList();
-    this.props.action.noti.getNotiList(mobile);
+    this.props.action.noti.getNotiList({mobile});
   }
 
   pagination() {
@@ -646,7 +646,7 @@ class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
     const {mobile, loggedIn} = this.props.account;
 
     if (loggedIn) {
-      this.props.action.noti.getNotiList(mobile);
+      this.props.action.noti.getNotiList({mobile});
       this.props.action.cart.cartFetch();
     }
   }
@@ -655,7 +655,7 @@ class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
     const {mobile, loggedIn} = this.props.account;
 
     if (loggedIn) {
-      this.props.action.noti.getNotiList(mobile);
+      this.props.action.noti.getNotiList({mobile});
     }
 
     switch (type) {

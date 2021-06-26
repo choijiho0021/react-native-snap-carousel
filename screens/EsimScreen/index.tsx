@@ -189,7 +189,7 @@ class EsimScreen extends Component<EsimScreenProps> {
       this.props.action.order
         .getSubsWithToast(iccid, auth)
         .then(() => {
-          this.props.action.account.getAccount(iccid, auth);
+          this.props.action.account.getAccount({iccid, ...auth});
         })
         .finally(() => {
           this.setState({

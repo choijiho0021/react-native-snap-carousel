@@ -131,7 +131,7 @@ class PaymentResultScreen extends Component<PaymentResultScreenProps> {
     });
 
     this.init();
-    this.props.action.noti.getNotiList(this.props.auth.user);
+    this.props.action.noti.getNotiList({mobile: this.props.auth.user});
     this.backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       this.backKeyHandler,

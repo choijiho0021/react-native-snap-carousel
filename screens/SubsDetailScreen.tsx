@@ -139,7 +139,7 @@ class SubsDetailScreen extends Component {
         .then((resp) => {
           // 업데이트 후 정렬된 usage list 가져오기
           if (resp.result === 0) {
-            this.props.action.account.getAccount(iccid, auth);
+            this.props.action.account.getAccount({iccid, ...auth});
           }
         });
     }
