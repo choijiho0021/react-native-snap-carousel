@@ -12,7 +12,7 @@ const {esimApp} = Env.get();
 
 const MainStack = createStackNavigator();
 
-const getActiveRouteName = (state) => {
+const getActiveRouteName = (state): string => {
   const route = state.routes[state.index];
 
   if (route.state) {

@@ -107,7 +107,10 @@ export const auth = (state: AccountModelState): AccountAuth => ({
   token: state.token,
 });
 
-export const changeNotiToken = (): AppThunk => async (dispatch, getState) => {
+export const changeNotiToken = (): AppThunk => async (
+  dispatch: AppDispatch,
+  getState,
+) => {
   const {account} = getState();
   const fcmToken = Platform.OS === 'android' ? account.deviceToken : '';
   const deviceToken = Platform.OS === 'ios' ? account.deviceToken : '';
@@ -121,8 +124,9 @@ export const changeNotiToken = (): AppThunk => async (dispatch, getState) => {
   return dispatch(
     changeUserAttr({uuid: account.userId, attributes, ...authObj}),
   ).then(
-    (resp) => {
-      if (resp.result === 0) {
+    ({payload}) => {
+      const {result} = payload;
+      if (result === 0) {
         console.log('Token is updated');
       }
     },
@@ -147,8 +151,9 @@ export const registerMobile = ({
   return dispatch(
     registerMobile0({iccid, code, mobile, token: authObj.token}),
   ).then(
-    (resp) => {
-      if (resp.result === 0) {
+    ({payload}) => {
+      const {result} = payload;
+      if (result === 0) {
         return dispatch(getAccount({iccid, ...authObj}));
       }
       console.log('failed to register mobile resp:', resp);
@@ -177,9 +182,10 @@ export const logInAndGetAccount = ({
   iccid?: string;
 }): AppThunk => (dispatch: AppDispatch) => {
   return dispatch(logIn({user: mobile, pass: pin})).then(
-    (resp) => {
-      if (resp.result === 0 && resp.objects.length > 0) {
-        const obj = resp.objects[0];
+    ({payload}) => {
+      const {result, objects} = payload;
+      if (result === 0 && objects && objects.length > 0) {
+        const obj = objects[0];
         const token = obj.csrf_token;
 
         storeData(API.User.KEY_MOBILE, obj.current_user.name);
@@ -188,29 +194,24 @@ export const logInAndGetAccount = ({
 
         // get ICCID account info
         if (iccid) {
-          dispatch(getAccount({iccid, token})).then((rsp) => {
-            console.log('resp register', rsp);
-          });
+          dispatch(getAccount({iccid, token}));
         } else if (esimApp) {
           dispatch(registerMobile({iccid: 'esim', code: pin, mobile}));
         } else {
           // 가장 최근 사용한 SIM 카드 번호를 조회한다.
-          dispatch(getAccountByUser({mobile, token})).then((rsp) => {
-            if (
-              rsp.result === 0 &&
-              rsp.objects.length > 0 &&
-              rsp.objects[0].status === 'A'
-            ) {
-              storeData(API.User.KEY_ICCID, rsp.objects[0].iccid);
-              dispatch(getAccount({iccid: rsp.objects[0].iccid, token}));
+          dispatch(getAccountByUser({mobile, token})).then(({payload}) => {
+            const {result: rst, objects: obj} = payload;
+            if (rst === 0 && obj.length > 0 && obj[0].status === 'A') {
+              storeData(API.User.KEY_ICCID, obj[0].iccid);
+              dispatch(getAccount({iccid: obj[0].iccid, token}));
             }
           });
         }
 
         // iccid 상관 없이 로그인마다 토큰 업데이트
-        return dispatch(getUserId({name: obj.current_user.name, token})).then(
-          (rsp) => {
-            console.log('user resp', rsp);
+        dispatch(getUserId({name: obj.current_user.name, token})).then(
+          ({payload}) => {
+            console.log('user resp', payload);
             dispatch(changeNotiToken());
           },
         );
@@ -224,19 +225,21 @@ export const logInAndGetAccount = ({
 };
 
 export const uploadAndChangePicture = (image: string): AppThunk => (
-  dispatch,
+  dispatch: AppDispatch,
   getState,
 ) => {
   const {account} = getState();
-  return dispatch(uploadPictureWithToast(image, auth(account))).then(
-    (resp) => {
-      if (resp.result === 0 && resp.objects.length > 0) {
+  const authObj = auth(account);
+  return dispatch(uploadPictureWithToast({image, ...authObj})).then(
+    ({payload}) => {
+      const {result, objects} = payload;
+      if (result === 0 && objects.length > 0) {
         return dispatch(
-          changePictureWithToast(
-            account.userId,
-            resp.objects[0],
-            auth(account),
-          ),
+          changePictureWithToast({
+            userId: account.userId,
+            userPicture: objects[0],
+            ...authObj,
+          }),
         );
       }
       console.log('Failed to upload picture', resp);
@@ -245,14 +248,6 @@ export const uploadAndChangePicture = (image: string): AppThunk => (
       console.log('Failed to upload picture', err);
     },
   );
-};
-
-export const clearCurrentAccount = (): AppThunk => (dispatch) => {
-  removeData(API.User.KEY_ICCID);
-
-  batch(() => {
-    dispatch(clearAccount());
-  });
 };
 
 const updateAccountState = (state: AccountModelState, payload: object) => {
@@ -427,19 +422,24 @@ export const logout = (): AppThunk => async (dispatch) => {
   });
 };
 
-export const changeEmail = (mail: string): AppThunk => (dispatch, getState) => {
+export const changeEmail = (mail: string): AppThunk => (
+  dispatch: AppDispatch,
+  getState,
+) => {
   const {account} = getState();
   const authObj = auth(account);
-  const attr = {
+  const attributes = {
     mail,
     pass: {
       existing: authObj.pass,
     },
   };
 
-  return dispatch(changeUserAttrWithToast(account.userId, authObj, attr)).then(
-    (resp) => {
-      if (resp.result === 0) {
+  return dispatch(
+    changeUserAttrWithToast({userId: account.userId, ...authObj, attributes}),
+  ).then(
+    ({payload}) => {
+      if (payload.result === 0) {
         return dispatch(slice.actions.updateAccount({email: mail}));
       }
     },
@@ -453,21 +453,29 @@ export const changePushNoti = ({
   isPushNotiEnabled,
 }: {
   isPushNotiEnabled: string;
-}): AppThunk => (dispatch, getState) => {
+}): AppThunk => (dispatch: AppDispatch, getState) => {
   const {account} = getState();
   const authObj = auth(account);
-  const attr = {
+  const attributes = {
     field_is_notification_enabled: isPushNotiEnabled,
   };
 
-  return dispatch(changeUserAttrWithToast(account.userId, authObj, attr)).then(
-    (resp) => {
-      if (resp.result === 0) {
-        return dispatch(slice.actions.updateAccount({isPushNotiEnabled}));
-      }
-      return Promise.reject();
-    },
-  );
+  return dispatch(
+    changeUserAttrWithToast({userId: account.userId, ...authObj, attributes}),
+  ).then(({payload}) => {
+    if (payload.result === 0) {
+      return dispatch(slice.actions.updateAccount({isPushNotiEnabled}));
+    }
+    return Promise.reject();
+  });
+};
+
+export const clearCurrentAccount = (): AppThunk => (dispatch) => {
+  removeData(API.User.KEY_ICCID);
+
+  batch(() => {
+    dispatch(slice.actions.clearAccount());
+  });
 };
 
 export const actions = {
@@ -476,5 +484,6 @@ export const actions = {
   auth,
   logInAndGetAccount,
   getToken,
+  clearCurrentAccount,
 };
 export type AccountAction = typeof actions;

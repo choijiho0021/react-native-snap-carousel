@@ -2,8 +2,10 @@ import _ from 'underscore';
 import utils from '@/submodules/rokebi-utils/utils';
 import AppAlert from '@/components/AppAlert';
 import {actions as toastActions} from '@/redux/modules/toast';
+import {AsyncThunk} from '@reduxjs/toolkit';
+import {Toast} from '@/constants/CustomTypes';
+import {AppDispatch} from '@/store';
 import i18n from './i18n';
-import {AppThunk} from '../redux';
 
 const UniAsyncStorage = require('@react-native-community/async-storage')
   .default;
@@ -34,10 +36,11 @@ const removeData = async (key: string) => {
   }
 };
 
-const reflectWithToast = (action: () => AppThunk, toastType?: string) => (
-  ...args
-) => (dispatch) =>
-  dispatch(action(...args)).then(
+const reflectWithToast = <T, S>(
+  action: AsyncThunk<T, S, {}>,
+  toastType?: Toast,
+) => (args: S) => (dispatch: AppDispatch) =>
+  dispatch(action(args)).then(
     (resp) => {
       if (resp.result !== 0) {
         dispatch(toastActions.push(toastType));

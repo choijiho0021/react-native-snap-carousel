@@ -36,6 +36,7 @@ import FaqScreen from '@/screens/FaqScreen';
 import GuideScreen from '@/screens/GuideScreen';
 import {RootState} from '@/redux';
 import AuthStack from './AuthStackNavigator';
+import {HomeStackParamList} from './navigation';
 
 const styles = StyleSheet.create({
   tabBarIcon: {
@@ -57,7 +58,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const HomeStack = createStackNavigator();
+const HomeStack = createStackNavigator<HomeStackParamList>();
 const CartStack = createStackNavigator();
 const EsimStack = createStackNavigator();
 const MyPageStack = createStackNavigator();
@@ -144,14 +145,18 @@ const BadgedIcon = withBadge(
   'cartItems',
 )(AppIcon);
 
-const TabNavigator = createBottomTabNavigator();
+const Tab = createBottomTabNavigator();
 
-function tabNavigator({loggedIn, iccid}) {
+const TabNavigator = ({
+  loggedIn,
+  iccid,
+}: {
+  loggedIn: boolean;
+  iccid: string;
+}) => {
   return (
-    <TabNavigator.Navigator
-      initialRouteName="HomeStack"
-      backBehavior="initialRoute">
-      <TabNavigator.Screen
+    <Tab.Navigator initialRouteName="HomeStack" backBehavior="initialRoute">
+      <Tab.Screen
         name="HomeStack"
         component={homeStack}
         options={({route}) => ({
@@ -168,7 +173,7 @@ function tabNavigator({loggedIn, iccid}) {
           ),
         })}
       />
-      <TabNavigator.Screen
+      <Tab.Screen
         name="CartStack"
         component={iccid && loggedIn ? cartStack : AuthStack}
         options={() => ({
@@ -183,7 +188,7 @@ function tabNavigator({loggedIn, iccid}) {
           ),
         })}
       />
-      <TabNavigator.Screen
+      <Tab.Screen
         name="EsimStack"
         component={iccid && loggedIn ? esimStack : AuthStack}
         options={({route}) => ({
@@ -199,7 +204,7 @@ function tabNavigator({loggedIn, iccid}) {
           ),
         })}
       />
-      <TabNavigator.Screen
+      <Tab.Screen
         name="MyPageStack"
         component={iccid && loggedIn ? myPageStack : AuthStack}
         options={({route}) => ({
@@ -215,11 +220,11 @@ function tabNavigator({loggedIn, iccid}) {
           ),
         })}
       />
-    </TabNavigator.Navigator>
+    </Tab.Navigator>
   );
-}
+};
 
 export default connect(({account}: RootState) => ({
   loggedIn: account.loggedIn,
   iccid: account.iccid,
-}))(tabNavigator);
+}))(TabNavigator);

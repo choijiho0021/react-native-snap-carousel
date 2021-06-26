@@ -5,17 +5,14 @@ import SimpleTextScreen from '@/screens/SimpleTextScreen';
 
 // const AuthStack = createStackNavigator({ RegisterMobile: RegisterMobileScreen, SimpleTextForAuth: SimpleTextScreen });
 
-const AuthStack = createStackNavigator();
+const Auth = createStackNavigator();
 
 function authStack() {
   return (
-    <AuthStack.Navigator>
-      <AuthStack.Screen
-        name="RegisterMobile"
-        component={RegisterMobileScreen}
-      />
-      <AuthStack.Screen name="SimpleTextForAuth" component={SimpleTextScreen} />
-    </AuthStack.Navigator>
+    <Auth.Navigator>
+      <Auth.Screen name="RegisterMobile" component={RegisterMobileScreen} />
+      <Auth.Screen name="SimpleTextForAuth" component={SimpleTextScreen} />
+    </Auth.Navigator>
   );
 }
 

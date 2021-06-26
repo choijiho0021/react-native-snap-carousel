@@ -42,11 +42,8 @@ import FaqScreen from '@/screens/FaqScreen';
 import GuideScreen from '@/screens/GuideScreen';
 import SubsDetailScreen from '@/screens/SubsDetailScreen';
 import {RootState} from '@/redux';
-import {RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
-import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
-import {RkbOrder} from '@/submodules/rokebi-utils/api/orderApi';
-import {AccountAuth} from '@/redux/modules/account';
 import AuthStack from './AuthStackNavigator';
+import {HomeStackParamList} from './navigation';
 
 const styles = StyleSheet.create({
   tabBarIcon: {
@@ -67,45 +64,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 18,
   },
 });
-
-export type HomeStackParamList = {
-  Home: undefined;
-  StoreSearch: undefined;
-  Cart: undefined;
-  ProductDetail: undefined;
-
-  Recharge: undefined;
-  RegisterSim: undefined;
-  NewSim: undefined;
-  Usim: undefined;
-  Noti: {
-    mode: 'noti' | 'info';
-    info?: RkbInfo[];
-    title?: string;
-  };
-  SimpleText: {
-    key: string;
-    title: string;
-    mode: 'noti' | 'info';
-    body?: string;
-    bodyTitle?: string;
-    text?: string;
-  };
-  Contact: undefined;
-  ContactBoard: undefined;
-  BoardMsgResp: {key: string; status: 'Closed'};
-  Faq: undefined;
-  Guide: undefined;
-  Country: {prodOfCountry: RkbProduct[]};
-  Payment: undefined;
-  PymMethod: undefined;
-  FindAddress: undefined;
-  PaymentResult: undefined;
-  CodePush: undefined;
-  CustomerProfile: undefined;
-  AddProfile: undefined;
-  PurchaseDetail: {detail: RkbOrder; auth: AccountAuth};
-};
 const HomeStack = createStackNavigator<HomeStackParamList>();
 const StoreStack = createStackNavigator();
 const CartStack = createStackNavigator();
@@ -242,14 +200,18 @@ const BadgedIcon = withBadge(
   'cartItems',
 )(AppIcon);
 
-const TabNavigator = createBottomTabNavigator();
+const Tab = createBottomTabNavigator();
 
-function tabNavigator({loggedIn, iccid}) {
+const TabNavigator = ({
+  loggedIn,
+  iccid,
+}: {
+  loggedIn: boolean;
+  iccid: string;
+}) => {
   return (
-    <TabNavigator.Navigator
-      initialRouteName="HomeStack"
-      backBehavior="initialRoute">
-      <TabNavigator.Screen
+    <Tab.Navigator initialRouteName="HomeStack" backBehavior="initialRoute">
+      <Tab.Screen
         name="HomeStack"
         component={homeStack}
         options={({route}) => ({
@@ -266,7 +228,7 @@ function tabNavigator({loggedIn, iccid}) {
           ),
         })}
       />
-      <TabNavigator.Screen
+      <Tab.Screen
         name="StoreStack"
         component={storeStack}
         options={({route}) => ({
@@ -282,7 +244,7 @@ function tabNavigator({loggedIn, iccid}) {
           ),
         })}
       />
-      <TabNavigator.Screen
+      <Tab.Screen
         name="CartStack"
         component={cartStack}
         options={() => ({
@@ -297,7 +259,7 @@ function tabNavigator({loggedIn, iccid}) {
           ),
         })}
       />
-      <TabNavigator.Screen
+      <Tab.Screen
         name="UsimStack"
         component={
           loggedIn ? (iccid ? usimStack : RegisterSimScreen) : AuthStack
@@ -318,12 +280,12 @@ function tabNavigator({loggedIn, iccid}) {
           ),
         })}
       />
-      <TabNavigator.Screen
+      <Tab.Screen
         name="MyPageStack"
         component={loggedIn ? myPageStack : AuthStack}
         options={({route}) => ({
           tabBarVisible:
-            (getFocusedRouteNameFromRoute(route) === 'MyPage') === 'MyPage',
+            (getFocusedRouteNameFromRoute(route) || 'MyPage') === 'MyPage',
           tabBarLabel: i18n.t('mypage'),
           tabBarIcon: ({focused}) => (
             <AppIcon
@@ -334,11 +296,11 @@ function tabNavigator({loggedIn, iccid}) {
           ),
         })}
       />
-    </TabNavigator.Navigator>
+    </Tab.Navigator>
   );
-}
+};
 
 export default connect(({account}: RootState) => ({
   loggedIn: account.loggedIn,
   iccid: account.iccid,
-}))(tabNavigator);
+}))(TabNavigator);
