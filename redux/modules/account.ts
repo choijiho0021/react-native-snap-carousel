@@ -481,6 +481,7 @@ export const actions = {
   logInAndGetAccount,
   getToken,
   clearCurrentAccount,
+  uploadAndChangePicture,
 };
 export type AccountAction = typeof actions;
 
