@@ -3,8 +3,8 @@ import {createAsyncThunk, createAction, createSlice} from '@reduxjs/toolkit';
 import moment from 'moment';
 import {API} from '@/submodules/rokebi-utils';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import {AppDispatch} from '@/store';
 import {RkbNoti} from '@/submodules/rokebi-utils/api/notiApi';
+import {AppDispatch} from '@/store';
 import {AppThunk} from '..';
 
 const getNotiList = createAsyncThunk('noti/getNotiList', API.Noti.getNoti);

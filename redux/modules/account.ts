@@ -1,11 +1,8 @@
 /* eslint-disable no-param-reassign */
+import {Reducer} from 'redux-actions';
+import {AnyAction} from 'redux';
 import {Platform} from 'react-native';
-import {
-  createAsyncThunk,
-  createAction,
-  createSlice,
-  PayloadAction,
-} from '@reduxjs/toolkit';
+import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import _ from 'underscore';
 import {batch} from 'react-redux';
 import {API} from '@/submodules/rokebi-utils';
@@ -17,10 +14,16 @@ import {
 } from '@/utils/utils';
 import {Toast} from '@/constants/CustomTypes';
 import Env from '@/environment';
-import {RkbFile} from '@/submodules/rokebi-utils/api/accountApi';
+import {
+  RkbAccount,
+  RkbFile,
+  RkbImage,
+} from '@/submodules/rokebi-utils/api/accountApi';
+import {ApiResult} from '@/submodules/rokebi-utils/api/api';
+import {RkbLogin} from '@/submodules/rokebi-utils/api/userApi';
+import {AppDispatch} from '@/store';
 import {AppThunk} from '..';
 import {actions as toastActions} from './toast';
-import {AppDispatch} from '../../store';
 
 const {esimApp} = Env.get();
 
@@ -111,19 +114,16 @@ export const changeNotiToken = (): AppThunk => async (
   dispatch: AppDispatch,
   getState,
 ) => {
-  const {account} = getState();
-  const fcmToken = Platform.OS === 'android' ? account.deviceToken : '';
-  const deviceToken = Platform.OS === 'ios' ? account.deviceToken : '';
+  const {
+    account: {token, deviceToken, userId},
+  } = getState();
 
-  const authObj = auth(account);
   const attributes = {
-    field_device_token: deviceToken,
-    field_fcm_token: fcmToken,
+    field_device_token: Platform.OS === 'ios' ? deviceToken : '',
+    field_fcm_token: Platform.OS === 'android' ? deviceToken : '',
   };
 
-  return dispatch(
-    changeUserAttr({uuid: account.userId, attributes, ...authObj}),
-  ).then(
+  return dispatch(changeUserAttr({uuid: userId, attributes, token})).then(
     ({payload}) => {
       const {result} = payload;
       if (result === 0) {
@@ -145,19 +145,16 @@ export const registerMobile = ({
   code: string;
   mobile: string;
 }): AppThunk => (dispatch: AppDispatch, getState) => {
-  const {account} = getState();
-  const authObj = auth(account);
+  const {
+    account: {token},
+  } = getState();
 
-  return dispatch(
-    registerMobile0({iccid, code, mobile, token: authObj.token}),
-  ).then(
-    ({payload}) => {
-      const {result} = payload;
-      if (result === 0) {
-        return dispatch(getAccount({iccid, ...authObj}));
+  return dispatch(registerMobile0({iccid, code, mobile, token})).then(
+    ({payload}: {payload: ApiResult<RkbAccount>}) => {
+      if (payload.result === 0) {
+        return dispatch(getAccount({iccid, token}));
       }
-      console.log('failed to register mobile resp:', resp);
-      return resp;
+      return payload;
     },
     (err) => {
       console.log('failed to register mobile', err);
@@ -182,7 +179,7 @@ export const logInAndGetAccount = ({
   iccid?: string;
 }): AppThunk => (dispatch: AppDispatch) => {
   return dispatch(logIn({user: mobile, pass: pin})).then(
-    ({payload}) => {
+    ({payload}: {payload: ApiResult<RkbLogin>}) => {
       const {result, objects} = payload;
       if (result === 0 && objects && objects.length > 0) {
         const obj = objects[0];
@@ -199,21 +196,20 @@ export const logInAndGetAccount = ({
           dispatch(registerMobile({iccid: 'esim', code: pin, mobile}));
         } else {
           // 가장 최근 사용한 SIM 카드 번호를 조회한다.
-          dispatch(getAccountByUser({mobile, token})).then(({payload}) => {
-            const {result: rst, objects: obj} = payload;
-            if (rst === 0 && obj.length > 0 && obj[0].status === 'A') {
-              storeData(API.User.KEY_ICCID, obj[0].iccid);
-              dispatch(getAccount({iccid: obj[0].iccid, token}));
-            }
-          });
+          dispatch(getAccountByUser({mobile, token})).then(
+            ({payload}: {payload: ApiResult<RkbAccount>}) => {
+              const {result: rst, objects: obj} = payload;
+              if (rst === 0 && obj && obj[0]?.status === 'A') {
+                storeData(API.User.KEY_ICCID, obj[0].iccid);
+                dispatch(getAccount({iccid: obj[0].iccid, token}));
+              }
+            },
+          );
         }
 
         // iccid 상관 없이 로그인마다 토큰 업데이트
-        dispatch(getUserId({name: obj.current_user.name, token})).then(
-          ({payload}) => {
-            console.log('user resp', payload);
-            dispatch(changeNotiToken());
-          },
+        dispatch(getUserId({name: obj.current_user.name, token})).then(() =>
+          dispatch(changeNotiToken()),
         );
       }
     },
@@ -224,25 +220,27 @@ export const logInAndGetAccount = ({
   );
 };
 
-export const uploadAndChangePicture = (image: string): AppThunk => (
+export const uploadAndChangePicture = (image: RkbImage): AppThunk => (
   dispatch: AppDispatch,
   getState,
 ) => {
-  const {account} = getState();
-  const authObj = auth(account);
-  return dispatch(uploadPictureWithToast({image, ...authObj})).then(
-    ({payload}) => {
+  const {
+    account: {mobile, token, userId},
+  } = getState();
+
+  return dispatch(uploadPictureWithToast({image, user: mobile, token})).then(
+    ({payload}: {payload: ApiResult<RkbFile>}) => {
       const {result, objects} = payload;
-      if (result === 0 && objects.length > 0) {
+      if (result === 0 && objects && objects.length > 0) {
         return dispatch(
           changePictureWithToast({
-            userId: account.userId,
+            userId,
             userPicture: objects[0],
-            ...authObj,
+            token,
           }),
         );
       }
-      console.log('Failed to upload picture', resp);
+      console.log('Failed to upload picture', payload);
     },
     (err) => {
       console.log('Failed to upload picture', err);
@@ -382,7 +380,7 @@ const slice = createSlice({
       const {result, objects} = action.payload;
       if (result === 0 && objects && objects.length > 0) {
         // update picture file id
-        state.userPicture = objects[0];
+        [state.userPicture] = objects;
       }
     });
 
@@ -401,8 +399,6 @@ const slice = createSlice({
     );
   },
 });
-
-export default slice.reducer;
 
 export const logout = (): AppThunk => async (dispatch) => {
   const token = await retrieveData(API.User.KEY_TOKEN);
@@ -426,18 +422,17 @@ export const changeEmail = (mail: string): AppThunk => (
   dispatch: AppDispatch,
   getState,
 ) => {
-  const {account} = getState();
-  const authObj = auth(account);
+  const {
+    account: {userId, token, pin},
+  } = getState();
   const attributes = {
     mail,
     pass: {
-      existing: authObj.pass,
+      existing: pin,
     },
   };
 
-  return dispatch(
-    changeUserAttrWithToast({userId: account.userId, ...authObj, attributes}),
-  ).then(
+  return dispatch(changeUserAttrWithToast({userId, token, attributes})).then(
     ({payload}) => {
       if (payload.result === 0) {
         return dispatch(slice.actions.updateAccount({email: mail}));
@@ -454,20 +449,21 @@ export const changePushNoti = ({
 }: {
   isPushNotiEnabled: string;
 }): AppThunk => (dispatch: AppDispatch, getState) => {
-  const {account} = getState();
-  const authObj = auth(account);
+  const {
+    account: {userId, token},
+  } = getState();
   const attributes = {
     field_is_notification_enabled: isPushNotiEnabled,
   };
 
-  return dispatch(
-    changeUserAttrWithToast({userId: account.userId, ...authObj, attributes}),
-  ).then(({payload}) => {
-    if (payload.result === 0) {
-      return dispatch(slice.actions.updateAccount({isPushNotiEnabled}));
-    }
-    return Promise.reject();
-  });
+  return dispatch(changeUserAttrWithToast({userId, token, attributes})).then(
+    ({payload}) => {
+      if (payload.result === 0) {
+        return dispatch(slice.actions.updateAccount({isPushNotiEnabled}));
+      }
+      return Promise.reject();
+    },
+  );
 };
 
 export const clearCurrentAccount = (): AppThunk => (dispatch) => {
@@ -487,3 +483,5 @@ export const actions = {
   clearCurrentAccount,
 };
 export type AccountAction = typeof actions;
+
+export default slice.reducer as Reducer<AccountModelState, AnyAction>;
