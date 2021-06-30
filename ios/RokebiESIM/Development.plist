@@ -102,17 +102,12 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>esim-tb-v1.ap-northeast-2.elasticbeanstalk.com</key>
+			<key>tb-esim.rokebi.com</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>
 			<key>esim.rokebi.com</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-			</dict>
-			<key>esim2-tb-v3.ap-northeast-2.elasticbeanstalk.com</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
