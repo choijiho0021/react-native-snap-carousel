@@ -1,14 +1,16 @@
-import React, {Component, PureComponent} from 'react';
+import React, {Component, memo} from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
 import {connect} from 'react-redux';
-import _ from 'underscore';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
-import {appStyles} from '../constants/Styles';
-import i18n from '../utils/i18n';
+import {Map as ImmutableMap} from 'immutable';
+import {API} from '@/submodules/rokebi-utils';
 import utils from '@/submodules/rokebi-utils/utils';
-import {colors} from '../constants/Colors';
-import {isDeviceSize} from '../constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
+import {colors} from '@/constants/Colors';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {RootState} from '@/redux';
+import {ProductByCategory} from '@/screens/HomeScreenEsim';
+import {RkbLocalOp, RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
 
 const styles = StyleSheet.create({
   container: {
@@ -71,21 +73,25 @@ const styles = StyleSheet.create({
   },
 });
 
-const CountryItem = ({item, localOpList, onPress}) => {
+const CountryItem0 = ({
+  item,
+  localOpList,
+  onPress,
+}: {
+  item: ProductByCategory;
+  localOpList: ImmutableMap<string, RkbLocalOp>;
+  onPress?: (p: RkbProduct[]) => void;
+}) => {
   return (
     <View key={item.key} style={styles.productList}>
       {item.data.map((elm, idx) => {
         // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
         if (elm && elm.length > 0) {
-          const localOp =
-            (localOpList && localOpList.get(elm[0].partnerId)) || {};
-          const bestPrice = elm.reduce(
-            (acc, cur) =>
-              typeof acc === 'undefined'
-                ? cur.pricePerDay
-                : Math.min(acc, cur.pricePerDay),
-            undefined,
-          );
+          const localOp = localOpList && localOpList.get(elm[0].partnerId);
+          const bestPrice = elm.reduce((acc, cur) => {
+            if (!acc) return cur.pricePerDay;
+            return cur.pricePerDay ? Math.min(acc, cur.pricePerDay) : acc;
+          }, elm[0].pricePerDay);
 
           return (
             <View
@@ -94,7 +100,7 @@ const CountryItem = ({item, localOpList, onPress}) => {
               <TouchableOpacity onPress={() => onPress && onPress(elm)}>
                 <Image
                   key="img"
-                  source={{uri: API.default.httpImageUrl(localOp.imageUrl)}}
+                  source={{uri: API.default.httpImageUrl(localOp?.imageUrl)}}
                   style={styles.image}
                 />
                 <Text key="cntry" style={styles.cntry}>
@@ -128,9 +134,17 @@ const CountryItem = ({item, localOpList, onPress}) => {
     </View>
   );
 };
+const CountryItem = memo(CountryItem0);
 
-class StoreList extends Component {
-  shouldComponentUpdate(nextProps) {
+type StoreListProps = {
+  localOpList: ImmutableMap<string, RkbLocalOp>;
+  data: ProductByCategory[];
+  onPress: (p: RkbProduct[]) => void;
+  refreshTrigger: number;
+};
+
+class StoreList extends Component<StoreListProps> {
+  shouldComponentUpdate(nextProps: StoreListProps) {
     const {data, refreshTrigger} = this.props;
 
     return (

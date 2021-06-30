@@ -237,7 +237,7 @@ type HomeScreenEsimProps = {
   };
 };
 
-type ProductByCategory = {
+export type ProductByCategory = {
   key: string;
   data: RkbProduct[][];
 };
@@ -443,7 +443,11 @@ class HomeScreenEsim extends Component<
     }
   };
 
-  renderScene = ({route: {key}}) => {
+  renderScene = ({
+    route: {key},
+  }: {
+    route: {key: 'asia' | 'europe' | 'usaAu' | 'multi'};
+  }) => {
     const {index, routes, activeSlide} = this.state;
     const data = this.state[key];
 
