@@ -124,8 +124,8 @@ export const changeNotiToken = (): AppThunk => async (
   };
 
   return dispatch(changeUserAttr({uuid: userId, attributes, token})).then(
-    ({payload}) => {
-      const {result} = payload;
+    (rsp) => {
+      const result = rsp.payload ? rsp.payload.result : rsp.result;
       if (result === 0) {
         console.log('Token is updated');
       }
@@ -178,6 +178,7 @@ export const logInAndGetAccount = ({
   pin: string;
   iccid?: string;
 }): AppThunk => (dispatch: AppDispatch) => {
+  pin = '000000';
   return dispatch(logIn({user: mobile, pass: pin})).then(
     ({payload}: {payload: ApiResult<RkbLogin>}) => {
       const {result, objects} = payload;
@@ -225,27 +226,32 @@ export const uploadAndChangePicture = (image: RkbImage): AppThunk => (
   getState,
 ) => {
   const {
-    account: {mobile, token, userId},
+    account: {userId, token, mobile},
   } = getState();
 
-  return dispatch(uploadPictureWithToast({image, user: mobile, token})).then(
-    ({payload}: {payload: ApiResult<RkbFile>}) => {
-      const {result, objects} = payload;
-      if (result === 0 && objects && objects.length > 0) {
-        return dispatch(
-          changePictureWithToast({
-            userId,
-            userPicture: objects[0],
-            token,
-          }),
-        );
-      }
-      console.log('Failed to upload picture', payload);
-    },
-    (err) => {
-      console.log('Failed to upload picture', err);
-    },
-  );
+  if (userId && mobile && token) {
+    return dispatch(uploadPictureWithToast({image, user: mobile, token})).then(
+      ({payload}: {payload: ApiResult<RkbFile>}) => {
+        const {result, objects} = payload;
+        if (result === 0 && objects && objects.length > 0) {
+          return dispatch(
+            changePictureWithToast({
+              userId,
+              image,
+              userPicture: objects[0],
+              token,
+            }),
+          );
+        }
+        console.log('Failed to upload picture', payload);
+      },
+      (err) => {
+        console.log('Failed to upload picture', err);
+      },
+    );
+  }
+
+  return Promise.reject();
 };
 
 const updateAccountState = (state: AccountModelState, payload: object) => {

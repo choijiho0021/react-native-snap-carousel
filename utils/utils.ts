@@ -42,7 +42,8 @@ const reflectWithToast = <T, S>(
 ) => (args: S) => (dispatch: AppDispatch) =>
   dispatch(action(args)).then(
     (resp) => {
-      if (resp.result !== 0) {
+      const result = resp.payload ? resp.payload.result : resp.result;
+      if (result !== 0) {
         dispatch(toastActions.push(toastType));
       }
       return resp;
