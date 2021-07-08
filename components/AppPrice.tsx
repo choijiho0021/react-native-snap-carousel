@@ -1,7 +1,14 @@
 import React, {memo} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
-import {appStyles} from '../constants/Styles';
-import i18n from '../utils/i18n';
+import {
+  StyleSheet,
+  View,
+  Text,
+  StyleProp,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
+import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
 import utils from '@/submodules/rokebi-utils/utils';
 
 const styles = StyleSheet.create({
@@ -19,7 +26,17 @@ const styles = StyleSheet.create({
   },
 });
 
-function AppPrice({style, balanceStyle, wonStyle, price}) {
+const AppPrice = ({
+  style,
+  balanceStyle,
+  wonStyle,
+  price,
+}: {
+  style?: StyleProp<ViewStyle>;
+  balanceStyle?: StyleProp<TextStyle>;
+  wonStyle?: StyleProp<TextStyle>;
+  price: number;
+}) => {
   return (
     <View style={style || styles.container}>
       <Text key="balance" style={balanceStyle || styles.price}>
@@ -30,6 +47,6 @@ function AppPrice({style, balanceStyle, wonStyle, price}) {
       </Text>
     </View>
   );
-}
+};
 
 export default memo(AppPrice);

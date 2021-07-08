@@ -7,7 +7,7 @@ export type HomeStackParamList = {
   Home: undefined;
   StoreSearch: undefined;
   Cart: undefined;
-  ProductDetail: undefined;
+  ProductDetail: {title?: string; img?: string; localOpDetails?: string};
 
   Recharge: undefined;
   RegisterSim: undefined;

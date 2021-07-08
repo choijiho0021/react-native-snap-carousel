@@ -1,5 +1,5 @@
 import React, {memo, useCallback} from 'react';
-import {Image, TouchableWithoutFeedback, View, Text} from 'react-native';
+import {Image, View, Text, Pressable} from 'react-native';
 import {connect} from 'react-redux';
 import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
@@ -30,7 +30,7 @@ const AppBackButton = ({
   }, [back, lastTab, navigation]);
 
   return (
-    <TouchableWithoutFeedback
+    <Pressable
       onPress={() => {
         if (!isPaid) goBack();
       }}
@@ -46,7 +46,7 @@ const AppBackButton = ({
         )}
         <Text style={[appStyles.subTitle, {marginLeft: 16}]}>{title}</Text>
       </View>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 };
 

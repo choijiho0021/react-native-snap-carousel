@@ -157,10 +157,12 @@ export const actions = {
   empty,
   payNorder,
   pushLastTab,
+  cartAddAndGet,
+  checkStockAndPurchase,
 };
 export type CartAction = typeof actions;
 
-interface CartModelState {
+export interface CartModelState {
   result: number;
   orderId?: number;
   orderItems: object[];

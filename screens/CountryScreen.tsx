@@ -17,9 +17,19 @@ import SnackBar from 'react-native-snackbar-component';
 import {API} from '@/submodules/rokebi-utils';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
-import {actions as productActions} from '@/redux/modules/product';
-import {actions as cartActions} from '@/redux/modules/cart';
-import {actions as accountActions} from '@/redux/modules/account';
+import {
+  actions as productActions,
+  ProductModelState,
+} from '@/redux/modules/product';
+import {
+  actions as cartActions,
+  CartAction,
+  CartModelState,
+} from '@/redux/modules/cart';
+import {
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
 import AppBackButton from '@/components/AppBackButton';
@@ -29,10 +39,14 @@ import AppCartButton from '@/components/AppCartButton';
 import {windowWidth, device, windowHeight} from '@/constants/SliderEntry.style';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {timer} from '@/constants/Timer';
-import api from '@/submodules/rokebi-utils/api/api';
+import api, {ApiResult} from '@/submodules/rokebi-utils/api/api';
 import AppAlert from '@/components/AppAlert';
 import Env from '@/environment';
 import {RootState} from '@/redux';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RouteProp} from '@react-navigation/native';
+import {RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
 
 const {esimApp} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -172,7 +186,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const CountryListItem0 = ({item, selected, onPress}) => {
+const CountryListItem0 = ({
+  item,
+  selected,
+  onPress,
+}: {
+  item: RkbProduct;
+  selected: string;
+  onPress: (v: string) => () => void;
+}) => {
   let borderColor = {};
   let color = {};
 
@@ -223,21 +245,7 @@ const CountryListItem0 = ({item, selected, onPress}) => {
 
 const CountryListItem = memo(CountryListItem0);
 
-const CountryBackButton = ({navigation, product}) => {
-  const {localOpList, prodOfCountry} = product;
-  const title =
-    prodOfCountry && prodOfCountry.length > 0
-      ? API.Product.getTitle(localOpList.get(prodOfCountry[0].partnerId))
-      : '';
-
-  return <AppBackButton navigation={navigation} title={title} />;
-};
-
-const BackButton = connect(({product}: RootState) => ({product}))(
-  memo(CountryBackButton),
-);
-
-function soldOut(resp, message) {
+function soldOut(resp: ApiResult<any>, message: string) {
   if (resp.result === api.E_RESOURCE_NOT_FOUND) {
     AppAlert.info(resp.title + i18n.t(message));
   } else {
@@ -245,8 +253,40 @@ function soldOut(resp, message) {
   }
 }
 
-class CountryScreen extends Component {
-  constructor(props) {
+type CountryScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'Country'
+>;
+
+type CountryScreenRouteProp = RouteProp<HomeStackParamList, 'Country'>;
+
+type CountryScreenProps = {
+  navigation: CountryScreenNavigationProp;
+  route: CountryScreenRouteProp;
+  product: ProductModelState;
+  cart: CartModelState;
+  account: AccountModelState;
+
+  action: {
+    cart: CartAction;
+  };
+};
+
+type CountryScreenState = {
+  prodData: RkbProduct[];
+  selected?: string;
+  imageUrl?: string;
+  title?: string;
+  showSnackBar: boolean;
+  localOpDetails?: string;
+  pending: boolean;
+  disabled: boolean;
+  isFocused: boolean;
+};
+class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
+  snackRef: React.RefObject<unknown>;
+
+  constructor(props: CountryScreenProps) {
     super(props);
 
     this.state = {
@@ -267,61 +307,59 @@ class CountryScreen extends Component {
     this.onPressBtnRegCard = this.onPressBtnRegCard.bind(this);
     this.selectedProduct = this.selectedProduct.bind(this);
     this.onPress = this.onPress.bind(this);
-    this.setValue = this.setValue.bind(this);
   }
 
   componentDidMount() {
-    this.props.navigation.setOptions({
+    const {navigation, route, product} = this.props;
+    const {localOpList, prodOfCountry} = product;
+    const prodList =
+      prodOfCountry.length > 0 ? prodOfCountry : route.params?.prodOfCountry;
+
+    const localOp = localOpList.get(prodList[0]?.partnerId);
+    const title =
+      prodList && prodList.length > 0
+        ? API.Product.getTitle(localOpList.get(prodList[0]?.partnerId))
+        : '';
+
+    navigation.setOptions({
       title: null,
-      headerLeft: () => (
-        <BackButton
-          navigation={this.props.navigation}
-          route={this.props.route}
-        />
-      ),
+      headerLeft: () => <AppBackButton title={title} />,
       headerRight: () => (
-        <AppCartButton onPress={() => this.props.navigation.navigate('Cart')} />
+        <AppCartButton onPress={() => navigation.navigate('Cart')} />
       ),
     });
 
-    const {localOpList, prodOfCountry} = this.props.product;
-    const localOp = localOpList.get(prodOfCountry[0].partnerId) || {};
-    const title =
-      prodOfCountry && prodOfCountry.length > 0
-        ? API.Product.getTitle(localOpList.get(prodOfCountry[0].partnerId))
-        : '';
-
-    if (prodOfCountry) {
+    if (!_.isEmpty(prodList)) {
       this.setState({
-        prodData: prodOfCountry,
-        imageUrl: localOp.imageUrl,
-        localOpDetails: localOp.detail,
-        selected: prodOfCountry[0].uuid,
+        prodData: prodList,
+        imageUrl: localOp?.imageUrl,
+        localOpDetails: localOp?.detail,
+        selected: prodList[0]?.uuid,
         title,
       });
     }
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(
+    nextProps: CountryScreenProps,
+    nextState: CountryScreenState,
+  ) {
     return this.props !== nextProps || this.state !== nextState;
   }
 
   componentDidUpdate() {
-    if (this.props.navigation.isFocused() !== this.state.isFocused) {
-      this.setValue('isFocused', this.props.navigation.isFocused());
-      if (this.props.navigation.isFocused()) {
+    const isFocused = this.props.navigation.isFocused();
+
+    if (isFocused !== this.state.isFocused) {
+      this.setState({isFocused});
+      if (isFocused) {
+        // bhtak 아래 함수는 아무런 효과가 없을 것 같은데..
         this.onPress(this.state.selected);
       }
     }
   }
 
-  setValue = (key, value) => {
-    this.setState({
-      [key]: value,
-    });
-  };
-
-  onPress = (uuid) => () => {
+  onPress = (uuid?: string) => () => {
     this.setState({selected: uuid});
     if (
       (this.props.cart.orderItems || []).find((v) => v.key === uuid)?.qty >=
@@ -333,10 +371,11 @@ class CountryScreen extends Component {
     }
   };
 
-  selectedProduct = (selected) => {
-    return API.Product.toPurchaseItem(
-      this.props.product.prodList.get(selected),
-    );
+  selectedProduct = (selected: string) => {
+    const prod = this.props.product.prodList.get(selected);
+    if (prod) {
+      return API.Product.toPurchaseItem(prod);
+    }
   };
 
   onPressBtnCart = () => {
@@ -430,7 +469,7 @@ class CountryScreen extends Component {
     this.props.navigation.navigate('RegisterSim');
   };
 
-  renderItem = ({item}) => {
+  renderItem = ({item}: {item: RkbProduct}) => {
     return (
       <CountryListItem
         item={item}
@@ -509,7 +548,7 @@ class CountryScreen extends Component {
           autoHidingTime={timer.snackBarHidingTime}
           onClose={() => this.setState({showSnackBar: false})}
           actionHandler={() => {
-            this.snackRef.current.hideSnackbar();
+            this.snackRef.current?.hideSnackbar();
           }}
           textMessage={i18n.t('country:addCart')}
         />

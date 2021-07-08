@@ -1,5 +1,5 @@
-import React, {PureComponent} from 'react';
-import {StyleSheet, TouchableOpacity} from 'react-native';
+import React, {memo} from 'react';
+import {Pressable, StyleProp, StyleSheet, ViewStyle} from 'react-native';
 import {connect} from 'react-redux';
 import {Badge} from 'react-native-elements';
 import {RootState} from '../redux';
@@ -30,29 +30,40 @@ const styles = StyleSheet.create({
   },
 });
 
-class AppCartButton extends PureComponent {
-  render() {
-    const {cartItems, iconName, style, onPress} = this.props;
-    const hidden = !cartItems;
+type AppCartButtonProps = {
+  cartItems: number;
+  iconName?: string;
+  style?: StyleProp<ViewStyle>;
+  onPress: () => void;
+};
+const AppCartButton: React.FC<AppCartButtonProps> = ({
+  cartItems,
+  iconName,
+  style,
+  onPress,
+}) => {
+  const hidden = !cartItems;
 
-    return (
-      <TouchableOpacity onPress={onPress} style={style}>
-        <AppIcon name={iconName || 'btnCart'} style={styles.icon} />
-        {!hidden && (
-          <Badge
-            badgeStyle={styles.badge}
-            textStyle={styles.badgeText}
-            value={cartItems}
-            status="error"
-            onPress={onPress}
-            containerStyle={[styles.badgeContainer, {top: 4, right: 10}]}
-          />
-        )}
-      </TouchableOpacity>
-    );
-  }
-}
+  return (
+    <Pressable onPress={onPress} style={style}>
+      <AppIcon name={iconName || 'btnCart'} style={styles.icon} />
+      {!hidden && (
+        <Badge
+          badgeStyle={styles.badge}
+          textStyle={styles.badgeText}
+          value={cartItems}
+          status="error"
+          onPress={onPress}
+          containerStyle={[styles.badgeContainer, {top: 4, right: 10}]}
+        />
+      )}
+    </Pressable>
+  );
+};
 
 export default connect(({cart}: RootState) => ({
-  cartItems: (cart.orderItems || []).reduce((acc, cur) => acc + cur.qty, 0),
-}))(AppCartButton);
+  cartItems: (cart.orderItems || []).reduce(
+    (acc, cur) => acc + (cur.qty || 0),
+    0,
+  ),
+}))(memo(AppCartButton));

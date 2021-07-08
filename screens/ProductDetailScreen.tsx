@@ -31,6 +31,9 @@ import {Toast} from '@/constants/CustomTypes';
 import AppIcon from '@/components/AppIcon';
 import {actions as infoActions} from '@/redux/modules/info';
 import {RootState} from '@/redux';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RouteProp} from '@react-navigation/native';
 
 const {channelId} = Env.get();
 
@@ -86,7 +89,19 @@ const styles = StyleSheet.create({
   },
 });
 
+type ProductDetailScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'ProductDetail'
+>;
+
+type ProductDetailScreenRouteProp = RouteProp<
+  HomeStackParamList,
+  'ProductDetail'
+>;
+
 type ProductDetailScreenProps = {
+  navigation: ProductDetailScreenNavigationProp;
+  route: ProductDetailScreenRouteProp;
   action: {
     toast: ToastAction;
   };
@@ -121,9 +136,7 @@ class ProductDetailScreen extends Component<ProductDetailScreenProps> {
     this.props.navigation.setOptions({
       title: null,
       headerLeft: () => (
-        <AppBackButton
-          title={this.props.route.params && this.props.route.params.title}
-        />
+        <AppBackButton title={this.props.route.params?.title} />
       ),
     });
 
@@ -268,7 +281,7 @@ class ProductDetailScreen extends Component<ProductDetailScreenProps> {
   renderWebView() {
     const {height3} = this.state;
     const {route, product} = this.props;
-    const localOpDetails = route.params && route.params.localOpDetails;
+    const localOpDetails = route.params?.localOpDetails;
     const detail = _.isEmpty(localOpDetails)
       ? product.detailInfo + product.detailCommon
       : localOpDetails + product.detailCommon;
@@ -312,7 +325,7 @@ class ProductDetailScreen extends Component<ProductDetailScreenProps> {
             <Image
               style={{height: HEADER_IMG_HEIGHT}}
               source={{
-                uri: API.default.httpImageUrl(route.params && route.params.img),
+                uri: API.default.httpImageUrl(route.params?.img),
               }}
             />
           </View>
