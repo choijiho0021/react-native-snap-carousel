@@ -25,11 +25,15 @@ export type HomeStackParamList = {
     body?: string;
     bodyTitle?: string;
     text?: string;
+    rule?: string;
   };
   Contact: undefined;
   ContactBoard: undefined;
   BoardMsgResp: {key: string; status: 'Closed'};
-  Faq: undefined;
+  Faq: {
+    key?: string;
+    num?: string;
+  };
   Guide: undefined;
   Country: {prodOfCountry: RkbProduct[]};
   Payment: undefined;

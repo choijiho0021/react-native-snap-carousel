@@ -393,6 +393,7 @@ class HomeScreenEsim extends Component<
         title: i18n.t('set:noti'),
         bodyTitle: item.notice.title,
         body: item.notice.body,
+        rule: item.notice.rule,
         mode: 'noti',
       });
     } else {

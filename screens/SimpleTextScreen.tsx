@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import WebView from 'react-native-webview';
+import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -20,8 +20,11 @@ import Env from '@/environment';
 import {API} from '@/submodules/rokebi-utils';
 import i18n from '@/utils/i18n';
 import utils from '@/submodules/rokebi-utils/utils';
-import {actions as infoActions} from '@/redux/modules/info';
+import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
 import {RootState} from '@/redux';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RouteProp} from '@react-navigation/native';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const {baseUrl} = Env.get();
 
@@ -61,14 +64,40 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
 });
-class SimpleTextScreen extends Component {
-  constructor(props) {
+
+type SimpleTextScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'SimpleText'
+>;
+
+type SimpleTextScreenRouteProp = RouteProp<HomeStackParamList, 'SimpleText'>;
+
+type SimpleTextScreenProps = {
+  navigation: SimpleTextScreenNavigationProp;
+  route: SimpleTextScreenRouteProp;
+  info: InfoModelState;
+};
+
+type SimpleTextScreenState = {
+  querying: boolean;
+  body?: string;
+  mode?: string;
+  isMounted: boolean;
+  bodyTitle?: string;
+};
+
+class SimpleTextScreen extends Component<
+  SimpleTextScreenProps,
+  SimpleTextScreenState
+> {
+  controller: AbortController;
+
+  constructor(props: SimpleTextScreenProps) {
     super(props);
 
     this.state = {
       querying: false,
       body: '',
-      mode: undefined,
       isMounted: false,
     };
 
@@ -78,25 +107,14 @@ class SimpleTextScreen extends Component {
 
   componentDidMount() {
     const {params} = this.props.route;
-    let key;
-    let body;
-    let bodyTitle;
-    let mode;
+    const {key, text: body, bodyTitle, mode} = params || {};
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => <AppBackButton title={params && params.title} />,
+      headerLeft: () => <AppBackButton title={params?.title} />,
     });
 
-    if (params) {
-      key = params.key;
-      body = params.text;
-      bodyTitle = params.bodyTitle;
-      mode = params.mode;
-    }
-
-    this.setState({mode});
-    this.stateSet({isMounted: true});
+    this.setState({mode, isMounted: true});
 
     if (body) {
       this.setState({body, bodyTitle});
@@ -106,7 +124,7 @@ class SimpleTextScreen extends Component {
       });
 
       if (key === 'noti') {
-        API.Page.getPageByTitle(params.bodyTitle, this.controller)
+        API.Page.getPageByTitle(bodyTitle, this.controller)
           .then((resp) => {
             if (
               resp.result === 0 &&
@@ -130,7 +148,7 @@ class SimpleTextScreen extends Component {
             }
           });
       } else {
-        API.Page.getPageByCategory(key, this.controller)
+        API.Page.getPageByCategory(key)
           .then((resp) => {
             if (
               resp.result === 0 &&
@@ -159,18 +177,19 @@ class SimpleTextScreen extends Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: SimpleTextScreenProps) {
     if (this.props.route.params !== prevProps.route.params) {
-      this.stateSet(this.props.route.params);
+      const {key, text: body, bodyTitle, mode} = this.props.route.params || {};
+      this.setState({key, body, bodyTitle, mode});
     }
   }
 
   componentWillUnmount() {
-    this.stateSet({isMounted: false});
+    this.setState({isMounted: false});
     this.controller.abort();
   }
 
-  onMessage(event) {
+  onMessage(event: WebViewMessageEvent) {
     const cmd = JSON.parse(event.nativeEvent.data);
 
     switch (cmd.key) {
@@ -236,14 +255,9 @@ class SimpleTextScreen extends Component {
     );
   };
 
-  stateSet(val) {
-    this.setState({
-      ...val,
-    });
-  }
-
   render() {
     const {querying, mode = 'html'} = this.state;
+    const {rule} = this.props.route.params;
 
     return (
       <SafeAreaView style={styles.screen}>
@@ -252,8 +266,12 @@ class SimpleTextScreen extends Component {
         {Platform.OS === 'ios' && (
           <AppButton
             style={styles.button}
-            title={i18n.t('ok')}
-            onPress={() => this.props.navigation.goBack()}
+            title={i18n.t(rule ? 'simple:promo' : 'ok')}
+            onPress={() =>
+              rule
+                ? API.Promotion.joinPromotion(rule)
+                : this.props.navigation.goBack()
+            }
           />
         )}
       </SafeAreaView>
