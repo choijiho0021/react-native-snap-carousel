@@ -525,6 +525,8 @@ const en = {
   'mypage:preparing': 'Preparing for Service',
   'mypage:mailInfo':
     '* The eSIM product you have purchased will be sent to this email.',
+
+  'simple:promo': 'Participate',
 };
 
 const ko = {
@@ -1059,6 +1061,8 @@ const ko = {
   'mypage:openRokebiTalk': '로깨비톡 바로가기 ＞',
   'mypage:preparing': '서비스 준비중',
   'mypage:mailInfo': '* 구매하신 eSIM 상품은 본 이메일로 발송됩니다.',
+
+  'simple:promo': '프로모션 참여',
 };
 
 if (Array.isArray(locales)) {
