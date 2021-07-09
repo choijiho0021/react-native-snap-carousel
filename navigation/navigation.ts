@@ -46,4 +46,6 @@ export type HomeStackParamList = {
   CustomerProfile: undefined;
   AddProfile: undefined;
   PurchaseDetail: {detail: RkbOrder; auth: AccountAuth};
+  RegisterMobile: undefined;
+  Main: undefined;
 };
