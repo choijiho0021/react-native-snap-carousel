@@ -35,6 +35,9 @@ import {colors} from '@/constants/Colors';
 import validationUtil from '@/utils/validationUtil';
 import InputPinInTime from '@/components/InputPinInTime';
 import {RootState} from '@/redux';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RouteProp} from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   helpText: {
@@ -107,13 +110,64 @@ const styles = StyleSheet.create({
   },
 });
 
+type ConfirmItem = {
+  key: string;
+  list: {color: string; text: string}[];
+  navi: {
+    route: string;
+    param: {key: string; title: string};
+  };
+};
+
+const confirmList: ConfirmItem[] = [
+  {
+    key: '0',
+    list: [
+      {color: colors.warmGrey, text: i18n.t('cfm:contract')},
+      {color: colors.clearBlue, text: i18n.t('cfm:mandatory')},
+    ],
+    navi: {
+      route: 'SimpleTextForAuth',
+      param: {key: 'setting:contract', title: i18n.t('cfm:contract')},
+    },
+  },
+  {
+    key: '1',
+    list: [
+      {color: colors.warmGrey, text: i18n.t('cfm:personalInfo')},
+      {color: colors.clearBlue, text: i18n.t('cfm:mandatory')},
+    ],
+    navi: {
+      route: 'SimpleTextForAuth',
+      param: {key: 'setting:privacy', title: i18n.t('cfm:personalInfo')},
+    },
+  },
+  {
+    key: '2',
+    list: [
+      {color: colors.warmGrey, text: i18n.t('cfm:marketing')},
+      {color: colors.warmGrey, text: i18n.t('cfm:optional')},
+    ],
+    navi: {
+      route: 'SimpleTextForAuth',
+      param: {key: 'mkt:agreement', title: i18n.t('cfm:marketing')},
+    },
+  },
+];
+
 const RegisterMobileListItem0 = ({
   item,
   confirm,
   onPress,
   onMove,
 }: {
-  onPress: () => void;
+  item: ConfirmItem;
+  onPress: (k: string) => void;
+  onMove: (
+    k: string,
+    route: string,
+    param: {key: string; title: string},
+  ) => () => void;
   confirm: ImmutableMap<string, boolean>;
 }) => {
   const confirmed = confirm.get(item.key);
@@ -155,6 +209,16 @@ const RegisterMobileListItem0 = ({
 
 const RegisterMobileListItem = memo(RegisterMobileListItem0);
 
+type RegisterMobileScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'RegisterMobile'
+>;
+
+type RegisterMobileScreenRouteProp = RouteProp<
+  HomeStackParamList,
+  'RegisterMobile'
+>;
+
 type RegisterMobileScreenProps = {
   account: AccountModelState;
   pending: boolean;
@@ -162,11 +226,15 @@ type RegisterMobileScreenProps = {
   loginFailure: boolean;
   onSubmit: () => void;
 
+  navigation: RegisterMobileScreenNavigationProp;
+  route: RegisterMobileScreenRouteProp;
+
   actions: {
     account: AccountAction;
     cart: CartAction;
   };
 };
+
 type RegisterMobileScreenState = {
   loading: boolean;
   pin?: string;
@@ -207,12 +275,6 @@ class RegisterMobileScreen extends Component<
   RegisterMobileScreenProps,
   RegisterMobileScreenState
 > {
-  confirmList: {
-    key: string;
-    list: {color: string; text: string}[];
-    navi: {route: string; param: {key: string; title: string}};
-  }[];
-
   email: React.RefObject<TextInput>;
 
   authInputRef: React.RefObject<TextInput>;
@@ -225,42 +287,6 @@ class RegisterMobileScreen extends Component<
     super(props);
 
     this.state = initialState;
-
-    this.confirmList = [
-      {
-        key: '0',
-        list: [
-          {color: colors.warmGrey, text: i18n.t('cfm:contract')},
-          {color: colors.clearBlue, text: i18n.t('cfm:mandatory')},
-        ],
-        navi: {
-          route: 'SimpleTextForAuth',
-          param: {key: 'setting:contract', title: i18n.t('cfm:contract')},
-        },
-      },
-      {
-        key: '1',
-        list: [
-          {color: colors.warmGrey, text: i18n.t('cfm:personalInfo')},
-          {color: colors.clearBlue, text: i18n.t('cfm:mandatory')},
-        ],
-        navi: {
-          route: 'SimpleTextForAuth',
-          param: {key: 'setting:privacy', title: i18n.t('cfm:personalInfo')},
-        },
-      },
-      {
-        key: '2',
-        list: [
-          {color: colors.warmGrey, text: i18n.t('cfm:marketing')},
-          {color: colors.warmGrey, text: i18n.t('cfm:optional')},
-        ],
-        navi: {
-          route: 'SimpleTextForAuth',
-          param: {key: 'mkt:agreement', title: i18n.t('cfm:marketing')},
-        },
-      },
-    ];
 
     this.email = React.createRef();
 
@@ -405,17 +431,18 @@ class RegisterMobileScreen extends Component<
 
         API.User.sendSms({user: value, abortController: this.controller})
           .then((resp) => {
-            if (resp.result === 0) {
-              this.setState({
-                authNoti: true,
-                timeout: false,
-              });
+            // bhtak, temporary
+            // if (resp.result === 0) {
+            this.setState({
+              authNoti: true,
+              timeout: false,
+            });
 
-              this.focusAuthInput();
-            } else {
-              console.log('send sms failed', resp);
-              throw new Error('failed to send sms');
-            }
+            this.focusAuthInput();
+            // } else {
+            //   console.log('send sms failed', resp);
+            //   throw new Error('failed to send sms');
+            // }
           })
           .catch((err) => {
             console.log('send sms failed', err);
@@ -434,6 +461,12 @@ class RegisterMobileScreen extends Component<
     const {mobile, authorized} = this.state;
     const pin = value;
     // PIN이 맞는지 먼저 확인한다.
+
+    console.log('@@@ press pin', mobile, value);
+
+    // bhtak, temporary
+    this.signIn({mobile, pin});
+    return;
 
     if (authorized) return;
 
@@ -504,14 +537,14 @@ class RegisterMobileScreen extends Component<
   };
 
   focusAuthInput() {
-    this.authInputRef.current.focus();
+    this.authInputRef.current?.focus();
   }
 
   focusEmailInput() {
     this.email.current?.focusInput();
   }
 
-  renderItem({item}) {
+  renderItem({item}: {item: ConfirmItem}) {
     return (
       <RegisterMobileListItem
         item={item}
@@ -559,7 +592,8 @@ class RegisterMobileScreen extends Component<
           style={{marginTop: 26, paddingHorizontal: 20}}
           forwardRef={this.authInputRef}
           editable={editablePin}
-          clickable={editablePin && !timeout}
+          // clickable={editablePin && !timeout}
+          clickable
           authorized={mobile ? authorized : undefined}
           countdown={authNoti && !authorized && !timeout}
           onTimeout={this.onTimeout}
@@ -583,7 +617,7 @@ class RegisterMobileScreen extends Component<
 
               <View key="list" style={{paddingHorizontal: 20, flex: 1}}>
                 <FlatList
-                  data={this.confirmList}
+                  data={confirmList}
                   renderItem={this.renderItem}
                   extraData={confirm}
                 />

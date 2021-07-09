@@ -188,7 +188,7 @@ class SimpleTextScreen extends Component<
     const {token} = this.props.account;
     if (rule) {
       const resp = await API.Promotion.join({rule, token});
-      if (resp.result === 0) {
+      if (resp.result === 0 && resp.objects[0]?.available > 0) {
         AppAlert.info(i18n.t('promo:join:success'), i18n.t('promo:join'));
       } else AppAlert.error(i18n.t('promo:join:fail'), i18n.t('promo:join'));
     }
