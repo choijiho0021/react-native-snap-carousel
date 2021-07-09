@@ -1,6 +1,6 @@
 import firebase from '@react-native-firebase/app';
 import Analytics from 'appcenter-analytics';
-import React, {Component, memo} from 'react';
+import React, {Component, memo, useCallback} from 'react';
 import {FlatList, StyleSheet, Text, Pressable, View} from 'react-native';
 import VersionCheck from 'react-native-version-check';
 import {connect} from 'react-redux';
@@ -56,25 +56,27 @@ const styles = StyleSheet.create({
   },
 });
 
-const button = (item, child, onPress) => {
-  if (item.desc) {
-    return <Text style={styles.itemDesc}>{item.desc}</Text>;
-  }
-  if (item.hasOwnProperty('toggle')) {
-    return (
-      <AppSwitch
-        value={item.toggle}
-        ref={child}
-        onPress={onPress(item.key, item.value, item.route)}
-        waitFor={1000}
-      />
-    );
-  }
-  return <AppIcon style={{alignSelf: 'center'}} name="iconArrowRight" />;
-};
-
 const SettingsListItem0 = ({item, onPress}) => {
   const child = React.createRef();
+  const button = useCallback(
+    (item) => {
+      if (item.desc) {
+        return <Text style={styles.itemDesc}>{item.desc}</Text>;
+      }
+      if (item.hasOwnProperty('toggle')) {
+        return (
+          <AppSwitch
+            value={item.toggle}
+            ref={child}
+            onPress={onPress(item.key, item.value, item.route)}
+            waitFor={1000}
+          />
+        );
+      }
+      return <AppIcon style={{alignSelf: 'center'}} name="iconArrowRight" />;
+    },
+    [child, onPress],
+  );
 
   return (
     <Pressable
@@ -85,7 +87,7 @@ const SettingsListItem0 = ({item, onPress}) => {
       }>
       <View style={styles.row}>
         <Text style={styles.itemTitle}>{item.value}</Text>
-        {button(item, child, onPress)}
+        {button(item)}
       </View>
     </Pressable>
   );

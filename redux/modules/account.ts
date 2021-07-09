@@ -178,10 +178,10 @@ export const logInAndGetAccount = ({
   pin: string;
   iccid?: string;
 }): AppThunk => (dispatch: AppDispatch) => {
-  pin = '000000';
   return dispatch(logIn({user: mobile, pass: pin})).then(
-    ({payload}: {payload: ApiResult<RkbLogin>}) => {
-      const {result, objects} = payload;
+    // ({payload}: {payload: ApiResult<RkbLogin>}) => {
+    (rsp) => {
+      const {result, objects} = rsp?.payload || {};
       if (result === 0 && objects && objects.length > 0) {
         const obj = objects[0];
         const token = obj.csrf_token;
@@ -488,6 +488,11 @@ export const actions = {
   getToken,
   clearCurrentAccount,
   uploadAndChangePicture,
+  logout,
+  changeEmail,
+  changeNotiToken,
+  getAccount,
+  getUserId,
 };
 export type AccountAction = typeof actions;
 
