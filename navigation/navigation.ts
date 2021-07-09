@@ -3,6 +3,8 @@ import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
 import {RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
 import {AccountAuth} from '@/redux/modules/account';
 
+export type SimpleTextScreenMode = 'text' | 'uri' | 'html';
+
 export type HomeStackParamList = {
   Home: undefined;
   StoreSearch: undefined;
@@ -19,9 +21,9 @@ export type HomeStackParamList = {
     title?: string;
   };
   SimpleText: {
-    key: string;
+    key: 'noti' | 'info';
     title: string;
-    mode: 'noti' | 'info';
+    mode: SimpleTextScreenMode;
     body?: string;
     bodyTitle?: string;
     text?: string;
