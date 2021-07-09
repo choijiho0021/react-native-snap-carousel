@@ -24,7 +24,11 @@ import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
 import {RootState} from '@/redux';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
-import {HomeStackParamList} from '@/navigation/navigation';
+import {
+  HomeStackParamList,
+  SimpleTextScreenMode,
+} from '@/navigation/navigation';
+import {AccountModelState} from '@/redux/modules/account';
 
 const {baseUrl} = Env.get();
 
@@ -76,14 +80,16 @@ type SimpleTextScreenProps = {
   navigation: SimpleTextScreenNavigationProp;
   route: SimpleTextScreenRouteProp;
   info: InfoModelState;
+  account: AccountModelState;
 };
 
 type SimpleTextScreenState = {
   querying: boolean;
   body?: string;
-  mode?: string;
+  mode?: SimpleTextScreenMode;
   isMounted: boolean;
   bodyTitle?: string;
+  promoAvailable: boolean;
 };
 
 class SimpleTextScreen extends Component<
@@ -99,15 +105,18 @@ class SimpleTextScreen extends Component<
       querying: false,
       body: '',
       isMounted: false,
+      promoAvailable: false,
     };
 
     this.controller = new AbortController();
     this.onMessage = this.onMessage.bind(this);
+    this.getContent = this.getContent.bind(this);
+    this.onPress = this.onPress.bind(this);
   }
 
   componentDidMount() {
     const {params} = this.props.route;
-    const {key, text: body, bodyTitle, mode} = params || {};
+    const {key, text: body, bodyTitle, mode, rule} = params || {};
 
     this.props.navigation.setOptions({
       title: null,
@@ -119,70 +128,22 @@ class SimpleTextScreen extends Component<
     if (body) {
       this.setState({body, bodyTitle});
     } else if (key) {
-      this.setState({
-        querying: true,
-      });
-
-      if (key === 'noti') {
-        API.Page.getPageByTitle(bodyTitle, this.controller)
-          .then((resp) => {
-            if (
-              resp.result === 0 &&
-              resp.objects.length > 0 &&
-              this.state.isMounted
-            ) {
-              this.setState({
-                body: resp.objects[0].body,
-              });
-            } else throw Error('Failed to get contract');
-          })
-          .catch((err) => {
-            console.log('failed', err);
-            AppAlert.error(i18n.t('set:fail'));
-          })
-          .finally(() => {
-            if (this.state.isMounted) {
-              this.setState({
-                querying: false,
-              });
-            }
-          });
-      } else {
-        API.Page.getPageByCategory(key)
-          .then((resp) => {
-            if (
-              resp.result === 0 &&
-              resp.objects.length > 0 &&
-              this.state.isMounted
-            ) {
-              this.setState({
-                body: resp.objects[0].body,
-              });
-            } else throw Error('Failed to get contract');
-          })
-          .catch((err) => {
-            console.log('failed', err);
-            AppAlert.error(i18n.t('set:fail'));
-          })
-          .finally(() => {
-            if (this.state.isMounted) {
-              this.setState({
-                querying: false,
-              });
-            }
-          });
-      }
+      this.getContent({key, bodyTitle});
     } else {
       this.setState({body: i18n.t('err:body')});
     }
+
+    this.getPromo(rule);
   }
 
+  /* bhtak 2021/07/08 아래 함수의 용도를 모르겠음. 불필요한 것 같아서 일단 제거
   componentDidUpdate(prevProps: SimpleTextScreenProps) {
     if (this.props.route.params !== prevProps.route.params) {
       const {key, text: body, bodyTitle, mode} = this.props.route.params || {};
       this.setState({key, body, bodyTitle, mode});
     }
   }
+  */
 
   componentWillUnmount() {
     this.setState({isMounted: false});
@@ -202,9 +163,9 @@ class SimpleTextScreen extends Component<
           this.props.navigation.navigate('SimpleText', {
             key: 'noti',
             title: i18n.t('set:noti'),
-            bodyTitle: item.title,
-            body: item.body,
-            mode: 'noti',
+            bodyTitle: item?.title,
+            body: item?.body,
+            mode: 'html',
           });
         }
         break;
@@ -222,7 +183,61 @@ class SimpleTextScreen extends Component<
     }
   }
 
-  defineSource = (mode) => {
+  async onPress() {
+    const {rule} = this.props.route.params;
+    const {token} = this.props.account;
+    if (rule) {
+      const resp = await API.Promotion.join({rule, token});
+      if (resp.result === 0) {
+        AppAlert.info(i18n.t('promo:join:success'), i18n.t('promo:join'));
+      } else AppAlert.error(i18n.t('promo:join:fail'), i18n.t('promo:join'));
+    }
+    this.props.navigation.goBack();
+  }
+
+  async getContent({key, bodyTitle}: {key: string; bodyTitle?: string}) {
+    this.setState({
+      querying: true,
+    });
+
+    try {
+      const resp =
+        key === 'noti'
+          ? await API.Page.getPageByTitle(bodyTitle, this.controller)
+          : await API.Page.getPageByCategory(key);
+
+      if (
+        resp.result === 0 &&
+        resp.objects.length > 0 &&
+        this.state.isMounted // async call이므로 isMounted는 이전과 다를수 있음
+      ) {
+        this.setState({
+          body: resp.objects[0].body,
+        });
+      } else throw Error('Failed to get contract');
+    } catch (err) {
+      console.log('failed', err);
+      AppAlert.error(i18n.t('set:fail'));
+    } finally {
+      if (this.state.isMounted) {
+        this.setState({
+          querying: false,
+        });
+      }
+    }
+  }
+
+  async getPromo(rule?: string) {
+    if (rule) {
+      const resp = await API.Promotion.check({rule});
+      // available 값이 0보다 크면 프로모션 참여 가능하다.
+      if (resp.result === 0 && resp.objects[0]?.available > 0) {
+        this.setState({promoAvailable: true});
+      }
+    }
+  }
+
+  defineSource = (mode: SimpleTextScreenMode) => {
     const {body = '', bodyTitle = ''} = this.state;
 
     if (mode === 'text')
@@ -256,8 +271,10 @@ class SimpleTextScreen extends Component<
   };
 
   render() {
-    const {querying, mode = 'html'} = this.state;
+    const {querying, promoAvailable, mode = 'html'} = this.state;
     const {rule} = this.props.route.params;
+    // eslint-disable-next-line no-nested-ternary
+    const title = rule ? (promoAvailable ? 'promo:join' : 'promo:end') : 'ok';
 
     return (
       <SafeAreaView style={styles.screen}>
@@ -266,12 +283,8 @@ class SimpleTextScreen extends Component<
         {Platform.OS === 'ios' && (
           <AppButton
             style={styles.button}
-            title={i18n.t(rule ? 'simple:promo' : 'ok')}
-            onPress={() =>
-              rule
-                ? API.Promotion.joinPromotion(rule)
-                : this.props.navigation.goBack()
-            }
+            title={i18n.t(title)}
+            onPress={this.onPress}
           />
         )}
       </SafeAreaView>
@@ -281,7 +294,7 @@ class SimpleTextScreen extends Component<
 
 // export default SimpleTextScreen;
 export default connect(
-  ({info}: RootState) => ({info}),
+  ({info, account}: RootState) => ({info, account}),
   (dispatch) => ({
     action: {
       info: bindActionCreators(infoActions, dispatch),

@@ -526,7 +526,10 @@ const en = {
   'mypage:mailInfo':
     '* The eSIM product you have purchased will be sent to this email.',
 
-  'simple:promo': 'Participate',
+  'promo:join': 'Participate',
+  'promo:join:success': 'Successfully participated.',
+  'promo:join:fail': 'Sorry try again.',
+  'promo:end': 'Promotion Finished',
 };
 
 const ko = {
@@ -1062,7 +1065,10 @@ const ko = {
   'mypage:preparing': '서비스 준비중',
   'mypage:mailInfo': '* 구매하신 eSIM 상품은 본 이메일로 발송됩니다.',
 
-  'simple:promo': '프로모션 참여',
+  'promo:join': '프로모션 참여',
+  'promo:join:success': '프로모션 참여 성공',
+  'promo:join:fail': '프로모션 참여 실패',
+  'promo:end': '프로모션 종료',
 };
 
 if (Array.isArray(locales)) {
