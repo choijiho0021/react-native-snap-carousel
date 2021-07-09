@@ -1,5 +1,12 @@
 import React, {PureComponent} from 'react';
-import {Animated, Easing, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  Animated,
+  Easing,
+  StyleProp,
+  StyleSheet,
+  TouchableOpacity,
+  ViewProps,
+} from 'react-native';
 import _ from 'underscore';
 import {colors} from '../constants/Colors';
 
@@ -19,8 +26,27 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class AppSwitch extends PureComponent {
-  constructor(props) {
+type AppSwitchProps = {
+  waitFor: number;
+  value: boolean;
+  onPress: () => void;
+  styles: StyleProp<ViewProps>;
+};
+
+type AppSwitchState = {
+  animatedValue: Animated.Value;
+  circlePosXStart: number;
+  circlePosXEnd: number;
+  waitFor: number;
+};
+
+export default class AppSwitch extends PureComponent<
+  AppSwitchProps,
+  AppSwitchState
+> {
+  clickable: boolean;
+
+  constructor(props: AppSwitchProps) {
     super(props);
 
     this.state = {
@@ -46,7 +72,7 @@ export default class AppSwitch extends PureComponent {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: AppSwitchProps) {
     const isOn = this.props.value;
     if (isOn !== prevProps.value) {
       Animated.timing(this.state.animatedValue, {
