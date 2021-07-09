@@ -60,8 +60,30 @@ const styles = StyleSheet.create({
   },
 });
 
-class InputPinInTime extends Component {
-  constructor(props) {
+type InputPinInTimeProps = {
+  countdown: boolean;
+  authorized: boolean;
+  editable: boolean;
+  clickable: boolean;
+  duration: number;
+  onTimeout: () => void;
+  onPress: (v: string) => void;
+  forwardRef: React.MutableRefObject<TextInput>;
+};
+
+type InputPinInTimeState = {
+  pin: string;
+  duration: number;
+  timeout: boolean;
+};
+
+class InputPinInTime extends Component<
+  InputPinInTimeProps,
+  InputPinInTimeState
+> {
+  interval: NodeJS.Timeout | null;
+
+  constructor(props: InputPinInTimeProps) {
     super(props);
 
     this.state = {
@@ -76,19 +98,17 @@ class InputPinInTime extends Component {
     this.start = this.start.bind(this);
     this.pause = this.pause.bind(this);
     this.timeout = this.timeout.bind(this);
-    this.onChangeText = this.onChangeText.bind(this);
-    this.onPress = this.onPress.bind(this);
     this.onClick = this.onClick.bind(this);
   }
 
   componentDidMount() {
-    this.init(this.props);
+    this.init();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: InputPinInTimeProps) {
     if (this.props.countdown !== prevProps.countdown) {
       if (this.props.countdown) {
-        this.init(this.props);
+        this.init();
       } else {
         this.pause();
       }
@@ -109,10 +129,12 @@ class InputPinInTime extends Component {
     this.pause();
   }
 
-  init = ({duration, countdown}) => {
+  init = () => {
+    const {duration, countdown} = this.props;
+
     this.setState({
       pin: '',
-      duration: parseInt(duration, 10) || 0,
+      duration,
       timeout: false,
     });
 
@@ -156,21 +178,6 @@ class InputPinInTime extends Component {
     }
   };
 
-  onChangeText = (key) => (value) => {
-    this.setState({
-      [key]: value,
-    });
-  };
-
-  onPress = () => {
-    const {pin} = this.state;
-    const {onPress} = this.props;
-
-    if (_.isFunction(onPress)) {
-      onPress(pin);
-    }
-  };
-
   onClick = () => {
     if (this.props.forwardRef && this.props.forwardRef.current)
       this.props.forwardRef.current.focus();
@@ -178,7 +185,7 @@ class InputPinInTime extends Component {
 
   render() {
     const {pin, duration, timeout} = this.state;
-    const {forwardRef, authorized, countdown, editable} = this.props;
+    const {forwardRef, authorized, countdown, editable, onPress} = this.props;
     const clickable = this.props.clickable && _.size(pin) === 6;
 
     const min = Math.floor(duration / 60);
@@ -200,17 +207,17 @@ class InputPinInTime extends Component {
               placeholderTextColor={colors.greyish}
               ref={forwardRef}
               keyboardType="numeric"
-              enablesReturnKeyAutomaticalllCy
+              enablesReturnKeyAutomatically
               maxLength={6}
               clearTextOnFocus
               autoFocus={editable}
               onFocus={() => {
                 this.setState({pin: ''});
               }} //  android - clearTextOnFocus 수동적용
-              onChangeText={this.onChangeText('pin')}
+              onChangeText={(value: string) => this.setState({pin: value})}
               value={pin}
               style={styles.input}
-              textContentType={'oneTimeCode'}
+              textContentType="oneTimeCode"
             />
 
             {countdown ? (
@@ -224,7 +231,7 @@ class InputPinInTime extends Component {
           </TouchableOpacity>
           <AppButton
             disabled={!clickable}
-            onPress={this.onPress}
+            onPress={() => onPress && onPress(pin)}
             titleStyle={styles.title}
             title={i18n.t('ok')}
             disableColor={colors.white}
@@ -239,6 +246,7 @@ class InputPinInTime extends Component {
             {typeof authorized === 'undefined' && !timeout
               ? null
               : i18n.t(
+                  // eslint-disable-next-line no-nested-ternary
                   timeout
                     ? 'mobile:timeout'
                     : authorized
