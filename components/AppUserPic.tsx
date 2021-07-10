@@ -1,16 +1,27 @@
 import React, {memo} from 'react';
 import {View, Image, TouchableOpacity} from 'react-native';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
+import {API} from '@/submodules/rokebi-utils';
 import AppIcon from './AppIcon';
 
-function AppUserPic({style, url, icon, onPress}) {
+type AppUserPicProps = {
+  dimension: {width: number; height: number};
+  url?: string;
+  icon?: string;
+  onPress?: () => void;
+};
+const AppUserPic: React.FC<AppUserPicProps> = ({
+  dimension,
+  url,
+  icon,
+  onPress = () => {},
+}) => {
   return (
-    <View style={[style, {alignSelf: 'center'}]}>
+    <View style={[dimension, {alignSelf: 'center'}]}>
       <TouchableOpacity onPress={onPress}>
         {url ? (
           <Image
             source={{uri: API.default.httpImageUrl(url)}}
-            style={[style, {borderRadius: style.width / 2}]}
+            style={[dimension, {borderRadius: dimension.width / 2}]}
           />
         ) : (
           <AppIcon name={icon} />
@@ -18,6 +29,6 @@ function AppUserPic({style, url, icon, onPress}) {
       </TouchableOpacity>
     </View>
   );
-}
+};
 
 export default memo(AppUserPic);

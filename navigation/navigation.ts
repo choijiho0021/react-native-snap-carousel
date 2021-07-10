@@ -28,6 +28,10 @@ export type HomeStackParamList = {
     bodyTitle?: string;
     text?: string;
     rule?: string;
+    image?: {
+      success?: string;
+      failure?: string;
+    };
   };
   Contact: undefined;
   ContactBoard: undefined;

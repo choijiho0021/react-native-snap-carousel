@@ -102,10 +102,6 @@ const styles = StyleSheet.create({
     marginVertical: 60,
     textAlign: 'center',
   },
-  userPicture: {
-    width: 76,
-    height: 76,
-  },
   settings: {
     marginRight: 20,
     justifyContent: 'flex-end',
@@ -497,6 +493,10 @@ class MyPageScreen extends Component<MyPageScreenProps> {
     const {
       account: {mobile, email, userPictureUrl},
     } = this.props;
+    const userPicture = {
+      width: 76,
+      height: 76,
+    };
 
     return (
       <View style={{marginBottom: 10}}>
@@ -515,7 +515,7 @@ class MyPageScreen extends Component<MyPageScreenProps> {
             <AppUserPic
               url={userPictureUrl}
               icon="imgPeopleL"
-              style={styles.userPicture}
+              dimension={userPicture}
               onPress={this.changePhoto}
             />
             <AppIcon

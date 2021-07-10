@@ -534,7 +534,7 @@ class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
         <AppUserPic
           url={userPictureUrl}
           icon="imgPeople"
-          style={styles.userPicture}
+          dimension={styles.userPicture}
           onPress={this.navigate('RegisterSim_user', {mode: 'Home'})}
         />
         <View style={{marginLeft: 20, justifyContent: 'space-around', flex: 1}}>

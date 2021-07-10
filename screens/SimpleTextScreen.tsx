@@ -29,6 +29,8 @@ import {
   SimpleTextScreenMode,
 } from '@/navigation/navigation';
 import {AccountModelState} from '@/redux/modules/account';
+import AppModal from '@/components/AppModal';
+import AppUserPic from '@/components/AppUserPic';
 
 const {baseUrl} = Env.get();
 
@@ -90,6 +92,7 @@ type SimpleTextScreenState = {
   mode?: SimpleTextScreenMode;
   isMounted: boolean;
   bodyTitle?: string;
+  promoResult?: string;
 };
 
 class SimpleTextScreen extends Component<
@@ -178,13 +181,16 @@ class SimpleTextScreen extends Component<
     if (!loggedIn) {
       // 로그인 화면으로 이동
       this.props.navigation.navigate('Auth');
+    } else if (rule) {
+      this.setState({promoResult: undefined});
+      const resp = await API.Promotion.join({rule, token});
+      this.setState({
+        promoResult:
+          resp.result === 0 && resp.objects[0]?.available > 0
+            ? 'promo:join:success'
+            : 'promo:join:fail',
+      });
     } else {
-      if (rule) {
-        const resp = await API.Promotion.join({rule, token});
-        if (resp.result === 0 && resp.objects[0]?.available > 0) {
-          AppAlert.info(i18n.t('promo:join:success'), i18n.t('promo:join'));
-        } else AppAlert.error(i18n.t('promo:join:fail'), i18n.t('promo:join'));
-      }
       this.props.navigation.goBack();
     }
   }
@@ -255,12 +261,13 @@ class SimpleTextScreen extends Component<
   };
 
   render() {
-    const {querying, mode = 'html'} = this.state;
+    const {querying, promoResult, mode = 'html'} = this.state;
     const {
       promoAvailable,
       account: {loggedIn},
+      navigation,
     } = this.props;
-    const {rule} = this.props.route.params;
+    const {rule, image} = this.props.route.params;
 
     let title = 'ok';
     if (rule) {
@@ -279,6 +286,23 @@ class SimpleTextScreen extends Component<
             onPress={this.onPress}
           />
         )}
+        <AppModal
+          type="close"
+          visible={!!promoResult}
+          title={i18n.t(promoResult || '')}
+          onOkClose={() => {
+            this.setState({promoResult: undefined});
+            navigation.goBack();
+          }}>
+          <AppUserPic
+            url={
+              promoResult === 'promo:join:success'
+                ? image?.success
+                : image?.failure
+            }
+            dimension={{width: 300, height: 300}}
+          />
+        </AppModal>
       </SafeAreaView>
     );
   }

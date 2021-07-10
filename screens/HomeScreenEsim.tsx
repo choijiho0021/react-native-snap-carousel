@@ -394,6 +394,7 @@ class HomeScreenEsim extends Component<
         bodyTitle: item.notice.title,
         body: item.notice.body,
         rule: item.notice.rule,
+        image: item.notice.image,
         mode: 'noti',
       });
     } else {
