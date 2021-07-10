@@ -139,7 +139,6 @@ class SettingsScreen extends Component<
           key: 'setting:pushnoti',
           value: i18n.t('set:pushnoti'),
           toggle: props.isPushNotiEnabled,
-          route: undefined,
         },
         // { "key": "info", "value": i18n.t('set:info'), route: 'MySim'},
         {
@@ -158,7 +157,6 @@ class SettingsScreen extends Component<
           desc: `${i18n.t(
             'now',
           )} ${VersionCheck.getCurrentVersion()}/${label.replace(/v/g, '')}`,
-          route: undefined,
         },
         {
           key: 'setting:aboutus',
@@ -168,7 +166,6 @@ class SettingsScreen extends Component<
         {
           key: 'setting:logout',
           value: i18n.t(props.loggedIn ? 'set:logout' : 'set:login'),
-          route: undefined,
         },
       ],
       isMounted: false,

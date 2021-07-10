@@ -530,6 +530,7 @@ const en = {
   'promo:join:success': 'Successfully participated.',
   'promo:join:fail': 'Sorry try again.',
   'promo:end': 'Promotion Finished',
+  'promo:login': 'Login to participate',
 };
 
 const ko = {
@@ -1069,6 +1070,7 @@ const ko = {
   'promo:join:success': '프로모션 참여 성공',
   'promo:join:fail': '프로모션 참여 실패',
   'promo:end': '프로모션 종료',
+  'promo:login': '프로모션 참여를 위해 로그인',
 };
 
 if (Array.isArray(locales)) {

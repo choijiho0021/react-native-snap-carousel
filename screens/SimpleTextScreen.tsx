@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, memo, useState} from 'react';
 import {
   Platform,
   SafeAreaView,
@@ -23,7 +23,7 @@ import utils from '@/submodules/rokebi-utils/utils';
 import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
 import {RootState} from '@/redux';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {RouteProp} from '@react-navigation/native';
+import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {
   HomeStackParamList,
   SimpleTextScreenMode,
@@ -81,6 +81,7 @@ type SimpleTextScreenProps = {
   route: SimpleTextScreenRouteProp;
   info: InfoModelState;
   account: AccountModelState;
+  promoAvailable: boolean;
 };
 
 type SimpleTextScreenState = {
@@ -89,7 +90,6 @@ type SimpleTextScreenState = {
   mode?: SimpleTextScreenMode;
   isMounted: boolean;
   bodyTitle?: string;
-  promoAvailable: boolean;
 };
 
 class SimpleTextScreen extends Component<
@@ -105,7 +105,6 @@ class SimpleTextScreen extends Component<
       querying: false,
       body: '',
       isMounted: false,
-      promoAvailable: false,
     };
 
     this.controller = new AbortController();
@@ -132,18 +131,7 @@ class SimpleTextScreen extends Component<
     } else {
       this.setState({body: i18n.t('err:body')});
     }
-
-    this.getPromo(rule);
   }
-
-  /* bhtak 2021/07/08 아래 함수의 용도를 모르겠음. 불필요한 것 같아서 일단 제거
-  componentDidUpdate(prevProps: SimpleTextScreenProps) {
-    if (this.props.route.params !== prevProps.route.params) {
-      const {key, text: body, bodyTitle, mode} = this.props.route.params || {};
-      this.setState({key, body, bodyTitle, mode});
-    }
-  }
-  */
 
   componentWillUnmount() {
     this.setState({isMounted: false});
@@ -185,14 +173,20 @@ class SimpleTextScreen extends Component<
 
   async onPress() {
     const {rule} = this.props.route.params;
-    const {token} = this.props.account;
-    if (rule) {
-      const resp = await API.Promotion.join({rule, token});
-      if (resp.result === 0 && resp.objects[0]?.available > 0) {
-        AppAlert.info(i18n.t('promo:join:success'), i18n.t('promo:join'));
-      } else AppAlert.error(i18n.t('promo:join:fail'), i18n.t('promo:join'));
+    const {token, loggedIn} = this.props.account;
+
+    if (!loggedIn) {
+      // 로그인 화면으로 이동
+      this.props.navigation.navigate('Auth');
+    } else {
+      if (rule) {
+        const resp = await API.Promotion.join({rule, token});
+        if (resp.result === 0 && resp.objects[0]?.available > 0) {
+          AppAlert.info(i18n.t('promo:join:success'), i18n.t('promo:join'));
+        } else AppAlert.error(i18n.t('promo:join:fail'), i18n.t('promo:join'));
+      }
+      this.props.navigation.goBack();
     }
-    this.props.navigation.goBack();
   }
 
   async getContent({key, bodyTitle}: {key: string; bodyTitle?: string}) {
@@ -223,16 +217,6 @@ class SimpleTextScreen extends Component<
         this.setState({
           querying: false,
         });
-      }
-    }
-  }
-
-  async getPromo(rule?: string) {
-    if (rule) {
-      const resp = await API.Promotion.check({rule});
-      // available 값이 0보다 크면 프로모션 참여 가능하다.
-      if (resp.result === 0 && resp.objects[0]?.available > 0) {
-        this.setState({promoAvailable: true});
       }
     }
   }
@@ -271,10 +255,18 @@ class SimpleTextScreen extends Component<
   };
 
   render() {
-    const {querying, promoAvailable, mode = 'html'} = this.state;
+    const {querying, mode = 'html'} = this.state;
+    const {
+      promoAvailable,
+      account: {loggedIn},
+    } = this.props;
     const {rule} = this.props.route.params;
-    // eslint-disable-next-line no-nested-ternary
-    const title = rule ? (promoAvailable ? 'promo:join' : 'promo:end') : 'ok';
+
+    let title = 'ok';
+    if (rule) {
+      if (loggedIn) title = promoAvailable ? 'promo:join' : 'promo:end';
+      else title = 'promo:login';
+    }
 
     return (
       <SafeAreaView style={styles.screen}>
@@ -292,6 +284,28 @@ class SimpleTextScreen extends Component<
   }
 }
 
+const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
+  const [promoAvailable, setPromoAvailable] = useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const getPromo = async () => {
+        const {rule} = props.route.params;
+        if (rule) {
+          const resp = await API.Promotion.check({rule});
+          // available 값이 0보다 크면 프로모션 참여 가능하다.
+          if (resp.result === 0 && resp.objects[0]?.available > 0) {
+            setPromoAvailable(true);
+          }
+        }
+      };
+      getPromo();
+    }, [props.route.params]),
+  );
+
+  return <SimpleTextScreen {...props} promoAvailable={promoAvailable} />;
+};
+
 // export default SimpleTextScreen;
 export default connect(
   ({info, account}: RootState) => ({info, account}),
@@ -300,4 +314,4 @@ export default connect(
       info: bindActionCreators(infoActions, dispatch),
     },
   }),
-)(SimpleTextScreen);
+)(memo(SimpleTextScreen0));
