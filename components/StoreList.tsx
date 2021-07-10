@@ -140,7 +140,7 @@ type StoreListProps = {
   localOpList: ImmutableMap<string, RkbLocalOp>;
   data: ProductByCategory[];
   onPress: (p: RkbProduct[]) => void;
-  refreshTrigger: number;
+  refreshTrigger?: number;
 };
 
 class StoreList extends Component<StoreListProps> {

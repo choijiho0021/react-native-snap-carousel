@@ -12,7 +12,7 @@ const AppBackButton = ({
   lastTab = [0, 1],
 }: {
   back?: string;
-  title: string;
+  title?: string;
   isPaid?: boolean;
   lastTab: number[];
 }) => {

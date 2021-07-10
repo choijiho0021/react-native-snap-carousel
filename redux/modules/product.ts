@@ -26,7 +26,7 @@ export interface ProductModelState {
   prodList: ImmutableMap<string, RkbProduct>;
   localOpList: ImmutableMap<string, RkbLocalOp>;
   prodOfCountry: RkbProduct[];
-  sortedProdList: RkbProduct[];
+  sortedProdList: RkbProduct[][];
   detailInfo: string;
   detailCommon: string;
 }

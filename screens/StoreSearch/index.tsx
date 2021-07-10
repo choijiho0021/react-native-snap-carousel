@@ -1,11 +1,20 @@
 /* eslint-disable no-param-reassign */
 import {RootState} from '@/redux';
 import Analytics from 'appcenter-analytics';
-import React, {Component} from 'react';
+import React, {
+  Component,
+  createRef,
+  memo,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
+  Dimensions,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -19,11 +28,20 @@ import StoreList from '@/components/StoreList';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
-import {actions as productActions} from '@/redux/modules/product';
+import {
+  actions as productActions,
+  ProductAction,
+  ProductModelState,
+} from '@/redux/modules/product';
 import {API} from '@/submodules/rokebi-utils';
 import i18n from '@/utils/i18n';
 import {retrieveData, storeData} from '@/utils/utils';
-import HeaderTitle from './components/HeaderTitle';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RouteProp} from '@react-navigation/native';
+import {RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
+import AppBackButton from '@/components/AppBackButton';
+import AppButton from '@/components/AppButton';
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -128,12 +146,125 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
+  container: {
+    flex: 1,
+  },
+  headerTitle: {
+    width: Math.round(Dimensions.get('window').width),
+    flexDirection: 'row',
+    alignContent: 'center',
+    flex: 1,
+  },
+  searchText: {
+    // React Native 6.3버전 미만에서 한글로 글을 쓰는 경우 글씨 크기가 오락가락하는 이슈가 발생
+    // 글씨크기의 기본값 17로 설정하는 경우 어느정도 해결할 수 있으므로 설정 변경
+    // ... appStyles.normal14Text,
+    color: colors.black,
+    fontSize: 17,
+    flex: 1,
+  },
+  showSearchBar: {
+    marginRight: 30,
+    justifyContent: 'flex-end',
+    backgroundColor: colors.white,
+  },
+  titleBottom: {
+    height: 1,
+    marginHorizontal: 20,
+    marginTop: 10,
+    backgroundColor: colors.black,
+  },
 });
 
 const MAX_HISTORY_LENGTH = 7;
 
-class StoreSearchScreen extends Component {
-  constructor(props) {
+type HeaderTitleRef = {
+  changeValue: (v: string) => void;
+};
+
+const HeaderTitle0 = ({
+  search,
+  headerRef,
+}: {
+  search: (v: string, b: boolean) => void;
+  headerRef: React.MutableRefObject<HeaderTitleRef>;
+}) => {
+  const [word, setWord] = useState('');
+  const ref = useRef<HeaderTitleRef>();
+
+  useEffect(() => {
+    if (headerRef) {
+      headerRef.current = ref.current;
+      headerRef.current.changeValue = (v: string) => {
+        setWord(v);
+      };
+    }
+  }, [headerRef]);
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.headerTitle}>
+        <AppBackButton />
+        <TextInput
+          ref={ref}
+          style={styles.searchText}
+          placeholder={i18n.t('store:search')}
+          placeholderTextColor={colors.greyish}
+          returnKeyType="search"
+          enablesReturnKeyAutomatically
+          clearButtonMode="always"
+          onSubmitEditing={() => search(word, true)}
+          onChangeText={(value: string) => {
+            search(value, false);
+            setWord(value);
+          }}
+          value={word}
+        />
+        <AppButton
+          style={styles.showSearchBar}
+          onPress={() => search(word, true)}
+          iconName="btnSearchOff"
+        />
+      </View>
+      <View style={styles.titleBottom} />
+    </View>
+  );
+};
+
+const HeaderTitle = memo(HeaderTitle0);
+
+type StoreSearchScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'StoreSearch'
+>;
+
+type StoreSearchScreenRouteProp = RouteProp<HomeStackParamList, 'StoreSearch'>;
+
+type StoreSearchScreenProps = {
+  navigation: StoreSearchScreenNavigationProp;
+  route: StoreSearchScreenRouteProp;
+
+  product: ProductModelState;
+  action: {
+    product: ProductAction;
+  };
+};
+
+type StoreSearchScreenState = {
+  querying: boolean;
+  searching: boolean;
+  searchWord: string;
+  searchList: string[];
+  recommendCountry: string[];
+};
+
+class StoreSearchScreen extends Component<
+  StoreSearchScreenProps,
+  StoreSearchScreenState
+> {
+  headerRef: React.MutableRefObject<HeaderTitleRef>;
+
+  constructor(props: StoreSearchScreenProps) {
     super(props);
     this.state = {
       querying: true,
@@ -142,6 +273,8 @@ class StoreSearchScreen extends Component {
       searchList: [],
       recommendCountry: [],
     };
+
+    this.headerRef = createRef<HeaderTitleRef>();
     this.search = this.search.bind(this);
   }
 
@@ -150,40 +283,18 @@ class StoreSearchScreen extends Component {
 
     Analytics.trackEvent('Page_View_Count', {page: 'Country Search'});
 
-    this.setState({allData: this.props.product.sortedProdList});
     this.getSearchHist();
 
     this.props.navigation.setOptions({
       title: null,
       headerLeft: null,
       headerTitle: () => (
-        <HeaderTitle
-          search={this.search}
-          searchWord={this.state.searchWord}
-          navigation={this.props.navigation}
-        />
+        <HeaderTitle search={this.search} headerRef={this.headerRef} />
       ),
     });
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (
-      this.state.searchWord &&
-      this.state.searchWord !== prevState.searchWord
-    ) {
-      this.props.navigation.setOptions({
-        title: null,
-        headerLeft: null,
-        headerTitle: () => (
-          <HeaderTitle
-            search={this.search}
-            searchWord={this.state.searchWord}
-            navigation={this.props.navigation}
-          />
-        ),
-      });
-    }
-
+  componentDidUpdate(prevProps, prevState: StoreSearchScreenState) {
     if (this.state.searching !== prevState.searching) {
       this.getSearchHist();
     }
@@ -203,12 +314,14 @@ class StoreSearchScreen extends Component {
       .then((resp) => {
         if (resp.result === 0 && resp.objects.length > 0) {
           const recommendation = resp.objects[0].body
-            .replace(/<\/p>/gi, '')
+            ?.replace(/<\/p>/gi, '')
             .replace(/<p>/gi, '')
             .split(',');
-          this.setState({
-            recommendCountry: recommendation,
-          });
+          if (recommendation) {
+            this.setState({
+              recommendCountry: recommendation,
+            });
+          }
         }
       })
       .catch((err) => {
@@ -221,7 +334,7 @@ class StoreSearchScreen extends Component {
       });
   }
 
-  onPressItem = (prodOfCountry) => {
+  onPressItem = async (prodOfCountry: RkbProduct[]) => {
     if (this.state.searchWord.length > 0) {
       Analytics.trackEvent('Page_View_Count', {
         page: 'Move To Country with Searching',
@@ -229,7 +342,8 @@ class StoreSearchScreen extends Component {
 
       // * logEvent(eventName: string, valueToSum: number, parameters: {[key:string]:string|number});
 
-      if (getTrackingStatus === 'authorized') {
+      const status = await getTrackingStatus();
+      if (status === 'authorized') {
         const params = {
           _valueToSum: 1,
           fb_search_string: this.state.searchWord,
@@ -245,7 +359,7 @@ class StoreSearchScreen extends Component {
     this.props.navigation.navigate('Country');
   };
 
-  async search(searchWord, searching = false) {
+  async search(searchWord: string, searching = false) {
     this.setState({searchWord, searching});
 
     if (searching) {
@@ -328,14 +442,15 @@ class StoreSearchScreen extends Component {
 
   // 국가이름 자동완성
   renderSearching() {
-    const {allData, searchWord = ''} = this.state;
+    const {searchWord = ''} = this.state;
+    const allData = this.props.product.sortedProdList;
     if (!allData) {
       return null;
     }
 
     // 복수국가 이름 검색 추가
     const searchResult = allData
-      .filter((elm) => elm.length > 0 && elm[0].search.match(searchWord))
+      .filter((elm) => elm.length > 0 && elm[0].search?.match(searchWord))
       .map((elm) => ({
         name: elm[0].name,
         country: elm[0].search,
@@ -351,7 +466,7 @@ class StoreSearchScreen extends Component {
             onPress={() => this.search(elm.country, true)}>
             <View key={`${idx}`} style={styles.autoList}>
               <Text key="text" style={styles.autoText}>
-                {elm.categoryId === API.Product.category.multi
+                {elm.categoryId.includes(API.Product.category.multi)
                   ? elm.name
                   : elm.country}
               </Text>
@@ -364,9 +479,10 @@ class StoreSearchScreen extends Component {
 
   // 국가 검색
   renderStoreList() {
-    const {allData, searchWord = ''} = this.state;
+    const {searchWord = ''} = this.state;
+    const allData = this.props.product.sortedProdList;
     const filtered = allData.filter(
-      (elm) => _.isEmpty(searchWord) || elm[0].search.match(searchWord),
+      (elm) => _.isEmpty(searchWord) || elm[0].search?.match(searchWord),
     );
 
     const list = API.Product.toColumnList(filtered);
