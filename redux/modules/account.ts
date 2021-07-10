@@ -123,7 +123,7 @@ export const changeNotiToken = (): AppThunk => async (
     field_fcm_token: Platform.OS === 'android' ? deviceToken : '',
   };
 
-  return dispatch(changeUserAttr({uuid: userId, attributes, token})).then(
+  return dispatch(changeUserAttr({userId, attributes, token})).then(
     (rsp) => {
       const result = rsp.payload ? rsp.payload.result : rsp.result;
       if (result === 0) {
@@ -453,7 +453,7 @@ export const changeEmail = (mail: string): AppThunk => (
 export const changePushNoti = ({
   isPushNotiEnabled,
 }: {
-  isPushNotiEnabled: string;
+  isPushNotiEnabled: boolean;
 }): AppThunk => (dispatch: AppDispatch, getState) => {
   const {
     account: {userId, token},
@@ -493,6 +493,7 @@ export const actions = {
   changeNotiToken,
   getAccount,
   getUserId,
+  changePushNoti,
 };
 export type AccountAction = typeof actions;
 

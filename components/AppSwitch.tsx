@@ -30,7 +30,7 @@ type AppSwitchProps = {
   waitFor: number;
   value: boolean;
   onPress: () => void;
-  styles: StyleProp<ViewProps>;
+  style?: StyleProp<ViewProps>;
 };
 
 type AppSwitchState = {
@@ -98,7 +98,7 @@ export default class AppSwitch extends PureComponent<
   }
 
   render() {
-    const {styles: st} = this.props;
+    const {style: st} = this.props;
     const trackColor = {
       true: ((st || {}).trackColor || {}).true || colors.clearBlue,
       false: ((st || {}).trackColor || {}).false || colors.lightGrey,

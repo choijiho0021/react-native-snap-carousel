@@ -1,6 +1,6 @@
 import firebase from '@react-native-firebase/app';
 import Analytics from 'appcenter-analytics';
-import React, {Component, memo, useCallback} from 'react';
+import React, {Component, memo} from 'react';
 import {FlatList, StyleSheet, Text, Pressable, View} from 'react-native';
 import VersionCheck from 'react-native-version-check';
 import {connect} from 'react-redux';
@@ -21,6 +21,9 @@ import {
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RouteProp} from '@react-navigation/native';
 
 const {label} = Env.get();
 
@@ -56,38 +59,39 @@ const styles = StyleSheet.create({
   },
 });
 
-const SettingsListItem0 = ({item, onPress}) => {
-  const child = React.createRef();
-  const button = useCallback(
-    (item) => {
-      if (item.desc) {
-        return <Text style={styles.itemDesc}>{item.desc}</Text>;
-      }
-      if (item.hasOwnProperty('toggle')) {
-        return (
-          <AppSwitch
-            value={item.toggle}
-            ref={child}
-            onPress={onPress(item.key, item.value, item.route)}
-            waitFor={1000}
-          />
-        );
-      }
-      return <AppIcon style={{alignSelf: 'center'}} name="iconArrowRight" />;
-    },
-    [child, onPress],
-  );
+type SettingsItem = {
+  key: string;
+  value: string;
+  toggle?: boolean;
+  route?: string;
+  desc?: string;
+};
 
+const SettingsListItem0 = ({
+  item,
+  onPress,
+}: {
+  item: SettingsItem;
+  onPress: () => void;
+}) => {
   return (
-    <Pressable
-      onPress={
-        _.isFunction((child.current || {}).onPress)
-          ? child.current.onPress
-          : onPress(item.key, item.value, item.route)
-      }>
+    <Pressable onPress={onPress}>
       <View style={styles.row}>
         <Text style={styles.itemTitle}>{item.value}</Text>
-        {button(item)}
+        {
+          // eslint-disable-next-line no-nested-ternary
+          item.desc ? (
+            <Text style={styles.itemDesc}>{item.desc}</Text>
+          ) : item.hasOwnProperty('toggle') ? (
+            <AppSwitch
+              value={item.toggle || false}
+              onPress={onPress}
+              waitFor={1000}
+            />
+          ) : (
+            <AppIcon style={{alignSelf: 'center'}} name="iconArrowRight" />
+          )
+        }
       </View>
     </Pressable>
   );
@@ -95,7 +99,17 @@ const SettingsListItem0 = ({item, onPress}) => {
 
 const SettingsListItem = memo(SettingsListItem0);
 
+type SettingsScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'Settings'
+>;
+
+type SettingsScreenRouteProp = RouteProp<HomeStackParamList, 'SimpleText'>;
+
 type SettingsScreenProps = {
+  navigation: SettingsScreenNavigationProp;
+  route: SettingsScreenRouteProp;
+
   isPushNotiEnabled?: boolean;
   loggedIn?: boolean;
   action: {
@@ -107,13 +121,7 @@ type SettingsScreenProps = {
 
 type SettingsScreenState = {
   showModal: boolean;
-  data: {
-    key: string;
-    value: string;
-    toggle?: boolean;
-    route?: string;
-    desc?: string;
-  }[];
+  data: SettingsItem[];
   isMounted: boolean;
 };
 
@@ -188,7 +196,7 @@ class SettingsScreen extends Component<
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: SettingsScreenProps) {
     const {loggedIn, isPushNotiEnabled} = this.props;
     const statePushNoti = (
       this.state.data.find((item) => item.key === 'setting:pushnoti') || {}
@@ -218,7 +226,7 @@ class SettingsScreen extends Component<
     }));
   }
 
-  setData(key, obj) {
+  setData(key: string, obj: Partial<SettingsItem>) {
     this.setState((prevState) => ({
       data: prevState.data.map((item) =>
         item.key === key
@@ -231,8 +239,9 @@ class SettingsScreen extends Component<
     }));
   }
 
-  onPress = (key, title, route) => () => {
-    let isEnabled;
+  onPress = (item: SettingsItem) => {
+    const {key, value, route} = item;
+    let isEnabled: boolean;
     switch (key) {
       case 'setting:logout':
         if (this.props.loggedIn) this.showModal(true);
@@ -241,19 +250,12 @@ class SettingsScreen extends Component<
         break;
 
       case 'setting:pushnoti':
-        isEnabled = (
-          this.state.data.find((item) => item.key === 'setting:pushnoti') || {}
-        ).toggle;
-        this.setState((prevState) => ({
-          data: prevState.data.map((item) =>
-            item.key === 'setting:pushnoti'
-              ? {
-                  ...item,
-                  toggle: !isEnabled,
-                }
-              : item,
-          ),
-        }));
+        isEnabled =
+          this.state.data.find((i) => i.key === 'setting:pushnoti')?.toggle ||
+          false;
+
+        this.setData('setting:pushnoti', {toggle: !isEnabled});
+
         this.props.action.account
           .changePushNoti({isPushNotiEnabled: !isEnabled})
           .catch(() => {
@@ -268,7 +270,10 @@ class SettingsScreen extends Component<
       default:
         if (route) {
           Analytics.trackEvent('Page_View_Count', {page: `MyPage${key}`});
-          this.props.navigation.navigate(route, {key, title});
+          this.props.navigation.navigate(route as keyof HomeStackParamList, {
+            key,
+            title: value,
+          });
         }
     }
   };
@@ -285,22 +290,22 @@ class SettingsScreen extends Component<
     this.showModal(false);
   }
 
-  showModal(value) {
+  showModal(value: boolean) {
     this.setState({
       showModal: value,
     });
   }
 
-  renderItem({item}) {
-    return <SettingsListItem item={item} onPress={this.onPress} />;
+  renderItem({item}: {item: SettingsItem}) {
+    return <SettingsListItem item={item} onPress={() => this.onPress(item)} />;
   }
 
   render() {
-    const {showModal} = this.state;
+    const {showModal, data} = this.state;
 
     return (
       <View style={styles.container}>
-        <FlatList data={this.state.data} renderItem={this.renderItem} />
+        <FlatList data={data} renderItem={this.renderItem} />
 
         <AppModal
           title={i18n.t('set:confirmLogout')}
