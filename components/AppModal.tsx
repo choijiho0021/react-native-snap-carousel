@@ -13,7 +13,7 @@ import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
 import {colors} from '../constants/Colors';
 import AppButton from './AppButton';
-import validationUtil from '../utils/validationUtil';
+import validationUtil, {ValidationResult} from '../utils/validationUtil';
 import AppIcon from './AppIcon';
 
 const styles = StyleSheet.create({
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
 
 interface AppModalProps {
   visible: boolean;
-  type?: 'normal' | 'close' | 'edit';
+  type?: 'normal' | 'close' | 'edit' | 'info';
   title: string;
   titleStyle?: TextStyle;
   titleIcon?: string;
@@ -106,8 +106,9 @@ interface AppModalProps {
   toRokebiCash?: boolean;
   closeButtonTitle?: string;
   infoText?: string;
-  validate?: (v: string) => string;
-  validateAsync?: (v: string) => Promise<string[] | undefined>;
+  default?: string;
+  validate?: (v: string) => ValidationResult;
+  validateAsync?: (v: string) => Promise<ValidationResult>;
   onOkClose?: (v: string) => void;
   onCancelClose?: () => void;
 }
@@ -118,11 +119,11 @@ interface AppModalState {
 }
 
 class AppModal extends PureComponent<AppModalProps, AppModalState> {
-  constructor(props) {
+  constructor(props: AppModalProps) {
     super(props);
 
     this.state = {
-      value: props.default,
+      value: props.default || '',
       error: undefined,
     };
 
@@ -131,10 +132,10 @@ class AppModal extends PureComponent<AppModalProps, AppModalState> {
     this.renderError = this.renderError.bind(this);
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: AppModalProps) {
     if (this.props.visible && this.props.visible !== prevProps.visible) {
       this.setState({
-        value: this.props.default,
+        value: this.props.default || '',
       });
     }
   }

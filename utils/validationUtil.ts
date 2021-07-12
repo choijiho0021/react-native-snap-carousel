@@ -130,18 +130,28 @@ validate.validators.custom = function(value, options, key, attributes) {
 */
 
 type ValidationRule = typeof validation;
+
+export type ValidationResult =
+  | {
+      [x: string]: [string];
+    }
+  | undefined;
+
 const validate = (
   key: keyof ValidationRule,
   value: string,
   vald?: ValidationRule,
-) => {
+): ValidationResult => {
   const val = {
     [key]: value,
   };
   return validate0(val, vald || {[key]: validation[key]});
 };
 
-const validateAll = (val: object, extraValidation?: ValidationRule) => {
+const validateAll = (
+  val: object,
+  extraValidation?: ValidationRule,
+): ValidationResult => {
   if (!_.isEmpty(val)) {
     Object.keys(val).forEach((key) => {
       if (extraValidation && _.isEmpty(extraValidation[key]))

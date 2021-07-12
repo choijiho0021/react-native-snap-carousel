@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
 import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
-
-import _ from 'underscore';
-import {appStyles} from '../constants/Styles';
-import {colors} from '../constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import {colors} from '@/constants/Colors';
 import utils from '@/submodules/rokebi-utils/utils';
+import {RkbBoard} from '@/submodules/rokebi-utils/api/boardApi';
 
 const styles = StyleSheet.create({
   list: {
@@ -31,8 +30,13 @@ const styles = StyleSheet.create({
   },
 });
 
-class BoardMsg extends Component {
-  shouldComponentUpdate(nextProps) {
+type BoardMsgProps = {
+  item: RkbBoard;
+  uid: number;
+  onPress: (uuid: string, status: string) => void;
+};
+class BoardMsg extends Component<BoardMsgProps> {
+  shouldComponentUpdate(nextProps: BoardMsgProps) {
     return (
       this.props.item.uuid !== nextProps.item.uuid ||
       this.props.item.statusCode !== nextProps.item.statusCode

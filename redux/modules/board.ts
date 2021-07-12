@@ -2,6 +2,7 @@ import {createAction, handleActions} from 'redux-actions';
 import {pender} from 'redux-pender';
 import _ from 'underscore';
 import {API} from '@/submodules/rokebi-utils';
+import {RkbBoard} from '@/submodules/rokebi-utils/api/boardApi';
 import {auth} from './account';
 import {AppThunk} from '..';
 
@@ -97,14 +98,15 @@ export const actions = {
   getIssueList,
   postAttach,
   postIssue,
+  getNextIssueList,
 };
 
 export type BoardAction = typeof actions;
 
-interface BoardModelState {
+export interface BoardModelState {
   next: boolean;
   page: number;
-  list: any[];
+  list: RkbBoard[];
   comment?: string;
 }
 

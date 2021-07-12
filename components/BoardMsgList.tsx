@@ -13,10 +13,19 @@ import {bindActionCreators} from 'redux';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
-import {actions as boardActions} from '@/redux/modules/board';
-import {actions as accountActions} from '@/redux/modules/account';
+import {
+  actions as boardActions,
+  BoardAction,
+  BoardModelState,
+} from '@/redux/modules/board';
+import {
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import utils from '@/submodules/rokebi-utils/utils';
 import {RootState} from '@/redux';
+import {ValidationResult} from '@/utils/validationUtil';
+import {RkbBoard} from '@/submodules/rokebi-utils/api/boardApi';
 import AppActivityIndicator from './AppActivityIndicator';
 import AppModal from './AppModal';
 import AppButton from './AppButton';
@@ -71,16 +80,35 @@ const styles = StyleSheet.create({
   },
 });
 
-class BoardMsgList extends Component {
-  constructor(props) {
+type BoardMsgListProps = {
+  board: BoardModelState;
+  account: AccountModelState;
+  pending: boolean;
+  uid: number;
+  onPress: (uuid: string, status: string) => void;
+
+  action: {
+    board: BoardAction;
+  };
+};
+type BoardMsgListState = {
+  data: RkbBoard[];
+  mobile?: string;
+  showModal: boolean;
+  selected?: string;
+  refreshing: boolean;
+  status: string;
+};
+
+class BoardMsgList extends Component<BoardMsgListProps, BoardMsgListState> {
+  constructor(props: BoardMsgListProps) {
     super(props);
 
     this.state = {
       data: [],
-      mobile: undefined,
       showModal: false,
-      selected: undefined,
       refreshing: false,
+      status: '',
     };
 
     this.renderItem = this.renderItem.bind(this);
@@ -99,7 +127,7 @@ class BoardMsgList extends Component {
     this.init();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: BoardMsgListProps) {
     if (this.props.board.list !== prevProps.board.list) {
       this.setState({
         data: this.props.board.list,
@@ -119,13 +147,15 @@ class BoardMsgList extends Component {
 
   onSubmit() {
     const {mobile} = this.state;
-    const number = mobile.replace(/-/g, '');
+    if (mobile) {
+      const number = mobile.replace(/-/g, '');
 
-    this.setState({
-      data: this.props.board.list.filter((item) =>
-        item.mobile.includes(number),
-      ),
-    });
+      this.setState({
+        data: this.props.board.list.filter((item) =>
+          item.mobile.includes(number),
+        ),
+      });
+    }
   }
 
   // 응답 메시지 화면으로 이동한다.
@@ -134,16 +164,11 @@ class BoardMsgList extends Component {
       showModal: false,
     });
 
-    this.props.onPress(this.state.selected, this.state.status);
+    const {selected, status} = this.state;
+    if (selected) this.props.onPress(selected, status);
   }
 
-  onChangeValue = (key) => (value) => {
-    this.setState({
-      [key]: value,
-    });
-  };
-
-  onPress = (uuid, status) => () => {
+  onPress = (uuid: string, status: string) => () => {
     if (this.props.uid === 0) {
       // anonymous인 경우에는 비밀 번호를 입력받아서 일치하면 보여준다.
       this.setState({
@@ -158,12 +183,12 @@ class BoardMsgList extends Component {
   };
 
   // 입력된 PIN이 일치하는지 확인한다.
-  onValidate(value) {
+  onValidate(value: string): ValidationResult {
     const item = this.state.data.find((i) => i.uuid === this.state.selected);
 
     // PIN match
     if (item && item.pin === value) return undefined;
-    return i18n.t('board:pinMismatch');
+    return {pin: [i18n.t('board:pinMismatch')]};
   }
 
   onEndReached() {
@@ -205,7 +230,7 @@ class BoardMsgList extends Component {
                 maxLength={13}
                 value={mobile}
                 onSubmitEditing={this.onSubmit}
-                onChangeText={this.onChangeValue('mobile')}
+                onChangeText={(v: string) => this.setState({mobile: v})}
               />
 
               <AppButton
@@ -239,7 +264,7 @@ class BoardMsgList extends Component {
     );
   }
 
-  renderItem({item}) {
+  renderItem({item}: {item: RkbBoard}) {
     return (
       <BoardMsg
         onPress={this.onPress(item.uuid, item.statusCode)}
@@ -283,7 +308,7 @@ class BoardMsgList extends Component {
           maxLength={4}
           keyboardType="numeric"
           onOkClose={this.onSubmitPin}
-          onCancelClose={() => this.onChangeValue('showModal')(false)}
+          onCancelClose={() => this.setState({showModal: false})}
           validate={this.onValidate}
         />
       </SafeAreaView>
