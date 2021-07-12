@@ -9,11 +9,12 @@ import {
   Animated,
   Image,
   Clipboard,
+  NativeScrollEvent,
 } from 'react-native';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import _ from 'underscore';
-import WebView from 'react-native-webview';
+import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import Analytics from 'appcenter-analytics';
 import KakaoSDK from '@actbase/react-native-kakaosdk';
 import {API} from '@/submodules/rokebi-utils';
@@ -26,10 +27,14 @@ import AppButton from '@/components/AppButton';
 import Env from '@/environment';
 import {windowWidth} from '@/constants/SliderEntry.style';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
-import {actions as productActions} from '@/redux/modules/product';
+import {
+  actions as productActions,
+  ProductAction,
+  ProductModelState,
+} from '@/redux/modules/product';
 import {Toast} from '@/constants/CustomTypes';
 import AppIcon from '@/components/AppIcon';
-import {actions as infoActions} from '@/redux/modules/info';
+import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
 import {RootState} from '@/redux';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
@@ -102,13 +107,35 @@ type ProductDetailScreenRouteProp = RouteProp<
 type ProductDetailScreenProps = {
   navigation: ProductDetailScreenNavigationProp;
   route: ProductDetailScreenRouteProp;
+
+  pending: boolean;
+  product: ProductModelState;
+  info: InfoModelState;
+
   action: {
     toast: ToastAction;
+    product: ProductAction;
   };
 };
 
-class ProductDetailScreen extends Component<ProductDetailScreenProps> {
-  constructor(props) {
+type ProductDetailScreenState = {
+  scrollY: Animated.Value;
+  tabIdx: number;
+  querying: boolean;
+  height1?: number;
+  height2?: number;
+  height3?: number;
+};
+
+class ProductDetailScreen extends Component<
+  ProductDetailScreenProps,
+  ProductDetailScreenState
+> {
+  controller: AbortController;
+
+  scrollView: React.RefObject<ScrollView>;
+
+  constructor(props: ProductDetailScreenProps) {
     super(props);
 
     this.state = {
@@ -116,8 +143,6 @@ class ProductDetailScreen extends Component<ProductDetailScreenProps> {
       tabIdx: 0,
       querying: true,
     };
-
-    this.toastRef = React.createRef();
 
     this.openKTalk = this.openKTalk.bind(this);
     this.checkIdx = this.checkIdx.bind(this);
@@ -129,7 +154,7 @@ class ProductDetailScreen extends Component<ProductDetailScreenProps> {
     this.clickTab = this.clickTab.bind(this);
 
     this.controller = new AbortController();
-    this.scrollView = React.createRef();
+    this.scrollView = React.createRef<ScrollView>();
   }
 
   componentDidMount() {
@@ -143,20 +168,23 @@ class ProductDetailScreen extends Component<ProductDetailScreenProps> {
     this.props.action.product.getProdDetail(this.controller);
   }
 
-  shouldComponentUpdate(preProps, preState) {
+  // TODO : detailInfo 정보 비교 방법
+  shouldComponentUpdate(
+    preProps: ProductDetailScreenProps,
+    preState: ProductDetailScreenState,
+  ) {
     const {tabIdx, height2} = this.state;
     const {detailInfo, detailCommon} = this.props.product;
 
     return (
       preState.tabIdx !== tabIdx ||
       preState.height2 !== height2 ||
-      preProps.detailInfo !== detailInfo ||
-      preProps.detailCommon !== detailCommon ||
-      preProps.localOpDetails !== this.props.localOpDetails
+      preProps.product.detailInfo !== detailInfo ||
+      preProps.product.detailCommon !== detailCommon
     );
   }
 
-  onMessage(event) {
+  onMessage(event: WebViewMessageEvent) {
     const cmd = JSON.parse(event.nativeEvent.data);
 
     switch (cmd.key) {
@@ -171,9 +199,9 @@ class ProductDetailScreen extends Component<ProductDetailScreenProps> {
           this.props.navigation.navigate('SimpleText', {
             key: 'noti',
             title: i18n.t('set:noti'),
-            bodyTitle: item.title,
-            body: item.body,
-            mode: 'noti',
+            bodyTitle: item?.title,
+            body: item?.body,
+            mode: 'text',
           });
         }
         break;
@@ -191,6 +219,7 @@ class ProductDetailScreen extends Component<ProductDetailScreenProps> {
         break;
       default:
         Clipboard.setString(cmd.value);
+        break;
     }
   }
 
@@ -200,7 +229,7 @@ class ProductDetailScreen extends Component<ProductDetailScreenProps> {
     });
   };
 
-  clickTab = (idx) => () => {
+  clickTab = (idx: number) => () => {
     // console.log('@@@ click tab', this._webView1)
 
     Analytics.trackEvent('Page_View_Count', {page: tabList[idx]});
@@ -217,7 +246,8 @@ class ProductDetailScreen extends Component<ProductDetailScreenProps> {
     const sz = sizeString.split(',');
     const scale = windowWidth / Number(sz[0]);
 
-    for (var i = 3; i < sz.length; i++) {
+    let i = 3;
+    for (; i < sz.length; i++) {
       // 각 tab별로 시작 위치를 설정한다.
       this.setState({
         [`height${i - 2}`]: Math.ceil(Number(sz[i]) * scale),
@@ -229,7 +259,7 @@ class ProductDetailScreen extends Component<ProductDetailScreenProps> {
     });
   }
 
-  checkIdx(event) {
+  checkIdx(event: NativeScrollEvent) {
     const {contentOffset} = event;
     let offset = contentOffset.y;
 
@@ -318,8 +348,8 @@ class ProductDetailScreen extends Component<ProductDetailScreenProps> {
           stickyHeaderIndices={[1]} //탭 버튼 고정
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={100}
-          onScroll={(state) => {
-            this.checkIdx(state.nativeEvent);
+          onScroll={({nativeEvent}) => {
+            this.checkIdx(nativeEvent);
           }}>
           <View style={{height: HEADER_IMG_HEIGHT}}>
             <Image
