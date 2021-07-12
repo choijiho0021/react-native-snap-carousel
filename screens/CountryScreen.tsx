@@ -494,10 +494,12 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
       <SafeAreaView
         style={styles.container}
         forceInset={{top: 'never', bottom: 'always'}}>
-        <Image
-          style={styles.box}
-          source={{uri: API.default.httpImageUrl(imageUrl)}}
-        />
+        {imageUrl && (
+          <Image
+            style={styles.box}
+            source={{uri: API.default.httpImageUrl(imageUrl)}}
+          />
+        )}
 
         <Pressable
           onPress={() =>
