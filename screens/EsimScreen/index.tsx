@@ -14,18 +14,30 @@ import {colors} from '@/constants/Colors';
 import {Toast} from '@/constants/CustomTypes';
 import {appStyles} from '@/constants/Styles';
 import {timer} from '@/constants/Timer';
-import {actions as accountActions} from '@/redux/modules/account';
+import {
+  AccountAction,
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import {actions as cartActions} from '@/redux/modules/cart';
 import {actions as infoActions} from '@/redux/modules/info';
 import {actions as notiActions} from '@/redux/modules/noti';
-import {actions as orderActions} from '@/redux/modules/order';
-import {actions as toastActions} from '@/redux/modules/toast';
+import {
+  actions as orderActions,
+  OrderAction,
+  OrderModelState,
+} from '@/redux/modules/order';
+import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
-import {ToastAction} from '@/redux/modules/toast';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RouteProp} from '@react-navigation/native';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RkbSubscription} from '@/submodules/rokebi-utils/api/subscriptionApi';
 import CardInfo from './components/CardInfo';
 import UsageItem from './components/UsageItem';
 
 const styles = StyleSheet.create({
+  container: {flex: 1},
   title: {
     ...appStyles.title,
     marginLeft: 20,
@@ -67,18 +79,13 @@ const styles = StyleSheet.create({
     color: colors.warmGrey,
     marginBottom: 6,
   },
-  btnCopy: (selected) => ({
+  btnCopy: {
     backgroundColor: colors.white,
     width: 62,
     height: 40,
     borderStyle: 'solid',
     borderWidth: 1,
-    borderColor: selected ? colors.clearBlue : colors.whiteTwo,
-  }),
-  btnCopyTitle: (selected) => ({
-    ...appStyles.normal14Text,
-    color: selected ? colors.clearBlue : colors.black,
-  }),
+  },
   modalBody: {
     marginVertical: 20,
     marginHorizontal: 20,
@@ -89,7 +96,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const showQR = (subs) => {
+const showQR = (subs: RkbSubscription) => {
   return (
     <View style={styles.modalBody}>
       {_.isEmpty(subs.qrCode) ? (
@@ -132,14 +139,39 @@ const esimManualInputInfo = () => {
   );
 };
 
+type EsimScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Esim'>;
+
+type EsimScreenRouteProp = RouteProp<HomeStackParamList, 'Esim'>;
+
 type EsimScreenProps = {
+  navigation: EsimScreenNavigationProp;
+  route: EsimScreenRouteProp;
+
+  loginPending: boolean;
+  pending: boolean;
+  account: AccountModelState;
+  order: OrderModelState;
+
   action: {
     toast: ToastAction;
+    order: OrderAction;
+    account: AccountAction;
   };
 };
 
-class EsimScreen extends Component<EsimScreenProps> {
-  constructor(props) {
+export type ModalType = 'showQR' | 'manual';
+
+type EsimScreenState = {
+  refreshing: boolean;
+  showSnackBar: boolean;
+  showModal: boolean;
+  modal?: ModalType;
+  subs?: RkbSubscription;
+  copyString: string;
+};
+
+class EsimScreen extends Component<EsimScreenProps, EsimScreenState> {
+  constructor(props: EsimScreenProps) {
     super(props);
 
     this.state = {
@@ -155,7 +187,6 @@ class EsimScreen extends Component<EsimScreenProps> {
     this.renderSubs = this.renderSubs.bind(this);
     this.onRefresh = this.onRefresh.bind(this);
     this.info = this.info.bind(this);
-    this.showSnackBar = this.showSnackBar.bind(this);
     this.showModal = this.showModal.bind(this);
     this.modalBody = this.modalBody.bind(this);
     this.copyToClipboard = this.copyToClipboard.bind(this);
@@ -163,8 +194,7 @@ class EsimScreen extends Component<EsimScreenProps> {
 
   componentDidMount() {
     const {
-      account: {iccid},
-      auth,
+      account: {iccid, token},
     } = this.props;
 
     this.props.navigation.setOptions({
@@ -172,13 +202,12 @@ class EsimScreen extends Component<EsimScreenProps> {
       headerLeft: () => <Text style={styles.title}>{i18n.t('esimList')}</Text>,
     });
 
-    this.init(iccid, auth);
+    this.init({iccid, token});
   }
 
   onRefresh() {
     const {
-      account: {iccid},
-      auth,
+      account: {iccid, token},
     } = this.props;
 
     if (iccid) {
@@ -187,9 +216,9 @@ class EsimScreen extends Component<EsimScreenProps> {
       });
 
       this.props.action.order
-        .getSubsWithToast(iccid, auth)
+        .getSubsWithToast({iccid, token})
         .then(() => {
-          this.props.action.account.getAccount({iccid, ...auth});
+          this.props.action.account.getAccount({iccid, token});
         })
         .finally(() => {
           this.setState({
@@ -211,16 +240,18 @@ class EsimScreen extends Component<EsimScreenProps> {
     return (
       <View style={styles.modalBody}>
         {esimManualInputInfo()}
-        {this.copyInfo(subs.smdpAddr, 'smdp')}
-        {this.copyInfo(subs.actCode, 'actCode')}
+        {this.copyInfo('smdp', subs.smdpAddr)}
+        {this.copyInfo('actCode', subs.actCode)}
       </View>
     );
   };
 
-  copyToClipboard = (value) => () => {
-    Clipboard.setString(value);
-    this.setState({copyString: value});
-    this.props.action.toast.push(Toast.COPY_SUCCESS);
+  copyToClipboard = (value?: string) => () => {
+    if (value) {
+      Clipboard.setString(value);
+      this.setState({copyString: value});
+      this.props.action.toast.push(Toast.COPY_SUCCESS);
+    }
   };
 
   empty = () => {
@@ -244,12 +275,13 @@ class EsimScreen extends Component<EsimScreenProps> {
     );
   }
 
-  showModal(flag, modal, subs) {
+  showModal(flag: boolean, modal?: ModalType, subs?: RkbSubscription) {
     this.setState({showModal: flag, modal, subs});
   }
 
-  copyInfo(valToCopy, title) {
+  copyInfo(title: string, valToCopy?: string) {
     const {copyString} = this.state;
+    const selected = copyString === valToCopy;
 
     return (
       <View style={styles.titleAndStatus}>
@@ -259,35 +291,37 @@ class EsimScreen extends Component<EsimScreenProps> {
         </View>
         <AppButton
           title={i18n.t('copy')}
-          titleStyle={styles.btnCopyTitle(copyString === valToCopy)}
-          style={styles.btnCopy(copyString === valToCopy)}
+          titleStyle={[
+            appStyles.normal14Text,
+            {color: selected ? colors.clearBlue : colors.black},
+          ]}
+          style={[
+            styles.btnCopy,
+            {
+              borderColor: selected ? colors.clearBlue : colors.whiteTwo,
+            },
+          ]}
           onPress={this.copyToClipboard(valToCopy)}
         />
       </View>
     );
   }
 
-  showSnackBar() {
-    this.setState({
-      showSnackBar: true,
-    });
-  }
-
-  init(iccid, auth) {
-    if (iccid && auth) {
-      this.props.action.order.getSubsWithToast(iccid, auth);
+  init({iccid, token}: {iccid?: string; token?: string}) {
+    if (iccid && token) {
+      this.props.action.order.getSubsWithToast({iccid, token});
     }
   }
 
-  renderSubs({item}) {
+  renderSubs({item}: {item: RkbSubscription}) {
     return (
       <UsageItem
         key={item.key}
         item={item}
-        auth={this.props.auth}
         expired={new Date(item.expireDate) <= new Date()}
-        showSnackBar={this.showSnackBar}
-        onPress={this.showModal}
+        onPress={(qr: boolean) =>
+          this.showModal(true, qr ? 'showQR' : 'manual', item)
+        }
       />
     );
   }

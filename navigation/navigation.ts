@@ -55,4 +55,5 @@ export type HomeStackParamList = {
   Settings: undefined;
   Auth: undefined;
   HeaderTitle: undefined;
+  Esim: undefined;
 };

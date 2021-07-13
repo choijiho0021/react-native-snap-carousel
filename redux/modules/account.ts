@@ -35,7 +35,7 @@ const clearCookies0 = createAsyncThunk(
   API.User.clearCookies,
 );
 const getUserId = createAsyncThunk('account/getUserId', API.User.getByName);
-const getAccount = createAsyncThunk(
+export const getAccount = createAsyncThunk(
   'account/getAccount',
   API.Account.getAccount,
 );
