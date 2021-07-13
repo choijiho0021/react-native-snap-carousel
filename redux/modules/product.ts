@@ -2,10 +2,10 @@ import {createAction} from 'redux-actions';
 import {Map as ImmutableMap} from 'immutable';
 import {pender} from 'redux-pender/lib/utils';
 import {API} from '@/submodules/rokebi-utils';
-import {reflectWithToast} from '@/utils/utils';
 import {RkbLocalOp, RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
 import {AppThunk} from '..';
 import handleActions from '../handleActions';
+import {reflectWithToast, Toast} from './toast';
 
 const GET_PROD_LIST = 'rokebi/product/GET_PROD_LIST' as const;
 const GET_LOCAL_OP_LIST = 'rokebi/product/GET_LOCAL_OP_LIST' as const;
@@ -47,7 +47,10 @@ export const getProdList = (): AppThunk => async (dispatch) => {
   return dispatch(getLocalOp());
 };
 
-export const getProdListWithToast = reflectWithToast(getProdList);
+export const getProdListWithToast = reflectWithToast(
+  getProdList,
+  Toast.NOT_LOADED,
+);
 
 export const actions = {
   setProdOfCountry,

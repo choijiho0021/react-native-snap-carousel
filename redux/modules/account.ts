@@ -6,13 +6,7 @@ import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import _ from 'underscore';
 import {batch} from 'react-redux';
 import {API} from '@/submodules/rokebi-utils';
-import {
-  reflectWithToast,
-  removeData,
-  retrieveData,
-  storeData,
-} from '@/utils/utils';
-import {Toast} from '@/constants/CustomTypes';
+import {removeData, retrieveData, storeData} from '@/utils/utils';
 import Env from '@/environment';
 import {
   RkbAccount,
@@ -23,7 +17,7 @@ import {ApiResult} from '@/submodules/rokebi-utils/api/api';
 import {RkbLogin} from '@/submodules/rokebi-utils/api/userApi';
 import {AppDispatch} from '@/store';
 import {AppThunk} from '..';
-import {actions as toastActions} from './toast';
+import {actions as toastActions, reflectWithToast, Toast} from './toast';
 
 const {esimApp} = Env.get();
 
@@ -122,6 +116,8 @@ export const changeNotiToken = (): AppThunk => async (
     field_device_token: Platform.OS === 'ios' ? deviceToken : '',
     field_fcm_token: Platform.OS === 'android' ? deviceToken : '',
   };
+
+  console.log('@@@ change noti token', token, userId);
 
   return dispatch(changeUserAttr({userId, attributes, token})).then(
     (rsp) => {

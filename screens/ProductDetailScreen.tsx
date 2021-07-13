@@ -26,13 +26,16 @@ import {appStyles, htmlDetailWithCss} from '@/constants/Styles';
 import AppButton from '@/components/AppButton';
 import Env from '@/environment';
 import {windowWidth} from '@/constants/SliderEntry.style';
-import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
+import {
+  actions as toastActions,
+  Toast,
+  ToastAction,
+} from '@/redux/modules/toast';
 import {
   actions as productActions,
   ProductAction,
   ProductModelState,
 } from '@/redux/modules/product';
-import {Toast} from '@/constants/CustomTypes';
 import AppIcon from '@/components/AppIcon';
 import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
 import {RootState} from '@/redux';

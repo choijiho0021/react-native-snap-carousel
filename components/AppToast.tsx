@@ -15,7 +15,6 @@ import {RootState} from '@/redux';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
-import {mapToMessage} from '@/constants/CustomTypes';
 
 const styles = StyleSheet.create({
   container: {
@@ -135,7 +134,7 @@ class AppToast extends PureComponent<AppToastProps, AppToastState> {
 
   show({duration}: {duration?: number} = {}) {
     const {toastMsgBox} = this.props;
-    const text = mapToMessage(toastMsgBox.first());
+    const text = toastMsgBox.first();
 
     if (_.isNumber(duration)) {
       this.duration = Number(duration);

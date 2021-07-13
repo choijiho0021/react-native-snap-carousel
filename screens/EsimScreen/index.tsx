@@ -11,7 +11,6 @@ import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import {colors} from '@/constants/Colors';
-import {Toast} from '@/constants/CustomTypes';
 import {appStyles} from '@/constants/Styles';
 import {timer} from '@/constants/Timer';
 import {
@@ -27,7 +26,11 @@ import {
   OrderAction,
   OrderModelState,
 } from '@/redux/modules/order';
-import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
+import {
+  actions as toastActions,
+  Toast,
+  ToastAction,
+} from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
@@ -247,6 +250,7 @@ class EsimScreen extends Component<EsimScreenProps, EsimScreenState> {
   };
 
   copyToClipboard = (value?: string) => () => {
+    console.log('@@@ copy', value);
     if (value) {
       Clipboard.setString(value);
       this.setState({copyString: value});

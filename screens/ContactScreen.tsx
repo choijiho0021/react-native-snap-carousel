@@ -19,10 +19,13 @@ import {colors} from '@/constants/Colors';
 import AppIcon from '@/components/AppIcon';
 import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
 import {actions as notiActions, NotiModelState} from '@/redux/modules/noti';
-import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
+import {
+  actions as toastActions,
+  Toast,
+  ToastAction,
+} from '@/redux/modules/toast';
 import AppModal from '@/components/AppModal';
 import Env from '@/environment';
-import {Toast} from '@/constants/CustomTypes';
 import {RootState} from '@/redux';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/MainTabNavigator';

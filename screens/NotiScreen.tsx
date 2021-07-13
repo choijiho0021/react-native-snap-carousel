@@ -146,7 +146,6 @@ type NotiScreenProps = {
   navigation: NotiScreenNavigationProp;
   route: NotiScreenRouteProp;
   pending: boolean;
-  auth: AccountAuth;
   order: OrderModelState;
   account: AccountModelState;
   action: {
@@ -198,23 +197,27 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
     body,
     notiType = 'Notice/0',
   }: RkbNoti) => {
-    const {auth, navigation, order} = this.props;
+    const {
+      account: {mobile, token},
+      navigation,
+      order,
+    } = this.props;
     const {mode} = this.state;
     const split = notiType.split('/');
     const type = split[0];
-    const id = split[1];
+    const orderId = split[1];
 
     Analytics.trackEvent('Page_View_Count', {page: 'Noti Detail'});
 
     if (uuid) {
       // if ( mode != MODE_NOTIFICATION) this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
       if (mode !== 'info' && isRead === 'F')
-        this.props.action.noti.readNoti({uuid, token: auth.token});
+        this.props.action.noti.readNoti({uuid, token});
 
       switch (type) {
         case notiActions.NOTI_TYPE_REPLY:
           navigation.navigate('BoardMsgResp', {
-            key: id,
+            key: orderId,
             status: 'Closed',
           });
           break;
@@ -222,7 +225,11 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
         case notiActions.NOTI_TYPE_PYM:
           // read orders if not read before
           Promise.resolve(
-            this.props.action.order.checkAndGetOrderById(auth, id),
+            this.props.action.order.checkAndGetOrderById({
+              user: mobile,
+              token,
+              orderId: utils.stringToNumber(orderId),
+            }),
           ).then(() => {
             const idx = order.ordersIdx.get(Number(id));
             if (idx && idx >= 0) {
@@ -298,7 +305,6 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
 export default connect(
   ({account, order, board, noti, pender}: RootState) => ({
     account,
-    auth: accountActions.auth(account),
     order,
     board,
     noti,

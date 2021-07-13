@@ -205,7 +205,7 @@ class AppModal extends PureComponent<AppModalProps, AppModalState> {
       type = 'normal',
       maxLength = undefined,
       keyboardType = 'default',
-      toRokebiCash = undefined,
+      toRokebiCash = false,
       closeButtonTitle = i18n.t('close'),
       infoText,
     } = this.props;
@@ -216,7 +216,7 @@ class AppModal extends PureComponent<AppModalProps, AppModalState> {
           <View style={styles.inner}>
             {titleIcon && <AppIcon name={titleIcon} style={styles.icon} />}
             {title && <Text style={titleStyle || styles.title}>{title}</Text>}
-            {!_.isUndefined(toRokebiCash) && (
+            {toRokebiCash && (
               <View style={{marginTop: 30}}>
                 <Text style={styles.blueCenter}>
                   {i18n.t('usim:toRokebiCash')}

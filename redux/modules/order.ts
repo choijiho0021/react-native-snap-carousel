@@ -4,43 +4,36 @@ import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
 import _ from 'underscore';
 import {API} from '@/submodules/rokebi-utils';
-import {reflectWithToast} from '@/utils/utils';
 import {RkbOrder} from '@/submodules/rokebi-utils/api/orderApi';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {RkbSubscription} from '@/submodules/rokebi-utils/api/subscriptionApi';
 import {AccountAuth, getAccount} from './account';
 import {AppThunk} from '..';
+import {reflectWithToast, Toast} from './toast';
 
-export const GET_ORDERS = 'rokebi/order/GET_ORDERS';
-export const GET_ORDER_BY_ID = 'rokebi/order/GET_ORDER_BY_ID';
-export const CANCEL_ORDER = 'rokebi/order/CANCEL_ORDER';
-export const GET_SUBS = 'rokebi/order/GET_SUBS';
-export const GET_SUBS_USAGE = 'rokebi/usage/subs';
-export const UPDATE_SUBS_STATUS = 'rokebi/order/UPDATE_SUBS_STATUS';
-
-const getNextOrders = createAsyncThunk(GET_ORDERS, API.Order.getOrders);
+const getNextOrders = createAsyncThunk('order/getOrders', API.Order.getOrders);
 export const getOrderById = createAsyncThunk(
-  GET_ORDER_BY_ID,
+  'order/getOrderById',
   API.Order.getOrderById,
 );
 export const cancelOrder = createAsyncThunk(
-  CANCEL_ORDER,
+  'order/cancelOrder',
   API.Order.cancelOrder,
 );
 export const getSubs = createAsyncThunk(
-  GET_SUBS,
+  'order/getSubs',
   API.Subscription.getSubscription,
 );
 export const getSubsUsage = createAsyncThunk(
-  GET_SUBS_USAGE,
+  'order/getSubsUsage',
   API.Subscription.getSubsUsage,
 );
 export const updateSubsStatus = createAsyncThunk(
-  UPDATE_SUBS_STATUS,
+  'order/updateSubsStatus',
   API.Subscription.updateSubscriptionStatus,
 );
 
-export const getSubsWithToast = reflectWithToast(getSubs);
+export const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED);
 
 export interface OrderModelState {
   orders: RkbOrder[];
@@ -51,25 +44,37 @@ export interface OrderModelState {
   page: number;
 }
 
-export const checkAndGetOrderById = (
-  auth: AccountAuth,
-  orderId: number,
-): AppThunk => (dispatch, getState) => {
+export const checkAndGetOrderById = ({
+  user,
+  token,
+  orderId,
+}: {
+  user?: string;
+  token?: string;
+  orderId?: number;
+}): AppThunk => (dispatch, getState) => {
   const {order} = getState();
 
   if (order.ordersIdx.has(orderId)) return Promise.resolve();
-  return dispatch(getOrderById(auth, orderId));
+  return dispatch(getOrderById({user, token, orderId}));
 };
 
-export const getOrders = (auth: AccountAuth, page: number): AppThunk => (
-  dispatch,
-  getState,
-) => {
+export const getOrders = ({
+  user,
+  token,
+  page,
+}: {
+  user: string;
+  token: string;
+  page: number;
+}): AppThunk => (dispatch, getState) => {
   const {order} = getState();
 
-  if (typeof page !== 'undefined') return dispatch(getNextOrders(auth, page));
-  if (order.next) return dispatch(getNextOrders(auth, order.page + 1));
-  return new Promise.resolve();
+  if (typeof page !== 'undefined')
+    return dispatch(getNextOrders({user, token, page}));
+  if (order.next)
+    return dispatch(getNextOrders({user, token, page: order.page + 1}));
+  return Promise.resolve();
 };
 
 export const cancelAndGetOrder = (

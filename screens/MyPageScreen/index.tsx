@@ -29,12 +29,15 @@ import AppModal from '@/components/AppModal';
 import AppUserPic from '@/components/AppUserPic';
 import LabelTextTouchable from '@/components/LabelTextTouchable';
 import {colors} from '@/constants/Colors';
-import {Toast} from '@/constants/CustomTypes';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {actions as accountActions} from '@/redux/modules/account';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
-import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
+import {
+  actions as toastActions,
+  Toast,
+  ToastAction,
+} from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import validationUtil from '@/utils/validationUtil';
