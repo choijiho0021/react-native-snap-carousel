@@ -5,12 +5,14 @@ import AppIcon from './AppIcon';
 
 type AppUserPicProps = {
   dimension: {width: number; height: number};
+  crop?: boolean;
   url?: string;
   icon?: string;
   onPress?: () => void;
 };
 const AppUserPic: React.FC<AppUserPicProps> = ({
   dimension,
+  crop = true,
   url,
   icon,
   onPress = () => {},
@@ -21,7 +23,7 @@ const AppUserPic: React.FC<AppUserPicProps> = ({
         {url ? (
           <Image
             source={{uri: API.default.httpImageUrl(url)}}
-            style={[dimension, {borderRadius: dimension.width / 2}]}
+            style={[dimension, crop && {borderRadius: dimension.width / 2}]}
           />
         ) : (
           <AppIcon name={icon} />
