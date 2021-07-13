@@ -1,13 +1,13 @@
-import React, {PureComponent} from 'react';
+import React, {memo} from 'react';
 import {StyleSheet, View, Text} from 'react-native';
-import _ from 'underscore';
-import {colors} from '../../../constants/Colors';
-import i18n from '../../../utils/i18n';
-import AppButton from '../../../components/AppButton';
-import {appStyles} from '../../../constants/Styles';
-import {isDeviceSize} from '../../../constants/SliderEntry.style';
-import {utils} from '../../../utils/utils';
-import {API} from '../../../submodules/rokebi-utils';
+import {colors} from '@/constants/Colors';
+import i18n from '@/utils/i18n';
+import AppButton from '@/components/AppButton';
+import {appStyles} from '@/constants/Styles';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {utils} from '@/utils/utils';
+import {API} from '@/submodules/rokebi-utils';
+import {RkbSubscription} from '@/submodules/rokebi-utils/api/subscriptionApi';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const title = (item, expired) => {
+const title = (item: RkbSubscription, expired: boolean) => {
   return (
     <View style={styles.prodTitle}>
       <Text
@@ -96,7 +96,7 @@ const title = (item, expired) => {
   );
 };
 
-const topInfo = (item) => {
+const topInfo = (item: RkbSubscription) => {
   return (
     <View>
       {item.type !== API.Subscription.CALL_PRODUCT && (
@@ -118,19 +118,19 @@ const topInfo = (item) => {
   );
 };
 
-const QRnCopyInfo = (item, onPress) => {
+const QRnCopyInfo = (onPress: (showQR: boolean) => void) => {
   return (
     <View style={styles.activeBottomBox}>
       <AppButton
         style={styles.btn}
-        onPress={() => onPress(true, 'showQR', item)}
+        onPress={() => onPress(true)}
         title={i18n.t('esim:showQR')}
         titleStyle={styles.btnTitle}
         iconName="btnQr"
       />
       <AppButton
         style={styles.btn}
-        onPress={() => onPress(true, 'manual', item)}
+        onPress={() => onPress(false)}
         title={i18n.t('esim:manualInput')}
         titleStyle={styles.btnTitle}
         iconName="btnPen"
@@ -139,19 +139,24 @@ const QRnCopyInfo = (item, onPress) => {
   );
 };
 
-export default class UsageItem extends PureComponent {
-  render() {
-    const {item, onPress, expired} = this.props;
+const UsageItem = ({
+  item,
+  onPress,
+  expired,
+}: {
+  item: RkbSubscription;
+  onPress: (showQR: boolean) => void;
+  expired: boolean;
+}) => {
+  return (
+    <View style={[styles.usageListContainer, expired && styles.cardExpiredBg]}>
+      {title(item, expired)}
+      {topInfo(item)}
+      {!expired &&
+        item.type !== API.Subscription.CALL_PRODUCT &&
+        QRnCopyInfo(onPress)}
+    </View>
+  );
+};
 
-    return (
-      <View
-        style={[styles.usageListContainer, expired && styles.cardExpiredBg]}>
-        {title(item, expired)}
-        {topInfo(item)}
-        {!expired &&
-          item.type !== API.Subscription.CALL_PRODUCT &&
-          QRnCopyInfo(item, onPress)}
-      </View>
-    );
-  }
-}
+export default memo(UsageItem);
