@@ -176,15 +176,16 @@ class SimpleTextScreen extends Component<
 
   async onPress() {
     const {rule} = this.props.route.params;
-    const {token, loggedIn} = this.props.account;
+    const {iccid, token, loggedIn} = this.props.account;
 
     if (!loggedIn) {
       // 로그인 화면으로 이동
       this.props.navigation.navigate('Auth');
     } else if (rule) {
-      this.setState({promoResult: undefined});
-      const resp = await API.Promotion.join({rule, token});
+      this.setState({promoResult: 'promo:join:ing', querying: true});
+      const resp = await API.Promotion.join({rule, iccid, token});
       this.setState({
+        querying: false,
         promoResult:
           resp.result === 0 && resp.objects[0]?.available > 0
             ? 'promo:join:success'
@@ -283,12 +284,13 @@ class SimpleTextScreen extends Component<
           <AppButton
             style={styles.button}
             title={i18n.t(title)}
+            disabled={promoResult === 'promo:join:ing'}
             onPress={this.onPress}
           />
         )}
         <AppModal
           type="close"
-          visible={!!promoResult}
+          visible={!!promoResult && promoResult !== 'promo:join:ing'}
           title={i18n.t(promoResult || '')}
           onOkClose={() => {
             this.setState({promoResult: undefined});
@@ -300,6 +302,7 @@ class SimpleTextScreen extends Component<
                 ? image?.success
                 : image?.failure
             }
+            crop={false}
             dimension={{width: 300, height: 300}}
           />
         </AppModal>

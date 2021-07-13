@@ -117,8 +117,6 @@ export const changeNotiToken = (): AppThunk => async (
     field_fcm_token: Platform.OS === 'android' ? deviceToken : '',
   };
 
-  console.log('@@@ change noti token', token, userId);
-
   return dispatch(changeUserAttr({userId, attributes, token})).then(
     (rsp) => {
       const result = rsp.payload ? rsp.payload.result : rsp.result;

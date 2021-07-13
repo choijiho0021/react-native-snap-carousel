@@ -529,6 +529,7 @@ const en = {
   'promo:join': 'Participate',
   'promo:join:success': 'Successfully participated.',
   'promo:join:fail': 'Sorry try again.',
+  'promo:join:ing': 'Participating ...',
   'promo:end': 'Promotion Finished',
   'promo:login': 'Login to participate',
 };
@@ -1069,6 +1070,7 @@ const ko = {
   'promo:join': '프로모션 참여',
   'promo:join:success': '프로모션 참여 성공',
   'promo:join:fail': '프로모션 참여 실패',
+  'promo:join:ing': '시도중 ...',
   'promo:end': '프로모션 종료',
   'promo:login': '프로모션 참여를 위해 로그인',
 };
