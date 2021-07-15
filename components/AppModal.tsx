@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
 interface AppModalProps {
   visible: boolean;
   type?: 'normal' | 'close' | 'edit' | 'info';
-  title: string;
+  title?: string;
   titleStyle?: TextStyle;
   titleIcon?: string;
   maxLength?: number;
