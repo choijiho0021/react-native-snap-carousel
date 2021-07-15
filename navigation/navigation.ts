@@ -58,3 +58,7 @@ export type HomeStackParamList = {
   HeaderTitle: undefined;
   Esim: undefined;
 };
+
+export type EsimStackParamList = {
+  Esim: undefined;
+};

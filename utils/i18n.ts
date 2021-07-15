@@ -59,6 +59,7 @@ const en = {
   hot: 'Hot',
   copy: 'Copy',
   close: 'Close',
+  redirect: 'Redirect',
 
   'home:exitApp': 'Exit App',
   'home:guide': 'User Guide',
@@ -589,6 +590,7 @@ const ko = {
   hot: '추천',
   copy: '복사',
   close: '닫기',
+  redirect: '바로 가기',
 
   'home:exitApp': '앱 종료',
   'home:guide': '로밍도깨비 사용가이드 !',
@@ -1067,11 +1069,12 @@ const ko = {
   'mypage:preparing': '서비스 준비중',
   'mypage:mailInfo': '* 구매하신 eSIM 상품은 본 이메일로 발송됩니다.',
 
-  'promo:join': '이벤트 참여',
-  'promo:join:success': '이벤트 참여 완료',
-  'promo:join:fail': '프로모션 참여 실패',
+  'promo:join:open': '이벤트 참여',
+  'promo:join:joined': '이벤트 참여 완료',
+  'promo:join:end': '이벤트 종료',
+
+  'promo:join:fail': '이벤트 참여 실패',
   'promo:join:ing': '시도중 ...',
-  'promo:end': '이벤트 종료',
   'promo:login': '로그인 후 참여',
 };
 

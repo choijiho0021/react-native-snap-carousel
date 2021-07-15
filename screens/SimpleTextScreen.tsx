@@ -78,12 +78,14 @@ type SimpleTextScreenNavigationProp = StackNavigationProp<
 
 type SimpleTextScreenRouteProp = RouteProp<HomeStackParamList, 'SimpleText'>;
 
+type EventStatus = 'open' | 'closed' | 'joined';
+
 type SimpleTextScreenProps = {
   navigation: SimpleTextScreenNavigationProp;
   route: SimpleTextScreenRouteProp;
   info: InfoModelState;
   account: AccountModelState;
-  promoAvailable: boolean;
+  eventStatus: EventStatus;
 };
 
 type SimpleTextScreenState = {
@@ -188,7 +190,7 @@ class SimpleTextScreen extends Component<
         querying: false,
         promoResult:
           resp.result === 0 && resp.objects[0]?.available > 0
-            ? 'promo:join:success'
+            ? 'promo:join:joined'
             : 'promo:join:fail',
       });
     } else {
@@ -264,7 +266,7 @@ class SimpleTextScreen extends Component<
   render() {
     const {querying, promoResult, mode = 'html'} = this.state;
     const {
-      promoAvailable,
+      eventStatus,
       account: {loggedIn},
       navigation,
     } = this.props;
@@ -272,7 +274,7 @@ class SimpleTextScreen extends Component<
 
     let title = 'ok';
     if (rule) {
-      if (loggedIn) title = promoAvailable ? 'promo:join' : 'promo:end';
+      if (loggedIn) title = `promo:join:${eventStatus}`;
       else title = 'promo:login';
     }
 
@@ -284,20 +286,25 @@ class SimpleTextScreen extends Component<
           <AppButton
             style={styles.button}
             title={i18n.t(title)}
-            disabled={promoResult === 'promo:join:ing'}
+            disabled={
+              eventStatus === 'joined' || promoResult === 'promo:join:ing'
+            }
             onPress={this.onPress}
           />
         )}
         <AppModal
           type="close"
           visible={!!promoResult && promoResult !== 'promo:join:ing'}
+          closeButtonTitle={i18n.t('redirect')}
           onOkClose={() => {
             this.setState({promoResult: undefined});
-            navigation.goBack();
+            navigation.navigate('EsimStack', {
+              screen: 'Esim',
+            });
           }}>
           <AppUserPic
             url={
-              promoResult === 'promo:join:success'
+              promoResult === 'promo:join:joined'
                 ? image?.success
                 : image?.failure
             }
@@ -311,7 +318,7 @@ class SimpleTextScreen extends Component<
 }
 
 const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
-  const [promoAvailable, setPromoAvailable] = useState(false);
+  const [eventStatus, setEventStatus] = useState<EventStatus>('open');
 
   useFocusEffect(
     React.useCallback(() => {
@@ -320,8 +327,10 @@ const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
         if (rule) {
           const resp = await API.Promotion.check({rule});
           // available 값이 0보다 크면 프로모션 참여 가능하다.
-          if (resp.result === 0 && resp.objects[0]?.available > 0) {
-            setPromoAvailable(true);
+          if (resp.result === 0) {
+            if (resp.objects[0]?.hold > 0) setEventStatus('joined');
+            else if (resp.objects[0]?.available > 0) setEventStatus('open');
+            else setEventStatus('closed');
           }
         }
       };
@@ -329,7 +338,7 @@ const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
     }, [props.route.params]),
   );
 
-  return <SimpleTextScreen {...props} promoAvailable={promoAvailable} />;
+  return <SimpleTextScreen {...props} eventStatus={eventStatus} />;
 };
 
 // export default SimpleTextScreen;
