@@ -499,6 +499,7 @@ class MyPageScreen extends Component<MyPageScreenProps> {
     const userPicture = {
       width: 76,
       height: 76,
+      borderRadius: 76 / 2,
     };
 
     return (
@@ -518,7 +519,7 @@ class MyPageScreen extends Component<MyPageScreenProps> {
             <AppUserPic
               url={userPictureUrl}
               icon="imgPeopleL"
-              dimension={userPicture}
+              style={userPicture}
               onPress={this.changePhoto}
             />
             <AppIcon

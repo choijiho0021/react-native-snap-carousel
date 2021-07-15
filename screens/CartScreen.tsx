@@ -170,7 +170,7 @@ class CartScreen extends Component {
         .checkStockAndPurchase(purchaseItems, balance, dlvCost > 0)
         .then((resp) => {
           if (resp.result === 0) {
-            this.props.navigation.navigate('PymMethod', {mode: 'Cart'});
+            this.props.navigation.navigate('PymMethod', {mode: 'cart'});
           } else if (resp.result === api.E_RESOURCE_NOT_FOUND)
             AppAlert.info(`${resp.title} ${i18n.t('cart:soldOut')}`);
           else AppAlert.info(i18n.t('cart:systemError'));

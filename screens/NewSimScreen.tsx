@@ -111,7 +111,7 @@ class NewSimScreen extends Component<NewSimScreenProps, NewSimScreenState> {
           dlvCost: true,
           balance,
         });
-        this.props.navigation.navigate('PymMethod', {mode: 'New Sim'});
+        this.props.navigation.navigate('PymMethod', {mode: 'new_sim'});
       }
     }
   };

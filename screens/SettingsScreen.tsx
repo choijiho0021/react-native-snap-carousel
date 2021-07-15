@@ -282,7 +282,8 @@ class SettingsScreen extends Component<
 
     this.props.navigation.reset({index: 0, routes: [{name: 'HomeStack'}]});
 
-    firebase.notifications().setBadge(0);
+    // bhtak
+    // firebase.notifications().setBadge(0);
 
     this.showModal(false);
   }

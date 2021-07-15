@@ -445,7 +445,7 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
         .then((resp) => {
           if (resp.result === 0) {
             this.props.navigation.navigate('PymMethod', {
-              mode: 'Roaming Product',
+              mode: 'roaming_product',
             });
           } else {
             soldOut(resp, 'cart:soldOut');

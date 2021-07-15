@@ -1067,12 +1067,12 @@ const ko = {
   'mypage:preparing': '서비스 준비중',
   'mypage:mailInfo': '* 구매하신 eSIM 상품은 본 이메일로 발송됩니다.',
 
-  'promo:join': '프로모션 참여',
-  'promo:join:success': '프로모션 참여 성공',
+  'promo:join': '이벤트 참여',
+  'promo:join:success': '이벤트 참여 완료',
   'promo:join:fail': '프로모션 참여 실패',
   'promo:join:ing': '시도중 ...',
-  'promo:end': '프로모션 종료',
-  'promo:login': '프로모션 참여를 위해 로그인',
+  'promo:end': '이벤트 종료',
+  'promo:login': '로그인 후 참여',
 };
 
 if (Array.isArray(locales)) {

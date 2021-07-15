@@ -96,6 +96,7 @@ const styles = StyleSheet.create({
   userPicture: {
     width: size.userPic,
     height: size.userPic,
+    borderRadius: size.userPic / 2,
   },
   bar: {
     width: 1,
@@ -534,7 +535,7 @@ class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
         <AppUserPic
           url={userPictureUrl}
           icon="imgPeople"
-          dimension={styles.userPicture}
+          style={styles.userPicture}
           onPress={this.navigate('RegisterSim_user', {mode: 'Home'})}
         />
         <View style={{marginLeft: 20, justifyContent: 'space-around', flex: 1}}>

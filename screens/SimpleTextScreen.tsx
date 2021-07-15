@@ -291,7 +291,6 @@ class SimpleTextScreen extends Component<
         <AppModal
           type="close"
           visible={!!promoResult && promoResult !== 'promo:join:ing'}
-          title={i18n.t(promoResult || '')}
           onOkClose={() => {
             this.setState({promoResult: undefined});
             navigation.goBack();
@@ -303,7 +302,7 @@ class SimpleTextScreen extends Component<
                 : image?.failure
             }
             crop={false}
-            dimension={{width: 300, height: 300}}
+            style={{width: 300, height: 300 * 1.3}}
           />
         </AppModal>
       </SafeAreaView>

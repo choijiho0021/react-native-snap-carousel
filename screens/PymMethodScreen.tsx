@@ -9,9 +9,16 @@ import {TouchableOpacity, TextInput} from 'react-native-gesture-handler';
 import RNPickerSelect from 'react-native-picker-select';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {API} from '@/submodules/rokebi-utils';
-import {actions as accountActions} from '@/redux/modules/account';
-import {actions as profileActions} from '@/redux/modules/profile';
-import {actions as cartActions} from '@/redux/modules/cart';
+import {
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
+import {
+  actions as profileActions,
+  ProfileAction,
+  ProfileModelState,
+} from '@/redux/modules/profile';
+import {actions as cartActions, CartModelState} from '@/redux/modules/cart';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import AppBackButton from '@/components/AppBackButton';
@@ -28,6 +35,9 @@ import api from '@/submodules/rokebi-utils/api/api';
 import AppAlert from '@/components/AppAlert';
 import PaymentResult from '@/submodules/rokebi-utils/models/paymentResult';
 import {RootState} from '@/redux';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList, PymMethodScreenMode} from '@/navigation/navigation';
+import {RouteProp} from '@react-navigation/native';
 
 const {esimApp} = Env.get();
 const {deliveryText} = API.Order;
@@ -251,8 +261,56 @@ const styles = StyleSheet.create({
   },
 });
 
-class PymMethodScreen extends Component {
-  constructor(props) {
+type PymMethodScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'PymMethod'
+>;
+
+type PymMethodScreenRouteProp = RouteProp<HomeStackParamList, 'PymMethod'>;
+
+type PymMethodScreenProps = {
+  navigation: PymMethodScreenNavigationProp;
+  route: PymMethodScreenRouteProp;
+
+  account: AccountModelState;
+  cart: CartModelState;
+  profile: ProfileModelState;
+
+  action: {
+    profile: ProfileAction;
+  };
+};
+
+type PymMethodScreenState = {
+  mode?: PymMethodScreenMode;
+  selected: object;
+  pymPrice?: number;
+  deduct?: number;
+  isRecharge?: boolean;
+  clickable: boolean;
+  loading?: boolean;
+  data: object;
+  showModal: {
+    address: boolean;
+    memo: boolean;
+    method: boolean;
+  };
+  label?: string;
+  deliveryMemo: {
+    directInput: boolean;
+    header?: string;
+    selected: undefined;
+    content?: string;
+  };
+  consent?: boolean;
+  simIncluded?: boolean;
+};
+
+class PymMethodScreen extends Component<
+  PymMethodScreenProps,
+  PymMethodScreenState
+> {
+  constructor(props: PymMethodScreenProps) {
     super(props);
 
     this.state = {
@@ -288,19 +346,6 @@ class PymMethodScreen extends Component {
       simIncluded: undefined,
     };
 
-    this.confirmList = [
-      {
-        key: '1',
-        route: 'SimpleText',
-        param: {key: 'setting:privacy', title: i18n.t('pym:privacy')},
-      },
-      {
-        key: '2',
-        route: 'SimpleText',
-        param: {key: 'pym:agreement', title: i18n.t('pym:paymentAgency')},
-      },
-    ];
-
     this.onSubmit = this.onSubmit.bind(this);
     this.onPress = this.onPress.bind(this);
     this.button = this.button.bind(this);
@@ -324,19 +369,20 @@ class PymMethodScreen extends Component {
       headerLeft: () => (
         <AppBackButton
           title={i18n.t('payment')}
-          isPaid={this.props.route.params && this.props.route.params.isPaid}
+          isPaid={this.props.route.params?.isPaid}
         />
       ),
     });
 
     if (!esimApp) {
+      const {uid, token} = this.props.account;
       // ESIM이 아닌 경우에만 주소 정보가 필요하다.
-      this.props.action.profile.getCustomerProfile(this.props.account);
+      this.props.action.profile.getCustomerProfile({uid, token});
     }
 
     const {pymPrice, deduct} = this.props.cart;
     const {content} = this.props.profile;
-    const mode = this.props.route.param && this.props.route.param.mode;
+    const mode = this.props.route.params?.mode;
 
     Analytics.trackEvent('Page_View_Count', {page: `Payment - ${mode}`});
 
@@ -738,12 +784,20 @@ class PymMethodScreen extends Component {
     );
   }
 
-  move(key) {
-    if (!_.isEmpty(key)) {
-      const {route, param} = this.confirmList.find((item) => item.key === key);
-      Analytics.trackEvent('Page_View_Count', {page: param.key});
-      this.props.navigation.navigate(route, param);
-    }
+  move(key: '1' | '2') {
+    const param =
+      key === '1'
+        ? {
+            key: 'setting:privacy',
+            title: i18n.t('pym:privacy'),
+          }
+        : {
+            key: 'pym:agreement',
+            title: i18n.t('pym:paymentAgency'),
+          };
+
+    Analytics.trackEvent('Page_View_Count', {page: param.key});
+    this.props.navigation.navigate('SimpleText', param);
   }
 
   consentEssential() {

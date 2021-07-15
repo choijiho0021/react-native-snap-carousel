@@ -1,6 +1,7 @@
 import {createAction, handleActions} from 'redux-actions';
 import {pender} from 'redux-pender';
 import {API} from '@/submodules/rokebi-utils';
+import {createAsyncThunk} from '@reduxjs/toolkit';
 import {AppThunk} from '..';
 
 const UPDATE_PROFILE_ADDRESS = 'rokebi/order/UPDATE_PROFILE_ADDRESS';
@@ -12,19 +13,19 @@ const SELECTED_ADDR = 'rokebi/order/SELECTED_ADDR';
 
 // add address list
 export const updateProfileAddress = createAction(UPDATE_PROFILE_ADDRESS);
-export const getCustomerProfile = createAction(
+export const getCustomerProfile = createAsyncThunk(
   GET_CUSTOMER_PROFILE,
   API.Profile.getCustomerProfile,
 );
-export const addCustomerProfile = createAction(
+export const addCustomerProfile = createAsyncThunk(
   ADD_CUSTOMER_PROFILE,
   API.Profile.addCustomerProfile,
 );
-export const updateCustomerProfile = createAction(
+export const updateCustomerProfile = createAsyncThunk(
   UPDATE_CUSTOMER_PROFILE,
   API.Profile.updateCustomerProfile,
 );
-export const delCustomerProfile = createAction(
+export const delCustomerProfile = createAsyncThunk(
   DELETE_CUSTOMER_PROFILE,
   API.Profile.delCustomerProfile,
 );
@@ -41,7 +42,7 @@ export const actions = {
 
 export type ProfileAction = typeof actions;
 
-interface ProfileModelState {
+export interface ProfileModelState {
   // selectedAddrIdx: undefined,
   selectedAddr?: string;
   profile: object[];

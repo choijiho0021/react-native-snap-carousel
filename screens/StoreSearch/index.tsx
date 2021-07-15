@@ -341,17 +341,18 @@ class StoreSearchScreen extends Component<
       });
 
       // * logEvent(eventName: string, valueToSum: number, parameters: {[key:string]:string|number});
+      const {searchWord} = this.state;
 
       const status = await getTrackingStatus();
       if (status === 'authorized') {
         const params = {
           _valueToSum: 1,
-          fb_search_string: this.state.searchWord,
+          fb_search_string: searchWord,
           fb_content_type: 'Country',
           success: 1,
         };
         AppEventsLogger.logEvent('fb_mobile_search', params);
-        console.log('@@ search events', prodOfCountry, this.state.searchWord);
+        console.log('@@ search events', prodOfCountry, searchWord);
       }
     }
 

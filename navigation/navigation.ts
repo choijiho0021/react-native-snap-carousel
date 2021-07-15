@@ -4,6 +4,7 @@ import {RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
 import {AccountAuth} from '@/redux/modules/account';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html';
+export type PymMethodScreenMode = 'cart' | 'roaming_product' | 'new_sim';
 
 export type HomeStackParamList = {
   Home: undefined;
@@ -43,7 +44,7 @@ export type HomeStackParamList = {
   Guide: undefined;
   Country: {prodOfCountry: RkbProduct[]};
   Payment: undefined;
-  PymMethod: undefined;
+  PymMethod: {isPaid: boolean; mode?: PymMethodScreenMode};
   FindAddress: undefined;
   PaymentResult: undefined;
   CodePush: undefined;
