@@ -295,12 +295,17 @@ class SimpleTextScreen extends Component<
         <AppModal
           type="close"
           visible={!!promoResult && promoResult !== 'promo:join:ing'}
-          closeButtonTitle={i18n.t('redirect')}
+          contentStyle={{marginHorizontal: 40}}
+          closeButtonTitle={i18n.t(
+            promoResult === 'promo:join:joined' ? 'redirect' : 'close',
+          )}
           onOkClose={() => {
             this.setState({promoResult: undefined});
-            navigation.navigate('EsimStack', {
-              screen: 'Esim',
-            });
+            if (promoResult === 'promo:join:joined')
+              navigation.navigate('EsimStack', {
+                screen: 'Esim',
+              });
+            else navigation.goBack();
           }}>
           <AppUserPic
             url={
@@ -309,7 +314,7 @@ class SimpleTextScreen extends Component<
                 : image?.failure
             }
             crop={false}
-            style={{width: 300, height: 300 * 1.3}}
+            style={{width: 300, height: 400}}
           />
         </AppModal>
       </SafeAreaView>

@@ -7,6 +7,7 @@ import {
   TextInput,
   TextStyle,
   KeyboardTypeOptions,
+  ViewStyle,
 } from 'react-native';
 import _ from 'underscore';
 import {appStyles} from '../constants/Styles';
@@ -34,7 +35,6 @@ const styles = StyleSheet.create({
     height: 36,
   },
   closeButton: {
-    width: '100%',
     height: 50,
     backgroundColor: colors.clearBlue,
   },
@@ -80,8 +80,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   inner: {
-    ...appStyles.modalInner,
+    marginHorizontal: 40,
     paddingVertical: 25,
+    backgroundColor: 'white',
   },
   icon: {
     marginVertical: 15,
@@ -107,6 +108,7 @@ interface AppModalProps {
   closeButtonTitle?: string;
   infoText?: string;
   default?: string;
+  contentStyle?: ViewStyle;
   validate?: (v: string) => ValidationResult;
   validateAsync?: (v: string) => Promise<ValidationResult>;
   onOkClose?: (v: string) => void;
@@ -208,12 +210,14 @@ class AppModal extends PureComponent<AppModalProps, AppModalState> {
       toRokebiCash = false,
       closeButtonTitle = i18n.t('close'),
       infoText,
+      contentStyle,
     } = this.props;
 
     return (
       <Modal animationType="fade" transparent visible={this.props.visible}>
         <View style={appStyles.modal}>
-          <View style={styles.inner}>
+          {/* children과 wrapper view 사이에 padding 간격이 있는데, 찾을 수 없어서 padding:5를 적용하여 layour을 맞춤 */}
+          <View style={[contentStyle || styles.inner, {padding: 5}]}>
             {titleIcon && <AppIcon name={titleIcon} style={styles.icon} />}
             {title && <Text style={titleStyle || styles.title}>{title}</Text>}
             {toRokebiCash && (
@@ -250,18 +254,15 @@ class AppModal extends PureComponent<AppModalProps, AppModalState> {
             )}
             {this.renderError()}
 
-            {type === 'close' && (
-              <View style={{marginHorizontal: 20}}>
-                <AppButton
-                  style={styles.closeButton}
-                  onPress={this.onSubmit}
-                  title={closeButtonTitle}
-                  titleStyle={styles.closeButtonTitle}
-                />
-              </View>
-            )}
-
-            {['normal', 'info'].includes(type) && (
+            {type === 'close' ? (
+              <AppButton
+                style={styles.closeButton}
+                onPress={this.onSubmit}
+                title={closeButtonTitle}
+                titleStyle={styles.closeButtonTitle}
+              />
+            ) : (
+              // type == normal or info
               <View style={styles.row}>
                 {type === 'normal' && (
                   <AppButton

@@ -72,10 +72,6 @@ export const appStyles = StyleSheet.create({
     alignContent: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
-  modalInner: {
-    marginHorizontal: 20,
-    backgroundColor: 'white',
-  },
 
   title: {
     height: 28,

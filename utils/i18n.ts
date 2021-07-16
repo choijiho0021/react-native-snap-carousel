@@ -1071,7 +1071,7 @@ const ko = {
 
   'promo:join:open': '이벤트 참여',
   'promo:join:joined': '이벤트 참여 완료',
-  'promo:join:end': '이벤트 종료',
+  'promo:join:closed': '이벤트 종료',
 
   'promo:join:fail': '이벤트 참여 실패',
   'promo:join:ing': '시도중 ...',

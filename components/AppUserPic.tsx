@@ -1,5 +1,5 @@
 import React, {memo} from 'react';
-import {Image, ImageStyle, Pressable} from 'react-native';
+import {Image, ImageResizeMode, ImageStyle, Pressable} from 'react-native';
 import {API} from '@/submodules/rokebi-utils';
 import AppIcon from './AppIcon';
 
@@ -8,24 +8,28 @@ type AppUserPicProps = {
   crop?: boolean;
   url?: string;
   icon?: string;
+  resizeMode?: ImageResizeMode;
   onPress?: () => void;
 };
 const AppUserPic: React.FC<AppUserPicProps> = ({
   style,
   url,
   icon,
+  resizeMode = 'cover',
   onPress = () => {},
 }) => {
   return (
-    <Pressable style={{alignSelf: 'center'}} onPress={onPress}>
+    <Pressable
+      style={{alignSelf: 'center', backgroundColor: 'blue'}}
+      onPress={onPress}>
       {url ? (
         <Image
           style={style}
           source={{uri: API.default.httpImageUrl(url)}}
-          resizeMode="contain"
+          resizeMode={resizeMode}
         />
       ) : (
-        <AppIcon name={icon} />
+        icon && <AppIcon name={icon} />
       )}
     </Pressable>
   );
