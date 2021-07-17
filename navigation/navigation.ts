@@ -62,3 +62,12 @@ export type HomeStackParamList = {
 export type EsimStackParamList = {
   Esim: undefined;
 };
+
+export type MyPageStackParamList = {
+  MyPage: undefined;
+  Auth: undefined;
+  Settings: undefined;
+  PurchageDetail: undefined;
+  Recharge: undefined;
+  ContactBoard: undefined;
+};

@@ -31,8 +31,16 @@ import LabelTextTouchable from '@/components/LabelTextTouchable';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {actions as accountActions} from '@/redux/modules/account';
-import {actions as orderActions, OrderAction} from '@/redux/modules/order';
+import {
+  AccountAction,
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
+import {
+  actions as orderActions,
+  OrderAction,
+  OrderModelState,
+} from '@/redux/modules/order';
 import {
   actions as toastActions,
   Toast,
@@ -40,8 +48,12 @@ import {
 } from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
-import validationUtil from '@/utils/validationUtil';
+import validationUtil, {ValidationResult} from '@/utils/validationUtil';
 import {RootState} from '@/redux';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {MyPageStackParamList} from '@/navigation/navigation';
+import {RouteProp} from '@react-navigation/native';
+import AppModalForm from '@/components/AppModalForm';
 import OrderItem from './components/OrderItem';
 
 const {esimApp} = Env.get();
@@ -140,18 +152,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15,
   },
-  btnCopy: (selected) => ({
+  btnCopy: {
     backgroundColor: colors.white,
     width: 62,
     height: 40,
     borderStyle: 'solid',
     borderWidth: 1,
-    borderColor: selected ? colors.clearBlue : colors.whiteTwo,
-  }),
-  btnCopyTitle: (selected) => ({
-    ...appStyles.normal14Text,
-    color: selected ? colors.clearBlue : colors.black,
-  }),
+  },
   titleStyle: {
     marginHorizontal: 20,
     fontSize: 20,
@@ -185,14 +192,42 @@ const styles = StyleSheet.create({
   },
 });
 
+type MyPageScreenNavigationProp = StackNavigationProp<
+  MyPageStackParamList,
+  'MyPage'
+>;
+
+type MyPageScreenRouteProp = RouteProp<MyPageStackParamList, 'MyPage'>;
+
 type MyPageScreenProps = {
+  navigation: MyPageScreenNavigationProp;
+  route: MyPageScreenRouteProp;
+
+  account: AccountModelState;
+  order: OrderModelState;
+
+  pending: boolean;
+
   action: {
     toast: ToastAction;
     order: OrderAction;
+    account: AccountAction;
   };
 };
-class MyPageScreen extends Component<MyPageScreenProps> {
-  constructor(props) {
+
+type MyPageScreenState = {
+  hasPhotoPermission: boolean;
+  showEmailModal: boolean;
+  showIdModal: boolean;
+  isFocused: boolean;
+  refreshing: boolean;
+  isRokebiInstalled: boolean;
+  copyString: string;
+};
+class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
+  flatListRef: React.RefObject<FlatList>;
+
+  constructor(props: MyPageScreenProps) {
     super(props);
 
     this.state = {
@@ -220,32 +255,34 @@ class MyPageScreen extends Component<MyPageScreenProps> {
     this.copyToClipboard = this.copyToClipboard.bind(this);
     this.checkPhotoPermission = this.checkPhotoPermission.bind(this);
 
-    this.flatListRef = React.createRef();
+    this.flatListRef = React.createRef<FlatList>();
   }
 
   componentDidMount() {
-    this.props.navigation.setOptions({
+    const {navigation, account} = this.props;
+
+    navigation.setOptions({
       title: null,
       headerLeft: () => <Text style={styles.title}>{i18n.t('acc:title')}</Text>,
       headerRight: () => (
         <AppButton
           key="cnter"
           style={styles.settings}
-          onPress={() => this.props.navigation.navigate('Settings')}
+          onPress={() => navigation.navigate('Settings')}
           iconName="btnSetup"
         />
       ),
     });
 
     // Logout시에 mount가 새로 되는데 login 페이지로 안가기 위해서 isFocused 조건 추가
-    if (!this.props.account.loggedIn && this.props.navigation.isFocused()) {
-      this.props.navigation.navigate('Auth');
+    if (!account.loggedIn && navigation.isFocused()) {
+      navigation.navigate('Auth');
     } else {
       this.didMount();
     }
   }
 
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate(nextProps: MyPageScreenProps) {
     const {ordersIdx, account = {}} = this.props.order;
     return (
       account.userPictureUrl !== nextProps.account.userPictureUrl ||
@@ -253,7 +290,7 @@ class MyPageScreen extends Component<MyPageScreenProps> {
     );
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: MyPageScreenProps) {
     const focus = this.props.navigation.isFocused();
 
     // 구매내역 원래 조건 확인
@@ -373,8 +410,17 @@ class MyPageScreen extends Component<MyPageScreenProps> {
           </View>
           <AppButton
             title={i18n.t('copy')}
-            titleStyle={styles.btnCopyTitle(copyString === iccid)}
-            style={styles.btnCopy(copyString === iccid)}
+            titleStyle={[
+              appStyles.normal14Text,
+              {color: copyString === iccid ? colors.clearBlue : colors.black},
+            ]}
+            style={[
+              styles.btnCopy,
+              {
+                borderColor:
+                  copyString === iccid ? colors.clearBlue : colors.whiteTwo,
+              },
+            ]}
             onPress={this.copyToClipboard(iccid)}
           />
         </View>
@@ -387,8 +433,17 @@ class MyPageScreen extends Component<MyPageScreenProps> {
           </View>
           <AppButton
             title={i18n.t('copy')}
-            titleStyle={styles.btnCopyTitle(copyString === pin)}
-            style={styles.btnCopy(copyString === pin)}
+            titleStyle={[
+              appStyles.normal14Text,
+              {color: copyString === pin ? colors.clearBlue : colors.black},
+            ]}
+            style={[
+              styles.btnCopy,
+              {
+                borderColor:
+                  copyString === pin ? colors.clearBlue : colors.whiteTwo,
+              },
+            ]}
             onPress={this.copyToClipboard(pin)}
           />
         </View>
@@ -567,18 +622,18 @@ class MyPageScreen extends Component<MyPageScreenProps> {
     );
   }
 
-  async validEmail(value: string): Promise<string[] | undefined> {
+  async validEmail(value: string): Promise<ValidationResult | undefined> {
     const err = validationUtil.validate('email', value);
-    if (!_.isEmpty(err)) return err.email;
+    if (!_.isEmpty(err)) return err;
 
-    const {email} = this.props.account;
+    const {email, token} = this.props.account;
 
     if (email !== value) {
       // check duplicated email
-      const resp = await API.User.getByMail(value, this.props.auth);
+      const resp = await API.User.getByMail({mail: value, token});
       if (resp.result === 0 && resp.objects.length > 0) {
         // duplicated email
-        return [i18n.t('acc:duplicatedEmail')];
+        return {email: [i18n.t('acc:duplicatedEmail')]};
       }
     } else {
       this.setState({
@@ -641,10 +696,10 @@ class MyPageScreen extends Component<MyPageScreenProps> {
 
         <AppActivityIndicator visible={this.props.pending} />
 
-        <AppModal
+        <AppModalForm
           title={i18n.t('acc:changeEmail')}
-          type="edit"
-          default={this.props.account.email}
+          defaultValue={this.props.account.email}
+          valueType="email"
           onOkClose={this.changeEmail}
           onCancelClose={() => this.showEmailModal(false)}
           validateAsync={this.validEmail}

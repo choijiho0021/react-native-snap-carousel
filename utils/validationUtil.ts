@@ -123,6 +123,7 @@ const validation = {
   },
 };
 
+export type ValidationKey = keyof typeof validation;
 /*
 validate.validators.custom = function(value, options, key, attributes) {
   if ( key == 'actCode' && value != options) return i18n.t('reg:invalidActCode')
@@ -152,13 +153,14 @@ const validateAll = (
   val: object,
   extraValidation?: ValidationRule,
 ): ValidationResult => {
-  if (!_.isEmpty(val)) {
-    Object.keys(val).forEach((key) => {
-      if (extraValidation && _.isEmpty(extraValidation[key]))
-        extraValidation[key] = validation[key];
-    });
-  }
-  return validate0(val, extraValidation);
+  const vald = Object.fromEntries(
+    Object.keys(val).map((k) => [
+      k,
+      validation[k] || (extraValidation ? extraValidation[k] : undefined),
+    ]),
+  );
+
+  return validate0(val, vald);
 };
 
 export default {validate, validateAll};

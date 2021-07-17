@@ -1,36 +1,21 @@
-import React, {PureComponent} from 'react';
+import React from 'react';
 import {
   StyleSheet,
   Text,
   View,
   Modal,
-  TextInput,
   TextStyle,
-  KeyboardTypeOptions,
   ViewStyle,
   ColorValue,
   SafeAreaView,
 } from 'react-native';
-import _ from 'underscore';
-import {appStyles} from '../constants/Styles';
-import i18n from '../utils/i18n';
-import {colors} from '../constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
+import {colors} from '@/constants/Colors';
 import AppButton from './AppButton';
-import validationUtil, {ValidationResult} from '../utils/validationUtil';
 import AppIcon from './AppIcon';
 
 const styles = StyleSheet.create({
-  error: {
-    ...appStyles.normal14Text,
-    color: colors.tomato,
-    marginHorizontal: 30,
-    marginTop: 10,
-  },
-  cancelButton: {
-    width: 20,
-    height: 20,
-    backgroundColor: colors.white,
-  },
   button: {
     backgroundColor: colors.white,
     width: 65,
@@ -57,20 +42,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },
-  inputBox: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginHorizontal: 30,
-    marginTop: 30,
-    borderBottomColor: colors.black,
-    borderBottomWidth: 1,
-    alignItems: 'center',
-  },
-  textInput: {
-    ...appStyles.normal16Text,
-    flex: 1,
-    paddingVertical: 12,
-  },
   title: {
     ...appStyles.normal18Text,
     marginHorizontal: 30,
@@ -82,241 +53,121 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   inner: {
-    marginHorizontal: 40,
+    marginHorizontal: 20,
     paddingVertical: 25,
     backgroundColor: 'white',
   },
   icon: {
     marginVertical: 15,
   },
-  label: {
-    ...appStyles.normal14Text,
-    marginLeft: 30,
-    marginTop: 10,
-    color: colors.clearBlue,
-  },
 });
 
-interface AppModalProps {
+export interface AppModalProps {
   visible: boolean;
-  type?: 'normal' | 'close' | 'edit' | 'info';
+  type?: 'normal' | 'close' | 'info';
   justifyContent?: 'center' | 'flex-end';
   title?: string;
   titleStyle?: TextStyle;
   titleIcon?: string;
-  maxLength?: number;
-  keyboardType?: KeyboardTypeOptions;
   toRokebiCash?: boolean;
   closeButtonTitle?: string;
   infoText?: string;
-  default?: string;
   contentStyle?: ViewStyle;
   buttonBackgroundColor?: ColorValue;
   buttonTitleColor?: ColorValue;
-  validate?: (v: string) => ValidationResult;
-  validateAsync?: (v: string) => Promise<ValidationResult>;
-  onOkClose?: (v: string) => void;
+  disableOkButton?: boolean;
+  onOkClose?: (v?: string) => void;
   onCancelClose?: () => void;
 }
 
-interface AppModalState {
-  value: string;
-  error?: object;
-}
-
-class AppModal extends PureComponent<AppModalProps, AppModalState> {
-  constructor(props: AppModalProps) {
-    super(props);
-
-    this.state = {
-      value: props.default || '',
-      error: undefined,
-    };
-
-    this.onChangeText = this.onChangeText.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
-    this.renderError = this.renderError.bind(this);
-  }
-
-  componentDidUpdate(prevProps: AppModalProps) {
-    if (this.props.visible && this.props.visible !== prevProps.visible) {
-      this.setState({
-        value: this.props.default || '',
-      });
-    }
-  }
-
-  onChangeText = (key: string) => (value: string) => {
-    const val = {
-      [key]: value,
-    };
-    const error = validationUtil.validateAll(val);
-
-    this.setState({
-      ...val,
-      error,
-    });
-  };
-
-  async onSubmit() {
-    const {value} = this.state;
-    const {validate, validateAsync, onOkClose = () => {}} = this.props;
-    const validated =
-      (validate && validate(value)) ||
-      (validateAsync && (await validateAsync(value)));
-
-    if (_.isUndefined(validated)) {
-      onOkClose(value);
-    } else {
-      this.setState({
-        error: validated,
-      });
-    }
-  }
-
-  onCancelClose() {
-    const {onCancelClose = () => {}} = this.props;
-    onCancelClose();
-    this.setState({error: undefined});
-  }
-
-  renderError() {
-    const {error} = this.state;
-    const {type} = this.props;
-
-    if (type === 'edit') {
-      if (_.isArray(error))
-        return (
-          <View>
-            {error.map((err, idx) => (
-              <Text key={`${idx}`} style={styles.error}>
-                {err}
+const AppModal: React.FC<AppModalProps> = ({
+  title,
+  titleStyle,
+  titleIcon,
+  children,
+  type = 'normal',
+  toRokebiCash = false,
+  closeButtonTitle = i18n.t('close'),
+  contentStyle,
+  buttonBackgroundColor,
+  buttonTitleColor,
+  justifyContent,
+  visible,
+  disableOkButton,
+  onOkClose = () => {},
+  onCancelClose = () => {},
+}) => {
+  return (
+    <Modal animationType="fade" transparent visible={visible}>
+      <SafeAreaView
+        style={[
+          appStyles.modal,
+          justifyContent ? {justifyContent} : undefined,
+        ]}>
+        <View style={contentStyle || styles.inner}>
+          {titleIcon && <AppIcon name={titleIcon} style={styles.icon} />}
+          {title && <Text style={titleStyle || styles.title}>{title}</Text>}
+          {toRokebiCash && (
+            <View style={{marginTop: 30}}>
+              <Text style={styles.blueCenter}>
+                {i18n.t('usim:toRokebiCash')}
               </Text>
-            ))}
-          </View>
-        );
+              <Text style={styles.blueCenter}>
+                {toRokebiCash} {i18n.t('usim:balance')}
+              </Text>
+            </View>
+          )}
+          {children}
 
-      if (!_.isEmpty(error)) return <Text style={styles.error}>{error}</Text>;
-    }
-    return null;
-  }
-
-  render() {
-    const {value, error} = this.state;
-    const {
-      title,
-      titleStyle,
-      titleIcon,
-      children,
-      type = 'normal',
-      maxLength = undefined,
-      keyboardType = 'default',
-      toRokebiCash = false,
-      closeButtonTitle = i18n.t('close'),
-      infoText,
-      contentStyle,
-      buttonBackgroundColor,
-      buttonTitleColor,
-      justifyContent,
-    } = this.props;
-
-    return (
-      <Modal animationType="fade" transparent visible={this.props.visible}>
-        <SafeAreaView
-          style={[
-            appStyles.modal,
-            justifyContent ? {justifyContent: 'flex-end'} : undefined,
-            // {justifyContent: 'flex-end'},
-          ]}>
-          <View style={contentStyle || styles.inner}>
-            {titleIcon && <AppIcon name={titleIcon} style={styles.icon} />}
-            {title && <Text style={titleStyle || styles.title}>{title}</Text>}
-            {toRokebiCash && (
-              <View style={{marginTop: 30}}>
-                <Text style={styles.blueCenter}>
-                  {i18n.t('usim:toRokebiCash')}
-                </Text>
-                <Text style={styles.blueCenter}>
-                  {toRokebiCash} {i18n.t('usim:balance')}
-                </Text>
-              </View>
-            )}
-            {children}
-            {type === 'edit' && (
-              <View>
-                <View style={styles.inputBox}>
-                  <TextInput
-                    style={styles.textInput}
-                    returnKeyType="done"
-                    enablesReturnKeyAutomatically
-                    onChangeText={this.onChangeText('value')}
-                    maxLength={maxLength}
-                    keyboardType={keyboardType}
-                    value={value}
-                  />
-                  <AppButton
-                    style={styles.cancelButton}
-                    iconName="btnCancel"
-                    onPress={() => this.onChangeText('value')('')}
-                  />
-                </View>
-                {infoText && <Text style={styles.label}>{infoText}</Text>}
-              </View>
-            )}
-            {this.renderError()}
-
-            {type === 'close' ? (
-              <AppButton
-                style={[
-                  styles.closeButton,
-                  buttonBackgroundColor
-                    ? {
-                        backgroundColor: buttonBackgroundColor,
-                      }
-                    : undefined,
-                ]}
-                onPress={this.onSubmit}
-                title={closeButtonTitle}
-                titleStyle={[
-                  styles.closeButtonTitle,
-                  buttonTitleColor ? {color: buttonTitleColor} : undefined,
-                ]}
-              />
-            ) : (
-              // type == normal or info
-              <View style={styles.row}>
-                {type === 'normal' && (
-                  <AppButton
-                    style={styles.button}
-                    onPress={() => this.onCancelClose()}
-                    title={i18n.t('cancel')}
-                    titleStyle={styles.buttonTitle}
-                  />
-                )}
+          {type === 'close' ? (
+            <AppButton
+              style={[
+                styles.closeButton,
+                buttonBackgroundColor
+                  ? {
+                      backgroundColor: buttonBackgroundColor,
+                    }
+                  : undefined,
+              ]}
+              onPress={onOkClose}
+              title={closeButtonTitle}
+              titleStyle={[
+                styles.closeButtonTitle,
+                buttonTitleColor ? {color: buttonTitleColor} : undefined,
+              ]}
+            />
+          ) : (
+            // type == normal or info
+            <View style={styles.row}>
+              {type === 'normal' && (
                 <AppButton
                   style={styles.button}
-                  disabled={!_.isEmpty(error)}
-                  onPress={this.onSubmit}
-                  title={i18n.t('ok')}
-                  disableBackgroundColor={colors.white}
-                  disableColor={colors.warmGrey}
-                  titleStyle={{
-                    ...styles.buttonTitle,
-                    color: _.isEmpty(error)
-                      ? colors.clearBlue
-                      : colors.warmGrey,
-                  }}
+                  onPress={onCancelClose}
+                  title={i18n.t('cancel')}
+                  titleStyle={styles.buttonTitle}
                 />
-              </View>
-            )}
-          </View>
-        </SafeAreaView>
-        {justifyContent === 'flex-end' && (
-          <SafeAreaView style={{backgroundColor: 'white'}} />
-        )}
-      </Modal>
-    );
-  }
-}
+              )}
+              <AppButton
+                style={styles.button}
+                disabled={disableOkButton}
+                onPress={onOkClose}
+                title={i18n.t('ok')}
+                disableBackgroundColor={colors.white}
+                disableColor={colors.warmGrey}
+                titleStyle={{
+                  ...styles.buttonTitle,
+                  color: disableOkButton ? colors.warmGrey : colors.clearBlue,
+                }}
+              />
+            </View>
+          )}
+        </View>
+      </SafeAreaView>
+      {justifyContent === 'flex-end' && (
+        <SafeAreaView style={{backgroundColor: 'white'}} />
+      )}
+    </Modal>
+  );
+};
 
 export default AppModal;
