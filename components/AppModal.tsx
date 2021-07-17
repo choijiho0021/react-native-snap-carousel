@@ -8,6 +8,8 @@ import {
   TextStyle,
   KeyboardTypeOptions,
   ViewStyle,
+  ColorValue,
+  SafeAreaView,
 } from 'react-native';
 import _ from 'underscore';
 import {appStyles} from '../constants/Styles';
@@ -86,7 +88,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginVertical: 15,
-    marginHorizontal: 20,
   },
   label: {
     ...appStyles.normal14Text,
@@ -99,6 +100,7 @@ const styles = StyleSheet.create({
 interface AppModalProps {
   visible: boolean;
   type?: 'normal' | 'close' | 'edit' | 'info';
+  justifyContent?: 'center' | 'flex-end';
   title?: string;
   titleStyle?: TextStyle;
   titleIcon?: string;
@@ -109,6 +111,8 @@ interface AppModalProps {
   infoText?: string;
   default?: string;
   contentStyle?: ViewStyle;
+  buttonBackgroundColor?: ColorValue;
+  buttonTitleColor?: ColorValue;
   validate?: (v: string) => ValidationResult;
   validateAsync?: (v: string) => Promise<ValidationResult>;
   onOkClose?: (v: string) => void;
@@ -211,13 +215,20 @@ class AppModal extends PureComponent<AppModalProps, AppModalState> {
       closeButtonTitle = i18n.t('close'),
       infoText,
       contentStyle,
+      buttonBackgroundColor,
+      buttonTitleColor,
+      justifyContent,
     } = this.props;
 
     return (
       <Modal animationType="fade" transparent visible={this.props.visible}>
-        <View style={appStyles.modal}>
-          {/* children과 wrapper view 사이에 padding 간격이 있는데, 찾을 수 없어서 padding:5를 적용하여 layour을 맞춤 */}
-          <View style={[contentStyle || styles.inner, {padding: 5}]}>
+        <SafeAreaView
+          style={[
+            appStyles.modal,
+            justifyContent ? {justifyContent: 'flex-end'} : undefined,
+            // {justifyContent: 'flex-end'},
+          ]}>
+          <View style={contentStyle || styles.inner}>
             {titleIcon && <AppIcon name={titleIcon} style={styles.icon} />}
             {title && <Text style={titleStyle || styles.title}>{title}</Text>}
             {toRokebiCash && (
@@ -256,10 +267,20 @@ class AppModal extends PureComponent<AppModalProps, AppModalState> {
 
             {type === 'close' ? (
               <AppButton
-                style={styles.closeButton}
+                style={[
+                  styles.closeButton,
+                  buttonBackgroundColor
+                    ? {
+                        backgroundColor: buttonBackgroundColor,
+                      }
+                    : undefined,
+                ]}
                 onPress={this.onSubmit}
                 title={closeButtonTitle}
-                titleStyle={styles.closeButtonTitle}
+                titleStyle={[
+                  styles.closeButtonTitle,
+                  buttonTitleColor ? {color: buttonTitleColor} : undefined,
+                ]}
               />
             ) : (
               // type == normal or info
@@ -289,7 +310,10 @@ class AppModal extends PureComponent<AppModalProps, AppModalState> {
               </View>
             )}
           </View>
-        </View>
+        </SafeAreaView>
+        {justifyContent === 'flex-end' && (
+          <SafeAreaView style={{backgroundColor: 'white'}} />
+        )}
       </Modal>
     );
   }

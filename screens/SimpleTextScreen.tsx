@@ -1,5 +1,6 @@
 import React, {Component, memo, useState} from 'react';
 import {
+  Dimensions,
   Platform,
   SafeAreaView,
   ScrollView,
@@ -33,6 +34,7 @@ import AppModal from '@/components/AppModal';
 import AppUserPic from '@/components/AppUserPic';
 
 const {baseUrl} = Env.get();
+const {width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   screen: {
@@ -295,10 +297,15 @@ class SimpleTextScreen extends Component<
         <AppModal
           type="close"
           visible={!!promoResult && promoResult !== 'promo:join:ing'}
-          contentStyle={{marginHorizontal: 40}}
+          // children과 wrapper view 사이에 padding 간격이 있는데, 찾을 수 없어서 padding:5를 적용하여 layour을 맞춤
+          contentStyle={{
+            marginHorizontal: (width - 333) / 2,
+          }}
           closeButtonTitle={i18n.t(
             promoResult === 'promo:join:joined' ? 'redirect' : 'close',
           )}
+          buttonBackgroundColor="white"
+          buttonTitleColor={colors.black}
           onOkClose={() => {
             this.setState({promoResult: undefined});
             if (promoResult === 'promo:join:joined')
@@ -314,7 +321,7 @@ class SimpleTextScreen extends Component<
                 : image?.failure
             }
             crop={false}
-            style={{width: 300, height: 400}}
+            style={{width: 333, height: 444}}
           />
         </AppModal>
       </SafeAreaView>

@@ -74,7 +74,6 @@ const styles = StyleSheet.create({
     paddingTop: 25,
   },
   titleStyle: {
-    marginHorizontal: 20,
     fontSize: 20,
   },
   esimInfoKey: {
@@ -91,7 +90,6 @@ const styles = StyleSheet.create({
   },
   modalBody: {
     marginVertical: 20,
-    marginHorizontal: 20,
   },
   normal16BlueText: {
     ...appStyles.normal16Text,
@@ -361,6 +359,7 @@ class EsimScreen extends Component<EsimScreenProps, EsimScreenState> {
         </View>
         <AppModal
           type="close"
+          justifyContent="flex-end"
           titleIcon={modal === 'showQR' ? 'btnQr' : 'btnPen'}
           titleStyle={styles.titleStyle}
           title={
@@ -368,6 +367,13 @@ class EsimScreen extends Component<EsimScreenProps, EsimScreenState> {
               ? i18n.t('esim:showQR:title')
               : i18n.t('esim:manualInput:title')
           }
+          contentStyle={{
+            marginHorizontal: 0,
+            backgroundColor: 'white',
+            borderTopLeftRadius: 8,
+            borderTopRightRadius: 8,
+            padding: 20,
+          }}
           onOkClose={() => this.showModal(false)}
           visible={showModal}>
           {this.modalBody()}
