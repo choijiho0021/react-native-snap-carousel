@@ -323,7 +323,7 @@ class SimpleTextScreen extends Component<
 }
 
 const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
-  const [eventStatus, setEventStatus] = useState<EventStatus>('open');
+  const [eventStatus, setEventStatus] = useState<EventStatus>('closed');
 
   useFocusEffect(
     React.useCallback(() => {

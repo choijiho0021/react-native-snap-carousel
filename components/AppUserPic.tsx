@@ -19,9 +19,7 @@ const AppUserPic: React.FC<AppUserPicProps> = ({
   onPress = () => {},
 }) => {
   return (
-    <Pressable
-      style={{alignSelf: 'center', backgroundColor: 'blue'}}
-      onPress={onPress}>
+    <Pressable style={{alignSelf: 'center'}} onPress={onPress}>
       {url ? (
         <Image
           style={style}
