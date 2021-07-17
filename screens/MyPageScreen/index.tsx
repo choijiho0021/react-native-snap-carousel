@@ -54,6 +54,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {MyPageStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
 import AppModalForm from '@/components/AppModalForm';
+import {RkbOrder} from '@/submodules/rokebi-utils/api/orderApi';
 import OrderItem from './components/OrderItem';
 
 const {esimApp} = Env.get();
@@ -644,10 +645,10 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
     return undefined;
   }
 
-  changeEmail(mail: string) {
+  changeEmail(mail?: string) {
     const {email} = this.props.account;
 
-    if (email !== mail) {
+    if (mail && email !== mail) {
       this.props.action.account.changeEmail(mail);
       Analytics.trackEvent('Page_View_Count', {page: 'Change Email'});
     }
@@ -663,7 +664,7 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
     return <Text style={styles.nolist}>{i18n.t('his:noPurchase')}</Text>;
   }
 
-  renderOrder({item}) {
+  renderOrder({item}: {item: RkbOrder}) {
     return (
       <OrderItem item={item} onPress={this.onPressOrderDetail(item.orderId)} />
     );

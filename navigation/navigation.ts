@@ -68,6 +68,6 @@ export type MyPageStackParamList = {
   Auth: undefined;
   Settings: undefined;
   PurchageDetail: undefined;
-  Recharge: undefined;
-  ContactBoard: undefined;
+  Recharge: {mode: string};
+  ContactBoard: {index: number};
 };
