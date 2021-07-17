@@ -35,7 +35,7 @@ export type HomeStackParamList = {
     };
   };
   Contact: undefined;
-  ContactBoard: undefined;
+  ContactBoard: {index: number};
   BoardMsgResp: {key: string; status: 'Closed'};
   Faq: {
     key?: string;

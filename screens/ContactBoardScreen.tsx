@@ -4,12 +4,15 @@
 import React, {Component} from 'react';
 import {StyleSheet, View, Dimensions} from 'react-native';
 import {TabView, TabBar} from 'react-native-tab-view';
-import i18n from '../utils/i18n';
-import AppBackButton from '../components/AppBackButton';
-import BoardMsgAdd from '../components/BoardMsgAdd';
-import BoardMsgList from '../components/BoardMsgList';
-import {colors} from '../constants/Colors';
-import {appStyles} from '../constants/Styles';
+import i18n from '@/utils/i18n';
+import AppBackButton from '@/components/AppBackButton';
+import BoardMsgAdd from '@/components/BoardMsgAdd';
+import BoardMsgList from '@/components/BoardMsgList';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RouteProp} from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   container: {
@@ -17,14 +20,38 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-class ContactBoardScreen extends Component {
-  constructor(props) {
+
+type ContactBoardScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'ContactBoard'
+>;
+
+type ContactBoardScreenRouteProp = RouteProp<
+  HomeStackParamList,
+  'ContactBoard'
+>;
+
+type ContactBoardScreenProps = {
+  navigation: ContactBoardScreenNavigationProp;
+  route: ContactBoardScreenRouteProp;
+};
+
+type ContactBoardScreenState = {
+  index: number;
+  routes: {key: string; title: string}[];
+  link?: string;
+};
+class ContactBoardScreen extends Component<
+  ContactBoardScreenProps,
+  ContactBoardScreenState
+> {
+  constructor(props: ContactBoardScreenProps) {
     super(props);
 
     const {params} = this.props.route;
 
     this.state = {
-      index: params && params.index ? params.index : 0,
+      index: params?.index ? params.index : 0,
       routes: [
         {key: 'new', title: i18n.t('board:new')},
         {key: 'list', title: i18n.t('board:list')},
