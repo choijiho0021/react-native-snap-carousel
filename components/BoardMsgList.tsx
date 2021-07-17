@@ -31,6 +31,7 @@ import AppModal from './AppModal';
 import AppButton from './AppButton';
 import AppIcon from './AppIcon';
 import BoardMsg from './BoardMsg';
+import AppModalForm from './AppModalForm';
 
 const styles = StyleSheet.create({
   noList: {
@@ -301,11 +302,11 @@ class BoardMsgList extends Component<BoardMsgListProps, BoardMsgListState> {
         />
 
         <AppActivityIndicator visible={this.props.pending && !refreshing} />
-        <AppModal
+        <AppModalForm
           visible={showModal}
           title={i18n.t('board:inputPass')}
-          type="edit"
           maxLength={4}
+          valueType="pin"
           keyboardType="numeric"
           onOkClose={this.onSubmitPin}
           onCancelClose={() => this.setState({showModal: false})}
