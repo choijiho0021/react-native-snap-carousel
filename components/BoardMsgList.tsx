@@ -27,7 +27,6 @@ import {RootState} from '@/redux';
 import {ValidationResult} from '@/utils/validationUtil';
 import {RkbBoard} from '@/submodules/rokebi-utils/api/boardApi';
 import AppActivityIndicator from './AppActivityIndicator';
-import AppModal from './AppModal';
 import AppButton from './AppButton';
 import AppIcon from './AppIcon';
 import BoardMsg from './BoardMsg';
@@ -321,7 +320,6 @@ export default connect(
   ({board, account, pender}: RootState) => ({
     board,
     account,
-    auth: accountActions.auth(account),
     uid: account.uid || 0,
     pending: pender.pending[boardActions.FETCH_ISSUE_LIST] || false,
   }),

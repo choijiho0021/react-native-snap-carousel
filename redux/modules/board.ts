@@ -1,108 +1,57 @@
-import {createAction, handleActions} from 'redux-actions';
-import {pender} from 'redux-pender';
-import _ from 'underscore';
+/* eslint-disable no-param-reassign */
+import {AnyAction} from 'redux';
+import {createAction, Reducer} from 'redux-actions';
 import {API} from '@/submodules/rokebi-utils';
-import {RkbBoard} from '@/submodules/rokebi-utils/api/boardApi';
-import {auth} from './account';
+import {RkbBoard, RkbIssue} from '@/submodules/rokebi-utils/api/boardApi';
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {AppDispatch} from '@/store';
 import {AppThunk} from '..';
 
-export const POST_ISSUE = 'rokebi/board/POST_ISSUE';
-export const POST_ATTACH = 'rokebi/board/POST_ATTACH';
-const NO_MORE_ISSUES = 'rokebi/board/NO_MORE_ISSUES';
-export const FETCH_ISSUE_LIST = 'rokebi/board/FETCH_ISSUE_LIST';
-export const GET_ISSUE_RESP = 'rokebi/board/GET_ISSUE_RESP';
-const RESET_ISSUE_LIST = 'rokebi/board/RESET_ISSUE_LIST';
-const NEXT_ISSUE_LIST = 'rokebi/board/NEXT_ISSUE_LIST';
-const RESET_ISSUE_COMMENT = 'rokebi/board/RESET_ISSUE_COMMENT';
-
-export const postIssue = createAction(POST_ISSUE, API.Board.post);
-export const postAttach = createAction(
-  GET_ISSUE_RESP,
+export const postIssue = createAsyncThunk('board/postIssue', API.Board.post);
+export const postAttach = createAsyncThunk(
+  'board/postAttach',
   API.Board.uploadAttachment,
 );
-export const fetchIssueList = createAction(
-  FETCH_ISSUE_LIST,
+export const fetchIssueList = createAsyncThunk(
+  'board/fetchIssueList',
   API.Board.getIssueList,
 );
-export const getIssueResp = createAction(GET_ISSUE_RESP, API.Board.getComments);
-const resetIssueList = createAction(RESET_ISSUE_LIST);
-export const resetIssueComment = createAction(RESET_ISSUE_COMMENT);
-const nextIssueList = createAction(NEXT_ISSUE_LIST);
-
-export const getIssueList = (reloadAlways = true): AppThunk => (
-  dispatch,
-  getState,
-) => {
-  const {account, board} = getState();
-  const {uid, token} = account;
-
-  if (reloadAlways) {
-    dispatch(resetIssueList());
-    return dispatch(fetchIssueList(uid, {token}, 0));
-  }
-
-  // reloadAlways == false 이면 list가 비어있는 경우에만 다시 읽는다.
-  if (board.list.length === 0) return dispatch(fetchIssueList(uid, {token}, 0));
-
-  return Promise.resolve();
-};
-
-export const getNextIssueList = (): AppThunk => (dispatch, getState) => {
-  const {account, board, pender: pender0} = getState();
-  const {uid, token} = account;
-  const {next, page} = board;
-  const pending = pender0.pending[FETCH_ISSUE_LIST];
-
-  if (next && !pending) {
-    dispatch(nextIssueList());
-    return dispatch(fetchIssueList(uid, {token}, page + 1));
-  }
-
-  // no more list
-  return dispatch({type: NO_MORE_ISSUES});
-};
+export const getIssueResp = createAsyncThunk(
+  'board/getIssueResp',
+  API.Board.getComments,
+);
+export const resetIssueComment = createAction('board/resetIssueComment');
 
 // 10 items per page
 const PAGE_LIMIT = 10;
 const PAGE_UPDATE = 0;
 
-export const postAndGetList = (issue, attachment): AppThunk => (
-  dispatch,
+export const postAndGetList = (issue: RkbIssue): AppThunk<Promise<void>> => (
+  dispatch: AppDispatch,
   getState,
 ) => {
-  const {account} = getState();
-  const {uid} = account;
-  const authObj = auth(account);
+  const {
+    account: {uid, mobile, token},
+  } = getState();
 
-  return dispatch(postAttach(attachment, authObj)).then((rsp) => {
-    const attach = rsp ? rsp.map((item) => item.objects[0]) : [];
-    console.log('Failed to upload picture', rsp);
-    return dispatch(postIssue(issue, attach, authObj)).then(
-      (resp) => {
-        if (resp.result === 0 && resp.objects.length > 0) {
-          return dispatch(getIssueList(uid, authObj));
-        }
-        console.log('Failed to post issue', resp);
-      },
-      (err) => {
-        console.log('Failed to post issue', err);
-      },
-    );
-  });
+  return dispatch(postAttach({images: issue.images, user: mobile, token})).then(
+    ({payload}) => {
+      console.log('upload picture', payload);
+      const images = payload ? payload.map((item) => item.objects[0]) : [];
+      return dispatch(postIssue({...issue, images, token})).then(
+        ({payload: resp}) => {
+          if (resp.result === 0 && resp.objects.length > 0) {
+            return dispatch(fetchIssueList({uid, token}));
+          }
+          return Promise.reject(new Error('failed to post issue'));
+        },
+        (err) => {
+          return Promise.reject(new Error(`failed to post issue: ${err}`));
+        },
+      );
+    },
+  );
 };
-
-export const actions = {
-  getIssueResp,
-  resetIssueComment,
-  fetchIssueList,
-  getIssueList,
-  postAttach,
-  postIssue,
-  getNextIssueList,
-};
-
-export type BoardAction = typeof actions;
-
 export interface BoardModelState {
   next: boolean;
   page: number;
@@ -116,21 +65,17 @@ const initialState: BoardModelState = {
   list: [],
 };
 
-export default handleActions(
-  {
-    [NO_MORE_ISSUES]: (state) => {
+const slice = createSlice({
+  name: 'board',
+  initialState,
+  reducers: {
+    noMoreIssues: (state) => {
       return state;
     },
-
-    [NEXT_ISSUE_LIST]: (state) => {
-      const {page} = state;
-      return {
-        ...state,
-        page: page + 1,
-      };
+    nextIssueList: (state) => {
+      state.page = state.page + 1;
     },
-
-    [RESET_ISSUE_LIST]: (state) => {
+    resetIssueList: (state) => {
       return {
         ...state,
         next: true,
@@ -138,76 +83,99 @@ export default handleActions(
         list: [],
       };
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchIssueList.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+      const {list} = state;
 
-    [RESET_ISSUE_COMMENT]: (state) => {
-      return {
-        ...state,
-        comment: undefined,
-      };
-    },
+      if (result === 0 && objects.length > 0) {
+        //Status가 변경된 item을 찾아서 변경해 준다.
+        const changedList = list.map((item) => {
+          const findObjects = objects.find((org) => org.uuid === item.uuid);
+          if (
+            findObjects !== undefined &&
+            item.statusCode !== findObjects.statusCode
+          ) {
+            return findObjects;
+          }
+          return item;
+        });
 
-    ...pender<BoardModelState>({
-      type: FETCH_ISSUE_LIST,
-      onSuccess: (state, action) => {
-        const {result, objects} = action.payload;
-        const {list} = state;
+        const newList = objects.filter(
+          (item) => changedList.findIndex((org) => org.uuid === item.uuid) < 0,
+        );
 
-        if (result === 0 && objects.length > 0) {
-          //Status가 변경된 item을 찾아서 변경해 준다.
-          const changedList = list.map((item) => {
-            const findObjects = objects.find((org) => org.uuid === item.uuid);
-            if (
-              findObjects !== undefined &&
-              item.statusCode !== findObjects.statusCode
-            ) {
-              return findObjects;
-            }
-            return item;
-          });
-
-          const newList = objects.filter(
-            (item) =>
-              changedList.findIndex((org) => org.uuid === item.uuid) < 0,
-          );
-
-          return {
-            ...state,
-            list: changedList
-              .concat(newList)
-              .sort((a, b) => (a.created < b.created ? 1 : -1)),
-            next:
-              newList.length === PAGE_LIMIT || newList.length === PAGE_UPDATE,
-          };
-        }
         return {
           ...state,
-          next: false,
+          list: changedList
+            .concat(newList)
+            .sort((a, b) => (a.created < b.created ? 1 : -1)),
+          next: newList.length === PAGE_LIMIT || newList.length === PAGE_UPDATE,
         };
-      },
-    }),
+      }
+      return {
+        ...state,
+        next: false,
+      };
+    });
 
-    ...pender<BoardModelState>({
-      type: GET_ISSUE_RESP,
-      onSuccess: (state, action) => {
-        const {result, objects} = action.payload;
-        if (result === 0) {
-          // object.length == 0인 경우에도 comment를 overwrite 한다.
-          return {
-            ...state,
-            comment: objects,
-          };
-        }
-        return state;
-      },
-    }),
-
-    ...pender({
-      type: POST_ATTACH,
-    }),
-
-    ...pender({
-      type: POST_ISSUE,
-    }),
+    builder.addCase(getIssueResp.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+      if (result === 0) {
+        // object.length == 0인 경우에도 comment를 overwrite 한다.
+        state.comment = objects;
+      }
+    });
   },
-  initialState,
-);
+});
+
+export const getIssueList = (reloadAlways = true): AppThunk => (
+  dispatch,
+  getState,
+) => {
+  const {account, board} = getState();
+  const {uid, token} = account;
+
+  if (reloadAlways) {
+    dispatch(slice.actions.resetIssueList());
+    return dispatch(fetchIssueList({uid, token, page: 0}));
+  }
+
+  // reloadAlways == false 이면 list가 비어있는 경우에만 다시 읽는다.
+  if (board.list.length === 0)
+    return dispatch(fetchIssueList({uid, token, page: 0}));
+
+  return Promise.resolve();
+};
+
+export const getNextIssueList = (): AppThunk => (dispatch, getState) => {
+  const {account, board, pender: pender0} = getState();
+  const {uid, token} = account;
+  const {next, page} = board;
+  // const pending = pender0.pending[FETCH_ISSUE_LIST];
+  const pending = false;
+
+  if (next && !pending) {
+    dispatch(slice.actions.nextIssueList());
+    return dispatch(fetchIssueList({uid, token, page: page + 1}));
+  }
+
+  // no more list
+  return dispatch(slice.actions.noMoreIssues());
+};
+
+export const actions = {
+  ...slice.actions,
+  getIssueResp,
+  resetIssueComment,
+  getIssueList,
+  postAttach,
+  postIssue,
+  getNextIssueList,
+  postAndGetList,
+};
+
+export type BoardAction = typeof actions;
+
+export default slice.reducer as Reducer<BoardModelState, AnyAction>;

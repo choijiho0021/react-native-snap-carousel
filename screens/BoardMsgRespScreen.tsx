@@ -14,8 +14,11 @@ import {bindActionCreators} from 'redux';
 import {API} from '@/submodules/rokebi-utils';
 import i18n from '@/utils/i18n';
 import AppBackButton from '@/components/AppBackButton';
-import {actions as boardActions} from '@/redux/modules/board';
-import {actions as accountActions} from '@/redux/modules/account';
+import {
+  actions as boardActions,
+  BoardAction,
+  BoardModelState,
+} from '@/redux/modules/board';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
@@ -24,6 +27,10 @@ import utils from '@/submodules/rokebi-utils/utils';
 import {attachmentSize, windowWidth} from '@/constants/SliderEntry.style';
 import AppButton from '@/components/AppButton';
 import {RootState} from '@/redux';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RouteProp} from '@react-navigation/native';
+import {AccountModelState} from '../redux/modules/account';
 
 const styles = StyleSheet.create({
   attachBox: {
@@ -85,21 +92,48 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
 });
-class BoardMsgRespScreen extends Component {
-  constructor(props) {
+
+type BoardMsgRespScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'BoardMsgResp'
+>;
+
+type BoardMsgRespScreenRouteProp = RouteProp<
+  HomeStackParamList,
+  'BoardMsgResp'
+>;
+
+type BoardMsgRespScreenProps = {
+  navigation: BoardMsgRespScreenNavigationProp;
+  route: BoardMsgRespScreenRouteProp;
+
+  board: BoardModelState;
+  pending: boolean;
+
+  account: AccountModelState;
+
+  action: {
+    board: BoardAction;
+  };
+};
+type BoardMsgRespScreenState = {
+  idx?: number;
+};
+class BoardMsgRespScreen extends Component<
+  BoardMsgRespScreenProps,
+  BoardMsgRespScreenState
+> {
+  constructor(props: BoardMsgRespScreenProps) {
     super(props);
 
     this.state = {
       idx: undefined,
-      uuid: undefined,
     };
   }
 
   componentDidMount() {
     const {params} = this.props.route;
-
-    const uuid = params && params.key;
-    const status = params && params.status;
+    const {uuid, status} = params || {};
 
     this.props.navigation.setOptions({
       title: null,
@@ -111,12 +145,11 @@ class BoardMsgRespScreen extends Component {
       this.props.action.board.getIssueList(false).then(() => {
         this.setState({
           idx: this.props.board.list.findIndex((item) => item.uuid === uuid),
-          uuid,
-          status,
         });
 
         if (status === 'Closed') {
-          this.props.action.board.getIssueResp(uuid, this.props.auth);
+          const {token} = this.props.account;
+          this.props.action.board.getIssueResp({uuid, token});
         } else {
           this.props.action.board.resetIssueComment();
         }
@@ -124,40 +157,34 @@ class BoardMsgRespScreen extends Component {
     }
   }
 
-  renderAttachment(images) {
-    return (
-      <View style={styles.attachBox}>
-        {images &&
-          images
-            .filter((item) => !_.isEmpty(item))
-            .map((url, idx) => (
-              <Image
-                key={url + idx}
-                source={{uri: API.default.httpImageUrl(url).toString()}}
-                style={styles.attach}
-              />
-            ))}
-      </View>
-    );
-  }
-
   render() {
-    const {idx} = this.state,
-      {list = [], comment = []} = this.props.board,
-      issue = idx >= 0 ? list[idx] : {},
-      resp = comment[0] || {};
+    const {idx} = this.state;
+    const {list = [], comment = []} = this.props.board;
+    const issue = idx !== undefined && idx >= 0 ? list[idx] : undefined;
+    const resp = comment[0] || {};
 
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView style={styles.container}>
           <View style={{flex: 1}}>
             <Text style={[styles.inputBox, {marginTop: 30}]}>
-              {issue.title}
+              {issue?.title}
             </Text>
             <Text style={[styles.inputBox, {marginTop: 15, paddingBottom: 72}]}>
-              {utils.htmlToString(issue.msg)}
+              {utils.htmlToString(issue?.msg)}
             </Text>
-            {this.renderAttachment(issue.images)}
+            <View style={styles.attachBox}>
+              {issue?.images
+                ?.filter((item) => !_.isEmpty(item))
+                .map((url, i) => (
+                  <Image
+                    key={`${url}${i}`}
+                    source={{uri: API.default.httpImageUrl(url).toString()}}
+                    style={styles.attach}
+                  />
+                ))}
+            </View>
+
             {!_.isEmpty(resp) && (
               <View style={styles.resp}>
                 <AppIcon
@@ -188,7 +215,7 @@ class BoardMsgRespScreen extends Component {
 export default connect(
   ({board, account, pender}: RootState) => ({
     board,
-    auth: accountActions.auth(account),
+    account,
     pending: pender.pending[boardActions.GET_ISSUE_RESP] || false,
   }),
   (dispatch) => ({

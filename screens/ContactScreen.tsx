@@ -28,7 +28,7 @@ import AppModal from '@/components/AppModal';
 import Env from '@/environment';
 import {RootState} from '@/redux';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {HomeStackParamList} from '@/navigation/MainTabNavigator';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const {channelId} = Env.get();
 
@@ -60,16 +60,22 @@ type MenuItem = {
   onPress?: () => void;
 };
 
-const ContactListItem0 = ({item}: {item: MenuItem}) => {
+const ContactListItem0 = ({
+  item,
+  onPress,
+}: {
+  item: MenuItem;
+  onPress?: (k: string) => void;
+}) => {
   return (
     <Pressable
       onPress={() => {
         Analytics.trackEvent('Page_View_Count', {page: item.page});
-        if (item.onPress) item.onPress();
+        if (onPress) onPress(item.key);
       }}>
       <View style={styles.row}>
         <Text style={styles.itemTitle}>{item.value}</Text>
-        {item.onPress && (
+        {onPress && (
           <AppIcon style={{alignSelf: 'center'}} name="iconArrowRight" />
         )}
       </View>
@@ -86,6 +92,7 @@ type ContactScreenNavigationProp = StackNavigationProp<
 
 type ContactScreenProps = {
   navigation: ContactScreenNavigationProp;
+
   info: InfoModelState;
   noti: NotiModelState;
   action: {
@@ -108,52 +115,33 @@ class ContactScreen extends Component<ContactScreenProps, ContactScreenState> {
           key: 'noti',
           value: i18n.t('contact:notice'),
           page: 'Notice',
-          onPress: () => {
-            this.props.navigation.navigate('Noti', {
-              mode: 'info',
-              title: i18n.t('contact:notice'),
-              info: this.props.info.infoList,
-            });
-          },
         },
         {
           key: 'faq',
           value: i18n.t('contact:faq'),
           page: 'FAQ',
-          onPress: () => {
-            this.props.navigation.navigate('Faq');
-          },
         },
         {
           key: 'board',
           value: i18n.t('contact:board'),
           page: 'Contact Board',
-          onPress: () => {
-            this.props.navigation.navigate('ContactBoard');
-          },
         },
         {
           key: 'ktalk',
           value: i18n.t('contact:ktalk'),
           page: 'Open Kakao Talk',
-          onPress: () => {
-            this.openKTalk();
-          },
         },
         {
           key: 'call',
           value: i18n.t('contact:call'),
           page: 'Call Center',
-          onPress: () => {
-            Linking.openURL(`tel:0317103969`);
-          },
         },
       ],
       showModal: false,
     };
 
-    this.openKTalk = this.openKTalk.bind(this);
     this.showModal = this.showModal.bind(this);
+    this.onPress = this.onPress.bind(this);
   }
 
   componentDidMount() {
@@ -174,20 +162,46 @@ class ContactScreen extends Component<ContactScreenProps, ContactScreenState> {
     }
   }
 
+  onPress = (key: string) => {
+    const {navigation} = this.props;
+
+    switch (key) {
+      case 'noti':
+        navigation.navigate('Noti', {
+          mode: 'info',
+          title: i18n.t('contact:notice'),
+          info: this.props.info.infoList,
+        });
+        break;
+      case 'faq':
+        navigation.navigate('Faq');
+        break;
+      case 'board':
+        navigation.navigate('ContactBoard');
+        break;
+      case 'ktalk':
+        KakaoSDK.Channel.chat(channelId).catch((_) => {
+          this.props.action.toast.push(Toast.NOT_OPENED);
+        });
+
+        break;
+      case 'call':
+        Linking.openURL(`tel:0317103969`);
+        break;
+      default:
+        break;
+    }
+  };
+
   renderItem = ({item}: {item: MenuItem}) => {
-    return <ContactListItem item={item} />;
+    return <ContactListItem item={item} onPress={this.onPress} />;
   };
 
   showModal = (value: boolean) => {
     this.setState({showModal: value});
   };
 
-  openKTalk = () => {
-    KakaoSDK.Channel.chat(channelId).catch((_) => {
-      this.props.action.toast.push(Toast.NOT_OPENED);
-    });
-
-    /*
+  /*
     const resendable = this.props.noti.result !== 0 ||
       (this.props.noti.lastSent instanceof Date ? Math.round( (new Date() - this.props.noti.lastSent)/ (1000*60) ) > 0 : true)
 
@@ -215,7 +229,6 @@ class ContactScreen extends Component<ContactScreenProps, ContactScreenState> {
     sendKtalk.catch( err => console.log("failed to send alimtalk", err))
 
     */
-  };
 
   render() {
     const {showModal, data} = this.state;

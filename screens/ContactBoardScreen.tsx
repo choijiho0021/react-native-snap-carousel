@@ -36,9 +36,10 @@ type ContactBoardScreenProps = {
   route: ContactBoardScreenRouteProp;
 };
 
+type TabRoute = {key: string; title: string};
 type ContactBoardScreenState = {
   index: number;
-  routes: {key: string; title: string}[];
+  routes: TabRoute[];
   link?: string;
 };
 class ContactBoardScreen extends Component<
@@ -58,8 +59,6 @@ class ContactBoardScreen extends Component<
       ],
       link: undefined,
     };
-
-    this.onPress = this.onPress.bind(this);
   }
 
   componentDidMount() {
@@ -69,18 +68,29 @@ class ContactBoardScreen extends Component<
     });
   }
 
-  renderScene = (onPress) => ({route, jumpTo}) => {
+  renderScene = ({
+    route,
+    jumpTo,
+  }: {
+    route: TabRoute;
+    jumpTo: (v: string) => void;
+  }) => {
     if (route.key === 'new') {
       return <BoardMsgAdd jumpTo={jumpTo} />;
     }
     if (route.key === 'list') {
-      return <BoardMsgList jumpTo={jumpTo} onPress={onPress} />;
+      return (
+        <BoardMsgList
+          onPress={(uuid: string, status: string) =>
+            this.props.navigation.navigate('BoardMsgResp', {
+              uuid,
+              status,
+            })
+          }
+        />
+      );
     }
     return null;
-  };
-
-  onPress = (key, status = 'O') => {
-    this.props.navigation.navigate('BoardMsgResp', {key, status});
   };
 
   renderTabBar = (props) => {
@@ -104,7 +114,7 @@ class ContactBoardScreen extends Component<
         <TabView
           style={styles.container}
           navigationState={this.state}
-          renderScene={this.renderScene(this.onPress)}
+          renderScene={this.renderScene}
           onIndexChange={(index) => this.setState({index})}
           initialLayout={{width: Dimensions.get('window').width}}
           renderTabBar={this.renderTabBar}

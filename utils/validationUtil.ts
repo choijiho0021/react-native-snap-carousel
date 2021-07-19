@@ -2,7 +2,24 @@ import validate0 from 'validate.js';
 import _ from 'underscore';
 import i18n from './i18n';
 
-const validation = {
+export type ValidationRule = {
+  [x: string]: {
+    presence: {message: string};
+    length?: {
+      minimum: number;
+      message: string;
+    };
+    email?: {
+      message: string;
+    };
+    format?: {
+      pattern?: RegExp;
+      message: string;
+    };
+  };
+};
+
+const validation: ValidationRule = {
   password: {
     presence: {
       message: '^Please enter a password',
@@ -129,8 +146,6 @@ validate.validators.custom = function(value, options, key, attributes) {
   if ( key == 'actCode' && value != options) return i18n.t('reg:invalidActCode')
 }
 */
-
-type ValidationRule = typeof validation;
 
 export type ValidationResult =
   | {

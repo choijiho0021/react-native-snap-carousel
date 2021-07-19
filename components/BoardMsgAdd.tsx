@@ -6,10 +6,13 @@ import {
   Text,
   findNodeHandle,
   TextInput,
-  TouchableOpacity,
   Image,
   InputAccessoryView,
   SafeAreaView,
+  NativeSyntheticEvent,
+  TextInputContentSizeChangeEventData,
+  ScrollView,
+  Pressable,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -25,19 +28,22 @@ import {
 
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
-import {actions as accountActions} from '@/redux/modules/account';
-import {actions as boardActions} from '@/redux/modules/board';
+import {AccountModelState} from '@/redux/modules/account';
+import {actions as boardActions, BoardAction} from '@/redux/modules/board';
 import utils from '@/submodules/rokebi-utils/utils';
-import validationUtil from '@/utils/validationUtil';
+import validationUtil, {
+  ValidationResult,
+  ValidationRule,
+} from '@/utils/validationUtil';
 import {colors} from '@/constants/Colors';
 import {attachmentSize} from '@/constants/SliderEntry.style';
 import {RootState} from '@/redux';
+import ImagePicker, {Image as CropImage} from 'react-native-image-crop-picker';
 import AppActivityIndicator from './AppActivityIndicator';
 import AppButton from './AppButton';
 import AppAlert from './AppAlert';
 import AppIcon from './AppIcon';
-
-const ImagePicker = require('react-native-image-crop-picker').default;
+import {RkbImage} from '@/submodules/rokebi-utils/api/accountApi';
 
 const styles = StyleSheet.create({
   passwordInput: {
@@ -151,42 +157,71 @@ const styles = StyleSheet.create({
   },
 });
 
-class BoardMsgAdd extends Component {
-  static validation = {
-    title: {
-      presence: {
-        message: i18n.t('board:noTitle'),
-      },
-    },
-    msg: {
-      presence: {
-        message: i18n.t('board:noMsg'),
-      },
-    },
-  };
+type BoardMsgAddProps = {
+  account: AccountModelState;
+  success: boolean;
+  pending: boolean;
 
-  constructor(props) {
+  onSubmit?: () => void;
+  jumpTo: (v: string) => void;
+
+  action: {
+    board: BoardAction;
+  };
+};
+
+type BoardMsgAddState = {
+  name?: string;
+  mobile: string;
+  title?: string;
+  msg?: string;
+  disable: boolean;
+  checkMobile: boolean;
+  checkEmail: boolean;
+  errors?: ValidationResult;
+  pin?: string;
+  attachment: List<CropImage>;
+  extraHeight: number;
+  hasPhotoPermission: boolean;
+};
+
+const validationRule: ValidationRule = {
+  title: {
+    presence: {
+      message: i18n.t('board:noTitle'),
+    },
+  },
+  msg: {
+    presence: {
+      message: i18n.t('board:noMsg'),
+    },
+  },
+};
+
+const initialState: BoardMsgAddState = {
+  name: undefined,
+  mobile: '',
+  title: undefined,
+  msg: undefined,
+  disable: false,
+  checkMobile: false,
+  checkEmail: false,
+  errors: {},
+  pin: undefined,
+  attachment: List<CropImage>(),
+  extraHeight: 80,
+  hasPhotoPermission: false,
+};
+
+class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
+  keybd: React.RefObject<TextInput>;
+
+  scrollRef: React.LegacyRef<ScrollView>;
+
+  constructor(props: BoardMsgAddProps) {
     super(props);
 
-    this.initialState = {
-      name: undefined,
-      mobile: '',
-      email: undefined,
-      title: undefined,
-      msg: undefined,
-      disable: false,
-      checkMobile: false,
-      checkEmail: false,
-      errors: {},
-      pin: undefined,
-      attachment: List(),
-    };
-
-    this.state = {
-      ...this.initialState,
-      extraHeight: 80,
-      hasPhotoPermission: false,
-    };
+    this.state = initialState;
 
     this.onSubmit = this.onSubmit.bind(this);
     this.onCancel = this.onCancel.bind(this);
@@ -198,7 +233,7 @@ class BoardMsgAdd extends Component {
     this.renderAttachment = this.renderAttachment.bind(this);
     this.renderContact = this.renderContact.bind(this);
 
-    this.keybd = React.createRef();
+    this.keybd = React.createRef<TextInput>();
     this.scrollRef = null;
   }
 
@@ -208,19 +243,15 @@ class BoardMsgAdd extends Component {
         ? PERMISSIONS.IOS.PHOTO_LIBRARY
         : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
     const result = await check(permission);
-    const {mobile, email} = this.props.account;
+    const {mobile} = this.props.account;
     const number = utils.toPhoneNumber(mobile);
 
     this.setState({
       hasPhotoPermission: result === RESULTS.GRANTED,
       mobile: number,
-      email,
     });
 
-    const errors = validationUtil.validateAll(
-      {mobile: number},
-      BoardMsgAdd.validation,
-    );
+    const errors = validationUtil.validate('mobile', number);
     if (errors) {
       this.setState({
         errors,
@@ -228,52 +259,66 @@ class BoardMsgAdd extends Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: BoardMsgAddProps) {
     if (this.props.success && this.props.success !== prevProps.success) {
       // post가 완료되면 list 텝으로 전환한다.
       this.props.jumpTo('list');
     }
   }
 
-  validate = (key, value) => {
-    const {errors} = this.state;
-    const valid = validationUtil.validate(key, value, {
-      [key]: BoardMsgAdd.validation[key],
-    });
+  validate = (key: string, value: string) => {
+    let {errors} = this.state;
+    const valid = validationUtil.validate(key, value, validationRule);
 
-    errors[key] = _.isEmpty(valid) ? undefined : valid[key];
+    if (!errors) errors = {};
+    errors[key] = valid ? valid[key] : [''];
     this.setState({
       errors,
     });
   };
 
-  onSubmit = () => {
+  onSubmit = async () => {
     const {title, msg, mobile, attachment, pin} = this.state;
+    if (!title || !msg) {
+      console.log('@@@ invalid issue', title, msg);
+      return;
+    }
+
     const issue = {
       title,
       msg,
       mobile,
       pin,
+      images: attachment
+        .map(
+          ({mime, size, width, height, data}) =>
+            ({
+              mime,
+              size,
+              width,
+              height,
+              data,
+            } as RkbImage),
+        )
+        .toArray(),
     };
 
-    // reset data
-    setTimeout(() => {
-      this.setState((state) => ({
-        msg: undefined,
-        title: undefined,
-        pin: undefined,
-        attachment: state.attachment.clear(),
-      }));
-    }, 1000);
-
-    this.props.action.board.postAndGetList(issue, attachment.toJS());
+    const rsp = await this.props.action.board.postAndGetList(issue);
+    console.log('@@@ rsp', rsp);
+    this.setState((state) => ({
+      msg: undefined,
+      title: undefined,
+      pin: undefined,
+      attachment: state.attachment.clear(),
+    }));
   };
 
   onCancel = () => {
-    this.props.onSubmit();
+    const {onSubmit} = this.props;
+    if (onSubmit) onSubmit();
   };
 
-  onChangeText = (key) => (value) => {
+  onChangeText = (key: keyof BoardMsgAddState) => (value: string) => {
     this.setState({
       [key]: value,
     });
@@ -281,13 +326,15 @@ class BoardMsgAdd extends Component {
     this.validate(key, value);
   };
 
-  scroll = (event) => {
+  scroll = (
+    event: NativeSyntheticEvent<TextInputContentSizeChangeEventData>,
+  ) => {
     this.scrollRef?.props?.scrollToFocusedInput(findNodeHandle(event.target));
   };
 
-  error(key) {
+  error(key: string) {
     const {errors} = this.state;
-    return !_.isEmpty(errors) && errors[key] ? errors[key][0] : '';
+    return errors && errors[key] ? errors[key][0] : '';
   }
 
   async addAttachment() {
@@ -304,26 +351,27 @@ class BoardMsgAdd extends Component {
     }
 
     if (this.state.hasPhotoPermission || checkNewPermission) {
-      if (ImagePicker)
-        ImagePicker.openPicker({
-          width: 750,
-          height: 1334, // iphone 8 size
-          cropping: true,
-          includeBase64: true,
-          writeTempFile: false,
-          mediaType: 'photo',
-          forceJpb: true,
-          cropperChooseText: i18n.t('select'),
-          cropperCancelText: i18n.t('cancel'),
-        })
-          .then((image) => {
-            this.setState((state) => ({
-              attachment: state.attachment.push(image),
-            }));
-          })
-          .catch((err) => {
-            console.log('failed to select', err);
+      if (ImagePicker) {
+        try {
+          const image = await ImagePicker.openPicker({
+            width: 750,
+            height: 1334, // iphone 8 size
+            cropping: true,
+            includeBase64: true,
+            writeTempFile: false,
+            mediaType: 'photo',
+            forceJpb: true,
+            cropperChooseText: i18n.t('select'),
+            cropperCancelText: i18n.t('cancel'),
           });
+
+          this.setState((state) => ({
+            attachment: state.attachment.push(image),
+          }));
+        } catch (err) {
+          console.log('failed to select', err);
+        }
+      }
     } else {
       // 사진 앨범 조회 권한을 요청한다.
       AppAlert.confirm(i18n.t('settings'), i18n.t('acc:permPhoto'), {
@@ -332,7 +380,7 @@ class BoardMsgAdd extends Component {
     }
   }
 
-  rmAttachment(idx) {
+  rmAttachment(idx: number) {
     this.setState((state) => ({
       attachment: state.attachment.delete(idx),
     }));
@@ -376,9 +424,9 @@ class BoardMsgAdd extends Component {
         <Text style={styles.attachTitle}>{i18n.t('board:attach')}</Text>
         <View style={styles.attachBox}>
           {attachment.map((image, idx) => (
-            <TouchableOpacity
+            <Pressable
               // eslint-disable-next-line react/no-array-index-key
-              key={image.filename + idx}
+              key={image.filename}
               style={[styles.attach, idx < 2 && {marginRight: 33}]}
               onPress={() => this.rmAttachment(idx)}>
               <Image
@@ -386,15 +434,15 @@ class BoardMsgAdd extends Component {
                 source={{uri: `data:${image.mime};base64,${image.data}`}}
               />
               <AppIcon name="btnBoxCancel" style={styles.attachCancel} />
-            </TouchableOpacity>
+            </Pressable>
           ))}
           {attachment.size < 3 && (
-            <TouchableOpacity
+            <Pressable
               key="add"
               style={[styles.attach, styles.plusButton]}
               onPress={this.addAttachment}>
               <AppIcon name="btnPhotoPlus" />
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
       </View>
@@ -415,7 +463,7 @@ class BoardMsgAdd extends Component {
           returnKeyType="next"
           enablesReturnKeyAutomatically
           maxLength={13}
-          disabled={disable}
+          editable={!disable}
           onChangeText={(value) =>
             this.onChangeText('mobile')(utils.toPhoneNumber(value))
           }
@@ -437,11 +485,14 @@ class BoardMsgAdd extends Component {
       mobile,
       errors = {},
     } = this.state;
+    const {
+      account: {loggedIn},
+    } = this.props;
     const inputAccessoryViewID = 'doneKbd';
     // errors object의 모든 value 값들이 undefined인지 확인한다.
     const hasError =
       Object.values(errors).findIndex((val) => !_.isEmpty(val)) >= 0 ||
-      (!this.props.isLoggedIn && _.isEmpty(pin)) ||
+      (!loggedIn && _.isEmpty(pin)) ||
       _.isEmpty(msg) ||
       _.isEmpty(title) ||
       _.isEmpty(mobile);
@@ -458,20 +509,23 @@ class BoardMsgAdd extends Component {
           innerRef={(ref) => {
             this.scrollRef = ref;
           }}>
-          {this.props.isLoggedIn === false && this.renderContact()}
+          {!loggedIn && this.renderContact()}
           <View style={styles.notiView}>
             <Text style={styles.noti}>{i18n.t('board:noti')}</Text>
           </View>
 
           <View style={{flex: 1}}>
             <TextInput
-              style={[styles.inputBox, title && {borderColor: colors.black}]}
+              style={[
+                styles.inputBox,
+                title ? {borderColor: colors.black} : undefined,
+              ]}
               placeholder={i18n.t('title')}
               placeholderTextColor={colors.greyish}
               returnKeyType="next"
               enablesReturnKeyAutomatically
               clearTextOnFocus={false}
-              disabled={disable}
+              editable={!disable}
               maxLength={25}
               onChangeText={this.onChangeText('title')}
               onFocus={() => this.setState({extraHeight: 20})}
@@ -485,7 +539,7 @@ class BoardMsgAdd extends Component {
               style={[
                 styles.inputBox,
                 {height: 208, paddingTop: 5, textAlignVertical: 'top'},
-                msg && {borderColor: colors.black},
+                msg ? {borderColor: colors.black} : undefined,
               ]}
               ref={this.keybd}
               placeholder={i18n.t('content')}
@@ -495,7 +549,7 @@ class BoardMsgAdd extends Component {
               inputAccessoryViewID={inputAccessoryViewID}
               enablesReturnKeyAutomatically
               clearTextOnFocus={false}
-              disabled={disable}
+              editable={!disable}
               maxLength={2000}
               onChangeText={this.onChangeText('msg')}
               onFocus={() => this.setState({extraHeight: 80})}
@@ -506,9 +560,7 @@ class BoardMsgAdd extends Component {
               value={msg}
             />
 
-            {this.props.isLoggedIn
-              ? this.renderAttachment()
-              : this.renderPass()}
+            {loggedIn ? this.renderAttachment() : this.renderPass()}
           </View>
         </KeyboardAwareScrollView>
 
@@ -521,7 +573,7 @@ class BoardMsgAdd extends Component {
                 styles.inputAccessoryText,
                 {color: _.isEmpty(this.state.msg) ? colors.white : colors.blue},
               ]}
-              onPress={() => this.keybd.current.blur()}
+              onPress={() => this.keybd.current?.blur()}
             />
           </InputAccessoryView>
         ) : null}
@@ -540,8 +592,6 @@ class BoardMsgAdd extends Component {
 export default connect(
   ({account, pender}: RootState) => ({
     account,
-    auth: accountActions.auth(account),
-    isLoggedIn: account.loggedIn || false,
     success: pender.success[boardActions.POST_ISSUE],
     pending:
       pender.pending[boardActions.POST_ISSUE] ||
