@@ -590,12 +590,12 @@ class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
 }
 
 export default connect(
-  ({account, pender}: RootState) => ({
+  ({account, status}: RootState) => ({
     account,
-    success: pender.success[boardActions.POST_ISSUE],
+    success: status.fulfilled[boardActions.postIssue.typePrefix],
     pending:
-      pender.pending[boardActions.POST_ISSUE] ||
-      pender.pending[boardActions.POST_ATTACH] ||
+      status.pending[boardActions.postIssue.typePrefix] ||
+      status.pending[boardActions.postAttach.typePrefix] ||
       false,
   }),
   (dispatch) => ({

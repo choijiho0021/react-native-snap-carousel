@@ -1,6 +1,7 @@
 import {AnyAction} from 'redux';
 import {combineReducers} from '@reduxjs/toolkit';
 import {ThunkAction} from 'redux-thunk';
+
 import {penderReducer} from 'redux-pender';
 import account from './modules/account';
 import product from './modules/product';
@@ -14,6 +15,7 @@ import info from './modules/info';
 import sync from './modules/sync';
 import toast from './modules/toast';
 import promotion from './modules/promotion';
+import status from './modules/status';
 
 const reducers = {
   account,
@@ -28,6 +30,7 @@ const reducers = {
   sync,
   toast,
   promotion,
+  status,
   pender: penderReducer,
 };
 
@@ -45,5 +48,16 @@ export type AppThunk<ReturnType = void> = ThunkAction<
   unknown,
   AnyAction
 >;
+
+/*
+type GenericAsyncThunk = AsyncThunk<unknown, unknown, any>;
+
+export type PendingAction = ReturnType<GenericAsyncThunk['pending']>;
+export type RejectedAction = ReturnType<GenericAsyncThunk['rejected']>;
+export type FulfilledAction = ReturnType<GenericAsyncThunk['fulfilled']>;
+export function isPendingAction(action: AnyAction): action is PendingAction {
+  return action.type.endsWith('/pending');
+}
+*/
 
 export default combineReducers(reducers);

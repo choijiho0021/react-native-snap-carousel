@@ -18,10 +18,7 @@ import {
   BoardAction,
   BoardModelState,
 } from '@/redux/modules/board';
-import {
-  AccountModelState,
-  actions as accountActions,
-} from '@/redux/modules/account';
+import {AccountModelState} from '@/redux/modules/account';
 import utils from '@/submodules/rokebi-utils/utils';
 import {RootState} from '@/redux';
 import {ValidationResult} from '@/utils/validationUtil';
@@ -317,11 +314,11 @@ class BoardMsgList extends Component<BoardMsgListProps, BoardMsgListState> {
 }
 
 export default connect(
-  ({board, account, pender}: RootState) => ({
+  ({board, account, status}: RootState) => ({
     board,
     account,
     uid: account.uid || 0,
-    pending: pender.pending[boardActions.FETCH_ISSUE_LIST] || false,
+    pending: status.pending[boardActions.fetchIssueList.typePrefix] || false,
   }),
   (dispatch) => ({
     action: {
