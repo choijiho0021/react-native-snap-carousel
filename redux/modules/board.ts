@@ -145,11 +145,11 @@ export const getIssueList = (reloadAlways = true): AppThunk => (
 };
 
 export const getNextIssueList = (): AppThunk => (dispatch, getState) => {
-  const {account, board, pending} = getState();
+  const {account, board, status} = getState();
   const {uid, token} = account;
   const {next, page} = board;
 
-  if (next && pending[fetchIssueList.typePrefix] !== 'pending') {
+  if (next && !status.pending[fetchIssueList.typePrefix]) {
     dispatch(slice.actions.nextIssueList());
     return dispatch(fetchIssueList({uid, token, page: page + 1}));
   }
