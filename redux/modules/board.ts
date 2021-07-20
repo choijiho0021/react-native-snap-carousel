@@ -3,9 +3,7 @@ import {AnyAction} from 'redux';
 import {Reducer} from 'redux-actions';
 import {API} from '@/submodules/rokebi-utils';
 import {RkbBoard, RkbIssue} from '@/submodules/rokebi-utils/api/boardApi';
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import {AppDispatch} from '@/store';
-import {AppThunk} from '..';
+import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 
 const postIssue = createAsyncThunk('board/postIssue', API.Board.post);
 const postAttach = createAsyncThunk(
@@ -25,16 +23,16 @@ const getIssueResp = createAsyncThunk(
 const PAGE_LIMIT = 10;
 const PAGE_UPDATE = 0;
 
-export const postAndGetList = (issue: RkbIssue): AppThunk<Promise<void>> => (
-  dispatch: AppDispatch,
-  getState,
-) => {
-  const {
-    account: {uid, mobile, token},
-  } = getState();
+export const postAndGetList = createAsyncThunk(
+  'board/postAndGetList',
+  (issue: RkbIssue, {dispatch, getState}) => {
+    const {
+      account: {uid, mobile, token},
+    } = getState() as RootState;
 
-  return dispatch(postAttach({images: issue.images, user: mobile, token})).then(
-    ({payload}) => {
+    return dispatch(
+      postAttach({images: issue.images, user: mobile, token}),
+    ).then(({payload}) => {
       console.log('upload picture', payload);
       const images = payload ? payload.map((item) => item.objects[0]) : [];
       return dispatch(postIssue({...issue, images, token})).then(
@@ -48,9 +46,9 @@ export const postAndGetList = (issue: RkbIssue): AppThunk<Promise<void>> => (
           return Promise.reject(new Error(`failed to post issue: ${err}`));
         },
       );
-    },
-  );
-};
+    });
+  },
+);
 export interface BoardModelState {
   next: boolean;
   page: number;
@@ -125,38 +123,41 @@ const slice = createSlice({
   },
 });
 
-export const getIssueList = (reloadAlways = true): AppThunk => (
-  dispatch,
-  getState,
-) => {
-  const {account, board} = getState();
-  const {uid, token} = account;
+export const getIssueList = createAsyncThunk(
+  'board/getIssueList',
+  (reloadAlways = true, {dispatch, getState}) => {
+    const {account, board} = getState() as RootState;
+    const {uid, token} = account;
 
-  if (reloadAlways) {
-    dispatch(slice.actions.resetIssueList());
-    return dispatch(fetchIssueList({uid, token, page: 0}));
-  }
+    if (reloadAlways) {
+      dispatch(slice.actions.resetIssueList());
+      return dispatch(fetchIssueList({uid, token, page: 0}));
+    }
 
-  // reloadAlways == false 이면 list가 비어있는 경우에만 다시 읽는다.
-  if (board.list.length === 0)
-    return dispatch(fetchIssueList({uid, token, page: 0}));
+    // reloadAlways == false 이면 list가 비어있는 경우에만 다시 읽는다.
+    if (board.list.length === 0)
+      return dispatch(fetchIssueList({uid, token, page: 0}));
 
-  return Promise.resolve();
-};
+    return Promise.resolve();
+  },
+);
 
-export const getNextIssueList = (): AppThunk => (dispatch, getState) => {
-  const {account, board, status} = getState();
-  const {uid, token} = account;
-  const {next, page} = board;
+export const getNextIssueList = createAsyncThunk(
+  'board/getNextIssueList',
+  (param, {dispatch, getState}) => {
+    const {account, board, status} = getState() as RootState;
+    const {uid, token} = account;
+    const {next, page} = board;
 
-  if (next && !status.pending[fetchIssueList.typePrefix]) {
-    dispatch(slice.actions.nextIssueList());
-    return dispatch(fetchIssueList({uid, token, page: page + 1}));
-  }
+    if (next && !status.pending[fetchIssueList.typePrefix]) {
+      dispatch(slice.actions.nextIssueList());
+      return dispatch(fetchIssueList({uid, token, page: page + 1}));
+    }
 
-  // no more list
-  return dispatch(slice.actions.noMoreIssues());
-};
+    // no more list
+    return dispatch(slice.actions.noMoreIssues());
+  },
+);
 
 export const actions = {
   ...slice.actions,
