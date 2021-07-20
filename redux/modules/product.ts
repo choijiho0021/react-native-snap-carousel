@@ -17,10 +17,13 @@ const getProdDetail = createAsyncThunk(
   API.Page.getProductDetails,
 );
 
-const getProdList = createAsyncThunk('', async (param, {dispatch}) => {
-  await Promise.resolve(dispatch(getProd()));
-  return dispatch(getLocalOp());
-});
+const getProdList = createAsyncThunk(
+  'product/getProdList',
+  async (param, {dispatch}) => {
+    await Promise.resolve(dispatch(getProd()));
+    return dispatch(getLocalOp());
+  },
+);
 
 const getProdListWithToast = reflectWithToast(getProdList, Toast.NOT_LOADED);
 
