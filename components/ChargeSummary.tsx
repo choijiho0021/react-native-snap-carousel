@@ -67,14 +67,12 @@ const ChargeSummary = ({
         valueStyle={{...appStyles.normal14Text, color: colors.black}}
         value={i18n.t('cart:totalCntX').replace('%%', totalCnt.toString())}
       />
-      {!esimApp && (
-        <LabelText
-          label={i18n.t('cart:totalPrice')}
-          style={styles.summary}
-          format="price"
-          value={totalPrice}
-        />
-      )}
+      <LabelText
+        label={i18n.t('cart:totalPrice')}
+        style={styles.summary}
+        format="price"
+        value={totalPrice}
+      />
       {!_.isEmpty(simList) && (
         <LabelText
           label={i18n.t('cart:dlvCost')}
@@ -84,15 +82,13 @@ const ChargeSummary = ({
         />
       )}
 
-      {!esimApp && (
-        <LabelText
-          label={i18n.t('cart:deductBalance')}
-          style={styles.summary}
-          format="price"
-          value={balance}
-          deduct={deduct}
-        />
-      )}
+      <LabelText
+        label={i18n.t('cart:deductBalance')}
+        style={styles.summary}
+        format="price"
+        value={balance}
+        deduct={deduct}
+      />
 
       <LabelText
         label={i18n.t('cart:totalCost')}

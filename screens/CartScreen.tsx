@@ -39,6 +39,7 @@ import {HomeStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
 import {RkbOrderItem} from '@/submodules/rokebi-utils/api/cartApi';
 import {ProductModelState} from '@/redux/modules/product';
+import {PurchaseItem} from '@/submodules/rokebi-utils/models/purchaseItem';
 
 const sectionTitle = ['sim', 'product'];
 
@@ -196,21 +197,24 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
           (acc, cur) =>
             acc.concat(
               cur.data.filter(
-                (item) => checked.get(item.key) && qty.get(item.key) > 0,
+                (item) => checked.get(item.key) && qty.get(item.key, 0) > 0,
               ),
             ),
-          [],
+          [] as RkbOrderItem[],
         )
-        .map((item) => ({
-          ...item,
-          sku: item.prod.sku,
-          variationId: item.prod.variationId,
-          qty: qty.get(item.key),
-        }));
+        .map(
+          (item) =>
+            ({
+              ...item,
+              sku: item.prod.sku,
+              variationId: item.prod.variationId,
+              qty: qty.get(item.key),
+            } as PurchaseItem),
+        );
 
       this.props.action.cart
-        .checkStockAndPurchase(purchaseItems, balance, dlvCost > 0)
-        .then((resp) => {
+        .checkStockAndPurchase({purchaseItems, balance, dlvCost: dlvCost > 0})
+        .then(({payload: resp}) => {
           if (resp.result === 0) {
             this.props.navigation.navigate('PymMethod', {mode: 'cart'});
           } else if (resp.result === api.E_RESOURCE_NOT_FOUND)
@@ -223,7 +227,7 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
     }
   }
 
-  onChangeQty(key: string, orderItemId: string, cnt: number) {
+  onChangeQty(key: string, orderItemId: number, cnt: number) {
     this.setState((state) => {
       const qty = state.qty.set(key, cnt);
       const checked = state.checked.set(key, true);
@@ -235,22 +239,13 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
       };
     });
 
-    if (orderItemId) {
-      if (this.cancelUpdate) {
-        this.cancelUpdate();
-        this.cancelUpdate = null;
-      }
-
-      const cartUpdateQty = this.props.action.cart.cartUpdateQty({
-        orderId: this.props.cart.orderId,
+    const {orderId} = this.props.cart;
+    if (orderItemId && orderId) {
+      this.props.action.cart.cartUpdateQty({
+        orderId,
         orderItemId,
         qty: cnt,
         abortController: new AbortController(),
-      });
-
-      this.cancelUpdate = cartUpdateQty.cancel;
-      cartUpdateQty.catch((err) => {
-        console.log('cancel2', err);
       });
     }
   }
@@ -349,7 +344,7 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
     }
   }
 
-  removeItem(key: string, orderItemId: string) {
+  removeItem(key: string, orderItemId: number) {
     this.setState((state) => {
       const section = state.section.map((item) => ({
         title: item.title,
@@ -367,9 +362,10 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
       };
     });
 
-    if (orderItemId) {
+    const {orderId} = this.props.cart;
+    if (orderItemId && orderId) {
       this.props.action.cart.cartRemove({
-        orderId: this.props.cart.orderId,
+        orderId,
         orderItemId,
       });
     }
@@ -384,7 +380,7 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
     // return  item.key && <CartItem checked={checked.get(item.key) || false}
     return (
       <CartItem
-        checked={checked.get(item.key) || false}
+        checked={checked.get(item.key, false)}
         onChange={(value) =>
           this.onChangeQty(item.key, item.orderItemId, value)
         }
@@ -393,7 +389,7 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
         name={item.title}
         price={item.price}
         image={imageUrl}
-        qty={qty.get(item.key)}
+        qty={qty.get(item.key, 0)}
       />
     );
   };
@@ -416,7 +412,7 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
         [] as RkbOrderItem[],
       )
       .map((item) => ({
-        qty: qty.get(item.key) || 0,
+        qty: qty.get(item.key, 0),
         price: item.price,
       }))
       .reduce(
@@ -456,9 +452,7 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
     );
 
     return (
-      <SafeAreaView
-        style={styles.container}
-        forceInset={{top: 'never', bottom: 'always'}}>
+      <SafeAreaView style={styles.container}>
         <SectionList
           sections={section}
           renderItem={this.renderItem}
@@ -489,7 +483,7 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
           autoHidingTime={timer.snackBarHidingTime}
           onClose={() => this.setState({showSnackBar: false})}
           actionHandler={() => {
-            this.snackRef.current.hideSnackbar();
+            this.snackRef.current?.hideSnackbar();
           }}
         />
         <View style={styles.buttonBox}>
@@ -508,7 +502,6 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
             style={styles.btnBuy}
             title={`${i18n.t('cart:purchase')} (${total.cnt})`}
             titleStyle={{
-              fontSize: isDeviceSize('small') ? 16 : 18,
               ...appStyles.normal18Text,
               color: colors.white,
               textAlign: 'center',
@@ -529,16 +522,17 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
 }
 
 export default connect(
-  ({account, cart, sim, product, pender}: RootState) => ({
+  ({account, cart, sim, product, status}: RootState) => ({
     lastTab: cart.lastTab.toJS(),
     sim,
     product,
     cart,
     account,
     pending:
-      pender.pending[cartActions.CART_ADD] ||
-      pender.pending[cartActions.CART_UPDATE] ||
-      pender.pending[cartActions.CART_REMOVE] ||
+      status.pending[cartActions.cartAddAndGet.typePrefix] ||
+      status.pending[cartActions.cartUpdateQty.typePrefix] ||
+      status.pending[cartActions.cartRemove.typePrefix] ||
+      status.pending[cartActions.checkStockAndPurchase.typePrefix] ||
       false,
   }),
   (dispatch) => ({

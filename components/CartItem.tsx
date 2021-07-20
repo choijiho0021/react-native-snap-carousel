@@ -1,14 +1,14 @@
-import React from 'react';
+import React, {memo} from 'react';
 import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
-import {appStyles} from '../constants/Styles';
-import i18n from '../utils/i18n';
+import {API} from '@/submodules/rokebi-utils';
+import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
 import utils from '@/submodules/rokebi-utils/utils';
-import {colors} from '../constants/Colors';
+import {colors} from '@/constants/Colors';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppIcon from './AppIcon';
 import AppButton from './AppButton';
 import InputNumber from './InputNumber';
-import {isDeviceSize} from '../constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   container: {
@@ -66,58 +66,63 @@ const styles = StyleSheet.create({
   },
 });
 
-class CartItem extends React.PureComponent {
-  render() {
-    const {
-      name,
-      price,
-      image,
-      qty,
-      onChange,
-      onChecked,
-      checked,
-      onDelete,
-    } = this.props;
+const CartItem = ({
+  name,
+  price,
+  image,
+  qty,
+  onChange,
+  onChecked,
+  checked,
+  onDelete,
+}: {
+  name: string;
+  price: number;
+  image?: string;
+  qty: number;
+  onChange: (v: number) => void;
+  onChecked: () => void;
+  checked: boolean;
+  onDelete: () => void;
+}) => {
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity onPress={onChecked} style={styles.touch}>
+        <View style={styles.checker}>
+          <AppIcon name="btnCheck" checked={checked} />
+        </View>
 
-    return (
-      <View style={styles.container}>
-        <TouchableOpacity onPress={onChecked} style={styles.touch}>
-          <View style={styles.checker}>
-            <AppIcon name="btnCheck" checked={checked} />
-          </View>
+        <View style={styles.slide}>
+          <Image
+            source={{uri: API.default.httpImageUrl(image)}}
+            style={styles.slide}
+            resizeMode="stretch"
+          />
+        </View>
+      </TouchableOpacity>
 
-          <View style={styles.slide}>
-            <Image
-              source={{uri: API.default.httpImageUrl(image)}}
-              style={styles.slide}
-              resizeMode="stretch"
-            />
-          </View>
-        </TouchableOpacity>
-
-        <View style={styles.desc}>
-          <Text style={styles.itemTitle}>{name}</Text>
-          <View style={styles.input}>
-            <Text style={styles.itemPrice}>{utils.price(price)}</Text>
-            <InputNumber value={qty} onChange={onChange} />
-          </View>
-          <View style={[styles.input, {marginTop: 20}]}>
-            <Text style={appStyles.price}>
-              {utils.numberToCommaString(price * qty)}
-            </Text>
-            <Text style={[appStyles.normal14Text, {flex: 1}]}>
-              {i18n.t('won')}
-            </Text>
-            <AppButton
-              style={styles.delete}
-              iconName="iconTrash"
-              onPress={onDelete}
-            />
-          </View>
+      <View style={styles.desc}>
+        <Text style={styles.itemTitle}>{name}</Text>
+        <View style={styles.input}>
+          <Text style={styles.itemPrice}>{utils.price(price)}</Text>
+          <InputNumber value={qty} onChange={onChange} />
+        </View>
+        <View style={[styles.input, {marginTop: 20}]}>
+          <Text style={appStyles.price}>
+            {utils.numberToCommaString(price * qty)}
+          </Text>
+          <Text style={[appStyles.normal14Text, {flex: 1}]}>
+            {i18n.t('won')}
+          </Text>
+          <AppButton
+            style={styles.delete}
+            iconName="iconTrash"
+            onPress={onDelete}
+          />
         </View>
       </View>
-    );
-  }
-}
+    </View>
+  );
+};
 
-export default CartItem;
+export default memo(CartItem);

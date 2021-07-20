@@ -373,9 +373,7 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
 
   selectedProduct = (selected: string) => {
     const prod = this.props.product.prodList.get(selected);
-    if (prod) {
-      return API.Product.toPurchaseItem(prod);
-    }
+    return prod ? API.Product.toPurchaseItem(prod) : undefined;
   };
 
   onPressBtnCart = () => {

@@ -44,7 +44,7 @@ export type HomeStackParamList = {
   Guide: undefined;
   Country: {prodOfCountry: RkbProduct[]};
   Payment: undefined;
-  PymMethod: {isPaid: boolean; mode?: PymMethodScreenMode};
+  PymMethod: {isPaid?: boolean; mode?: PymMethodScreenMode};
   FindAddress: undefined;
   PaymentResult: undefined;
   CodePush: undefined;

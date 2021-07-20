@@ -1,201 +1,97 @@
-import {createAction, handleActions} from 'redux-actions';
-import {List} from 'immutable';
-import {pender} from 'redux-pender';
+/* eslint-disable no-param-reassign */
+import {Reducer} from 'redux-actions';
+import {List as ImmutableList} from 'immutable';
+import {AnyAction} from 'redux';
 import {API} from '@/submodules/rokebi-utils';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import Env from '@/environment';
-import {AppThunk} from '..';
+import {RkbOrderItem} from '@/submodules/rokebi-utils/api/cartApi';
+import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
+import {PurchaseItem} from '@/submodules/rokebi-utils/models/purchaseItem';
 import {getOrders} from './order';
 import {getAccount} from './account';
-import {RkbOrderItem} from '@/submodules/rokebi-utils/api/cartApi';
 
 const {esimApp} = Env.get();
 
-const SET_CART_TOKEN = 'rokebi/cart/SET_CART_TOKEN';
-const CART_FLYOUT_CLOSE = 'rokebi/cart/CART_FLYOUT_CLOSE';
-const CART_FLYOUT_OPEN = 'rokebi/cart/CART_FLYOUT_OPEN';
-const CART_FETCH = 'rokebi/cart/CART_FETCH';
-const MAKE_PAYMENT = 'rokebi/cart/MAKE_PAYMENT';
-const MAKE_ORDER = 'rokebi/cart/MAKE_ORDER';
-const PURCHASE = 'rokebi/cart/PURCHASE';
-const PYM_RESULT = 'rokebi/cart/PYM_RESULT';
-const PUSH_LAST_TAB = 'rokebi/cart/PUSH_LAST_TAB';
-const EMPTY = 'rokebi/cart/EMPTY';
-const RESET = 'rokebi/cart/RESET';
-const RECHARGE_ACCOUNT = 'rokebi/cart/RECHARGE_ACCOUNT';
-
-export const CART_ADD = 'rokebi/cart/CART_ADD';
-export const CART_REMOVE = 'rokebi/cart/CART_REMOVE';
-export const CART_UPDATE = 'rokebi/cart/CART_UPDATE';
-export const CART_CHECK_STOCK = 'rokebi/cart/CART_CHECK_STOCK';
-const GET_OUT_OF_STOCK_TITLE = 'rokebi/cart/GET_OUT_OF_STOCK_TITLE';
-
-export const setCartToken = createAction(SET_CART_TOKEN);
-export const cartFlyoutOpen = createAction(CART_FLYOUT_OPEN);
-export const cartFlyoutClose = createAction(CART_FLYOUT_CLOSE);
-
-export const cartFetch = createAction(CART_FETCH, API.Cart.get);
-export const cartAdd = createAction(CART_ADD, API.Cart.add);
-export const cartRemove = createAction(CART_REMOVE, API.Cart.remove);
-const cartCheckStock = createAction(CART_CHECK_STOCK, API.Cart.checkStock);
-const getOutOfStockTitle = createAction(
-  GET_OUT_OF_STOCK_TITLE,
+export const cartFetch = createAsyncThunk('cart/fetch', API.Cart.get);
+export const cartAdd = createAsyncThunk('cart/add', API.Cart.add);
+export const cartRemove = createAsyncThunk('cart/remove', API.Cart.remove);
+const cartCheckStock = createAsyncThunk('cart/checkStock', API.Cart.checkStock);
+const getOutOfStockTitle = createAsyncThunk(
+  'cart/getOutOfStockTitle',
   API.Cart.getStockTitle,
 );
-export const cartUpdateQty = createAction(
-  CART_UPDATE,
+export const cartUpdateQty = createAsyncThunk(
+  'cart/update',
   API.Cart.updateQty,
-  (...args) => ({abortController: args.abortController}),
 );
 
-export const purchase = createAction(PURCHASE);
-export const makeOrder = createAction(MAKE_ORDER, API.Cart.makeOrder);
-export const pymResult = createAction(PYM_RESULT);
-export const empty = createAction(EMPTY);
-export const reset = createAction(RESET);
-export const rechargeAccount = createAction(RECHARGE_ACCOUNT, API.Recharge.add);
+export const makeOrder = createAsyncThunk('cart/makeOrder', API.Cart.makeOrder);
+export const rechargeAccount = createAsyncThunk(
+  'cart/rechargeAccount',
+  API.Recharge.add,
+);
 
-export const pushLastTab = createAction(PUSH_LAST_TAB);
+const checkStock = createAsyncThunk(
+  'cart/checkStock',
+  ({purchaseItems}: {purchaseItems: PurchaseItem[]}, {dispatch, getState}) => {
+    const {
+      account: {token},
+    } = getState() as RootState;
 
-const checkStock = (prodList): AppThunk => (dispatch, getState) => {
-  const {account} = getState();
-  const {token} = account;
+    return esimApp
+      ? dispatch(cartCheckStock({purchaseItems, token})).then(
+          ({payload: resp}) => {
+            if (resp.result === 0) return resp;
+            return dispatch(getOutOfStockTitle(resp));
+          },
+        )
+      : Promise.resolve({result: 0});
+  },
+);
 
-  return esimApp
-    ? dispatch(cartCheckStock(prodList, {token})).then((resp) => {
-        if (resp.result === 0) return resp;
-        return dispatch(getOutOfStockTitle(resp)).payload;
-      })
-    : new Promise.resolve({result: 0});
-};
-
-export const payNorder = (result): AppThunk => (dispatch, getState) => {
-  const {account, cart} = getState();
-  const {token, iccid, email, mobile} = account;
-  const auth = {
-    token,
-    iccid,
-    mail: email,
-    user: mobile,
-  };
-
-  // update payment result
-  dispatch(pymResult(result));
-
-  // remove ordered items from the cart
-  const {orderId, orderItems, purchaseItems} = cart;
-
-  // make order in the server
-  // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
-  return dispatch(checkStock(purchaseItems)).then((res) => {
-    if (res.result === 0) {
-      return dispatch(makeOrder(purchaseItems, result, auth)).then((resp) => {
-        if (resp.result === 0) {
-          dispatch(getOrders(auth, 0));
-          // cart에서 item 삭제
-          orderItems.forEach((item) => {
-            if (purchaseItems.find((o) => o.orderItemId === item.orderItemId)) {
-              // remove ordered item
-              dispatch(cartRemove({orderId, orderItemId: item.orderItemId}));
+export const cartAddAndGet = createAsyncThunk(
+  'cart/addAndGet',
+  (purchaseItems: PurchaseItem[], {dispatch}) => {
+    return dispatch(checkStock({purchaseItems})).then((resp) => {
+      if (resp.result === 0) {
+        return dispatch(cartAdd({purchaseItems})).then(
+          (rsp) => {
+            if (rsp.result === 0 && rsp.objects.length > 0) {
+              return dispatch(cartFetch());
             }
-          });
-
-          if (
-            purchaseItems.find((item) => item.type === 'rch') ||
-            result.rokebi_cash > 0
-          ) {
-            // 충전을 한 경우에는 account를 다시 읽어들인다.
-            // balance에서 차감한 경우에도 다시 읽어들인다.
-            return dispatch(getAccount(iccid, {token}));
-          }
-        }
-        return resp;
-      });
-    }
-    return res;
-  });
-};
-
-export const checkStockAndPurchase = (
-  purchaseItems,
-  balance,
-  dlvCost = false,
-): AppThunk => (dispatch) => {
-  return dispatch(checkStock(purchaseItems)).then((resp) => {
-    if (resp.result === 0) {
-      dispatch(purchase({purchaseItems, dlvCost, balance}));
-    }
-    return resp;
-  });
-};
-
-export const cartAddAndGet = (prodList): AppThunk => (dispatch) => {
-  return dispatch(checkStock(prodList)).then((resp) => {
-    if (resp.result === 0) {
-      return dispatch(cartAdd(prodList)).then(
-        (rsp) => {
-          if (rsp.result === 0 && rsp.objects.length > 0) {
-            return dispatch(cartFetch());
-          }
-          throw new Error('Failed to add products');
-        },
-        (err) => {
-          throw err;
-        },
-      );
-    }
-    return resp;
-  });
-};
-
-export const actions = {
-  cartFetch,
-  reset,
-  cartUpdateQty,
-  cartRemove,
-  purchase,
-  empty,
-  payNorder,
-  pushLastTab,
-  cartAddAndGet,
-  checkStockAndPurchase,
-};
-export type CartAction = typeof actions;
+            throw new Error('Failed to add products');
+          },
+          (err) => {
+            throw err;
+          },
+        );
+      }
+      return resp;
+    });
+  },
+);
 
 export interface CartModelState {
   result: number;
   orderId?: number;
   orderItems: RkbOrderItem[];
   uuid?: string;
-  purchaseItems: object[];
+  purchaseItems: PurchaseItem[];
   pymReq?: object;
   pymResult?: object;
-  lastTab: List<string>;
+  lastTab: ImmutableList<string>;
 }
 
-const onSuccess = (state: CartModelState, action) => {
+const onSuccess = (state, action) => {
   const {result, objects} = action.payload;
+  state.result = result;
   if (result === 0 && objects.length > 0) {
-    return {
-      ...state,
-      result,
-      orderId: objects[0].orderId,
-      orderItems: objects[0].orderItems,
-      uuid: objects[0].uuid,
-    };
+    state.orderId = objects[0].orderId;
+    state.orderItems = objects[0].orderItems;
+    state.uuid = objects[0].uuid;
   }
-  return {
-    ...state,
-    result,
-  };
-};
-
-const onFailure = (state: CartModelState) => {
-  return {
-    ...state,
-    result: API.default.FAILED,
-  };
 };
 
 const initialState: CartModelState = {
@@ -206,37 +102,31 @@ const initialState: CartModelState = {
   purchaseItems: [],
   pymReq: undefined,
   pymResult: undefined,
-  lastTab: List(['Home']),
+  lastTab: ImmutableList<string>(['Home']),
 };
 
-export default handleActions(
-  {
-    [RESET]: () => {
+const slice = createSlice({
+  name: 'cart',
+  initialState,
+  reducers: {
+    reset: () => {
       return initialState;
     },
-
     // set last tab
     // 2개 리스트를 유지한다.
-    [PUSH_LAST_TAB]: (state, action) => {
+    pushLastTab: (state, action) => {
       const {lastTab} = state;
-      if (lastTab.first() === action.payload) return state;
-
-      return {
-        ...state,
-        lastTab: lastTab.unshift(action.payload).setSize(2),
-      };
+      if (lastTab.first() !== action.payload) {
+        state.lastTab = lastTab.unshift(action.payload).setSize(2);
+      }
     },
-
     // empty cart
-    [EMPTY]: (state) => {
-      return {
-        ...state,
-        purchaseItems: [],
-      };
+    empty: (state) => {
+      state.purchaseItems = [];
     },
 
     // 구매할 품목을 저장한다.
-    [PURCHASE]: (state, action) => {
+    purchase: (state, action) => {
       const {purchaseItems, dlvCost = false, balance = 0} = action.payload;
       const total = (purchaseItems || []).reduce(
         (sum, acc) => sum + acc.price * (acc.qty || 1),
@@ -260,99 +150,161 @@ export default handleActions(
       // 배송비 포함 상품 합계
       const totalPrice = total + (dlvCost && utils.dlvCost(total));
       // 계산해야하는 총액
-      const pymPrice = totalPrice > balance ? totalPrice - balance : 0;
       // 잔액 차감
-      const deduct = totalPrice > balance ? balance : totalPrice;
 
       // purchaseItems에는 key, qty, price, title 정보 필요
-      return {
-        ...state,
-        purchaseItems,
-        pymReq,
-        pymPrice,
-        deduct,
-      };
+      state.purchaseItems = purchaseItems;
+      state.pymReq = pymReq;
+      state.pymPrice = totalPrice > balance ? totalPrice - balance : 0;
+      state.deduct = totalPrice > balance ? balance : totalPrice;
     },
 
     // 결제 결과를 저장한다.
-    [PYM_RESULT]: (state, action) => {
+    pymResult: (state, action) => {
       const {purchaseItems, orderItems} = state;
 
       // orderItems에서 purchaseItem에 포함된 상품은 모두 제거한다.
-      return {
-        ...state,
-        pymResult: action.payload,
-        orderItems: orderItems.filter(
-          (item) => purchaseItems.findIndex((p) => p.key === item.key) < 0,
-        ),
-      };
+      state.pymResult = action.payload;
+      state.orderItems = orderItems.filter(
+        (item) => purchaseItems.findIndex((p) => p.key === item.key) < 0,
+      );
     },
+  },
 
-    ...pender({
-      type: CART_FETCH,
-      onSuccess,
-    }),
+  extraReducers: (builder) => {
+    builder.addCase(cartFetch.fulfilled, onSuccess);
+
     // onfailure ->api 실패
     // onsuccess
-    ...pender({
-      type: CART_ADD,
-      onFailure,
-      onSuccess: (state, action) => {
-        const {result} = action.payload;
-        return {
-          ...state,
-          result,
-        };
-      },
-    }),
+    builder.addCase(cartAdd.rejected, (state) => {
+      state.result = API.default.FAILED;
+    });
 
-    ...pender<CartModelState>({
-      type: CART_REMOVE,
-      onSuccess: (state, action) => {
-        const {result, objects = []} = action.payload;
-        const {orderId, orderItems} = state;
-        if (
-          result === 0 &&
-          objects.length > 0 &&
-          objects[0].orderId === orderId
-        ) {
-          return {
-            ...state,
-            orderItems: orderItems.filter(
-              (item) => item.orderItemId !== objects[0].orderItemId,
-            ),
-          };
-        }
-        return state;
-      },
-    }),
+    builder.addCase(cartAdd.fulfilled, (state, action) => {
+      state.result = action.payload;
+    });
 
-    ...pender<CartModelState>({
-      type: CART_UPDATE,
-      onSuccess,
-      onCancel: (state) => {
-        return state;
-      },
-    }),
+    builder.addCase(cartRemove.fulfilled, (state, action) => {
+      const {result, objects = []} = action.payload;
+      const {orderId, orderItems} = state;
+      if (
+        result === 0 &&
+        objects.length > 0 &&
+        objects[0].orderId === orderId
+      ) {
+        state.orderItems = orderItems.filter(
+          (item) => item.orderItemId !== objects[0].orderItemId,
+        );
+      }
+    });
 
+    // builder.addCase(cartUpdate.fulfilled, onSuccess);
+    // onCancel: (state) => {
+    //   return state;
+    // },
+
+    builder.addCase(makeOrder.fulfilled, onSuccess);
+
+    builder.addCase(rechargeAccount.fulfilled, onSuccess);
+  },
+});
+
+export const payNorder = createAsyncThunk(
+  'cart/payNorder',
+  (result, {dispatch, getState}) => {
+    const {account, cart} = getState() as RootState;
+    const {token, iccid, email, mobile} = account;
+
+    // update payment result
+    dispatch(slice.actions.pymResult(result));
+
+    // remove ordered items from the cart
+    const {orderId, orderItems, purchaseItems} = cart;
+
+    // make order in the server
+    // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
+    return dispatch(checkStock({purchaseItems})).then((res) => {
+      if (res.result === 0) {
+        return dispatch(
+          makeOrder({
+            items: purchaseItems,
+            result,
+            token,
+            iccid,
+            user: mobile,
+            mail: email,
+          }),
+        ).then((resp) => {
+          if (resp.result === 0) {
+            dispatch(getOrders({user: mobile, token, page: 0}));
+            // cart에서 item 삭제
+            orderItems.forEach((item) => {
+              if (
+                purchaseItems.find((o) => o.orderItemId === item.orderItemId)
+              ) {
+                // remove ordered item
+                dispatch(cartRemove({orderId, orderItemId: item.orderItemId}));
+              }
+            });
+
+            if (
+              purchaseItems.find((item) => item.type === 'rch') ||
+              result.rokebi_cash > 0
+            ) {
+              // 충전을 한 경우에는 account를 다시 읽어들인다.
+              // balance에서 차감한 경우에도 다시 읽어들인다.
+              return dispatch(getAccount({iccid, token}));
+            }
+          }
+          return resp;
+        });
+      }
+      return res;
+    });
+  },
+);
+
+export const checkStockAndPurchase = createAsyncThunk(
+  'cart/checkStockAndPurchase',
+  (
+    {
+      purchaseItems,
+      balance,
+      dlvCost = false,
+    }: {purchaseItems: PurchaseItem[]; balance?: number; dlvCost?: boolean},
+    {dispatch},
+  ) => {
+    return dispatch(checkStock({purchaseItems})).then(({payload: resp}) => {
+      console.log('@@@ check stock', resp);
+      if (resp.result === 0) {
+        dispatch(slice.actions.purchase({purchaseItems, dlvCost, balance}));
+      }
+      return resp;
+    });
+  },
+);
+/*
+export default handleActions(
+  {
     [`${CART_UPDATE}_CANCEL`]: (state, action) => {
       if (action.meta.abortController) action.meta.abortController.abort();
       return state;
     },
-
-    ...pender({
-      type: MAKE_PAYMENT,
-      onSuccess,
-    }),
-
-    ...pender({
-      type: MAKE_ORDER,
-      onSuccess,
-    }),
-
-    ...pender({
-      type: RECHARGE_ACCOUNT,
-    }),
   },
   initialState,
 );
+
+*/
+
+export const actions = {
+  ...slice.actions,
+  cartFetch,
+  cartUpdateQty,
+  cartRemove,
+  payNorder,
+  cartAddAndGet,
+  checkStockAndPurchase,
+};
+export type CartAction = typeof actions;
+
+export default slice.reducer as Reducer<CartModelState, AnyAction>;
