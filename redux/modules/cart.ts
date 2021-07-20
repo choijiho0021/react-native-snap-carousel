@@ -8,6 +8,7 @@ import Env from '@/environment';
 import {AppThunk} from '..';
 import {getOrders} from './order';
 import {getAccount} from './account';
+import {RkbOrderItem} from '@/submodules/rokebi-utils/api/cartApi';
 
 const {esimApp} = Env.get();
 
@@ -165,7 +166,7 @@ export type CartAction = typeof actions;
 export interface CartModelState {
   result: number;
   orderId?: number;
-  orderItems: object[];
+  orderItems: RkbOrderItem[];
   uuid?: string;
   purchaseItems: object[];
   pymReq?: object;

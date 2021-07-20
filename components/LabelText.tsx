@@ -1,10 +1,17 @@
-import React, {PureComponent} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import {appStyles} from '../constants/Styles';
+import React, {memo} from 'react';
+import {
+  ColorValue,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
+import {appStyles} from '@/constants/Styles';
 import utils from '@/submodules/rokebi-utils/utils';
-import i18n from '../utils/i18n';
-import {colors} from '../constants/Colors';
-import _ from 'underscore';
+import i18n from '@/utils/i18n';
+import {colors} from '@/constants/Colors';
 
 const styles = StyleSheet.create({
   label: {
@@ -27,49 +34,57 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class LabelText extends PureComponent {
-  render() {
-    const {
-      label,
-      value = 0,
-      deduct,
-      style,
-      format,
-      color = colors.black,
-      labelStyle,
-      valueStyle,
-    } = this.props;
-    const isDeduct = label === i18n.t('cart:deductBalance');
+const LabelText = ({
+  label,
+  value = 0,
+  deduct,
+  style,
+  format,
+  color = colors.black,
+  labelStyle,
+  valueStyle,
+}: {
+  label: string;
+  value?: string | number;
+  deduct?: number;
+  style?: StyleProp<ViewStyle>;
+  format?: 'price' | 'shortDistance';
+  color?: ColorValue;
+  labelStyle?: TextStyle;
+  valueStyle?: TextStyle;
+}) => {
+  const isDeduct = label === i18n.t('cart:deductBalance');
 
-    return (
-      <View
-        style={[
-          styles.container,
-          style,
-          format !== 'shortDistance' && {justifyContent: 'space-between'},
-        ]}>
-        <Text
-          numberOfLines={1}
-          ellipsizeMode="tail"
-          style={[{maxWidth: '70%'}, labelStyle || styles.label]}>
-          {label}
-        </Text>
-        {/* {
+  return (
+    <View
+      style={[
+        styles.container,
+        style,
+        format !== 'shortDistance' && {justifyContent: 'space-between'},
+      ]}>
+      <Text
+        numberOfLines={1}
+        ellipsizeMode="tail"
+        style={[{maxWidth: '70%'}, labelStyle || styles.label]}>
+        {label}
+      </Text>
+      {/* {
           isDeduct &&
           <Text style={[styles.label, {marginLeft: 18}]}>{`(${i18n.t('cart:currentBalance')}:${utils.numberToCommaString(value) + ' ' + i18n.t('won')}) `}</Text>
         } */}
-        {format === 'price' ? (
-          <View style={styles.value}>
-            <Text style={[valueStyle || appStyles.price, {color}]}>
-              {isDeduct && '- '}
-              {utils.numberToCommaString(isDeduct ? deduct : value)}
-            </Text>
-            <Text style={appStyles.normal14Text}>{` ${i18n.t('won')}`}</Text>
-          </View>
-        ) : (
-          <Text style={valueStyle || styles.singleValue}>{value}</Text>
-        )}
-      </View>
-    );
-  }
-}
+      {format === 'price' ? (
+        <View style={styles.value}>
+          <Text style={[valueStyle || appStyles.price, {color}]}>
+            {isDeduct && '- '}
+            {utils.numberToCommaString(isDeduct ? deduct : Number(value))}
+          </Text>
+          <Text style={appStyles.normal14Text}>{` ${i18n.t('won')}`}</Text>
+        </View>
+      ) : (
+        <Text style={valueStyle || styles.singleValue}>{value}</Text>
+      )}
+    </View>
+  );
+};
+
+export default memo(LabelText);

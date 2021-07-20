@@ -1,11 +1,11 @@
-import React, {PureComponent} from 'react';
+import React, {memo} from 'react';
 import {StyleSheet, View} from 'react-native';
 import _ from 'underscore';
-import {colors} from '../constants/Colors';
-import i18n from '../utils/i18n';
+import {colors} from '@/constants/Colors';
+import i18n from '@/utils/i18n';
+import {appStyles} from '@/constants/Styles';
+import Env from '@/environment';
 import LabelText from './LabelText';
-import {appStyles} from '../constants/Styles';
-import Env from '../environment';
 
 const {esimApp} = Env.get();
 
@@ -31,74 +31,78 @@ const styles = StyleSheet.create({
   },
 });
 
-class ChargeSummary extends PureComponent {
-  render() {
-    const {
-      totalCnt = 0,
-      totalPrice = 0,
-      balance = 0,
-      dlvCost = 0,
-      simList,
-    } = this.props;
-    // 상품가격 + 배송비
-    const amount = totalPrice + dlvCost;
-    // 잔액 차감
-    const deduct = totalCnt > 0 ? (amount > balance ? balance : amount) : 0;
-    // 계산해야하는 총액
-    const pymPrice = amount > balance ? amount - balance : 0;
+const ChargeSummary = ({
+  totalCnt = 0,
+  totalPrice = 0,
+  balance = 0,
+  dlvCost = 0,
+  simList,
+}: {
+  totalCnt: number;
+  totalPrice: number;
+  balance: number;
+  dlvCost: number;
+  simList?: any[];
+}) => {
+  // 상품가격 + 배송비
+  const amount = totalPrice + dlvCost;
+  // 잔액 차감
+  const deduct = totalCnt > 0 ? (amount > balance ? balance : amount) : 0;
+  // 계산해야하는 총액
+  const pymPrice = amount > balance ? amount - balance : 0;
 
-    return (
-      <View style={styles.price}>
-        {!_.isEmpty(simList) && (
-          <LabelText
-            label={i18n.t('cart:dlvCostNotice')}
-            labelStyle={{color: colors.warmGrey}}
-            value=""
-          />
-        )}
-
+  return (
+    <View style={styles.price}>
+      {!_.isEmpty(simList) && (
         <LabelText
-          label={i18n.t('cart:totalCnt')}
-          style={[styles.summary, styles.summaryTop]}
-          valueStyle={{...appStyles.normal14Text, color: colors.black}}
-          value={i18n.t('cart:totalCntX').replace('%%', totalCnt)}
+          label={i18n.t('cart:dlvCostNotice')}
+          labelStyle={{color: colors.warmGrey}}
+          value=""
         />
-        {!esimApp && (
-          <LabelText
-            label={i18n.t('cart:totalPrice')}
-            style={styles.summary}
-            format="price"
-            value={totalPrice}
-          />
-        )}
-        {!_.isEmpty(simList) && (
-          <LabelText
-            label={i18n.t('cart:dlvCost')}
-            style={styles.summary}
-            format="price"
-            value={dlvCost}
-          />
-        )}
+      )}
 
-        {!esimApp && (
-          <LabelText
-            label={i18n.t('cart:deductBalance')}
-            style={styles.summary}
-            format="price"
-            value={balance}
-            deduct={deduct}
-          />
-        )}
-
+      <LabelText
+        label={i18n.t('cart:totalCnt')}
+        style={[styles.summary, styles.summaryTop]}
+        valueStyle={{...appStyles.normal14Text, color: colors.black}}
+        value={i18n.t('cart:totalCntX').replace('%%', totalCnt.toString())}
+      />
+      {!esimApp && (
         <LabelText
-          label={i18n.t('cart:totalCost')}
+          label={i18n.t('cart:totalPrice')}
           style={styles.summary}
           format="price"
-          color={colors.clearBlue}
-          value={pymPrice}
+          value={totalPrice}
         />
-      </View>
-    );
-  }
-}
-export default ChargeSummary;
+      )}
+      {!_.isEmpty(simList) && (
+        <LabelText
+          label={i18n.t('cart:dlvCost')}
+          style={styles.summary}
+          format="price"
+          value={dlvCost}
+        />
+      )}
+
+      {!esimApp && (
+        <LabelText
+          label={i18n.t('cart:deductBalance')}
+          style={styles.summary}
+          format="price"
+          value={balance}
+          deduct={deduct}
+        />
+      )}
+
+      <LabelText
+        label={i18n.t('cart:totalCost')}
+        style={styles.summary}
+        format="price"
+        color={colors.clearBlue}
+        value={pymPrice}
+      />
+    </View>
+  );
+};
+
+export default memo(ChargeSummary);

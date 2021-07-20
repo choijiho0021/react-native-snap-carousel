@@ -1,4 +1,4 @@
-import {Map} from 'immutable';
+import {Map as ImmutableMap} from 'immutable';
 import React, {Component} from 'react';
 import {
   Alert,
@@ -21,12 +21,24 @@ import {colors} from '@/constants/Colors';
 import {isDeviceSize, windowHeight} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {timer} from '@/constants/Timer';
-import {actions as accountActions} from '@/redux/modules/account';
-import {actions as cartActions} from '@/redux/modules/cart';
+import {
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
+import {
+  actions as cartActions,
+  CartAction,
+  CartModelState,
+} from '@/redux/modules/cart';
 import api from '@/submodules/rokebi-utils/api/api';
 import i18n from '@/utils/i18n';
 import {RootState} from '@/redux';
 import utils from '@/submodules/rokebi-utils/utils';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RouteProp} from '@react-navigation/native';
+import {RkbOrderItem} from '@/submodules/rokebi-utils/api/cartApi';
+import {ProductModelState} from '@/redux/modules/product';
 
 const sectionTitle = ['sim', 'product'];
 
@@ -88,17 +100,47 @@ const styles = StyleSheet.create({
   },
 });
 
-class CartScreen extends Component {
-  constructor(props) {
+type CartScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Cart'>;
+
+type CartScreenRouteProp = RouteProp<HomeStackParamList, 'Cart'>;
+
+type CartScreenProps = {
+  navigation: CartScreenNavigationProp;
+  route: CartScreenRouteProp;
+
+  cart: CartModelState;
+  account: AccountModelState;
+  product: ProductModelState;
+  pending: boolean;
+
+  action: {
+    cart: CartAction;
+  };
+};
+
+type ItemTotal = {cnt: number; price: number};
+type ItemSection = {data: RkbOrderItem[]; title: string};
+type CartScreenState = {
+  section: ItemSection[];
+  checked: ImmutableMap<string, boolean>;
+  qty: ImmutableMap<string, number>;
+  total: ItemTotal;
+  showSnackBar: boolean;
+};
+class CartScreen extends Component<CartScreenProps, CartScreenState> {
+  snackRef: React.RefObject<SnackBar>;
+
+  constructor(props: CartScreenProps) {
     super(props);
 
     this.state = {
-      section: this.section([], []),
-      checked: new Map(),
-      qty: new Map(),
+      section: [],
+      checked: ImmutableMap<string, boolean>(),
+      qty: ImmutableMap<string, number>(),
       total: {cnt: 0, price: 0},
       showSnackBar: false,
     };
+
     this.snackRef = React.createRef();
 
     this.onPurchase = this.onPurchase.bind(this);
@@ -120,7 +162,7 @@ class CartScreen extends Component {
     this.init();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: CartScreenProps) {
     const {cart, pending} = this.props;
 
     if (cart && cart !== prevProps.cart && cart.orderItems && !pending) {
@@ -128,7 +170,7 @@ class CartScreen extends Component {
     }
   }
 
-  onChecked(key) {
+  onChecked(key: string) {
     this.setState((state) => {
       const checked = state.checked.update(key, (value) => !value);
       const {qty} = state;
@@ -181,7 +223,7 @@ class CartScreen extends Component {
     }
   }
 
-  onChangeQty(key, orderItemId, cnt) {
+  onChangeQty(key: string, orderItemId: string, cnt: number) {
     this.setState((state) => {
       const qty = state.qty.set(key, cnt);
       const checked = state.checked.set(key, true);
@@ -223,19 +265,22 @@ class CartScreen extends Component {
     );
   };
 
-  getDlvCost = (checked, qty, total, section) => {
+  getDlvCost = (
+    checked: ImmutableMap<string, boolean>,
+    qty: ImmutableMap<string, number>,
+    total: ItemTotal,
+    section: ItemSection[],
+  ) => {
     const simList = section.find((item) => item.title === 'sim');
-    if (
-      simList &&
+    return simList &&
       simList.data.findIndex(
-        (item) => checked.get(item.key) && qty.get(item.key) > 0,
+        (item) => checked.get(item.key) && (qty.get(item.key) || 0) > 0,
       ) >= 0
-    )
-      return utils.dlvCost(total.price);
-    return 0;
+      ? utils.dlvCost(total.price)
+      : 0;
   };
 
-  section = (...args) => {
+  section = (args: RkbOrderItem[][]) => {
     return args
       .map((item, idx) => ({
         title: sectionTitle[idx],
@@ -254,15 +299,15 @@ class CartScreen extends Component {
     const list = orderItems.reduce(
       (acc, cur) => {
         return cur.type === 'sim_card'
-          ? [acc[0].concat([cur]), acc[1]]
-          : [acc[0], acc[1].concat([cur])];
+          ? [acc[0].concat(cur), acc[1]]
+          : [acc[0], acc[1].concat(cur)];
       },
-      [[], []],
+      [[] as RkbOrderItem[], [] as RkbOrderItem[]],
     );
 
     this.setState({
       total,
-      section: this.section(list[0], list[1]),
+      section: this.section(list),
     });
 
     orderItems.forEach((item) => {
@@ -290,7 +335,7 @@ class CartScreen extends Component {
       .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
   }
 
-  checkDeletedItem(items) {
+  checkDeletedItem(items: RkbOrderItem[]) {
     const {prodList} = this.props.product;
     const toRemove = (items || {}).filter(
       (item) => typeof prodList.get(item.key) === 'undefined',
@@ -304,7 +349,7 @@ class CartScreen extends Component {
     }
   }
 
-  removeItem(key, orderItemId) {
+  removeItem(key: string, orderItemId: string) {
     this.setState((state) => {
       const section = state.section.map((item) => ({
         title: item.title,
@@ -330,10 +375,11 @@ class CartScreen extends Component {
     }
   }
 
-  renderItem = ({item}) => {
+  renderItem = ({item}: {item: RkbOrderItem}) => {
     const {qty, checked} = this.state;
-    const {partnerId} = this.props.product.prodList.get(item.key) || {};
-    const {imageUrl} = this.props.product.localOpList.get(partnerId) || {};
+    const partnerId = this.props.product.prodList.get(item.key)?.partnerId;
+    const imageUrl =
+      partnerId && this.props.product.localOpList.get(partnerId)?.imageUrl;
 
     // return  item.key && <CartItem checked={checked.get(item.key) || false}
     return (
@@ -352,7 +398,11 @@ class CartScreen extends Component {
     );
   };
 
-  calculate(checked, qty, section = this.state.section) {
+  calculate(
+    checked: ImmutableMap<string, boolean>,
+    qty: ImmutableMap<string, number>,
+    section = this.state.section,
+  ) {
     // 초기 기동시에는 checked = new Map() 으로 선언되어 있어서
     // checked.get() == undefined를 반환할 수 있다.
     // 따라서, checked.get() 값이 false인 경우(사용자가 명확히 uncheck 한 경우)에만 계산에서 제외한다.
@@ -363,10 +413,10 @@ class CartScreen extends Component {
           acc.concat(
             cur.data.filter((item) => checked.get(item.key) !== false),
           ),
-        [],
+        [] as RkbOrderItem[],
       )
       .map((item) => ({
-        qty: Math.max(0, qty.get(item.key)),
+        qty: qty.get(item.key) || 0,
         price: item.price,
       }))
       .reduce(
