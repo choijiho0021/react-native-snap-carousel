@@ -20,10 +20,13 @@ import {
   OrderAction,
   OrderModelState,
 } from '@/redux/modules/order';
-import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
+import {
+  actions as notiActions,
+  NotiAction,
+  NotiModelState,
+} from '@/redux/modules/noti';
 import {actions as boardActions, BoardAction} from '@/redux/modules/board';
 import {
-  AccountAuth,
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
@@ -33,7 +36,7 @@ import {RkbNoti} from '@/submodules/rokebi-utils/api/notiApi';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
-import {HomeStackParamList} from '@/navigation/MainTabNavigator';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const styles = StyleSheet.create({
   container: {
@@ -148,6 +151,7 @@ type NotiScreenProps = {
   pending: boolean;
   order: OrderModelState;
   account: AccountModelState;
+  noti: NotiModelState;
   action: {
     noti: NotiAction;
     board: BoardAction;
@@ -157,7 +161,7 @@ type NotiScreenProps = {
 
 type NotiScreenState = {
   mode: 'noti' | 'info';
-  info?: RkbInfo[];
+  info: RkbInfo[];
 };
 
 class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
@@ -166,6 +170,7 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
 
     this.state = {
       mode: 'noti',
+      info: [],
     };
 
     this.onRefresh = this.onRefresh.bind(this);
@@ -173,8 +178,7 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
 
   componentDidMount() {
     const {params} = this.props.route;
-    const mode = params?.mode || 'noti';
-    const info = params?.info;
+    const {mode = 'info', info = []} = params || {};
 
     this.props.navigation.setOptions({
       title: null,
@@ -217,7 +221,7 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
       switch (type) {
         case notiActions.NOTI_TYPE_REPLY:
           navigation.navigate('BoardMsgResp', {
-            key: orderId,
+            uuid: orderId,
             status: 'Closed',
           });
           break;
@@ -231,11 +235,10 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
               orderId: utils.stringToNumber(orderId),
             }),
           ).then(() => {
-            const idx = order.ordersIdx.get(Number(id));
+            const idx = order.ordersIdx.get(Number(orderId));
             if (idx && idx >= 0) {
               navigation.navigate('PurchaseDetail', {
                 detail: order.orders[idx],
-                auth,
               });
             }
           });
@@ -255,7 +258,7 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
                 : i18n.t('contact:noticeDetail'),
             bodyTitle,
             text: body,
-            mode: 'info',
+            mode: 'html',
           });
           break;
       }
@@ -287,7 +290,6 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
           ListEmptyComponent={
             <Text style={styles.emptyPage}>{i18n.t('noti:empty')}</Text>
           }
-          tintColor={colors.clearBlue}
           refreshControl={
             <RefreshControl
               refreshing={pending}
@@ -303,13 +305,12 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
 }
 
 export default connect(
-  ({account, order, board, noti, pender}: RootState) => ({
+  ({account, order, board, noti, status}: RootState) => ({
     account,
     order,
     board,
     noti,
-    pending: pender.pending[notiActions.GET_NOTI_LIST] || false,
-    // pending: state.pender.pending
+    pending: status.pending[notiActions.getNotiList.typePrefix] || false,
   }),
   (dispatch) => ({
     action: {
