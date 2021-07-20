@@ -1,26 +1,8 @@
-import {createAction, handleActions} from 'redux-actions';
+/* eslint-disable no-param-reassign */
+import {Reducer} from 'redux-actions';
 import codePush from 'react-native-code-push';
-
-const INIT = 'rokebi/sync/INIT';
-const UPDATE = 'rokebi/sync/UPDATE';
-const COMPLETE = 'rokebi/sync/COMPLETE';
-const SKIP = 'rokebi/sync/SKIP';
-const PROGRESS = 'rokebi/sync/PROGRESS';
-
-export const init = createAction(INIT);
-export const update = createAction(UPDATE);
-export const complete = createAction(COMPLETE);
-export const skip = createAction(SKIP);
-export const progress = createAction(PROGRESS);
-
-export const actions = {
-  init,
-  update,
-  complete,
-  skip,
-  progress,
-};
-export type SyncAction = typeof actions;
+import {AnyAction} from 'redux';
+import {createSlice} from '@reduxjs/toolkit';
 
 export interface SyncModelState {
   syncStatus?: codePush.SyncStatus;
@@ -37,42 +19,34 @@ const initialState: SyncModelState = {
   progress: false,
 };
 
-export default handleActions(
-  {
-    [INIT]: (state, action) => {
+const slice = createSlice({
+  name: 'sync',
+  initialState,
+  reducers: {
+    init: () => {
       return initialState;
     },
-
-    [UPDATE]: (state, action) => {
+    update: (state, action) => {
       const {syncStatus} = action.payload || {};
-      return {
-        ...state,
-        syncStatus,
-        isUpdating: [
-          codePush.SyncStatus.DOWNLOADING_PACKAGE,
-          codePush.SyncStatus.INSTALLING_UPDATE,
-        ].includes(syncStatus),
-      };
+      state.syncStatus = syncStatus;
+      state.isUpdating = [
+        codePush.SyncStatus.DOWNLOADING_PACKAGE,
+        codePush.SyncStatus.INSTALLING_UPDATE,
+      ].includes(syncStatus);
     },
-    [COMPLETE]: (state, action) => {
-      return {
-        ...state,
-        isCompleted: true,
-        progress: false,
-      };
+    complete: (state) => {
+      state.isCompleted = true;
+      state.progress = false;
     },
-    [SKIP]: (state, action) => {
-      return {
-        ...state,
-        isSkipped: true,
-      };
+    skip: (state) => {
+      state.isSkipped = true;
     },
-    [PROGRESS]: (state, action) => {
-      return {
-        ...state,
-        progress: true,
-      };
+    progress: (state) => {
+      state.progress = true;
     },
   },
-  initialState,
-);
+});
+
+export const {actions} = slice;
+export type SyncAction = typeof actions;
+export default slice.reducer as Reducer<SyncModelState, AnyAction>;
