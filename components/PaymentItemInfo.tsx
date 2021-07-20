@@ -8,8 +8,6 @@ import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import Env from '@/environment';
 
-const {esimApp} = Env.get();
-
 const styles = StyleSheet.create({
   // container: {
   //   justifyContent: 'space-between',
@@ -128,7 +126,7 @@ const PaymentItemInfo = ({
       <View
         style={[
           styles.productPriceInfo,
-          !isRecharge && !esimApp && styles.borderBottomGrey,
+          !isRecharge && styles.borderBottomGrey,
         ]}>
         {cart.map((item) => {
           const [qty, price] = _.isUndefined(item.qty)
@@ -154,7 +152,7 @@ const PaymentItemInfo = ({
         })}
       </View>
 
-      {!isRecharge && !esimApp && (
+      {!isRecharge && (
         <View style={styles.priceInfo}>
           {pymReq.map((item) => (
             <View style={styles.row} key={item.title}>
@@ -171,25 +169,23 @@ const PaymentItemInfo = ({
               </Text>
             </View>
           ))}
-          {!esimApp && (
-            <View style={styles.row} key="balance">
-              <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-                <Text key="title" style={styles.normal14WarmGrey}>
-                  {i18n.t('cart:deductBalance')}
-                </Text>
-                {/* {
+          <View style={styles.row} key="balance">
+            <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+              <Text key="title" style={styles.normal14WarmGrey}>
+                {i18n.t('cart:deductBalance')}
+              </Text>
+              {/* {
                   screen != 'PaymentResult' &&
                   <Text key="currentBal" style={[styles.normal14WarmGrey, {marginLeft: 18}]}>{`(${i18n.t('cart:currentBalance')}:${utils.numberToCommaString(balance) + ' ' + i18n.t('won')}) `}</Text>
                 } */}
-              </View>
-              <Text
-                key="amount"
-                style={[
-                  styles.normalText16,
-                  mode === 'result' && styles.colorWarmGrey,
-                ]}>{`- ${utils.price(deduct)}`}</Text>
             </View>
-          )}
+            <Text
+              key="amount"
+              style={[
+                styles.normalText16,
+                mode === 'result' && styles.colorWarmGrey,
+              ]}>{`- ${utils.price(deduct)}`}</Text>
+          </View>
         </View>
       )}
 
