@@ -15,7 +15,7 @@ import {actions as productActions} from '@/redux/modules/product';
 import {actions as promotionActions} from '@/redux/modules/promotion';
 import {actions as simActions} from '@/redux/modules/sim';
 import {actions as syncActions} from '@/redux/modules/sync';
-import i18n from '@/utils/i18n';
+import i18n, {setI18nConfig} from '@/utils/i18n';
 import {retrieveData} from '@/utils/utils';
 import store from './store';
 
@@ -100,6 +100,8 @@ async function login() {
 }
 
 async function loadResourcesAsync() {
+  setI18nConfig();
+
   // clear caches
   await store.dispatch(accountActions.clearCookies());
 
