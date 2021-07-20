@@ -56,8 +56,8 @@ import {RkbPromotion} from '@/submodules/rokebi-utils/api/promotionApi';
 import {SyncModelState} from '@/redux/modules/sync';
 import {RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
 import TutorialScreen from './TutorialScreen';
-import {HomeStackParamList} from '../navigation/MainTabNavigator';
 
 const DOT_MARGIN = 6;
 const INACTIVE_DOT_WIDTH = 6;
