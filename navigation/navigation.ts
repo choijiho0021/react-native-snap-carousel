@@ -1,11 +1,12 @@
 import {RkbOrder} from '@/submodules/rokebi-utils/api/orderApi';
 import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
 import {RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
-import {AccountAuth} from '@/redux/modules/account';
 import {BoardMsgStatus} from '@/submodules/rokebi-utils/api/boardApi';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html';
 export type PymMethodScreenMode = 'cart' | 'roaming_product' | 'new_sim';
+type ContactBoardRouteParam = {index?: number} | undefined;
+type FaqRouteParam = {key?: string; num?: string} | undefined;
 
 export type HomeStackParamList = {
   Home: undefined;
@@ -36,13 +37,10 @@ export type HomeStackParamList = {
     };
   };
   Contact: undefined;
-  ContactBoard: {index: number};
-  BoardMsgResp: {uuid: string; status: BoardMsgStatus};
+  ContactBoard: ContactBoardRouteParam;
+  BoardMsgResp: {uuid: string; status?: BoardMsgStatus};
   BoardMsgAdd: {key: string; status: BoardMsgStatus};
-  Faq: {
-    key?: string;
-    num?: string;
-  };
+  Faq: FaqRouteParam;
   Guide: undefined;
   Country: {prodOfCountry: RkbProduct[]};
   Payment: undefined;
@@ -52,7 +50,7 @@ export type HomeStackParamList = {
   CodePush: undefined;
   CustomerProfile: undefined;
   AddProfile: undefined;
-  PurchaseDetail: {detail: RkbOrder; auth: AccountAuth};
+  PurchaseDetail: {detail: RkbOrder};
   RegisterMobile: undefined;
   Main: undefined;
   Settings: undefined;
@@ -71,5 +69,5 @@ export type MyPageStackParamList = {
   Settings: undefined;
   PurchageDetail: undefined;
   Recharge: {mode: string};
-  ContactBoard: {index: number};
+  ContactBoard: ContactBoardRouteParam;
 };

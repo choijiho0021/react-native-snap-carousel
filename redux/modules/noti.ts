@@ -4,8 +4,8 @@ import moment from 'moment';
 import {API} from '@/submodules/rokebi-utils';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {RkbNoti} from '@/submodules/rokebi-utils/api/notiApi';
-import {AppDispatch} from '@/store';
-import {AppThunk} from '..';
+import {Reducer} from 'react';
+import {AnyAction} from 'redux';
 
 const getNotiList = createAsyncThunk('noti/getNotiList', API.Noti.getNoti);
 const readNoti = createAsyncThunk('noti/readNoti', API.Noti.read);
@@ -15,7 +15,6 @@ const initAlimTalk = createAction('initAlimTalk');
 const sendAlimTalk = createAsyncThunk(
   'noti/sendAlimTalk',
   API.Noti.sendAlimTalk,
-  // (...args) => ({abortController: args.abortController}),
 );
 const sendLog = createAsyncThunk('noti/sendLog', API.Noti.sendLog);
 
@@ -30,39 +29,51 @@ const setAppBadge = (notiCount: number) => {
   // messaging().setBadge(notiCount);
 };
 
-const notiReadAndGet = ({
-  uuid,
-  mobile,
-  token,
-}: {
-  uuid: string;
-  mobile: string;
-  token: string;
-}): AppThunk => (dispatch: AppDispatch) => {
-  return dispatch(readNoti({uuid, token})).then(
-    (resp) => {
-      if (resp.result === 0 && resp.objects.length > 0) {
-        return dispatch(getNotiList({mobile}));
-      }
-      throw new Error('Failed to read Noti and Get notiList');
+const notiReadAndGet = createAsyncThunk(
+  'noti/readAndGet',
+  (
+    {
+      uuid,
+      mobile,
+      token,
+    }: {
+      uuid: string;
+      mobile: string;
+      token: string;
     },
-    (err) => {
-      throw err;
+    {dispatch},
+  ) => {
+    return dispatch(readNoti({uuid, token})).then(
+      (resp) => {
+        if (resp.result === 0 && resp.objects.length > 0) {
+          return dispatch(getNotiList({mobile}));
+        }
+        throw new Error('Failed to read Noti and Get notiList');
+      },
+      (err) => {
+        throw err;
+      },
+    );
+  },
+);
+
+const initAndSendAlimTalk = createAsyncThunk(
+  'noti/initAndSendAlimTalk',
+  (
+    {
+      mobile,
+      abortController,
+    }: {
+      mobile: string;
+      abortController: AbortController;
     },
-  );
-};
-
-const initAndSendAlimTalk = ({
-  mobile,
-  abortController,
-}: {
-  mobile: string;
-  abortController: AbortController;
-}): AppThunk => (dispatch) => {
-  dispatch(initAlimTalk());
-
-  return dispatch(sendAlimTalk({mobile, abortController}));
-};
+    {dispatch},
+  ) => {
+    return dispatch(initAlimTalk()).then(() =>
+      dispatch(sendAlimTalk({mobile, abortController})),
+    );
+  },
+);
 
 export const actions = {
   NOTI_TYPE_ACCOUNT,
@@ -144,4 +155,4 @@ const slice = createSlice({
   },
 });
 
-export default slice.reducer;
+export default slice.reducer as Reducer<NotiModelState, AnyAction>;

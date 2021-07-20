@@ -155,7 +155,7 @@ class ContactScreen extends Component<ContactScreenProps, ContactScreenState> {
 
   componentDidUpdate(prevProps: ContactScreenProps) {
     if (
-      !_.isUndefined(this.props.noti.result) &&
+      !!this.props.noti.result &&
       prevProps.noti.result !== this.props.noti.result
     ) {
       this.showModal(true);

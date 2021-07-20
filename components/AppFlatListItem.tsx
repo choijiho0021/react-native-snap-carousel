@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import React, {memo, useState} from 'react';
+import {StyleSheet, View, Text, Pressable} from 'react-native';
 
-import _ from 'underscore';
 import utils from '@/submodules/rokebi-utils/utils';
+import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
 import AppIcon from './AppIcon';
-import {colors} from '../constants/Colors';
-import {appStyles} from '../constants/Styles';
 
 const styles = StyleSheet.create({
   row: {
@@ -31,46 +31,31 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class AppFlatListItem extends Component {
-  constructor(props) {
-    super(props);
+const AppFlatListItem = ({
+  item,
+  checked = false,
+}: {
+  item: RkbInfo;
+  checked?: boolean;
+}) => {
+  const [checkedState, setCheckedState] = useState(checked);
 
-    this.state = {
-      checked: this.props.checked || false,
-    };
-
-    this.onPress = this.onPress.bind(this);
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return nextState.checked !== this.state.checked;
-  }
-
-  onPress() {
-    this.setState((state) => ({
-      checked: !state.checked,
-    }));
-  }
-
-  render() {
-    const {item} = this.props;
-    const {checked} = this.state;
-
-    return (
-      <TouchableOpacity onPress={this.onPress}>
-        <View>
-          <View style={styles.row}>
-            <Text style={styles.title}>{item.title}</Text>
-            <AppIcon
-              style={styles.button}
-              name={checked ? 'iconArrowUp' : 'iconArrowDown'}
-            />
-          </View>
-          {checked && (
-            <Text style={styles.body}>{utils.htmlToString(item.body)}</Text>
-          )}
+  return (
+    <Pressable onPress={() => setCheckedState(!checkedState)}>
+      <View>
+        <View style={styles.row}>
+          <Text style={styles.title}>{item.title}</Text>
+          <AppIcon
+            style={styles.button}
+            name={checkedState ? 'iconArrowUp' : 'iconArrowDown'}
+          />
         </View>
-      </TouchableOpacity>
-    );
-  }
-}
+        {checkedState && (
+          <Text style={styles.body}>{utils.htmlToString(item.body)}</Text>
+        )}
+      </View>
+    </Pressable>
+  );
+};
+
+export default memo(AppFlatListItem);
