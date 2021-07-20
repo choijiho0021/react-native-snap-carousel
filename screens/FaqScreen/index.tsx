@@ -2,11 +2,15 @@ import React, {Component} from 'react';
 import {StyleSheet, View, Dimensions} from 'react-native';
 import {TabView, TabBar} from 'react-native-tab-view';
 import _ from 'underscore';
-import i18n from '../../utils/i18n';
-import AppBackButton from '../../components/AppBackButton';
-import AppActivityIndicator from '../../components/AppActivityIndicator';
-import {colors} from '../../constants/Colors';
-import {API} from '../../submodules/rokebi-utils';
+import i18n from '@/utils/i18n';
+import AppBackButton from '@/components/AppBackButton';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import {colors} from '@/constants/Colors';
+import {API} from '@/submodules/rokebi-utils';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RouteProp} from '@react-navigation/native';
+import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
 import FaqList from './components/FaqList';
 
 const styles = StyleSheet.create({
@@ -22,8 +26,33 @@ const styles = StyleSheet.create({
   },
 });
 
-class FaqScreen extends Component {
-  constructor(props) {
+type FaqScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Faq'>;
+
+type FaqScreenRouteProp = RouteProp<HomeStackParamList, 'Faq'>;
+
+type FaqScreenProps = {
+  navigation: FaqScreenNavigationProp;
+  route: FaqScreenRouteProp;
+};
+
+type TabViewRoute = {
+  key: 'general' | 'config' | 'payment' | 'etc';
+  title: string;
+};
+
+type FaqScreenState = {
+  querying: boolean;
+  index: number;
+  routes: TabViewRoute[];
+  general: RkbInfo[];
+  payment: RkbInfo[];
+  config: RkbInfo[];
+  etc: RkbInfo[];
+  selectedTitleNo?: string;
+};
+
+class FaqScreen extends Component<FaqScreenProps, FaqScreenState> {
+  constructor(props: FaqScreenProps) {
     super(props);
 
     this.state = {
@@ -49,8 +78,7 @@ class FaqScreen extends Component {
 
   componentDidMount() {
     const {params} = this.props.route;
-    const key = params && params.key ? params.key : undefined;
-    const num = params && params.num ? params.num : undefined;
+    const {key, num} = params || {};
 
     this.props.navigation.setOptions({
       title: null,
@@ -73,12 +101,11 @@ class FaqScreen extends Component {
     return _.isEmpty(key) ? true : !_.isEmpty(this.state[key]);
   }
 
-  onPress = (key) => {
-    console.log('goto screen', key);
-    this.props.navigation.navigate('BoardMsgResp', {key});
+  onPress = (uuid: string) => {
+    this.props.navigation.navigate('BoardMsgResp', {uuid});
   };
 
-  onIndexChange(index) {
+  onIndexChange(index: number) {
     this.refreshData(index);
 
     this.setState({
@@ -87,7 +114,7 @@ class FaqScreen extends Component {
     });
   }
 
-  refreshData(index) {
+  refreshData(index: number) {
     if (index < 0 || index >= this.state.routes.length) return;
 
     const {key} = this.state.routes[index];
@@ -115,7 +142,13 @@ class FaqScreen extends Component {
       });
   }
 
-  renderScene = ({route, jumpTo}) => {
+  renderScene = ({
+    route,
+    jumpTo,
+  }: {
+    route: TabViewRoute;
+    jumpTo: (v: string) => void;
+  }) => {
     return (
       <FaqList
         data={this.state[route.key]}

@@ -1,7 +1,8 @@
-import React, {Component} from 'react';
+import React, {memo} from 'react';
 import {View, StyleSheet, FlatList} from 'react-native';
-import AppFlatListItem from '../../../components/AppFlatListItem';
-import {colors} from '../../../constants/Colors';
+import AppFlatListItem from '@/components/AppFlatListItem';
+import {colors} from '@/constants/Colors';
+import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
 
 const styles = StyleSheet.create({
   container: {
@@ -11,32 +12,21 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class FaqList extends Component {
-  constructor(props) {
-    super(props);
-
-    this.renderItem = this.renderItem.bind(this);
-  }
-
-  shouldComponentUpdate(nextProps) {
-    return nextProps.data !== this.props.data;
-  }
-
-  renderItem({item}) {
-    return (
-      <AppFlatListItem
-        key={item.key}
-        item={item}
-        checked={item.title.startsWith(this.props.titleNo)}
+const FaqList = ({data, titleNo = ''}: {data: RkbInfo[]; titleNo?: string}) => {
+  return (
+    <View style={styles.container}>
+      <FlatList
+        renderItem={({item}) => (
+          <AppFlatListItem
+            key={item.key}
+            item={item}
+            checked={item.title.startsWith(titleNo)}
+          />
+        )}
+        data={data}
       />
-    );
-  }
+    </View>
+  );
+};
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <FlatList renderItem={this.renderItem} data={this.props.data} />
-      </View>
-    );
-  }
-}
+export default memo(FaqList);

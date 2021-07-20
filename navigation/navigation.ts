@@ -1,7 +1,6 @@
 import {RkbOrder} from '@/submodules/rokebi-utils/api/orderApi';
 import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
 import {RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
-import {AccountAuth} from '@/redux/modules/account';
 import {BoardMsgStatus} from '@/submodules/rokebi-utils/api/boardApi';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html';
@@ -39,7 +38,7 @@ export type HomeStackParamList = {
   };
   Contact: undefined;
   ContactBoard: ContactBoardRouteParam;
-  BoardMsgResp: {uuid: string; status: BoardMsgStatus};
+  BoardMsgResp: {uuid: string; status?: BoardMsgStatus};
   BoardMsgAdd: {key: string; status: BoardMsgStatus};
   Faq: FaqRouteParam;
   Guide: undefined;
