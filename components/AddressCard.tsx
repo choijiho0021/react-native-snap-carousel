@@ -1,6 +1,14 @@
+import {RkbProfile} from '@/submodules/rokebi-utils/api/profileApi';
 import utils from '@/submodules/rokebi-utils/utils';
 import React, {memo} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
 import _ from 'underscore';
 
 const styles = StyleSheet.create({
@@ -10,7 +18,17 @@ const styles = StyleSheet.create({
   },
 });
 
-function AddressCard({textStyle, mobileStyle, profile, style}) {
+const AddressCard = ({
+  textStyle,
+  mobileStyle,
+  profile,
+  style,
+}: {
+  textStyle: TextStyle;
+  mobileStyle: StyleProp<TextStyle>;
+  profile: RkbProfile;
+  style?: ViewStyle;
+}) => {
   const name = _.isEmpty(profile.recipient)
     ? `${profile.familyName} ${profile.givenName}`
     : profile.recipient;
@@ -26,6 +44,6 @@ function AddressCard({textStyle, mobileStyle, profile, style}) {
       <Text style={textStyle}>{profile.detailAddr}</Text>
     </View>
   );
-}
+};
 
 export default memo(AddressCard);
