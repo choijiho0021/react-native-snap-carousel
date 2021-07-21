@@ -6,7 +6,8 @@ import utils from '@/submodules/rokebi-utils/utils';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
-import Env from '@/environment';
+import {PurchaseItem} from '@/submodules/rokebi-utils/models/purchaseItem';
+import {PaymentReq} from '@/redux/modules/cart';
 
 const styles = StyleSheet.create({
   // container: {
@@ -116,7 +117,13 @@ const PaymentItemInfo = ({
   screen,
   mode = 'method',
 }: {
+  cart: PurchaseItem[];
+  pymReq?: PaymentReq[];
+  deduct?: number;
+  pymPrice?: number;
   isRecharge?: boolean;
+  screen?: string;
+  mode?: 'method' | 'result';
 }) => {
   return (
     <View>
@@ -156,7 +163,9 @@ const PaymentItemInfo = ({
         <View style={styles.priceInfo}>
           {pymReq.map((item) => (
             <View style={styles.row} key={item.title}>
-              <Text key="title" style={styles.normal14WarmGrey}>
+              <Text
+                key="title"
+                style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
                 {item.title}
               </Text>
               <Text
@@ -171,7 +180,9 @@ const PaymentItemInfo = ({
           ))}
           <View style={styles.row} key="balance">
             <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-              <Text key="title" style={styles.normal14WarmGrey}>
+              <Text
+                key="title"
+                style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
                 {i18n.t('cart:deductBalance')}
               </Text>
               {/* {
