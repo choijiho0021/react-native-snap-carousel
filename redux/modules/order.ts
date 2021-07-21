@@ -248,6 +248,7 @@ const slice = createSlice({
 export const actions = {
   ...slice.actions,
   getSubsWithToast,
+  getSubs,
   getOrders,
   updateOrders,
   updateStatusAndGetSubs,

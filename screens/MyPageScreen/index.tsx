@@ -725,18 +725,18 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
 }
 
 export default connect(
-  ({cart, account, order, pender}: RootState) => ({
+  ({cart, account, order, status}: RootState) => ({
     account,
     lastTab: cart.lastTab.toJS(),
     order,
     auth: accountActions.auth(account),
     uid: account.uid,
     pending:
-      pender.pending[orderActions.GET_ORDERS] ||
-      pender.pending[orderActions.GET_SUBS] ||
-      pender.pending[accountActions.CHANGE_EMAIL] ||
-      pender.pending[accountActions.UPLOAD_PICTURE] ||
-      pender.pending[accountActions.CHANGE_PICTURE] ||
+      status.pending[orderActions.getOrders.typePrefix] ||
+      status.pending[orderActions.getSubs.typePrefix] ||
+      status.pending[accountActions.changeEmail.typePrefix] ||
+      status.pending[accountActions.uploadPicture.typePrefix] ||
+      status.pending[accountActions.uploadAndChangePicture.typePrefix] ||
       false,
   }),
   (dispatch) => ({

@@ -204,18 +204,19 @@ class UsimScreen extends Component {
 }
 
 export default connect(
-  ({order, account, noti, info, pender, sync, cart}: RootState) => ({
+  ({order, account, noti, info, status, sync, cart}: RootState) => ({
     order,
     account,
     auth: accountActions.auth(account),
     noti,
     info,
     loginPending:
-      pender.pending[accountActions.LOGIN] ||
-      pender.pending[accountActions.GET_ACCOUNT] ||
+      status.pending[accountActions.logInAndGetAccount.typePrefix] ||
+      status.pending[accountActions.getAccount.typePrefix] ||
       false,
-    pending: pender.pending[orderActions.GET_SUBS] || false,
-    updatePending: pender.pending[orderActions.UPDATE_SUBS_STATUS] || false,
+    pending: status.pending[orderActions.getSubs.typePrefix] || false,
+    updatePending:
+      status.pending[orderActions.updateSubsStatus.typePrefix] || false,
     sync,
     lastTab: cart.lastTab.toJS(),
   }),

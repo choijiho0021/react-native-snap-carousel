@@ -853,13 +853,13 @@ class PurchaseDetailScreen extends Component {
 }
 
 export default connect(
-  ({account, pender}: RootState) => ({
+  ({account, status}: RootState) => ({
     account,
     auth: accountActions.auth(account),
     uid: account.uid,
     pending:
-      pender.pending[orderActions.GET_ORDERS] ||
-      pender.pending[orderActions.CANCEL_ORDER] ||
+      status.pending[orderActions.getOrders.typePrefix] ||
+      status.pending[orderActions.cancelAndGetOrder.typePrefix] ||
       false,
   }),
   (dispatch) => ({

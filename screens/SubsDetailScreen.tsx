@@ -295,14 +295,15 @@ class SubsDetailScreen extends Component {
 }
 
 export default connect(
-  ({account, product, order, pender}: RootState) => ({
+  ({account, product, order, status}: RootState) => ({
     product,
     account,
     auth: accountActions.auth(account),
     order,
     pending:
-      // state.pender.pending[orderActions.GET_SUBS] ||
-      pender.pending[orderActions.UPDATE_SUBS_STATUS] || false,
+      status.pending[orderActions.getSubs.typePrefix] ||
+      status.pending[orderActions.updateSubsStatus.typePrefix] ||
+      false,
   }),
   (dispatch) => ({
     action: {

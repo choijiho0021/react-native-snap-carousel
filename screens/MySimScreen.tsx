@@ -105,10 +105,10 @@ class MySimScreen extends Component {
 }
 
 export default connect(
-  ({sim, account, pender}: RootState) => ({
+  ({sim, account, status}: RootState) => ({
     sim,
     account,
-    pending: pender.pending[simActions.UPDATE_SIM_PARTNER],
+    pending: status.pending[simActions.updateSimPartner.typePrefix] || false,
   }),
   (dispatch) => ({
     action: {

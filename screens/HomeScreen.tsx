@@ -765,12 +765,13 @@ class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
 }
 
 export default connect(
-  ({account, noti, info, pender, product, sync, promotion}: RootState) => ({
+  ({account, noti, info, status, product, sync, promotion}: RootState) => ({
     account,
     auth: accountActions.auth(account),
     noti,
     info,
-    loginPending: pender.pending[accountActions.LOGIN] || false,
+    loginPending:
+      status.pending[accountActions.logInAndGetAccount.typePrefix] || false,
     product,
     sync,
     promotion: promotion.promotion,

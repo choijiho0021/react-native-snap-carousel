@@ -254,11 +254,11 @@ class ContactScreen extends Component<ContactScreenProps, ContactScreenState> {
 }
 
 export default connect(
-  ({info, account, noti, pender}: RootState) => ({
+  ({info, account, noti, status}: RootState) => ({
     info,
     account,
     noti,
-    pending: pender.pending[notiActions.SEND_ALIM_TALK] || false,
+    pending: status.pending[notiActions.sendAlimTalk.typePrefix] || false,
   }),
   (dispatch) => ({
     action: {

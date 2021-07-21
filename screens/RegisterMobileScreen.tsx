@@ -222,8 +222,6 @@ type RegisterMobileScreenRouteProp = RouteProp<
 type RegisterMobileScreenProps = {
   account: AccountModelState;
   pending: boolean;
-  loginSuccess: boolean;
-  loginFailure: boolean;
   onSubmit: () => void;
 
   navigation: RegisterMobileScreenNavigationProp;
@@ -319,7 +317,7 @@ class RegisterMobileScreen extends Component<
     }
 
     if (!this.props.pending && this.props.pending !== prevProps.pending) {
-      if (this.props.loginSuccess && this.props.account.loggedIn) {
+      if (this.props.account.loggedIn) {
         if (this.mounted) {
           this.setState({authorized: true});
         }
@@ -645,11 +643,10 @@ class RegisterMobileScreen extends Component<
 }
 
 export default connect(
-  ({account, pender}: RootState) => ({
+  ({account, status}: RootState) => ({
     account,
-    pending: pender.pending[accountActions.LOGIN] || false,
-    loginSuccess: pender.success[accountActions.LOGIN],
-    loginFailure: pender.failure[accountActions.LOGIN],
+    pending:
+      status.pending[accountActions.logInAndGetAccount.typePrefix] || false,
   }),
   (dispatch) => ({
     actions: {

@@ -226,11 +226,11 @@ class GuideScreen extends Component {
   }
 }
 
-export default connect(({account, pender}: RootState) => ({
+export default connect(({account, status}: RootState) => ({
   account,
   auth: accountActions.auth(account),
   pending:
-    pender.pending[orderActions.GET_ORDERS] ||
-    pender.pending[accountActions.UPLOAD_PICTURE] ||
+    status.pending[orderActions.getOrders.typePrefix] ||
+    status.pending[accountActions.uploadPicture.typePrefix] ||
     false,
 }))(GuideScreen);

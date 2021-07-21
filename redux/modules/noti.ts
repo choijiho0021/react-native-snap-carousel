@@ -75,22 +75,6 @@ const initAndSendAlimTalk = createAsyncThunk(
   },
 );
 
-export const actions = {
-  NOTI_TYPE_ACCOUNT,
-  NOTI_TYPE_NOTI,
-  NOTI_TYPE_PYM,
-  NOTI_TYPE_REPLY,
-  NOTI_TYPE_USIM,
-  sendLog,
-  getNotiList,
-  init,
-  readNoti,
-  initAndSendAlimTalk,
-  notiReadAndGet,
-};
-
-export type NotiAction = typeof actions;
-
 export interface NotiModelState {
   notiList: RkbNoti[];
   lastSent?: Date;
@@ -154,5 +138,23 @@ const slice = createSlice({
     });
   },
 });
+
+export const actions = {
+  ...slice.actions,
+  NOTI_TYPE_ACCOUNT,
+  NOTI_TYPE_NOTI,
+  NOTI_TYPE_PYM,
+  NOTI_TYPE_REPLY,
+  NOTI_TYPE_USIM,
+  sendLog,
+  getNotiList,
+  init,
+  readNoti,
+  initAndSendAlimTalk,
+  notiReadAndGet,
+  sendAlimTalk,
+};
+
+export type NotiAction = typeof actions;
 
 export default slice.reducer as Reducer<NotiModelState, AnyAction>;

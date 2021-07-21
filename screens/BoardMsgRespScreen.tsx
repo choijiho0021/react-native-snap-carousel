@@ -213,10 +213,10 @@ class BoardMsgRespScreen extends Component<
 }
 
 export default connect(
-  ({board, account, pender}: RootState) => ({
+  ({board, account, status}: RootState) => ({
     board,
     account,
-    pending: pender.pending[boardActions.GET_ISSUE_RESP] || false,
+    pending: status.pending[boardActions.getIssueResp.typePrefix] || false,
   }),
   (dispatch) => ({
     action: {

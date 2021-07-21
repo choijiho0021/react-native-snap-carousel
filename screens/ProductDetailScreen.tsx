@@ -390,9 +390,9 @@ class ProductDetailScreen extends Component<
 }
 
 export default connect(
-  ({product, pender, info}: RootState) => ({
+  ({product, status, info}: RootState) => ({
     product,
-    pending: pender.pending[productActions.GET_PROD_DETAIL] || false,
+    pending: status.pending[productActions.getProdDetail.typePrefix] || false,
     info,
   }),
   (dispatch) => ({

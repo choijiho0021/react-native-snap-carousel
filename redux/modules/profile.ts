@@ -164,6 +164,8 @@ export const actions = {
   addCustomerProfile,
   updateCustomerProfile,
   delCustomerProfile,
+  profileAddAndGet,
+  profileDelAndGet,
 };
 
 export type ProfileAction = typeof actions;

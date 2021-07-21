@@ -2,7 +2,6 @@ import {AnyAction} from 'redux';
 import {combineReducers} from '@reduxjs/toolkit';
 import {ThunkAction} from 'redux-thunk';
 
-import {penderReducer} from 'redux-pender';
 import account from './modules/account';
 import product from './modules/product';
 import sim from './modules/sim';
@@ -31,7 +30,6 @@ const reducers = {
   toast,
   promotion,
   status,
-  pender: penderReducer,
 };
 
 type BaseReducerMap<S> = {

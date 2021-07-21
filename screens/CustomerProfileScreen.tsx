@@ -312,15 +312,15 @@ class CustomerProfileScreen extends Component {
 }
 
 export default connect(
-  ({account, profile, pender}: RootState) => ({
+  ({account, profile, status}: RootState) => ({
     account,
     auth: accountActions.auth(account),
     profile,
     pending:
-      pender.pending[profileActions.profileAddAndGet] ||
-      pender.pending[profileActions.updateCustomerProfile] ||
-      pender.pending[profileActions.getCustomerProfile] ||
-      pender.pending[profileActions.profileDelAndGet] ||
+      status.pending[profileActions.profileAddAndGet.typePrefix] ||
+      status.pending[profileActions.updateCustomerProfile.typePrefix] ||
+      status.pending[profileActions.getCustomerProfile.typePrefix] ||
+      status.pending[profileActions.profileDelAndGet.typePrefix] ||
       false,
   }),
   // export default CustomerProfileScreen

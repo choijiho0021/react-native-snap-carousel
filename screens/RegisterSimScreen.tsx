@@ -455,10 +455,10 @@ class RegisterSimScreen extends Component {
 }
 
 export default connect(
-  ({account, pender}: RootState) => ({
+  ({account, status}: RootState) => ({
     account,
     auth: accountActions.auth(account),
-    pending: pender.pending[accountActions.GET_ACCOUNT] || false,
+    pending: status.pending[accountActions.getAccount.typePrefix] || false,
   }),
   (dispatch) => ({
     action: {

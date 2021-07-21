@@ -48,7 +48,10 @@ const slice = createSlice({
   },
 });
 
-export const {actions} = slice;
+export const actions = {
+  ...slice.actions,
+  updateSimPartner,
+};
 
 export type SimAction = typeof actions;
 

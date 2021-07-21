@@ -395,17 +395,17 @@ class EsimScreen extends Component<EsimScreenProps, EsimScreenState> {
 }
 
 export default connect(
-  ({account, order, noti, info, pender, sync, cart}: RootState) => ({
+  ({account, order, noti, info, status, sync, cart}: RootState) => ({
     order,
     account,
     auth: accountActions.auth(account),
     noti,
     info,
     loginPending:
-      pender.pending[accountActions.LOGIN] ||
-      pender.pending[accountActions.GET_ACCOUNT] ||
+      status.pending[accountActions.logInAndGetAccount.typePrefix] ||
+      status.pending[accountActions.getAccount.typePrefix] ||
       false,
-    pending: pender.pending[orderActions.GET_SUBS] || false,
+    pending: status.pending[orderActions.getSubs.typePrefix] || false,
     sync,
     lastTab: cart.lastTab.toJS(),
   }),

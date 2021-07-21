@@ -496,6 +496,7 @@ export const actions = {
   getAccount,
   getUserId,
   changePushNoti,
+  uploadPicture,
 };
 export type AccountAction = typeof actions;
 
