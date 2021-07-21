@@ -73,7 +73,7 @@ export const getOrders = createAsyncThunk(
 export const cancelAndGetOrder = createAsyncThunk(
   'order/cancelAndGetOrder',
   (
-    {orderId, token}: {orderId: number; token: string},
+    {orderId, token}: {orderId?: number; token?: string},
     {dispatch, getState},
   ) => {
     const {

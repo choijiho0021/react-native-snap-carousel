@@ -11,6 +11,7 @@ import {
   SafeAreaView,
   ScrollView,
   Pressable,
+  NativeSyntheticEvent,
 } from 'react-native';
 import {API} from '@/submodules/rokebi-utils';
 import {appStyles} from '@/constants/Styles';
@@ -22,8 +23,11 @@ import {colors} from '@/constants/Colors';
 import LabelText from '@/components/LabelText';
 import {isDeviceSize, windowHeight} from '@/constants/SliderEntry.style';
 import LabelTextTouchable from '@/components/LabelTextTouchable';
-import {actions as orderActions} from '@/redux/modules/order';
-import {actions as accountActions} from '@/redux/modules/account';
+import {actions as orderActions, OrderAction} from '@/redux/modules/order';
+import {
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import AppIcon from '@/components/AppIcon';
 import {isAndroid} from '@/components/SearchBarAnimation/utils';
 import AddressCard from '@/components/AddressCard';
@@ -32,6 +36,12 @@ import {timer} from '@/constants/Timer';
 import Env from '@/environment';
 import {RootState} from '@/redux';
 import utils from '@/submodules/rokebi-utils/utils';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {MyPageStackParamList} from '@/navigation/navigation';
+import {RouteProp} from '@react-navigation/native';
+import {RkbProfile} from '@/submodules/rokebi-utils/api/profileApi';
+import {RkbOrder} from '@/submodules/rokebi-utils/api/orderApi';
+import {PaymentMethod} from '@/submodules/rokebi-utils/api/paymentApi';
 
 const {esimApp} = Env.get();
 
@@ -236,18 +246,63 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
 });
-class PurchaseDetailScreen extends Component {
-  constructor(props) {
+
+type PurchaseDetailScreenNavigationProp = StackNavigationProp<
+  MyPageStackParamList,
+  'PurchaseDetail'
+>;
+
+type PurchaseDetailScreenRouteProp = RouteProp<
+  MyPageStackParamList,
+  'PurchaseDetail'
+>;
+
+type PurchaseDetailScreenProps = {
+  navigation: PurchaseDetailScreenNavigationProp;
+  route: PurchaseDetailScreenRouteProp;
+
+  account: AccountModelState;
+
+  action: {
+    order: OrderAction;
+  };
+};
+
+type PurchaseDetailScreenState = {
+  showPayment: boolean;
+  showDelivery: boolean;
+  cancelPressed: boolean;
+  disableBtn: boolean;
+  scrollHeight: number;
+  borderBlue: boolean;
+  isCanceled: boolean;
+
+  billingAmt?: number;
+  orderId?: number;
+  profile?: RkbProfile;
+  trackingCompany?: string;
+  trackingCode?: string;
+  shipmentState?: string;
+  memo?: string;
+} & RkbOrder;
+
+class PurchaseDetailScreen extends Component<
+  PurchaseDetailScreenProps,
+  PurchaseDetailScreenState
+> {
+  snackRef: React.RefObject<SnackBar>;
+
+  constructor(props: PurchaseDetailScreenProps) {
     super(props);
 
     this.state = {
       showPayment: true,
       showDelivery: true,
       cancelPressed: false, // 결제취소버튼 클릭시 true
-      isCanceled: false, // 결제취소처리 완료시 및 기존결제 취소상품의 경우 true
       disableBtn: false,
       scrollHeight: 0,
       borderBlue: false,
+      isCanceled: false,
     };
 
     this.snackRef = React.createRef();
@@ -269,32 +324,24 @@ class PurchaseDetailScreen extends Component {
       headerLeft: () => <AppBackButton title={i18n.t('his:detail')} />,
     });
 
-    const {params} = this.props.route;
-
-    const detail = params && params.detail ? params.detail : {};
+    const {detail} = this.props.route.params;
 
     Analytics.trackEvent('Page_View_Count', {page: 'Purchase Detail'});
 
     this.setState({
       ...detail,
-      isCanceled: detail.state === 'canceled' || false,
-      billingAmt: utils.numberToCommaString(detail.totalPrice + detail.dlvCost),
-      method:
-        !_.isEmpty(detail.paymentList) &&
-        detail.paymentList.find(
-          (item) => item.paymentGateway !== 'rokebi_cash',
-        ),
-      totalCnt: _.isEmpty(detail)
-        ? 0
-        : detail.orderItems.reduce((acc, cur) => acc + cur.qty, 0),
+      isCanceled: detail?.state === 'canceled' || false,
+      billingAmt: (detail?.totalPrice || 0) + (detail?.dlvCost || 0),
+      method: detail?.paymentList?.find(
+        (item) => item.paymentGateway !== 'rokebi_cash',
+      ),
+      totalCnt: detail?.orderItems.reduce((acc, cur) => acc + cur.qty, 0) || 0,
     });
 
     // load Profile by profile_id
-    if (detail.orderType === 'physical') {
-      API.Profile.getCustomerProfileById(
-        detail.profileId,
-        this.props.auth,
-      ).then(
+    const {token} = this.props.account;
+    if (detail?.orderType === 'physical') {
+      API.Profile.getCustomerProfileById({id: detail.profileId, token}).then(
         (resp) => {
           if (resp.result === 0) this.profile(resp);
         },
@@ -316,10 +363,10 @@ class PurchaseDetailScreen extends Component {
     }
   }
 
-  onScroll = (e) => {
+  onScroll = (height: number) => {
     if (this.state.cancelPressed) {
       this.setState({
-        scrollHeight: e.nativeEvent.contentOffset.y,
+        scrollHeight: height,
       });
     }
   };
@@ -348,16 +395,16 @@ class PurchaseDetailScreen extends Component {
     let isCanceled;
     let disableBtn;
 
-    const {auth} = this.props;
+    const {token} = this.props.account;
 
     this.setState({borderBlue: true});
 
     AppAlert.confirm(i18n.t('his:cancel'), i18n.t('his:cancelAlert'), {
       ok: () => {
         this.props.action.order
-          .cancelAndGetOrder(this.state.orderId, auth)
+          .cancelAndGetOrder({orderId: this.state.orderId, token})
           .then(
-            (resp) => {
+            ({payload: resp}) => {
               // getOrderById 에 대한 결과 확인
               // 기존에 취소했는데, 처리가 안되어 다시 취소버튼을 누르게 된 경우
               // 배송상태가 변화되었는데 refresh 되지 않아 취소버튼을 누른 경우 등
@@ -402,7 +449,7 @@ class PurchaseDetailScreen extends Component {
   }
 
   address() {
-    const profile = !_.isEmpty(this.state.profile) && this.state.profile;
+    const {profile} = this.state;
     return (
       // 주소
       profile && (
@@ -420,7 +467,6 @@ class PurchaseDetailScreen extends Component {
             mobileStyle={[styles.addrCardText, {color: colors.warmGrey}]}
             style={styles.addrCard}
             profile={profile}
-            mobile={profile.recipientNumber}
           />
         </View>
       )
@@ -428,8 +474,14 @@ class PurchaseDetailScreen extends Component {
   }
 
   deliveryInfo() {
-    const {trackingCompany, trackingCode, shipmentState, isCanceled, memo} =
-      this.state || {};
+    const {
+      trackingCompany,
+      trackingCode,
+      shipmentState,
+      isCanceled,
+      memo,
+    } = this.state;
+
     const ship = API.Order.shipmentState;
 
     return (
@@ -519,6 +571,8 @@ class PurchaseDetailScreen extends Component {
             <LabelTextTouchable
               onPress={() =>
                 this.props.navigation.navigate('SimpleText', {
+                  key: 'info',
+                  title: '',
                   mode: 'uri',
                   text: API.Order.deliveryTrackingUrl('CJ', trackingCode),
                 })
@@ -559,17 +613,15 @@ class PurchaseDetailScreen extends Component {
     const elapsedDay = Math.ceil(
       (new Date() - new Date(orderDate)) / (24 * 60 * 60 * 1000),
     );
-    const paidAmount = !_.isEmpty(method) ? method.amount : 0;
+    const paidAmount = method?.amount || 0;
     const isRecharge =
       orderItems.find((item) =>
         item.title.includes(i18n.t('sim:rechargeBalance')),
       ) || false;
     const isUsed =
-      (!_.isEmpty(usageList) &&
-        usageList.find(
-          (value) => value.status !== 'R' && value.status !== 'I',
-        )) ||
-      false;
+      usageList?.find(
+        (value) => value.status !== 'R' && value.status !== 'I',
+      ) || false;
     const usedOrExpired = isUsed || elapsedDay > 7;
     const activateCancelBtn =
       orderType === 'physical'
@@ -708,7 +760,7 @@ class PurchaseDetailScreen extends Component {
     return (
       <View>
         <Text style={styles.date}>
-          {orderDate.split('+')[0].replace('T', ' ')}
+          {orderDate?.split('+')[0].replace('T', ' ')}
         </Text>
         <View style={styles.productTitle}>
           {isCanceled && (
@@ -768,7 +820,11 @@ class PurchaseDetailScreen extends Component {
     return (
       <ScrollView
         style={styles.container}
-        onScroll={this.onScroll}
+        onScroll={({
+          nativeEvent: {
+            contentOffset: {y},
+          },
+        }) => this.onScroll(y)}
         scrollEventThrottle={16}>
         <SafeAreaView forceInset={{top: 'never', bottom: 'always'}}>
           <SnackBar

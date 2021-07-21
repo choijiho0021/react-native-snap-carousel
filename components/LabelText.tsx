@@ -34,6 +34,16 @@ const styles = StyleSheet.create({
   },
 });
 
+export type LabelTextProps = {
+  label: string;
+  value?: string | number;
+  deduct?: number;
+  style?: StyleProp<ViewStyle>;
+  format?: 'price' | 'shortDistance';
+  color?: ColorValue;
+  labelStyle?: StyleProp<TextStyle>;
+  valueStyle?: StyleProp<TextStyle>;
+};
 const LabelText = ({
   label,
   value = 0,
@@ -43,16 +53,7 @@ const LabelText = ({
   color = colors.black,
   labelStyle,
   valueStyle,
-}: {
-  label: string;
-  value?: string | number;
-  deduct?: number;
-  style?: StyleProp<ViewStyle>;
-  format?: 'price' | 'shortDistance';
-  color?: ColorValue;
-  labelStyle?: TextStyle;
-  valueStyle?: TextStyle;
-}) => {
+}: LabelTextProps) => {
   const isDeduct = label === i18n.t('cart:deductBalance');
 
   return (

@@ -1,7 +1,7 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import React, {memo} from 'react';
-import {View, Image, ViewStyle} from 'react-native';
+import {View, Image, ViewStyle, StyleProp} from 'react-native';
 
 const tabbarPath = '../assets/images/tabbar/';
 const mainPath = '../assets/images/main/';
@@ -97,7 +97,7 @@ const images: Record<string, any[]> = {
 interface AppIconProps {
   name: string;
   focused?: boolean;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   size?: number;
   checked?: boolean;
 }
@@ -115,7 +115,7 @@ const AppIcon: React.FC<AppIconProps> = ({
     <View
       style={[
         style || {justifyContent: 'center', alignItems: 'center'},
-        size && {width: size, heigth: size},
+        size ? {width: size, height: size} : undefined,
       ]}>
       <Image
         source={

@@ -26,6 +26,20 @@ export type PaymentParams = {
   digital: boolean; // 컨텐츠 - 데이터상품일 경우 true
   memo?: string;
 };
+type SimpleTextParams = {
+  key: 'noti' | 'info' | string;
+  title: string;
+  mode?: SimpleTextScreenMode;
+  body?: string;
+  bodyTitle?: string;
+  text?: string;
+  rule?: string;
+  image?: {
+    success?: string;
+    failure?: string;
+  };
+};
+type PurchaseDetailParams = {detail?: RkbOrder};
 
 export type HomeStackParamList = {
   Home: undefined;
@@ -42,19 +56,7 @@ export type HomeStackParamList = {
     info?: RkbInfo[];
     title?: string;
   };
-  SimpleText: {
-    key: 'noti' | 'info' | string;
-    title: string;
-    mode?: SimpleTextScreenMode;
-    body?: string;
-    bodyTitle?: string;
-    text?: string;
-    rule?: string;
-    image?: {
-      success?: string;
-      failure?: string;
-    };
-  };
+  SimpleText: SimpleTextParams;
   Contact: undefined;
   ContactBoard: ContactBoardRouteParam;
   BoardMsgResp: {uuid: string; status?: BoardMsgStatus};
@@ -69,7 +71,7 @@ export type HomeStackParamList = {
   CodePush: undefined;
   CustomerProfile: undefined;
   AddProfile: undefined;
-  PurchaseDetail: {detail?: RkbOrder};
+  PurchaseDetail: PurchaseDetailParams;
   RegisterMobile: undefined;
   Main: undefined;
   Settings: undefined;
@@ -88,5 +90,6 @@ export type MyPageStackParamList = {
   Settings: undefined;
   Recharge: {mode: string};
   ContactBoard: ContactBoardRouteParam;
-  PurchaseDetail: {detail?: RkbOrder};
+  PurchaseDetail: PurchaseDetailParams;
+  SimpleText: SimpleTextParams;
 };

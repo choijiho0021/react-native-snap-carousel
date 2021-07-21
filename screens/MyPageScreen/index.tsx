@@ -54,7 +54,6 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {MyPageStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
 import AppModalForm from '@/components/AppModalForm';
-import {RkbOrder} from '@/submodules/rokebi-utils/api/orderApi';
 import OrderItem from './components/OrderItem';
 
 const {esimApp} = Env.get();
