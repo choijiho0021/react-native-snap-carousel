@@ -39,7 +39,6 @@ export interface OrderModelState {
   orderList: number[];
   subs: RkbSubscription[];
   usageProgress: object;
-  next: boolean;
   page: number;
 }
 
@@ -135,8 +134,7 @@ const initialState: OrderModelState = {
   orderList: [],
   subs: [],
   usageProgress: {},
-  next: true,
-  page: -1,
+  page: 0,
 };
 
 const slice = createSlice({
@@ -149,7 +147,7 @@ const slice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(getNextOrders.fulfilled, (state, action) => {
-      const {objects, links, result} = action.payload;
+      const {objects, result} = action.payload;
 
       if (result === 0 && objects.length > 0) {
         const orders = ImmutableMap(objects.map((o) => [o.orderId, o])).merge(
@@ -161,6 +159,7 @@ const slice = createSlice({
           .keySeq()
           .toArray()
           .sort((a, b) => b - a);
+        state.page = action.meta.arg.page;
       }
     });
 
