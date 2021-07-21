@@ -713,7 +713,7 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
           }
         />
 
-        <AppActivityIndicator visible={this.props.pending} />
+        <AppActivityIndicator visible={!refreshing && this.props.pending} />
 
         <AppModalForm
           title={i18n.t('acc:changeEmail')}
