@@ -69,7 +69,7 @@ export type HomeStackParamList = {
   CodePush: undefined;
   CustomerProfile: undefined;
   AddProfile: undefined;
-  PurchaseDetail: {detail: RkbOrder};
+  PurchaseDetail: {detail?: RkbOrder};
   RegisterMobile: undefined;
   Main: undefined;
   Settings: undefined;
@@ -86,7 +86,7 @@ export type MyPageStackParamList = {
   MyPage: undefined;
   Auth: undefined;
   Settings: undefined;
-  PurchageDetail: undefined;
   Recharge: {mode: string};
   ContactBoard: ContactBoardRouteParam;
+  PurchaseDetail: {detail?: RkbOrder};
 };

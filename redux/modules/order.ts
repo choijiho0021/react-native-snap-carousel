@@ -35,8 +35,8 @@ export const updateSubsStatus = createAsyncThunk(
 export const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED);
 
 export interface OrderModelState {
-  orders: RkbOrder[];
-  ordersIdx: ImmutableMap<number, number>;
+  orders: ImmutableMap<number, RkbOrder>;
+  orderList: number[];
   subs: RkbSubscription[];
   usageProgress: object;
   next: boolean;
@@ -51,23 +51,22 @@ export const checkAndGetOrderById = createAsyncThunk(
   ) => {
     const {order} = getState() as RootState;
 
-    if (orderId && !order.ordersIdx.has(orderId))
-      dispatch(getOrderById({user, token, orderId}));
+    if (orderId && !order.orders.has(orderId))
+      return dispatch(getOrderById({user, token, orderId}));
+    return undefined;
   },
 );
 
 export const getOrders = createAsyncThunk(
   'order/getOrders',
   (
-    {user, token, page}: {user: string; token?: string; page: number},
+    {user, token, page}: {user?: string; token?: string; page?: number},
     {dispatch, getState},
   ) => {
     const {order} = getState() as RootState;
 
     if (page !== undefined) return dispatch(getNextOrders({user, token, page}));
-    if (order.next)
-      return dispatch(getNextOrders({user, token, page: order.page + 1}));
-    // return Promise.resolve();
+    return dispatch(getNextOrders({user, token, page: (order.page || 0) + 1}));
   },
 );
 
@@ -77,7 +76,9 @@ export const cancelAndGetOrder = createAsyncThunk(
     {orderId, token}: {orderId: number; token: string},
     {dispatch, getState},
   ) => {
-    const {account: iccid} = getState() as RootState;
+    const {
+      account: {iccid},
+    } = getState() as RootState;
 
     return dispatch(cancelOrder({orderId, token})).then(({payload: resp}) => {
       // 결제취소요청 후 항상 order를 가져온다
@@ -105,19 +106,18 @@ export const cancelAndGetOrder = createAsyncThunk(
 );
 
 // subs status 변환 후
+/* not used
 export const updateStatusAndGetSubs = createAsyncThunk(
   'order/updateStatusAndGetSubs',
   (
-    {
-      uuid,
-      targetStatus,
-      token,
-    }: {uuid: string; targetStatus: string; token: string},
+    {uuid, status, token}: {uuid: string; status: string; token: string},
     {dispatch, getState},
   ) => {
-    const {account: iccid} = getState() as RootState;
+    const {
+      account: {iccid},
+    } = getState() as RootState;
 
-    return dispatch(updateSubsStatus({uuid, targetStatus, token})).then(
+    return dispatch(updateSubsStatus({uuid, status, token})).then(
       ({payload: resp}) => {
         // 결제취소요청 후 항상 order를 가져온다
         if (resp.result === 0) {
@@ -128,50 +128,11 @@ export const updateStatusAndGetSubs = createAsyncThunk(
     );
   },
 );
-
-function updateOrders(state: OrderModelState, {payload}) {
-  const {result, objects} = payload;
-
-  if (result === 0 && objects.length > 0) {
-    const isPageZero =
-      (objects[0] || []).key >= ((state.orders[0] || []).key || -1);
-    const orders = isPageZero
-      ? state.orders.slice(0, API.Order.ORDER_PAGE_ITEMS)
-      : state.orders;
-    const page = isPageZero ? -1 : state.page;
-
-    let {ordersIdx} = state;
-
-    // add to the order list if not exist
-    objects.forEach((item) => {
-      if (ordersIdx.has(item.orderId)) {
-        // replace the element
-        orders[ordersIdx.get(item.orderId)] = item;
-      } else {
-        orders.push(item);
-        ordersIdx = ordersIdx.set(item.orderId, orders.length - 1);
-      }
-    });
-
-    ordersIdx = ImmutableMap(
-      orders
-        .sort((a, b) => b.orderId - a.orderId)
-        .map((a, idx) => [a.orderId, idx]),
-    );
-    return {
-      ...state,
-      orders,
-      ordersIdx,
-      page,
-    };
-  }
-
-  return state;
-}
+*/
 
 const initialState: OrderModelState = {
-  orders: [],
-  ordersIdx: ImmutableMap(),
+  orders: ImmutableMap<number, RkbOrder>(),
+  orderList: [],
   subs: [],
   usageProgress: {},
   next: true,
@@ -188,21 +149,25 @@ const slice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(getNextOrders.fulfilled, (state, action) => {
-      const {objects, links} = action.payload;
+      const {objects, links, result} = action.payload;
 
-      const newState = updateOrders(state, action);
-      return {
-        ...newState,
-        next: objects && objects.length === API.Order.ORDER_PAGE_ITEMS,
-        page:
-          links && typeof (links || [])[0] !== 'undefined'
-            ? (links || [])[0]
-            : newState.page,
-      };
+      if (result === 0 && objects.length > 0) {
+        const orders = ImmutableMap(objects.map((o) => [o.orderId, o])).merge(
+          state.orders,
+        );
+
+        state.orders = orders;
+        state.orderList = orders
+          .keySeq()
+          .toArray()
+          .sort((a, b) => b - a);
+      }
     });
 
     builder.addCase(getOrderById.fulfilled, (state, action) => {
-      return updateOrders(state, action);
+      // return updateOrders(state, action);
+      // TODO: 다시 구현 필요
+      return state;
     });
 
     builder.addCase(cancelOrder.fulfilled, (state, action) => {
@@ -214,19 +179,15 @@ const slice = createSlice({
 
       const {subs} = state;
 
-      if (result === 0) {
+      if (result === 0 && objects[0]) {
         const idx = subs.findIndex((item) => item.key === objects[0]?.key);
 
         if (!_.isEmpty(idx)) {
           subs[idx].statusCd = objects[0]?.statusCd;
           subs[idx].status = objects[0]?.status;
         }
-        return {
-          ...state,
-          subs,
-        };
+        state.subs = subs;
       }
-      return state;
     });
 
     builder.addCase(getSubs.fulfilled, (state, action) => {
@@ -250,8 +211,6 @@ export const actions = {
   getSubsWithToast,
   getSubs,
   getOrders,
-  updateOrders,
-  updateStatusAndGetSubs,
   updateSubsStatus,
   cancelAndGetOrder,
   checkAndGetOrderById,

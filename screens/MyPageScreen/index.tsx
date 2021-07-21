@@ -208,6 +208,8 @@ type MyPageScreenProps = {
   order: OrderModelState;
 
   pending: boolean;
+  uid?: number;
+  lastTab: string[];
 
   action: {
     toast: ToastAction;
@@ -284,36 +286,42 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
   }
 
   shouldComponentUpdate(nextProps: MyPageScreenProps) {
-    const {ordersIdx, account = {}} = this.props.order;
+    const {orders, account = {}} = this.props.order;
     return (
       account.userPictureUrl !== nextProps.account.userPictureUrl ||
-      ordersIdx !== nextProps.order.ordersIdx
+      orders !== nextProps.order.orders
     );
   }
 
   componentDidUpdate(prevProps: MyPageScreenProps) {
-    const focus = this.props.navigation.isFocused();
+    const {
+      navigation,
+      lastTab,
+      uid,
+      account: {loggedIn, mobile, token},
+    } = this.props;
+    const focus = navigation.isFocused();
 
     // 구매내역 원래 조건 확인
     if (this.state.isFocused !== focus) {
       this.setFocus(focus);
       if (focus) {
-        if (!this.props.account.loggedIn) {
-          this.props.navigation.navigate('Auth');
+        if (!loggedIn) {
+          navigation.navigate('Auth');
         } else {
-          this.props.action.order.getOrders(this.props.auth, 0);
+          this.props.action.order.getOrders({user: mobile, token, page: 0});
         }
       }
     }
 
-    if (this.props.uid && this.props.uid !== prevProps.uid) {
+    if (uid && uid !== prevProps.account.uid) {
       // reload order history
-      this.props.action.order.getOrders(this.props.auth);
+      this.props.action.order.getOrders({user: mobile, token, page: 0});
     }
 
     if (
-      this.props.lastTab[0] === 'MyPageStack' &&
-      this.props.lastTab[0] !== prevProps.lastTab[0] &&
+      lastTab[0] === 'MyPageStack' &&
+      lastTab[0] !== prevProps.lastTab[0] &&
       this.flatListRef.current
     ) {
       this.flatListRef.current.scrollToOffset({animated: false, y: 0});
@@ -326,43 +334,49 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
     });
 
     const {
-      account: {mobile},
-      auth,
+      account: {mobile, token},
     } = this.props;
 
     this.props.action.account.getUserId({
-      mobile,
-      ...auth,
+      name: mobile,
+      token,
     });
-    this.props.action.order.getOrders(this.props.auth, 0).then((resp) => {
-      if (resp) {
-        this.setState({
-          refreshing: false,
-        });
-      }
-    });
+
+    this.props.action.order
+      .getOrders({user: mobile, token, page: 0})
+      .then((resp) => {
+        if (resp) {
+          this.setState({
+            refreshing: false,
+          });
+        }
+      });
   }
 
-  setFocus(focus) {
+  setFocus(focus: boolean) {
     this.setState({isFocused: focus});
   }
 
   getNextOrder() {
-    this.props.action.order.getOrders(this.props.auth);
+    const {
+      account: {mobile, token},
+    } = this.props;
+    this.props.action.order.getOrders({user: mobile, token});
   }
 
-  onPressOrderDetail = (orderId) => () => {
-    const {orders, ordersIdx} = this.props.order;
+  onPressOrderDetail = (orderId: number) => () => {
+    const {orders} = this.props.order;
     this.props.navigation.navigate('PurchaseDetail', {
-      detail: orders[ordersIdx.get(orderId)],
-      auth: this.props.auth,
+      detail: orders.get(orderId),
     });
   };
 
-  copyToClipboard = (value) => () => {
-    Clipboard.setString(value);
-    this.setState({copyString: value});
-    this.props.action.toast.push(Toast.COPY_SUCCESS);
+  copyToClipboard = (value?: string) => () => {
+    if (value) {
+      Clipboard.setString(value);
+      this.setState({copyString: value});
+      this.props.action.toast.push(Toast.COPY_SUCCESS);
+    }
   };
 
   // RokebiSIm에서 RokebiTalk 호출
@@ -474,7 +488,7 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
     // if (this.props.uid) this.props.action.order.getOrders(this.props.auth)
   }
 
-  showEmailModal(flag) {
+  showEmailModal(flag: boolean) {
     if (flag && !this.props.uid) {
       this.props.navigation.navigate('Auth');
     }
@@ -664,22 +678,27 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
     return <Text style={styles.nolist}>{i18n.t('his:noPurchase')}</Text>;
   }
 
-  renderOrder({item}: {item: RkbOrder}) {
-    return (
-      <OrderItem item={item} onPress={this.onPressOrderDetail(item.orderId)} />
-    );
+  renderOrder({item}: {item: number}) {
+    const {orders} = this.props.order;
+    const orderItem = orders.get(item);
+    return orderItem ? (
+      <OrderItem
+        item={orderItem}
+        onPress={this.onPressOrderDetail(orderItem.orderId)}
+      />
+    ) : null;
   }
 
   render() {
     const {showEmailModal, showIdModal, refreshing = false} = this.state;
-    const {orders, ordersIdx} = this.props.order;
+    const {orderList} = this.props.order;
 
     return (
       <View style={styles.container}>
         <FlatList
           ref={this.flatListRef}
-          data={orders}
-          extraData={ordersIdx}
+          data={orderList}
+          keyExtractor={(item) => `${item}`}
           ListHeaderComponent={this.info}
           ListEmptyComponent={this.empty()}
           renderItem={this.renderOrder}

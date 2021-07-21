@@ -235,10 +235,10 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
               orderId: utils.stringToNumber(orderId),
             }),
           ).then(() => {
-            const idx = order.ordersIdx.get(Number(orderId));
-            if (idx && idx >= 0) {
+            const ord = order.orders.get(Number(orderId));
+            if (ord) {
               navigation.navigate('PurchaseDetail', {
-                detail: order.orders[idx],
+                detail: ord,
               });
             }
           });
