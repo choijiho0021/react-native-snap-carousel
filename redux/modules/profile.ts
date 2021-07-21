@@ -135,8 +135,6 @@ const slice = createSlice({
       const {result, objects} = action.payload;
 
       if (result === 0 && objects.length > 0) {
-        console.log('pender update', objects);
-
         const {profile} = state;
         const idx = profile.findIndex((item) => item.uuid === objects[0].uuid);
         // TODO : profile[]을 변경하는데, state.update()는 호출이 안됨. 목적이 무엇인지?
