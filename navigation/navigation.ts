@@ -2,11 +2,30 @@ import {RkbOrder} from '@/submodules/rokebi-utils/api/orderApi';
 import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
 import {RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
 import {BoardMsgStatus} from '@/submodules/rokebi-utils/api/boardApi';
+import {PaymentResult} from '@/submodules/rokebi-utils/models/paymentResult';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html';
 export type PymMethodScreenMode = 'cart' | 'roaming_product' | 'new_sim';
 type ContactBoardRouteParam = {index?: number} | undefined;
 type FaqRouteParam = {key?: string; num?: string} | undefined;
+
+export type PaymentParams = {
+  pg: string;
+  pay_method: string;
+  merchant_uid: string;
+  name: string;
+  amount: number;
+  rokebi_cash: number;
+  buyer_tel: string;
+  buyer_name: string;
+  buyer_email: string;
+  escrow: boolean;
+  app_scheme: string;
+  profile_uuid: string;
+  dlvCost: number;
+  digital: boolean; // 컨텐츠 - 데이터상품일 경우 true
+  memo?: string;
+};
 
 export type HomeStackParamList = {
   Home: undefined;
@@ -24,9 +43,9 @@ export type HomeStackParamList = {
     title?: string;
   };
   SimpleText: {
-    key: 'noti' | 'info';
+    key: 'noti' | 'info' | string;
     title: string;
-    mode: SimpleTextScreenMode;
+    mode?: SimpleTextScreenMode;
     body?: string;
     bodyTitle?: string;
     text?: string;
@@ -43,10 +62,10 @@ export type HomeStackParamList = {
   Faq: FaqRouteParam;
   Guide: undefined;
   Country: {prodOfCountry: RkbProduct[]};
-  Payment: undefined;
+  Payment: {params: PaymentParams};
   PymMethod: {isPaid?: boolean; mode?: PymMethodScreenMode};
   FindAddress: undefined;
-  PaymentResult: undefined;
+  PaymentResult: {pymResult: PaymentResult; orderResult: object; mode?: string};
   CodePush: undefined;
   CustomerProfile: undefined;
   AddProfile: undefined;

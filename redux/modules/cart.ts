@@ -9,6 +9,7 @@ import Env from '@/environment';
 import {RkbOrderItem} from '@/submodules/rokebi-utils/api/cartApi';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {PurchaseItem} from '@/submodules/rokebi-utils/models/purchaseItem';
+import {PaymentResult} from '@/submodules/rokebi-utils/models/paymentResult';
 import {getOrders} from './order';
 import {getAccount} from './account';
 
@@ -73,15 +74,19 @@ export const cartAddAndGet = createAsyncThunk(
   },
 );
 
+export type PaymentReq = {key: string; title: string; amount: number};
+
 export interface CartModelState {
   result: number;
   orderId?: number;
   orderItems: RkbOrderItem[];
   uuid?: string;
   purchaseItems: PurchaseItem[];
-  pymReq?: object;
+  pymReq?: PaymentReq[];
   pymResult?: object;
   lastTab: ImmutableList<string>;
+  pymPrice?: number;
+  deduct?: number;
 }
 
 const onSuccess = (state, action) => {
@@ -211,7 +216,7 @@ const slice = createSlice({
 
 export const payNorder = createAsyncThunk(
   'cart/payNorder',
-  (result, {dispatch, getState}) => {
+  (result: PaymentResult, {dispatch, getState}) => {
     const {account, cart} = getState() as RootState;
     const {token, iccid, email, mobile} = account;
 
@@ -223,7 +228,7 @@ export const payNorder = createAsyncThunk(
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
-    return dispatch(checkStock({purchaseItems})).then((res) => {
+    return dispatch(checkStock({purchaseItems})).then(({payload: res}) => {
       if (res.result === 0) {
         return dispatch(
           makeOrder({

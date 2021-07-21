@@ -18,7 +18,11 @@ import {
   ProfileAction,
   ProfileModelState,
 } from '@/redux/modules/profile';
-import {actions as cartActions, CartModelState} from '@/redux/modules/cart';
+import {
+  actions as cartActions,
+  CartAction,
+  CartModelState,
+} from '@/redux/modules/cart';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import AppBackButton from '@/components/AppBackButton';
@@ -33,11 +37,17 @@ import Triangle from '@/components/Triangle';
 import AppIcon from '@/components/AppIcon';
 import api from '@/submodules/rokebi-utils/api/api';
 import AppAlert from '@/components/AppAlert';
-import PaymentResult from '@/submodules/rokebi-utils/models/paymentResult';
 import {RootState} from '@/redux';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {HomeStackParamList, PymMethodScreenMode} from '@/navigation/navigation';
+import {
+  HomeStackParamList,
+  PaymentParams,
+  PymMethodScreenMode,
+} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
+import {createPaymentResultForRokebiCash} from '@/submodules/rokebi-utils/models/paymentResult';
+import {PaymentMethod} from '@/submodules/rokebi-utils/api/paymentApi';
+import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
 
 const {esimApp} = Env.get();
 const {deliveryText} = API.Order;
@@ -65,31 +75,6 @@ const pickerSelectStyles = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
-  buttonStyle: (idx, column, key, row) => {
-    return {
-      // key, idx => 현위치 / row, column -> selected
-      width: '33.3%',
-      height: 62,
-      backgroundColor: colors.white,
-      borderStyle: 'solid',
-      borderRightWidth: 1,
-      borderBottomWidth: 1,
-      borderLeftWidth: idx === 0 ? 1 : 0,
-      borderTopWidth: key === 0 ? 1 : 0,
-      borderLeftColor:
-        column === 0 && key === row ? colors.clearBlue : colors.lightGrey,
-      borderTopColor:
-        row === 0 && idx === column ? colors.clearBlue : colors.lightGrey,
-      borderRightColor:
-        (idx === column || idx === column - 1) && key === row
-          ? colors.clearBlue
-          : colors.lightGrey,
-      borderBottomColor:
-        (key === row || key === row - 1) && idx === column
-          ? colors.clearBlue
-          : colors.lightGrey,
-    };
-  },
   container: {
     flex: 1,
     justifyContent: 'flex-start',
@@ -261,6 +246,35 @@ const styles = StyleSheet.create({
   },
 });
 
+const buttonStyle = (
+  idx: number,
+  column: number,
+  key: number,
+  row: number,
+) => ({
+  // key, idx => 현위치 / row, column -> selected
+  width: '33.3%',
+  height: 62,
+  backgroundColor: colors.white,
+  borderStyle: 'solid' as const,
+  borderRightWidth: 1,
+  borderBottomWidth: 1,
+  borderLeftWidth: idx === 0 ? 1 : 0,
+  borderTopWidth: key === 0 ? 1 : 0,
+  borderLeftColor:
+    column === 0 && key === row ? colors.clearBlue : colors.lightGrey,
+  borderTopColor:
+    row === 0 && idx === column ? colors.clearBlue : colors.lightGrey,
+  borderRightColor:
+    (idx === column || idx === column - 1) && key === row
+      ? colors.clearBlue
+      : colors.lightGrey,
+  borderBottomColor:
+    (key === row || key === row - 1) && idx === column
+      ? colors.clearBlue
+      : colors.lightGrey,
+});
+
 type PymMethodScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
   'PymMethod'
@@ -278,32 +292,35 @@ type PymMethodScreenProps = {
 
   action: {
     profile: ProfileAction;
+    cart: CartAction;
   };
 };
 
+type ShowModal = 'address' | 'memo' | 'method';
+
 type PymMethodScreenState = {
   mode?: PymMethodScreenMode;
-  selected: object;
+  selected?: PaymentMethod;
   pymPrice?: number;
   deduct?: number;
   isRecharge?: boolean;
   clickable: boolean;
   loading?: boolean;
-  data: object;
+  data?: RkbInfo[];
   showModal: {
-    address: boolean;
-    memo: boolean;
-    method: boolean;
+    [m in ShowModal]: boolean;
   };
   label?: string;
   deliveryMemo: {
     directInput: boolean;
     header?: string;
-    selected: undefined;
+    selected?: string;
     content?: string;
   };
   consent?: boolean;
   simIncluded?: boolean;
+  row?: string;
+  column?: number;
 };
 
 class PymMethodScreen extends Component<
@@ -315,13 +332,12 @@ class PymMethodScreen extends Component<
 
     this.state = {
       mode: undefined,
-      selected: {},
+      selected: undefined,
       pymPrice: undefined,
       deduct: undefined,
       isRecharge: undefined,
       clickable: true,
       loading: undefined,
-      data: {},
       showModal: {
         address: true,
         memo: true,
@@ -431,10 +447,10 @@ class PymMethodScreen extends Component<
     const {mobile, email} = this.props.account;
     const profileId =
       this.props.profile.selectedAddr ||
-      (this.props.profile.profile.find((item) => item.isBasicAddr) || {}).uuid;
-    const dlvCost = (
-      this.props.cart.pymReq.find((item) => item.key === 'dlvCost') || {}
-    ).amount;
+      this.props.profile.profile.find((item) => item.isBasicAddr)?.uuid;
+    const dlvCost =
+      this.props.cart.pymReq?.find((item) => item.key === 'dlvCost')?.amount ||
+      0;
 
     // 로깨비캐시 결제
     if (pymPrice === 0) {
@@ -442,7 +458,7 @@ class PymMethodScreen extends Component<
         loading: true,
       });
       const {impId} = Env.get();
-      const response = PaymentResult.createForRokebiCash({
+      const response = createPaymentResultForRokebiCash({
         impId,
         mobile,
         profileId,
@@ -452,7 +468,7 @@ class PymMethodScreen extends Component<
         digital: !simIncluded,
       });
       // payNorder에서 재고 확인 - resp.result값으로 비교
-      this.props.action.cart.payNorder(response).then((resp) => {
+      this.props.action.cart.payNorder(response).then(({payload: resp}) => {
         if (resp.result === 0) {
           this.props.navigation.setParams({isPaid: true});
           this.props.navigation.replace('PaymentResult', {
@@ -474,8 +490,8 @@ class PymMethodScreen extends Component<
       });
     } else {
       const params = {
-        pg: selected.key,
-        pay_method: selected.method,
+        pg: selected?.key,
+        pay_method: selected?.method,
         merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
         name: i18n.t('appTitle'),
         amount: pymPrice, // 최종 결제 금액
@@ -490,7 +506,7 @@ class PymMethodScreen extends Component<
         digital: !simIncluded, // 컨텐츠 - 데이터상품일 경우 true
         memo,
         // mode: 'test'
-      };
+      } as PaymentParams;
 
       this.setState({
         clickable: true,
@@ -499,7 +515,7 @@ class PymMethodScreen extends Component<
     }
   }
 
-  onPress = (method, key, idx) => () => {
+  onPress = (method: PaymentMethod, key: string, idx: number) => () => {
     this.setState({
       selected: method,
       row: key,
@@ -507,8 +523,8 @@ class PymMethodScreen extends Component<
     });
   };
 
-  button(key, value) {
-    const {selected, row, column} = this.state;
+  button(key: string, value: PaymentMethod[]) {
+    const {selected, row = '0', column = 0} = this.state;
 
     return (
       <View key={key} style={styles.buttonRow}>
@@ -519,15 +535,15 @@ class PymMethodScreen extends Component<
               !_.isEmpty(v) && (
                 <AppButton
                   key={v.method}
-                  title={_.isEmpty(v.icon) && v.title}
-                  style={styles.buttonStyle(
+                  title={_.isEmpty(v.icon) ? v.title : undefined}
+                  style={buttonStyle(
                     idx,
                     column,
                     parseInt(key, 10),
                     parseInt(row, 10),
                   )}
-                  iconName={!_.isEmpty(v.icon) && v.icon}
-                  checked={v.method === selected.method}
+                  iconName={v.icon}
+                  checked={v.method === selected?.method}
                   onPress={this.onPress(v, key, idx)}
                   titleStyle={styles.buttonText}
                 />
@@ -538,25 +554,24 @@ class PymMethodScreen extends Component<
     );
   }
 
-  saveMemo(value) {
-    const selectedMemo =
-      deliveryText.find((item) => item.value === value) || {};
+  saveMemo(value: string) {
+    const selectedMemo = deliveryText.find((item) => item.value === value);
 
-    if (!_.isEmpty(selectedMemo)) {
+    if (!!selectedMemo) {
       if (deliveryText.indexOf(selectedMemo) + 1 === deliveryText.length) {
         this.setState((state) => ({
           deliveryMemo: {
+            ...state.deliveryMemo,
             directInput: true,
-            header: !_.isEmpty(selectedMemo) && selectedMemo.key,
+            header: selectedMemo?.key,
             selected: value,
-            ...state.deliveryMemo.content,
           },
         }));
       } else {
         this.setState({
           deliveryMemo: {
             directInput: false,
-            header: !_.isEmpty(selectedMemo) && selectedMemo.key,
+            header: selectedMemo?.key,
             selected: value,
           },
         });
@@ -564,7 +579,7 @@ class PymMethodScreen extends Component<
     }
   }
 
-  showModal(key) {
+  showModal(key: ShowModal) {
     this.setState((state) => ({
       showModal: {
         ...state.showModal,
@@ -573,7 +588,7 @@ class PymMethodScreen extends Component<
     }));
   }
 
-  dropDownHeader(stateTitle, title, alias) {
+  dropDownHeader(stateTitle: ShowModal, title: string, alias?: string) {
     return (
       <TouchableOpacity
         style={styles.spaceBetweenBox}
@@ -597,7 +612,7 @@ class PymMethodScreen extends Component<
     );
   }
 
-  inputMemo(val) {
+  inputMemo(val: string) {
     this.setState((state) => ({
       deliveryMemo: {
         ...state.deliveryMemo,
@@ -611,10 +626,9 @@ class PymMethodScreen extends Component<
     const {profile} = this.props.profile;
     const item =
       profile.find((i) => i.uuid === selectedAddr) ||
-      profile.find((i) => i.isBasicAddr) ||
-      {};
+      profile.find((i) => i.isBasicAddr);
 
-    return (
+    return item ? (
       <View>
         {this.dropDownHeader('address', i18n.t('pym:delivery'), item.alias)}
         {this.state.showModal.address && (
@@ -651,7 +665,6 @@ class PymMethodScreen extends Component<
                       {color: colors.warmGrey},
                     ]}
                     profile={item}
-                    mobile={this.props.account.mobile}
                   />
                 </View>
               )
@@ -662,7 +675,7 @@ class PymMethodScreen extends Component<
               this.props.profile.profile.length === 0 && (
                 <AppButton
                   title={i18n.t('reg:address')}
-                  textStyle={appStyles.confirmText}
+                  titleStyle={appStyles.confirmText}
                   style={[appStyles.confirm, styles.addrBtn]}
                   onPress={() => this.props.navigation.navigate('AddProfile')}
                 />
@@ -672,7 +685,7 @@ class PymMethodScreen extends Component<
         )}
         <View style={styles.divider} />
       </View>
-    );
+    ) : null;
   }
 
   changePlaceHolder() {
@@ -698,26 +711,20 @@ class PymMethodScreen extends Component<
             <View style={styles.thickBar} />
             <View style={styles.pickerWrapper}>
               <RNPickerSelect
-                style={{
-                  ...pickerSelectStyles,
-                }}
+                style={pickerSelectStyles}
                 useNativeAndroidPickerStyle={false}
                 placeholder={!_.isEmpty(label) ? {label} : {}}
                 placeholderTextColor={colors.warmGrey}
-                onValueChange={(value) => {
-                  this.saveMemo(value);
-                }}
+                onValueChange={(value) => this.saveMemo(value)}
                 onOpen={this.changePlaceHolder}
                 items={deliveryText.map((item) => ({
                   label: item.value,
                   value: item.value,
                 }))}
                 value={this.state.deliveryMemo.selected}
-                Icon={() => {
-                  return (
-                    <Triangle width={8} height={6} color={colors.warmGrey} />
-                  );
-                }}
+                Icon={() => (
+                  <Triangle width={8} height={6} color={colors.warmGrey} />
+                )}
               />
             </View>
             {this.state.deliveryMemo.directInput && (
@@ -744,18 +751,13 @@ class PymMethodScreen extends Component<
 
   method() {
     const {selected, data} = this.state;
-    const benefit =
-      !_.isEmpty(data) &&
-      !_.isEmpty(selected) &&
-      this.state.data.find((item) => item.title.indexOf(selected.title) >= 0);
+    const benefit = selected
+      ? data?.find((item) => item.title.indexOf(selected.title) >= 0)
+      : undefined;
 
     return (
       <View>
-        {this.dropDownHeader(
-          'method',
-          i18n.t('pym:method'),
-          this.state.selected.title,
-        )}
+        {this.dropDownHeader('method', i18n.t('pym:method'), selected?.title)}
         {this.state.showModal.method && (
           <View style={styles.beforeDrop}>
             <View style={styles.thickBar} />
@@ -766,7 +768,7 @@ class PymMethodScreen extends Component<
               {i18n.t('pym:tossInfo')}
             </Text> 
             */}
-            {!_.isEmpty(benefit) && (
+            {benefit && (
               <View style={styles.benefit}>
                 <Text style={[styles.normal12TxtLeft, {marginBottom: 5}]}>
                   {benefit.title}
@@ -879,16 +881,13 @@ class PymMethodScreen extends Component<
     const noProfile = this.props.profile.profile.length === 0;
 
     return (
-      <SafeAreaView
-        style={styles.container}
-        forceInset={{top: 'never', bottom: 'always'}}>
+      <SafeAreaView style={styles.container}>
         <KeyboardAwareScrollView
           resetScrollToCoords={{x: 0, y: 0}}
           enableOnAndroid>
           <PaymentItemInfo
             cart={purchaseItems}
             pymReq={pymReq}
-            balance={this.props.account.balance}
             mode="method"
             pymPrice={pymPrice}
             deduct={deduct}
@@ -907,7 +906,7 @@ class PymMethodScreen extends Component<
           {this.consentBox()}
           <AppButton
             title={i18n.t('payment')}
-            textStyle={appStyles.confirmText}
+            titleStyle={appStyles.confirmText}
             disabled={
               (pymPrice !== 0 && _.isEmpty(selected)) ||
               (simIncluded && noProfile) ||

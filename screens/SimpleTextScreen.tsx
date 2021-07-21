@@ -122,7 +122,7 @@ class SimpleTextScreen extends Component<
 
   componentDidMount() {
     const {params} = this.props.route;
-    const {key, text: body, bodyTitle, mode, rule} = params || {};
+    const {key, text: body, bodyTitle, mode = 'html'} = params || {};
 
     this.props.navigation.setOptions({
       title: null,

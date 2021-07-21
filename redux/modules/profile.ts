@@ -28,6 +28,7 @@ export interface ProfileModelState {
   selectedAddr?: string;
   profile: RkbProfile[];
   addr: object;
+  content?: string;
 }
 
 const initialState: ProfileModelState = {
