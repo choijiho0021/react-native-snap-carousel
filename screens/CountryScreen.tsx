@@ -247,7 +247,7 @@ const CountryListItem = memo(CountryListItem0);
 
 function soldOut(resp: ApiResult<any>, message: string) {
   if (resp.result === api.E_RESOURCE_NOT_FOUND) {
-    AppAlert.info(resp.title + i18n.t(message));
+    AppAlert.info(i18n.t(message));
   } else {
     AppAlert.info(i18n.t('cart:systemError'));
   }
@@ -266,6 +266,7 @@ type CountryScreenProps = {
   product: ProductModelState;
   cart: CartModelState;
   account: AccountModelState;
+  pending: boolean;
 
   action: {
     cart: CartAction;
@@ -279,7 +280,6 @@ type CountryScreenState = {
   title?: string;
   showSnackBar: boolean;
   localOpDetails?: string;
-  pending: boolean;
   disabled: boolean;
   isFocused: boolean;
 };
@@ -296,7 +296,6 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
       title: undefined,
       showSnackBar: false,
       localOpDetails: undefined,
-      pending: false,
       disabled: false,
       isFocused: true,
     };
@@ -372,8 +371,10 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
   };
 
   selectedProduct = (selected: string) => {
-    const prod = this.props.product.prodList.get(selected);
-    return prod ? API.Product.toPurchaseItem(prod) : undefined;
+    const prod = API.Product.toPurchaseItem(
+      this.props.product.prodList.get(selected),
+    );
+    return prod ? [prod] : [];
   };
 
   onPressBtnCart = () => {
@@ -392,13 +393,10 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
     }
 
     if (selected) {
-      this.setState({
-        pending: true,
-      });
-
       this.props.action.cart
-        .cartAddAndGet([this.selectedProduct(selected)])
-        .then((resp) => {
+        .cartAddAndGet({purchaseItems: this.selectedProduct(selected)})
+        .then(({payload: resp}) => {
+          console.log('@@@ add and get', resp);
           if (resp.result === 0) {
             this.setState({
               showSnackBar: true,
@@ -412,11 +410,6 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
           } else {
             soldOut(resp, 'cart:notToCart');
           }
-        })
-        .finally(() => {
-          this.setState({
-            pending: false,
-          });
         });
     }
   };
@@ -439,8 +432,12 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
     if (selected) {
       // 구매 품목을 갱신한다.
       this.props.action.cart
-        .checkStockAndPurchase([this.selectedProduct(selected)], balance)
+        .checkStockAndPurchase({
+          purchaseItems: this.selectedProduct(selected),
+          balance,
+        })
         .then((resp) => {
+          console.log('@@@ check and purchse', resp);
           if (resp.result === 0) {
             this.props.navigation.navigate('PymMethod', {
               mode: 'roaming_product',
@@ -478,7 +475,10 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
   };
 
   render() {
-    const {iccid, loggedIn} = this.props.account;
+    const {
+      account: {iccid, loggedIn},
+      pending,
+    } = this.props;
     const {
       prodData,
       imageUrl,
@@ -486,12 +486,11 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
       title,
       selected,
       showSnackBar,
+      disabled,
     } = this.state;
 
     return (
-      <SafeAreaView
-        style={styles.container}
-        forceInset={{top: 'never', bottom: 'always'}}>
+      <SafeAreaView style={styles.container}>
         {imageUrl && (
           <Image
             style={styles.box}
@@ -558,7 +557,7 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
               style={styles.btnCart}
               title={i18n.t('cart:toCart')}
               titleStyle={styles.btnCartText}
-              disabled={this.state.pending || this.state.disabled}
+              disabled={pending || disabled}
               disableColor={colors.black}
               disableBackgroundColor={colors.whiteTwo}
               onPress={this.onPressBtnCart}
@@ -581,14 +580,22 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
             <Text style={styles.regCard}>{i18n.t('reg:card')}</Text>
           </View>
         )}
-        <AppActivityIndicator visible={this.state.pending} />
+        <AppActivityIndicator visible={pending} />
       </SafeAreaView>
     );
   }
 }
 
 export default connect(
-  ({account, cart, product}: RootState) => ({product, cart, account}),
+  ({account, cart, product, status}: RootState) => ({
+    product,
+    cart,
+    account,
+    pending:
+      status.pending[cartActions.cartAddAndGet.typePrefix] ||
+      status.pending[cartActions.checkStockAndPurchase.typePrefix] ||
+      false,
+  }),
   (dispatch) => ({
     action: {
       product: bindActionCreators(productActions, dispatch),

@@ -12,6 +12,7 @@ import {PurchaseItem} from '@/submodules/rokebi-utils/models/purchaseItem';
 import {PaymentResult} from '@/submodules/rokebi-utils/models/paymentResult';
 import {getOrders} from './order';
 import {getAccount} from './account';
+import api from '@/submodules/rokebi-utils/api/api';
 
 const {esimApp} = Env.get();
 
@@ -36,11 +37,10 @@ export const rechargeAccount = createAsyncThunk(
 
 const checkStock = createAsyncThunk(
   'cart/checkStock',
-  ({purchaseItems}: {purchaseItems: PurchaseItem[]}, {dispatch, getState}) => {
-    const {
-      account: {token},
-    } = getState() as RootState;
-
+  (
+    {purchaseItems, token}: {purchaseItems: PurchaseItem[]; token?: string},
+    {dispatch},
+  ) => {
     return esimApp
       ? dispatch(cartCheckStock({purchaseItems, token})).then(
           ({payload: resp}) => {
@@ -54,23 +54,26 @@ const checkStock = createAsyncThunk(
 
 export const cartAddAndGet = createAsyncThunk(
   'cart/addAndGet',
-  (purchaseItems: PurchaseItem[], {dispatch}) => {
-    return dispatch(checkStock({purchaseItems})).then((resp) => {
-      if (resp.result === 0) {
-        return dispatch(cartAdd({purchaseItems})).then(
-          (rsp) => {
-            if (rsp.result === 0 && rsp.objects.length > 0) {
-              return dispatch(cartFetch());
-            }
-            throw new Error('Failed to add products');
-          },
-          (err) => {
-            throw err;
-          },
-        );
-      }
-      return resp;
-    });
+  ({purchaseItems}: {purchaseItems: PurchaseItem[]}, {dispatch, getState}) => {
+    const {
+      account: {token},
+    } = getState() as RootState;
+
+    return dispatch(checkStock({purchaseItems, token}))
+      .then(({payload: resp}) => {
+        if (resp.result === 0) {
+          return dispatch(cartAdd({purchaseItems, token}));
+        }
+        throw new Error('Soldout');
+      })
+      .then(({payload: rsp}) => {
+        if (rsp.result === 0 && rsp.objects.length > 0) {
+          return dispatch(cartFetch());
+        }
+        throw new Error('Failed to add products');
+      })
+      .then(({payload}) => payload)
+      .catch((err) => Promise.resolve({result: api.E_RESOURCE_NOT_FOUND}));
   },
 );
 
@@ -228,44 +231,47 @@ export const payNorder = createAsyncThunk(
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
-    return dispatch(checkStock({purchaseItems})).then(({payload: res}) => {
-      if (res.result === 0) {
-        return dispatch(
-          makeOrder({
-            items: purchaseItems,
-            result,
-            token,
-            iccid,
-            user: mobile,
-            mail: email,
-          }),
-        ).then((resp) => {
-          if (resp.result === 0) {
-            dispatch(getOrders({user: mobile, token, page: 0}));
-            // cart에서 item 삭제
-            orderItems.forEach((item) => {
-              if (
-                purchaseItems.find((o) => o.orderItemId === item.orderItemId)
-              ) {
-                // remove ordered item
+    return dispatch(checkStock({purchaseItems, token}))
+      .then(({payload: res}) => {
+        if (res.result === 0) {
+          return dispatch(
+            makeOrder({
+              items: purchaseItems,
+              result,
+              token,
+              iccid,
+              user: mobile,
+              mail: email,
+            }),
+          );
+        }
+        throw new Error('Soldout');
+      })
+      .then((resp) => {
+        if (resp.payload?.result === 0) {
+          dispatch(getOrders({user: mobile, token, page: 0}));
+          // cart에서 item 삭제
+          orderItems.forEach((item) => {
+            if (purchaseItems.find((o) => o.orderItemId === item.orderItemId)) {
+              // remove ordered item
+              if (orderId)
                 dispatch(cartRemove({orderId, orderItemId: item.orderItemId}));
-              }
-            });
-
-            if (
-              purchaseItems.find((item) => item.type === 'rch') ||
-              result.rokebi_cash > 0
-            ) {
-              // 충전을 한 경우에는 account를 다시 읽어들인다.
-              // balance에서 차감한 경우에도 다시 읽어들인다.
-              return dispatch(getAccount({iccid, token}));
             }
+          });
+
+          if (
+            purchaseItems.find((item) => item.type === 'rch') ||
+            result.rokebi_cash > 0
+          ) {
+            // 충전을 한 경우에는 account를 다시 읽어들인다.
+            // balance에서 차감한 경우에도 다시 읽어들인다.
+            return dispatch(getAccount({iccid, token}));
           }
-          return resp;
-        });
-      }
-      return res;
-    });
+        }
+        return resp;
+      })
+      .then(({payload}) => payload)
+      .catch((err) => Promise.resolve({result: api.E_RESOURCE_NOT_FOUND}));
   },
 );
 
@@ -277,15 +283,21 @@ export const checkStockAndPurchase = createAsyncThunk(
       balance,
       dlvCost = false,
     }: {purchaseItems: PurchaseItem[]; balance?: number; dlvCost?: boolean},
-    {dispatch},
+    {dispatch, getState},
   ) => {
-    return dispatch(checkStock({purchaseItems})).then(({payload: resp}) => {
-      console.log('@@@ check stock', resp);
-      if (resp.result === 0) {
-        dispatch(slice.actions.purchase({purchaseItems, dlvCost, balance}));
-      }
-      return resp;
-    });
+    const {
+      account: {token},
+    } = getState() as RootState;
+
+    return dispatch(checkStock({purchaseItems, token})).then(
+      ({payload: resp}) => {
+        if (resp.result === 0) {
+          dispatch(slice.actions.purchase({purchaseItems, dlvCost, balance}));
+        }
+        // 처리 결과는 reducer에 보내서 처리하지만, 결과는 resp를 반환한다.
+        return resp;
+      },
+    );
   },
 );
 /*
