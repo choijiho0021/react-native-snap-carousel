@@ -1,26 +1,17 @@
-import {createAction, handleActions} from 'redux-actions';
-import {pender} from 'redux-pender';
+/* eslint-disable no-param-reassign */
+import {Reducer} from 'redux-actions';
+import {AnyAction} from 'redux';
 import {API} from '@/submodules/rokebi-utils';
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
-const ADD_ICCID = 'rokebi/sim/ADD_ICCID';
-export const UPDATE_SIM_PARTNER = 'rokebi/sim/UPDATE_SIM_PARTNER';
-export const GET_SIM_CARD_LIST = 'rokebi/sim/GET_SIM_CARD_LIST';
-
-export const addIccid = createAction(ADD_ICCID);
-export const updateSimPartner = createAction(
-  UPDATE_SIM_PARTNER,
+export const updateSimPartner = createAsyncThunk(
+  'sim/updateSimPartner',
   API.SimCard.getSimPartnerByID,
 );
-export const getSimCardList = createAction(GET_SIM_CARD_LIST, API.SimCard.get);
-
-export const actions = {
-  addIccid,
-  updateSimPartner,
-  getSimCardList,
-};
-
-export type SimAction = typeof actions;
-
+export const getSimCardList = createAsyncThunk(
+  'sim/getSimCardList',
+  API.SimCard.get,
+);
 export interface SimModelState {
   iccid?: string;
   simPartner?: string;
@@ -31,42 +22,34 @@ const initialState: SimModelState = {
   simList: [],
 };
 
-export default handleActions(
-  {
-    [ADD_ICCID]: (state, action) => {
-      return {
-        ...state,
-        iccid: action.payload.iccid,
-      };
-    },
-
-    ...pender<SimModelState>({
-      type: GET_SIM_CARD_LIST,
-      onSuccess: (state, action) => {
-        const {result, objects} = action.payload;
-        if (result === 0 && objects.length > 0) {
-          return {
-            ...state,
-            simList: objects,
-          };
-        }
-        return state;
-      },
-    }),
-
-    ...pender<SimModelState>({
-      type: UPDATE_SIM_PARTNER,
-      onSuccess: (state, action) => {
-        const {result, objects} = action.payload;
-        if (result === 0 && objects.length > 0) {
-          return {
-            ...state,
-            simPartner: objects[0],
-          };
-        }
-        return state;
-      },
-    }),
-  },
+const slice = createSlice({
+  name: 'sim',
   initialState,
-);
+  reducers: {
+    addIccid: (state, action) => {
+      state.iccid = action.payload.iccid;
+    },
+  },
+
+  extraReducers: (builder) => {
+    builder.addCase(getSimCardList.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+      if (result === 0 && objects.length > 0) {
+        state.simList = objects;
+      }
+    });
+
+    builder.addCase(updateSimPartner.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+      if (result === 0 && objects.length > 0) {
+        state.simPartner = objects[0];
+      }
+    });
+  },
+});
+
+export const {actions} = slice;
+
+export type SimAction = typeof actions;
+
+export default slice.reducer as Reducer<SimModelState, AnyAction>;
