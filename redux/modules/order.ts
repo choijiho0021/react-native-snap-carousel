@@ -5,10 +5,9 @@ import {Map as ImmutableMap} from 'immutable';
 import _ from 'underscore';
 import {API} from '@/submodules/rokebi-utils';
 import {RkbOrder} from '@/submodules/rokebi-utils/api/orderApi';
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {RkbSubscription} from '@/submodules/rokebi-utils/api/subscriptionApi';
-import {AccountAuth, getAccount} from './account';
-import {AppThunk} from '..';
+import {getAccount} from './account';
 import {reflectWithToast, Toast} from './toast';
 
 const getNextOrders = createAsyncThunk('order/getOrders', API.Order.getOrders);
@@ -44,87 +43,91 @@ export interface OrderModelState {
   page: number;
 }
 
-export const checkAndGetOrderById = ({
-  user,
-  token,
-  orderId,
-}: {
-  user?: string;
-  token?: string;
-  orderId?: number;
-}): AppThunk => (dispatch, getState) => {
-  const {order} = getState();
+export const checkAndGetOrderById = createAsyncThunk(
+  'order/checkAndGetOrderById',
+  (
+    {user, token, orderId}: {user?: string; token?: string; orderId?: number},
+    {dispatch, getState},
+  ) => {
+    const {order} = getState() as RootState;
 
-  if (order.ordersIdx.has(orderId)) return Promise.resolve();
-  return dispatch(getOrderById({user, token, orderId}));
-};
+    if (orderId && !order.ordersIdx.has(orderId))
+      dispatch(getOrderById({user, token, orderId}));
+  },
+);
 
-export const getOrders = ({
-  user,
-  token,
-  page,
-}: {
-  user: string;
-  token: string;
-  page: number;
-}): AppThunk => (dispatch, getState) => {
-  const {order} = getState();
+export const getOrders = createAsyncThunk(
+  'order/getOrders',
+  (
+    {user, token, page}: {user: string; token?: string; page: number},
+    {dispatch, getState},
+  ) => {
+    const {order} = getState() as RootState;
 
-  if (typeof page !== 'undefined')
-    return dispatch(getNextOrders({user, token, page}));
-  if (order.next)
-    return dispatch(getNextOrders({user, token, page: order.page + 1}));
-  return Promise.resolve();
-};
+    if (page !== undefined) return dispatch(getNextOrders({user, token, page}));
+    if (order.next)
+      return dispatch(getNextOrders({user, token, page: order.page + 1}));
+    // return Promise.resolve();
+  },
+);
 
-export const cancelAndGetOrder = (
-  orderId: string,
-  auth: AccountAuth,
-): AppThunk => (dispatch, getState) => {
-  const {account} = getState();
-  const {iccid} = account;
+export const cancelAndGetOrder = createAsyncThunk(
+  'order/cancelAndGetOrder',
+  (
+    {orderId, token}: {orderId: number; token: string},
+    {dispatch, getState},
+  ) => {
+    const {account: iccid} = getState() as RootState;
 
-  return dispatch(cancelOrder(orderId, auth)).then((resp) => {
-    // 결제취소요청 후 항상 order를 가져온다
-    return dispatch(getOrderById(auth, orderId)).then((val) => {
-      if (resp.result === 0) {
-        if (val.result === 0) {
-          dispatch(getAccount(iccid, auth));
-          return val;
+    return dispatch(cancelOrder({orderId, token})).then(({payload: resp}) => {
+      // 결제취소요청 후 항상 order를 가져온다
+      return dispatch(getOrderById({orderId, token})).then(({payload: val}) => {
+        if (resp.result === 0) {
+          if (val.result === 0) {
+            dispatch(getAccount({iccid, token}));
+            return val;
+          }
+          return {
+            ...val,
+            result: 1,
+          };
         }
-        return {
-          ...val,
-          result: 1,
-        };
-      }
-      if (val.result === 0) {
-        return {
-          ...val,
-          result: 1,
-        };
-      }
-      return resp;
+        if (val.result === 0) {
+          return {
+            ...val,
+            result: 1,
+          };
+        }
+        return resp;
+      });
     });
-  });
-};
+  },
+);
 
 // subs status 변환 후
-export const updateStatusAndGetSubs = (
-  uuid: string,
-  targetStatus: string,
-  auth: AccountAuth,
-): AppThunk => (dispatch, getState) => {
-  const {account} = getState();
-  const {iccid} = account;
+export const updateStatusAndGetSubs = createAsyncThunk(
+  'order/updateStatusAndGetSubs',
+  (
+    {
+      uuid,
+      targetStatus,
+      token,
+    }: {uuid: string; targetStatus: string; token: string},
+    {dispatch, getState},
+  ) => {
+    const {account: iccid} = getState() as RootState;
 
-  return dispatch(updateSubsStatus(uuid, targetStatus, auth)).then((resp) => {
-    // 결제취소요청 후 항상 order를 가져온다
-    if (resp.result === 0) {
-      return dispatch(getSubs(iccid, auth));
-    }
-    return resp;
-  });
-};
+    return dispatch(updateSubsStatus({uuid, targetStatus, token})).then(
+      ({payload: resp}) => {
+        // 결제취소요청 후 항상 order를 가져온다
+        if (resp.result === 0) {
+          return dispatch(getSubs({iccid, token}));
+        }
+        return resp;
+      },
+    );
+  },
+);
 
 function updateOrders(state: OrderModelState, {payload}) {
   const {result, objects} = payload;
