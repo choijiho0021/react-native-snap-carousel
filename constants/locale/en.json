@@ -150,6 +150,7 @@
   "acc:remain": "ROKEBI Cash Balance",
   "acc:mysim": "My SIM Info",
   "acc:recharge": "Recharge",
+  "acc:goRecharge": "Recharge",
   "acc:purchaseHistory": "Purchase",
   "acc:usageHistory": "Usage",
   "acc:rechargeHistory": "Recharge History",

@@ -151,6 +151,7 @@
   "acc:remain": "로깨비캐시 잔액",
   "acc:mysim": "유심 정보",
   "acc:recharge": "충전",
+  "acc:goRecharge": "충전하기",
   "acc:purchaseHistory": "구매 내역",
   "acc:usageHistory": "사용 내역",
   "acc:rechargeHistory": "충전/차감 내역",

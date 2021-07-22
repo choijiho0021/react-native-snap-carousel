@@ -1,36 +1,16 @@
-import Clipboard from '@react-native-community/clipboard';
-import Analytics from 'appcenter-analytics';
-import React, {Component} from 'react';
-import {
-  FlatList,
-  Linking,
-  Platform,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  Pressable,
-  View,
-} from 'react-native';
-import {
-  check,
-  openSettings,
-  PERMISSIONS,
-  RESULTS,
-} from 'react-native-permissions';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import _ from 'underscore';
-import {API} from '@/submodules/rokebi-utils';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
 import AppModal from '@/components/AppModal';
+import AppModalForm from '@/components/AppModalForm';
 import AppUserPic from '@/components/AppUserPic';
 import LabelTextTouchable from '@/components/LabelTextTouchable';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
+import {MyPageStackParamList} from '@/navigation/navigation';
+import {RootState} from '@/redux';
 import {
   AccountAction,
   AccountModelState,
@@ -46,14 +26,35 @@ import {
   Toast,
   ToastAction,
 } from '@/redux/modules/toast';
+import {API} from '@/submodules/rokebi-utils';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import validationUtil, {ValidationResult} from '@/utils/validationUtil';
-import {RootState} from '@/redux';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {MyPageStackParamList} from '@/navigation/navigation';
+import Clipboard from '@react-native-community/clipboard';
 import {RouteProp} from '@react-navigation/native';
-import AppModalForm from '@/components/AppModalForm';
+import {StackNavigationProp} from '@react-navigation/stack';
+import Analytics from 'appcenter-analytics';
+import React, {Component} from 'react';
+import {
+  FlatList,
+  ImageBackground,
+  Linking,
+  Platform,
+  Pressable,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import {
+  check,
+  openSettings,
+  PERMISSIONS,
+  RESULTS,
+} from 'react-native-permissions';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import OrderItem from './components/OrderItem';
 
 const {esimApp} = Env.get();
@@ -128,7 +129,8 @@ const styles = StyleSheet.create({
     flex: 1,
     borderColor: colors.lightGrey,
     borderWidth: 1,
-    height: esimApp ? 60 : 30,
+    borderRadius: 3,
+    height: esimApp ? 40 : 30,
     justifyContent: 'center',
   },
   btnIdCheck: {
@@ -137,7 +139,8 @@ const styles = StyleSheet.create({
     flex: 1,
     borderColor: colors.lightGrey,
     borderWidth: 1,
-    height: 60,
+    borderRadius: 3,
+    height: 40,
     justifyContent: 'center',
   },
   body: {
@@ -189,6 +192,29 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     color: colors.clearBlue,
     marginLeft: 20,
+  },
+  rechargeBox: {
+    marginHorizontal: 20,
+    marginBottom: 20,
+    height: 130,
+    flex: 1,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+  rechargeText: {
+    margin: 27,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  rchBtn: {
+    width: 80,
+    height: 40,
+    borderRadius: 3,
+    backgroundColor: colors.clearBlue,
   },
 });
 
@@ -563,7 +589,7 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
 
   info() {
     const {
-      account: {mobile, email, userPictureUrl},
+      account: {mobile, email, userPictureUrl, balance},
     } = this.props;
     const userPicture = {
       width: 76,
@@ -609,6 +635,33 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
             />
           </View>
         </View>
+        {esimApp && (
+          <Pressable
+            style={styles.rechargeBox}
+            onPress={() => this.props.navigation.navigate('Recharge')}>
+            <ImageBackground
+              source={require('../assets/images/esim/card.png')}
+              style={styles.image}>
+              <View style={styles.rechargeText}>
+                <View style={{flexDirection: 'column'}}>
+                  <Text style={[appStyles.normal14Text, {marginBottom: 10}]}>
+                    {i18n.t('acc:remain')}
+                  </Text>
+                  <Text style={appStyles.bold30Text}>
+                    {`${utils.numberToCommaString(balance)}${i18n.t('won')}`}
+                  </Text>
+                </View>
+                <AppButton
+                  title={i18n.t('acc:goRecharge')}
+                  titleStyle={[appStyles.normal14Text, {color: colors.white}]}
+                  style={styles.rchBtn}
+                  onPress={() => this.props.navigation.navigate('Recharge')}
+                />
+              </View>
+            </ImageBackground>
+          </Pressable>
+        )}
+
         <View style={{flexDirection: 'row', justifyContent: 'center'}}>
           {esimApp && (
             <Pressable
