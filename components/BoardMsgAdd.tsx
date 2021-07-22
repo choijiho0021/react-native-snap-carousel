@@ -9,9 +9,6 @@ import {
   Image,
   InputAccessoryView,
   SafeAreaView,
-  NativeSyntheticEvent,
-  TextInputContentSizeChangeEventData,
-  ScrollView,
   Pressable,
 } from 'react-native';
 import {connect} from 'react-redux';
@@ -39,11 +36,12 @@ import {colors} from '@/constants/Colors';
 import {attachmentSize} from '@/constants/SliderEntry.style';
 import {RootState} from '@/redux';
 import ImagePicker, {Image as CropImage} from 'react-native-image-crop-picker';
+import {RkbImage} from '@/submodules/rokebi-utils/api/accountApi';
+import {RkbIssue} from '@/submodules/rokebi-utils/api/boardApi';
 import AppActivityIndicator from './AppActivityIndicator';
 import AppButton from './AppButton';
 import AppAlert from './AppAlert';
 import AppIcon from './AppIcon';
-import {RkbImage} from '@/submodules/rokebi-utils/api/accountApi';
 
 const styles = StyleSheet.create({
   passwordInput: {
@@ -216,7 +214,7 @@ const initialState: BoardMsgAddState = {
 class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
   keybd: React.RefObject<TextInput>;
 
-  scrollRef: React.LegacyRef<ScrollView>;
+  scrollRef: React.LegacyRef<KeyboardAwareScrollView>;
 
   constructor(props: BoardMsgAddProps) {
     super(props);
@@ -227,7 +225,6 @@ class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
     this.onCancel = this.onCancel.bind(this);
     this.validate = this.validate.bind(this);
     this.error = this.error.bind(this);
-    this.scroll = this.scroll.bind(this);
     this.addAttachment = this.addAttachment.bind(this);
     this.rmAttachment = this.rmAttachment.bind(this);
     this.renderAttachment = this.renderAttachment.bind(this);
@@ -301,7 +298,7 @@ class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
             } as RkbImage),
         )
         .toArray(),
-    };
+    } as RkbIssue;
 
     const rsp = await this.props.action.board.postAndGetList(issue);
     console.log('@@@ rsp', rsp);
@@ -324,12 +321,6 @@ class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
     });
 
     this.validate(key, value);
-  };
-
-  scroll = (
-    event: NativeSyntheticEvent<TextInputContentSizeChangeEventData>,
-  ) => {
-    this.scrollRef?.props?.scrollToFocusedInput(findNodeHandle(event.target));
   };
 
   error(key: string) {
@@ -556,7 +547,11 @@ class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
               error={this.error('msg')}
               autoCapitalize="none"
               autoCorrect={false}
-              onContentSizeChange={this.scroll}
+              onContentSizeChange={({target}) =>
+                this.scrollRef?.props?.scrollToFocusedInput(
+                  findNodeHandle(target),
+                )
+              }
               value={msg}
             />
 

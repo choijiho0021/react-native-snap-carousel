@@ -4,6 +4,8 @@ import {
   View,
   Text,
   TextInput,
+  ViewStyle,
+  StyleProp,
   TouchableOpacity,
 } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
@@ -91,8 +93,28 @@ const styles = StyleSheet.create({
   },
 });
 
-class InputEmail extends Component {
-  constructor(props) {
+export type InputEmailRef = {
+  focus: () => void;
+  getValue: () => {email: string; domain: string};
+};
+
+type InputEmailProps = {
+  style?: StyleProp<ViewStyle>;
+  inputRef?: React.MutableRefObject<InputEmailRef|null>;
+};
+type InputEmailState = {
+  email: string;
+  domain: string;
+  domainIdx: string;
+};
+class InputEmail extends Component<InputEmailProps, InputEmailState> {
+  emailRef: React.RefObject<TextInput>;
+
+  domainRef: React.RefObject<TextInput>;
+
+  pickerRef: React.RefObject<RNPickerSelect>;
+
+  constructor(props: InputEmailProps) {
     super(props);
 
     this.state = {
@@ -110,16 +132,20 @@ class InputEmail extends Component {
   }
 
   componentDidMount() {
-    if (this.props.onRef) {
-      this.props.onRef(this);
+    if (this.props.inputRef) {
+      const {email, domain} = this.state;
+      this.props.inputRef.current = {
+        getValue: () => ({email, domain}),
+        focus:() => this.emailRef.current?.focus();
+      }
     }
   }
 
-  onChangeText = (key) => (value) => {
-    value = _.isEmpty(value) ? '' : value.replace(/\s+/g, '');
+  onChangeText = (key: keyof InputEmailState) => (value: string) => {
+    const val = _.isEmpty(value) ? '' : value.replace(/\s+/g, '');
 
     this.setState({
-      [key]: value,
+      [key]: val,
     });
 
     if (key === 'domainIdx' && value !== DIRECT_INPUT) {
@@ -131,15 +157,17 @@ class InputEmail extends Component {
   };
 
   focusInput = () => {
-    if (this.emailRef.current) this.emailRef.current.focus();
+    this.emailRef.current?.focus();
   };
 
   openPicker = () => {
-    if (this.pickerRef.current) this.pickerRef.current.togglePicker();
+    this.pickerRef.current?.togglePicker();
   };
 
   render() {
     const {domain, email, domainIdx} = this.state;
+    const inputStyle =
+      domainIdx === DIRECT_INPUT ? styles.directInput : styles.noDirectInput;
 
     return (
       <View style={this.props.style}>
@@ -206,18 +234,14 @@ class InputEmail extends Component {
             <RNPickerSelect
               style={{
                 placeholder: styles.placeholder,
-                inputIOS: [
-                  styles.inputIOS,
-                  domainIdx === DIRECT_INPUT
-                    ? styles.directInput
-                    : styles.noDirectInput,
-                ],
-                inputAndroid: [
-                  styles.placeholder,
-                  domainIdx === DIRECT_INPUT
-                    ? styles.directInput
-                    : styles.noDirectInput,
-                ],
+                inputIOS: {
+                  ...styles.inputIOS,
+                  ...inputStyle,
+                },
+                inputAndroid: {
+                  ...styles.placeholder,
+                  ...inputStyle,
+                },
                 iconContainer: {
                   bottom: 14,
                   right: 10,
@@ -232,11 +256,9 @@ class InputEmail extends Component {
               value={domainIdx}
               useNativeAndroidPickerStyle={false}
               ref={this.pickerRef}
-              Icon={() => {
-                return (
-                  <Triangle width={8} height={6} color={colors.warmGrey} />
-                );
-              }}
+              Icon={() => (
+                <Triangle width={8} height={6} color={colors.warmGrey} />
+              )}
             />
           </TouchableOpacity>
         </View>

@@ -9,12 +9,12 @@ import {
 import _ from 'underscore';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
-import AppButton from './AppButton';
-import AppModal, {AppModalProps} from './AppModal';
 import validationUtil, {
   ValidationKey,
   ValidationResult,
-} from '../utils/validationUtil';
+} from '@/utils/validationUtil';
+import AppButton from './AppButton';
+import AppModal, {AppModalProps} from './AppModal';
 
 const styles = StyleSheet.create({
   cancelButton: {

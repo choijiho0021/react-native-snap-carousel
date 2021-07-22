@@ -9,12 +9,12 @@ const AppBackButton = ({
   title,
   isPaid = false,
   back,
-  lastTab = [0, 1],
+  lastTab = ['0', '1'],
 }: {
   back?: string;
   title?: string;
   isPaid?: boolean;
-  lastTab: number[];
+  lastTab: string[];
 }) => {
   const navigation = useNavigation();
 
@@ -51,5 +51,5 @@ const AppBackButton = ({
 };
 
 export default connect(({cart}: RootState) => ({
-  lastTab: cart.lastTab.toJS(),
+  lastTab: cart.lastTab.toArray(),
 }))(memo(AppBackButton));

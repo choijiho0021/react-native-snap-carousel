@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {memo, PropsWithChildren} from 'react';
 import {
   StyleSheet,
   Text,
@@ -80,7 +80,7 @@ export interface AppModalProps {
   onCancelClose?: () => void;
 }
 
-const AppModal: React.FC<AppModalProps> = ({
+const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
   title,
   titleStyle,
   titleIcon,
@@ -170,4 +170,4 @@ const AppModal: React.FC<AppModalProps> = ({
   );
 };
 
-export default AppModal;
+export default memo(AppModal);

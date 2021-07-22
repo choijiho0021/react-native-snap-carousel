@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, View, Text, Pressable} from 'react-native';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
 import utils from '@/submodules/rokebi-utils/utils';
@@ -51,7 +51,7 @@ class BoardMsg extends Component<BoardMsgProps> {
       : `${mobile.substr(0, 3)}-****-${mobile.substr(7)}`;
 
     return (
-      <TouchableOpacity onPress={() => this.props.onPress(uuid, statusCode)}>
+      <Pressable onPress={() => this.props.onPress(uuid, statusCode)}>
         <View style={styles.list} key="info">
           <View style={{flex: 1}}>
             <Text
@@ -81,7 +81,7 @@ class BoardMsg extends Component<BoardMsgProps> {
             </Text>
           </View>
         </View>
-      </TouchableOpacity>
+      </Pressable>
     );
   }
 }

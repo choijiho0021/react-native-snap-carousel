@@ -3,11 +3,22 @@ import {Alert, AppState} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import codePush from 'react-native-code-push';
-import {actions as syncActions} from '@/redux/modules/sync';
+import {
+  actions as syncActions,
+  SyncAction,
+  SyncModelState,
+} from '@/redux/modules/sync';
 import i18n from '@/utils/i18n';
 import {RootState} from '@/redux';
 
-class CodePushModal extends Component {
+type CodePushModalProps = {
+  sync: SyncModelState;
+  action: {
+    sync: SyncAction;
+  };
+};
+
+class CodePushModal extends Component<CodePushModalProps> {
   componentDidMount() {
     this.props.action.sync.init();
     this.codePushCheckForUpdate();
@@ -59,7 +70,7 @@ class CodePushModal extends Component {
         }
       })
       .catch((error) => {
-        codePush.log(error);
+        console.log('@@ codePush failed', error);
       });
   }
 

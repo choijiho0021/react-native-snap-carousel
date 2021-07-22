@@ -30,7 +30,7 @@ import AppBackButton from '@/components/AppBackButton';
 import AppAlert from '@/components/AppAlert';
 import AppIcon from '@/components/AppIcon';
 import InputMobile from '@/components/InputMobile';
-import InputEmail from '@/components/InputEmail';
+import InputEmail, {InputEmailRef} from '@/components/InputEmail';
 import {colors} from '@/constants/Colors';
 import validationUtil from '@/utils/validationUtil';
 import InputPinInTime from '@/components/InputPinInTime';
@@ -273,7 +273,7 @@ class RegisterMobileScreen extends Component<
   RegisterMobileScreenProps,
   RegisterMobileScreenState
 > {
-  email: React.RefObject<TextInput>;
+  email: React.RefObject<InputEmailRef>;
 
   authInputRef: React.RefObject<TextInput>;
 
@@ -334,7 +334,7 @@ class RegisterMobileScreen extends Component<
   }
 
   onSubmit = async () => {
-    const {email, domain} = this.email.current?.state;
+    const {email, domain} = this.email.current?.getValue() || {};
     const {pin, mobile, confirm, loading} = this.state;
 
     const error = validationUtil.validate('email', `${email}@${domain}`);
@@ -539,7 +539,7 @@ class RegisterMobileScreen extends Component<
   }
 
   focusEmailInput() {
-    this.email.current?.focusInput();
+    this.email.current?.focus();
   }
 
   renderItem({item}: {item: ConfirmItem}) {
@@ -604,7 +604,7 @@ class RegisterMobileScreen extends Component<
             <View style={{flex: 1}}>
               <InputEmail
                 style={{marginTop: 38, paddingHorizontal: 20}}
-                ref={this.email}
+                inputRef={this.email}
               />
 
               <Text style={[styles.helpText, {color: colors.errorBackground}]}>

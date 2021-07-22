@@ -98,17 +98,12 @@ export default class AppSwitch extends PureComponent<
   }
 
   render() {
-    const {style: st} = this.props;
-    const trackColor = {
-      true: ((st || {}).trackColor || {}).true || colors.clearBlue,
-      false: ((st || {}).trackColor || {}).false || colors.lightGrey,
-    };
-    const thumbColor = (st || {}).thumbColor || colors.white;
+    const {style} = this.props;
     const {animatedValue, circlePosXStart, circlePosXEnd} = this.state;
 
     return (
       <TouchableOpacity
-        style={[styles.container, st]}
+        style={[styles.container, style]}
         activeOpacity={0.7}
         onPress={this.onPress}>
         <Animated.View
@@ -117,7 +112,7 @@ export default class AppSwitch extends PureComponent<
             {
               backgroundColor: animatedValue.interpolate({
                 inputRange: [0, 1],
-                outputRange: [trackColor.false, trackColor.true],
+                outputRange: [colors.lightGrey, colors.clearBlue],
               }),
             },
           ]}>
@@ -125,7 +120,7 @@ export default class AppSwitch extends PureComponent<
             style={[
               styles.thumb,
               {
-                backgroundColor: thumbColor,
+                backgroundColor: colors.white,
                 transform: [
                   {
                     translateX: animatedValue.interpolate({
