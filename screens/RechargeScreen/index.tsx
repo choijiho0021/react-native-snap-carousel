@@ -163,13 +163,6 @@ type RechargeScreenProps = {
 };
 
 type RechargeScreenState = {
-  // hasPhotoPermission: boolean;
-  // showEmailModal: boolean;
-  // showIdModal: boolean;
-  // isFocused: boolean;
-  // refreshing: boolean;
-  // isRokebiInstalled: boolean;
-  // copyString: string;
   selected: string;
 };
 
@@ -316,7 +309,7 @@ class RechargeScreen extends Component<
                 resizeMode="contain"
               />
               <View style={styles.iccidBox}>
-                <Text style={styles.iccidTitle}>ICCID</Text>
+                <Text style={styles.iccidTitle}>{i18n.t('rch:iccid')}</Text>
                 <View style={styles.iccidRow}>
                   {seg.map((s, i) => [
                     <Text key={i} style={styles.iccid}>
@@ -339,8 +332,8 @@ class RechargeScreen extends Component<
           <View style={[styles.divider, esimApp && {marginTop: 20}]} />
           <View style={{flex: 1}} />
           <Text
-            style={[appStyles.normal16Text, {marginTop: 30, marginLeft: 20}]}>
-            충전 금액
+            style={[appStyles.normal16Text, {marginTop: 30, marginLeft: 40}]}>
+            {i18n.t('rch:amount')}
           </Text>
           <View style={{marginBottom: 40}}>
             {amount.map((v) => this.rechargeButton(v))}
