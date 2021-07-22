@@ -10,11 +10,11 @@ import {
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import _ from 'underscore';
-import {List} from 'immutable';
 import {RootState} from '@/redux';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
+import i18n from '@/utils/i18n';
 
 const styles = StyleSheet.create({
   container: {
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
 });
 
 type AppToastProps = {
-  toastMsgBox: List<string>;
+  toastMsgBox: string[];
   closable?: boolean;
   style?: ViewStyle;
   action: {
@@ -90,8 +90,8 @@ class AppToast extends PureComponent<AppToastProps, AppToastState> {
 
   componentDidUpdate(prevProps: AppToastProps) {
     if (
-      this.props.toastMsgBox.size > 0 &&
-      prevProps.toastMsgBox.size === 0 &&
+      this.props.toastMsgBox.length > 0 &&
+      prevProps.toastMsgBox.length === 0 &&
       !this.state.isShown
     ) {
       this.show();
@@ -112,7 +112,6 @@ class AppToast extends PureComponent<AppToastProps, AppToastState> {
   }
 
   close() {
-    const {toastMsgBox} = this.props;
     if (this.timer) clearTimeout(this.timer);
 
     if (!this.isShown && !this.state.isShown) return;
@@ -125,37 +124,35 @@ class AppToast extends PureComponent<AppToastProps, AppToastState> {
     }).start(() => {
       if (this.mounted) this.setState({isShown: false});
       this.isShown = false;
-
-      if (toastMsgBox.size > 0) {
-        this.show();
-      }
+      this.show();
     });
   }
 
   show({duration}: {duration?: number} = {}) {
     const {toastMsgBox} = this.props;
-    const text = toastMsgBox.first();
+    const text = toastMsgBox[0];
+    if (text) {
+      if (_.isNumber(duration)) {
+        this.duration = Number(duration);
+      }
 
-    if (_.isNumber(duration)) {
-      this.duration = Number(duration);
+      if (this.mounted) this.setState({isShown: true, text: i18n.t(text)});
+
+      Animated.timing(this.state.opacity, {
+        toValue: 1,
+        easing: Easing.ease,
+        duration: this.fadeInDuration,
+        useNativeDriver: false,
+      }).start(() => {
+        this.isShown = true;
+        if (this.timer) clearTimeout(this.timer);
+        this.props.action.toast.remove();
+
+        this.timer = setTimeout(() => {
+          this.close();
+        }, this.duration);
+      });
     }
-
-    if (this.mounted) this.setState({isShown: true, text});
-
-    Animated.timing(this.state.opacity, {
-      toValue: 1,
-      easing: Easing.ease,
-      duration: this.fadeInDuration,
-      useNativeDriver: false,
-    }).start(() => {
-      this.isShown = true;
-      if (this.timer) clearTimeout(this.timer);
-      this.props.action.toast.remove();
-
-      this.timer = setTimeout(() => {
-        this.close();
-      }, this.duration);
-    });
   }
 
   render() {

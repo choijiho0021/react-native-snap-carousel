@@ -1,25 +1,23 @@
 /* eslint-disable no-param-reassign */
 import {Reducer} from 'redux-actions';
-import {List as ImmutableList} from 'immutable';
 import {AsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {AnyAction} from 'redux';
 
-import i18n from '@/utils/i18n';
 import {AppDispatch} from '@/store';
 
 export const Toast = {
-  NOT_LOADED: i18n.t('toast:failedToLoad'),
-  NOT_UPDATED: i18n.t('toast:failedToUpdate'),
-  NOT_OPENED: i18n.t('toast:failedToOpen'),
-  COPY_SUCCESS: i18n.t('toast:copySuccess'),
+  NOT_LOADED: 'toast:failedToLoad',
+  NOT_UPDATED: 'toast:failedToUpdate',
+  NOT_OPENED: 'toast:failedToOpen',
+  COPY_SUCCESS: 'toast:copySuccess',
 };
 
 interface ToastModelState {
-  messages: ImmutableList<string>;
+  messages: string[];
 }
 
 const initialState: ToastModelState = {
-  messages: ImmutableList<string>(),
+  messages: [],
 };
 
 const slice = createSlice({
@@ -31,13 +29,12 @@ const slice = createSlice({
       const {messages} = state;
       const newMsg = action.payload || Toast.NOT_LOADED;
 
-      if (!messages.contains(newMsg)) {
-        state.messages = messages.push(newMsg);
+      if (!messages.includes(newMsg)) {
+        state.messages = messages.concat(newMsg);
       }
     },
-    remove: (state, action) => {
-      const {messages} = state;
-      state.messages = messages.remove(0);
+    remove: (state) => {
+      state.messages = state.messages.slice(1);
     },
   },
 });
