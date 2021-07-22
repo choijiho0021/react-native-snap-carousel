@@ -140,37 +140,23 @@ type StoreListProps = {
   localOpList: ImmutableMap<string, RkbLocalOp>;
   data: ProductByCategory[];
   onPress: (p: RkbProduct[]) => void;
-  refreshTrigger?: number;
 };
 
-class StoreList extends Component<StoreListProps> {
-  shouldComponentUpdate(nextProps: StoreListProps) {
-    const {data, refreshTrigger} = this.props;
-
-    return (
-      data !== nextProps.data ||
-      (data === [] && refreshTrigger !== nextProps.refreshTrigger)
-    );
-  }
-
-  render() {
-    const {data, localOpList, onPress} = this.props;
-
-    return (
-      <View style={appStyles.container}>
-        {data.map((elm) => (
-          <CountryItem
-            key={elm.key}
-            onPress={onPress}
-            item={elm}
-            localOpList={localOpList}
-          />
-        ))}
-      </View>
-    );
-  }
-}
+const StoreList: React.FC<StoreListProps> = ({localOpList, data, onPress}) => {
+  return (
+    <View style={appStyles.container}>
+      {data.map((elm) => (
+        <CountryItem
+          key={elm.key}
+          onPress={onPress}
+          item={elm}
+          localOpList={localOpList}
+        />
+      ))}
+    </View>
+  );
+};
 
 export default connect(({product}: RootState) => ({
   localOpList: product.localOpList,
-}))(StoreList);
+}))(memo(StoreList));
