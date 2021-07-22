@@ -436,8 +436,7 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
           purchaseItems: this.selectedProduct(selected),
           balance,
         })
-        .then((resp) => {
-          console.log('@@@ check and purchse', resp);
+        .then(({payload: resp}) => {
           if (resp.result === 0) {
             this.props.navigation.navigate('PymMethod', {
               mode: 'roaming_product',
