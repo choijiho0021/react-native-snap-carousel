@@ -535,7 +535,7 @@ class PymMethodScreen extends Component<
               !_.isEmpty(v) && (
                 <AppButton
                   key={v.method}
-                  title={_.isEmpty(v.icon) ? v.title : undefined}
+                  title={_.isEmpty(v.icon) ? i18n.t(v.title) : undefined}
                   style={buttonStyle(
                     idx,
                     column,
@@ -757,7 +757,11 @@ class PymMethodScreen extends Component<
 
     return (
       <View>
-        {this.dropDownHeader('method', i18n.t('pym:method'), selected?.title)}
+        {this.dropDownHeader(
+          'method',
+          i18n.t('pym:method'),
+          selected?.title ? i18n.t(selected?.title) : '',
+        )}
         {this.state.showModal.method && (
           <View style={styles.beforeDrop}>
             <View style={styles.thickBar} />
