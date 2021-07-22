@@ -178,6 +178,8 @@
   "set:pushnoti": "Push Notifications",
 
   "rch:recharge": "Recharge",
+  "rch:iccid": "ICCID",
+  "rch:amount": "Recharge Amount",
 
   "sim:purchase": "Purchase SIM Card",
   "sim:reg": "Register SIM Card",

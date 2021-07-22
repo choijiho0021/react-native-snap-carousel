@@ -179,6 +179,8 @@
   "set:pushnoti": "Push 알림 받기",
 
   "rch:recharge": "충전 하기",
+  "rch:iccid": "ICCID",
+  "rch:amount": "충전 금액",
 
   "sim:purchase": "유심 구매",
   "sim:reg": "유심 등록",
