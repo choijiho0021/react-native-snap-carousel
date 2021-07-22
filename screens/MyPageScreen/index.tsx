@@ -313,7 +313,8 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
   shouldComponentUpdate(nextProps: MyPageScreenProps) {
     return (
       this.props.account.userPictureUrl !== nextProps.account.userPictureUrl ||
-      this.props.order.orders !== nextProps.order.orders
+      this.props.order.orders !== nextProps.order.orders ||
+      this.props.navigation.isFocused()
     );
   }
 
@@ -324,6 +325,7 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
       uid,
       account: {loggedIn, mobile, token},
     } = this.props;
+
     const focus = navigation.isFocused();
 
     // 구매내역 원래 조건 확인
