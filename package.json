@@ -38,6 +38,7 @@
     "appcenter-crashes": "^4.1.0",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "buffer": "^6.0.3",
+    "events": "^3.3.0",
     "i18n-js": "^3.8.0",
     "iamport-react-native": "^1.6.2",
     "immutable": "^4.0.0-rc.12",
