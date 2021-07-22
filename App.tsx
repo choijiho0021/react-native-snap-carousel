@@ -44,6 +44,10 @@ const App = ({skipLoadingScreen}: {skipLoadingScreen: boolean}) => {
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
+    setI18nConfig();
+  }, []);
+
+  useEffect(() => {
     if (!isLoadingComplete && !skipLoadingScreen) {
       try {
         loadResourcesAsync();
@@ -100,8 +104,6 @@ async function login() {
 }
 
 async function loadResourcesAsync() {
-  setI18nConfig();
-
   // clear caches
   await store.dispatch(accountActions.clearCookies());
 
@@ -124,11 +126,13 @@ function handleLoadingError(error) {
     Platform.OS === 'ios'
       ? i18n.t('loading:failedToExec')
       : i18n.t('loading:terminate');
+
   AppAlert.error(errorMsg, i18n.t('loading:error'), () => {
     if (Platform.OS !== 'ios') {
       BackHandler.exitApp();
     }
   });
+
   console.warn(error);
 }
 

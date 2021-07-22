@@ -51,6 +51,7 @@ const slice = createSlice({
 export const actions = {
   ...slice.actions,
   updateSimPartner,
+  getSimCardList,
 };
 
 export type SimAction = typeof actions;
