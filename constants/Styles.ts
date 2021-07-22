@@ -1,5 +1,5 @@
 import {StyleSheet, Platform} from 'react-native';
-import {isDeviceSize} from '../constants/SliderEntry.style';
+import {isDeviceSize} from './SliderEntry.style';
 import {colors} from './Colors';
 
 export const appStyles = StyleSheet.create({
