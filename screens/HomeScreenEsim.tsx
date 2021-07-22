@@ -242,6 +242,13 @@ export type ProductByCategory = {
   data: RkbProduct[][];
 };
 
+type TabViewRouteKey = 'asia' | 'europe' | 'usaAu' | 'multi';
+type TabViewRoute = {
+  key: TabViewRouteKey;
+  title: string;
+  category: string;
+};
+
 const initialState = {
   isSupportDev: true,
   index: 0,
@@ -251,7 +258,7 @@ const initialState = {
     {key: 'europe', title: i18n.t('store:europe'), category: '유럽'},
     {key: 'usaAu', title: i18n.t('store:usa/au'), category: '미주/호주'},
     {key: 'multi', title: i18n.t('store:multi'), category: '복수 국가'},
-  ],
+  ] as TabViewRoute[],
   allData: [] as RkbProduct[][],
   asia: [] as ProductByCategory[],
   europe: [] as ProductByCategory[],
@@ -445,28 +452,9 @@ class HomeScreenEsim extends Component<
     }
   };
 
-  renderScene = ({
-    route: {key},
-  }: {
-    route: {key: 'asia' | 'europe' | 'usaAu' | 'multi'};
-  }) => {
-    const {index, routes, activeSlide} = this.state;
-    const data = this.state[key];
-
-    if (
-      key !== routes[index].key ||
-      this.props.product.sortedProdList.length === 0
-    ) {
-      return <AppActivityIndicator style={{top: 100}} />;
-    }
-
-    return (
-      <StoreList
-        data={data}
-        onPress={this.onPressItem}
-        refreshTrigger={activeSlide}
-      />
-    );
+  renderScene = ({route}: {route: TabViewRoute}) => {
+    const data = this.state[route.key];
+    return <StoreList data={data} onPress={this.onPressItem} />;
   };
 
   modalBody = () => {
@@ -735,9 +723,11 @@ class HomeScreenEsim extends Component<
   }
 
   render() {
-    const {isSupportDev, firstLaunch, darkMode} = this.state;
+    const {isSupportDev, firstLaunch, darkMode, index, routes} = this.state;
+
     return (
       <View style={styles.whiteBackground}>
+        <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
         <TutorialScreen
           visible={firstLaunch}
           onOkClose={() => this.setState({firstLaunch: false})}
@@ -745,33 +735,38 @@ class HomeScreenEsim extends Component<
         {this.renderCarousel()}
         <ScrollView
           ref={this.scrollRef}
-          // contentContainerStyle={appStyles.container}
+          contentContainerStyle={{flex: 1}}
           style={styles.scrollView}
           stickyHeaderIndices={[1]}>
-          <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
           {/* ScrollView  stickyHeaderIndices로 상단 탭을 고정하기 위해서 View한번 더 사용 */}
           {this.tabHeader()}
-          <TabView
-            style={styles.container}
-            navigationState={this.state}
-            renderScene={this.renderScene}
-            onIndexChange={this.onIndexChange}
-            initialLayout={{width: Dimensions.get('window').width, height: 10}}
-            titleStyle={appStyles.normal16Text}
-            indicatorStyle={{backgroundColor: 'white'}}
-            renderTabBar={() => null}
-          />
 
-          <AppModal
-            title={i18n.t('home:unsupportedTitle')}
-            closeButtonTitle={i18n.t('home:exitApp')}
-            titleStyle={styles.modalTitle}
-            type="close"
-            onOkClose={this.exitApp}
-            visible={!isSupportDev}>
-            {this.modalBody()}
-          </AppModal>
+          {this.props.product.sortedProdList.length === 0 ? (
+            <AppActivityIndicator style={{top: 100}} />
+          ) : (
+            <TabView
+              style={styles.container}
+              navigationState={{index, routes}}
+              renderScene={this.renderScene}
+              onIndexChange={this.onIndexChange}
+              initialLayout={{
+                width: Dimensions.get('window').width,
+                height: 10,
+              }}
+              renderTabBar={() => null}
+            />
+          )}
         </ScrollView>
+
+        <AppModal
+          title={i18n.t('home:unsupportedTitle')}
+          closeButtonTitle={i18n.t('home:exitApp')}
+          titleStyle={styles.modalTitle}
+          type="close"
+          onOkClose={this.exitApp}
+          visible={!isSupportDev}>
+          {this.modalBody()}
+        </AppModal>
       </View>
     );
   }
