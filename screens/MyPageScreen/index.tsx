@@ -311,10 +311,9 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
   }
 
   shouldComponentUpdate(nextProps: MyPageScreenProps) {
-    const {orders, account = {}} = this.props.order;
     return (
-      account.userPictureUrl !== nextProps.account.userPictureUrl ||
-      orders !== nextProps.order.orders
+      this.props.account.userPictureUrl !== nextProps.account.userPictureUrl ||
+      this.props.order.orders !== nextProps.order.orders
     );
   }
 
@@ -798,7 +797,7 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
 export default connect(
   ({cart, account, order, status}: RootState) => ({
     account,
-    lastTab: cart.lastTab.toJS(),
+    lastTab: cart.lastTab.toArray(),
     order,
     auth: accountActions.auth(account),
     uid: account.uid,

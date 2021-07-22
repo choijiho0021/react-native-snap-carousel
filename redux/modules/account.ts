@@ -380,13 +380,18 @@ const slice = createSlice({
       const {result, objects} = action.payload;
       if (result === 0 && objects && objects.length > 0) {
         // update picture file id
-        [state.userPicture] = objects;
+        state.userPictureUrl = objects[0].userPictureUrl;
       }
     });
 
     builder.addCase(changePicture.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
-      if (result === 0 && objects && objects.length > 0) {
+      if (
+        result === 0 &&
+        objects &&
+        objects.length > 0 &&
+        objects[0].userPictureUrl
+      ) {
         state.userPictureUrl = objects[0].userPictureUrl;
       }
     });
