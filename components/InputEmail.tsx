@@ -100,7 +100,7 @@ export type InputEmailRef = {
 
 type InputEmailProps = {
   style?: StyleProp<ViewStyle>;
-  inputRef?: React.MutableRefObject<InputEmailRef|null>;
+  inputRef?: React.MutableRefObject<InputEmailRef | null>;
 };
 type InputEmailState = {
   email: string;
@@ -136,8 +136,8 @@ class InputEmail extends Component<InputEmailProps, InputEmailState> {
       const {email, domain} = this.state;
       this.props.inputRef.current = {
         getValue: () => ({email, domain}),
-        focus:() => this.emailRef.current?.focus();
-      }
+        focus: () => this.emailRef.current?.focus(),
+      };
     }
   }
 
