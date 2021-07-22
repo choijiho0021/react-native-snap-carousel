@@ -1,3 +1,14 @@
+import AppButton from '@/components/AppButton';
+import PaymentItemInfo from '@/components/PaymentItemInfo';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import {RootState} from '@/redux';
+import {actions as accountActions} from '@/redux/modules/account';
+import {actions as cartActions} from '@/redux/modules/cart';
+import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
+import {actions as orderActions} from '@/redux/modules/order';
+import utils from '@/submodules/rokebi-utils/utils';
+import i18n from '@/utils/i18n';
 import Analytics from 'appcenter-analytics';
 import React, {Component} from 'react';
 import {
@@ -12,20 +23,6 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import AppButton from '@/components/AppButton';
-import PaymentItemInfo from '@/components/PaymentItemInfo';
-import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
-import {actions as accountActions} from '@/redux/modules/account';
-import {actions as cartActions} from '@/redux/modules/cart';
-import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
-import {actions as orderActions} from '@/redux/modules/order';
-import i18n from '@/utils/i18n';
-import Env from '@/environment';
-import {RootState} from '@/redux';
-import utils from '@/submodules/rokebi-utils/utils';
-
-const {esimApp} = Env.get();
 
 const imgCheck = require('../assets/images/main/imgCheck.png');
 
@@ -231,7 +228,7 @@ class PaymentResultScreen extends Component<PaymentResultScreenProps> {
               isRecharge={isRecharge}
               screen={screen}
             />
-            {screen === 'PaymentResult' && !esimApp && (
+            {screen === 'PaymentResult' && (
               <View style={styles.result}>
                 <Text style={appStyles.normal16Text}>
                   {i18n.t('cart:afterDeductBalance')}{' '}
