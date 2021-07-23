@@ -19,9 +19,8 @@ const getProdDetail = createAsyncThunk(
 
 const getProdList = createAsyncThunk(
   'product/getProdList',
-  async (param, {dispatch}) => {
-    await Promise.resolve(dispatch(getProd()));
-    return dispatch(getLocalOp());
+  (param, {dispatch}) => {
+    return dispatch(getProd()).then(() => dispatch(getLocalOp()));
   },
 );
 

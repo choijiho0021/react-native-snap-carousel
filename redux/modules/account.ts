@@ -31,7 +31,7 @@ const clearCookies = createAsyncThunk(
   API.User.clearCookies,
 );
 const getUserId = createAsyncThunk('account/getUserId', API.User.getByName);
-export const getAccount = createAsyncThunk(
+const getAccount = createAsyncThunk(
   'account/getAccount',
   API.Account.getAccount,
 );
@@ -106,7 +106,7 @@ export const auth = (state: AccountModelState): AccountAuth => ({
   token: state.token,
 });
 
-export const changeNotiToken = createAsyncThunk(
+const changeNotiToken = createAsyncThunk(
   'account/changeNotiToken',
   (param, {dispatch, getState}) => {
     const {
@@ -132,7 +132,7 @@ export const changeNotiToken = createAsyncThunk(
   },
 );
 
-export const registerMobile = createAsyncThunk(
+const registerMobile = createAsyncThunk(
   'account/registerMobile',
   (
     {iccid, code, mobile}: {iccid: string; code: string; mobile: string},
@@ -163,7 +163,7 @@ export const registerMobile = createAsyncThunk(
 //   return dispatch(clearCookies0());
 // };
 
-export const logInAndGetAccount = createAsyncThunk(
+const logInAndGetAccount = createAsyncThunk(
   'account/logInAndGetAccount',
   (
     {mobile, pin, iccid}: {mobile?: string; pin?: string; iccid?: string},
@@ -219,7 +219,7 @@ export const logInAndGetAccount = createAsyncThunk(
   },
 );
 
-export const uploadAndChangePicture = createAsyncThunk(
+const uploadAndChangePicture = createAsyncThunk(
   'account/uploadAndChangePicture',
   (image: RkbImage, {dispatch, getState}) => {
     const {
@@ -411,28 +411,25 @@ const slice = createSlice({
   },
 });
 
-export const logout = createAsyncThunk(
-  'account/logout',
-  async (param, {dispatch}) => {
-    const token = await retrieveData(API.User.KEY_TOKEN);
+const logout = createAsyncThunk('account/logout', async (param, {dispatch}) => {
+  const token = await retrieveData(API.User.KEY_TOKEN);
 
-    removeData(API.User.KEY_ICCID);
-    removeData(API.User.KEY_MOBILE);
-    removeData(API.User.KEY_PIN);
-    removeData(API.User.KEY_TOKEN);
+  removeData(API.User.KEY_ICCID);
+  removeData(API.User.KEY_MOBILE);
+  removeData(API.User.KEY_PIN);
+  removeData(API.User.KEY_TOKEN);
 
-    batch(() => {
-      // 먼저 로그아웃 한다.
-      dispatch(logOut(token));
+  batch(() => {
+    // 먼저 로그아웃 한다.
+    dispatch(logOut(token));
 
-      dispatch(slice.actions.resetAccount());
-      // reset 한 후에 token을 다시 읽어 온다.
-      dispatch(getToken());
-    });
-  },
-);
+    dispatch(slice.actions.resetAccount());
+    // reset 한 후에 token을 다시 읽어 온다.
+    dispatch(getToken());
+  });
+});
 
-export const changeEmail = createAsyncThunk(
+const changeEmail = createAsyncThunk(
   'account/changeEmail',
   (mail: string, {dispatch, getState}) => {
     const {
@@ -460,7 +457,7 @@ export const changeEmail = createAsyncThunk(
   },
 );
 
-export const changePushNoti = createAsyncThunk(
+const changePushNoti = createAsyncThunk(
   'account/changePushNoti',
   ({isPushNotiEnabled}: {isPushNotiEnabled: boolean}, {dispatch, getState}) => {
     const {
@@ -482,7 +479,7 @@ export const changePushNoti = createAsyncThunk(
   },
 );
 
-export const clearCurrentAccount = createAsyncThunk(
+const clearCurrentAccount = createAsyncThunk(
   'account/clearCurrentAccount',
   (param, {dispatch}) => {
     removeData(API.User.KEY_ICCID);

@@ -7,32 +7,32 @@ import {API} from '@/submodules/rokebi-utils';
 import {RkbOrder} from '@/submodules/rokebi-utils/api/orderApi';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {RkbSubscription} from '@/submodules/rokebi-utils/api/subscriptionApi';
-import {getAccount} from './account';
+import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
 
 const getNextOrders = createAsyncThunk('order/getOrders', API.Order.getOrders);
-export const getOrderById = createAsyncThunk(
+const getOrderById = createAsyncThunk(
   'order/getOrderById',
   API.Order.getOrderById,
 );
-export const cancelOrder = createAsyncThunk(
+const cancelOrder = createAsyncThunk(
   'order/cancelOrder',
   API.Order.cancelOrder,
 );
-export const getSubs = createAsyncThunk(
+const getSubs = createAsyncThunk(
   'order/getSubs',
   API.Subscription.getSubscription,
 );
-export const getSubsUsage = createAsyncThunk(
+const getSubsUsage = createAsyncThunk(
   'order/getSubsUsage',
   API.Subscription.getSubsUsage,
 );
-export const updateSubsStatus = createAsyncThunk(
+const updateSubsStatus = createAsyncThunk(
   'order/updateSubsStatus',
   API.Subscription.updateSubscriptionStatus,
 );
 
-export const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED);
+const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED);
 
 export interface OrderModelState {
   orders: ImmutableMap<number, RkbOrder>;
@@ -42,7 +42,7 @@ export interface OrderModelState {
   page: number;
 }
 
-export const checkAndGetOrderById = createAsyncThunk(
+const checkAndGetOrderById = createAsyncThunk(
   'order/checkAndGetOrderById',
   (
     {user, token, orderId}: {user?: string; token?: string; orderId?: number},
@@ -56,7 +56,7 @@ export const checkAndGetOrderById = createAsyncThunk(
   },
 );
 
-export const getOrders = createAsyncThunk(
+const getOrders = createAsyncThunk(
   'order/getOrders',
   (
     {user, token, page}: {user?: string; token?: string; page?: number},
@@ -69,7 +69,7 @@ export const getOrders = createAsyncThunk(
   },
 );
 
-export const cancelAndGetOrder = createAsyncThunk(
+const cancelAndGetOrder = createAsyncThunk(
   'order/cancelAndGetOrder',
   (
     {orderId, token}: {orderId?: number; token?: string},
@@ -84,7 +84,7 @@ export const cancelAndGetOrder = createAsyncThunk(
       return dispatch(getOrderById({orderId, token})).then(({payload: val}) => {
         if (resp.result === 0) {
           if (val.result === 0) {
-            dispatch(getAccount({iccid, token}));
+            dispatch(accountAction.getAccount({iccid, token}));
             return val;
           }
           return {

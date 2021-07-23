@@ -23,7 +23,7 @@ const getIssueResp = createAsyncThunk(
 const PAGE_LIMIT = 10;
 const PAGE_UPDATE = 0;
 
-export const postAndGetList = createAsyncThunk(
+const postAndGetList = createAsyncThunk(
   'board/postAndGetList',
   (issue: RkbIssue, {dispatch, getState}) => {
     const {
@@ -123,7 +123,7 @@ const slice = createSlice({
   },
 });
 
-export const getIssueList = createAsyncThunk(
+const getIssueList = createAsyncThunk(
   'board/getIssueList',
   (reloadAlways = true, {dispatch, getState}) => {
     const {account, board} = getState() as RootState;
@@ -142,7 +142,7 @@ export const getIssueList = createAsyncThunk(
   },
 );
 
-export const getNextIssueList = createAsyncThunk(
+const getNextIssueList = createAsyncThunk(
   'board/getNextIssueList',
   (param, {dispatch, getState}) => {
     const {account, board, status} = getState() as RootState;
