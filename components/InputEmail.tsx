@@ -10,34 +10,38 @@ import {
 } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import _ from 'underscore';
-import i18n from '../utils/i18n';
-import {colors} from '../constants/Colors';
+import i18n, {i18nEvent} from '@/utils/i18n';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
 import Triangle from './Triangle';
-import {appStyles} from '../constants/Styles';
 
 const DIRECT_INPUT = 'direct';
-const domains = [
-  {
-    label: i18n.t('email:input'),
-    value: DIRECT_INPUT,
-  },
-  {
-    label: 'Naver',
-    value: 'naver.com',
-  },
-  {
-    label: 'Gmail',
-    value: 'gmail.com',
-  },
-  {
-    label: 'Daum',
-    value: 'daum.net',
-  },
-  {
-    label: 'Hanmail',
-    value: 'hanmail.net',
-  },
-];
+let domains: {label: string; value: string}[] = [];
+
+i18nEvent.on('loaded', () => {
+  domains = [
+    {
+      label: i18n.t('email:input'),
+      value: DIRECT_INPUT,
+    },
+    {
+      label: 'Naver',
+      value: 'naver.com',
+    },
+    {
+      label: 'Gmail',
+      value: 'gmail.com',
+    },
+    {
+      label: 'Daum',
+      value: 'daum.net',
+    },
+    {
+      label: 'Hanmail',
+      value: 'hanmail.net',
+    },
+  ];
+});
 
 const styles = StyleSheet.create({
   noDirectInput: {

@@ -18,7 +18,7 @@ import {
   RkbFile,
   RkbImage,
 } from '@/submodules/rokebi-utils/api/accountApi';
-import {ApiResult} from '@/submodules/rokebi-utils/api/api';
+import api, {ApiResult} from '@/submodules/rokebi-utils/api/api';
 import {actions as toastActions, reflectWithToast, Toast} from './toast';
 
 const {esimApp} = Env.get();
@@ -166,13 +166,16 @@ export const registerMobile = createAsyncThunk(
 export const logInAndGetAccount = createAsyncThunk(
   'account/logInAndGetAccount',
   (
-    {mobile, pin, iccid}: {mobile: string; pin: string; iccid?: string},
+    {mobile, pin, iccid}: {mobile?: string; pin?: string; iccid?: string},
     {dispatch},
   ) => {
+    if (!mobile || !pin) {
+      return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter');
+    }
+
     return dispatch(logIn({user: mobile, pass: pin})).then(
-      // ({payload}: {payload: ApiResult<RkbLogin>}) => {
-      (rsp) => {
-        const {result, objects} = rsp?.payload || {};
+      ({payload}) => {
+        const {result, objects} = payload || {};
         if (result === 0 && objects && objects.length > 0) {
           const obj = objects[0];
           const token = obj.csrf_token;
@@ -203,11 +206,14 @@ export const logInAndGetAccount = createAsyncThunk(
           dispatch(getUserId({name: obj.current_user.name, token})).then(() =>
             dispatch(changeNotiToken()),
           );
+          return api.success([]);
         }
+        return payload;
       },
       (err) => {
-        dispatch(toastActions.push());
         console.log('login failed', err);
+        dispatch(toastActions.push('reg:failedToLogIn'));
+        return api.reject(api.E_INVALID_STATUS, 'failed to login');
       },
     );
   },
