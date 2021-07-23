@@ -76,9 +76,10 @@ const cartAddAndGet = createAsyncThunk(
 );
 
 export type PaymentReq = {key: string; title: string; amount: number};
-export type Store = {
-  kr: 2;
-  global: 3;
+export type Store = 'kr' | 'global';
+const storeId: Record<Store, number> = {
+  kr: 2,
+  global: 3,
 };
 
 export interface CartModelState {
@@ -92,7 +93,7 @@ export interface CartModelState {
   lastTab: ImmutableList<string>;
   pymPrice?: number;
   deduct?: number;
-  store: keyof Store;
+  store: Store;
 }
 
 const onSuccess = (state, action) => {
@@ -228,12 +229,12 @@ const slice = createSlice({
 
 const changeStore = createAsyncThunk(
   'cart/changeStore',
-  ({store}: {store: keyof Store}, {dispatch, getState}) => {
+  ({store}: {store: Store}, {dispatch, getState}) => {
     const {cart} = getState() as RootState;
 
     if (cart.store !== store) {
       slice.actions.setStore({store});
-      return dispatch(productAction.getProdList());
+      dispatch(productAction.getProd(storeId[store]));
     }
   },
 );

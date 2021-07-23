@@ -347,7 +347,7 @@ class HomeScreenEsim extends Component<
 
     if (diff > 60 && focus) {
       this.setState({time: now});
-      this.props.action.product.getProdList();
+      this.props.action.product.getProd();
     }
 
     if (

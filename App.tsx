@@ -108,7 +108,8 @@ async function loadResourcesAsync() {
   await store.dispatch(accountActions.clearCookies());
 
   // load product list
-  await store.dispatch(productActions.getProdList());
+  await store.dispatch(productActions.getProd());
+  await store.dispatch(productActions.getLocalOp());
   await store.dispatch(promotionActions.getPromotion());
 
   if (!esimApp) {

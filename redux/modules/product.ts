@@ -17,14 +17,7 @@ const getProdDetail = createAsyncThunk(
   API.Page.getProductDetails,
 );
 
-const getProdList = createAsyncThunk(
-  'product/getProdList',
-  (param, {dispatch}) => {
-    return dispatch(getProd()).then(() => dispatch(getLocalOp()));
-  },
-);
-
-const getProdListWithToast = reflectWithToast(getProdList, Toast.NOT_LOADED);
+// const getProdListWithToast = reflectWithToast(getProdList, Toast.NOT_LOADED);
 
 export interface ProductModelState {
   prodList: ImmutableMap<string, RkbProduct>;
@@ -89,8 +82,8 @@ const slice = createSlice({
 export const actions = {
   ...slice.actions,
   getProdDetail,
-  getProdList,
-  getProdListWithToast,
+  getLocalOp,
+  getProd,
 };
 export type ProductAction = typeof actions;
 
