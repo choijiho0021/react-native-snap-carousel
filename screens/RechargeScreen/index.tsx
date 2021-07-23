@@ -139,16 +139,16 @@ const styles = StyleSheet.create({
   },
 });
 
-type MyPageScreenNavigationProp = StackNavigationProp<
+type RechargeScreenNavigationProp = StackNavigationProp<
   MyPageStackParamList,
-  'MyPage'
+  'Recharge'
 >;
 
-type MyPageScreenRouteProp = RouteProp<MyPageStackParamList, 'MyPage'>;
+type RechargeScreenRouteProp = RouteProp<MyPageStackParamList, 'Recharge'>;
 
 type RechargeScreenProps = {
-  navigation: MyPageScreenNavigationProp;
-  route: MyPageScreenRouteProp;
+  navigation: RechargeScreenNavigationProp;
+  route: RechargeScreenRouteProp;
 
   cart: CartModelState;
   order: OrderModelState;
@@ -175,11 +175,6 @@ class RechargeScreen extends Component<
   constructor(props: RechargeScreenProps) {
     super(props);
 
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('recharge')} />,
-    });
-
     // recharge 상품의 SKU는 'rch-{amount}' 형식을 갖는다.
     this.state = {
       selected: 'rch-5000',
@@ -188,6 +183,13 @@ class RechargeScreen extends Component<
     this.onSubmit = this.onSubmit.bind(this);
     this.onPress = this.onPress.bind(this);
     this.rechargeButton = this.rechargeButton.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => <AppBackButton title={i18n.t('recharge')} />,
+    });
   }
 
   componentWillUnmount() {
@@ -222,13 +224,13 @@ class RechargeScreen extends Component<
     });
   }
 
-  onPress = (key) => () => {
+  onPress = (key: string) => () => {
     this.setState({
       selected: key,
     });
   };
 
-  rechargeButton(value: [number, number]) {
+  rechargeButton(value: number[]) {
     const {selected} = this.state;
 
     return (
@@ -336,7 +338,7 @@ class RechargeScreen extends Component<
             {i18n.t('rch:amount')}
           </Text>
           <View style={{marginBottom: 40}}>
-            {amount.map((v) => this.rechargeButton(v))}
+            {amount.map((v: number[]) => this.rechargeButton(v))}
           </View>
         </ScrollView>
         <AppButton
