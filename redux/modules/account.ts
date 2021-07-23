@@ -91,7 +91,7 @@ export interface AccountModelState {
   simCardName?: string;
   simCardImage?: string;
   isUsedByOther?: boolean;
-  isPushNotiEnabled?: string;
+  isPushNotiEnabled?: boolean;
 }
 
 export type AccountAuth = {
