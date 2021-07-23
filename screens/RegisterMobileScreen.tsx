@@ -349,7 +349,7 @@ class RegisterMobileScreen extends Component<
     try {
       if (!_.isEmpty(error)) {
         isValid = false;
-        this.setState({emailValidation: {isValid, error: error.email[0]}});
+        this.setState({emailValidation: {isValid, error: error?.email[0]}});
       } else {
         const resp = await API.User.confirmEmail({email: `${email}@${domain}`});
 
@@ -587,7 +587,7 @@ class RegisterMobileScreen extends Component<
     const {isValid, error} = emailValidation || {};
     const disableButton =
       !authorized || (newUser && !(confirm.get('0') && confirm.get('1')));
-    const editablePin = mobile && authNoti && !authorized && !loading;
+    const editablePin = !!mobile && authNoti && !authorized && !loading;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -600,7 +600,6 @@ class RegisterMobileScreen extends Component<
           authNoti={authNoti}
           disabled={(authNoti && authorized) || loading}
           authorized={authorized}
-          timeout={timeout}
         />
 
         <InputPinInTime

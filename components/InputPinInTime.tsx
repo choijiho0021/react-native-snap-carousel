@@ -5,6 +5,7 @@ import {
   TextInput,
   Text,
   TouchableOpacity,
+  ViewStyle,
 } from 'react-native';
 import _ from 'underscore';
 import i18n from '../utils/i18n';
@@ -62,13 +63,14 @@ const styles = StyleSheet.create({
 
 type InputPinInTimeProps = {
   countdown: boolean;
-  authorized: boolean;
+  authorized?: boolean;
   editable: boolean;
   clickable: boolean;
   duration: number;
   onTimeout: () => void;
   onPress: (v: string) => void;
-  forwardRef: React.MutableRefObject<TextInput>;
+  forwardRef: React.MutableRefObject<TextInput | null>;
+  style?: ViewStyle;
 };
 
 type InputPinInTimeState = {
@@ -185,7 +187,8 @@ class InputPinInTime extends Component<
 
   render() {
     const {pin, duration, timeout} = this.state;
-    const {forwardRef, authorized, countdown, editable, onPress} = this.props;
+    const {style, forwardRef, authorized, countdown, editable, onPress} =
+      this.props;
     const clickable = this.props.clickable && _.size(pin) === 6;
 
     const min = Math.floor(duration / 60);
@@ -193,7 +196,7 @@ class InputPinInTime extends Component<
 
     return (
       <View>
-        <View style={[styles.container, this.props.style]}>
+        <View style={[styles.container, style]}>
           <TouchableOpacity
             style={[
               styles.inputWrapper,
