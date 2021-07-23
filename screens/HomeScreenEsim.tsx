@@ -351,8 +351,8 @@ class HomeScreenEsim extends Component<
     }
 
     if (
-      prevProps.product.prodList !== this.props.product.prodList ||
-      (diff > 0.2 && this.props.product.sortedProdList.length === 0)
+      prevProps.product.prodList !== this.props.product.prodList
+      // || (diff > 0.2 && this.props.product.sortedProdList.length === 0
     ) {
       this.refresh();
     }

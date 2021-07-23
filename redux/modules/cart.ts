@@ -11,6 +11,7 @@ import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {PurchaseItem} from '@/submodules/rokebi-utils/models/purchaseItem';
 import {PaymentResult} from '@/submodules/rokebi-utils/models/paymentResult';
 import api from '@/submodules/rokebi-utils/api/api';
+import AsyncStorage from '@react-native-community/async-storage';
 import {actions as orderAction} from './order';
 import {actions as accountAction} from './account';
 import {actions as productAction} from './product';
@@ -77,10 +78,6 @@ const cartAddAndGet = createAsyncThunk(
 
 export type PaymentReq = {key: string; title: string; amount: number};
 export type Store = 'kr' | 'global';
-const storeId: Record<Store, number> = {
-  kr: 2,
-  global: 3,
-};
 
 export interface CartModelState {
   result: number;
@@ -229,13 +226,10 @@ const slice = createSlice({
 
 const changeStore = createAsyncThunk(
   'cart/changeStore',
-  ({store}: {store: Store}, {dispatch, getState}) => {
-    const {cart} = getState() as RootState;
-
-    if (cart.store !== store) {
-      slice.actions.setStore({store});
-      dispatch(productAction.getProd(storeId[store]));
-    }
+  ({store}: {store: Store}, {dispatch}) => {
+    dispatch(slice.actions.setStore({store}));
+    dispatch(productAction.getProd(store));
+    AsyncStorage.setItem('cart.store', store);
   },
 );
 
