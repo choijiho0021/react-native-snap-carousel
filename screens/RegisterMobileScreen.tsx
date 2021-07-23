@@ -38,6 +38,7 @@ import {RootState} from '@/redux';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
+import {ApiResult} from '@/submodules/rokebi-utils/api/api';
 
 const styles = StyleSheet.create({
   helpText: {
@@ -118,42 +119,6 @@ type ConfirmItem = {
     param: {key: string; title: string};
   };
 };
-
-const confirmList: ConfirmItem[] = [
-  {
-    key: '0',
-    list: [
-      {color: colors.warmGrey, text: i18n.t('cfm:contract')},
-      {color: colors.clearBlue, text: i18n.t('cfm:mandatory')},
-    ],
-    navi: {
-      route: 'SimpleTextForAuth',
-      param: {key: 'setting:contract', title: i18n.t('cfm:contract')},
-    },
-  },
-  {
-    key: '1',
-    list: [
-      {color: colors.warmGrey, text: i18n.t('cfm:personalInfo')},
-      {color: colors.clearBlue, text: i18n.t('cfm:mandatory')},
-    ],
-    navi: {
-      route: 'SimpleTextForAuth',
-      param: {key: 'setting:privacy', title: i18n.t('cfm:personalInfo')},
-    },
-  },
-  {
-    key: '2',
-    list: [
-      {color: colors.warmGrey, text: i18n.t('cfm:marketing')},
-      {color: colors.warmGrey, text: i18n.t('cfm:optional')},
-    ],
-    navi: {
-      route: 'SimpleTextForAuth',
-      param: {key: 'mkt:agreement', title: i18n.t('cfm:marketing')},
-    },
-  },
-];
 
 const RegisterMobileListItem0 = ({
   item,
@@ -281,6 +246,8 @@ class RegisterMobileScreen extends Component<
 
   controller: AbortController;
 
+  confirmList: ConfirmItem[];
+
   constructor(props: RegisterMobileScreenProps) {
     super(props);
 
@@ -298,6 +265,41 @@ class RegisterMobileScreen extends Component<
     this.authInputRef = React.createRef();
     this.mounted = false;
     this.controller = new AbortController();
+    this.confirmList = [
+      {
+        key: '0',
+        list: [
+          {color: colors.warmGrey, text: i18n.t('cfm:contract')},
+          {color: colors.clearBlue, text: i18n.t('cfm:mandatory')},
+        ],
+        navi: {
+          route: 'SimpleTextForAuth',
+          param: {key: 'setting:contract', title: i18n.t('cfm:contract')},
+        },
+      },
+      {
+        key: '1',
+        list: [
+          {color: colors.warmGrey, text: i18n.t('cfm:personalInfo')},
+          {color: colors.clearBlue, text: i18n.t('cfm:mandatory')},
+        ],
+        navi: {
+          route: 'SimpleTextForAuth',
+          param: {key: 'setting:privacy', title: i18n.t('cfm:personalInfo')},
+        },
+      },
+      {
+        key: '2',
+        list: [
+          {color: colors.warmGrey, text: i18n.t('cfm:marketing')},
+          {color: colors.warmGrey, text: i18n.t('cfm:optional')},
+        ],
+        navi: {
+          route: 'SimpleTextForAuth',
+          param: {key: 'mkt:agreement', title: i18n.t('cfm:marketing')},
+        },
+      },
+    ];
   }
 
   componentDidMount() {
@@ -347,7 +349,7 @@ class RegisterMobileScreen extends Component<
     try {
       if (!_.isEmpty(error)) {
         isValid = false;
-        this.setState({emailValidation: {isValid, error: error.email[0]}});
+        this.setState({emailValidation: {isValid, error: error?.email[0]}});
       } else {
         const resp = await API.User.confirmEmail({email: `${email}@${domain}`});
 
@@ -463,7 +465,11 @@ class RegisterMobileScreen extends Component<
     console.log('@@@ press pin', mobile, value);
 
     // bhtak, temporary
-    this.signIn({mobile, pin});
+    this.signIn({mobile, pin}).then((resp) => {
+      if (resp.result < 0) {
+        this.setState({newUser: true, authorized: true});
+      }
+    });
     return;
 
     if (authorized) return;
@@ -522,10 +528,23 @@ class RegisterMobileScreen extends Component<
     }
   };
 
-  signIn = ({mobile, pin}: {mobile: string; pin: string}) => {
-    this.props.actions.account
-      .logInAndGetAccount({mobile, pin})
-      .then((_) => this.props.actions.cart.cartFetch());
+  signIn = async ({
+    mobile,
+    pin,
+  }: {
+    mobile?: string;
+    pin?: string;
+  }): Promise<ApiResult<any>> => {
+    const {payload: resp} = await this.props.actions.account.logInAndGetAccount(
+      {
+        mobile,
+        pin,
+      },
+    );
+
+    console.log('@@@ login', resp);
+    if (resp.result === 0) this.props.actions.cart.cartFetch();
+    return resp;
   };
 
   onTimeout = () => {
@@ -568,12 +587,10 @@ class RegisterMobileScreen extends Component<
     const {isValid, error} = emailValidation || {};
     const disableButton =
       !authorized || (newUser && !(confirm.get('0') && confirm.get('1')));
-    const editablePin = mobile && authNoti && !authorized && !loading;
+    const editablePin = !!mobile && authNoti && !authorized && !loading;
 
     return (
-      <SafeAreaView
-        style={styles.container}
-        forceInset={{top: 'never', bottom: 'always'}}>
+      <SafeAreaView style={styles.container}>
         <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
         <Text style={styles.title}>{i18n.t('mobile:title')}</Text>
 
@@ -583,7 +600,6 @@ class RegisterMobileScreen extends Component<
           authNoti={authNoti}
           disabled={(authNoti && authorized) || loading}
           authorized={authorized}
-          timeout={timeout}
         />
 
         <InputPinInTime
@@ -615,7 +631,7 @@ class RegisterMobileScreen extends Component<
 
               <View key="list" style={{paddingHorizontal: 20, flex: 1}}>
                 <FlatList
-                  data={confirmList}
+                  data={this.confirmList}
                   renderItem={this.renderItem}
                   extraData={confirm}
                 />

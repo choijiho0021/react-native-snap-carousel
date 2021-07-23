@@ -1,12 +1,14 @@
 import {API} from '@/submodules/rokebi-utils';
 import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {Reducer} from 'react';
+import {AnyAction} from 'redux';
 
-export const getInfoList = createAsyncThunk(
+const getInfoList = createAsyncThunk(
   'info/getInfoList',
   API.Page.getPageByCategory,
 );
-export const getHomeInfoList = createAsyncThunk(
+const getHomeInfoList = createAsyncThunk(
   'info/getHomeInfoList',
   API.Page.getPageByCategory,
 );
@@ -50,4 +52,4 @@ const slice = createSlice({
   },
 });
 
-export default slice.reducer;
+export default slice.reducer as Reducer<InfoModelState, AnyAction>;

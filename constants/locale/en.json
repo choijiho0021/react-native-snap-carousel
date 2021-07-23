@@ -176,6 +176,7 @@
   "set:sendAlimTalk": "The KakaoTalk message has been sent",
   "set:failedToSendAlimTalk": "Failed to send a KakaoTalk message. Please try again later",
   "set:pushnoti": "Push Notifications",
+  "set:globalMarket": "Global Market",
 
   "rch:recharge": "Recharge",
   "rch:iccid": "ICCID",

@@ -18,7 +18,7 @@ import {
   RkbFile,
   RkbImage,
 } from '@/submodules/rokebi-utils/api/accountApi';
-import {ApiResult} from '@/submodules/rokebi-utils/api/api';
+import api, {ApiResult} from '@/submodules/rokebi-utils/api/api';
 import {actions as toastActions, reflectWithToast, Toast} from './toast';
 
 const {esimApp} = Env.get();
@@ -31,7 +31,7 @@ const clearCookies = createAsyncThunk(
   API.User.clearCookies,
 );
 const getUserId = createAsyncThunk('account/getUserId', API.User.getByName);
-export const getAccount = createAsyncThunk(
+const getAccount = createAsyncThunk(
   'account/getAccount',
   API.Account.getAccount,
 );
@@ -91,7 +91,7 @@ export interface AccountModelState {
   simCardName?: string;
   simCardImage?: string;
   isUsedByOther?: boolean;
-  isPushNotiEnabled?: string;
+  isPushNotiEnabled?: boolean;
 }
 
 export type AccountAuth = {
@@ -106,7 +106,7 @@ export const auth = (state: AccountModelState): AccountAuth => ({
   token: state.token,
 });
 
-export const changeNotiToken = createAsyncThunk(
+const changeNotiToken = createAsyncThunk(
   'account/changeNotiToken',
   (param, {dispatch, getState}) => {
     const {
@@ -132,7 +132,7 @@ export const changeNotiToken = createAsyncThunk(
   },
 );
 
-export const registerMobile = createAsyncThunk(
+const registerMobile = createAsyncThunk(
   'account/registerMobile',
   (
     {iccid, code, mobile}: {iccid: string; code: string; mobile: string},
@@ -163,16 +163,19 @@ export const registerMobile = createAsyncThunk(
 //   return dispatch(clearCookies0());
 // };
 
-export const logInAndGetAccount = createAsyncThunk(
+const logInAndGetAccount = createAsyncThunk(
   'account/logInAndGetAccount',
   (
-    {mobile, pin, iccid}: {mobile: string; pin: string; iccid?: string},
+    {mobile, pin, iccid}: {mobile?: string; pin?: string; iccid?: string},
     {dispatch},
   ) => {
+    if (!mobile || !pin) {
+      return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter');
+    }
+
     return dispatch(logIn({user: mobile, pass: pin})).then(
-      // ({payload}: {payload: ApiResult<RkbLogin>}) => {
-      (rsp) => {
-        const {result, objects} = rsp?.payload || {};
+      ({payload}) => {
+        const {result, objects} = payload || {};
         if (result === 0 && objects && objects.length > 0) {
           const obj = objects[0];
           const token = obj.csrf_token;
@@ -203,17 +206,20 @@ export const logInAndGetAccount = createAsyncThunk(
           dispatch(getUserId({name: obj.current_user.name, token})).then(() =>
             dispatch(changeNotiToken()),
           );
+          return api.success([]);
         }
+        return payload;
       },
       (err) => {
-        dispatch(toastActions.push());
         console.log('login failed', err);
+        dispatch(toastActions.push('reg:failedToLogIn'));
+        return api.reject(api.E_INVALID_STATUS, 'failed to login');
       },
     );
   },
 );
 
-export const uploadAndChangePicture = createAsyncThunk(
+const uploadAndChangePicture = createAsyncThunk(
   'account/uploadAndChangePicture',
   (image: RkbImage, {dispatch, getState}) => {
     const {
@@ -405,28 +411,25 @@ const slice = createSlice({
   },
 });
 
-export const logout = createAsyncThunk(
-  'account/logout',
-  async (param, {dispatch}) => {
-    const token = await retrieveData(API.User.KEY_TOKEN);
+const logout = createAsyncThunk('account/logout', async (param, {dispatch}) => {
+  const token = await retrieveData(API.User.KEY_TOKEN);
 
-    removeData(API.User.KEY_ICCID);
-    removeData(API.User.KEY_MOBILE);
-    removeData(API.User.KEY_PIN);
-    removeData(API.User.KEY_TOKEN);
+  removeData(API.User.KEY_ICCID);
+  removeData(API.User.KEY_MOBILE);
+  removeData(API.User.KEY_PIN);
+  removeData(API.User.KEY_TOKEN);
 
-    batch(() => {
-      // 먼저 로그아웃 한다.
-      dispatch(logOut(token));
+  batch(() => {
+    // 먼저 로그아웃 한다.
+    dispatch(logOut(token));
 
-      dispatch(slice.actions.resetAccount());
-      // reset 한 후에 token을 다시 읽어 온다.
-      dispatch(getToken());
-    });
-  },
-);
+    dispatch(slice.actions.resetAccount());
+    // reset 한 후에 token을 다시 읽어 온다.
+    dispatch(getToken());
+  });
+});
 
-export const changeEmail = createAsyncThunk(
+const changeEmail = createAsyncThunk(
   'account/changeEmail',
   (mail: string, {dispatch, getState}) => {
     const {
@@ -454,7 +457,7 @@ export const changeEmail = createAsyncThunk(
   },
 );
 
-export const changePushNoti = createAsyncThunk(
+const changePushNoti = createAsyncThunk(
   'account/changePushNoti',
   ({isPushNotiEnabled}: {isPushNotiEnabled: boolean}, {dispatch, getState}) => {
     const {
@@ -476,7 +479,7 @@ export const changePushNoti = createAsyncThunk(
   },
 );
 
-export const clearCurrentAccount = createAsyncThunk(
+const clearCurrentAccount = createAsyncThunk(
   'account/clearCurrentAccount',
   (param, {dispatch}) => {
     removeData(API.User.KEY_ICCID);

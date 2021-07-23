@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
 type InputMobileProps = {
   onPress?: (v: string) => void;
   authNoti: boolean;
-  authorized: boolean;
+  authorized?: boolean;
   disabled: boolean;
   style?: StyleProp<ViewStyle>;
 };
@@ -183,7 +183,7 @@ class InputMobile extends Component<InputMobileProps, InputMobileState> {
             />
           </View>
         </View>
-        {authNoti && typeof authorized === 'undefined' && (
+        {authNoti && typeof authorized === undefined && (
           <Text style={styles.helpText}>{i18n.t('reg:authNoti')}</Text>
         )}
       </View>

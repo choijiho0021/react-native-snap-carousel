@@ -15,9 +15,11 @@ import {actions as productActions} from '@/redux/modules/product';
 import {actions as promotionActions} from '@/redux/modules/promotion';
 import {actions as simActions} from '@/redux/modules/sim';
 import {actions as syncActions} from '@/redux/modules/sync';
+import {actions as cartActions, Store} from '@/redux/modules/cart';
 import i18n, {setI18nConfig} from '@/utils/i18n';
+import AsyncStorage from '@react-native-community/async-storage';
 import {retrieveData} from '@/utils/utils';
-import store from './store';
+import store from '@/store';
 
 const {esimApp} = Env.get();
 
@@ -104,19 +106,24 @@ async function login() {
 }
 
 async function loadResourcesAsync() {
+  // get store info
+  const st = await AsyncStorage.getItem('cart.store');
+  store.dispatch(cartActions.setStore({store: st}));
+
   // clear caches
   await store.dispatch(accountActions.clearCookies());
 
   // load product list
-  await store.dispatch(productActions.getProdListWithToast());
-  await store.dispatch(promotionActions.getPromotion());
+  store.dispatch(productActions.getProd(st as Store));
+  store.dispatch(productActions.getLocalOp());
+  store.dispatch(promotionActions.getPromotion());
 
   if (!esimApp) {
-    await store.dispatch(simActions.getSimCardList());
+    store.dispatch(simActions.getSimCardList());
   }
   // 공지 사항 가져오기
-  await store.dispatch(infoActions.getInfoList('info'));
-  await store.dispatch(infoActions.getHomeInfoList('info:home'));
+  store.dispatch(infoActions.getInfoList('info'));
+  store.dispatch(infoActions.getHomeInfoList('info:home'));
 }
 
 function handleLoadingError(error) {

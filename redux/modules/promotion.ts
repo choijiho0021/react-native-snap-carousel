@@ -30,7 +30,7 @@ const slice = createSlice({
 });
 
 // const {actions} = slice;
-export const actions = {getPromotion};
+export const actions = {...slice.actions, getPromotion};
 
 export type PromotionAction = typeof actions;
 

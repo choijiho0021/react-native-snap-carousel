@@ -37,7 +37,7 @@ const initialState: ProfileModelState = {
   addr: {},
 };
 
-export const profileDelAndGet = createAsyncThunk(
+const profileDelAndGet = createAsyncThunk(
   'profile/delAndGet',
   ({uuid, token}: {uuid: string; token: string}, {dispatch, getState}) => {
     const {
@@ -70,7 +70,7 @@ export const profileDelAndGet = createAsyncThunk(
   },
 );
 
-export const profileAddAndGet = createAsyncThunk(
+const profileAddAndGet = createAsyncThunk(
   'profile/addAndGet',
   ({profile, token}: {profile: RkbProfile; token: string}, {dispatch}) =>
     dispatch(addCustomerProfile({profile, token})).then(

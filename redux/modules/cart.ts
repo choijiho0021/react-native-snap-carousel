@@ -10,27 +10,26 @@ import {RkbOrderItem} from '@/submodules/rokebi-utils/api/cartApi';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {PurchaseItem} from '@/submodules/rokebi-utils/models/purchaseItem';
 import {PaymentResult} from '@/submodules/rokebi-utils/models/paymentResult';
-import {getOrders} from './order';
-import {getAccount} from './account';
 import api from '@/submodules/rokebi-utils/api/api';
+import AsyncStorage from '@react-native-community/async-storage';
+import {actions as orderAction} from './order';
+import {actions as accountAction} from './account';
+import {actions as productAction} from './product';
 
 const {esimApp} = Env.get();
 
-export const cartFetch = createAsyncThunk('cart/fetch', API.Cart.get);
-export const cartAdd = createAsyncThunk('cart/add', API.Cart.add);
-export const cartRemove = createAsyncThunk('cart/remove', API.Cart.remove);
+const cartFetch = createAsyncThunk('cart/fetch', API.Cart.get);
+const cartAdd = createAsyncThunk('cart/add', API.Cart.add);
+const cartRemove = createAsyncThunk('cart/remove', API.Cart.remove);
 const cartCheckStock = createAsyncThunk('cart/checkStock', API.Cart.checkStock);
 const getOutOfStockTitle = createAsyncThunk(
   'cart/getOutOfStockTitle',
   API.Cart.getStockTitle,
 );
-export const cartUpdateQty = createAsyncThunk(
-  'cart/update',
-  API.Cart.updateQty,
-);
+const cartUpdateQty = createAsyncThunk('cart/update', API.Cart.updateQty);
 
-export const makeOrder = createAsyncThunk('cart/makeOrder', API.Cart.makeOrder);
-export const rechargeAccount = createAsyncThunk(
+const makeOrder = createAsyncThunk('cart/makeOrder', API.Cart.makeOrder);
+const rechargeAccount = createAsyncThunk(
   'cart/rechargeAccount',
   API.Recharge.add,
 );
@@ -52,7 +51,7 @@ const checkStock = createAsyncThunk(
   },
 );
 
-export const cartAddAndGet = createAsyncThunk(
+const cartAddAndGet = createAsyncThunk(
   'cart/addAndGet',
   ({purchaseItems}: {purchaseItems: PurchaseItem[]}, {dispatch, getState}) => {
     const {
@@ -78,6 +77,7 @@ export const cartAddAndGet = createAsyncThunk(
 );
 
 export type PaymentReq = {key: string; title: string; amount: number};
+export type Store = 'kr' | 'global';
 
 export interface CartModelState {
   result: number;
@@ -90,6 +90,7 @@ export interface CartModelState {
   lastTab: ImmutableList<string>;
   pymPrice?: number;
   deduct?: number;
+  store: Store;
 }
 
 const onSuccess = (state, action) => {
@@ -111,6 +112,7 @@ const initialState: CartModelState = {
   pymReq: undefined,
   pymResult: undefined,
   lastTab: ImmutableList<string>(['Home']),
+  store: 'kr',
 };
 
 const slice = createSlice({
@@ -177,6 +179,11 @@ const slice = createSlice({
         (item) => purchaseItems.findIndex((p) => p.key === item.key) < 0,
       );
     },
+
+    setStore: (state, action) => {
+      const {store} = action.payload;
+      state.store = store;
+    },
   },
 
   extraReducers: (builder) => {
@@ -217,7 +224,16 @@ const slice = createSlice({
   },
 });
 
-export const payNorder = createAsyncThunk(
+const changeStore = createAsyncThunk(
+  'cart/changeStore',
+  ({store}: {store: Store}, {dispatch}) => {
+    dispatch(slice.actions.setStore({store}));
+    dispatch(productAction.getProd(store));
+    AsyncStorage.setItem('cart.store', store);
+  },
+);
+
+const payNorder = createAsyncThunk(
   'cart/payNorder',
   (result: PaymentResult, {dispatch, getState}) => {
     const {account, cart} = getState() as RootState;
@@ -249,7 +265,7 @@ export const payNorder = createAsyncThunk(
       })
       .then((resp) => {
         if (resp.payload?.result === 0) {
-          dispatch(getOrders({user: mobile, token, page: 0}));
+          dispatch(orderAction.getOrders({user: mobile, token, page: 0}));
           // cart에서 item 삭제
           orderItems.forEach((item) => {
             if (purchaseItems.find((o) => o.orderItemId === item.orderItemId)) {
@@ -265,7 +281,7 @@ export const payNorder = createAsyncThunk(
           ) {
             // 충전을 한 경우에는 account를 다시 읽어들인다.
             // balance에서 차감한 경우에도 다시 읽어들인다.
-            return dispatch(getAccount({iccid, token}));
+            return dispatch(accountAction.getAccount({iccid, token}));
           }
         }
         return resp;
@@ -275,7 +291,7 @@ export const payNorder = createAsyncThunk(
   },
 );
 
-export const checkStockAndPurchase = createAsyncThunk(
+const checkStockAndPurchase = createAsyncThunk(
   'cart/checkStockAndPurchase',
   (
     {
@@ -321,6 +337,7 @@ export const actions = {
   payNorder,
   cartAddAndGet,
   checkStockAndPurchase,
+  changeStore,
 };
 export type CartAction = typeof actions;
 

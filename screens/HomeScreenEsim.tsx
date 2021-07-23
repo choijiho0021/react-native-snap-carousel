@@ -347,12 +347,12 @@ class HomeScreenEsim extends Component<
 
     if (diff > 60 && focus) {
       this.setState({time: now});
-      this.props.action.product.getProdList();
+      this.props.action.product.getProd();
     }
 
     if (
-      prevProps.product.prodList !== this.props.product.prodList ||
-      (diff > 0.2 && this.props.product.sortedProdList.length === 0)
+      prevProps.product.prodList !== this.props.product.prodList
+      // || (diff > 0.2 && this.props.product.sortedProdList.length === 0
     ) {
       this.refresh();
     }
