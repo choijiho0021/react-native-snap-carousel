@@ -177,6 +177,7 @@
   "set:sendAlimTalk": "알림톡이 발송되었습니다",
   "set:failedToSendAlimTalk": "알림톡 발송에 실패했습니다. 나중에 다시 시도해 주세요",
   "set:pushnoti": "Push 알림 받기",
+  "set:globalMarket": "Global Market",
 
   "rch:recharge": "충전 하기",
   "rch:iccid": "ICCID",

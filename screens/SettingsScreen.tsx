@@ -6,7 +6,6 @@ import VersionCheck from 'react-native-version-check';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {RootState} from '@/redux';
-import _ from 'underscore';
 import AppBackButton from '@/components/AppBackButton';
 import AppIcon from '@/components/AppIcon';
 import AppModal from '@/components/AppModal';
@@ -18,7 +17,7 @@ import {
   AccountAction,
   actions as accountActions,
 } from '@/redux/modules/account';
-import {actions as cartActions, CartAction} from '@/redux/modules/cart';
+import {actions as cartActions, CartAction, Store} from '@/redux/modules/cart';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -112,6 +111,7 @@ type SettingsScreenProps = {
 
   isPushNotiEnabled?: boolean;
   loggedIn?: boolean;
+  store: Store;
   action: {
     cart: CartAction;
     order: OrderAction;
@@ -139,6 +139,11 @@ class SettingsScreen extends Component<
           key: 'setting:pushnoti',
           value: i18n.t('set:pushnoti'),
           toggle: props.isPushNotiEnabled,
+        },
+        {
+          key: 'setting:globalMarket',
+          value: i18n.t('set:globalMarket'),
+          toggle: props.store === 'global',
         },
         // { "key": "info", "value": i18n.t('set:info'), route: 'MySim'},
         {
@@ -195,9 +200,9 @@ class SettingsScreen extends Component<
 
   componentDidUpdate(prevProps: SettingsScreenProps) {
     const {loggedIn, isPushNotiEnabled} = this.props;
-    const statePushNoti = (
-      this.state.data.find((item) => item.key === 'setting:pushnoti') || {}
-    ).toggle;
+    const statePushNoti = this.state.data.find(
+      (item) => item.key === 'setting:pushnoti',
+    )?.toggle;
 
     if (loggedIn !== prevProps.loggedIn) {
       this.setData('setting:logout', {
@@ -247,20 +252,30 @@ class SettingsScreen extends Component<
         break;
 
       case 'setting:pushnoti':
-        isEnabled =
-          this.state.data.find((i) => i.key === 'setting:pushnoti')?.toggle ||
-          false;
+        isEnabled = this.state.data.find((i) => i.key === key)?.toggle || false;
 
-        this.setData('setting:pushnoti', {toggle: !isEnabled});
+        this.setData(key, {toggle: !isEnabled});
 
         this.props.action.account
           .changePushNoti({isPushNotiEnabled: !isEnabled})
           .catch(() => {
             if (this.state.isMounted)
-              this.setData('setting:pushnoti', {
+              this.setData(key, {
                 toggle: this.props.isPushNotiEnabled,
               });
           });
+
+        break;
+
+      case 'setting:globalMarket':
+        isEnabled = this.state.data.find((i) => i.key === key)?.toggle || false;
+
+        this.setData(key, {toggle: !isEnabled});
+
+        // flag == On 이면 market을 'global'로 바꾼다.
+        this.props.action.cart.changeStore({
+          store: !isEnabled ? 'global' : 'kr',
+        });
 
         break;
 
@@ -317,9 +332,10 @@ class SettingsScreen extends Component<
 }
 
 export default connect(
-  ({account}: RootState) => ({
+  ({account, cart}: RootState) => ({
     loggedIn: account.loggedIn,
     isPushNotiEnabled: account.isPushNotiEnabled,
+    store: cart.store,
   }),
   (dispatch) => ({
     action: {
