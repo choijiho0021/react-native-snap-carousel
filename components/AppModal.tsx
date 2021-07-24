@@ -54,11 +54,12 @@ const styles = StyleSheet.create({
   },
   inner: {
     marginHorizontal: 20,
-    paddingVertical: 25,
+    paddingTop: 20,
     backgroundColor: 'white',
   },
   icon: {
     marginVertical: 15,
+    marginHorizontal: 20,
   },
 });
 
