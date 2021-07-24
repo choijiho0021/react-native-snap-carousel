@@ -8,7 +8,7 @@ import _ from 'underscore';
 import {TouchableOpacity, TextInput} from 'react-native-gesture-handler';
 import RNPickerSelect from 'react-native-picker-select';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 import {
   AccountModelState,
   actions as accountActions,
@@ -35,7 +35,7 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import Env from '@/environment';
 import Triangle from '@/components/Triangle';
 import AppIcon from '@/components/AppIcon';
-import api from '@/submodules/rokebi-utils/api/api';
+import api from '@/redux/api/api';
 import AppAlert from '@/components/AppAlert';
 import {RootState} from '@/redux';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -45,9 +45,9 @@ import {
   PymMethodScreenMode,
 } from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
-import {createPaymentResultForRokebiCash} from '@/submodules/rokebi-utils/models/paymentResult';
-import {PaymentMethod} from '@/submodules/rokebi-utils/api/paymentApi';
-import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
+import {createPaymentResultForRokebiCash} from '@/redux/models/paymentResult';
+import {PaymentMethod} from '@/redux/api/paymentApi';
+import {RkbInfo} from '@/redux/api/pageApi';
 
 const {esimApp} = Env.get();
 const {deliveryText} = API.Order;
@@ -429,14 +429,8 @@ class PymMethodScreen extends Component<
       clickable: false,
     });
 
-    const {
-      selected,
-      pymPrice,
-      deduct,
-      deliveryMemo,
-      simIncluded,
-      mode,
-    } = this.state;
+    const {selected, pymPrice, deduct, deliveryMemo, simIncluded, mode} =
+      this.state;
     const memo =
       deliveryMemo.selected === i18n.t('pym:input')
         ? deliveryMemo.content
@@ -873,14 +867,8 @@ class PymMethodScreen extends Component<
   }
 
   render() {
-    const {
-      selected,
-      pymPrice,
-      deduct,
-      isRecharge,
-      consent,
-      simIncluded,
-    } = this.state;
+    const {selected, pymPrice, deduct, isRecharge, consent, simIncluded} =
+      this.state;
     const {purchaseItems = [], pymReq} = this.props.cart;
     const noProfile = this.props.profile.profile.length === 0;
 

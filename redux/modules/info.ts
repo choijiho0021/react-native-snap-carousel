@@ -1,5 +1,5 @@
-import {API} from '@/submodules/rokebi-utils';
-import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
+import {API} from '@/redux/api';
+import {RkbInfo} from '@/redux/api/pageApi';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Reducer} from 'react';
 import {AnyAction} from 'redux';

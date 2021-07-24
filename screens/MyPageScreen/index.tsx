@@ -23,7 +23,7 @@ import {
   Toast,
   ToastAction,
 } from '@/redux/modules/toast';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 import i18n from '@/utils/i18n';
 import validationUtil, {ValidationResult} from '@/utils/validationUtil';
 import Clipboard from '@react-native-community/clipboard';

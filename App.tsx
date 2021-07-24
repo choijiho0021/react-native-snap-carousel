@@ -3,7 +3,7 @@ import {BackHandler, Platform, StatusBar, StyleSheet, View} from 'react-native';
 import codePush from 'react-native-code-push';
 import Video from 'react-native-video';
 import {Provider} from 'react-redux';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 import AppAlert from '@/components/AppAlert';
 import AppToast from '@/components/AppToast';
 import CodePushModal from '@/components/CodePushModal';

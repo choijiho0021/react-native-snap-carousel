@@ -3,8 +3,8 @@ import {Reducer} from 'redux-actions';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
-import {API} from '@/submodules/rokebi-utils';
-import {RkbLocalOp, RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
+import {API} from '@/redux/api';
+import {RkbLocalOp, RkbProduct} from '@/redux/api/productApi';
 import {reflectWithToast, Toast} from './toast';
 
 const getProd = createAsyncThunk('product/getProd', API.Product.getProduct);

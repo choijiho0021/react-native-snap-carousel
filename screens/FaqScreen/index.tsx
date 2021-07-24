@@ -6,11 +6,11 @@ import i18n from '@/utils/i18n';
 import AppBackButton from '@/components/AppBackButton';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {colors} from '@/constants/Colors';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
-import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
+import {RkbInfo} from '@/redux/api/pageApi';
 import FaqList from './components/FaqList';
 
 const styles = StyleSheet.create({

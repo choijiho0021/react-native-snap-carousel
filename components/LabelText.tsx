@@ -9,7 +9,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import {appStyles} from '@/constants/Styles';
-import utils from '@/submodules/rokebi-utils/utils';
+import utils from '@/redux/api/utils';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 

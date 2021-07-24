@@ -9,7 +9,7 @@ import {TabView, TabBar} from 'react-native-tab-view';
 import moment from 'moment';
 import Analytics from 'appcenter-analytics';
 import {Set} from 'immutable';
-import {API, Country} from '@/submodules/rokebi-utils';
+import {API, Country} from '@/redux/api';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import {actions as productActions} from '@/redux/modules/product';

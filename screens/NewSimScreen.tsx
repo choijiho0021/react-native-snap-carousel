@@ -19,7 +19,7 @@ import SimCard from '@/components/SimCard';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
 import ChargeSummary from '@/components/ChargeSummary';
-import utils from '@/submodules/rokebi-utils/utils';
+import utils from '@/redux/api/utils';
 
 interface NewSimScreenProps {
   account: AccountModelState;

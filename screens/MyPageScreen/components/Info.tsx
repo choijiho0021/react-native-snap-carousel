@@ -1,4 +1,4 @@
-import utils from '@/submodules/rokebi-utils/utils';
+import utils from '@/redux/api/utils';
 import React, {memo} from 'react';
 import {ImageBackground, Pressable, StyleSheet, Text, View} from 'react-native';
 import AppButton from '@/components/AppButton';

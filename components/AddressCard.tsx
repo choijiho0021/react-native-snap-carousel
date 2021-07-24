@@ -1,5 +1,5 @@
-import {RkbProfile} from '@/submodules/rokebi-utils/api/profileApi';
-import utils from '@/submodules/rokebi-utils/utils';
+import {RkbProfile} from '@/redux/api/profileApi';
+import utils from '@/redux/api/utils';
 import React, {memo} from 'react';
 import {
   StyleProp,

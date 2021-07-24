@@ -14,7 +14,7 @@ import {connect} from 'react-redux';
 import _ from 'underscore';
 import {Map as ImmutableMap} from 'immutable';
 import {bindActionCreators} from 'redux';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
@@ -38,7 +38,7 @@ import {RootState} from '@/redux';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
-import {ApiResult} from '@/submodules/rokebi-utils/api/api';
+import {ApiResult} from '@/redux/api/api';
 
 const styles = StyleSheet.create({
   helpText: {

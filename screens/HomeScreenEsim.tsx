@@ -48,14 +48,14 @@ import {
   ProductAction,
   ProductModelState,
 } from '@/redux/modules/product';
-import {API, Country} from '@/submodules/rokebi-utils';
-import createHandlePushNoti from '@/submodules/rokebi-utils/models/createHandlePushNoti';
+import {API, Country} from '@/redux/api';
+import createHandlePushNoti from '@/redux/models/createHandlePushNoti';
 import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import {RkbPromotion} from '@/submodules/rokebi-utils/api/promotionApi';
+import {RkbPromotion} from '@/redux/api/promotionApi';
 import {SyncModelState} from '@/redux/modules/sync';
-import {RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
+import {RkbProduct} from '@/redux/api/productApi';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
 import TutorialScreen from './TutorialScreen';

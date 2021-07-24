@@ -33,13 +33,13 @@ import {
   ProductAction,
   ProductModelState,
 } from '@/redux/modules/product';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 import i18n from '@/utils/i18n';
 import {retrieveData, storeData} from '@/utils/utils';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
-import {RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
+import {RkbProduct} from '@/redux/api/productApi';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 

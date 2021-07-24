@@ -1,10 +1,10 @@
 import _ from 'underscore';
-import utils from '@/submodules/rokebi-utils/utils';
+import utils from '@/redux/api/utils';
 import AppAlert from '@/components/AppAlert';
 import i18n from './i18n';
 
-const UniAsyncStorage = require('@react-native-community/async-storage')
-  .default;
+const UniAsyncStorage =
+  require('@react-native-community/async-storage').default;
 
 const storeData = async (key: string, value: any) => {
   try {

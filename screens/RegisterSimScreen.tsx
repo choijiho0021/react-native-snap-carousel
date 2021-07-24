@@ -16,7 +16,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {bindActionCreators} from 'redux';
 import {openSettings, check, PERMISSIONS} from 'react-native-permissions';
 import Analytics from 'appcenter-analytics';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 import {RootState} from '@/redux';
 import i18n from '@/utils/i18n';
 import {actions as simActions} from '@/redux/modules/sim';

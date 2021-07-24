@@ -6,7 +6,7 @@ import _ from 'underscore';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import Analytics from 'appcenter-analytics';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';

@@ -19,10 +19,10 @@ import {
   BoardModelState,
 } from '@/redux/modules/board';
 import {AccountModelState} from '@/redux/modules/account';
-import utils from '@/submodules/rokebi-utils/utils';
+import utils from '@/redux/api/utils';
 import {RootState} from '@/redux';
 import {ValidationResult} from '@/utils/validationUtil';
-import {RkbBoard} from '@/submodules/rokebi-utils/api/boardApi';
+import {RkbBoard} from '@/redux/api/boardApi';
 import AppActivityIndicator from './AppActivityIndicator';
 import AppButton from './AppButton';
 import AppIcon from './AppIcon';

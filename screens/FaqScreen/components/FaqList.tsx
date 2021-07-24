@@ -2,7 +2,7 @@ import React, {memo} from 'react';
 import {View, StyleSheet, FlatList} from 'react-native';
 import AppFlatListItem from '@/components/AppFlatListItem';
 import {colors} from '@/constants/Colors';
-import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
+import {RkbInfo} from '@/redux/api/pageApi';
 
 const styles = StyleSheet.create({
   container: {

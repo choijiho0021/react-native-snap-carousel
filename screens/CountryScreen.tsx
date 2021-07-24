@@ -14,7 +14,7 @@ import {bindActionCreators} from 'redux';
 import Analytics from 'appcenter-analytics';
 import _ from 'underscore';
 import SnackBar from 'react-native-snackbar-component';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import {
@@ -39,14 +39,14 @@ import AppCartButton from '@/components/AppCartButton';
 import {windowWidth, device, windowHeight} from '@/constants/SliderEntry.style';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {timer} from '@/constants/Timer';
-import api, {ApiResult} from '@/submodules/rokebi-utils/api/api';
+import api, {ApiResult} from '@/redux/api/api';
 import AppAlert from '@/components/AppAlert';
 import Env from '@/environment';
 import {RootState} from '@/redux';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
-import {RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
+import {RkbProduct} from '@/redux/api/productApi';
 
 const {esimApp} = Env.get();
 const PURCHASE_LIMIT = 10;

@@ -10,15 +10,11 @@ import {
 } from '@reduxjs/toolkit';
 import _ from 'underscore';
 import {batch} from 'react-redux';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 import {removeData, retrieveData, storeData} from '@/utils/utils';
 import Env from '@/environment';
-import {
-  RkbAccount,
-  RkbFile,
-  RkbImage,
-} from '@/submodules/rokebi-utils/api/accountApi';
-import api, {ApiResult} from '@/submodules/rokebi-utils/api/api';
+import {RkbAccount, RkbFile, RkbImage} from '@/redux/api/accountApi';
+import api, {ApiResult} from '@/redux/api/api';
 import {actions as toastActions, reflectWithToast, Toast} from './toast';
 
 const {esimApp} = Env.get();

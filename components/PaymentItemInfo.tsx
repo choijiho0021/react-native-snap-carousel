@@ -2,11 +2,11 @@ import React, {memo} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import _ from 'underscore';
 import {appStyles} from '@/constants/Styles';
-import utils from '@/submodules/rokebi-utils/utils';
+import utils from '@/redux/api/utils';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
-import {PurchaseItem} from '@/submodules/rokebi-utils/models/purchaseItem';
+import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {PaymentReq} from '@/redux/modules/cart';
 
 const styles = StyleSheet.create({

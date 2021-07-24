@@ -14,7 +14,7 @@ import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
 import AppIcon from '@/components/AppIcon';
-import utils from '@/submodules/rokebi-utils/utils';
+import utils from '@/redux/api/utils';
 import {
   actions as orderActions,
   OrderAction,
@@ -32,10 +32,10 @@ import {
 } from '@/redux/modules/account';
 import AppBackButton from '@/components/AppBackButton';
 import {RootState} from '@/redux';
-import {RkbNoti} from '@/submodules/rokebi-utils/api/notiApi';
+import {RkbNoti} from '@/redux/api/notiApi';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
-import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
+import {RkbInfo} from '@/redux/api/pageApi';
 import {HomeStackParamList} from '@/navigation/navigation';
 
 const styles = StyleSheet.create({

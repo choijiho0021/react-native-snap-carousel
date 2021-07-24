@@ -6,8 +6,8 @@ import AppButton from '@/components/AppButton';
 import {appStyles} from '@/constants/Styles';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {utils} from '@/utils/utils';
-import {API} from '@/submodules/rokebi-utils';
-import {RkbSubscription} from '@/submodules/rokebi-utils/api/subscriptionApi';
+import {API} from '@/redux/api';
+import {RkbSubscription} from '@/redux/api/subscriptionApi';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {

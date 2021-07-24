@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign */
 import {createAsyncThunk, createAction, createSlice} from '@reduxjs/toolkit';
 import moment from 'moment';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import {RkbNoti} from '@/submodules/rokebi-utils/api/notiApi';
+import {RkbNoti} from '@/redux/api/notiApi';
 import {Reducer} from 'react';
 import {AnyAction} from 'redux';
 

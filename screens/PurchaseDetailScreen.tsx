@@ -13,7 +13,7 @@ import {
   Pressable,
   NativeSyntheticEvent,
 } from 'react-native';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import AppAlert from '@/components/AppAlert';
@@ -35,13 +35,13 @@ import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {timer} from '@/constants/Timer';
 import Env from '@/environment';
 import {RootState} from '@/redux';
-import utils from '@/submodules/rokebi-utils/utils';
+import utils from '@/redux/api/utils';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {MyPageStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
-import {RkbProfile} from '@/submodules/rokebi-utils/api/profileApi';
-import {RkbOrder} from '@/submodules/rokebi-utils/api/orderApi';
-import {PaymentMethod} from '@/submodules/rokebi-utils/api/paymentApi';
+import {RkbProfile} from '@/redux/api/profileApi';
+import {RkbOrder} from '@/redux/api/orderApi';
+import {PaymentMethod} from '@/redux/api/paymentApi';
 
 const {esimApp} = Env.get();
 
@@ -474,13 +474,8 @@ class PurchaseDetailScreen extends Component<
   }
 
   deliveryInfo() {
-    const {
-      trackingCompany,
-      trackingCode,
-      shipmentState,
-      isCanceled,
-      memo,
-    } = this.state;
+    const {trackingCompany, trackingCode, shipmentState, isCanceled, memo} =
+      this.state;
 
     const ship = API.Order.shipmentState;
 

@@ -1,5 +1,5 @@
-import {API} from '@/submodules/rokebi-utils';
-import {RkbPromotion} from '@/submodules/rokebi-utils/api/promotionApi';
+import {API} from '@/redux/api';
+import {RkbPromotion} from '@/redux/api/promotionApi';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 const getPromotion = createAsyncThunk(
