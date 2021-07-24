@@ -1,14 +1,16 @@
 import {Platform} from 'react-native';
+import {getBundleId} from 'react-native-device-info';
 
+const bundleId = getBundleId();
 const impId = 'imp53913318';
 
 // rokebi esim App
-const appId = 'esim';
+const appId = bundleId === 'com.uangel.rokebi-USIM' ? 'usim' : 'esim';
 const codePushLabel = {
   stagingIOS: 'v56',
   stagingAndroid: 'v55',
-  productionIOS: "v13",
-  productionAndroid: "v6",
+  productionIOS: 'v13',
+  productionAndroid: 'v6',
 };
 const channelId = '_nzQhxb';
 
@@ -26,10 +28,13 @@ const ENV = {
       // rokApiUrl: 'svcapp.rokebi.com',
       // apiUrl: 'esim.rokebi.com',
       // baseUrl: 'http://esim.rokebi.com',
-      scheme: 'https',
+      scheme: 'http',
+      apiUrl: 'tb-esim.rokebi.com',
+      baseUrl: 'http://tb-esim.rokebi.com',
+      // scheme: 'https',
+      // apiUrl: 'esim.rokebi.com',
+      // baseUrl: 'https://esim.rokebi.com',
       rokApiUrl: 'svcapp.rokebi.com',
-      apiUrl: 'esim.rokebi.com',
-      baseUrl: 'https://esim.rokebi.com',
       label:
         Platform.OS === 'ios'
           ? codePushLabel.stagingIOS
@@ -47,10 +52,10 @@ const ENV = {
           : codePushLabel.stagingAndroid,
     },
     prod: {
-      scheme: 'https',
+      scheme: 'http',
       rokApiUrl: 'svcapp.rokebi.com',
-      apiUrl: 'esim.rokebi.com',
-      baseUrl: 'https://esim.rokebi.com',
+      apiUrl: 'tb-esim.rokebi.com',
+      baseUrl: 'https://tb-esim.rokebi.com',
       impId,
       label:
         Platform.OS === 'ios'

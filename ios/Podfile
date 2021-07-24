@@ -1,6 +1,8 @@
 project './RokebiESIM.xcodeproj',
         'Global.Debug' => :debug,
         'Global.Release' => :release,
+        'USIM.Debug' => :debug,
+        'USIM.Release' => :release,
         'Debug' => :debug,
         'Release' => :release
 

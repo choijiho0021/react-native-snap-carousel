@@ -20,7 +20,6 @@ import SettingsScreen from '@/screens/SettingsScreen';
 import i18n from '@/utils/i18n';
 import RechargeScreen from '@/screens/RechargeScreen';
 import CartScreen from '@/screens/CartScreen';
-import withBadge from '@/components/withBadge';
 import NewSimScreen from '@/screens/NewSimScreen';
 import MyPageScreen from '@/screens/MyPageScreen';
 import NotiScreen from '@/screens/NotiScreen';
@@ -44,6 +43,7 @@ import SubsDetailScreen from '@/screens/SubsDetailScreen';
 import {RootState} from '@/redux';
 import AuthStack from './AuthStackNavigator';
 import {HomeStackParamList} from './navigation';
+import BadgedIcon from './component/BadgedIcon';
 
 const styles = StyleSheet.create({
   tabBarIcon: {
@@ -191,23 +191,14 @@ function myPageStack() {
   );
 }
 
-// redux store에서 cart에 추가된 상품 개수를 읽어서 배지에 표시한다.
-//
-const BadgedIcon = withBadge(
-  ({cart}: RootState) => ({
-    cartItems: (cart.orderItems || []).reduce((acc, cur) => acc + cur.qty, 0),
-  }),
-  'cartItems',
-)(AppIcon);
-
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = ({
   loggedIn,
   iccid,
 }: {
-  loggedIn: boolean;
-  iccid: string;
+  loggedIn?: boolean;
+  iccid?: string;
 }) => {
   return (
     <Tab.Navigator initialRouteName="HomeStack" backBehavior="initialRoute">
