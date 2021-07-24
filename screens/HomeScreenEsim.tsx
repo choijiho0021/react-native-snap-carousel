@@ -1,12 +1,13 @@
 /* eslint-disable no-param-reassign */
 import AsyncStorage from '@react-native-community/async-storage';
 import {Set} from 'immutable';
-import moment from 'moment';
+import moment, {Moment} from 'moment';
 import React, {Component, memo} from 'react';
 import {
   Animated,
   Appearance,
   BackHandler,
+  ColorSchemeName,
   Dimensions,
   Image,
   Platform,
@@ -249,30 +250,52 @@ type TabViewRoute = {
   category: string;
 };
 
-const initialState = {
-  isSupportDev: true,
-  index: 0,
-  activeSlide: 0,
-  routes: [
-    {key: 'asia', title: i18n.t('store:asia'), category: '아시아'},
-    {key: 'europe', title: i18n.t('store:europe'), category: '유럽'},
-    {key: 'usaAu', title: i18n.t('store:usa/au'), category: '미주/호주'},
-    {key: 'multi', title: i18n.t('store:multi'), category: '복수 국가'},
-  ] as TabViewRoute[],
-  allData: [] as RkbProduct[][],
-  asia: [] as ProductByCategory[],
-  europe: [] as ProductByCategory[],
-  usaAu: [] as ProductByCategory[],
-  multi: [] as ProductByCategory[],
-  firstLaunch: false,
-  darkMode: Appearance.getColorScheme(),
-  time: moment(),
-};
-
-type HomeScreenEsimState = typeof initialState & {
+type HomeScreenEsimState = {
+  isSupportDev: boolean;
+  index: number;
+  activeSlide: number;
+  routes: TabViewRoute[];
+  allData: RkbProduct[][];
+  asia: ProductByCategory[];
+  europe: ProductByCategory[];
+  usaAu: ProductByCategory[];
+  multi: ProductByCategory[];
+  darkMode: ColorSchemeName;
+  time: Moment;
   deviceList?: string[];
   firstLaunch?: boolean;
 };
+
+const TabHeader0 = ({
+  index,
+  routes,
+  onIndexChange,
+}: {
+  index: number;
+  routes: TabViewRoute[];
+  onIndexChange: (n: number) => void;
+}) => {
+  return (
+    <View style={styles.whiteTwoBackground}>
+      <View style={styles.tabView}>
+        {routes.map((elm, idx) => (
+          <AppButton
+            key={elm.key}
+            style={styles.whiteTwoBackground}
+            titleStyle={[
+              styles.normal16WarmGrey,
+              idx === index ? styles.boldClearBlue : {},
+            ]}
+            title={elm.title}
+            // title={i18n.t(`prodDetail:${elm}`)}
+            onPress={() => onIndexChange(idx)}
+          />
+        ))}
+      </View>
+    </View>
+  );
+};
+const TabHeader = memo(TabHeader0);
 
 class HomeScreenEsim extends Component<
   HomeScreenEsimProps,
@@ -287,7 +310,25 @@ class HomeScreenEsim extends Component<
   constructor(props: HomeScreenEsimProps) {
     super(props);
 
-    this.state = initialState;
+    this.state = {
+      isSupportDev: true,
+      index: 0,
+      activeSlide: 0,
+      routes: [
+        {key: 'asia', title: i18n.t('store:asia'), category: '아시아'},
+        {key: 'europe', title: i18n.t('store:europe'), category: '유럽'},
+        {key: 'usaAu', title: i18n.t('store:usa/au'), category: '미주/호주'},
+        {key: 'multi', title: i18n.t('store:multi'), category: '복수 국가'},
+      ] as TabViewRoute[],
+      allData: [] as RkbProduct[][],
+      asia: [] as ProductByCategory[],
+      europe: [] as ProductByCategory[],
+      usaAu: [] as ProductByCategory[],
+      multi: [] as ProductByCategory[],
+      firstLaunch: false,
+      darkMode: Appearance.getColorScheme(),
+      time: moment(),
+    };
 
     this.refresh = this.refresh.bind(this);
     this.renderTitleBtn = this.renderTitleBtn.bind(this);
@@ -301,7 +342,6 @@ class HomeScreenEsim extends Component<
     this.init = this.init.bind(this);
     this.modalBody = this.modalBody.bind(this);
     this.checkFistLaunch = this.checkFistLaunch.bind(this);
-    this.tabHeader = this.tabHeader.bind(this);
 
     this.offset = 0;
     this.controller = new AbortController();
@@ -600,29 +640,6 @@ class HomeScreenEsim extends Component<
     pushNotiHandler.handleNoti();
   }
 
-  tabHeader() {
-    const {index, routes} = this.state;
-    return (
-      <View style={styles.whiteTwoBackground}>
-        <View style={styles.tabView}>
-          {routes.map((elm, idx) => (
-            <AppButton
-              key={elm.key + idx}
-              style={styles.whiteTwoBackground}
-              titleStyle={[
-                styles.normal16WarmGrey,
-                idx === index ? styles.boldClearBlue : {},
-              ]}
-              title={elm.category}
-              // title={i18n.t(`prodDetail:${elm}`)}
-              onPress={() => this.onIndexChange(idx)}
-            />
-          ))}
-        </View>
-      </View>
-    );
-  }
-
   renderDots(activeIndex: number) {
     const {promotion} = this.props;
     const duration = 200;
@@ -739,7 +756,11 @@ class HomeScreenEsim extends Component<
           style={styles.scrollView}
           stickyHeaderIndices={[1]}>
           {/* ScrollView  stickyHeaderIndices로 상단 탭을 고정하기 위해서 View한번 더 사용 */}
-          {this.tabHeader()}
+          <TabHeader
+            index={index}
+            routes={routes}
+            onIndexChange={this.onIndexChange}
+          />
 
           {this.props.product.sortedProdList.length === 0 ? (
             <AppActivityIndicator style={{top: 100}} />
