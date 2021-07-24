@@ -559,7 +559,7 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
               onChangePhoto={this.changePhoto}
               onPress={(key: 'id' | 'email') => {
                 if (key === 'id') this.showIdModal(true);
-                else this.changeEmail(true);
+                else this.showEmailModal(true);
               }}
             />
           }
