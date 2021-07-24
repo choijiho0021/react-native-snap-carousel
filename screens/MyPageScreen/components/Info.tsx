@@ -184,7 +184,7 @@ const Info: React.FC<InfoProps> = ({
         )}
         <Pressable
           style={styles.btnContactBoard}
-          onPress={() => navigation.navigate('ContactBoard', {index: 2})}>
+          onPress={() => navigation.navigate('ContactBoard', {index: 1})}>
           <Text style={[appStyles.normal16Text, {textAlign: 'center'}]}>
             {i18n.t('board:mylist')}
           </Text>
