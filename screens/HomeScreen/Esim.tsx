@@ -58,7 +58,7 @@ import {SyncModelState} from '@/redux/modules/sync';
 import {RkbProduct} from '@/redux/api/productApi';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
-import TutorialScreen from './TutorialScreen';
+import TutorialScreen from '../TutorialScreen';
 
 const DOT_MARGIN = 6;
 const INACTIVE_DOT_WIDTH = 6;
@@ -85,7 +85,6 @@ const dotStyle = (
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
     backgroundColor: colors.white,
     flex: 1,
   },
@@ -167,10 +166,6 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginBottom: 10,
   },
-  whiteBackground: {
-    flex: 1,
-    backgroundColor: colors.white,
-  },
   imgRatio: {
     // figure out your image aspect ratio
     aspectRatio: 335 / 100,
@@ -224,7 +219,7 @@ function filterByCategory(list: RkbProduct[][], key: string) {
 
 type HomeScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Home'>;
 
-type HomeScreenEsimProps = {
+type EsimProps = {
   navigation: HomeScreenNavigationProp;
   promotion: RkbPromotion[];
   product: ProductModelState;
@@ -250,7 +245,7 @@ type TabViewRoute = {
   category: string;
 };
 
-type HomeScreenEsimState = {
+type EsimState = {
   isSupportDev: boolean;
   index: number;
   activeSlide: number;
@@ -297,17 +292,14 @@ const TabHeader0 = ({
 };
 const TabHeader = memo(TabHeader0);
 
-class HomeScreenEsim extends Component<
-  HomeScreenEsimProps,
-  HomeScreenEsimState
-> {
+class Esim extends Component<EsimProps, EsimState> {
   offset: number;
 
   controller: AbortController;
 
   scrollRef: React.RefObject<ScrollView>;
 
-  constructor(props: HomeScreenEsimProps) {
+  constructor(props: EsimProps) {
     super(props);
 
     this.state = {
@@ -380,7 +372,7 @@ class HomeScreenEsim extends Component<
     this.init();
   }
 
-  componentDidUpdate(prevProps: HomeScreenEsimProps) {
+  componentDidUpdate(prevProps: EsimProps) {
     const focus = this.props.navigation.isFocused();
     const now = moment();
     const diff = moment.duration(now.diff(this.state.time)).asMinutes();
@@ -743,7 +735,7 @@ class HomeScreenEsim extends Component<
     const {isSupportDev, firstLaunch, darkMode, index, routes} = this.state;
 
     return (
-      <View style={styles.whiteBackground}>
+      <View style={styles.container}>
         <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
         <TutorialScreen
           visible={firstLaunch}
@@ -809,4 +801,4 @@ export default connect(
       cart: bindActionCreators(cartActions, dispatch),
     },
   }),
-)(HomeScreenEsim);
+)(Esim);

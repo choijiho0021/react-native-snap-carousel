@@ -5,9 +5,9 @@ import {
   Dimensions,
   Image,
   Modal,
+  Pressable,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import {AppEventsLogger} from 'react-native-fbsdk';
@@ -34,10 +34,10 @@ const tutorialImages = esimApp
       step4: require('../assets/images/esim/tutorial/step4/esimTutorial4.png'),
     }
   : {
-      step1: require('../assets/images/tutorial/step1/mT1.png'),
-      step2: require('../assets/images/tutorial/step2/mT2.png'),
-      step3: require('../assets/images/tutorial/step3/mT3.png'),
-      step4: require('../assets/images/tutorial/step4/mT4.png'),
+      step1: require('../assets/images/usim/tutorial/step1/mT1.png'),
+      step2: require('../assets/images/usim/tutorial/step2/mT2.png'),
+      step3: require('../assets/images/usim/tutorial/step3/mT3.png'),
+      step4: require('../assets/images/usim/tutorial/step4/mT4.png'),
     };
 
 const styles = StyleSheet.create({
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
 });
 
 type TutorialScreenProps = {
-  visible: boolean;
+  visible?: boolean;
   onOkClose: () => void;
 };
 
@@ -119,7 +119,7 @@ class TutorialScreen extends Component<
 > {
   carousel: React.RefObject<unknown>;
 
-  constructor(props) {
+  constructor(props: TutorialScreenProps) {
     super(props);
 
     this.carousel = React.createRef();
@@ -205,7 +205,7 @@ class TutorialScreen extends Component<
           }}>
           {this.state.activeSlide === this.state.images.length - 1 ? (
             <View style={styles.bottom}>
-              <TouchableOpacity
+              <Pressable
                 style={[
                   styles.touchableOpacity,
                   {flex: 1, alignItems: 'center'},
@@ -214,22 +214,22 @@ class TutorialScreen extends Component<
                 <Text style={styles.bottomText}>
                   {i18n.t('tutorial:close')}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           ) : (
             <View style={[styles.bottom, {justifyContent: 'space-between'}]}>
-              <TouchableOpacity
+              <Pressable
                 style={styles.touchableOpacity}
                 onPress={() => this.skip()}>
                 <Text style={styles.bottomText}>{i18n.t('tutorial:skip')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
+              </Pressable>
+              <Pressable
                 style={styles.touchableOpacity}
                 onPress={() => this.carousel.current?.snapToNext()}>
                 <Text style={[styles.bottomText, {color: colors.clearBlue}]}>
                   {i18n.t('tutorial:next')}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           )}
         </View>

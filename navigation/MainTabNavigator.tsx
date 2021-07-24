@@ -8,7 +8,7 @@ import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import {appStyles} from '@/constants/Styles';
 import AppIcon from '@/components/AppIcon';
 
-import HomeScreen from '@/screens/HomeScreen';
+import HomeScreen from '@/screens/HomeScreen/Usim';
 import MySimScreen from '@/screens/MySimScreen';
 
 import StoreScreen from '@/screens/StoreScreen';

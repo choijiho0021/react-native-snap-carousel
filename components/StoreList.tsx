@@ -1,4 +1,4 @@
-import React, {Component, memo} from 'react';
+import React, {memo} from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
 import {connect} from 'react-redux';
 import {Map as ImmutableMap} from 'immutable';
@@ -9,7 +9,7 @@ import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {RootState} from '@/redux';
-import {ProductByCategory} from '@/screens/HomeScreenEsim';
+import {ProductByCategory} from '@/screens/HomeScreen/Esim';
 import {RkbLocalOp, RkbProduct} from '@/redux/api/productApi';
 
 const styles = StyleSheet.create({

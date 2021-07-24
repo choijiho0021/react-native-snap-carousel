@@ -10,6 +10,7 @@ import {
   Appearance,
   Animated,
   ColorSchemeName,
+  SafeAreaView,
 } from 'react-native';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
@@ -43,7 +44,7 @@ import AppAlert from '@/components/AppAlert';
 import appStateHandler from '@/utils/appState';
 import PromotionImage from '@/components/PromotionImage';
 import {RootState} from '@/redux';
-import TutorialScreen from './TutorialScreen';
+import TutorialScreen from '../TutorialScreen';
 
 // windowHeight
 // iphone 8 - 375x667
@@ -263,18 +264,19 @@ const BadgeAppButton = withBadge(
   'notReadNoti',
 )(AppButton);
 
-type HomeScreenProps = {
+type UsimProps = {
   navigation: any;
+  loginPending: boolean;
   action: {
     noti: NotiAction;
   };
 };
-type HomeScreenState = {
+type UsimState = {
   darkMode: ColorSchemeName;
   activeSlide: number;
   firstLaunch?: boolean;
 };
-class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
+class Usim extends Component<UsimProps, UsimState> {
   constructor(props) {
     super(props);
 
@@ -357,14 +359,8 @@ class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
   }
 
   componentDidUpdate(prevProps) {
-    const {
-      mobile,
-      pin,
-      iccid,
-      loggedIn,
-      deviceToken,
-      isUsedByOther,
-    } = this.props.account;
+    const {mobile, pin, iccid, loggedIn, deviceToken, isUsedByOther} =
+      this.props.account;
 
     if (mobile !== prevProps.account.mobile || pin !== prevProps.account.pin) {
       if (!_.isEmpty(mobile) && !loggedIn) {
@@ -439,15 +435,17 @@ class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
   }
 
   // 공지 사항 상세 페이지로 이동
-  onPressInfo = ({title, body}) => () => {
-    this.props.navigation.navigate('SimpleText', {
-      key: 'noti',
-      title: i18n.t('contact:noticeDetail'),
-      bodyTitle: title,
-      text: body,
-      mode: 'text',
-    });
-  };
+  onPressInfo =
+    ({title, body}) =>
+    () => {
+      this.props.navigation.navigate('SimpleText', {
+        key: 'noti',
+        title: i18n.t('contact:noticeDetail'),
+        bodyTitle: title,
+        text: body,
+        mode: 'text',
+      });
+    };
 
   onPressPromotion(item) {
     if (item.product_uuid) {
@@ -472,18 +470,20 @@ class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
     }
   }
 
-  navigate = (key, params = {}) => () => {
-    const {mobile, iccid} = this.props.account;
-    let naviTarget = '';
+  navigate =
+    (key, params = {}) =>
+    () => {
+      const {mobile, iccid} = this.props.account;
+      let naviTarget = '';
 
-    if (key.includes('RegisterSim')) {
-      if (_.isEmpty(mobile)) naviTarget = 'Auth';
-      else if (_.isEmpty(iccid)) naviTarget = 'RegisterSim';
-      else naviTarget = key.indexOf('_') > 0 ? 'Recharge' : 'RegisterSim';
-    }
+      if (key.includes('RegisterSim')) {
+        if (_.isEmpty(mobile)) naviTarget = 'Auth';
+        else if (_.isEmpty(iccid)) naviTarget = 'RegisterSim';
+        else naviTarget = key.indexOf('_') > 0 ? 'Recharge' : 'RegisterSim';
+      }
 
-    this.props.navigation.navigate(naviTarget, params);
-  };
+      this.props.navigation.navigate(naviTarget, params);
+    };
 
   appStateHandler(state) {
     const {iccid, token} = this.props.account;
@@ -734,32 +734,37 @@ class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
   }
 
   render() {
-    const {darkMode} = this.state;
+    const {darkMode, firstLaunch} = this.state;
 
     return (
-      <ScrollView style={styles.container}>
-        {this.state.firstLaunch && <TutorialScreen />}
+      <SafeAreaView style={styles.container}>
         <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
-        <AppActivityIndicator visible={this.props.loginPending} />
-        <View style={styles.carousel}>
-          <Carousel
-            data={this.props.promotion}
-            renderItem={this.renderPromotion}
-            autoplay
-            loop
-            lockScrollWhileSnapping
-            onSnapToItem={(index) => this.setState({activeSlide: index})}
-            sliderWidth={sliderWidth}
-            itemWidth={sliderWidth}
-          />
-          {this.pagination()}
-        </View>
-        {this.userInfo()}
-        {this.menu()}
-        {this.guide()}
-        <View style={styles.divider} />
-        {this.info()}
-      </ScrollView>
+        <TutorialScreen
+          visible={firstLaunch}
+          onOkClose={() => this.setState({firstLaunch: false})}
+        />
+        <ScrollView>
+          <AppActivityIndicator visible={this.props.loginPending} />
+          <View style={styles.carousel}>
+            <Carousel
+              data={this.props.promotion}
+              renderItem={this.renderPromotion}
+              autoplay
+              loop
+              lockScrollWhileSnapping
+              onSnapToItem={(index) => this.setState({activeSlide: index})}
+              sliderWidth={sliderWidth}
+              itemWidth={sliderWidth}
+            />
+            {this.pagination()}
+          </View>
+          {this.userInfo()}
+          {this.menu()}
+          {this.guide()}
+          <View style={styles.divider} />
+          {this.info()}
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 }
@@ -786,4 +791,4 @@ export default connect(
       product: bindActionCreators(productActions, dispatch),
     },
   }),
-)(HomeScreen);
+)(Usim);
