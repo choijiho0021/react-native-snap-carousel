@@ -13,12 +13,6 @@ import {
 } from 'react-native';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import AsyncStorage from '@react-native-community/async-storage';
-import {
-  requestNotifications,
-  PERMISSIONS,
-  request,
-} from 'react-native-permissions';
 import Analytics from 'appcenter-analytics';
 import _ from 'underscore';
 import Carousel from 'react-native-snap-carousel';
@@ -53,6 +47,8 @@ import TutorialScreen from '../TutorialScreen';
 import {PromotionModelState} from '../../redux/modules/promotion';
 import PromotionCarousel from './component/PromotionCarousel';
 import {SyncModelState} from '../../redux/modules/sync';
+import {checkFistLaunch, requestPermission} from './component/permission';
+import createHandlePushNoti from '../../redux/models/createHandlePushNoti';
 
 // windowHeight
 // iphone 8 - 375x667
@@ -311,31 +307,20 @@ class Usim extends Component<UsimProps, UsimState> {
       ),
     });
 
-    Analytics.trackEvent('Page_View_Count', {page: 'Home'});
-    // 로그인 여부와 관련 없이 항상 처리할 부분
-    if (Platform.OS === 'ios') {
-      await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
-      await request(PERMISSIONS.IOS.CAMERA);
-      await requestNotifications(['alert', 'sound', 'badge']);
-    } else if (Platform.OS === 'android') {
-      await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
-      await request(PERMISSIONS.ANDROID.CAMERA);
-    }
-
-    // 앱 첫 실행 여부 확인
-    AsyncStorage.getItem('alreadyLaunched').then((value) => {
-      if (value == null) {
-        AsyncStorage.setItem('alreadyLaunched', 'true');
-        this.setState({firstLaunch: true});
-      } else {
-        this.setState({firstLaunch: false});
-      }
-    });
-    // AsyncStorage.removeItem('alreadyLaunched')
+    // bhtak
+    // Analytics.trackEvent('Page_View_Count', {page: 'Home'});
 
     // config push notification
     pushNoti.add(this.notification);
-    appStateHandler.add(this.appStateHandler);
+
+    requestPermission();
+
+    // 앱 첫 실행 여부 확인
+    const firstLaunch = await checkFistLaunch();
+    this.setState({firstLaunch});
+
+    // bhtak
+    // appStateHandler.add(this.appStateHandler);
 
     // 로그인 여부에 따라 달라지는 부분
     this.init();
@@ -590,28 +575,29 @@ class Usim extends Component<UsimProps, UsimState> {
     if (loggedIn) {
       this.props.action.noti.getNotiList({mobile});
       this.props.action.cart.cartFetch();
+    } else {
+      this.props.action.noti.init();
     }
   }
 
-  notification(type, data, isForeground = true) {
-    const {mobile, loggedIn} = this.props.account;
+  notification(type: string, payload, isForeground = true) {
+    const {mobile, iccid, loggedIn} = this.props.account;
+    const {navigation} = this.props;
 
     if (loggedIn) {
       this.props.action.noti.getNotiList({mobile});
     }
 
-    switch (type) {
-      case 'register':
-        this.props.action.account.updateAccount({
-          deviceToken: data,
-        });
-        break;
-      case 'notification':
-        this.handleNotification(data, isForeground);
-        break;
-      default:
-        console.log('default notification');
-    }
+    const pushNotiHandler = createHandlePushNoti(navigation, payload, {
+      mobile,
+      iccid,
+      isForeground,
+      isRegister: type === 'register',
+      updateAccount: this.props.action.account.updateAccount,
+      clearCurrentAccount: this.props.action.account.clearCurrentAccount,
+    });
+    pushNotiHandler.sendLog();
+    pushNotiHandler.handleNoti();
   }
 
   renderInfo({item}) {
@@ -630,10 +616,10 @@ class Usim extends Component<UsimProps, UsimState> {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
-        {/* <TutorialScreen
+        <TutorialScreen
           visible={firstLaunch}
           onOkClose={() => this.setState({firstLaunch: false})}
-        /> */}
+        />
         <ScrollView>
           <PromotionCarousel />
           {this.userInfo()}

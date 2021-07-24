@@ -110,7 +110,7 @@ type TutorialScreenProps = {
 
 type TutorialScreenState = {
   activeSlide: number;
-  images: {key: string}[];
+  images: string[];
 };
 
 class TutorialScreen extends Component<
@@ -125,7 +125,7 @@ class TutorialScreen extends Component<
     this.carousel = React.createRef();
     this.state = {
       activeSlide: 0,
-      images: [{key: 'step1'}, {key: 'step2'}, {key: 'step3'}, {key: 'step4'}],
+      images: ['step1', 'step2', 'step3', 'step4'],
     };
 
     this.renderTutorial = this.renderTutorial.bind(this);
@@ -133,13 +133,12 @@ class TutorialScreen extends Component<
     this.completed = this.completed.bind(this);
   }
 
-  componentDidMount() {}
-
-  renderTutorial = ({item}) => {
+  renderTutorial = ({item}: {item: string}) => {
     return (
       <Image
         style={styles.image}
-        source={tutorialImages[item.key]}
+        source={tutorialImages[item]}
+        // source={require('../assets/images/usim/tutorial/step1/mT1.png')}
         resizeMode="cover"
       />
     );

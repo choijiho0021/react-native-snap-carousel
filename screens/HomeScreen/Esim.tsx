@@ -17,13 +17,10 @@ import {
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import RNExitApp from 'react-native-exit-app';
-import {PERMISSIONS, request} from 'react-native-permissions';
 import {TabView} from 'react-native-tab-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import {requestTrackingPermission} from 'react-native-tracking-transparency';
-import messaging from '@react-native-firebase/messaging';
 import {RootState} from '@/redux';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
@@ -55,6 +52,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
 import TutorialScreen from '../TutorialScreen';
 import PromotionCarousel from './component/PromotionCarousel';
+import {checkFistLaunch, requestPermission} from './component/permission';
 
 const BadgeAppButton = withBadge(
   ({noti}: RootState) => ({
@@ -137,17 +135,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 });
-
-async function requestPermission() {
-  if (Platform.OS === 'ios') {
-    await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
-    await messaging().requestPermission();
-    await requestTrackingPermission();
-  } else if (Platform.OS === 'android') {
-    await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
-    await requestTrackingPermission();
-  }
-}
 
 function filterByCategory(list: RkbProduct[][], key: string) {
   const filtered = list.filter(
@@ -269,7 +256,6 @@ class Esim extends Component<EsimProps, EsimState> {
     this.notification = this.notification.bind(this);
     this.init = this.init.bind(this);
     this.modalBody = this.modalBody.bind(this);
-    this.checkFistLaunch = this.checkFistLaunch.bind(this);
 
     this.offset = 0;
     this.controller = new AbortController();
@@ -279,7 +265,7 @@ class Esim extends Component<EsimProps, EsimState> {
   componentDidMount() {
     this.setState({time: moment()});
 
-    API.Device.getDevList().then((resp) => {
+    API.Device.getDevList().then(async (resp) => {
       if (resp.result === 0) {
         const deviceModel = DeviceInfo.getModel();
         const deviceName = DeviceInfo.getDeviceId();
@@ -292,6 +278,7 @@ class Esim extends Component<EsimProps, EsimState> {
         });
 
         this.renderTitleBtn();
+
         if (isSupportDev) {
           pushNoti.add(this.notification);
 
@@ -299,7 +286,8 @@ class Esim extends Component<EsimProps, EsimState> {
 
           requestPermission();
 
-          this.checkFistLaunch();
+          const firstLaunch = await checkFistLaunch();
+          this.setState({firstLaunch});
         }
       }
     });
@@ -490,18 +478,6 @@ class Esim extends Component<EsimProps, EsimState> {
       europe: filterByCategory(sorted, europe),
       usaAu: filterByCategory(sorted, usaAu),
       multi: filterByCategory(sorted, multi),
-    });
-  }
-
-  checkFistLaunch() {
-    // 앱 첫 실행 여부 확인
-    AsyncStorage.getItem('alreadyLaunched').then((value) => {
-      if (value == null) {
-        AsyncStorage.setItem('alreadyLaunched', 'true');
-        this.setState({firstLaunch: true});
-      } else {
-        this.setState({firstLaunch: false});
-      }
     });
   }
 
