@@ -4,24 +4,20 @@ import {Set} from 'immutable';
 import moment, {Moment} from 'moment';
 import React, {Component, memo} from 'react';
 import {
-  Animated,
   Appearance,
   BackHandler,
   ColorSchemeName,
   Dimensions,
-  Image,
   Platform,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import RNExitApp from 'react-native-exit-app';
 import {PERMISSIONS, request} from 'react-native-permissions';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {TabView} from 'react-native-tab-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -31,7 +27,6 @@ import messaging from '@react-native-firebase/messaging';
 import {RootState} from '@/redux';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
-import {sliderWidth} from '@/constants/SliderEntry.style';
 import StoreList from '@/components/StoreList';
 import withBadge from '@/components/withBadge';
 import {colors} from '@/constants/Colors';
@@ -59,10 +54,7 @@ import {RkbProduct} from '@/redux/api/productApi';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
 import TutorialScreen from '../TutorialScreen';
-
-const DOT_MARGIN = 6;
-const INACTIVE_DOT_WIDTH = 6;
-const ACTIVE_DOT_WIDTH = 20;
+import PromotionCarousel from './component/PromotionCarousel';
 
 const BadgeAppButton = withBadge(
   ({noti}: RootState) => ({
@@ -70,18 +62,6 @@ const BadgeAppButton = withBadge(
   }),
   'notReadNoti',
 )(AppButton);
-
-const dotStyle = (
-  width: Animated.Value | Animated.AnimatedInterpolation,
-  marginLeft: number | Animated.AnimatedInterpolation,
-  backgroundColor: string = colors.clearBlue,
-) => ({
-  height: 6,
-  borderRadius: 3.5,
-  width,
-  marginLeft,
-  backgroundColor,
-});
 
 const styles = StyleSheet.create({
   container: {
@@ -112,21 +92,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     marginHorizontal: 18,
-  },
-  pagination: {
-    marginRight: 30,
-    alignSelf: 'flex-end',
-  },
-  paginationContainer: {
-    paddingVertical: 5,
-    paddingHorizontal: 0,
-  },
-  inactiveDot: {
-    width: INACTIVE_DOT_WIDTH,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.lightGrey,
-    marginLeft: DOT_MARGIN,
   },
   whiteTwoBackground: {
     backgroundColor: colors.whiteTwo,
@@ -172,31 +137,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 });
-
-const PromotionImage0 = ({
-  item,
-  onPress,
-}: {
-  item: RkbPromotion;
-  onPress: (i: RkbPromotion) => void;
-}) => {
-  return (
-    <TouchableOpacity
-      style={{paddingHorizontal: 20}}
-      onPress={() => onPress(item)}>
-      {_.isEmpty(item.imageUrl) ? (
-        <Text style={appStyles.normal16Text}>{item.title}</Text>
-      ) : (
-        <Image
-          source={{uri: API.default.httpImageUrl(item.imageUrl)}}
-          style={styles.imgRatio}
-          resizeMode="contain"
-        />
-      )}
-    </TouchableOpacity>
-  );
-};
-const PromotionImage = memo(PromotionImage0);
 
 async function requestPermission() {
   if (Platform.OS === 'ios') {
@@ -248,7 +188,6 @@ type TabViewRoute = {
 type EsimState = {
   isSupportDev: boolean;
   index: number;
-  activeSlide: number;
   routes: TabViewRoute[];
   allData: RkbProduct[][];
   asia: ProductByCategory[];
@@ -305,7 +244,6 @@ class Esim extends Component<EsimProps, EsimState> {
     this.state = {
       isSupportDev: true,
       index: 0,
-      activeSlide: 0,
       routes: [
         {key: 'asia', title: i18n.t('store:asia'), category: '아시아'},
         {key: 'europe', title: i18n.t('store:europe'), category: '유럽'},
@@ -328,8 +266,6 @@ class Esim extends Component<EsimProps, EsimState> {
     this.sortProdGroup = this.sortProdGroup.bind(this);
     this.onIndexChange = this.onIndexChange.bind(this);
     this.onPressItem = this.onPressItem.bind(this);
-    this.onPressPromotion = this.onPressPromotion.bind(this);
-    this.renderDots = this.renderDots.bind(this);
     this.notification = this.notification.bind(this);
     this.init = this.init.bind(this);
     this.modalBody = this.modalBody.bind(this);
@@ -413,33 +349,6 @@ class Esim extends Component<EsimProps, EsimState> {
     });
     this.scrollRef.current?.scrollTo({x: 0, y: 0, animated: false});
   };
-
-  onPressPromotion(item: RkbPromotion) {
-    if (item.product_uuid) {
-      const {prodList} = this.props.product;
-      const prod = prodList.get(item.product_uuid);
-
-      if (prod) {
-        const prodOfCountry = prodList
-          .filter((p) => _.isEqual(p.partnerId, prod.partnerId))
-          .toList()
-          .toArray();
-        this.props.navigation.navigate('Country', {prodOfCountry});
-      }
-    } else if (item.notice) {
-      this.props.navigation.navigate('SimpleText', {
-        key: 'noti',
-        title: i18n.t('set:noti'),
-        bodyTitle: item.notice.title,
-        body: item.notice.body,
-        rule: item.notice.rule,
-        image: item.notice.image,
-        mode: 'noti',
-      });
-    } else {
-      this.props.navigation.navigate('Faq');
-    }
-  }
 
   getProdGroup() {
     const {prodList, localOpList} = this.props.product;
@@ -526,22 +435,6 @@ class Esim extends Component<EsimProps, EsimState> {
       </View>
     );
   };
-
-  pagination() {
-    const {activeSlide} = this.state;
-    const {promotion} = this.props;
-
-    return (
-      <View style={styles.pagination}>
-        <Pagination
-          dotsLength={promotion.length}
-          activeDotIndex={activeSlide}
-          containerStyle={styles.paginationContainer}
-          renderDots={this.renderDots}
-        />
-      </View>
-    );
-  }
 
   sortProdGroup(list: RkbProduct[][]) {
     const {localOpList} = this.props.product;
@@ -632,51 +525,6 @@ class Esim extends Component<EsimProps, EsimState> {
     pushNotiHandler.handleNoti();
   }
 
-  renderDots(activeIndex: number) {
-    const {promotion} = this.props;
-    const duration = 200;
-    const width = new Animated.Value(INACTIVE_DOT_WIDTH);
-    const margin = width.interpolate({
-      inputRange: [INACTIVE_DOT_WIDTH, ACTIVE_DOT_WIDTH],
-      outputRange: [ACTIVE_DOT_WIDTH, INACTIVE_DOT_WIDTH],
-    });
-
-    Animated.timing(width, {
-      toValue: ACTIVE_DOT_WIDTH,
-      duration,
-      useNativeDriver: false,
-    }).start();
-
-    if (activeIndex === 0) {
-      return promotion.map((_, idx) =>
-        idx === 0 ? (
-          <Animated.View key={idx.toString()} style={dotStyle(width, margin)} />
-        ) : (
-          <View key={idx.toString()} style={styles.inactiveDot} />
-        ),
-      );
-    }
-
-    return promotion.map((_, idx) => {
-      if (activeIndex === idx)
-        return (
-          <Animated.View
-            key={idx.toString()}
-            style={dotStyle(width, DOT_MARGIN, colors.clearBlue)}
-          />
-        );
-
-      return activeIndex === (idx + 1) % promotion.length ? (
-        <Animated.View
-          key={idx.toString()}
-          style={dotStyle(margin, DOT_MARGIN, colors.lightGrey)}
-        />
-      ) : (
-        <View key={idx.toString()} style={styles.inactiveDot} />
-      );
-    });
-  }
-
   renderTitleBtn() {
     const {navigation} = this.props;
     navigation?.setOptions({
@@ -710,27 +558,6 @@ class Esim extends Component<EsimProps, EsimState> {
     });
   }
 
-  renderCarousel() {
-    return (
-      <View style={styles.carousel}>
-        <Carousel
-          data={this.props.promotion}
-          renderItem={({item}) => (
-            <PromotionImage item={item} onPress={this.onPressPromotion} />
-          )}
-          autoplay
-          loop
-          lockScrollWhileSnapping
-          useScrollView={false}
-          onSnapToItem={(index) => this.setState({activeSlide: index})}
-          sliderWidth={sliderWidth}
-          itemWidth={sliderWidth}
-        />
-        {this.pagination()}
-      </View>
-    );
-  }
-
   render() {
     const {isSupportDev, firstLaunch, darkMode, index, routes} = this.state;
 
@@ -741,7 +568,7 @@ class Esim extends Component<EsimProps, EsimState> {
           visible={firstLaunch}
           onOkClose={() => this.setState({firstLaunch: false})}
         />
-        {this.renderCarousel()}
+        <PromotionCarousel />
         <ScrollView
           ref={this.scrollRef}
           contentContainerStyle={{flex: 1}}

@@ -8,7 +8,6 @@ import {
   ScrollView,
   Platform,
   Appearance,
-  Animated,
   ColorSchemeName,
   SafeAreaView,
 } from 'react-native';
@@ -22,18 +21,25 @@ import {
 } from 'react-native-permissions';
 import Analytics from 'appcenter-analytics';
 import _ from 'underscore';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
+import Carousel from 'react-native-snap-carousel';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import {actions as simActions} from '@/redux/modules/sim';
-import {actions as accountActions} from '@/redux/modules/account';
+import {
+  AccountAction,
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
-import {actions as infoActions} from '@/redux/modules/info';
-import {actions as cartActions} from '@/redux/modules/cart';
-import {actions as productActions} from '@/redux/modules/product';
+import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
+import {actions as cartActions, CartAction} from '@/redux/modules/cart';
+import {
+  actions as productActions,
+  ProductModelState,
+} from '@/redux/modules/product';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppButton from '@/components/AppButton';
-import {sliderWidth, windowHeight} from '@/constants/SliderEntry.style';
+import {windowHeight} from '@/constants/SliderEntry.style';
 import {colors} from '@/constants/Colors';
 import AppIcon from '@/components/AppIcon';
 import AppUserPic from '@/components/AppUserPic';
@@ -42,9 +48,11 @@ import AppPrice from '@/components/AppPrice';
 import pushNoti from '@/utils/pushNoti';
 import AppAlert from '@/components/AppAlert';
 import appStateHandler from '@/utils/appState';
-import PromotionImage from '@/components/PromotionImage';
 import {RootState} from '@/redux';
 import TutorialScreen from '../TutorialScreen';
+import {PromotionModelState} from '../../redux/modules/promotion';
+import PromotionCarousel from './component/PromotionCarousel';
+import {SyncModelState} from '../../redux/modules/sync';
 
 // windowHeight
 // iphone 8 - 375x667
@@ -67,10 +75,6 @@ const size =
         carouselHeight: 190,
         carouselMargin: 20,
       };
-
-const DOT_MARGIN = 6;
-const INACTIVE_DOT_WIDTH = 6;
-const ACTIVE_DOT_WIDTH = 20;
 
 const styles = StyleSheet.create({
   container: {
@@ -191,22 +195,6 @@ const styles = StyleSheet.create({
   carousel: {
     alignItems: 'flex-end',
   },
-  inactiveDot: {
-    width: INACTIVE_DOT_WIDTH,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.lightGrey,
-    marginLeft: DOT_MARGIN,
-  },
-  pagination: {
-    marginRight: 30,
-    marginTop: 10,
-  },
-  paginationContainer: {
-    paddingVertical: 5,
-    paddingHorizontal: 0,
-    justifyContent: 'flex-start',
-  },
   cardLayer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -245,17 +233,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 });
-const dotStyle = (
-  width: number = ACTIVE_DOT_WIDTH,
-  marginLeft: number = DOT_MARGIN,
-  backgroundColor: string = colors.clearBlue,
-) => ({
-  height: 6,
-  borderRadius: 3.5,
-  width,
-  marginLeft,
-  backgroundColor,
-});
 
 const BadgeAppButton = withBadge(
   ({noti}: RootState) => ({
@@ -267,36 +244,42 @@ const BadgeAppButton = withBadge(
 type UsimProps = {
   navigation: any;
   loginPending: boolean;
+
+  account: AccountModelState;
+  product: ProductModelState;
+  promotion: PromotionModelState;
+  info: InfoModelState;
+  sync: SyncModelState;
+
   action: {
     noti: NotiAction;
+    account: AccountAction;
+    cart: CartAction;
   };
 };
 type UsimState = {
   darkMode: ColorSchemeName;
-  activeSlide: number;
   firstLaunch?: boolean;
 };
 class Usim extends Component<UsimProps, UsimState> {
-  constructor(props) {
+  isNoticed: boolean | null;
+
+  constructor(props: UsimProps) {
     super(props);
 
     this.state = {
       darkMode: Appearance.getColorScheme(),
-      activeSlide: 0,
       firstLaunch: undefined,
     };
 
     this.login = this.login.bind(this);
     this.init = this.init.bind(this);
-    this.renderPromotion = this.renderPromotion.bind(this);
     this.navigate = this.navigate.bind(this);
     this.userInfo = this.userInfo.bind(this);
     this.notification = this.notification.bind(this);
     this.handleNotification = this.handleNotification.bind(this);
     this.clearAccount = this.clearAccount.bind(this);
     this.appStateHandler = this.appStateHandler.bind(this);
-    this.onPressPromotion = this.onPressPromotion.bind(this);
-    this.renderDots = this.renderDots.bind(this);
     this.renderInfo = this.renderInfo.bind(this);
 
     this.isNoticed = null;
@@ -358,7 +341,7 @@ class Usim extends Component<UsimProps, UsimState> {
     this.init();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: UsimProps) {
     const {mobile, pin, iccid, loggedIn, deviceToken, isUsedByOther} =
       this.props.account;
 
@@ -399,9 +382,9 @@ class Usim extends Component<UsimProps, UsimState> {
     appStateHandler.remove();
   }
 
-  handleNotification(payload, isForeground) {
-    const type = (payload.data || {}).notiType;
-    const target = (payload.data || {}).iccid;
+  handleNotification(payload, isForeground: boolean) {
+    const type = payload.data?.notiType;
+    const target = payload.data?.iccid;
     const {mobile, iccid} = this.props.account;
 
     //  무슨코드인지 확인필요
@@ -423,14 +406,11 @@ class Usim extends Component<UsimProps, UsimState> {
               this.clearAccount,
             );
           }
-        } else {
-          // eslint-disable-next-line no-unused-expressions
-          !isForeground && this.props.navigation.navigate('Noti');
-        }
+        } else if (!isForeground) this.props.navigation.navigate('Noti');
         break;
       default:
         // eslint-disable-next-line no-unused-expressions
-        !isForeground && this.props.navigation.navigate('Noti');
+        if (!isForeground) this.props.navigation.navigate('Noti');
     }
   }
 
@@ -446,29 +426,6 @@ class Usim extends Component<UsimProps, UsimState> {
         mode: 'text',
       });
     };
-
-  onPressPromotion(item) {
-    if (item.product_uuid) {
-      const {prodList} = this.props.product;
-      const prod = prodList.get(item.product_uuid);
-
-      if (prod) {
-        const prodOfCountry = prodList
-          .filter((product) => _.isEqual(product.partnerId, prod.partnerId))
-          .toList()
-          .toArray();
-        this.props.navigation.navigate('Country', {prodOfCountry});
-      }
-    } else if (item.notice) {
-      this.props.navigation.navigate('SimpleText', {
-        key: 'noti',
-        title: i18n.t('set:noti'),
-        bodyTitle: item.notice.title,
-        text: item.notice.body,
-        mode: 'text',
-      });
-    }
-  }
 
   navigate =
     (key, params = {}) =>
@@ -507,22 +464,6 @@ class Usim extends Component<UsimProps, UsimState> {
     this.props.action.account.logInAndGetAccount({mobile, pin, iccid});
     this.props.action.sim.getSimCardList();
     this.props.action.noti.getNotiList({mobile});
-  }
-
-  pagination() {
-    const {activeSlide} = this.state;
-    const {promotion} = this.props;
-
-    return (
-      <View style={styles.pagination}>
-        <Pagination
-          dotsLength={promotion.length}
-          activeDotIndex={activeSlide}
-          containerStyle={styles.paginationContainer}
-          renderDots={this.renderDots}
-        />
-      </View>
-    );
   }
 
   userInfo() {
@@ -683,86 +624,24 @@ class Usim extends Component<UsimProps, UsimState> {
     );
   }
 
-  renderDots(activeIndex) {
-    const {promotion} = this.props;
-    const duration = 200;
-    const width = new Animated.Value(INACTIVE_DOT_WIDTH);
-    const margin = width.interpolate({
-      inputRange: [INACTIVE_DOT_WIDTH, ACTIVE_DOT_WIDTH],
-      outputRange: [ACTIVE_DOT_WIDTH, INACTIVE_DOT_WIDTH],
-    });
-
-    Animated.timing(width, {
-      toValue: ACTIVE_DOT_WIDTH,
-      duration,
-      useNativeDriver: false,
-    }).start();
-
-    if (activeIndex === 0) {
-      return promotion.map((_, idx) =>
-        idx === 0 ? (
-          <Animated.View key={`${idx}`} style={dotStyle(width, margin)} />
-        ) : (
-          <View key={`${idx}`} style={styles.inactiveDot} />
-        ),
-      );
-    }
-
-    return promotion.map((_, idx) => {
-      if (activeIndex === idx) {
-        return (
-          <Animated.View
-            key={`${idx}`}
-            style={dotStyle(width, DOT_MARGIN, colors.clearBlue)}
-          />
-        );
-      }
-      if (activeIndex === (idx + 1) % promotion.length) {
-        return (
-          <Animated.View
-            key={`${idx}`}
-            style={dotStyle(margin, DOT_MARGIN, colors.lightGrey)}
-          />
-        );
-      }
-      return <View key={`${idx}`} style={styles.inactiveDot} />;
-    });
-  }
-
-  renderPromotion({item}) {
-    return <PromotionImage item={item} onPress={this.onPressPromotion} />;
-  }
-
   render() {
     const {darkMode, firstLaunch} = this.state;
 
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
-        <TutorialScreen
+        {/* <TutorialScreen
           visible={firstLaunch}
           onOkClose={() => this.setState({firstLaunch: false})}
-        />
+        /> */}
         <ScrollView>
-          <AppActivityIndicator visible={this.props.loginPending} />
-          <View style={styles.carousel}>
-            <Carousel
-              data={this.props.promotion}
-              renderItem={this.renderPromotion}
-              autoplay
-              loop
-              lockScrollWhileSnapping
-              onSnapToItem={(index) => this.setState({activeSlide: index})}
-              sliderWidth={sliderWidth}
-              itemWidth={sliderWidth}
-            />
-            {this.pagination()}
-          </View>
+          <PromotionCarousel />
           {this.userInfo()}
           {this.menu()}
           {this.guide()}
           <View style={styles.divider} />
           {this.info()}
+          <AppActivityIndicator visible={this.props.loginPending} />
         </ScrollView>
       </SafeAreaView>
     );
