@@ -277,6 +277,7 @@ type PurchaseDetailScreenState = {
   borderBlue: boolean;
   isCanceled: boolean;
 
+  balanceCharge?: number;
   billingAmt?: number;
   orderId?: number;
   profile?: RkbProfile;
@@ -336,6 +337,10 @@ class PurchaseDetailScreen extends Component<
         (item) => item.paymentGateway !== 'rokebi_cash',
       ),
       totalCnt: detail?.orderItems.reduce((acc, cur) => acc + cur.qty, 0) || 0,
+      balanceCharge:
+        detail?.paymentList?.find(
+          (item) => item.paymentGateway === 'rokebi_cash',
+        )?.amount || 0,
     });
 
     // load Profile by profile_id
@@ -474,13 +479,8 @@ class PurchaseDetailScreen extends Component<
   }
 
   deliveryInfo() {
-    const {
-      trackingCompany,
-      trackingCode,
-      shipmentState,
-      isCanceled,
-      memo,
-    } = this.state;
+    const {trackingCompany, trackingCode, shipmentState, isCanceled, memo} =
+      this.state;
 
     const ship = API.Order.shipmentState;
 
@@ -655,20 +655,20 @@ class PurchaseDetailScreen extends Component<
               value={item.price}
             />
           ))}
-        {!esimApp && (
-          <View>
-            <View style={styles.bar} />
-            <LabelText
-              key="productAmount"
-              style={styles.item}
-              label={i18n.t('his:productAmount')}
-              labelStyle={styles.label2}
-              format="price"
-              valueStyle={appStyles.roboto16Text}
-              value={totalPrice}
-            />
-          </View>
-        )}
+        {/* {!esimApp && ( */}
+        <View>
+          <View style={styles.bar} />
+          <LabelText
+            key="productAmount"
+            style={styles.item}
+            label={i18n.t('his:productAmount')}
+            labelStyle={styles.label2}
+            format="price"
+            valueStyle={appStyles.roboto16Text}
+            value={totalPrice}
+          />
+        </View>
+        {/* )} */}
 
         {orderType === 'physical' && (
           <LabelText
@@ -681,15 +681,15 @@ class PurchaseDetailScreen extends Component<
             value={dlvCost}
           />
         )}
-        {!isRecharge && !esimApp && (
+        {!isRecharge && (
           <LabelText
             key="pymBalance"
             style={styles.item}
-            label={i18n.t('pym:balance')}
-            labelStyle={styles.label2}
+            label={i18n.t('pym:deductBalance')}
             format="price"
+            labelStyle={styles.label2}
             valueStyle={appStyles.roboto16Text}
-            value={`- ${balanceCharge}`}
+            value={balanceCharge || 0}
           />
         )}
         <View style={styles.bar} />

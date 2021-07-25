@@ -77,7 +77,8 @@ const LabelText = ({
         <View style={styles.value}>
           <Text style={[valueStyle || appStyles.price, {color}]}>
             {isDeduct && '- '}
-            {utils.numberToCommaString(isDeduct ? deduct : Number(value))}
+            {utils.numberToCommaString(isDeduct ? deduct : Number(value)) ||
+              value}
           </Text>
           <Text style={appStyles.normal14Text}>{` ${i18n.t('won')}`}</Text>
         </View>

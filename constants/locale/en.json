@@ -430,6 +430,7 @@
   "pym:detail": "Check Details",
   "pym:systemError": "Payment failed due to system error",
   "pym:loadingInfo": "* Upon network speed on your location, delay time for 3-4 seconds can be occurred.",
+  "pym:deductBalance": "Deduction from ROKEBI Cash",
 
   "err:login": "Available to use after login",
   "err:body": "No body text",
