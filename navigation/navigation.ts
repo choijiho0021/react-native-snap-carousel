@@ -5,7 +5,11 @@ import {BoardMsgStatus} from '@/redux/api/boardApi';
 import {PaymentResult} from '@/redux/models/paymentResult';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html';
-export type PymMethodScreenMode = 'cart' | 'roaming_product' | 'new_sim';
+export type PymMethodScreenMode =
+  | 'cart'
+  | 'roaming_product'
+  | 'new_sim'
+  | 'recharge';
 type ContactBoardRouteParam = {index?: number} | undefined;
 type FaqRouteParam = {key?: string; num?: string} | undefined;
 
@@ -91,6 +95,7 @@ export type MyPageStackParamList = {
   Settings: undefined;
   Recharge: {mode: string};
   ContactBoard: ContactBoardRouteParam;
+  PymMethod: {pymPrice?: number; mode?: PymMethodScreenMode};
   PurchaseDetail: PurchaseDetailParams;
   SimpleText: SimpleTextParams;
 };

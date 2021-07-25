@@ -202,7 +202,6 @@ class RechargeScreen extends Component<
   }
 
   onSubmit() {
-    const mode = this.props.route.params && this.props.route.params.mode;
     const {selected} = this.state;
     const purchaseItems = [
       {
@@ -218,9 +217,9 @@ class RechargeScreen extends Component<
     ];
 
     this.props.action.cart.purchase({purchaseItems});
-    this.props.navigation.navigate('PymMethod' as keyof MyPageStackParamList, {
+    this.props.navigation.navigate('PymMethod', {
       pymPrice: utils.stringToNumber(selected),
-      mode: `${mode}Recharge`,
+      mode: 'recharge',
     });
   }
 
