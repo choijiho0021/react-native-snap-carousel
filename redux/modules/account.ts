@@ -131,13 +131,14 @@ const changeNotiToken = createAsyncThunk(
 const registerMobile = createAsyncThunk(
   'account/registerMobile',
   (
-    {iccid, code, mobile}: {iccid: string; code: string; mobile: string},
-    {dispatch, getState},
+    {
+      iccid,
+      code,
+      mobile,
+      token,
+    }: {iccid?: string; code?: string; mobile?: string; token?: string},
+    {dispatch},
   ) => {
-    const {
-      account: {token},
-    } = getState() as RootState;
-
     return dispatch(registerMobile0({iccid, code, mobile, token})).then(
       ({payload}: {payload: ApiResult<RkbAccount>}) => {
         if (payload.result === 0) {
@@ -501,6 +502,7 @@ export const actions = {
   getUserId,
   changePushNoti,
   uploadPicture,
+  registerMobile,
 };
 export type AccountAction = typeof actions;
 

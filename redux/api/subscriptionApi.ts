@@ -430,6 +430,13 @@ const remainingTime = (endDate: Moment) => {
 export default {
   CALL_PRODUCT,
 
+  STATUS_ACTIVE,
+  STATUS_INACTIVE,
+  STATUS_RESERVED,
+  STATUS_CANCELED,
+  STATUS_EXPIRED,
+  STATUS_USED,
+
   getSubscription,
   getRkbTalkSubscription,
   addSubscription,

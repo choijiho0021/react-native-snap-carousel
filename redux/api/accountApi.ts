@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import {Buffer} from 'buffer';
-import utils from '../utils';
+import utils from '@/redux/api/utils';
 import api, {ApiResult, ApiToken, DrupalNode, DrupalNodeJsonApi} from './api';
 
 export type RkbAccount = {
@@ -178,9 +178,9 @@ const registerMobile = ({
   mobile,
   token,
 }: {
-  iccid: string;
-  code: string;
-  mobile: string;
+  iccid?: string;
+  code?: string;
+  mobile?: string;
   token?: string;
 }) => {
   if (!iccid)

@@ -1,9 +1,22 @@
+/* eslint-disable no-param-reassign */
 import _ from 'underscore';
-import {Set} from 'immutable';
+import {Set, Map as ImmutableMap} from 'immutable';
+import utils from '@/redux/api/utils';
 import {Store} from '@/redux/modules/cart';
+import {createFromProduct} from '@/redux/models/purchaseItem';
 import api, {ApiResult} from './api';
-import utils from '../utils';
-import {createFromProduct} from '../models/purchaseItem';
+import {Country} from '.';
+
+export type TabViewRouteKey = 'asia' | 'europe' | 'usaAu' | 'multi';
+export type TabViewRoute = {
+  key: TabViewRouteKey;
+  title: string;
+  category: string;
+};
+export type ProductByCategory = {
+  key: string;
+  data: RkbProduct[][];
+};
 
 const category = {
   asia: '64',
@@ -182,6 +195,72 @@ const getLocalOp = (op?: string) => {
     toLocalOp,
   );
 };
+const getProdGroup = ({
+  prodList,
+  localOpList,
+}: {
+  prodList: ImmutableMap<string, RkbProduct>;
+  localOpList: ImmutableMap<string, RkbLocalOp>;
+}) => {
+  const list: RkbProduct[][] = [];
+
+  prodList
+    .valueSeq()
+    .toArray()
+    .forEach((item) => {
+      if (localOpList.has(item.partnerId)) {
+        const localOp = localOpList.get(item.partnerId);
+        item.ccodeStr = (localOp?.ccode || []).join(',');
+        item.cntry = Set(Country.getName(localOp?.ccode));
+        item.search = [...item.cntry].join(',');
+        item.pricePerDay =
+          item.price && item.days
+            ? Math.round(item.price / item.days / 10) * 10
+            : 0;
+
+        const idxCcode = list.findIndex(
+          (elm) => elm.length > 0 && elm[0].ccodeStr === item.ccodeStr,
+        );
+
+        if (idxCcode < 0) {
+          // new item, insert it
+          list.push([item]);
+        } else {
+          // 이미 같은 country code를 갖는 데이터가 존재하면, 그 아래에 추가한다. (2차원 배열)
+          list[idxCcode].push(item);
+        }
+      }
+    });
+
+  return list;
+};
+
+const sortProdGroup = (
+  localOpList: ImmutableMap<string, RkbLocalOp>,
+  list: RkbProduct[][],
+) => {
+  const getMaxWeight = (item: RkbProduct[]) =>
+    Math.max(...item.map((p) => localOpList.get(p.partnerId)?.weight || 0));
+
+  return list
+    .map((item) =>
+      item.sort((a, b) => {
+        // 동일 국가내의 상품을 정렬한다.
+        // field_daily == true 인 무제한 상품 우선, 사용 날짜는 오름차순
+        if (a.field_daily) return b.field_daily ? a.days - b.days : -1;
+        return b.field_daily ? 1 : a.days - b.days;
+      }),
+    )
+    .sort((a, b) => {
+      // 국가는 weight 값이 높은 순서가 우선, weight 값이 같으면 이름 순서
+      const weightA = getMaxWeight(a);
+      const weightB = getMaxWeight(b);
+      if (weightA === weightB) {
+        return a[0].search < b[0].search ? -1 : 1;
+      }
+      return weightB - weightA;
+    });
+};
 
 export default {
   category,
@@ -191,4 +270,6 @@ export default {
   getProduct,
   getProductBySku,
   getLocalOp,
+  getProdGroup,
+  sortProdGroup,
 };

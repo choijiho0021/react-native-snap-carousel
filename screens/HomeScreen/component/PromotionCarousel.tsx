@@ -7,10 +7,10 @@ import {RootState} from '@/redux';
 import {RkbPromotion} from '@/redux/api/promotionApi';
 import {sliderWidth} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
-import {API} from '@/submodules/rokebi-utils';
 import {ProductModelState} from '@/redux/modules/product';
 import {useNavigation} from '@react-navigation/native';
 import i18n from '@/utils/i18n';
+import {API} from '@/redux/api';
 
 const DOT_MARGIN = 6;
 const INACTIVE_DOT_WIDTH = 6;

@@ -49,11 +49,12 @@ export type HomeStackParamList = {
   Home: undefined;
   Tutorial: undefined;
   StoreSearch: undefined;
+  Store: undefined;
   Cart: undefined;
   ProductDetail: {title?: string; img?: string; localOpDetails?: string};
 
   Recharge: undefined;
-  RegisterSim: undefined;
+  RegisterSim: {back: string; title: string};
   NewSim: undefined;
   Usim: undefined;
   Noti: {

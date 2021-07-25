@@ -1,13 +1,13 @@
 import React, {PureComponent} from 'react';
 import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
-import {appStyles} from '../constants/Styles';
+import {appStyles} from '@/constants/Styles';
 import utils from '@/redux/api/utils';
-import {colors} from '../constants/Colors';
+import {colors} from '@/constants/Colors';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {API} from '@/redux/api';
 import AppIcon from './AppIcon';
 import LabelText from './LabelText';
 import InputNumber from './InputNumber';
-import {isDeviceSize} from '../constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   container: {
