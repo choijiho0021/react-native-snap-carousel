@@ -501,6 +501,7 @@ export const actions = {
   getUserId,
   changePushNoti,
   uploadPicture,
+  registerMobile,
 };
 export type AccountAction = typeof actions;
 

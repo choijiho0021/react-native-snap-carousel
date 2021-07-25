@@ -31,17 +31,9 @@ import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
-
-const initState = {
-  scan: false,
-  showRegisterSimModal: false,
-  loggedIn: false,
-  querying: false,
-  iccid: ['', '', '', ''],
-  actCode: undefined,
-  focusInputIccid: false,
-  hasCameraPermission: false,
-};
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RouteProp} from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   actCodeTitle: {
@@ -140,24 +132,55 @@ const styles = StyleSheet.create({
   },
 });
 
-class RegisterSimScreen extends Component {
-  constructor(props) {
+type RegisterSimScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'RegisterSim'
+>;
+
+type RegisterSimScreenRouteProp = RouteProp<HomeStackParamList, 'RegisterSim'>;
+
+type RegisterSimScreenProps = {
+  navigation: RegisterSimScreenNavigationProp;
+  route: RegisterSimScreenRouteProp;
+};
+type RegisterSimScreenState = {
+  iccid: string[];
+  actCode?: string;
+  scan: boolean;
+  querying: boolean;
+  focusInputIccid: boolean;
+  hasCameraPermission: boolean;
+};
+
+class RegisterSimScreen extends Component<
+  RegisterSimScreenProps,
+  RegisterSimScreenState
+> {
+  inputIccid: React.RefObject<unknown>[];
+
+  defaultIccid: string;
+
+  defaultLastIccid: string;
+
+  lastIccidIdx: number;
+
+  isMounted: boolean;
+
+  err: {[x: number]: string};
+
+  scroll: any;
+
+  constructor(props: RegisterSimScreenProps) {
     super(props);
 
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          back={props.route.params && props.route.params.back}
-          title={
-            (this.props.route.params && this.props.route.params.title) ||
-            i18n.t('sim:reg')
-          }
-        />
-      ),
-    });
-
-    this.state = initState;
+    this.state = {
+      scan: false,
+      querying: false,
+      iccid: ['', '', '', ''],
+      actCode: undefined,
+      focusInputIccid: false,
+      hasCameraPermission: false,
+    };
 
     this.onSubmit = this.onSubmit.bind(this);
     this.onCamera = this.onCamera.bind(this);
@@ -170,8 +193,7 @@ class RegisterSimScreen extends Component {
     this.defaultIccid = '12345';
     this.defaultLastIccid = '1234';
     this.lastIccidIdx = 6;
-
-    this._isMounted = null;
+    this.isMounted = false;
 
     this.err = {
       [API.default.E_NOT_FOUND]: 'reg:invalidStatus',
@@ -182,36 +204,32 @@ class RegisterSimScreen extends Component {
   }
 
   componentDidMount() {
+    const {params} = this.props.route;
+
     Analytics.trackEvent('Page_View_Count', {page: 'Register Usim'});
 
-    this._isMounted = true;
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <AppBackButton
+          back={params?.back}
+          title={params?.title || i18n.t('sim:reg')}
+        />
+      ),
+    });
+
+    this.isMounted = true;
   }
 
   componentWillUnmount() {
-    this._isMounted = false;
-  }
-
-  updateIccid(iccid) {
-    console.log('update ICCID', iccid);
-
-    let arr = [];
-
-    for (let i = 0; i < _.size(iccid) / 5 && i < 4; ) {
-      arr.push(iccid.substring(i * 5, ++i * 5));
-    }
-
-    this.setState({
-      iccid: arr,
-    });
-
-    this.props.action.sim.addIccid(iccid);
+    this.isMounted = false;
   }
 
   onSubmit() {
-    const {actCode} = this.state,
-      iccid = this.state.iccid.join('');
+    const {actCode} = this.state;
+    const iccid = this.state.iccid.join('');
 
-    this._isMounted &&
+    this.isMounted &&
       this.setState({
         querying: true,
       });
@@ -240,7 +258,7 @@ class RegisterSimScreen extends Component {
         this.setState(initState);
       })
       .finally(() => {
-        this._isMounted &&
+        this.isMounted &&
           this.setState({
             querying: false,
             disable: false,
@@ -312,6 +330,22 @@ class RegisterSimScreen extends Component {
       [key]: value,
     });
   };
+
+  updateIccid(iccid) {
+    console.log('update ICCID', iccid);
+
+    let arr = [];
+
+    for (let i = 0; i < _.size(iccid) / 5 && i < 4; ) {
+      arr.push(iccid.substring(i * 5, ++i * 5));
+    }
+
+    this.setState({
+      iccid: arr,
+    });
+
+    this.props.action.sim.addIccid(iccid);
+  }
 
   validIccid(iccid) {
     return iccid.every((elm, idx) =>
@@ -458,7 +492,10 @@ export default connect(
   ({account, status}: RootState) => ({
     account,
     auth: accountActions.auth(account),
-    pending: status.pending[accountActions.getAccount.typePrefix] || false,
+    pending:
+      status.pending[accountActions.getAccount.typePrefix] ||
+      status.pending[accountActions.registerMobile.typePrefix] ||
+      false,
   }),
   (dispatch) => ({
     action: {

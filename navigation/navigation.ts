@@ -49,7 +49,7 @@ export type HomeStackParamList = {
   ProductDetail: {title?: string; img?: string; localOpDetails?: string};
 
   Recharge: undefined;
-  RegisterSim: undefined;
+  RegisterSim: {back: string; title: string};
   NewSim: undefined;
   Usim: undefined;
   Noti: {

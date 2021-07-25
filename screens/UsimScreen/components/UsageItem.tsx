@@ -5,14 +5,13 @@ import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import _ from 'underscore';
 import Analytics from 'appcenter-analytics';
 import Svg, {Line} from 'react-native-svg';
-import {API} from 'RokebiESIM/submodules/rokebi-utils';
-import subsApi from 'RokebiESIM/submodules/rokebi-utils/api/subscriptionApi';
-import i18n from '../../../utils/i18n';
-import {utils} from '../../../utils/utils';
-import {appStyles} from '../../../constants/Styles';
-import {colors} from '../../../constants/Colors';
-import AppButton from '../../../components/AppButton';
-import {isDeviceSize} from '../../../constants/SliderEntry.style';
+import i18n from '@/utils/i18n';
+import {utils} from '@/utils/utils';
+import {appStyles} from '@/constants/Styles';
+import {colors} from '@/constants/Colors';
+import AppButton from '@/components/AppButton';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {API} from '@/redux/api';
 
 const styles = StyleSheet.create({
   usageListContainer: {
@@ -128,12 +127,12 @@ function getStatusColor(statusCd) {
   let statusColor = colors.warmGrey;
   let isActive = false;
 
-  if (statusCd === subsApi.STATUS_ACTIVE) {
+  if (statusCd === API.Subscription.STATUS_ACTIVE) {
     statusColor = colors.tomato;
     isActive = true;
-  } else if (statusCd === subsApi.STATUS_RESERVED) {
+  } else if (statusCd === API.Subscription.STATUS_RESERVED) {
     statusColor = colors.clearBlue;
-  } else if (statusCd === subsApi.STATUS_INACTIVE) {
+  } else if (statusCd === API.Subscription.STATUS_INACTIVE) {
     statusColor = colors.black;
   } else {
     statusColor = colors.warmGrey;
@@ -308,7 +307,7 @@ class UsageItem extends Component {
     const {statusColor = colors.warmGrey, isActive = false} = getStatusColor(
       item.statusCd,
     );
-    const isCallProduct = item.type === subsApi.CALL_PRODUCT;
+    const isCallProduct = item.type === API.Subscription.CALL_PRODUCT;
 
     return (
       <TouchableOpacity onPress={onPress}>
