@@ -286,8 +286,12 @@ class Esim extends Component<EsimProps, EsimState> {
 
           requestPermission();
 
+          // 앱 첫 실행 여부 확인
           const firstLaunch = await checkFistLaunch();
           this.setState({firstLaunch});
+          if (firstLaunch) {
+            this.props.navigation.navigate('Tutorial');
+          }
         }
       }
     });
@@ -535,15 +539,11 @@ class Esim extends Component<EsimProps, EsimState> {
   }
 
   render() {
-    const {isSupportDev, firstLaunch, darkMode, index, routes} = this.state;
+    const {isSupportDev, darkMode, index, routes} = this.state;
 
     return (
       <View style={styles.container}>
         <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
-        <TutorialScreen
-          visible={firstLaunch}
-          onOkClose={() => this.setState({firstLaunch: false})}
-        />
         <PromotionCarousel />
         <ScrollView
           ref={this.scrollRef}

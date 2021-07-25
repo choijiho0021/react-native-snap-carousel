@@ -9,6 +9,7 @@ import {appStyles} from '@/constants/Styles';
 import AppIcon from '@/components/AppIcon';
 
 import HomeScreen from '@/screens/HomeScreen/Usim';
+import TutorialScreen from '@/screens/TutorialScreen';
 import MySimScreen from '@/screens/MySimScreen';
 
 import StoreScreen from '@/screens/StoreScreen';
@@ -74,6 +75,11 @@ function homeStack() {
   return (
     <HomeStack.Navigator screenOptions={{animationEnabled: false}}>
       <HomeStack.Screen name="Home" component={HomeScreen} />
+      <HomeStack.Screen
+        name="Tutorial"
+        component={TutorialScreen}
+        options={{headerShown: false}}
+      />
       <HomeStack.Screen name="StoreSearch" component={StoreSearchScreen} />
       <HomeStack.Screen name="Cart" component={CartScreen} />
       <HomeStack.Screen name="ProductDetail" component={ProductDetailScreen} />

@@ -43,6 +43,7 @@ type PurchaseDetailParams = {detail?: RkbOrder};
 
 export type HomeStackParamList = {
   Home: undefined;
+  Tutorial: undefined;
   StoreSearch: undefined;
   Cart: undefined;
   ProductDetail: {title?: string; img?: string; localOpDetails?: string};

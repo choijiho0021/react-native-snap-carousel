@@ -1,11 +1,10 @@
 /* eslint-disable global-require */
-import {RootState} from '@/redux';
 import React, {Component} from 'react';
 import {
   Dimensions,
   Image,
-  Modal,
   Pressable,
+  SafeAreaView,
   StyleSheet,
   Text,
   View,
@@ -13,15 +12,14 @@ import {
 import {AppEventsLogger} from 'react-native-fbsdk';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {getTrackingStatus} from 'react-native-tracking-transparency';
-import {connect} from 'react-redux';
 import _ from 'underscore';
 import {colors} from '@/constants/Colors';
 import {sliderWidth} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {actions as accountActions} from '@/redux/modules/account';
-import {actions as orderActions} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const {esimApp} = Env.get();
 
@@ -103,9 +101,13 @@ const styles = StyleSheet.create({
   },
 });
 
+type TutorialScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'Tutorial'
+>;
+
 type TutorialScreenProps = {
-  visible?: boolean;
-  onOkClose: () => void;
+  navigation: TutorialScreenNavigationProp;
 };
 
 type TutorialScreenState = {
@@ -117,7 +119,7 @@ class TutorialScreen extends Component<
   TutorialScreenProps,
   TutorialScreenState
 > {
-  carousel: React.RefObject<unknown>;
+  carousel: React.LegacyRef<Carousel<string>>;
 
   constructor(props: TutorialScreenProps) {
     super(props);
@@ -138,34 +140,29 @@ class TutorialScreen extends Component<
       <Image
         style={styles.image}
         source={tutorialImages[item]}
-        // source={require('../assets/images/usim/tutorial/step1/mT1.png')}
         resizeMode="cover"
       />
     );
   };
 
   skip = async () => {
-    this.props.onOkClose();
     const status = await getTrackingStatus();
     if (status === 'authorized') AppEventsLogger.logEvent('튜토리얼 SKIP');
+    this.props.navigation.goBack();
   };
 
   completed = async () => {
-    this.props.onOkClose();
     const status = await getTrackingStatus();
     if (status === 'authorized')
       AppEventsLogger.logEvent('fb_mobile_tutorial_completion');
+    this.props.navigation.goBack();
   };
 
   render() {
     const {images, activeSlide} = this.state;
 
     return (
-      <Modal
-        style={styles.container}
-        animationType="slide"
-        transparent={false}
-        visible={this.props.visible}>
+      <SafeAreaView style={{flex: 1}}>
         <View style={{flex: 1}}>
           <Carousel
             ref={this.carousel}
@@ -191,8 +188,8 @@ class TutorialScreen extends Component<
             inactiveDotStyle={styles.inactiveDotStyle}
             inactiveDotOpacity={0.4}
             inactiveDotScale={1.0}
-            carouselRef={this.carousel.current}
-            tappableDots={!_.isEmpty(this.carousel.current)}
+            carouselRef={this.carousel}
+            tappableDots={!_.isEmpty(this.carousel?.current)}
             containerStyle={styles.pagination}
           />
         </View>
@@ -224,7 +221,7 @@ class TutorialScreen extends Component<
               </Pressable>
               <Pressable
                 style={styles.touchableOpacity}
-                onPress={() => this.carousel.current?.snapToNext()}>
+                onPress={() => this.carousel?.current?.snapToNext()}>
                 <Text style={[styles.bottomText, {color: colors.clearBlue}]}>
                   {i18n.t('tutorial:next')}
                 </Text>
@@ -232,16 +229,9 @@ class TutorialScreen extends Component<
             </View>
           )}
         </View>
-      </Modal>
+      </SafeAreaView>
     );
   }
 }
 
-export default connect(({account, status}: RootState) => ({
-  account,
-  auth: accountActions.auth(account),
-  pending:
-    status.pending[orderActions.getOrders.typePrefix] ||
-    status.pending[accountActions.uploadPicture.typePrefix] ||
-    false,
-}))(TutorialScreen);
+export default TutorialScreen;

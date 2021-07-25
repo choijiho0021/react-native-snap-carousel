@@ -10,6 +10,7 @@ import {
   Appearance,
   ColorSchemeName,
   SafeAreaView,
+  Pressable,
 } from 'react-native';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
@@ -18,7 +19,7 @@ import _ from 'underscore';
 import Carousel from 'react-native-snap-carousel';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
-import {actions as simActions} from '@/redux/modules/sim';
+import {actions as simActions, SimAction} from '@/redux/modules/sim';
 import {
   AccountAction,
   AccountModelState,
@@ -43,12 +44,13 @@ import pushNoti from '@/utils/pushNoti';
 import AppAlert from '@/components/AppAlert';
 import appStateHandler from '@/utils/appState';
 import {RootState} from '@/redux';
-import TutorialScreen from '../TutorialScreen';
-import {PromotionModelState} from '../../redux/modules/promotion';
+import createHandlePushNoti from '@/redux/models/createHandlePushNoti';
+import AsyncStorage from '@react-native-community/async-storage';
+import {RkbInfo} from '@/redux/api/pageApi';
+import {PromotionModelState} from '@/redux/modules/promotion';
+import {SyncModelState} from '@/redux/modules/sync';
 import PromotionCarousel from './component/PromotionCarousel';
-import {SyncModelState} from '../../redux/modules/sync';
 import {checkFistLaunch, requestPermission} from './component/permission';
-import createHandlePushNoti from '../../redux/models/createHandlePushNoti';
 
 // windowHeight
 // iphone 8 - 375x667
@@ -251,6 +253,7 @@ type UsimProps = {
     noti: NotiAction;
     account: AccountAction;
     cart: CartAction;
+    sim: SimAction;
   };
 };
 type UsimState = {
@@ -307,7 +310,7 @@ class Usim extends Component<UsimProps, UsimState> {
       ),
     });
 
-    // bhtak
+    // TODO: update
     // Analytics.trackEvent('Page_View_Count', {page: 'Home'});
 
     // config push notification
@@ -318,8 +321,11 @@ class Usim extends Component<UsimProps, UsimState> {
     // 앱 첫 실행 여부 확인
     const firstLaunch = await checkFistLaunch();
     this.setState({firstLaunch});
+    if (firstLaunch) {
+      this.props.navigation.navigate('Tutorial');
+    }
 
-    // bhtak
+    // TODO: update
     // appStateHandler.add(this.appStateHandler);
 
     // 로그인 여부에 따라 달라지는 부분
@@ -331,9 +337,7 @@ class Usim extends Component<UsimProps, UsimState> {
       this.props.account;
 
     if (mobile !== prevProps.account.mobile || pin !== prevProps.account.pin) {
-      if (!_.isEmpty(mobile) && !loggedIn) {
-        this.login(mobile, pin, iccid);
-      }
+      this.login(mobile, pin, iccid);
     }
 
     //  자동로그인의 경우 device token update
@@ -346,6 +350,10 @@ class Usim extends Component<UsimProps, UsimState> {
     }
 
     if (this.props.sync.progress) {
+      if (this.state.firstLaunch) {
+        AsyncStorage.removeItem('alreadyLaunched');
+        this.setState({firstLaunch: false});
+      }
       this.props.navigation.navigate('CodePush');
     }
 
@@ -399,19 +407,6 @@ class Usim extends Component<UsimProps, UsimState> {
     }
   }
 
-  // 공지 사항 상세 페이지로 이동
-  onPressInfo =
-    ({title, body}) =>
-    () => {
-      this.props.navigation.navigate('SimpleText', {
-        key: 'noti',
-        title: i18n.t('contact:noticeDetail'),
-        bodyTitle: title,
-        text: body,
-        mode: 'text',
-      });
-    };
-
   navigate =
     (key, params = {}) =>
     () => {
@@ -427,11 +422,11 @@ class Usim extends Component<UsimProps, UsimState> {
       this.props.navigation.navigate(naviTarget, params);
     };
 
-  appStateHandler(state) {
+  appStateHandler(state: string) {
     const {iccid, token} = this.props.account;
     switch (state) {
       case 'active':
-        if (!_.isEmpty(iccid) && !this.isNoticed) {
+        if (!iccid && !this.isNoticed) {
           this.props.action.account.getAccount({iccid, token});
         }
         break;
@@ -445,7 +440,7 @@ class Usim extends Component<UsimProps, UsimState> {
     this.isNoticed = null;
   }
 
-  login(mobile, pin, iccid) {
+  login(mobile?: string, pin?: string, iccid?: string) {
     this.props.action.account.logInAndGetAccount({mobile, pin, iccid});
     this.props.action.sim.getSimCardList();
     this.props.action.noti.getNotiList({mobile});
@@ -600,26 +595,31 @@ class Usim extends Component<UsimProps, UsimState> {
     pushNotiHandler.handleNoti();
   }
 
-  renderInfo({item}) {
+  renderInfo({item}: {item: RkbInfo}) {
     return (
-      <TouchableOpacity onPress={this.onPressInfo(item)}>
+      <Pressable
+        onPress={() =>
+          this.props.navigation.navigate('SimpleText', {
+            key: 'noti',
+            title: i18n.t('contact:noticeDetail'),
+            bodyTitle: item.title,
+            text: item.body,
+            mode: 'text',
+          })
+        }>
         <View style={styles.info}>
           <Text style={styles.infoText}>{item.title}</Text>
         </View>
-      </TouchableOpacity>
+      </Pressable>
     );
   }
 
   render() {
-    const {darkMode, firstLaunch} = this.state;
+    const {darkMode} = this.state;
 
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
-        <TutorialScreen
-          visible={firstLaunch}
-          onOkClose={() => this.setState({firstLaunch: false})}
-        />
         <ScrollView>
           <PromotionCarousel />
           {this.userInfo()}
