@@ -1,9 +1,9 @@
 import React, {memo} from 'react';
 import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
-import utils from '@/submodules/rokebi-utils/utils';
+import utils from '@/redux/api/utils';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppIcon from './AppIcon';

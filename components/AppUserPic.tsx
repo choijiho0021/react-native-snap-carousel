@@ -1,6 +1,6 @@
 import React, {memo} from 'react';
 import {Image, ImageResizeMode, ImageStyle, Pressable} from 'react-native';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 import AppIcon from './AppIcon';
 
 type AppUserPicProps = {

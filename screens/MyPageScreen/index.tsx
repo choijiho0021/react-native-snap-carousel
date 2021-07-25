@@ -4,11 +4,8 @@ import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
 import AppModal from '@/components/AppModal';
 import AppModalForm from '@/components/AppModalForm';
-import AppUserPic from '@/components/AppUserPic';
-import LabelTextTouchable from '@/components/LabelTextTouchable';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import Env from '@/environment';
 import {MyPageStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {
@@ -26,9 +23,8 @@ import {
   Toast,
   ToastAction,
 } from '@/redux/modules/toast';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 import i18n from '@/utils/i18n';
-import {utils} from '@/utils/utils';
 import validationUtil, {ValidationResult} from '@/utils/validationUtil';
 import Clipboard from '@react-native-community/clipboard';
 import {RouteProp} from '@react-navigation/native';
@@ -37,7 +33,6 @@ import Analytics from 'appcenter-analytics';
 import React, {Component} from 'react';
 import {
   FlatList,
-  ImageBackground,
   Linking,
   Platform,
   Pressable,
@@ -55,17 +50,12 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import Info from './components/Info';
 import OrderItem from './components/OrderItem';
-
-const {esimApp} = Env.get();
 
 const ImagePicker = require('react-native-image-crop-picker').default;
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    marginRight: 20,
-  },
   title: {
     ...appStyles.title,
     marginLeft: 20,
@@ -75,45 +65,6 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     backgroundColor: colors.white,
   },
-  photo: {
-    height: 76,
-    width: 76,
-    marginTop: 20,
-    alignSelf: 'center',
-  },
-  label: {
-    ...appStyles.normal14Text,
-    marginHorizontal: 20,
-    color: colors.warmGrey,
-  },
-  value: {
-    ...appStyles.roboto16Text,
-    marginLeft: 20,
-    maxWidth: '100%',
-    lineHeight: 40,
-    color: colors.black,
-  },
-  dividerSmall: {
-    borderBottomWidth: 1,
-    margin: 20,
-    marginBottom: 0,
-    borderBottomColor: colors.black,
-  },
-  divider: {
-    height: 10,
-    marginTop: 40,
-    backgroundColor: colors.whiteTwo,
-  },
-  subTitle: {
-    ...appStyles.bold18Text,
-    marginTop: 40,
-    marginLeft: 20,
-    color: colors.black,
-  },
-  buttonTitle: {
-    ...appStyles.normal16Text,
-    textAlign: 'center',
-  },
   nolist: {
     marginVertical: 60,
     textAlign: 'center',
@@ -122,29 +73,6 @@ const styles = StyleSheet.create({
     marginRight: 20,
     justifyContent: 'flex-end',
     backgroundColor: colors.white,
-  },
-  btnContactBoard: {
-    marginRight: 20,
-    marginLeft: esimApp ? 3 : 20,
-    flex: 1,
-    borderColor: colors.lightGrey,
-    borderWidth: 1,
-    borderRadius: 3,
-    height: esimApp ? 40 : 30,
-    justifyContent: 'center',
-  },
-  btnIdCheck: {
-    marginLeft: 20,
-    marginRight: 3,
-    flex: 1,
-    borderColor: colors.lightGrey,
-    borderWidth: 1,
-    borderRadius: 3,
-    height: 40,
-    justifyContent: 'center',
-  },
-  body: {
-    ...appStyles.normal16Text,
   },
   titleAndStatus: {
     flexDirection: 'row',
@@ -192,29 +120,6 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     color: colors.clearBlue,
     marginLeft: 20,
-  },
-  rechargeBox: {
-    marginHorizontal: 20,
-    marginBottom: 20,
-    height: 130,
-    flex: 1,
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-  rechargeText: {
-    margin: 27,
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  rchBtn: {
-    width: 80,
-    height: 40,
-    borderRadius: 3,
-    backgroundColor: colors.clearBlue,
   },
 });
 
@@ -268,7 +173,6 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
       copyString: '',
     };
 
-    this.info = this.info.bind(this);
     this.renderOrder = this.renderOrder.bind(this);
     this.changePhoto = this.changePhoto.bind(this);
     this.showEmailModal = this.showEmailModal.bind(this);
@@ -588,108 +492,6 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
     return this.props.navigation.navigate('Recharge', {mode: 'MyPage'});
   }
 
-  info() {
-    const {
-      account: {mobile, email, userPictureUrl, balance},
-    } = this.props;
-    const userPicture = {
-      width: 76,
-      height: 76,
-      borderRadius: 76 / 2,
-    };
-
-    return (
-      <View style={{marginBottom: 10}}>
-        <View
-          style={{
-            marginTop: 35,
-            flex: 1,
-            flexDirection: 'row',
-            marginLeft: 20,
-            height: 76,
-            marginBottom: 30,
-          }}>
-          <Pressable
-            style={{flex: 1, alignSelf: 'center'}}
-            onPress={this.changePhoto}>
-            <AppUserPic
-              url={userPictureUrl}
-              icon="imgPeopleL"
-              style={userPicture}
-              onPress={this.changePhoto}
-            />
-            <AppIcon
-              name="imgPeoplePlus"
-              style={{bottom: 20, right: -29, alignSelf: 'center'}}
-            />
-          </Pressable>
-          <View style={{flex: 3, justifyContent: 'center'}}>
-            <Text style={styles.label}>{utils.toPhoneNumber(mobile)}</Text>
-            <LabelTextTouchable
-              key="email"
-              label={email}
-              labelStyle={styles.value}
-              value=""
-              arrowStyle={{paddingRight: 20}}
-              onPress={() => this.showEmailModal(true)}
-              arrow="iconArrowRight"
-            />
-          </View>
-        </View>
-        {esimApp && (
-          <Pressable
-            style={styles.rechargeBox}
-            onPress={() => this.props.navigation.navigate('Recharge')}>
-            <ImageBackground
-              source={require('../assets/images/esim/card.png')}
-              style={styles.image}>
-              <View style={styles.rechargeText}>
-                <View style={{flexDirection: 'column'}}>
-                  <Text style={[appStyles.normal14Text, {marginBottom: 10}]}>
-                    {i18n.t('acc:remain')}
-                  </Text>
-                  <Text style={appStyles.bold30Text}>
-                    {`${utils.numberToCommaString(balance)}${i18n.t('won')}`}
-                  </Text>
-                </View>
-                <AppButton
-                  title={i18n.t('acc:goRecharge')}
-                  titleStyle={[appStyles.normal14Text, {color: colors.white}]}
-                  style={styles.rchBtn}
-                  onPress={() => this.props.navigation.navigate('Recharge')}
-                />
-              </View>
-            </ImageBackground>
-          </Pressable>
-        )}
-
-        <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-          {esimApp && (
-            <Pressable
-              style={styles.btnIdCheck}
-              onPress={() => this.showIdModal(true)}>
-              <Text style={[appStyles.normal16Text, {textAlign: 'center'}]}>
-                {i18n.t('mypage:idCheckTitle')}
-              </Text>
-            </Pressable>
-          )}
-          <Pressable
-            style={styles.btnContactBoard}
-            onPress={() =>
-              this.props.navigation.navigate('ContactBoard', {index: 2})
-            }>
-            <Text style={[appStyles.normal16Text, {textAlign: 'center'}]}>
-              {i18n.t('board:mylist')}
-            </Text>
-          </Pressable>
-        </View>
-        <View style={styles.divider} />
-        <Text style={styles.subTitle}>{i18n.t('acc:purchaseHistory')}</Text>
-        <View style={styles.dividerSmall} />
-      </View>
-    );
-  }
-
   async validEmail(value: string): Promise<ValidationResult | undefined> {
     const err = validationUtil.validate('email', value);
     if (!_.isEmpty(err)) return err;
@@ -752,7 +554,15 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
           ref={this.flatListRef}
           data={orderList}
           keyExtractor={(item) => `${item}`}
-          ListHeaderComponent={this.info}
+          ListHeaderComponent={
+            <Info
+              onChangePhoto={this.changePhoto}
+              onPress={(key: 'id' | 'email') => {
+                if (key === 'id') this.showIdModal(true);
+                else this.showEmailModal(true);
+              }}
+            />
+          }
           ListEmptyComponent={this.empty()}
           renderItem={this.renderOrder}
           onEndReachedThreshold={0.4}

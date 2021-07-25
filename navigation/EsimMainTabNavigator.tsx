@@ -8,7 +8,8 @@ import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import {appStyles} from '@/constants/Styles';
 import AppIcon from '@/components/AppIcon';
 
-import HomeScreenEsim from '@/screens/HomeScreenEsim';
+import HomeScreenEsim from '@/screens/HomeScreen/Esim';
+import TutorialScreen from '@/screens/TutorialScreen';
 import MySimScreen from '@/screens/MySimScreen';
 
 import CountryScreen from '@/screens/CountryScreen';
@@ -18,7 +19,6 @@ import SettingsScreen from '@/screens/SettingsScreen';
 import i18n from '@/utils/i18n';
 import RechargeScreen from '@/screens/RechargeScreen';
 import CartScreen from '@/screens/CartScreen';
-import withBadge from '@/components/withBadge';
 import MyPageScreen from '@/screens/MyPageScreen/index';
 import NotiScreen from '@/screens/NotiScreen';
 import PaymentScreen from '@/screens/PaymentScreen';
@@ -37,6 +37,7 @@ import GuideScreen from '@/screens/GuideScreen';
 import {RootState} from '@/redux';
 import AuthStack from './AuthStackNavigator';
 import {HomeStackParamList} from './navigation';
+import BadgedIcon from './component/BadgedIcon';
 
 const styles = StyleSheet.create({
   tabBarIcon: {
@@ -67,6 +68,7 @@ function homeStack() {
   return (
     <HomeStack.Navigator screenOptions={{animationEnabled: false}}>
       <HomeStack.Screen name="Home" component={HomeScreenEsim} />
+      <HomeStack.Screen name="Tutorial" component={TutorialScreen} />
       <HomeStack.Screen name="StoreSearch" component={StoreSearchScreen} />
       <HomeStack.Screen name="Cart" component={CartScreen} />
       <HomeStack.Screen name="ProductDetail" component={ProductDetailScreen} />
@@ -136,23 +138,14 @@ function myPageStack() {
   );
 }
 
-// redux store에서 cart에 추가된 상품 개수를 읽어서 배지에 표시한다.
-//
-const BadgedIcon = withBadge(
-  ({cart}: RootState) => ({
-    cartItems: (cart.orderItems || []).reduce((acc, cur) => acc + cur.qty, 0),
-  }),
-  'cartItems',
-)(AppIcon);
-
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = ({
   loggedIn,
   iccid,
 }: {
-  loggedIn: boolean;
-  iccid: string;
+  loggedIn?: boolean;
+  iccid?: string;
 }) => {
   return (
     <Tab.Navigator initialRouteName="HomeStack" backBehavior="initialRoute">

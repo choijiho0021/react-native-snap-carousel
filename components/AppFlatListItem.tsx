@@ -1,8 +1,8 @@
 import React, {memo, useState} from 'react';
 import {StyleSheet, View, Text, Pressable} from 'react-native';
 
-import utils from '@/submodules/rokebi-utils/utils';
-import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
+import utils from '@/redux/api/utils';
+import {RkbInfo} from '@/redux/api/pageApi';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppIcon from './AppIcon';

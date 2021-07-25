@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
 import {AnyAction} from 'redux';
 import {Reducer} from 'redux-actions';
-import {API} from '@/submodules/rokebi-utils';
-import {RkbBoard, RkbIssue} from '@/submodules/rokebi-utils/api/boardApi';
+import {API} from '@/redux/api';
+import {RkbBoard, RkbIssue} from '@/redux/api/boardApi';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 
 const postIssue = createAsyncThunk('board/postIssue', API.Board.post);

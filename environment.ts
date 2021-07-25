@@ -1,134 +1,84 @@
 import {Platform} from 'react-native';
+import {getBundleId} from 'react-native-device-info';
 
+const bundleId = getBundleId();
 const impId = 'imp53913318';
 
 // rokebi esim App
-const appId = 'esim';
+const appId = bundleId === 'com.uangel.rokebi-USIM' ? 'usim' : 'esim';
 const codePushLabel = {
   stagingIOS: 'v56',
   stagingAndroid: 'v55',
-  productionIOS: "v13",
-  productionAndroid: "v6",
+  productionIOS: 'v13',
+  productionAndroid: 'v6',
 };
 const channelId = '_nzQhxb';
 
-const env = {
+type Env = {
+  appId: string;
+  impId: string;
+  channelId: string;
+  esimApp: boolean;
+  label?: string;
+  scheme?: string;
+  apiUrl?: string;
+  baseUrl?: string;
+  rokApiUrl?: string;
+  sipServer: string;
+};
+const env: Env = {
   appId,
   impId,
   channelId,
   esimApp: appId === 'esim',
+  sipServer: '193.122.106.2:35060',
 };
 
-const ENV = {
-  esim: {
-    dev: {
-      // scheme: 'http',
-      // rokApiUrl: 'svcapp.rokebi.com',
-      // apiUrl: 'esim.rokebi.com',
-      // baseUrl: 'http://esim.rokebi.com',
-      scheme: 'https',
-      rokApiUrl: 'svcapp.rokebi.com',
-      apiUrl: 'esim.rokebi.com',
-      baseUrl: 'https://esim.rokebi.com',
-      label:
-        Platform.OS === 'ios'
-          ? codePushLabel.stagingIOS
-          : codePushLabel.stagingAndroid,
-    },
-    staging: {
-      scheme: 'http',
-      rokApiUrl: 'tb.service.rokebi.com',
-      apiUrl: 'esim-tb-v1.ap-northeast-2.elasticbeanstalk.com',
-      baseUrl: 'http://esim-tb-v1.ap-northeast-2.elasticbeanstalk.com',
-      impId,
-      label:
-        Platform.OS === 'ios'
-          ? codePushLabel.stagingIOS
-          : codePushLabel.stagingAndroid,
-    },
-    prod: {
-      scheme: 'https',
-      rokApiUrl: 'svcapp.rokebi.com',
-      apiUrl: 'esim.rokebi.com',
-      baseUrl: 'https://esim.rokebi.com',
-      impId,
-      label:
-        Platform.OS === 'ios'
-          ? codePushLabel.productionIOS
-          : codePushLabel.productionAndroid,
-    },
-  },
-  rokebi: {
-    dev: {
-      scheme: 'https',
-      rokApiUrl: 'svcapp.rokebi.com',
-      apiUrl: 'usim.rokebi.com',
-      baseUrl: 'https://usim.rokebi.com',
-      // scheme: 'http',
-      // rokApiUrl: 'tb.service.rokebi.com',
-      // apiUrl: 'esim2-tb-v3.ap-northeast-2.elasticbeanstalk.com',
-      // baseUrl: 'http://esim-tb-v3.ap-northeast-2.elasticbeanstalk.com',
-      label:
-        Platform.OS === 'ios'
-          ? codePushLabel.stagingIOS
-          : codePushLabel.stagingAndroid,
-    },
-    staging: {
-      scheme: 'http',
-      rokApiUrl: 'tb.service.rokebi.com',
-      apiUrl: 'esim2-tb-v3.ap-northeast-2.elasticbeanstalk.com',
-      baseUrl: 'http://esim2-tb-v3.ap-northeast-2.elasticbeanstalk.com',
-      label:
-        Platform.OS === 'ios'
-          ? codePushLabel.stagingIOS
-          : codePushLabel.stagingAndroid,
-    },
-    prod: {
-      scheme: 'https',
-      rokApiUrl: 'svcapp.rokebi.com',
-      apiUrl: 'usim.rokebi.com',
-      baseUrl: 'https://usim.rokebi.com',
-      label:
-        Platform.OS === 'ios'
-          ? codePushLabel.productionIOS
-          : codePushLabel.productionAndroid,
-    },
-  },
-};
+function get() {
+  if (env.label) return env;
 
-class Env {
-  constructor() {
-    this.env = Env.appEnv('esim');
-  }
+  env.label =
+    Platform.OS === 'ios'
+      ? codePushLabel.stagingIOS
+      : codePushLabel.stagingAndroid;
 
-  setAppIdByIccid(iccid) {
-    this.env = Env.appEnv(iccid.substr(0, 8) === '00001111' ? 'esim' : 'usim');
-  }
-
-  get() {
-    return this.env;
-  }
-
-  static appEnv(app) {
-    if (ENV[app]) {
-      const appEnv =
-        ENV[app][
-          // eslint-disable-next-line no-nested-ternary
-          process.env.NODE_ENV === 'production'
-            ? 'prod'
-            : process.env.NODE_ENV === 'staging'
-            ? 'staging'
-            : 'dev'
-        ];
-
-      return {
-        ...appEnv,
-        ...env,
-        sipServer: '193.122.106.2:35060',
-      };
+  if (appId === 'esim') {
+    switch (process.env.NODE_ENV) {
+      case 'production':
+        env.scheme = 'http';
+        env.rokApiUrl = 'svcapp.rokebi.com';
+        env.apiUrl = 'tb-esim.rokebi.com';
+        env.baseUrl = 'https://tb-esim.rokebi.com';
+        break;
+      default:
+        env.scheme = 'http';
+        env.apiUrl = 'tb-esim.rokebi.com';
+        env.baseUrl = 'http://tb-esim.rokebi.com';
+        // scheme: 'https',
+        // apiUrl: 'esim.rokebi.com',
+        // baseUrl: 'https://esim.rokebi.com',
+        env.rokApiUrl = 'svcapp.rokebi.com';
+        break;
     }
     return env;
   }
+
+  // appId = rokebi
+  switch (process.env.NODE_ENV) {
+    case 'production':
+      env.scheme = 'https';
+      env.rokApiUrl = 'svcapp.rokebi.com';
+      env.apiUrl = 'usim.rokebi.com';
+      env.baseUrl = 'https://usim.rokebi.com';
+      break;
+    default:
+      env.scheme = 'http';
+      env.rokApiUrl = 'svcapp.rokebi.com';
+      env.apiUrl = 'tb-usim.rokebi.com';
+      env.baseUrl = 'http://tb-usim.rokebi.com';
+      break;
+  }
+  return env;
 }
 
-export default new Env();
+export default {get};

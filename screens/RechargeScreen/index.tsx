@@ -22,8 +22,8 @@ import {
   OrderAction,
   OrderModelState,
 } from '@/redux/modules/order';
-import {API} from '@/submodules/rokebi-utils';
-import utils from '@/submodules/rokebi-utils/utils';
+import {API} from '@/redux/api';
+import utils from '@/redux/api/utils';
 import i18n from '@/utils/i18n';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';

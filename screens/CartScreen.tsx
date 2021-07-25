@@ -30,16 +30,16 @@ import {
   CartAction,
   CartModelState,
 } from '@/redux/modules/cart';
-import api from '@/submodules/rokebi-utils/api/api';
+import api from '@/redux/api/api';
 import i18n from '@/utils/i18n';
 import {RootState} from '@/redux';
-import utils from '@/submodules/rokebi-utils/utils';
+import utils from '@/redux/api/utils';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
-import {RkbOrderItem} from '@/submodules/rokebi-utils/api/cartApi';
+import {RkbOrderItem} from '@/redux/api/cartApi';
 import {ProductModelState} from '@/redux/modules/product';
-import {PurchaseItem} from '@/submodules/rokebi-utils/models/purchaseItem';
+import {PurchaseItem} from '@/redux/models/purchaseItem';
 
 const sectionTitle = ['sim', 'product'];
 

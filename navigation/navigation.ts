@@ -1,8 +1,8 @@
-import {RkbOrder} from '@/submodules/rokebi-utils/api/orderApi';
-import {RkbInfo} from '@/submodules/rokebi-utils/api/pageApi';
-import {RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
-import {BoardMsgStatus} from '@/submodules/rokebi-utils/api/boardApi';
-import {PaymentResult} from '@/submodules/rokebi-utils/models/paymentResult';
+import {RkbOrder} from '@/redux/api/orderApi';
+import {RkbInfo} from '@/redux/api/pageApi';
+import {RkbProduct} from '@/redux/api/productApi';
+import {BoardMsgStatus} from '@/redux/api/boardApi';
+import {PaymentResult} from '@/redux/models/paymentResult';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html';
 export type PymMethodScreenMode = 'cart' | 'roaming_product' | 'new_sim';
@@ -43,6 +43,7 @@ type PurchaseDetailParams = {detail?: RkbOrder};
 
 export type HomeStackParamList = {
   Home: undefined;
+  Tutorial: undefined;
   StoreSearch: undefined;
   Cart: undefined;
   ProductDetail: {title?: string; img?: string; localOpDetails?: string};

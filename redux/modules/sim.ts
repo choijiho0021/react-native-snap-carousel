@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 export const updateSimPartner = createAsyncThunk(

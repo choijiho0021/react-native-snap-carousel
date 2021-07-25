@@ -35,7 +35,7 @@ import i18n from '@/utils/i18n';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import {HomeStackParamList} from '@/navigation/navigation';
-import {RkbSubscription} from '@/submodules/rokebi-utils/api/subscriptionApi';
+import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import CardInfo from './components/CardInfo';
 import UsageItem from './components/UsageItem';
 

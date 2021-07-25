@@ -17,7 +17,7 @@ import _ from 'underscore';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import Analytics from 'appcenter-analytics';
 import KakaoSDK from '@actbase/react-native-kakaosdk';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 import i18n from '@/utils/i18n';
 import AppBackButton from '@/components/AppBackButton';
 import AppActivityIndicator from '@/components/AppActivityIndicator';

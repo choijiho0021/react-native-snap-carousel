@@ -18,7 +18,7 @@ import AppIcon from '@/components/AppIcon';
 import validationUtil from '@/utils/validationUtil';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {isAndroid} from '@/components/SearchBarAnimation/utils';
-import utils from '@/submodules/rokebi-utils/utils';
+import utils from '@/redux/api/utils';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
@@ -294,13 +294,15 @@ class AddProfileScreen extends Component {
     }
   }
 
-  onChangeProfile = (key = '') => (value) => {
-    this.setState((state) => ({
-      profile: state.profile.set(key, value),
-    }));
+  onChangeProfile =
+    (key = '') =>
+    (value) => {
+      this.setState((state) => ({
+        profile: state.profile.set(key, value),
+      }));
 
-    this.validate(key, value);
-  };
+      this.validate(key, value);
+    };
 
   // _onFocusClear(key){
 

@@ -7,7 +7,7 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
-import {RkbOrder} from '@/submodules/rokebi-utils/api/orderApi';
+import {RkbOrder} from '@/redux/api/orderApi';
 
 const styles = StyleSheet.create({
   order: {

@@ -1,36 +1,29 @@
 /* eslint-disable no-param-reassign */
 import AsyncStorage from '@react-native-community/async-storage';
 import {Set} from 'immutable';
-import moment from 'moment';
+import moment, {Moment} from 'moment';
 import React, {Component, memo} from 'react';
 import {
-  Animated,
   Appearance,
   BackHandler,
+  ColorSchemeName,
   Dimensions,
-  Image,
   Platform,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import RNExitApp from 'react-native-exit-app';
-import {PERMISSIONS, request} from 'react-native-permissions';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {TabView} from 'react-native-tab-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import {requestTrackingPermission} from 'react-native-tracking-transparency';
-import messaging from '@react-native-firebase/messaging';
 import {RootState} from '@/redux';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
-import {sliderWidth} from '@/constants/SliderEntry.style';
 import StoreList from '@/components/StoreList';
 import withBadge from '@/components/withBadge';
 import {colors} from '@/constants/Colors';
@@ -47,21 +40,19 @@ import {
   ProductAction,
   ProductModelState,
 } from '@/redux/modules/product';
-import {API, Country} from '@/submodules/rokebi-utils';
-import createHandlePushNoti from '@/submodules/rokebi-utils/models/createHandlePushNoti';
+import {API, Country} from '@/redux/api';
+import createHandlePushNoti from '@/redux/models/createHandlePushNoti';
 import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import {RkbPromotion} from '@/submodules/rokebi-utils/api/promotionApi';
+import {RkbPromotion} from '@/redux/api/promotionApi';
 import {SyncModelState} from '@/redux/modules/sync';
-import {RkbProduct} from '@/submodules/rokebi-utils/api/productApi';
+import {RkbProduct} from '@/redux/api/productApi';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
-import TutorialScreen from './TutorialScreen';
-
-const DOT_MARGIN = 6;
-const INACTIVE_DOT_WIDTH = 6;
-const ACTIVE_DOT_WIDTH = 20;
+import TutorialScreen from '../TutorialScreen';
+import PromotionCarousel from './component/PromotionCarousel';
+import {checkFistLaunch, requestPermission} from './component/permission';
 
 const BadgeAppButton = withBadge(
   ({noti}: RootState) => ({
@@ -70,21 +61,8 @@ const BadgeAppButton = withBadge(
   'notReadNoti',
 )(AppButton);
 
-const dotStyle = (
-  width: Animated.Value | Animated.AnimatedInterpolation,
-  marginLeft: number | Animated.AnimatedInterpolation,
-  backgroundColor: string = colors.clearBlue,
-) => ({
-  height: 6,
-  borderRadius: 3.5,
-  width,
-  marginLeft,
-  backgroundColor,
-});
-
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
     backgroundColor: colors.white,
     flex: 1,
   },
@@ -112,21 +90,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     marginHorizontal: 18,
-  },
-  pagination: {
-    marginRight: 30,
-    alignSelf: 'flex-end',
-  },
-  paginationContainer: {
-    paddingVertical: 5,
-    paddingHorizontal: 0,
-  },
-  inactiveDot: {
-    width: INACTIVE_DOT_WIDTH,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.lightGrey,
-    marginLeft: DOT_MARGIN,
   },
   whiteTwoBackground: {
     backgroundColor: colors.whiteTwo,
@@ -166,52 +129,12 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginBottom: 10,
   },
-  whiteBackground: {
-    flex: 1,
-    backgroundColor: colors.white,
-  },
   imgRatio: {
     // figure out your image aspect ratio
     aspectRatio: 335 / 100,
     width: '100%',
   },
 });
-
-const PromotionImage0 = ({
-  item,
-  onPress,
-}: {
-  item: RkbPromotion;
-  onPress: (i: RkbPromotion) => void;
-}) => {
-  return (
-    <TouchableOpacity
-      style={{paddingHorizontal: 20}}
-      onPress={() => onPress(item)}>
-      {_.isEmpty(item.imageUrl) ? (
-        <Text style={appStyles.normal16Text}>{item.title}</Text>
-      ) : (
-        <Image
-          source={{uri: API.default.httpImageUrl(item.imageUrl)}}
-          style={styles.imgRatio}
-          resizeMode="contain"
-        />
-      )}
-    </TouchableOpacity>
-  );
-};
-const PromotionImage = memo(PromotionImage0);
-
-async function requestPermission() {
-  if (Platform.OS === 'ios') {
-    await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
-    await messaging().requestPermission();
-    await requestTrackingPermission();
-  } else if (Platform.OS === 'android') {
-    await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
-    await requestTrackingPermission();
-  }
-}
 
 function filterByCategory(list: RkbProduct[][], key: string) {
   const filtered = list.filter(
@@ -223,7 +146,7 @@ function filterByCategory(list: RkbProduct[][], key: string) {
 
 type HomeScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Home'>;
 
-type HomeScreenEsimProps = {
+type EsimProps = {
   navigation: HomeScreenNavigationProp;
   promotion: RkbPromotion[];
   product: ProductModelState;
@@ -249,45 +172,80 @@ type TabViewRoute = {
   category: string;
 };
 
-const initialState = {
-  isSupportDev: true,
-  index: 0,
-  activeSlide: 0,
-  routes: [
-    {key: 'asia', title: i18n.t('store:asia'), category: '아시아'},
-    {key: 'europe', title: i18n.t('store:europe'), category: '유럽'},
-    {key: 'usaAu', title: i18n.t('store:usa/au'), category: '미주/호주'},
-    {key: 'multi', title: i18n.t('store:multi'), category: '복수 국가'},
-  ] as TabViewRoute[],
-  allData: [] as RkbProduct[][],
-  asia: [] as ProductByCategory[],
-  europe: [] as ProductByCategory[],
-  usaAu: [] as ProductByCategory[],
-  multi: [] as ProductByCategory[],
-  firstLaunch: false,
-  darkMode: Appearance.getColorScheme(),
-  time: moment(),
-};
-
-type HomeScreenEsimState = typeof initialState & {
+type EsimState = {
+  isSupportDev: boolean;
+  index: number;
+  routes: TabViewRoute[];
+  allData: RkbProduct[][];
+  asia: ProductByCategory[];
+  europe: ProductByCategory[];
+  usaAu: ProductByCategory[];
+  multi: ProductByCategory[];
+  darkMode: ColorSchemeName;
+  time: Moment;
   deviceList?: string[];
   firstLaunch?: boolean;
 };
 
-class HomeScreenEsim extends Component<
-  HomeScreenEsimProps,
-  HomeScreenEsimState
-> {
+const TabHeader0 = ({
+  index,
+  routes,
+  onIndexChange,
+}: {
+  index: number;
+  routes: TabViewRoute[];
+  onIndexChange: (n: number) => void;
+}) => {
+  return (
+    <View style={styles.whiteTwoBackground}>
+      <View style={styles.tabView}>
+        {routes.map((elm, idx) => (
+          <AppButton
+            key={elm.key}
+            style={styles.whiteTwoBackground}
+            titleStyle={[
+              styles.normal16WarmGrey,
+              idx === index ? styles.boldClearBlue : {},
+            ]}
+            title={elm.title}
+            // title={i18n.t(`prodDetail:${elm}`)}
+            onPress={() => onIndexChange(idx)}
+          />
+        ))}
+      </View>
+    </View>
+  );
+};
+const TabHeader = memo(TabHeader0);
+
+class Esim extends Component<EsimProps, EsimState> {
   offset: number;
 
   controller: AbortController;
 
   scrollRef: React.RefObject<ScrollView>;
 
-  constructor(props: HomeScreenEsimProps) {
+  constructor(props: EsimProps) {
     super(props);
 
-    this.state = initialState;
+    this.state = {
+      isSupportDev: true,
+      index: 0,
+      routes: [
+        {key: 'asia', title: i18n.t('store:asia'), category: '아시아'},
+        {key: 'europe', title: i18n.t('store:europe'), category: '유럽'},
+        {key: 'usaAu', title: i18n.t('store:usa/au'), category: '미주/호주'},
+        {key: 'multi', title: i18n.t('store:multi'), category: '복수 국가'},
+      ] as TabViewRoute[],
+      allData: [] as RkbProduct[][],
+      asia: [] as ProductByCategory[],
+      europe: [] as ProductByCategory[],
+      usaAu: [] as ProductByCategory[],
+      multi: [] as ProductByCategory[],
+      firstLaunch: false,
+      darkMode: Appearance.getColorScheme(),
+      time: moment(),
+    };
 
     this.refresh = this.refresh.bind(this);
     this.renderTitleBtn = this.renderTitleBtn.bind(this);
@@ -295,13 +253,9 @@ class HomeScreenEsim extends Component<
     this.sortProdGroup = this.sortProdGroup.bind(this);
     this.onIndexChange = this.onIndexChange.bind(this);
     this.onPressItem = this.onPressItem.bind(this);
-    this.onPressPromotion = this.onPressPromotion.bind(this);
-    this.renderDots = this.renderDots.bind(this);
     this.notification = this.notification.bind(this);
     this.init = this.init.bind(this);
     this.modalBody = this.modalBody.bind(this);
-    this.checkFistLaunch = this.checkFistLaunch.bind(this);
-    this.tabHeader = this.tabHeader.bind(this);
 
     this.offset = 0;
     this.controller = new AbortController();
@@ -311,7 +265,7 @@ class HomeScreenEsim extends Component<
   componentDidMount() {
     this.setState({time: moment()});
 
-    API.Device.getDevList().then((resp) => {
+    API.Device.getDevList().then(async (resp) => {
       if (resp.result === 0) {
         const deviceModel = DeviceInfo.getModel();
         const deviceName = DeviceInfo.getDeviceId();
@@ -324,6 +278,7 @@ class HomeScreenEsim extends Component<
         });
 
         this.renderTitleBtn();
+
         if (isSupportDev) {
           pushNoti.add(this.notification);
 
@@ -331,7 +286,12 @@ class HomeScreenEsim extends Component<
 
           requestPermission();
 
-          this.checkFistLaunch();
+          // 앱 첫 실행 여부 확인
+          const firstLaunch = await checkFistLaunch();
+          this.setState({firstLaunch});
+          if (firstLaunch) {
+            this.props.navigation.navigate('Tutorial');
+          }
         }
       }
     });
@@ -340,7 +300,7 @@ class HomeScreenEsim extends Component<
     this.init();
   }
 
-  componentDidUpdate(prevProps: HomeScreenEsimProps) {
+  componentDidUpdate(prevProps: EsimProps) {
     const focus = this.props.navigation.isFocused();
     const now = moment();
     const diff = moment.duration(now.diff(this.state.time)).asMinutes();
@@ -381,33 +341,6 @@ class HomeScreenEsim extends Component<
     });
     this.scrollRef.current?.scrollTo({x: 0, y: 0, animated: false});
   };
-
-  onPressPromotion(item: RkbPromotion) {
-    if (item.product_uuid) {
-      const {prodList} = this.props.product;
-      const prod = prodList.get(item.product_uuid);
-
-      if (prod) {
-        const prodOfCountry = prodList
-          .filter((p) => _.isEqual(p.partnerId, prod.partnerId))
-          .toList()
-          .toArray();
-        this.props.navigation.navigate('Country', {prodOfCountry});
-      }
-    } else if (item.notice) {
-      this.props.navigation.navigate('SimpleText', {
-        key: 'noti',
-        title: i18n.t('set:noti'),
-        bodyTitle: item.notice.title,
-        body: item.notice.body,
-        rule: item.notice.rule,
-        image: item.notice.image,
-        mode: 'noti',
-      });
-    } else {
-      this.props.navigation.navigate('Faq');
-    }
-  }
 
   getProdGroup() {
     const {prodList, localOpList} = this.props.product;
@@ -495,22 +428,6 @@ class HomeScreenEsim extends Component<
     );
   };
 
-  pagination() {
-    const {activeSlide} = this.state;
-    const {promotion} = this.props;
-
-    return (
-      <View style={styles.pagination}>
-        <Pagination
-          dotsLength={promotion.length}
-          activeDotIndex={activeSlide}
-          containerStyle={styles.paginationContainer}
-          renderDots={this.renderDots}
-        />
-      </View>
-    );
-  }
-
   sortProdGroup(list: RkbProduct[][]) {
     const {localOpList} = this.props.product;
 
@@ -568,18 +485,6 @@ class HomeScreenEsim extends Component<
     });
   }
 
-  checkFistLaunch() {
-    // 앱 첫 실행 여부 확인
-    AsyncStorage.getItem('alreadyLaunched').then((value) => {
-      if (value == null) {
-        AsyncStorage.setItem('alreadyLaunched', 'true');
-        this.setState({firstLaunch: true});
-      } else {
-        this.setState({firstLaunch: false});
-      }
-    });
-  }
-
   notification(type: string, payload, isForeground = true) {
     const {mobile, iccid, loggedIn} = this.props.account;
     const {navigation} = this.props;
@@ -598,74 +503,6 @@ class HomeScreenEsim extends Component<
     });
     pushNotiHandler.sendLog();
     pushNotiHandler.handleNoti();
-  }
-
-  tabHeader() {
-    const {index, routes} = this.state;
-    return (
-      <View style={styles.whiteTwoBackground}>
-        <View style={styles.tabView}>
-          {routes.map((elm, idx) => (
-            <AppButton
-              key={elm.key + idx}
-              style={styles.whiteTwoBackground}
-              titleStyle={[
-                styles.normal16WarmGrey,
-                idx === index ? styles.boldClearBlue : {},
-              ]}
-              title={elm.category}
-              // title={i18n.t(`prodDetail:${elm}`)}
-              onPress={() => this.onIndexChange(idx)}
-            />
-          ))}
-        </View>
-      </View>
-    );
-  }
-
-  renderDots(activeIndex: number) {
-    const {promotion} = this.props;
-    const duration = 200;
-    const width = new Animated.Value(INACTIVE_DOT_WIDTH);
-    const margin = width.interpolate({
-      inputRange: [INACTIVE_DOT_WIDTH, ACTIVE_DOT_WIDTH],
-      outputRange: [ACTIVE_DOT_WIDTH, INACTIVE_DOT_WIDTH],
-    });
-
-    Animated.timing(width, {
-      toValue: ACTIVE_DOT_WIDTH,
-      duration,
-      useNativeDriver: false,
-    }).start();
-
-    if (activeIndex === 0) {
-      return promotion.map((_, idx) =>
-        idx === 0 ? (
-          <Animated.View key={idx.toString()} style={dotStyle(width, margin)} />
-        ) : (
-          <View key={idx.toString()} style={styles.inactiveDot} />
-        ),
-      );
-    }
-
-    return promotion.map((_, idx) => {
-      if (activeIndex === idx)
-        return (
-          <Animated.View
-            key={idx.toString()}
-            style={dotStyle(width, DOT_MARGIN, colors.clearBlue)}
-          />
-        );
-
-      return activeIndex === (idx + 1) % promotion.length ? (
-        <Animated.View
-          key={idx.toString()}
-          style={dotStyle(margin, DOT_MARGIN, colors.lightGrey)}
-        />
-      ) : (
-        <View key={idx.toString()} style={styles.inactiveDot} />
-      );
-    });
   }
 
   renderTitleBtn() {
@@ -701,45 +538,24 @@ class HomeScreenEsim extends Component<
     });
   }
 
-  renderCarousel() {
-    return (
-      <View style={styles.carousel}>
-        <Carousel
-          data={this.props.promotion}
-          renderItem={({item}) => (
-            <PromotionImage item={item} onPress={this.onPressPromotion} />
-          )}
-          autoplay
-          loop
-          lockScrollWhileSnapping
-          useScrollView={false}
-          onSnapToItem={(index) => this.setState({activeSlide: index})}
-          sliderWidth={sliderWidth}
-          itemWidth={sliderWidth}
-        />
-        {this.pagination()}
-      </View>
-    );
-  }
-
   render() {
-    const {isSupportDev, firstLaunch, darkMode, index, routes} = this.state;
+    const {isSupportDev, darkMode, index, routes} = this.state;
 
     return (
-      <View style={styles.whiteBackground}>
+      <View style={styles.container}>
         <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
-        <TutorialScreen
-          visible={firstLaunch}
-          onOkClose={() => this.setState({firstLaunch: false})}
-        />
-        {this.renderCarousel()}
+        <PromotionCarousel />
         <ScrollView
           ref={this.scrollRef}
           contentContainerStyle={{flex: 1}}
           style={styles.scrollView}
           stickyHeaderIndices={[1]}>
           {/* ScrollView  stickyHeaderIndices로 상단 탭을 고정하기 위해서 View한번 더 사용 */}
-          {this.tabHeader()}
+          <TabHeader
+            index={index}
+            routes={routes}
+            onIndexChange={this.onIndexChange}
+          />
 
           {this.props.product.sortedProdList.length === 0 ? (
             <AppActivityIndicator style={{top: 100}} />
@@ -788,4 +604,4 @@ export default connect(
       cart: bindActionCreators(cartActions, dispatch),
     },
   }),
-)(HomeScreenEsim);
+)(Esim);

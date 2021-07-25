@@ -2,8 +2,8 @@ import React, {Component} from 'react';
 import {StyleSheet, View, Text, Pressable} from 'react-native';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
-import utils from '@/submodules/rokebi-utils/utils';
-import {RkbBoard} from '@/submodules/rokebi-utils/api/boardApi';
+import utils from '@/redux/api/utils';
+import {RkbBoard} from '@/redux/api/boardApi';
 
 const styles = StyleSheet.create({
   list: {

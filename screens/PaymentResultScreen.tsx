@@ -7,7 +7,7 @@ import {actions as accountActions} from '@/redux/modules/account';
 import {actions as cartActions} from '@/redux/modules/cart';
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
 import {actions as orderActions} from '@/redux/modules/order';
-import utils from '@/submodules/rokebi-utils/utils';
+import utils from '@/redux/api/utils';
 import i18n from '@/utils/i18n';
 import Analytics from 'appcenter-analytics';
 import React, {Component} from 'react';
@@ -176,14 +176,8 @@ class PaymentResultScreen extends Component<PaymentResultScreenProps> {
 
   render() {
     const {params} = this.props.route;
-    const {
-      pymReq,
-      purchaseItems,
-      pymPrice,
-      deduct,
-      isRecharge,
-      screen,
-    } = this.state;
+    const {pymReq, purchaseItems, pymPrice, deduct, isRecharge, screen} =
+      this.state;
     const {success} = params && params.pymResult;
     const {result} = params && params.orderResult;
 

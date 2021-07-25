@@ -27,7 +27,7 @@ import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import {AccountModelState} from '@/redux/modules/account';
 import {actions as boardActions, BoardAction} from '@/redux/modules/board';
-import utils from '@/submodules/rokebi-utils/utils';
+import utils from '@/redux/api/utils';
 import validationUtil, {
   ValidationResult,
   ValidationRule,
@@ -36,8 +36,8 @@ import {colors} from '@/constants/Colors';
 import {attachmentSize} from '@/constants/SliderEntry.style';
 import {RootState} from '@/redux';
 import ImagePicker, {Image as CropImage} from 'react-native-image-crop-picker';
-import {RkbImage} from '@/submodules/rokebi-utils/api/accountApi';
-import {RkbIssue} from '@/submodules/rokebi-utils/api/boardApi';
+import {RkbImage} from '@/redux/api/accountApi';
+import {RkbIssue} from '@/redux/api/boardApi';
 import AppActivityIndicator from './AppActivityIndicator';
 import AppButton from './AppButton';
 import AppAlert from './AppAlert';

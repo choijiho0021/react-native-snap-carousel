@@ -7,14 +7,14 @@ import {actions as accountActions} from '@/redux/modules/account';
 import {actions as orderActions} from '@/redux/modules/order';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
-import utils from '@/submodules/rokebi-utils/utils';
+import utils from '@/redux/api/utils';
 import AppBackButton from '@/components/AppBackButton';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {colors} from '@/constants/Colors';
 import LabelText from '@/components/LabelText';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
-import subsApi from '@/submodules/rokebi-utils/api/subscriptionApi';
+import subsApi from '@/redux/api/subscriptionApi';
 import {RootState} from '@/redux';
 
 const activateBtn = 'activateBtn';
@@ -156,13 +156,8 @@ class SubsDetailScreen extends Component {
   }
 
   info() {
-    const {
-      prodName,
-      activationDate,
-      endDate,
-      expireDate,
-      purchaseDate,
-    } = this.state;
+    const {prodName, activationDate, endDate, expireDate, purchaseDate} =
+      this.state;
 
     return (
       <View style={styles.container}>

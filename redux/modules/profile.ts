@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign */
 import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
-import {RkbProfile} from '@/submodules/rokebi-utils/api/profileApi';
+import {RkbProfile} from '@/redux/api/profileApi';
 
 // add address list
 export const getCustomerProfile = createAsyncThunk(

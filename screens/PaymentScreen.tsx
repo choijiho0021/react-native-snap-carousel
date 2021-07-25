@@ -10,9 +10,9 @@ import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import Env from '@/environment';
 import {actions as cartActions} from '@/redux/modules/cart';
-import api from '@/submodules/rokebi-utils/api/api';
+import api from '@/redux/api/api';
 import i18n from '@/utils/i18n';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 
 // const IMP = require('iamport-react-native').default;
 const loading = require('../assets/images/loading_1.mp4');

@@ -1,27 +1,25 @@
 /* eslint-disable global-require */
-import {RootState} from '@/redux';
 import React, {Component} from 'react';
 import {
   Dimensions,
   Image,
-  Modal,
+  Pressable,
+  SafeAreaView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import {AppEventsLogger} from 'react-native-fbsdk';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {getTrackingStatus} from 'react-native-tracking-transparency';
-import {connect} from 'react-redux';
 import _ from 'underscore';
 import {colors} from '@/constants/Colors';
 import {sliderWidth} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {actions as accountActions} from '@/redux/modules/account';
-import {actions as orderActions} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const {esimApp} = Env.get();
 
@@ -34,10 +32,10 @@ const tutorialImages = esimApp
       step4: require('../assets/images/esim/tutorial/step4/esimTutorial4.png'),
     }
   : {
-      step1: require('../assets/images/tutorial/step1/mT1.png'),
-      step2: require('../assets/images/tutorial/step2/mT2.png'),
-      step3: require('../assets/images/tutorial/step3/mT3.png'),
-      step4: require('../assets/images/tutorial/step4/mT4.png'),
+      step1: require('../assets/images/usim/tutorial/step1/mT1.png'),
+      step2: require('../assets/images/usim/tutorial/step2/mT2.png'),
+      step3: require('../assets/images/usim/tutorial/step3/mT3.png'),
+      step4: require('../assets/images/usim/tutorial/step4/mT4.png'),
     };
 
 const styles = StyleSheet.create({
@@ -103,29 +101,33 @@ const styles = StyleSheet.create({
   },
 });
 
+type TutorialScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'Tutorial'
+>;
+
 type TutorialScreenProps = {
-  visible: boolean;
-  onOkClose: () => void;
+  navigation: TutorialScreenNavigationProp;
 };
 
 type TutorialScreenState = {
   activeSlide: number;
-  images: {key: string}[];
+  images: string[];
 };
 
 class TutorialScreen extends Component<
   TutorialScreenProps,
   TutorialScreenState
 > {
-  carousel: React.RefObject<unknown>;
+  carousel: React.LegacyRef<Carousel<string>>;
 
-  constructor(props) {
+  constructor(props: TutorialScreenProps) {
     super(props);
 
     this.carousel = React.createRef();
     this.state = {
       activeSlide: 0,
-      images: [{key: 'step1'}, {key: 'step2'}, {key: 'step3'}, {key: 'step4'}],
+      images: ['step1', 'step2', 'step3', 'step4'],
     };
 
     this.renderTutorial = this.renderTutorial.bind(this);
@@ -133,40 +135,34 @@ class TutorialScreen extends Component<
     this.completed = this.completed.bind(this);
   }
 
-  componentDidMount() {}
-
-  renderTutorial = ({item}) => {
+  renderTutorial = ({item}: {item: string}) => {
     return (
       <Image
         style={styles.image}
-        source={tutorialImages[item.key]}
+        source={tutorialImages[item]}
         resizeMode="cover"
       />
     );
   };
 
   skip = async () => {
-    this.props.onOkClose();
     const status = await getTrackingStatus();
     if (status === 'authorized') AppEventsLogger.logEvent('튜토리얼 SKIP');
+    this.props.navigation.goBack();
   };
 
   completed = async () => {
-    this.props.onOkClose();
     const status = await getTrackingStatus();
     if (status === 'authorized')
       AppEventsLogger.logEvent('fb_mobile_tutorial_completion');
+    this.props.navigation.goBack();
   };
 
   render() {
     const {images, activeSlide} = this.state;
 
     return (
-      <Modal
-        style={styles.container}
-        animationType="slide"
-        transparent={false}
-        visible={this.props.visible}>
+      <SafeAreaView style={{flex: 1}}>
         <View style={{flex: 1}}>
           <Carousel
             ref={this.carousel}
@@ -192,8 +188,8 @@ class TutorialScreen extends Component<
             inactiveDotStyle={styles.inactiveDotStyle}
             inactiveDotOpacity={0.4}
             inactiveDotScale={1.0}
-            carouselRef={this.carousel.current}
-            tappableDots={!_.isEmpty(this.carousel.current)}
+            carouselRef={this.carousel}
+            tappableDots={!_.isEmpty(this.carousel?.current)}
             containerStyle={styles.pagination}
           />
         </View>
@@ -205,7 +201,7 @@ class TutorialScreen extends Component<
           }}>
           {this.state.activeSlide === this.state.images.length - 1 ? (
             <View style={styles.bottom}>
-              <TouchableOpacity
+              <Pressable
                 style={[
                   styles.touchableOpacity,
                   {flex: 1, alignItems: 'center'},
@@ -214,35 +210,28 @@ class TutorialScreen extends Component<
                 <Text style={styles.bottomText}>
                   {i18n.t('tutorial:close')}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           ) : (
             <View style={[styles.bottom, {justifyContent: 'space-between'}]}>
-              <TouchableOpacity
+              <Pressable
                 style={styles.touchableOpacity}
                 onPress={() => this.skip()}>
                 <Text style={styles.bottomText}>{i18n.t('tutorial:skip')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
+              </Pressable>
+              <Pressable
                 style={styles.touchableOpacity}
-                onPress={() => this.carousel.current?.snapToNext()}>
+                onPress={() => this.carousel?.current?.snapToNext()}>
                 <Text style={[styles.bottomText, {color: colors.clearBlue}]}>
                   {i18n.t('tutorial:next')}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           )}
         </View>
-      </Modal>
+      </SafeAreaView>
     );
   }
 }
 
-export default connect(({account, status}: RootState) => ({
-  account,
-  auth: accountActions.auth(account),
-  pending:
-    status.pending[orderActions.getOrders.typePrefix] ||
-    status.pending[accountActions.uploadPicture.typePrefix] ||
-    false,
-}))(TutorialScreen);
+export default TutorialScreen;

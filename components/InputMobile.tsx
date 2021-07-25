@@ -4,7 +4,7 @@ import _ from 'underscore';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import utils from '@/submodules/rokebi-utils/utils';
+import utils from '@/redux/api/utils';
 import validationUtil from '@/utils/validationUtil';
 import AppTextInput from './AppTextInput';
 

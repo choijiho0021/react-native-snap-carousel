@@ -3,10 +3,10 @@ import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
 import _ from 'underscore';
-import {API} from '@/submodules/rokebi-utils';
-import {RkbOrder} from '@/submodules/rokebi-utils/api/orderApi';
+import {API} from '@/redux/api';
+import {RkbOrder} from '@/redux/api/orderApi';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
-import {RkbSubscription} from '@/submodules/rokebi-utils/api/subscriptionApi';
+import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
 

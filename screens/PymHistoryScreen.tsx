@@ -3,7 +3,7 @@ import {FlatList, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import {connect} from 'react-redux';
 import _ from 'underscore';
 import {bindActionCreators} from 'redux';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 import {RootState} from '@/redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';

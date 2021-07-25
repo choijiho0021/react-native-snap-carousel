@@ -8,31 +8,33 @@ import {
   ScrollView,
   Platform,
   Appearance,
-  Animated,
   ColorSchemeName,
+  SafeAreaView,
+  Pressable,
 } from 'react-native';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import AsyncStorage from '@react-native-community/async-storage';
-import {
-  requestNotifications,
-  PERMISSIONS,
-  request,
-} from 'react-native-permissions';
 import Analytics from 'appcenter-analytics';
 import _ from 'underscore';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
+import Carousel from 'react-native-snap-carousel';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
-import {actions as simActions} from '@/redux/modules/sim';
-import {actions as accountActions} from '@/redux/modules/account';
+import {actions as simActions, SimAction} from '@/redux/modules/sim';
+import {
+  AccountAction,
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
-import {actions as infoActions} from '@/redux/modules/info';
-import {actions as cartActions} from '@/redux/modules/cart';
-import {actions as productActions} from '@/redux/modules/product';
+import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
+import {actions as cartActions, CartAction} from '@/redux/modules/cart';
+import {
+  actions as productActions,
+  ProductModelState,
+} from '@/redux/modules/product';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppButton from '@/components/AppButton';
-import {sliderWidth, windowHeight} from '@/constants/SliderEntry.style';
+import {windowHeight} from '@/constants/SliderEntry.style';
 import {colors} from '@/constants/Colors';
 import AppIcon from '@/components/AppIcon';
 import AppUserPic from '@/components/AppUserPic';
@@ -41,9 +43,14 @@ import AppPrice from '@/components/AppPrice';
 import pushNoti from '@/utils/pushNoti';
 import AppAlert from '@/components/AppAlert';
 import appStateHandler from '@/utils/appState';
-import PromotionImage from '@/components/PromotionImage';
 import {RootState} from '@/redux';
-import TutorialScreen from './TutorialScreen';
+import createHandlePushNoti from '@/redux/models/createHandlePushNoti';
+import AsyncStorage from '@react-native-community/async-storage';
+import {RkbInfo} from '@/redux/api/pageApi';
+import {PromotionModelState} from '@/redux/modules/promotion';
+import {SyncModelState} from '@/redux/modules/sync';
+import PromotionCarousel from './component/PromotionCarousel';
+import {checkFistLaunch, requestPermission} from './component/permission';
 
 // windowHeight
 // iphone 8 - 375x667
@@ -66,10 +73,6 @@ const size =
         carouselHeight: 190,
         carouselMargin: 20,
       };
-
-const DOT_MARGIN = 6;
-const INACTIVE_DOT_WIDTH = 6;
-const ACTIVE_DOT_WIDTH = 20;
 
 const styles = StyleSheet.create({
   container: {
@@ -190,22 +193,6 @@ const styles = StyleSheet.create({
   carousel: {
     alignItems: 'flex-end',
   },
-  inactiveDot: {
-    width: INACTIVE_DOT_WIDTH,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.lightGrey,
-    marginLeft: DOT_MARGIN,
-  },
-  pagination: {
-    marginRight: 30,
-    marginTop: 10,
-  },
-  paginationContainer: {
-    paddingVertical: 5,
-    paddingHorizontal: 0,
-    justifyContent: 'flex-start',
-  },
   cardLayer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -244,17 +231,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 });
-const dotStyle = (
-  width: number = ACTIVE_DOT_WIDTH,
-  marginLeft: number = DOT_MARGIN,
-  backgroundColor: string = colors.clearBlue,
-) => ({
-  height: 6,
-  borderRadius: 3.5,
-  width,
-  marginLeft,
-  backgroundColor,
-});
 
 const BadgeAppButton = withBadge(
   ({noti}: RootState) => ({
@@ -263,38 +239,46 @@ const BadgeAppButton = withBadge(
   'notReadNoti',
 )(AppButton);
 
-type HomeScreenProps = {
+type UsimProps = {
   navigation: any;
+  loginPending: boolean;
+
+  account: AccountModelState;
+  product: ProductModelState;
+  promotion: PromotionModelState;
+  info: InfoModelState;
+  sync: SyncModelState;
+
   action: {
     noti: NotiAction;
+    account: AccountAction;
+    cart: CartAction;
+    sim: SimAction;
   };
 };
-type HomeScreenState = {
+type UsimState = {
   darkMode: ColorSchemeName;
-  activeSlide: number;
   firstLaunch?: boolean;
 };
-class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
-  constructor(props) {
+class Usim extends Component<UsimProps, UsimState> {
+  isNoticed: boolean | null;
+
+  constructor(props: UsimProps) {
     super(props);
 
     this.state = {
       darkMode: Appearance.getColorScheme(),
-      activeSlide: 0,
       firstLaunch: undefined,
     };
 
     this.login = this.login.bind(this);
     this.init = this.init.bind(this);
-    this.renderPromotion = this.renderPromotion.bind(this);
     this.navigate = this.navigate.bind(this);
     this.userInfo = this.userInfo.bind(this);
     this.notification = this.notification.bind(this);
     this.handleNotification = this.handleNotification.bind(this);
     this.clearAccount = this.clearAccount.bind(this);
     this.appStateHandler = this.appStateHandler.bind(this);
-    this.onPressPromotion = this.onPressPromotion.bind(this);
-    this.renderDots = this.renderDots.bind(this);
     this.renderInfo = this.renderInfo.bind(this);
 
     this.isNoticed = null;
@@ -326,50 +310,34 @@ class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
       ),
     });
 
-    Analytics.trackEvent('Page_View_Count', {page: 'Home'});
-    // 로그인 여부와 관련 없이 항상 처리할 부분
-    if (Platform.OS === 'ios') {
-      await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
-      await request(PERMISSIONS.IOS.CAMERA);
-      await requestNotifications(['alert', 'sound', 'badge']);
-    } else if (Platform.OS === 'android') {
-      await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
-      await request(PERMISSIONS.ANDROID.CAMERA);
-    }
-
-    // 앱 첫 실행 여부 확인
-    AsyncStorage.getItem('alreadyLaunched').then((value) => {
-      if (value == null) {
-        AsyncStorage.setItem('alreadyLaunched', 'true');
-        this.setState({firstLaunch: true});
-      } else {
-        this.setState({firstLaunch: false});
-      }
-    });
-    // AsyncStorage.removeItem('alreadyLaunched')
+    // TODO: update
+    // Analytics.trackEvent('Page_View_Count', {page: 'Home'});
 
     // config push notification
     pushNoti.add(this.notification);
-    appStateHandler.add(this.appStateHandler);
+
+    requestPermission();
+
+    // 앱 첫 실행 여부 확인
+    const firstLaunch = await checkFistLaunch();
+    this.setState({firstLaunch});
+    if (firstLaunch) {
+      this.props.navigation.navigate('Tutorial');
+    }
+
+    // TODO: update
+    // appStateHandler.add(this.appStateHandler);
 
     // 로그인 여부에 따라 달라지는 부분
     this.init();
   }
 
-  componentDidUpdate(prevProps) {
-    const {
-      mobile,
-      pin,
-      iccid,
-      loggedIn,
-      deviceToken,
-      isUsedByOther,
-    } = this.props.account;
+  componentDidUpdate(prevProps: UsimProps) {
+    const {mobile, pin, iccid, loggedIn, deviceToken, isUsedByOther} =
+      this.props.account;
 
     if (mobile !== prevProps.account.mobile || pin !== prevProps.account.pin) {
-      if (!_.isEmpty(mobile) && !loggedIn) {
-        this.login(mobile, pin, iccid);
-      }
+      this.login(mobile, pin, iccid);
     }
 
     //  자동로그인의 경우 device token update
@@ -382,6 +350,10 @@ class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
     }
 
     if (this.props.sync.progress) {
+      if (this.state.firstLaunch) {
+        AsyncStorage.removeItem('alreadyLaunched');
+        this.setState({firstLaunch: false});
+      }
       this.props.navigation.navigate('CodePush');
     }
 
@@ -403,9 +375,9 @@ class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
     appStateHandler.remove();
   }
 
-  handleNotification(payload, isForeground) {
-    const type = (payload.data || {}).notiType;
-    const target = (payload.data || {}).iccid;
+  handleNotification(payload, isForeground: boolean) {
+    const type = payload.data?.notiType;
+    const target = payload.data?.iccid;
     const {mobile, iccid} = this.props.account;
 
     //  무슨코드인지 확인필요
@@ -427,69 +399,34 @@ class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
               this.clearAccount,
             );
           }
-        } else {
-          // eslint-disable-next-line no-unused-expressions
-          !isForeground && this.props.navigation.navigate('Noti');
-        }
+        } else if (!isForeground) this.props.navigation.navigate('Noti');
         break;
       default:
         // eslint-disable-next-line no-unused-expressions
-        !isForeground && this.props.navigation.navigate('Noti');
+        if (!isForeground) this.props.navigation.navigate('Noti');
     }
   }
 
-  // 공지 사항 상세 페이지로 이동
-  onPressInfo = ({title, body}) => () => {
-    this.props.navigation.navigate('SimpleText', {
-      key: 'noti',
-      title: i18n.t('contact:noticeDetail'),
-      bodyTitle: title,
-      text: body,
-      mode: 'text',
-    });
-  };
+  navigate =
+    (key, params = {}) =>
+    () => {
+      const {mobile, iccid} = this.props.account;
+      let naviTarget = '';
 
-  onPressPromotion(item) {
-    if (item.product_uuid) {
-      const {prodList} = this.props.product;
-      const prod = prodList.get(item.product_uuid);
-
-      if (prod) {
-        const prodOfCountry = prodList
-          .filter((product) => _.isEqual(product.partnerId, prod.partnerId))
-          .toList()
-          .toArray();
-        this.props.navigation.navigate('Country', {prodOfCountry});
+      if (key.includes('RegisterSim')) {
+        if (_.isEmpty(mobile)) naviTarget = 'Auth';
+        else if (_.isEmpty(iccid)) naviTarget = 'RegisterSim';
+        else naviTarget = key.indexOf('_') > 0 ? 'Recharge' : 'RegisterSim';
       }
-    } else if (item.notice) {
-      this.props.navigation.navigate('SimpleText', {
-        key: 'noti',
-        title: i18n.t('set:noti'),
-        bodyTitle: item.notice.title,
-        text: item.notice.body,
-        mode: 'text',
-      });
-    }
-  }
 
-  navigate = (key, params = {}) => () => {
-    const {mobile, iccid} = this.props.account;
-    let naviTarget = '';
+      this.props.navigation.navigate(naviTarget, params);
+    };
 
-    if (key.includes('RegisterSim')) {
-      if (_.isEmpty(mobile)) naviTarget = 'Auth';
-      else if (_.isEmpty(iccid)) naviTarget = 'RegisterSim';
-      else naviTarget = key.indexOf('_') > 0 ? 'Recharge' : 'RegisterSim';
-    }
-
-    this.props.navigation.navigate(naviTarget, params);
-  };
-
-  appStateHandler(state) {
+  appStateHandler(state: string) {
     const {iccid, token} = this.props.account;
     switch (state) {
       case 'active':
-        if (!_.isEmpty(iccid) && !this.isNoticed) {
+        if (!iccid && !this.isNoticed) {
           this.props.action.account.getAccount({iccid, token});
         }
         break;
@@ -503,26 +440,10 @@ class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
     this.isNoticed = null;
   }
 
-  login(mobile, pin, iccid) {
+  login(mobile?: string, pin?: string, iccid?: string) {
     this.props.action.account.logInAndGetAccount({mobile, pin, iccid});
     this.props.action.sim.getSimCardList();
     this.props.action.noti.getNotiList({mobile});
-  }
-
-  pagination() {
-    const {activeSlide} = this.state;
-    const {promotion} = this.props;
-
-    return (
-      <View style={styles.pagination}>
-        <Pagination
-          dotsLength={promotion.length}
-          activeDotIndex={activeSlide}
-          containerStyle={styles.paginationContainer}
-          renderDots={this.renderDots}
-        />
-      </View>
-    );
   }
 
   userInfo() {
@@ -649,117 +570,66 @@ class HomeScreen extends Component<HomeScreenProps, HomeScreenState> {
     if (loggedIn) {
       this.props.action.noti.getNotiList({mobile});
       this.props.action.cart.cartFetch();
+    } else {
+      this.props.action.noti.init();
     }
   }
 
-  notification(type, data, isForeground = true) {
-    const {mobile, loggedIn} = this.props.account;
+  notification(type: string, payload, isForeground = true) {
+    const {mobile, iccid, loggedIn} = this.props.account;
+    const {navigation} = this.props;
 
     if (loggedIn) {
       this.props.action.noti.getNotiList({mobile});
     }
 
-    switch (type) {
-      case 'register':
-        this.props.action.account.updateAccount({
-          deviceToken: data,
-        });
-        break;
-      case 'notification':
-        this.handleNotification(data, isForeground);
-        break;
-      default:
-        console.log('default notification');
-    }
+    const pushNotiHandler = createHandlePushNoti(navigation, payload, {
+      mobile,
+      iccid,
+      isForeground,
+      isRegister: type === 'register',
+      updateAccount: this.props.action.account.updateAccount,
+      clearCurrentAccount: this.props.action.account.clearCurrentAccount,
+    });
+    pushNotiHandler.sendLog();
+    pushNotiHandler.handleNoti();
   }
 
-  renderInfo({item}) {
+  renderInfo({item}: {item: RkbInfo}) {
     return (
-      <TouchableOpacity onPress={this.onPressInfo(item)}>
+      <Pressable
+        onPress={() =>
+          this.props.navigation.navigate('SimpleText', {
+            key: 'noti',
+            title: i18n.t('contact:noticeDetail'),
+            bodyTitle: item.title,
+            text: item.body,
+            mode: 'text',
+          })
+        }>
         <View style={styles.info}>
           <Text style={styles.infoText}>{item.title}</Text>
         </View>
-      </TouchableOpacity>
+      </Pressable>
     );
-  }
-
-  renderDots(activeIndex) {
-    const {promotion} = this.props;
-    const duration = 200;
-    const width = new Animated.Value(INACTIVE_DOT_WIDTH);
-    const margin = width.interpolate({
-      inputRange: [INACTIVE_DOT_WIDTH, ACTIVE_DOT_WIDTH],
-      outputRange: [ACTIVE_DOT_WIDTH, INACTIVE_DOT_WIDTH],
-    });
-
-    Animated.timing(width, {
-      toValue: ACTIVE_DOT_WIDTH,
-      duration,
-      useNativeDriver: false,
-    }).start();
-
-    if (activeIndex === 0) {
-      return promotion.map((_, idx) =>
-        idx === 0 ? (
-          <Animated.View key={`${idx}`} style={dotStyle(width, margin)} />
-        ) : (
-          <View key={`${idx}`} style={styles.inactiveDot} />
-        ),
-      );
-    }
-
-    return promotion.map((_, idx) => {
-      if (activeIndex === idx) {
-        return (
-          <Animated.View
-            key={`${idx}`}
-            style={dotStyle(width, DOT_MARGIN, colors.clearBlue)}
-          />
-        );
-      }
-      if (activeIndex === (idx + 1) % promotion.length) {
-        return (
-          <Animated.View
-            key={`${idx}`}
-            style={dotStyle(margin, DOT_MARGIN, colors.lightGrey)}
-          />
-        );
-      }
-      return <View key={`${idx}`} style={styles.inactiveDot} />;
-    });
-  }
-
-  renderPromotion({item}) {
-    return <PromotionImage item={item} onPress={this.onPressPromotion} />;
   }
 
   render() {
     const {darkMode} = this.state;
 
     return (
-      <ScrollView style={styles.container}>
-        {this.state.firstLaunch && <TutorialScreen />}
+      <SafeAreaView style={styles.container}>
         <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
-        <AppActivityIndicator visible={this.props.loginPending} />
-        <View style={styles.carousel}>
-          <Carousel
-            data={this.props.promotion}
-            renderItem={this.renderPromotion}
-            autoplay
-            loop
-            lockScrollWhileSnapping
-            onSnapToItem={(index) => this.setState({activeSlide: index})}
-            sliderWidth={sliderWidth}
-            itemWidth={sliderWidth}
-          />
-          {this.pagination()}
-        </View>
-        {this.userInfo()}
-        {this.menu()}
-        {this.guide()}
-        <View style={styles.divider} />
-        {this.info()}
-      </ScrollView>
+        <ScrollView>
+          <PromotionCarousel />
+          {this.userInfo()}
+          {this.menu()}
+          {this.guide()}
+          <View style={styles.divider} />
+          {this.info()}
+          <AppActivityIndicator visible={this.props.loginPending} />
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 }
@@ -786,4 +656,4 @@ export default connect(
       product: bindActionCreators(productActions, dispatch),
     },
   }),
-)(HomeScreen);
+)(Usim);

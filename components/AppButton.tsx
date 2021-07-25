@@ -9,7 +9,7 @@ import {
   TextStyle,
   StyleProp,
 } from 'react-native';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';

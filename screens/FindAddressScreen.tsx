@@ -22,7 +22,7 @@ import {appStyles} from '@/constants/Styles';
 import AppBackButton from '@/components/AppBackButton';
 import AppIcon from '@/components/AppIcon';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
-import {API} from '@/submodules/rokebi-utils';
+import {API} from '@/redux/api';
 
 const styles = StyleSheet.create({
   container: {
@@ -164,16 +164,18 @@ class FindAddressScreen extends Component {
     );
   }
 
-  _findAddr = (page = 1) => () => {
-    const {addr} = this.state;
+  _findAddr =
+    (page = 1) =>
+    () => {
+      const {addr} = this.state;
 
-    API.Address.find(addr, page).then((resp) => {
-      this.setState({
-        links: resp.links,
-        data: resp.objects,
+      API.Address.find(addr, page).then((resp) => {
+        this.setState({
+          links: resp.links,
+          data: resp.objects,
+        });
       });
-    });
-  };
+    };
 
   _onPress = (addr) => () => {
     //리덕스 저장
@@ -183,8 +185,11 @@ class FindAddressScreen extends Component {
 
   _renderPagination() {
     const {links} = this.state,
-      {totalCount = 0, countPerPage = 1, currentPage = 1} =
-        _.isArray(links) && links.length > 0 ? links[0] : {},
+      {
+        totalCount = 0,
+        countPerPage = 1,
+        currentPage = 1,
+      } = _.isArray(links) && links.length > 0 ? links[0] : {},
       totalPage = Math.ceil(Number(totalCount) / Number(countPerPage));
     const minDisabled = currentPage == 1 ? true : false;
     const maxDisabled = currentPage == totalPage ? true : false;

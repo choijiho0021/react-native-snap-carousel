@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
-import utils from '@/submodules/rokebi-utils/utils';
+import utils from '@/redux/api/utils';
 
 const styles = StyleSheet.create({
   container: {
