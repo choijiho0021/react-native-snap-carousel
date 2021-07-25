@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   findNodeHandle,
   TouchableOpacity,
+  Pressable,
   Keyboard,
   Platform,
 } from 'react-native';
@@ -19,9 +20,13 @@ import Analytics from 'appcenter-analytics';
 import {API} from '@/redux/api';
 import {RootState} from '@/redux';
 import i18n from '@/utils/i18n';
-import {actions as simActions} from '@/redux/modules/sim';
-import {actions as accountActions} from '@/redux/modules/account';
-import {actions as orderActions} from '@/redux/modules/order';
+import {actions as simActions, SimAction} from '@/redux/modules/sim';
+import {
+  AccountAction,
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
+import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import ScanSim from '@/components/ScanSim';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppButton from '@/components/AppButton';
@@ -34,6 +39,7 @@ import BackbuttonHandler from '@/components/BackbuttonHandler';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
+import {BarCodeReadEvent} from 'react-native-camera';
 
 const styles = StyleSheet.create({
   actCodeTitle: {
@@ -117,11 +123,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   card: {
-    //marginHorizontal: 20,
     marginVertical: 20,
     paddingHorizontal: 20,
     height: 200,
-    //borderWidth: 1,
     borderColor: 'transparent',
   },
   title: {
@@ -142,21 +146,43 @@ type RegisterSimScreenRouteProp = RouteProp<HomeStackParamList, 'RegisterSim'>;
 type RegisterSimScreenProps = {
   navigation: RegisterSimScreenNavigationProp;
   route: RegisterSimScreenRouteProp;
+
+  pending: boolean;
+
+  account: AccountModelState;
+
+  action: {
+    account: AccountAction;
+    order: OrderAction;
+    sim: SimAction;
+  };
 };
 type RegisterSimScreenState = {
   iccid: string[];
   actCode?: string;
   scan: boolean;
-  querying: boolean;
-  focusInputIccid: boolean;
   hasCameraPermission: boolean;
+};
+
+const initialState: RegisterSimScreenState = {
+  scan: false,
+  iccid: ['', '', '', ''],
+  actCode: undefined,
+  hasCameraPermission: false,
+};
+
+const errCode = {
+  [API.default.E_NOT_FOUND]: 'reg:invalidStatus',
+  [API.default.E_ACT_CODE_MISMATCH]: 'reg:wrongActCode',
+  [API.default.E_STATUS_EXPIRED]: 'reg:expiredIccid',
+  [API.default.E_INVALID_STATUS]: 'reg:invalidStatus',
 };
 
 class RegisterSimScreen extends Component<
   RegisterSimScreenProps,
   RegisterSimScreenState
 > {
-  inputIccid: React.RefObject<unknown>[];
+  inputIccid: React.RefObject<TextInput>[];
 
   defaultIccid: string;
 
@@ -166,41 +192,25 @@ class RegisterSimScreen extends Component<
 
   isMounted: boolean;
 
-  err: {[x: number]: string};
-
-  scroll: any;
+  scrollRef: any;
 
   constructor(props: RegisterSimScreenProps) {
     super(props);
 
-    this.state = {
-      scan: false,
-      querying: false,
-      iccid: ['', '', '', ''],
-      actCode: undefined,
-      focusInputIccid: false,
-      hasCameraPermission: false,
-    };
+    this.state = initialState;
 
     this.onSubmit = this.onSubmit.bind(this);
     this.onCamera = this.onCamera.bind(this);
-    this.onScan = this.onScan.bind(this);
     this.updateIccid = this.updateIccid.bind(this);
-    this.scrolll = this.scrolll.bind(this);
-    this.validIccid = this.validIccid.bind(this);
+    this.onChangeIccid = this.onChangeIccid.bind(this);
+    this.onChangeActCode = this.onChangeActCode.bind(this);
 
     this.inputIccid = [...Array(4)].map(() => React.createRef());
     this.defaultIccid = '12345';
     this.defaultLastIccid = '1234';
     this.lastIccidIdx = 6;
     this.isMounted = false;
-
-    this.err = {
-      [API.default.E_NOT_FOUND]: 'reg:invalidStatus',
-      [API.default.E_ACT_CODE_MISMATCH]: 'reg:wrongActCode',
-      [API.default.E_STATUS_EXPIRED]: 'reg:expiredIccid',
-      [API.default.E_INVALID_STATUS]: 'reg:invalidStatus',
-    };
+    this.scrollRef = null;
   }
 
   componentDidMount() {
@@ -228,17 +238,13 @@ class RegisterSimScreen extends Component<
   onSubmit() {
     const {actCode} = this.state;
     const iccid = this.state.iccid.join('');
-
-    this.isMounted &&
-      this.setState({
-        querying: true,
-      });
+    const {mobile, token} = this.props.account;
 
     this.props.action.account
-      .registerMobile({iccid, code: actCode, mobile: this.props.account.mobile})
-      .then((resp) => {
+      .registerMobile({iccid, code: actCode, mobile, token})
+      .then(({payload: resp}) => {
         if (resp.result === 0) {
-          this.props.action.order.getSubs(iccid, this.props.auth);
+          this.props.action.order.getSubs({iccid, token});
 
           AppAlert.info(
             i18n.t('reg:success'),
@@ -249,26 +255,17 @@ class RegisterSimScreen extends Component<
           );
           return resp;
         }
-        return new Promise.reject({
-          msg: i18n.t(this.err[resp.result] || 'reg:fail'),
-        });
+        return Promise.reject(errCode[resp.result]);
       })
-      .catch((err) => {
-        AppAlert.error(err.msg || i18n.t('reg:fail'));
-        this.setState(initState);
-      })
-      .finally(() => {
-        this.isMounted &&
-          this.setState({
-            querying: false,
-            disable: false,
-          });
+      .catch((err: string) => {
+        AppAlert.error(err || i18n.t('reg:fail'));
+        this.setState(initialState);
       });
   }
 
-  async onCamera(flag) {
+  async onCamera(flag: boolean) {
     const permission =
-      Platform.OS == 'ios'
+      Platform.OS === 'ios'
         ? PERMISSIONS.IOS.CAMERA
         : PERMISSIONS.ANDROID.CAMERA;
     const result = await check(permission);
@@ -287,54 +284,32 @@ class RegisterSimScreen extends Component<
     }
   }
 
-  onScan = ({data, rawData, type}) => {
+  onChangeIccid = (value: string, idx: number) => {
+    const {iccid} = this.state;
+
     this.setState({
-      scan: false,
+      iccid: iccid.map((elm, i) => (i === idx ? value : elm)),
     });
-    alert(`${i18n.t('scanned')} ${data}`);
-    this.updateIccid(data);
+
+    if (_.size(value) === 5 && idx < 3) {
+      this.inputIccid[idx + 1]?.current?.focus();
+    } else if (value.length === 4 && idx === 3) {
+      Keyboard.dismiss();
+    }
   };
 
-  scrolll = (event) => {
-    if (this.scroll)
-      this.scroll.props.scrollToFocusedInput(findNodeHandle(event.target));
-  };
-
-  onChangeText = (key, idx) => (value) => {
-    //if (key == 'iccid') value = value.replace(/[ -]/g, '')
-
-    if (key == 'iccid') {
-      const {iccid} = this.state;
-
-      this.setState({
-        iccid: iccid.map((elm, i) => (i === idx ? value : elm)),
-      });
-
-      if (_.size(value) === 5 && idx < 3) {
-        this.inputIccid[idx + 1].current.focus();
-      } else {
-        // if ( iccid.map((elm,i) => i === idx ? value : elm ).every(elm => _.size(elm) === 4) && idx === 3 ) {
-        if (value.length === 4 && idx === 3) {
-          Keyboard.dismiss();
-        }
-      }
-
-      return;
-    } else if (key === 'actCode') {
-      if (value.length === 6) {
-        Keyboard.dismiss();
-      }
+  onChangeActCode = (value: string) => {
+    if (value.length === 6) {
+      Keyboard.dismiss();
     }
 
     this.setState({
-      [key]: value,
+      actCode: value,
     });
   };
 
-  updateIccid(iccid) {
-    console.log('update ICCID', iccid);
-
-    let arr = [];
+  updateIccid(iccid: string) {
+    const arr = [] as string[];
 
     for (let i = 0; i < _.size(iccid) / 5 && i < 4; ) {
       arr.push(iccid.substring(i * 5, ++i * 5));
@@ -347,103 +322,101 @@ class RegisterSimScreen extends Component<
     this.props.action.sim.addIccid(iccid);
   }
 
-  validIccid(iccid) {
-    return iccid.every((elm, idx) =>
-      idx == iccid.length - 1 ? elm.length == 4 : elm.length == 5,
-    );
+  renderIccid() {
+    const {iccid} = this.state;
+
+    return iccid
+      .reduce((acc, cur) => acc.concat([cur, '-']), [] as string[])
+      .map((elm, idx) => {
+        if (elm === '-') {
+          return idx + 1 === _.size(iccid) * 2 ? null : (
+            <Text
+              key={`${idx}`}
+              style={[
+                styles.delimiter,
+                {
+                  color: _.size(elm) === 5 ? colors.black : colors.greyish,
+                },
+              ]}>
+              -
+            </Text>
+          );
+        }
+
+        return (
+          <TextInput
+            style={styles.input}
+            key={`${idx}`}
+            ref={this.inputIccid[idx / 2]}
+            placeholder={
+              idx === this.lastIccidIdx
+                ? this.defaultLastIccid
+                : this.defaultIccid
+            }
+            placeholderTextColor={colors.greyish}
+            onChangeText={(value) => this.onChangeIccid(value, idx / 2)}
+            keyboardType="numeric"
+            returnKeyType="done"
+            enablesReturnKeyAutomatically
+            maxLength={idx === this.lastIccidIdx ? 4 : 5}
+            value={elm}
+            blurOnSubmit={false}
+            // onFocus={() => {}}
+          />
+        );
+      });
   }
 
   render() {
-    const {
-      scan,
-      iccid,
-      actCode,
-      querying,
-      focusInputIccid,
-      hasCameraPermission,
-    } = this.state;
+    const {scan, iccid, actCode, hasCameraPermission} = this.state;
+
     const disabled =
       _.size(iccid) !== 4 ||
-      !this.validIccid(iccid) ||
-      _.isEmpty(actCode) ||
+      iccid.every((elm, idx) =>
+        idx === iccid.length - 1 ? elm.length === 4 : elm.length === 5,
+      ) ||
+      !actCode ||
       actCode.length < 6 ||
-      querying;
+      this.props.pending;
+
     let iccidIdx = iccid.findIndex((elm) => _.size(elm) !== 5);
     if (iccidIdx < 0) iccidIdx = 3;
 
-    const back = this.props.route.params && this.props.route.params.back;
+    const back = this.props.route.params?.back;
 
     return (
       <SafeAreaView style={{flex: 1}}>
         <BackbuttonHandler navigation={this.props.navigation} back={back} />
-        <AppActivityIndicator visible={querying || this.props.pending} />
+        <AppActivityIndicator visible={this.props.pending} />
 
         <KeyboardAwareScrollView
-          innerRef={(ref) => (this.scroll = ref)}
+          innerRef={(ref) => (this.scrollRef = ref)}
           resetScrollToCoords={{x: 0, y: 0}}
           contentContainerStyle={styles.container}
-          enableOnAndroid={true}
+          enableOnAndroid
           extraScrollHeight={50}
           // scrollEnabled={isDeviceSize('small')}
         >
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() => this.onCamera(!scan)}>
+          <Pressable style={styles.card} onPress={() => this.onCamera(!scan)}>
             <ScanSim
               scan={scan}
-              onScan={this.onScan}
               hasCameraPermission={hasCameraPermission}
+              onScan={({data}: BarCodeReadEvent) => {
+                this.setState({
+                  scan: false,
+                });
+                this.updateIccid(data);
+              }}
             />
-          </TouchableOpacity>
+          </Pressable>
 
           <Text style={styles.title}>{i18n.t('reg:inputIccid')}</Text>
           <TouchableOpacity
-            onPress={() => this.inputIccid[iccidIdx].current.focus()}
+            onPress={() => this.inputIccid[iccidIdx]?.current?.focus()}
             activeOpacity={1.0}
             style={styles.iccidBox}>
             <Text style={styles.iccid}>ICCID</Text>
-            <View style={styles.inputBox}>
-              {iccid
-                .reduce((acc, cur) => acc.concat([cur, '-']), [])
-                .map((elm, idx) =>
-                  elm == '-' ? (
-                    idx + 1 === _.size(iccid) * 2 ? null : (
-                      <Text
-                        key={idx + ''}
-                        style={[
-                          styles.delimiter,
-                          {
-                            color:
-                              _.size(elm) === 5 ? colors.black : colors.greyish,
-                          },
-                        ]}>
-                        -
-                      </Text>
-                    )
-                  ) : (
-                    <TextInput
-                      style={styles.input}
-                      key={idx + ''}
-                      ref={this.inputIccid[idx / 2]}
-                      placeholder={
-                        idx == this.lastIccidIdx
-                          ? this.defaultLastIccid
-                          : this.defaultIccid
-                      }
-                      placeholderTextColor={colors.greyish}
-                      onChangeText={this.onChangeText('iccid', idx / 2)}
-                      keyboardType="numeric"
-                      returnKeyType="done"
-                      enablesReturnKeyAutomatically={true}
-                      maxLength={idx == this.lastIccidIdx ? 4 : 5}
-                      value={elm}
-                      focus={focusInputIccid}
-                      blurOnSubmit={false}
-                      // onFocus={() => {}}
-                    />
-                  ),
-                )}
-            </View>
+            <View style={styles.inputBox}>{this.renderIccid()}</View>
           </TouchableOpacity>
 
           <AppButton
@@ -460,16 +433,19 @@ class RegisterSimScreen extends Component<
               <Text style={styles.actCodeTitle}>{i18n.t('reg:actCode')}</Text>
               <TextInput
                 style={styles.actCodeInput}
-                onChangeText={this.onChangeText('actCode')}
+                onChangeText={this.onChangeActCode}
                 keyboardType="numeric"
                 returnKeyType="done"
                 placeholder="123456"
                 placeholderTextColor={colors.greyish}
-                enablesReturnKeyAutomatically={true}
+                enablesReturnKeyAutomatically
                 maxLength={6}
-                //clearTextOnFocus={true}
-                //onFocus={() => this.setState({actCode: ''})}
-                onContentSizeChange={this.scrolll}
+                onContentSizeChange={({target}) => {
+                  if (this.scrollRef)
+                    this.scrollRef.props?.scrollToFocusedInput(
+                      findNodeHandle(target),
+                    );
+                }}
                 value={actCode}
               />
             </View>
