@@ -45,6 +45,7 @@ export type HomeStackParamList = {
   Home: undefined;
   Tutorial: undefined;
   StoreSearch: undefined;
+  Store: undefined;
   Cart: undefined;
   ProductDetail: {title?: string; img?: string; localOpDetails?: string};
 
