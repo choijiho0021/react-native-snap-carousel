@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 import AsyncStorage from '@react-native-community/async-storage';
-import {Set} from 'immutable';
 import moment, {Moment} from 'moment';
 import React, {Component, memo} from 'react';
 import {
@@ -40,7 +39,7 @@ import {
   ProductAction,
   ProductModelState,
 } from '@/redux/modules/product';
-import {API, Country} from '@/redux/api';
+import {API} from '@/redux/api';
 import createHandlePushNoti from '@/redux/models/createHandlePushNoti';
 import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
@@ -476,32 +475,32 @@ class Esim extends Component<EsimProps, EsimState> {
         <PromotionCarousel />
         <ScrollView
           ref={this.scrollRef}
-          contentContainerStyle={{flex: 1}}
+          // contentContainerStyle={{flex: 1}}
           style={styles.scrollView}
-          stickyHeaderIndices={[1]}>
-          {/* ScrollView  stickyHeaderIndices로 상단 탭을 고정하기 위해서 View한번 더 사용 */}
+          stickyHeaderIndices={[0]}>
           <TabHeader
             index={index}
             routes={routes}
             onIndexChange={this.onIndexChange}
           />
 
-          {this.props.product.sortedProdList.length === 0 ? (
-            <AppActivityIndicator style={{top: 100}} />
-          ) : (
-            <TabView
-              style={styles.container}
-              navigationState={{index, routes}}
-              renderScene={this.renderScene}
-              onIndexChange={this.onIndexChange}
-              initialLayout={{
-                width: Dimensions.get('window').width,
-                height: 10,
-              }}
-              renderTabBar={() => null}
-            />
-          )}
+          <TabView
+            style={styles.container}
+            // sceneContainerStyle={{flex: 1, height: 1500}}
+            navigationState={{index, routes}}
+            renderScene={this.renderScene}
+            onIndexChange={this.onIndexChange}
+            initialLayout={{
+              width: Dimensions.get('window').width,
+              height: 10,
+            }}
+            renderTabBar={() => null}
+          />
         </ScrollView>
+        <AppActivityIndicator
+          style={{top: 100}}
+          visible={this.props.product.sortedProdList.length === 0}
+        />
 
         <AppModal
           title={i18n.t('home:unsupportedTitle')}
