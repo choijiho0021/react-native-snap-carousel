@@ -1,23 +1,26 @@
 /* eslint-disable global-require */
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, FlatList, Image} from 'react-native';
+import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import _ from 'underscore';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import Analytics from 'appcenter-analytics';
-import {API} from '@/redux/api';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import AppIcon from '@/components/AppIcon';
 import {actions as accountActions} from '@/redux/modules/account';
 import {actions as orderActions} from '@/redux/modules/order';
+import {actions as infoActions, InfoAction} from '@/redux/modules/info';
 import AppBackButton from '@/components/AppBackButton';
 import AppFlatListItem from '@/components/AppFlatListItem';
 import {sliderWidth} from '@/constants/SliderEntry.style';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {RootState} from '@/redux';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RkbInfo} from '@/redux/api/pageApi';
 
 const styles = StyleSheet.create({
   pagination: {
@@ -98,28 +101,45 @@ const guideImages = {
   step4: require('../assets/images/guide/step4/img.png'),
 };
 
-const renderGuide = ({item}) => {
+const renderGuide = ({item}: {item: string}) => {
   return (
-    <Image
-      style={styles.image}
-      source={guideImages[item.key]}
-      resizeMode="cover"
-    />
+    <Image style={styles.image} source={guideImages[item]} resizeMode="cover" />
   );
 };
 
-const renderItem = ({item}) => {
+const renderItem = ({item}: {item: RkbInfo}) => {
   return <AppFlatListItem key={item.key} item={item} />;
 };
-class GuideScreen extends Component {
-  constructor(props) {
+
+type GuideScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'Guide'
+>;
+
+type GuideScreenProps = {
+  navigation: GuideScreenNavigationProp;
+
+  pending: boolean;
+
+  action: {
+    info: InfoAction;
+  };
+};
+
+type GuideScreenState = {
+  data: string[];
+  activeSlide: number;
+  images: string[];
+};
+
+class GuideScreen extends Component<GuideScreenProps, GuideScreenState> {
+  constructor(props: GuideScreenProps) {
     super(props);
 
     this.state = {
-      querying: false,
       data: [],
       activeSlide: 0,
-      images: [{key: 'step1'}, {key: 'step2'}, {key: 'step3'}, {key: 'step4'}],
+      images: ['step1', 'step2', 'step3', 'step4'],
     };
 
     this.header = this.header.bind(this);
@@ -137,12 +157,9 @@ class GuideScreen extends Component {
   }
 
   refreshData() {
-    this.setState({
-      querying: true,
-    });
-
-    API.Page.getPageByCategory('faq:tip')
-      .then((resp) => {
+    this.props.action.info
+      .getInfoList('faq:tip')
+      .then(({payload: resp}) => {
         if (resp.result === 0 && resp.objects.length > 0) {
           this.setState({
             data: resp.objects,
@@ -151,11 +168,6 @@ class GuideScreen extends Component {
       })
       .catch((err) => {
         console.log('failed to get page', err);
-      })
-      .finally(() => {
-        this.setState({
-          querying: false,
-        });
       });
   }
 
@@ -218,19 +230,25 @@ class GuideScreen extends Component {
           ListHeaderComponent={this.header}
           ListFooterComponent={this.footer}
         />
-        <AppActivityIndicator
-          visible={this.props.pending || this.state.querying}
-        />
+        <AppActivityIndicator visible={this.props.pending} />
       </View>
     );
   }
 }
 
-export default connect(({account, status}: RootState) => ({
-  account,
-  auth: accountActions.auth(account),
-  pending:
-    status.pending[orderActions.getOrders.typePrefix] ||
-    status.pending[accountActions.uploadPicture.typePrefix] ||
-    false,
-}))(GuideScreen);
+export default connect(
+  ({account, status}: RootState) => ({
+    account,
+    auth: accountActions.auth(account),
+    pending:
+      status.pending[orderActions.getOrders.typePrefix] ||
+      status.pending[accountActions.uploadPicture.typePrefix] ||
+      status.pending[infoActions.getInfoList.typePrefix] ||
+      false,
+  }),
+  (dispatch) => ({
+    action: {
+      info: bindActionCreators(infoActions, dispatch),
+    },
+  }),
+)(GuideScreen);

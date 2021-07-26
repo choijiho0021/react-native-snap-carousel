@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import {API} from '@/redux/api';
 import {RkbInfo} from '@/redux/api/pageApi';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
@@ -12,13 +13,6 @@ const getHomeInfoList = createAsyncThunk(
   'info/getHomeInfoList',
   API.Page.getPageByCategory,
 );
-
-export const actions = {
-  getInfoList,
-  getHomeInfoList,
-};
-
-export type InfoAction = typeof actions;
 
 export interface InfoModelState {
   infoList: RkbInfo[];
@@ -51,5 +45,12 @@ const slice = createSlice({
     });
   },
 });
+
+export const actions = {
+  getInfoList,
+  getHomeInfoList,
+};
+
+export type InfoAction = typeof actions;
 
 export default slice.reducer as Reducer<InfoModelState, AnyAction>;

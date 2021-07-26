@@ -21,7 +21,11 @@ import Env from '@/environment';
 import {API} from '@/redux/api';
 import i18n from '@/utils/i18n';
 import utils from '@/redux/api/utils';
-import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
+import {
+  actions as infoActions,
+  InfoAction,
+  InfoModelState,
+} from '@/redux/modules/info';
 import {RootState} from '@/redux';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp, useFocusEffect} from '@react-navigation/native';
@@ -88,6 +92,10 @@ type SimpleTextScreenProps = {
   info: InfoModelState;
   account: AccountModelState;
   eventStatus: EventStatus;
+
+  action: {
+    info: InfoAction;
+  };
 };
 
 type SimpleTextScreenState = {
