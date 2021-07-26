@@ -14,6 +14,11 @@ const getHomeInfoList = createAsyncThunk(
   API.Page.getPageByCategory,
 );
 
+const getInfoByTitle = createAsyncThunk(
+  'info/getInfoByTitle',
+  API.Page.getPageByTitle,
+);
+
 export interface InfoModelState {
   infoList: RkbInfo[];
   homeInfoList: RkbInfo[];
@@ -49,6 +54,7 @@ const slice = createSlice({
 export const actions = {
   getInfoList,
   getHomeInfoList,
+  getInfoByTitle,
 };
 
 export type InfoAction = typeof actions;

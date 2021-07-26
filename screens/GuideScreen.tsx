@@ -101,16 +101,6 @@ const guideImages = {
   step4: require('../assets/images/guide/step4/img.png'),
 };
 
-const renderGuide = ({item}: {item: string}) => {
-  return (
-    <Image style={styles.image} source={guideImages[item]} resizeMode="cover" />
-  );
-};
-
-const renderItem = ({item}: {item: RkbInfo}) => {
-  return <AppFlatListItem key={item.key} item={item} />;
-};
-
 type GuideScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
   'Guide'
@@ -127,7 +117,7 @@ type GuideScreenProps = {
 };
 
 type GuideScreenState = {
-  data: string[];
+  data: RkbInfo[];
   activeSlide: number;
   images: string[];
 };
@@ -178,7 +168,13 @@ class GuideScreen extends Component<GuideScreenProps, GuideScreenState> {
       <View>
         <Carousel
           data={images}
-          renderItem={renderGuide}
+          renderItem={({item}) => (
+            <Image
+              style={styles.image}
+              source={guideImages[item]}
+              resizeMode="cover"
+            />
+          )}
           onSnapToItem={(index) => this.setState({activeSlide: index})}
           autoplay={false}
           loop
@@ -225,7 +221,9 @@ class GuideScreen extends Component<GuideScreenProps, GuideScreenState> {
       <View style={styles.container}>
         <FlatList
           data={data}
-          renderItem={renderItem}
+          renderItem={({item}) => (
+            <AppFlatListItem key={item.key} item={item} />
+          )}
           extraData={activeSlide}
           ListHeaderComponent={this.header}
           ListFooterComponent={this.footer}

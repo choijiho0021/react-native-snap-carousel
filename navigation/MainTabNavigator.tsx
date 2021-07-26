@@ -213,7 +213,7 @@ const TabNavigator = ({
         component={homeStack}
         options={({route}) => ({
           tabBarVisible:
-            (getFocusedRouteNameFromRoute(route) || 'Main') === 'Main',
+            (getFocusedRouteNameFromRoute(route) || 'Home') === 'Home',
           tabBarLabel: i18n.t('home'),
           animationEnabled: false,
           tabBarIcon: ({focused}) => (

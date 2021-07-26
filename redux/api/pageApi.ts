@@ -47,22 +47,20 @@ const getPageByCategory = (name: string) => {
   return api.callHttpGet(
     `${api.httpUrl(
       api.path.jsonapi.page,
-    )}?filter[field_category.name]=${name}&sort=-field_wieght`,
+    )}?filter[field_category.name]=${name}&sort=-field_weight`,
     toPage,
   );
 };
 
-const getPageByTitle = (title?: string, abortController?: AbortController) => {
+const getPageByTitle = (title?: string) => {
   if (!title)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: title');
 
   return api.callHttpGet(
     `${api.httpUrl(
       api.path.jsonapi.page,
-    )}?filter[title]=${title}&sort=field_wieght`,
+    )}?filter[title]=${title}&sort=field_weight`,
     toPage,
-    undefined,
-    {abortController},
   );
 };
 
