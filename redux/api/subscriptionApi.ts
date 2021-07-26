@@ -140,14 +140,18 @@ const toSubsUpdate = (data) => {
   return data;
 };
 
-const toSubsUsage = (data) => {
+export type RkbSubsUsage = {
+  quota: number;
+  used: number;
+};
+const toSubsUsage = (data: {
+  objects: {usage: RkbSubsUsage};
+}): ApiResult<RkbSubsUsage> => {
   if (data.objects && data.objects.usage) {
-    return api.success(data.objects.usage);
+    return api.success([data.objects.usage]);
   }
 
-  return {
-    result: api.E_NOT_FOUND,
-  };
+  return api.failure(api.E_NOT_FOUND);
 };
 
 const getSubscription = ({
@@ -159,13 +163,10 @@ const getSubscription = ({
   token?: string;
   prodType?: string;
 }) => {
-  const missing = api.missingParameters({iccid, token});
-  if (missing.length > 0) {
-    return api.reject(
-      api.E_INVALID_ARGUMENT,
-      `missing parameter: ${missing.join(',')}`,
-    );
-  }
+  if (!iccid)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
+  if (!token)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
   return api.callHttpGet(
     `${api.httpUrl(api.path.subscription)}/${iccid}${
@@ -186,14 +187,21 @@ const getRkbTalkSubscription = ({
   return getSubscription({iccid, token, prodType: 'rokebi_call_product'});
 };
 
-const addSubscription = ({subs, user, pass}) => {
-  const missing = api.missingParameters({subs, user, pass});
-  if (missing.length > 0) {
-    return api.reject(
-      api.E_INVALID_ARGUMENT,
-      `missing parameter: ${missing.join(',')}`,
-    );
-  }
+const addSubscription = ({
+  subs,
+  user,
+  pass,
+}: {
+  subs: RkbSubscription;
+  user?: string;
+  pass?: string;
+}) => {
+  if (!subs)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: subs');
+  if (!user)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
+  if (!pass)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: pass');
 
   const url = `${api.httpUrl(api.path.jsonapi.subscription)}`;
   const headers = api.basicAuth(user, pass, 'vnd.api+json', {
@@ -241,13 +249,14 @@ const otaSubscription = ({
   pass: string;
   method?: string;
 }) => {
-  const missing = api.missingParameters({iccid, mccmnc, user, pass});
-  if (missing.length > 0) {
-    return api.reject(
-      api.E_INVALID_ARGUMENT,
-      `missing parameter: ${missing.join(',')}`,
-    );
-  }
+  if (!iccid)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
+  if (!mccmnc)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: mccmnc');
+  if (!user)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
+  if (!pass)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: pass');
 
   return api.callHttp(
     `${api.httpUrl(
@@ -285,13 +294,12 @@ const updateSubscriptionStatus = ({
   status: string;
   token: string;
 }) => {
-  const missing = api.missingParameters({uuid, status, token});
-  if (missing.length > 0) {
-    return api.reject(
-      api.E_INVALID_ARGUMENT,
-      `missing parameter: ${missing.join(',')}`,
-    );
-  }
+  if (!uuid)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: uuid');
+  if (!status)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: status');
+  if (!token)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
   return api.callHttp(
     `${api.httpUrl(api.path.rokApi.rokebi.subs, '')}/${uuid}?_format=json`,
@@ -305,14 +313,10 @@ const updateSubscriptionStatus = ({
 };
 
 //그래프를 그리기 위해서 가져올 데이터
-const getSubsUsage = ({id, token}: {id: string; token: string}) => {
-  const missing = api.missingParameters({id, token});
-  if (missing.length > 0) {
-    return api.reject(
-      api.E_INVALID_ARGUMENT,
-      `missing parameter: ${missing.join(',')}`,
-    );
-  }
+const getSubsUsage = ({id, token}: {id?: string; token?: string}) => {
+  if (!id) return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: id');
+  if (!token)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
   return api.callHttpGet(
     `${api.httpUrl(api.path.rokApi.rokebi.usage)}/${id}?_format=json`,

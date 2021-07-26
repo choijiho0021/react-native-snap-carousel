@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
 import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
@@ -12,6 +13,9 @@ import {colors} from '@/constants/Colors';
 import AppButton from '@/components/AppButton';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {API} from '@/redux/api';
+import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import {RootState} from '@/redux';
+import {AccountModelState} from '@/redux/modules/account';
 
 const styles = StyleSheet.create({
   usageListContainer: {
@@ -140,8 +144,24 @@ function getStatusColor(statusCd) {
   return {statusColor, isActive};
 }
 
-class UsageItem extends Component {
-  constructor(props) {
+type UsageItemProps = {
+  item: RkbSubscription;
+  onPress: () => void;
+  showSnackbar: () => void;
+
+  account: AccountModelState;
+};
+type UsageItemState = {
+  isShowUsage: boolean;
+  disableBtn: boolean;
+  quota?: number;
+  used?: number;
+};
+
+class UsageItem extends Component<UsageItemProps, UsageItemState> {
+  circularProgress: React.RefObject<AnimatedCircularProgress>;
+
+  constructor(props: UsageItemProps) {
     super(props);
 
     this.state = {
@@ -156,7 +176,7 @@ class UsageItem extends Component {
     this.circularProgress = React.createRef();
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps: UsageItemProps, nextState: UsageItemState) {
     return (
       !_.isEqual(nextProps.item, this.props.item) ||
       this.state.disableBtn !== nextState.disableBtn
@@ -174,44 +194,47 @@ class UsageItem extends Component {
   }
 
   getUsage() {
-    const {item, auth, showSnackBar} = this.props;
+    const {
+      item,
+      showSnackbar,
+      account: {token},
+    } = this.props;
 
     //그래프 테스트 nid = 1616
     if (item.statusCd === 'A') {
-      API.Subscription.getSubsUsage(item.nid, auth).then((resp) => {
+      API.Subscription.getSubsUsage({id: item.nid, token}).then((resp) => {
         this.setState({disableBtn: true});
         if (resp.result === 0) {
           console.log('getSubsUsage progress', resp.objects, item.nid);
-          const {quota, used} = resp.objects;
+          const {quota, used} = resp.objects[0];
           const progress =
             used > 0 ? 100 - Math.floor((used / quota) * 100) : 0;
 
           this.setState({quota, used, isShowUsage: true});
 
-          if (this.circularProgress.current)
-            this.circularProgress.current.animate(progress, 3000, null);
+          this.circularProgress.current?.animate(progress, 3000, null);
 
           Analytics.trackEvent('Page_View_Count', {page: 'Get Detail Data'});
         } else {
-          showSnackBar();
+          showSnackbar();
           console.log('Get Usage failed', resp);
         }
       });
     }
   }
 
-  expire = (item) => {
+  expire = (item: RkbSubscription) => {
     return (
       <View style={styles.endDateContainer}>
         <Text style={appStyles.normal12Text}>{i18n.t('usim:usingTime')}</Text>
-        <Text style={styles.usageUntil}>{`${utils.toDateString(
+        <Text style={styles.usagePeriod}>{`${utils.toDateString(
           item.endDate,
         )} ${i18n.t('usim:until')}`}</Text>
       </View>
     );
   };
 
-  expireBeforeUse = (item) => {
+  expireBeforeUse = (item: RkbSubscription) => {
     return (
       <View style={styles.inactiveContainer}>
         <Text style={appStyles.normal12Text}>
@@ -225,12 +248,12 @@ class UsageItem extends Component {
     );
   };
 
-  toMb = (kb) => {
+  toMb = (kb: number) => {
     if (kb === 0) return 0;
     return utils.numberToCommaString(kb / 1024);
   };
 
-  toGb = (kb) => {
+  toGb = (kb: number) => {
     if (kb === 0) return 0;
     return (kb / 1024 / 1024).toFixed(2);
   };
@@ -363,4 +386,4 @@ class UsageItem extends Component {
   }
 }
 
-export default UsageItem;
+export default connect(({account}: RootState) => ({account}))(UsageItem);

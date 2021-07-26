@@ -27,9 +27,9 @@ import {RootState} from '@/redux';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
+import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import UsimCardInfo from './components/UsimCardInfo';
 import UsageItem from './components/UsageItem';
-import {RkbSubscription} from '../../redux/api/subscriptionApi';
 
 const styles = StyleSheet.create({
   container: {flex: 1},
@@ -80,7 +80,6 @@ class UsimScreen extends Component<UsimScreenProps, UsimScreenState> {
     this.init = this.init.bind(this);
     this.renderSubs = this.renderSubs.bind(this);
     this.onRefresh = this.onRefresh.bind(this);
-    this.showSnackBar = this.showSnackBar.bind(this);
   }
 
   componentDidMount() {
@@ -130,33 +129,24 @@ class UsimScreen extends Component<UsimScreenProps, UsimScreenState> {
     );
   };
 
-  onPressSubsDetail = (key) => () => {
-    const {subs} = this.props.order;
-    this.props.navigation.navigate('SubsDetail', {
-      detail: subs.find((item) => item.key === key),
-    });
-  };
-
   init({iccid, token}: {iccid?: string; token?: string}) {
     if (iccid && token) {
       this.props.action.order.getSubsWithToast({iccid, token});
     }
   }
 
-  showSnackBar() {
-    this.setState({
-      showSnackBar: true,
-    });
-  }
-
   renderSubs({item}: {item: RkbSubscription}) {
+    const {subs} = this.props.order;
     return (
       <UsageItem
         key={item.key}
         item={item}
-        auth={this.props.auth}
-        showSnackBar={this.showSnackBar}
-        onPress={this.onPressSubsDetail(item.key)}
+        showSnackbar={() => this.setState({showSnackBar: true})}
+        onPress={() =>
+          this.props.navigation.navigate('SubsDetail', {
+            detail: subs.find((s) => s.key === item.key),
+          })
+        }
       />
     );
   }

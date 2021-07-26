@@ -129,7 +129,10 @@ const toDate = (str: string) => {
   return null;
 };
 
-const toDateString = (str: string | object, fmt = 'LLL'): string => {
+const toDateString = (
+  str: string | object | undefined,
+  fmt = 'LLL',
+): string => {
   if (typeof str === 'string') {
     const dt = toDate(str);
     return dt?.format(fmt) || '';
