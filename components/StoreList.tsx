@@ -9,8 +9,11 @@ import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {RootState} from '@/redux';
-import {ProductByCategory} from '@/screens/HomeScreen/Esim';
-import {RkbLocalOp, RkbProduct} from '@/redux/api/productApi';
+import {
+  ProductByCategory,
+  RkbLocalOp,
+  RkbProduct,
+} from '@/redux/api/productApi';
 
 const styles = StyleSheet.create({
   container: {
