@@ -8,6 +8,8 @@
     "build_prod": "react-native run-ios --configuration Release",
     "android": "react-native run-android",
     "ios": "react-native run-ios --simulator 'iPhone 12'",
+    "ios_usim": "react-native run-ios --simulator 'iPhone 12' --scheme USIM --configuration USIM.Debug",
+    "ios_esim": "react-native run-ios --simulator 'iPhone 12' --scheme ESIM --configuration ESIM.Debug",
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",
