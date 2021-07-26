@@ -300,7 +300,7 @@ type ShowModal = 'address' | 'memo' | 'method';
 
 type PymMethodScreenState = {
   mode?: PymMethodScreenMode;
-  selected?: PaymentMethod;
+  selected: PaymentMethod;
   pymPrice?: number;
   deduct?: number;
   isRecharge?: boolean;
@@ -332,7 +332,7 @@ class PymMethodScreen extends Component<
 
     this.state = {
       mode: undefined,
-      selected: undefined,
+      selected: API.Payment.method[0][0],
       pymPrice: undefined,
       deduct: undefined,
       isRecharge: undefined,
@@ -537,7 +537,7 @@ class PymMethodScreen extends Component<
                     parseInt(row, 10),
                   )}
                   iconName={v.icon}
-                  checked={v.method === selected?.method}
+                  checked={v === selected}
                   onPress={this.onPress(v, key, idx)}
                   titleStyle={styles.buttonText}
                 />
