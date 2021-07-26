@@ -3,6 +3,7 @@ import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
 import {API} from '@/redux/api';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {RkbSimCard} from '../api/simCardApi';
 
 export const updateSimPartner = createAsyncThunk(
   'sim/updateSimPartner',
@@ -10,12 +11,12 @@ export const updateSimPartner = createAsyncThunk(
 );
 export const getSimCardList = createAsyncThunk(
   'sim/getSimCardList',
-  API.SimCard.get,
+  API.SimCard.getSimCardList,
 );
 export interface SimModelState {
   iccid?: string;
   simPartner?: string;
-  simList: object[];
+  simList: RkbSimCard[];
 }
 
 const initialState: SimModelState = {

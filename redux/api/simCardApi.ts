@@ -64,7 +64,7 @@ const toSimPartner = (data: DrupalNodeJsonApi): ApiResult<RkbSimPartner> => {
   return api.failure(api.E_NOT_FOUND);
 };
 
-const get = () => {
+const getSimCardList = () => {
   return api.callHttpGet(
     `${api.httpUrl(api.path.simCard)}?_format=hal_json`,
     toSimCard,
@@ -82,6 +82,6 @@ const getSimPartnerByID = (tid: number) => {
 };
 
 export default {
-  get,
+  getSimCardList,
   getSimPartnerByID,
 };

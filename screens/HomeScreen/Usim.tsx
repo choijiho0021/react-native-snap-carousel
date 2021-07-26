@@ -407,20 +407,15 @@ class Usim extends Component<UsimProps, UsimState> {
     }
   }
 
-  navigate =
-    (key, params = {}) =>
-    () => {
-      const {mobile, iccid} = this.props.account;
-      let naviTarget = '';
+  navigate = (key: string, params = {}) => {
+    const {mobile, iccid} = this.props.account;
+    let naviTarget = key;
 
-      if (key.includes('RegisterSim')) {
-        if (_.isEmpty(mobile)) naviTarget = 'Auth';
-        else if (_.isEmpty(iccid)) naviTarget = 'RegisterSim';
-        else naviTarget = key.indexOf('_') > 0 ? 'Recharge' : 'RegisterSim';
-      }
+    if (!mobile) naviTarget = 'Auth';
+    else if (!iccid) naviTarget = 'RegisterSim';
 
-      this.props.navigation.navigate(naviTarget, params);
-    };
+    this.props.navigation.navigate(naviTarget, params);
+  };
 
   appStateHandler(state: string) {
     const {iccid, token} = this.props.account;
@@ -452,12 +447,12 @@ class Usim extends Component<UsimProps, UsimState> {
     return (
       <TouchableOpacity
         style={styles.userInfo}
-        onPress={this.navigate('RegisterSim_user', {mode: 'Home'})}>
+        onPress={() => this.navigate('Recharge', {mode: 'Home'})}>
         <AppUserPic
           url={userPictureUrl}
           icon="imgPeople"
           style={styles.userPicture}
-          onPress={this.navigate('RegisterSim_user', {mode: 'Home'})}
+          onPress={() => this.navigate('Recharge', {mode: 'Home'})}
         />
         <View style={{marginLeft: 20, justifyContent: 'space-around', flex: 1}}>
           {loggedIn ? (
@@ -496,7 +491,7 @@ class Usim extends Component<UsimProps, UsimState> {
           iconName="imgCard1"
           style={styles.menuBox}
           title={i18n.t('menu:purchase')}
-          onPress={this.navigate('NewSim')}
+          onPress={() => this.props.navigation.navigate('NewSim')}
           titleStyle={styles.menuText}
         />
 
@@ -506,7 +501,7 @@ class Usim extends Component<UsimProps, UsimState> {
           iconName="imgCard2"
           style={styles.menuBox}
           title={title}
-          onPress={this.navigate('RegisterSim', {title})}
+          onPress={() => this.navigate('RegisterSim', {title})}
           titleStyle={styles.menuText}
         />
 
@@ -516,7 +511,7 @@ class Usim extends Component<UsimProps, UsimState> {
           iconName="imgCard3"
           style={styles.menuBox}
           title={i18n.t('store')}
-          onPress={this.navigate('StoreStack')}
+          onPress={() => this.props.navigation.navigate('StoreStack')}
           titleStyle={styles.menuText}
         />
       </View>
@@ -525,7 +520,9 @@ class Usim extends Component<UsimProps, UsimState> {
 
   guide() {
     return (
-      <TouchableOpacity style={styles.guide} onPress={this.navigate('Guide')}>
+      <TouchableOpacity
+        style={styles.guide}
+        onPress={() => this.props.navigation.navigate('Guide')}>
         <View style={{flex: 1, justifyContent: 'space-between'}}>
           <Text style={[appStyles.normal16Text, {marginLeft: 30}]}>
             {i18n.t('home:guide')}
@@ -539,7 +536,7 @@ class Usim extends Component<UsimProps, UsimState> {
           iconName="imgDokebi"
           style={{marginRight: 30}}
           iconStyle={{height: '100%', justifyContent: 'flex-end'}}
-          onPress={this.navigate('Guide')}
+          onPress={() => this.props.navigation.navigate('Guide')}
         />
       </TouchableOpacity>
     );

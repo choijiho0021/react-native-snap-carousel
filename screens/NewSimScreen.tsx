@@ -14,36 +14,57 @@ import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
-import {actions as cartActions} from '@/redux/modules/cart';
+import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import SimCard from '@/components/SimCard';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
 import ChargeSummary from '@/components/ChargeSummary';
 import utils from '@/redux/api/utils';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.white,
+  },
+  btnBuy: {
+    width: '100%',
+    height: 52,
+    backgroundColor: colors.clearBlue,
+  },
+});
+
+type NewSimScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'NewSim'
+>;
 
 interface NewSimScreenProps {
   account: AccountModelState;
   sim: SimModelState;
-  navigation: any;
+  navigation: NewSimScreenNavigationProp;
+
+  action: {
+    cart: CartAction;
+  };
 }
 
 interface NewSimScreenState {
-  querying: boolean;
   total: {cnt: number; price: number};
   checked: ImmutableMap<string, boolean>;
   simPrice: ImmutableMap<string, number>;
   simQty: ImmutableMap<string, number>;
 }
 class NewSimScreen extends Component<NewSimScreenProps, NewSimScreenState> {
-  constructor(props) {
+  constructor(props: NewSimScreenProps) {
     super(props);
 
     this.state = {
-      querying: false,
       total: {cnt: 0, price: 0},
-      checked: ImmutableMap(),
-      simPrice: ImmutableMap(),
-      simQty: ImmutableMap(),
+      checked: ImmutableMap<string, boolean>(),
+      simPrice: ImmutableMap<string, number>(),
+      simQty: ImmutableMap<string, number>(),
     };
 
     this.onChangeQty = this.onChangeQty.bind(this);
@@ -80,13 +101,13 @@ class NewSimScreen extends Component<NewSimScreenProps, NewSimScreenState> {
       simQty: simQty.set(key, qty),
       simPrice: simPrice.set(
         key,
-        this.props.sim.simList.filter((item) => item.key === key || false)[0]
-          .price * qty,
+        (this.props.sim.simList.find((item) => item.key === key)?.price || 0) *
+          qty,
       ),
     }));
   }
 
-  onPress = (mode) => () => {
+  onPress = () => {
     const {loggedIn, balance} = this.props.account;
     const {checked, simQty} = this.state;
 
@@ -94,7 +115,9 @@ class NewSimScreen extends Component<NewSimScreenProps, NewSimScreenState> {
       this.props.navigation.navigate('Auth');
     } else {
       const simList = this.props.sim.simList
-        .filter((item) => checked.get(item.uuid) && simQty.get(item.uuid) > 0)
+        .filter(
+          (item) => checked.get(item.uuid) && simQty.get(item.uuid, 0) > 0,
+        )
         .map((item) => ({
           title: item.name,
           key: item.uuid,
@@ -124,8 +147,8 @@ class NewSimScreen extends Component<NewSimScreenProps, NewSimScreenState> {
         key,
         (value) =>
           value ||
-          this.props.sim.simList.filter((item) => item.key === key || false)[0]
-            .price,
+          this.props.sim.simList.find((item) => item.key === key)?.price ||
+          0,
       ),
     }));
   }
@@ -142,7 +165,7 @@ class NewSimScreen extends Component<NewSimScreenProps, NewSimScreenState> {
         .reduce(
           (acc, cur) => ({
             cnt: acc.cnt + cur.qty,
-            price: acc.price + cur.qty * cur.price,
+            price: acc.price + cur.qty * (cur?.price || 0),
           }),
           {cnt: 0, price: 0},
         ),
@@ -168,16 +191,9 @@ class NewSimScreen extends Component<NewSimScreenProps, NewSimScreenState> {
   // key value array로 리턴해서 합쳐야 함 - array로 맵을 초기화 할 수 있음
   init() {
     const {simList} = this.props.sim;
-    const checked = ImmutableMap(
-      simList.reduce(
-        (acc, cur) => ({
-          ...acc,
-          [cur.key]: false,
-        }),
-        {},
-      ),
+    const checked = ImmutableMap<string, boolean>(
+      simList.map((s) => [s.key, false]),
     );
-
     this.setState({
       checked,
       simQty: checked.map(() => 0),
@@ -190,18 +206,16 @@ class NewSimScreen extends Component<NewSimScreenProps, NewSimScreenState> {
   }
 
   render() {
-    const {querying, checked, simQty, total, simPrice} = this.state;
+    const {checked, simQty, total, simPrice} = this.state;
     const {simList} = this.props.sim;
     const selected =
       simList.findIndex(
-        (item) => checked.get(item.key) && simQty.get(item.key) > 0,
+        (item) => checked.get(item.key) && simQty.get(item.key, 0) > 0,
       ) >= 0;
 
     return (
-      <SafeAreaView
-        style={styles.container}
-        forceInset={{top: 'never', bottom: 'always'}}>
-        <AppActivityIndicator visible={querying} />
+      <SafeAreaView style={styles.container}>
+        <AppActivityIndicator visible={this.props.pending} />
         <FlatList
           data={simList}
           renderItem={this.renderItem}
@@ -220,27 +234,15 @@ class NewSimScreen extends Component<NewSimScreenProps, NewSimScreenState> {
           style={styles.btnBuy}
           title={i18n.t('cart:buy')}
           disabled={!selected}
-          onPress={this.onPress('purchase')}
+          onPress={this.onPress}
         />
       </SafeAreaView>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-  },
-  btnBuy: {
-    width: '100%',
-    height: 52,
-    backgroundColor: colors.clearBlue,
-  },
-});
-
 export default connect(
-  ({account, sim}: RootState) => ({sim, account}),
+  ({account, sim}: RootState) => ({sim, account, pending: false}),
   (dispatch) => ({
     action: {
       sim: bindActionCreators(simActions, dispatch),

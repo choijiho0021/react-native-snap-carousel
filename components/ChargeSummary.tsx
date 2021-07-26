@@ -7,8 +7,6 @@ import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import LabelText from './LabelText';
 
-const {esimApp} = Env.get();
-
 const styles = StyleSheet.create({
   container: {
     width: 96,
@@ -40,7 +38,7 @@ const ChargeSummary = ({
 }: {
   totalCnt: number;
   totalPrice: number;
-  balance: number;
+  balance?: number;
   dlvCost: number;
   simList?: any[];
 }) => {

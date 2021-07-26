@@ -86,7 +86,7 @@ function homeStack() {
 
       {/* <HomeStack.Screen name="Recharge" component={RechargeScreen} /> */}
       <HomeStack.Screen name="RegisterSim" component={RegisterSimScreen} />
-      {/* <HomeStack.Screen name="NewSim" component={NewSimScreen} /> */}
+      <HomeStack.Screen name="NewSim" component={NewSimScreen} />
       <HomeStack.Screen name="Noti" component={NotiScreen} />
       <HomeStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <HomeStack.Screen name="Contact" component={ContactScreen} />
