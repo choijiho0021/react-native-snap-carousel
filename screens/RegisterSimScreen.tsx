@@ -190,8 +190,6 @@ class RegisterSimScreen extends Component<
 
   lastIccidIdx: number;
 
-  isMounted: boolean;
-
   scrollRef: any;
 
   constructor(props: RegisterSimScreenProps) {
@@ -209,7 +207,6 @@ class RegisterSimScreen extends Component<
     this.defaultIccid = '12345';
     this.defaultLastIccid = '1234';
     this.lastIccidIdx = 6;
-    this.isMounted = false;
     this.scrollRef = null;
   }
 
@@ -227,12 +224,6 @@ class RegisterSimScreen extends Component<
         />
       ),
     });
-
-    this.isMounted = true;
-  }
-
-  componentWillUnmount() {
-    this.isMounted = false;
   }
 
   onSubmit() {
@@ -245,6 +236,7 @@ class RegisterSimScreen extends Component<
       .then(({payload: resp}) => {
         if (resp.result === 0) {
           this.props.action.order.getSubs({iccid, token});
+          this.props.action.account.getAccount({iccid, token});
 
           AppAlert.info(
             i18n.t('reg:success'),
@@ -253,13 +245,12 @@ class RegisterSimScreen extends Component<
               this.props.navigation.canGoBack() &&
               this.props.navigation.goBack(),
           );
-          return resp;
+        } else {
+          AppAlert.error(i18n.t(errCode[resp.result] || 'reg:fail'));
+          this.setState(initialState);
         }
-        return Promise.reject(errCode[resp.result]);
-      })
-      .catch((err: string) => {
-        AppAlert.error(err || i18n.t('reg:fail'));
-        this.setState(initialState);
+        console.log('@@@ resp', resp);
+        return resp;
       });
   }
 
@@ -372,7 +363,7 @@ class RegisterSimScreen extends Component<
 
     const disabled =
       _.size(iccid) !== 4 ||
-      iccid.every((elm, idx) =>
+      !iccid.every((elm, idx) =>
         idx === iccid.length - 1 ? elm.length === 4 : elm.length === 5,
       ) ||
       !actCode ||

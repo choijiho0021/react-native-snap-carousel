@@ -194,10 +194,9 @@ class RechargeScreen extends Component<
 
   componentWillUnmount() {
     // 보완 필요
-    const {iccid} = this.props.account;
-    const {auth} = this.props;
-    if (iccid && auth) {
-      this.props.action.order.getSubs(iccid, auth);
+    const {iccid, token} = this.props.account;
+    if (iccid && token) {
+      this.props.action.order.getSubs({iccid, token});
     }
   }
 
@@ -272,11 +271,8 @@ class RechargeScreen extends Component<
       [25000, 30000],
     ];
 
-    console.log('image22222', API.default.httpImageUrl(simCardImage));
     return (
-      <SafeAreaView
-        style={styles.container}
-        forceInset={{top: 'never', bottom: 'always'}}>
+      <SafeAreaView style={styles.container}>
         <ScrollView>
           {esimApp ? (
             <View style={styles.rechargeBox}>

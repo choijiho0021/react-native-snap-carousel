@@ -35,7 +35,7 @@ const getAccountByUser = createAsyncThunk(
   'account/getAccountByUser',
   API.Account.getByUser,
 );
-const registerMobile0 = createAsyncThunk(
+const registerMobile = createAsyncThunk(
   'account/registerMobile',
   API.Account.registerMobile,
 );
@@ -128,34 +128,6 @@ const changeNotiToken = createAsyncThunk(
   },
 );
 
-const registerMobile = createAsyncThunk(
-  'account/registerMobile',
-  (
-    {
-      iccid,
-      code,
-      mobile,
-      token,
-    }: {iccid?: string; code?: string; mobile?: string; token?: string},
-    {dispatch},
-  ) => {
-    return dispatch(registerMobile0({iccid, code, mobile, token})).then(
-      ({payload}: {payload: ApiResult<RkbAccount>}) => {
-        if (payload.result === 0) {
-          return dispatch(getAccount({iccid, token}));
-        }
-        return payload;
-      },
-      (err) => {
-        console.log('failed to register mobile', err);
-        return {
-          result: -1,
-        };
-      },
-    );
-  },
-);
-
 // export const clearCookies = (): AppThunk => (dispatch) => {
 //   return dispatch(clearCookies0());
 // };
@@ -185,7 +157,11 @@ const logInAndGetAccount = createAsyncThunk(
           if (iccid) {
             dispatch(getAccount({iccid, token}));
           } else if (esimApp) {
-            dispatch(registerMobile({iccid: 'esim', code: pin, mobile}));
+            dispatch(
+              registerMobile({iccid: 'esim', code: pin, mobile, token}),
+            ).then(({payload: resp}) => {
+              if (resp.result === 0) dispatch(getAccount({iccid, token}));
+            });
           } else {
             // 가장 최근 사용한 SIM 카드 번호를 조회한다.
             dispatch(getAccountByUser({mobile, token})).then(
@@ -347,7 +323,7 @@ const slice = createSlice({
       }
     });
 
-    builder.addCase(registerMobile0.fulfilled, (state, action) => {
+    builder.addCase(registerMobile.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
       if (result === 0 && objects && objects.length > 0) {
         storeData(API.User.KEY_ICCID, objects[0].iccid);
