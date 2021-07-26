@@ -6,6 +6,7 @@ const impId = 'imp53913318';
 
 // rokebi esim App
 const appId = bundleId === 'com.uangel.rokebi-USIM' ? 'usim' : 'esim';
+const esimGlobal = appId === 'esim' && bundleId === 'com.uangel.rokebi-global';
 const codePushLabel = {
   stagingIOS: 'v56',
   stagingAndroid: 'v55',
@@ -47,17 +48,21 @@ function get() {
       case 'production':
         env.scheme = 'http';
         env.rokApiUrl = 'svcapp.rokebi.com';
-        env.apiUrl = 'tb-esim.rokebi.com';
-        env.baseUrl = 'https://tb-esim.rokebi.com';
+        env.apiUrl = esimGlobal ? 'tb-global.rokebi.com' : 'tb-esim.rokebi.com';
+        env.baseUrl = esimGlobal
+          ? 'https://tb-global.rokebi.com'
+          : 'https://tb-esim.rokebi.com';
         break;
       default:
         env.scheme = 'http';
-        env.apiUrl = 'tb-esim.rokebi.com';
-        env.baseUrl = 'http://tb-esim.rokebi.com';
+        env.rokApiUrl = 'svcapp.rokebi.com';
+        env.apiUrl = esimGlobal ? 'tb-global.rokebi.com' : 'tb-esim.rokebi.com';
+        env.baseUrl = esimGlobal
+          ? 'http://tb-global.rokebi.com'
+          : 'http://tb-esim.rokebi.com';
         // scheme: 'https',
         // apiUrl: 'esim.rokebi.com',
         // baseUrl: 'https://esim.rokebi.com',
-        env.rokApiUrl = 'svcapp.rokebi.com';
         break;
     }
     return env;
