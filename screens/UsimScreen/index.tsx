@@ -8,18 +8,31 @@ import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
 import {actions as simActions} from '@/redux/modules/sim';
-import {actions as accountActions} from '@/redux/modules/account';
+import {
+  AccountAction,
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import {actions as notiActions} from '@/redux/modules/noti';
 import {actions as infoActions} from '@/redux/modules/info';
 import {actions as cartActions} from '@/redux/modules/cart';
-import {actions as orderActions} from '@/redux/modules/order';
+import {
+  actions as orderActions,
+  OrderAction,
+  OrderModelState,
+} from '@/redux/modules/order';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {timer} from '@/constants/Timer';
 import {RootState} from '@/redux';
-import CardInfo from './components/CardInfo';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RouteProp} from '@react-navigation/native';
+import UsimCardInfo from './components/UsimCardInfo';
 import UsageItem from './components/UsageItem';
+import {RkbSubscription} from '../../redux/api/subscriptionApi';
 
 const styles = StyleSheet.create({
+  container: {flex: 1},
   title: {
     ...appStyles.title,
     marginLeft: 20,
@@ -31,17 +44,34 @@ const styles = StyleSheet.create({
   },
 });
 
-class UsimScreen extends Component {
-  constructor(props) {
+type UsimScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Usim'>;
+type UsimScreenRouteProp = RouteProp<HomeStackParamList, 'Usim'>;
+
+type UsimScreenProps = {
+  navigation: UsimScreenNavigationProp;
+  route: UsimScreenRouteProp;
+
+  lastTab: string[];
+  pending: boolean;
+  refreshing: boolean;
+
+  account: AccountModelState;
+  order: OrderModelState;
+
+  action: {
+    order: OrderAction;
+    account: AccountAction;
+  };
+};
+type UsimScreenState = {
+  showSnackBar: boolean;
+};
+
+class UsimScreen extends Component<UsimScreenProps, UsimScreenState> {
+  constructor(props: UsimScreenProps) {
     super(props);
 
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => <Text style={styles.title}>{i18n.t('usim')}</Text>,
-    });
-
     this.state = {
-      refreshing: false,
       showSnackBar: false,
       // isFocused: false,
       // afterLogin: false,
@@ -50,66 +80,54 @@ class UsimScreen extends Component {
     this.init = this.init.bind(this);
     this.renderSubs = this.renderSubs.bind(this);
     this.onRefresh = this.onRefresh.bind(this);
-    this.info = this.info.bind(this);
     this.showSnackBar = this.showSnackBar.bind(this);
   }
 
   componentDidMount() {
     const {iccid, token} = this.props.account;
-    this.init(iccid, {token});
+    this.init({iccid, token});
+
+    this.props.navigation.setOptions({
+      title: null,
+      headerLeft: () => <Text style={styles.title}>{i18n.t('usim')}</Text>,
+    });
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: UsimScreenProps) {
     const {
       account: {iccid, token},
       lastTab,
-      loginPending,
-      updatePending,
+      pending,
     } = this.props;
     const routeName = this.props.route.name;
     const isFocusedToUsimTab =
       (lastTab[0] || '').startsWith(routeName) &&
       lastTab[0] !== prevProps.lastTab[0];
-    const updateSubs =
-      !updatePending && prevProps.updatePending !== updatePending;
 
     if (
-      updateSubs ||
-      (isFocusedToUsimTab && !loginPending && !updatePending) ||
+      (isFocusedToUsimTab && !pending) ||
       (prevProps.account.iccid && iccid !== prevProps.account.iccid)
     ) {
-      this.init(iccid, {token});
+      this.init({iccid, token});
     }
   }
 
   onRefresh() {
     const {
-      account: {iccid},
-      auth,
+      account: {iccid, token},
     } = this.props;
 
     if (iccid) {
-      this.setState({
-        refreshing: true,
+      this.props.action.order.getSubsWithToast({iccid, token}).then((_) => {
+        this.props.action.account.getAccount({iccid, token});
       });
-
-      this.props.action.order
-        .getSubsWithToast(iccid, auth)
-        .then((_) => {
-          this.props.action.account.getAccount({iccid, ...auth});
-        })
-        .finally(() => {
-          this.setState({
-            refreshing: false,
-          });
-        });
     }
   }
 
   empty = () => {
-    if (this.props.pending) return null;
-
-    return <Text style={styles.nolist}>{i18n.t('his:noUsage')}</Text>;
+    return this.props.pending ? null : (
+      <Text style={styles.nolist}>{i18n.t('his:noUsage')}</Text>
+    );
   };
 
   onPressSubsDetail = (key) => () => {
@@ -119,9 +137,9 @@ class UsimScreen extends Component {
     });
   };
 
-  init(iccid, auth) {
-    if (iccid && auth) {
-      this.props.action.order.getSubsWithToast(iccid, auth);
+  init({iccid, token}: {iccid?: string; token?: string}) {
+    if (iccid && token) {
+      this.props.action.order.getSubsWithToast({iccid, token});
     }
   }
 
@@ -131,22 +149,7 @@ class UsimScreen extends Component {
     });
   }
 
-  info() {
-    const {
-      account: {iccid, balance, expDate},
-      navigation,
-    } = this.props;
-    return (
-      <CardInfo
-        iccid={iccid}
-        balance={balance}
-        expDate={expDate}
-        navigation={navigation}
-      />
-    );
-  }
-
-  renderSubs({item}) {
+  renderSubs({item}: {item: RkbSubscription}) {
     return (
       <UsageItem
         key={item.key}
@@ -160,7 +163,12 @@ class UsimScreen extends Component {
 
   render() {
     const {subs} = this.props.order;
-    const {refreshing, showSnackBar} = this.state;
+    const {
+      account: {iccid, balance},
+      refreshing,
+    } = this.props;
+
+    const {showSnackBar} = this.state;
 
     return (
       <View style={styles.container}>
@@ -168,7 +176,9 @@ class UsimScreen extends Component {
           <FlatList
             data={subs}
             keyExtractor={(item) => item.key.toString()}
-            ListHeaderComponent={this.info}
+            ListHeaderComponent={
+              <UsimCardInfo iccid={iccid} balance={balance} />
+            }
             ListEmptyComponent={this.empty}
             renderItem={this.renderSubs}
             // onRefresh={this.onRefresh}
@@ -183,9 +193,7 @@ class UsimScreen extends Component {
               />
             }
           />
-          <AppActivityIndicator
-            visible={this.props.pending || this.props.loginPending}
-          />
+          <AppActivityIndicator visible={this.props.pending} />
         </View>
         <SnackBar
           visible={showSnackBar}
@@ -210,15 +218,18 @@ export default connect(
     auth: accountActions.auth(account),
     noti,
     info,
-    loginPending:
+    pending:
       status.pending[accountActions.logInAndGetAccount.typePrefix] ||
       status.pending[accountActions.getAccount.typePrefix] ||
+      status.pending[orderActions.getSubs.typePrefix] ||
+      status.pending[orderActions.updateSubsStatus.typePrefix] ||
       false,
-    pending: status.pending[orderActions.getSubs.typePrefix] || false,
-    updatePending:
-      status.pending[orderActions.updateSubsStatus.typePrefix] || false,
     sync,
     lastTab: cart.lastTab.toJS(),
+    refreshing:
+      status.pending[orderActions.getSubs.typePrefix] ||
+      status.pending[accountActions.getAccount.typePrefix] ||
+      false,
   }),
   (dispatch) => ({
     action: {

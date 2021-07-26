@@ -6,7 +6,7 @@ import AppModal from '@/components/AppModal';
 import AppModalForm from '@/components/AppModalForm';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {MyPageStackParamList} from '@/navigation/navigation';
+import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {
   AccountAction,
@@ -124,11 +124,11 @@ const styles = StyleSheet.create({
 });
 
 type MyPageScreenNavigationProp = StackNavigationProp<
-  MyPageStackParamList,
+  HomeStackParamList,
   'MyPage'
 >;
 
-type MyPageScreenRouteProp = RouteProp<MyPageStackParamList, 'MyPage'>;
+type MyPageScreenRouteProp = RouteProp<HomeStackParamList, 'MyPage'>;
 
 type MyPageScreenProps = {
   navigation: MyPageScreenNavigationProp;

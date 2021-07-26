@@ -139,7 +139,7 @@ const QRnCopyInfo = (onPress: (showQR: boolean) => void) => {
   );
 };
 
-const UsageItem = ({
+const EsimSubs = ({
   item,
   onPress,
   expired,
@@ -159,4 +159,4 @@ const UsageItem = ({
   );
 };
 
-export default memo(UsageItem);
+export default memo(EsimSubs);

@@ -3,6 +3,7 @@ import {RkbInfo} from '@/redux/api/pageApi';
 import {RkbProduct} from '@/redux/api/productApi';
 import {BoardMsgStatus} from '@/redux/api/boardApi';
 import {PaymentResult} from '@/redux/models/paymentResult';
+import {RkbSubscription} from '../redux/api/subscriptionApi';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html';
 export type PymMethodScreenMode =
@@ -53,7 +54,6 @@ export type HomeStackParamList = {
   Cart: undefined;
   ProductDetail: {title?: string; img?: string; localOpDetails?: string};
 
-  Recharge: undefined;
   RegisterSim: {back: string; title: string};
   NewSim: undefined;
   Usim: undefined;
@@ -84,19 +84,8 @@ export type HomeStackParamList = {
   Auth: undefined;
   HeaderTitle: undefined;
   Esim: undefined;
-};
+  SubsDetail: {detail?: RkbSubscription};
 
-export type EsimStackParamList = {
-  Esim: undefined;
-};
-
-export type MyPageStackParamList = {
   MyPage: undefined;
-  Auth: undefined;
-  Settings: undefined;
   Recharge: {mode: string};
-  ContactBoard: ContactBoardRouteParam;
-  PymMethod: {pymPrice?: number; mode?: PymMethodScreenMode};
-  PurchaseDetail: PurchaseDetailParams;
-  SimpleText: SimpleTextParams;
 };

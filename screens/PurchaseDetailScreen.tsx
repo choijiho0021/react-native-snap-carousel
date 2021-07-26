@@ -11,7 +11,6 @@ import {
   SafeAreaView,
   ScrollView,
   Pressable,
-  NativeSyntheticEvent,
 } from 'react-native';
 import {API} from '@/redux/api';
 import {appStyles} from '@/constants/Styles';
@@ -37,11 +36,10 @@ import Env from '@/environment';
 import {RootState} from '@/redux';
 import utils from '@/redux/api/utils';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {MyPageStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
 import {RkbProfile} from '@/redux/api/profileApi';
 import {RkbOrder} from '@/redux/api/orderApi';
-import {PaymentMethod} from '@/redux/api/paymentApi';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const {esimApp} = Env.get();
 
@@ -248,12 +246,12 @@ const styles = StyleSheet.create({
 });
 
 type PurchaseDetailScreenNavigationProp = StackNavigationProp<
-  MyPageStackParamList,
+  HomeStackParamList,
   'PurchaseDetail'
 >;
 
 type PurchaseDetailScreenRouteProp = RouteProp<
-  MyPageStackParamList,
+  HomeStackParamList,
   'PurchaseDetail'
 >;
 

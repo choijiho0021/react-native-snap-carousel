@@ -37,7 +37,7 @@ import {RouteProp} from '@react-navigation/native';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import CardInfo from './components/CardInfo';
-import UsageItem from './components/UsageItem';
+import EsimSubs from './components/EsimSubs';
 
 const styles = StyleSheet.create({
   container: {flex: 1},
@@ -317,7 +317,7 @@ class EsimScreen extends Component<EsimScreenProps, EsimScreenState> {
 
   renderSubs({item}: {item: RkbSubscription}) {
     return (
-      <UsageItem
+      <EsimSubs
         key={item.key}
         item={item}
         expired={new Date(item.expireDate) <= new Date()}

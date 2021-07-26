@@ -6,7 +6,7 @@ import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {MyPageStackParamList} from '@/navigation/navigation';
+import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {
   AccountModelState,
@@ -140,11 +140,11 @@ const styles = StyleSheet.create({
 });
 
 type RechargeScreenNavigationProp = StackNavigationProp<
-  MyPageStackParamList,
+  HomeStackParamList,
   'Recharge'
 >;
 
-type RechargeScreenRouteProp = RouteProp<MyPageStackParamList, 'Recharge'>;
+type RechargeScreenRouteProp = RouteProp<HomeStackParamList, 'Recharge'>;
 
 type RechargeScreenProps = {
   navigation: RechargeScreenNavigationProp;
