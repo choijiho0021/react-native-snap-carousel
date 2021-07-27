@@ -1,8 +1,10 @@
 import _ from 'underscore';
 import moment from 'moment-with-locales-es6';
 import i18n from '@/utils/i18n';
+import Env from '@/environment';
 import {Currency, CurrencyCode} from './productApi';
 
+const {esimGlobal} = Env.get();
 const dateTimeFmt = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})*$/;
 moment.locale(i18n.locale);
 
@@ -71,7 +73,10 @@ const stringToCurrency = (value: string): Currency => {
   }
 
   // default currency : KRW
-  return {value: stringToNumber(value) || 0, currency: 'KRW'};
+  return {
+    value: stringToNumber(value) || 0,
+    currency: esimGlobal ? 'USD' : 'KRW',
+  };
 };
 
 const priceToCurrency = ({
@@ -94,14 +99,23 @@ const toCurrency = (value: number, currency: CurrencyCode): Currency => ({
   currency,
 });
 
-const addCurrency = (a: Currency, b: Currency) => {
-  if (a.currency === b.currency)
-    return toCurrency(a.value + b.value, a.currency);
+const addCurrency = (a?: Currency, b?: Currency) => {
+  if (a) {
+    if (b) {
+      if (a.currency === b.currency)
+        return toCurrency(a.value + b.value, a.currency);
+      throw Error('Currency code mismatch');
+    }
+    return a;
+  }
 
-  throw Error('Currency code mismatch');
+  return b;
 };
 
 const price = (num: Currency): string => {
+  if (num.currency === 'USD')
+    return ` ${i18n.t(num.currency)} ${numberToCommaString(num.value)}`;
+
   return `${numberToCommaString(num.value)} ${i18n.t(num.currency)}`;
 };
 

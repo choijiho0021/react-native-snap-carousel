@@ -47,7 +47,7 @@ export type LabelTextProps = {
 };
 const LabelText = ({
   label,
-  value = 0,
+  value,
   deduct,
   style,
   format,

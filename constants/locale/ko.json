@@ -55,7 +55,7 @@
   "close": "닫기",
   "redirect": "바로 가기",
   "KRW": "원",
-  "USD": "달러",
+  "USD": "$",
 
   "home:exitApp": "앱 종료",
   "home:guide": "로밍도깨비 사용가이드 !",

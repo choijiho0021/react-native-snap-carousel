@@ -30,13 +30,14 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
   if (_.isEmpty(item.orderItems)) return <View />;
 
   label = item.orderItems[0].title;
-  if (item.orderItems.length > 1)
+  if (item.orderItems && item.orderItems.length > 1) {
     label += i18n
       .t('his:etcCnt')
-      .replace('%%', (item.orderItems?.length || 0) - 1);
+      .replace('%%', (item.orderItems.length - 1).toString());
+  }
 
   const isCanceled = item.state === 'canceled';
-  const billingAmt = (item.totalPrice || 0) + item.dlvCost;
+  const billingAmt = utils.addCurrency(item.totalPrice, item.dlvCost);
 
   return (
     <Pressable onPress={onPress}>
@@ -46,7 +47,7 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
           label={utils.toDateString(item.orderDate, 'YYYY-MM-DD')}
           labelStyle={styles.date}
           valueStyle={{color: colors.tomato}}
-          value={isCanceled && i18n.t('his:cancel')}
+          value={isCanceled ? i18n.t('his:cancel') : undefined}
         />
         <LabelText
           style={styles.orderValue}

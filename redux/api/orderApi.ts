@@ -1,7 +1,9 @@
 import i18n from '@/utils/i18n';
+import utils from '@/redux/api/utils';
 import _ from 'underscore';
 import api, {ApiResult, DrupalNode} from './api';
-import utils from '../utils';
+import {Currency} from './productApi';
+import {util} from 'prettier';
 
 const ORDER_PAGE_ITEMS = 10;
 
@@ -50,7 +52,7 @@ export type RkbOrder = {
   orderNo: string;
   orderDate?: string;
   orderType?: string;
-  totalPrice?: number;
+  totalPrice?: Currency;
   profileId?: string;
   trackingCode?: string;
   trackingCompany?: string;
@@ -64,8 +66,8 @@ export type RkbOrder = {
     paymentGateway: string;
     paymentMethod: string;
   }[];
-  dlvCost: number;
-  balanceCharge: number;
+  dlvCost: Currency;
+  balanceCharge: Currency;
 };
 
 const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
@@ -77,6 +79,7 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
           const balanceCharge = paymentList.find(
             (value) => value.payment_gateway === 'rokebi_cash',
           );
+          const totalPrice = utils.stringToCurrency(item.total_price__number); // 배송비 불포함 금액
 
           return {
             key: item.order_id || '',
@@ -84,7 +87,7 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
             orderNo: item.order_number || '',
             orderDate: item.placed,
             orderType: item.type,
-            totalPrice: utils.stringToNumber(item.total_price__number), // 배송비 불포함 금액
+            totalPrice,
             profileId: item.profile_id,
             trackingCode: item.tracking_code,
             trackingCompany: item.tracking_company,
@@ -105,10 +108,13 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
               paymentGateway: value.payment_gateway,
               paymentMethod: value.payment_method, // 결제 수단
             })),
-            dlvCost: utils.stringToNumber(item.dlv_cost) || 0,
-            balanceCharge: balanceCharge
-              ? utils.stringToNumber(balanceCharge.amount__number) || 0
-              : 0,
+            dlvCost: utils.stringToCurrency(item.dlv_cost),
+            balanceCharge: utils.toCurrency(
+              balanceCharge
+                ? utils.stringToNumber(balanceCharge.amount__number) || 0
+                : 0,
+              totalPrice.currency,
+            ),
           };
         })
         .sort((a, b) => (a.orderDate < b.orderDate ? 1 : -1)),

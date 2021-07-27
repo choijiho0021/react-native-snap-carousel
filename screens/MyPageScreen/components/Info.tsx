@@ -14,7 +14,7 @@ import AppIcon from '@/components/AppIcon';
 import {useNavigation} from '@react-navigation/native';
 import Env from '@/environment';
 
-const {esimApp} = Env.get();
+const {esimApp, esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   label: {
@@ -160,7 +160,9 @@ const Info: React.FC<InfoProps> = ({
                   {i18n.t('acc:remain')}
                 </Text>
                 <Text style={appStyles.bold30Text}>
-                  {`${utils.numberToCommaString(balance)}${i18n.t('won')}`}
+                  {utils.price(
+                    utils.toCurrency(balance || 0, esimGlobal ? 'USD' : 'KRW'),
+                  )}
                 </Text>
               </View>
               <AppButton
