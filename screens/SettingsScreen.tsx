@@ -1,11 +1,3 @@
-import firebase from '@react-native-firebase/app';
-import Analytics from 'appcenter-analytics';
-import React, {Component, memo} from 'react';
-import {FlatList, StyleSheet, Text, Pressable, View} from 'react-native';
-import VersionCheck from 'react-native-version-check';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {RootState} from '@/redux';
 import AppBackButton from '@/components/AppBackButton';
 import AppIcon from '@/components/AppIcon';
 import AppModal from '@/components/AppModal';
@@ -13,6 +5,8 @@ import AppSwitch from '@/components/AppSwitch';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RootState} from '@/redux';
 import {
   AccountAction,
   actions as accountActions,
@@ -20,11 +14,17 @@ import {
 import {actions as cartActions, CartAction, Store} from '@/redux/modules/cart';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {HomeStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import Analytics from 'appcenter-analytics';
+import React, {Component, memo} from 'react';
+import {FlatList, Pressable, StyleSheet, Text, View} from 'react-native';
+import Config from 'react-native-config';
+import VersionCheck from 'react-native-version-check';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 
-const {label} = Env.get();
+const {label = '', isProduction} = Env.get();
 
 const styles = StyleSheet.create({
   title: {
@@ -161,7 +161,9 @@ class SettingsScreen extends Component<
           value: i18n.t('set:version'),
           desc: `${i18n.t(
             'now',
-          )} ${VersionCheck.getCurrentVersion()}/${label.replace(/v/g, '')}`,
+          )} ${VersionCheck.getCurrentVersion()}/${label.replace(/v/g, '')} ${
+            !isProduction ? `(${Config.NODE_ENV})` : ''
+          }`,
         },
         {
           key: 'setting:aboutus',

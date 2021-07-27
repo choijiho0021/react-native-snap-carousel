@@ -53,6 +53,7 @@
     "react-native-camera": "^4.0.0",
     "react-native-circular-progress": "^1.3.6",
     "react-native-code-push": "^7.0.1",
+    "react-native-config": "^1.4.3",
     "react-native-device-info": "^8.0.2",
     "react-native-elements": "^3.4.2",
     "react-native-exit-app": "^1.1.0",
