@@ -362,6 +362,7 @@ class StoreSearchScreen extends Component<
 
   async search(searchWord: string, searching = false) {
     this.setState({searchWord, searching});
+    this.headerRef.current.changeValue(searchWord);
 
     if (searching) {
       // 최근 검색 기록
