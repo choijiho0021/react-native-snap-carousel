@@ -1,3 +1,5 @@
+import {Currency, CurrencyCode} from '../api/productApi';
+
 export type PaymentResult = {
   success: boolean;
   imp_uid: string;
@@ -9,6 +11,7 @@ export type PaymentResult = {
   digital: boolean;
   memo?: string;
   payment_type: string;
+  currency_code: CurrencyCode;
 };
 
 export const createPaymentResult = ({
@@ -22,6 +25,7 @@ export const createPaymentResult = ({
   dlvCost,
   digital,
   amount,
+  currency_code,
 }: {
   success: boolean;
   paymentType: string;
@@ -33,8 +37,14 @@ export const createPaymentResult = ({
   dlvCost: number;
   digital: boolean;
   amount?: number;
-}) =>
-  ({
+  currency_code?: CurrencyCode;
+}) => {
+  if ((amount || dlvCost) && !currency_code) {
+    // amount, dlvCost 값이 있는데 currency_code가 없으면 에러 처리한다.
+    throw Error('Invalid currency code');
+  }
+
+  return {
     success,
     imp_uid: impId,
     merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
@@ -45,7 +55,9 @@ export const createPaymentResult = ({
     digital,
     memo,
     payment_type: paymentType,
-  } as PaymentResult);
+    currency_code,
+  } as PaymentResult;
+};
 
 export const createPaymentResultForRokebiCash = ({
   impId,
@@ -59,8 +71,8 @@ export const createPaymentResultForRokebiCash = ({
   impId: string;
   mobile?: string;
   profileId?: string;
-  deduct?: number;
-  dlvCost: number;
+  deduct?: Currency;
+  dlvCost: Currency;
   digital: boolean;
   memo?: string;
 }) =>
@@ -68,8 +80,9 @@ export const createPaymentResultForRokebiCash = ({
     impId,
     mobile,
     profileId,
-    deduct,
-    dlvCost,
+    deduct: deduct?.value,
+    dlvCost: dlvCost?.value,
+    currency_code: deduct?.currency,
     digital,
     memo,
     success: true,
