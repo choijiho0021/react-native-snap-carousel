@@ -1,4 +1,4 @@
-import React, {memo} from 'react';
+import React, {memo, useEffect, useRef} from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
 import {connect} from 'react-redux';
 import {Map as ImmutableMap} from 'immutable';
@@ -7,13 +7,14 @@ import utils from '@/redux/api/utils';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
 import {RootState} from '@/redux';
 import {
   ProductByCategory,
   RkbLocalOp,
   RkbProduct,
 } from '@/redux/api/productApi';
+import {FlatList} from 'react-native-gesture-handler';
 
 const styles = StyleSheet.create({
   container: {
@@ -31,6 +32,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   productList: {
+    width: windowWidth - 40,
     flexDirection: 'row',
     marginTop: 20,
     marginBottom: 10,
@@ -139,23 +141,47 @@ const CountryItem0 = ({
 };
 const CountryItem = memo(CountryItem0);
 
+export type StoreListRef = {
+  scrollToIndex: ({index}: {index: number}) => void;
+};
 type StoreListProps = {
   localOpList: ImmutableMap<string, RkbLocalOp>;
   data: ProductByCategory[];
   onPress: (p: RkbProduct[]) => void;
+  storeListRef?: React.MutableRefObject<StoreListRef | null>;
 };
 
-const StoreList: React.FC<StoreListProps> = ({localOpList, data, onPress}) => {
+const StoreList: React.FC<StoreListProps> = ({
+  localOpList,
+  data,
+  onPress,
+  storeListRef,
+}) => {
+  const ref = useRef<FlatList<any>>(null);
+  useEffect(() => {
+    if (storeListRef) {
+      storeListRef.current = {
+        scrollToIndex: ({index}) => {
+          ref.current?.scrollToIndex({index, animated: false});
+        },
+      };
+    }
+  }, [storeListRef]);
+
   return (
     <View style={appStyles.container}>
-      {data.map((elm) => (
-        <CountryItem
-          key={elm.key}
-          onPress={onPress}
-          item={elm}
-          localOpList={localOpList}
-        />
-      ))}
+      <FlatList
+        data={data}
+        ref={ref}
+        renderItem={({item}) => (
+          <CountryItem
+            key={item.key}
+            onPress={onPress}
+            item={item}
+            localOpList={localOpList}
+          />
+        )}
+      />
     </View>
   );
 };

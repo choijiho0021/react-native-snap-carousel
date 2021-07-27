@@ -21,6 +21,7 @@ type Env = {
   impId: string;
   channelId: string;
   esimApp: boolean;
+  esimGlobal: boolean;
   label?: string;
   scheme?: string;
   apiUrl?: string;
@@ -35,6 +36,7 @@ const env: Env = {
   impId,
   channelId,
   esimApp: appId === 'esim',
+  esimGlobal,
   sipServer: '193.122.106.2:35060',
   isProduction: Config.NODE_ENV === 'production',
   isIOS: Platform.OS === 'ios',

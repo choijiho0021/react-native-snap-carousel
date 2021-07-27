@@ -3,7 +3,6 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, Dimensions} from 'react-native';
 import {connect} from 'react-redux';
-import _ from 'underscore';
 import {bindActionCreators} from 'redux';
 import {TabView, TabBar} from 'react-native-tab-view';
 import moment, {Moment} from 'moment';
@@ -25,6 +24,7 @@ import {
   ProductByCategory,
   RkbProduct,
   TabViewRoute,
+  TabViewRouteKey,
 } from '@/redux/api/productApi';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '../navigation/navigation';
@@ -64,14 +64,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const filterByCategory = (list, key) => {
-  const filtered = list.filter(
-    (elm) => elm.length > 0 && elm[0].categoryId.includes(key),
-  );
-
-  return API.Product.toColumnList(filtered);
-};
-
 type StoreScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
   'Store'
@@ -90,11 +82,7 @@ type StoreScreenProps = {
 type StoreScreenState = {
   index: number;
   routes: TabViewRoute[];
-  allData: RkbProduct[][];
-  asia: ProductByCategory[];
-  europe: ProductByCategory[];
-  usaAu: ProductByCategory[];
-  multi: ProductByCategory[];
+  scene: Record<TabViewRouteKey, ProductByCategory[]>;
   time: Moment;
 };
 
@@ -114,11 +102,12 @@ class StoreScreen extends Component<StoreScreenProps, StoreScreenState> {
         {key: 'usaAu', title: i18n.t('store:usa/au'), category: '미주/호주'},
         {key: 'multi', title: i18n.t('store:multi'), category: '복수 국가'},
       ],
-      allData: [],
-      asia: [],
-      europe: [],
-      usaAu: [],
-      multi: [],
+      scene: {
+        asia: [],
+        europe: [],
+        usaAu: [],
+        multi: [],
+      },
       time: moment(),
     };
 
@@ -198,16 +187,17 @@ class StoreScreen extends Component<StoreScreenProps, StoreScreenState> {
     this.props.action.product.setSortedProdList(sorted);
 
     this.setState({
-      allData: sorted,
-      asia: filterByCategory(sorted, asia),
-      europe: filterByCategory(sorted, europe),
-      usaAu: filterByCategory(sorted, usaAu),
-      multi: filterByCategory(sorted, multi),
+      scene: {
+        asia: API.Product.filterByCategory(sorted, asia),
+        europe: API.Product.filterByCategory(sorted, europe),
+        usaAu: API.Product.filterByCategory(sorted, usaAu),
+        multi: API.Product.filterByCategory(sorted, multi),
+      },
     });
   }
 
   renderScene = ({route}: {route: TabViewRoute}) => {
-    const data = this.state[route.key];
+    const data = this.state.scene[route.key];
     return <StoreList data={data} onPress={this.onPressItem} />;
   };
 
