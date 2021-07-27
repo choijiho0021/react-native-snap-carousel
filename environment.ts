@@ -45,13 +45,15 @@ const env: Env = {
 function get() {
   if (env.label) return env;
 
-  env.label = env.isIOS
-    ? codePushLabel.stagingIOS
-    : codePushLabel.stagingAndroid;
-  if (env.isProduction)
+  if (env.isProduction) {
     env.label = env.isIOS
       ? codePushLabel.productionIOS
       : codePushLabel.productionAndroid;
+  } else {
+    env.label = env.isIOS
+      ? codePushLabel.stagingIOS
+      : codePushLabel.stagingAndroid;
+  }
 
   if (appId === 'esim') {
     switch (process.env.NODE_ENV) {
