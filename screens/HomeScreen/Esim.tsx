@@ -8,7 +8,6 @@ import {
   ColorSchemeName,
   Dimensions,
   Platform,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -23,7 +22,7 @@ import _ from 'underscore';
 import {RootState} from '@/redux';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
-import StoreList from '@/components/StoreList';
+import StoreList, {StoreListRef} from '@/components/StoreList';
 import withBadge from '@/components/withBadge';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -50,6 +49,7 @@ import {
   ProductByCategory,
   RkbProduct,
   TabViewRoute,
+  TabViewRouteKey,
 } from '@/redux/api/productApi';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
@@ -138,14 +138,6 @@ const styles = StyleSheet.create({
   },
 });
 
-function filterByCategory(list: RkbProduct[][], key: string) {
-  const filtered = list.filter(
-    (elm) => elm.length > 0 && elm[0].categoryId.includes(key),
-  );
-
-  return API.Product.toColumnList(filtered);
-}
-
 type HomeScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Home'>;
 
 type EsimProps = {
@@ -166,11 +158,7 @@ type EsimState = {
   isSupportDev: boolean;
   index: number;
   routes: TabViewRoute[];
-  allData: RkbProduct[][];
-  asia: ProductByCategory[];
-  europe: ProductByCategory[];
-  usaAu: ProductByCategory[];
-  multi: ProductByCategory[];
+  scene: Record<TabViewRouteKey, ProductByCategory[]>;
   darkMode: ColorSchemeName;
   time: Moment;
   deviceList?: string[];
@@ -213,7 +201,7 @@ class Esim extends Component<EsimProps, EsimState> {
 
   controller: AbortController;
 
-  scrollRef: React.RefObject<ScrollView>;
+  tabViewRef: Record<TabViewRouteKey, React.RefObject<StoreListRef>>;
 
   constructor(props: EsimProps) {
     super(props);
@@ -227,11 +215,12 @@ class Esim extends Component<EsimProps, EsimState> {
         {key: 'usaAu', title: i18n.t('store:usa/au'), category: '미주/호주'},
         {key: 'multi', title: i18n.t('store:multi'), category: '복수 국가'},
       ] as TabViewRoute[],
-      allData: [] as RkbProduct[][],
-      asia: [] as ProductByCategory[],
-      europe: [] as ProductByCategory[],
-      usaAu: [] as ProductByCategory[],
-      multi: [] as ProductByCategory[],
+      scene: {
+        asia: [] as ProductByCategory[],
+        europe: [] as ProductByCategory[],
+        usaAu: [] as ProductByCategory[],
+        multi: [] as ProductByCategory[],
+      },
       firstLaunch: false,
       darkMode: Appearance.getColorScheme(),
       time: moment(),
@@ -247,7 +236,12 @@ class Esim extends Component<EsimProps, EsimState> {
 
     this.offset = 0;
     this.controller = new AbortController();
-    this.scrollRef = React.createRef<ScrollView>();
+    this.tabViewRef = {
+      asia: React.createRef(),
+      europe: React.createRef(),
+      usaAu: React.createRef(),
+      multi: React.createRef(),
+    };
   }
 
   componentDidMount() {
@@ -327,7 +321,8 @@ class Esim extends Component<EsimProps, EsimState> {
     this.setState({
       index,
     });
-    this.scrollRef.current?.scrollTo({x: 0, y: 0, animated: false});
+    const {key} = this.state.routes[index];
+    this.tabViewRef[key].current?.scrollToIndex({index: 0});
   };
 
   exitApp = () => {
@@ -339,8 +334,14 @@ class Esim extends Component<EsimProps, EsimState> {
   };
 
   renderScene = ({route}: {route: TabViewRoute}) => {
-    const data = this.state[route.key];
-    return <StoreList data={data} onPress={this.onPressItem} />;
+    const data = this.state.scene[route.key];
+    return (
+      <StoreList
+        data={data}
+        onPress={this.onPressItem}
+        storeListRef={this.tabViewRef[route.key]}
+      />
+    );
   };
 
   modalBody = () => {
@@ -405,11 +406,12 @@ class Esim extends Component<EsimProps, EsimState> {
     this.props.action.product.setSortedProdList(sorted);
 
     this.setState({
-      allData: sorted,
-      asia: filterByCategory(sorted, asia),
-      europe: filterByCategory(sorted, europe),
-      usaAu: filterByCategory(sorted, usaAu),
-      multi: filterByCategory(sorted, multi),
+      scene: {
+        asia: API.Product.filterByCategory(sorted, asia),
+        europe: API.Product.filterByCategory(sorted, europe),
+        usaAu: API.Product.filterByCategory(sorted, usaAu),
+        multi: API.Product.filterByCategory(sorted, multi),
+      },
     });
   }
 
@@ -473,30 +475,24 @@ class Esim extends Component<EsimProps, EsimState> {
       <View style={styles.container}>
         <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
         <PromotionCarousel />
-        <ScrollView
-          ref={this.scrollRef}
-          // contentContainerStyle={{flex: 1}}
-          style={styles.scrollView}
-          stickyHeaderIndices={[0]}>
-          <TabHeader
-            index={index}
-            routes={routes}
-            onIndexChange={this.onIndexChange}
-          />
+        <TabHeader
+          index={index}
+          routes={routes}
+          onIndexChange={this.onIndexChange}
+        />
 
-          <TabView
-            style={styles.container}
-            // sceneContainerStyle={{flex: 1, height: 1500}}
-            navigationState={{index, routes}}
-            renderScene={this.renderScene}
-            onIndexChange={this.onIndexChange}
-            initialLayout={{
-              width: Dimensions.get('window').width,
-              height: 10,
-            }}
-            renderTabBar={() => null}
-          />
-        </ScrollView>
+        <TabView
+          style={styles.container}
+          sceneContainerStyle={{flex: 1}}
+          navigationState={{index, routes}}
+          renderScene={this.renderScene}
+          onIndexChange={this.onIndexChange}
+          initialLayout={{
+            width: Dimensions.get('window').width,
+            height: 10,
+          }}
+          renderTabBar={() => null}
+        />
         <AppActivityIndicator
           style={{top: 100}}
           visible={this.props.product.sortedProdList.length === 0}

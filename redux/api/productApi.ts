@@ -262,6 +262,14 @@ const sortProdGroup = (
     });
 };
 
+const filterByCategory = (list: RkbProduct[][], key: string) => {
+  const filtered = list.filter(
+    (elm) => elm.length > 0 && elm[0].categoryId.includes(key),
+  );
+
+  return toColumnList(filtered);
+};
+
 export default {
   category,
   toPurchaseItem,
@@ -272,4 +280,5 @@ export default {
   getLocalOp,
   getProdGroup,
   sortProdGroup,
+  filterByCategory,
 };
