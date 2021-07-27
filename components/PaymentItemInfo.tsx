@@ -8,6 +8,7 @@ import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {PaymentReq} from '@/redux/modules/cart';
+import {Currency} from '@/redux/api/productApi';
 
 const styles = StyleSheet.create({
   // container: {
@@ -119,8 +120,8 @@ const PaymentItemInfo = ({
 }: {
   cart: PurchaseItem[];
   pymReq?: PaymentReq[];
-  deduct?: number;
-  pymPrice?: number;
+  deduct?: Currency;
+  pymPrice?: Currency;
   isRecharge?: boolean;
   screen?: string;
   mode?: 'method' | 'result';
@@ -136,9 +137,16 @@ const PaymentItemInfo = ({
           !isRecharge && styles.borderBottomGrey,
         ]}>
         {cart.map((item) => {
-          const [qty, price] = _.isUndefined(item.qty)
-            ? ['', item.price]
-            : [` × ${item.qty}${i18n.t('qty')}`, item.price * item.qty];
+          const [qty, price] =
+            item.qty === undefined
+              ? ['', item.price]
+              : [
+                  ` × ${item.qty}`,
+                  utils.toCurrency(
+                    item.price.value * item.qty,
+                    item.price.currency,
+                  ),
+                ];
           return (
             <View style={styles.row} key={item.key}>
               {/* <View style={{maxWidth: '70%'}}> */}
@@ -216,7 +224,7 @@ const PaymentItemInfo = ({
             mode === 'result' ? styles.boldText18 : styles.boldText16,
             styles.colorClearBlue,
           ]}>
-          {`${utils.numberToCommaString(pymPrice)} ${i18n.t('won')}`}
+          {utils.price(pymPrice)}
         </Text>
       </View>
       {mode !== 'result' && (

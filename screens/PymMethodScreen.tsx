@@ -48,6 +48,8 @@ import {RouteProp} from '@react-navigation/native';
 import {createPaymentResultForRokebiCash} from '@/redux/models/paymentResult';
 import {PaymentMethod} from '@/redux/api/paymentApi';
 import {RkbInfo} from '@/redux/api/pageApi';
+import {Currency} from '@/redux/api/productApi';
+import utils from '@/redux/api/utils';
 
 const {esimApp} = Env.get();
 const {deliveryText} = API.Order;
@@ -301,8 +303,8 @@ type ShowModal = 'address' | 'memo' | 'method';
 type PymMethodScreenState = {
   mode?: PymMethodScreenMode;
   selected: PaymentMethod;
-  pymPrice?: number;
-  deduct?: number;
+  pymPrice?: Currency;
+  deduct?: Currency;
   isRecharge?: boolean;
   clickable: boolean;
   loading?: boolean;
@@ -331,13 +333,8 @@ class PymMethodScreen extends Component<
     super(props);
 
     this.state = {
-      mode: undefined,
       selected: API.Payment.method[0][0],
-      pymPrice: undefined,
-      deduct: undefined,
-      isRecharge: undefined,
       clickable: true,
-      loading: undefined,
       showModal: {
         address: true,
         memo: true,
@@ -436,7 +433,7 @@ class PymMethodScreen extends Component<
         ? deliveryMemo.content
         : deliveryMemo.selected;
 
-    if (_.isEmpty(selected) && pymPrice !== 0) return;
+    if (_.isEmpty(selected) && pymPrice?.value !== 0) return;
 
     const {mobile, email} = this.props.account;
     const profileId =
@@ -444,10 +441,10 @@ class PymMethodScreen extends Component<
       this.props.profile.profile.find((item) => item.isBasicAddr)?.uuid;
     const dlvCost =
       this.props.cart.pymReq?.find((item) => item.key === 'dlvCost')?.amount ||
-      0;
+      utils.toCurrency(0, pymPrice?.currency);
 
     // 로깨비캐시 결제
-    if (pymPrice === 0) {
+    if (pymPrice?.value === 0) {
       this.setState({
         loading: true,
       });
@@ -456,9 +453,9 @@ class PymMethodScreen extends Component<
         impId,
         mobile,
         profileId,
-        deduct,
-        dlvCost,
         memo,
+        deduct: deduct?.value,
+        dlvCost: dlvCost?.value,
         digital: !simIncluded,
       });
       // payNorder에서 재고 확인 - resp.result값으로 비교
@@ -488,15 +485,15 @@ class PymMethodScreen extends Component<
         pay_method: selected?.method,
         merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
         name: i18n.t('appTitle'),
-        amount: pymPrice, // 최종 결제 금액
-        rokebi_cash: deduct, // balance 차감 금액
+        amount: pymPrice?.value, // 최종 결제 금액
+        rokebi_cash: deduct?.value, // balance 차감 금액
         buyer_tel: mobile,
         buyer_name: mobile,
         buyer_email: email,
         escrow: false,
         app_scheme: esimApp ? 'rokebiesim' : 'Rokebi',
         profile_uuid: profileId,
-        dlvCost,
+        dlvCost: dlvCost.value,
         digital: !simIncluded, // 컨텐츠 - 데이터상품일 경우 true
         memo,
         // mode: 'test'
@@ -888,7 +885,7 @@ class PymMethodScreen extends Component<
 
           {simIncluded && this.address()}
           {simIncluded && this.memo()}
-          {pymPrice !== 0 ? (
+          {pymPrice?.value !== 0 ? (
             this.method()
           ) : (
             <View style={styles.result}>
@@ -900,7 +897,7 @@ class PymMethodScreen extends Component<
             title={i18n.t('payment')}
             titleStyle={appStyles.confirmText}
             disabled={
-              (pymPrice !== 0 && _.isEmpty(selected)) ||
+              (pymPrice?.value !== 0 && _.isEmpty(selected)) ||
               (simIncluded && noProfile) ||
               !consent
             }

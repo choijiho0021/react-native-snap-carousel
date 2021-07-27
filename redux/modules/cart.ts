@@ -15,8 +15,9 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {actions as orderAction} from './order';
 import {actions as accountAction} from './account';
 import {actions as productAction} from './product';
+import {Currency} from '../api/productApi';
 
-const {esimApp} = Env.get();
+const {esimApp, esimGlobal} = Env.get();
 
 const cartFetch = createAsyncThunk('cart/fetch', API.Cart.get);
 const cartAdd = createAsyncThunk('cart/add', API.Cart.add);
@@ -76,7 +77,7 @@ const cartAddAndGet = createAsyncThunk(
   },
 );
 
-export type PaymentReq = {key: string; title: string; amount: number};
+export type PaymentReq = {key: string; title: string; amount: Currency};
 export type Store = 'kr' | 'global';
 
 export interface CartModelState {
@@ -88,8 +89,8 @@ export interface CartModelState {
   pymReq?: PaymentReq[];
   pymResult?: object;
   lastTab: ImmutableList<string>;
-  pymPrice?: number;
-  deduct?: number;
+  pymPrice?: Currency;
+  deduct?: Currency;
   store: Store;
 }
 
@@ -138,9 +139,13 @@ const slice = createSlice({
     // 구매할 품목을 저장한다.
     purchase: (state, action) => {
       const {purchaseItems, dlvCost = false, balance = 0} = action.payload;
-      const total = (purchaseItems || []).reduce(
-        (sum, acc) => sum + acc.price * (acc.qty || 1),
-        0,
+      const total = ((purchaseItems as PurchaseItem[]) || []).reduce(
+        (acc, cur) =>
+          utils.toCurrency(
+            acc.value + cur.price.value * (cur.qty || 1),
+            cur.price.currency,
+          ),
+        utils.toCurrency(0, esimGlobal ? 'USD' : 'KRW'),
       );
       const pymReq = [
         {
@@ -158,15 +163,24 @@ const slice = createSlice({
         });
 
       // 배송비 포함 상품 합계
-      const totalPrice = total + (dlvCost && utils.dlvCost(total));
+      const totalPrice = utils.addCurrency(
+        total,
+        dlvCost ? utils.dlvCost(total) : utils.toCurrency(0, total.currency),
+      );
       // 계산해야하는 총액
       // 잔액 차감
 
       // purchaseItems에는 key, qty, price, title 정보 필요
       state.purchaseItems = purchaseItems;
       state.pymReq = pymReq;
-      state.pymPrice = totalPrice > balance ? totalPrice - balance : 0;
-      state.deduct = totalPrice > balance ? balance : totalPrice;
+      state.pymPrice = utils.toCurrency(
+        totalPrice.value > balance ? totalPrice.value - balance : 0,
+        totalPrice.currency,
+      );
+      state.deduct = utils.toCurrency(
+        totalPrice.value > balance ? balance : totalPrice.value,
+        totalPrice.currency,
+      );
     },
 
     // 결제 결과를 저장한다.

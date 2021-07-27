@@ -94,6 +94,13 @@ const toCurrency = (value: number, currency: CurrencyCode): Currency => ({
   currency,
 });
 
+const addCurrency = (a: Currency, b: Currency) => {
+  if (a.currency === b.currency)
+    return toCurrency(a.value + b.value, a.currency);
+
+  throw Error('Currency code mismatch');
+};
+
 const price = (num: Currency): string => {
   return `${numberToCommaString(num.value)} ${i18n.t(num.currency)}`;
 };
@@ -196,4 +203,5 @@ export default {
   stringToCurrency,
   priceToCurrency,
   toCurrency,
+  addCurrency,
 };
