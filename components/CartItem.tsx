@@ -9,6 +9,7 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppIcon from './AppIcon';
 import AppButton from './AppButton';
 import InputNumber from './InputNumber';
+import {Currency} from '../redux/api/productApi';
 
 const styles = StyleSheet.create({
   container: {
@@ -77,7 +78,7 @@ const CartItem = ({
   onDelete,
 }: {
   name: string;
-  price: number;
+  price: Currency;
   image?: string;
   qty: number;
   onChange: (v: number) => void;
@@ -109,10 +110,10 @@ const CartItem = ({
         </View>
         <View style={[styles.input, {marginTop: 20}]}>
           <Text style={appStyles.price}>
-            {utils.numberToCommaString(price * qty)}
+            {utils.numberToCommaString(price.value * qty)}
           </Text>
           <Text style={[appStyles.normal14Text, {flex: 1}]}>
-            {i18n.t('won')}
+            {` ${i18n.t(price.currency)}`}
           </Text>
           <AppButton
             style={styles.delete}

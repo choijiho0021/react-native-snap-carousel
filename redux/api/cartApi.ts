@@ -3,6 +3,7 @@ import api, {ApiResult, DrupalNode} from './api';
 import utils from '../utils';
 import {PurchaseItem} from '../models/purchaseItem';
 import {PaymentResult} from '../models/paymentResult';
+import {Currency} from './productApi';
 
 export type RkbOrderItem = {
   orderItemId: number;
@@ -17,8 +18,8 @@ export type RkbOrderItem = {
   };
   title: string;
   qty: number;
-  price: number;
-  totalPrice: number;
+  price: Currency;
+  totalPrice: Currency;
 };
 
 export type RkbCart = {
@@ -54,9 +55,8 @@ const toCart = (data: DrupalNode): ApiResult<RkbCart> => {
               },
               title: o.title,
               qty: utils.stringToNumber(o.quantity),
-              price: o.unit_price && utils.stringToNumber(o.unit_price.number),
-              totalPrice:
-                o.total_price && utils.stringToNumber(o.total_price.number),
+              price: o.unit_price && utils.priceToCurrency(o.unit_price),
+              totalPrice: o.total_price && utils.priceToCurrency(o.total_price),
             })),
       })),
     );
@@ -81,23 +81,23 @@ export type RkbStock = {
   title?: string;
 };
 
-const toStock = (purchaseItems: PurchaseItem[]) => (
-  resp,
-): ApiResult<RkbStock> => {
-  return api.success(
-    resp.objects.map((item) => ({
-      variationId: item.purchased_entity_id,
-      qty: item.quantity,
-      stock: item.stock,
-      lack: item.quantity - item.stock,
-      title: purchaseItems.find(
-        (p) => p.variationId === item.purchased_entity_id,
-      )?.title,
-    })),
-    [],
-    resp.result,
-  );
-};
+const toStock =
+  (purchaseItems: PurchaseItem[]) =>
+  (resp): ApiResult<RkbStock> => {
+    return api.success(
+      resp.objects.map((item) => ({
+        variationId: item.purchased_entity_id,
+        qty: item.quantity,
+        stock: item.stock,
+        lack: item.quantity - item.stock,
+        title: purchaseItems.find(
+          (p) => p.variationId === item.purchased_entity_id,
+        )?.title,
+      })),
+      [],
+      resp.result,
+    );
+  };
 
 const get = () => {
   return api.callHttpGet(

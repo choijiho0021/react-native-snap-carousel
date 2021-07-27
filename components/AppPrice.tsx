@@ -10,6 +10,7 @@ import {
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import utils from '@/redux/api/utils';
+import {Currency} from '@/redux/api/productApi';
 
 const styles = StyleSheet.create({
   container: {
@@ -35,15 +36,15 @@ const AppPrice = ({
   style?: StyleProp<ViewStyle>;
   balanceStyle?: StyleProp<TextStyle>;
   wonStyle?: StyleProp<TextStyle>;
-  price: number;
+  price: Currency;
 }) => {
   return (
     <View style={style || styles.container}>
       <Text key="balance" style={balanceStyle || styles.price}>
-        {utils.numberToCommaString(price)}
+        {utils.numberToCommaString(price.value)}
       </Text>
       <Text key="won" style={wonStyle || styles.won}>
-        {i18n.t('won')}
+        {` ${i18n.t(price.currency)}`}
       </Text>
     </View>
   );

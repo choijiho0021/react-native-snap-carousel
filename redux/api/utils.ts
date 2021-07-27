@@ -1,6 +1,7 @@
 import _ from 'underscore';
 import moment from 'moment-with-locales-es6';
 import i18n from '@/utils/i18n';
+import {Currency, CurrencyCode} from './productApi';
 
 const dateTimeFmt = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})*$/;
 moment.locale(i18n.locale);
@@ -16,8 +17,18 @@ const numberToCommaString = (n?: number): string => {
   return n ? n.toString() : '';
 };
 
-const dlvCost = (totalPrice: number) => {
-  return totalPrice < 30000 && totalPrice > 0 ? 3000 : 0;
+const dlvCost = (totalPrice: Currency): Currency => {
+  if (totalPrice.currency === 'USD') {
+    return {
+      value: totalPrice.value < 30 && totalPrice.value > 0 ? 3 : 0,
+      currency: 'USD',
+    };
+  }
+
+  return {
+    value: totalPrice.value < 30000 && totalPrice.value > 0 ? 3000 : 0,
+    currency: 'KRW',
+  };
 };
 
 const isExist = (value: any) => {
@@ -50,18 +61,51 @@ const stringToNumber = (value: string): number | undefined => {
   return Number(num);
 };
 
-const price = (num: number | string | undefined): string => {
-  if (_.isNumber(num)) return `${numberToCommaString(num)} ${i18n.t('won')}`;
-
-  if (_.isString(num)) {
-    const str = stringToNumber(num);
-    return str ? `${numberToCommaString(str)} ${i18n.t('won')}` : '';
+const stringToCurrency = (value: string): Currency => {
+  if (value.startsWith('USD')) {
+    return {value: stringToNumber(value.substr(3)) || 0, currency: 'USD'};
   }
 
-  return '';
+  if (value.startsWith('KRW')) {
+    return {value: stringToNumber(value.substr(3)) || 0, currency: 'KRW'};
+  }
+
+  // default currency : KRW
+  return {value: stringToNumber(value) || 0, currency: 'KRW'};
 };
 
-const pricePerDay = (num: number | string | undefined, days: number) => {
+const priceToCurrency = ({
+  number,
+  currency_code,
+}: {
+  number: string;
+  currency_code: string;
+}): Currency => {
+  if (currency_code === 'USD') {
+    return {value: stringToNumber(number) || 0, currency: 'USD'};
+  }
+
+  // default currency : KRW
+  return {value: stringToNumber(number) || 0, currency: 'KRW'};
+};
+
+const toCurrency = (value: number, currency: CurrencyCode): Currency => ({
+  value,
+  currency,
+});
+
+const addCurrency = (a: Currency, b: Currency) => {
+  if (a.currency === b.currency)
+    return toCurrency(a.value + b.value, a.currency);
+
+  throw Error('Currency code mismatch');
+};
+
+const price = (num: Currency): string => {
+  return `${numberToCommaString(num.value)} ${i18n.t(num.currency)}`;
+};
+
+const pricePerDay = (num: Currency, days: number) => {
   return price(num) + (days ? ` / ${days} ${i18n.t('day')}` : '');
 };
 
@@ -156,4 +200,8 @@ export default {
   htmlToString,
   toDateString,
   toDate,
+  stringToCurrency,
+  priceToCurrency,
+  toCurrency,
+  addCurrency,
 };

@@ -4,8 +4,9 @@ import _ from 'underscore';
 import {colors} from '@/constants/Colors';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
-import Env from '@/environment';
+import {Currency} from '@/redux/api/productApi';
 import LabelText from './LabelText';
+import utils from '../redux/api/utils';
 
 const styles = StyleSheet.create({
   container: {
@@ -31,19 +32,19 @@ const styles = StyleSheet.create({
 
 const ChargeSummary = ({
   totalCnt = 0,
-  totalPrice = 0,
   balance = 0,
-  dlvCost = 0,
+  totalPrice,
+  dlvCost,
   simList,
 }: {
   totalCnt: number;
-  totalPrice: number;
+  totalPrice: Currency;
   balance?: number;
-  dlvCost: number;
+  dlvCost: Currency;
   simList?: any[];
 }) => {
   // 상품가격 + 배송비
-  const amount = totalPrice + dlvCost;
+  const amount = totalPrice.value + dlvCost.value;
   // 잔액 차감
   const deduct = totalCnt > 0 ? (amount > balance ? balance : amount) : 0;
   // 계산해야하는 총액
@@ -84,7 +85,7 @@ const ChargeSummary = ({
         label={i18n.t('cart:deductBalance')}
         style={styles.summary}
         format="price"
-        value={balance}
+        value={utils.toCurrency(balance, totalPrice.currency)}
         deduct={deduct}
       />
 
@@ -93,7 +94,7 @@ const ChargeSummary = ({
         style={styles.summary}
         format="price"
         color={colors.clearBlue}
-        value={pymPrice}
+        value={utils.toCurrency(pymPrice, totalPrice.currency)}
       />
     </View>
   );

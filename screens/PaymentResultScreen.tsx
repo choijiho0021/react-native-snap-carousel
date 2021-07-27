@@ -89,7 +89,7 @@ type PaymentResultScreenProps = {
 };
 
 class PaymentResultScreen extends Component<PaymentResultScreenProps> {
-  constructor(props) {
+  constructor(props: PaymentResultScreenProps) {
     super(props);
 
     this.state = {

@@ -57,11 +57,16 @@ type DrupalProduct = {
   sku: string;
 };
 
+export type CurrencyCode = 'KRW' | 'USD';
+export type Currency = {
+  value: number;
+  currency: CurrencyCode;
+};
 export type RkbProduct = {
   key: string;
   uuid: string;
   name: string;
-  price: number;
+  price: Currency;
   field_daily: boolean;
   partnerId: string;
   categoryId: string[];
@@ -75,7 +80,7 @@ export type RkbProduct = {
   // additional
   ccodeStr?: string;
   search?: string;
-  pricePerDay?: number;
+  pricePerDay?: Currency;
   cntry?: Set<string>;
   imageUrl?: string;
 };
@@ -91,7 +96,7 @@ const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
         key: item.uuid,
         uuid: item.uuid,
         name: item.title,
-        price: utils.stringToNumber(item.price) || 0,
+        price: utils.stringToCurrency(item.price),
         field_daily: item.field_daily === 'daily',
         partnerId: item.partner_id,
         categoryId: item.field_product_categories,
@@ -215,8 +220,11 @@ const getProdGroup = ({
         item.search = [...item.cntry].join(',');
         item.pricePerDay =
           item.price && item.days
-            ? Math.round(item.price / item.days / 10) * 10
-            : 0;
+            ? {
+                value: Math.round(item.price.value / item.days / 10) * 10,
+                currency: item.price.currency,
+              }
+            : {value: 0, currency: item.price.currency};
 
         const idxCcode = list.findIndex(
           (elm) => elm.length > 0 && elm[0].ccodeStr === item.ccodeStr,
