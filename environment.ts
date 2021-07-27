@@ -60,8 +60,8 @@ function get() {
         env.rokApiUrl = 'svcapp.rokebi.com';
         env.apiUrl = esimGlobal ? 'tb-global.rokebi.com' : 'tb-esim.rokebi.com';
         env.baseUrl = esimGlobal
-          ? 'https://tb-global.rokebi.com'
-          : 'https://tb-esim.rokebi.com';
+          ? 'http://tb-global.rokebi.com'
+          : 'http://tb-esim.rokebi.com';
         break;
       default:
         env.scheme = 'http';
