@@ -388,6 +388,7 @@ const makeOrder = ({
       amount: result.amount,
       rokebi_cash: result.rokebi_cash,
       shipping_cost: result.dlvCost,
+      currency_code: result.currency_code,
     },
   };
 

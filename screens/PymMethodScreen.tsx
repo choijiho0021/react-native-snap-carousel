@@ -454,8 +454,8 @@ class PymMethodScreen extends Component<
         mobile,
         profileId,
         memo,
-        deduct: deduct?.value,
-        dlvCost: dlvCost?.value,
+        deduct,
+        dlvCost,
         digital: !simIncluded,
       });
       // payNorder에서 재고 확인 - resp.result값으로 비교
