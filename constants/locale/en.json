@@ -55,6 +55,8 @@
   "copy": "Copy",
   "close": "Close",
   "redirect": "Get Shortcut",
+  "KRW": "KRW",
+  "USD": "USD",
 
   "home:exitApp": "Close App",
   "home:guide": "User Guide",

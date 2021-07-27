@@ -1,10 +1,10 @@
-import {RkbProduct} from '../api/productApi';
+import {Currency, RkbProduct} from '../api/productApi';
 
 export type PurchaseItem = {
   type: 'product' | 'rch' | 'sim_card';
   title: string;
   variationId: string;
-  price: number;
+  price: Currency;
   qty: number;
   key: string;
   orderItemId: number;

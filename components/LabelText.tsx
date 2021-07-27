@@ -1,4 +1,4 @@
-import React, {memo} from 'react';
+import React, {memo, useCallback} from 'react';
 import {
   ColorValue,
   StyleProp,
@@ -12,6 +12,7 @@ import {appStyles} from '@/constants/Styles';
 import utils from '@/redux/api/utils';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
+import {Currency} from '@/redux/api/productApi';
 
 const styles = StyleSheet.create({
   label: {
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
 
 export type LabelTextProps = {
   label: string;
-  value?: string | number;
+  value?: string | number | Currency;
   deduct?: number;
   style?: StyleProp<ViewStyle>;
   format?: 'price' | 'shortDistance';
@@ -56,6 +57,20 @@ const LabelText = ({
 }: LabelTextProps) => {
   const isDeduct = label === i18n.t('cart:deductBalance');
 
+  const renderValue = useCallback(() => {
+    const val = typeof value === 'object' ? value.value : Number(value);
+    const currency = typeof value === 'object' ? value.currency : 'KRW';
+    return (
+      <View style={styles.value}>
+        <Text style={[valueStyle || appStyles.price, {color}]}>
+          {isDeduct && '- '}
+          {utils.numberToCommaString(isDeduct ? deduct : val) || value}
+        </Text>
+        <Text style={appStyles.normal14Text}>{` ${i18n.t(currency)}`}</Text>
+      </View>
+    );
+  }, [color, deduct, isDeduct, value, valueStyle]);
+
   return (
     <View
       style={[
@@ -74,14 +89,7 @@ const LabelText = ({
           <Text style={[styles.label, {marginLeft: 18}]}>{`(${i18n.t('cart:currentBalance')}:${utils.numberToCommaString(value) + ' ' + i18n.t('won')}) `}</Text>
         } */}
       {format === 'price' ? (
-        <View style={styles.value}>
-          <Text style={[valueStyle || appStyles.price, {color}]}>
-            {isDeduct && '- '}
-            {utils.numberToCommaString(isDeduct ? deduct : Number(value)) ||
-              value}
-          </Text>
-          <Text style={appStyles.normal14Text}>{` ${i18n.t('won')}`}</Text>
-        </View>
+        renderValue()
       ) : (
         <Text style={valueStyle || styles.singleValue}>{value}</Text>
       )}

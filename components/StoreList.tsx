@@ -15,6 +15,9 @@ import {
   RkbProduct,
 } from '@/redux/api/productApi';
 import {FlatList} from 'react-native-gesture-handler';
+import Env from '@/environment';
+
+const {esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -93,9 +96,14 @@ const CountryItem0 = ({
         // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
         if (elm && elm.length > 0) {
           const localOp = localOpList && localOpList.get(elm[0].partnerId);
-          const bestPrice = elm.reduce((acc, cur) => {
-            if (!acc) return cur.pricePerDay;
-            return cur.pricePerDay ? Math.min(acc, cur.pricePerDay) : acc;
+          const bestPrice = elm.reduce((acc, {pricePerDay}) => {
+            if (!acc) return pricePerDay;
+            if (!pricePerDay || acc.currency !== pricePerDay.currency)
+              return acc;
+            return {
+              value: Math.min(acc.value, pricePerDay.value),
+              currency: pricePerDay.currency,
+            };
           }, elm[0].pricePerDay);
 
           return (
@@ -112,22 +120,31 @@ const CountryItem0 = ({
                   {API.Product.getTitle(localOp)}
                 </Text>
                 <View style={styles.priceRow}>
+                  {esimGlobal && (
+                    <View style={styles.lowPriceView}>
+                      <Text style={styles.lowPrice}>{i18n.t('lowest')}</Text>
+                    </View>
+                  )}
                   <View style={styles.price}>
-                    <Text key="price" style={styles.priceNumber}>
-                      {utils.numberToCommaString(bestPrice)}
-                    </Text>
-                    <Text
-                      key="days"
-                      style={[
-                        isDeviceSize('small')
-                          ? appStyles.normal14Text
-                          : appStyles.normal16Text,
-                        styles.text,
-                      ]}>{` ${i18n.t('won')}/Day`}</Text>
+                    {bestPrice && [
+                      <Text key="price" style={styles.priceNumber}>
+                        {utils.numberToCommaString(bestPrice.value)}
+                      </Text>,
+                      <Text
+                        key="days"
+                        style={[
+                          isDeviceSize('small')
+                            ? appStyles.normal14Text
+                            : appStyles.normal16Text,
+                          styles.text,
+                        ]}>{` ${i18n.t(bestPrice.currency)}/Day`}</Text>,
+                    ]}
                   </View>
-                  <View style={styles.lowPriceView}>
-                    <Text style={styles.lowPrice}>{i18n.t('lowest')}</Text>
-                  </View>
+                  {!esimGlobal && (
+                    <View style={styles.lowPriceView}>
+                      <Text style={styles.lowPrice}>{i18n.t('lowest')}</Text>
+                    </View>
+                  )}
                 </View>
               </TouchableOpacity>
             </View>

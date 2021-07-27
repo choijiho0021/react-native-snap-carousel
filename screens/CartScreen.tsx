@@ -40,7 +40,10 @@ import {RouteProp} from '@react-navigation/native';
 import {RkbOrderItem} from '@/redux/api/cartApi';
 import {ProductModelState} from '@/redux/modules/product';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
+import {Currency} from '@/redux/api/productApi';
+import Env from '@/environment';
 
+const {esimGlobal} = Env.get();
 const sectionTitle = ['sim', 'product'];
 
 const styles = StyleSheet.create({
@@ -119,7 +122,7 @@ type CartScreenProps = {
   };
 };
 
-type ItemTotal = {cnt: number; price: number};
+type ItemTotal = {cnt: number; price: Currency};
 type ItemSection = {data: RkbOrderItem[]; title: string};
 type CartScreenState = {
   section: ItemSection[];
@@ -138,7 +141,7 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
       section: [],
       checked: ImmutableMap<string, boolean>(),
       qty: ImmutableMap<string, number>(),
-      total: {cnt: 0, price: 0},
+      total: {cnt: 0, price: utils.toCurrency(0, esimGlobal ? 'USD' : 'KRW')},
       showSnackBar: false,
     };
 
@@ -272,7 +275,7 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
         (item) => checked.get(item.key) && (qty.get(item.key) || 0) > 0,
       ) >= 0
       ? utils.dlvCost(total.price)
-      : 0;
+      : utils.toCurrency(0, total.price.currency);
   };
 
   section = (args: RkbOrderItem[][]) => {
@@ -327,7 +330,10 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
           this.state.qty.get(item.key),
       )
       .map((item) => item.totalPrice)
-      .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+      .reduce(
+        (acc, cur) => utils.toCurrency(acc.value + cur.value, cur.currency),
+        utils.toCurrency(0, 'KRW'),
+      );
   }
 
   checkDeletedItem(items: RkbOrderItem[]) {
@@ -418,9 +424,12 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
       .reduce(
         (acc, cur) => ({
           cnt: acc.cnt + cur.qty,
-          price: acc.price + cur.qty * cur.price,
+          price: {
+            value: acc.price.value + cur.qty * cur.price.value,
+            currency: cur.price.currency,
+          } as Currency,
         }),
-        {cnt: 0, price: 0},
+        {cnt: 0, price: utils.toCurrency(0, esimGlobal ? 'USD' : 'KRW')},
       );
   }
 
@@ -442,8 +451,14 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
     const {iccid} = this.props.account;
     const dlvCost = this.getDlvCost(checked, qty, total, section);
     const balance = this.props.account.balance || 0;
-    const amount = total.price + dlvCost;
-    const pymPrice = amount > balance ? amount - balance : 0;
+    const amount = utils.toCurrency(
+      total.price.value + dlvCost.value,
+      total.price.currency,
+    );
+    const pymPrice = utils.toCurrency(
+      amount.value > balance ? amount.value - balance : 0,
+      amount.currency,
+    );
 
     const data = this.props.cart.orderItems.find(
       (item) =>
@@ -492,10 +507,10 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
               {`${i18n.t('cart:pymAmount')}: `}
             </Text>
             <Text style={[styles.btnBuyText, {color: colors.black}]}>
-              {utils.numberToCommaString(pymPrice)}
+              {utils.numberToCommaString(pymPrice.value)}
             </Text>
             <Text style={[styles.btnBuyText, {color: colors.black}]}>
-              {i18n.t('won')}
+              {` ${i18n.t(pymPrice.currency)}`}
             </Text>
           </View>
           <AppButton
@@ -508,7 +523,7 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
               margin: 5,
             }}
             checkedColor={colors.white}
-            disabled={total.price === 0}
+            disabled={total.price.value === 0}
             onPress={
               !_.isEmpty(!iccid && data)
                 ? this.registerSimAlert
