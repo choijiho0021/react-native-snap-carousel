@@ -216,6 +216,7 @@ const slice = createSlice({
     builder.addCase(cartRemove.fulfilled, (state, action) => {
       const {result, objects = []} = action.payload;
       const {orderId, orderItems} = state;
+
       if (
         result === 0 &&
         objects.length > 0 &&
@@ -224,6 +225,19 @@ const slice = createSlice({
         state.orderItems = orderItems.filter(
           (item) => item.orderItemId !== objects[0].orderItemId,
         );
+      }
+    });
+
+    builder.addCase(cartUpdateQty.fulfilled, (state, action) => {
+      const {result, objects = []} = action.payload;
+      const {orderId} = state;
+
+      if (
+        result === 0 &&
+        objects.length > 0 &&
+        objects[0].orderId === orderId
+      ) {
+        state.orderItems = objects[0].orderItems;
       }
     });
 

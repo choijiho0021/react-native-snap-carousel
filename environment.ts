@@ -1,4 +1,5 @@
 import {Platform} from 'react-native';
+import Config from 'react-native-config';
 import {getBundleId} from 'react-native-device-info';
 
 const bundleId = getBundleId();
@@ -27,6 +28,8 @@ type Env = {
   baseUrl?: string;
   rokApiUrl?: string;
   sipServer: string;
+  isProduction: boolean;
+  isIOS?: boolean;
 };
 const env: Env = {
   appId,
@@ -35,15 +38,20 @@ const env: Env = {
   esimApp: appId === 'esim',
   esimGlobal,
   sipServer: '193.122.106.2:35060',
+  isProduction: Config.NODE_ENV === 'production',
+  isIOS: Platform.OS === 'ios',
 };
 
 function get() {
   if (env.label) return env;
 
-  env.label =
-    Platform.OS === 'ios'
-      ? codePushLabel.stagingIOS
-      : codePushLabel.stagingAndroid;
+  env.label = env.isIOS
+    ? codePushLabel.stagingIOS
+    : codePushLabel.stagingAndroid;
+  if (env.isProduction)
+    env.label = env.isIOS
+      ? codePushLabel.productionIOS
+      : codePushLabel.productionAndroid;
 
   if (appId === 'esim') {
     switch (process.env.NODE_ENV) {

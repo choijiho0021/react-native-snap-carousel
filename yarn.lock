@@ -1096,6 +1096,7 @@
     "semver" "^7.3.5"
     "slash" "^3.0.0"
     "xcode" "^3.0.1"
+<<<<<<< HEAD
     "xml2js" "^0.4.23"
 
 "@expo/config-plugins@2.0.4":
@@ -1116,6 +1117,28 @@
     "xcode" "^3.0.1"
     "xml2js" "^0.4.23"
 
+=======
+    "xml2js" "^0.4.23"
+
+"@expo/config-plugins@2.0.4":
+  "integrity" "sha512-JGt/X2tFr7H8KBQrKfbGo9hmCubQraMxq5sj3bqDdKmDOLcE1a/EDCP9g0U4GHsa425J8VDIkQUHYz3h3ndEXQ=="
+  "resolved" "https://registry.npmjs.org/@expo/config-plugins/-/config-plugins-2.0.4.tgz"
+  "version" "2.0.4"
+  dependencies:
+    "@expo/config-types" "^41.0.0"
+    "@expo/json-file" "8.2.30"
+    "@expo/plist" "0.0.13"
+    "debug" "^4.3.1"
+    "find-up" "~5.0.0"
+    "fs-extra" "9.0.0"
+    "getenv" "^1.0.0"
+    "glob" "7.1.6"
+    "resolve-from" "^5.0.0"
+    "slash" "^3.0.0"
+    "xcode" "^3.0.1"
+    "xml2js" "^0.4.23"
+
+>>>>>>> 6e36dd1013f063b7207ce2b30b07a8910e83df99
 "@expo/config-types@^41.0.0":
   "integrity" "sha512-Ax0pHuY5OQaSrzplOkT9DdpdmNzaVDnq9VySb4Ujq7UJ4U4jriLy8u93W98zunOXpcu0iiKubPsqD6lCiq0pig=="
   "resolved" "https://registry.npmjs.org/@expo/config-types/-/config-types-41.0.0.tgz"
@@ -8582,6 +8605,11 @@
     "semver" "^7.3.2"
     "xcode" "3.0.1"
 
+"react-native-config@^1.4.3":
+  "integrity" "sha512-KcrlImtkrANeYMT5VM3NaXO5+nyxZkY42CVW8FCHThVqLa5xkNwQJSn8RXu+pNn5WpUatxYgUTP5ZqUpA4/ZKQ=="
+  "resolved" "https://registry.npmjs.org/react-native-config/-/react-native-config-1.4.3.tgz"
+  "version" "1.4.3"
+
 "react-native-device-info@^8.0.2":
   "integrity" "sha512-PiYRJf3GBaVnGAUUB9YKzaGc5h6Rmn7NniD328JUXLeepKvLaDhK6EvFWU98YiZ2jePOF9/jg2cxfyN4jhZ2LA=="
   "resolved" "https://registry.npmjs.org/react-native-device-info/-/react-native-device-info-8.1.4.tgz"
@@ -8695,7 +8723,11 @@
   dependencies:
     "lodash" "^4.17.15"
 
+<<<<<<< HEAD
 "react-native-reanimated@^2.2.0":
+=======
+"react-native-reanimated@*", "react-native-reanimated@^2.2.0":
+>>>>>>> 6e36dd1013f063b7207ce2b30b07a8910e83df99
   "integrity" "sha512-lOJDd+5w1gY6DHGXG2jD1dsjzQmXQ2699HUc3IztvI2WP4zUT+UAA+zSG+5JiBS5DUnTL8YhhkmUQmr1KNGO5w=="
   "resolved" "https://registry.npmjs.org/react-native-reanimated/-/react-native-reanimated-2.2.0.tgz"
   "version" "2.2.0"
@@ -8750,10 +8782,17 @@
     "css-select" "^2.1.0"
     "css-tree" "^1.0.0-alpha.39"
 
+<<<<<<< HEAD
 "react-native-tab-view@^3.0.1":
   "integrity" "sha512-L7qXtYz5Z+NdWyu38zaJrlHA/8H6rNFRZXe3ydym12UEEPPoefbVZ71b9YK2O6QP0u4pUlzMpMVM/Lsz2DJ4jg=="
   "resolved" "https://registry.npmjs.org/react-native-tab-view/-/react-native-tab-view-3.0.1.tgz"
   "version" "3.0.1"
+=======
+"react-native-tab-view@^2.16.0":
+  "integrity" "sha512-ac2DmT7+l13wzIFqtbfXn4wwfgtPoKzWjjZyrK1t+T8sdemuUvD4zIt+UImg03fu3s3VD8Wh/fBrIdcqQyZJWg=="
+  "resolved" "https://registry.npmjs.org/react-native-tab-view/-/react-native-tab-view-2.16.0.tgz"
+  "version" "2.16.0"
+>>>>>>> 6e36dd1013f063b7207ce2b30b07a8910e83df99
 
 "react-native-tracking-transparency@^0.1.0":
   "integrity" "sha512-yGzpprmZ7dnlScegpoq1uQLuMLR2yDcFVHKF39FB0hxUBmck3G0bKSIbjj1ienM9IgjPvJQPgvG0dX9asyZ7NA=="
@@ -8842,7 +8881,11 @@
     "escape-string-regexp" "2.0.0"
     "invariant" "2.2.4"
 
+<<<<<<< HEAD
 "react-native-windows@^0.63.24", "react-native-windows@>=0.62.0":
+=======
+"react-native-windows@^0.63.24", "react-native-windows@>=0.61", "react-native-windows@>=0.62.0":
+>>>>>>> 6e36dd1013f063b7207ce2b30b07a8910e83df99
   "integrity" "sha512-N+C3NR4cYM7uOXbhx4sMT3QmjSJ7tPKEJBZOVlieEHJ1Bm0ZyP9Bv7ZKzLeouCA/z78/5NhixIwiJVJ1CPIjMA=="
   "resolved" "https://registry.npmjs.org/react-native-windows/-/react-native-windows-0.63.24.tgz"
   "version" "0.63.24"

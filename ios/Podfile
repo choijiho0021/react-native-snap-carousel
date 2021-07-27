@@ -29,6 +29,12 @@ target 'RokebiESIM' do
   pod 'FBSDKLoginKit'
   pod 'FBSDKShareKit'
 
+  ENVFILES = {
+    'Debug' => '$(PODS_ROOT)/../../.env',
+    'Staging' => '$(PODS_ROOT)/../../.env.staging',
+    'Release' => '$(PODS_ROOT)/../../.env.production',
+  }
+
 	# Enables Flipper.
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
@@ -36,6 +42,15 @@ target 'RokebiESIM' do
   use_flipper!('Flipper' => '0.75.1', 'Flipper-Folly' => '2.5.3', 'Flipper-RSocket' => '1.3.1')
   post_install do |installer|
     flipper_post_install(installer)
-  end
+
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        if target.name == 'react-native-config'
+          config.build_settings['ENVFILE'] = ENVFILES[config.name]
+        end
+      end
+    end
+  
+  end  
 end
 

@@ -256,7 +256,7 @@ const callHttp = async <T>(
         if (option.isJson) {
           if (response.status === 204) {
             // 204 -> no content
-            return callback({});
+            return callback(response);
           }
 
           try {
