@@ -9,8 +9,8 @@ const impId = 'imp53913318';
 const appId = bundleId === 'com.uangel.rokebi-USIM' ? 'usim' : 'esim';
 const esimGlobal = appId === 'esim' && bundleId === 'com.uangel.rokebi-global';
 const codePushLabel = {
-  stagingIOS: 'v56',
-  stagingAndroid: 'v55',
+  stagingIOS: "v64",
+  stagingAndroid: "v62",
   productionIOS: 'v13',
   productionAndroid: 'v6',
 };
@@ -54,7 +54,7 @@ function get() {
       : codePushLabel.productionAndroid;
 
   if (appId === 'esim') {
-    switch (process.env.NODE_ENV) {
+    switch (Config.NODE_ENV) {
       case 'production':
         env.scheme = 'http';
         env.rokApiUrl = 'svcapp.rokebi.com';
@@ -79,7 +79,7 @@ function get() {
   }
 
   // appId = rokebi
-  switch (process.env.NODE_ENV) {
+  switch (Config.NODE_ENV) {
     case 'production':
       env.scheme = 'https';
       env.rokApiUrl = 'svcapp.rokebi.com';

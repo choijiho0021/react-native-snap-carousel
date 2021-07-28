@@ -15,6 +15,7 @@ import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
 import AppAlert from '@/components/AppAlert';
 import {RootState} from '@/redux';
+import Config from 'react-native-config';
 
 const styles = StyleSheet.create({
   container: {
@@ -68,10 +69,7 @@ class CodePushScreen extends Component {
   }
 
   codePushSync() {
-    if (
-      process.env.NODE_ENV !== 'production' &&
-      process.env.NODE_ENV !== 'staging'
-    )
+    if (Config.NODE_ENV !== 'production' && Config.NODE_ENV !== 'staging')
       return;
 
     try {
