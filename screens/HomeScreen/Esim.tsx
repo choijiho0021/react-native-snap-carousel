@@ -53,8 +53,11 @@ import {
 } from '@/redux/api/productApi';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
+import Env from '@/environment';
 import PromotionCarousel from './component/PromotionCarousel';
 import {checkFistLaunch, requestPermission} from './component/permission';
+
+const {esimGlobal} = Env.get();
 
 const BadgeAppButton = withBadge(
   ({noti}: RootState) => ({
@@ -439,7 +442,12 @@ class Esim extends Component<EsimProps, EsimState> {
     const {navigation} = this.props;
     navigation?.setOptions({
       title: null,
-      headerLeft: () => <Text style={styles.title}>{i18n.t('esim')}</Text>,
+      headerLeft: () => (
+        <Text style={styles.title}>
+          {i18n.t('esim')}
+          {esimGlobal ? ' Global' : ''}
+        </Text>
+      ),
       headerRight: () => (
         <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
           <AppButton
