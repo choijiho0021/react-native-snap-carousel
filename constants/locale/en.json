@@ -503,10 +503,11 @@
   "mypage:preparing": "On preparing",
   "mypage:mailInfo": "* Activation info for your eSIM product will be sent to this email.",
 
-  "promo:join": "Paticipation in the Event",
-  "promo:join:success": "Successfully participated.",
+  "promo:join:open": "Paticipate the Event",
+  "promo:join:joined": "Successfully Participated.",
+  "promo:join:closed": "End of participation",
+
   "promo:join:fail": "Sorry, try again.",
   "promo:join:ing": "Participating ...",
-  "promo:end": "The event was over",
   "promo:login": "Login to participate"
 }

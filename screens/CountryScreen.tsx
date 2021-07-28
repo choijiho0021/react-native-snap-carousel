@@ -361,7 +361,7 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
   onPress = (uuid?: string) => () => {
     this.setState({selected: uuid});
     if (
-      (this.props.cart.orderItems || []).find((v) => v.key === uuid)?.qty >=
+      (this.props.cart.orderItems?.find((v) => v.key === uuid)?.qty || 0) >=
       PURCHASE_LIMIT
     ) {
       this.setState({disabled: true});

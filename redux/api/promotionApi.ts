@@ -30,26 +30,23 @@ export type RkbPromoInfo = {
 const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
   if (_.isArray(data)) {
     return api.success(
-      data
-        .map((item) => ({
-          uuid: item.uuid,
-          title: item.title,
-          imageUrl: item.field_image,
-          product_uuid: item.field_product_uuid, // product variation id
-          notice: item.field_ref_content
-            ? {
-                title: item.field_notice_title,
-                body: item.field_notice_body,
-                rule: item.field_promotion_rule?.replace(/&quot;/g, '"'),
-                image: {
-                  success: item.field_successful_image,
-                  failure: item.field_failure_image,
-                },
-              }
-            : undefined,
-          langcode: api.toLangcode(item.langcode),
-        }))
-        .filter((i) => i.langcode === i18n.locale),
+      data.map((item) => ({
+        uuid: item.uuid,
+        title: item.title,
+        imageUrl: item.field_image,
+        product_uuid: item.field_product_uuid, // product variation id
+        notice: item.field_ref_content
+          ? {
+              title: item.field_notice_title,
+              body: item.field_notice_body,
+              rule: item.field_promotion_rule?.replace(/&quot;/g, '"'),
+              image: {
+                success: item.field_successful_image,
+                failure: item.field_failure_image,
+              },
+            }
+          : undefined,
+      })),
     );
   }
   return api.failure(api.E_NOT_FOUND);
