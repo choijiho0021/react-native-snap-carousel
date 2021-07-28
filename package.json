@@ -29,6 +29,7 @@
     "@react-native-cookies/cookies": "^6.0.4",
     "@react-native-firebase/app": "^11.1.0",
     "@react-native-firebase/messaging": "^11.1.0",
+    "@react-native-seoul/naver-login": "^2.1.1",
     "@react-navigation/bottom-tabs": "^5.11.8",
     "@react-navigation/compat": "^5.1.26",
     "@react-navigation/native": "^5.9.3",
