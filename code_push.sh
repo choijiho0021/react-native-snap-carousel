@@ -97,11 +97,11 @@ case $cmd in
 		nextAndroidVersion=`echo $curAndroidVersion | awk -F 'v' '{ print "v" $2 + 1 }'`
 
 		if [ "$environment" = "Production" ]; then
-  			sed -i '' -E 's/  productionAndroid: ?.+/  productionAndroid: "'"${nextAndroidVersion}"'",/g'  $_dir/environment.js
-  			sed -i '' -E 's/  productionIOS: ?.+/  productionIOS: "'"${nextiOSVersion}"'",/g'  $_dir/environment.js
+  			sed -i '' -E 's/  productionAndroid: ?.+/  productionAndroid: "'"${nextAndroidVersion}"'",/g'  $_dir/environment.ts
+  			sed -i '' -E 's/  productionIOS: ?.+/  productionIOS: "'"${nextiOSVersion}"'",/g'  $_dir/environment.ts
 		else
-  			sed -i '' -E 's/  stagingAndroid: ?.+/  stagingAndroid: "'"${nextAndroidVersion}"'",/g'  $_dir/environment.js
- 	 		sed -i '' -E 's/  stagingIOS: ?.+/  stagingIOS: "'"${nextiOSVersion}"'",/g'  $_dir/environment.js
+  			sed -i '' -E 's/  stagingAndroid: ?.+/  stagingAndroid: "'"${nextAndroidVersion}"'",/g'  $_dir/environment.ts
+ 	 		sed -i '' -E 's/  stagingIOS: ?.+/  stagingIOS: "'"${nextiOSVersion}"'",/g'  $_dir/environment.ts
 		fi
 	
 		appcenter codepush release-react -a $account/$appnameios -t $targetiOSBinaryVersion -d $environment
@@ -141,9 +141,9 @@ sed -i '' -E 's/'"${CODEPUSH_IOS_KEY}"'/\$\(CODEPUSH_KEY\)/g' ./ios/$appname/Inf
 sed -i '' -E 's/'"${CODEPUSH_IOS_KEY}"'/\$\(CODEPUSH_KEY\)/g' ./ios/$appname/Development.plist
 
 if [ "$environment" = "Production" ]; then
-	sed -i '' -E 's/  productionAndroid: ?.+/  productionAndroid: "'"${newAndroidVersion}"'",/g'  $_dir/environment.js
-	sed -i '' -E 's/  productionIOS: ?.+/  productionIOS: "'"${newiOSVersion}"'",/g'  $_dir/environment.js
+	sed -i '' -E 's/  productionAndroid: ?.+/  productionAndroid: "'"${newAndroidVersion}"'",/g'  $_dir/environment.ts
+	sed -i '' -E 's/  productionIOS: ?.+/  productionIOS: "'"${newiOSVersion}"'",/g'  $_dir/environment.ts
 else
-	sed -i '' -E 's/  stagingAndroid: ?.+/  stagingAndroid: "'"${newAndroidVersion}"'",/g'  $_dir/environment.js
-	sed -i '' -E 's/  stagingIOS: ?.+/  stagingIOS: "'"${newiOSVersion}"'",/g'  $_dir/environment.js
+	sed -i '' -E 's/  stagingAndroid: ?.+/  stagingAndroid: "'"${newAndroidVersion}"'",/g'  $_dir/environment.ts
+	sed -i '' -E 's/  stagingIOS: ?.+/  stagingIOS: "'"${newiOSVersion}"'",/g'  $_dir/environment.ts
 fi
