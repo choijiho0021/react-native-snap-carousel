@@ -4,7 +4,7 @@ import i18n from '@/utils/i18n';
 import Env from '@/environment';
 import {Currency, CurrencyCode} from './productApi';
 
-const {esimGlobal} = Env.get();
+const {esimCurrency} = Env.get();
 const dateTimeFmt = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})*$/;
 moment.locale(i18n.locale);
 
@@ -75,7 +75,7 @@ const stringToCurrency = (value: string): Currency => {
   // default currency : KRW
   return {
     value: stringToNumber(value) || 0,
-    currency: esimGlobal ? 'USD' : 'KRW',
+    currency: esimCurrency,
   };
 };
 
@@ -112,7 +112,9 @@ const addCurrency = (a?: Currency, b?: Currency) => {
   return b;
 };
 
-const price = (num: Currency): string => {
+const price = (num?: Currency): string => {
+  if (!num) return '';
+
   if (num.currency === 'USD')
     return ` ${i18n.t(num.currency)} ${numberToCommaString(num.value)}`;
 

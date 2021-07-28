@@ -43,7 +43,7 @@ import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {Currency} from '@/redux/api/productApi';
 import Env from '@/environment';
 
-const {esimGlobal} = Env.get();
+const {esimCurrency} = Env.get();
 const sectionTitle = ['sim', 'product'];
 
 const styles = StyleSheet.create({
@@ -141,7 +141,7 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
       section: [],
       checked: ImmutableMap<string, boolean>(),
       qty: ImmutableMap<string, number>(),
-      total: {cnt: 0, price: utils.toCurrency(0, esimGlobal ? 'USD' : 'KRW')},
+      total: {cnt: 0, price: utils.toCurrency(0, esimCurrency)},
       showSnackBar: false,
     };
 
@@ -429,7 +429,7 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
             currency: cur.price.currency,
           } as Currency,
         }),
-        {cnt: 0, price: utils.toCurrency(0, esimGlobal ? 'USD' : 'KRW')},
+        {cnt: 0, price: utils.toCurrency(0, esimCurrency)},
       );
   }
 

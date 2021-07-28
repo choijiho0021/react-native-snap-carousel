@@ -13,7 +13,9 @@ import utils from '@/redux/api/utils';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import {Currency} from '@/redux/api/productApi';
+import Env from '@/environment';
 
+const {esimCurrency} = Env.get();
 const styles = StyleSheet.create({
   label: {
     ...appStyles.normal14Text,
@@ -55,21 +57,23 @@ const LabelText = ({
   labelStyle,
   valueStyle,
 }: LabelTextProps) => {
-  const isDeduct = label === i18n.t('cart:deductBalance');
-
   const renderValue = useCallback(() => {
+    const isDeduct = label === i18n.t('cart:deductBalance');
     const val = typeof value === 'object' ? value.value : Number(value);
-    const currency = typeof value === 'object' ? value.currency : 'KRW';
+    const currency = typeof value === 'object' ? value.currency : esimCurrency;
+
     return (
-      <View style={styles.value}>
-        <Text style={[valueStyle || appStyles.price, {color}]}>
+      <View key="value" style={styles.value}>
+        <Text key="val" style={[valueStyle || appStyles.price, {color}]}>
           {isDeduct && '- '}
-          {utils.numberToCommaString(isDeduct ? deduct : val) || value}
+          {utils.numberToCommaString(isDeduct ? deduct || 0 : val)}
         </Text>
-        <Text style={appStyles.normal14Text}>{` ${i18n.t(currency)}`}</Text>
+        <Text key="currency" style={appStyles.normal14Text}>{` ${i18n.t(
+          currency,
+        )}`}</Text>
       </View>
     );
-  }, [color, deduct, isDeduct, value, valueStyle]);
+  }, [color, deduct, label, value, valueStyle]);
 
   return (
     <View
@@ -79,6 +83,7 @@ const LabelText = ({
         format !== 'shortDistance' && {justifyContent: 'space-between'},
       ]}>
       <Text
+        key="label"
         numberOfLines={1}
         ellipsizeMode="tail"
         style={[{maxWidth: '70%'}, labelStyle || styles.label]}>
@@ -91,7 +96,9 @@ const LabelText = ({
       {format === 'price' ? (
         renderValue()
       ) : (
-        <Text style={valueStyle || styles.singleValue}>{value}</Text>
+        <Text key="value" style={valueStyle || styles.singleValue}>
+          {value}
+        </Text>
       )}
     </View>
   );

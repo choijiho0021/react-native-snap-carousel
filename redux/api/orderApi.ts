@@ -3,7 +3,6 @@ import utils from '@/redux/api/utils';
 import _ from 'underscore';
 import api, {ApiResult, DrupalNode} from './api';
 import {Currency} from './productApi';
-import {util} from 'prettier';
 
 const ORDER_PAGE_ITEMS = 10;
 
@@ -46,6 +45,11 @@ const consentItem = {
   2: 'paymentAgency',
 };
 
+export type RkbPayment = {
+  amount: Currency;
+  paymentGateway: string;
+  paymentMethod: string;
+};
 export type RkbOrder = {
   key: string;
   orderId: number;
@@ -61,11 +65,7 @@ export type RkbOrder = {
   state?: string;
   orderItems: {title: string; qty: number; price: number}[];
   usageList: {status: string; nid: string}[];
-  paymentList: {
-    amount: number;
-    paymentGateway: string;
-    paymentMethod: string;
-  }[];
+  paymentList: RkbPayment[];
   dlvCost: Currency;
   balanceCharge: Currency;
 };
@@ -104,7 +104,7 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
               nid: value.nid,
             })),
             paymentList: JSON.parse(item.payment_list).map((value) => ({
-              amount: value.amount__number,
+              amount: utils.stringToCurrency(value.amount__number),
               paymentGateway: value.payment_gateway,
               paymentMethod: value.payment_method, // 결제 수단
             })),
@@ -188,7 +188,7 @@ const cancelOrder = ({orderId, token}: {orderId?: number; token?: string}) => {
   );
 };
 
-const deliveryTrackingUrl = (company: string, trackingCode: string) => {
+const deliveryTrackingUrl = (company: string, trackingCode?: string) => {
   switch (company) {
     // 지금은 CJ 주소만 있음. 다른 회사 주소 확인 필요
     case 'CJ':

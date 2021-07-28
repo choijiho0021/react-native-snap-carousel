@@ -17,7 +17,7 @@ import {actions as accountAction} from './account';
 import {actions as productAction} from './product';
 import {Currency} from '../api/productApi';
 
-const {esimApp, esimGlobal} = Env.get();
+const {esimApp, esimCurrency} = Env.get();
 
 const cartFetch = createAsyncThunk('cart/fetch', API.Cart.get);
 const cartAdd = createAsyncThunk('cart/add', API.Cart.add);
@@ -145,7 +145,7 @@ const slice = createSlice({
             acc.value + cur.price.value * (cur.qty || 1),
             cur.price.currency,
           ),
-        utils.toCurrency(0, esimGlobal ? 'USD' : 'KRW'),
+        utils.toCurrency(0, esimCurrency),
       );
       const pymReq = [
         {

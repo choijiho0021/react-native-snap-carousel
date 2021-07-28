@@ -1,6 +1,5 @@
 import React, {memo} from 'react';
 import {StyleSheet, Pressable, View} from 'react-native';
-import _ from 'underscore';
 import LabelText from '@/components/LabelText';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
@@ -8,6 +7,7 @@ import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import {RkbOrder} from '@/redux/api/orderApi';
+import _ from 'underscore';
 
 const styles = StyleSheet.create({
   order: {
