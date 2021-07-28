@@ -1,6 +1,7 @@
 import {Platform} from 'react-native';
 import Config from 'react-native-config';
 import {getBundleId} from 'react-native-device-info';
+import {CurrencyCode} from './redux/api/productApi';
 
 const bundleId = getBundleId();
 const impId = 'imp53913318';
@@ -22,6 +23,7 @@ type Env = {
   channelId: string;
   esimApp: boolean;
   esimGlobal: boolean;
+  esimCurrency: CurrencyCode;
   label?: string;
   scheme?: string;
   apiUrl?: string;
@@ -37,6 +39,7 @@ const env: Env = {
   channelId,
   esimApp: appId === 'esim',
   esimGlobal,
+  esimCurrency: esimGlobal ? 'USD' : 'KRW',
   sipServer: '193.122.106.2:35060',
   isProduction: Config.NODE_ENV === 'production',
   isIOS: Platform.OS === 'ios',
@@ -45,13 +48,15 @@ const env: Env = {
 function get() {
   if (env.label) return env;
 
-  env.label = env.isIOS
-    ? codePushLabel.stagingIOS
-    : codePushLabel.stagingAndroid;
-  if (env.isProduction)
+  if (env.isProduction) {
     env.label = env.isIOS
       ? codePushLabel.productionIOS
       : codePushLabel.productionAndroid;
+  } else {
+    env.label = env.isIOS
+      ? codePushLabel.stagingIOS
+      : codePushLabel.stagingAndroid;
+  }
 
   if (appId === 'esim') {
     switch (Config.NODE_ENV) {

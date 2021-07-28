@@ -1,7 +1,8 @@
 import i18n from '@/utils/i18n';
+import utils from '@/redux/api/utils';
 import _ from 'underscore';
 import api, {ApiResult, DrupalNode} from './api';
-import utils from '../utils';
+import {Currency} from './productApi';
 
 const ORDER_PAGE_ITEMS = 10;
 
@@ -44,13 +45,18 @@ const consentItem = {
   2: 'paymentAgency',
 };
 
+export type RkbPayment = {
+  amount: Currency;
+  paymentGateway: string;
+  paymentMethod: string;
+};
 export type RkbOrder = {
   key: string;
   orderId: number;
   orderNo: string;
   orderDate?: string;
   orderType?: string;
-  totalPrice?: number;
+  totalPrice?: Currency;
   profileId?: string;
   trackingCode?: string;
   trackingCompany?: string;
@@ -59,13 +65,9 @@ export type RkbOrder = {
   state?: string;
   orderItems: {title: string; qty: number; price: number}[];
   usageList: {status: string; nid: string}[];
-  paymentList: {
-    amount: number;
-    paymentGateway: string;
-    paymentMethod: string;
-  }[];
-  dlvCost: number;
-  balanceCharge: number;
+  paymentList: RkbPayment[];
+  dlvCost: Currency;
+  balanceCharge: Currency;
 };
 
 const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
@@ -77,6 +79,7 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
           const balanceCharge = paymentList.find(
             (value) => value.payment_gateway === 'rokebi_cash',
           );
+          const totalPrice = utils.stringToCurrency(item.total_price__number); // 배송비 불포함 금액
 
           return {
             key: item.order_id || '',
@@ -84,7 +87,7 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
             orderNo: item.order_number || '',
             orderDate: item.placed,
             orderType: item.type,
-            totalPrice: utils.stringToNumber(item.total_price__number), // 배송비 불포함 금액
+            totalPrice,
             profileId: item.profile_id,
             trackingCode: item.tracking_code,
             trackingCompany: item.tracking_company,
@@ -101,14 +104,17 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
               nid: value.nid,
             })),
             paymentList: JSON.parse(item.payment_list).map((value) => ({
-              amount: value.amount__number,
+              amount: utils.stringToCurrency(value.amount__number),
               paymentGateway: value.payment_gateway,
               paymentMethod: value.payment_method, // 결제 수단
             })),
-            dlvCost: utils.stringToNumber(item.dlv_cost) || 0,
-            balanceCharge: balanceCharge
-              ? utils.stringToNumber(balanceCharge.amount__number) || 0
-              : 0,
+            dlvCost: utils.stringToCurrency(item.dlv_cost),
+            balanceCharge: utils.toCurrency(
+              balanceCharge
+                ? utils.stringToNumber(balanceCharge.amount__number) || 0
+                : 0,
+              totalPrice.currency,
+            ),
           };
         })
         .sort((a, b) => (a.orderDate < b.orderDate ? 1 : -1)),
@@ -182,7 +188,7 @@ const cancelOrder = ({orderId, token}: {orderId?: number; token?: string}) => {
   );
 };
 
-const deliveryTrackingUrl = (company: string, trackingCode: string) => {
+const deliveryTrackingUrl = (company: string, trackingCode?: string) => {
   switch (company) {
     // 지금은 CJ 주소만 있음. 다른 회사 주소 확인 필요
     case 'CJ':

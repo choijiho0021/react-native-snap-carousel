@@ -38,10 +38,12 @@ import utils from '@/redux/api/utils';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import {RkbProfile} from '@/redux/api/profileApi';
-import {RkbOrder} from '@/redux/api/orderApi';
+import {RkbOrder, RkbPayment} from '@/redux/api/orderApi';
 import {HomeStackParamList} from '@/navigation/navigation';
+import {Currency} from '@/redux/api/productApi';
+import moment from 'moment';
 
-const {esimApp} = Env.get();
+const {esimApp, esimCurrency} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -261,6 +263,8 @@ type PurchaseDetailScreenProps = {
 
   account: AccountModelState;
 
+  pending: boolean;
+
   action: {
     order: OrderAction;
   };
@@ -275,15 +279,11 @@ type PurchaseDetailScreenState = {
   borderBlue: boolean;
   isCanceled: boolean;
 
-  balanceCharge?: number;
-  billingAmt?: number;
-  orderId?: number;
+  billingAmt?: Currency;
   profile?: RkbProfile;
-  trackingCompany?: string;
-  trackingCode?: string;
-  shipmentState?: string;
-  memo?: string;
-} & RkbOrder;
+  method?: RkbPayment;
+  totalCnt?: number;
+} & Partial<RkbOrder>;
 
 class PurchaseDetailScreen extends Component<
   PurchaseDetailScreenProps,
@@ -330,15 +330,14 @@ class PurchaseDetailScreen extends Component<
     this.setState({
       ...detail,
       isCanceled: detail?.state === 'canceled' || false,
-      billingAmt: (detail?.totalPrice || 0) + (detail?.dlvCost || 0),
+      billingAmt: utils.addCurrency(detail?.totalPrice, detail?.dlvCost),
       method: detail?.paymentList?.find(
         (item) => item.paymentGateway !== 'rokebi_cash',
       ),
       totalCnt: detail?.orderItems.reduce((acc, cur) => acc + cur.qty, 0) || 0,
-      balanceCharge:
-        detail?.paymentList?.find(
-          (item) => item.paymentGateway === 'rokebi_cash',
-        )?.amount || 0,
+      balanceCharge: detail?.paymentList?.find(
+        (item) => item.paymentGateway === 'rokebi_cash',
+      )?.amount,
     });
 
     // load Profile by profile_id
@@ -346,7 +345,7 @@ class PurchaseDetailScreen extends Component<
     if (detail?.orderType === 'physical') {
       API.Profile.getCustomerProfileById({id: detail.profileId, token}).then(
         (resp) => {
-          if (resp.result === 0) this.profile(resp);
+          if (resp.result === 0) this.profile(resp.objects[0]);
         },
         (err) => {
           console.log('Failed to get profile', err);
@@ -386,9 +385,9 @@ class PurchaseDetailScreen extends Component<
     }));
   }
 
-  profile(profile) {
+  profile(profile: RkbProfile) {
     this.setState({
-      profile: profile.objects[0],
+      profile,
     });
   }
 
@@ -606,14 +605,12 @@ class PurchaseDetailScreen extends Component<
       balanceCharge,
       isCanceled,
       method,
-    } = this.state || {};
+    } = this.state;
 
-    const elapsedDay = Math.ceil(
-      (new Date() - new Date(orderDate)) / (24 * 60 * 60 * 1000),
-    );
-    const paidAmount = method?.amount || 0;
+    const elapsedDay = orderDate ? moment().diff(moment(orderDate), 'days') : 0;
+    const paidAmount = method?.amount || utils.toCurrency(0, esimCurrency);
     const isRecharge =
-      orderItems.find((item) =>
+      orderItems?.find((item) =>
         item.title.includes(i18n.t('sim:rechargeBalance')),
       ) || false;
     const isUsed =
@@ -687,7 +684,7 @@ class PurchaseDetailScreen extends Component<
             format="price"
             labelStyle={styles.label2}
             valueStyle={appStyles.roboto16Text}
-            value={balanceCharge || 0}
+            value={balanceCharge}
           />
         )}
         <View style={styles.bar} />
@@ -706,10 +703,10 @@ class PurchaseDetailScreen extends Component<
                 styles.fontWeightBold,
                 {marginHorizontal: 5},
               ]}>
-              {utils.numberToCommaString(paidAmount)}
+              {utils.numberToCommaString(paidAmount.value)}
             </Text>
             <Text style={[styles.normal16BlueTxt, {color: colors.black}]}>
-              {i18n.t('won')}
+              {i18n.t(paidAmount.currency)}
             </Text>
           </View>
         </View>
@@ -724,8 +721,8 @@ class PurchaseDetailScreen extends Component<
               },
             ]}
             disableBackgroundColor={colors.whiteTwo}
-            disableColor={this.state.pending ? colors.whiteTwo : colors.greyish}
-            disabled={disableBtn || this.state.disableBtn || this.state.pending}
+            disableColor={this.props.pending ? colors.whiteTwo : colors.greyish}
+            disabled={disableBtn || this.state.disableBtn || this.props.pending}
             onPress={() => this.cancelOrder()}
             title={i18n.t('his:cancel')}
             titleStyle={styles.normal16BlueTxt}
@@ -741,19 +738,18 @@ class PurchaseDetailScreen extends Component<
   }
 
   headerInfo() {
-    const {orderNo, orderDate, orderItems, isCanceled, method} =
-      this.state || {};
+    const {orderNo, orderDate, orderItems, isCanceled, method} = this.state;
 
-    const pg = !_.isEmpty(method)
-      ? method.paymentMethod
-      : i18n.t('pym:balance');
-    let label;
+    const pg = method?.paymentMethod || i18n.t('pym:balance');
+    let label: string;
 
-    if (_.isEmpty(orderItems)) return <View />;
+    if (!orderItems) return <View />;
 
     label = orderItems[0].title;
     if (orderItems.length > 1)
-      label += i18n.t('his:etcCnt').replace('%%', orderItems.length - 1);
+      label += i18n
+        .t('his:etcCnt')
+        .replace('%%', (orderItems.length - 1).toString());
 
     return (
       <View>
@@ -801,7 +797,7 @@ class PurchaseDetailScreen extends Component<
       showDelivery,
       cancelPressed,
       totalCnt,
-    } = this.state || {};
+    } = this.state;
     const ship = API.Order.shipmentState;
     let shipStatus;
 
@@ -824,7 +820,7 @@ class PurchaseDetailScreen extends Component<
           },
         }) => this.onScroll(y)}
         scrollEventThrottle={16}>
-        <SafeAreaView forceInset={{top: 'never', bottom: 'always'}}>
+        <SafeAreaView>
           <SnackBar
             ref={this.snackRef}
             visible={cancelPressed}
@@ -856,7 +852,7 @@ class PurchaseDetailScreen extends Component<
                   </Text>
                   <Text style={styles.normal16BlueTxt}>{i18n.t('qty')} / </Text>
                   <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>
-                    {utils.numberToCommaString(billingAmt)}
+                    {utils.price(billingAmt)}
                   </Text>
                   <Text style={styles.normal16BlueTxt}>{i18n.t('won')}</Text>
                 </View>
