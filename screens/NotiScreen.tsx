@@ -44,10 +44,10 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
   },
   notibox: {
-    height: 126,
+    height: 100,
     marginTop: 3,
-    paddingTop: 10,
-    paddingBottom: 14,
+    paddingTop: 20,
+    paddingBottom: 10,
     paddingLeft: 18,
     paddingRight: 20,
     alignItems: 'center',
@@ -116,9 +116,6 @@ const NotiListItem0 = ({
           },
         ]}>
         <View key="notitext" style={styles.notiText}>
-          <Text key="created" style={styles.created}>
-            {utils.toDateString(item.created)}
-          </Text>
           <View style={styles.title}>
             <Text key="titleText" style={styles.titleText}>
               {item.title}
