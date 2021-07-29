@@ -109,11 +109,8 @@ const showQR = (subs: RkbSubscription) => {
         <View>
           <AppColorText
             style={appStyles.normal16Text}
-            text={i18n.t('esim:showQR:body1')}
+            text={i18n.t('esim:showQR:body')}
           />
-          <Text style={appStyles.normal16Text}>
-            {i18n.t('esim:showQR:body2')}
-          </Text>
           <View style={styles.center}>
             <QRCode value={subs.qrCode} />
           </View>
@@ -126,18 +123,10 @@ const showQR = (subs: RkbSubscription) => {
 const esimManualInputInfo = () => {
   return (
     <View style={{marginBottom: 20}}>
-      <Text style={appStyles.normal16Text}>
-        <Text style={styles.normal16BlueText}>
-          {i18n.t('esim:manualInput:bodyPart1')}
-        </Text>
-        <Text style={appStyles.normal16Text}>
-          {i18n.t('esim:manualInput:bodyPart2')}
-        </Text>
-        <Text style={styles.normal16BlueText}>
-          {i18n.t('esim:manualInput:bodyPart3')}
-        </Text>
-        {i18n.t('esim:manualInput:bodyPart4')}
-      </Text>
+      <AppColorText
+        style={appStyles.normal16Text}
+        text={i18n.t('esim:manualInput:body')}
+      />
     </View>
   );
 };
