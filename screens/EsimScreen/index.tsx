@@ -36,6 +36,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import AppColorText from '@/components/AppColorText';
 import CardInfo from './components/CardInfo';
 import EsimSubs from './components/EsimSubs';
 
@@ -106,11 +107,12 @@ const showQR = (subs: RkbSubscription) => {
         </View>
       ) : (
         <View>
+          <AppColorText
+            style={appStyles.normal16Text}
+            text={i18n.t('esim:showQR:body1')}
+          />
           <Text style={appStyles.normal16Text}>
-            <Text style={styles.normal16BlueText}>
-              {i18n.t('esim:showQR:frontBody')}
-            </Text>
-            {i18n.t('esim:showQR:endBody')}
+            {i18n.t('esim:showQR:body2')}
           </Text>
           <View style={styles.center}>
             <QRCode value={subs.qrCode} />

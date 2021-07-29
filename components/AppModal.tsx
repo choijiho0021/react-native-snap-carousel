@@ -59,7 +59,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginVertical: 15,
-    marginHorizontal: 20,
   },
 });
 
