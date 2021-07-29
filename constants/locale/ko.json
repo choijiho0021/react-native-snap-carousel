@@ -502,7 +502,7 @@
   "toast:copySuccess": "복사되었습니다.",
 
   "mypage:idCheckTitle": "로깨비톡 ID 확인",
-  "mypage:manualInput:body": "아래의 정보를 사용하여 로깨비톡에 로그인할 수 있습니다",
+  "mypage:manualInput:body": "아래의 정보를 사용하여 <color:'#2a7ff6'>로깨비 톡</color>에 로그인할 수 있습니다",
   "mypage:iccid": "ICCID",
   "mypage:activationCode": "Activation Code",
   "mypage:openRokebiTalk": "로깨비톡 바로가기 ＞",

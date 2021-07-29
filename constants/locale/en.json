@@ -297,7 +297,7 @@
   "his:usedOrExpiredInfo": "• The product has been used or the deadline for canceling payment has expired.",
   "his:dataCancelInfo": "• If all products included in the payment are not in use, you can cancel them within 7 days after payment.",
 
-  "contact:title": "Customer Service",
+  "contact:title": "Help Center",
   "contact:notice": "Announcement",
   "contact:noticeDetail": "Announcement Details",
   "contact:faq": "FAQ",
@@ -326,7 +326,7 @@
   "board:resp": "Answer",
   "board:contact": "Contact info",
   "board:attach": "Pic Upload",
-  "board:noti": "- Notification for answer is notified via ROKEBI App or KakaoTalk.\n- If you are not registered user, it is required to input your contact info in order to confirm the answer.",
+  "board:noti": "Notification for answer is notified via ROKEBI App or KakaoTalk.",
   "board:pass": "Password",
   "board:inputPass": "Input password",
   "board:mylist": "My Inquiry",
@@ -493,7 +493,7 @@
   "toast:copySuccess": "Copied Successfully.",
 
   "mypage:idCheckTitle": "ROKEBI Talk ID",
-  "mypage:manualInput:body": "You can use below ID to login ROKEBI Talk service",
+  "mypage:manualInput:body": "You can use below ID to login <color:'#2a7ff6'>ROKEBI Talk</color>.",
   "mypage:iccid": "ICCID",
   "mypage:activationCode": "Activation Code",
   "mypage:openRokebiTalk": "Open ROKEBI Talk ＞",
