@@ -10,10 +10,10 @@ const impId = 'imp53913318';
 const appId = bundleId === 'com.uangel.rokebi-USIM' ? 'usim' : 'esim';
 const esimGlobal = appId === 'esim' && bundleId === 'com.uangel.rokebi-global';
 const codePushLabel = {
-  stagingIOS: "v64",
-  stagingAndroid: "v62",
-  productionIOS: 'v13',
-  productionAndroid: 'v6',
+  stagingIOS: "v65",
+  stagingAndroid: "v64",
+  productionIOS: "v16",
+  productionAndroid: "v9",
 };
 const channelId = '_nzQhxb';
 
