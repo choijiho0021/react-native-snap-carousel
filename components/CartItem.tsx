@@ -2,7 +2,6 @@ import React, {memo} from 'react';
 import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 import {API} from '@/redux/api';
 import {appStyles} from '@/constants/Styles';
-import i18n from '@/utils/i18n';
 import utils from '@/redux/api/utils';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
@@ -10,6 +9,7 @@ import AppIcon from './AppIcon';
 import AppButton from './AppButton';
 import InputNumber from './InputNumber';
 import {Currency} from '../redux/api/productApi';
+import AppPrice from './AppPrice';
 
 const styles = StyleSheet.create({
   container: {
@@ -109,12 +109,10 @@ const CartItem = ({
           <InputNumber value={qty} onChange={onChange} />
         </View>
         <View style={[styles.input, {marginTop: 20}]}>
-          <Text style={appStyles.price}>
-            {utils.numberToCommaString(price.value * qty)}
-          </Text>
-          <Text style={[appStyles.normal14Text, {flex: 1}]}>
-            {` ${i18n.t(price.currency)}`}
-          </Text>
+          <AppPrice
+            price={utils.toCurrency(price.value * qty, price.currency)}
+          />
+          <View style={{flex: 1}} />
           <AppButton
             style={styles.delete}
             iconName="iconTrash"

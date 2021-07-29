@@ -14,6 +14,7 @@ import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import {Currency} from '@/redux/api/productApi';
 import Env from '@/environment';
+import AppPrice from './AppPrice';
 
 const {esimCurrency} = Env.get();
 const styles = StyleSheet.create({
@@ -63,17 +64,12 @@ const LabelText = ({
     const currency = typeof value === 'object' ? value.currency : esimCurrency;
 
     return (
-      <View key="value" style={styles.value}>
-        <Text key="val" style={[valueStyle || appStyles.price, {color}]}>
-          {isDeduct && '- '}
-          {utils.numberToCommaString(isDeduct ? deduct || 0 : val)}
-        </Text>
-        <Text key="currency" style={appStyles.normal14Text}>{` ${i18n.t(
-          currency,
-        )}`}</Text>
-      </View>
+      <AppPrice
+        price={utils.toCurrency(isDeduct ? -(deduct || 0) : val, currency)}
+        balanceStyle={{color}}
+      />
     );
-  }, [color, deduct, label, value, valueStyle]);
+  }, [color, deduct, label, value]);
 
   return (
     <View

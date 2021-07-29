@@ -227,7 +227,7 @@ const CountryListItem0 = ({
               key="price"
               price={item.price}
               balanceStyle={styles.priceStyle}
-              wonStyle={styles.wonStyle}
+              currencyStyle={styles.wonStyle}
             />
           </View>
         </View>

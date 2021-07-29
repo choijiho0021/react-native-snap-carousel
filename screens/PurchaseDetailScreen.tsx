@@ -41,6 +41,7 @@ import {RkbProfile} from '@/redux/api/profileApi';
 import {RkbOrder, RkbPayment} from '@/redux/api/orderApi';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {Currency} from '@/redux/api/productApi';
+import AppPrice from '@/components/AppPrice';
 import moment from 'moment';
 
 const {esimApp, esimCurrency} = Env.get();
@@ -694,20 +695,15 @@ class PurchaseDetailScreen extends Component<
           </Text>
           <View
             style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
-            <Text style={[styles.normal16BlueTxt, {color: colors.black}]}>
-              {i18n.t('total')}
-            </Text>
-            <Text
-              style={[
+            <AppPrice
+              price={paidAmount}
+              balanceStyle={[
                 appStyles.price,
                 styles.fontWeightBold,
                 {marginHorizontal: 5},
-              ]}>
-              {utils.numberToCommaString(paidAmount.value)}
-            </Text>
-            <Text style={[styles.normal16BlueTxt, {color: colors.black}]}>
-              {i18n.t(paidAmount.currency)}
-            </Text>
+              ]}
+              currencyStyle={[styles.normal16BlueTxt, {color: colors.black}]}
+            />
           </View>
         </View>
         {!isRecharge && !esimApp ? (
@@ -846,7 +842,7 @@ class PurchaseDetailScreen extends Component<
             <View style={{flexDirection: 'row'}}>
               {!showPayment && (
                 <View style={[styles.alignCenter, {flexDirection: 'row'}]}>
-                  <Text style={styles.normal16BlueTxt}>{i18n.t('total')}</Text>
+                  <Text style={styles.normal16BlueTxt}>{i18n.t('total')} </Text>
                   <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>
                     {totalCnt}
                   </Text>
@@ -854,7 +850,6 @@ class PurchaseDetailScreen extends Component<
                   <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>
                     {utils.price(billingAmt)}
                   </Text>
-                  <Text style={styles.normal16BlueTxt}>{i18n.t('won')}</Text>
                 </View>
               )}
               <AppButton
