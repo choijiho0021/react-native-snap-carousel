@@ -485,7 +485,7 @@
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "$(inherited)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/../../node_modules/@actbase/react-native-kakao-channel\"",
@@ -667,7 +667,8 @@
 				CURRENT_PROJECT_VERSION = 28;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				EXCLUDED_ARCHS = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -834,7 +835,7 @@
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "$(inherited)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/../../node_modules/@actbase/react-native-kakao-channel\"",
@@ -1016,7 +1017,7 @@
 				CURRENT_PROJECT_VERSION = 28;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -1128,7 +1129,7 @@
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "$(inherited)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/../../node_modules/@actbase/react-native-kakao-channel\"",
@@ -1262,7 +1263,7 @@
 				CURRENT_PROJECT_VERSION = 46;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -1421,7 +1422,7 @@
 				CURRENT_PROJECT_VERSION = 46;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
