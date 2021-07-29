@@ -38,7 +38,6 @@ const styles = StyleSheet.create({
   imgRatio: {
     // figure out your image aspect ratio
     aspectRatio: 335 / 100,
-    width: '100%',
   },
   pagination: {
     marginRight: 30,
@@ -78,7 +77,10 @@ const PromotionImage0 = ({
     </Pressable>
   );
 };
-const PromotionImage = memo(PromotionImage0);
+const PromotionImage = memo(
+  PromotionImage0,
+  (prev, next) => prev.item.imageUrl === next.item.imageUrl,
+);
 
 type PromotionCarouselProps = {
   promotion: RkbPromotion[];
@@ -175,7 +177,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
     <View style={styles.carousel}>
       <Carousel
         data={promotion}
-        renderItem={({item}) => (
+        renderItem={({item}: {item: RkbPromotion}) => (
           <PromotionImage item={item} onPress={onPress} />
         )}
         autoplay
