@@ -110,7 +110,10 @@ const CartItem = ({
         </View>
         <View style={[styles.input, {marginTop: 20}]}>
           <AppPrice
-            price={utils.toCurrency(price.value * qty, price.currency)}
+            price={utils.toCurrency(
+              Math.round(price.value * qty * 100) / 100,
+              price.currency,
+            )}
           />
           <View style={{flex: 1}} />
           <AppButton

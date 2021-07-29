@@ -336,7 +336,7 @@
   "board:Closed": "Answered",
   "board:Open": "Waiting",
 
-  "cart:totalCnt": "Total Qty",
+  "cart:totalCnt": "Total Quantity",
   "cart:totalPrice": "Total Amount",
   "cart:deductBalance": "Deduction from ROKEBI Cash",
   "cart:currentBalance": "Balance in ROKEBI Cash",
