@@ -37,6 +37,7 @@
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 
+#import <RNKakaoLogins.h>
 
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];
@@ -66,6 +67,14 @@ static void InitializeFlipper(UIApplication *application) {
    openURL:(NSURL *)url
    options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
+  dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+      dispatch_async(dispatch_get_main_queue(), ^(void){
+        if ([RNKakaoLogins isKakaoTalkLoginUrl:url]) {
+          [RNKakaoLogins handleOpenUrl: url];
+        }
+      });
+  });
+  
   if ([[FBSDKApplicationDelegate sharedInstance] application:application
                                                  openURL:url
                                                  options:options]) return YES;
@@ -164,6 +173,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
             openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation {
+  
   return [[FBSDKApplicationDelegate sharedInstance] application:application
                                                          openURL:url
                                                sourceApplication:sourceApplication
