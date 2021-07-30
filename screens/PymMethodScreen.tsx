@@ -23,6 +23,11 @@ import {
   CartAction,
   CartModelState,
 } from '@/redux/modules/cart';
+import {
+  actions as infoActions,
+  InfoAction,
+  InfoModelState,
+} from '@/redux/modules/info';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import AppBackButton from '@/components/AppBackButton';
@@ -47,12 +52,12 @@ import {
 import {RouteProp} from '@react-navigation/native';
 import {createPaymentResultForRokebiCash} from '@/redux/models/paymentResult';
 import {PaymentMethod} from '@/redux/api/paymentApi';
-import {RkbInfo} from '@/redux/api/pageApi';
 import {Currency} from '@/redux/api/productApi';
 import utils from '@/redux/api/utils';
 
 const {esimApp} = Env.get();
 const {deliveryText} = API.Order;
+const infoKey = 'pym:benefit';
 const loadingImg = require('../assets/images/loading_1.mp4');
 
 const pickerSelectStyles = StyleSheet.create({
@@ -291,10 +296,12 @@ type PymMethodScreenProps = {
   account: AccountModelState;
   cart: CartModelState;
   profile: ProfileModelState;
+  info: InfoModelState;
 
   action: {
     profile: ProfileAction;
     cart: CartAction;
+    info: InfoAction;
   };
 };
 
@@ -308,7 +315,6 @@ type PymMethodScreenState = {
   isRecharge?: boolean;
   clickable: boolean;
   loading?: boolean;
-  data?: RkbInfo[];
   showModal: {
     [m in ShowModal]: boolean;
   };
@@ -741,9 +747,12 @@ class PymMethodScreen extends Component<
   }
 
   method() {
-    const {selected, data} = this.state;
+    const {selected} = this.state;
+    const {infoMap} = this.props.info;
     const benefit = selected
-      ? data?.find((item) => item.title.indexOf(selected.title) >= 0)
+      ? infoMap
+          .get(infoKey)
+          ?.find((item) => item.title.indexOf(selected.title) >= 0)
       : undefined;
 
     return (
@@ -804,18 +813,10 @@ class PymMethodScreen extends Component<
   }
 
   benefit() {
-    API.Page.getPageByCategory('pym:benefit')
-      .then((resp) => {
-        if (resp.result === 0 && resp.objects.length > 0) {
-          console.log('benefit resp', resp);
-          this.setState({
-            data: resp.objects,
-          });
-        }
-      })
-      .catch((err) => {
-        console.log('failed to get page', err);
-      });
+    const {infoMap} = this.props.info;
+    if (!infoMap.has(infoKey)) {
+      this.props.action.info.getInfoList(infoKey);
+    }
   }
 
   consentBox() {
@@ -922,17 +923,18 @@ class PymMethodScreen extends Component<
 }
 
 export default connect(
-  ({account, cart, profile}: RootState) => ({
+  ({account, cart, profile, info}: RootState) => ({
     account,
     cart,
-    auth: accountActions.auth(account),
     profile,
+    info,
   }),
   (dispatch) => ({
     action: {
       account: bindActionCreators(accountActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
       profile: bindActionCreators(profileActions, dispatch),
+      info: bindActionCreators(infoActions, dispatch),
     },
   }),
 )(PymMethodScreen);

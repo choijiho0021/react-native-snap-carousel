@@ -1,6 +1,9 @@
+/* eslint-disable no-param-reassign */
 import {API} from '@/redux/api';
 import {RkbPromotion} from '@/redux/api/promotionApi';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {Reducer} from 'react';
+import {AnyAction} from 'redux';
 
 const getPromotion = createAsyncThunk(
   'promotion/getPromotion',
@@ -34,4 +37,4 @@ export const actions = {...slice.actions, getPromotion};
 
 export type PromotionAction = typeof actions;
 
-export default slice.reducer;
+export default slice.reducer as Reducer<PromotionModelState, AnyAction>;

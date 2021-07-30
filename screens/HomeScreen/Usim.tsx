@@ -554,7 +554,7 @@ class Usim extends Component<UsimProps, UsimState> {
       <View style={{flexDirection: 'row', marginHorizontal: 20}}>
         <AppIcon name="iconNotice" size={36} />
         <Carousel
-          data={this.props.info.homeInfoList}
+          data={this.props.info.infoMap.get('info:home', [])}
           renderItem={this.renderInfo}
           autoplay
           vertical

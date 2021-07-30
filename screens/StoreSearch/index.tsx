@@ -187,16 +187,16 @@ const HeaderTitle0 = ({
   headerRef,
 }: {
   search: (v: string, b: boolean) => void;
-  headerRef: React.MutableRefObject<HeaderTitleRef>;
+  headerRef: React.MutableRefObject<HeaderTitleRef | null>;
 }) => {
   const [word, setWord] = useState('');
-  const ref = useRef<HeaderTitleRef>();
 
   useEffect(() => {
     if (headerRef) {
-      headerRef.current = ref.current;
-      headerRef.current.changeValue = (v: string) => {
-        setWord(v);
+      headerRef.current = {
+        changeValue: (v: string) => {
+          setWord(v);
+        },
       };
     }
   }, [headerRef]);
@@ -206,7 +206,6 @@ const HeaderTitle0 = ({
       <View style={styles.headerTitle}>
         <AppBackButton />
         <TextInput
-          ref={ref}
           style={styles.searchText}
           placeholder={i18n.t('store:search')}
           placeholderTextColor={colors.greyish}
@@ -262,7 +261,7 @@ class StoreSearchScreen extends Component<
   StoreSearchScreenProps,
   StoreSearchScreenState
 > {
-  headerRef: React.MutableRefObject<HeaderTitleRef>;
+  headerRef: React.RefObject<HeaderTitleRef>;
 
   constructor(props: StoreSearchScreenProps) {
     super(props);
@@ -274,7 +273,7 @@ class StoreSearchScreen extends Component<
       recommendCountry: [],
     };
 
-    this.headerRef = createRef<HeaderTitleRef>();
+    this.headerRef = React.createRef<HeaderTitleRef>();
     this.search = this.search.bind(this);
   }
 
@@ -362,7 +361,7 @@ class StoreSearchScreen extends Component<
 
   async search(searchWord: string, searching = false) {
     this.setState({searchWord, searching});
-    this.headerRef.current.changeValue(searchWord);
+    this.headerRef?.current?.changeValue(searchWord);
 
     if (searching) {
       // 최근 검색 기록

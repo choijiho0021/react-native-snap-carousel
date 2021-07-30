@@ -4,13 +4,10 @@ import {RkbInfo} from '@/redux/api/pageApi';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Reducer} from 'react';
 import {AnyAction} from 'redux';
+import {Map as ImmutableMap} from 'immutable';
 
 const getInfoList = createAsyncThunk(
   'info/getInfoList',
-  API.Page.getPageByCategory,
-);
-const getHomeInfoList = createAsyncThunk(
-  'info/getHomeInfoList',
   API.Page.getPageByCategory,
 );
 
@@ -20,13 +17,11 @@ const getInfoByTitle = createAsyncThunk(
 );
 
 export interface InfoModelState {
-  infoList: RkbInfo[];
-  homeInfoList: RkbInfo[];
+  infoMap: ImmutableMap<string, RkbInfo[]>;
 }
 
 const initialState: InfoModelState = {
-  infoList: [],
-  homeInfoList: [],
+  infoMap: ImmutableMap<string, RkbInfo[]>(),
 };
 
 const slice = createSlice({
@@ -34,18 +29,18 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(getInfoList.fulfilled, (state, {payload}) => {
-      const {result, objects} = payload;
+    builder.addCase(getInfoList.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
 
       if (result === 0) {
-        state.infoList = objects || [];
+        state.infoMap = state.infoMap.set(action.meta.arg, objects || []);
       }
     });
-    builder.addCase(getHomeInfoList.fulfilled, (state, {payload}) => {
-      const {result, objects} = payload;
+    builder.addCase(getInfoByTitle.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
 
       if (result === 0) {
-        state.homeInfoList = objects || [];
+        state.infoMap = state.infoMap.set(action.meta.arg, objects || []);
       }
     });
   },
@@ -53,7 +48,6 @@ const slice = createSlice({
 
 export const actions = {
   getInfoList,
-  getHomeInfoList,
   getInfoByTitle,
 };
 

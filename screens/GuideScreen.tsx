@@ -12,7 +12,11 @@ import {colors} from '@/constants/Colors';
 import AppIcon from '@/components/AppIcon';
 import {actions as accountActions} from '@/redux/modules/account';
 import {actions as orderActions} from '@/redux/modules/order';
-import {actions as infoActions, InfoAction} from '@/redux/modules/info';
+import info, {
+  actions as infoActions,
+  InfoAction,
+  InfoModelState,
+} from '@/redux/modules/info';
 import AppBackButton from '@/components/AppBackButton';
 import AppFlatListItem from '@/components/AppFlatListItem';
 import {sliderWidth} from '@/constants/SliderEntry.style';
@@ -110,6 +114,7 @@ type GuideScreenProps = {
   navigation: GuideScreenNavigationProp;
 
   pending: boolean;
+  info: InfoModelState;
 
   action: {
     info: InfoAction;
@@ -117,7 +122,6 @@ type GuideScreenProps = {
 };
 
 type GuideScreenState = {
-  data: RkbInfo[];
   activeSlide: number;
   images: string[];
 };
@@ -127,13 +131,13 @@ class GuideScreen extends Component<GuideScreenProps, GuideScreenState> {
     super(props);
 
     this.state = {
-      data: [],
       activeSlide: 0,
       images: ['step1', 'step2', 'step3', 'step4'],
     };
 
     this.header = this.header.bind(this);
     this.footer = this.footer.bind(this);
+    this.refreshData = this.refreshData.bind(this);
   }
 
   componentDidMount() {
@@ -147,18 +151,10 @@ class GuideScreen extends Component<GuideScreenProps, GuideScreenState> {
   }
 
   refreshData() {
-    this.props.action.info
-      .getInfoList('faq:tip')
-      .then(({payload: resp}) => {
-        if (resp.result === 0 && resp.objects.length > 0) {
-          this.setState({
-            data: resp.objects,
-          });
-        }
-      })
-      .catch((err) => {
-        console.log('failed to get page', err);
-      });
+    const {infoMap} = this.props.info;
+    if (!infoMap.has('faq:tip')) {
+      this.props.action.info.getInfoList('faq:tip');
+    }
   }
 
   header() {
@@ -215,12 +211,13 @@ class GuideScreen extends Component<GuideScreenProps, GuideScreenState> {
   }
 
   render() {
-    const {data, activeSlide} = this.state;
+    const {activeSlide} = this.state;
+    const {infoMap} = this.props.info;
 
     return (
       <View style={styles.container}>
         <FlatList
-          data={data}
+          data={infoMap.get('faq:tip', [])}
           renderItem={({item}) => (
             <AppFlatListItem key={item.key} item={item} />
           )}
@@ -237,7 +234,6 @@ class GuideScreen extends Component<GuideScreenProps, GuideScreenState> {
 export default connect(
   ({account, status}: RootState) => ({
     account,
-    auth: accountActions.auth(account),
     pending:
       status.pending[orderActions.getOrders.typePrefix] ||
       status.pending[accountActions.uploadPicture.typePrefix] ||

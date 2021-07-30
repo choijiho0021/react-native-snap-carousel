@@ -196,9 +196,9 @@ class ProductDetailScreen extends Component<
         break;
       case 'moveToPage':
         if (cmd.value) {
-          const item = this.props.info.infoList.find(
-            (elm) => elm.uuid === cmd.value,
-          );
+          const item = this.props.info.infoMap
+            .get('info')
+            ?.find((elm) => elm.uuid === cmd.value);
           this.props.navigation.navigate('SimpleText', {
             key: 'noti',
             title: i18n.t('set:noti'),

@@ -49,12 +49,12 @@ const AppPrice = ({
               {`${i18n.t(price.currency)} `}
             </Text>,
             <Text key="balance" style={[styles.price, balanceStyle]}>
-              {utils.numberToCommaString(price.value)}
+              {utils.currencyString(price.value)}
             </Text>,
           ]
         : [
             <Text key="balance" style={[styles.price, balanceStyle]}>
-              {utils.numberToCommaString(price.value)}
+              {utils.currencyString(price.value)}
             </Text>,
             <Text key="won" style={[styles.won, currencyStyle]}>
               {` ${i18n.t(price.currency)}`}
