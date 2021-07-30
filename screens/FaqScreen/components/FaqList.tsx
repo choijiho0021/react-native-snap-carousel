@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const FaqList = ({data, titleNo = ''}: {data: RkbInfo[]; titleNo?: string}) => {
+const FaqList = ({data, titleNo}: {data: RkbInfo[]; titleNo?: string}) => {
   return (
     <View style={styles.container}>
       <FlatList
@@ -20,7 +20,7 @@ const FaqList = ({data, titleNo = ''}: {data: RkbInfo[]; titleNo?: string}) => {
           <AppFlatListItem
             key={item.key}
             item={item}
-            checked={item.title.startsWith(titleNo)}
+            checked={!!titleNo && item.title.startsWith(titleNo)}
           />
         )}
         data={data}

@@ -425,7 +425,9 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
         (acc, cur) => ({
           cnt: acc.cnt + cur.qty,
           price: {
-            value: acc.price.value + cur.qty * cur.price.value,
+            value:
+              Math.round((acc.price.value + cur.qty * cur.price.value) * 100) /
+              100,
             currency: cur.price.currency,
           } as Currency,
         }),
@@ -507,10 +509,7 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
               {`${i18n.t('cart:pymAmount')}: `}
             </Text>
             <Text style={[styles.btnBuyText, {color: colors.black}]}>
-              {utils.numberToCommaString(pymPrice.value)}
-            </Text>
-            <Text style={[styles.btnBuyText, {color: colors.black}]}>
-              {` ${i18n.t(pymPrice.currency)}`}
+              {utils.price(pymPrice)}
             </Text>
           </View>
           <AppButton

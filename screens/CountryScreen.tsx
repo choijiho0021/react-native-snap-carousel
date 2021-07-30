@@ -227,7 +227,7 @@ const CountryListItem0 = ({
               key="price"
               price={item.price}
               balanceStyle={styles.priceStyle}
-              wonStyle={styles.wonStyle}
+              currencyStyle={styles.wonStyle}
             />
           </View>
         </View>
@@ -361,7 +361,7 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
   onPress = (uuid?: string) => () => {
     this.setState({selected: uuid});
     if (
-      (this.props.cart.orderItems || []).find((v) => v.key === uuid)?.qty >=
+      (this.props.cart.orderItems?.find((v) => v.key === uuid)?.qty || 0) >=
       PURCHASE_LIMIT
     ) {
       this.setState({disabled: true});

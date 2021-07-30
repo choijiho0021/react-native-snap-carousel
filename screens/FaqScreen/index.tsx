@@ -35,8 +35,9 @@ type FaqScreenProps = {
   route: FaqScreenRouteProp;
 };
 
+type TabViewRouteKey = 'general' | 'config' | 'payment' | 'etc';
 type TabViewRoute = {
-  key: 'general' | 'config' | 'payment' | 'etc';
+  key: TabViewRouteKey;
   title: string;
 };
 
@@ -44,10 +45,7 @@ type FaqScreenState = {
   querying: boolean;
   index: number;
   routes: TabViewRoute[];
-  general: RkbInfo[];
-  payment: RkbInfo[];
-  config: RkbInfo[];
-  etc: RkbInfo[];
+  scene: Record<TabViewRouteKey, RkbInfo[]>;
   selectedTitleNo?: string;
 };
 
@@ -64,10 +62,12 @@ class FaqScreen extends Component<FaqScreenProps, FaqScreenState> {
         {key: 'payment', title: i18n.t('faq:payment')},
         {key: 'etc', title: i18n.t('faq:etc')},
       ],
-      general: [],
-      payment: [],
-      config: [],
-      etc: [],
+      scene: {
+        general: [],
+        payment: [],
+        config: [],
+        etc: [],
+      },
     };
 
     this.onPress = this.onPress.bind(this);
@@ -98,7 +98,7 @@ class FaqScreen extends Component<FaqScreenProps, FaqScreenState> {
 
   shouldComponentUpdate() {
     const {key} = this.props.route.params || {};
-    return _.isEmpty(key) ? true : !_.isEmpty(this.state[key]);
+    return _.isEmpty(key) ? true : !_.isEmpty(this.state.scene[key]);
   }
 
   onPress = (uuid: string) => {
@@ -118,7 +118,7 @@ class FaqScreen extends Component<FaqScreenProps, FaqScreenState> {
     if (index < 0 || index >= this.state.routes.length) return;
 
     const {key} = this.state.routes[index];
-    if (this.state[key].length > 0) return;
+    if (this.state.scene[key].length > 0) return;
 
     this.setState({
       querying: true,
@@ -127,9 +127,12 @@ class FaqScreen extends Component<FaqScreenProps, FaqScreenState> {
     API.Page.getPageByCategory(`faq:${key}`)
       .then((resp) => {
         if (resp.result === 0 && resp.objects.length > 0) {
-          this.setState({
-            [key]: resp.objects,
-          });
+          this.setState((state) => ({
+            scene: {
+              ...state.scene,
+              [key]: resp.objects,
+            },
+          }));
         } else throw new Error(`failed to get page:${key}`);
       })
       .catch((err) => {
@@ -142,17 +145,10 @@ class FaqScreen extends Component<FaqScreenProps, FaqScreenState> {
       });
   }
 
-  renderScene = ({
-    route,
-    jumpTo,
-  }: {
-    route: TabViewRoute;
-    jumpTo: (v: string) => void;
-  }) => {
+  renderScene = ({route}: {route: TabViewRoute}) => {
     return (
       <FaqList
-        data={this.state[route.key]}
-        jumpTp={jumpTo}
+        data={this.state.scene[route.key]}
         titleNo={this.state.selectedTitleNo}
       />
     );
@@ -172,12 +168,13 @@ class FaqScreen extends Component<FaqScreenProps, FaqScreenState> {
   };
 
   render() {
+    const {index, routes} = this.state;
     return (
       <View style={styles.container}>
         <AppActivityIndicator visible={this.state.querying} />
         <TabView
           style={styles.container}
-          navigationState={this.state}
+          navigationState={{index, routes}}
           renderScene={this.renderScene}
           onIndexChange={this.onIndexChange}
           initialLayout={{width: Dimensions.get('window').width}}

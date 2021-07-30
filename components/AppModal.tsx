@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     height: 36,
   },
   closeButton: {
-    height: 50,
+    height: 55,
     backgroundColor: colors.clearBlue,
   },
   closeButtonTitle: {
@@ -59,7 +59,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginVertical: 15,
-    marginHorizontal: 20,
   },
 });
 
@@ -106,7 +105,12 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
           justifyContent ? {justifyContent} : undefined,
         ]}>
         <View style={contentStyle || styles.inner}>
-          {titleIcon && <AppIcon name={titleIcon} style={styles.icon} />}
+          {titleIcon && (
+            <AppIcon
+              name={titleIcon}
+              style={[styles.icon, !contentStyle && {paddingHorizontal: 20}]}
+            />
+          )}
           {title && <Text style={titleStyle || styles.title}>{title}</Text>}
           {toRokebiCash && (
             <View style={{marginTop: 30}}>

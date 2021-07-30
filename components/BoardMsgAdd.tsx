@@ -124,7 +124,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingHorizontal: 20,
     backgroundColor: colors.whiteTwo,
-    justifyContent: 'center',
     alignItems: 'center',
   },
   noti: {

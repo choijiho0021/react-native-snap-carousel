@@ -842,7 +842,6 @@ class PymMethodScreen extends Component<
               {color: colors.warmGrey, lineHeight: 22},
             ]}>
             {i18n.t('pym:privacy')}
-            {i18n.t('pym:mandatory')}
           </Text>
           <Text style={styles.underlinedClearBlue}>{i18n.t('pym:detail')}</Text>
         </TouchableOpacity>
@@ -855,7 +854,6 @@ class PymMethodScreen extends Component<
               {color: colors.warmGrey, lineHeight: 22},
             ]}>
             {i18n.t('pym:paymentAgency')}
-            {i18n.t('pym:mandatory')}
           </Text>
           <Text style={styles.underlinedClearBlue}>{i18n.t('pym:detail')}</Text>
         </TouchableOpacity>

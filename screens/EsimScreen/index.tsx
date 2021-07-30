@@ -36,6 +36,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import AppColorText from '@/components/AppColorText';
 import CardInfo from './components/CardInfo';
 import EsimSubs from './components/EsimSubs';
 
@@ -106,12 +107,10 @@ const showQR = (subs: RkbSubscription) => {
         </View>
       ) : (
         <View>
-          <Text style={appStyles.normal16Text}>
-            <Text style={styles.normal16BlueText}>
-              {i18n.t('esim:showQR:frontBody')}
-            </Text>
-            {i18n.t('esim:showQR:endBody')}
-          </Text>
+          <AppColorText
+            style={appStyles.normal16Text}
+            text={i18n.t('esim:showQR:body')}
+          />
           <View style={styles.center}>
             <QRCode value={subs.qrCode} />
           </View>
@@ -124,18 +123,10 @@ const showQR = (subs: RkbSubscription) => {
 const esimManualInputInfo = () => {
   return (
     <View style={{marginBottom: 20}}>
-      <Text style={appStyles.normal16Text}>
-        <Text style={styles.normal16BlueText}>
-          {i18n.t('esim:manualInput:bodyPart1')}
-        </Text>
-        <Text style={appStyles.normal16Text}>
-          {i18n.t('esim:manualInput:bodyPart2')}
-        </Text>
-        <Text style={styles.normal16BlueText}>
-          {i18n.t('esim:manualInput:bodyPart3')}
-        </Text>
-        {i18n.t('esim:manualInput:bodyPart4')}
-      </Text>
+      <AppColorText
+        style={appStyles.normal16Text}
+        text={i18n.t('esim:manualInput:body')}
+      />
     </View>
   );
 };

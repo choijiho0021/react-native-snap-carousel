@@ -58,10 +58,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignContent: 'center',
+    alignItems: 'center',
   },
   price: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'baseline',
   },
   priceNumber: {
     // fontFamily: "Roboto-Regular",
@@ -127,6 +128,18 @@ const CountryItem0 = ({
                   )}
                   <View style={styles.price}>
                     {bestPrice && [
+                      esimGlobal && (
+                        <Text
+                          key="currency"
+                          style={[
+                            isDeviceSize('small')
+                              ? appStyles.normal14Text
+                              : appStyles.normal16Text,
+                            styles.text,
+                          ]}>
+                          {`${i18n.t(bestPrice.currency)} `}
+                        </Text>
+                      ),
                       <Text key="price" style={styles.priceNumber}>
                         {utils.numberToCommaString(bestPrice.value)}
                       </Text>,
@@ -137,7 +150,9 @@ const CountryItem0 = ({
                             ? appStyles.normal14Text
                             : appStyles.normal16Text,
                           styles.text,
-                        ]}>{` ${i18n.t(bestPrice.currency)}/Day`}</Text>,
+                        ]}>{` ${
+                        esimGlobal ? '' : i18n.t(bestPrice.currency)
+                      }/Day`}</Text>,
                     ]}
                   </View>
                   {!esimGlobal && (

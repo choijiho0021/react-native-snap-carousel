@@ -6,6 +6,7 @@ import _ from 'underscore';
 import Env from '@/environment';
 
 export type Langcode = 'ko' | 'en';
+const {scheme, apiUrl, appId, rokApiUrl} = Env.get();
 
 const FAILED = -1000;
 const E_NOT_FOUND = -1001;
@@ -96,7 +97,6 @@ const path = {
 };
 
 const httpUrl = (path0: string, lang: string = i18n.locale) => {
-  const {scheme, apiUrl} = Env.get();
   return lang == ''
     ? `${scheme}://${apiUrl}/${path0}`
     : `${scheme}://${apiUrl}/${lang}/${path0}`;
@@ -104,19 +104,16 @@ const httpUrl = (path0: string, lang: string = i18n.locale) => {
 
 const httpImageUrl = (path0?: string) => {
   if (path0) {
-    const {scheme, apiUrl} = Env.get();
     return `${scheme}://${apiUrl}/${path0}`;
   }
   return '';
 };
 
 const addrApiUrl = () => {
-  const {scheme} = Env.get();
   return `${scheme}://www.juso.go.kr/addrlink/addrLinkApi.do`;
 };
 
 const rokHttpUrl = (path0: string) => {
-  const {scheme, rokApiUrl, appId} = Env.get();
   return `${scheme}://${rokApiUrl}/${path0}?service=${appId}`;
 };
 

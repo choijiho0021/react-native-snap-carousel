@@ -2,13 +2,17 @@ import * as RNLocalize from 'react-native-localize';
 import i18n from 'i18n-js';
 import {EventEmitter} from 'events';
 import moment from 'moment-with-locales-es6';
+import Env from '@/environment';
 
+const {esimGlobal} = Env.get();
 export const i18nEvent = new EventEmitter();
 
 export const setI18nConfig = () => {
-  const fallback = {languageTag: 'ko'};
-  const {languageTag} =
-    RNLocalize.findBestAvailableLanguage(['ko', 'en']) || fallback;
+  const locales = RNLocalize.getLocales();
+  let languageTag = locales[0].languageCode;
+  if (!['en', 'ko'].includes(languageTag)) {
+    languageTag = esimGlobal ? 'en' : 'ko';
+  }
 
   // translate.cache.clear();
   switch (languageTag) {

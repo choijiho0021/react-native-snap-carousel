@@ -50,6 +50,7 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import AppColorText from '@/components/AppColorText';
 import Info from './components/Info';
 import OrderItem from './components/OrderItem';
 
@@ -345,9 +346,10 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
 
     return (
       <View style={styles.modalBody}>
-        <Text style={[appStyles.normal16Text, {marginBottom: 20}]}>
-          {i18n.t('mypage:manualInput:body')}
-        </Text>
+        <AppColorText
+          style={[appStyles.normal16Text, {marginBottom: 20}]}
+          text={i18n.t('mypage:manualInput:body')}
+        />
         <View style={styles.titleAndStatus}>
           <View>
             <Text style={styles.keyTitle}>{i18n.t('mypage:iccid')}</Text>

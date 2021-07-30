@@ -49,6 +49,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {RkbInfo} from '@/redux/api/pageApi';
 import {PromotionModelState} from '@/redux/modules/promotion';
 import {SyncModelState} from '@/redux/modules/sync';
+import utils from '@/redux/api/utils';
+import Env from '@/environment';
 import PromotionCarousel from './component/PromotionCarousel';
 import {checkFistLaunch, requestPermission} from './component/permission';
 
@@ -73,6 +75,8 @@ const size =
         carouselHeight: 190,
         carouselMargin: 20,
       };
+
+const {esimCurrency} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -461,7 +465,10 @@ class Usim extends Component<UsimProps, UsimState> {
                 {i18n.t('acc:remain')}
               </Text>,
               iccid ? (
-                <AppPrice key="price" price={balance} />
+                <AppPrice
+                  key="price"
+                  price={utils.toCurrency(balance, esimCurrency)}
+                />
               ) : (
                 <Text
                   key="sim"
