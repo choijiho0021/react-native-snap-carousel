@@ -137,8 +137,8 @@ echo "\033[32m"[Info]"\033[0m" "Current $environment Android version: $newAndroi
 
 # 소스 롤백
 
-sed -i '' -E 's/'"${CODEPUSH_IOS_KEY}"'/\$\(CODEPUSH_KEY\)/g' ./ios/$appname/Info.plist
-sed -i '' -E 's/'"${CODEPUSH_IOS_KEY}"'/\$\(CODEPUSH_KEY\)/g' ./ios/$appname/Development.plist
+#sed -i '' -E 's/'"${CODEPUSH_IOS_KEY}"'/\$\(CODEPUSH_KEY\)/g' ./ios/$appname/Info.plist
+#sed -i '' -E 's/'"${CODEPUSH_IOS_KEY}"'/\$\(CODEPUSH_KEY\)/g' ./ios/$appname/Development.plist
 
 if [ "$environment" = "Production" ]; then
 	sed -i '' -E 's/  productionAndroid: ?.+/  productionAndroid: "'"${newAndroidVersion}"'",/g'  $_dir/environment.ts
