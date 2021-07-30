@@ -38,7 +38,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>kakaof881469e3b4a140967dfaebe648ede8d</string>
+				<string>kakao${KAKAO_APP_KEY}</string>
 			</array>
 		</dict>
 	</array>
@@ -53,7 +53,7 @@
 	<key>FacebookDisplayName</key>
 	<string>로밍도깨비 eSIM</string>
 	<key>KAKAO_APP_KEY</key>
-	<string>f881469e3b4a140967dfaebe648ede8d</string>
+	<string>${KAKAO_APP_KEY}</string>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -61,7 +61,7 @@
 		<string>kakaotalk-5.9.7</string>
 		<string>kakaolink</string>
 		<string>kakaokompassauth</string>
-		<string>kakaof881469e3b4a140967dfaebe648ede8d</string>
+		<string>kakao${KAKAO_APP_KEY}</string>
 		<string>kftc-bankpay</string>
 		<string>ispmobile</string>
 		<string>itms-apps</string>
