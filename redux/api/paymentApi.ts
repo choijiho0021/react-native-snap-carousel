@@ -4,7 +4,7 @@ import _ from 'underscore';
 import utils from '../utils';
 import api, {ApiResult, DrupalNodeJsonApi} from './api';
 
-const {esimApp} = Env.get();
+const {esimApp, esimGlobal, isProduction} = Env.get();
 
 const PAGE_SIZE = 10;
 
@@ -68,6 +68,18 @@ const method = [
     //   title: 'pym:naver',
     //   icon: 'naver',
     // },
+    // esimGlobal &&
+    !isProduction && {
+      key: 'paypal',
+      method: 'card',
+      title: 'pym:paypal',
+    },
+    // esimGlobal &&
+    !isProduction && {
+      key: 'eximbay',
+      method: 'card',
+      title: 'pym:eximbay',
+    },
     !esimApp
       ? {
           key: 'danal',
@@ -285,7 +297,7 @@ const getImpToken = () => {
 
   const formdata = new FormData();
 
-  // impkey, secret formdata append
+  // impkey, secret formdata append (Production / Development)
 
   return api.callHttp(
     `https://api.iamport.kr/users/getToken`,
