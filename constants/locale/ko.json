@@ -404,6 +404,8 @@
   "pym:bank": "계좌이체",
   "pym:mobile": "휴대폰결제",
   "pym:toss": "토스",
+  "pym:paypal": "페이팔",
+  "pym:eximbay": "엑심베이",
   // "pym:syrup": "시럽",
   "pym:kakao": "카카오페이",
   "pym:naver": "네이버페이",

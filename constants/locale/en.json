@@ -394,6 +394,8 @@
   "pym:bank": "Bank",
   "pym:mobile": "Mobile phone",
   "pym:toss": "TOSS",
+  "pym:paypal": "Paypal",
+  "pym:eximbay": "Eximbay",
   // "pym:syrup": "Syrup",
   "pym:kakao": "Kakao Pay",
   "pym:naver": "Naver Pay",
