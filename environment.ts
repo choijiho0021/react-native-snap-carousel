@@ -4,16 +4,16 @@ import {getBundleId} from 'react-native-device-info';
 import {CurrencyCode} from './redux/api/productApi';
 
 const bundleId = getBundleId();
-const impId = 'imp53913318';
+const impId = Config.NODE_ENV === 'production' ? 'imp53913318' : 'imp60215393';
 
 // rokebi esim App
 const appId = bundleId === 'com.uangel.rokebi-USIM' ? 'usim' : 'esim';
 const esimGlobal = appId === 'esim' && bundleId === 'com.uangel.rokebi-global';
 const codePushLabel = {
-  stagingIOS: "v65",
-  stagingAndroid: "v64",
-  productionIOS: "v16",
-  productionAndroid: "v9",
+  stagingIOS: 'v66',
+  stagingAndroid: 'v65',
+  productionIOS: 'v18',
+  productionAndroid: 'v11',
 };
 const channelId = '_nzQhxb';
 
