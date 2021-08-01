@@ -9,7 +9,7 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios --simulator 'iPhone 12'",
     "ios_usim": "react-native run-ios --simulator 'iPhone 12' --scheme USIM --configuration USIM.Debug",
-    "ios_esim": "react-native run-ios --simulator 'iPhone 12' --scheme ESIM --configuration ESIM.Debug",
+    "ios_esim": "react-native run-ios --simulator 'iPhone 12' --scheme RokebiESIM --configuration ESIM.Debug",
     "ios_global": "react-native run-ios --simulator 'iPhone 12' --scheme Global --configuration Global.Debug",
     "start": "react-native start",
     "test": "jest",
@@ -127,7 +127,7 @@
     "jest": "^25.1.0",
     "metro-react-native-babel-preset": "^0.65.2",
     "prettier": "^2.2.1",
-    "react-devtools": "^4.14.0",
+    "react-devtools": "^4.11.0",
     "react-test-renderer": "16.13.1",
     "typescript": "^4.2.3"
   },

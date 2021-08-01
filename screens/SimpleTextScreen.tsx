@@ -135,7 +135,7 @@ class SimpleTextScreen extends Component<
       headerLeft: () => <AppBackButton title={params?.title} />,
     });
 
-    this.setState({mode});
+    this.setState({mode, loading: mode !== 'text'});
 
     if (body) {
       this.setState({body, bodyTitle});
@@ -237,15 +237,13 @@ class SimpleTextScreen extends Component<
           </View>
         </ScrollView>
       );
+
     if (mode === 'uri')
       return (
         <WebView
           source={{uri: body}}
           style={styles.container}
           onMessage={this.onMessage}
-          onLoadStart={({nativeEvent: {loading}}) => {
-            this.setState({loading});
-          }}
           onLoadEnd={({nativeEvent: {loading}}) => {
             this.setState({loading});
           }}
@@ -258,9 +256,6 @@ class SimpleTextScreen extends Component<
         originWhitelist={['*']}
         onMessage={this.onMessage}
         source={{html: htmlDetailWithCss(body), baseUrl}}
-        onLoadStart={({nativeEvent: {loading}}) => {
-          this.setState({loading});
-        }}
         onLoadEnd={({nativeEvent: {loading}}) => {
           this.setState({loading});
         }}

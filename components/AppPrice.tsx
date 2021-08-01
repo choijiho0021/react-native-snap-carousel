@@ -43,7 +43,7 @@ const AppPrice = ({
 }) => {
   return (
     <View style={style || styles.container}>
-      {esimGlobal
+      {esimGlobal || i18n.locale !== 'ko'
         ? [
             <Text key="won" style={[styles.won, currencyStyle]}>
               {`${i18n.t(price.currency)} `}
