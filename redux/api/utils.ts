@@ -20,7 +20,9 @@ const numberToCommaString = (n?: number): string => {
 };
 
 const currencyString = (n?: number): string => {
-  const str = numberToCommaString(n);
+  if (n === undefined) return '';
+
+  const str = numberToCommaString(Math.round(n * 100) / 100);
   if (esimCurrency === 'KRW') return str;
   const digits = str.split('.');
   return `${digits[0]}.${(digits[1] || '').padEnd(1, '0')}`;

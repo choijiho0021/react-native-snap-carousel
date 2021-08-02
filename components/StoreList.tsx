@@ -95,7 +95,7 @@ const CountryItem0 = ({
 }) => {
   const renderLowest = useCallback(
     () => (
-      <View style={styles.lowPriceView}>
+      <View key="lowest" style={styles.lowPriceView}>
         <Text style={styles.lowPrice}>{i18n.t('lowest')}</Text>
       </View>
     ),
@@ -104,9 +104,10 @@ const CountryItem0 = ({
 
   const renderPrice = useCallback(
     (bestPrice?: Currency) => (
-      <View style={styles.price}>
+      <View key="price" style={styles.price}>
         {bestPrice && [
           <AppPrice
+            key="price"
             style={styles.price}
             price={bestPrice}
             balanceStyle={styles.priceNumber}

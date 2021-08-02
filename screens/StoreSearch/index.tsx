@@ -1,14 +1,7 @@
 /* eslint-disable no-param-reassign */
 import {RootState} from '@/redux';
 import Analytics from 'appcenter-analytics';
-import React, {
-  Component,
-  createRef,
-  memo,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, {Component, memo, useEffect, useState} from 'react';
 import {
   Dimensions,
   ScrollView,
