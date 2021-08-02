@@ -1,5 +1,12 @@
 import React, {memo} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
 import _ from 'underscore';
 import {appStyles} from '@/constants/Styles';
 import utils from '@/redux/api/utils';
@@ -9,7 +16,9 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {PaymentReq} from '@/redux/modules/cart';
 import {Currency} from '@/redux/api/productApi';
+import Env from '@/environment';
 
+const {esimApp} = Env.get();
 const styles = StyleSheet.create({
   // container: {
   //   justifyContent: 'space-between',
@@ -54,9 +63,6 @@ const styles = StyleSheet.create({
   },
   colorWarmGrey: {
     color: colors.warmGrey,
-  },
-  colorBlack: {
-    color: colors.black,
   },
   productPriceInfo: {
     paddingVertical: isDeviceSize('small') ? 13 : 11,
@@ -109,11 +115,52 @@ const styles = StyleSheet.create({
   },
 });
 
+type PaymentItemMode = 'method' | 'result';
+
+const PaymentItem0 = ({
+  style,
+  title,
+  titleStyle,
+  value,
+  valueStyle,
+  mode,
+}: {
+  title: string;
+  value: string;
+  mode?: PaymentItemMode;
+  style?: StyleProp<ViewStyle>;
+  titleStyle?: StyleProp<TextStyle>;
+  valueStyle?: StyleProp<TextStyle>;
+}) => {
+  return (
+    <View style={style || styles.row} key={title}>
+      <Text
+        key="title"
+        style={
+          titleStyle || [appStyles.normal14Text, {color: colors.warmGrey}]
+        }>
+        {title}
+      </Text>
+      <Text
+        key="amount"
+        style={
+          valueStyle || [
+            styles.normalText16,
+            mode === 'result' && styles.colorWarmGrey,
+          ]
+        }>
+        {value}
+      </Text>
+    </View>
+  );
+};
+const PaymentItem = memo(PaymentItem0);
+
 const PaymentItemInfo = ({
   cart,
   pymReq = [],
-  deduct = 0,
-  pymPrice = 0,
+  deduct,
+  pymPrice,
   isRecharge,
   screen,
   mode = 'method',
@@ -124,13 +171,17 @@ const PaymentItemInfo = ({
   pymPrice?: Currency;
   isRecharge?: boolean;
   screen?: string;
-  mode?: 'method' | 'result';
+  mode?: PaymentItemMode;
 }) => {
   return (
     <View>
       <Text style={[styles.title, styles.mrgBottom0]}>
         {i18n.t('pym:title')}
       </Text>
+      {/*
+        상품별 가격
+        ex) 일본 상품 3일  x 1개   
+      */}
       <View
         style={[
           styles.productPriceInfo,
@@ -143,26 +194,20 @@ const PaymentItemInfo = ({
               : [
                   ` × ${item.qty}`,
                   utils.toCurrency(
-                    item.price.value * item.qty,
+                    Math.round(item.price.value * item.qty * 100) / 100,
                     item.price.currency,
                   ),
                 ];
           return (
-            <View style={styles.row} key={item.key}>
-              {/* <View style={{maxWidth: '70%'}}> */}
-              <Text key="title" style={styles.productPriceTitle}>
-                {item.title + qty}
-              </Text>
-              {/* </View> */}
-              <Text
-                key="price"
-                style={[
-                  styles.normalText16,
-                  mode === 'result' && styles.colorWarmGrey,
-                ]}>
-                {utils.price(price)}
-              </Text>
-            </View>
+            <PaymentItem
+              titleStyle={styles.productPriceTitle}
+              title={item.title + qty}
+              valueStyle={[
+                styles.normalText16,
+                mode === 'result' && styles.colorWarmGrey,
+              ]}
+              value={utils.price(price)}
+            />
           );
         })}
       </View>
@@ -170,64 +215,36 @@ const PaymentItemInfo = ({
       {!isRecharge && (
         <View style={styles.priceInfo}>
           {pymReq.map((item) => (
-            <View style={styles.row} key={item.title}>
-              <Text
-                key="title"
-                style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
-                {item.title}
-              </Text>
-              <Text
-                key="amount"
-                style={[
-                  styles.normalText16,
-                  mode === 'result' && styles.colorWarmGrey,
-                ]}>
-                {utils.price(item.amount)}
-              </Text>
-            </View>
+            <PaymentItem
+              title={item.title}
+              value={utils.price(item.amount)}
+              mode={mode}
+            />
           ))}
-          <View style={styles.row} key="balance">
-            <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-              <Text
-                key="title"
-                style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
-                {i18n.t('cart:deductBalance')}
-              </Text>
-              {/* {
-                  screen != 'PaymentResult' &&
-                  <Text key="currentBal" style={[styles.normal14WarmGrey, {marginLeft: 18}]}>{`(${i18n.t('cart:currentBalance')}:${utils.numberToCommaString(balance) + ' ' + i18n.t('won')}) `}</Text>
-                } */}
-            </View>
-            <Text
-              key="amount"
-              style={[
-                styles.normalText16,
-                mode === 'result' && styles.colorWarmGrey,
-              ]}>{`- ${utils.price(deduct)}`}</Text>
-          </View>
+          <PaymentItem
+            title={i18n.t('cart:deductBalance')}
+            value={`- ${utils.price(deduct)}`}
+            mode={mode}
+          />
         </View>
       )}
 
-      <View
+      <PaymentItem
         style={[
           styles.row,
           styles.total,
           styles.brdrBottom0,
           mode === 'result' && styles.resultTotal,
-        ]}>
-        <Text
-          style={mode === 'result' ? styles.boldText16 : styles.normalText16}>
-          {i18n.t('cart:totalCost')}{' '}
-        </Text>
-        <Text
-          style={[
-            mode === 'result' ? styles.boldText18 : styles.boldText16,
-            styles.colorClearBlue,
-          ]}>
-          {utils.price(pymPrice)}
-        </Text>
-      </View>
-      {mode !== 'result' && (
+        ]}
+        titleStyle={mode === 'result' ? styles.boldText16 : styles.normalText16}
+        title={`${i18n.t('cart:totalCost')} `}
+        valueStyle={[
+          mode === 'result' ? styles.boldText18 : styles.boldText16,
+          styles.colorClearBlue,
+        ]}
+        value={utils.price(pymPrice)}
+      />
+      {mode !== 'result' && esimApp && (
         <Text style={styles.esimInfo}>{i18n.t('pym:esimInfo')}</Text>
       )}
       <View
