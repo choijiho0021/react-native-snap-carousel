@@ -39,6 +39,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
 import {ApiResult} from '@/redux/api/api';
+import SocialLogin from '@/components/SocialLogin';
 
 const styles = StyleSheet.create({
   helpText: {
@@ -615,6 +616,7 @@ class RegisterMobileScreen extends Component<
           duration={180}
         />
 
+        <SocialLogin />
         <View style={{flex: 1}}>
           {newUser && authorized && (
             <View style={{flex: 1}}>

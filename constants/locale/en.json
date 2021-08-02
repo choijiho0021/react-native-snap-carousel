@@ -508,5 +508,7 @@
 
   "promo:join:fail": "Sorry, try again.",
   "promo:join:ing": "Participating ...",
-  "promo:login": "Login to participate"
+  "promo:login": "Login to participate",
+
+  "login:easyLogin": "Easy Login"
 }
