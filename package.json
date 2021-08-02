@@ -21,6 +21,7 @@
   "dependencies": {
     "@actbase/react-native-kakao-channel": "^1.0.1",
     "@actbase/react-native-kakaosdk": "^1.3.6",
+    "@invertase/react-native-apple-authentication": "^2.1.2",
     "@react-native-community/async-storage": "^1.11.0",
     "@react-native-community/clipboard": "^1.2.3",
     "@react-native-community/picker": "^1.6.1",

@@ -62,7 +62,7 @@ function get() {
     switch (Config.NODE_ENV) {
       case 'production':
         env.scheme = 'http';
-        env.rokApiUrl = 'svcapp.rokebi.com';
+        env.rokApiUrl = 'tb-svcapp.rokebi.com';
         env.apiUrl = esimGlobal ? 'tb-global.rokebi.com' : 'tb-esim.rokebi.com';
         env.baseUrl = esimGlobal
           ? 'http://tb-global.rokebi.com'
@@ -70,7 +70,7 @@ function get() {
         break;
       default:
         env.scheme = 'http';
-        env.rokApiUrl = 'svcapp.rokebi.com';
+        env.rokApiUrl = 'tb-svcapp.rokebi.com';
         env.apiUrl = esimGlobal ? 'tb-global.rokebi.com' : 'tb-esim.rokebi.com';
         env.baseUrl = esimGlobal
           ? 'http://tb-global.rokebi.com'
