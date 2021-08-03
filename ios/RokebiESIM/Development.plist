@@ -41,9 +41,19 @@
 				<string>kakao48e28ca0768702895194b5612db75cf4</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>naverlogin</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>naverlogin</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<string>53</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
@@ -58,6 +68,9 @@
 	<string></string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>rokebitalk</string>
+		<string>naversearchapp</string>
+		<string>naversearchthirdlogin</string>
 		<string>kakaotalk-5.9.7</string>
 		<string>kakaolink</string>
 		<string>kakaokompassauth</string>
