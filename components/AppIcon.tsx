@@ -79,6 +79,7 @@ const images: Record<string, any[]> = {
     require(`${mainPath}btnCheckSel.png`),
   ],
   openKakao: [require(`${mainPath}imgKakao.png`)],
+  kakaoLogin: [require(`${mainPath}kakao_login_small.png`)],
   imgQuestion: [require('../assets/images/main/imgQuestion.png')],
   kakao: [require(`${paymentPath}logoKakao.png`)],
   naver: [require(`${paymentPath}logoNaver.png`)],
