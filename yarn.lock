@@ -1220,6 +1220,11 @@
   "resolved" "https://registry.npmjs.org/@humanwhocodes/object-schema/-/object-schema-1.2.0.tgz"
   "version" "1.2.0"
 
+"@invertase/react-native-apple-authentication@^2.1.2":
+  "integrity" "sha512-FzY+CApZLgGS9fmPBDB2kFBMePB37bH0+4h4e8gHtnHm/hF3/iqANAS6oXQq7W3SC+bgciuq38jeLFqNLgAmCA=="
+  "resolved" "https://registry.npmjs.org/@invertase/react-native-apple-authentication/-/react-native-apple-authentication-2.1.2.tgz"
+  "version" "2.1.2"
+
 "@istanbuljs/load-nyc-config@^1.0.0":
   "integrity" "sha512-VjeHSlIzpv/NyD3N0YuHfXOPDIixcA1q2ZV98wsMqcYlPmv2n3Yb2lYP9XMElnaFVXg5A7YLTeLu6V84uQDjmQ=="
   "resolved" "https://registry.npmjs.org/@istanbuljs/load-nyc-config/-/load-nyc-config-1.1.0.tgz"
@@ -8542,7 +8547,7 @@
     "fbjs" "^0.8.4"
     "object-assign" "^4.1.0"
 
-"react-devtools-core@^4.6.0", "react-devtools-core@4.14.0":
+"react-devtools-core@^4.6.0":
   "integrity" "sha512-cE7tkSUkGCDxTA79pntDGJCBgzNN/XxA3kgPdXujdfSfEfVhzrItQIEsN0kCN/hJJACDvH2Q8p5+tJb/K4B3qA=="
   "resolved" "https://registry.npmjs.org/react-devtools-core/-/react-devtools-core-4.14.0.tgz"
   "version" "4.14.0"
@@ -8550,16 +8555,24 @@
     "shell-quote" "^1.6.1"
     "ws" "^7"
 
-"react-devtools@^4.14.0":
-  "integrity" "sha512-zGb3Vt1fvYCUYuK4cmpaGWyCwwsioX8YqBZPUGL3QTLFoB/glUsgOsZWviiyhnfBuhbp5iiMQz0VBKfms9pB2w=="
-  "resolved" "https://registry.npmjs.org/react-devtools/-/react-devtools-4.14.0.tgz"
-  "version" "4.14.0"
+"react-devtools-core@4.11.0":
+  "integrity" "sha512-QBbyZv3rodvWvhh2NjXuEk5AehCDNh/3elTi1vL03/Bo8UbeX3bmR3NDlx1YIcZ7hsDjxhT6a1GSuO5PVOR8Ag=="
+  "resolved" "https://registry.npmjs.org/react-devtools-core/-/react-devtools-core-4.11.0.tgz"
+  "version" "4.11.0"
+  dependencies:
+    "shell-quote" "^1.6.1"
+    "ws" "^7"
+
+"react-devtools@^4.11.0":
+  "integrity" "sha512-8A/jrbD5F92F9X+QhR7QPVRX5rXU2npbN6fS+Duy7HbOpCajBIx6pd2jIrVZ0WLdjMu43s7MTOEZtqBuM6TNng=="
+  "resolved" "https://registry.npmjs.org/react-devtools/-/react-devtools-4.11.0.tgz"
+  "version" "4.11.0"
   dependencies:
     "cross-spawn" "^5.0.1"
     "electron" "^11.1.0"
     "ip" "^1.1.4"
     "minimist" "^1.2.3"
-    "react-devtools-core" "4.14.0"
+    "react-devtools-core" "4.11.0"
     "update-notifier" "^2.1.0"
 
 "react-is@^16.12.0", "react-is@^16.13.0", "react-is@^16.13.1", "react-is@^16.7.0", "react-is@^16.8.1", "react-is@^16.8.4", "react-is@^16.8.6":
