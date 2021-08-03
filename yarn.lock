@@ -1220,6 +1220,11 @@
   "resolved" "https://registry.npmjs.org/@humanwhocodes/object-schema/-/object-schema-1.2.0.tgz"
   "version" "1.2.0"
 
+"@invertase/react-native-apple-authentication@^2.1.2":
+  "integrity" "sha512-FzY+CApZLgGS9fmPBDB2kFBMePB37bH0+4h4e8gHtnHm/hF3/iqANAS6oXQq7W3SC+bgciuq38jeLFqNLgAmCA=="
+  "resolved" "https://registry.npmjs.org/@invertase/react-native-apple-authentication/-/react-native-apple-authentication-2.1.2.tgz"
+  "version" "2.1.2"
+
 "@istanbuljs/load-nyc-config@^1.0.0":
   "integrity" "sha512-VjeHSlIzpv/NyD3N0YuHfXOPDIixcA1q2ZV98wsMqcYlPmv2n3Yb2lYP9XMElnaFVXg5A7YLTeLu6V84uQDjmQ=="
   "resolved" "https://registry.npmjs.org/@istanbuljs/load-nyc-config/-/load-nyc-config-1.1.0.tgz"
@@ -1672,6 +1677,13 @@
   "integrity" "sha512-Qt40DBg7IEhBN5x2DYPV3B26j5fNhVZcpCestr1IuirneMNtOaIyA9+nPYniL/OBzd9YbpUKbS7XSy/MM9bP3w=="
   "resolved" "https://registry.npmjs.org/@react-native-picker/picker/-/picker-1.16.3.tgz"
   "version" "1.16.3"
+
+"@react-native-seoul/kakao-login@^3.3.3":
+  "integrity" "sha512-rDmeFkAg161kLOMcTO/z463pexZulUb6HJokDXKU+bQ2EiDnIk3KC0dqDgXaF2Yxn/1cfMUAu5ndl5YfPbla4w=="
+  "resolved" "https://registry.npmjs.org/@react-native-seoul/kakao-login/-/kakao-login-3.3.3.tgz"
+  "version" "3.3.3"
+  dependencies:
+    "dooboolab-welcome" "^1.3.0"
 
 "@react-native-seoul/naver-login@^2.1.1":
   "integrity" "sha512-/JWdUnGU9qWEyVTyDAhhJHxMmAirtmqbfJx/lc7qWtLRDIEw7wx5d4NB1k+zngDRKwfY+M8zzwa/BXKPkSdhxg=="
@@ -3896,7 +3908,7 @@
     "dom-serializer" "0"
     "domelementtype" "1"
 
-"dooboolab-welcome@^1.1.1":
+"dooboolab-welcome@^1.1.1", "dooboolab-welcome@^1.3.0":
   "integrity" "sha512-2NbMaIIURElxEf/UAoVUFlXrO+7n/FRhLCiQlk4fkbGRh9cJ3/f8VEMPveR9m4Ug2l2Zey+UCXjd6EcBqHJ5bw=="
   "resolved" "https://registry.npmjs.org/dooboolab-welcome/-/dooboolab-welcome-1.3.2.tgz"
   "version" "1.3.2"
@@ -8535,7 +8547,7 @@
     "fbjs" "^0.8.4"
     "object-assign" "^4.1.0"
 
-"react-devtools-core@^4.6.0", "react-devtools-core@4.14.0":
+"react-devtools-core@^4.6.0":
   "integrity" "sha512-cE7tkSUkGCDxTA79pntDGJCBgzNN/XxA3kgPdXujdfSfEfVhzrItQIEsN0kCN/hJJACDvH2Q8p5+tJb/K4B3qA=="
   "resolved" "https://registry.npmjs.org/react-devtools-core/-/react-devtools-core-4.14.0.tgz"
   "version" "4.14.0"
@@ -8543,16 +8555,24 @@
     "shell-quote" "^1.6.1"
     "ws" "^7"
 
-"react-devtools@^4.14.0":
-  "integrity" "sha512-zGb3Vt1fvYCUYuK4cmpaGWyCwwsioX8YqBZPUGL3QTLFoB/glUsgOsZWviiyhnfBuhbp5iiMQz0VBKfms9pB2w=="
-  "resolved" "https://registry.npmjs.org/react-devtools/-/react-devtools-4.14.0.tgz"
-  "version" "4.14.0"
+"react-devtools-core@4.11.0":
+  "integrity" "sha512-QBbyZv3rodvWvhh2NjXuEk5AehCDNh/3elTi1vL03/Bo8UbeX3bmR3NDlx1YIcZ7hsDjxhT6a1GSuO5PVOR8Ag=="
+  "resolved" "https://registry.npmjs.org/react-devtools-core/-/react-devtools-core-4.11.0.tgz"
+  "version" "4.11.0"
+  dependencies:
+    "shell-quote" "^1.6.1"
+    "ws" "^7"
+
+"react-devtools@^4.11.0":
+  "integrity" "sha512-8A/jrbD5F92F9X+QhR7QPVRX5rXU2npbN6fS+Duy7HbOpCajBIx6pd2jIrVZ0WLdjMu43s7MTOEZtqBuM6TNng=="
+  "resolved" "https://registry.npmjs.org/react-devtools/-/react-devtools-4.11.0.tgz"
+  "version" "4.11.0"
   dependencies:
     "cross-spawn" "^5.0.1"
     "electron" "^11.1.0"
     "ip" "^1.1.4"
     "minimist" "^1.2.3"
-    "react-devtools-core" "4.14.0"
+    "react-devtools-core" "4.11.0"
     "update-notifier" "^2.1.0"
 
 "react-is@^16.12.0", "react-is@^16.13.0", "react-is@^16.13.1", "react-is@^16.7.0", "react-is@^16.8.1", "react-is@^16.8.4", "react-is@^16.8.6":
