@@ -9,14 +9,23 @@ const dateTimeFmt = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})*$/;
 moment.locale(i18n.locale);
 
 const numberToCommaString = (n?: number): string => {
-  if (typeof n !== 'undefined' && n.toString()) {
+  if (typeof n === 'number') {
     return n
       .toString()
       .replace(/,/g, '')
       .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
 
-  return n ? n.toString() : '';
+  return typeof n === 'string' ? n : '';
+};
+
+const currencyString = (n?: number): string => {
+  if (n === undefined) return '';
+
+  const str = numberToCommaString(Math.round(n * 100) / 100);
+  if (esimCurrency === 'KRW') return str;
+  const digits = str.split('.');
+  return `${digits[0]}.${(digits[1] || '').padEnd(1, '0')}`;
 };
 
 const dlvCost = (totalPrice: Currency): Currency => {
@@ -116,9 +125,9 @@ const price = (num?: Currency): string => {
   if (!num) return '';
 
   if (num.currency === 'USD')
-    return ` ${i18n.t(num.currency)} ${numberToCommaString(num.value)}`;
+    return ` ${i18n.t(num.currency)} ${currencyString(num.value)}`;
 
-  return `${numberToCommaString(num.value)} ${i18n.t(num.currency)}`;
+  return `${currencyString(num.value)} ${i18n.t(num.currency)}`;
 };
 
 const pricePerDay = (num: Currency, days: number) => {
@@ -220,4 +229,5 @@ export default {
   priceToCurrency,
   toCurrency,
   addCurrency,
+  currencyString,
 };

@@ -123,7 +123,7 @@ async function loadResourcesAsync() {
   }
   // 공지 사항 가져오기
   store.dispatch(infoActions.getInfoList('info'));
-  store.dispatch(infoActions.getHomeInfoList('info:home'));
+  store.dispatch(infoActions.getInfoList('info:home'));
 }
 
 function handleLoadingError(error) {

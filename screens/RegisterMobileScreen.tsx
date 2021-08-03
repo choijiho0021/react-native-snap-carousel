@@ -39,6 +39,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
 import {ApiResult} from '@/redux/api/api';
+import SocialLogin from '@/components/SocialLogin';
 
 const styles = StyleSheet.create({
   helpText: {
@@ -212,6 +213,8 @@ type RegisterMobileScreenState = {
     error: any;
   };
   darkMode: boolean;
+  socialLogin: boolean;
+  email?: string;
 };
 
 const initialState: RegisterMobileScreenState = {
@@ -232,6 +235,7 @@ const initialState: RegisterMobileScreenState = {
     error: undefined,
   },
   darkMode: Appearance.getColorScheme() === 'dark',
+  socialLogin: false,
 };
 
 class RegisterMobileScreen extends Component<
@@ -258,9 +262,8 @@ class RegisterMobileScreen extends Component<
     this.onSubmit = this.onSubmit.bind(this);
     this.onCancel = this.onCancel.bind(this);
     this.renderItem = this.renderItem.bind(this);
-    this.focusAuthInput = this.focusAuthInput.bind(this);
-    this.focusEmailInput = this.focusEmailInput.bind(this);
     this.onPress = this.onPress.bind(this);
+    this.onAuth = this.onAuth.bind(this);
 
     this.authInputRef = React.createRef();
     this.mounted = false;
@@ -438,7 +441,7 @@ class RegisterMobileScreen extends Component<
               timeout: false,
             });
 
-            this.focusAuthInput();
+            this.authInputRef.current?.focus();
             // } else {
             //   console.log('send sms failed', resp);
             //   throw new Error('failed to send sms');
@@ -496,7 +499,7 @@ class RegisterMobileScreen extends Component<
           if (!_.isEmpty(resp.objects)) {
             this.signIn({mobile, pin});
           } else {
-            this.focusEmailInput();
+            this.email.current?.focus();
           }
         } else {
           console.log('sms confirmation failed', resp);
@@ -528,6 +531,42 @@ class RegisterMobileScreen extends Component<
     }
   };
 
+  onAuth = async ({
+    authorized,
+    user,
+    pass,
+    email,
+    mobile,
+  }: {
+    authorized: boolean;
+    user: string;
+    pass: string;
+    email?: string;
+    mobile?: string;
+  }) => {
+    console.log('@@@ onAuth', authorized, user, pass, email, mobile);
+
+    const resp = await API.User.socialLogin({
+      user,
+      pass,
+      kind: 'ios',
+    });
+
+    if (resp.result === 0) {
+      this.setState({
+        newUser: true,
+        mobile: user,
+        pin: pass,
+        authorized,
+        email,
+        socialLogin: true,
+      });
+
+      // create account
+      this.email.current?.focus();
+    }
+  };
+
   signIn = async ({
     mobile,
     pin,
@@ -553,14 +592,6 @@ class RegisterMobileScreen extends Component<
     });
   };
 
-  focusAuthInput() {
-    this.authInputRef.current?.focus();
-  }
-
-  focusEmailInput() {
-    this.email.current?.focus();
-  }
-
   renderItem({item}: {item: ConfirmItem}) {
     return (
       <RegisterMobileListItem
@@ -583,6 +614,8 @@ class RegisterMobileScreen extends Component<
       emailValidation,
       loading,
       darkMode,
+      email,
+      socialLogin,
     } = this.state;
     const {isValid, error} = emailValidation || {};
     const disableButton =
@@ -594,31 +627,38 @@ class RegisterMobileScreen extends Component<
         <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
         <Text style={styles.title}>{i18n.t('mobile:title')}</Text>
 
-        <InputMobile
-          style={{marginTop: 30, paddingHorizontal: 20}}
-          onPress={this.onChangeText('mobile')}
-          authNoti={authNoti}
-          disabled={(authNoti && authorized) || loading}
-          authorized={authorized}
-        />
+        {!socialLogin && (
+          <View>
+            <InputMobile
+              style={{marginTop: 30, paddingHorizontal: 20}}
+              onPress={this.onChangeText('mobile')}
+              authNoti={authNoti}
+              disabled={(authNoti && authorized) || loading}
+              authorized={authorized}
+            />
 
-        <InputPinInTime
-          style={{marginTop: 26, paddingHorizontal: 20}}
-          forwardRef={this.authInputRef}
-          editable={editablePin}
-          // clickable={editablePin && !timeout}
-          clickable
-          authorized={mobile ? authorized : undefined}
-          countdown={authNoti && !authorized && !timeout}
-          onTimeout={this.onTimeout}
-          onPress={this.onPressPin}
-          duration={180}
-        />
+            <InputPinInTime
+              style={{marginTop: 26, paddingHorizontal: 20}}
+              forwardRef={this.authInputRef}
+              editable={editablePin}
+              // clickable={editablePin && !timeout}
+              clickable
+              authorized={mobile ? authorized : undefined}
+              countdown={authNoti && !authorized && !timeout}
+              onTimeout={this.onTimeout}
+              onPress={this.onPressPin}
+              duration={180}
+            />
+          </View>
+        )}
+
+        <SocialLogin onAuth={this.onAuth} />
 
         <View style={{flex: 1}}>
           {newUser && authorized && (
             <View style={{flex: 1}}>
               <InputEmail
+                email={email}
                 style={{marginTop: 38, paddingHorizontal: 20}}
                 inputRef={this.email}
               />

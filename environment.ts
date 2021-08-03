@@ -4,16 +4,16 @@ import {getBundleId} from 'react-native-device-info';
 import {CurrencyCode} from './redux/api/productApi';
 
 const bundleId = getBundleId();
-const impId = 'imp53913318';
+const impId = Config.NODE_ENV === 'production' ? 'imp53913318' : 'imp60215393';
 
 // rokebi esim App
 const appId = bundleId === 'com.uangel.rokebi-USIM' ? 'usim' : 'esim';
 const esimGlobal = appId === 'esim' && bundleId === 'com.uangel.rokebi-global';
 const codePushLabel = {
-  stagingIOS: "v65",
-  stagingAndroid: "v64",
-  productionIOS: "v16",
-  productionAndroid: "v9",
+  stagingIOS: 'v66',
+  stagingAndroid: 'v65',
+  productionIOS: 'v18',
+  productionAndroid: 'v11',
 };
 const channelId = '_nzQhxb';
 
@@ -62,7 +62,7 @@ function get() {
     switch (Config.NODE_ENV) {
       case 'production':
         env.scheme = 'http';
-        env.rokApiUrl = 'svcapp.rokebi.com';
+        env.rokApiUrl = 'tb-svcapp.rokebi.com';
         env.apiUrl = esimGlobal ? 'tb-global.rokebi.com' : 'tb-esim.rokebi.com';
         env.baseUrl = esimGlobal
           ? 'http://tb-global.rokebi.com'
@@ -70,7 +70,7 @@ function get() {
         break;
       default:
         env.scheme = 'http';
-        env.rokApiUrl = 'svcapp.rokebi.com';
+        env.rokApiUrl = 'tb-svcapp.rokebi.com';
         env.apiUrl = esimGlobal ? 'tb-global.rokebi.com' : 'tb-esim.rokebi.com';
         env.baseUrl = esimGlobal
           ? 'http://tb-global.rokebi.com'

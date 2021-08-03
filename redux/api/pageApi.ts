@@ -52,7 +52,7 @@ const getPageByCategory = (name: string) => {
   );
 };
 
-const getPageByTitle = (title?: string) => {
+const getPageByTitle = (title: string) => {
   if (!title)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: title');
 

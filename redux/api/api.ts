@@ -6,7 +6,7 @@ import _ from 'underscore';
 import Env from '@/environment';
 
 export type Langcode = 'ko' | 'en';
-const {scheme, apiUrl, appId, rokApiUrl} = Env.get();
+const {scheme, apiUrl, appId, esimGlobal, rokApiUrl} = Env.get();
 
 const FAILED = -1000;
 const E_NOT_FOUND = -1001;
@@ -79,6 +79,7 @@ const path = {
       verify: 'api/v1/auth/verify/sms',
       confirm: 'api/v1/auth/verify/sms/confirm',
       email: 'api/v1/auth/verify/email/confirm',
+      social: 'api/v1/auth/social',
     },
     user: {
       create: 'api/v1/auth/user',
@@ -114,7 +115,9 @@ const addrApiUrl = () => {
 };
 
 const rokHttpUrl = (path0: string) => {
-  return `${scheme}://${rokApiUrl}/${path0}?service=${appId}`;
+  return `${scheme}://${rokApiUrl}/${path0}?service=${
+    esimGlobal ? 'global' : appId
+  }`;
 };
 
 const queryString = (obj: Record<string, string | number>) => {

@@ -347,7 +347,7 @@
   "cart:dlvCostNotice": "* Free delivery is available if total amount payment is more than KRW 30,000",
   "cart:toCart": "Add to Cart",
   "cart:buy": "Buy it now",
-  "cart:pymAmount": "Payment Amount",
+  "cart:pymAmount": "Total Payment",
   "cart:purchase": "Buy it now",
   "cart:empty": "Your Cart is Empty",
   "cart:remove": "Product not on sale has been removed from the list.",
@@ -394,6 +394,8 @@
   "pym:bank": "Bank",
   "pym:mobile": "Mobile phone",
   "pym:toss": "TOSS",
+  "pym:paypal": "Paypal",
+  "pym:eximbay": "Eximbay",
   // "pym:syrup": "Syrup",
   "pym:kakao": "Kakao Pay",
   "pym:naver": "Naver Pay",
@@ -506,5 +508,7 @@
 
   "promo:join:fail": "Sorry, try again.",
   "promo:join:ing": "Participating ...",
-  "promo:login": "Login to participate"
+  "promo:login": "Login to participate",
+
+  "login:easyLogin": "Easy Login"
 }

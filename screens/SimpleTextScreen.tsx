@@ -12,7 +12,6 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import {colors} from '@/constants/Colors';
@@ -92,6 +91,7 @@ type SimpleTextScreenProps = {
   info: InfoModelState;
   account: AccountModelState;
   eventStatus: EventStatus;
+  pending: boolean;
 
   action: {
     info: InfoAction;
@@ -99,12 +99,11 @@ type SimpleTextScreenProps = {
 };
 
 type SimpleTextScreenState = {
-  querying: boolean;
   body?: string;
   mode?: SimpleTextScreenMode;
-  isMounted: boolean;
   bodyTitle?: string;
   promoResult?: string;
+  loading: boolean;
 };
 
 class SimpleTextScreen extends Component<
@@ -117,9 +116,8 @@ class SimpleTextScreen extends Component<
     super(props);
 
     this.state = {
-      querying: false,
       body: '',
-      isMounted: false,
+      loading: false,
     };
 
     this.controller = new AbortController();
@@ -137,7 +135,7 @@ class SimpleTextScreen extends Component<
       headerLeft: () => <AppBackButton title={params?.title} />,
     });
 
-    this.setState({mode, isMounted: true});
+    this.setState({mode, loading: mode !== 'text'});
 
     if (body) {
       this.setState({body, bodyTitle});
@@ -149,7 +147,6 @@ class SimpleTextScreen extends Component<
   }
 
   componentWillUnmount() {
-    this.setState({isMounted: false});
     this.controller.abort();
   }
 
@@ -160,9 +157,9 @@ class SimpleTextScreen extends Component<
       // uuid를 받아서 해당 페이지로 이동 추가
       case 'moveToPage':
         if (cmd.value) {
-          const item = this.props.info.infoList.find(
-            (elm) => elm.uuid === cmd.value,
-          );
+          const item = this.props.info.infoMap
+            .get('info')
+            ?.find((elm) => elm.uuid === cmd.value);
           this.props.navigation.navigate('SimpleText', {
             key: 'noti',
             title: i18n.t('set:noti'),
@@ -194,10 +191,9 @@ class SimpleTextScreen extends Component<
       // 로그인 화면으로 이동
       this.props.navigation.navigate('Auth');
     } else if (rule) {
-      this.setState({promoResult: 'promo:join:ing', querying: true});
+      this.setState({promoResult: 'promo:join:ing'});
       const resp = await API.Promotion.join({rule, iccid, token});
       this.setState({
-        querying: false,
         promoResult:
           resp.result === 0 && resp.objects[0]?.available > 0
             ? 'promo:join:joined'
@@ -208,33 +204,20 @@ class SimpleTextScreen extends Component<
     }
   }
 
-  async getContent({key, bodyTitle}: {key: string; bodyTitle?: string}) {
-    this.setState({
-      querying: true,
-    });
-
-    try {
-      const resp =
-        key === 'noti'
-          ? await API.Page.getPageByTitle(bodyTitle, this.controller)
-          : await API.Page.getPageByCategory(key);
-
-      if (
-        resp.result === 0 &&
-        resp.objects.length > 0 &&
-        this.state.isMounted // async call이므로 isMounted는 이전과 다를수 있음
-      ) {
-        this.setState({
-          body: resp.objects[0].body,
+  getContent({key, bodyTitle}: {key: string; bodyTitle?: string}) {
+    const {infoMap} = this.props.info;
+    const contentExist =
+      key === 'noti' && bodyTitle ? infoMap.has(bodyTitle) : infoMap.has(key);
+    if (!contentExist) {
+      if (key === 'noti' && bodyTitle) {
+        this.props.action.info.getInfoByTitle(bodyTitle).then(() => {
+          const object = infoMap.get(bodyTitle, []);
+          this.setState({body: object[0]?.body});
         });
-      } else throw Error('Failed to get contract');
-    } catch (err) {
-      console.log('failed', err);
-      AppAlert.error(i18n.t('set:fail'));
-    } finally {
-      if (this.state.isMounted) {
-        this.setState({
-          querying: false,
+      } else {
+        this.props.action.info.getInfoList(key).then(() => {
+          const object = infoMap.get(key, []);
+          this.setState({body: object[0]?.body});
         });
       }
     }
@@ -254,12 +237,16 @@ class SimpleTextScreen extends Component<
           </View>
         </ScrollView>
       );
+
     if (mode === 'uri')
       return (
         <WebView
           source={{uri: body}}
           style={styles.container}
           onMessage={this.onMessage}
+          onLoadEnd={({nativeEvent: {loading}}) => {
+            this.setState({loading});
+          }}
         />
       );
 
@@ -269,13 +256,17 @@ class SimpleTextScreen extends Component<
         originWhitelist={['*']}
         onMessage={this.onMessage}
         source={{html: htmlDetailWithCss(body), baseUrl}}
+        onLoadEnd={({nativeEvent: {loading}}) => {
+          this.setState({loading});
+        }}
       />
     );
   };
 
   render() {
-    const {querying, promoResult, mode = 'html'} = this.state;
+    const {loading, promoResult, mode = 'html'} = this.state;
     const {
+      pending,
       eventStatus,
       account: {loggedIn},
       navigation,
@@ -290,8 +281,8 @@ class SimpleTextScreen extends Component<
 
     return (
       <SafeAreaView style={styles.screen}>
-        <AppActivityIndicator visible={querying} />
         {this.defineSource(mode)}
+        <AppActivityIndicator visible={pending || loading} />
         {Platform.OS === 'ios' && (
           <AppButton
             style={styles.button}
@@ -363,7 +354,14 @@ const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
 
 // export default SimpleTextScreen;
 export default connect(
-  ({info, account}: RootState) => ({info, account}),
+  ({info, account, status}: RootState) => ({
+    info,
+    account,
+    pending:
+      status.pending[infoActions.getInfoList.typePrefix] ||
+      status.pending[infoActions.getInfoByTitle.typePrefix] ||
+      false,
+  }),
   (dispatch) => ({
     action: {
       info: bindActionCreators(infoActions, dispatch),

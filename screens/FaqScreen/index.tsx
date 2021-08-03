@@ -6,11 +6,17 @@ import i18n from '@/utils/i18n';
 import AppBackButton from '@/components/AppBackButton';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {colors} from '@/constants/Colors';
-import {API} from '@/redux/api';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
-import {RkbInfo} from '@/redux/api/pageApi';
+import {RootState} from '@reduxjs/toolkit';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {
+  actions as infoActions,
+  InfoAction,
+  InfoModelState,
+} from '@/redux/modules/info';
 import FaqList from './components/FaqList';
 
 const styles = StyleSheet.create({
@@ -33,6 +39,11 @@ type FaqScreenRouteProp = RouteProp<HomeStackParamList, 'Faq'>;
 type FaqScreenProps = {
   navigation: FaqScreenNavigationProp;
   route: FaqScreenRouteProp;
+
+  info: InfoModelState;
+  action: {
+    info: InfoAction;
+  };
 };
 
 type TabViewRouteKey = 'general' | 'config' | 'payment' | 'etc';
@@ -45,7 +56,6 @@ type FaqScreenState = {
   querying: boolean;
   index: number;
   routes: TabViewRoute[];
-  scene: Record<TabViewRouteKey, RkbInfo[]>;
   selectedTitleNo?: string;
 };
 
@@ -62,12 +72,6 @@ class FaqScreen extends Component<FaqScreenProps, FaqScreenState> {
         {key: 'payment', title: i18n.t('faq:payment')},
         {key: 'etc', title: i18n.t('faq:etc')},
       ],
-      scene: {
-        general: [],
-        payment: [],
-        config: [],
-        etc: [],
-      },
     };
 
     this.onPress = this.onPress.bind(this);
@@ -98,7 +102,9 @@ class FaqScreen extends Component<FaqScreenProps, FaqScreenState> {
 
   shouldComponentUpdate() {
     const {key} = this.props.route.params || {};
-    return _.isEmpty(key) ? true : !_.isEmpty(this.state.scene[key]);
+    return !key
+      ? true
+      : this.props.info.infoMap.get(`faq:${key}`, []).length > 0;
   }
 
   onPress = (uuid: string) => {
@@ -118,37 +124,16 @@ class FaqScreen extends Component<FaqScreenProps, FaqScreenState> {
     if (index < 0 || index >= this.state.routes.length) return;
 
     const {key} = this.state.routes[index];
-    if (this.state.scene[key].length > 0) return;
+    if (this.props.info.infoMap.has(`faq:${key}`)) return;
 
-    this.setState({
-      querying: true,
-    });
-
-    API.Page.getPageByCategory(`faq:${key}`)
-      .then((resp) => {
-        if (resp.result === 0 && resp.objects.length > 0) {
-          this.setState((state) => ({
-            scene: {
-              ...state.scene,
-              [key]: resp.objects,
-            },
-          }));
-        } else throw new Error(`failed to get page:${key}`);
-      })
-      .catch((err) => {
-        console.log('failed to get page', key, err);
-      })
-      .finally(() => {
-        this.setState({
-          querying: false,
-        });
-      });
+    this.props.action.info.getInfoList(`faq:${key}`);
   }
 
   renderScene = ({route}: {route: TabViewRoute}) => {
+    const {infoMap} = this.props.info;
     return (
       <FaqList
-        data={this.state.scene[route.key]}
+        data={infoMap.get(`faq:${route.key}`, [])}
         titleNo={this.state.selectedTitleNo}
       />
     );
@@ -185,4 +170,11 @@ class FaqScreen extends Component<FaqScreenProps, FaqScreenState> {
   }
 }
 
-export default FaqScreen;
+export default connect(
+  ({info}: RootState) => ({info}),
+  (dispatch) => ({
+    action: {
+      info: bindActionCreators(infoActions, dispatch),
+    },
+  }),
+)(FaqScreen);

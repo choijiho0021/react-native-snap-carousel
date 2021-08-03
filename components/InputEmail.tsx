@@ -25,6 +25,10 @@ i18nEvent.on('loaded', () => {
       value: DIRECT_INPUT,
     },
     {
+      label: 'Apple',
+      value: 'icloud.com',
+    },
+    {
       label: 'Naver',
       value: 'naver.com',
     },
@@ -105,6 +109,7 @@ export type InputEmailRef = {
 type InputEmailProps = {
   style?: StyleProp<ViewStyle>;
   inputRef?: React.MutableRefObject<InputEmailRef | null>;
+  email?: string;
 };
 type InputEmailState = {
   email: string;
@@ -121,9 +126,11 @@ class InputEmail extends Component<InputEmailProps, InputEmailState> {
   constructor(props: InputEmailProps) {
     super(props);
 
+    const mail = props.email?.split('@');
+
     this.state = {
-      email: '',
-      domain: '',
+      email: mail ? mail[0] : '',
+      domain: mail ? mail[1] : '',
       domainIdx: DIRECT_INPUT,
     };
 

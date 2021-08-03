@@ -1,23 +1,22 @@
-import React, {memo, useEffect, useRef} from 'react';
+import React, {memo, useCallback, useEffect, useRef} from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
 import {connect} from 'react-redux';
 import {Map as ImmutableMap} from 'immutable';
 import {API} from '@/redux/api';
-import utils from '@/redux/api/utils';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
 import {RootState} from '@/redux';
 import {
+  Currency,
   ProductByCategory,
   RkbLocalOp,
   RkbProduct,
 } from '@/redux/api/productApi';
 import {FlatList} from 'react-native-gesture-handler';
 import Env from '@/environment';
-
-const {esimGlobal} = Env.get();
+import AppPrice from './AppPrice';
 
 const styles = StyleSheet.create({
   container: {
@@ -25,6 +24,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   text: {
+    ...(isDeviceSize('small')
+      ? appStyles.normal14Text
+      : appStyles.normal16Text),
     textAlign: 'left',
     color: colors.clearBlue,
   },
@@ -91,6 +93,35 @@ const CountryItem0 = ({
   localOpList: ImmutableMap<string, RkbLocalOp>;
   onPress?: (p: RkbProduct[]) => void;
 }) => {
+  const renderLowest = useCallback(
+    () => (
+      <View key="lowest" style={styles.lowPriceView}>
+        <Text style={styles.lowPrice}>{i18n.t('lowest')}</Text>
+      </View>
+    ),
+    [],
+  );
+
+  const renderPrice = useCallback(
+    (bestPrice?: Currency) => (
+      <View key="price" style={styles.price}>
+        {bestPrice && [
+          <AppPrice
+            key="price"
+            style={styles.price}
+            price={bestPrice}
+            balanceStyle={styles.priceNumber}
+            currencyStyle={styles.text}
+          />,
+          <Text key="days" style={styles.text}>
+            /Day
+          </Text>,
+        ]}
+      </View>
+    ),
+    [],
+  );
+
   return (
     <View key={item.key} style={styles.productList}>
       {item.data.map((elm, idx) => {
@@ -121,45 +152,9 @@ const CountryItem0 = ({
                   {API.Product.getTitle(localOp)}
                 </Text>
                 <View style={styles.priceRow}>
-                  {esimGlobal && (
-                    <View style={styles.lowPriceView}>
-                      <Text style={styles.lowPrice}>{i18n.t('lowest')}</Text>
-                    </View>
-                  )}
-                  <View style={styles.price}>
-                    {bestPrice && [
-                      esimGlobal && (
-                        <Text
-                          key="currency"
-                          style={[
-                            isDeviceSize('small')
-                              ? appStyles.normal14Text
-                              : appStyles.normal16Text,
-                            styles.text,
-                          ]}>
-                          {`${i18n.t(bestPrice.currency)} `}
-                        </Text>
-                      ),
-                      <Text key="price" style={styles.priceNumber}>
-                        {utils.numberToCommaString(bestPrice.value)}
-                      </Text>,
-                      <Text
-                        key="days"
-                        style={[
-                          isDeviceSize('small')
-                            ? appStyles.normal14Text
-                            : appStyles.normal16Text,
-                          styles.text,
-                        ]}>{` ${
-                        esimGlobal ? '' : i18n.t(bestPrice.currency)
-                      }/Day`}</Text>,
-                    ]}
-                  </View>
-                  {!esimGlobal && (
-                    <View style={styles.lowPriceView}>
-                      <Text style={styles.lowPrice}>{i18n.t('lowest')}</Text>
-                    </View>
-                  )}
+                  {i18n.locale === 'ko'
+                    ? [renderPrice(bestPrice), renderLowest()]
+                    : [renderLowest(), renderPrice(bestPrice)]}
                 </View>
               </TouchableOpacity>
             </View>
