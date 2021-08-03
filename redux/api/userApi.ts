@@ -450,6 +450,40 @@ const sendSms = ({
   );
 };
 
+const socialLogin = ({
+  user,
+  pass,
+  kind,
+  abortController,
+}: {
+  user: string;
+  pass: string;
+  kind: 'ios' | 'fb' | 'naver' | 'kakao' | 'google';
+  abortController?: AbortController;
+}) => {
+  if (!user)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
+  if (!pass)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: pass');
+  if (!kind)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: kind');
+
+  return api.callHttp(
+    `${api.rokHttpUrl(api.path.rokApi.auth.social)}`,
+    {
+      method: 'POST',
+      headers: api.headers('json'),
+      body: JSON.stringify({user, pass, kind}),
+    },
+    (rsp = {}) => {
+      return rsp.result.code === 0
+        ? api.success(rsp.id)
+        : api.failure(api.FAILED, rsp.result?.error);
+    },
+    {abortController},
+  );
+};
+
 const confirmSmsCode = ({
   user,
   pass,
@@ -569,4 +603,5 @@ export default {
   confirmSmsCode,
   signUp,
   confirmEmail,
+  socialLogin,
 };

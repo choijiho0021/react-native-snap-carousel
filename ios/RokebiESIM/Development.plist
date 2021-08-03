@@ -115,6 +115,11 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
+			<key>tb-svcapp.rokebi.com</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
 			<key>esim.rokebi.com</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
