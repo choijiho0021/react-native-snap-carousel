@@ -41,6 +41,16 @@
 				<string>fb147522690488197</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>naverlogin</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>naversearchthirdlogin</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>33</string>
@@ -63,6 +73,8 @@
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>rokebitalk</string>
+		<string>naversearchapp</string>
+		<string>naversearchthirdlogin</string>
 		<string>kakaotalk-5.9.7</string>
 		<string>kakaolink</string>
 		<string>kakaokompassauth</string>
