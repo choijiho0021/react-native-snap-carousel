@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
 const AppleLogin = ({onAuth}: {onAuth: AuthCallback}) => {
   const onPress = useCallback(async () => {
     try {
+      /* for testing
       if (onAuth)
         onAuth({
           user: 'appleuser',
@@ -22,6 +23,7 @@ const AppleLogin = ({onAuth}: {onAuth: AuthCallback}) => {
           authorized: true,
           email: 'app@test.com',
         });
+        */
 
       // performs login request
       const appleAuthRequestResponse = await appleAuth.performRequest({
@@ -81,7 +83,7 @@ const AppleLogin = ({onAuth}: {onAuth: AuthCallback}) => {
   return (
     <View style={styles.button}>
       <AppleButton
-        buttonStyle={AppleButton.Style.BLACK}
+        buttonStyle={AppleButton.Style.WHITE_OUTLINE}
         buttonType={AppleButton.Type.SIGN_IN}
         style={{
           width: 160, // You must specify a width

@@ -544,8 +544,6 @@ class RegisterMobileScreen extends Component<
     email?: string;
     mobile?: string;
   }) => {
-    console.log('@@@ onAuth', authorized, user, pass, email, mobile);
-
     const resp = await API.User.socialLogin({
       user,
       pass,
@@ -554,7 +552,7 @@ class RegisterMobileScreen extends Component<
 
     if (resp.result === 0) {
       this.setState({
-        newUser: true,
+        newUser: !resp.objects,
         mobile: user,
         pin: pass,
         authorized,
@@ -562,8 +560,14 @@ class RegisterMobileScreen extends Component<
         socialLogin: true,
       });
 
-      // create account
-      this.email.current?.focus();
+      if (!resp.objects) {
+        // new login
+        // create account
+        this.email.current?.focus();
+      } else {
+        // account exist. try login
+        this.signIn({mobile: user, pin: pass});
+      }
     }
   };
 
