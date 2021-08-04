@@ -28,6 +28,7 @@
 
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>
+#import <RNKakaoLogins.h>
 
 #if FB_SONARKIT_ENABLED
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
@@ -37,7 +38,6 @@
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 
-#import <RNKakaoLogins.h>
 
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];
