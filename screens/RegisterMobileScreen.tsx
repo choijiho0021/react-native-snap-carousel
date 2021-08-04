@@ -551,22 +551,25 @@ class RegisterMobileScreen extends Component<
     });
 
     if (resp.result === 0) {
+      console.log('@@@ social', resp);
+      const {mobile: drupalId, newUser} = resp.objects[0];
+
       this.setState({
-        newUser: !resp.objects,
-        mobile: user,
+        newUser,
+        mobile: drupalId,
         pin: pass,
         authorized,
         email,
         socialLogin: true,
       });
 
-      if (!resp.objects) {
+      if (newUser) {
         // new login
         // create account
         this.email.current?.focus();
       } else {
         // account exist. try login
-        this.signIn({mobile: user, pin: pass});
+        this.signIn({mobile: drupalId, pin: pass});
       }
     }
   };
