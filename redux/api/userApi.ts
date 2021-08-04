@@ -450,6 +450,11 @@ const sendSms = ({
   );
 };
 
+export type RkbSocialLogin = {
+  mobile: string;
+  newUser: boolean;
+};
+
 const socialLogin = ({
   user,
   pass,
@@ -477,8 +482,8 @@ const socialLogin = ({
     },
     (rsp = {}) => {
       return rsp.result.code === 0
-        ? api.success(rsp.id)
-        : api.failure(api.FAILED, rsp.result?.error);
+        ? api.success<RkbSocialLogin>([rsp.row as RkbSocialLogin])
+        : api.failure<RkbSocialLogin>(api.FAILED, rsp.result?.error);
     },
     {abortController},
   );
