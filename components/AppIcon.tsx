@@ -83,6 +83,7 @@ const images: Record<string, any[]> = {
   appleLogin: [require(`${mainPath}LoginImgApple.png`)],
   naverLogin: [require(`${mainPath}LoginImgNaver.png`)],
   facebookLogin: [require(`${mainPath}LoginImgFacebook.png`)],
+  imgRokebiChar: [require(`${mainPath}imgRokebiChar.png`)],
   imgQuestion: [require('../assets/images/main/imgQuestion.png')],
   kakao: [require(`${paymentPath}logoKakao.png`)],
   naver: [require(`${paymentPath}logoNaver.png`)],
