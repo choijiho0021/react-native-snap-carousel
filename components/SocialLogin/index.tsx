@@ -2,6 +2,7 @@ import React, {memo} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import i18n from '@/utils/i18n';
 import AppleLogin from './AppleLogin';
+import KakaoLogin from './KakaoLogin';
 
 export type AuthCallback = ({
   user,
@@ -29,6 +30,7 @@ const SocialLogin = ({onAuth}: {onAuth: AuthCallback}) => {
     <View>
       <Text style={styles.title}>{i18n.t('login:easyLogin')}</Text>
       <AppleLogin onAuth={onAuth} />
+      <KakaoLogin onAuth={onAuth} />
     </View>
   );
 };

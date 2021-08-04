@@ -25,20 +25,20 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakao${KAKAO_APP_KEY}</string>
+			</array>
+		</dict>
+		<dict>
 			<key>CFBundleURLName</key>
 			<string></string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>rokebiesim</string>
 				<string>fb147522690488197</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>kakao48e28ca0768702895194b5612db75cf4</string>
 			</array>
 		</dict>
 		<dict>
@@ -67,7 +67,7 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>KAKAO_APP_KEY</key>
-	<string>48e28ca0768702895194b5612db75cf4</string>
+	<string>${KAKAO_APP_KEY}</string>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -78,7 +78,7 @@
 		<string>kakaotalk-5.9.7</string>
 		<string>kakaolink</string>
 		<string>kakaokompassauth</string>
-		<string>kakao48e28ca0768702895194b5612db75cf4</string>
+		<string>kakao${KAKAO_APP_KEY}</string>
 		<string>kftc-bankpay</string>
 		<string>ispmobile</string>
 		<string>itms-apps</string>
