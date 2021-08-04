@@ -40,6 +40,11 @@ import {HomeStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
 import {ApiResult} from '@/redux/api/api';
 import SocialLogin from '@/components/SocialLogin';
+import Env from '@/environment';
+import {utils} from '@/utils/utils';
+
+const {esimGlobal} = Env.get();
+// const esimGlobal = false;
 
 const styles = StyleSheet.create({
   helpText: {
@@ -49,9 +54,15 @@ const styles = StyleSheet.create({
     marginLeft: 30,
   },
   title: {
+    ...appStyles.bold30Text,
+    paddingHorizontal: 20,
+    paddingTop: 50,
+    lineHeight: 40,
+  },
+  mobileAuth: {
     ...appStyles.h1,
     paddingHorizontal: 20,
-    paddingTop: 30,
+    paddingTop: 50,
   },
   confirmList: {
     flexDirection: 'row',
@@ -109,6 +120,11 @@ const styles = StyleSheet.create({
   rowStyle: {
     flexDirection: 'row',
     flex: 1,
+  },
+  id: {
+    ...appStyles.normal22Text,
+    marginTop: 30,
+    paddingHorizontal: 20,
   },
 });
 
@@ -610,6 +626,14 @@ class RegisterMobileScreen extends Component<
     );
   }
 
+  renderTitle = () => (
+    <Text style={styles.title}>{i18n.t('mobile:title')}</Text>
+  );
+
+  renderId = () => (
+    <Text style={styles.id}>ID : {utils.toPhoneNumber(this.state.mobile)}</Text>
+  );
+
   render() {
     const {
       mobile,
@@ -632,10 +656,11 @@ class RegisterMobileScreen extends Component<
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
-        <Text style={styles.title}>{i18n.t('mobile:title')}</Text>
+        {socialLogin ? this.renderId() : this.renderTitle()}
 
-        {!socialLogin && (
+        {!socialLogin && !esimGlobal && (
           <View>
+            <Text style={styles.mobileAuth}>{i18n.t('mobile:easyLogin')}</Text>
             <InputMobile
               style={{marginTop: 30, paddingHorizontal: 20}}
               onPress={this.onChangeText('mobile')}
@@ -645,7 +670,7 @@ class RegisterMobileScreen extends Component<
             />
 
             <InputPinInTime
-              style={{marginTop: 26, paddingHorizontal: 20}}
+              style={{marginTop: 20, paddingHorizontal: 20}}
               forwardRef={this.authInputRef}
               editable={editablePin}
               // clickable={editablePin && !timeout}
@@ -659,14 +684,24 @@ class RegisterMobileScreen extends Component<
           </View>
         )}
 
-        <SocialLogin onAuth={this.onAuth} />
+        {!socialLogin && <SocialLogin onAuth={this.onAuth} />}
 
-        <View style={{flex: 1}}>
-          {newUser && authorized && (
+        {!socialLogin && esimGlobal && (
+          <View
+            style={{flex: 1, justifyContent: 'flex-end', paddingBottom: 52}}>
+            <AppIcon name="imgRokebiChar" />
+          </View>
+        )}
+
+        {newUser && authorized && (
+          <View style={{flex: 1}}>
             <View style={{flex: 1}}>
               <InputEmail
                 email={email}
-                style={{marginTop: 38, paddingHorizontal: 20}}
+                style={{
+                  marginTop: socialLogin ? 20 : 38,
+                  paddingHorizontal: 20,
+                }}
                 inputRef={this.email}
               />
 
@@ -696,8 +731,8 @@ class RegisterMobileScreen extends Component<
                 />
               </View>
             </View>
-          )}
-        </View>
+          </View>
+        )}
 
         <AppActivityIndicator visible={this.props.pending || loading} />
       </SafeAreaView>

@@ -606,7 +606,7 @@
 					"\"$(PODS_ROOT)/Headers/Public/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = RokebiESIM/Development.plist;
-				KAKAO_APP_KEY = "";
+				KAKAO_APP_KEY = 20432406a5258ae68b9c9558a4ba23ef;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.1.1;
 				ONLY_ACTIVE_ARCH = YES;
@@ -770,7 +770,7 @@
 					"\"$(PODS_ROOT)/Headers/Public/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = RokebiESIM/Info.plist;
-				KAKAO_APP_KEY = "";
+				KAKAO_APP_KEY = 20432406a5258ae68b9c9558a4ba23ef;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.1.1;
 				ONLY_ACTIVE_ARCH = NO;
@@ -1693,6 +1693,7 @@
 					"\"$(PODS_ROOT)/Headers/Public/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = RokebiESIM/Info.plist;
+				KAKAO_APP_KEY = 20432406a5258ae68b9c9558a4ba23ef;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.1.1;
 				ONLY_ACTIVE_ARCH = NO;
