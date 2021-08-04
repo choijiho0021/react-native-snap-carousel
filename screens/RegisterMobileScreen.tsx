@@ -41,6 +41,7 @@ import {RouteProp} from '@react-navigation/native';
 import {ApiResult} from '@/redux/api/api';
 import SocialLogin from '@/components/SocialLogin';
 import Env from '@/environment';
+import {utils} from '@/utils/utils';
 
 const {esimGlobal} = Env.get();
 // const esimGlobal = false;
@@ -629,7 +630,9 @@ class RegisterMobileScreen extends Component<
     <Text style={styles.title}>{i18n.t('mobile:title')}</Text>
   );
 
-  renderId = () => <Text style={styles.id}>ID : {this.state.mobile}</Text>;
+  renderId = () => (
+    <Text style={styles.id}>ID : {utils.toPhoneNumber(this.state.mobile)}</Text>
+  );
 
   render() {
     const {
