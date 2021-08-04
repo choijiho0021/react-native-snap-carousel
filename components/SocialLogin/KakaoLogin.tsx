@@ -36,12 +36,13 @@ const KakaoLogin = ({onAuth}: {onAuth: AuthCallback}) => {
 
       if (accessToken) {
         const profile = await getKakaoProfile();
-        const {phoneNumber, email} = profile;
-        const user = phoneNumber.split(' ')[1].replace(/-/g, ''); // phoneNumber : '{국가코드} + ' ' + {번호}'
+        const {phoneNumber, email, id} = profile;
+        const mobile = phoneNumber
+          .replace(/^\+[\d]+/, '0')
+          .replace(/[ -]+/g, ''); // phoneNumber : '{국가코드} + ' ' + {번호}'
+        const user = id.toString();
 
-        console.log('@@@ Kakao accessToken', accessToken);
-        console.log('@@@ Kakao user', user);
-        console.log('@@@ Kakao email', email);
+        console.log('@@@ Kakao accessToken', accessToken, id, mobile, email);
 
         await AsyncStorage.setItem('login.kakao.user', user);
         if (accessToken)
@@ -58,6 +59,7 @@ const KakaoLogin = ({onAuth}: {onAuth: AuthCallback}) => {
           onAuth({
             user,
             pass: accessToken,
+            mobile,
             authorized: true,
             email: storedEmail,
           });
