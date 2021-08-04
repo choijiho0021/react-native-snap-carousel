@@ -51,9 +51,6 @@ const styles = StyleSheet.create({
     ...appStyles.normal14Text,
     color: colors.clearBlue,
   },
-  helpTextMargin: {
-    marginTop: 30,
-  },
   input: {
     ...appStyles.normal16Text,
     color: colors.black,
@@ -258,12 +255,7 @@ class InputPinInTime extends Component<
                 )}
           </Text>
           {authorized ? null : (
-            <Text
-              style={[
-                styles.helpText,
-                styles.helpTextMargin,
-                {color: colors.warmGrey},
-              ]}>
+            <Text style={[styles.helpText, {color: colors.warmGrey}]}>
               {i18n.t('mobile:inputInTime')}
             </Text>
           )}

@@ -72,8 +72,8 @@ const KakaoLogin = ({onAuth}: {onAuth: AuthCallback}) => {
       <AppButton
         iconName="kakaoLogin"
         style={{
-          width: 160,
-          height: 45,
+          width: 44,
+          height: 44,
         }}
         onPress={onPress}
       />

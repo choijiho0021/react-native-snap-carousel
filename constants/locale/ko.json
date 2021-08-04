@@ -195,7 +195,8 @@
   "sim:rechargeBalance": "로깨비캐시",
 
   "mobile:header": "로그인",
-  "mobile:title": "휴대폰 간편 인증 로그인",
+  "mobile:title": "여행을\n시작해 볼까요?",
+  "mobile:easyLogin": "휴대폰 간편 인증 로그인",
   "mobile:input": "- 없이 숫자만 입력",
   "mobile:auth": "인증번호 입력",
   "mobile:sendAuth": "인증번호 전송",

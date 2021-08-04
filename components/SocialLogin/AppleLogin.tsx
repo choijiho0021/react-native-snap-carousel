@@ -5,6 +5,7 @@ import appleAuth, {
 } from '@invertase/react-native-apple-authentication';
 import AsyncStorage from '@react-native-community/async-storage';
 import {AuthCallback} from '.';
+import AppButton from '../AppButton';
 
 const styles = StyleSheet.create({
   button: {
@@ -82,7 +83,15 @@ const AppleLogin = ({onAuth}: {onAuth: AuthCallback}) => {
 
   return (
     <View style={styles.button}>
-      <AppleButton
+      <AppButton
+        iconName="appleLogin"
+        style={{
+          width: 44,
+          height: 44,
+        }}
+        onPress={onPress}
+      />
+      {/* <AppleButton
         buttonStyle={AppleButton.Style.WHITE_OUTLINE}
         buttonType={AppleButton.Type.SIGN_IN}
         style={{
@@ -90,7 +99,7 @@ const AppleLogin = ({onAuth}: {onAuth: AuthCallback}) => {
           height: 45, // You must specify a height
         }}
         onPress={onPress}
-      />
+      /> */}
     </View>
   );
 };
