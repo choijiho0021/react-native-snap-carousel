@@ -342,7 +342,12 @@ class RegisterMobileScreen extends Component<
         if (this.mounted) {
           this.setState({authorized: true});
         }
-        this.props.navigation.navigate('Main');
+        this.props.navigation.navigate('Main', {
+          screen: 'MyPageStack',
+          params: {
+            screen: 'MyPage',
+          },
+        });
       } else {
         AppAlert.error(i18n.t('reg:failedToLogIn'));
       }
@@ -564,6 +569,7 @@ class RegisterMobileScreen extends Component<
       user,
       pass,
       kind: 'ios',
+      mobile,
     });
 
     if (resp.result === 0) {

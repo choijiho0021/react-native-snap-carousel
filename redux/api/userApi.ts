@@ -459,11 +459,13 @@ const socialLogin = ({
   user,
   pass,
   kind,
+  mobile,
   abortController,
 }: {
   user: string;
   pass: string;
   kind: 'ios' | 'fb' | 'naver' | 'kakao' | 'google';
+  mobile?: string;
   abortController?: AbortController;
 }) => {
   if (!user)
@@ -478,7 +480,7 @@ const socialLogin = ({
     {
       method: 'POST',
       headers: api.headers('json'),
-      body: JSON.stringify({user, pass, kind}),
+      body: JSON.stringify({user, pass, kind, mobile}),
     },
     (rsp = {}) => {
       return rsp.result.code === 0
