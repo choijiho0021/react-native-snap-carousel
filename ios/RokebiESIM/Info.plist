@@ -38,7 +38,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>rokebiesim</string>
-				<string>fb147522690488197</string>
+				<string>fb${FACEBOOK_APP_KEY}</string>
 			</array>
 		</dict>
 		<dict>
@@ -57,7 +57,7 @@
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
-	<string>147522690488197</string>
+	<string>${FACEBOOK_APP_KEY}</string>
 	<key>FacebookDisplayName</key>
 	<string>로밍도깨비 eSIM</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>

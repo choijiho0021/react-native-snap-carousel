@@ -6,6 +6,7 @@ import KakaoLogin from './KakaoLogin';
 import {appStyles} from '../../constants/Styles';
 import {colors} from '@/constants/Colors';
 import AppButton from '../AppButton';
+import FacebookLogin from './FacebookLogin';
 
 export type AuthCallback = ({
   user,
@@ -66,14 +67,7 @@ const SocialLogin = ({onAuth}: {onAuth: AuthCallback}) => {
           }}
           onPress={() => {}}
         />
-        <AppButton
-          iconName="facebookLogin"
-          style={{
-            width: 44,
-            height: 44,
-          }}
-          onPress={() => {}}
-        />
+        <FacebookLogin onAuth={onAuth} />
         <AppleLogin onAuth={onAuth} />
       </View>
     </View>
