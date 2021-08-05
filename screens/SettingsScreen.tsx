@@ -140,11 +140,6 @@ class SettingsScreen extends Component<
           value: i18n.t('set:pushnoti'),
           toggle: props.isPushNotiEnabled,
         },
-        {
-          key: 'setting:globalMarket',
-          value: i18n.t('set:globalMarket'),
-          toggle: props.store === 'global',
-        },
         // { "key": "info", "value": i18n.t('set:info'), route: 'MySim'},
         {
           key: 'setting:contract',
