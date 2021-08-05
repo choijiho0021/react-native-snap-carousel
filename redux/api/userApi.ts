@@ -450,15 +450,22 @@ const sendSms = ({
   );
 };
 
+export type RkbSocialLogin = {
+  mobile: string;
+  newUser: boolean;
+};
+
 const socialLogin = ({
   user,
   pass,
   kind,
+  mobile,
   abortController,
 }: {
   user: string;
   pass: string;
   kind: 'ios' | 'fb' | 'naver' | 'kakao' | 'google';
+  mobile?: string;
   abortController?: AbortController;
 }) => {
   if (!user)
@@ -473,12 +480,12 @@ const socialLogin = ({
     {
       method: 'POST',
       headers: api.headers('json'),
-      body: JSON.stringify({user, pass, kind}),
+      body: JSON.stringify({user, pass, kind, mobile}),
     },
     (rsp = {}) => {
       return rsp.result.code === 0
-        ? api.success(rsp.id)
-        : api.failure(api.FAILED, rsp.result?.error);
+        ? api.success<RkbSocialLogin>([rsp.row as RkbSocialLogin])
+        : api.failure<RkbSocialLogin>(api.FAILED, rsp.result?.error);
     },
     {abortController},
   );

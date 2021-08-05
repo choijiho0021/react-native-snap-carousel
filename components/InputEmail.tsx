@@ -144,9 +144,8 @@ class InputEmail extends Component<InputEmailProps, InputEmailState> {
 
   componentDidMount() {
     if (this.props.inputRef) {
-      const {email, domain} = this.state;
       this.props.inputRef.current = {
-        getValue: () => ({email, domain}),
+        getValue: () => ({email: this.state.email, domain: this.state.domain}),
         focus: () => this.emailRef.current?.focus(),
       };
     }

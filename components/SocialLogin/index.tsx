@@ -3,6 +3,9 @@ import {StyleSheet, Text, View} from 'react-native';
 import i18n from '@/utils/i18n';
 import AppleLogin from './AppleLogin';
 import KakaoLogin from './KakaoLogin';
+import {appStyles} from '../../constants/Styles';
+import {colors} from '@/constants/Colors';
+import AppButton from '../AppButton';
 
 export type AuthCallback = ({
   user,
@@ -19,18 +22,60 @@ export type AuthCallback = ({
 }) => void;
 
 const styles = StyleSheet.create({
-  title: {
-    marginTop: 10,
-    textAlign: 'center',
+  container: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    marginBottom: 60,
+  },
+  divider: {
+    marginHorizontal: 20,
+    height: 1,
+    flex: 1,
+    backgroundColor: colors.lightGrey,
+    alignContent: 'center',
+  },
+  easyLoginTitle: {
+    flexDirection: 'row',
+    height: 30,
+    marginVertical: 20,
+    alignItems: 'center',
+  },
+  btnGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 55,
   },
 });
 
 const SocialLogin = ({onAuth}: {onAuth: AuthCallback}) => {
   return (
-    <View>
-      <Text style={styles.title}>{i18n.t('login:easyLogin')}</Text>
-      <AppleLogin onAuth={onAuth} />
-      <KakaoLogin onAuth={onAuth} />
+    <View style={styles.container}>
+      <View style={styles.easyLoginTitle}>
+        <View style={styles.divider} />
+        <Text style={appStyles.bold18Text}>{i18n.t('login:easyLogin')}</Text>
+        <View style={styles.divider} />
+      </View>
+      <View style={styles.btnGroup}>
+        <KakaoLogin onAuth={onAuth} />
+        {/* naver, facebook 로그인은 추가 필요 */}
+        <AppButton
+          iconName="naverLogin"
+          style={{
+            width: 44,
+            height: 44,
+          }}
+          onPress={() => {}}
+        />
+        <AppButton
+          iconName="facebookLogin"
+          style={{
+            width: 44,
+            height: 44,
+          }}
+          onPress={() => {}}
+        />
+        <AppleLogin onAuth={onAuth} />
+      </View>
     </View>
   );
 };

@@ -194,7 +194,8 @@
   "sim:rechargeBalance": "ROKEBI Cash",
 
   "mobile:header": "Login",
-  "mobile:title": "Easy Login",
+  "mobile:title": "Where is\nyour next destination?",
+  "mobile:easyLogin": "Easy Login",
   "mobile:input": "Input your phone numbers",
   "mobile:auth": "Input auth code",
   "mobile:sendAuth": "Send code",
