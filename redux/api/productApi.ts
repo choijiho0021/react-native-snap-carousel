@@ -223,7 +223,7 @@ const getProdGroup = ({
             ? {
                 value:
                   item.price.currency === 'KRW'
-                    ? Math.round(item.price.value / item.days / 100) * 100
+                    ? Math.round(item.price.value / item.days / 10) * 10
                     : Math.round((item.price.value / item.days) * 100) / 100,
                 currency: item.price.currency,
               }
