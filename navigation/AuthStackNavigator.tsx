@@ -9,7 +9,7 @@ const Auth = createStackNavigator();
 
 function authStack() {
   return (
-    <Auth.Navigator>
+    <Auth.Navigator screenOptions={{headerShown: false}}>
       <Auth.Screen name="RegisterMobile" component={RegisterMobileScreen} />
       <Auth.Screen name="SimpleTextForAuth" component={SimpleTextScreen} />
     </Auth.Navigator>

@@ -10,11 +10,13 @@ const AppBackButton = ({
   isPaid = false,
   back,
   lastTab = ['0', '1'],
+  onPress,
 }: {
   back?: string;
   title?: string;
   isPaid?: boolean;
   lastTab: string[];
+  onPress?: () => void;
 }) => {
   const navigation = useNavigation();
 
@@ -32,7 +34,8 @@ const AppBackButton = ({
   return (
     <Pressable
       onPress={() => {
-        if (!isPaid) goBack();
+        if (onPress) onPress();
+        else if (!isPaid) goBack();
       }}
       disabled={isPaid}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>

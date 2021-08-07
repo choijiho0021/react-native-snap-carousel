@@ -5,7 +5,6 @@ import {
   AccessToken,
   GraphRequest,
   GraphRequestManager,
-  LoginButton,
   LoginManager,
 } from 'react-native-fbsdk';
 import {AuthCallback} from '.';
@@ -49,23 +48,6 @@ const FacebookLogin = ({onAuth}: {onAuth: AuthCallback}) => {
     [onAuth],
   );
 
-  const onLoginFinished = useCallback(
-    (error, data) => {
-      console.log('@@@ facebook', error, data);
-      if (error) {
-        console.log('@@@ facebook login failed');
-      } else if (data.isCancelled) {
-        console.log('@@@ facebook login cancelled');
-      } else {
-        AccessToken.getCurrentAccessToken().then((data) => {
-          console.log('@@@ login', data?.accessToken.toString());
-          getPublicProfile(data);
-        });
-      }
-    },
-    [getPublicProfile],
-  );
-
   const onPress = useCallback(() => {
     LoginManager.logInWithPermissions(['public_profile', 'email']).then(
       (result) => {
@@ -82,7 +64,7 @@ const FacebookLogin = ({onAuth}: {onAuth: AuthCallback}) => {
         console.log('Login fail with error: ' + error);
       },
     );
-  }, []);
+  }, [getPublicProfile]);
 
   return (
     <View style={styles.button}>
@@ -94,7 +76,6 @@ const FacebookLogin = ({onAuth}: {onAuth: AuthCallback}) => {
         }}
         onPress={onPress}
       />
-      {/* <LoginButton onLoginFinished={onLoginFinished} /> */}
     </View>
   );
 };
