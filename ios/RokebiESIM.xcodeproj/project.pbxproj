@@ -501,7 +501,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ $CONFIGURATION == \"Release\" ] \nthen\nlastNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\")\nnewNumber=$(($lastNumber + 1))\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $newNumber\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\"\nfi\n";
+			shellScript = "if [ $CONFIGURATION == \"Release\" ] || [ $CONFIGURATION == \"Staging\" ]\nthen\nlastNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\")\nnewNumber=$(($lastNumber + 1))\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $newNumber\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\"\nfi\n";
 		};
 		0D83ED5526BDFAEF00C53610 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -549,7 +549,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ $CONFIGURATION == \"Release\" ]\nthen\nlastNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\")\nnewNumber=$(($lastNumber + 1))\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $newNumber\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\"\nfi\n";
+			shellScript = "if [ $CONFIGURATION == \"Release\" ] || [ $CONFIGURATION == \"Staging\" ]\nthen\nlastNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\")\nnewNumber=$(($lastNumber + 1))\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $newNumber\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\"\nfi\n";
 		};
 		5CB06FF0AC8B12EC3C36F3D3 /* [CP-User] [RNFB] Core Configuration */ = {
 			isa = PBXShellScriptBuildPhase;
