@@ -72,6 +72,10 @@
 	<string></string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>fbshareextension</string>
+		<string>fbauth2</string>
+		<string>fb-messenger-api</string>
+		<string>fbapi</string>
 		<string>rokebitalk</string>
 		<string>naversearchapp</string>
 		<string>naversearchthirdlogin</string>
