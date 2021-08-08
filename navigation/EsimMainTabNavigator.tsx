@@ -170,7 +170,7 @@ const TabNavigator = ({
         name="CartStack"
         component={iccid && loggedIn ? cartStack : AuthStack}
         options={() => ({
-          tabBarVisible: false,
+          tabBarVisible: !!iccid && !!loggedIn,
           tabBarLabel: i18n.t('cart'),
           tabBarIcon: ({focused}) => (
             <BadgedIcon
@@ -186,6 +186,8 @@ const TabNavigator = ({
         component={iccid && loggedIn ? esimStack : AuthStack}
         options={({route}) => ({
           tabBarVisible:
+            !!iccid &&
+            !!loggedIn &&
             (getFocusedRouteNameFromRoute(route) || 'Esim') === 'Esim',
           tabBarLabel: i18n.t('esim'),
           tabBarIcon: ({focused}) => (
@@ -202,6 +204,8 @@ const TabNavigator = ({
         component={iccid && loggedIn ? myPageStack : AuthStack}
         options={({route}) => ({
           tabBarVisible:
+            !!iccid &&
+            !!loggedIn &&
             (getFocusedRouteNameFromRoute(route) || 'MyPage') === 'MyPage',
           tabBarLabel: i18n.t('mypage'),
           tabBarIcon: ({focused}) => (

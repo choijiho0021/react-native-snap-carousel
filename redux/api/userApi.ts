@@ -579,10 +579,10 @@ const confirmEmail = ({
         email,
       }),
     },
-    (rsp = {}) => {
-      return rsp.result?.code === 0
+    ({result}) => {
+      return result?.code === 0
         ? api.success([])
-        : api.failure(rsp.result?.code, rsp.result?.desc, rsp.result?.error);
+        : api.failure(result?.code, result?.error, result?.desc);
     },
     {abortController},
   );

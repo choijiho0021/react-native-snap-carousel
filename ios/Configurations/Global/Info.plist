@@ -29,7 +29,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>kakao${KAKAO_APP_KEY}</string>
+				<string>kakao20432406a5258ae68b9c9558a4ba23ef</string>
 			</array>
 		</dict>
 		<dict>
@@ -53,13 +53,13 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>57</string>
+	<string>63</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
 	<string>147522690488197</string>
 	<key>FacebookDisplayName</key>
-	<string>로밍도깨비 eSIM</string>
+	<string>Rokebi Global</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<true/>
 	<key>FirebaseScreenReportingEnabled</key>
@@ -67,7 +67,7 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>KAKAO_APP_KEY</key>
-	<string>${KAKAO_APP_KEY}</string>
+	<string>20432406a5258ae68b9c9558a4ba23ef</string>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -78,7 +78,7 @@
 		<string>kakaotalk-5.9.7</string>
 		<string>kakaolink</string>
 		<string>kakaokompassauth</string>
-		<string>kakao${KAKAO_APP_KEY}</string>
+		<string>kakao20432406a5258ae68b9c9558a4ba23ef</string>
 		<string>kftc-bankpay</string>
 		<string>ispmobile</string>
 		<string>itms-apps</string>

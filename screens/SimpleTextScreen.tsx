@@ -104,6 +104,7 @@ type SimpleTextScreenState = {
   bodyTitle?: string;
   promoResult?: string;
   loading: boolean;
+  infoMapKey: string;
 };
 
 class SimpleTextScreen extends Component<
@@ -117,6 +118,7 @@ class SimpleTextScreen extends Component<
 
     this.state = {
       body: '',
+      infoMapKey: '',
       loading: false,
     };
 
@@ -143,6 +145,15 @@ class SimpleTextScreen extends Component<
       this.getContent({key, bodyTitle});
     } else {
       this.setState({body: i18n.t('err:body')});
+    }
+  }
+
+  componentDidUpdate(prevProps: SimpleTextScreenProps) {
+    if (this.props.info !== prevProps.info) {
+      const {infoMap} = this.props.info;
+      this.setState(({infoMapKey}) => ({
+        body: infoMap.get(infoMapKey, [])[0]?.body,
+      }));
     }
   }
 
@@ -206,20 +217,16 @@ class SimpleTextScreen extends Component<
 
   getContent({key, bodyTitle}: {key: string; bodyTitle?: string}) {
     const {infoMap} = this.props.info;
-    const contentExist =
-      key === 'noti' && bodyTitle ? infoMap.has(bodyTitle) : infoMap.has(key);
-    if (!contentExist) {
-      if (key === 'noti' && bodyTitle) {
-        this.props.action.info.getInfoByTitle(bodyTitle).then(() => {
-          const object = infoMap.get(bodyTitle, []);
-          this.setState({body: object[0]?.body});
-        });
-      } else {
-        this.props.action.info.getInfoList(key).then(() => {
-          const object = infoMap.get(key, []);
-          this.setState({body: object[0]?.body});
-        });
-      }
+    const infoMapKey = key === 'noti' && bodyTitle ? bodyTitle : key;
+    this.setState({infoMapKey});
+    if (infoMap.has(infoMapKey)) {
+      this.setState({
+        body: infoMap.get(infoMapKey, [])[0]?.body,
+      });
+    } else if (key === 'noti' && bodyTitle) {
+      this.props.action.info.getInfoByTitle(infoMapKey);
+    } else {
+      this.props.action.info.getInfoList(infoMapKey);
     }
   }
 

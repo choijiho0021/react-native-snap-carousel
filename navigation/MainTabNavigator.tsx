@@ -266,6 +266,7 @@ const TabNavigator = ({
           //   console.log('tab bar', e);
           // },
           tabBarVisible:
+            loggedIn &&
             (getFocusedRouteNameFromRoute(route) || 'Usim') === 'Usim',
           tabBarLabel: i18n.t('usim'),
           tabBarIcon: ({focused}) => (
@@ -282,6 +283,7 @@ const TabNavigator = ({
         component={loggedIn ? myPageStack : AuthStack}
         options={({route}) => ({
           tabBarVisible:
+            loggedIn &&
             (getFocusedRouteNameFromRoute(route) || 'MyPage') === 'MyPage',
           tabBarLabel: i18n.t('mypage'),
           tabBarIcon: ({focused}) => (
