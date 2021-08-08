@@ -47,7 +47,7 @@ const NaverLoginButton = ({onAuth}: {onAuth: AuthCallback}) => {
       // kCosumerSecret => naver application secret key
       kConsumerKey: '',
       kConsumerSecret: '',
-      kServiceAppName: '로밍도깨비 eSIM',
+      kServiceAppName: '로깨비ESIM',
       kServiceAppUrlScheme: 'naverlogin', // only for iOS // naverlogin
     };
 
