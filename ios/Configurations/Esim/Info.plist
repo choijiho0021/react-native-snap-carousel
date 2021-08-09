@@ -48,12 +48,12 @@
 			<string>esimnaverlogin</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>naversearchthirdlogin</string>
+				<string>esimnaverlogin</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>60</string>
+	<string>62</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
