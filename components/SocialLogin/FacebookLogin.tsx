@@ -1,14 +1,14 @@
 import React, {memo, useCallback} from 'react';
 import {StyleSheet, View} from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import {
+  AccessToken,
   GraphRequest,
   GraphRequestManager,
   LoginManager,
-  AccessToken,
 } from 'react-native-fbsdk';
-import AsyncStorage from '@react-native-community/async-storage';
-import AppButton from '@/components/AppButton';
 import {AuthCallback} from '.';
+import AppButton from '../AppButton';
 
 const styles = StyleSheet.create({
   button: {
@@ -17,81 +17,54 @@ const styles = StyleSheet.create({
 });
 
 const FacebookLogin = ({onAuth}: {onAuth: AuthCallback}) => {
-  const onPress = useCallback(async () => {
-    try {
-      /* for testing
-      if (onAuth)
-        onAuth({
-          user: 'facebookuser',
-          pass: '1234',
-          authorized: true,
-          email: 'app@test.com',
-        });
-        */
-
-      LoginManager.logInWithPermissions(['public_profile', 'email']).then(
-        (result) => {
-          if (result.isCancelled) {
-            console.log('FacebookLogin is Cancelled');
+  const getPublicProfile = useCallback(
+    (data) => {
+      const infoRequest = new GraphRequest(
+        '/me?fields=id,name,email,picture',
+        null,
+        async (error, result) => {
+          if (error) {
+            console.log('@@@ profile', error);
           } else {
-            const req = new GraphRequest(
-              '/me',
-              {
-                httpMethod: 'GET',
-                version: 'v2.5',
-                parameters: {
-                  fields: {
-                    string: 'email,name',
-                  },
-                },
-              },
-              async (err, res) => {
-                if (err) {
-                  console.log('Facebook get profile is failed', err);
-                } else {
-                  const {id, email} = res;
-                  const {accessToken} =
-                    await AccessToken.getCurrentAccessToken();
+            console.log('@@@ profile', data, result);
 
-                  if (accessToken) {
-                    await AsyncStorage.setItem('login.facebook.user', id);
-                    await AsyncStorage.setItem(
-                      'login.facebook.pass',
-                      accessToken,
-                    );
+            const pass = data.accessToken.substr(0, 16);
+            await AsyncStorage.setItem('login.facebook.user', result.id);
+            await AsyncStorage.setItem('login.facebook.pass', pass);
 
-                    let storedEmail = email || '';
-                    if (email) {
-                      await AsyncStorage.setItem('login.facebook.email', email);
-                    } else {
-                      storedEmail =
-                        (await AsyncStorage.getItem('login.facebook.email')) ||
-                        '';
-                    }
-
-                    if (onAuth)
-                      onAuth({
-                        user: id,
-                        pass: accessToken,
-                        authorized: true,
-                        email: storedEmail,
-                      });
-                  }
-                }
-              },
-            );
-
-            new GraphRequestManager().addRequest(req).start();
+            if (onAuth)
+              onAuth({
+                user: result.id,
+                pass,
+                authorized: true,
+                email: result.email,
+              });
           }
         },
-        (error) => {
-          console.log('aaaaa Login fail with error: ', error);
-        },
       );
-    } catch (error) {
-      console.error(error);
-    }
-  }, [onAuth]);
+
+      new GraphRequestManager().addRequest(infoRequest).start();
+    },
+    [onAuth],
+  );
+
+  const onPress = useCallback(() => {
+    LoginManager.logInWithPermissions(['public_profile', 'email']).then(
+      (result) => {
+        if (result.isCancelled) {
+          console.log('Login cancelled');
+        } else {
+          AccessToken.getCurrentAccessToken().then((data) => {
+            console.log('@@@ login', data?.accessToken.toString());
+            getPublicProfile(data);
+          });
+        }
+      },
+      (error) => {
+        console.log('Login fail with error: ' + error);
+      },
+    );
+  }, [getPublicProfile]);
 
   return (
     <View style={styles.button}>

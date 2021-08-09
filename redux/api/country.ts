@@ -278,7 +278,7 @@ const getPfx = (code?: string) => {
 
 const getCountryName = (code?: string, lang = 'ko') => {
   const cc = code ? code.toLowerCase() : '';
-  return typeof ccode[cc] === 'undefined' ? 'N/A' : ccode[cc][lang][0];
+  return ccode[cc] === undefined ? 'N/A' : ccode[cc][lang][0];
 };
 
 const getName = (code: string[] = [], lang = 'ko') => {
@@ -290,7 +290,7 @@ const getName = (code: string[] = [], lang = 'ko') => {
     return ['N/A'];
   }
 
-  return code.map((elm) => getCountryName(elm));
+  return code.map((elm) => getCountryName(elm, lang));
 };
 
 export default {

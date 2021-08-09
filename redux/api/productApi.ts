@@ -217,13 +217,15 @@ const getProdGroup = ({
         const localOp = localOpList.get(item.partnerId);
         item.ccodeStr = (localOp?.ccode || []).join(',');
         item.cntry = Set(Country.getName(localOp?.ccode));
-        item.search = [...item.cntry].join(',');
+        item.search = [...item.cntry]
+          .concat([...Set(Country.getName(localOp?.ccode, 'en'))])
+          .join(',');
         item.pricePerDay =
           item.price && item.days
             ? {
                 value:
                   item.price.currency === 'KRW'
-                    ? Math.round(item.price.value / item.days / 100) * 100
+                    ? Math.round(item.price.value / item.days / 10) * 10
                     : Math.round((item.price.value / item.days) * 100) / 100,
                 currency: item.price.currency,
               }

@@ -1,4 +1,4 @@
-import React, {Component, memo} from 'react';
+import React, {Component, memo, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -37,7 +37,11 @@ import InputPinInTime from '@/components/InputPinInTime';
 import {RootState} from '@/redux';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
-import {RouteProp} from '@react-navigation/native';
+import {
+  NavigationContainer,
+  RouteProp,
+  useFocusEffect,
+} from '@react-navigation/native';
 import {ApiResult} from '@/redux/api/api';
 import SocialLogin from '@/components/SocialLogin';
 import Env from '@/environment';
@@ -204,6 +208,7 @@ type RegisterMobileScreenRouteProp = RouteProp<
 type RegisterMobileScreenProps = {
   account: AccountModelState;
   pending: boolean;
+  focused: boolean;
   onSubmit: () => void;
 
   navigation: RegisterMobileScreenNavigationProp;
@@ -322,11 +327,6 @@ class RegisterMobileScreen extends Component<
   }
 
   componentDidMount() {
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('mobile:header')} />,
-    });
-
     this.mounted = true;
   }
 
@@ -391,6 +391,7 @@ class RegisterMobileScreen extends Component<
             throw new Error('failed to confirm email');
           }
         }
+        console.log('@@@ confirm email', resp);
 
         // 정상이거나, duplicated email 인 경우는 화면 상태 갱신 필요
         this.setState({
@@ -565,6 +566,8 @@ class RegisterMobileScreen extends Component<
     email?: string;
     mobile?: string;
   }) => {
+    this.setState({loading: true});
+
     const resp = await API.User.socialLogin({
       user,
       pass,
@@ -572,8 +575,9 @@ class RegisterMobileScreen extends Component<
       mobile,
     });
 
+    this.setState({loading: false});
+
     if (resp.result === 0) {
-      console.log('@@@ social', resp);
       const {mobile: drupalId, newUser} = resp.objects[0];
 
       this.setState({
@@ -662,6 +666,20 @@ class RegisterMobileScreen extends Component<
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
+
+        <AppBackButton
+          title={i18n.t('mobile:header')}
+          onPress={() => {
+            if (socialLogin) {
+              this.setState({
+                socialLogin: false,
+                newUser: false,
+                authorized: undefined,
+              });
+            } else this.props.navigation.goBack();
+          }}
+        />
+
         {socialLogin ? this.renderId() : this.renderTitle()}
 
         {!socialLogin && !esimGlobal && (

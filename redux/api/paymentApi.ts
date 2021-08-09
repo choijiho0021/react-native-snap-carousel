@@ -13,92 +13,97 @@ export type PaymentMethod = {
   method: string;
   title: string;
   icon?: string;
+  language?: string;
 };
-const method = [
-  [
-    {
-      key: 'html5_inicis',
-      method: 'card',
-      title: 'pym:ccard',
-    },
-    {
-      key: 'html5_inicis',
-      method: 'ssgpay',
-      title: 'pym:ssgpay',
-      icon: 'ssgpay',
-    },
-    {
-      key: 'html5_inicis',
-      method: 'lpay',
-      title: 'pym:lpay',
-      icon: 'lpay',
-    },
-  ] as PaymentMethod[],
-  [
-    {
-      key: 'html5_inicis',
-      method: 'kakaopay',
-      title: 'pym:kakao',
-      icon: 'kakao',
-    },
-    {
-      key: 'html5_inicis',
-      method: 'tosspay',
-      title: 'pym:toss',
-      icon: 'toss',
-    },
-    {
-      key: 'html5_inicis',
-      method: 'payco',
-      title: 'pym:payco',
-      icon: 'payco',
-    },
-  ] as PaymentMethod[],
-  [
-    // {
-    //   // method 확인
-    //   key: 'html5_inicis',
-    //   method: 'trans',
-    //   title: 'pym:bank',
-    // },
-    // {
-    //   // 확인필요
-    //   key: 'naverco',
-    //   method: 'naverco',
-    //   title: 'pym:naver',
-    //   icon: 'naver',
-    // },
-    // esimGlobal &&
-    !isProduction && {
-      key: 'paypal',
-      method: 'card',
-      title: 'pym:paypal',
-    },
-    // esimGlobal &&
-    !isProduction && {
-      key: 'eximbay',
-      method: 'card',
-      title: 'pym:eximbay',
-    },
-    !esimApp
-      ? {
-          key: 'danal',
-          method: 'phone',
-          title: 'pym:mobile',
-        }
-      : undefined,
-  ] as PaymentMethod[],
-  [
-    Platform.OS === 'android'
-      ? {
+const method = esimGlobal
+  ? [
+      [
+        {
+          key: 'eximbay',
+          method: 'card',
+          title: 'pym:ccard',
+        },
+        {
+          key: 'paypal',
+          method: 'card',
+          title: 'pym:paypal',
+          language: 'en_US',
+        },
+      ],
+    ]
+  : [
+      [
+        {
           key: 'html5_inicis',
-          method: 'samsung',
-          title: 'pym:samsung',
-          icon: 'samsung',
-        }
-      : undefined,
-  ] as PaymentMethod[],
-];
+          method: 'card',
+          title: 'pym:ccard',
+        },
+        {
+          key: 'html5_inicis',
+          method: 'ssgpay',
+          title: 'pym:ssgpay',
+          icon: 'ssgpay',
+        },
+        {
+          key: 'html5_inicis',
+          method: 'lpay',
+          title: 'pym:lpay',
+          icon: 'lpay',
+        },
+      ] as PaymentMethod[],
+      [
+        {
+          key: 'html5_inicis',
+          method: 'kakaopay',
+          title: 'pym:kakao',
+          icon: 'kakao',
+        },
+        {
+          key: 'html5_inicis',
+          method: 'tosspay',
+          title: 'pym:toss',
+          icon: 'toss',
+        },
+        {
+          key: 'html5_inicis',
+          method: 'payco',
+          title: 'pym:payco',
+          icon: 'payco',
+        },
+      ] as PaymentMethod[],
+      [
+        // {
+        //   // method 확인
+        //   key: 'html5_inicis',
+        //   method: 'trans',
+        //   title: 'pym:bank',
+        // },
+        // {
+        //   // 확인필요
+        //   key: 'naverco',
+        //   method: 'naverco',
+        //   title: 'pym:naver',
+        //   icon: 'naver',
+        // },
+        !esimApp
+          ? {
+              key: 'danal',
+              method: 'phone',
+              title: 'pym:mobile',
+            }
+          : undefined,
+      ] as PaymentMethod[],
+      [
+        Platform.OS === 'android'
+          ? {
+              key: 'html5_inicis',
+              method: 'samsung',
+              title: 'pym:samsung',
+              icon: 'samsung',
+            }
+          : undefined,
+      ] as PaymentMethod[],
+    ];
 
 type RkbPayment = {
   type?: string;
