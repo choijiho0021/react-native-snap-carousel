@@ -29,7 +29,7 @@ const NaverLoginButton = ({onAuth}: {onAuth: AuthCallback}) => {
       if (onAuth) {
         onAuth({
           user: res.response.id,
-          pass: '',
+          pass: token,
           authorized: true,
           email: res.response.email,
           mobile: res.response.mobile,

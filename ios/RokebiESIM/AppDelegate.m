@@ -28,6 +28,7 @@
 
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>
+#import <NaverThirdPartyLogin/NaverThirdPartyLoginConnection.h>
 #import <RNKakaoLogins.h>
 
 #if FB_SONARKIT_ENABLED
@@ -70,6 +71,9 @@ static void InitializeFlipper(UIApplication *application) {
       dispatch_async(dispatch_get_main_queue(), ^(void){
         if ([RNKakaoLogins isKakaoTalkLoginUrl:url]) {
           [RNKakaoLogins handleOpenUrl: url];
+        }
+        if([url.scheme isEqualToString:@"naverlogin"]){
+          [self handleWithUrl:url];
         }
       });
   });
@@ -131,7 +135,6 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
     [FIRApp configure];
   }
   
-  
   [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
   
   // TODO - 호출 순서 확인 필요 
@@ -156,6 +159,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+  [[NaverThirdPartyLoginConnection getSharedInstance] setIsNaverAppOauthEnable:YES];
   [super application:application didFinishLaunchingWithOptions:launchOptions];
   
   // Define UNUserNotificationCenter
@@ -177,6 +181,29 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
                                                          openURL:url
                                                sourceApplication:sourceApplication
                                                       annotation:annotation];
+}
+
+- (BOOL)handleWithUrl:(NSURL *)url {
+  NSLog(@"naver url : %@", url);
+  NSLog(@"naver url scheme : %@", url.scheme);
+  //NSLog(@"url scheme : %@", kServiceAppUrlScheme);
+  // NSLog(@"result - %d", [url.scheme isEqualToString:kServiceAppUrlScheme]);
+
+  
+      // 네이버앱으로부터 전달받은 url값을 NaverThirdPartyLoginConnection의 인스턴스에 전달
+      NaverThirdPartyLoginConnection *thirdConnection = [NaverThirdPartyLoginConnection getSharedInstance];
+      THIRDPARTYLOGIN_RECEIVE_TYPE resultType = [thirdConnection receiveAccessToken:url];
+
+      if (SUCCESS == resultType) {
+        NSLog(@"Getting auth code from NaverApp success!");
+      } else {
+        NSLog(@"  Error  ::  %u", resultType);
+        // 앱에서 resultType에 따라 실패 처리한다.
+        /*  SUCCESS = 0, PARAMETERNOTSET = 1, CANCELBYUSER = 2, NAVERAPPNOTINSTALLED = 3 , NAVERAPPVERSIONINVALID = 4,
+         .  OAUTHMETHODNOTSET = 5, INVALIDREQUEST = 6, CLIENTNETWORKPROBLEM = 7, UNAUTHORIZEDCLIENT = 8,
+         .  UNSUPPORTEDRESPONSETYPE = 9, NETWORKERROR = 10, UNKNOWNERROR = 11 */
+      }
+  return YES;
 }
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
