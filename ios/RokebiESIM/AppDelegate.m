@@ -72,7 +72,7 @@ static void InitializeFlipper(UIApplication *application) {
         if ([RNKakaoLogins isKakaoTalkLoginUrl:url]) {
           [RNKakaoLogins handleOpenUrl: url];
         }
-        if([url.scheme isEqualToString:@"naverlogin"]){
+        if([url.scheme isEqualToString:@"esimnaverlogin"]){
           [self handleWithUrl:url];
         }
       });
@@ -134,7 +134,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   if ([FIRApp defaultApp] == nil) {
     [FIRApp configure];
   }
-  
+
   [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
   
   // TODO - 호출 순서 확인 필요 
@@ -159,7 +159,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
-  [[NaverThirdPartyLoginConnection getSharedInstance] setIsNaverAppOauthEnable:YES];
+  // [[NaverThirdPartyLoginConnection getSharedInstance] setIsNaverAppOauthEnable:NO];
   [super application:application didFinishLaunchingWithOptions:launchOptions];
   
   // Define UNUserNotificationCenter

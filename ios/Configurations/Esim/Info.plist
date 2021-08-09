@@ -45,7 +45,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>naverlogin</string>
+			<string>esimnaverlogin</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>naversearchthirdlogin</string>
