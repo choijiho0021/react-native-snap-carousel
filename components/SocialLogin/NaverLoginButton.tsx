@@ -45,9 +45,9 @@ const NaverLoginButton = ({onAuth}: {onAuth: AuthCallback}) => {
     const iosKeys: ConfigParam = {
       // kConsumerKey => naver application client ID
       // kCosumerSecret => naver application secret key
-      kConsumerKey: '',
+      kConsumerKey: '', // client ID
       kConsumerSecret: '',
-      kServiceAppName: '로깨비ESIM',
+      kServiceAppName: '로깨비ESIM', // app name
       kServiceAppUrlScheme: 'naverlogin', // only for iOS // naverlogin
     };
 
@@ -69,11 +69,10 @@ const NaverLoginButton = ({onAuth}: {onAuth: AuthCallback}) => {
   return (
     <View style={styles.button}>
       <AppButton
-        title="naverLogin"
+        iconName="naverLogin"
         style={{
-          backgroundColor: colors.clearBlue,
-          width: 160, // You must specify a width
-          height: 45, // You must specify a height
+          width: 44, // You must specify a width
+          height: 44, // You must specify a height
         }}
         onPress={onPress}
       />
