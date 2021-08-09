@@ -59,7 +59,6 @@ const SocialLogin = ({onAuth}: {onAuth: AuthCallback}) => {
       </View>
       <View style={styles.btnGroup}>
         <KakaoLogin onAuth={onAuth} />
-        {/* naver, facebook 로그인은 추가 필요 */}
         <NaverLoginButton onAuth={onAuth} />
         <FacebookLogin onAuth={onAuth} />
         <AppleLogin onAuth={onAuth} />
