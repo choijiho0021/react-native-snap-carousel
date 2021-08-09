@@ -2,9 +2,9 @@ import {colors} from '@/constants/Colors';
 import i18n from '@/utils/i18n';
 import React, {memo} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import {appStyles} from '../../constants/Styles';
-import AppButton from '../AppButton';
+import {appStyles} from '@/constants/Styles';
 import AppleLogin from './AppleLogin';
+import FacebookLogin from './FacebookLogin';
 import KakaoLogin from './KakaoLogin';
 import NaverLoginButton from './NaverLoginButton';
 
@@ -58,16 +58,8 @@ const SocialLogin = ({onAuth}: {onAuth: AuthCallback}) => {
       </View>
       <View style={styles.btnGroup}>
         <KakaoLogin onAuth={onAuth} />
-        {/* naver, facebook 로그인은 추가 필요 */}
         <NaverLoginButton onAuth={onAuth} />
-        <AppButton
-          iconName="facebookLogin"
-          style={{
-            width: 44,
-            height: 44,
-          }}
-          onPress={() => {}}
-        />
+        <FacebookLogin onAuth={onAuth} />
         <AppleLogin onAuth={onAuth} />
       </View>
     </View>

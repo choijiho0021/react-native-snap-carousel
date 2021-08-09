@@ -1,9 +1,9 @@
 //
 //  File.swift
-//  Rokebi
+//  RokebiESIM
 //
-//  Created by 정연수 on 2020/06/02.
-//  Copyright © 2020 Facebook. All rights reserved.
+//  Created by Bohun Tak on 2021/08/09.
+//  Copyright © 2021 Facebook. All rights reserved.
 //
 
 import Foundation
