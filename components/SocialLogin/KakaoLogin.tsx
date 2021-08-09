@@ -1,12 +1,8 @@
-import React, {memo, useCallback, useEffect} from 'react';
+import React, {memo, useCallback} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {
-  KakaoOAuthToken,
-  KakaoProfile,
   getProfile as getKakaoProfile,
-  login,
-  logout,
-  unlink,
+  loginWithKakaoAccount,
 } from '@react-native-seoul/kakao-login';
 import AsyncStorage from '@react-native-community/async-storage';
 import AppButton from '@/components/AppButton';
@@ -32,7 +28,7 @@ const KakaoLogin = ({onAuth}: {onAuth: AuthCallback}) => {
         */
 
       // performs login request
-      const {accessToken} = await login();
+      const {accessToken} = await loginWithKakaoAccount();
 
       if (accessToken) {
         const profile = await getKakaoProfile();
