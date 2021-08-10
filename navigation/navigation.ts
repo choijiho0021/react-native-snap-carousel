@@ -26,7 +26,7 @@ export type PaymentParams = {
   buyer_email: string;
   escrow: boolean;
   app_scheme: string;
-  profile_uuid: string;
+  profile_uuid?: string;
   dlvCost: number;
   digital: boolean; // 컨텐츠 - 데이터상품일 경우 true
   memo?: string;
