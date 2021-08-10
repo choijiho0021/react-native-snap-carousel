@@ -192,7 +192,7 @@ const CountryListItem0 = ({
   onPress,
 }: {
   item: RkbProduct;
-  selected: string;
+  selected?: string;
   onPress: (v: string) => () => void;
 }) => {
   let borderColor = {};

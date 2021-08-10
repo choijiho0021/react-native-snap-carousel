@@ -15,7 +15,6 @@ import {
   RkbProduct,
 } from '@/redux/api/productApi';
 import {FlatList} from 'react-native-gesture-handler';
-import Env from '@/environment';
 import AppPrice from './AppPrice';
 
 const styles = StyleSheet.create({
