@@ -204,7 +204,7 @@ class ProductDetailScreen extends Component<
             title: i18n.t('set:noti'),
             bodyTitle: item?.title,
             body: item?.body,
-            mode: 'text',
+            mode: 'html',
           });
         }
         break;
@@ -280,7 +280,7 @@ class ProductDetailScreen extends Component<
     }
   }
 
-  scrollTo(y) {
+  scrollTo(y: number) {
     // console.log('@@@ scroll to', y)
 
     if (this.scrollView.current)
