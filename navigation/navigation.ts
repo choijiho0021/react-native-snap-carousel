@@ -3,7 +3,7 @@ import {RkbInfo} from '@/redux/api/pageApi';
 import {RkbProduct} from '@/redux/api/productApi';
 import {BoardMsgStatus} from '@/redux/api/boardApi';
 import {PaymentResult} from '@/redux/models/paymentResult';
-import {RkbSubscription} from '../redux/api/subscriptionApi';
+import {RkbSubscription} from '@/redux/api/subscriptionApi';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html';
 export type PymMethodScreenMode =
@@ -30,7 +30,11 @@ export type PaymentParams = {
   dlvCost: number;
   digital: boolean; // 컨텐츠 - 데이터상품일 경우 true
   memo?: string;
+
+  isPaid?: boolean;
+  mode?: string;
 };
+
 type SimpleTextParams = {
   key: 'noti' | 'info' | string;
   title: string;
@@ -70,7 +74,7 @@ export type HomeStackParamList = {
   Faq: FaqRouteParam;
   Guide: undefined;
   Country: {prodOfCountry: RkbProduct[]};
-  Payment: {params: PaymentParams};
+  Payment: PaymentParams;
   PymMethod: {isPaid?: boolean; mode?: PymMethodScreenMode};
   FindAddress: undefined;
   PaymentResult: {pymResult: PaymentResult; orderResult: object; mode?: string};

@@ -4,15 +4,17 @@ import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import Video from 'react-native-video';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 import {colors} from '@/constants/Colors';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import Env from '@/environment';
-import {actions as cartActions} from '@/redux/modules/cart';
+import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import api from '@/redux/api/api';
 import i18n from '@/utils/i18n';
 import {API} from '@/redux/api';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RouteProp} from '@react-navigation/native';
 
 // const IMP = require('iamport-react-native').default;
 const loading = require('../assets/images/loading_1.mp4');
@@ -51,8 +53,30 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
-class PaymentScreen extends Component {
-  constructor(props) {
+
+type PaymentScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'Payment'
+>;
+
+type PaymentScreenRouteProp = RouteProp<HomeStackParamList, 'Payment'>;
+
+type PaymentScreenProps = {
+  navigation: PaymentScreenNavigationProp;
+  route: PaymentScreenRouteProp;
+
+  action: {
+    cart: CartAction;
+  };
+};
+
+type PaymentScreenState = {
+  isPaid: boolean;
+  token?: string;
+};
+
+class PaymentScreen extends Component<PaymentScreenProps, PaymentScreenState> {
+  constructor(props: PaymentScreenProps) {
     super(props);
 
     this.state = {
@@ -66,20 +90,16 @@ class PaymentScreen extends Component {
   }
 
   componentDidMount() {
-    const params = this.props.route.params && this.props.route.params.params;
+    const {params} = this.props.route;
 
     this.props.navigation.setOptions({
       title: null,
       headerLeft: () => (
         <AppBackButton
           title={
-            (params || {}).isPaid
-              ? i18n.t('his:paymentCompleted')
-              : i18n.t('payment')
+            params?.isPaid ? i18n.t('his:paymentCompleted') : i18n.t('payment')
           }
           isPaid={params.isPaid}
-          pymResult={params.pymResult}
-          orderResult={params.orderResult}
         />
       ),
     });
@@ -135,8 +155,8 @@ class PaymentScreen extends Component {
       // 결제완료시 '다음' 버튼 연속클릭 방지 - 연속클릭시 추가 결제 없이 order 계속 생성
       if (!this.props.route.params.isPaid) {
         await this.props.navigation.setParams({isPaid: true});
-        const params =
-          this.props.route.params && this.props.route.params.params;
+        const {params} = this.props.route;
+
         this.props.action.cart
           .payNorder({
             imp_uid: rsp[0].imp_uid,
@@ -149,7 +169,7 @@ class PaymentScreen extends Component {
             dlvCost: params.dlvCost,
             memo: params.memo,
           })
-          .then((resp) => {
+          .then(({payload: resp}) => {
             console.log(' pay and order then ', resp);
             if (resp.result === 0) {
               this.props.navigation.replace('PaymentResult', {
@@ -171,12 +191,10 @@ class PaymentScreen extends Component {
 
   render() {
     const {impId} = Env.get();
-    const params = this.props.route.params && this.props.route.params.params;
+    const {params} = this.props.route ;
 
     return (
-      <SafeAreaView
-        style={styles.container}
-        forceInset={{top: 'never', bottom: 'always'}}>
+      <SafeAreaView style={styles.container}>
         <IMP.Payment
           userCode={impId}
           loading={

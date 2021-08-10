@@ -508,7 +508,7 @@ class PymMethodScreen extends Component<
       this.setState({
         clickable: true,
       });
-      this.props.navigation.navigate('Payment', {params});
+      this.props.navigation.navigate('Payment', params);
     }
   }
 
@@ -531,7 +531,7 @@ class PymMethodScreen extends Component<
             (v, idx) =>
               !_.isEmpty(v) && (
                 <AppButton
-                  key={v.key+v.method}
+                  key={v.key + v.method}
                   title={_.isEmpty(v.icon) ? i18n.t(v.title) : undefined}
                   style={buttonStyle(
                     idx,

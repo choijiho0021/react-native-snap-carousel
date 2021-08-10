@@ -1,8 +1,8 @@
 import _ from 'underscore';
+import {utils} from '@/utils/utils';
+import {PurchaseItem} from '@/redux/models/purchaseItem';
+import {PaymentResult} from '@/redux/models/paymentResult';
 import api, {ApiResult, DrupalNode} from './api';
-import utils from '../utils';
-import {PurchaseItem} from '../models/purchaseItem';
-import {PaymentResult} from '../models/paymentResult';
 import {Currency} from './productApi';
 
 export type RkbOrderItem = {
@@ -400,11 +400,10 @@ const makeOrder = ({
       body: JSON.stringify(body),
     },
     (resp) => {
-      console.log('make order', resp);
       if (resp.result < 0) {
-        return api.failure(resp.result, '', resp.desc);
+        return api.failure<PurchaseItem>(resp.result, '', resp.desc);
       }
-      return api.success([]);
+      return api.success(items);
     },
   );
 };
