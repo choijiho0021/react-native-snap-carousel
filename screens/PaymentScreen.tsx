@@ -112,21 +112,25 @@ class PaymentScreen extends Component {
     }
   }
 
-  setToken = (token) => {
+  setToken = (token: string) => {
     this.setState({token});
   };
 
-  isTrue = (val) => {
+  isTrue = (val: string) => {
     return val === 'true';
   };
 
   async callback(response) {
     let rsp = {};
 
-    await API.Payment.getUid(response.imp_uid, this.state.token).then((res) => {
+    await API.Payment.getUid({
+      uid: response.imp_uid,
+      token: this.state.token,
+    }).then((res) => {
       rsp = res;
     });
 
+    console.log('payment getuid rsp: \n', rsp, response);
     if (rsp[0].success) {
       // 결제완료시 '다음' 버튼 연속클릭 방지 - 연속클릭시 추가 결제 없이 order 계속 생성
       if (!this.props.route.params.isPaid) {
@@ -146,6 +150,7 @@ class PaymentScreen extends Component {
             memo: params.memo,
           })
           .then((resp) => {
+            console.log(' pay and order then ', resp);
             if (resp.result === 0) {
               this.props.navigation.replace('PaymentResult', {
                 pymResult: rsp[0],
