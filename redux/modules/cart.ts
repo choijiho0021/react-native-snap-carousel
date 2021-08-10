@@ -277,6 +277,7 @@ const payNorder = createAsyncThunk(
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
     return dispatch(checkStock({purchaseItems, token}))
       .then(({payload: res}) => {
+        console.log('@@@ check stock', res, iccid);
         if (res.result === 0) {
           return dispatch(
             makeOrder({
@@ -292,10 +293,11 @@ const payNorder = createAsyncThunk(
         throw new Error('Soldout');
       })
       .then((resp) => {
+        console.log('@@@ make order ', resp, orderItems);
         if (resp.payload?.result === 0) {
           dispatch(orderAction.getOrders({user: mobile, token, page: 0}));
           // cart에서 item 삭제
-          orderItems.forEach((item) => {
+          orderItems?.forEach((item) => {
             if (purchaseItems.find((o) => o.orderItemId === item.orderItemId)) {
               // remove ordered item
               if (orderId)

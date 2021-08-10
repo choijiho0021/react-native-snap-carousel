@@ -18,7 +18,6 @@ import RNExitApp from 'react-native-exit-app';
 import {TabView} from 'react-native-tab-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 import {RootState} from '@/redux';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';

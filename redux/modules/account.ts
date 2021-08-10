@@ -65,7 +65,7 @@ const changePictureWithToast = reflectWithToast(
   Toast.NOT_UPDATED,
 );
 
-export interface AccountModelState {
+export type AccountModelState = {
   expDate?: string;
   balance?: number;
   email?: string;
@@ -88,7 +88,7 @@ export interface AccountModelState {
   simCardImage?: string;
   isUsedByOther?: boolean;
   isPushNotiEnabled?: boolean;
-}
+};
 
 export type AccountAuth = {
   user?: string;
@@ -168,7 +168,6 @@ const logInAndGetAccount = createAsyncThunk(
               ({payload}: {payload: ApiResult<RkbAccount>}) => {
                 const {result: rst, objects: obj} = payload;
                 if (rst === 0 && obj && obj[0]?.status === 'A') {
-                  storeData(API.User.KEY_ICCID, obj[0].iccid);
                   dispatch(getAccount({iccid: obj[0].iccid, token}));
                 }
               },
@@ -227,36 +226,35 @@ const uploadAndChangePicture = createAsyncThunk(
   },
 );
 
-const updateAccountState = (state: AccountModelState, payload: object) => {
+const updateAccountState = (
+  state: AccountModelState,
+  payload: AccountModelState,
+) => {
   const newState = _.clone(state);
 
-  [
-    'expDate',
-    'actDate',
-    'firstActDate',
-    'userId',
-    'iccid',
-    'uuid',
-    'mobile',
-    'pin',
-    'email',
-    'token',
-    'deviceToken',
-    'simCardName',
-    'simCardImage',
-  ].forEach((key) => {
-    if (!_.isEmpty(payload[key])) newState[key] = payload[key];
-  });
+  if (payload.expDate) newState.expDate = payload.expDate;
+  if (payload.actDate) newState.actDate = payload.actDate;
+  if (payload.firstActDate) newState.firstActDate = payload.firstActDate;
+  if (payload.userId) newState.userId = payload.userId;
+  if (payload.iccid) newState.iccid = payload.iccid;
+  if (payload.uuid) newState.uuid = payload.uuid;
+  if (payload.mobile) newState.mobile = payload.mobile;
+  if (payload.pin) newState.pin = payload.pin;
+  if (payload.email) newState.email = payload.email;
+  if (payload.token) newState.token = payload.token;
+  if (payload.deviceToken) newState.deviceToken = payload.deviceToken;
+  if (payload.simCardName) newState.simCardName = payload.simCardName;
+  if (payload.simCardImage) newState.simCardImage = payload.simCardImage;
 
-  ['balance', 'simPartnerId', 'nid', 'uid'].forEach((key) => {
-    if (_.isNumber(payload[key])) newState[key] = payload[key];
-  });
+  if (_.isNumber(payload.balance)) newState.balance = payload.balance;
+  if (_.isNumber(payload.simPartnerId))
+    newState.simPartnerId = payload.simPartnerId;
+  if (_.isNumber(payload.nid)) newState.nid = payload.nid;
+  if (_.isNumber(payload.uid)) newState.uid = payload.uid;
 
-  ['isPushNotiEnabled'].forEach((key) => {
-    if (payload[key]) newState[key] = payload[key];
-  });
-
+  newState.isPushNotiEnabled = payload.isPushNotiEnabled;
   newState.isUsedByOther = undefined;
+
   return newState;
 };
 
