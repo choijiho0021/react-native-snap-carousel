@@ -3,11 +3,11 @@ import {Currency, RkbProduct} from '../api/productApi';
 export type PurchaseItem = {
   type: 'product' | 'rch' | 'sim_card';
   title: string;
-  variationId: string;
+  variationId?: string;
   price: Currency;
   qty: number;
   key: string;
-  orderItemId: number;
+  orderItemId?: number;
   sku: string;
   imageUrl?: string;
 };

@@ -124,7 +124,7 @@ const addCurrency = (a?: Currency, b?: Currency) => {
 const price = (num?: Currency): string => {
   if (!num) return '';
 
-  if (num.currency === 'USD')
+  if (num.currency === 'USD' || i18n.locale !== 'ko')
     return ` ${i18n.t(num.currency)} ${currencyString(num.value)}`;
 
   return `${currencyString(num.value)} ${i18n.t(num.currency)}`;

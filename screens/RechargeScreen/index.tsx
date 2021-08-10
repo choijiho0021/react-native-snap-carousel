@@ -31,16 +31,19 @@ import React, {Component} from 'react';
 import {
   Image,
   ImageBackground,
+  Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import AppPrice from '@/components/AppPrice';
+import {PurchaseItem} from '@/redux/models/purchaseItem';
+import EsimMainTabNavigator from '@/navigation/EsimMainTabNavigator';
 
 const styles = StyleSheet.create({
   buttonBox: {
@@ -164,9 +167,22 @@ type RechargeScreenProps = {
 
 type RechargeScreenState = {
   selected: string;
+  amount: number;
 };
 
-const {esimApp} = Env.get();
+const {esimApp, esimCurrency} = Env.get();
+const rechargeChoice =
+  esimCurrency === 'KRW'
+    ? [
+        [5000, 10000],
+        [15000, 20000],
+        [25000, 30000],
+      ]
+    : [
+        [5, 10],
+        [15, 20],
+        [25, 30],
+      ];
 
 class RechargeScreen extends Component<
   RechargeScreenProps,
@@ -177,11 +193,11 @@ class RechargeScreen extends Component<
 
     // recharge 상품의 SKU는 'rch-{amount}' 형식을 갖는다.
     this.state = {
-      selected: 'rch-5000',
+      selected: `rch-${rechargeChoice[0][0]}`,
+      amount: rechargeChoice[0][0],
     };
 
     this.onSubmit = this.onSubmit.bind(this);
-    this.onPress = this.onPress.bind(this);
     this.rechargeButton = this.rechargeButton.bind(this);
   }
 
@@ -201,32 +217,28 @@ class RechargeScreen extends Component<
   }
 
   onSubmit() {
-    const {selected} = this.state;
-    const purchaseItems = [
-      {
-        key: 'rch',
-        type: 'rch',
-        title: `${utils.numberToCommaString(
-          utils.stringToNumber(selected),
-        )} ${i18n.t('sim:rechargeBalance')}`,
-        price: utils.stringToNumber(selected),
-        qty: 1,
-        sku: selected,
-      },
-    ];
+    const {selected, amount} = this.state;
+    if (selected) {
+      const purchaseItems = [
+        {
+          key: 'rch',
+          type: 'rch',
+          title: `${utils.numberToCommaString(amount)} ${i18n.t(
+            'sim:rechargeBalance',
+          )}`,
+          price: utils.toCurrency(amount, esimCurrency),
+          qty: 1,
+          sku: selected,
+        } as PurchaseItem,
+      ];
 
-    this.props.action.cart.purchase({purchaseItems});
-    this.props.navigation.navigate('PymMethod', {
-      pymPrice: utils.stringToNumber(selected),
-      mode: 'recharge',
-    });
+      this.props.action.cart.purchase({purchaseItems});
+      this.props.navigation.navigate('PymMethod', {
+        pymPrice: utils.stringToNumber(selected),
+        mode: 'recharge',
+      });
+    }
   }
-
-  onPress = (key: string) => () => {
-    this.setState({
-      selected: key,
-    });
-  };
 
   rechargeButton(value: number[]) {
     const {selected} = this.state;
@@ -239,22 +251,20 @@ class RechargeScreen extends Component<
           const color = checked ? colors.clearBlue : colors.warmGrey;
 
           return (
-            <TouchableOpacity
+            <Pressable
               key={key}
-              onPress={this.onPress(key)}
+              onPress={() => this.setState({selected: key, amount: v})}
               style={[
                 styles.button,
                 {borderColor: checked ? colors.clearBlue : colors.lightGrey},
               ]}>
-              <View style={styles.buttonBox}>
-                <Text style={[styles.buttonText, {color}]}>
-                  {utils.numberToCommaString(v)}
-                </Text>
-                <Text style={[appStyles.normal14Text, {color}]}>
-                  {i18n.t('won')}
-                </Text>
-              </View>
-            </TouchableOpacity>
+              <AppPrice
+                style={styles.buttonBox}
+                balanceStyle={[styles.buttonText, {color}]}
+                currencyStyle={[appStyles.normal14Text, {color}]}
+                price={utils.toCurrency(v, esimCurrency)}
+              />
+            </Pressable>
           );
         })}
       </View>
@@ -262,14 +272,9 @@ class RechargeScreen extends Component<
   }
 
   render() {
-    const {iccid = '', balance, simCardImage} = this.props.account;
+    const {iccid = '', balance = 0, simCardImage} = this.props.account;
     const {selected} = this.state;
     const seg = [0, 5, 10, 15].map((v) => iccid.substring(v, v + 5));
-    const amount = [
-      [5000, 10000],
-      [15000, 20000],
-      [25000, 30000],
-    ];
 
     return (
       <SafeAreaView style={styles.container}>
@@ -288,12 +293,9 @@ class RechargeScreen extends Component<
                     <Text style={appStyles.normal14Text}>
                       {i18n.t('acc:remain')}
                     </Text>
-                    <Text
-                      style={
-                        appStyles.bold30Text
-                      }>{`${utils.numberToCommaString(balance)}${i18n.t(
-                      'won',
-                    )}`}</Text>
+                    <Text style={appStyles.bold30Text}>
+                      {utils.price(utils.toCurrency(balance, esimCurrency))}
+                    </Text>
                   </View>
                 </View>
               </ImageBackground>
@@ -333,7 +335,7 @@ class RechargeScreen extends Component<
             {i18n.t('rch:amount')}
           </Text>
           <View style={{marginBottom: 40}}>
-            {amount.map((v: number[]) => this.rechargeButton(v))}
+            {rechargeChoice.map((v: number[]) => this.rechargeButton(v))}
           </View>
         </ScrollView>
         <AppButton
