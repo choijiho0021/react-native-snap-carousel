@@ -33,6 +33,7 @@ const AppBackButton = ({
 
   return (
     <Pressable
+      style={{justifyContent: 'center'}}
       onPress={() => {
         if (onPress) onPress();
         else if (!isPaid) goBack();
