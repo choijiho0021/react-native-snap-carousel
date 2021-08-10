@@ -1,3 +1,4 @@
+import Env from '@/environment';
 import _ from 'underscore';
 import {utils} from '@/utils/utils';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
@@ -360,6 +361,7 @@ const makeOrder = ({
       ? 'physical'
       : 'default';
 
+  const {esimCurrency} = Env.get();
   const body = {
     iccid,
     order: {
@@ -388,7 +390,7 @@ const makeOrder = ({
       amount: result.amount,
       rokebi_cash: result.rokebi_cash,
       shipping_cost: result.dlvCost,
-      currency_code: result.currency_code || 'KRW',
+      currency_code: result.currency_code || esimCurrency,
     },
   };
 
