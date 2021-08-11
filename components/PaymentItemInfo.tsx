@@ -200,6 +200,7 @@ const PaymentItemInfo = ({
                 ];
           return (
             <PaymentItem
+              key={item.key}
               titleStyle={styles.productPriceTitle}
               title={item.title + qty}
               valueStyle={[
