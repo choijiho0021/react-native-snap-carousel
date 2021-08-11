@@ -1,4 +1,4 @@
-import {Currency, CurrencyCode} from '../api/productApi';
+import {Currency, CurrencyCode} from '@/redux/api/productApi';
 
 export type PaymentResult = {
   success: boolean;

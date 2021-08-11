@@ -315,7 +315,7 @@ const getImpToken = () => {
   );
 };
 
-const getUid = ({uid, token}: {uid: string; token: string}) => {
+const getUid = ({uid, token}: {uid: string; token?: string}) => {
   if (!uid) return api.reject(api.E_INVALID_ARGUMENT, `missing parameter: uid`);
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, `missing parameter: token`);

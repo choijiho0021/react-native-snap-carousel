@@ -159,7 +159,7 @@ const getSubscription = ({
   token,
   prodType,
 }: {
-  iccid: string;
+  iccid?: string;
   token?: string;
   prodType?: string;
 }) => {

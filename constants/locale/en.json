@@ -341,7 +341,7 @@
   "cart:totalPrice": "Total Amount",
   "cart:deductBalance": "Deduction from ROKEBI Cash",
   "cart:currentBalance": "Balance in ROKEBI Cash",
-  "cart:afterDeductBalance": "Remaining Balance in ROKEBI Cash",
+  "cart:afterDeductBalance": "Remaining ROKEBI Cash",
   "cart:dlvCost": "Delivery cost",
   "cart:totalCost": "Total Payment",
   "cart:totalCntX": "%%",
@@ -352,7 +352,7 @@
   "cart:purchase": "Buy it now",
   "cart:empty": "Your Cart is Empty",
   "cart:remove": "Product not on sale has been removed from the list.",
-  "cart:soldOout": "Due to out of stock, can't purchase at this time.",
+  "cart:soldOut": "Due to out of stock, can't purchase at this time.",
   "cart:notToCart": "Due to out of stock, can't add to the cart.",
   "cart:systemError": "Due to system error, The service does not work properly. \nPlease try again in a few min.",
 

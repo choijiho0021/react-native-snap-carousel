@@ -3,10 +3,15 @@ import PaymentItemInfo from '@/components/PaymentItemInfo';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
-import {actions as accountActions} from '@/redux/modules/account';
-import {actions as cartActions} from '@/redux/modules/cart';
+import {AccountModelState} from '@/redux/modules/account';
+import {
+  actions as cartActions,
+  CartAction,
+  CartModelState,
+  PaymentReq,
+} from '@/redux/modules/cart';
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
-import {actions as orderActions} from '@/redux/modules/order';
+import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import utils from '@/redux/api/utils';
 import i18n from '@/utils/i18n';
 import Analytics from 'appcenter-analytics';
@@ -14,6 +19,7 @@ import React, {Component} from 'react';
 import {
   BackHandler,
   Image,
+  NativeEventSubscription,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -23,7 +29,14 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RouteProp} from '@react-navigation/native';
+import {PurchaseItem} from '@/redux/models/purchaseItem';
+import {Currency} from '@/redux/api/productApi';
+import Env from '@/environment';
 
+const {esimCurrency} = Env.get();
 const imgCheck = require('../assets/images/main/imgCheck.png');
 
 const styles = StyleSheet.create({
@@ -82,13 +95,45 @@ const styles = StyleSheet.create({
   },
 });
 
+type PaymentResultScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'PaymentResult'
+>;
+
+type PaymentResultScreenRouteProp = RouteProp<
+  HomeStackParamList,
+  'PaymentResult'
+>;
+
 type PaymentResultScreenProps = {
+  navigation: PaymentResultScreenNavigationProp;
+  route: PaymentResultScreenRouteProp;
+
+  account: AccountModelState;
+  cart: CartModelState;
+
   action: {
     noti: NotiAction;
+    order: OrderAction;
+    cart: CartAction;
   };
 };
 
-class PaymentResultScreen extends Component<PaymentResultScreenProps> {
+type PaymentResultScreenState = {
+  pymReq?: PaymentReq[];
+  purchaseItems: PurchaseItem[];
+  pymPrice?: Currency;
+  deduct?: Currency;
+  isRecharge?: boolean;
+  screen: keyof HomeStackParamList;
+};
+
+class PaymentResultScreen extends Component<
+  PaymentResultScreenProps,
+  PaymentResultScreenState
+> {
+  backHandler: NativeEventSubscription | null;
+
   constructor(props: PaymentResultScreenProps) {
     super(props);
 
@@ -103,6 +148,8 @@ class PaymentResultScreen extends Component<PaymentResultScreenProps> {
     this.init = this.init.bind(this);
     this.moveScreen = this.moveScreen.bind(this);
     this.backKeyHandler = this.backKeyHandler.bind(this);
+
+    this.backHandler = null;
   }
 
   componentDidMount() {
@@ -114,10 +161,9 @@ class PaymentResultScreen extends Component<PaymentResultScreenProps> {
     });
 
     const {params} = this.props.route;
-
-    const {success} = (params && params.pymResult) || {};
-    const {result} = params && params.orderResult;
-    const mode = params && params.mode;
+    const {success} = params?.pymResult || {};
+    const {result} = params?.orderResult || {};
+    const mode = params?.mode;
 
     const isSuccess = _.isEmpty(success)
       ? result === 0
@@ -128,7 +174,7 @@ class PaymentResultScreen extends Component<PaymentResultScreenProps> {
     });
 
     this.init();
-    this.props.action.noti.getNotiList({mobile: this.props.auth.user});
+    this.props.action.noti.getNotiList({mobile: this.props.account.mobile});
     this.backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       this.backKeyHandler,
@@ -140,18 +186,15 @@ class PaymentResultScreen extends Component<PaymentResultScreenProps> {
     return true;
   };
 
-  moveScreen(key) {
-    this.backHandler.remove();
+  moveScreen(name: keyof HomeStackParamList) {
+    this.backHandler?.remove();
 
-    if (key === 'MyPage') {
-      this.props.navigation.reset({routes: [{name: 'MyPageStack'}]});
-    } else {
-      this.props.navigation.reset({routes: [{name: 'HomeStack'}]});
-    }
+    this.props.navigation.reset({routes: [{name}]});
   }
 
   init() {
     const {pymReq, purchaseItems, pymPrice, deduct} = this.props.cart;
+    const {iccid, token} = this.props.account;
     const {name} = this.props.route;
 
     this.setState({
@@ -169,7 +212,7 @@ class PaymentResultScreen extends Component<PaymentResultScreenProps> {
     // 구매 이력을 다시 읽어 온다.
     // this.props.action.order.getOrders(this.props.auth)
     // 사용 내역을 다시 읽어 온다.
-    this.props.action.order.getSubs(this.props.account.iccid, this.props.auth);
+    this.props.action.order.getSubs({iccid, token});
     // 카트를 비운다.
     this.props.action.cart.empty();
   }
@@ -178,8 +221,9 @@ class PaymentResultScreen extends Component<PaymentResultScreenProps> {
     const {params} = this.props.route;
     const {pymReq, purchaseItems, pymPrice, deduct, isRecharge, screen} =
       this.state;
-    const {success} = params && params.pymResult;
-    const {result} = params && params.orderResult;
+    const {success} = params?.pymResult || {};
+    const {result} = params?.orderResult || {};
+    const {balance = 0} = this.props.account;
 
     // [WARNING: 이해를 돕기 위한 것일 뿐, imp_success 또는 success 파라미터로 결제 성공 여부를 장담할 수 없습니다.]
     // 아임포트 서버로 결제내역 조회(GET /payments/${imp_uid})를 통해 그 응답(status)에 따라 결제 성공 여부를 판단하세요.
@@ -189,9 +233,7 @@ class PaymentResultScreen extends Component<PaymentResultScreenProps> {
       : success && result === 0;
 
     return (
-      <SafeAreaView
-        style={{flex: 1}}
-        forceInset={{top: 'never', bottom: 'always'}}>
+      <SafeAreaView style={{flex: 1}}>
         <ScrollView style={{backgroundColor: colors.whiteTwo}}>
           <View style={styles.paymentResultView}>
             <Image
@@ -205,7 +247,9 @@ class PaymentResultScreen extends Component<PaymentResultScreenProps> {
             <AppButton
               style={styles.btnOrderList}
               // MyPage화면 이동 필요
-              onPress={() => this.moveScreen('MyPage')}
+              onPress={() =>
+                this.moveScreen('MyPageStack' as keyof HomeStackParamList)
+              }
               // title={i18n.t('cancel')}
               title={i18n.t('pym:toOrderList')}
               titleStyle={appStyles.normal16Text}
@@ -215,22 +259,21 @@ class PaymentResultScreen extends Component<PaymentResultScreenProps> {
             <PaymentItemInfo
               cart={purchaseItems}
               pymReq={pymReq}
-              balance={this.props.account.balance}
               mode="result"
-              pymPrice={isSuccess ? pymPrice : 0}
-              deduct={isSuccess ? deduct : 0}
+              pymPrice={
+                isSuccess ? pymPrice : utils.toCurrency(0, esimCurrency)
+              }
+              deduct={isSuccess ? deduct : utils.toCurrency(0, esimCurrency)}
               isRecharge={isRecharge}
               screen={screen}
             />
             {screen === 'PaymentResult' && (
               <View style={styles.result}>
-                <Text style={appStyles.normal16Text}>
-                  {i18n.t('cart:afterDeductBalance')}{' '}
+                <Text style={[appStyles.normal16Text, {flex: 1}]}>
+                  {i18n.t('cart:afterDeductBalance')}
                 </Text>
                 <Text style={appStyles.normal16Text}>
-                  {`${utils.numberToCommaString(
-                    this.props.account.balance,
-                  )} ${i18n.t('won')}`}
+                  {utils.price(utils.toCurrency(balance, esimCurrency))}
                 </Text>
               </View>
             )}
@@ -240,7 +283,9 @@ class PaymentResultScreen extends Component<PaymentResultScreenProps> {
           style={styles.btnHome}
           title={i18n.t('pym:toHome')}
           titleStyle={styles.btnHomeText}
-          onPress={() => this.moveScreen('Home')}
+          onPress={() =>
+            this.moveScreen('HomeStack' as keyof HomeStackParamList)
+          }
         />
       </SafeAreaView>
     );
@@ -248,11 +293,9 @@ class PaymentResultScreen extends Component<PaymentResultScreenProps> {
 }
 
 export default connect(
-  ({account, cart, noti}: RootState) => ({
+  ({account, cart}: RootState) => ({
     account,
     cart,
-    auth: accountActions.auth(account),
-    noti,
   }),
   (dispatch) => ({
     action: {

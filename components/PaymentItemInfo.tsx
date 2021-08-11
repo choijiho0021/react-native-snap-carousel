@@ -217,12 +217,14 @@ const PaymentItemInfo = ({
         <View style={styles.priceInfo}>
           {pymReq.map((item) => (
             <PaymentItem
+              key={item.key}
               title={item.title}
               value={utils.price(item.amount)}
               mode={mode}
             />
           ))}
           <PaymentItem
+            key="deductBalance"
             title={i18n.t('cart:deductBalance')}
             value={`- ${utils.price(deduct)}`}
             mode={mode}
@@ -231,6 +233,7 @@ const PaymentItemInfo = ({
       )}
 
       <PaymentItem
+        key="totalCost"
         style={[
           styles.row,
           styles.total,

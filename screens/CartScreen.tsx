@@ -462,7 +462,7 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
       amount.currency,
     );
 
-    const data = this.props.cart.orderItems.find(
+    const data = this.props.cart.orderItems?.find(
       (item) =>
         (item.prod || {}).type === 'roaming_product' &&
         this.state.checked.get(item.key),
