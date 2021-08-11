@@ -352,7 +352,7 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
 
   removeItem(key: string, orderItemId: number) {
     this.setState((state) => {
-      const section = state.section.map((item) => ({
+      const section = state.section?.map((item) => ({
         title: item.title,
         data: item.data.filter((i) => i.orderItemId !== orderItemId),
       }));
@@ -462,7 +462,7 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
       amount.currency,
     );
 
-    const data = this.props.cart.orderItems.find(
+    const data = this.props.cart.orderItems?.find(
       (item) =>
         (item.prod || {}).type === 'roaming_product' &&
         this.state.checked.get(item.key),
