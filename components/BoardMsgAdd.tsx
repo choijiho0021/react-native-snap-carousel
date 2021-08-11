@@ -499,11 +499,13 @@ class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
           innerRef={(ref) => {
             this.scrollRef = ref;
           }}>
-          {!loggedIn && this.renderContact()}
-          <View style={styles.notiView}>
-            <Text style={styles.noti}>{i18n.t('board:noti')}</Text>
-          </View>
-
+          {loggedIn ? (
+            <View style={styles.notiView}>
+              <Text style={styles.noti}>{i18n.t('board:noti')}</Text>
+            </View>
+          ) : (
+            this.renderContact()
+          )}
           <View style={{flex: 1}}>
             <TextInput
               style={[
