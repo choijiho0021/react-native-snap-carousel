@@ -32,7 +32,7 @@ const NaverLoginButton = ({onAuth}: {onAuth: AuthCallback}) => {
           pass: token,
           authorized: true,
           email: res.response.email,
-          mobile: res.response.mobile,
+          mobile: res.response.mobile.replace(/-/gi, ''),
         });
       }
 
