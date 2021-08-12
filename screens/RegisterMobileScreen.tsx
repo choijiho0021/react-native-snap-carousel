@@ -456,18 +456,16 @@ class RegisterMobileScreen extends Component<
 
         API.User.sendSms({user: value, abortController: this.controller})
           .then((resp) => {
-            // bhtak, temporary
-            // if (resp.result === 0) {
-            this.setState({
-              authNoti: true,
-              timeout: false,
-            });
-
-            this.authInputRef.current?.focus();
-            // } else {
-            //   console.log('send sms failed', resp);
-            //   throw new Error('failed to send sms');
-            // }
+            if (resp.result === 0) {
+              this.setState({
+                authNoti: true,
+                timeout: false,
+              });
+              this.authInputRef.current?.focus();
+            } else {
+              console.log('send sms failed', resp);
+              throw new Error('failed to send sms');
+            }
           })
           .catch((err) => {
             console.log('send sms failed', err);
@@ -488,14 +486,6 @@ class RegisterMobileScreen extends Component<
     // PIN이 맞는지 먼저 확인한다.
 
     console.log('@@@ press pin', mobile, value);
-
-    // bhtak, temporary
-    this.signIn({mobile, pin}).then((resp) => {
-      if (resp.result < 0) {
-        this.setState({newUser: true, authorized: true});
-      }
-    });
-    return;
 
     if (authorized) return;
 
