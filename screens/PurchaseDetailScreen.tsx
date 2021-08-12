@@ -644,7 +644,7 @@ class PurchaseDetailScreen extends Component<
             <LabelText
               key={idx.toString()}
               style={styles.item}
-              label={`${item.title}  ×  ${item.qty} ${i18n.t('qty')}`}
+              label={`${item.title}  ×  ${item.qty}`}
               labelStyle={styles.label}
               format="price"
               valueStyle={appStyles.roboto16Text}
@@ -841,16 +841,14 @@ class PurchaseDetailScreen extends Component<
             <Text style={styles.boldTitle}>{i18n.t('his:paymentDetail')}</Text>
             <View style={{flexDirection: 'row'}}>
               {!showPayment && (
-                <View style={[styles.alignCenter, {flexDirection: 'row'}]}>
-                  <Text style={styles.normal16BlueTxt}>{i18n.t('total')} </Text>
-                  <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>
-                    {totalCnt}
-                  </Text>
-                  <Text style={styles.normal16BlueTxt}>{i18n.t('qty')} / </Text>
-                  <Text style={[styles.normal16BlueTxt, styles.fontWeightBold]}>
-                    {utils.price(billingAmt)}
-                  </Text>
-                </View>
+                <Text
+                  style={[
+                    styles.normal16BlueTxt,
+                    styles.fontWeightBold,
+                    styles.alignCenter,
+                  ]}>
+                  {utils.price(billingAmt)}
+                </Text>
               )}
               <AppButton
                 style={{backgroundColor: colors.white, height: 70}}
