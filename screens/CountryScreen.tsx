@@ -245,8 +245,8 @@ const CountryListItem0 = ({
 
 const CountryListItem = memo(CountryListItem0);
 
-function soldOut(resp: ApiResult<any>, message: string) {
-  if (resp.result === api.E_RESOURCE_NOT_FOUND) {
+function soldOut({payload}: ApiResult<any>, message: string) {
+  if (payload.result === api.E_RESOURCE_NOT_FOUND) {
     AppAlert.info(i18n.t(message));
   } else {
     AppAlert.info(i18n.t('cart:systemError'));

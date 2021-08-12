@@ -1,3 +1,4 @@
+import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppIcon from '@/components/AppIcon';
 import AppModal from '@/components/AppModal';
@@ -112,6 +113,7 @@ type SettingsScreenProps = {
   isPushNotiEnabled?: boolean;
   loggedIn?: boolean;
   store: Store;
+  pending: boolean;
   action: {
     cart: CartAction;
     order: OrderAction;
@@ -288,16 +290,18 @@ class SettingsScreen extends Component<
   };
 
   logout() {
-    this.props.action.cart.reset();
-    this.props.action.order.reset();
-    this.props.action.account.logout();
+    Promise.all([
+      this.props.action.cart.reset(),
+      this.props.action.order.reset(),
+      this.props.action.account.logout(),
+    ]).then(() => {
+      this.props.navigation.reset({index: 0, routes: [{name: 'HomeStack'}]});
 
-    this.props.navigation.reset({index: 0, routes: [{name: 'HomeStack'}]});
+      // bhtak
+      // firebase.notifications().setBadge(0);
 
-    // bhtak
-    // firebase.notifications().setBadge(0);
-
-    this.showModal(false);
+      this.showModal(false);
+    });
   }
 
   showModal(value: boolean) {
@@ -323,16 +327,18 @@ class SettingsScreen extends Component<
           onCancelClose={() => this.showModal(false)}
           visible={showModal}
         />
+        <AppActivityIndicator visible={this.props.pending} />
       </View>
     );
   }
 }
 
 export default connect(
-  ({account, cart}: RootState) => ({
+  ({account, cart, status}: RootState) => ({
     loggedIn: account.loggedIn,
     isPushNotiEnabled: account.isPushNotiEnabled,
     store: cart.store,
+    pending: status.pending[accountActions.logout.typePrefix] || false,
   }),
   (dispatch) => ({
     action: {
