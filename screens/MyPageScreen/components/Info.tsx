@@ -1,18 +1,18 @@
-import utils from '@/redux/api/utils';
-import React, {memo} from 'react';
-import {ImageBackground, Pressable, StyleSheet, Text, View} from 'react-native';
 import AppButton from '@/components/AppButton';
+import AppIcon from '@/components/AppIcon';
 import AppUserPic from '@/components/AppUserPic';
 import LabelTextTouchable from '@/components/LabelTextTouchable';
-import {appStyles} from '@/constants/Styles';
-import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
-import {connect} from 'react-redux';
-import {RootState} from '@reduxjs/toolkit';
-import {AccountModelState} from '@/redux/modules/account';
-import AppIcon from '@/components/AppIcon';
-import {useNavigation} from '@react-navigation/native';
+import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
+import utils from '@/redux/api/utils';
+import {AccountModelState} from '@/redux/modules/account';
+import i18n from '@/utils/i18n';
+import {useNavigation} from '@react-navigation/native';
+import {RootState} from '@reduxjs/toolkit';
+import React, {memo} from 'react';
+import {ImageBackground, Pressable, StyleSheet, Text, View} from 'react-native';
+import {connect} from 'react-redux';
 
 const {esimApp, esimCurrency} = Env.get();
 
@@ -84,6 +84,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   rchBtn: {
+    marginLeft: 10,
     width: 80,
     height: 40,
     borderRadius: 3,
@@ -155,7 +156,7 @@ const Info: React.FC<InfoProps> = ({
             source={require('../assets/images/esim/card.png')}
             style={styles.image}>
             <View style={styles.rechargeText}>
-              <View style={{flexDirection: 'column'}}>
+              <View style={{flexDirection: 'column', flex: 9}}>
                 <Text style={[appStyles.normal14Text, {marginBottom: 10}]}>
                   {i18n.t('acc:remain')}
                 </Text>
