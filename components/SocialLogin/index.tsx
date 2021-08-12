@@ -14,12 +14,14 @@ export type AuthCallback = ({
   authorized,
   email,
   mobile,
+  profileImageUrl,
 }: {
   user: string;
   pass: string;
   authorized: boolean;
   email?: string;
   mobile?: string;
+  profileImageUrl?: string;
 }) => void;
 
 const styles = StyleSheet.create({

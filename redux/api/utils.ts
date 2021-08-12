@@ -2,7 +2,10 @@ import _ from 'underscore';
 import moment from 'moment-with-locales-es6';
 import i18n from '@/utils/i18n';
 import Env from '@/environment';
+import {Image} from 'react-native';
 import {Currency, CurrencyCode} from './productApi';
+import {RkbImage} from './accountApi';
+import RNFetchBlob from 'rn-fetch-blob';
 
 const {esimCurrency} = Env.get();
 const dateTimeFmt = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})*$/;
@@ -212,6 +215,26 @@ const toDateString = (
   return '';
 };
 
+const convertURLtoRkbImage = async (url: string) => {
+  const response = await RNFetchBlob.fetch('GET', url);
+  const data = response.base64();
+
+  return new Promise<RkbImage>((resolve, reject) => {
+    if (data) {
+      Image.getSize(url, (width, height) => {
+        const rkbImage: RkbImage = {
+          mime: 'image/jpeg',
+          data,
+          height,
+          width,
+        };
+        resolve(rkbImage);
+      });
+    }
+    reject(new Error('convertURLtoRkbImage failed'));
+  });
+};
+
 export default {
   numberToCommaString,
   dlvCost,
@@ -230,4 +253,5 @@ export default {
   toCurrency,
   addCurrency,
   currencyString,
+  convertURLtoRkbImage,
 };
