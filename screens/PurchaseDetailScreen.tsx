@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import _ from 'underscore';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import SnackBar from 'react-native-snackbar-component';
 import Analytics from 'appcenter-analytics';
 import {
   StyleSheet,
@@ -31,7 +30,6 @@ import AppIcon from '@/components/AppIcon';
 import {isAndroid} from '@/components/SearchBarAnimation/utils';
 import AddressCard from '@/components/AddressCard';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import {timer} from '@/constants/Timer';
 import Env from '@/environment';
 import {RootState} from '@/redux';
 import utils from '@/redux/api/utils';
@@ -43,6 +41,7 @@ import {HomeStackParamList} from '@/navigation/navigation';
 import {Currency} from '@/redux/api/productApi';
 import AppPrice from '@/components/AppPrice';
 import moment from 'moment';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const {esimApp, esimCurrency} = Env.get();
 
@@ -290,8 +289,6 @@ class PurchaseDetailScreen extends Component<
   PurchaseDetailScreenProps,
   PurchaseDetailScreenState
 > {
-  snackRef: React.RefObject<SnackBar>;
-
   constructor(props: PurchaseDetailScreenProps) {
     super(props);
 
@@ -817,24 +814,10 @@ class PurchaseDetailScreen extends Component<
         }) => this.onScroll(y)}
         scrollEventThrottle={16}>
         <SafeAreaView>
-          <SnackBar
-            ref={this.snackRef}
+          <AppSnackBar
             visible={cancelPressed}
-            backgroundColor={colors.clearBlue}
-            textMessage={i18n.t('his:cancelSuccess')}
-            messageColor={colors.white}
-            position="top"
-            top={this.state.scrollHeight + windowHeight / 2}
-            containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 10}}
-            actionText="X"
-            actionStyle={{paddingHorizontal: 20}}
-            accentColor={colors.white}
-            autoHidingTime={timer.snackBarHidingTime}
             onClose={() => this.setState({cancelPressed: false})}
-            // distanceCallback={(distance) => {console.log('distance', distance)}}
-            actionHandler={() => {
-              this.snackRef.current.hideSnackbar();
-            }}
+            textMessage={i18n.t('his:cancelSuccess')}
           />
           {this.headerInfo()}
           <Pressable style={styles.dropDownBox} onPress={this.onPressPayment}>
