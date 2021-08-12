@@ -90,6 +90,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderStyle: 'solid',
     borderWidth: 1,
+    marginLeft: 20,
   },
   titleStyle: {
     marginHorizontal: 20,
@@ -351,7 +352,7 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
           text={i18n.t('mypage:manualInput:body')}
         />
         <View style={styles.titleAndStatus}>
-          <View>
+          <View style={{flex: 9}}>
             <Text style={styles.keyTitle}>{i18n.t('mypage:iccid')}</Text>
             <Text style={appStyles.normal18Text}>{iccid}</Text>
           </View>
@@ -372,7 +373,7 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
           />
         </View>
         <View style={styles.titleAndStatus}>
-          <View>
+          <View style={{flex: 9}}>
             <Text style={styles.keyTitle}>
               {i18n.t('mypage:activationCode')}
             </Text>
