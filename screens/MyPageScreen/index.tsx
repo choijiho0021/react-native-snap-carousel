@@ -561,7 +561,8 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
             <Info
               onChangePhoto={this.changePhoto}
               onPress={(key: 'id' | 'email') => {
-                if (key === 'id') this.showIdModal(true);
+                if (key === 'id') this.props.navigation.navigate('Faq');
+                // if (key === 'id') this.showIdModal(true);
                 else this.showEmailModal(true);
               }}
             />

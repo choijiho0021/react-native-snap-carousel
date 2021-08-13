@@ -179,7 +179,8 @@ const Info: React.FC<InfoProps> = ({
         {esimApp && (
           <Pressable style={styles.btnIdCheck} onPress={() => onPress('id')}>
             <Text style={[appStyles.normal16Text, {textAlign: 'center'}]}>
-              {i18n.t('mypage:idCheckTitle')}
+              {/* {i18n.t('mypage:idCheckTitle')} */}
+              {i18n.t('contact:faq')}
             </Text>
           </Pressable>
         )}
