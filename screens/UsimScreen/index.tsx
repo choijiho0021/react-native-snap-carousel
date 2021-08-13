@@ -1,7 +1,5 @@
 import React, {Component} from 'react';
 import {StyleSheet, View, Text, FlatList, RefreshControl} from 'react-native';
-
-import SnackBar from 'react-native-snackbar-component';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import i18n from '@/utils/i18n';
@@ -22,12 +20,12 @@ import {
   OrderModelState,
 } from '@/redux/modules/order';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import {timer} from '@/constants/Timer';
 import {RootState} from '@/redux';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import AppSnackBar from '@/components/AppSnackBar';
 import UsimCardInfo from './components/UsimCardInfo';
 import UsageItem from './components/UsageItem';
 
@@ -185,14 +183,8 @@ class UsimScreen extends Component<UsimScreenProps, UsimScreenState> {
           />
           <AppActivityIndicator visible={this.props.pending} />
         </View>
-        <SnackBar
+        <AppSnackBar
           visible={showSnackBar}
-          backgroundColor={colors.clearBlue}
-          messageColor={colors.white}
-          position="bottom"
-          top={0}
-          containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 0}}
-          autoHidingTime={timer.snackBarHidingTime}
           onClose={() => this.setState({showSnackBar: false})}
           textMessage={i18n.t('usim:failSnackBar')}
         />

@@ -46,6 +46,9 @@ import {ApiResult} from '@/redux/api/api';
 import SocialLogin from '@/components/SocialLogin';
 import Env from '@/environment';
 import {utils} from '@/utils/utils';
+import AppUserPic from '@/components/AppUserPic';
+import Profile from '@/components/Profile';
+import {RkbImage} from '../redux/api/accountApi';
 
 const {esimGlobal} = Env.get();
 // const esimGlobal = false;
@@ -236,6 +239,7 @@ type RegisterMobileScreenState = {
   darkMode: boolean;
   socialLogin: boolean;
   email?: string;
+  profileImageUrl?: string;
 };
 
 const initialState: RegisterMobileScreenState = {
@@ -549,12 +553,14 @@ class RegisterMobileScreen extends Component<
     pass,
     email,
     mobile,
+    profileImageUrl,
   }: {
     authorized: boolean;
     user: string;
     pass: string;
     email?: string;
     mobile?: string;
+    profileImageUrl?: string;
   }) => {
     this.setState({loading: true});
 
@@ -577,6 +583,7 @@ class RegisterMobileScreen extends Component<
         authorized,
         email,
         socialLogin: true,
+        profileImageUrl,
       });
 
       if (newUser) {
@@ -605,7 +612,14 @@ class RegisterMobileScreen extends Component<
     );
 
     console.log('@@@ login', resp);
-    if (resp.result === 0) this.props.actions.cart.cartFetch();
+    if (resp.result === 0) {
+      const profileImage: RkbImage = await utils.convertURLtoRkbImage(
+        this.state.profileImageUrl!,
+      );
+      this.props.actions.cart.cartFetch();
+      if (profileImage)
+        this.props.actions.account.uploadAndChangePicture(profileImage);
+    }
     return resp;
   };
 
@@ -630,8 +644,14 @@ class RegisterMobileScreen extends Component<
     <Text style={styles.title}>{i18n.t('mobile:title')}</Text>
   );
 
-  renderId = () => (
-    <Text style={styles.id}>ID : {utils.toPhoneNumber(this.state.mobile)}</Text>
+  renderProfile = (
+    email?: string,
+    mobile?: string,
+    profileImageUrl?: string,
+  ) => (
+    <View style={{marginTop: 30}}>
+      <Profile email={email} mobile={mobile} userPictureUrl={profileImageUrl} />
+    </View>
   );
 
   render() {
@@ -647,6 +667,7 @@ class RegisterMobileScreen extends Component<
       darkMode,
       email,
       socialLogin,
+      profileImageUrl,
     } = this.state;
     const {isValid, error} = emailValidation || {};
     const disableButton =
@@ -670,7 +691,9 @@ class RegisterMobileScreen extends Component<
           }}
         />
 
-        {socialLogin ? this.renderId() : this.renderTitle()}
+        {socialLogin
+          ? this.renderProfile(email, mobile, profileImageUrl)
+          : this.renderTitle()}
 
         {!socialLogin && !esimGlobal && (
           <View>
