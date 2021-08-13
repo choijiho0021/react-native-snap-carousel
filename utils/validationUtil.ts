@@ -51,11 +51,11 @@ i18nEvent.on('loaded', () => {
     },
     pin: {
       presence: {
-        message: i18n.t('reg:noActCode'),
+        message: i18n.t('reg:noPin'),
       },
       format: {
         pattern: /^\d{4}$/,
-        message: i18n.t('reg:invalidActCode'),
+        message: i18n.t('reg:invalidPin'),
       },
     },
     mobile: {
