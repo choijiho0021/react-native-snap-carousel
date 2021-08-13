@@ -61,9 +61,9 @@
 	<key>FacebookDisplayName</key>
 	<string>로밍도깨비 eSIM</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
-	<true/>
+	<false/>
 	<key>FirebaseScreenReportingEnabled</key>
-	<true/>
+	<false/>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>KAKAO_APP_KEY</key>

@@ -13,7 +13,6 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import Analytics from 'appcenter-analytics';
 import _ from 'underscore';
-import SnackBar from 'react-native-snackbar-component';
 import {API} from '@/redux/api';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
@@ -38,7 +37,6 @@ import AppPrice from '@/components/AppPrice';
 import AppCartButton from '@/components/AppCartButton';
 import {windowWidth, device, windowHeight} from '@/constants/SliderEntry.style';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import {timer} from '@/constants/Timer';
 import api, {ApiResult} from '@/redux/api/api';
 import AppAlert from '@/components/AppAlert';
 import Env from '@/environment';
@@ -47,6 +45,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
 import {RkbProduct} from '@/redux/api/productApi';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const {esimApp} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -284,8 +283,6 @@ type CountryScreenState = {
   isFocused: boolean;
 };
 class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
-  snackRef: React.RefObject<unknown>;
-
   constructor(props: CountryScreenProps) {
     super(props);
 
@@ -532,22 +529,9 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
           />
         </View>
         {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
-        <SnackBar
-          ref={this.snackRef}
+        <AppSnackBar
           visible={showSnackBar}
-          backgroundColor={colors.clearBlue}
-          messageColor={colors.white}
-          position="top"
-          top={windowHeight / 2}
-          containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 0}}
-          actionText="X"
-          actionStyle={{paddingHorizontal: 20}}
-          accentColor={colors.white}
-          autoHidingTime={timer.snackBarHidingTime}
           onClose={() => this.setState({showSnackBar: false})}
-          actionHandler={() => {
-            this.snackRef.current?.hideSnackbar();
-          }}
           textMessage={i18n.t('country:addCart')}
         />
         {iccid || (esimApp && loggedIn) ? (

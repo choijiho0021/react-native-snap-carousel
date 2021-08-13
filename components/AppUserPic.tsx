@@ -9,6 +9,7 @@ type AppUserPicProps = {
   url?: string;
   icon?: string;
   resizeMode?: ImageResizeMode;
+  isAbsolutePath?: boolean;
   onPress?: () => void;
 };
 const AppUserPic: React.FC<AppUserPicProps> = ({
@@ -16,6 +17,7 @@ const AppUserPic: React.FC<AppUserPicProps> = ({
   url,
   icon,
   resizeMode = 'cover',
+  isAbsolutePath = false,
   onPress = () => {},
 }) => {
   return (
@@ -23,7 +25,7 @@ const AppUserPic: React.FC<AppUserPicProps> = ({
       {url ? (
         <Image
           style={style}
-          source={{uri: API.default.httpImageUrl(url)}}
+          source={{uri: isAbsolutePath ? url : API.default.httpImageUrl(url)}}
           resizeMode={resizeMode}
         />
       ) : (

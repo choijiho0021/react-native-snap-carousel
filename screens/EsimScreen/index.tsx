@@ -3,7 +3,6 @@ import Clipboard from '@react-native-community/clipboard';
 import React, {Component} from 'react';
 import {FlatList, RefreshControl, StyleSheet, Text, View} from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
-import SnackBar from 'react-native-snackbar-component';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
@@ -12,7 +11,6 @@ import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {timer} from '@/constants/Timer';
 import {
   AccountAction,
   AccountModelState,
@@ -37,6 +35,7 @@ import {RouteProp} from '@react-navigation/native';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import AppColorText from '@/components/AppColorText';
+import AppSnackBar from '@/components/AppSnackBar';
 import CardInfo from './components/CardInfo';
 import EsimSubs from './components/EsimSubs';
 
@@ -369,14 +368,8 @@ class EsimScreen extends Component<EsimScreenProps, EsimScreenState> {
           visible={showModal}>
           {this.modalBody()}
         </AppModal>
-        <SnackBar
+        <AppSnackBar
           visible={showSnackBar}
-          backgroundColor={colors.clearBlue}
-          messageColor={colors.white}
-          position="bottom"
-          top={0}
-          containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 0}}
-          autoHidingTime={timer.snackBarHidingTime}
           onClose={() => this.setState({showSnackBar: false})}
           textMessage={i18n.t('usim:failSnackBar')}
         />

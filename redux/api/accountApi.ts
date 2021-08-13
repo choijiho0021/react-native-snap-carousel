@@ -272,7 +272,7 @@ export type RkbImage = {
   data: string;
   width: number;
   height: number;
-  size: number;
+  size?: number;
 };
 
 const uploadPicture = ({

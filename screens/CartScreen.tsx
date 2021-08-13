@@ -8,7 +8,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import SnackBar from 'react-native-snackbar-component';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
@@ -20,7 +19,6 @@ import ChargeSummary from '@/components/ChargeSummary';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize, windowHeight} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
-import {timer} from '@/constants/Timer';
 import {
   AccountModelState,
   actions as accountActions,
@@ -42,6 +40,7 @@ import {ProductModelState} from '@/redux/modules/product';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {Currency} from '@/redux/api/productApi';
 import Env from '@/environment';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const {esimCurrency} = Env.get();
 const sectionTitle = ['sim', 'product'];
@@ -133,8 +132,6 @@ type CartScreenState = {
   showSnackBar: boolean;
 };
 class CartScreen extends Component<CartScreenProps, CartScreenState> {
-  snackRef: React.RefObject<SnackBar>;
-
   constructor(props: CartScreenProps) {
     super(props);
 
@@ -145,8 +142,6 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
       total: {cnt: 0, price: utils.toCurrency(0, esimCurrency)},
       showSnackBar: false,
     };
-
-    this.snackRef = React.createRef();
 
     this.onPurchase = this.onPurchase.bind(this);
     this.onChangeQty = this.onChangeQty.bind(this);
@@ -486,23 +481,10 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
             />
           }
         />
-        <SnackBar
-          ref={this.snackRef}
+        <AppSnackBar
           visible={showSnackBar}
-          backgroundColor={colors.clearBlue}
-          textMessage={i18n.t('cart:remove')}
-          messageColor={colors.white}
-          position="top"
-          top={windowHeight / 2}
-          containerStyle={{borderRadius: 3, height: 48, marginHorizontal: 10}}
-          actionText="X"
-          actionStyle={{paddingHorizontal: 20}}
-          accentColor={colors.white}
-          autoHidingTime={timer.snackBarHidingTime}
           onClose={() => this.setState({showSnackBar: false})}
-          actionHandler={() => {
-            this.snackRef.current?.hideSnackbar();
-          }}
+          textMessage={i18n.t('cart:remove')}
         />
         <View style={styles.buttonBox}>
           <View style={styles.sumBox}>
