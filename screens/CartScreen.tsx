@@ -97,10 +97,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
     height: isDeviceSize('small') ? 200 : 450,
   },
   emptyText: {
-    alignSelf: 'center',
+    textAlign: 'center',
   },
 });
 
