@@ -262,8 +262,8 @@
   "his:pymAmount": "Payment Amount",
   "his:productAmount": "Product Amount",
   "his:purchaseList": "List",
-  "his:noPurchase": "No purchase list",
-  "his:noUsage": "No usage list",
+  "his:noPurchase": "Your purchase history is empty.",
+  "his:noUsage": "No service experience yet.\nNow, experience how easy and convenient it is!",
   "his:orderId": "Order No.",
   "his:inactive": "Inactive",
   "his:active": "Active",
@@ -350,7 +350,7 @@
   "cart:buy": "Buy it now",
   "cart:pymAmount": "Total Payment",
   "cart:purchase": "Buy it now",
-  "cart:empty": "Your Cart is Empty",
+  "cart:empty": "Your Cart is Empty.\nEnjoy your travel with ROKEBI together!",
   "cart:remove": "Product not on sale has been removed from the list.",
   "cart:soldOut": "Due to out of stock, can't purchase at this time.",
   "cart:notToCart": "Due to out of stock, can't add to the cart.",
@@ -434,7 +434,7 @@
   "pym:loadingInfo": "* Upon network speed on your location, delay time for 3-4 seconds can be occurred.",
   "pym:deductBalance": "Deduction from ROKEBI Cash",
 
-  "err:login": "Available to use after login",
+  "err:login": "Let's get started",
   "err:body": "No body text",
 
   "guide:title": "User Guide",
