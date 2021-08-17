@@ -198,18 +198,20 @@ class SimpleTextScreen extends Component<
     const {rule} = this.props.route.params;
     const {iccid, token, loggedIn} = this.props.account;
 
-    if (!loggedIn) {
-      // 로그인 화면으로 이동
-      this.props.navigation.navigate('Auth');
-    } else if (rule) {
-      this.setState({promoResult: 'promo:join:ing'});
-      const resp = await API.Promotion.join({rule, iccid, token});
-      this.setState({
-        promoResult:
-          resp.result === 0 && resp.objects[0]?.available > 0
-            ? 'promo:join:joined'
-            : 'promo:join:fail',
-      });
+    if (rule) {
+      if (!loggedIn) {
+        // 로그인 화면으로 이동
+        this.props.navigation.navigate('Auth');
+      } else {
+        this.setState({promoResult: 'promo:join:ing'});
+        const resp = await API.Promotion.join({rule, iccid, token});
+        this.setState({
+          promoResult:
+            resp.result === 0 && resp.objects[0]?.available > 0
+              ? 'promo:join:joined'
+              : 'promo:join:fail',
+        });
+      }
     } else {
       this.props.navigation.goBack();
     }
