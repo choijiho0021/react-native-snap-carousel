@@ -132,6 +132,7 @@ function myPageStack() {
         name="PaymentResult"
         component={PaymentResultScreen}
       />
+      <MyPageStack.Screen name="Faq" component={FaqScreen} />
       <MyPageStack.Screen name="Settings" component={SettingsScreen} />
       <MyPageStack.Screen name="MySim" component={MySimScreen} />
     </MyPageStack.Navigator>
