@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   Appearance,
   TextInput,
+  Keyboard,
 } from 'react-native';
 import {connect} from 'react-redux';
 import _ from 'underscore';
@@ -49,6 +50,7 @@ import {utils} from '@/utils/utils';
 import AppUserPic from '@/components/AppUserPic';
 import Profile from '@/components/Profile';
 import {RkbImage} from '../redux/api/accountApi';
+import {Pressable} from 'react-native';
 
 const {esimGlobal} = Env.get();
 // const esimGlobal = false;
@@ -677,102 +679,107 @@ class RegisterMobileScreen extends Component<
 
     return (
       <SafeAreaView style={styles.container}>
-        <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
+        <Pressable style={styles.container} onPress={() => Keyboard.dismiss()}>
+          <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
 
-        <AppBackButton
-          title={i18n.t('mobile:header')}
-          onPress={() => {
-            if (socialLogin) {
-              this.setState({
-                socialLogin: false,
-                newUser: false,
-                authorized: undefined,
-              });
-            } else this.props.navigation.goBack();
-          }}
-        />
+          <AppBackButton
+            title={i18n.t('mobile:header')}
+            onPress={() => {
+              if (socialLogin) {
+                this.setState({
+                  socialLogin: false,
+                  newUser: false,
+                  authorized: undefined,
+                });
+              } else this.props.navigation.goBack();
+            }}
+          />
 
-        {socialLogin
-          ? this.renderProfile(email, mobile, profileImageUrl)
-          : this.renderTitle()}
+          {socialLogin
+            ? this.renderProfile(email, mobile, profileImageUrl)
+            : this.renderTitle()}
 
-        {!socialLogin && !esimGlobal && (
-          <View>
-            <Text style={styles.mobileAuth}>{i18n.t('mobile:easyLogin')}</Text>
-            <InputMobile
-              style={{marginTop: 30, paddingHorizontal: 20}}
-              onPress={this.onChangeText('mobile')}
-              authNoti={authNoti}
-              disabled={(authNoti && authorized) || loading}
-              authorized={authorized}
-            />
-
-            <InputPinInTime
-              style={{marginTop: 20, paddingHorizontal: 20}}
-              forwardRef={this.authInputRef}
-              editable={editablePin}
-              // clickable={editablePin && !timeout}
-              clickable
-              authorized={mobile ? authorized : undefined}
-              countdown={authNoti && !authorized && !timeout}
-              onTimeout={this.onTimeout}
-              onPress={this.onPressPin}
-              duration={180}
-            />
-          </View>
-        )}
-
-        {!socialLogin && <SocialLogin onAuth={this.onAuth} />}
-
-        {!socialLogin && esimGlobal && (
-          <View
-            style={{flex: 1, justifyContent: 'flex-end', paddingBottom: 52}}>
-            <AppIcon name="imgRokebiChar" />
-          </View>
-        )}
-
-        {newUser && authorized && (
-          <View style={{flex: 1}}>
-            <View style={{flex: 1}}>
-              <InputEmail
-                email={email}
-                style={{
-                  marginTop: socialLogin ? 20 : 38,
-                  paddingHorizontal: 20,
-                }}
-                inputRef={this.email}
+          {!socialLogin && !esimGlobal && (
+            <View>
+              <Text style={styles.mobileAuth}>
+                {i18n.t('mobile:easyLogin')}
+              </Text>
+              <InputMobile
+                style={{marginTop: 30, paddingHorizontal: 20}}
+                onPress={this.onChangeText('mobile')}
+                authNoti={authNoti}
+                disabled={(authNoti && authorized) || loading}
+                authorized={authorized}
               />
 
-              <Text style={[styles.helpText, {color: colors.errorBackground}]}>
-                {isValid ? null : error}
-              </Text>
+              <InputPinInTime
+                style={{marginTop: 20, paddingHorizontal: 20}}
+                forwardRef={this.authInputRef}
+                editable={editablePin}
+                // clickable={editablePin && !timeout}
+                clickable
+                authorized={mobile ? authorized : undefined}
+                countdown={authNoti && !authorized && !timeout}
+                onTimeout={this.onTimeout}
+                onPress={this.onPressPin}
+                duration={180}
+              />
+            </View>
+          )}
 
-              <View key="divider" style={styles.divider} />
+          {!socialLogin && <SocialLogin onAuth={this.onAuth} />}
 
-              <View key="list" style={{paddingHorizontal: 20, flex: 1}}>
-                <FlatList
-                  data={this.confirmList}
-                  renderItem={this.renderItem}
-                  extraData={confirm}
+          {!socialLogin && esimGlobal && (
+            <View
+              style={{flex: 1, justifyContent: 'flex-end', paddingBottom: 52}}>
+              <AppIcon name="imgRokebiChar" />
+            </View>
+          )}
+
+          {newUser && authorized && (
+            <View style={{flex: 1}}>
+              <View style={{flex: 1}}>
+                <InputEmail
+                  email={email}
+                  style={{
+                    marginTop: socialLogin ? 20 : 38,
+                    paddingHorizontal: 20,
+                  }}
+                  inputRef={this.email}
                 />
-              </View>
 
-              <View key="button">
-                <AppButton
-                  style={styles.confirm}
-                  title={i18n.t('ok')}
-                  titleStyle={styles.text}
-                  disabled={disableButton}
-                  disableColor={colors.black}
-                  disableBackgroundColor={colors.lightGrey}
-                  onPress={this.onSubmit}
-                />
+                <Text
+                  style={[styles.helpText, {color: colors.errorBackground}]}>
+                  {isValid ? null : error}
+                </Text>
+
+                <View key="divider" style={styles.divider} />
+
+                <View key="list" style={{paddingHorizontal: 20, flex: 1}}>
+                  <FlatList
+                    data={this.confirmList}
+                    renderItem={this.renderItem}
+                    extraData={confirm}
+                  />
+                </View>
+
+                <View key="button">
+                  <AppButton
+                    style={styles.confirm}
+                    title={i18n.t('ok')}
+                    titleStyle={styles.text}
+                    disabled={disableButton}
+                    disableColor={colors.black}
+                    disableBackgroundColor={colors.lightGrey}
+                    onPress={this.onSubmit}
+                  />
+                </View>
               </View>
             </View>
-          </View>
-        )}
+          )}
 
-        <AppActivityIndicator visible={this.props.pending || loading} />
+          <AppActivityIndicator visible={this.props.pending || loading} />
+        </Pressable>
       </SafeAreaView>
     );
   }
