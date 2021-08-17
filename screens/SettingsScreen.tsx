@@ -14,6 +14,7 @@ import {
 } from '@/redux/modules/account';
 import {actions as cartActions, CartAction, Store} from '@/redux/modules/cart';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
+import {actions as notiActions} from '@/redux/modules/noti';
 import i18n from '@/utils/i18n';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -23,7 +24,9 @@ import {FlatList, Pressable, StyleSheet, Text, View} from 'react-native';
 import Config from 'react-native-config';
 import VersionCheck from 'react-native-version-check';
 import {connect} from 'react-redux';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {bindActionCreators} from 'redux';
+import {NotiAction} from '../redux/modules/noti';
 
 const {label = '', isProduction} = Env.get();
 
@@ -118,6 +121,7 @@ type SettingsScreenProps = {
     cart: CartAction;
     order: OrderAction;
     account: AccountAction;
+    noti: NotiAction;
   };
 };
 
@@ -294,11 +298,13 @@ class SettingsScreen extends Component<
       this.props.action.cart.reset(),
       this.props.action.order.reset(),
       this.props.action.account.logout(),
+      this.props.action.noti.init(),
     ]).then(() => {
       this.props.navigation.reset({index: 0, routes: [{name: 'HomeStack'}]});
 
       // bhtak
       // firebase.notifications().setBadge(0);
+      PushNotificationIOS.setApplicationIconBadgeNumber(0);
 
       this.showModal(false);
     });
@@ -345,6 +351,7 @@ export default connect(
       account: bindActionCreators(accountActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
       order: bindActionCreators(orderActions, dispatch),
+      noti: bindActionCreators(notiActions, dispatch),
     },
   }),
 )(SettingsScreen);

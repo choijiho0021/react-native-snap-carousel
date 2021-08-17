@@ -10,7 +10,6 @@ import {AnyAction} from 'redux';
 const getNotiList = createAsyncThunk('noti/getNotiList', API.Noti.getNoti);
 const readNoti = createAsyncThunk('noti/readNoti', API.Noti.read);
 // export const updateNoti = createAsyncThunk(UPDATE_NOTI, API.Noti.update);
-const init = createAction('init');
 const initAlimTalk = createAction('initAlimTalk');
 const sendAlimTalk = createAsyncThunk(
   'noti/sendAlimTalk',
@@ -148,7 +147,6 @@ export const actions = {
   NOTI_TYPE_USIM,
   sendLog,
   getNotiList,
-  init,
   readNoti,
   initAndSendAlimTalk,
   notiReadAndGet,
