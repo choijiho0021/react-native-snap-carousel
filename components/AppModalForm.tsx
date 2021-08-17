@@ -117,6 +117,7 @@ const AppModalForm: React.FC<AppModalFormProps> = ({
           enablesReturnKeyAutomatically
           onChangeText={onChangeText}
           maxLength={maxLength}
+          secureTextEntry={valueType === 'pin'}
           keyboardType={keyboardType}
           value={value}
         />
