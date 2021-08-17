@@ -242,6 +242,7 @@ type RegisterMobileScreenState = {
   socialLogin: boolean;
   email?: string;
   profileImageUrl?: string;
+  isFocused?: boolean;
 };
 
 const initialState: RegisterMobileScreenState = {
@@ -263,6 +264,7 @@ const initialState: RegisterMobileScreenState = {
   },
   darkMode: Appearance.getColorScheme() === 'dark',
   socialLogin: false,
+  isFocused: true,
 };
 
 class RegisterMobileScreen extends Component<
@@ -336,7 +338,10 @@ class RegisterMobileScreen extends Component<
     this.mounted = true;
   }
 
-  componentDidUpdate(prevProps: RegisterMobileScreenProps) {
+  componentDidUpdate(
+    prevProps: RegisterMobileScreenProps,
+    prevState: RegisterMobileScreenState,
+  ) {
     if (this.props.account !== prevProps.account) {
       if (this.props.account.loggedIn) {
         this.props.navigation.navigate('Main');
@@ -357,6 +362,10 @@ class RegisterMobileScreen extends Component<
       } else {
         AppAlert.error(i18n.t('reg:failedToLogIn'));
       }
+    }
+    if (prevState.isFocused !== this.state.isFocused) {
+      // eslint-disable-next-line react/no-did-update-set-state
+      this.setState({isFocused: true});
     }
   }
 
@@ -671,6 +680,7 @@ class RegisterMobileScreen extends Component<
       email,
       socialLogin,
       profileImageUrl,
+      isFocused,
     } = this.state;
     const {isValid, error} = emailValidation || {};
     const disableButton =
@@ -691,7 +701,10 @@ class RegisterMobileScreen extends Component<
                   newUser: false,
                   authorized: undefined,
                 });
-              } else this.props.navigation.goBack();
+              } else {
+                this.setState({isFocused: false});
+                this.props.navigation.goBack();
+              }
             }}
           />
 
@@ -704,26 +717,30 @@ class RegisterMobileScreen extends Component<
               <Text style={styles.mobileAuth}>
                 {i18n.t('mobile:easyLogin')}
               </Text>
-              <InputMobile
-                style={{marginTop: 30, paddingHorizontal: 20}}
-                onPress={this.onChangeText('mobile')}
-                authNoti={authNoti}
-                disabled={(authNoti && authorized) || loading}
-                authorized={authorized}
-              />
+              {isFocused && (
+                <InputMobile
+                  style={{marginTop: 30, paddingHorizontal: 20}}
+                  onPress={this.onChangeText('mobile')}
+                  authNoti={authNoti}
+                  disabled={(authNoti && authorized) || loading}
+                  authorized={authorized}
+                />
+              )}
 
-              <InputPinInTime
-                style={{marginTop: 20, paddingHorizontal: 20}}
-                forwardRef={this.authInputRef}
-                editable={editablePin}
-                // clickable={editablePin && !timeout}
-                clickable
-                authorized={mobile ? authorized : undefined}
-                countdown={authNoti && !authorized && !timeout}
-                onTimeout={this.onTimeout}
-                onPress={this.onPressPin}
-                duration={180}
-              />
+              {isFocused && (
+                <InputPinInTime
+                  style={{marginTop: 20, paddingHorizontal: 20}}
+                  forwardRef={this.authInputRef}
+                  editable={editablePin}
+                  // clickable={editablePin && !timeout}
+                  clickable
+                  authorized={mobile ? authorized : undefined}
+                  countdown={authNoti && !authorized && !timeout}
+                  onTimeout={this.onTimeout}
+                  onPress={this.onPressPin}
+                  duration={180}
+                />
+              )}
             </View>
           )}
 
