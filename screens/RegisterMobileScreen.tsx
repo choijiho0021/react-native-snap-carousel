@@ -616,9 +616,10 @@ class RegisterMobileScreen extends Component<
       const profileImage: RkbImage = await utils.convertURLtoRkbImage(
         this.state.profileImageUrl!,
       );
-      this.props.actions.cart.cartFetch();
-      if (profileImage)
+      if (profileImage) {
         this.props.actions.account.uploadAndChangePicture(profileImage);
+      }
+      this.props.actions.cart.cartFetch();
     }
     return resp;
   };
