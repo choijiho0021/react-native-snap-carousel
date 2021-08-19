@@ -26,6 +26,9 @@ import VersionCheck from 'react-native-version-check';
 import {connect} from 'react-redux';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {bindActionCreators} from 'redux';
+import messaging from '@react-native-firebase/messaging';
+import AppAlert from '@/components/AppAlert';
+import {openSettings} from 'react-native-permissions';
 import {NotiAction} from '../redux/modules/noti';
 
 const {label = '', isProduction} = Env.get();
@@ -244,9 +247,11 @@ class SettingsScreen extends Component<
     }));
   }
 
-  onPress = (item: SettingsItem) => {
+  onPress = async (item: SettingsItem) => {
     const {key, value, route} = item;
     let isEnabled: boolean;
+    let permissionGranted: number;
+
     switch (key) {
       case 'setting:logout':
         if (this.props.loggedIn) this.showModal(true);
@@ -257,17 +262,25 @@ class SettingsScreen extends Component<
       case 'setting:pushnoti':
         isEnabled = this.state.data.find((i) => i.key === key)?.toggle || false;
 
-        this.setData(key, {toggle: !isEnabled});
-
-        this.props.action.account
-          .changePushNoti({isPushNotiEnabled: !isEnabled})
-          .catch(() => {
-            if (this.state.isMounted)
-              this.setData(key, {
-                toggle: this.props.isPushNotiEnabled,
-              });
-          });
-
+        permissionGranted = await messaging().requestPermission();
+        if (permissionGranted === 0 && !isEnabled) {
+          AppAlert.alert(
+            i18n.t('settings:reqPushSet'),
+            '',
+            i18n.t('settings:openSettings'),
+            openSettings,
+          );
+        } else {
+          this.setData(key, {toggle: !isEnabled});
+          this.props.action.account
+            .changePushNoti({isPushNotiEnabled: !isEnabled})
+            .catch(() => {
+              if (this.state.isMounted)
+                this.setData(key, {
+                  toggle: this.props.isPushNotiEnabled,
+                });
+            });
+        }
         break;
 
       case 'setting:globalMarket':

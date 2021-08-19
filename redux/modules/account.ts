@@ -160,7 +160,8 @@ const logInAndGetAccount = createAsyncThunk(
             dispatch(
               registerMobile({iccid: 'esim', code: pin, mobile, token}),
             ).then(({payload: resp}) => {
-              if (resp.result === 0) dispatch(getAccount({iccid, token}));
+              if (resp.result === 0)
+                dispatch(getAccount({iccid: `00001111${mobile}`, token}));
             });
           } else {
             // 가장 최근 사용한 SIM 카드 번호를 조회한다.
@@ -231,7 +232,6 @@ const updateAccountState = (
   payload: AccountModelState,
 ) => {
   const newState = _.clone(state);
-
   if (payload.expDate) newState.expDate = payload.expDate;
   if (payload.actDate) newState.actDate = payload.actDate;
   if (payload.firstActDate) newState.firstActDate = payload.firstActDate;
@@ -245,6 +245,8 @@ const updateAccountState = (
   if (payload.deviceToken) newState.deviceToken = payload.deviceToken;
   if (payload.simCardName) newState.simCardName = payload.simCardName;
   if (payload.simCardImage) newState.simCardImage = payload.simCardImage;
+  if (payload.isPushNotiEnabled)
+    newState.isPushNotiEnabled = payload.isPushNotiEnabled;
 
   if (_.isNumber(payload.balance)) newState.balance = payload.balance;
   if (_.isNumber(payload.simPartnerId))
@@ -252,9 +254,7 @@ const updateAccountState = (
   if (_.isNumber(payload.nid)) newState.nid = payload.nid;
   if (_.isNumber(payload.uid)) newState.uid = payload.uid;
 
-  newState.isPushNotiEnabled = payload.isPushNotiEnabled;
   newState.isUsedByOther = undefined;
-
   return newState;
 };
 

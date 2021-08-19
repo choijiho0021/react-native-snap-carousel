@@ -43,6 +43,7 @@ const toAccount = (
         simCardName: item.sim_card_name,
         simCardImage: item.sim_card_image,
         userAccount: item.field_ref_user_account,
+        isPushNotiEnabled: item.field_is_notification_enabled == 'true',
       })),
     );
   }
@@ -91,6 +92,7 @@ const toAccount = (
         mobile: item.attributes.field_mobile,
         deviceToken: item.attributes.field_device_token,
         fcmToken: item.attributes.field_fcm_token,
+        isPushNotiEnabled: item.attributes.field_is_notification_enabled,
         simPartnerId: undefined,
         uid: undefined,
       })),
@@ -237,7 +239,6 @@ const update = ({
       relationships,
     },
   };
-
   return api.callHttp(
     `${api.httpUrl(api.path.jsonapi.account)}/${uuid}`,
     {

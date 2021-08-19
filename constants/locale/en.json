@@ -513,5 +513,7 @@
   "promo:join:ing": "Participating ...",
   "promo:login": "Login to participate",
 
-  "login:easyLogin": "Easy Login"
+  "login:easyLogin": "Easy Login",
+  "settings:reqPushSet": "Notification is turned off.\nDon't miss important notification for you!",
+  "settings:openSettings": "Go to notification settings"
 }
