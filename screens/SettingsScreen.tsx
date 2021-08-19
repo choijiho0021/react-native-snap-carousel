@@ -32,7 +32,7 @@ import {openSettings} from 'react-native-permissions';
 import {NotiAction} from '../redux/modules/noti';
 
 const {label = '', isProduction} = Env.get();
-
+const PUSH_ENABLED = 0;
 const styles = StyleSheet.create({
   title: {
     ...appStyles.title,
@@ -188,7 +188,7 @@ class SettingsScreen extends Component<
     this.renderItem = this.renderItem.bind(this);
   }
 
-  componentDidMount() {
+  componentDidMount = async () => {
     this.props.navigation.setOptions({
       title: null,
       headerLeft: () => <AppBackButton title={i18n.t('settings')} />,
@@ -199,10 +199,18 @@ class SettingsScreen extends Component<
 
     if (loggedIn) {
       this.props.action.cart.cartFetch();
+
+      const pushPermission = await messaging().requestPermission();
+      if (pushPermission === PUSH_ENABLED) {
+        this.props.action.account.changePushNoti({
+          isPushNotiEnabled: false,
+        });
+        this.setData('setting:pushnoti', {toggle: false});
+      }
     } else {
       this.props.navigation.navigate('Auth');
     }
-  }
+  };
 
   componentDidUpdate(prevProps: SettingsScreenProps) {
     const {loggedIn, isPushNotiEnabled} = this.props;
@@ -250,7 +258,7 @@ class SettingsScreen extends Component<
   onPress = async (item: SettingsItem) => {
     const {key, value, route} = item;
     let isEnabled: boolean;
-    let permissionGranted: number;
+    let pushPermission: number;
 
     switch (key) {
       case 'setting:logout':
@@ -262,8 +270,8 @@ class SettingsScreen extends Component<
       case 'setting:pushnoti':
         isEnabled = this.state.data.find((i) => i.key === key)?.toggle || false;
 
-        permissionGranted = await messaging().requestPermission();
-        if (permissionGranted === 0 && !isEnabled) {
+        pushPermission = await messaging().requestPermission();
+        if (pushPermission === PUSH_ENABLED && !isEnabled) {
           AppAlert.alert(
             i18n.t('settings:reqPushSet'),
             '',
