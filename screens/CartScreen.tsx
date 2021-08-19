@@ -1,3 +1,33 @@
+import AppAlert from '@/components/AppAlert';
+import AppBackButton from '@/components/AppBackButton';
+import AppButton from '@/components/AppButton';
+import AppIcon from '@/components/AppIcon';
+import AppSnackBar from '@/components/AppSnackBar';
+import CartItem from '@/components/CartItem';
+import ChargeSummary from '@/components/ChargeSummary';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import Env from '@/environment';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RootState} from '@/redux';
+import api from '@/redux/api/api';
+import {RkbOrderItem} from '@/redux/api/cartApi';
+import {Currency} from '@/redux/api/productApi';
+import utils from '@/redux/api/utils';
+import {PurchaseItem} from '@/redux/models/purchaseItem';
+import {
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
+import {
+  actions as cartActions,
+  CartAction,
+  CartModelState,
+} from '@/redux/modules/cart';
+import {ProductModelState} from '@/redux/modules/product';
+import i18n from '@/utils/i18n';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import {Map as ImmutableMap} from 'immutable';
 import React, {Component} from 'react';
 import {
@@ -11,36 +41,6 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import AppAlert from '@/components/AppAlert';
-import AppBackButton from '@/components/AppBackButton';
-import AppButton from '@/components/AppButton';
-import CartItem from '@/components/CartItem';
-import ChargeSummary from '@/components/ChargeSummary';
-import {colors} from '@/constants/Colors';
-import {isDeviceSize, windowHeight} from '@/constants/SliderEntry.style';
-import {appStyles} from '@/constants/Styles';
-import {
-  AccountModelState,
-  actions as accountActions,
-} from '@/redux/modules/account';
-import {
-  actions as cartActions,
-  CartAction,
-  CartModelState,
-} from '@/redux/modules/cart';
-import api from '@/redux/api/api';
-import i18n from '@/utils/i18n';
-import {RootState} from '@/redux';
-import utils from '@/redux/api/utils';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {HomeStackParamList} from '@/navigation/navigation';
-import {RouteProp} from '@react-navigation/native';
-import {RkbOrderItem} from '@/redux/api/cartApi';
-import {ProductModelState} from '@/redux/modules/product';
-import {PurchaseItem} from '@/redux/models/purchaseItem';
-import {Currency} from '@/redux/api/productApi';
-import Env from '@/environment';
-import AppSnackBar from '@/components/AppSnackBar';
 
 const {esimCurrency} = Env.get();
 const sectionTitle = ['sim', 'product'];
@@ -94,10 +94,10 @@ const styles = StyleSheet.create({
   },
   emptyView: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    height: isDeviceSize('small') ? 200 : 450,
+    backgroundColor: colors.white,
   },
   emptyText: {
     textAlign: 'center',
@@ -252,9 +252,15 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
   isEmptyList = () => {
     return (
       <View style={styles.emptyView}>
-        <Text style={[styles.emptyText, {color: colors.black}]}>
-          {i18n.t('cart:empty')}
-        </Text>
+        <AppIcon name="emptyCart" />
+        <View style={{marginTop: 20}}>
+          <Text style={[styles.emptyText, {color: colors.clearBlue}]}>
+            {i18n.t('cart:empty1')}
+          </Text>
+          <Text style={[styles.emptyText, {color: colors.warmGrey}]}>
+            {i18n.t('cart:empty2')}
+          </Text>
+        </View>
       </View>
     );
   };
@@ -464,14 +470,15 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
         this.state.checked.get(item.key),
     );
 
-    return (
+    return _.isEmpty(section) ? (
+      this.isEmptyList()
+    ) : (
       <SafeAreaView style={styles.container}>
         <SectionList
           sections={section}
           renderItem={this.renderItem}
           extraData={[qty, checked]}
           stickySectionHeadersEnabled={false}
-          ListEmptyComponent={() => this.isEmptyList()}
           ListFooterComponent={
             <ChargeSummary
               totalCnt={total.cnt}
