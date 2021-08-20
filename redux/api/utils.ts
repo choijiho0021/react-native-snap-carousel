@@ -218,7 +218,6 @@ const toDateString = (
 const convertURLtoRkbImage = async (url: string) => {
   const response = await RNFetchBlob.fetch('GET', url);
   const data = response.base64();
-
   return new Promise<RkbImage>((resolve, reject) => {
     if (data) {
       Image.getSize(url, (width, height) => {
@@ -230,8 +229,9 @@ const convertURLtoRkbImage = async (url: string) => {
         };
         resolve(rkbImage);
       });
+    } else {
+      reject(new Error('convertURLtoRkbImage failed'));
     }
-    reject(new Error('convertURLtoRkbImage failed'));
   });
 };
 
