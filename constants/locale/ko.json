@@ -524,5 +524,6 @@
 
   "login:easyLogin": "간편 로그인",
   "settings:reqPushSet": "기기 알림이 꺼져 있어요.\n중요한 소식을 놓치지 마세요!",
-  "settings:openSettings": "알림허용 바로가기"
+  "settings:openSettings": "알림허용 바로가기",
+  "settings:deniedPush": "알림권한이 없어서 기능이 제한되었습니다."
 }

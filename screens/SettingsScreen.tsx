@@ -30,6 +30,7 @@ import messaging from '@react-native-firebase/messaging';
 import AppAlert from '@/components/AppAlert';
 import {openSettings} from 'react-native-permissions';
 import {NotiAction} from '../redux/modules/noti';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const {label = '', isProduction} = Env.get();
 const PUSH_ENABLED = 0;
@@ -132,6 +133,7 @@ type SettingsScreenState = {
   showModal: boolean;
   data: SettingsItem[];
   isMounted: boolean;
+  showSnackBar: boolean;
 };
 
 class SettingsScreen extends Component<
@@ -180,6 +182,7 @@ class SettingsScreen extends Component<
         },
       ],
       isMounted: false,
+      showSnackBar: false,
     };
 
     this.onPress = this.onPress.bind(this);
@@ -202,6 +205,7 @@ class SettingsScreen extends Component<
 
       const pushPermission = await messaging().requestPermission();
       if (pushPermission === PUSH_ENABLED) {
+        this.setState({showSnackBar: true});
         this.props.action.account.changePushNoti({
           isPushNotiEnabled: false,
         });
@@ -342,7 +346,7 @@ class SettingsScreen extends Component<
   }
 
   render() {
-    const {showModal, data} = this.state;
+    const {showModal, data, showSnackBar} = this.state;
 
     return (
       <View style={styles.container}>
@@ -353,6 +357,12 @@ class SettingsScreen extends Component<
           onOkClose={this.logout}
           onCancelClose={() => this.showModal(false)}
           visible={showModal}
+        />
+
+        <AppSnackBar
+          visible={showSnackBar!}
+          onClose={() => this.setState({showSnackBar: false})}
+          textMessage={i18n.t('settings:deniedPush')}
         />
         <AppActivityIndicator visible={this.props.pending} />
       </View>
