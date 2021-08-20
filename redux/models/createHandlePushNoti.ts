@@ -1,4 +1,4 @@
-import {actions as notiActions} from '../../../redux/modules/noti';
+import {actions as notiActions} from '@/redux/modules/noti';
 import HandleRegisterPushNoti from './handleRegisterPushNoti';
 import HandleAccountPushNoti from './handleAccountPushNoti';
 import HandleNormalPushNoti from './handleNormalPushNoti';
