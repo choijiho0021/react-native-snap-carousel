@@ -108,11 +108,15 @@ class InputMobile extends Component<InputMobileProps, InputMobileState> {
 
   onPress() {
     const {mobile} = this.state;
+    const value = mobile.replace(/-/g, '');
 
     if (typeof this.props.onPress === 'function' && !this.timer) {
-      this.props.onPress(mobile.replace(/-/g, ''));
+      this.props.onPress(value);
     }
-    this.onTimer();
+    const error = validationUtil.validate('mobileSms', `${value}`);
+    if (!error) {
+      this.onTimer();
+    }
   }
 
   validate = (key: keyof InputMobileState, value) => {

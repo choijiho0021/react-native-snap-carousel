@@ -14,6 +14,7 @@ import {
 } from '@/redux/modules/account';
 import {actions as cartActions, CartAction, Store} from '@/redux/modules/cart';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
+import {actions as notiActions} from '@/redux/modules/noti';
 import i18n from '@/utils/i18n';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -23,10 +24,16 @@ import {FlatList, Pressable, StyleSheet, Text, View} from 'react-native';
 import Config from 'react-native-config';
 import VersionCheck from 'react-native-version-check';
 import {connect} from 'react-redux';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {bindActionCreators} from 'redux';
+import messaging from '@react-native-firebase/messaging';
+import AppAlert from '@/components/AppAlert';
+import {openSettings} from 'react-native-permissions';
+import {NotiAction} from '../redux/modules/noti';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const {label = '', isProduction} = Env.get();
-
+const PUSH_ENABLED = 0;
 const styles = StyleSheet.create({
   title: {
     ...appStyles.title,
@@ -118,6 +125,7 @@ type SettingsScreenProps = {
     cart: CartAction;
     order: OrderAction;
     account: AccountAction;
+    noti: NotiAction;
   };
 };
 
@@ -125,6 +133,7 @@ type SettingsScreenState = {
   showModal: boolean;
   data: SettingsItem[];
   isMounted: boolean;
+  showSnackBar: boolean;
 };
 
 class SettingsScreen extends Component<
@@ -173,6 +182,7 @@ class SettingsScreen extends Component<
         },
       ],
       isMounted: false,
+      showSnackBar: false,
     };
 
     this.onPress = this.onPress.bind(this);
@@ -181,7 +191,7 @@ class SettingsScreen extends Component<
     this.renderItem = this.renderItem.bind(this);
   }
 
-  componentDidMount() {
+  componentDidMount = async () => {
     this.props.navigation.setOptions({
       title: null,
       headerLeft: () => <AppBackButton title={i18n.t('settings')} />,
@@ -192,10 +202,19 @@ class SettingsScreen extends Component<
 
     if (loggedIn) {
       this.props.action.cart.cartFetch();
+
+      const pushPermission = await messaging().requestPermission();
+      if (pushPermission === PUSH_ENABLED) {
+        this.setState({showSnackBar: true});
+        this.props.action.account.changePushNoti({
+          isPushNotiEnabled: false,
+        });
+        this.setData('setting:pushnoti', {toggle: false});
+      }
     } else {
       this.props.navigation.navigate('Auth');
     }
-  }
+  };
 
   componentDidUpdate(prevProps: SettingsScreenProps) {
     const {loggedIn, isPushNotiEnabled} = this.props;
@@ -240,9 +259,11 @@ class SettingsScreen extends Component<
     }));
   }
 
-  onPress = (item: SettingsItem) => {
+  onPress = async (item: SettingsItem) => {
     const {key, value, route} = item;
     let isEnabled: boolean;
+    let pushPermission: number;
+
     switch (key) {
       case 'setting:logout':
         if (this.props.loggedIn) this.showModal(true);
@@ -253,17 +274,25 @@ class SettingsScreen extends Component<
       case 'setting:pushnoti':
         isEnabled = this.state.data.find((i) => i.key === key)?.toggle || false;
 
-        this.setData(key, {toggle: !isEnabled});
-
-        this.props.action.account
-          .changePushNoti({isPushNotiEnabled: !isEnabled})
-          .catch(() => {
-            if (this.state.isMounted)
-              this.setData(key, {
-                toggle: this.props.isPushNotiEnabled,
-              });
-          });
-
+        pushPermission = await messaging().requestPermission();
+        if (pushPermission === PUSH_ENABLED && !isEnabled) {
+          AppAlert.alert(
+            i18n.t('settings:reqPushSet'),
+            '',
+            i18n.t('settings:openSettings'),
+            openSettings,
+          );
+        } else {
+          this.setData(key, {toggle: !isEnabled});
+          this.props.action.account
+            .changePushNoti({isPushNotiEnabled: !isEnabled})
+            .catch(() => {
+              if (this.state.isMounted)
+                this.setData(key, {
+                  toggle: this.props.isPushNotiEnabled,
+                });
+            });
+        }
         break;
 
       case 'setting:globalMarket':
@@ -294,11 +323,13 @@ class SettingsScreen extends Component<
       this.props.action.cart.reset(),
       this.props.action.order.reset(),
       this.props.action.account.logout(),
+      this.props.action.noti.init(),
     ]).then(() => {
       this.props.navigation.reset({index: 0, routes: [{name: 'HomeStack'}]});
 
       // bhtak
       // firebase.notifications().setBadge(0);
+      PushNotificationIOS.setApplicationIconBadgeNumber(0);
 
       this.showModal(false);
     });
@@ -315,7 +346,7 @@ class SettingsScreen extends Component<
   }
 
   render() {
-    const {showModal, data} = this.state;
+    const {showModal, data, showSnackBar} = this.state;
 
     return (
       <View style={styles.container}>
@@ -326,6 +357,12 @@ class SettingsScreen extends Component<
           onOkClose={this.logout}
           onCancelClose={() => this.showModal(false)}
           visible={showModal}
+        />
+
+        <AppSnackBar
+          visible={showSnackBar!}
+          onClose={() => this.setState({showSnackBar: false})}
+          textMessage={i18n.t('settings:deniedPush')}
         />
         <AppActivityIndicator visible={this.props.pending} />
       </View>
@@ -345,6 +382,7 @@ export default connect(
       account: bindActionCreators(accountActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
       order: bindActionCreators(orderActions, dispatch),
+      noti: bindActionCreators(notiActions, dispatch),
     },
   }),
 )(SettingsScreen);
