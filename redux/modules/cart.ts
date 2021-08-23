@@ -41,7 +41,7 @@ const checkStock = createAsyncThunk(
     {purchaseItems, token}: {purchaseItems: PurchaseItem[]; token?: string},
     {dispatch},
   ) => {
-    return esimApp
+    return esimApp && purchaseItems[0].type !== 'rch'
       ? dispatch(cartCheckStock({purchaseItems, token})).then(
           ({payload: resp}) => {
             if (resp.result === 0) return resp;
@@ -275,10 +275,17 @@ const payNorder = createAsyncThunk(
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
-    return dispatch(checkStock({purchaseItems, token}))
+    return dispatch(
+      purchaseItems[0].type === 'rch'
+        ? rechargeAccount({
+            iccid,
+            amount: result.amount,
+            token,
+          })
+        : checkStock({purchaseItems, token}),
+    )
       .then(({payload: res}) => {
-        console.log('@@@ check stock', res, iccid);
-        if (res.result === 0) {
+        if (res.result === 0 || purchaseItems[0].type === 'rch') {
           return dispatch(
             makeOrder({
               items: purchaseItems,
