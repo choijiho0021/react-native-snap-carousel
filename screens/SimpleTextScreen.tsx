@@ -155,6 +155,14 @@ class SimpleTextScreen extends Component<
         body: infoMap.get(infoMapKey, [])[0]?.body,
       }));
     }
+
+    if (
+      this.props.route.params &&
+      this.props.route.params !== prevProps.route.params
+    ) {
+      const {body, bodyTitle} = this.props.route.params;
+      this.setState({body, bodyTitle});
+    }
   }
 
   componentWillUnmount() {
@@ -164,6 +172,8 @@ class SimpleTextScreen extends Component<
   onMessage(event: WebViewMessageEvent) {
     const cmd = JSON.parse(event.nativeEvent.data);
 
+    console.log('@@@ on message', cmd);
+
     switch (cmd.key) {
       // uuid를 받아서 해당 페이지로 이동 추가
       case 'moveToPage':
@@ -171,6 +181,9 @@ class SimpleTextScreen extends Component<
           const item = this.props.info.infoMap
             .get('info')
             ?.find((elm) => elm.uuid === cmd.value);
+
+          console.log('@@@ move to page', item);
+
           this.props.navigation.navigate('SimpleText', {
             key: 'noti',
             title: i18n.t('set:noti'),
