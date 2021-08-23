@@ -207,12 +207,12 @@
   "mobile:timeout": "Auth code is expired. Please try again.",
   "mobile:inputInTime": "* Please input the auth code within 3 minutes",
 
-  "email:input": "Manual Input",
+  "email:input": "Manual",
 
-  "cfm:contract": "Accept for contract terms",
+  "cfm:contract": "I agree to terms and conditions ",
   "cfm:mandatory": "(Mandatory)",
-  "cfm:personalInfo": "Accept for Personal info collection",
-  "cfm:marketing": "Accpet for receiving Marketing info",
+  "cfm:personalInfo": "I agree to  privacy policy ",
+  "cfm:marketing": "I agree to receive marketing info ",
   "cfm:optional": "(Optional)",
   "cfm:accept": "Accept",
 
