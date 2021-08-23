@@ -282,17 +282,18 @@ class SettingsScreen extends Component<
             i18n.t('settings:openSettings'),
             openSettings,
           );
-        } else {
-          this.setData(key, {toggle: !isEnabled});
-          this.props.action.account
-            .changePushNoti({isPushNotiEnabled: !isEnabled})
-            .catch(() => {
-              if (this.state.isMounted)
-                this.setData(key, {
-                  toggle: this.props.isPushNotiEnabled,
-                });
-            });
         }
+
+        this.setData(key, {toggle: !isEnabled});
+        this.props.action.account
+          .changePushNoti({isPushNotiEnabled: !isEnabled})
+          .catch(() => {
+            if (this.state.isMounted)
+              this.setData(key, {
+                toggle: this.props.isPushNotiEnabled,
+              });
+          });
+
         break;
 
       case 'setting:globalMarket':
