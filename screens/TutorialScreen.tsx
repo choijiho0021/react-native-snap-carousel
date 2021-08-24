@@ -110,16 +110,17 @@ type TutorialScreenProps = {
   navigation: TutorialScreenNavigationProp;
 };
 
+type CarouselIndex = 'step1' | 'step2' | 'step3' | 'step4';
 type TutorialScreenState = {
   activeSlide: number;
-  images: string[];
+  images: CarouselIndex[];
 };
 
 class TutorialScreen extends Component<
   TutorialScreenProps,
   TutorialScreenState
 > {
-  carousel: React.LegacyRef<Carousel<string>>;
+  carousel: React.LegacyRef<Carousel<CarouselIndex>>;
 
   constructor(props: TutorialScreenProps) {
     super(props);
@@ -135,7 +136,13 @@ class TutorialScreen extends Component<
     this.completed = this.completed.bind(this);
   }
 
-  renderTutorial = ({item}: {item: string}) => {
+  componentDidMount() {
+    this.props.navigation.setOptions({
+      headerShown: false,
+    });
+  }
+
+  renderTutorial = ({item}: {item: CarouselIndex}) => {
     return (
       <Image
         style={styles.image}
