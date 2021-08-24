@@ -384,7 +384,13 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
       showSnackBar: false,
     });
 
+    const purchaseItems = this.selectedProduct(selected);
     Analytics.trackEvent('Click_cart');
+
+    analytics().logEvent('toCart', {
+      item: purchaseItems[0].title,
+      count: 1,
+    });
 
     if (!loggedIn) {
       return this.props.navigation.navigate('Auth');

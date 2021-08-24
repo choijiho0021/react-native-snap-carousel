@@ -29,6 +29,8 @@ target 'RokebiESIM' do
   pod 'FBSDKLoginKit'
   pod 'FBSDKShareKit'
 
+  pod 'Firebase/Analytics'
+
   ENVFILES = {
     'Debug' => '$(PODS_ROOT)/../../.env',
     'Staging' => '$(PODS_ROOT)/../../.env.staging',
@@ -47,6 +49,8 @@ target 'RokebiESIM' do
       target.build_configurations.each do |config|
         if target.name == 'react-native-config'
           config.build_settings['ENVFILE'] = ENVFILES[config.name]
+          # config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
+          # config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] =  "arm64"
         end
       end
     end
