@@ -1660,10 +1660,15 @@
   dependencies:
     "invariant" "^2.2.4"
 
-"@react-native-firebase/app@^11.1.0":
-  "integrity" "sha512-dJfTxCB1FWid5CYTX5bjTDyAWyvi8u3g3OHBBup68rDuuqvE40n1eRFI+5ve4TUr01T1RI1D70M77qyjSHDkrQ=="
-  "resolved" "https://registry.npmjs.org/@react-native-firebase/app/-/app-11.1.1.tgz"
-  "version" "11.1.1"
+"@react-native-firebase/analytics@^11.1.0":
+  "integrity" "sha512-+89e6oWa9RxWThPoTDe6/qTLLscyli4kv584CxPuSBIMikRYR2nOE7EIKkbCYTtt9TayG5Qd99mPeGyYrk0eGg=="
+  "resolved" "https://registry.npmjs.org/@react-native-firebase/analytics/-/analytics-11.1.0.tgz"
+  "version" "11.1.0"
+
+"@react-native-firebase/app@^11.1.0", "@react-native-firebase/app@11.1.0":
+  "integrity" "sha512-jZrPjwFxUaayugU5sqk98VYejwkRzhS+eaiHOegdSGbHMMcUBR5vIl7HuEjtvwfd5u6dvJWnstHk237fvwwFZQ=="
+  "resolved" "https://registry.npmjs.org/@react-native-firebase/app/-/app-11.1.0.tgz"
+  "version" "11.1.0"
   dependencies:
     "opencollective-postinstall" "^2.0.1"
     "superstruct" "^0.6.2"
