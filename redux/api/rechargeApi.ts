@@ -127,7 +127,7 @@ const get = ({
 
 const add = ({
   iccid,
-  iccidId,
+  // iccidId,
   amount,
   token,
 }: {
@@ -140,8 +140,8 @@ const add = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'invalid parameter: amount');
   if (!iccid)
     return api.reject(api.E_INVALID_ARGUMENT, 'invalid parameter: iccid');
-  if (!iccidId)
-    return api.reject(api.E_INVALID_ARGUMENT, 'invalid parameter: iccidId');
+  // if (!iccidId)
+  // return api.reject(api.E_INVALID_ARGUMENT, 'invalid parameter: iccidId');
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'invalid parameter: token');
 

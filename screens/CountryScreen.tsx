@@ -12,6 +12,7 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import Analytics from 'appcenter-analytics';
+import analytics from '@react-native-firebase/analytics';
 import _ from 'underscore';
 import {API} from '@/redux/api';
 import {appStyles} from '@/constants/Styles';
@@ -244,7 +245,7 @@ const CountryListItem0 = ({
 
 const CountryListItem = memo(CountryListItem0);
 
-function soldOut({payload}: ApiResult<any>, message: string) {
+function soldOut(payload: ApiResult<any>, message: string) {
   if (payload.result === api.E_RESOURCE_NOT_FOUND) {
     AppAlert.info(i18n.t(message));
   } else {

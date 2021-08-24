@@ -69,6 +69,7 @@ const AppModalForm: React.FC<AppModalFormProps> = ({
   validate,
   validateAsync,
   onOkClose = () => {},
+  onCancelClose = () => {},
   ...props
 }) => {
   const [value, setValue] = useState(defaultValue);
@@ -104,11 +105,18 @@ const AppModalForm: React.FC<AppModalFormProps> = ({
     [valueType],
   );
 
+  const onCancel = useCallback(() => {
+    setValue('');
+    setError();
+    onCancelClose();
+  }, [onCancelClose]);
+
   return (
     <AppModal
       onOkClose={async () => {
         await onSubmit(value || '');
       }}
+      onCancelClose={() => onCancel()}
       {...props}>
       <View style={styles.inputBox}>
         <TextInput
@@ -117,7 +125,6 @@ const AppModalForm: React.FC<AppModalFormProps> = ({
           enablesReturnKeyAutomatically
           onChangeText={onChangeText}
           maxLength={maxLength}
-          secureTextEntry={valueType === 'pin'}
           keyboardType={keyboardType}
           value={value}
         />

@@ -8,9 +8,9 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   notice: {
+    flex: 1,
     backgroundColor: colors.whiteThree,
     padding: 20,
-    marginBottom: 20,
     flexDirection: 'row',
   },
   normal14WarmGrey: {

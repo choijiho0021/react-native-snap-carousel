@@ -4,7 +4,7 @@ import _ from 'underscore';
 import utils from '../utils';
 import api, {ApiResult, DrupalNodeJsonApi} from './api';
 
-const {esimApp, esimGlobal, isProduction} = Env.get();
+const {esimApp, esimGlobal} = Env.get();
 
 const PAGE_SIZE = 10;
 
@@ -297,11 +297,11 @@ const toToken = (data) => {
 
 const getImpToken = () => {
   const headers = {
-    'Content-Type': `application/hal+json`,
+    'Content-Type': `application/json`,
   };
 
-  const formdata = new FormData();
-
+  const imp_key = '';
+  const imp_secret = '';
   // impkey, secret formdata append (Production / Development)
 
   return api.callHttp(
@@ -309,7 +309,7 @@ const getImpToken = () => {
     {
       method: 'POST',
       headers,
-      body: formdata,
+      body: JSON.stringify({imp_key, imp_secret}),
     },
     toToken,
   );

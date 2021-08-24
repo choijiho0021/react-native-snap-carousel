@@ -1,16 +1,14 @@
-import {RootState} from '@/redux';
-import Clipboard from '@react-native-community/clipboard';
-import React, {Component} from 'react';
-import {FlatList, RefreshControl, StyleSheet, Text, View} from 'react-native';
-import QRCode from 'react-native-qrcode-svg';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppButton from '@/components/AppButton';
+import AppColorText from '@/components/AppColorText';
+import AppIcon from '@/components/AppIcon';
 import AppModal from '@/components/AppModal';
+import AppSnackBar from '@/components/AppSnackBar';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RootState} from '@/redux';
+import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {
   AccountAction,
   AccountModelState,
@@ -30,12 +28,15 @@ import {
   ToastAction,
 } from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
-import {StackNavigationProp} from '@react-navigation/stack';
+import Clipboard from '@react-native-community/clipboard';
 import {RouteProp} from '@react-navigation/native';
-import {HomeStackParamList} from '@/navigation/navigation';
-import {RkbSubscription} from '@/redux/api/subscriptionApi';
-import AppColorText from '@/components/AppColorText';
-import AppSnackBar from '@/components/AppSnackBar';
+import {StackNavigationProp} from '@react-navigation/stack';
+import React, {Component} from 'react';
+import {FlatList, RefreshControl, StyleSheet, Text, View} from 'react-native';
+import QRCode from 'react-native-qrcode-svg';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import CardInfo from './components/CardInfo';
 import EsimSubs from './components/EsimSubs';
 
@@ -56,9 +57,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 13,
   },
   nolist: {
-    marginVertical: '40%',
-    textAlign: 'center',
-    marginHorizontal: 20,
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.white,
   },
   titleAndStatus: {
     flexDirection: 'row',
@@ -94,6 +97,11 @@ const styles = StyleSheet.create({
   normal16BlueText: {
     ...appStyles.normal16Text,
     color: colors.clearBlue,
+  },
+  blueText: {
+    color: colors.clearBlue,
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
 
@@ -249,7 +257,18 @@ class EsimScreen extends Component<EsimScreenProps, EsimScreenState> {
   empty = () => {
     if (this.props.pending) return null;
 
-    return <Text style={styles.nolist}>{i18n.t('his:noUsage')}</Text>;
+    return (
+      <View style={{flex: 1}}>
+        <View style={{flexDirection: 'row'}}>{this.info()}</View>
+        <View style={styles.nolist}>
+          <AppIcon name="emptyESIM" />
+          <Text style={styles.blueText}>{i18n.t('his:noUsage1')}</Text>
+          <Text style={{color: colors.warmGrey, textAlign: 'center'}}>
+            {i18n.t('his:noUsage2')}
+          </Text>
+        </View>
+      </View>
+    );
   };
 
   info() {
@@ -322,14 +341,15 @@ class EsimScreen extends Component<EsimScreenProps, EsimScreenState> {
     const {subs} = this.props.order;
     const {refreshing, showSnackBar, showModal, modal} = this.state;
 
-    return (
+    return _.isEmpty(subs) ? (
+      this.empty()
+    ) : (
       <View style={styles.container}>
         <View style={{backgroundColor: colors.whiteTwo}}>
           <FlatList
             data={subs}
             keyExtractor={(item) => item.key.toString()}
             ListHeaderComponent={this.info}
-            ListEmptyComponent={this.empty}
             renderItem={this.renderSubs}
             // onRefresh={this.onRefresh}
             // refreshing={refreshing}

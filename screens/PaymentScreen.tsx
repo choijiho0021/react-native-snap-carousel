@@ -171,13 +171,13 @@ class PaymentScreen extends Component<PaymentScreenProps, PaymentScreenState> {
           })
           .then(({payload: resp}) => {
             console.log(' pay and order then ', resp);
-            if (resp.result === 0) {
+            if (resp?.result === 0) {
               this.props.navigation.replace('PaymentResult', {
                 pymResult: rsp[0],
                 orderResult: resp,
               });
             } else {
-              if (resp.result === api.E_RESOURCE_NOT_FOUND)
+              if (resp?.result === api.E_RESOURCE_NOT_FOUND)
                 AppAlert.info(`${resp.title} ${i18n.t('cart:soldOut')}`);
               else AppAlert.info(i18n.t('cart:systemError'));
               this.props.navigation.goBack();
@@ -191,7 +191,7 @@ class PaymentScreen extends Component<PaymentScreenProps, PaymentScreenState> {
 
   render() {
     const {impId} = Env.get();
-    const {params} = this.props.route ;
+    const {params} = this.props.route;
 
     return (
       <SafeAreaView style={styles.container}>

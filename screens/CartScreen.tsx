@@ -1,3 +1,33 @@
+import AppAlert from '@/components/AppAlert';
+import AppBackButton from '@/components/AppBackButton';
+import AppButton from '@/components/AppButton';
+import AppIcon from '@/components/AppIcon';
+import AppSnackBar from '@/components/AppSnackBar';
+import CartItem from '@/components/CartItem';
+import ChargeSummary from '@/components/ChargeSummary';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import Env from '@/environment';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RootState} from '@/redux';
+import api from '@/redux/api/api';
+import {RkbOrderItem} from '@/redux/api/cartApi';
+import {Currency} from '@/redux/api/productApi';
+import utils from '@/redux/api/utils';
+import {PurchaseItem} from '@/redux/models/purchaseItem';
+import {
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
+import {
+  actions as cartActions,
+  CartAction,
+  CartModelState,
+} from '@/redux/modules/cart';
+import {ProductModelState} from '@/redux/modules/product';
+import i18n from '@/utils/i18n';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import {Map as ImmutableMap} from 'immutable';
 import React, {Component} from 'react';
 import {
@@ -11,36 +41,6 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import AppAlert from '@/components/AppAlert';
-import AppBackButton from '@/components/AppBackButton';
-import AppButton from '@/components/AppButton';
-import CartItem from '@/components/CartItem';
-import ChargeSummary from '@/components/ChargeSummary';
-import {colors} from '@/constants/Colors';
-import {isDeviceSize, windowHeight} from '@/constants/SliderEntry.style';
-import {appStyles} from '@/constants/Styles';
-import {
-  AccountModelState,
-  actions as accountActions,
-} from '@/redux/modules/account';
-import {
-  actions as cartActions,
-  CartAction,
-  CartModelState,
-} from '@/redux/modules/cart';
-import api from '@/redux/api/api';
-import i18n from '@/utils/i18n';
-import {RootState} from '@/redux';
-import utils from '@/redux/api/utils';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {HomeStackParamList} from '@/navigation/navigation';
-import {RouteProp} from '@react-navigation/native';
-import {RkbOrderItem} from '@/redux/api/cartApi';
-import {ProductModelState} from '@/redux/modules/product';
-import {PurchaseItem} from '@/redux/models/purchaseItem';
-import {Currency} from '@/redux/api/productApi';
-import Env from '@/environment';
-import AppSnackBar from '@/components/AppSnackBar';
 
 const {esimCurrency} = Env.get();
 const sectionTitle = ['sim', 'product'];
@@ -94,10 +94,10 @@ const styles = StyleSheet.create({
   },
   emptyView: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    height: isDeviceSize('small') ? 200 : 450,
+    backgroundColor: colors.white,
   },
   emptyText: {
     textAlign: 'center',
@@ -192,16 +192,16 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
       this.props.navigation.navigate('Auth');
     } else {
       const purchaseItems = section
-        .reduce(
+        ?.reduce(
           (acc, cur) =>
             acc.concat(
-              cur.data.filter(
+              cur.data?.filter(
                 (item) => checked.get(item.key) && qty.get(item.key, 0) > 0,
               ),
             ),
           [] as RkbOrderItem[],
         )
-        .map(
+        ?.map(
           (item) =>
             ({
               ...item,
@@ -252,9 +252,15 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
   isEmptyList = () => {
     return (
       <View style={styles.emptyView}>
-        <Text style={[styles.emptyText, {color: colors.black}]}>
-          {i18n.t('cart:empty')}
-        </Text>
+        <AppIcon name="emptyCart" />
+        <View style={{marginTop: 20}}>
+          <Text style={[styles.emptyText, {color: colors.clearBlue}]}>
+            {i18n.t('cart:empty1')}
+          </Text>
+          <Text style={[styles.emptyText, {color: colors.warmGrey}]}>
+            {i18n.t('cart:empty2')}
+          </Text>
+        </View>
       </View>
     );
   };
@@ -265,22 +271,22 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
     total: ItemTotal,
     section: ItemSection[],
   ) => {
-    const simList = section.find((item) => item.title === 'sim');
+    const simList = section?.find((item) => item.title === 'sim');
     return simList &&
       simList.data.findIndex(
         (item) => checked.get(item.key) && (qty.get(item.key) || 0) > 0,
       ) >= 0
       ? utils.dlvCost(total.price)
-      : utils.toCurrency(0, total.price.currency);
+      : utils.toCurrency(0, total?.price.currency);
   };
 
   section = (args: RkbOrderItem[][]) => {
     return args
-      .map((item, idx) => ({
+      ?.map((item, idx) => ({
         title: sectionTitle[idx],
         data: item,
       }))
-      .filter((item) => item.data.length > 0);
+      ?.filter((item) => item.data.length > 0);
   };
 
   init() {
@@ -290,7 +296,7 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
 
     let {qty, checked} = this.state;
     const total = this.calculate(checked, qty);
-    const list = orderItems.reduce(
+    const list = orderItems?.reduce(
       (acc, cur) => {
         return cur.type === 'sim_card'
           ? [acc[0].concat(cur), acc[1]]
@@ -304,7 +310,7 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
       section: this.section(list),
     });
 
-    orderItems.forEach((item) => {
+    orderItems?.forEach((item) => {
       qty = qty.set(item.key, item.qty);
       checked = checked.update(item.key, (value) =>
         typeof value === 'undefined' ? true : value,
@@ -319,14 +325,14 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
 
   sim() {
     return this.props.cart.orderItems
-      .filter(
+      ?.filter(
         (item) =>
           item.prod.type === 'sim_card' &&
           this.state.checked.get(item.key) &&
           this.state.qty.get(item.key),
       )
-      .map((item) => item.totalPrice)
-      .reduce(
+      ?.map((item) => item.totalPrice)
+      ?.reduce(
         (acc, cur) => utils.toCurrency(acc.value + cur.value, cur.currency),
         utils.toCurrency(0, 'KRW'),
       );
@@ -334,7 +340,7 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
 
   checkDeletedItem(items: RkbOrderItem[]) {
     const {prodList} = this.props.product;
-    const toRemove = (items || {}).filter(
+    const toRemove = (items || []).filter(
       (item) => typeof prodList.get(item.key) === 'undefined',
     );
 
@@ -350,7 +356,7 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
     this.setState((state) => {
       const section = state.section?.map((item) => ({
         title: item.title,
-        data: item.data.filter((i) => i.orderItemId !== orderItemId),
+        data: item.data?.filter((i) => i.orderItemId !== orderItemId),
       }));
       const checked = state.checked.remove(key);
       const qty = state.qty.remove(key);
@@ -406,18 +412,18 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
     // 따라서, checked.get() 값이 false인 경우(사용자가 명확히 uncheck 한 경우)에만 계산에서 제외한다.
 
     return section
-      .reduce(
+      ?.reduce(
         (acc, cur) =>
           acc.concat(
-            cur.data.filter((item) => checked.get(item.key) !== false),
+            cur.data?.filter((item) => checked.get(item.key) !== false),
           ),
         [] as RkbOrderItem[],
       )
-      .map((item) => ({
+      ?.map((item) => ({
         qty: qty.get(item.key, 0),
         price: item.price,
       }))
-      .reduce(
+      ?.reduce(
         (acc, cur) => ({
           cnt: acc.cnt + cur.qty,
           price: {
@@ -449,10 +455,12 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
     const {iccid} = this.props.account;
     const dlvCost = this.getDlvCost(checked, qty, total, section);
     const balance = this.props.account.balance || 0;
-    const amount = utils.toCurrency(
-      total.price.value + dlvCost.value,
-      total.price.currency,
-    );
+    const amount = total
+      ? utils.toCurrency(
+          total.price.value + dlvCost.value,
+          total.price.currency,
+        )
+      : 0;
     const pymPrice = utils.toCurrency(
       amount.value > balance ? amount.value - balance : 0,
       amount.currency,
@@ -464,14 +472,15 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
         this.state.checked.get(item.key),
     );
 
-    return (
+    return _.isEmpty(section) ? (
+      this.isEmptyList()
+    ) : (
       <SafeAreaView style={styles.container}>
         <SectionList
           sections={section}
           renderItem={this.renderItem}
           extraData={[qty, checked]}
           stickySectionHeadersEnabled={false}
-          ListEmptyComponent={() => this.isEmptyList()}
           ListFooterComponent={
             <ChargeSummary
               totalCnt={total.cnt}

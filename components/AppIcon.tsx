@@ -98,6 +98,8 @@ const images: Record<string, any[]> = {
   btnPen: [require(`${esimPath}btnPen.png`)],
   imgDokebi2: [require(`${esimPath}imgDokebi2.png`)],
   rokIcon: [require(`${esimPath}icon.png`)],
+  emptyCart: [require(`${esimPath}imgCart.png`)],
+  emptyESIM: [require(`${esimPath}imgAirplane.png`)],
 };
 
 interface AppIconProps {
