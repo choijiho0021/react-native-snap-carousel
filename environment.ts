@@ -65,10 +65,8 @@ function get() {
   if (appId === 'esim') {
     switch (Config.NODE_ENV) {
       case 'production':
-        env.scheme = esimGlobal ? 'http' : 'https';
-        env.rokApiUrl = esimGlobal
-          ? 'tb-svcapp.rokebi.com'
-          : 'svcapp.rokebi.com';
+        env.scheme = 'https';
+        env.rokApiUrl = 'svcapp.rokebi.com';
         env.apiUrl = esimGlobal ? 'tb-global.rokebi.com' : 'esim.rokebi.com';
         env.baseUrl = esimGlobal
           ? 'http://tb-global.rokebi.com'
