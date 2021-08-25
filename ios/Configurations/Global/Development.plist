@@ -25,6 +25,8 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>CFBundleURLName</key>
 			<string></string>
 			<key>CFBundleURLSchemes</key>
@@ -45,10 +47,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>naverlogin</string>
+			<string>globalnaverlogin</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>naverlogin</string>
+				<string>globalnaverlogin</string>
 			</array>
 		</dict>
 	</array>
@@ -61,13 +63,17 @@
 	<key>FacebookCodelessDebugLogEnabled</key>
 	<true/>
 	<key>FacebookDisplayName</key>
-	<string>로밍도깨비 eSIM</string>
+	<string>RokebiGlobal</string>
 	<key>KAKAO_APP_KEY</key>
 	<string>20432406a5258ae68b9c9558a4ba23ef</string>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>fbshareextension</string>
+		<string>fbauth2</string>
+		<string>fb-messenger-api</string>
+		<string>fbapi</string>
 		<string>rokebitalk</string>
 		<string>naversearchapp</string>
 		<string>naversearchthirdlogin</string>

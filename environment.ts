@@ -1,3 +1,4 @@
+import {ConfigParam} from '@react-native-seoul/naver-login';
 import {Platform} from 'react-native';
 import Config from 'react-native-config';
 import {getBundleId} from 'react-native-device-info';
@@ -13,8 +14,8 @@ const impId = Config.NODE_ENV === 'production' ? 'imp53913318' : 'imp60215393';
 // const impId = esimGlobal ? 'imp60215393' : 'imp53913318';
 
 const codePushLabel = {
-  stagingIOS: 'v66',
-  stagingAndroid: 'v65',
+  stagingIOS: 'v76',
+  stagingAndroid: 'v75',
   productionIOS: 'v20',
   productionAndroid: 'v13',
 };

@@ -1,7 +1,7 @@
 // naver login for commit
 import AppButton from '@/components/AppButton';
 import {AuthCallback} from '@/components/SocialLogin';
-import {colors} from '@/constants/Colors';
+import Env from '@/environment';
 import {
   ConfigParam,
   getProfile,
@@ -10,6 +10,8 @@ import {
 } from '@react-native-seoul/naver-login';
 import React, {memo, useCallback} from 'react';
 import {Alert, StyleSheet, View} from 'react-native';
+
+const {esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   button: {
@@ -48,7 +50,7 @@ const NaverLoginButton = ({onAuth}: {onAuth: AuthCallback}) => {
       kConsumerKey: '', // client ID
       kConsumerSecret: '',
       kServiceAppName: '로밍도깨비 eSIM', // app name
-      kServiceAppUrlScheme: 'esimnaverlogin', // only for iOS // naverlogin
+      kServiceAppUrlScheme: esimGlobal ? 'globalnaverlogin' : 'esimnaverlogin', // only for iOS // naverlogin
     };
 
     await NaverLogin.login(iosKeys, (err?: Error, token?: TokenResponse) => {
@@ -56,7 +58,7 @@ const NaverLoginButton = ({onAuth}: {onAuth: AuthCallback}) => {
       // refreshToken: string;
       // expiresAt: string;
       // tokenType: string;
-      console.log('\n\n  Token is fetched  ::\n\n ', token);
+      console.log('\n\n  Token is fetched  ::\n\n ', token, iosKeys);
 
       if (err) {
         console.log('login error', err);
