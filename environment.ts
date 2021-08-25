@@ -1,9 +1,10 @@
-import {ConfigParam} from '@react-native-seoul/naver-login';
 import {Platform} from 'react-native';
 import Config from 'react-native-config';
 import {getBundleId} from 'react-native-device-info';
+import * as RNLocalize from 'react-native-localize';
 import {CurrencyCode} from './redux/api/productApi';
 
+// getBuildNumber() > 현재 info.plist bundleVersion 확인 가능
 const bundleId = getBundleId();
 
 // rokebi esim App
@@ -13,9 +14,16 @@ const esimGlobal = appId === 'esim' && bundleId === 'com.uangel.rokebi-global';
 const impId = Config.NODE_ENV === 'production' ? 'imp53913318' : 'imp60215393';
 // const impId = esimGlobal ? 'imp60215393' : 'imp53913318';
 
+// countryCode: "KR"
+// languageTag: "en-KR"
+// languageCode: "en"
+const lc = RNLocalize.getLocales()[0];
+// esim 이고 한국어가 아닌 경우 모두 esimEng
+const esimEng = appId === 'esim' && !esimGlobal && lc.languageCode !== 'ko';
+
 const codePushLabel = {
-  stagingIOS: 'v76',
-  stagingAndroid: 'v75',
+  stagingIOS: 'v77',
+  stagingAndroid: 'v76',
   productionIOS: 'v20',
   productionAndroid: 'v13',
 };
@@ -27,6 +35,7 @@ type Env = {
   channelId: string;
   esimApp: boolean;
   esimGlobal: boolean;
+  esimEng: boolean;
   esimCurrency: CurrencyCode;
   label?: string;
   scheme?: string;
@@ -43,6 +52,7 @@ const env: Env = {
   channelId,
   esimApp: appId === 'esim',
   esimGlobal,
+  esimEng,
   esimCurrency: esimGlobal ? 'USD' : 'KRW',
   sipServer: '193.122.106.2:35060',
   isProduction: Config.NODE_ENV === 'production',
