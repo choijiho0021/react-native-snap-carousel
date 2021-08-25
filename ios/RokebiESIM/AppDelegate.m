@@ -76,6 +76,9 @@ static void InitializeFlipper(UIApplication *application) {
         if([url.scheme isEqualToString:@"esimnaverlogin"]){
           [self handleWithUrl:url];
         }
+        if([url.scheme isEqualToString:@"globalnaverlogin"]){
+          [self handleWithUrl:url];
+        }
       });
   });
   
