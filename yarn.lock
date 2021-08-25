@@ -1660,18 +1660,18 @@
   dependencies:
     "invariant" "^2.2.4"
 
-"@react-native-firebase/app@^11.1.0":
-  "integrity" "sha512-dJfTxCB1FWid5CYTX5bjTDyAWyvi8u3g3OHBBup68rDuuqvE40n1eRFI+5ve4TUr01T1RI1D70M77qyjSHDkrQ=="
-  "resolved" "https://registry.npmjs.org/@react-native-firebase/app/-/app-11.1.1.tgz"
-  "version" "11.1.1"
+"@react-native-firebase/app@^11.5.0", "@react-native-firebase/app@11.5.0":
+  "integrity" "sha512-Jz5CBhqkybxHjTFr5V0K+Jq2YivzPbu9exSze61/z1zSaIfBhR4G38wmHk44VWAl+PEX8GaYy9yfT69tLiCERA=="
+  "resolved" "https://registry.npmjs.org/@react-native-firebase/app/-/app-11.5.0.tgz"
+  "version" "11.5.0"
   dependencies:
     "opencollective-postinstall" "^2.0.1"
     "superstruct" "^0.6.2"
 
-"@react-native-firebase/messaging@^11.1.0":
-  "integrity" "sha512-56iVLG1zB9Z+EHuKMFE6xbYg2oCDSZrdrEtGJXURI5zQ484SsJr1uxwXeFBiuydxn5IyCxXyP/0oN9jq3kzQaQ=="
-  "resolved" "https://registry.npmjs.org/@react-native-firebase/messaging/-/messaging-11.1.1.tgz"
-  "version" "11.1.1"
+"@react-native-firebase/messaging@^11.5.0":
+  "integrity" "sha512-bjsoJByiNtikNLCf5RMmUdIj3uH8Uf0eeyM9PdqfNRB1mtVaYrU8AmXnzbSd5SqJ/sxqwyZVuxzWNEJrcOnhZw=="
+  "resolved" "https://registry.npmjs.org/@react-native-firebase/messaging/-/messaging-11.5.0.tgz"
+  "version" "11.5.0"
 
 "@react-native-picker/picker@^1.8.3":
   "integrity" "sha512-Qt40DBg7IEhBN5x2DYPV3B26j5fNhVZcpCestr1IuirneMNtOaIyA9+nPYniL/OBzd9YbpUKbS7XSy/MM9bP3w=="

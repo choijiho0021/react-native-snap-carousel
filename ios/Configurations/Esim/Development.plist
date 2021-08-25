@@ -57,7 +57,7 @@
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
-	<false/>
+	<true/>
 	<key>FacebookAppID</key>
 	<string>147522690488197</string>
 	<key>FacebookCodelessDebugLogEnabled</key>
