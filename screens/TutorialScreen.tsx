@@ -1,4 +1,12 @@
 /* eslint-disable global-require */
+import {colors} from '@/constants/Colors';
+import {sliderWidth} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
+import Env from '@/environment';
+import {HomeStackParamList} from '@/navigation/navigation';
+import i18n from '@/utils/i18n';
+import analytics from '@react-native-firebase/analytics';
+import {StackNavigationProp} from '@react-navigation/stack';
 import React, {Component} from 'react';
 import {
   Dimensions,
@@ -11,15 +19,11 @@ import {
 } from 'react-native';
 import {AppEventsLogger} from 'react-native-fbsdk';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
-import {getTrackingStatus} from 'react-native-tracking-transparency';
+import {
+  getTrackingStatus,
+  TrackingStatus,
+} from 'react-native-tracking-transparency';
 import _ from 'underscore';
-import {colors} from '@/constants/Colors';
-import {sliderWidth} from '@/constants/SliderEntry.style';
-import {appStyles} from '@/constants/Styles';
-import Env from '@/environment';
-import i18n from '@/utils/i18n';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {HomeStackParamList} from '@/navigation/navigation';
 
 const {esimApp} = Env.get();
 
@@ -114,6 +118,7 @@ type CarouselIndex = 'step1' | 'step2' | 'step3' | 'step4';
 type TutorialScreenState = {
   activeSlide: number;
   images: CarouselIndex[];
+  status?: TrackingStatus;
 };
 
 class TutorialScreen extends Component<
@@ -136,10 +141,18 @@ class TutorialScreen extends Component<
     this.completed = this.completed.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.props.navigation.setOptions({
       headerShown: false,
     });
+
+    this.setState({
+      status: await getTrackingStatus(),
+    });
+
+    if (this.state.status === 'authorized') {
+      analytics().logEvent('tutorial_begin');
+    }
   }
 
   renderTutorial = ({item}: {item: CarouselIndex}) => {
@@ -152,16 +165,17 @@ class TutorialScreen extends Component<
     );
   };
 
-  skip = async () => {
-    const status = await getTrackingStatus();
-    if (status === 'authorized') AppEventsLogger.logEvent('튜토리얼 SKIP');
+  skip = () => {
+    if (this.state.status === 'authorized')
+      AppEventsLogger.logEvent('튜토리얼 SKIP');
     this.props.navigation.goBack();
   };
 
-  completed = async () => {
-    const status = await getTrackingStatus();
-    if (status === 'authorized')
+  completed = () => {
+    if (this.state.status === 'authorized') {
       AppEventsLogger.logEvent('fb_mobile_tutorial_completion');
+      analytics().logEvent('tutorial_complete');
+    }
     this.props.navigation.goBack();
   };
 
