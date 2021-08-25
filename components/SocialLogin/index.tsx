@@ -45,8 +45,9 @@ const styles = StyleSheet.create({
   },
   btnGroup: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginHorizontal: 55,
+    // justifyContent: 'space-between',
+    justifyContent: 'center',
+    marginHorizontal: 20,
   },
 });
 
@@ -59,9 +60,9 @@ const SocialLogin = ({onAuth}: {onAuth: AuthCallback}) => {
         <View style={styles.divider} />
       </View>
       <View style={styles.btnGroup}>
-        <KakaoLogin onAuth={onAuth} />
-        <NaverLoginButton onAuth={onAuth} />
-        <FacebookLogin onAuth={onAuth} />
+        {/* <KakaoLogin onAuth={onAuth} /> */}
+        {/* <NaverLoginButton onAuth={onAuth} /> */}
+        {/* <FacebookLogin onAuth={onAuth} /> */}
         <AppleLogin onAuth={onAuth} />
       </View>
     </View>

@@ -518,5 +518,5 @@
   "login:easyLogin": "Easy Login",
   "settings:reqPushSet": "Notification is turned off.\nDon't miss important notification for you!",
   "settings:openSettings": "Go to notification settings",
-  "settings:deniedPush": "Push Noti becomes disabled because of permission"
+  "settings:deniedPush": "Push Notification disabled"
 }
