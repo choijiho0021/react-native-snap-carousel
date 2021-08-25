@@ -43,7 +43,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
 
-const {channelId} = Env.get();
+const {channelId, esimEng} = Env.get();
 
 const HEADER_IMG_HEIGHT = 200;
 const TAB_IDX_ASK_BY_KAKAO = 3; // KakaoTalk으로 물어보기 Tab의 index
@@ -94,6 +94,7 @@ const styles = StyleSheet.create({
     marginTop: 56,
     marginBottom: 10,
     color: colors.warmGrey,
+    textAlign: 'center',
   },
 });
 
@@ -303,7 +304,7 @@ class ProductDetailScreen extends Component<
 
         <Text style={styles.kakaoPlus}>{i18n.t('prodDetail:KakaoPlus')}</Text>
         <AppButton
-          iconName="openKakao"
+          iconName={`openKakao${esimEng ? 'Eng' : ''}`}
           onPress={this.openKTalk}
           style={{flex: 1}}
         />
