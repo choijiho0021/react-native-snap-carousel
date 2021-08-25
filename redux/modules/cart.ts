@@ -275,17 +275,10 @@ const payNorder = createAsyncThunk(
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
-    return dispatch(
-      purchaseItems[0].type === 'rch'
-        ? rechargeAccount({
-            iccid,
-            amount: result.amount,
-            token,
-          })
-        : checkStock({purchaseItems, token}),
-    )
+    return dispatch(checkStock({purchaseItems, token}))
       .then(({payload: res}) => {
-        if (res.result === 0 || purchaseItems[0].type === 'rch') {
+        if (res.result === 0) {
+          // 충전, 구매 모두 order 생성
           return dispatch(
             makeOrder({
               items: purchaseItems,
@@ -323,7 +316,10 @@ const payNorder = createAsyncThunk(
         }
         return resp;
       })
-      .then(({payload}) => payload)
+      .then(({payload}) => {
+        dispatch(cartFetch());
+        return payload;
+      })
       .catch((err) => Promise.resolve({result: api.E_RESOURCE_NOT_FOUND}));
   },
 );
