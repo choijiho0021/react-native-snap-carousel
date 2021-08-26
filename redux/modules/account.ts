@@ -15,6 +15,7 @@ import {removeData, retrieveData, storeData} from '@/utils/utils';
 import Env from '@/environment';
 import {RkbAccount, RkbFile, RkbImage} from '@/redux/api/accountApi';
 import api, {ApiResult} from '@/redux/api/api';
+import messaging from '@react-native-firebase/messaging';
 import {actions as toastActions, reflectWithToast, Toast} from './toast';
 
 const {esimApp} = Env.get();
@@ -84,6 +85,8 @@ export type AccountModelState = {
   userPicture?: RkbFile;
   userPictureUrl?: string;
   deviceToken?: string;
+  old_deviceToken?: string;
+  old_fcmToken?: string;
   simCardName?: string;
   simCardImage?: string;
   isUsedByOther?: boolean;
@@ -104,14 +107,15 @@ export const auth = (state: AccountModelState): AccountAuth => ({
 
 const changeNotiToken = createAsyncThunk(
   'account/changeNotiToken',
-  (param, {dispatch, getState}) => {
+  ({notiToken}: {notiToken?: string}, {dispatch, getState}) => {
     const {
       account: {token, deviceToken, userId},
     } = getState() as RootState;
 
+    const attr = notiToken || deviceToken;
     const attributes = {
-      field_device_token: Platform.OS === 'ios' ? deviceToken : '',
-      field_fcm_token: Platform.OS === 'android' ? deviceToken : '',
+      field_device_token: Platform.OS === 'ios' ? attr : '',
+      field_fcm_token: Platform.OS === 'android' ? attr : '',
     };
 
     return dispatch(changeUserAttr({userId, attributes, token})).then(
@@ -136,7 +140,7 @@ const logInAndGetAccount = createAsyncThunk(
   'account/logInAndGetAccount',
   (
     {mobile, pin, iccid}: {mobile?: string; pin?: string; iccid?: string},
-    {dispatch},
+    {dispatch, getState},
   ) => {
     if (!mobile || !pin) {
       return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter');
@@ -153,15 +157,36 @@ const logInAndGetAccount = createAsyncThunk(
           storeData(API.User.KEY_PIN, pin);
           storeData(API.User.KEY_TOKEN, obj.csrf_token);
 
+          // Account 정보를 가져온 후 Token 값이 다르면 Disconnect
+          const getAccountWithDisconnect = (account: {
+            iccid: string;
+            token: string;
+          }) => {
+            Promise.resolve(dispatch(getAccount(account))).then(() => {
+              const {
+                account: {old_deviceToken},
+              } = getState() as RootState;
+              messaging()
+                .getToken()
+                .then((deviceToken) => {
+                  if (old_deviceToken && deviceToken !== old_deviceToken) {
+                    API.Noti.sendDisconnect({
+                      mobile,
+                      iccid: account.iccid,
+                    }).then(() => dispatch(changeNotiToken({})));
+                  }
+                });
+            });
+          };
           // get ICCID account info
           if (iccid) {
-            dispatch(getAccount({iccid, token}));
+            getAccountWithDisconnect({iccid, token});
           } else if (esimApp) {
             dispatch(
               registerMobile({iccid: 'esim', code: pin, mobile, token}),
             ).then(({payload: resp}) => {
               if (resp.result === 0)
-                dispatch(getAccount({iccid: `00001111${mobile}`, token}));
+                getAccountWithDisconnect({iccid: `00001111${mobile}`, token});
             });
           } else {
             // 가장 최근 사용한 SIM 카드 번호를 조회한다.
@@ -169,16 +194,13 @@ const logInAndGetAccount = createAsyncThunk(
               ({payload}: {payload: ApiResult<RkbAccount>}) => {
                 const {result: rst, objects: obj} = payload;
                 if (rst === 0 && obj && obj[0]?.status === 'A') {
-                  dispatch(getAccount({iccid: obj[0].iccid, token}));
+                  getAccountWithDisconnect({iccid: obj[0].iccid, token});
                 }
               },
             );
           }
 
-          // iccid 상관 없이 로그인마다 토큰 업데이트
-          dispatch(getUserId({name: obj.current_user.name, token})).then(() =>
-            dispatch(changeNotiToken()),
-          );
+          dispatch(getUserId({name: obj.current_user.name, token}));
           return api.success([]);
         }
         return payload;
@@ -243,6 +265,9 @@ const updateAccountState = (
   if (payload.email) newState.email = payload.email;
   if (payload.token) newState.token = payload.token;
   if (payload.deviceToken) newState.deviceToken = payload.deviceToken;
+  if (payload.old_deviceToken || payload.old_fcmToken)
+    newState.old_deviceToken = payload.old_deviceToken || payload.old_fcmToken;
+
   if (payload.simCardName) newState.simCardName = payload.simCardName;
   if (payload.simCardImage) newState.simCardImage = payload.simCardImage;
   if (payload.isPushNotiEnabled)

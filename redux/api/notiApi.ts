@@ -1,6 +1,7 @@
 import _ from 'underscore';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import {RkbInfo} from './pageApi';
+import Config from 'react-native-config';
 
 export type RkbNoti = RkbInfo & {
   bodyTitle?: string;
@@ -171,10 +172,42 @@ const sendLog = ({mobile, message}: {mobile: string; message: string}) => {
   );
 };
 
+const sendDisconnect = ({mobile, iccid}: {mobile: string; iccid: string}) => {
+  if (!mobile)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: mobile');
+
+  const url =
+    Config.NODE_ENV === 'production'
+      ? `${api.rokHttpUrl(
+          `${api.path.rokApi.noti.user}/${mobile}/account/disconnect`,
+        )}`
+      : `http://tb-svcapp-noti.rokebi.com/${api.path.rokApi.noti.user}/${mobile}/account/disconnect?service=esim`;
+  const headers = new Headers(jsonContentType);
+  const body = {
+    iccid,
+  };
+
+  return api.callHttp(
+    url,
+    {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    },
+    (data = {}) => {
+      if (_.size(data.result) > 0 && data.result.code === 0) {
+        return api.success([]);
+      }
+      return api.failure(api.FAILED, data.result?.error);
+    },
+  );
+};
+
 export default {
   getNoti,
   update,
   read,
   sendAlimTalk,
   sendLog,
+  sendDisconnect,
 };
