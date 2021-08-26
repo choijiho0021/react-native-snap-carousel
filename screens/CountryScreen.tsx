@@ -1,52 +1,56 @@
 /* eslint-disable consistent-return */
-import React, {Component, memo} from 'react';
-import {
-  StyleSheet,
-  Text,
-  FlatList,
-  View,
-  Image,
-  SafeAreaView,
-  Pressable,
-} from 'react-native';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import Analytics from 'appcenter-analytics';
-import analytics from '@react-native-firebase/analytics';
-import _ from 'underscore';
-import {API} from '@/redux/api';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppAlert from '@/components/AppAlert';
+import AppBackButton from '@/components/AppBackButton';
+import AppButton from '@/components/AppButton';
+import AppCartButton from '@/components/AppCartButton';
+import AppIcon from '@/components/AppIcon';
+import AppPrice from '@/components/AppPrice';
+import AppSnackBar from '@/components/AppSnackBar';
+import {colors} from '@/constants/Colors';
+import {device, windowWidth} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
-import i18n from '@/utils/i18n';
+import Env from '@/environment';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RootState} from '@/redux';
+import {API} from '@/redux/api';
+import api, {ApiResult} from '@/redux/api/api';
+import {RkbProduct} from '@/redux/api/productApi';
 import {
-  actions as productActions,
-  ProductModelState,
-} from '@/redux/modules/product';
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import {
   actions as cartActions,
   CartAction,
   CartModelState,
 } from '@/redux/modules/cart';
 import {
-  AccountModelState,
-  actions as accountActions,
-} from '@/redux/modules/account';
-import AppButton from '@/components/AppButton';
-import AppIcon from '@/components/AppIcon';
-import AppBackButton from '@/components/AppBackButton';
-import {colors} from '@/constants/Colors';
-import AppPrice from '@/components/AppPrice';
-import AppCartButton from '@/components/AppCartButton';
-import {windowWidth, device, windowHeight} from '@/constants/SliderEntry.style';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
-import api, {ApiResult} from '@/redux/api/api';
-import AppAlert from '@/components/AppAlert';
-import Env from '@/environment';
-import {RootState} from '@/redux';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {HomeStackParamList} from '@/navigation/navigation';
+  actions as productActions,
+  ProductModelState,
+} from '@/redux/modules/product';
+import i18n from '@/utils/i18n';
+import analytics from '@react-native-firebase/analytics';
 import {RouteProp} from '@react-navigation/native';
-import {RkbProduct} from '@/redux/api/productApi';
-import AppSnackBar from '@/components/AppSnackBar';
+import {StackNavigationProp} from '@react-navigation/stack';
+import Analytics from 'appcenter-analytics';
+import React, {Component, memo} from 'react';
+import {
+  FlatList,
+  Image,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import {
+  getTrackingStatus,
+  TrackingStatus,
+} from 'react-native-tracking-transparency';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 
 const {esimApp} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -282,6 +286,7 @@ type CountryScreenState = {
   localOpDetails?: string;
   disabled: boolean;
   isFocused: boolean;
+  status?: TrackingStatus;
 };
 class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
   constructor(props: CountryScreenProps) {
@@ -306,7 +311,7 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
     this.onPress = this.onPress.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const {navigation, route, product} = this.props;
     const {localOpList, prodOfCountry} = product;
     const prodList =
@@ -333,6 +338,7 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
         localOpDetails: localOp?.detail,
         selected: prodList[0]?.uuid,
         title,
+        status: await getTrackingStatus(),
       });
     }
   }
@@ -375,8 +381,8 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
     return prod ? [prod] : [];
   };
 
-  onPressBtnCart = () => {
-    const {selected} = this.state;
+  onPressBtnCart = async () => {
+    const {selected, status} = this.state;
     const {loggedIn} = this.props.account;
 
     // 다른 버튼 클릭으로 스낵바 종료될 경우, 재출력 안되는 부분이 있어 추가
@@ -385,12 +391,15 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
     });
 
     const purchaseItems = this.selectedProduct(selected);
-    Analytics.trackEvent('Click_cart');
 
-    analytics().logEvent('toCart', {
-      item: purchaseItems[0].title,
-      count: 1,
-    });
+    if (status === 'authorized') {
+      Analytics.trackEvent('Click_cart');
+
+      analytics().logEvent('toCart', {
+        item: purchaseItems[0].title,
+        count: 1,
+      });
+    }
 
     if (!loggedIn) {
       return this.props.navigation.navigate('Auth');
