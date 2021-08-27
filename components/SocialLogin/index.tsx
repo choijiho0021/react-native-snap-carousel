@@ -3,6 +3,7 @@ import i18n from '@/utils/i18n';
 import React, {memo} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {appStyles} from '@/constants/Styles';
+import appleAuth from '@invertase/react-native-apple-authentication';
 import AppleLogin from './AppleLogin';
 import FacebookLogin from './FacebookLogin';
 import KakaoLogin from './KakaoLogin';
@@ -62,7 +63,7 @@ const SocialLogin = ({onAuth}: {onAuth: AuthCallback}) => {
         <KakaoLogin onAuth={onAuth} />
         <NaverLoginButton onAuth={onAuth} />
         <FacebookLogin onAuth={onAuth} />
-        <AppleLogin onAuth={onAuth} />
+        {appleAuth.isSupported && <AppleLogin onAuth={onAuth} />}
       </View>
     </View>
   );
