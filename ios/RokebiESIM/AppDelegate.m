@@ -134,10 +134,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
     InitializeFlipper(application);
   #endif
 
-  /// Firebase configuration
-  if ([FIRApp defaultApp] == nil) {
-    [FIRApp configure];
-  }
+  [FIRApp configure];
 
   [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
   

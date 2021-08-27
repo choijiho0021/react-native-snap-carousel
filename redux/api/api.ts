@@ -87,6 +87,7 @@ const path = {
     noti: {
       alimtalk: 'api/v1/noti/msg/alimtalk',
       log: 'api/v1/noti/log',
+      user: 'api/v1/noti/user',
     },
     rokebi: {
       subs: 'rokebi/subs',

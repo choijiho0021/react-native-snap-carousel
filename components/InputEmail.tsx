@@ -45,6 +45,14 @@ i18nEvent.on('loaded', () => {
       label: 'Hanmail',
       value: 'hanmail.net',
     },
+    {
+      label: 'Kakao',
+      value: 'kakao.com',
+    },
+    {
+      label: 'Hotmail',
+      value: 'hotmail.com',
+    },
   ];
 });
 

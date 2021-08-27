@@ -737,7 +737,7 @@ class RegisterMobileScreen extends Component<
             </View>
           )}
 
-          {!socialLogin && <SocialLogin onAuth={this.onAuth} />}
+          {!socialLogin && !newUser && <SocialLogin onAuth={this.onAuth} />}
 
           {!socialLogin && esimGlobal && (
             <View
