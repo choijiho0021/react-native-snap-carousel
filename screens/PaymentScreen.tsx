@@ -1,20 +1,21 @@
+import AppAlert from '@/components/AppAlert';
+import AppBackButton from '@/components/AppBackButton';
+import AppText from '@/components/AppText';
+import {colors} from '@/constants/Colors';
+import Env from '@/environment';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {API} from '@/redux/api';
+import api from '@/redux/api/api';
+import {actions as cartActions, CartAction} from '@/redux/modules/cart';
+import i18n from '@/utils/i18n';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import IMP from 'iamport-react-native';
 import React, {Component} from 'react';
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
 import Video from 'react-native-video';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {colors} from '@/constants/Colors';
-import AppAlert from '@/components/AppAlert';
-import AppBackButton from '@/components/AppBackButton';
-import Env from '@/environment';
-import {actions as cartActions, CartAction} from '@/redux/modules/cart';
-import api from '@/redux/api/api';
-import i18n from '@/utils/i18n';
-import {API} from '@/redux/api';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {HomeStackParamList} from '@/navigation/navigation';
-import {RouteProp} from '@react-navigation/native';
 
 // const IMP = require('iamport-react-native').default;
 const loading = require('../assets/images/loading_1.mp4');
@@ -205,7 +206,9 @@ class PaymentScreen extends Component<PaymentScreenProps, PaymentScreenState> {
                 style={styles.backgroundVideo}
                 resizeMode="cover"
               />
-              <Text style={styles.infoText}>{i18n.t('pym:loadingInfo')}</Text>
+              <AppText style={styles.infoText}>
+                {i18n.t('pym:loadingInfo')}
+              </AppText>
             </View>
           }
           startInLoadingState
