@@ -38,8 +38,8 @@ const toAccount = (
         actDate: item.field_activation_date,
         firstActDate: item.field_first_activation_date,
         mobile: item.field_mobile,
-        deviceToken: item.field_device_token,
-        fcmToken: item.field_fcm_token,
+        old_deviceToken: item.field_device_token,
+        old_fcmToken: item.field_fcm_token,
         simCardName: item.sim_card_name,
         simCardImage: item.sim_card_image,
         userAccount: item.field_ref_user_account,
@@ -68,9 +68,9 @@ const toAccount = (
           data.field_first_activation_date &&
           data.field_first_activation_date[0].value,
         mobile: data.field_mobile && data.field_mobile[0].value,
-        deviceToken:
+        old_deviceToken:
           data.field_device_token && data.field_device_token[0].value,
-        fcmToken: data.field_fcm_token && data.field_fcm_token[0].value,
+        old_fcmToken: data.field_fcm_token && data.field_fcm_token[0].value,
         simPartnerId: undefined,
       },
     ]);
@@ -90,8 +90,8 @@ const toAccount = (
         actDate: item.attributes.field_activation_date,
         firstActDate: item.attributes.field_first_activation_date,
         mobile: item.attributes.field_mobile,
-        deviceToken: item.attributes.field_device_token,
-        fcmToken: item.attributes.field_fcm_token,
+        old_deviceToken: item.attributes.field_device_token,
+        old_fcmToken: item.attributes.field_fcm_token,
         isPushNotiEnabled: item.attributes.field_is_notification_enabled,
         simPartnerId: undefined,
         uid: undefined,

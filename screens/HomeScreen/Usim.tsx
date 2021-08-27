@@ -347,7 +347,7 @@ class Usim extends Component<UsimProps, UsimState> {
 
     //  자동로그인의 경우 device token update
     if (prevProps.account.deviceToken !== deviceToken && loggedIn) {
-      this.props.action.account.changeNotiToken();
+      this.props.action.account.changeNotiToken({});
     }
 
     if (prevProps.account.loggedIn !== loggedIn) {

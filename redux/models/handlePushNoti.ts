@@ -1,6 +1,6 @@
 import {Platform} from 'react-native';
 import _ from 'underscore';
-import {API} from '..';
+import {API} from '@/redux/api';
 
 class HandlePushNoti {
   constructor(
@@ -35,10 +35,10 @@ class HandlePushNoti {
   sendLog() {
     if (this.mobile && _.size(this.payload.data) > 0) {
       if (Platform.OS === 'ios') {
-        API.Noti.sendLog({
-          mobile: this.mobile,
-          message: JSON.stringify(this.payload.data),
-        });
+        // API.Noti.sendLog({
+        //   mobile: this.mobile,
+        //   message: JSON.stringify(this.payload.data),
+        // });
       }
     }
   }
