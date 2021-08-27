@@ -1,13 +1,11 @@
 import {colors} from '@/constants/Colors';
-import i18n from '@/utils/i18n';
-import React, {memo} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
 import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
 import appleAuth from '@invertase/react-native-apple-authentication';
+import React, {memo} from 'react';
+import {StyleSheet, View} from 'react-native';
+import AppText from '../AppText';
 import AppleLogin from './AppleLogin';
-import FacebookLogin from './FacebookLogin';
-import KakaoLogin from './KakaoLogin';
-import NaverLoginButton from './NaverLoginButton';
 
 export type AuthCallback = ({
   user,
@@ -46,8 +44,9 @@ const styles = StyleSheet.create({
   },
   btnGroup: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginHorizontal: 55,
+    // justifyContent: 'space-between',
+    justifyContent: 'center',
+    marginHorizontal: 20,
   },
 });
 
@@ -56,13 +55,15 @@ const SocialLogin = ({onAuth}: {onAuth: AuthCallback}) => {
     <View style={styles.container}>
       <View style={styles.easyLoginTitle}>
         <View style={styles.divider} />
-        <Text style={appStyles.bold18Text}>{i18n.t('login:easyLogin')}</Text>
+        <AppText style={appStyles.bold18Text}>
+          {i18n.t('login:easyLogin')}
+        </AppText>
         <View style={styles.divider} />
       </View>
       <View style={styles.btnGroup}>
-        <KakaoLogin onAuth={onAuth} />
-        <NaverLoginButton onAuth={onAuth} />
-        <FacebookLogin onAuth={onAuth} />
+        {/* <KakaoLogin onAuth={onAuth} /> */}
+        {/* <NaverLoginButton onAuth={onAuth} /> */}
+        {/* <FacebookLogin onAuth={onAuth} /> */}
         {appleAuth.isSupported && <AppleLogin onAuth={onAuth} />}
       </View>
     </View>

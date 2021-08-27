@@ -1,32 +1,33 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-nested-ternary */
-import React, {Component} from 'react';
-import {StyleSheet, Text, View, Dimensions} from 'react-native';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {TabView, TabBar} from 'react-native-tab-view';
-import moment, {Moment} from 'moment';
-import Analytics from 'appcenter-analytics';
-import {API} from '@/redux/api';
-import {appStyles} from '@/constants/Styles';
-import i18n from '@/utils/i18n';
-import {
-  actions as productActions,
-  ProductAction,
-  ProductModelState,
-} from '@/redux/modules/product';
-import {colors} from '@/constants/Colors';
 import AppButton from '@/components/AppButton';
+import AppText from '@/components/AppText';
 import StoreList from '@/components/StoreList';
+import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
+import {API} from '@/redux/api';
 import {
   ProductByCategory,
   RkbProduct,
   TabViewRoute,
   TabViewRouteKey,
 } from '@/redux/api/productApi';
+import {
+  actions as productActions,
+  ProductAction,
+  ProductModelState,
+} from '@/redux/modules/product';
+import i18n from '@/utils/i18n';
 import {StackNavigationProp} from '@react-navigation/stack';
+import Analytics from 'appcenter-analytics';
+import moment, {Moment} from 'moment';
+import React, {Component} from 'react';
+import {Dimensions, StyleSheet, View} from 'react-native';
+import {TabBar, TabView} from 'react-native-tab-view';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import {HomeStackParamList} from '../navigation/navigation';
 
 const styles = StyleSheet.create({
@@ -173,7 +174,9 @@ class StoreScreen extends Component<StoreScreenProps, StoreScreenState> {
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => <Text style={styles.title}>{i18n.t('store')}</Text>,
+      headerLeft: () => (
+        <AppText style={styles.title}>{i18n.t('store')}</AppText>
+      ),
       headerRight: () => (
         <AppButton
           key="search"
@@ -204,7 +207,7 @@ class StoreScreen extends Component<StoreScreenProps, StoreScreenState> {
   render() {
     const {index, routes} = this.state;
     return (
-      // AppTextInput
+      // AppTextInputButton
       <View style={[appStyles.container, {flexGrow: 1}]}>
         <TabView
           style={styles.container}
@@ -212,8 +215,6 @@ class StoreScreen extends Component<StoreScreenProps, StoreScreenState> {
           renderScene={this.renderScene}
           onIndexChange={this.onIndexChange}
           initialLayout={{width: Dimensions.get('window').width, height: 10}}
-          titleStyle={appStyles.normal16Text}
-          indicatorStyle={{backgroundColor: 'white'}}
           renderTabBar={(props) => (
             <TabBar
               {...props}

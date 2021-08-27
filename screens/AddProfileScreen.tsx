@@ -1,27 +1,29 @@
-import React, {Component} from 'react';
-import {StyleSheet, View, Text, TextInput, SafeAreaView} from 'react-native';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {Map} from 'immutable';
-import _ from 'underscore';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import RNPickerSelect from 'react-native-picker-select';
-import {actions as accountActions} from '@/redux/modules/account';
-import {actions as profileActions} from '@/redux/modules/profile';
 import AppBackButton from '@/components/AppBackButton';
-import {colors} from '@/constants/Colors';
 import AppButton from '@/components/AppButton';
-import Triangle from '@/components/Triangle';
-import FindEngAddress from '@/utils/findEngAddress';
 import AppIcon from '@/components/AppIcon';
-import validationUtil from '@/utils/validationUtil';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
+import AppText from '@/components/AppText';
+import AppTextInput from '@/components/AppTextInput';
 import {isAndroid} from '@/components/SearchBarAnimation/utils';
-import utils from '@/redux/api/utils';
-import i18n from '@/utils/i18n';
+import Triangle from '@/components/Triangle';
+import {colors} from '@/constants/Colors';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
+import utils from '@/redux/api/utils';
+import {actions as accountActions} from '@/redux/modules/account';
+import {actions as profileActions} from '@/redux/modules/profile';
+import FindEngAddress from '@/utils/findEngAddress';
+import i18n from '@/utils/i18n';
+import validationUtil from '@/utils/validationUtil';
+import {Map} from 'immutable';
+import React, {Component} from 'react';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import RNPickerSelect from 'react-native-picker-select';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
@@ -346,7 +348,7 @@ class AddProfileScreen extends Component {
 
   warning(key) {
     return (
-      <Text
+      <AppText
         style={[
           styles.textWidth,
           {
@@ -358,7 +360,7 @@ class AddProfileScreen extends Component {
           },
         ]}>
         {this.state.errors[key] ? this.state.errors[key] : null}
-      </Text>
+      </AppText>
     );
   }
 
@@ -392,14 +394,14 @@ class AddProfileScreen extends Component {
             <View style={{margin: 20, flex: 1}}>
               <View style={styles.textRow}>
                 <View style={styles.titleView}>
-                  <Text style={styles.titleText}>
+                  <AppText style={styles.titleText}>
                     {i18n.t('addr:addrAlias')}
-                  </Text>
-                  <Text style={styles.titleRequired}>
+                  </AppText>
+                  <AppText style={styles.titleRequired}>
                     {i18n.t('addr:mandatory')}
-                  </Text>
+                  </AppText>
                 </View>
-                <TextInput
+                <AppTextInput
                   style={[
                     styles.textBox,
                     {borderColor: this.changeBorder('alias')},
@@ -414,14 +416,14 @@ class AddProfileScreen extends Component {
 
               <View style={styles.textRow}>
                 <View style={styles.titleView}>
-                  <Text style={styles.titleText}>
+                  <AppText style={styles.titleText}>
                     {i18n.t('addr:recipient')}
-                  </Text>
-                  <Text style={styles.titleRequired}>
+                  </AppText>
+                  <AppText style={styles.titleRequired}>
                     {i18n.t('addr:mandatory')}
-                  </Text>
+                  </AppText>
                 </View>
-                <TextInput
+                <AppTextInput
                   style={[
                     styles.textBox,
                     {borderColor: this.changeBorder('recipient')},
@@ -436,12 +438,12 @@ class AddProfileScreen extends Component {
               {this.warning('recipient')}
               <View style={styles.textRow}>
                 <View style={styles.titleView}>
-                  <Text style={styles.titleText}>
+                  <AppText style={styles.titleText}>
                     {i18n.t('addr:recipientNumber')}
-                  </Text>
-                  <Text style={styles.titleRequired}>
+                  </AppText>
+                  <AppText style={styles.titleRequired}>
                     {i18n.t('addr:mandatory')}
-                  </Text>
+                  </AppText>
                 </View>
                 <View style={[styles.textWidth, {flexDirection: 'row'}]}>
                   <View style={[styles.container, this.props.style]}>
@@ -466,7 +468,7 @@ class AddProfileScreen extends Component {
                       />
                     </View>
                   </View>
-                  <TextInput
+                  <AppTextInput
                     style={[
                       styles.textBox,
                       {
@@ -487,13 +489,15 @@ class AddProfileScreen extends Component {
               {this.warning('recipientNumber')}
               <View style={[styles.textRow, {marginBottom: 10}]}>
                 <View style={styles.titleView}>
-                  <Text style={styles.titleText}>{i18n.t('addr:address')}</Text>
-                  <Text style={styles.titleRequired}>
+                  <AppText style={styles.titleText}>
+                    {i18n.t('addr:address')}
+                  </AppText>
+                  <AppText style={styles.titleRequired}>
                     {i18n.t('addr:mandatory')}
-                  </Text>
+                  </AppText>
                 </View>
                 <View style={[styles.textWidth, {flexDirection: 'row'}]}>
-                  <Text
+                  <AppText
                     style={[
                       styles.textBox,
                       {
@@ -504,7 +508,7 @@ class AddProfileScreen extends Component {
                     ]}
                     onPress={this.findAddress}>
                     {profile.get('addressLine1')}
-                  </Text>
+                  </AppText>
                   <AppButton
                     title={i18n.t('addr:search')}
                     style={styles.findButton}
@@ -514,7 +518,7 @@ class AddProfileScreen extends Component {
                 </View>
               </View>
               <View style={styles.findTextRow}>
-                <Text
+                <AppText
                   style={[
                     styles.textBox,
                     {
@@ -524,11 +528,11 @@ class AddProfileScreen extends Component {
                   ]}
                   onPress={this.findAddress}>
                   {profile.get('addressLine2')}
-                </Text>
+                </AppText>
               </View>
 
               <View style={[styles.findTextRow, {marginBottom: 13}]}>
-                <TextInput
+                <AppTextInput
                   style={[
                     styles.textBox,
                     {borderColor: this.changeBorder('detailAddr')},
@@ -545,15 +549,17 @@ class AddProfileScreen extends Component {
                 <View style={styles.findTextRow}>
                   <View style={styles.textWidth}>
                     <View style={styles.roadBox}>
-                      <Text style={styles.roadText}>{i18n.t('addr:road')}</Text>
+                      <AppText style={styles.roadText}>
+                        {i18n.t('addr:road')}
+                      </AppText>
                     </View>
-                    <Text style={styles.addrText}>
+                    <AppText style={styles.addrText}>
                       {!_.isEmpty(profile.get('detailAddr'))
                         ? `${profile.get('roadAddr')} ${profile.get(
                             'detailAddr',
                           )}`
                         : profile.get('roadAddr')}
-                    </Text>
+                    </AppText>
                   </View>
                 </View>
               )}
@@ -572,9 +578,9 @@ class AddProfileScreen extends Component {
                   name="btnCheck2"
                   checked={this.state.profile.get('isBasicAddr')}
                 />
-                <Text style={styles.basicProfile}>
+                <AppText style={styles.basicProfile}>
                   {i18n.t('addr:selectBasicAddr')}
-                </Text>
+                </AppText>
               </TouchableOpacity>
             </View>
           </View>

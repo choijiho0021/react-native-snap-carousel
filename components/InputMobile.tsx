@@ -1,12 +1,13 @@
-import React, {Component} from 'react';
-import {StyleSheet, View, Text, ViewStyle, StyleProp} from 'react-native';
-import _ from 'underscore';
-import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import utils from '@/redux/api/utils';
+import i18n from '@/utils/i18n';
 import validationUtil from '@/utils/validationUtil';
-import AppTextInput from './AppTextInput';
+import React, {Component} from 'react';
+import {StyleProp, StyleSheet, View, ViewStyle} from 'react-native';
+import _ from 'underscore';
+import AppText from './AppText';
+import AppTextInputButton from './AppTextInputButton';
 
 const styles = StyleSheet.create({
   button: {
@@ -163,7 +164,7 @@ class InputMobile extends Component<InputMobileProps, InputMobileState> {
       <View>
         <View style={[styles.container, style]}>
           <View style={{flex: 1}}>
-            <AppTextInput
+            <AppTextInputButton
               placeholder={i18n.t('mobile:input')}
               placeholderTextColor={colors.greyish}
               keyboardType="numeric"
@@ -188,7 +189,7 @@ class InputMobile extends Component<InputMobileProps, InputMobileState> {
           </View>
         </View>
         {authNoti && typeof authorized === undefined && (
-          <Text style={styles.helpText}>{i18n.t('reg:authNoti')}</Text>
+          <AppText style={styles.helpText}>{i18n.t('reg:authNoti')}</AppText>
         )}
       </View>
     );

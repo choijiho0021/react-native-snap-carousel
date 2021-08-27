@@ -1,23 +1,33 @@
-import React, {Component} from 'react';
-import {StyleSheet, Text, View, Platform, SafeAreaView} from 'react-native';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import Video from 'react-native-video';
-import Analytics from 'appcenter-analytics';
-import _ from 'underscore';
-import {TouchableOpacity, TextInput} from 'react-native-gesture-handler';
-import RNPickerSelect from 'react-native-picker-select';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import AddressCard from '@/components/AddressCard';
+import AppAlert from '@/components/AppAlert';
+import AppBackButton from '@/components/AppBackButton';
+import AppButton from '@/components/AppButton';
+import AppIcon from '@/components/AppIcon';
+import AppText from '@/components/AppText';
+import AppTextInputButton from '@/components/AppTextInputButton';
+import PaymentItemInfo from '@/components/PaymentItemInfo';
+import {isAndroid} from '@/components/SearchBarAnimation/utils';
+import Triangle from '@/components/Triangle';
+import {colors} from '@/constants/Colors';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
+import Env from '@/environment';
+import {
+  HomeStackParamList,
+  PaymentParams,
+  PymMethodScreenMode,
+} from '@/navigation/navigation';
+import {RootState} from '@/redux';
 import {API} from '@/redux/api';
+import api from '@/redux/api/api';
+import {PaymentMethod} from '@/redux/api/paymentApi';
+import {Currency} from '@/redux/api/productApi';
+import utils from '@/redux/api/utils';
+import {createPaymentResultForRokebiCash} from '@/redux/models/paymentResult';
 import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
-import {
-  actions as profileActions,
-  ProfileAction,
-  ProfileModelState,
-} from '@/redux/modules/profile';
 import {
   actions as cartActions,
   CartAction,
@@ -28,32 +38,24 @@ import {
   InfoAction,
   InfoModelState,
 } from '@/redux/modules/info';
-import {appStyles} from '@/constants/Styles';
-import i18n from '@/utils/i18n';
-import AppBackButton from '@/components/AppBackButton';
-import {colors} from '@/constants/Colors';
-import AppButton from '@/components/AppButton';
-import AddressCard from '@/components/AddressCard';
-import PaymentItemInfo from '@/components/PaymentItemInfo';
-import {isAndroid} from '@/components/SearchBarAnimation/utils';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
-import Env from '@/environment';
-import Triangle from '@/components/Triangle';
-import AppIcon from '@/components/AppIcon';
-import api from '@/redux/api/api';
-import AppAlert from '@/components/AppAlert';
-import {RootState} from '@/redux';
-import {StackNavigationProp} from '@react-navigation/stack';
 import {
-  HomeStackParamList,
-  PaymentParams,
-  PymMethodScreenMode,
-} from '@/navigation/navigation';
+  actions as profileActions,
+  ProfileAction,
+  ProfileModelState,
+} from '@/redux/modules/profile';
+import i18n from '@/utils/i18n';
 import {RouteProp} from '@react-navigation/native';
-import {createPaymentResultForRokebiCash} from '@/redux/models/paymentResult';
-import {PaymentMethod} from '@/redux/api/paymentApi';
-import {Currency} from '@/redux/api/productApi';
-import utils from '@/redux/api/utils';
+import {StackNavigationProp} from '@react-navigation/stack';
+import Analytics from 'appcenter-analytics';
+import React, {Component} from 'react';
+import {Platform, SafeAreaView, StyleSheet, View} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import RNPickerSelect from 'react-native-picker-select';
+import Video from 'react-native-video';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 
 const {esimApp} = Env.get();
 const {deliveryText} = API.Order;
@@ -508,6 +510,7 @@ class PymMethodScreen extends Component<
       this.setState({
         clickable: true,
       });
+      console.log('payment click', params);
       this.props.navigation.navigate('Payment', params);
     }
   }
@@ -590,12 +593,12 @@ class PymMethodScreen extends Component<
       <TouchableOpacity
         style={styles.spaceBetweenBox}
         onPress={() => this.showModal(stateTitle)}>
-        <Text style={styles.boldTitle}>{title}</Text>
+        <AppText style={styles.boldTitle}>{title}</AppText>
         <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
           {!this.state.showModal[stateTitle] && (
-            <Text style={[styles.alignCenter, styles.normal16BlueTxt]}>
+            <AppText style={[styles.alignCenter, styles.normal16BlueTxt]}>
               {alias}
-            </Text>
+            </AppText>
           )}
           <AppButton
             style={{backgroundColor: colors.white, height: 70}}
@@ -636,12 +639,14 @@ class PymMethodScreen extends Component<
               this.props.profile.profile.length > 0 && (
                 <View>
                   <View style={styles.profileTitle}>
-                    <Text style={styles.profileTitleText}>{item.alias}</Text>
+                    <AppText style={styles.profileTitleText}>
+                      {item.alias}
+                    </AppText>
                     {item.isBasicAddr && (
                       <View style={styles.basicAddrBox}>
-                        <Text style={styles.basicAddr}>
+                        <AppText style={styles.basicAddr}>
                           {i18n.t('addr:basicAddr')}
-                        </Text>
+                        </AppText>
                       </View>
                     )}
                     <View style={{flex: 1, alignItems: 'flex-end'}}>
@@ -725,7 +730,7 @@ class PymMethodScreen extends Component<
               />
             </View>
             {this.state.deliveryMemo.directInput && (
-              <TextInput
+              <AppTextInputButton
                 placeholder={i18n.t('pym:IputMemo')}
                 placeholderTextColor={colors.warmGrey}
                 style={styles.textField}
@@ -768,19 +773,19 @@ class PymMethodScreen extends Component<
             {API.Payment.method.map((v, idx) => this.button(`${idx}`, v))}
             {/* 
             // 토스 간편결제 추가로 현재 불필요
-            <Text style={{marginVertical: 20, color: colors.clearBlue}}>
+            <AppText style={{marginVertical: 20, color: colors.clearBlue}}>
               {i18n.t('pym:tossInfo')}
-            </Text> 
+            </AppText> 
             */}
             {benefit && (
               <View style={styles.benefit}>
-                <Text style={[styles.normal12TxtLeft, {marginBottom: 5}]}>
+                <AppText style={[styles.normal12TxtLeft, {marginBottom: 5}]}>
                   {benefit.title}
-                </Text>
-                <Text
+                </AppText>
+                <AppText
                   style={[styles.normal12TxtLeft, {color: colors.warmGrey}]}>
                   {benefit.body}
-                </Text>
+                </AppText>
               </View>
             )}
           </View>
@@ -826,37 +831,41 @@ class PymMethodScreen extends Component<
           style={styles.rowCenter}
           onPress={() => this.consentEssential()}>
           <AppIcon name="btnCheck2" checked={this.state.consent} size={22} />
-          <Text
+          <AppText
             style={[
               appStyles.bold16Text,
               {color: colors.black, marginLeft: 12},
             ]}>
             {i18n.t('pym:consentEssential')}
-          </Text>
+          </AppText>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.spaceBetweenBox]}
           onPress={() => this.move('1')}>
-          <Text
+          <AppText
             style={[
               appStyles.normal14Text,
               {color: colors.warmGrey, lineHeight: 22},
             ]}>
             {i18n.t('pym:privacy')}
-          </Text>
-          <Text style={styles.underlinedClearBlue}>{i18n.t('pym:detail')}</Text>
+          </AppText>
+          <AppText style={styles.underlinedClearBlue}>
+            {i18n.t('pym:detail')}
+          </AppText>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.spaceBetweenBox}
           onPress={() => this.move('2')}>
-          <Text
+          <AppText
             style={[
               appStyles.normal14Text,
               {color: colors.warmGrey, lineHeight: 22},
             ]}>
             {i18n.t('pym:paymentAgency')}
-          </Text>
-          <Text style={styles.underlinedClearBlue}>{i18n.t('pym:detail')}</Text>
+          </AppText>
+          <AppText style={styles.underlinedClearBlue}>
+            {i18n.t('pym:detail')}
+          </AppText>
         </TouchableOpacity>
       </View>
     );
@@ -888,7 +897,9 @@ class PymMethodScreen extends Component<
             this.method()
           ) : (
             <View style={styles.result}>
-              <Text style={styles.resultText}>{i18n.t('pym:balPurchase')}</Text>
+              <AppText style={styles.resultText}>
+                {i18n.t('pym:balPurchase')}
+              </AppText>
             </View>
           )}
           {this.consentBox()}

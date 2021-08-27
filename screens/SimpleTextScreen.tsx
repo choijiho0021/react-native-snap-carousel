@@ -1,3 +1,28 @@
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppBackButton from '@/components/AppBackButton';
+import AppButton from '@/components/AppButton';
+import AppModal from '@/components/AppModal';
+import AppText from '@/components/AppText';
+import AppUserPic from '@/components/AppUserPic';
+import {colors} from '@/constants/Colors';
+import {appStyles, htmlDetailWithCss} from '@/constants/Styles';
+import Env from '@/environment';
+import {
+  HomeStackParamList,
+  SimpleTextScreenMode,
+} from '@/navigation/navigation';
+import {RootState} from '@/redux';
+import {API} from '@/redux/api';
+import utils from '@/redux/api/utils';
+import {AccountModelState} from '@/redux/modules/account';
+import {
+  actions as infoActions,
+  InfoAction,
+  InfoModelState,
+} from '@/redux/modules/info';
+import i18n from '@/utils/i18n';
+import {RouteProp, useFocusEffect} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import React, {Component, memo, useState} from 'react';
 import {
   Dimensions,
@@ -5,36 +30,11 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
-import AppBackButton from '@/components/AppBackButton';
-import AppButton from '@/components/AppButton';
-import {colors} from '@/constants/Colors';
-import {appStyles, htmlDetailWithCss} from '@/constants/Styles';
-import Env from '@/environment';
-import {API} from '@/redux/api';
-import i18n from '@/utils/i18n';
-import utils from '@/redux/api/utils';
-import {
-  actions as infoActions,
-  InfoAction,
-  InfoModelState,
-} from '@/redux/modules/info';
-import {RootState} from '@/redux';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {RouteProp, useFocusEffect} from '@react-navigation/native';
-import {
-  HomeStackParamList,
-  SimpleTextScreenMode,
-} from '@/navigation/navigation';
-import {AccountModelState} from '@/redux/modules/account';
-import AppModal from '@/components/AppModal';
-import AppUserPic from '@/components/AppUserPic';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 
 const {baseUrl} = Env.get();
 const {width} = Dimensions.get('window');
@@ -253,9 +253,9 @@ class SimpleTextScreen extends Component<
         <ScrollView style={styles.scrollContainer}>
           <View style={styles.container}>
             {bodyTitle && (
-              <Text style={styles.bodyTitle}>{`${bodyTitle}\n\n`}</Text>
+              <AppText style={styles.bodyTitle}>{`${bodyTitle}\n\n`}</AppText>
             )}
-            <Text style={styles.text}>{utils.htmlToString(body)}</Text>
+            <AppText style={styles.text}>{utils.htmlToString(body)}</AppText>
           </View>
         </ScrollView>
       );

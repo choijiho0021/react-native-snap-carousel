@@ -1,4 +1,5 @@
 /* eslint-disable global-require */
+import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {sliderWidth} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
@@ -14,7 +15,6 @@ import {
   Pressable,
   SafeAreaView,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 import {AppEventsLogger} from 'react-native-fbsdk';
@@ -228,9 +228,9 @@ class TutorialScreen extends Component<
                   {flex: 1, alignItems: 'center'},
                 ]}
                 onPress={() => this.completed()}>
-                <Text style={styles.bottomText}>
+                <AppText style={styles.bottomText}>
                   {i18n.t('tutorial:close')}
-                </Text>
+                </AppText>
               </Pressable>
             </View>
           ) : (
@@ -238,14 +238,16 @@ class TutorialScreen extends Component<
               <Pressable
                 style={styles.touchableOpacity}
                 onPress={() => this.skip()}>
-                <Text style={styles.bottomText}>{i18n.t('tutorial:skip')}</Text>
+                <AppText style={styles.bottomText}>
+                  {i18n.t('tutorial:skip')}
+                </AppText>
               </Pressable>
               <Pressable
                 style={styles.touchableOpacity}
                 onPress={() => this.carousel?.current?.snapToNext()}>
-                <Text style={[styles.bottomText, {color: colors.clearBlue}]}>
+                <AppText style={[styles.bottomText, {color: colors.clearBlue}]}>
                   {i18n.t('tutorial:next')}
-                </Text>
+                </AppText>
               </Pressable>
             </View>
           )}

@@ -1,6 +1,8 @@
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
+import AppPrice from '@/components/AppPrice';
+import AppText from '@/components/AppText';
 import LabelText from '@/components/LabelText';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
@@ -8,6 +10,9 @@ import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
+import {API} from '@/redux/api';
+import utils from '@/redux/api/utils';
+import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {
   AccountModelState,
   actions as accountActions,
@@ -22,8 +27,6 @@ import {
   OrderAction,
   OrderModelState,
 } from '@/redux/modules/order';
-import {API} from '@/redux/api';
-import utils from '@/redux/api/utils';
 import i18n from '@/utils/i18n';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -35,15 +38,11 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import AppPrice from '@/components/AppPrice';
-import {PurchaseItem} from '@/redux/models/purchaseItem';
-import EsimMainTabNavigator from '@/navigation/EsimMainTabNavigator';
 
 const styles = StyleSheet.create({
   buttonBox: {
@@ -290,12 +289,12 @@ class RechargeScreen extends Component<
                     name="rokIcon"
                   />
                   <View style={styles.rchTextBox}>
-                    <Text style={appStyles.normal14Text}>
+                    <AppText style={appStyles.normal14Text}>
                       {i18n.t('acc:remain')}
-                    </Text>
-                    <Text style={appStyles.bold30Text}>
+                    </AppText>
+                    <AppText style={appStyles.bold30Text}>
                       {utils.price(utils.toCurrency(balance, esimCurrency))}
-                    </Text>
+                    </AppText>
                   </View>
                 </View>
               </ImageBackground>
@@ -308,13 +307,15 @@ class RechargeScreen extends Component<
                 resizeMode="contain"
               />
               <View style={styles.iccidBox}>
-                <Text style={styles.iccidTitle}>{i18n.t('rch:iccid')}</Text>
+                <AppText style={styles.iccidTitle}>
+                  {i18n.t('rch:iccid')}
+                </AppText>
                 <View style={styles.iccidRow}>
                   {seg.map((s, i) => [
-                    <Text key={i} style={styles.iccid}>
+                    <AppText key={i} style={styles.iccid}>
                       {s}
-                    </Text>,
-                    i < 3 ? <Text key={`${i}-`}>-</Text> : null,
+                    </AppText>,
+                    i < 3 ? <AppText key={`${i}-`}>-</AppText> : null,
                   ])}
                 </View>
                 <LabelText
@@ -330,10 +331,10 @@ class RechargeScreen extends Component<
 
           <View style={[styles.divider, esimApp && {marginTop: 20}]} />
           <View style={{flex: 1}} />
-          <Text
+          <AppText
             style={[appStyles.normal16Text, {marginTop: 30, marginLeft: 40}]}>
             {i18n.t('rch:amount')}
-          </Text>
+          </AppText>
           <View style={{marginBottom: 40}}>
             {rechargeChoice.map((v: number[]) => this.rechargeButton(v))}
           </View>

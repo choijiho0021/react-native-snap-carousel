@@ -1,16 +1,17 @@
-import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {StyleSheet, View, Dimensions} from 'react-native';
-import {TabView, TabBar} from 'react-native-tab-view';
-import i18n from '@/utils/i18n';
-import AppBackButton from '@/components/AppBackButton';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
-import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
-import {RouteProp} from '@react-navigation/native';
-import {RootState} from '@reduxjs/toolkit';
-import {connect, DispatchProp} from 'react-redux';
+import {Utils} from '@/redux/api';
 import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
+import i18n from '@/utils/i18n';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RootState} from '@reduxjs/toolkit';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
+import {Dimensions, StyleSheet, View} from 'react-native';
+import {TabBar, TabView} from 'react-native-tab-view';
+import {connect, DispatchProp} from 'react-redux';
 import FaqList from './components/FaqList';
 
 const styles = StyleSheet.create({
@@ -63,6 +64,7 @@ const FaqScreen: React.FC<FaqScreenProps & DispatchProp> = ({
       ] as TabViewRoute[],
     [],
   );
+  const [fontSize, setFontSize] = useState<number>();
 
   const refreshData = useCallback(
     (idx: number) => {
@@ -113,6 +115,10 @@ const FaqScreen: React.FC<FaqScreenProps & DispatchProp> = ({
     refreshData(idx > 0 ? idx : 0);
   }, [navigation, refreshData, route.params, routes]);
 
+  useEffect(() => {
+    Utils.fontScaling(14).then((v) => setFontSize(v));
+  }, []);
+
   return (
     <View style={styles.container}>
       <AppActivityIndicator visible={pending} />
@@ -126,6 +132,7 @@ const FaqScreen: React.FC<FaqScreenProps & DispatchProp> = ({
           <TabBar
             {...props}
             tabStyle={{backgroundColor: colors.whiteTwo}}
+            labelStyle={{fontSize}}
             activeColor={colors.clearBlue}
             inactiveColor={colors.warmGrey}
             pressColor={colors.white}

@@ -4,6 +4,7 @@ import AppColorText from '@/components/AppColorText';
 import AppIcon from '@/components/AppIcon';
 import AppModal from '@/components/AppModal';
 import AppSnackBar from '@/components/AppSnackBar';
+import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
@@ -32,7 +33,7 @@ import Clipboard from '@react-native-community/clipboard';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {Component} from 'react';
-import {FlatList, RefreshControl, StyleSheet, Text, View} from 'react-native';
+import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -110,7 +111,7 @@ const showQR = (subs: RkbSubscription) => {
     <View style={styles.modalBody}>
       {_.isEmpty(subs.qrCode) ? (
         <View style={styles.center}>
-          <Text>{i18n.t('esim:showQR:nothing')}</Text>
+          <AppText>{i18n.t('esim:showQR:nothing')}</AppText>
         </View>
       ) : (
         <View>
@@ -198,7 +199,9 @@ class EsimScreen extends Component<EsimScreenProps, EsimScreenState> {
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => <Text style={styles.title}>{i18n.t('esimList')}</Text>,
+      headerLeft: () => (
+        <AppText style={styles.title}>{i18n.t('esimList')}</AppText>
+      ),
     });
 
     this.init({iccid, token});
@@ -262,10 +265,10 @@ class EsimScreen extends Component<EsimScreenProps, EsimScreenState> {
         <View style={{flexDirection: 'row'}}>{this.info()}</View>
         <View style={styles.nolist}>
           <AppIcon name="emptyESIM" />
-          <Text style={styles.blueText}>{i18n.t('his:noUsage1')}</Text>
-          <Text style={{color: colors.warmGrey, textAlign: 'center'}}>
+          <AppText style={styles.blueText}>{i18n.t('his:noUsage1')}</AppText>
+          <AppText style={{color: colors.warmGrey, textAlign: 'center'}}>
             {i18n.t('his:noUsage2')}
-          </Text>
+          </AppText>
         </View>
       </View>
     );
@@ -297,8 +300,10 @@ class EsimScreen extends Component<EsimScreenProps, EsimScreenState> {
     return (
       <View style={styles.titleAndStatus}>
         <View style={{flex: 1}}>
-          <Text style={styles.esimInfoKey}>{i18n.t(`esim:${title}`)}</Text>
-          <Text style={appStyles.normal16Text}>{valToCopy}</Text>
+          <AppText style={styles.esimInfoKey}>
+            {i18n.t(`esim:${title}`)}
+          </AppText>
+          <AppText style={appStyles.normal16Text}>{valToCopy}</AppText>
         </View>
         <AppButton
           title={i18n.t('copy')}

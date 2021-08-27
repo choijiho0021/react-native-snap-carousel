@@ -1,8 +1,11 @@
 import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppIcon from '@/components/AppIcon';
 import AppModal from '@/components/AppModal';
+import AppSnackBar from '@/components/AppSnackBar';
 import AppSwitch from '@/components/AppSwitch';
+import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
@@ -13,24 +16,22 @@ import {
   actions as accountActions,
 } from '@/redux/modules/account';
 import {actions as cartActions, CartAction, Store} from '@/redux/modules/cart';
-import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import {actions as notiActions} from '@/redux/modules/noti';
+import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import messaging from '@react-native-firebase/messaging';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {Component, memo} from 'react';
-import {FlatList, Pressable, StyleSheet, Text, View} from 'react-native';
+import {FlatList, Pressable, StyleSheet, View} from 'react-native';
 import Config from 'react-native-config';
+import {openSettings} from 'react-native-permissions';
 import VersionCheck from 'react-native-version-check';
 import {connect} from 'react-redux';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {bindActionCreators} from 'redux';
-import messaging from '@react-native-firebase/messaging';
-import AppAlert from '@/components/AppAlert';
-import {openSettings} from 'react-native-permissions';
 import {NotiAction} from '../redux/modules/noti';
-import AppSnackBar from '@/components/AppSnackBar';
 
 const {label = '', isProduction} = Env.get();
 const PUSH_ENABLED = 0;
@@ -84,11 +85,11 @@ const SettingsListItem0 = ({
   return (
     <Pressable onPress={onPress}>
       <View style={styles.row}>
-        <Text style={styles.itemTitle}>{item.value}</Text>
+        <AppText style={styles.itemTitle}>{item.value}</AppText>
         {
           // eslint-disable-next-line no-nested-ternary
           item.desc ? (
-            <Text style={styles.itemDesc}>{item.desc}</Text>
+            <AppText style={styles.itemDesc}>{item.desc}</AppText>
           ) : item.hasOwnProperty('toggle') ? (
             <AppSwitch
               value={item.toggle || false}
@@ -282,17 +283,18 @@ class SettingsScreen extends Component<
             i18n.t('settings:openSettings'),
             openSettings,
           );
-        } else {
-          this.setData(key, {toggle: !isEnabled});
-          this.props.action.account
-            .changePushNoti({isPushNotiEnabled: !isEnabled})
-            .catch(() => {
-              if (this.state.isMounted)
-                this.setData(key, {
-                  toggle: this.props.isPushNotiEnabled,
-                });
-            });
         }
+
+        this.setData(key, {toggle: !isEnabled});
+        this.props.action.account
+          .changePushNoti({isPushNotiEnabled: !isEnabled})
+          .catch(() => {
+            if (this.state.isMounted)
+              this.setData(key, {
+                toggle: this.props.isPushNotiEnabled,
+              });
+          });
+
         break;
 
       case 'setting:globalMarket':

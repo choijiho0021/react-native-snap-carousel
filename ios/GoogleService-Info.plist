@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>851340189695-15jkl430nd0cn0t75cb287906i54r0h5.apps.googleusercontent.com</string>
+	<string>851340189695-lhnjfntqlt77fdsajattircls9i8mgn8.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.851340189695-15jkl430nd0cn0t75cb287906i54r0h5</string>
+	<string>com.googleusercontent.apps.851340189695-lhnjfntqlt77fdsajattircls9i8mgn8</string>
 	<key>API_KEY</key>
 	<string>AIzaSyC9t_XR6FI0CDRvkyYQE1d4egvU2IpTR-0</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.uangel.rokebi-global</string>
+	<string>com.uangel.rokebi-ESIM</string>
 	<key>PROJECT_ID</key>
 	<string>rokebi-ios</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,7 +29,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:851340189695:ios:e427d8160608e818ccd1ca</string>
+	<string>1:851340189695:ios:029125ba4bc4ffdcccd1ca</string>
 	<key>DATABASE_URL</key>
 	<string>https://rokebi-ios.firebaseio.com</string>
 </dict>

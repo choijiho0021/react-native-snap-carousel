@@ -1,13 +1,14 @@
-import React, {memo} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
-import {colors} from '@/constants/Colors';
-import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
-import {appStyles} from '@/constants/Styles';
+import AppText from '@/components/AppText';
+import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
-import {utils} from '@/utils/utils';
+import {appStyles} from '@/constants/Styles';
 import {API} from '@/redux/api';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import i18n from '@/utils/i18n';
+import {utils} from '@/utils/utils';
+import React, {memo} from 'react';
+import {StyleSheet, View} from 'react-native';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -80,16 +81,16 @@ const styles = StyleSheet.create({
 const title = (item: RkbSubscription, expired: boolean) => {
   return (
     <View style={styles.prodTitle}>
-      <Text
+      <AppText
         key={item.key}
         style={expired ? styles.usageTitleNormal : styles.usageTitleBold}>
         {item.prodName}
-      </Text>
+      </AppText>
       {expired && (
         <View style={styles.expiredBg}>
-          <Text key={item.nid} style={appStyles.normal12Text}>
+          <AppText key={item.nid} style={appStyles.normal12Text}>
             {i18n.t('esim:expired')}
-          </Text>
+          </AppText>
         </View>
       )}
     </View>
@@ -101,18 +102,20 @@ const topInfo = (item: RkbSubscription) => {
     <View>
       {item.type !== API.Subscription.CALL_PRODUCT && (
         <View style={styles.inactiveContainer}>
-          <Text style={styles.normal12WarmGrey}>{i18n.t('esim:iccid')}</Text>
-          <Text style={styles.normal14WarmGrey}>{item.subsIccid}</Text>
+          <AppText style={styles.normal12WarmGrey}>
+            {i18n.t('esim:iccid')}
+          </AppText>
+          <AppText style={styles.normal14WarmGrey}>{item.subsIccid}</AppText>
         </View>
       )}
       <View style={styles.inactiveContainer}>
-        <Text style={styles.normal12WarmGrey}>
+        <AppText style={styles.normal12WarmGrey}>
           {i18n.t('esim:usablePeriod')}
-        </Text>
-        <Text style={styles.normal14WarmGrey}>{`${utils.toDateString(
+        </AppText>
+        <AppText style={styles.normal14WarmGrey}>{`${utils.toDateString(
           item.purchaseDate,
           'YYYY-MM-DD',
-        )} ~ ${item.expireDate}`}</Text>
+        )} ~ ${item.expireDate}`}</AppText>
       </View>
     </View>
   );

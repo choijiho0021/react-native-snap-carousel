@@ -1,9 +1,10 @@
 import React, {memo} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import {appStyles} from '../constants/Styles';
-import i18n from '../utils/i18n';
+import {StyleSheet, View} from 'react-native';
 import {colors} from '../constants/Colors';
 import {isDeviceSize} from '../constants/SliderEntry.style';
+import {appStyles} from '../constants/Styles';
+import i18n from '../utils/i18n';
+import AppText from './AppText';
 import {isAndroid} from './SearchBarAnimation/utils';
 
 const styles = StyleSheet.create({
@@ -56,22 +57,22 @@ const Address = ({item}) => {
   return (
     <View style={styles.itemRow}>
       <View style={styles.addr}>
-        <Text style={[styles.bdTitle, styles.itemRow]}>{item.bdNm}</Text>
+        <AppText style={[styles.bdTitle, styles.itemRow]}>{item.bdNm}</AppText>
         <View style={styles.itemRow}>
-          <Text style={styles.addrValue}>{item.jibunAddr}</Text>
+          <AppText style={styles.addrValue}>{item.jibunAddr}</AppText>
         </View>
         <View style={styles.itemRow}>
           <View style={styles.roadBox}>
-            <Text style={styles.roadText}>{i18n.t('addr:road')}</Text>
+            <AppText style={styles.roadText}>{i18n.t('addr:road')}</AppText>
           </View>
           <View style={{maxWidth: '83%'}}>
-            <Text
+            <AppText
               style={[
                 styles.addrValue,
                 {flexDirection: 'row', flexWrap: 'wrap'},
               ]}>
               {item.roadAddr}
-            </Text>
+            </AppText>
           </View>
         </View>
       </View>

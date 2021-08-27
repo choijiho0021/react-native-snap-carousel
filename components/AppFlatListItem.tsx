@@ -1,11 +1,11 @@
-import React, {memo, useState} from 'react';
-import {StyleSheet, View, Text, Pressable} from 'react-native';
-
-import utils from '@/redux/api/utils';
-import {RkbInfo} from '@/redux/api/pageApi';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
+import {RkbInfo} from '@/redux/api/pageApi';
+import utils from '@/redux/api/utils';
+import React, {memo, useState} from 'react';
+import {Pressable, StyleSheet, View} from 'react-native';
 import AppIcon from './AppIcon';
+import AppText from './AppText';
 
 const styles = StyleSheet.create({
   row: {
@@ -44,14 +44,14 @@ const AppFlatListItem = ({
     <Pressable onPress={() => setCheckedState(!checkedState)}>
       <View>
         <View style={styles.row}>
-          <Text style={styles.title}>{item.title}</Text>
+          <AppText style={styles.title}>{item.title}</AppText>
           <AppIcon
             style={styles.button}
             name={checkedState ? 'iconArrowUp' : 'iconArrowDown'}
           />
         </View>
         {checkedState && (
-          <Text style={styles.body}>{utils.htmlToString(item.body)}</Text>
+          <AppText style={styles.body}>{utils.htmlToString(item.body)}</AppText>
         )}
       </View>
     </Pressable>

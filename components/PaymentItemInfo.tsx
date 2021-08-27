@@ -1,22 +1,15 @@
-import React, {memo} from 'react';
-import {
-  StyleProp,
-  StyleSheet,
-  Text,
-  TextStyle,
-  View,
-  ViewStyle,
-} from 'react-native';
-import _ from 'underscore';
-import {appStyles} from '@/constants/Styles';
-import utils from '@/redux/api/utils';
-import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
+import Env from '@/environment';
+import {Currency} from '@/redux/api/productApi';
+import utils from '@/redux/api/utils';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {PaymentReq} from '@/redux/modules/cart';
-import {Currency} from '@/redux/api/productApi';
-import Env from '@/environment';
+import i18n from '@/utils/i18n';
+import React, {memo} from 'react';
+import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from 'react-native';
+import AppText from './AppText';
 
 const {esimApp} = Env.get();
 const styles = StyleSheet.create({
@@ -134,14 +127,14 @@ const PaymentItem0 = ({
 }) => {
   return (
     <View style={style || styles.row} key={title}>
-      <Text
+      <AppText
         key="title"
         style={
           titleStyle || [appStyles.normal14Text, {color: colors.warmGrey}]
         }>
         {title}
-      </Text>
-      <Text
+      </AppText>
+      <AppText
         key="amount"
         style={
           valueStyle || [
@@ -150,7 +143,7 @@ const PaymentItem0 = ({
           ]
         }>
         {value}
-      </Text>
+      </AppText>
     </View>
   );
 };
@@ -175,9 +168,9 @@ const PaymentItemInfo = ({
 }) => {
   return (
     <View>
-      <Text style={[styles.title, styles.mrgBottom0]}>
+      <AppText style={[styles.title, styles.mrgBottom0]}>
         {i18n.t('pym:title')}
-      </Text>
+      </AppText>
       {/*
         상품별 가격
         ex) 일본 상품 3일  x 1개   
@@ -249,7 +242,7 @@ const PaymentItemInfo = ({
         value={utils.price(pymPrice)}
       />
       {mode !== 'result' && esimApp && (
-        <Text style={styles.esimInfo}>{i18n.t('pym:esimInfo')}</Text>
+        <AppText style={styles.esimInfo}>{i18n.t('pym:esimInfo')}</AppText>
       )}
       <View
         style={[styles.divider, screen === 'PaymentResult' && {marginTop: 0}]}

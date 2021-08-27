@@ -1,47 +1,47 @@
-import React, {Component} from 'react';
-import _ from 'underscore';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import Analytics from 'appcenter-analytics';
-import {
-  StyleSheet,
-  Text,
-  View,
-  SafeAreaView,
-  ScrollView,
-  Pressable,
-} from 'react-native';
-import {API} from '@/redux/api';
-import {appStyles} from '@/constants/Styles';
-import i18n from '@/utils/i18n';
+import AddressCard from '@/components/AddressCard';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
-import AppButton from '@/components/AppButton';
 import AppBackButton from '@/components/AppBackButton';
-import {colors} from '@/constants/Colors';
+import AppButton from '@/components/AppButton';
+import AppIcon from '@/components/AppIcon';
+import AppPrice from '@/components/AppPrice';
+import AppSnackBar from '@/components/AppSnackBar';
+import AppText from '@/components/AppText';
 import LabelText from '@/components/LabelText';
-import {isDeviceSize, windowHeight} from '@/constants/SliderEntry.style';
 import LabelTextTouchable from '@/components/LabelTextTouchable';
-import {actions as orderActions, OrderAction} from '@/redux/modules/order';
+import {isAndroid} from '@/components/SearchBarAnimation/utils';
+import {colors} from '@/constants/Colors';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
+import Env from '@/environment';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RootState} from '@/redux';
+import {API} from '@/redux/api';
+import {RkbOrder, RkbPayment} from '@/redux/api/orderApi';
+import {Currency} from '@/redux/api/productApi';
+import {RkbProfile} from '@/redux/api/profileApi';
+import utils from '@/redux/api/utils';
 import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
-import AppIcon from '@/components/AppIcon';
-import {isAndroid} from '@/components/SearchBarAnimation/utils';
-import AddressCard from '@/components/AddressCard';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
-import Env from '@/environment';
-import {RootState} from '@/redux';
-import utils from '@/redux/api/utils';
-import {StackNavigationProp} from '@react-navigation/stack';
+import {actions as orderActions, OrderAction} from '@/redux/modules/order';
+import i18n from '@/utils/i18n';
 import {RouteProp} from '@react-navigation/native';
-import {RkbProfile} from '@/redux/api/profileApi';
-import {RkbOrder, RkbPayment} from '@/redux/api/orderApi';
-import {HomeStackParamList} from '@/navigation/navigation';
-import {Currency} from '@/redux/api/productApi';
-import AppPrice from '@/components/AppPrice';
+import {StackNavigationProp} from '@react-navigation/stack';
+import Analytics from 'appcenter-analytics';
 import moment from 'moment';
-import AppSnackBar from '@/components/AppSnackBar';
+import React, {Component} from 'react';
+import {
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 
 const {esimApp, esimCurrency} = Env.get();
 
@@ -455,10 +455,12 @@ class PurchaseDetailScreen extends Component<
       profile && (
         <View style={{marginBottom: 30}}>
           <View style={styles.profileTitle}>
-            <Text style={styles.profileTitleText}>{profile.alias}</Text>
+            <AppText style={styles.profileTitleText}>{profile.alias}</AppText>
             {profile.isBasicAddr && (
               <View style={styles.basicAddrBox}>
-                <Text style={styles.basicAddr}>{i18n.t('addr:basicAddr')}</Text>
+                <AppText style={styles.basicAddr}>
+                  {i18n.t('addr:basicAddr')}
+                </AppText>
               </View>
             )}
           </View>
@@ -482,7 +484,9 @@ class PurchaseDetailScreen extends Component<
     return (
       <View>
         <View style={styles.thickBar} />
-        <Text style={styles.deliveryTitle}>{i18n.t('his:shipmentState')}</Text>
+        <AppText style={styles.deliveryTitle}>
+          {i18n.t('his:shipmentState')}
+        </AppText>
         <View
           style={{
             flex: 1,
@@ -490,7 +494,7 @@ class PurchaseDetailScreen extends Component<
             justifyContent: 'flex-start',
             marginHorizontal: 20,
           }}>
-          <Text
+          <AppText
             style={[
               styles.deliveryStatus,
               (_.isEmpty(shipmentState) || shipmentState === ship.DRAFT) && {
@@ -498,53 +502,56 @@ class PurchaseDetailScreen extends Component<
               },
             ]}>
             {i18n.t('his:paymentCompleted')}
-          </Text>
+          </AppText>
           <AppIcon name="iconArrowRight" style={styles.arrowIcon} />
-          <Text
+          <AppText
             style={[
               styles.deliveryStatus,
               shipmentState === ship.READY && {color: colors.clearBlue},
             ]}>
             {i18n.t('his:ready')}
-          </Text>
+          </AppText>
           <AppIcon name="iconArrowRight" style={styles.arrowIcon} />
-          <Text
+          <AppText
             style={[
               styles.deliveryStatus,
               shipmentState === ship.SHIP && {color: colors.clearBlue},
             ]}>
             {i18n.t('his:shipped')}
-          </Text>
+          </AppText>
         </View>
 
         <View style={styles.bar} />
-        <Text style={styles.deliveryTitle}>{i18n.t('his:addressInfo')}</Text>
+        <AppText style={styles.deliveryTitle}>
+          {i18n.t('his:addressInfo')}
+        </AppText>
         {
           // !_.isEmpty(this.state.profile) && this.address()
           this.address()
         }
         <View style={[styles.bar, {marginTop: 0}]} />
-        <Text style={styles.deliveryTitle}>{i18n.t('his:memo')}</Text>
+        <AppText style={styles.deliveryTitle}>{i18n.t('his:memo')}</AppText>
         <View style={{marginHorizontal: 20, marginBottom: 40}}>
           {!_.isEmpty(memo) &&
             _.isEmpty(
               API.Order.deliveryText.find((item) => item.value === memo),
             ) && (
-              <Text style={[styles.label2, {marginBottom: 5, lineHeight: 24}]}>
+              <AppText
+                style={[styles.label2, {marginBottom: 5, lineHeight: 24}]}>
                 {i18n.t('his:input')}
-              </Text>
+              </AppText>
             )}
-          <Text style={appStyles.normal16Text}>
+          <AppText style={appStyles.normal16Text}>
             {_.isEmpty(memo) ? i18n.t('his:notSelected') : memo}
-          </Text>
+          </AppText>
         </View>
 
         {!isCanceled && shipmentState === API.Order.shipmentState.SHIP && (
           <View style={{marginBottom: 40}}>
             <View style={[styles.bar, {marginTop: 0}]} />
-            <Text style={styles.deliveryTitle}>
+            <AppText style={styles.deliveryTitle}>
               {i18n.t('his:companyInfo')}
-            </Text>
+            </AppText>
             <LabelText
               key="trackingCompany"
               style={styles.item}
@@ -687,9 +694,9 @@ class PurchaseDetailScreen extends Component<
         )}
         <View style={styles.bar} />
         <View style={[styles.row, {marginBottom: 5}]}>
-          <Text style={[appStyles.normal16Text]}>
+          <AppText style={[appStyles.normal16Text]}>
             {i18n.t('cart:totalCost')}{' '}
-          </Text>
+          </AppText>
           <View
             style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
             <AppPrice
@@ -723,9 +730,9 @@ class PurchaseDetailScreen extends Component<
         ) : (
           <View style={{marginBottom: 20}} />
         )}
-        <Text style={styles.cancelInfo}>
+        <AppText style={styles.cancelInfo}>
           {!isRecharge && !esimApp && infoText}
-        </Text>
+        </AppText>
       </View>
     );
   }
@@ -746,16 +753,16 @@ class PurchaseDetailScreen extends Component<
 
     return (
       <View>
-        <Text style={styles.date}>
+        <AppText style={styles.date}>
           {orderDate?.split('+')[0].replace('T', ' ')}
-        </Text>
+        </AppText>
         <View style={styles.productTitle}>
           {isCanceled && (
-            <Text style={[appStyles.bold18Text, {color: colors.tomato}]}>
+            <AppText style={[appStyles.bold18Text, {color: colors.tomato}]}>
               {`(${i18n.t('his:cancel')})`}{' '}
-            </Text>
+            </AppText>
           )}
-          <Text style={appStyles.bold18Text}>{label}</Text>
+          <AppText style={appStyles.bold18Text}>{label}</AppText>
         </View>
         <View style={styles.bar} />
         <LabelText
@@ -821,17 +828,19 @@ class PurchaseDetailScreen extends Component<
           />
           {this.headerInfo()}
           <Pressable style={styles.dropDownBox} onPress={this.onPressPayment}>
-            <Text style={styles.boldTitle}>{i18n.t('his:paymentDetail')}</Text>
+            <AppText style={styles.boldTitle}>
+              {i18n.t('his:paymentDetail')}
+            </AppText>
             <View style={{flexDirection: 'row'}}>
               {!showPayment && (
-                <Text
+                <AppText
                   style={[
                     styles.normal16BlueTxt,
                     styles.fontWeightBold,
                     styles.alignCenter,
                   ]}>
                   {utils.price(billingAmt)}
-                </Text>
+                </AppText>
               )}
               <AppButton
                 style={{backgroundColor: colors.white, height: 70}}
@@ -848,14 +857,15 @@ class PurchaseDetailScreen extends Component<
               <Pressable
                 style={styles.dropDownBox}
                 onPress={this.onPressDelivery}>
-                <Text style={styles.boldTitle}>
+                <AppText style={styles.boldTitle}>
                   {i18n.t('his:shipmentInfo')}
-                </Text>
+                </AppText>
                 <View style={{flexDirection: 'row'}}>
                   {!showDelivery && (
-                    <Text style={[styles.normal16BlueTxt, styles.alignCenter]}>
+                    <AppText
+                      style={[styles.normal16BlueTxt, styles.alignCenter]}>
                       {shipStatus}
-                    </Text>
+                    </AppText>
                   )}
                   <AppButton
                     style={{backgroundColor: colors.white, height: 70}}

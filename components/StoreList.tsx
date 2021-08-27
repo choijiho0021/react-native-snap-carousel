@@ -1,21 +1,22 @@
-import React, {memo, useCallback, useEffect, useRef} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
-import {connect} from 'react-redux';
-import {Map as ImmutableMap} from 'immutable';
-import {API} from '@/redux/api';
-import {appStyles} from '@/constants/Styles';
-import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
+import {API} from '@/redux/api';
 import {
   Currency,
   ProductByCategory,
   RkbLocalOp,
   RkbProduct,
 } from '@/redux/api/productApi';
+import i18n from '@/utils/i18n';
+import {Map as ImmutableMap} from 'immutable';
+import React, {memo, useCallback, useEffect, useRef} from 'react';
+import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
+import {connect} from 'react-redux';
 import AppPrice from './AppPrice';
+import AppText from './AppText';
 
 const styles = StyleSheet.create({
   container: {
@@ -95,7 +96,7 @@ const CountryItem0 = ({
   const renderLowest = useCallback(
     () => (
       <View key="lowest" style={styles.lowPriceView}>
-        <Text style={styles.lowPrice}>{i18n.t('lowest')}</Text>
+        <AppText style={styles.lowPrice}>{i18n.t('lowest')}</AppText>
       </View>
     ),
     [],
@@ -112,9 +113,9 @@ const CountryItem0 = ({
             balanceStyle={styles.priceNumber}
             currencyStyle={styles.text}
           />,
-          <Text key="days" style={styles.text}>
+          <AppText key="days" style={styles.text}>
             /Day
-          </Text>,
+          </AppText>,
         ]}
       </View>
     ),
@@ -147,9 +148,9 @@ const CountryItem0 = ({
                   source={{uri: API.default.httpImageUrl(localOp?.imageUrl)}}
                   style={styles.image}
                 />
-                <Text key="cntry" style={styles.cntry}>
+                <AppText key="cntry" style={styles.cntry}>
                   {API.Product.getTitle(localOp)}
-                </Text>
+                </AppText>
                 <View style={styles.priceRow}>
                   {i18n.locale === 'ko'
                     ? [renderPrice(bestPrice), renderLowest()]

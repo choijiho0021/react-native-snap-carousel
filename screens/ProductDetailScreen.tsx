@@ -1,47 +1,47 @@
 /* eslint-disable no-plusplus */
-import React, {Component} from 'react';
-import {
-  StyleSheet,
-  View,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  Animated,
-  Image,
-  Clipboard,
-  NativeScrollEvent,
-} from 'react-native';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import _ from 'underscore';
-import WebView, {WebViewMessageEvent} from 'react-native-webview';
-import Analytics from 'appcenter-analytics';
-import KakaoSDK from '@actbase/react-native-kakaosdk';
-import {API} from '@/redux/api';
-import i18n from '@/utils/i18n';
-import AppBackButton from '@/components/AppBackButton';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import {colors} from '@/constants/Colors';
-import {appStyles, htmlDetailWithCss} from '@/constants/Styles';
+import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
-import Env from '@/environment';
+import AppIcon from '@/components/AppIcon';
+import AppText from '@/components/AppText';
+import {colors} from '@/constants/Colors';
 import {windowWidth} from '@/constants/SliderEntry.style';
-import {
-  actions as toastActions,
-  Toast,
-  ToastAction,
-} from '@/redux/modules/toast';
+import {appStyles, htmlDetailWithCss} from '@/constants/Styles';
+import Env from '@/environment';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RootState} from '@/redux';
+import {API} from '@/redux/api';
+import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
 import {
   actions as productActions,
   ProductAction,
   ProductModelState,
 } from '@/redux/modules/product';
-import AppIcon from '@/components/AppIcon';
-import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
-import {RootState} from '@/redux';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {HomeStackParamList} from '@/navigation/navigation';
+import {
+  actions as toastActions,
+  Toast,
+  ToastAction,
+} from '@/redux/modules/toast';
+import i18n from '@/utils/i18n';
+import KakaoSDK from '@actbase/react-native-kakaosdk';
 import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import Analytics from 'appcenter-analytics';
+import React, {Component} from 'react';
+import {
+  Animated,
+  Clipboard,
+  Image,
+  NativeScrollEvent,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import WebView, {WebViewMessageEvent} from 'react-native-webview';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 
 const {channelId, esimEng} = Env.get();
 
@@ -292,17 +292,19 @@ class ProductDetailScreen extends Component<
     return (
       <View style={styles.kakaoContainer}>
         <AppIcon style={styles.questionImage} name="imgQuestion" />
-        <Text style={appStyles.normal16Text}>
-          <Text style={{...appStyles.normal16Text, color: colors.clearBlue}}>
+        <AppText style={appStyles.normal16Text}>
+          <AppText style={{...appStyles.normal16Text, color: colors.clearBlue}}>
             {i18n.t('prodDetail:Rokebi')}
-          </Text>
+          </AppText>
           {i18n.t('prodDetail:On')}
-        </Text>
-        <Text style={appStyles.normal16Text}>
+        </AppText>
+        <AppText style={appStyles.normal16Text}>
           {i18n.t('prodDetail:Question')}
-        </Text>
+        </AppText>
 
-        <Text style={styles.kakaoPlus}>{i18n.t('prodDetail:KakaoPlus')}</Text>
+        <AppText style={styles.kakaoPlus}>
+          {i18n.t('prodDetail:KakaoPlus')}
+        </AppText>
         <AppButton
           iconName={`openKakao${esimEng ? 'Eng' : ''}`}
           onPress={this.openKTalk}

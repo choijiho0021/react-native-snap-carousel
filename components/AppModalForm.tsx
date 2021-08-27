@@ -1,20 +1,16 @@
-import React, {memo, useCallback, useState} from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  KeyboardTypeOptions,
-} from 'react-native';
-import _ from 'underscore';
-import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
 import validationUtil, {
   ValidationKey,
   ValidationResult,
 } from '@/utils/validationUtil';
+import React, {memo, useCallback, useState} from 'react';
+import {KeyboardTypeOptions, StyleSheet, View} from 'react-native';
+import _ from 'underscore';
 import AppButton from './AppButton';
 import AppModal, {AppModalProps} from './AppModal';
+import AppText from './AppText';
+import AppTextInput from './AppTextInput';
 
 const styles = StyleSheet.create({
   cancelButton: {
@@ -78,9 +74,9 @@ const AppModalForm: React.FC<AppModalFormProps> = ({
   const renderError = useCallback(() => {
     return _.isObject(error)
       ? Object.entries(error).map(([k, v]) => (
-          <Text key={k} style={styles.error}>
+          <AppText key={k} style={styles.error}>
             {v}
-          </Text>
+          </AppText>
         ))
       : null;
   }, [error]);
@@ -119,7 +115,7 @@ const AppModalForm: React.FC<AppModalFormProps> = ({
       onCancelClose={() => onCancel()}
       {...props}>
       <View style={styles.inputBox}>
-        <TextInput
+        <AppTextInput
           style={styles.textInput}
           returnKeyType="done"
           enablesReturnKeyAutomatically
@@ -134,7 +130,7 @@ const AppModalForm: React.FC<AppModalFormProps> = ({
           onPress={() => setValue('')}
         />
       </View>
-      {infoText && <Text style={styles.label}>{infoText}</Text>}
+      {infoText && <AppText style={styles.label}>{infoText}</AppText>}
       {renderError()}
     </AppModal>
   );

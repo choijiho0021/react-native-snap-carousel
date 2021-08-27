@@ -1,47 +1,47 @@
-import React, {Component} from 'react';
-import {
-  Platform,
-  StyleSheet,
-  View,
-  Text,
-  findNodeHandle,
-  TextInput,
-  Image,
-  InputAccessoryView,
-  SafeAreaView,
-  Pressable,
-} from 'react-native';
-import {connect} from 'react-redux';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {bindActionCreators} from 'redux';
-import _ from 'underscore';
-import {List} from 'immutable';
-import {
-  openSettings,
-  check,
-  PERMISSIONS,
-  RESULTS,
-} from 'react-native-permissions';
-
+import {colors} from '@/constants/Colors';
+import {attachmentSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
-import i18n from '@/utils/i18n';
+import {RootState} from '@/redux';
+import {RkbImage} from '@/redux/api/accountApi';
+import {RkbIssue} from '@/redux/api/boardApi';
+import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import {actions as boardActions, BoardAction} from '@/redux/modules/board';
-import utils from '@/redux/api/utils';
+import i18n from '@/utils/i18n';
 import validationUtil, {
   ValidationResult,
   ValidationRule,
 } from '@/utils/validationUtil';
-import {colors} from '@/constants/Colors';
-import {attachmentSize} from '@/constants/SliderEntry.style';
-import {RootState} from '@/redux';
+import {List} from 'immutable';
+import React, {Component} from 'react';
+import {
+  findNodeHandle,
+  Image,
+  InputAccessoryView,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import ImagePicker, {Image as CropImage} from 'react-native-image-crop-picker';
-import {RkbImage} from '@/redux/api/accountApi';
-import {RkbIssue} from '@/redux/api/boardApi';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {
+  check,
+  openSettings,
+  PERMISSIONS,
+  RESULTS,
+} from 'react-native-permissions';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import AppActivityIndicator from './AppActivityIndicator';
-import AppButton from './AppButton';
 import AppAlert from './AppAlert';
+import AppButton from './AppButton';
 import AppIcon from './AppIcon';
+import AppText from './AppText';
+import AppTextInput from './AppTextInput';
 
 const styles = StyleSheet.create({
   passwordInput: {
@@ -380,17 +380,18 @@ class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
     const {pin} = this.state;
     return (
       <View style={styles.passwordBox}>
-        <Text
+        <AppText
           style={[
             appStyles.normal14Text,
             {color: colors.tomato, marginRight: 5, textAlignVertical: 'center'},
           ]}>
           *
-        </Text>
-        <Text style={[appStyles.normal14Text, {textAlignVertical: 'center'}]}>
+        </AppText>
+        <AppText
+          style={[appStyles.normal14Text, {textAlignVertical: 'center'}]}>
           {i18n.t('board:pass')}
-        </Text>
-        <TextInput
+        </AppText>
+        <AppTextInput
           style={styles.passwordInput}
           placeholder={i18n.t('board:inputPass')}
           placeholderTextColor={colors.greyish}
@@ -411,7 +412,7 @@ class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
     const {attachment} = this.state;
     return (
       <View>
-        <Text style={styles.attachTitle}>{i18n.t('board:attach')}</Text>
+        <AppText style={styles.attachTitle}>{i18n.t('board:attach')}</AppText>
         <View style={styles.attachBox}>
           {attachment.map((image, idx) => (
             <Pressable
@@ -444,8 +445,8 @@ class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
 
     return (
       <View>
-        <Text style={styles.label}>{i18n.t('board:contact')}</Text>
-        <TextInput
+        <AppText style={styles.label}>{i18n.t('board:contact')}</AppText>
+        <AppTextInput
           style={styles.button}
           placeholder={i18n.t('board:noMobile')}
           placeholderTextColor={colors.greyish}
@@ -501,13 +502,13 @@ class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
           }}>
           {loggedIn ? (
             <View style={styles.notiView}>
-              <Text style={styles.noti}>{i18n.t('board:noti')}</Text>
+              <AppText style={styles.noti}>{i18n.t('board:noti')}</AppText>
             </View>
           ) : (
             this.renderContact()
           )}
           <View style={{flex: 1}}>
-            <TextInput
+            <AppTextInput
               style={[
                 styles.inputBox,
                 title ? {borderColor: colors.black} : undefined,
@@ -527,7 +528,7 @@ class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
               value={title}
             />
 
-            <TextInput
+            <AppTextInput
               style={[
                 styles.inputBox,
                 {height: 208, paddingTop: 5, textAlignVertical: 'top'},

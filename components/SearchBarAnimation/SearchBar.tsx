@@ -1,15 +1,10 @@
 //  Created by Artem Bogoslavskiy on 7/5/18.
 
 import React, {Component} from 'react';
+import {Animated, StyleSheet, TouchableOpacity, View} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {
-  View,
-  StyleSheet,
-  TextInput,
-  Animated,
-  TouchableOpacity,
-} from 'react-native';
-import {ifIphoneX, ifAndroid} from './utils';
+import AppTextInput from '../AppTextInput';
+import {ifAndroid, ifIphoneX} from './utils';
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -118,7 +113,7 @@ export default class SearchBar extends Component {
                   style={styles.searchIcon}
                   color="#bbb"
                 />
-                <TextInput
+                <AppTextInput
                   style={styles.inputText}
                   placeholder={"I'm looking for..."}
                   placeholderTextColor="#999"
@@ -145,7 +140,7 @@ export default class SearchBar extends Component {
                   style={styles.searchIcon} 
                   color='#bbb'
                 />
-                <TextInput 
+                <AppTextInput 
                   style={styles.inputText}
                   placeholder={'Anywhere'}
                   placeholderTextColor={'#999'}

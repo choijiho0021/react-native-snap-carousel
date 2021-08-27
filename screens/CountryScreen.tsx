@@ -7,6 +7,7 @@ import AppCartButton from '@/components/AppCartButton';
 import AppIcon from '@/components/AppIcon';
 import AppPrice from '@/components/AppPrice';
 import AppSnackBar from '@/components/AppSnackBar';
+import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {device, windowWidth} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
@@ -41,7 +42,6 @@ import {
   Pressable,
   SafeAreaView,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 import {
@@ -212,7 +212,7 @@ const CountryListItem0 = ({
       <View>
         <View key="product" style={[styles.card, borderColor]}>
           <View key="text" style={styles.textView}>
-            <Text
+            <AppText
               key="name"
               style={[
                 windowWidth > device.small.window.width
@@ -221,10 +221,17 @@ const CountryListItem0 = ({
                 color,
               ]}>
               {item.name}
-            </Text>
-            <Text key="desc" style={[appStyles.normal14Text, {marginTop: 5}]}>
+            </AppText>
+            <AppText
+              key="desc"
+              style={[
+                windowWidth > device.medium.window.width
+                  ? appStyles.normal14Text
+                  : appStyles.normal12Text,
+                {marginTop: 5},
+              ]}>
               {item.field_description}
-            </Text>
+            </AppText>
           </View>
           <View key="priceText" style={styles.appPrice}>
             <AppPrice
@@ -237,9 +244,9 @@ const CountryListItem0 = ({
         </View>
         {!_.isEmpty(item.promoFlag) && (
           <View style={styles.badge}>
-            <Text key="name" style={styles.badgeText}>
+            <AppText key="name" style={styles.badgeText}>
               {i18n.t(item.promoFlag[0])}
-            </Text>
+            </AppText>
           </View>
         )}
       </View>
@@ -519,14 +526,14 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
             })
           }>
           <View style={styles.detail}>
-            <Text
+            <AppText
               style={
                 windowWidth > device.small.window.width
                   ? appStyles.normal14Text
                   : appStyles.normal12Text
               }>
               {i18n.t('country:detail')}
-            </Text>
+            </AppText>
             <AppIcon
               style={{marginRight: 20}}
               name="iconArrowRight"
@@ -576,7 +583,7 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
               titleStyle={styles.regCard}
               onPress={this.onPressBtnRegCard}
             />
-            <Text style={styles.regCard}>{i18n.t('reg:card')}</Text>
+            <AppText style={styles.regCard}>{i18n.t('reg:card')}</AppText>
           </View>
         )}
         <AppActivityIndicator visible={pending} />

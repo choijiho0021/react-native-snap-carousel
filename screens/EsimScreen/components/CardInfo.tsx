@@ -1,10 +1,11 @@
-import React, {memo} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
-import {colors} from '@/constants/Colors';
-import i18n from '@/utils/i18n';
 import AppIcon from '@/components/AppIcon';
-import {appStyles} from '@/constants/Styles';
+import AppText from '@/components/AppText';
+import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
+import React, {memo} from 'react';
+import {StyleSheet, View} from 'react-native';
 
 const styles = StyleSheet.create({
   notice: {
@@ -24,7 +25,7 @@ const CardInfo = () => {
   return (
     <View style={styles.notice}>
       <AppIcon style={{marginRight: 10}} name="imgAlarm" />
-      <Text style={styles.normal14WarmGrey}>{i18n.t('esim:notice')}</Text>
+      <AppText style={styles.normal14WarmGrey}>{i18n.t('esim:notice')}</AppText>
     </View>
   );
 };

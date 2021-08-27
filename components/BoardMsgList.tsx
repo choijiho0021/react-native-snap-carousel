@@ -1,33 +1,33 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {
-  StyleSheet,
-  View,
-  Text,
-  FlatList,
-  TextInput,
-  SafeAreaView,
-  RefreshControl,
-} from 'react-native';
-import {bindActionCreators} from 'redux';
-import {appStyles} from '@/constants/Styles';
-import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import {RootState} from '@/redux';
+import {RkbBoard} from '@/redux/api/boardApi';
+import utils from '@/redux/api/utils';
+import {AccountModelState} from '@/redux/modules/account';
 import {
   actions as boardActions,
   BoardAction,
   BoardModelState,
 } from '@/redux/modules/board';
-import {AccountModelState} from '@/redux/modules/account';
-import utils from '@/redux/api/utils';
-import {RootState} from '@/redux';
+import i18n from '@/utils/i18n';
 import {ValidationResult} from '@/utils/validationUtil';
-import {RkbBoard} from '@/redux/api/boardApi';
+import React, {Component} from 'react';
+import {
+  FlatList,
+  RefreshControl,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import AppActivityIndicator from './AppActivityIndicator';
 import AppButton from './AppButton';
 import AppIcon from './AppIcon';
-import BoardMsg from './BoardMsg';
 import AppModalForm from './AppModalForm';
+import AppText from './AppText';
+import AppTextInput from './AppTextInput';
+import BoardMsg from './BoardMsg';
 
 const styles = StyleSheet.create({
   noList: {
@@ -216,9 +216,9 @@ class BoardMsgList extends Component<BoardMsgListProps, BoardMsgListState> {
       <View>
         {this.props.uid === 0 && (
           <View>
-            <Text style={styles.label}>{i18n.t('board:contact')}</Text>
+            <AppText style={styles.label}>{i18n.t('board:contact')}</AppText>
             <View style={styles.inputBox}>
-              <TextInput
+              <AppTextInput
                 style={styles.inputMobile}
                 placeholder={i18n.t('board:noMobile')}
                 placeholderTextColor={colors.greyish}
@@ -241,9 +241,9 @@ class BoardMsgList extends Component<BoardMsgListProps, BoardMsgListState> {
           </View>
         )}
 
-        <Text style={styles.mylist}>
+        <AppText style={styles.mylist}>
           {this.props.uid === 0 ? i18n.t('board:list') : i18n.t('board:mylist')}
-        </Text>
+        </AppText>
       </View>
     );
   }
@@ -252,11 +252,11 @@ class BoardMsgList extends Component<BoardMsgListProps, BoardMsgListState> {
     return (
       <View style={{alignItems: 'center'}}>
         <AppIcon style={styles.mark} name="imgMark" />
-        <Text style={styles.noList}>
+        <AppText style={styles.noList}>
           {this.state.refreshing
             ? i18n.t('board:loading')
             : i18n.t('board:nolist')}
-        </Text>
+        </AppText>
       </View>
     );
   }

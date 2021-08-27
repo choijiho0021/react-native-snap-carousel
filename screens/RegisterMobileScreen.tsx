@@ -1,56 +1,49 @@
-import React, {Component, memo, useState} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  FlatList,
-  StatusBar,
-  SafeAreaView,
-  Appearance,
-  TextInput,
-  Keyboard,
-} from 'react-native';
-import {connect} from 'react-redux';
-import _ from 'underscore';
-import {Map as ImmutableMap} from 'immutable';
-import {bindActionCreators} from 'redux';
-import {API} from '@/redux/api';
-
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppAlert from '@/components/AppAlert';
+import AppBackButton from '@/components/AppBackButton';
+import AppButton from '@/components/AppButton';
+import AppIcon from '@/components/AppIcon';
+import AppText from '@/components/AppText';
+import InputEmail, {InputEmailRef} from '@/components/InputEmail';
+import InputMobile from '@/components/InputMobile';
+import InputPinInTime from '@/components/InputPinInTime';
+import Profile from '@/components/Profile';
+import SocialLogin from '@/components/SocialLogin';
+import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import i18n from '@/utils/i18n';
+import Env from '@/environment';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RootState} from '@/redux';
+import {API} from '@/redux/api';
+import {ApiResult} from '@/redux/api/api';
 import {
   AccountAction,
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
-import AppButton from '@/components/AppButton';
-import AppBackButton from '@/components/AppBackButton';
-import AppAlert from '@/components/AppAlert';
-import AppIcon from '@/components/AppIcon';
-import InputMobile from '@/components/InputMobile';
-import InputEmail, {InputEmailRef} from '@/components/InputEmail';
-import {colors} from '@/constants/Colors';
-import validationUtil from '@/utils/validationUtil';
-import InputPinInTime from '@/components/InputPinInTime';
-import {RootState} from '@/redux';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {HomeStackParamList} from '@/navigation/navigation';
-import {
-  NavigationContainer,
-  RouteProp,
-  useFocusEffect,
-} from '@react-navigation/native';
-import {ApiResult} from '@/redux/api/api';
-import SocialLogin from '@/components/SocialLogin';
-import Env from '@/environment';
+import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
-import AppUserPic from '@/components/AppUserPic';
-import Profile from '@/components/Profile';
+import validationUtil from '@/utils/validationUtil';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {Map as ImmutableMap} from 'immutable';
+import React, {Component, memo} from 'react';
+import {
+  Appearance,
+  FlatList,
+  Keyboard,
+  Pressable,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import {RkbImage} from '../redux/api/accountApi';
-import {Pressable} from 'react-native';
 
 const {esimGlobal} = Env.get();
 // const esimGlobal = false;
@@ -182,11 +175,11 @@ const RegisterMobileListItem0 = ({
         style={[styles.rowStyle, {paddingVertical: 13}]}>
         <View style={styles.rowStyle}>
           {item.list.map((elm, idx) => (
-            <Text
+            <AppText
               key={`${idx}`}
               style={[styles.confirmItem, {color: elm.color}]}>
               {elm.text}
-            </Text>
+            </AppText>
           ))}
         </View>
         <AppIcon
@@ -653,7 +646,7 @@ class RegisterMobileScreen extends Component<
   }
 
   renderTitle = () => (
-    <Text style={styles.title}>{i18n.t('mobile:title')}</Text>
+    <AppText style={styles.title}>{i18n.t('mobile:title')}</AppText>
   );
 
   renderProfile = (
@@ -714,9 +707,9 @@ class RegisterMobileScreen extends Component<
 
           {!socialLogin && !esimGlobal && (
             <View>
-              <Text style={styles.mobileAuth}>
+              <AppText style={styles.mobileAuth}>
                 {i18n.t('mobile:easyLogin')}
-              </Text>
+              </AppText>
               {isFocused && (
                 <InputMobile
                   style={{marginTop: 30, paddingHorizontal: 20}}
@@ -744,7 +737,7 @@ class RegisterMobileScreen extends Component<
             </View>
           )}
 
-          {!socialLogin && <SocialLogin onAuth={this.onAuth} />}
+          {!socialLogin && !newUser && <SocialLogin onAuth={this.onAuth} />}
 
           {!socialLogin && esimGlobal && (
             <View
@@ -765,10 +758,10 @@ class RegisterMobileScreen extends Component<
                   inputRef={this.email}
                 />
 
-                <Text
+                <AppText
                   style={[styles.helpText, {color: colors.errorBackground}]}>
                   {isValid ? null : error}
-                </Text>
+                </AppText>
 
                 <View key="divider" style={styles.divider} />
 

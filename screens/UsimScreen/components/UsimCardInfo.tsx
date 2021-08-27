@@ -1,14 +1,14 @@
-import React, {memo, useCallback} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
-
-import Analytics from 'appcenter-analytics';
+import AppButton from '@/components/AppButton';
+import AppText from '@/components/AppText';
+import LabelText from '@/components/LabelText';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
-import {appStyles} from '@/constants/Styles';
-import {colors} from '@/constants/Colors';
-import AppButton from '@/components/AppButton';
-import LabelText from '@/components/LabelText';
 import {useNavigation} from '@react-navigation/native';
+import Analytics from 'appcenter-analytics';
+import React, {memo, useCallback} from 'react';
+import {StyleSheet, View} from 'react-native';
 
 const styles = StyleSheet.create({
   headerBox: {
@@ -76,13 +76,13 @@ const CardInfo = ({
             marginBottom: 10,
             justifyContent: 'space-between',
           }}>
-          <Text
+          <AppText
             style={[
               appStyles.bold16Text,
               {color: colors.white, height: 16, alignSelf: 'center'},
             ]}>
             {i18n.t('acc:balance')}
-          </Text>
+          </AppText>
           <AppButton
             title={i18n.t('menu:change')}
             titleStyle={[appStyles.normal12Text, {color: colors.white}]}
@@ -97,12 +97,12 @@ const CardInfo = ({
         {iccid && (
           <View>
             <View style={{flexDirection: 'row', marginBottom: 25}}>
-              <Text style={[appStyles.bold30Text, {color: colors.white}]}>
+              <AppText style={[appStyles.bold30Text, {color: colors.white}]}>
                 {utils.numberToCommaString(balance)}
-              </Text>
-              <Text style={[appStyles.normal22Text, {color: colors.white}]}>
+              </AppText>
+              <AppText style={[appStyles.normal22Text, {color: colors.white}]}>
                 {i18n.t('won')}
-              </Text>
+              </AppText>
             </View>
 
             <LabelText
@@ -141,9 +141,9 @@ const CardInfo = ({
       </View>
       <View
         style={{backgroundColor: colors.whiteTwo, margin: 20, marginTop: 30}}>
-        <Text style={{...appStyles.bold18Text}}>
+        <AppText style={{...appStyles.bold18Text}}>
           {i18n.t('usim:dataUsageList')}
-        </Text>
+        </AppText>
       </View>
     </View>
   );

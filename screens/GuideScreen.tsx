@@ -1,30 +1,30 @@
 /* eslint-disable global-require */
-import React, {Component} from 'react';
-import {StyleSheet, Text, View, FlatList, Image} from 'react-native';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import Analytics from 'appcenter-analytics';
-import {appStyles} from '@/constants/Styles';
-import i18n from '@/utils/i18n';
-import {colors} from '@/constants/Colors';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppBackButton from '@/components/AppBackButton';
+import AppFlatListItem from '@/components/AppFlatListItem';
 import AppIcon from '@/components/AppIcon';
+import AppText from '@/components/AppText';
+import {colors} from '@/constants/Colors';
+import {sliderWidth} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RootState} from '@/redux';
 import {actions as accountActions} from '@/redux/modules/account';
-import {actions as orderActions} from '@/redux/modules/order';
-import info, {
+import {
   actions as infoActions,
   InfoAction,
   InfoModelState,
 } from '@/redux/modules/info';
-import AppBackButton from '@/components/AppBackButton';
-import AppFlatListItem from '@/components/AppFlatListItem';
-import {sliderWidth} from '@/constants/SliderEntry.style';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
-import {RootState} from '@/redux';
+import {actions as orderActions} from '@/redux/modules/order';
+import i18n from '@/utils/i18n';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {HomeStackParamList} from '@/navigation/navigation';
-import {RkbInfo} from '@/redux/api/pageApi';
+import Analytics from 'appcenter-analytics';
+import React, {Component} from 'react';
+import {FlatList, Image, StyleSheet, View} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import Carousel, {Pagination} from 'react-native-snap-carousel';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 
 const styles = StyleSheet.create({
   pagination: {
@@ -191,7 +191,7 @@ class GuideScreen extends Component<GuideScreenProps, GuideScreenState> {
 
         <View style={styles.tipBox}>
           <AppIcon name="specialTip" />
-          <Text style={styles.tip}>{i18n.t('guide:tip')}</Text>
+          <AppText style={styles.tip}>{i18n.t('guide:tip')}</AppText>
         </View>
       </View>
     );
@@ -204,7 +204,7 @@ class GuideScreen extends Component<GuideScreenProps, GuideScreenState> {
         <TouchableOpacity
           style={styles.faqBox}
           onPress={() => this.props.navigation.navigate('Faq')}>
-          <Text style={styles.faq}>{i18n.t('guide:detail')}</Text>
+          <AppText style={styles.faq}>{i18n.t('guide:detail')}</AppText>
         </TouchableOpacity>
       </View>
     );

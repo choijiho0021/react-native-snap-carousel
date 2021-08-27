@@ -1,19 +1,19 @@
-import React, {memo, PropsWithChildren} from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  Modal,
-  TextStyle,
-  ViewStyle,
-  ColorValue,
-  SafeAreaView,
-} from 'react-native';
+import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
-import {colors} from '@/constants/Colors';
+import React, {memo, PropsWithChildren} from 'react';
+import {
+  ColorValue,
+  Modal,
+  SafeAreaView,
+  StyleSheet,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
 import AppButton from './AppButton';
 import AppIcon from './AppIcon';
+import AppText from './AppText';
 
 const styles = StyleSheet.create({
   button: {
@@ -111,15 +111,17 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
               style={[styles.icon, !contentStyle && {paddingHorizontal: 20}]}
             />
           )}
-          {title && <Text style={titleStyle || styles.title}>{title}</Text>}
+          {title && (
+            <AppText style={titleStyle || styles.title}>{title}</AppText>
+          )}
           {toRokebiCash && (
             <View style={{marginTop: 30}}>
-              <Text style={styles.blueCenter}>
+              <AppText style={styles.blueCenter}>
                 {i18n.t('usim:toRokebiCash')}
-              </Text>
-              <Text style={styles.blueCenter}>
+              </AppText>
+              <AppText style={styles.blueCenter}>
                 {toRokebiCash} {i18n.t('usim:balance')}
-              </Text>
+              </AppText>
             </View>
           )}
           {children}

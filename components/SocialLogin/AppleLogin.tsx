@@ -6,9 +6,13 @@ import appleAuth, {
 import AsyncStorage from '@react-native-community/async-storage';
 import {AuthCallback} from '.';
 import AppButton from '../AppButton';
+import {appStyles} from '../../constants/Styles';
+import {Langcode} from '../../redux/api/api';
 
 const styles = StyleSheet.create({
   button: {
+    flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
   },
 });
@@ -83,23 +87,26 @@ const AppleLogin = ({onAuth}: {onAuth: AuthCallback}) => {
 
   return (
     <View style={styles.button}>
-      <AppButton
+      {/* <AppButton
         iconName="appleLogin"
         style={{
           width: 44,
           height: 44,
         }}
         onPress={onPress}
-      />
-      {/* <AppleButton
-        buttonStyle={AppleButton.Style.WHITE_OUTLINE}
-        buttonType={AppleButton.Type.SIGN_IN}
-        style={{
-          width: 160, // You must specify a width
-          height: 45, // You must specify a height
-        }}
-        onPress={onPress}
       /> */}
+      <AppleButton
+        buttonStyle={AppleButton.Style.BLACK}
+        buttonType={AppleButton.Type.SIGN_IN}
+        // style={{
+        //   width: 160, // You must specify a width
+        //   height: 45, // You must specify a height
+        // }}
+        // style={{width: 200, height: 45}}
+        style={{flex: 1, height: 45}}
+        textStyle={appStyles.bold18Text}
+        onPress={onPress}
+      />
     </View>
   );
 };

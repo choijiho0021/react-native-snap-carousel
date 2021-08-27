@@ -1,5 +1,7 @@
 import React, {memo} from 'react';
-import {StyleSheet, View, TextInput, Text} from 'react-native';
+import {StyleSheet, View} from 'react-native';
+import AppText from './AppText';
+import AppTextInput from './AppTextInput';
 
 const styles = StyleSheet.create({
   input: {
@@ -10,8 +12,10 @@ const styles = StyleSheet.create({
 const TextField = (props) => {
   return (
     <View style={props.style}>
-      <TextInput {...props} style={styles.input} />
-      {props.error ? <Text style={styles.input}>{props.error[0]}</Text> : null}
+      <AppTextInput {...props} style={styles.input} />
+      {props.error ? (
+        <AppText style={styles.input}>{props.error[0]}</AppText>
+      ) : null}
     </View>
   );
 };

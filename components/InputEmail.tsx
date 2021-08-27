@@ -1,18 +1,19 @@
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import i18n, {i18nEvent} from '@/utils/i18n';
 import React, {Component} from 'react';
 import {
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  ViewStyle,
   StyleProp,
+  StyleSheet,
+  TextInput,
   TouchableOpacity,
+  View,
+  ViewStyle,
 } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import _ from 'underscore';
-import i18n, {i18nEvent} from '@/utils/i18n';
-import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
+import AppText from './AppText';
+import AppTextInput from './AppTextInput';
 import Triangle from './Triangle';
 
 const DIRECT_INPUT = 'direct';
@@ -43,6 +44,14 @@ i18nEvent.on('loaded', () => {
     {
       label: 'Hanmail',
       value: 'hanmail.net',
+    },
+    {
+      label: 'Kakao',
+      value: 'kakao.com',
+    },
+    {
+      label: 'Hotmail',
+      value: 'hotmail.com',
     },
   ];
 });
@@ -190,7 +199,7 @@ class InputEmail extends Component<InputEmailProps, InputEmailState> {
             ]}
             onPress={this.focusInput}
             activeOpacity={1}>
-            <TextInput
+            <AppTextInput
               style={[styles.textInput, email ? {} : styles.emptyInput]}
               placeholder={i18n.t('reg:email')}
               placeholderTextColor={colors.greyish}
@@ -203,14 +212,14 @@ class InputEmail extends Component<InputEmailProps, InputEmailState> {
             />
           </TouchableOpacity>
 
-          <Text
+          <AppText
             style={[
               appStyles.normal12Text,
               styles.textInput,
               email ? {} : styles.emptyInput,
             ]}>
             @
-          </Text>
+          </AppText>
 
           <TouchableOpacity
             style={[
@@ -222,7 +231,7 @@ class InputEmail extends Component<InputEmailProps, InputEmailState> {
               if (this.domainRef.current) this.domainRef.current.focus();
             }}
             activeOpacity={1}>
-            <TextInput
+            <AppTextInput
               style={[styles.textInput, domain ? {} : styles.emptyInput]}
               returnKeyType="next"
               enablesReturnKeyAutomatically
@@ -272,7 +281,7 @@ class InputEmail extends Component<InputEmailProps, InputEmailState> {
             />
           </TouchableOpacity>
         </View>
-        <Text style={styles.infoText}>{i18n.t('mypage:mailInfo')}</Text>
+        <AppText style={styles.infoText}>{i18n.t('mypage:mailInfo')}</AppText>
       </View>
     );
   }

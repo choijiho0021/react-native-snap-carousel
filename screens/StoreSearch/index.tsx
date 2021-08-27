@@ -1,12 +1,32 @@
 /* eslint-disable no-param-reassign */
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppBackButton from '@/components/AppBackButton';
+import AppButton from '@/components/AppButton';
+import AppText from '@/components/AppText';
+import AppTextInput from '@/components/AppTextInput';
+import StoreList from '@/components/StoreList';
+import {colors} from '@/constants/Colors';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
+import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
+import {API} from '@/redux/api';
+import {RkbProduct} from '@/redux/api/productApi';
+import {
+  actions as productActions,
+  ProductAction,
+  ProductModelState,
+} from '@/redux/modules/product';
+import i18n from '@/utils/i18n';
+import {retrieveData, storeData} from '@/utils/utils';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {Component, memo, useEffect, useState} from 'react';
 import {
   Dimensions,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   View,
@@ -16,25 +36,6 @@ import {getTrackingStatus} from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
-import StoreList from '@/components/StoreList';
-import {colors} from '@/constants/Colors';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
-import {appStyles} from '@/constants/Styles';
-import {
-  actions as productActions,
-  ProductAction,
-  ProductModelState,
-} from '@/redux/modules/product';
-import {API} from '@/redux/api';
-import i18n from '@/utils/i18n';
-import {retrieveData, storeData} from '@/utils/utils';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {HomeStackParamList} from '@/navigation/navigation';
-import {RouteProp} from '@react-navigation/native';
-import {RkbProduct} from '@/redux/api/productApi';
-import AppBackButton from '@/components/AppBackButton';
-import AppButton from '@/components/AppButton';
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -198,7 +199,7 @@ const HeaderTitle0 = ({
     <View style={styles.container}>
       <View style={styles.headerTitle}>
         <AppBackButton />
-        <TextInput
+        <AppTextInput
           style={styles.searchText}
           placeholder={i18n.t('store:search')}
           placeholderTextColor={colors.greyish}
@@ -389,13 +390,16 @@ class StoreSearchScreen extends Component<
       <View style={styles.width100}>
         {/* 최근 검색 */}
         <View style={styles.searchListHeader}>
-          <Text style={styles.searchListHeaderText}>
+          <AppText style={styles.searchListHeaderText}>
             {i18n.t('search:list')}
-          </Text>
+          </AppText>
         </View>
         {_.isEmpty(searchList) ? (
           <View style={styles.noList}>
-            <Text style={styles.searchListText}> {i18n.t('search:err')} </Text>
+            <AppText style={styles.searchListText}>
+              {' '}
+              {i18n.t('search:err')}{' '}
+            </AppText>
           </View>
         ) : (
           searchList.map((elm) => (
@@ -403,16 +407,16 @@ class StoreSearchScreen extends Component<
               key={elm}
               style={styles.searchList}
               onPress={() => this.search(elm, true)}>
-              <Text key="Text" style={styles.searchListText}>
+              <AppText key="Text" style={styles.searchListText}>
                 {elm}
-              </Text>
+              </AppText>
             </TouchableOpacity>
           ))
         )}
         <View style={styles.recommendHeader}>
-          <Text style={styles.searchListHeaderText}>
+          <AppText style={styles.searchListHeaderText}>
             {i18n.t('search:recommend')}
-          </Text>
+          </AppText>
         </View>
         {recommendCountryList.map((elm) => (
           <View key={elm.key} style={styles.recommendRow}>
@@ -422,7 +426,7 @@ class StoreSearchScreen extends Component<
                   key={elm2}
                   style={styles.recommebdItem}
                   onPress={() => this.search(elm2, true)}>
-                  <Text style={styles.recommendText}>{elm2}</Text>
+                  <AppText style={styles.recommendText}>{elm2}</AppText>
                 </TouchableOpacity>
               ) : (
                 <View key={`${idx}`} style={styles.recommebdEmpty} />
@@ -459,11 +463,11 @@ class StoreSearchScreen extends Component<
             key={elm.uuid}
             onPress={() => this.search(elm.country, true)}>
             <View key={`${idx}`} style={styles.autoList}>
-              <Text key="text" style={styles.autoText}>
+              <AppText key="text" style={styles.autoText}>
                 {elm.categoryId.includes(API.Product.category.multi)
                   ? elm.name
                   : elm.country}
-              </Text>
+              </AppText>
             </View>
           </TouchableOpacity>
         ))}
@@ -485,7 +489,7 @@ class StoreSearchScreen extends Component<
       <StoreList data={list} onPress={this.onPressItem} />
     ) : (
       <View style={styles.emptyViewPage}>
-        <Text style={styles.emptyPage}>{i18n.t('country:empty')}</Text>
+        <AppText style={styles.emptyPage}>{i18n.t('country:empty')}</AppText>
       </View>
     );
   }

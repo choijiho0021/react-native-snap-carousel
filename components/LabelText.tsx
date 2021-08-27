@@ -1,20 +1,20 @@
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import Env from '@/environment';
+import {Currency} from '@/redux/api/productApi';
+import utils from '@/redux/api/utils';
+import i18n from '@/utils/i18n';
 import React, {memo, useCallback} from 'react';
 import {
   ColorValue,
   StyleProp,
   StyleSheet,
-  Text,
   TextStyle,
   View,
   ViewStyle,
 } from 'react-native';
-import {appStyles} from '@/constants/Styles';
-import utils from '@/redux/api/utils';
-import i18n from '@/utils/i18n';
-import {colors} from '@/constants/Colors';
-import {Currency} from '@/redux/api/productApi';
-import Env from '@/environment';
 import AppPrice from './AppPrice';
+import AppText from './AppText';
 
 const {esimCurrency} = Env.get();
 const styles = StyleSheet.create({
@@ -78,23 +78,23 @@ const LabelText = ({
         style,
         format !== 'shortDistance' && {justifyContent: 'space-between'},
       ]}>
-      <Text
+      <AppText
         key="label"
         numberOfLines={1}
         ellipsizeMode="tail"
         style={[{maxWidth: '70%'}, labelStyle || styles.label]}>
         {label}
-      </Text>
+      </AppText>
       {/* {
           isDeduct &&
-          <Text style={[styles.label, {marginLeft: 18}]}>{`(${i18n.t('cart:currentBalance')}:${utils.numberToCommaString(value) + ' ' + i18n.t('won')}) `}</Text>
+          <AppText style={[styles.label, {marginLeft: 18}]}>{`(${i18n.t('cart:currentBalance')}:${utils.numberToCommaString(value) + ' ' + i18n.t('won')}) `}</AppText>
         } */}
       {format === 'price' ? (
         renderValue()
       ) : (
-        <Text key="value" style={valueStyle || styles.singleValue}>
+        <AppText key="value" style={valueStyle || styles.singleValue}>
           {value}
-        </Text>
+        </AppText>
       )}
     </View>
   );

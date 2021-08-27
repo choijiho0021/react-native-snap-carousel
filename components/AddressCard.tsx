@@ -1,15 +1,9 @@
 import {RkbProfile} from '@/redux/api/profileApi';
 import utils from '@/redux/api/utils';
 import React, {memo} from 'react';
-import {
-  StyleProp,
-  StyleSheet,
-  Text,
-  TextStyle,
-  View,
-  ViewStyle,
-} from 'react-native';
+import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from 'react-native';
 import _ from 'underscore';
+import AppText from './AppText';
 
 const styles = StyleSheet.create({
   container: {
@@ -35,13 +29,13 @@ const AddressCard = ({
 
   return (
     <View style={[styles.container, style]}>
-      <Text style={textStyle}>{name}</Text>
-      <Text style={mobileStyle}>
+      <AppText style={textStyle}>{name}</AppText>
+      <AppText style={mobileStyle}>
         {utils.toPhoneNumber(profile.prefix + profile.recipientNumber)}
-      </Text>
-      <Text style={textStyle}>{profile.addressLine1}</Text>
-      <Text style={textStyle}>{profile.addressLine2}</Text>
-      <Text style={textStyle}>{profile.detailAddr}</Text>
+      </AppText>
+      <AppText style={textStyle}>{profile.addressLine1}</AppText>
+      <AppText style={textStyle}>{profile.addressLine2}</AppText>
+      <AppText style={textStyle}>{profile.detailAddr}</AppText>
     </View>
   );
 };

@@ -1,22 +1,12 @@
-import React, {Component, memo} from 'react';
-import {
-  StyleSheet,
-  View,
-  FlatList,
-  Text,
-  Linking,
-  Pressable,
-} from 'react-native';
-import Analytics from 'appcenter-analytics';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import _ from 'underscore';
-import KakaoSDK from '@actbase/react-native-kakaosdk';
-import {appStyles} from '@/constants/Styles';
-import i18n from '@/utils/i18n';
 import AppBackButton from '@/components/AppBackButton';
-import {colors} from '@/constants/Colors';
 import AppIcon from '@/components/AppIcon';
+import AppModal from '@/components/AppModal';
+import AppText from '@/components/AppText';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import Env from '@/environment';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RootState} from '@/redux';
 import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
 import {actions as notiActions, NotiModelState} from '@/redux/modules/noti';
 import {
@@ -24,11 +14,15 @@ import {
   Toast,
   ToastAction,
 } from '@/redux/modules/toast';
-import AppModal from '@/components/AppModal';
-import Env from '@/environment';
-import {RootState} from '@/redux';
+import i18n from '@/utils/i18n';
+import KakaoSDK from '@actbase/react-native-kakaosdk';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {HomeStackParamList} from '@/navigation/navigation';
+import Analytics from 'appcenter-analytics';
+import React, {Component, memo} from 'react';
+import {FlatList, Linking, Pressable, StyleSheet, View} from 'react-native';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 
 const {channelId} = Env.get();
 
@@ -74,7 +68,7 @@ const ContactListItem0 = ({
         if (onPress) onPress(item.key);
       }}>
       <View style={styles.row}>
-        <Text style={styles.itemTitle}>{item.value}</Text>
+        <AppText style={styles.itemTitle}>{item.value}</AppText>
         {onPress && (
           <AppIcon style={{alignSelf: 'center'}} name="iconArrowRight" />
         )}

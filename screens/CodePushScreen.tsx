@@ -1,21 +1,16 @@
-import React, {Component} from 'react';
-import {
-  View,
-  Text,
-  AppState,
-  StyleSheet,
-  ActivityIndicator,
-} from 'react-native';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import codePush from 'react-native-code-push';
+import AppAlert from '@/components/AppAlert';
+import AppText from '@/components/AppText';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import {RootState} from '@/redux';
 import {actions as syncActions} from '@/redux/modules/sync';
 import i18n from '@/utils/i18n';
-import {appStyles} from '@/constants/Styles';
-import {colors} from '@/constants/Colors';
-import AppAlert from '@/components/AppAlert';
-import {RootState} from '@/redux';
+import React, {Component} from 'react';
+import {ActivityIndicator, AppState, StyleSheet, View} from 'react-native';
+import codePush from 'react-native-code-push';
 import Config from 'react-native-config';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 
 const styles = StyleSheet.create({
   container: {
@@ -162,13 +157,13 @@ class CodePushScreen extends Component {
           style={styles.indicator}
         />
         {progress && (
-          <Text style={styles.text}>
+          <AppText style={styles.text}>
             {' '}
             {parseInt((progress.receivedBytes / progress.totalBytes) * 100, 10)}
             %{' '}
-          </Text>
+          </AppText>
         )}
-        <Text style={styles.text}> {syncMessage} </Text>
+        <AppText style={styles.text}> {syncMessage} </AppText>
       </View>
     );
   }

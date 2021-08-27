@@ -1,28 +1,28 @@
-import React, {Component, memo} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  SafeAreaView,
-} from 'react-native';
-import i18n from '@/utils/i18n';
-import {appStyles} from '@/constants/Styles';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {actions as accountActions} from '@/redux/modules/account';
-import {actions as profileActions} from '@/redux/modules/profile';
-import _ from 'underscore';
-import AppBackButton from '@/components/AppBackButton';
 import AddressCard from '@/components/AddressCard';
-import {colors} from '@/constants/Colors';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppText from '@/components/AppText';
 import {isAndroid} from '@/components/SearchBarAnimation/utils';
+import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
+import {actions as accountActions} from '@/redux/modules/account';
+import {actions as profileActions} from '@/redux/modules/profile';
+import i18n from '@/utils/i18n';
+import React, {Component, memo} from 'react';
+import {
+  FlatList,
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 
 const styles = StyleSheet.create({
   container: {
@@ -154,18 +154,18 @@ const Profile0 = ({
                 alignSelf: 'flex-start',
                 paddingTop: 19,
               }}>
-              <Text
+              <AppText
                 style={[
                   styles.profileTitleText,
                   checked === item.uuid && styles.checkedColor,
                 ]}>
                 {item.alias}
-              </Text>
+              </AppText>
               {item.isBasicAddr && (
                 <View style={styles.basicAddrBox}>
-                  <Text style={styles.basicAddr}>
+                  <AppText style={styles.basicAddr}>
                     {i18n.t('addr:basicAddr')}
-                  </Text>
+                  </AppText>
                 </View>
               )}
             </View>
@@ -281,7 +281,7 @@ class CustomerProfileScreen extends Component {
   _isEmptyList() {
     return (
       <View style={styles.emptyView}>
-        <Text style={styles.emptyText}>{i18n.t('addr:noProfile')}</Text>
+        <AppText style={styles.emptyText}>{i18n.t('addr:noProfile')}</AppText>
       </View>
     );
   }

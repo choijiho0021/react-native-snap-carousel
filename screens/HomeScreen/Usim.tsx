@@ -1,58 +1,57 @@
-import React, {Component} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  StatusBar,
-  ScrollView,
-  Platform,
-  Appearance,
-  ColorSchemeName,
-  SafeAreaView,
-  Pressable,
-} from 'react-native';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import Analytics from 'appcenter-analytics';
-import _ from 'underscore';
-import Carousel from 'react-native-snap-carousel';
-import i18n from '@/utils/i18n';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppAlert from '@/components/AppAlert';
+import AppButton from '@/components/AppButton';
+import AppIcon from '@/components/AppIcon';
+import AppPrice from '@/components/AppPrice';
+import AppText from '@/components/AppText';
+import AppUserPic from '@/components/AppUserPic';
+import withBadge from '@/components/withBadge';
+import {colors} from '@/constants/Colors';
+import {windowHeight} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
-import {actions as simActions, SimAction} from '@/redux/modules/sim';
+import Env from '@/environment';
+import {RootState} from '@/redux';
+import {RkbInfo} from '@/redux/api/pageApi';
+import utils from '@/redux/api/utils';
+import createHandlePushNoti from '@/redux/models/createHandlePushNoti';
 import {
   AccountAction,
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
-import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
-import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
+import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
+import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
 import {
   actions as productActions,
   ProductModelState,
 } from '@/redux/modules/product';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
-import AppButton from '@/components/AppButton';
-import {windowHeight} from '@/constants/SliderEntry.style';
-import {colors} from '@/constants/Colors';
-import AppIcon from '@/components/AppIcon';
-import AppUserPic from '@/components/AppUserPic';
-import withBadge from '@/components/withBadge';
-import AppPrice from '@/components/AppPrice';
-import pushNoti from '@/utils/pushNoti';
-import AppAlert from '@/components/AppAlert';
-import appStateHandler from '@/utils/appState';
-import {RootState} from '@/redux';
-import createHandlePushNoti from '@/redux/models/createHandlePushNoti';
-import AsyncStorage from '@react-native-community/async-storage';
-import {RkbInfo} from '@/redux/api/pageApi';
 import {PromotionModelState} from '@/redux/modules/promotion';
+import {actions as simActions, SimAction} from '@/redux/modules/sim';
 import {SyncModelState} from '@/redux/modules/sync';
-import utils from '@/redux/api/utils';
-import Env from '@/environment';
-import PromotionCarousel from './component/PromotionCarousel';
+import appStateHandler from '@/utils/appState';
+import i18n from '@/utils/i18n';
+import pushNoti from '@/utils/pushNoti';
+import AsyncStorage from '@react-native-community/async-storage';
+import React, {Component} from 'react';
+import {
+  Appearance,
+  ColorSchemeName,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import Carousel from 'react-native-snap-carousel';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import {checkFistLaunch, requestPermission} from './component/permission';
+import PromotionCarousel from './component/PromotionCarousel';
 
 // windowHeight
 // iphone 8 - 375x667
@@ -291,7 +290,9 @@ class Usim extends Component<UsimProps, UsimState> {
   async componentDidMount() {
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => <Text style={styles.title}>{i18n.t('appTitle')}</Text>,
+      headerLeft: () => (
+        <AppText style={styles.title}>{i18n.t('appTitle')}</AppText>
+      ),
       headerRight: () => (
         <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
           <AppButton
@@ -346,7 +347,7 @@ class Usim extends Component<UsimProps, UsimState> {
 
     //  자동로그인의 경우 device token update
     if (prevProps.account.deviceToken !== deviceToken && loggedIn) {
-      this.props.action.account.changeNotiToken();
+      this.props.action.account.changeNotiToken({});
     }
 
     if (prevProps.account.loggedIn !== loggedIn) {
@@ -461,26 +462,26 @@ class Usim extends Component<UsimProps, UsimState> {
         <View style={{marginLeft: 20, justifyContent: 'space-around', flex: 1}}>
           {loggedIn ? (
             [
-              <Text key="mobile" style={appStyles.mobileNo}>
+              <AppText key="mobile" style={appStyles.mobileNo}>
                 {i18n.t('acc:remain')}
-              </Text>,
+              </AppText>,
               iccid ? (
                 <AppPrice
                   key="price"
                   price={utils.toCurrency(balance, esimCurrency)}
                 />
               ) : (
-                <Text
+                <AppText
                   key="sim"
                   style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
                   {i18n.t('reg:card')}
-                </Text>
+                </AppText>
               ),
             ]
           ) : (
-            <Text key="reg" style={appStyles.normal14Text}>
+            <AppText key="reg" style={appStyles.normal14Text}>
               {i18n.t('reg:guide')}
-            </Text>
+            </AppText>
           )}
         </View>
         <AppIcon style={{alignSelf: 'center'}} name="iconArrowRight" />
@@ -531,11 +532,13 @@ class Usim extends Component<UsimProps, UsimState> {
         style={styles.guide}
         onPress={() => this.props.navigation.navigate('Guide')}>
         <View style={{flex: 1, justifyContent: 'space-between'}}>
-          <Text style={[appStyles.normal16Text, {marginLeft: 30}]}>
+          <AppText style={[appStyles.normal16Text, {marginLeft: 30}]}>
             {i18n.t('home:guide')}
-          </Text>
+          </AppText>
           <View style={{flexDirection: 'row', marginTop: 9, marginLeft: 30}}>
-            <Text style={styles.checkGuide}>{i18n.t('home:checkGuide')}</Text>
+            <AppText style={styles.checkGuide}>
+              {i18n.t('home:checkGuide')}
+            </AppText>
             <AppIcon name="iconArrowRightBlue" />
           </View>
         </View>
@@ -612,7 +615,7 @@ class Usim extends Component<UsimProps, UsimState> {
           })
         }>
         <View style={styles.info}>
-          <Text style={styles.infoText}>{item.title}</Text>
+          <AppText style={styles.infoText}>{item.title}</AppText>
         </View>
       </Pressable>
     );

@@ -1,9 +1,10 @@
-import React, {Component} from 'react';
-import {StyleSheet, View, Text, Pressable} from 'react-native';
-import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
-import utils from '@/redux/api/utils';
+import {appStyles} from '@/constants/Styles';
 import {RkbBoard} from '@/redux/api/boardApi';
+import utils from '@/redux/api/utils';
+import React, {Component} from 'react';
+import {Pressable, StyleSheet, View} from 'react-native';
+import AppText from './AppText';
 
 const styles = StyleSheet.create({
   list: {
@@ -54,19 +55,19 @@ class BoardMsg extends Component<BoardMsgProps> {
       <Pressable onPress={() => this.props.onPress(uuid, statusCode)}>
         <View style={styles.list} key="info">
           <View style={{flex: 1}}>
-            <Text
+            <AppText
               key="title"
               ellipsizeMode="tail"
               numberOfLines={2}
               style={styles.title}>
               {titleOrMobile || ''}
-            </Text>
-            <Text key="date" style={styles.date}>
+            </AppText>
+            <AppText key="date" style={styles.date}>
               {date}
-            </Text>
+            </AppText>
           </View>
           <View style={{width: '30%', alignItems: 'flex-end'}}>
-            <Text
+            <AppText
               key="status"
               style={[
                 styles.status,
@@ -78,7 +79,7 @@ class BoardMsg extends Component<BoardMsgProps> {
                 },
               ]}>
               {status}
-            </Text>
+            </AppText>
           </View>
         </View>
       </Pressable>
