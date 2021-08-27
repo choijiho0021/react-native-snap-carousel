@@ -1,15 +1,22 @@
-import _ from 'underscore';
-import moment from 'moment-with-locales-es6';
-import i18n from '@/utils/i18n';
 import Env from '@/environment';
+import i18n from '@/utils/i18n';
+import moment from 'moment-with-locales-es6';
 import {Image} from 'react-native';
-import {Currency, CurrencyCode} from './productApi';
-import {RkbImage} from './accountApi';
+import {getFontScale} from 'react-native-device-info';
 import RNFetchBlob from 'rn-fetch-blob';
+import _ from 'underscore';
+import {RkbImage} from './accountApi';
+import {Currency, CurrencyCode} from './productApi';
 
 const {esimCurrency} = Env.get();
 const dateTimeFmt = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})*$/;
 moment.locale(i18n.locale);
+
+const fontScaling = async (size: number = 12): Promise<number> => {
+  const scale = await getFontScale();
+  if (scale) return size / scale;
+  return size;
+};
 
 const numberToCommaString = (n?: number): string => {
   if (typeof n === 'number') {
@@ -236,6 +243,7 @@ const convertURLtoRkbImage = async (url: string) => {
 };
 
 export default {
+  fontScaling,
   numberToCommaString,
   dlvCost,
   stringToNumber,

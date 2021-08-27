@@ -149,7 +149,10 @@ const TabNavigator = ({
   iccid?: string;
 }) => {
   return (
-    <Tab.Navigator initialRouteName="HomeStack" backBehavior="initialRoute">
+    <Tab.Navigator
+      tabBarOptions={{allowFontScaling: false}}
+      initialRouteName="HomeStack"
+      backBehavior="initialRoute">
       <Tab.Screen
         name="HomeStack"
         component={homeStack}
@@ -172,6 +175,7 @@ const TabNavigator = ({
         component={iccid && loggedIn ? cartStack : AuthStack}
         options={() => ({
           tabBarVisible: false,
+          tabBarBadgeStyle: {allowFontScaling: false},
           tabBarLabel: i18n.t('cart'),
           tabBarIcon: ({focused}) => (
             <BadgedIcon
