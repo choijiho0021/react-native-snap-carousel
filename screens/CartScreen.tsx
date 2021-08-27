@@ -3,6 +3,7 @@ import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
 import AppSnackBar from '@/components/AppSnackBar';
+import AppText from '@/components/AppText';
 import CartItem from '@/components/CartItem';
 import ChargeSummary from '@/components/ChargeSummary';
 import {colors} from '@/constants/Colors';
@@ -30,14 +31,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Map as ImmutableMap} from 'immutable';
 import React, {Component} from 'react';
-import {
-  Alert,
-  SafeAreaView,
-  SectionList,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {Alert, SafeAreaView, SectionList, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
@@ -254,12 +248,12 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
       <View style={styles.emptyView}>
         <AppIcon name="emptyCart" />
         <View style={{marginTop: 20}}>
-          <Text style={[styles.emptyText, {color: colors.clearBlue}]}>
+          <AppText style={[styles.emptyText, {color: colors.clearBlue}]}>
             {i18n.t('cart:empty1')}
-          </Text>
-          <Text style={[styles.emptyText, {color: colors.warmGrey}]}>
+          </AppText>
+          <AppText style={[styles.emptyText, {color: colors.warmGrey}]}>
             {i18n.t('cart:empty2')}
-          </Text>
+          </AppText>
         </View>
       </View>
     );
@@ -497,12 +491,12 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
         />
         <View style={styles.buttonBox}>
           <View style={styles.sumBox}>
-            <Text style={[styles.btnBuyText, {color: colors.black}]}>
+            <AppText style={[styles.btnBuyText, {color: colors.black}]}>
               {`${i18n.t('cart:pymAmount')}: `}
-            </Text>
-            <Text style={[styles.btnBuyText, {color: colors.black}]}>
+            </AppText>
+            <AppText style={[styles.btnBuyText, {color: colors.black}]}>
               {utils.price(pymPrice)}
-            </Text>
+            </AppText>
           </View>
           <AppButton
             style={styles.btnBuy}

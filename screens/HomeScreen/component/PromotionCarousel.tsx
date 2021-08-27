@@ -1,16 +1,17 @@
-import React, {memo, useCallback, useState} from 'react';
-import {Animated, Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
+import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
-import {connect} from 'react-redux';
-import {RootState} from '@/redux';
-import {RkbPromotion} from '@/redux/api/promotionApi';
 import {sliderWidth} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
-import {ProductModelState} from '@/redux/modules/product';
-import {useNavigation} from '@react-navigation/native';
-import i18n from '@/utils/i18n';
+import {RootState} from '@/redux';
 import {API} from '@/redux/api';
+import {RkbPromotion} from '@/redux/api/promotionApi';
+import {ProductModelState} from '@/redux/modules/product';
+import i18n from '@/utils/i18n';
+import {useNavigation} from '@react-navigation/native';
+import React, {memo, useCallback, useState} from 'react';
+import {Animated, Image, Pressable, StyleSheet, View} from 'react-native';
+import Carousel, {Pagination} from 'react-native-snap-carousel';
+import {connect} from 'react-redux';
 
 const DOT_MARGIN = 6;
 const INACTIVE_DOT_WIDTH = 6;
@@ -72,7 +73,7 @@ const PromotionImage0 = ({
           resizeMode="contain"
         />
       ) : (
-        <Text style={appStyles.normal16Text}>{item.title}</Text>
+        <AppText style={appStyles.normal16Text}>{item.title}</AppText>
       )}
     </Pressable>
   );

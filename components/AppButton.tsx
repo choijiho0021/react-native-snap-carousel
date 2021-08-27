@@ -1,19 +1,19 @@
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import {API} from '@/redux/api';
+import i18n from '@/utils/i18n';
 import React, {memo} from 'react';
 import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
   Image,
-  ViewStyle,
-  TextStyle,
   StyleProp,
+  StyleSheet,
+  TextStyle,
+  TouchableOpacity,
+  View,
+  ViewStyle,
 } from 'react-native';
-import {API} from '@/redux/api';
-import {appStyles} from '@/constants/Styles';
-import i18n from '@/utils/i18n';
-import {colors} from '@/constants/Colors';
 import AppIcon from './AppIcon';
+import AppText from './AppText';
 
 const styles = StyleSheet.create({
   button: {
@@ -101,14 +101,14 @@ const AppButton: React.FC<AppButtonProps> = ({
           )
         )}
         {title && (
-          <Text
+          <AppText
             style={[
               titleStyle || styles.text,
               disabled && {color: disableColor || colors.white},
               checked && {color: checkedColor || colors.clearBlue},
             ]}>
             {title || i18n.t('select')}
-          </Text>
+          </AppText>
         )}
       </View>
     </TouchableOpacity>

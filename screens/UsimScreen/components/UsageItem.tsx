@@ -1,21 +1,21 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
-
-import {AnimatedCircularProgress} from 'react-native-circular-progress';
-import _ from 'underscore';
-import Analytics from 'appcenter-analytics';
-import Svg, {Line} from 'react-native-svg';
-import i18n from '@/utils/i18n';
-import {utils} from '@/utils/utils';
-import {appStyles} from '@/constants/Styles';
-import {colors} from '@/constants/Colors';
 import AppButton from '@/components/AppButton';
+import AppText from '@/components/AppText';
+import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
+import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
-import {RootState} from '@/redux';
 import {AccountModelState} from '@/redux/modules/account';
+import i18n from '@/utils/i18n';
+import {utils} from '@/utils/utils';
+import Analytics from 'appcenter-analytics';
+import React, {Component} from 'react';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {AnimatedCircularProgress} from 'react-native-circular-progress';
+import Svg, {Line} from 'react-native-svg';
+import {connect} from 'react-redux';
+import _ from 'underscore';
 
 const styles = StyleSheet.create({
   usageListContainer: {
@@ -226,10 +226,12 @@ class UsageItem extends Component<UsageItemProps, UsageItemState> {
   expire = (item: RkbSubscription) => {
     return (
       <View style={styles.endDateContainer}>
-        <Text style={appStyles.normal12Text}>{i18n.t('usim:usingTime')}</Text>
-        <Text style={styles.usagePeriod}>{`${utils.toDateString(
+        <AppText style={appStyles.normal12Text}>
+          {i18n.t('usim:usingTime')}
+        </AppText>
+        <AppText style={styles.usagePeriod}>{`${utils.toDateString(
           item.endDate,
-        )} ${i18n.t('usim:until')}`}</Text>
+        )} ${i18n.t('usim:until')}`}</AppText>
       </View>
     );
   };
@@ -237,13 +239,13 @@ class UsageItem extends Component<UsageItemProps, UsageItemState> {
   expireBeforeUse = (item: RkbSubscription) => {
     return (
       <View style={styles.inactiveContainer}>
-        <Text style={appStyles.normal12Text}>
+        <AppText style={appStyles.normal12Text}>
           {i18n.t('usim:usablePeriod')}
-        </Text>
-        <Text style={styles.usagePeriod}>{`${utils.toDateString(
+        </AppText>
+        <AppText style={styles.usagePeriod}>{`${utils.toDateString(
           item.purchaseDate,
           'YYYY-MM-DD',
-        )} ~ ${item.expireDate}`}</Text>
+        )} ~ ${item.expireDate}`}</AppText>
       </View>
     );
   };
@@ -290,35 +292,35 @@ class UsageItem extends Component<UsageItemProps, UsageItemState> {
           backgroundColor={colors.whiteTwo}>
           {(fill) => (
             <View style={{alignItems: 'center'}}>
-              <Text style={styles.normal12WarmGrey}>
+              <AppText style={styles.normal12WarmGrey}>
                 {i18n.t('usim:remainAmount')}
-              </Text>
-              <Text style={styles.bold18ClearBlue}>
+              </AppText>
+              <AppText style={styles.bold18ClearBlue}>
                 {' '}
                 {`${Math.floor(fill)}%`}{' '}
-              </Text>
+              </AppText>
             </View>
           )}
         </AnimatedCircularProgress>
         <View style={{marginLeft: 20, flex: 1}}>
-          <Text style={styles.normal14WarmGrey}>
+          <AppText style={styles.normal14WarmGrey}>
             {i18n.t('usim:remainData')}
-          </Text>
-          <Text style={appStyles.bold18Text}>
+          </AppText>
+          <AppText style={appStyles.bold18Text}>
             {`${this.toGb(quota - used)}GB ${i18n.t('usim:remain')}`}
-          </Text>
-          <Text style={styles.normal12WarmGrey}>{`(${this.toMb(
+          </AppText>
+          <AppText style={styles.normal12WarmGrey}>{`(${this.toMb(
             quota - used,
-          )}MB)`}</Text>
-          <Text style={[styles.normal14WarmGrey, {marginTop: 10}]}>
+          )}MB)`}</AppText>
+          <AppText style={[styles.normal14WarmGrey, {marginTop: 10}]}>
             {i18n.t('usim:usageAmount')}
-          </Text>
-          <Text style={styles.bold16WarmGrey}>
+          </AppText>
+          <AppText style={styles.bold16WarmGrey}>
             {`${this.toGb(used)}GB ${i18n.t('usim:used')}`}
-          </Text>
-          <Text style={styles.normal12WarmGrey}>{`(${this.toMb(
+          </AppText>
+          <AppText style={styles.normal12WarmGrey}>{`(${this.toMb(
             used,
-          )}MB)`}</Text>
+          )}MB)`}</AppText>
         </View>
       </View>
     );
@@ -337,20 +339,20 @@ class UsageItem extends Component<UsageItemProps, UsageItemState> {
         <View style={styles.usageListContainer}>
           <View style={{backgroundColor: colors.white}}>
             <View style={styles.titleAndStatus}>
-              <Text
+              <AppText
                 key={item.key}
                 style={[
                   styles.usageTitleNormal,
                   {fontWeight: isActive ? 'bold' : 'normal'},
                 ]}>
                 {item.prodName}
-              </Text>
-              <Text
+              </AppText>
+              <AppText
                 key={item.nid}
                 style={[styles.usageStatus, {color: statusColor}]}>
                 {' '}
                 • {item.status}
-              </Text>
+              </AppText>
             </View>
           </View>
           {item.statusCd === 'A' ? (
@@ -358,7 +360,9 @@ class UsageItem extends Component<UsageItemProps, UsageItemState> {
               {!isCallProduct && (
                 <View style={styles.topOfActiveContainer}>
                   {isShowUsage ? this.usageRender() : this.checkUsageButton()}
-                  <Text style={styles.warning}>{i18n.t('usim:warning')}</Text>
+                  <AppText style={styles.warning}>
+                    {i18n.t('usim:warning')}
+                  </AppText>
                   <Svg height={2} width="100%">
                     <Line
                       style={{marginLeft: 2}}

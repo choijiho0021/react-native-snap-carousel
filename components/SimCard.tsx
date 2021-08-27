@@ -1,13 +1,14 @@
-import React, {PureComponent} from 'react';
-import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
-import {appStyles} from '@/constants/Styles';
-import utils from '@/redux/api/utils';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
 import {API} from '@/redux/api';
+import utils from '@/redux/api/utils';
+import React, {PureComponent} from 'react';
+import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import AppIcon from './AppIcon';
-import LabelText from './LabelText';
+import AppText from './AppText';
 import InputNumber from './InputNumber';
+import LabelText from './LabelText';
 
 const styles = StyleSheet.create({
   container: {
@@ -96,9 +97,9 @@ export default class SimCard extends PureComponent {
         </TouchableOpacity>
 
         <View style={styles.desc}>
-          <Text style={styles.itemTitle}>{name}</Text>
+          <AppText style={styles.itemTitle}>{name}</AppText>
           <View style={styles.input}>
-            <Text style={styles.itemPrice}>{utils.price(price)}</Text>
+            <AppText style={styles.itemPrice}>{utils.price(price)}</AppText>
             <InputNumber value={qty} onChange={onChange} />
           </View>
           <LabelText

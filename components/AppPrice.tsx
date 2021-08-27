@@ -1,17 +1,11 @@
-import React, {memo} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  StyleProp,
-  ViewStyle,
-  TextStyle,
-} from 'react-native';
 import {appStyles} from '@/constants/Styles';
-import i18n from '@/utils/i18n';
-import utils from '@/redux/api/utils';
-import {Currency} from '@/redux/api/productApi';
 import Env from '@/environment';
+import {Currency} from '@/redux/api/productApi';
+import utils from '@/redux/api/utils';
+import i18n from '@/utils/i18n';
+import React, {memo} from 'react';
+import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from 'react-native';
+import AppText from './AppText';
 
 const {esimGlobal} = Env.get();
 
@@ -45,20 +39,20 @@ const AppPrice = ({
     <View style={style || styles.container}>
       {esimGlobal || i18n.locale !== 'ko'
         ? [
-            <Text key="won" style={[styles.won, currencyStyle]}>
+            <AppText key="won" style={[styles.won, currencyStyle]}>
               {`${i18n.t(price.currency)} `}
-            </Text>,
-            <Text key="balance" style={[styles.price, balanceStyle]}>
+            </AppText>,
+            <AppText key="balance" style={[styles.price, balanceStyle]}>
               {utils.currencyString(price.value)}
-            </Text>,
+            </AppText>,
           ]
         : [
-            <Text key="balance" style={[styles.price, balanceStyle]}>
+            <AppText key="balance" style={[styles.price, balanceStyle]}>
               {utils.currencyString(price.value)}
-            </Text>,
-            <Text key="won" style={[styles.won, currencyStyle]}>
+            </AppText>,
+            <AppText key="won" style={[styles.won, currencyStyle]}>
               {` ${i18n.t(price.currency)}`}
-            </Text>,
+            </AppText>,
           ]}
     </View>
   );

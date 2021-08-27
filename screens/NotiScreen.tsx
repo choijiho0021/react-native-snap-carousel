@@ -1,42 +1,42 @@
-import React, {Component, memo} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  RefreshControl,
-} from 'react-native';
-import {bindActionCreators} from 'redux';
-import Analytics from 'appcenter-analytics';
-import {connect} from 'react-redux';
-import i18n from '@/utils/i18n';
-import {appStyles} from '@/constants/Styles';
-import {colors} from '@/constants/Colors';
+import AppBackButton from '@/components/AppBackButton';
 import AppIcon from '@/components/AppIcon';
+import AppText from '@/components/AppText';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RootState} from '@/redux';
+import {RkbNoti} from '@/redux/api/notiApi';
+import {RkbInfo} from '@/redux/api/pageApi';
 import utils from '@/redux/api/utils';
 import {
-  actions as orderActions,
-  OrderAction,
-  OrderModelState,
-} from '@/redux/modules/order';
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
+import {actions as boardActions, BoardAction} from '@/redux/modules/board';
 import {
   actions as notiActions,
   NotiAction,
   NotiModelState,
 } from '@/redux/modules/noti';
-import {actions as boardActions, BoardAction} from '@/redux/modules/board';
 import {
-  AccountModelState,
-  actions as accountActions,
-} from '@/redux/modules/account';
-import AppBackButton from '@/components/AppBackButton';
-import {RootState} from '@/redux';
-import {RkbNoti} from '@/redux/api/notiApi';
-import {StackNavigationProp} from '@react-navigation/stack';
+  actions as orderActions,
+  OrderAction,
+  OrderModelState,
+} from '@/redux/modules/order';
+import i18n from '@/utils/i18n';
 import {RouteProp} from '@react-navigation/native';
-import {RkbInfo} from '@/redux/api/pageApi';
-import {HomeStackParamList} from '@/navigation/navigation';
+import {StackNavigationProp} from '@react-navigation/stack';
+import Analytics from 'appcenter-analytics';
+import React, {Component, memo} from 'react';
+import {
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 
 const styles = StyleSheet.create({
   container: {
@@ -117,17 +117,17 @@ const NotiListItem0 = ({
         ]}>
         <View key="notitext" style={styles.notiText}>
           <View style={styles.title}>
-            <Text key="titleText" style={styles.titleText}>
+            <AppText key="titleText" style={styles.titleText}>
               {item.title}
-            </Text>
+            </AppText>
           </View>
-          <Text
+          <AppText
             key="body"
             style={styles.body}
             numberOfLines={3}
             ellipsizeMode="tail">
             {utils.htmlToString(item.summary || item.body)}
-          </Text>
+          </AppText>
         </View>
         <View key="iconview" style={styles.icon}>
           <AppIcon key="icon" name="iconArrowRight" size={10} />
@@ -285,7 +285,7 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
           data={data}
           renderItem={this.renderItem}
           ListEmptyComponent={
-            <Text style={styles.emptyPage}>{i18n.t('noti:empty')}</Text>
+            <AppText style={styles.emptyPage}>{i18n.t('noti:empty')}</AppText>
           }
           refreshControl={
             <RefreshControl

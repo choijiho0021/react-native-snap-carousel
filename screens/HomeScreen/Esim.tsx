@@ -1,30 +1,24 @@
 /* eslint-disable no-param-reassign */
-import AsyncStorage from '@react-native-community/async-storage';
-import moment, {Moment} from 'moment';
-import React, {Component, memo} from 'react';
-import {
-  Appearance,
-  BackHandler,
-  ColorSchemeName,
-  Dimensions,
-  Platform,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import DeviceInfo from 'react-native-device-info';
-import RNExitApp from 'react-native-exit-app';
-import {TabView} from 'react-native-tab-view';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {RootState} from '@/redux';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
+import AppText from '@/components/AppText';
 import StoreList, {StoreListRef} from '@/components/StoreList';
 import withBadge from '@/components/withBadge';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
+import Env from '@/environment';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RootState} from '@/redux';
+import {API} from '@/redux/api';
+import {
+  ProductByCategory,
+  RkbProduct,
+  TabViewRoute,
+  TabViewRouteKey,
+} from '@/redux/api/productApi';
+import {RkbPromotion} from '@/redux/api/promotionApi';
+import createHandlePushNoti from '@/redux/models/createHandlePushNoti';
 import {
   AccountAction,
   AccountModelState,
@@ -37,24 +31,30 @@ import {
   ProductAction,
   ProductModelState,
 } from '@/redux/modules/product';
-import {API} from '@/redux/api';
-import createHandlePushNoti from '@/redux/models/createHandlePushNoti';
+import {SyncModelState} from '@/redux/modules/sync';
 import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
-import {RkbPromotion} from '@/redux/api/promotionApi';
-import {SyncModelState} from '@/redux/modules/sync';
-import {
-  ProductByCategory,
-  RkbProduct,
-  TabViewRoute,
-  TabViewRouteKey,
-} from '@/redux/api/productApi';
+import AsyncStorage from '@react-native-community/async-storage';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {HomeStackParamList} from '@/navigation/navigation';
-import Env from '@/environment';
-import PromotionCarousel from './component/PromotionCarousel';
+import moment, {Moment} from 'moment';
+import React, {Component, memo} from 'react';
+import {
+  Appearance,
+  BackHandler,
+  ColorSchemeName,
+  Dimensions,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  View,
+} from 'react-native';
+import DeviceInfo from 'react-native-device-info';
+import RNExitApp from 'react-native-exit-app';
+import {TabView} from 'react-native-tab-view';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import {checkFistLaunch, requestPermission} from './component/permission';
+import PromotionCarousel from './component/PromotionCarousel';
 
 const {esimGlobal} = Env.get();
 
@@ -352,22 +352,22 @@ class Esim extends Component<EsimProps, EsimState> {
     return (
       <View style={styles.modalBody}>
         <View style={{marginBottom: 10}}>
-          <Text style={appStyles.normal16Text}>
+          <AppText style={appStyles.normal16Text}>
             {i18n.t('home:unsupportedBody1')}
-            <Text style={styles.normal16BlueText}>
+            <AppText style={styles.normal16BlueText}>
               {i18n.t('home:unsupportedBody2')}
-            </Text>
-            <Text style={appStyles.normal16Text}>
+            </AppText>
+            <AppText style={appStyles.normal16Text}>
               {i18n.t('home:unsupportedBody3')}
-            </Text>
-          </Text>
+            </AppText>
+          </AppText>
         </View>
-        <Text style={appStyles.normal16Text}>
+        <AppText style={appStyles.normal16Text}>
           {i18n.t('home:unsupportedBody4')}
-        </Text>
-        <Text style={styles.supportDevTitle}>
+        </AppText>
+        <AppText style={styles.supportDevTitle}>
           {i18n.t('home:supportedDevice')}
-        </Text>
+        </AppText>
 
         <View
           style={{
@@ -375,10 +375,10 @@ class Esim extends Component<EsimProps, EsimState> {
             paddingVertical: 15,
             paddingHorizontal: 15,
           }}>
-          <Text style={[appStyles.normal16Text, {lineHeight: 24}]}>
+          <AppText style={[appStyles.normal16Text, {lineHeight: 24}]}>
             {deviceList && deviceList.join(', ')}
             {i18n.t('home:supportedDeviceBody')}
-          </Text>
+          </AppText>
         </View>
       </View>
     );
@@ -442,10 +442,10 @@ class Esim extends Component<EsimProps, EsimState> {
     navigation?.setOptions({
       title: null,
       headerLeft: () => (
-        <Text style={styles.title}>
+        <AppText style={styles.title}>
           {i18n.t('esim')}
           {esimGlobal ? ' Global' : ''}
-        </Text>
+        </AppText>
       ),
       headerRight: () => (
         <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>

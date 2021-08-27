@@ -1,13 +1,16 @@
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppButton from '@/components/AppButton';
+import AppColorText from '@/components/AppColorText';
 import AppIcon from '@/components/AppIcon';
 import AppModal from '@/components/AppModal';
 import AppModalForm from '@/components/AppModalForm';
+import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
+import {API} from '@/redux/api';
 import {
   AccountAction,
   AccountModelState,
@@ -23,7 +26,6 @@ import {
   Toast,
   ToastAction,
 } from '@/redux/modules/toast';
-import {API} from '@/redux/api';
 import i18n from '@/utils/i18n';
 import validationUtil, {ValidationResult} from '@/utils/validationUtil';
 import Clipboard from '@react-native-community/clipboard';
@@ -38,7 +40,6 @@ import {
   Pressable,
   RefreshControl,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 import {
@@ -50,7 +51,6 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import AppColorText from '@/components/AppColorText';
 import Info from './components/Info';
 import OrderItem from './components/OrderItem';
 
@@ -197,7 +197,9 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
 
     navigation.setOptions({
       title: null,
-      headerLeft: () => <Text style={styles.title}>{i18n.t('acc:title')}</Text>,
+      headerLeft: () => (
+        <AppText style={styles.title}>{i18n.t('acc:title')}</AppText>
+      ),
       headerRight: () => (
         <AppButton
           key="cnter"
@@ -353,8 +355,8 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
         />
         <View style={styles.titleAndStatus}>
           <View style={{flex: 9}}>
-            <Text style={styles.keyTitle}>{i18n.t('mypage:iccid')}</Text>
-            <Text style={appStyles.normal18Text}>{iccid}</Text>
+            <AppText style={styles.keyTitle}>{i18n.t('mypage:iccid')}</AppText>
+            <AppText style={appStyles.normal18Text}>{iccid}</AppText>
           </View>
           <AppButton
             title={i18n.t('copy')}
@@ -374,10 +376,10 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
         </View>
         <View style={styles.titleAndStatus}>
           <View style={{flex: 9}}>
-            <Text style={styles.keyTitle}>
+            <AppText style={styles.keyTitle}>
               {i18n.t('mypage:activationCode')}
-            </Text>
-            <Text style={appStyles.normal18Text}>{pin}</Text>
+            </AppText>
+            <AppText style={appStyles.normal18Text}>{pin}</AppText>
           </View>
           <AppButton
             title={i18n.t('copy')}
@@ -400,12 +402,13 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
           // onPress={() => this.openRokebiTalk} // 로깨비톡으로 이동 X
         >
           <View>
-            <Text style={[styles.openRokebiTalkText, {color: colors.warmGrey}]}>
+            <AppText
+              style={[styles.openRokebiTalkText, {color: colors.warmGrey}]}>
               {i18n.t('mypage:openRokebiTalk')}
-            </Text>
-            <Text style={[styles.openRokebiTalkText, {fontWeight: 'bold'}]}>
+            </AppText>
+            <AppText style={[styles.openRokebiTalkText, {fontWeight: 'bold'}]}>
               {i18n.t('mypage:preparing')}
-            </Text>
+            </AppText>
           </View>
           <AppIcon name="imgDokebi2" style={{marginRight: 20}} />
         </Pressable>
@@ -533,7 +536,7 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
   empty() {
     if (this.props.pending) return null;
 
-    return <Text style={styles.nolist}>{i18n.t('his:noPurchase')}</Text>;
+    return <AppText style={styles.nolist}>{i18n.t('his:noPurchase')}</AppText>;
   }
 
   renderOrder({item}: {item: number}) {

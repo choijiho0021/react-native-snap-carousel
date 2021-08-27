@@ -1,5 +1,6 @@
 import React, {memo} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {StyleSheet, View} from 'react-native';
+import AppText from './AppText';
 
 const styles = StyleSheet.create({
   container: {
@@ -27,7 +28,7 @@ function Loading() {
   return (
     <View style={container}>
       <View style={contents}>
-        <Text style={text}>잠시만 기다려주세요...</Text>
+        <AppText style={text}>잠시만 기다려주세요...</AppText>
       </View>
     </View>
   );

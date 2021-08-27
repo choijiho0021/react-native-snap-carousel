@@ -1,4 +1,5 @@
 import AppButton from '@/components/AppButton';
+import AppText from '@/components/AppText';
 import Profile from '@/components/Profile';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -9,7 +10,7 @@ import i18n from '@/utils/i18n';
 import {useNavigation} from '@react-navigation/native';
 import {RootState} from '@reduxjs/toolkit';
 import React, {memo} from 'react';
-import {ImageBackground, Pressable, StyleSheet, Text, View} from 'react-native';
+import {ImageBackground, Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 
 const {esimApp, esimCurrency} = Env.get();
@@ -107,12 +108,12 @@ const Info: React.FC<InfoProps> = ({
             style={styles.image}>
             <View style={styles.rechargeText}>
               <View style={{flexDirection: 'column', flex: 9}}>
-                <Text style={[appStyles.normal14Text, {marginBottom: 10}]}>
+                <AppText style={[appStyles.normal14Text, {marginBottom: 10}]}>
                   {i18n.t('acc:remain')}
-                </Text>
-                <Text style={appStyles.bold30Text}>
+                </AppText>
+                <AppText style={appStyles.bold30Text}>
                   {utils.price(utils.toCurrency(balance || 0, esimCurrency))}
-                </Text>
+                </AppText>
               </View>
               <AppButton
                 title={i18n.t('acc:goRecharge')}
@@ -128,22 +129,22 @@ const Info: React.FC<InfoProps> = ({
       <View style={{flexDirection: 'row', justifyContent: 'center'}}>
         {esimApp && (
           <Pressable style={styles.btnIdCheck} onPress={() => onPress('id')}>
-            <Text style={[appStyles.normal16Text, {textAlign: 'center'}]}>
+            <AppText style={[appStyles.normal16Text, {textAlign: 'center'}]}>
               {/* {i18n.t('mypage:idCheckTitle')} */}
               {i18n.t('contact:faq')}
-            </Text>
+            </AppText>
           </Pressable>
         )}
         <Pressable
           style={styles.btnContactBoard}
           onPress={() => navigation.navigate('ContactBoard', {index: 1})}>
-          <Text style={[appStyles.normal16Text, {textAlign: 'center'}]}>
+          <AppText style={[appStyles.normal16Text, {textAlign: 'center'}]}>
             {i18n.t('board:mylist')}
-          </Text>
+          </AppText>
         </Pressable>
       </View>
       <View style={styles.divider} />
-      <Text style={styles.subTitle}>{i18n.t('acc:purchaseHistory')}</Text>
+      <AppText style={styles.subTitle}>{i18n.t('acc:purchaseHistory')}</AppText>
       <View style={styles.dividerSmall} />
     </View>
   );

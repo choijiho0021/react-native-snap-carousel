@@ -1,45 +1,46 @@
-import React, {Component} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  SafeAreaView,
-  findNodeHandle,
-  TouchableOpacity,
-  Pressable,
-  Keyboard,
-  Platform,
-} from 'react-native';
-import {connect} from 'react-redux';
-import _ from 'underscore';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {bindActionCreators} from 'redux';
-import {openSettings, check, PERMISSIONS} from 'react-native-permissions';
-import Analytics from 'appcenter-analytics';
-import {API} from '@/redux/api';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppAlert from '@/components/AppAlert';
+import AppBackButton from '@/components/AppBackButton';
+import AppButton from '@/components/AppButton';
+import AppText from '@/components/AppText';
+import AppTextInput from '@/components/AppTextInput';
+import BackbuttonHandler from '@/components/BackbuttonHandler';
+import ScanSim from '@/components/ScanSim';
+import {colors} from '@/constants/Colors';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
+import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
-import i18n from '@/utils/i18n';
-import {actions as simActions, SimAction} from '@/redux/modules/sim';
+import {API} from '@/redux/api';
 import {
   AccountAction,
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
-import ScanSim from '@/components/ScanSim';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
-import AppButton from '@/components/AppButton';
-import AppAlert from '@/components/AppAlert';
-import AppBackButton from '@/components/AppBackButton';
-import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
-import BackbuttonHandler from '@/components/BackbuttonHandler';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {HomeStackParamList} from '@/navigation/navigation';
+import {actions as simActions, SimAction} from '@/redux/modules/sim';
+import i18n from '@/utils/i18n';
 import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import Analytics from 'appcenter-analytics';
+import React, {Component} from 'react';
+import {
+  findNodeHandle,
+  Keyboard,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {BarCodeReadEvent} from 'react-native-camera';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {check, openSettings, PERMISSIONS} from 'react-native-permissions';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 
 const styles = StyleSheet.create({
   actCodeTitle: {
@@ -321,7 +322,7 @@ class RegisterSimScreen extends Component<
       .map((elm, idx) => {
         if (elm === '-') {
           return idx + 1 === _.size(iccid) * 2 ? null : (
-            <Text
+            <AppText
               key={`${idx}`}
               style={[
                 styles.delimiter,
@@ -330,12 +331,12 @@ class RegisterSimScreen extends Component<
                 },
               ]}>
               -
-            </Text>
+            </AppText>
           );
         }
 
         return (
-          <TextInput
+          <AppTextInput
             style={styles.input}
             key={`${idx}`}
             ref={this.inputIccid[idx / 2]}
@@ -401,12 +402,12 @@ class RegisterSimScreen extends Component<
             />
           </Pressable>
 
-          <Text style={styles.title}>{i18n.t('reg:inputIccid')}</Text>
+          <AppText style={styles.title}>{i18n.t('reg:inputIccid')}</AppText>
           <TouchableOpacity
             onPress={() => this.inputIccid[iccidIdx]?.current?.focus()}
             activeOpacity={1.0}
             style={styles.iccidBox}>
-            <Text style={styles.iccid}>ICCID</Text>
+            <AppText style={styles.iccid}>ICCID</AppText>
             <View style={styles.inputBox}>{this.renderIccid()}</View>
           </TouchableOpacity>
 
@@ -421,8 +422,10 @@ class RegisterSimScreen extends Component<
 
           <View style={styles.actCodeBox}>
             <View style={styles.actCode}>
-              <Text style={styles.actCodeTitle}>{i18n.t('reg:actCode')}</Text>
-              <TextInput
+              <AppText style={styles.actCodeTitle}>
+                {i18n.t('reg:actCode')}
+              </AppText>
+              <AppTextInput
                 style={styles.actCodeInput}
                 onChangeText={this.onChangeActCode}
                 keyboardType="numeric"

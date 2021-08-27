@@ -1,21 +1,22 @@
-import React, {Component} from 'react';
-import {StyleSheet, Text, View, SafeAreaView} from 'react-native';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {actions as productActions} from '@/redux/modules/product';
-import {actions as accountActions} from '@/redux/modules/account';
-import {actions as orderActions} from '@/redux/modules/order';
-import {appStyles} from '@/constants/Styles';
-import i18n from '@/utils/i18n';
-import utils from '@/redux/api/utils';
-import AppBackButton from '@/components/AppBackButton';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import {colors} from '@/constants/Colors';
-import LabelText from '@/components/LabelText';
+import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
-import subsApi from '@/redux/api/subscriptionApi';
+import AppText from '@/components/AppText';
+import LabelText from '@/components/LabelText';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
+import subsApi from '@/redux/api/subscriptionApi';
+import utils from '@/redux/api/utils';
+import {actions as accountActions} from '@/redux/modules/account';
+import {actions as orderActions} from '@/redux/modules/order';
+import {actions as productActions} from '@/redux/modules/product';
+import i18n from '@/utils/i18n';
+import React, {Component} from 'react';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 
 const activateBtn = 'activateBtn';
 const deactivateBtn = 'deactivateBtn';
@@ -161,8 +162,8 @@ class SubsDetailScreen extends Component {
 
     return (
       <View style={styles.container}>
-        <Text style={styles.notice}>{i18n.t('his:timeStd')}</Text>
-        <Text style={styles.title}>{prodName}</Text>
+        <AppText style={styles.notice}>{i18n.t('his:timeStd')}</AppText>
+        <AppText style={styles.title}>{prodName}</AppText>
         <View style={styles.divider} />
 
         <LabelText

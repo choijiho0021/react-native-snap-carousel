@@ -1,8 +1,9 @@
 import React, {memo} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import Flag from 'react-native-flags';
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
+import AppText from './AppText';
 import InputNumber from './InputNumber';
 
 const styles = StyleSheet.create({
@@ -43,16 +44,16 @@ function RoamingProduct({item, startDate, qty, onChange}) {
   return (
     <View style={[appStyles.container, {borderBottomWidth: 0.5}]}>
       <View style={styles.itemRow}>
-        <Text style={styles.itemTitle}>{item.name}</Text>
-        <Text style={styles.itemValue}>{`${i18n.t('sim:price')}: ${utils.price(
-          item.price,
-        )}`}</Text>
+        <AppText style={styles.itemTitle}>{item.name}</AppText>
+        <AppText style={styles.itemValue}>{`${i18n.t(
+          'sim:price',
+        )}: ${utils.price(item.price)}`}</AppText>
       </View>
       <View style={styles.itemRow}>
         <Flag style={styles.flag} code={item.ccode} size={48} />
-        <Text style={styles.desc}>{`${i18n.t(
+        <AppText style={styles.desc}>{`${i18n.t(
           'store:startDate',
-        )} : ${startDate}`}</Text>
+        )} : ${startDate}`}</AppText>
         <View style={[styles.itemValue, {alignItems: 'flex-end'}]}>
           <InputNumber
             value={qty}

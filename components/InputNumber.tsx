@@ -1,9 +1,10 @@
-import React, {memo} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import Icon from 'react-native-vector-icons/AntDesign';
-import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
+import React, {memo} from 'react';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import Icon from 'react-native-vector-icons/AntDesign';
+import AppText from './AppText';
 
 const styles = StyleSheet.create({
   container: {
@@ -70,7 +71,7 @@ const InputNumber = ({
         </View>
       </TouchableOpacity>
       <View style={styles.boxCenter}>
-        <Text style={styles.text}>{value}</Text>
+        <AppText style={styles.text}>{value}</AppText>
       </View>
       <TouchableOpacity onPress={() => onChange(value + 1)} disabled={max}>
         <View style={styles.box}>

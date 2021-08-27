@@ -1,20 +1,20 @@
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import {RootState} from '@/redux';
+import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
+import i18n from '@/utils/i18n';
 import React, {PureComponent} from 'react';
 import {
   Animated,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
   Easing,
+  StyleSheet,
+  TouchableOpacity,
   ViewStyle,
 } from 'react-native';
-import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import {RootState} from '@/redux';
-import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
-import {appStyles} from '@/constants/Styles';
-import {colors} from '@/constants/Colors';
-import i18n from '@/utils/i18n';
+import AppText from './AppText';
 
 const styles = StyleSheet.create({
   container: {
@@ -165,7 +165,7 @@ class AppToast extends PureComponent<AppToastProps, AppToastState> {
         activeOpacity={0.5}
         onPress={this.onPress}>
         <Animated.View style={[styles.content]}>
-          <Text style={[styles.text]}> {text} </Text>
+          <AppText style={[styles.text]}> {text} </AppText>
         </Animated.View>
       </TouchableOpacity>
     ) : null;

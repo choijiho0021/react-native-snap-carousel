@@ -1,28 +1,27 @@
+import Address from '@/components/Address';
+import AppBackButton from '@/components/AppBackButton';
+import AppButton from '@/components/AppButton';
+import AppIcon from '@/components/AppIcon';
+import AppText from '@/components/AppText';
+import {colors} from '@/constants/Colors';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
+import {API} from '@/redux/api';
+import {actions as profileActions} from '@/redux/modules/profile';
+import i18n from '@/utils/i18n';
 import React, {Component, memo} from 'react';
 import {
   Platform,
-  StyleSheet,
-  Text,
-  View,
   SafeAreaView,
+  StyleSheet,
   TouchableOpacity,
+  View,
 } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
+import Icon from 'react-native-vector-icons/Ionicons';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import i18n from '@/utils/i18n';
-import {actions as profileActions} from '@/redux/modules/profile';
-import {TextField} from 'react-native-material-textfield';
-import Icon from 'react-native-vector-icons/Ionicons';
-import AppButton from '@/components/AppButton';
-import {FlatList} from 'react-native-gesture-handler';
-import Address from '@/components/Address';
 import _ from 'underscore';
-import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
-import AppBackButton from '@/components/AppBackButton';
-import AppIcon from '@/components/AppIcon';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
-import {API} from '@/redux/api';
 
 const styles = StyleSheet.create({
   container: {
@@ -202,8 +201,10 @@ class FindAddressScreen extends Component {
           onPress={this._findAddr(Math.max(1, Number(currentPage) - 1))}>
           <AppIcon name="iconArrowLeftWhite" style={styles.paginationButton} />
         </TouchableOpacity>
-        <Text
-          style={styles.paginationText}>{`${currentPage} / ${totalPage}`}</Text>
+        <AppText
+          style={
+            styles.paginationText
+          }>{`${currentPage} / ${totalPage}`}</AppText>
         <TouchableOpacity
           style={[styles.paginationBox, maxDisabled && styles.disabledButton]}
           disabled={maxDisabled}
@@ -230,7 +231,7 @@ class FindAddressScreen extends Component {
         <View style={{flex: 1, justifyContent: 'space-between'}}>
           <View style={styles.modal}>
             <View style={styles.textFieldBox}>
-              <TextField
+              <AppTextField
                 containerStyle={styles.field}
                 inputContainerStyle={{paddingTop: 5, height: 55}}
                 style={{fontSize: 14, width: '80%'}}
@@ -261,18 +262,18 @@ class FindAddressScreen extends Component {
               />
             ) : (
               <View style={styles.mrgLeft40Top20}>
-                <Text style={(styles.searchEx, styles.boldText16)}>
+                <AppText style={(styles.searchEx, styles.boldText16)}>
                   {i18n.t('purchase:searchEx')}
-                </Text>
-                <Text style={styles.searchEx}>
+                </AppText>
+                <AppText style={styles.searchEx}>
                   {i18n.t('purchase:roadBuildingNo')}
-                </Text>
-                <Text style={styles.searchEx}>
+                </AppText>
+                <AppText style={styles.searchEx}>
                   {i18n.t('purchase:areaBunji')}
-                </Text>
-                <Text style={styles.searchEx}>
+                </AppText>
+                <AppText style={styles.searchEx}>
                   {i18n.t('purchase:areaBuilding')}
-                </Text>
+                </AppText>
               </View>
             )}
             {!_.isEmpty(data) && this._renderPagination()}

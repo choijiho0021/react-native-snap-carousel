@@ -36,27 +36,49 @@ type WithBadgeOption = {
   hidden?: boolean;
 };
 
-const withBadge = (
-  stateToProps: (v: RootState) => object,
-  key: string,
-  options?: WithBadgeOption,
-) => (WrappedComponent: React.ReactNode) => {
-  const badge = (props) => {
-    const {top, left, right, bottom} = styles.location;
-    const badgeValue = props[key];
-    const {hidden = !badgeValue} = options || {};
+const withBadge =
+  (
+    stateToProps: (v: RootState) => object,
+    key: string,
+    options?: WithBadgeOption,
+  ) =>
+  (WrappedComponent: React.ReactNode) => {
+    const badge = (props) => {
+      const {top, left, right, bottom} = styles.location;
+      const badgeValue = props[key];
+      const {hidden = !badgeValue} = options || {};
 
-    return props.onPress ? (
-      <TouchableOpacity onPress={props.onPress}>
+      return props.onPress ? (
+        <TouchableOpacity onPress={props.onPress}>
+          <View>
+            <WrappedComponent {...props} />
+            {!hidden && (
+              <Badge
+                textProps={{allowFontScaling: false}}
+                badgeStyle={styles.badge}
+                textStyle={styles.badgeText}
+                value={badgeValue}
+                status="error"
+                // onPress={this.props.onPress}
+                containerStyle={[
+                  styles.badgeContainer,
+                  {top, right, left, bottom},
+                ]}
+              />
+            )}
+          </View>
+        </TouchableOpacity>
+      ) : (
         <View>
           <WrappedComponent {...props} />
           {!hidden && (
             <Badge
+              textProps={{allowFontScaling: false}}
               badgeStyle={styles.badge}
               textStyle={styles.badgeText}
               value={badgeValue}
               status="error"
-              // onPress={this.props.onPress}
+              onPress={props.onPress}
               containerStyle={[
                 styles.badgeContainer,
                 {top, right, left, bottom},
@@ -64,25 +86,10 @@ const withBadge = (
             />
           )}
         </View>
-      </TouchableOpacity>
-    ) : (
-      <View>
-        <WrappedComponent {...props} />
-        {!hidden && (
-          <Badge
-            badgeStyle={styles.badge}
-            textStyle={styles.badgeText}
-            value={badgeValue}
-            status="error"
-            onPress={props.onPress}
-            containerStyle={[styles.badgeContainer, {top, right, left, bottom}]}
-          />
-        )}
-      </View>
-    );
-  };
+      );
+    };
 
-  return connect(stateToProps)(badge);
-};
+    return connect(stateToProps)(badge);
+  };
 
 export default withBadge;

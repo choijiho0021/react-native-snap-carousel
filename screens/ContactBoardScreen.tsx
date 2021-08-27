@@ -13,6 +13,7 @@ import {appStyles} from '@/constants/Styles';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RouteProp} from '@react-navigation/native';
+import {Utils} from '@/redux/api';
 
 const styles = StyleSheet.create({
   container: {
@@ -41,6 +42,7 @@ type ContactBoardScreenState = {
   index: number;
   routes: TabRoute[];
   link?: string;
+  fontSize?: number;
 };
 class ContactBoardScreen extends Component<
   ContactBoardScreenProps,
@@ -66,6 +68,12 @@ class ContactBoardScreen extends Component<
       title: null,
       headerLeft: () => <AppBackButton title={i18n.t('board:title')} />,
     });
+
+    Utils.fontScaling(16).then((v) =>
+      this.setState({
+        fontSize: v,
+      }),
+    );
   }
 
   renderScene = ({
@@ -98,12 +106,12 @@ class ContactBoardScreen extends Component<
       <TabBar
         {...props}
         tabStyle={{backgroundColor: colors.gray}}
+        labelStyle={[appStyles.normal16Text, {fontSize: this.state.fontSize}]}
         indicatorStyle={{
           borderBottomColor: colors.clearBlue,
           borderBottomWidth: 2,
         }}
         style={{paddingBottom: 2, backgroundColor: colors.white}}
-        labelStyle={appStyles.normal16Text}
       />
     );
   };

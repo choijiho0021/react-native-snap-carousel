@@ -1,35 +1,28 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {
-  StyleSheet,
-  View,
-  Text,
-  ScrollView,
-  SafeAreaView,
-  Image,
-} from 'react-native';
-
-import _ from 'underscore';
-import {bindActionCreators} from 'redux';
-import {API} from '@/redux/api';
-import i18n from '@/utils/i18n';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
+import AppButton from '@/components/AppButton';
+import AppIcon from '@/components/AppIcon';
+import AppText from '@/components/AppText';
+import {colors} from '@/constants/Colors';
+import {attachmentSize, windowWidth} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RootState} from '@/redux';
+import {API} from '@/redux/api';
+import utils from '@/redux/api/utils';
 import {
   actions as boardActions,
   BoardAction,
   BoardModelState,
 } from '@/redux/modules/board';
-import {appStyles} from '@/constants/Styles';
-import {colors} from '@/constants/Colors';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
-import AppIcon from '@/components/AppIcon';
-import utils from '@/redux/api/utils';
-import {attachmentSize, windowWidth} from '@/constants/SliderEntry.style';
-import AppButton from '@/components/AppButton';
-import {RootState} from '@/redux';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {HomeStackParamList} from '@/navigation/navigation';
+import i18n from '@/utils/i18n';
 import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import React, {Component} from 'react';
+import {Image, SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import {AccountModelState} from '../redux/modules/account';
 
 const styles = StyleSheet.create({
@@ -167,12 +160,13 @@ class BoardMsgRespScreen extends Component<
       <SafeAreaView style={styles.container}>
         <ScrollView style={styles.container}>
           <View style={{flex: 1}}>
-            <Text style={[styles.inputBox, {marginTop: 30}]}>
+            <AppText style={[styles.inputBox, {marginTop: 30}]}>
               {issue?.title}
-            </Text>
-            <Text style={[styles.inputBox, {marginTop: 15, paddingBottom: 72}]}>
+            </AppText>
+            <AppText
+              style={[styles.inputBox, {marginTop: 15, paddingBottom: 72}]}>
               {utils.htmlToString(issue?.msg)}
-            </Text>
+            </AppText>
             <View style={styles.attachBox}>
               {issue?.images
                 ?.filter((item) => !_.isEmpty(item))
@@ -192,8 +186,10 @@ class BoardMsgRespScreen extends Component<
                   style={{justifyContent: 'flex-start'}}
                 />
                 <View style={{marginLeft: 10, marginRight: 30}}>
-                  <Text style={styles.replyTitle}>{i18n.t('board:resp')}</Text>
-                  <Text style={styles.reply}>{resp.body}</Text>
+                  <AppText style={styles.replyTitle}>
+                    {i18n.t('board:resp')}
+                  </AppText>
+                  <AppText style={styles.reply}>{resp.body}</AppText>
                 </View>
               </View>
             )}

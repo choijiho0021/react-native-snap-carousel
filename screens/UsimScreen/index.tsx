@@ -1,33 +1,34 @@
-import React, {Component} from 'react';
-import {StyleSheet, View, Text, FlatList, RefreshControl} from 'react-native';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import i18n from '@/utils/i18n';
-import {appStyles} from '@/constants/Styles';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppSnackBar from '@/components/AppSnackBar';
+import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
-import {actions as simActions} from '@/redux/modules/sim';
+import {appStyles} from '@/constants/Styles';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RootState} from '@/redux';
+import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {
   AccountAction,
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
-import {actions as notiActions} from '@/redux/modules/noti';
-import {actions as infoActions} from '@/redux/modules/info';
 import {actions as cartActions} from '@/redux/modules/cart';
+import {actions as infoActions} from '@/redux/modules/info';
+import {actions as notiActions} from '@/redux/modules/noti';
 import {
   actions as orderActions,
   OrderAction,
   OrderModelState,
 } from '@/redux/modules/order';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
-import {RootState} from '@/redux';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {HomeStackParamList} from '@/navigation/navigation';
+import {actions as simActions} from '@/redux/modules/sim';
+import i18n from '@/utils/i18n';
 import {RouteProp} from '@react-navigation/native';
-import {RkbSubscription} from '@/redux/api/subscriptionApi';
-import AppSnackBar from '@/components/AppSnackBar';
-import UsimCardInfo from './components/UsimCardInfo';
+import {StackNavigationProp} from '@react-navigation/stack';
+import React, {Component} from 'react';
+import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import UsageItem from './components/UsageItem';
+import UsimCardInfo from './components/UsimCardInfo';
 
 const styles = StyleSheet.create({
   container: {flex: 1},
@@ -86,7 +87,9 @@ class UsimScreen extends Component<UsimScreenProps, UsimScreenState> {
 
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => <Text style={styles.title}>{i18n.t('usim')}</Text>,
+      headerLeft: () => (
+        <AppText style={styles.title}>{i18n.t('usim')}</AppText>
+      ),
     });
   }
 
@@ -123,7 +126,7 @@ class UsimScreen extends Component<UsimScreenProps, UsimScreenState> {
 
   empty = () => {
     return this.props.pending ? null : (
-      <Text style={styles.nolist}>{i18n.t('his:noUsage')}</Text>
+      <AppText style={styles.nolist}>{i18n.t('his:noUsage')}</AppText>
     );
   };
 

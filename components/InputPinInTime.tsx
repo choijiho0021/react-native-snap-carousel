@@ -1,17 +1,18 @@
 import React, {Component} from 'react';
 import {
   StyleSheet,
-  View,
   TextInput,
-  Text,
   TouchableOpacity,
+  View,
   ViewStyle,
 } from 'react-native';
 import _ from 'underscore';
-import i18n from '../utils/i18n';
-import AppButton from './AppButton';
 import {colors} from '../constants/Colors';
 import {appStyles} from '../constants/Styles';
+import i18n from '../utils/i18n';
+import AppButton from './AppButton';
+import AppText from './AppText';
+import AppTextInput from './AppTextInput';
 
 const styles = StyleSheet.create({
   container: {
@@ -201,7 +202,7 @@ class InputPinInTime extends Component<
             ]}
             onPress={this.onClick}
             activeOpacity={1}>
-            <TextInput
+            <AppTextInput
               {...this.props}
               placeholder={i18n.t('mobile:auth')}
               placeholderTextColor={colors.greyish}
@@ -221,12 +222,12 @@ class InputPinInTime extends Component<
             />
 
             {countdown ? (
-              <Text style={styles.timer}>
+              <AppText style={styles.timer}>
                 {' '}
                 {min > 0 ? min + i18n.t('min') : ''}{' '}
                 {sec.toString().padStart(2, '0')}
                 {i18n.t('sec')}{' '}
-              </Text>
+              </AppText>
             ) : null}
           </TouchableOpacity>
           <AppButton
@@ -238,7 +239,7 @@ class InputPinInTime extends Component<
           />
         </View>
         <View style={styles.helpBox}>
-          <Text
+          <AppText
             style={[
               styles.helpText,
               {color: authorized ? colors.clearBlue : colors.tomato},
@@ -253,11 +254,11 @@ class InputPinInTime extends Component<
                     ? 'mobile:authMatch'
                     : 'mobile:authMismatch',
                 )}
-          </Text>
+          </AppText>
           {authorized ? null : (
-            <Text style={[styles.helpText, {color: colors.warmGrey}]}>
+            <AppText style={[styles.helpText, {color: colors.warmGrey}]}>
               {i18n.t('mobile:inputInTime')}
-            </Text>
+            </AppText>
           )}
         </View>
       </View>

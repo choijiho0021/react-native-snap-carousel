@@ -1,19 +1,20 @@
-import React, {Component, memo} from 'react';
-import {FlatList, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import {connect} from 'react-redux';
-import _ from 'underscore';
-import {bindActionCreators} from 'redux';
-import {API} from '@/redux/api';
-import {RootState} from '@/redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
+import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
+import {RootState} from '@/redux';
+import {API} from '@/redux/api';
 import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
+import React, {Component, memo} from 'react';
+import {FlatList, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 
 const styles = StyleSheet.create({
   container: {
@@ -74,20 +75,20 @@ const PymHistoryListItem0 = ({item, onPressItem}) => {
     <View style={styles.container} key={item.key}>
       <TouchableOpacity onPress={onPressItem(item.key)}>
         <View style={styles.itemRow} key="date">
-          <Text style={styles.date} key="date">
+          <AppText style={styles.date} key="date">
             {dt}
-          </Text>
-          <Text style={styles.amount} key="detail">
+          </AppText>
+          <AppText style={styles.amount} key="detail">
             {i18n.t('his:detail')}
-          </Text>
+          </AppText>
         </View>
         <View style={styles.itemRow} key="payment">
-          <Text style={styles.date} key="prod">
+          <AppText style={styles.date} key="prod">
             {prod}
-          </Text>
-          <Text style={styles.amount} key="amount">
+          </AppText>
+          <AppText style={styles.amount} key="amount">
             {amt}
-          </Text>
+          </AppText>
         </View>
       </TouchableOpacity>
     </View>

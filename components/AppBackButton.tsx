@@ -1,9 +1,10 @@
-import React, {memo, useCallback} from 'react';
-import {Image, View, Text, Pressable} from 'react-native';
-import {connect} from 'react-redux';
 import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
 import {useNavigation} from '@react-navigation/native';
+import React, {memo, useCallback} from 'react';
+import {Image, Pressable, View} from 'react-native';
+import {connect} from 'react-redux';
+import AppText from './AppText';
 
 const AppBackButton = ({
   title,
@@ -48,7 +49,9 @@ const AppBackButton = ({
         ) : (
           <View style={{marginLeft: 15}} />
         )}
-        <Text style={[appStyles.subTitle, {marginLeft: 16}]}>{title}</Text>
+        <AppText style={[appStyles.subTitle, {marginLeft: 16}]}>
+          {title}
+        </AppText>
       </View>
     </Pressable>
   );

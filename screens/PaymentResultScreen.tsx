@@ -1,8 +1,14 @@
 import AppButton from '@/components/AppButton';
+import AppText from '@/components/AppText';
 import PaymentItemInfo from '@/components/PaymentItemInfo';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
+import Env from '@/environment';
+import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
+import {Currency} from '@/redux/api/productApi';
+import utils from '@/redux/api/utils';
+import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {AccountModelState} from '@/redux/modules/account';
 import {
   actions as cartActions,
@@ -12,8 +18,9 @@ import {
 } from '@/redux/modules/cart';
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
-import utils from '@/redux/api/utils';
 import i18n from '@/utils/i18n';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {Component} from 'react';
 import {
@@ -23,18 +30,11 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {HomeStackParamList} from '@/navigation/navigation';
-import {RouteProp} from '@react-navigation/native';
-import {PurchaseItem} from '@/redux/models/purchaseItem';
-import {Currency} from '@/redux/api/productApi';
-import Env from '@/environment';
 
 const {esimCurrency} = Env.get();
 const imgCheck = require('../assets/images/main/imgCheck.png');
@@ -156,7 +156,7 @@ class PaymentResultScreen extends Component<
     this.props.navigation.setOptions({
       title: null,
       headerLeft: () => (
-        <Text style={styles.title}>{i18n.t('his:paymentCompleted')}</Text>
+        <AppText style={styles.title}>{i18n.t('his:paymentCompleted')}</AppText>
       ),
     });
 
@@ -241,9 +241,9 @@ class PaymentResultScreen extends Component<
               source={imgCheck}
               resizeMode="contain"
             />
-            <Text style={styles.paymentResultText}>
+            <AppText style={styles.paymentResultText}>
               {` ${i18n.t(isSuccess ? 'pym:success' : 'pym:fail')}`}
-            </Text>
+            </AppText>
             <AppButton
               style={styles.btnOrderList}
               // MyPage화면 이동 필요
@@ -269,12 +269,12 @@ class PaymentResultScreen extends Component<
             />
             {screen === 'PaymentResult' && (
               <View style={styles.result}>
-                <Text style={[appStyles.normal16Text, {flex: 1}]}>
+                <AppText style={[appStyles.normal16Text, {flex: 1}]}>
                   {i18n.t('cart:afterDeductBalance')}
-                </Text>
-                <Text style={appStyles.normal16Text}>
+                </AppText>
+                <AppText style={appStyles.normal16Text}>
                   {utils.price(utils.toCurrency(balance, esimCurrency))}
-                </Text>
+                </AppText>
               </View>
             )}
           </View>

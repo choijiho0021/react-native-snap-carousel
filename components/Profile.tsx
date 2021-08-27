@@ -1,14 +1,15 @@
-import utils from '@/redux/api/utils';
-import React, {memo} from 'react';
-import {Pressable, StyleSheet, Text, View} from 'react-native';
+import AppIcon from '@/components/AppIcon';
 import AppUserPic from '@/components/AppUserPic';
 import LabelTextTouchable from '@/components/LabelTextTouchable';
-import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
-import {connect} from 'react-redux';
-import {RootState} from '@reduxjs/toolkit';
+import {appStyles} from '@/constants/Styles';
+import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
-import AppIcon from '@/components/AppIcon';
+import {RootState} from '@reduxjs/toolkit';
+import React, {memo} from 'react';
+import {Pressable, StyleSheet, View} from 'react-native';
+import {connect} from 'react-redux';
+import AppText from './AppText';
 
 const styles = StyleSheet.create({
   container: {
@@ -84,9 +85,9 @@ const Profile: React.FC<ProfileProps> = ({
         <AppIcon name="imgPeoplePlus" style={styles.icon} />
       </Pressable>
       <View style={{flex: 3, justifyContent: 'center'}}>
-        <Text style={styles.label}>
+        <AppText style={styles.label}>
           {utils.toPhoneNumber(mobile || accountMobile)}
-        </Text>
+        </AppText>
         <LabelTextTouchable
           key="email"
           label={email || accountEmail || ''}

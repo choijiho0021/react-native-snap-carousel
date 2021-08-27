@@ -1,11 +1,12 @@
-import React, {memo} from 'react';
-import {StyleSheet, Text, View, Image} from 'react-native';
-import {BarCodeReadEvent, RNCamera} from 'react-native-camera';
-import BarcodeMask from 'react-native-barcode-mask';
-import i18n from '@/utils/i18n';
-import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
 import {windowWidth} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
+import React, {memo} from 'react';
+import {Image, StyleSheet, View} from 'react-native';
+import BarcodeMask from 'react-native-barcode-mask';
+import {BarCodeReadEvent, RNCamera} from 'react-native-camera';
+import AppText from './AppText';
 
 const styles = StyleSheet.create({
   image: {
@@ -53,7 +54,7 @@ const ScanSim = ({
           source={require('../assets/images/main/imgCard.png')}
           resizeMode="stretch"
         />
-        <Text style={styles.boxTitle}>{i18n.t('reg:cardScan')}</Text>
+        <AppText style={styles.boxTitle}>{i18n.t('reg:cardScan')}</AppText>
       </View>
     );
   }
@@ -71,12 +72,12 @@ const ScanSim = ({
           source={require('../assets/images/main/imgCard.png')}
           resizeMode="stretch"
         />
-        <Text style={styles.boxTitle}>{i18n.t('reg:noPerm')}</Text>
+        <AppText style={styles.boxTitle}>{i18n.t('reg:noPerm')}</AppText>
       </View>
     );
   }
 
-  //const flashMode = flashOn ? Camera.Constants.FlashMode.torch : Camera.Constants.FlashMode.off
+  // const flashMode = flashOn ? Camera.Constants.FlashMode.torch : Camera.Constants.FlashMode.off
 
   return (
     <View style={styles.box}>
