@@ -1,13 +1,11 @@
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
+import appleAuth from '@invertase/react-native-apple-authentication';
 import React, {memo} from 'react';
 import {StyleSheet, View} from 'react-native';
 import AppText from '../AppText';
 import AppleLogin from './AppleLogin';
-import FacebookLogin from './FacebookLogin';
-import KakaoLogin from './KakaoLogin';
-import NaverLoginButton from './NaverLoginButton';
 
 export type AuthCallback = ({
   user,
@@ -66,7 +64,7 @@ const SocialLogin = ({onAuth}: {onAuth: AuthCallback}) => {
         {/* <KakaoLogin onAuth={onAuth} /> */}
         {/* <NaverLoginButton onAuth={onAuth} /> */}
         {/* <FacebookLogin onAuth={onAuth} /> */}
-        <AppleLogin onAuth={onAuth} />
+        {appleAuth.isSupported && <AppleLogin onAuth={onAuth} />}
       </View>
     </View>
   );
