@@ -146,7 +146,7 @@ const logInAndGetAccount = createAsyncThunk(
       return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter');
     }
 
-    return Promise.resolve(dispatch(logIn({user: mobile, pass: pin}))).then(
+    return dispatch(logIn({user: mobile, pass: pin})).then(
       ({payload}) => {
         const {result, objects} = payload || {};
         if (result === 0 && objects && objects.length > 0) {
@@ -162,7 +162,7 @@ const logInAndGetAccount = createAsyncThunk(
             iccid: string;
             token: string;
           }) => {
-            Promise.resolve(dispatch(getAccount(account))).then(() => {
+            dispatch(getAccount(account)).then(() => {
               const {
                 account: {old_deviceToken},
               } = getState() as RootState;
@@ -184,10 +184,8 @@ const logInAndGetAccount = createAsyncThunk(
           if (iccid) {
             getAccountWithDisconnect({iccid, token});
           } else if (esimApp) {
-            Promise.resolve(
-              dispatch(
-                registerMobile({iccid: 'esim', code: pin, mobile, token}),
-              ),
+            dispatch(
+              registerMobile({iccid: 'esim', code: pin, mobile, token}),
             ).then(({payload: resp}) => {
               if (resp.result === 0)
                 getAccountWithDisconnect({iccid: `00001111${mobile}`, token});
