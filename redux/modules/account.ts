@@ -477,24 +477,12 @@ const changePushNoti = createAsyncThunk(
   },
 );
 
-const clearCurrentAccount = createAsyncThunk(
-  'account/clearCurrentAccount',
-  (param, {dispatch}) => {
-    removeData(API.User.KEY_ICCID);
-
-    batch(() => {
-      dispatch(slice.actions.clearAccount());
-    });
-  },
-);
-
 export const actions = {
   ...slice.actions,
   clearCookies,
   auth,
   logInAndGetAccount,
   getToken,
-  clearCurrentAccount,
   uploadAndChangePicture,
   logout,
   changeEmail,
