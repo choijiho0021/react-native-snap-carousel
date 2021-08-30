@@ -7,6 +7,7 @@ import AppSnackBar from '@/components/AppSnackBar';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
+import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
@@ -40,6 +41,8 @@ import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import CardInfo from './components/CardInfo';
 import EsimSubs from './components/EsimSubs';
+
+const {esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   container: {flex: 1},
@@ -262,7 +265,9 @@ class EsimScreen extends Component<EsimScreenProps, EsimScreenState> {
 
     return (
       <View style={{flex: 1}}>
-        <View style={{flexDirection: 'row'}}>{this.info()}</View>
+        {!esimGlobal && (
+          <View style={{flexDirection: 'row'}}>{this.info()}</View>
+        )}
         <View style={styles.nolist}>
           <AppIcon name="emptyESIM" />
           <AppText style={styles.blueText}>{i18n.t('his:noUsage1')}</AppText>
