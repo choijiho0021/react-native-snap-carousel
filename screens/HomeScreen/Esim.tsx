@@ -26,6 +26,7 @@ import {
 } from '@/redux/modules/account';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
+import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import {
   actions as productActions,
   ProductAction,
@@ -55,6 +56,8 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {checkFistLaunch, requestPermission} from './component/permission';
 import PromotionCarousel from './component/PromotionCarousel';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import {removeData} from '@/utils/utils';
 
 const {esimGlobal} = Env.get();
 
@@ -151,6 +154,7 @@ type EsimProps = {
   action: {
     product: ProductAction;
     account: AccountAction;
+    order: OrderAction;
     noti: NotiAction;
     cart: CartAction;
   };
@@ -431,7 +435,16 @@ class Esim extends Component<EsimProps, EsimState> {
       isForeground,
       isRegister: type === 'register',
       updateAccount: this.props.action.account.updateAccount,
-      clearCurrentAccount: this.props.action.account.clearCurrentAccount,
+      clearCurrentAccount: () => {
+        Promise.all([
+          this.props.action.cart.reset(),
+          this.props.action.order.reset(),
+          this.props.action.account.logout(),
+          this.props.action.noti.init(),
+        ]).then(() => {
+          PushNotificationIOS.setApplicationIconBadgeNumber(0);
+        });
+      },
     });
     pushNotiHandler.sendLog();
     pushNotiHandler.handleNoti();
@@ -532,6 +545,7 @@ export default connect(
       product: bindActionCreators(productActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
       noti: bindActionCreators(notiActions, dispatch),
+      order: bindActionCreators(orderActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
     },
   }),
