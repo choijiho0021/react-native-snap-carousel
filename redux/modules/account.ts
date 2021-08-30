@@ -107,12 +107,12 @@ export const auth = (state: AccountModelState): AccountAuth => ({
 
 const changeNotiToken = createAsyncThunk(
   'account/changeNotiToken',
-  ({notiToken}: {notiToken?: string}, {dispatch, getState}) => {
+  (param, {dispatch, getState}) => {
     const {
       account: {token, deviceToken, userId},
     } = getState() as RootState;
 
-    const attr = notiToken || deviceToken;
+    const attr = deviceToken;
     const attributes = {
       field_device_token: Platform.OS === 'ios' ? attr : '',
       field_fcm_token: Platform.OS === 'android' ? attr : '',
@@ -173,7 +173,9 @@ const logInAndGetAccount = createAsyncThunk(
                     API.Noti.sendDisconnect({
                       mobile,
                       iccid: account.iccid,
-                    }).then(() => dispatch(changeNotiToken({})));
+                    }).then(() => dispatch(changeNotiToken()));
+                  } else {
+                    dispatch(changeNotiToken());
                   }
                 });
             });
