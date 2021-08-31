@@ -330,7 +330,7 @@
   "board:resp": "Answer",
   "board:contact": "Contact info",
   "board:attach": "Upload Picture",
-  "board:noti": "Notification for answer is notified via ROKEBI App or KakaoTalk.",
+  "board:noti": "Notification for answer is notified via ROKEBI App and Email.",
   "board:pass": "Password",
   "board:inputPass": "Input password",
   "board:mylist": "My Inquiry",
