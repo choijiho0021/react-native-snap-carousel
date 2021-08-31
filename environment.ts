@@ -22,8 +22,8 @@ const lc = RNLocalize.getLocales()[0];
 const esimEng = appId === 'esim' && !esimGlobal && lc.languageCode !== 'ko';
 
 const codePushLabel = {
-  stagingIOS: "v79",
-  stagingAndroid: "v78",
+  stagingIOS: "v80",
+  stagingAndroid: "v79",
   productionIOS: 'v20',
   productionAndroid: 'v13',
 };
