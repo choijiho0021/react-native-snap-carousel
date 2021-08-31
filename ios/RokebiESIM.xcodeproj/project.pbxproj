@@ -10,26 +10,27 @@
 		0D75258E2393BEBB000D9C77 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 0D75258D2393BEBB000D9C77 /* fonts */; };
 		0D9C212626D37D4D0082F077 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		0D9C212726D37D4D0082F077 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39B6F382485F35C00EDBBB6 /* File.swift */; };
-		0D9C212826D37D4D0082F077 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		0D9C212926D37D4D0082F077 /* AppDelegate+Iamport.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B508C824B8102B00213190 /* AppDelegate+Iamport.m */; };
-		0D9C212D26D37D4D0082F077 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		0D9C212E26D37D4D0082F077 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		0D9C212F26D37D4D0082F077 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 0D75258D2393BEBB000D9C77 /* fonts */; };
 		0D9C213026D37D4D0082F077 /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 405C1E9424D945870016B43C /* AppCenter-Config.plist */; };
 		0D9C213126D37D4D0082F077 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A3DAD91924F3471F008E7187 /* GoogleService-Info.plist */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
-		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		3C938857B7A5952AB0A331F7 /* libPods-RokebiESIM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6FE589803AAA960F05417CED /* libPods-RokebiESIM.a */; };
 		405C1E9524D945870016B43C /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 405C1E9424D945870016B43C /* AppCenter-Config.plist */; };
+		4060E90826DDAAD100E1C0AE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		4060E90926DDAAF100E1C0AE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		4060E90A26DDAAF800E1C0AE /* Global in Resources */ = {isa = PBXBuildFile; fileRef = 0D83ED5D26BE0C6600C53610 /* Global */; };
+		4060E90D26DDABFE00E1C0AE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		4060E90E26DDB1C300E1C0AE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		4060E91426DDB98A00E1C0AE /* GlobalLaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4060E91226DDB98A00E1C0AE /* GlobalLaunchScreen.xib */; };
 		40B508C924B8102B00213190 /* AppDelegate+Iamport.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B508C824B8102B00213190 /* AppDelegate+Iamport.m */; };
-		989C5ACE2A83DDDA34E39A1F /* libPods-RokebiESIM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F024210B09D11AB78DEF639E /* libPods-RokebiESIM.a */; };
 		A39B6F392485F35C00EDBBB6 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39B6F382485F35C00EDBBB6 /* File.swift */; };
 		A3DAD91A24F3471F008E7187 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A3DAD91924F3471F008E7187 /* GoogleService-Info.plist */; };
-		C80426F112AB52A71DA5B1D3 /* libPods-RokebiESIM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F024210B09D11AB78DEF639E /* libPods-RokebiESIM.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		09AF7482DBA93AE265D40C7D /* Pods-RokebiESIM.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.debug.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.debug.xcconfig"; sourceTree = "<group>"; };
 		0D19ADD4239112C900EAEAAB /* RokebiESIM.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RokebiESIM.entitlements; path = RokebiESIM/RokebiESIM.entitlements; sourceTree = "<group>"; };
 		0D75258D2393BEBB000D9C77 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../assets/fonts; sourceTree = "<group>"; };
 		0D83ED5D26BE0C6600C53610 /* Global */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Global; path = Configurations/Global; sourceTree = "<group>"; };
@@ -41,24 +42,24 @@
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = RokebiESIM/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = RokebiESIM/main.m; sourceTree = "<group>"; };
+		13E87760F911D4863261705D /* Pods-RokebiESIM.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.staging.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.staging.xcconfig"; sourceTree = "<group>"; };
+		26E693214BCA0E6B05C768D7 /* Pods-RokebiESIM.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.release.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.release.xcconfig"; sourceTree = "<group>"; };
 		31014468118C96283A9816D4 /* Pods-RokebiESIM.global.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.global.release.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.global.release.xcconfig"; sourceTree = "<group>"; };
 		405C1E9424D945870016B43C /* AppCenter-Config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "AppCenter-Config.plist"; path = "RokebiESIM/AppCenter-Config.plist"; sourceTree = "<group>"; };
+		4060E91326DDB98A00E1C0AE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = RokebiESIM/Base.lproj/GlobalLaunchScreen.xib; sourceTree = "<group>"; };
 		408CC8F526B8D23C000C8C8A /* libYogaKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libYogaKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		40B508C724B80F9900213190 /* AppDelegate+Iamport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AppDelegate+Iamport.h"; sourceTree = "<group>"; };
 		40B508C824B8102B00213190 /* AppDelegate+Iamport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "AppDelegate+Iamport.m"; sourceTree = "<group>"; };
 		545E33A6D23975A6105DED9D /* Pods-RokebiESIM.usim.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.usim.debug.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.usim.debug.xcconfig"; sourceTree = "<group>"; };
 		5A14F246B0ACACDA32424430 /* Pods-RokebiESIM.usim.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.usim.release.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.usim.release.xcconfig"; sourceTree = "<group>"; };
-		6AF66C0B50E1753862F0CB38 /* Pods-RokebiESIM.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.release.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.release.xcconfig"; sourceTree = "<group>"; };
-		847FB42CAA32B5916645988C /* Pods-RokebiESIM.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.debug.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.debug.xcconfig"; sourceTree = "<group>"; };
+		6FE589803AAA960F05417CED /* libPods-RokebiESIM.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RokebiESIM.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		98488BCD22A80A09DE3B948C /* Pods-RokebiESIM.global.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.global.staging.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.global.staging.xcconfig"; sourceTree = "<group>"; };
 		A36F6F3026B8F0F100A69BF2 /* Configurations */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Configurations; sourceTree = "<group>"; };
 		A39B6F372485F35C00EDBBB6 /* Rokebi-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Rokebi-Bridging-Header.h"; sourceTree = "<group>"; };
 		A39B6F382485F35C00EDBBB6 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		A3DAD91924F3471F008E7187 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ACC63B13A2EE50D80D796AB2 /* Pods-RokebiESIM.global.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.global.debug.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.global.debug.xcconfig"; sourceTree = "<group>"; };
-		B0AEA79CBF40AFBC660542E6 /* Pods-RokebiESIM.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.staging.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.staging.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F024210B09D11AB78DEF639E /* libPods-RokebiESIM.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RokebiESIM.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,8 +74,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				989C5ACE2A83DDDA34E39A1F /* libPods-RokebiESIM.a in Frameworks */,
-				C80426F112AB52A71DA5B1D3 /* libPods-RokebiESIM.a in Frameworks */,
+				3C938857B7A5952AB0A331F7 /* libPods-RokebiESIM.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,6 +84,7 @@
 		13B07FAE1A68108700A75B9A /* RokebiESIM */ = {
 			isa = PBXGroup;
 			children = (
+				4060E91226DDB98A00E1C0AE /* GlobalLaunchScreen.xib */,
 				405C1E9424D945870016B43C /* AppCenter-Config.plist */,
 				40B508C824B8102B00213190 /* AppDelegate+Iamport.m */,
 				40B508C724B80F9900213190 /* AppDelegate+Iamport.h */,
@@ -110,7 +111,7 @@
 			children = (
 				408CC8F526B8D23C000C8C8A /* libYogaKit.a */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				F024210B09D11AB78DEF639E /* libPods-RokebiESIM.a */,
+				6FE589803AAA960F05417CED /* libPods-RokebiESIM.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -161,9 +162,9 @@
 				545E33A6D23975A6105DED9D /* Pods-RokebiESIM.usim.debug.xcconfig */,
 				5A14F246B0ACACDA32424430 /* Pods-RokebiESIM.usim.release.xcconfig */,
 				98488BCD22A80A09DE3B948C /* Pods-RokebiESIM.global.staging.xcconfig */,
-				847FB42CAA32B5916645988C /* Pods-RokebiESIM.debug.xcconfig */,
-				6AF66C0B50E1753862F0CB38 /* Pods-RokebiESIM.release.xcconfig */,
-				B0AEA79CBF40AFBC660542E6 /* Pods-RokebiESIM.staging.xcconfig */,
+				09AF7482DBA93AE265D40C7D /* Pods-RokebiESIM.debug.xcconfig */,
+				26E693214BCA0E6B05C768D7 /* Pods-RokebiESIM.release.xcconfig */,
+				13E87760F911D4863261705D /* Pods-RokebiESIM.staging.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -196,17 +197,17 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "RokebiESIM" */;
 			buildPhases = (
-				83F353DA531F5D7165EABE4D /* [CP] Check Pods Manifest.lock */,
+				00501B27602895FF5740432C /* [CP] Check Pods Manifest.lock */,
 				A36F6F2B26B3E96B00A69BF2 /* ShellScript */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				00F4D3E32282F1A5AB82A635 /* [CP] Copy Pods Resources */,
 				40965D2B23E3B646003E8249 /* Increment Build */,
-				DD2F7C49062AB242D780CEDA /* [CP] Embed Pods Frameworks */,
-				5CB06FF0AC8B12EC3C36F3D3 /* [CP-User] [RNFB] Core Configuration */,
+				149214DE0363B258472BD1C7 /* [CP] Embed Pods Frameworks */,
+				F05ECEC46368058244137DE3 /* [CP] Copy Pods Resources */,
+				7F88FDEB2324527731560336 /* [CP-User] [RNFB] Core Configuration */,
 			);
 			buildRules = (
 			);
@@ -262,10 +263,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0D9C212D26D37D4D0082F077 /* Images.xcassets in Resources */,
-				0D9C212E26D37D4D0082F077 /* LaunchScreen.xib in Resources */,
+				4060E90A26DDAAF800E1C0AE /* Global in Resources */,
+				4060E91426DDB98A00E1C0AE /* GlobalLaunchScreen.xib in Resources */,
 				0D9C212F26D37D4D0082F077 /* fonts in Resources */,
 				0D9C213026D37D4D0082F077 /* AppCenter-Config.plist in Resources */,
+				4060E90D26DDABFE00E1C0AE /* Images.xcassets in Resources */,
 				0D9C213126D37D4D0082F077 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -274,8 +276,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				4060E90E26DDB1C300E1C0AE /* Images.xcassets in Resources */,
 				0D75258E2393BEBB000D9C77 /* fonts in Resources */,
 				405C1E9524D945870016B43C /* AppCenter-Config.plist in Resources */,
 				A3DAD91A24F3471F008E7187 /* GoogleService-Info.plist in Resources */,
@@ -285,6 +287,28 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		00501B27602895FF5740432C /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RokebiESIM-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -298,62 +322,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
-		};
-		00F4D3E32282F1A5AB82A635 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM-resources.sh",
-				"${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/RNImageCropPicker/QBImagePicker.bundle",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Entypo.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Feather.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Foundation.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Octicons.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Zocial.ttf",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/TOCropViewController/TOCropViewControllerBundle.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FacebookSDKStrings.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/QBImagePicker.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AntDesign.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Entypo.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EvilIcons.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Feather.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Brands.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Regular.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Solid.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Fontisto.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Foundation.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Ionicons.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MaterialCommunityIcons.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MaterialIcons.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Octicons.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SimpleLineIcons.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Zocial.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TOCropViewControllerBundle.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM-resources.sh\"\n";
-			showEnvVarsInLog = 0;
 		};
 		0D9C212326D37D4D0082F077 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -423,6 +391,26 @@
 			shellPath = /bin/sh;
 			shellScript = "if [ $CONFIGURATION == \"Release\" ] || [ $CONFIGURATION == \"Staging\" ]\nthen\nlastNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\")\nnewNumber=$(($lastNumber + 1))\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $newNumber\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\"\nfi\n";
 		};
+		149214DE0363B258472BD1C7 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM-frameworks.sh",
+				"${PODS_ROOT}/naveridlogin-sdk-ios/NaverThirdPartyLogin.framework",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL/OpenSSL.framework/OpenSSL",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NaverThirdPartyLogin.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		40965D2B23E3B646003E8249 /* Increment Build */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -441,7 +429,7 @@
 			shellPath = /bin/sh;
 			shellScript = "if [ $CONFIGURATION == \"Release\" ] || [ $CONFIGURATION == \"Staging\" ]\nthen\nlastNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\")\nnewNumber=$(($lastNumber + 1))\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $newNumber\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\"\nfi\n";
 		};
-		5CB06FF0AC8B12EC3C36F3D3 /* [CP-User] [RNFB] Core Configuration */ = {
+		7F88FDEB2324527731560336 /* [CP-User] [RNFB] Core Configuration */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -453,28 +441,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\n_MAX_LOOKUPS=2;\n_SEARCH_RESULT=''\n_RN_ROOT_EXISTS=''\n_CURRENT_LOOKUPS=1\n_JSON_ROOT=\"'react-native'\"\n_JSON_FILE_NAME='firebase.json'\n_JSON_OUTPUT_BASE64='e30=' # { }\n_CURRENT_SEARCH_DIR=${PROJECT_DIR}\n_PLIST_BUDDY=/usr/libexec/PlistBuddy\n_TARGET_PLIST=\"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n_DSYM_PLIST=\"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist\"\n\n# plist arrays\n_PLIST_ENTRY_KEYS=()\n_PLIST_ENTRY_TYPES=()\n_PLIST_ENTRY_VALUES=()\n\nfunction setPlistValue {\n  echo \"info:      setting plist entry '$1' of type '$2' in file '$4'\"\n  ${_PLIST_BUDDY} -c \"Add :$1 $2 '$3'\" $4 || echo \"info:      '$1' already exists\"\n}\n\nfunction getFirebaseJsonKeyValue () {\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    ruby -e \"require 'rubygems';require 'json'; output=JSON.parse('$1'); puts output[$_JSON_ROOT]['$2']\"\n  else\n    echo \"\"\n  fi;\n}\n\nfunction jsonBoolToYesNo () {\n  if [[ $1 == \"false\" ]]; then\n    echo \"NO\"\n  elif [[ $1 == \"true\" ]]; then\n    echo \"YES\"\n  else echo \"NO\"\n  fi\n}\n\necho \"info: -> RNFB build script started\"\necho \"info: 1) Locating ${_JSON_FILE_NAME} file:\"\n\nif [[ -z ${_CURRENT_SEARCH_DIR} ]]; then\n  _CURRENT_SEARCH_DIR=$(pwd)\nfi;\n\nwhile true; do\n  _CURRENT_SEARCH_DIR=$(dirname \"$_CURRENT_SEARCH_DIR\")\n  if [[ \"$_CURRENT_SEARCH_DIR\" == \"/\" ]] || [[ ${_CURRENT_LOOKUPS} -gt ${_MAX_LOOKUPS} ]]; then break; fi;\n  echo \"info:      ($_CURRENT_LOOKUPS of $_MAX_LOOKUPS) Searching in '$_CURRENT_SEARCH_DIR' for a ${_JSON_FILE_NAME} file.\"\n  _SEARCH_RESULT=$(find \"$_CURRENT_SEARCH_DIR\" -maxdepth 2 -name ${_JSON_FILE_NAME} -print | head -n 1)\n  if [[ ${_SEARCH_RESULT} ]]; then\n    echo \"info:      ${_JSON_FILE_NAME} found at $_SEARCH_RESULT\"\n    break;\n  fi;\n  _CURRENT_LOOKUPS=$((_CURRENT_LOOKUPS+1))\ndone\n\nif [[ ${_SEARCH_RESULT} ]]; then\n  _JSON_OUTPUT_RAW=$(cat \"${_SEARCH_RESULT}\")\n  _RN_ROOT_EXISTS=$(ruby -e \"require 'rubygems';require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]\" || echo '')\n\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    _JSON_OUTPUT_BASE64=$(python -c 'import json,sys,base64;print(base64.b64encode(json.dumps(json.loads(open('\"'${_SEARCH_RESULT}'\"').read())['${_JSON_ROOT}'])))' || echo \"e30=\")\n  fi\n\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n\n  # config.analytics_auto_collection_enabled\n  _ANALYTICS_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_auto_collection_enabled\")\n  if [[ $_ANALYTICS_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_COLLECTION\")\")\n  fi\n\n  # config.perf_auto_collection_enabled\n  _PERF_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_auto_collection_enabled\")\n  if [[ $_PERF_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_enabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_AUTO_COLLECTION\")\")\n  fi\n\n  # config.messaging_auto_init_enabled\n  _MESSAGING_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"messaging_auto_init_enabled\")\n  if [[ $_MESSAGING_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseMessagingAutoInitEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_MESSAGING_AUTO_INIT\")\")\n  fi\n\n  # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes useful\n  _CRASHLYTICS_AUTO_DISABLE_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"crashlytics_disable_auto_disabler\")\n  if [[ $_CRASHLYTICS_AUTO_DISABLE_ENABLED == \"true\" ]]; then\n    echo \"Disabled Crashlytics auto disabler.\" # do nothing\n  else\n    _PLIST_ENTRY_KEYS+=(\"FirebaseCrashlyticsCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"NO\")\n  fi\n\n  # config.admob_delay_app_measurement_init\n  _ADMOB_DELAY_APP_MEASUREMENT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"admob_delay_app_measurement_init\")\n  if [[ $_ADMOB_DELAY_APP_MEASUREMENT == \"true\" ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GADDelayAppMeasurementInit\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"YES\")\n  fi\n\n  # config.admob_ios_app_id\n  _ADMOB_IOS_APP_ID=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"admob_ios_app_id\")\n  if [[ $_ADMOB_IOS_APP_ID ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GADApplicationIdentifier\")\n    _PLIST_ENTRY_TYPES+=(\"string\")\n    _PLIST_ENTRY_VALUES+=(\"$_ADMOB_IOS_APP_ID\")\n  fi\nelse\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n  echo \"warning:   A firebase.json file was not found, whilst this file is optional it is recommended to include it to configure firebase services in React Native Firebase.\"\nfi;\n\necho \"info: 2) Injecting Info.plist entries: \"\n\n# Log out the keys we're adding\nfor i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n  echo \"    ->  $i) ${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\"\ndone\n\nfor plist in \"${_TARGET_PLIST}\" \"${_DSYM_PLIST}\" ; do\n  if [[ -f \"${plist}\" ]]; then\n\n    # paths with spaces break the call to setPlistValue. temporarily modify\n    # the shell internal field separator variable (IFS), which normally\n    # includes spaces, to consist only of line breaks\n    oldifs=$IFS\n    IFS=\"\n\"\n\n    for i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n      setPlistValue \"${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\" \"${plist}\"\n    done\n\n    # restore the original internal field separator value\n    IFS=$oldifs\n  else\n    echo \"warning:   A Info.plist build output file was not found (${plist})\"\n  fi\ndone\n\necho \"info: <- RNFB build script finished\"\n";
-		};
-		83F353DA531F5D7165EABE4D /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-RokebiESIM-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
 		};
 		A36F6F2B26B3E96B00A69BF2 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -493,24 +459,60 @@
 			shellPath = /bin/sh;
 			shellScript = "# Filename\nFIREBASE_INFO_PLIST=GoogleService-Info.plist\n\n# File path for ESIM\nFIREBASE_INFO_ESIM=${PROJECT_DIR}/Configurations/Esim/${FIREBASE_INFO_PLIST}\n\n# File path for Usim\nFIREBASE_INFO_USIM=${PROJECT_DIR}/Configurations/Usim/${FIREBASE_INFO_PLIST}\n\n# File path for Global\nFIREBASE_INFO_GLOBAL=${PROJECT_DIR}/Configurations/Global/${FIREBASE_INFO_PLIST}\n\n# PLIST_DESTINATION\nPLIST_DESTINATION=${PROJECT_DIR}/${FIREBASE_INFO_PLIST}\n\n# Copy selected GoogleService-Info.plist for builds depend on bundle identifier\nif [ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.uangel.rokebi-ESIM\" ]\nthen\necho \"Using ${FIREBASE_INFO_ESIM}\"\ncp \"${FIREBASE_INFO_ESIM}\" \"${PLIST_DESTINATION}\"\nelif [ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.uangel.rokebi-USIM\" ]\nthen\necho \"Using ${FIREBASE_INFO_USIM}\"\ncp \"${FIREBASE_INFO_USIM}\" \"${PLIST_DESTINATION}\"\nelse\necho \"Using ${FIREBASE_INFO_GLOBAL}\"\ncp \"${FIREBASE_INFO_GLOBAL}\" \"${PLIST_DESTINATION}\"\nfi\n";
 		};
-		DD2F7C49062AB242D780CEDA /* [CP] Embed Pods Frameworks */ = {
+		F05ECEC46368058244137DE3 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM-frameworks.sh",
-				"${PODS_ROOT}/naveridlogin-sdk-ios/NaverThirdPartyLogin.framework",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL/OpenSSL.framework/OpenSSL",
+				"${PODS_ROOT}/Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM-resources.sh",
+				"${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/RNImageCropPicker/QBImagePicker.bundle",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Entypo.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Feather.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Foundation.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Octicons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Zocial.ttf",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/TOCropViewController/TOCropViewControllerBundle.bundle",
 			);
-			name = "[CP] Embed Pods Frameworks";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NaverThirdPartyLogin.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FacebookSDKStrings.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/QBImagePicker.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AntDesign.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Entypo.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EvilIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Feather.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Brands.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Regular.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Solid.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Fontisto.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Foundation.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Ionicons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MaterialCommunityIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MaterialIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Octicons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SimpleLineIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Zocial.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TOCropViewControllerBundle.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -541,7 +543,7 @@
 			files = (
 				0D9C212626D37D4D0082F077 /* AppDelegate.m in Sources */,
 				0D9C212726D37D4D0082F077 /* File.swift in Sources */,
-				0D9C212826D37D4D0082F077 /* main.m in Sources */,
+				4060E90826DDAAD100E1C0AE /* main.m in Sources */,
 				0D9C212926D37D4D0082F077 /* AppDelegate+Iamport.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -552,7 +554,7 @@
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				A39B6F392485F35C00EDBBB6 /* File.swift in Sources */,
-				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				4060E90926DDAAF100E1C0AE /* main.m in Sources */,
 				40B508C924B8102B00213190 /* AppDelegate+Iamport.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -567,6 +569,14 @@
 			);
 			name = LaunchScreen.xib;
 			path = RokebiESIM;
+			sourceTree = "<group>";
+		};
+		4060E91226DDB98A00E1C0AE /* GlobalLaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4060E91326DDB98A00E1C0AE /* Base */,
+			);
+			name = GlobalLaunchScreen.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -930,7 +940,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 847FB42CAA32B5916645988C /* Pods-RokebiESIM.debug.xcconfig */;
+			baseConfigurationReference = 09AF7482DBA93AE265D40C7D /* Pods-RokebiESIM.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(BUNDLE_ID_SUFFIX)";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "";
@@ -1066,7 +1076,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6AF66C0B50E1753862F0CB38 /* Pods-RokebiESIM.release.xcconfig */;
+			baseConfigurationReference = 26E693214BCA0E6B05C768D7 /* Pods-RokebiESIM.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(BUNDLE_ID_SUFFIX)";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "";
@@ -1226,7 +1236,7 @@
 		};
 		40903F8126AF8AE10024059A /* Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B0AEA79CBF40AFBC660542E6 /* Pods-RokebiESIM.staging.xcconfig */;
+			baseConfigurationReference = 13E87760F911D4863261705D /* Pods-RokebiESIM.staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(BUNDLE_ID_SUFFIX)";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "";
