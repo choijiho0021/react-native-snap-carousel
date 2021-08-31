@@ -165,7 +165,8 @@
   "acc:permPhoto": "Please, grant the permission to access photos",
   "acc:permCamera": "Please, grant the permission to access camera",
   "acc:duplicatedEmail": "your email was already used for registration",
-  "acc:disconnectSim": "Your SIM card is registered newly in other account and it is deregistered in this account",
+  "acc:disconnectSim": "Your account  has been logged in on other device and it is logged out on this device. ",
+  "acc:moveToFbDown": "Move to Facebook Messenger App download page",
 
   // "set:info" : "My SIM Info",
   "set:noti": "Notice",
