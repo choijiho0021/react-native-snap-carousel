@@ -25,16 +25,23 @@ import {
 } from 'react-native-tracking-transparency';
 import _ from 'underscore';
 
-const {esimApp} = Env.get();
+const {esimApp, esimGlobal} = Env.get();
 
 const {width} = Dimensions.get('window');
-const tutorialImages = esimApp
+const esimImages = esimGlobal
   ? {
-      step1: require('../assets/images/esim/tutorial/step1/esimTutorial1.png'),
-      step2: require('../assets/images/esim/tutorial/step2/esimTutorial2.png'),
-      step3: require('../assets/images/esim/tutorial/step3/esimTutorial3.png'),
-      step4: require('../assets/images/esim/tutorial/step4/esimTutorial4.png'),
+      step1: require(`../assets/images/esim/tutorial/step1/t1.png`),
+      step2: require(`../assets/images/esim/tutorial/step2/t2.png`),
+      step3: require(`../assets/images/esim/tutorial/step3/t3.png`),
     }
+  : {
+      step1: require(`../assets/images/esim/tutorial/step1/esimTutorial1.png`),
+      step2: require(`../assets/images/esim/tutorial/step2/esimTutorial2.png`),
+      step3: require(`../assets/images/esim/tutorial/step3/esimTutorial3.png`),
+      step4: require(`../assets/images/esim/tutorial/step4/esimTutorial4.png`),
+    };
+const tutorialImages = esimApp
+  ? esimImages
   : {
       step1: require('../assets/images/usim/tutorial/step1/mT1.png'),
       step2: require('../assets/images/usim/tutorial/step2/mT2.png'),
@@ -117,7 +124,6 @@ type TutorialScreenProps = {
 type CarouselIndex = 'step1' | 'step2' | 'step3' | 'step4';
 type TutorialScreenState = {
   activeSlide: number;
-  images: CarouselIndex[];
   status?: TrackingStatus;
 };
 
@@ -133,7 +139,6 @@ class TutorialScreen extends Component<
     this.carousel = React.createRef();
     this.state = {
       activeSlide: 0,
-      images: ['step1', 'step2', 'step3', 'step4'],
     };
 
     this.renderTutorial = this.renderTutorial.bind(this);
@@ -180,7 +185,8 @@ class TutorialScreen extends Component<
   };
 
   render() {
-    const {images, activeSlide} = this.state;
+    const {activeSlide} = this.state;
+    const images = Object.keys(tutorialImages);
 
     return (
       <SafeAreaView style={{flex: 1}}>
@@ -220,7 +226,7 @@ class TutorialScreen extends Component<
             justifyContent: 'space-between',
             height: 52,
           }}>
-          {this.state.activeSlide === this.state.images.length - 1 ? (
+          {this.state.activeSlide === images.length - 1 ? (
             <View style={styles.bottom}>
               <Pressable
                 style={[

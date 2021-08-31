@@ -153,7 +153,7 @@
 	<key>NSContactsUsageDescription</key>
 	<string>연락처 접근을 허용해 주세요</string>
 	<key>NSMainNibFile</key>
-	<string>LaunchScreen</string>
+	<string>GlobalLaunchScreen</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow esim to access your microphone</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -187,7 +187,7 @@
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
+	<string>GlobalLaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

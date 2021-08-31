@@ -291,40 +291,29 @@ class RegisterMobileScreen extends Component<
     this.mounted = false;
     this.controller = new AbortController();
     this.confirmList = [
-      {
-        key: '0',
+      ['contract', 'mandatory', 'setting:contract'],
+      ['personalInfo', 'mandatory', 'setting:privacy'],
+    ]
+      .concat(
+        (!esimGlobal && [['marketing', 'optional', 'mkt:agreement']]) || [],
+      )
+      .map((v, i) => ({
+        key: `${i}`,
         list: [
-          {color: colors.warmGrey, text: i18n.t('cfm:contract')},
-          {color: colors.clearBlue, text: i18n.t('cfm:mandatory')},
+          {
+            color: colors.warmGrey,
+            text: i18n.t(`cfm:${v[0]}`),
+          },
+          {
+            color: v[1] === 'mandatory' ? colors.clearBlue : colors.warmGrey,
+            text: i18n.t(`cfm:${v[1]}`),
+          },
         ],
         navi: {
           route: 'SimpleTextForAuth',
-          param: {key: 'setting:contract', title: i18n.t('cfm:contract')},
+          param: {key: v[2], title: i18n.t(`cfm:${v[0]}`)},
         },
-      },
-      {
-        key: '1',
-        list: [
-          {color: colors.warmGrey, text: i18n.t('cfm:personalInfo')},
-          {color: colors.clearBlue, text: i18n.t('cfm:mandatory')},
-        ],
-        navi: {
-          route: 'SimpleTextForAuth',
-          param: {key: 'setting:privacy', title: i18n.t('cfm:personalInfo')},
-        },
-      },
-      {
-        key: '2',
-        list: [
-          {color: colors.warmGrey, text: i18n.t('cfm:marketing')},
-          {color: colors.warmGrey, text: i18n.t('cfm:optional')},
-        ],
-        navi: {
-          route: 'SimpleTextForAuth',
-          param: {key: 'mkt:agreement', title: i18n.t('cfm:marketing')},
-        },
-      },
-    ];
+      }));
   }
 
   componentDidMount() {

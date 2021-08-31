@@ -13,8 +13,8 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
             <subviews>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="imgAppicon" id="vkl-Hi-ElE">
-                    <rect key="frame" x="165" y="304" width="86" height="74"/>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="imgAppicon-global" id="vkl-Hi-ElE">
+                    <rect key="frame" x="122" y="290" width="170" height="42"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                 </imageView>
             </subviews>
@@ -26,6 +26,6 @@
         </view>
     </objects>
     <resources>
-        <image name="imgAppicon" width="86" height="74"/>
+        <image name="imgAppicon-global" width="170" height="42"/>
     </resources>
 </document>
