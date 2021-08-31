@@ -80,6 +80,8 @@ const images: Record<string, any[]> = {
   ],
   openKakao: [require(`${mainPath}imgKakao.png`)],
   openKakaoEng: [require(`${mainPath}imgKakaoEng.png`)],
+  openFacebook: [require(`${mainPath}imgFacebook.png`)],
+  openFacebookEng: [require(`${mainPath}imgFacebookEng.png`)],
   kakaoLogin: [require(`${mainPath}LoginImgKako.png`)],
   appleLogin: [require(`${mainPath}LoginImgApple.png`)],
   naverLogin: [require(`${mainPath}LoginImgNaver.png`)],

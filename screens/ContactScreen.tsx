@@ -1,3 +1,4 @@
+import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppIcon from '@/components/AppIcon';
 import AppModal from '@/components/AppModal';
@@ -24,7 +25,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 
-const {channelId} = Env.get();
+const {channelId, esimGlobal, fbUser} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -174,9 +175,20 @@ class ContactScreen extends Component<ContactScreenProps, ContactScreenState> {
         navigation.navigate('ContactBoard');
         break;
       case 'ktalk':
-        KakaoSDK.Channel.chat(channelId).catch((_) => {
-          this.props.action.toast.push(Toast.NOT_OPENED);
-        });
+        if (esimGlobal) {
+          Linking.openURL(`fb-messenger-public://user-thread/${fbUser}`).catch(
+            () =>
+              AppAlert.info(i18n.t('acc:moveToFbDown'), '', () =>
+                Linking.openURL(
+                  'https://apps.apple.com/kr/app/messenger/id454638411',
+                ),
+              ),
+          );
+        } else {
+          KakaoSDK.Channel.chat(channelId).catch((_) => {
+            this.props.action.toast.push(Toast.NOT_OPENED);
+          });
+        }
 
         break;
       case 'call':
