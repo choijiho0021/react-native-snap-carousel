@@ -14,7 +14,7 @@ platform :ios, '11.0'
 
 #project 'busdue',
 
-target 'RokebiESIM' do
+target 'RokebiGlobal' do
   use_unimodules!
   config = use_native_modules!
 
