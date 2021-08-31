@@ -491,6 +491,7 @@
   "prodDetail:On": "",
   "prodDetail:Question": "Is there any inquiries?",
   "prodDetail:KakaoPlus": "Ask via KakaoTalk Plus like a friend!",
+  "prodDetail:FacebookMessage": "Ask via Facebook message like a friend!",
 
   "loading:error": "Loading Error",
   "loading:terminate": "Due to error on loading process, App will be closed.",
