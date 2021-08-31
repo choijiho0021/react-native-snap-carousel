@@ -250,7 +250,8 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
           navigation.navigate('SimpleText', {
             key: 'noti',
             title:
-              type === notiActions.NOTI_TYPE_NOTI
+              type === notiActions.NOTI_TYPE_NOTI ||
+              type === notiActions.NOTI_TYPE_ACCOUNT
                 ? i18n.t('set:noti')
                 : i18n.t('contact:noticeDetail'),
             bodyTitle,
