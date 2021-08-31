@@ -93,6 +93,11 @@ const styles = StyleSheet.create({
     bottom: 30,
     backgroundColor: colors.clearBlue,
   },
+  scrollView: {
+    flex: 1,
+    backgroundColor: colors.whiteTwo,
+    marginBottom: 52,
+  },
 });
 
 type PaymentResultScreenNavigationProp = StackNavigationProp<
@@ -234,7 +239,7 @@ class PaymentResultScreen extends Component<
 
     return (
       <SafeAreaView style={{flex: 1}}>
-        <ScrollView style={{backgroundColor: colors.whiteTwo}}>
+        <ScrollView style={styles.scrollView}>
           <View style={styles.paymentResultView}>
             <Image
               style={styles.image}
