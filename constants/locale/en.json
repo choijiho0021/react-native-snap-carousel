@@ -308,6 +308,7 @@
   "contact:faq": "FAQ",
   "contact:board": "1:1 Inquiry board",
   "contact:ktalk": "1:1 Inquiry via KakaoTalk",
+  "contact:facebookMsg": "1:1 Inquiry via Facebook Messenger",
   "contact:call": "Direct call to CS",
 
   "faq:general": "General",

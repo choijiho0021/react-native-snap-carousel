@@ -123,7 +123,7 @@ class ContactScreen extends Component<ContactScreenProps, ContactScreenState> {
         },
         {
           key: 'ktalk',
-          value: i18n.t('contact:ktalk'),
+          value: i18n.t(esimGlobal ? 'contact:facebookMsg' : 'contact:ktalk'),
           page: 'Open Kakao Talk',
         },
         {
