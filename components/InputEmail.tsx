@@ -53,6 +53,10 @@ i18nEvent.on('loaded', () => {
       label: 'Hotmail',
       value: 'hotmail.com',
     },
+    {
+      label: 'Yahoo',
+      value: 'yahoo.com',
+    },
   ];
 });
 
