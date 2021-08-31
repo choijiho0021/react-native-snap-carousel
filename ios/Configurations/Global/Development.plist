@@ -32,7 +32,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>rokebiesim</string>
-				<string>fb${FACEBOOK_APP_KEY}</string>
+				<string>fb147522690488197</string>
 			</array>
 		</dict>
 		<dict>
@@ -59,11 +59,13 @@
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
-	<string>${FACEBOOK_APP_KEY}</string>
+	<string>147522690488197</string>
+    <key>FacebookClientToken</key>
+    <string>a516d23081ee3fb8db8bb9c006431ae6</string>
 	<key>FacebookCodelessDebugLogEnabled</key>
 	<true/>
 	<key>FacebookDisplayName</key>
-	<string>RokebiGlobal</string>
+	<string>Rokebi Global</string>
 	<key>KAKAO_APP_KEY</key>
 	<string>20432406a5258ae68b9c9558a4ba23ef</string>
 	<key>LSApplicationCategoryType</key>
@@ -73,6 +75,7 @@
 		<string>fbshareextension</string>
 		<string>fbauth2</string>
 		<string>fb-messenger-api</string>
+        <string>fb-messenger-public</string>
 		<string>fbapi</string>
 		<string>rokebitalk</string>
 		<string>naversearchapp</string>
