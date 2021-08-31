@@ -1,5 +1,6 @@
 /* eslint-disable no-plusplus */
 import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
@@ -32,6 +33,7 @@ import {
   Animated,
   Clipboard,
   Image,
+  Linking,
   NativeScrollEvent,
   SafeAreaView,
   ScrollView,
@@ -43,12 +45,10 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 
-const {channelId, esimEng} = Env.get();
+const {baseUrl, channelId, esimEng, esimGlobal, fbUser} = Env.get();
 
 const HEADER_IMG_HEIGHT = 200;
 const TAB_IDX_ASK_BY_KAKAO = 3; // KakaoTalk으로 물어보기 Tab의 index
-const {baseUrl} = Env.get();
-
 const tabList = ['ProdInfo', 'Tip', 'Caution', 'Ask with KakaoTalk'];
 
 const styles = StyleSheet.create({
@@ -228,9 +228,19 @@ class ProductDetailScreen extends Component<
   }
 
   openKTalk = () => {
-    KakaoSDK.Channel.chat(channelId).catch(() => {
-      this.props.action.toast.push(Toast.NOT_OPENED);
-    });
+    if (esimGlobal) {
+      Linking.openURL(`fb-messenger-public://user-thread/${fbUser}`).catch(() =>
+        AppAlert.info(i18n.t('acc:moveToFbDown'), '', () =>
+          Linking.openURL(
+            'https://apps.apple.com/kr/app/messenger/id454638411',
+          ),
+        ),
+      );
+    } else {
+      KakaoSDK.Channel.chat(channelId).catch((_) => {
+        this.props.action.toast.push(Toast.NOT_OPENED);
+      });
+    }
   };
 
   clickTab = (idx: number) => () => {
@@ -306,7 +316,11 @@ class ProductDetailScreen extends Component<
           {i18n.t('prodDetail:KakaoPlus')}
         </AppText>
         <AppButton
-          iconName={`openKakao${esimEng ? 'Eng' : ''}`}
+          iconName={
+            esimGlobal
+              ? `openFacebook${esimEng ? 'Eng' : ''}`
+              : `openKakao${esimEng ? 'Eng' : ''}`
+          }
           onPress={this.openKTalk}
           style={{flex: 1}}
         />

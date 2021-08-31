@@ -45,6 +45,7 @@ type Env = {
   sipServer: string;
   isProduction: boolean;
   isIOS?: boolean;
+  fbUser?: string;
 };
 const env: Env = {
   appId,
@@ -57,6 +58,7 @@ const env: Env = {
   sipServer: '193.122.106.2:35060',
   isProduction: Config.NODE_ENV === 'production',
   isIOS: Platform.OS === 'ios',
+  fbUser: '100751328128324',
 };
 
 function get() {
