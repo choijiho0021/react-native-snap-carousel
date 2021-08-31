@@ -18,8 +18,8 @@ const impId = Config.NODE_ENV === 'production' ? 'imp53913318' : 'imp60215393';
 // languageTag: "en-KR"
 // languageCode: "en"
 const lc = RNLocalize.getLocales()[0];
-// esim 이고 한국어가 아닌 경우 모두 esimEng
-const esimEng = appId === 'esim' && !esimGlobal && lc.languageCode !== 'ko';
+// 한국어가 아닌 경우 isEng = true
+const isEng = lc.languageCode !== 'ko';
 
 const codePushLabel = {
   stagingIOS: "v80",
@@ -35,7 +35,7 @@ type Env = {
   channelId: string;
   esimApp: boolean;
   esimGlobal: boolean;
-  esimEng: boolean;
+  isEng: boolean;
   esimCurrency: CurrencyCode;
   label?: string;
   scheme?: string;
@@ -53,7 +53,7 @@ const env: Env = {
   channelId,
   esimApp: appId === 'esim',
   esimGlobal,
-  esimEng,
+  isEng,
   esimCurrency: esimGlobal ? 'USD' : 'KRW',
   sipServer: '193.122.106.2:35060',
   isProduction: Config.NODE_ENV === 'production',
