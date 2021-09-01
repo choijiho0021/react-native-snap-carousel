@@ -24,6 +24,7 @@
 		4060E90E26DDB1C300E1C0AE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		4060E91426DDB98A00E1C0AE /* GlobalLaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4060E91226DDB98A00E1C0AE /* GlobalLaunchScreen.xib */; };
 		40B508C924B8102B00213190 /* AppDelegate+Iamport.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B508C824B8102B00213190 /* AppDelegate+Iamport.m */; };
+		44864A12E98F92B41ABD27D1 /* libPods-RokebiESIM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E316FDA3F4D7AC5E4902822C /* libPods-RokebiESIM.a */; };
 		A39B6F392485F35C00EDBBB6 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39B6F382485F35C00EDBBB6 /* File.swift */; };
 		A3DAD91A24F3471F008E7187 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A3DAD91924F3471F008E7187 /* GoogleService-Info.plist */; };
 		E84F0A2DE07E1DB34EB438B3 /* libPods-RokebiGlobal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A92C6295D67C0B8E5C1AC53 /* libPods-RokebiGlobal.a */; };
@@ -49,6 +50,7 @@
 		408CC8F526B8D23C000C8C8A /* libYogaKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libYogaKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		40B508C724B80F9900213190 /* AppDelegate+Iamport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AppDelegate+Iamport.h"; sourceTree = "<group>"; };
 		40B508C824B8102B00213190 /* AppDelegate+Iamport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "AppDelegate+Iamport.m"; sourceTree = "<group>"; };
+		53243CC84E52492C03574642 /* Pods-RokebiESIM.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.debug.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.debug.xcconfig"; sourceTree = "<group>"; };
 		545E33A6D23975A6105DED9D /* Pods-RokebiESIM.usim.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.usim.debug.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.usim.debug.xcconfig"; sourceTree = "<group>"; };
 		5A14F246B0ACACDA32424430 /* Pods-RokebiESIM.usim.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.usim.release.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.usim.release.xcconfig"; sourceTree = "<group>"; };
 		5D4BC6A61C72043444EF8051 /* Pods-RokebiGlobal.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiGlobal.staging.xcconfig"; path = "Target Support Files/Pods-RokebiGlobal/Pods-RokebiGlobal.staging.xcconfig"; sourceTree = "<group>"; };
@@ -59,6 +61,7 @@
 		A39B6F382485F35C00EDBBB6 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		A3DAD91924F3471F008E7187 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ACC63B13A2EE50D80D796AB2 /* Pods-RokebiESIM.global.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.global.debug.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.global.debug.xcconfig"; sourceTree = "<group>"; };
+		E316FDA3F4D7AC5E4902822C /* libPods-RokebiESIM.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RokebiESIM.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -498,7 +501,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RokebiGlobal/Pods-RokebiGlobal-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A36F6F2B26B3E96B00A69BF2 /* ShellScript */ = {
+		3543FD7AB47E336AD2564C2B /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -506,14 +509,19 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
+			name = "[CP] Check Pods Manifest.lock";
 			outputFileListPaths = (
 			);
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RokebiESIM-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Filename\nFIREBASE_INFO_PLIST=GoogleService-Info.plist\n\n# File path for ESIM\nFIREBASE_INFO_ESIM=${PROJECT_DIR}/Configurations/Esim/${FIREBASE_INFO_PLIST}\n\n# File path for Usim\nFIREBASE_INFO_USIM=${PROJECT_DIR}/Configurations/Usim/${FIREBASE_INFO_PLIST}\n\n# File path for Global\nFIREBASE_INFO_GLOBAL=${PROJECT_DIR}/Configurations/Global/${FIREBASE_INFO_PLIST}\n\n# PLIST_DESTINATION\nPLIST_DESTINATION=${PROJECT_DIR}/${FIREBASE_INFO_PLIST}\n\n# Copy selected GoogleService-Info.plist for builds depend on bundle identifier\nif [ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.uangel.rokebi-ESIM\" ]\nthen\necho \"Using ${FIREBASE_INFO_ESIM}\"\ncp \"${FIREBASE_INFO_ESIM}\" \"${PLIST_DESTINATION}\"\nelif [ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.uangel.rokebi-USIM\" ]\nthen\necho \"Using ${FIREBASE_INFO_USIM}\"\ncp \"${FIREBASE_INFO_USIM}\" \"${PLIST_DESTINATION}\"\nelse\necho \"Using ${FIREBASE_INFO_GLOBAL}\"\ncp \"${FIREBASE_INFO_GLOBAL}\" \"${PLIST_DESTINATION}\"\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
