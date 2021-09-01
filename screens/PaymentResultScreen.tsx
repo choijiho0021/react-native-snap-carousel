@@ -89,14 +89,11 @@ const styles = StyleSheet.create({
   btnHome: {
     width: '100%',
     height: 52,
-    position: 'absolute',
-    bottom: 30,
     backgroundColor: colors.clearBlue,
   },
   scrollView: {
     flex: 1,
     backgroundColor: colors.whiteTwo,
-    marginBottom: 52,
   },
 });
 
@@ -238,7 +235,7 @@ class PaymentResultScreen extends Component<
       : success && result === 0;
 
     return (
-      <SafeAreaView style={{flex: 1}}>
+      <SafeAreaView style={{flex: 1, alignItems: 'stretch'}}>
         <ScrollView style={styles.scrollView}>
           <View style={styles.paymentResultView}>
             <Image
