@@ -126,11 +126,6 @@ class ContactScreen extends Component<ContactScreenProps, ContactScreenState> {
           value: i18n.t(esimGlobal ? 'contact:facebookMsg' : 'contact:ktalk'),
           page: 'Open Kakao Talk',
         },
-        {
-          key: 'call',
-          value: i18n.t('contact:call'),
-          page: 'Call Center',
-        },
       ],
       showModal: false,
     };
@@ -190,9 +185,6 @@ class ContactScreen extends Component<ContactScreenProps, ContactScreenState> {
           });
         }
 
-        break;
-      case 'call':
-        Linking.openURL(`tel:0317103969`);
         break;
       default:
         break;
