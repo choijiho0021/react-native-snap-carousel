@@ -65,7 +65,10 @@ const LabelText = ({
 
     return (
       <AppPrice
-        price={utils.toCurrency(isDeduct && deduct ? -deduct : val, currency)}
+        price={utils.toCurrency(
+          isDeduct && deduct ? -deduct : val || 0,
+          currency,
+        )}
         balanceStyle={{color}}
       />
     );
