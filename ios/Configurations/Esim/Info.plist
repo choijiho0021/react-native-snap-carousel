@@ -51,7 +51,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>72</string>
+	<string>8</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
@@ -64,8 +64,8 @@
 	<false/>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
-    <key>CFBundleAllowMixedLocalizations</key>
-    <string>true</string>
+	<key>CFBundleAllowMixedLocalizations</key>
+	<string>true</string>
 	<key>KAKAO_APP_KEY</key>
 	<string>f881469e3b4a140967dfaebe648ede8d</string>
 	<key>LSApplicationCategoryType</key>
@@ -135,16 +135,16 @@
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>
+			<key>tb-svcapp-noti.rokebi.com</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
 			<key>tb-svcapp.rokebi.com</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>
-            <key>tb-svcapp-noti.rokebi.com</key>
-            <dict>
-                <key>NSExceptionAllowsInsecureHTTPLoads</key>
-                <true/>
-            </dict>
 		</dict>
 	</dict>
 	<key>NSCalendarsUsageDescription</key>

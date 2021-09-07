@@ -55,13 +55,13 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>53</string>
+	<string>78</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
 	<string>147522690488197</string>
-    <key>FacebookClientToken</key>
-    <string>a516d23081ee3fb8db8bb9c006431ae6</string>
+	<key>FacebookClientToken</key>
+	<string>a516d23081ee3fb8db8bb9c006431ae6</string>
 	<key>FacebookCodelessDebugLogEnabled</key>
 	<true/>
 	<key>FacebookDisplayName</key>
@@ -75,7 +75,7 @@
 		<string>fbshareextension</string>
 		<string>fbauth2</string>
 		<string>fb-messenger-api</string>
-        <string>fb-messenger-public</string>
+		<string>fb-messenger-public</string>
 		<string>fbapi</string>
 		<string>rokebitalk</string>
 		<string>naversearchapp</string>
