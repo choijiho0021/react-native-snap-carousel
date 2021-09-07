@@ -47,7 +47,7 @@
     "buffer": "^6.0.3",
     "events": "^3.3.0",
     "i18n-js": "^3.8.0",
-    "iamport-react-native": "^1.6.2",
+    "iamport-react-native": "^2.0.0-rc.0",
     "immutable": "^4.0.0-rc.12",
     "moment": "^2.29.1",
     "moment-with-locales-es6": "^1.0.1",

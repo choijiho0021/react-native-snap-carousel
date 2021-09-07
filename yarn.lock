@@ -989,7 +989,7 @@
     "core-js-pure" "^3.0.0"
     "regenerator-runtime" "^0.13.4"
 
-"@babel/runtime@*", "@babel/runtime@^7.0.0", "@babel/runtime@^7.10.2", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.1", "@babel/runtime@^7.14.8", "@babel/runtime@^7.8.4", "@babel/runtime@^7.9.2":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.10.2", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.1", "@babel/runtime@^7.14.8", "@babel/runtime@^7.8.4", "@babel/runtime@^7.9.2":
   "integrity" "sha512-twj3L8Og5SaCRCErB4x4ajbvBIVV77CGeFglHpeg5WC5FF8TZzBWXtTJ4MqaD9QszLYTtr+IsaAL2rEUevb+eg=="
   "resolved" "https://registry.npmjs.org/@babel/runtime/-/runtime-7.14.8.tgz"
   "version" "7.14.8"
@@ -5514,14 +5514,10 @@
   "resolved" "https://registry.npmjs.org/i18n-js/-/i18n-js-3.8.0.tgz"
   "version" "3.8.0"
 
-"iamport-react-native@^1.6.2":
-  "integrity" "sha512-e5WweCQBaE1LS6jMPC5O1zxfiSoT7X3R36HOZPB/+nG/SuW7jBy2lGaHiyHkBnk6Xm4UzfSloCkvRF/6Oq24Bw=="
-  "resolved" "https://registry.npmjs.org/iamport-react-native/-/iamport-react-native-1.6.4.tgz"
-  "version" "1.6.4"
-  dependencies:
-    "prop-types" "^15.6.2"
-    "query-string" "^6.1.0"
-    "react-native-webview" ">=10.8.3"
+"iamport-react-native@^2.0.0-rc.0":
+  "integrity" "sha512-6i5N7RooivCeEx4KiUuxYR6cw/WjZGM4YAkxjAMv2VeI4S5ysYmtA8y/2PRi694OrPTWbkB2diWo45GODYiFCQ=="
+  "resolved" "https://registry.npmjs.org/iamport-react-native/-/iamport-react-native-2.0.0-rc.0.tgz"
+  "version" "2.0.0-rc.0"
 
 "iconv-lite@^0.4.17", "iconv-lite@^0.4.24", "iconv-lite@0.4.24":
   "integrity" "sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA=="
@@ -8511,7 +8507,7 @@
   "resolved" "https://registry.npmjs.org/qs/-/qs-6.5.2.tgz"
   "version" "6.5.2"
 
-"query-string@^6.1.0", "query-string@^6.13.6":
+"query-string@*", "query-string@^6.13.6":
   "integrity" "sha512-XDxAeVmpfu1/6IjyT/gXHOl+S0vQ9owggJ30hhWKdHAsNPOcasn5o9BW0eejZqL2e4vMjhAxoW3jVHcD6mbcYw=="
   "resolved" "https://registry.npmjs.org/query-string/-/query-string-6.14.1.tgz"
   "version" "6.14.1"
