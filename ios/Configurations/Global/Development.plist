@@ -177,8 +177,6 @@
 	<string>카메라 접근을 허용해 주세요</string>
 	<key>NSContactsUsageDescription</key>
 	<string>연락처 접근을 허용해 주세요</string>
-	<key>NSMainNibFile</key>
-	<string>GlobalLaunchScreen</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow esim to access your microphone</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -198,8 +196,6 @@
 		<string>fetch</string>
 		<string>remote-notification</string>
 	</array>
-	<key>UILaunchStoryboardName</key>
-	<string>GlobalLaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
