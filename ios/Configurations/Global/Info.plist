@@ -2,8 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>ko_KR</string>
+	<key>CFBundleAllowMixedLocalizations</key>
+	<string>true</string>
 	<key>CFBundleDisplayName</key>
 	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundleExecutable</key>
@@ -53,13 +53,13 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>78</string>
+	<string>94</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
 	<string>147522690488197</string>
-    <key>FacebookClientToken</key>
-    <string>a516d23081ee3fb8db8bb9c006431ae6</string>
+	<key>FacebookClientToken</key>
+	<string>a516d23081ee3fb8db8bb9c006431ae6</string>
 	<key>FacebookDisplayName</key>
 	<string>Rokebi Global</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
@@ -74,7 +74,11 @@
 	<string></string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
-        <string>fbapi</string>
+		<string>fbshareextension</string>
+		<string>fbauth2</string>
+		<string>fb-messenger-api</string>
+		<string>fb-messenger-public</string>
+		<string>fbapi</string>
 		<string>rokebitalk</string>
 		<string>naversearchapp</string>
 		<string>naversearchthirdlogin</string>
@@ -134,16 +138,16 @@
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>
+			<key>tb-svcapp-noti.rokebi.com</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
 			<key>tb-svcapp.rokebi.com</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>
-            <key>tb-svcapp-noti.rokebi.com</key>
-            <dict>
-                <key>NSExceptionAllowsInsecureHTTPLoads</key>
-                <true/>
-            </dict>
 		</dict>
 	</dict>
 	<key>NSCalendarsUsageDescription</key>
