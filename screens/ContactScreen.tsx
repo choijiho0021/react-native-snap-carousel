@@ -126,7 +126,17 @@ class ContactScreen extends Component<ContactScreenProps, ContactScreenState> {
           value: i18n.t(esimGlobal ? 'contact:facebookMsg' : 'contact:ktalk'),
           page: 'Open Kakao Talk',
         },
-      ],
+      ].concat(
+        esimGlobal
+          ? []
+          : [
+              {
+                key: 'call',
+                value: i18n.t('contact:call'),
+                page: 'Call Center',
+              },
+            ],
+      ),
       showModal: false,
     };
 
