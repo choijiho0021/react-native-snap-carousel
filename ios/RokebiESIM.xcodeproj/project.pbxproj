@@ -21,6 +21,8 @@
 		4060E90926DDAAF100E1C0AE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		4060E90D26DDABFE00E1C0AE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		4060E90E26DDB1C300E1C0AE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		40A621E926E85C740037EE37 /* GlobalLaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 40A621E726E85C740037EE37 /* GlobalLaunchScreen.xib */; };
+		40A621EA26E85C740037EE37 /* GlobalLaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 40A621E726E85C740037EE37 /* GlobalLaunchScreen.xib */; };
 		40B508C924B8102B00213190 /* AppDelegate+Iamport.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B508C824B8102B00213190 /* AppDelegate+Iamport.m */; };
 		6AAD2046E019C427DDA67CA7 /* libPods-RokebiGlobal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9C37503CDBF2A86CB859AF /* libPods-RokebiGlobal.a */; };
 		A39B6F392485F35C00EDBBB6 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39B6F382485F35C00EDBBB6 /* File.swift */; };
@@ -43,6 +45,7 @@
 		31014468118C96283A9816D4 /* Pods-RokebiESIM.global.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.global.release.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.global.release.xcconfig"; sourceTree = "<group>"; };
 		405C1E9424D945870016B43C /* AppCenter-Config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "AppCenter-Config.plist"; path = "RokebiESIM/AppCenter-Config.plist"; sourceTree = "<group>"; };
 		408CC8F526B8D23C000C8C8A /* libYogaKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libYogaKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		40A621E826E85C740037EE37 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = RokebiESIM/Base.lproj/GlobalLaunchScreen.xib; sourceTree = "<group>"; };
 		40B508C724B80F9900213190 /* AppDelegate+Iamport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AppDelegate+Iamport.h"; sourceTree = "<group>"; };
 		40B508C824B8102B00213190 /* AppDelegate+Iamport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "AppDelegate+Iamport.m"; sourceTree = "<group>"; };
 		4CA00839B63DBBC1131836A1 /* Pods-RokebiGlobal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiGlobal.release.xcconfig"; path = "Target Support Files/Pods-RokebiGlobal/Pods-RokebiGlobal.release.xcconfig"; sourceTree = "<group>"; };
@@ -81,6 +84,7 @@
 		13B07FAE1A68108700A75B9A /* RokebiESIM */ = {
 			isa = PBXGroup;
 			children = (
+				40A621E726E85C740037EE37 /* GlobalLaunchScreen.xib */,
 				405C1E9424D945870016B43C /* AppCenter-Config.plist */,
 				40B508C824B8102B00213190 /* AppDelegate+Iamport.m */,
 				40B508C724B80F9900213190 /* AppDelegate+Iamport.h */,
@@ -262,6 +266,7 @@
 				0D9C212F26D37D4D0082F077 /* fonts in Resources */,
 				0D9C213026D37D4D0082F077 /* AppCenter-Config.plist in Resources */,
 				0D9C213126D37D4D0082F077 /* GoogleService-Info.plist in Resources */,
+				40A621EA26E85C740037EE37 /* GlobalLaunchScreen.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,6 +277,7 @@
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				4060E90E26DDB1C300E1C0AE /* Images.xcassets in Resources */,
 				0D75258E2393BEBB000D9C77 /* fonts in Resources */,
+				40A621E926E85C740037EE37 /* GlobalLaunchScreen.xib in Resources */,
 				405C1E9524D945870016B43C /* AppCenter-Config.plist in Resources */,
 				A3DAD91A24F3471F008E7187 /* GoogleService-Info.plist in Resources */,
 			);
@@ -545,6 +551,14 @@
 			);
 			name = LaunchScreen.xib;
 			path = RokebiESIM;
+			sourceTree = "<group>";
+		};
+		40A621E726E85C740037EE37 /* GlobalLaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				40A621E826E85C740037EE37 /* Base */,
+			);
+			name = GlobalLaunchScreen.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
