@@ -196,6 +196,9 @@ class ContactScreen extends Component<ContactScreenProps, ContactScreenState> {
         }
 
         break;
+      case 'call':
+        Linking.openURL(`tel:0317103969`);
+        break;
       default:
         break;
     }
