@@ -58,6 +58,8 @@
 	<string>78</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
+    <key>FirebaseAppDelegateProxyEnabled</key>
+    <true/>
 	<key>FacebookAppID</key>
 	<string>147522690488197</string>
 	<key>FacebookClientToken</key>

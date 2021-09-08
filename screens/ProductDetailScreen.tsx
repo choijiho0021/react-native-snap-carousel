@@ -313,7 +313,9 @@ class ProductDetailScreen extends Component<
         </AppText>
 
         <AppText style={styles.kakaoPlus}>
-          {i18n.t('prodDetail:KakaoPlus')}
+          {i18n.t(
+            esimGlobal ? 'prodDetail:FacebookMessage' : 'prodDetail:KakaoPlus',
+          )}
         </AppText>
         <AppButton
           iconName={
