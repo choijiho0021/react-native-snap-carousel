@@ -6,7 +6,7 @@ import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import i18n from '@/utils/i18n';
-import analytics from '@react-native-firebase/analytics';
+import analytics, {firebase} from '@react-native-firebase/analytics';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {Component} from 'react';
 import {
@@ -17,7 +17,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {AppEventsLogger} from 'react-native-fbsdk';
+import {AppEventsLogger, Settings} from 'react-native-fbsdk';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {
   getTrackingStatus,
@@ -156,6 +156,9 @@ class TutorialScreen extends Component<
     });
 
     if (this.state.status === 'authorized') {
+      await firebase.analytics().setAnalyticsCollectionEnabled(true);
+      await Settings.setAdvertiserTrackingEnabled(true);
+
       analytics().logEvent('tutorial_begin');
     }
   }
@@ -176,8 +179,11 @@ class TutorialScreen extends Component<
     this.props.navigation.goBack();
   };
 
-  completed = () => {
+  completed = async () => {
     if (this.state.status === 'authorized') {
+      await firebase.analytics().setAnalyticsCollectionEnabled(true);
+      await Settings.setAdvertiserTrackingEnabled(true);
+
       AppEventsLogger.logEvent('fb_mobile_tutorial_completion');
       analytics().logEvent('tutorial_complete');
     }
