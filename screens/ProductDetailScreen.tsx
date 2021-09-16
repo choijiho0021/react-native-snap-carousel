@@ -174,17 +174,18 @@ class ProductDetailScreen extends Component<
 
   // TODO : detailInfo 정보 비교 방법
   shouldComponentUpdate(
-    preProps: ProductDetailScreenProps,
-    preState: ProductDetailScreenState,
+    nextProps: ProductDetailScreenProps,
+    nextState: ProductDetailScreenState,
   ) {
     const {tabIdx, height2} = this.state;
     const {detailInfo, detailCommon} = this.props.product;
 
     return (
-      preState.tabIdx !== tabIdx ||
-      preState.height2 !== height2 ||
-      preProps.product.detailInfo !== detailInfo ||
-      preProps.product.detailCommon !== detailCommon
+      nextState.tabIdx !== tabIdx ||
+      nextState.height2 !== height2 ||
+      nextProps.product.detailInfo !== detailInfo ||
+      nextProps.product.detailCommon !== detailCommon ||
+      nextProps.pending !== this.props.pending
     );
   }
 

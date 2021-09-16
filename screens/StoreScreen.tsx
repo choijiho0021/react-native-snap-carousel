@@ -131,9 +131,7 @@ class StoreScreen extends Component<StoreScreenProps, StoreScreenState> {
     nextProps: StoreScreenProps,
     nextState: StoreScreenState,
   ) {
-    if (this.props !== nextProps || this.state.index !== nextState.index)
-      return true;
-    return false;
+    return this.props !== nextProps || this.state.index !== nextState.index;
   }
 
   componentDidUpdate(prevProps: StoreScreenProps) {

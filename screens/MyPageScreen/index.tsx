@@ -222,7 +222,8 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
     return (
       this.props.account.userPictureUrl !== nextProps.account.userPictureUrl ||
       this.props.order.orders !== nextProps.order.orders ||
-      this.props.navigation.isFocused()
+      this.props.navigation.isFocused() ||
+      this.props.pending !== nextProps.pending
     );
   }
 
