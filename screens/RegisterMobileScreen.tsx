@@ -37,6 +37,7 @@ import {
   SafeAreaView,
   StatusBar,
   StyleSheet,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -45,7 +46,7 @@ import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import {RkbImage} from '../redux/api/accountApi';
 
-const {esimGlobal} = Env.get();
+const {esimGlobal, isProduction} = Env.get();
 // const esimGlobal = false;
 
 const styles = StyleSheet.create({
@@ -453,7 +454,9 @@ class RegisterMobileScreen extends Component<
 
         API.User.sendSms({user: value, abortController: this.controller})
           .then((resp) => {
-            if (resp.result === 0) {
+            // bhtak
+            // temporary
+            if (resp.result === 0 || !isProduction) {
               this.setState({
                 authNoti: true,
                 timeout: false,
@@ -483,6 +486,16 @@ class RegisterMobileScreen extends Component<
     // PIN이 맞는지 먼저 확인한다.
 
     console.log('@@@ press pin', mobile, value);
+
+    if (!isProduction) {
+      // bhtak, temporary
+      this.signIn({mobile, pin}).then((resp) => {
+        if (resp.result < 0) {
+          this.setState({newUser: true, authorized: true});
+        }
+      });
+      return;
+    }
 
     if (authorized) return;
 
