@@ -176,8 +176,8 @@ const getTitle = (localOp?: RkbLocalOp) => {
   return localOp ? localOp.name.split('-')[0] : '';
 };
 
-const getProduct = (store?: Store) => {
-  const id = store ? storeId[store] : '';
+const getProduct = (categoryCode?: string) => {
+  const id = categoryCode ?? '';
   return api.callHttpGet(
     api.httpUrl(`${api.path.prodList}${id ? `/${id}` : ''}?_format=hal_json`),
     toProduct,

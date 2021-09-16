@@ -6,7 +6,6 @@ import {Map as ImmutableMap} from 'immutable';
 import {API} from '@/redux/api';
 import {RkbLocalOp, RkbProduct} from '@/redux/api/productApi';
 
-const getProd = createAsyncThunk('product/getProd', API.Product.getProduct);
 const getLocalOp = createAsyncThunk(
   'product/getLocalOp',
   API.Product.getLocalOp,
@@ -15,6 +14,18 @@ const getProdDetail = createAsyncThunk(
   'product/getProdDetail',
   API.Page.getProductDetails,
 );
+
+const getProd = createAsyncThunk('product/getProd', (param, {dispatch}) => {
+  const {category, getProduct} = API.Product;
+  Object.entries(category).forEach(([k, v]) => {
+    getProduct(v).then((payload) => {
+      dispatch({
+        type: 'product/updateProduct',
+        payload,
+      });
+    });
+  });
+});
 
 // const getProdListWithToast = reflectWithToast(getProdList, Toast.NOT_LOADED);
 
@@ -46,6 +57,15 @@ const slice = createSlice({
     setProdOfCountry: (state, action) => {
       state.prodOfCountry = action.payload;
     },
+    updateProduct: (state, action) => {
+      const {result, objects} = action.payload;
+
+      if (result === 0 && objects.length > 0) {
+        state.prodList = state.prodList.merge(
+          ImmutableMap(objects.map((item) => [item.key, item])),
+        );
+      }
+    },
   },
 
   extraReducers: (builder) => {
@@ -58,13 +78,13 @@ const slice = createSlice({
       }
     });
 
-    builder.addCase(getProd.fulfilled, (state, action) => {
-      const {result, objects} = action.payload;
+    // builder.addCase(getProd.fulfilled, (state, action) => {
+    //   const {result, objects} = action.payload;
 
-      if (result === 0 && objects.length > 0) {
-        state.prodList = ImmutableMap(objects.map((item) => [item.key, item]));
-      }
-    });
+    //   if (result === 0 && objects.length > 0) {
+    //     state.prodList = ImmutableMap(objects.map((item) => [item.key, item]));
+    //   }
+    // });
 
     builder.addCase(getLocalOp.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
