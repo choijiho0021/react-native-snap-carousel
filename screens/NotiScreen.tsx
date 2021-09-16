@@ -6,13 +6,17 @@ import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {RkbNoti} from '@/redux/api/notiApi';
-import {RkbInfo} from '@/redux/api/pageApi';
 import utils from '@/redux/api/utils';
 import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
 import {actions as boardActions, BoardAction} from '@/redux/modules/board';
+import {
+  actions as infoActions,
+  InfoAction,
+  InfoModelState,
+} from '@/redux/modules/info';
 import {
   actions as notiActions,
   NotiAction,
@@ -149,16 +153,17 @@ type NotiScreenProps = {
   order: OrderModelState;
   account: AccountModelState;
   noti: NotiModelState;
+  info: InfoModelState;
   action: {
     noti: NotiAction;
     board: BoardAction;
     order: OrderAction;
+    info: InfoAction;
   };
 };
 
 type NotiScreenState = {
   mode: 'noti' | 'info';
-  info: RkbInfo[];
 };
 
 class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
@@ -167,15 +172,17 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
 
     this.state = {
       mode: 'noti',
-      info: [],
     };
 
     this.onRefresh = this.onRefresh.bind(this);
   }
 
   componentDidMount() {
-    const {params} = this.props.route;
-    const {mode = 'info', info = []} = params || {};
+    const {
+      info: {infoMap},
+      route: {params},
+    } = this.props;
+    const {mode = 'info'} = params || {};
 
     this.props.navigation.setOptions({
       title: null,
@@ -186,8 +193,12 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
 
     Analytics.trackEvent('Page_View_Count', {page: 'Noti'});
 
+    if (mode === 'info' && !infoMap.has('info')) {
+      this.props.action.info.getInfoList('info');
+    }
+
     this.props.action.board.getIssueList();
-    this.setState({mode, info});
+    this.setState({mode});
   }
 
   // 공지사항의 경우 notiType이 없으므로 Notice/0으로 기본값 설정
@@ -274,11 +285,12 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
 
   render() {
     const {
+      info: {infoMap},
       noti: {notiList},
       pending,
     } = this.props;
-    const {mode, info} = this.state;
-    const data = mode === 'info' ? info : notiList;
+    const {mode} = this.state;
+    const data = mode === 'info' ? infoMap.get('info') : notiList;
 
     return (
       <View key="container" style={styles.container}>
@@ -303,11 +315,12 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
 }
 
 export default connect(
-  ({account, order, board, noti, status}: RootState) => ({
+  ({account, order, board, noti, info, status}: RootState) => ({
     account,
     order,
     board,
     noti,
+    info,
     pending: status.pending[notiActions.getNotiList.typePrefix] || false,
   }),
   (dispatch) => ({
@@ -316,6 +329,7 @@ export default connect(
       board: bindActionCreators(boardActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
       noti: bindActionCreators(notiActions, dispatch),
+      info: bindActionCreators(infoActions, dispatch),
     },
   }),
 )(NotiScreen);

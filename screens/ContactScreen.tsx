@@ -170,7 +170,6 @@ class ContactScreen extends Component<ContactScreenProps, ContactScreenState> {
         navigation.navigate('Noti', {
           mode: 'info',
           title: i18n.t('contact:notice'),
-          info: this.props.info.infoMap.get('info'),
         });
         break;
       case 'faq':

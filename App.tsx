@@ -126,7 +126,6 @@ async function loadResourcesAsync() {
     store.dispatch(simActions.getSimCardList());
   }
   // 공지 사항 가져오기
-  store.dispatch(infoActions.getInfoList('info'));
   store.dispatch(infoActions.getInfoList('info:home'));
 }
 
