@@ -21,7 +21,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {retrieveData} from '@/utils/utils';
 import store from '@/store';
 
-const {esimApp} = Env.get();
+const {esimApp, esimGlobal} = Env.get();
 
 const SplashScreen = require('react-native-splash-screen').default;
 
@@ -77,7 +77,11 @@ const App = ({skipLoadingScreen}: {skipLoadingScreen: boolean}) => {
           {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
           {showSplash ? (
             <Video
-              source={require('./assets/images/rokebi_intro.mp4')}
+              source={
+                esimGlobal
+                  ? require('./assets/images/intro.mp4')
+                  : require('./assets/images/rokebi_intro.mp4')
+              }
               style={styles.backgroundVideo}
               resizeMode="contain"
             />

@@ -31,9 +31,6 @@ import {Map as ImmutableMap} from 'immutable';
 import React, {Component, memo} from 'react';
 import {
   Appearance,
-  FlatList,
-  Keyboard,
-  Pressable,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -41,6 +38,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
@@ -72,12 +70,13 @@ const styles = StyleSheet.create({
     height: 46,
     borderBottomColor: colors.lightGrey,
     borderBottomWidth: 0.5,
-    // paddingVertical: 13,
+    paddingHorizontal: 20,
   },
   confirm: {
     width: '100%',
     height: 52,
     backgroundColor: colors.clearBlue,
+    justifyContent: 'flex-end',
   },
   divider: {
     marginTop: 30,
@@ -99,7 +98,8 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: 20,
     flex: 1,
-    justifyContent: 'flex-start',
+    alignContent: 'stretch',
+    flexDirection: 'column',
     backgroundColor: colors.white,
   },
   smsButtonText: {
@@ -128,6 +128,9 @@ const styles = StyleSheet.create({
     ...appStyles.normal22Text,
     marginTop: 30,
     paddingHorizontal: 20,
+  },
+  flexStyle: {
+    flex: 1,
   },
 });
 
@@ -639,6 +642,7 @@ class RegisterMobileScreen extends Component<
   renderItem({item}: {item: ConfirmItem}) {
     return (
       <RegisterMobileListItem
+        key={item.key}
         item={item}
         confirm={this.state.confirm}
         onPress={this.onPress}
@@ -684,31 +688,34 @@ class RegisterMobileScreen extends Component<
 
     return (
       <SafeAreaView style={styles.container}>
-        <Pressable style={styles.container} onPress={() => Keyboard.dismiss()}>
-          <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
+        <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
 
-          <AppBackButton
-            title={i18n.t('mobile:header')}
-            onPress={() => {
-              if (socialLogin) {
-                this.setState({
-                  socialLogin: false,
-                  newUser: false,
-                  authorized: undefined,
-                });
-              } else {
-                this.setState({isFocused: false});
-                this.props.navigation.goBack();
-              }
-            }}
-          />
-
+        <AppBackButton
+          title={i18n.t('mobile:header')}
+          onPress={() => {
+            this.setState({
+              ...initialState,
+              isFocused: false,
+            });
+            if (!socialLogin) this.props.navigation.goBack();
+          }}
+        />
+        <KeyboardAwareScrollView
+          contentContainerStyle={[
+            {
+              flexDirection: 'column',
+              alignContent: 'stretch',
+            },
+            !socialLogin && !newUser && styles.flexStyle,
+          ]}
+          keyboardShouldPersistTaps="handled"
+          resetScrollToCoords={{x: 0, y: 0}}>
           {socialLogin
             ? this.renderProfile(email, mobile, profileImageUrl)
             : this.renderTitle()}
 
           {!socialLogin && !esimGlobal && (
-            <View>
+            <View key="mobile">
               <AppText style={styles.mobileAuth}>
                 {i18n.t('mobile:easyLogin')}
               </AppText>
@@ -743,55 +750,46 @@ class RegisterMobileScreen extends Component<
 
           {!socialLogin && esimGlobal && (
             <View
+              key="imgRokebi"
               style={{flex: 1, justifyContent: 'flex-end', paddingBottom: 52}}>
               <AppIcon name="textLogo" />
             </View>
           )}
 
           {newUser && authorized && (
-            <View style={{flex: 1}}>
-              <View style={{flex: 1}}>
-                <InputEmail
-                  email={email}
-                  style={{
-                    marginTop: socialLogin ? 20 : 38,
-                    paddingHorizontal: 20,
-                  }}
-                  inputRef={this.email}
-                />
+            <View>
+              <InputEmail
+                email={email}
+                style={{
+                  marginTop: socialLogin ? 20 : 38,
+                  paddingHorizontal: 20,
+                }}
+                inputRef={this.email}
+              />
 
-                <AppText
-                  style={[styles.helpText, {color: colors.errorBackground}]}>
-                  {isValid ? null : error}
-                </AppText>
+              <AppText
+                style={[styles.helpText, {color: colors.errorBackground}]}>
+                {isValid ? null : error}
+              </AppText>
+              <View key="divider" style={styles.divider} />
 
-                <View key="divider" style={styles.divider} />
-
-                <View key="list" style={{paddingHorizontal: 20, flex: 1}}>
-                  <FlatList
-                    data={this.confirmList}
-                    renderItem={this.renderItem}
-                    extraData={confirm}
-                  />
-                </View>
-
-                <View key="button">
-                  <AppButton
-                    style={styles.confirm}
-                    title={i18n.t('ok')}
-                    titleStyle={styles.text}
-                    disabled={disableButton}
-                    disableColor={colors.black}
-                    disableBackgroundColor={colors.lightGrey}
-                    onPress={this.onSubmit}
-                  />
-                </View>
-              </View>
+              {this.confirmList.map((item) => this.renderItem({item}))}
             </View>
           )}
+        </KeyboardAwareScrollView>
+        {newUser && authorized && (
+          <AppButton
+            style={styles.confirm}
+            title={i18n.t('ok')}
+            titleStyle={styles.text}
+            disabled={disableButton}
+            disableColor={colors.black}
+            disableBackgroundColor={colors.lightGrey}
+            onPress={this.onSubmit}
+          />
+        )}
 
-          <AppActivityIndicator visible={this.props.pending || loading} />
-        </Pressable>
+        <AppActivityIndicator visible={this.props.pending || loading} />
       </SafeAreaView>
     );
   }

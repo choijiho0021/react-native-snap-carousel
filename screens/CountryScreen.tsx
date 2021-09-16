@@ -31,7 +31,7 @@ import {
   ProductModelState,
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
-import analytics from '@react-native-firebase/analytics';
+import analytics, {firebase} from '@react-native-firebase/analytics';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
@@ -44,6 +44,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+import {Settings} from 'react-native-fbsdk';
 import {
   getTrackingStatus,
   TrackingStatus,
@@ -401,6 +402,8 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
 
     if (status === 'authorized') {
       Analytics.trackEvent('Click_cart');
+      await firebase.analytics().setAnalyticsCollectionEnabled(true);
+      await Settings.setAdvertiserTrackingEnabled(true);
 
       analytics().logEvent('toCart', {
         item: purchaseItems[0].title,
