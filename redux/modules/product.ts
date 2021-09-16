@@ -5,7 +5,6 @@ import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
 import {API} from '@/redux/api';
 import {RkbLocalOp, RkbProduct} from '@/redux/api/productApi';
-import {reflectWithToast, Toast} from './toast';
 
 const getProd = createAsyncThunk('product/getProd', API.Product.getProduct);
 const getLocalOp = createAsyncThunk(
