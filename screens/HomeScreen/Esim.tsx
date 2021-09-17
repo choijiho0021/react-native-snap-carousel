@@ -54,10 +54,9 @@ import RNExitApp from 'react-native-exit-app';
 import {TabView} from 'react-native-tab-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {checkFistLaunch, requestPermission} from './component/permission';
 import PromotionCarousel from './component/PromotionCarousel';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import {removeData} from '@/utils/utils';
 
 const {esimGlobal} = Env.get();
 

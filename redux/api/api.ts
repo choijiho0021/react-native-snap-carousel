@@ -292,7 +292,7 @@ const callHttp = async <T>(
     }
     return failure(FAILED, response.statusText, response.status);
   } catch (err) {
-    console.log('API failed', err);
+    console.log('API failed', err, url);
     return failure(FAILED, 'API failed', 498);
   }
 };

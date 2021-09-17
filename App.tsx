@@ -110,23 +110,17 @@ async function login() {
 }
 
 async function loadResourcesAsync() {
-  // get store info
-  const st = await AsyncStorage.getItem('cart.store');
-  store.dispatch(cartActions.setStore({store: st}));
-
   // clear caches
   await store.dispatch(accountActions.clearCookies());
 
   // load product list
-  store.dispatch(productActions.getProd(st as Store));
-  store.dispatch(productActions.getLocalOp());
-  store.dispatch(promotionActions.getPromotion());
+  store.dispatch(productActions.init());
 
   if (!esimApp) {
     store.dispatch(simActions.getSimCardList());
+    // 공지 사항 가져오기
+    store.dispatch(infoActions.getInfoList('info:home'));
   }
-  // 공지 사항 가져오기
-  store.dispatch(infoActions.getInfoList('info:home'));
 }
 
 function handleLoadingError(error) {

@@ -5,6 +5,7 @@ import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
 import {API} from '@/redux/api';
 import {RkbLocalOp, RkbProduct} from '@/redux/api/productApi';
+import {actions as PromotionActions} from './promotion';
 
 const getLocalOp = createAsyncThunk(
   'product/getLocalOp',
@@ -15,16 +16,17 @@ const getProdDetail = createAsyncThunk(
   API.Page.getProductDetails,
 );
 
-const getProd = createAsyncThunk('product/getProd', (param, {dispatch}) => {
-  const {category, getProduct} = API.Product;
-  Object.entries(category).forEach(([k, v]) => {
-    getProduct(v).then((payload) => {
-      dispatch({
-        type: 'product/updateProduct',
-        payload,
-      });
-    });
-  });
+const getProd = createAsyncThunk('product/getProd', API.Product.getProduct);
+
+const init = createAsyncThunk('product/init', (_, {dispatch}) => {
+  const {category} = API.Product;
+
+  dispatch(getLocalOp())
+    .then((_) => dispatch(getProd(category.asia)))
+    .then((_) => dispatch(getProd(category.europe)))
+    .then((_) => dispatch(getProd(category.usaAu)))
+    .then((_) => dispatch(getProd(category.multi)))
+    .then((_) => dispatch(PromotionActions.getPromotion()));
 });
 
 // const getProdListWithToast = reflectWithToast(getProdList, Toast.NOT_LOADED);
@@ -78,13 +80,15 @@ const slice = createSlice({
       }
     });
 
-    // builder.addCase(getProd.fulfilled, (state, action) => {
-    //   const {result, objects} = action.payload;
+    builder.addCase(getProd.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
 
-    //   if (result === 0 && objects.length > 0) {
-    //     state.prodList = ImmutableMap(objects.map((item) => [item.key, item]));
-    //   }
-    // });
+      if (result === 0 && objects.length > 0) {
+        state.prodList = state.prodList.merge(
+          ImmutableMap(objects.map((item) => [item.key, item])),
+        );
+      }
+    });
 
     builder.addCase(getLocalOp.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
@@ -103,6 +107,7 @@ export const actions = {
   getProdDetail,
   getLocalOp,
   getProd,
+  init,
 };
 export type ProductAction = typeof actions;
 

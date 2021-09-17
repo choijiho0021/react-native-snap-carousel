@@ -189,11 +189,12 @@ const StoreList: React.FC<StoreListProps> = ({
     if (storeListRef) {
       storeListRef.current = {
         scrollToIndex: ({index}) => {
-          ref.current?.scrollToIndex({index, animated: false});
+          if (data.length > 0)
+            ref.current?.scrollToIndex({index, animated: false});
         },
       };
     }
-  }, [storeListRef]);
+  }, [data.length, storeListRef]);
 
   return (
     <View style={appStyles.container}>
