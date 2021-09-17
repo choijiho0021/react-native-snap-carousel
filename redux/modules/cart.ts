@@ -11,11 +11,9 @@ import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {PaymentResult} from '@/redux/models/paymentResult';
 import api from '@/redux/api/api';
-import AsyncStorage from '@react-native-community/async-storage';
+import {Currency} from '@/redux/api/productApi';
 import {actions as orderAction} from './order';
 import {actions as accountAction} from './account';
-import {actions as productAction} from './product';
-import {Currency} from '../api/productApi';
 
 const {esimApp, esimCurrency} = Env.get();
 
@@ -78,7 +76,6 @@ const cartAddAndGet = createAsyncThunk(
 );
 
 export type PaymentReq = {key: string; title: string; amount: Currency};
-export type Store = 'kr' | 'global';
 
 export interface CartModelState {
   result: number;
@@ -91,7 +88,6 @@ export interface CartModelState {
   lastTab: ImmutableList<string>;
   pymPrice?: Currency;
   deduct?: Currency;
-  store: Store;
 }
 
 const onSuccess = (state, action) => {
@@ -113,7 +109,6 @@ const initialState: CartModelState = {
   pymReq: undefined,
   pymResult: undefined,
   lastTab: ImmutableList<string>(['Home']),
-  store: 'kr',
 };
 
 const slice = createSlice({
@@ -193,11 +188,6 @@ const slice = createSlice({
         (item) => purchaseItems.findIndex((p) => p.key === item.key) < 0,
       );
     },
-
-    setStore: (state, action) => {
-      const {store} = action.payload;
-      state.store = store;
-    },
   },
 
   extraReducers: (builder) => {
@@ -251,15 +241,6 @@ const slice = createSlice({
     builder.addCase(rechargeAccount.fulfilled, onSuccess);
   },
 });
-
-const changeStore = createAsyncThunk(
-  'cart/changeStore',
-  ({store}: {store: Store}, {dispatch}) => {
-    dispatch(slice.actions.setStore({store}));
-    dispatch(productAction.getProd(store));
-    AsyncStorage.setItem('cart.store', store);
-  },
-);
 
 const payNorder = createAsyncThunk(
   'cart/payNorder',
@@ -370,7 +351,6 @@ export const actions = {
   payNorder,
   cartAddAndGet,
   checkStockAndPurchase,
-  changeStore,
 };
 export type CartAction = typeof actions;
 
