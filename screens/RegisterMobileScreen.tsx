@@ -751,7 +751,11 @@ class RegisterMobileScreen extends Component<
           {!socialLogin && esimGlobal && (
             <View
               key="imgRokebi"
-              style={{flex: 1, justifyContent: 'flex-end', paddingBottom: 52}}>
+              style={{
+                flex: 1,
+                justifyContent: 'flex-end',
+                paddingBottom: 52,
+              }}>
               <AppIcon name="textLogo" />
             </View>
           )}

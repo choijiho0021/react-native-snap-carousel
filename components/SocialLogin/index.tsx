@@ -26,11 +26,8 @@ export type AuthCallback = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    marginBottom: 60,
+    justifyContent: 'flex-end',
+    paddingBottom: 60,
   },
   divider: {
     marginHorizontal: 20,
