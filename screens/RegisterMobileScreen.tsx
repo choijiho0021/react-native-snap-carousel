@@ -1,3 +1,20 @@
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {Map as ImmutableMap} from 'immutable';
+import React, {Component, memo} from 'react';
+import {
+  Appearance,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -25,24 +42,7 @@ import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import validationUtil from '@/utils/validationUtil';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {Map as ImmutableMap} from 'immutable';
-import React, {Component, memo} from 'react';
-import {
-  Appearance,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import _ from 'underscore';
-import {RkbImage} from '../redux/api/accountApi';
+import {RkbImage} from '@/redux/api/accountApi';
 
 const {esimGlobal, isProduction} = Env.get();
 // const esimGlobal = false;
@@ -665,26 +665,82 @@ class RegisterMobileScreen extends Component<
     </View>
   );
 
+  renderInput = () => {
+    const {mobile, timeout, isFocused, authNoti, authorized, loading} =
+      this.state;
+    const editablePin = !!mobile && authNoti && !authorized && !loading;
+
+    return (
+      <View key="mobile">
+        <AppText style={styles.mobileAuth}>
+          {i18n.t('mobile:easyLogin')}
+        </AppText>
+        {isFocused && (
+          <InputMobile
+            style={{marginTop: 30, paddingHorizontal: 20}}
+            onPress={this.onChangeText('mobile')}
+            authNoti={authNoti}
+            disabled={(authNoti && authorized) || loading}
+            authorized={authorized}
+          />
+        )}
+
+        {isFocused && (
+          <InputPinInTime
+            style={{marginTop: 20, paddingHorizontal: 20}}
+            forwardRef={this.authInputRef}
+            editable={editablePin}
+            // clickable={editablePin && !timeout}
+            clickable
+            authorized={mobile ? authorized : undefined}
+            countdown={authNoti && !authorized && !timeout}
+            onTimeout={this.onTimeout}
+            onPress={this.onPressPin}
+            duration={180}
+          />
+        )}
+      </View>
+    );
+  };
+
+  renderLogin = () => {
+    const {newUser} = this.state;
+    return (
+      <View style={{flex: 1}}>
+        {this.renderTitle()}
+        {!esimGlobal && this.renderInput()}
+        {!newUser && (
+          <View style={{flex: 1, justifyContent: 'center'}}>
+            <SocialLogin onAuth={this.onAuth} />
+          </View>
+        )}
+        {esimGlobal && (
+          <View
+            key="imgRokebi"
+            style={{justifyContent: 'flex-end', paddingBottom: 52}}>
+            <AppIcon name="textLogo" />
+          </View>
+        )}
+      </View>
+    );
+  };
+
   render() {
     const {
       mobile,
       authorized,
       confirm,
-      authNoti,
       newUser,
-      timeout,
       emailValidation,
       loading,
       darkMode,
       email,
       socialLogin,
       profileImageUrl,
-      isFocused,
     } = this.state;
     const {isValid, error} = emailValidation || {};
     const disableButton =
       !authorized || (newUser && !(confirm.get('0') && confirm.get('1')));
-    const editablePin = !!mobile && authNoti && !authorized && !loading;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -712,49 +768,7 @@ class RegisterMobileScreen extends Component<
           resetScrollToCoords={{x: 0, y: 0}}>
           {socialLogin
             ? this.renderProfile(email, mobile, profileImageUrl)
-            : this.renderTitle()}
-
-          {!socialLogin && !esimGlobal && (
-            <View key="mobile">
-              <AppText style={styles.mobileAuth}>
-                {i18n.t('mobile:easyLogin')}
-              </AppText>
-              {isFocused && (
-                <InputMobile
-                  style={{marginTop: 30, paddingHorizontal: 20}}
-                  onPress={this.onChangeText('mobile')}
-                  authNoti={authNoti}
-                  disabled={(authNoti && authorized) || loading}
-                  authorized={authorized}
-                />
-              )}
-
-              {isFocused && (
-                <InputPinInTime
-                  style={{marginTop: 20, paddingHorizontal: 20}}
-                  forwardRef={this.authInputRef}
-                  editable={editablePin}
-                  // clickable={editablePin && !timeout}
-                  clickable
-                  authorized={mobile ? authorized : undefined}
-                  countdown={authNoti && !authorized && !timeout}
-                  onTimeout={this.onTimeout}
-                  onPress={this.onPressPin}
-                  duration={180}
-                />
-              )}
-            </View>
-          )}
-
-          {!socialLogin && !newUser && <SocialLogin onAuth={this.onAuth} />}
-
-          {!socialLogin && esimGlobal && (
-            <View
-              key="imgRokebi"
-              style={{flex: 1, justifyContent: 'flex-end', paddingBottom: 52}}>
-              <AppIcon name="textLogo" />
-            </View>
-          )}
+            : this.renderLogin()}
 
           {newUser && authorized && (
             <View>
