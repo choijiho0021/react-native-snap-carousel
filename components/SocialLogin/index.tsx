@@ -1,9 +1,9 @@
-import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
-import i18n from '@/utils/i18n';
 import appleAuth from '@invertase/react-native-apple-authentication';
 import React, {memo} from 'react';
 import {StyleSheet, View} from 'react-native';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
 import AppText from '../AppText';
 import AppleLogin from './AppleLogin';
 
@@ -26,11 +26,7 @@ export type AuthCallback = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    marginBottom: 60,
+    justifyContent: 'center',
   },
   divider: {
     marginHorizontal: 20,
