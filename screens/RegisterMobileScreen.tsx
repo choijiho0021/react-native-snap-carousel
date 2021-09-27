@@ -757,6 +757,9 @@ class RegisterMobileScreen extends Component<
           }}
         />
         <KeyboardAwareScrollView
+          enableOnAndroid
+          enableResetScrollToCoords={false}
+          keyboardShouldPersistTaps="handled"
           contentContainerStyle={[
             {
               flexDirection: 'column',
@@ -764,8 +767,8 @@ class RegisterMobileScreen extends Component<
             },
             !socialLogin && !newUser && styles.flexStyle,
           ]}
-          keyboardShouldPersistTaps="handled"
-          resetScrollToCoords={{x: 0, y: 0}}>
+          // resetScrollToCoords={{x: 0, y: 0}}
+        >
           {socialLogin
             ? this.renderProfile(email, mobile, profileImageUrl)
             : this.renderLogin()}

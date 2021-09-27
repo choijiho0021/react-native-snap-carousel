@@ -135,7 +135,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
     InitializeFlipper(application);
   #endif
 
-  [FIRApp configure];
+  if ([FIRApp defaultApp] == nil) {
+      [FIRApp configure];
+    }
 
   [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
   
