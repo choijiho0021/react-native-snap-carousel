@@ -382,10 +382,11 @@ class RegisterSimScreen extends Component<
         <AppActivityIndicator visible={this.props.pending} />
 
         <KeyboardAwareScrollView
-          innerRef={(ref) => (this.scrollRef = ref)}
-          resetScrollToCoords={{x: 0, y: 0}}
-          contentContainerStyle={styles.container}
           enableOnAndroid
+          enableResetScrollToCoords={false}
+          innerRef={(ref) => (this.scrollRef = ref)}
+          // resetScrollToCoords={{x: 0, y: 0}}
+          contentContainerStyle={styles.container}
           extraScrollHeight={50}
           // scrollEnabled={isDeviceSize('small')}
         >

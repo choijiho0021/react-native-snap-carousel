@@ -880,8 +880,10 @@ class PymMethodScreen extends Component<
     return (
       <SafeAreaView style={styles.container}>
         <KeyboardAwareScrollView
-          resetScrollToCoords={{x: 0, y: 0}}
-          enableOnAndroid>
+          enableOnAndroid
+          enableResetScrollToCoords={false}
+          // resetScrollToCoords={{x: 0, y: 0}}
+        >
           <PaymentItemInfo
             cart={purchaseItems}
             pymReq={pymReq}
