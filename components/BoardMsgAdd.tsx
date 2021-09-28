@@ -493,10 +493,11 @@ class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
         <AppActivityIndicator visible={this.props.pending} />
 
         <KeyboardAwareScrollView
-          resetScrollToCoords={{x: 0, y: 0}}
+          enableOnAndroid
+          enableResetScrollToCoords={false}
+          // resetScrollToCoords={{x: 0, y: 0}}
           contentContainerStyle={styles.modalInner}
           extraScrollHeight={extraHeight}
-          enableOnAndroid
           innerRef={(ref) => {
             this.scrollRef = ref;
           }}>

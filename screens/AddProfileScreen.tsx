@@ -378,9 +378,10 @@ class AddProfileScreen extends Component {
         style={styles.container}
         forceInset={{top: 'never', bottom: 'always'}}>
         <KeyboardAwareScrollView
-          resetScrollToCoords={{x: 0, y: 0}}
-          // contentContainerStyle={styles.scrollContainer}
           enableOnAndroid
+          enableResetScrollToCoords={false}
+          // resetScrollToCoords={{x: 0, y: 0}}
+          // contentContainerStyle={styles.scrollContainer}
           // extraScrollHeight={60}
           innerRef={(ref) => {
             this.scroll = ref;

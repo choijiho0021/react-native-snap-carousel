@@ -7,12 +7,9 @@
 
 #import <React/RCTBridgeDelegate.h>
 #import <UIKit/UIKit.h>
-#import <UMCore/UMAppDelegateWrapper.h>
-#import <UserNotifications/UNUserNotificationCenter.h>
-#import <Firebase.h>
 
-@interface AppDelegate : UMAppDelegateWrapper <UIApplicationDelegate, RCTBridgeDelegate, UNUserNotificationCenterDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate>
 
-@property(nonatomic, strong) UIWindow *window;
+@property (nonatomic, strong) UIWindow *window;
 
 @end
