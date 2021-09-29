@@ -58,6 +58,8 @@
   "KRW": "KRW",
   "USD": "USD",
 
+  "home:disablePopup": "Disable For A Week",
+
   "home:exitApp": "Close App",
   "home:guide": "User Guide",
   "home:checkGuide": "Check",
