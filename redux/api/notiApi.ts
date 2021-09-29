@@ -1,7 +1,10 @@
 import _ from 'underscore';
+import Env from '@/environment';
+import Config from 'react-native-config';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import {RkbInfo} from './pageApi';
-import Config from 'react-native-config';
+
+const {appId, esimGlobal} = Env.get();
 
 export type RkbNoti = RkbInfo & {
   bodyTitle?: string;
@@ -181,7 +184,11 @@ const sendDisconnect = ({mobile, iccid}: {mobile: string; iccid: string}) => {
       ? `${api.rokHttpUrl(
           `${api.path.rokApi.noti.user}/${mobile}/account/disconnect`,
         )}`
-      : `http://tb-svcapp-noti.rokebi.com/${api.path.rokApi.noti.user}/${mobile}/account/disconnect?service=esim`;
+      : `http://tb-svcapp-noti.rokebi.com/${
+          api.path.rokApi.noti.user
+        }/${mobile}/account/disconnect?service=${
+          esimGlobal ? 'global' : appId
+        }`;
   const headers = new Headers(jsonContentType);
   const body = {
     iccid,

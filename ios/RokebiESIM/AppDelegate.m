@@ -10,13 +10,8 @@
 #import "AppDelegate.h"
 
 #import <React/RCTBridge.h>
-#import <React/RCTLinkingManager.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
-
-#import <UMCore/UMModuleRegistry.h>
-#import <UMReactNativeAdapter/UMNativeModulesProxy.h>
-#import <UMReactNativeAdapter/UMModuleRegistryAdapter.h>
 
 #import "RNSplashScreen.h"  // here
 #import <CodePush/CodePush.h>
@@ -31,12 +26,12 @@
 #import <NaverThirdPartyLogin/NaverThirdPartyLoginConnection.h>
 #import <RNKakaoLogins.h>
 
-#if FB_SONARKIT_ENABLED
-#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
+#ifdef FB_SONARKIT_ENABLED
 #import <FlipperKit/FlipperClient.h>
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
 #import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
+#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 
 static void InitializeFlipper(UIApplication *application) {
@@ -50,19 +45,24 @@ static void InitializeFlipper(UIApplication *application) {
 }
 #endif
 
-@interface AppDelegate () <RCTBridgeDelegate>
-
-@property (nonatomic, strong) UMModuleRegistryAdapter *moduleRegistryAdapter;
-
-@end
-
 @implementation AppDelegate
+
+/*
+- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
+{
+#if DEBUG
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+#else
+  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+#endif
+}
+*/
 
 @synthesize window = _window;
 - (void)applicationDidBecomeActive:(UIApplication *)application {
   [FBSDKAppEvents activateApp];
 }
-
+/*
 - (BOOL)application:(UIApplication *)application
    openURL:(NSURL *)url
    options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
@@ -88,6 +88,7 @@ static void InitializeFlipper(UIApplication *application) {
   
   return [RCTLinkingManager application:application openURL:url options:options];
 }
+ */
 
 // Required to register for notifications
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
@@ -130,16 +131,19 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  [FIRApp configure];
-
   #if FB_SONARKIT_ENABLED
     InitializeFlipper(application);
   #endif
 
+  if ([FIRApp defaultApp] == nil) {
+      [FIRApp configure];
+    }
+
   [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
   
-  // TODO - 호출 순서 확인 필요 
-  self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
+  // TODO - 호출 순서 확인 필요
+  // bhtak
+//  self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
                                                    moduleName:@"RokebiESIM"
@@ -153,7 +157,11 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   [AppCenterReactNativeCrashes registerWithAutomaticProcessing];
   [[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
   
-  rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
+  if (@available(iOS 13.0, *)) {
+      rootView.backgroundColor = [UIColor systemBackgroundColor];
+  } else {
+      rootView.backgroundColor = [UIColor whiteColor];
+  }
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
@@ -161,7 +169,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   // [[NaverThirdPartyLoginConnection getSharedInstance] setIsNaverAppOauthEnable:NO];
-  [super application:application didFinishLaunchingWithOptions:launchOptions];
+  
+  // bhtak
+//  [super application:application didFinishLaunchingWithOptions:launchOptions];
   
   // Define UNUserNotificationCenter
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
@@ -207,13 +217,14 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   return YES;
 }
 
-- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
-{
-  NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge];
-  // You can inject any extra modules that you would like here, more information at:
-  // https://facebook.github.io/react-native/docs/native-modules-ios.html#dependency-injection
-  return extraModules;
-}
+// bhtak
+//- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+//{
+//  NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge];
+//  // You can inject any extra modules that you would like here, more information at:
+//  // https://facebook.github.io/react-native/docs/native-modules-ios.html#dependency-injection
+//  return extraModules;
+//}
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
 #ifdef DEBUG
