@@ -35,7 +35,9 @@ import {
 import {SyncModelState} from '@/redux/modules/sync';
 import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
+import {utils} from '@/utils/utils';
 import AsyncStorage from '@react-native-community/async-storage';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {StackNavigationProp} from '@react-navigation/stack';
 import moment, {Moment} from 'moment';
 import React, {Component, memo} from 'react';
@@ -54,7 +56,6 @@ import RNExitApp from 'react-native-exit-app';
 import {TabView} from 'react-native-tab-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {checkFistLaunch, requestPermission} from './component/permission';
 import PromotionCarousel from './component/PromotionCarousel';
 
@@ -140,6 +141,15 @@ const styles = StyleSheet.create({
     aspectRatio: 335 / 100,
     width: '100%',
   },
+  infoModalTitle: {
+    ...appStyles.normal20Text,
+    marginHorizontal: 20,
+    marginBottom: 20,
+  },
+  infoModalText: {
+    ...appStyles.normal14Text,
+    color: colors.warmGrey,
+  },
 });
 
 type HomeScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Home'>;
@@ -168,6 +178,9 @@ type EsimState = {
   time: Moment;
   deviceList?: string[];
   firstLaunch?: boolean;
+  popUp?: RkbPromotion;
+  closeType?: string;
+  popUpVisible: boolean;
 };
 
 const TabHeader0 = ({
@@ -229,6 +242,7 @@ class Esim extends Component<EsimProps, EsimState> {
       firstLaunch: false,
       darkMode: Appearance.getColorScheme(),
       time: moment(),
+      popUpVisible: false,
     };
 
     this.refresh = this.refresh.bind(this);
@@ -238,6 +252,8 @@ class Esim extends Component<EsimProps, EsimState> {
     this.notification = this.notification.bind(this);
     this.init = this.init.bind(this);
     this.modalBody = this.modalBody.bind(this);
+    this.renderNotiModal = this.renderNotiModal.bind(this);
+    this.setNotiModal = this.setNotiModal.bind(this);
 
     this.offset = 0;
     this.controller = new AbortController();
@@ -277,8 +293,10 @@ class Esim extends Component<EsimProps, EsimState> {
           const firstLaunch = await checkFistLaunch();
           this.setState({firstLaunch});
           if (firstLaunch) {
-            this.props.navigation.navigate('Tutorial');
-          }
+            this.props.navigation.navigate('Tutorial', {
+              popUp: this.setNotiModal,
+            });
+          } else if (this.props.promotion) this.setNotiModal();
         }
       }
     });
@@ -296,6 +314,8 @@ class Esim extends Component<EsimProps, EsimState> {
       this.setState({time: now});
       this.props.action.product.getProd();
     }
+
+    if (prevProps.promotion !== this.props.promotion) this.setNotiModal();
 
     if (
       prevProps.product.prodList !== this.props.product.prodList
@@ -317,6 +337,23 @@ class Esim extends Component<EsimProps, EsimState> {
     }
   }
 
+  setNotiModal = () => {
+    let closeType = 'close';
+    const popUp = this.props.promotion.find((v) => {
+      const val = JSON.parse(v?.notice?.rule)['noti'];
+      if (val) closeType = val;
+      return val;
+    });
+
+    if (popUp) {
+      this.setState({
+        popUp,
+        closeType,
+        popUpVisible: true,
+      });
+    }
+  };
+
   onPressItem = (prodOfCountry: RkbProduct[]) => {
     this.props.action.product.setProdOfCountry(prodOfCountry);
     this.props.navigation.navigate('Country');
@@ -330,8 +367,10 @@ class Esim extends Component<EsimProps, EsimState> {
     this.tabViewRef[key].current?.scrollToIndex({index: 0});
   };
 
-  exitApp = () => {
-    if (Platform.OS === 'ios') {
+  exitApp = (v?: string) => {
+    if (v === 'close')
+      this.setState({popUpVisible: false, closeType: undefined});
+    else if (Platform.OS === 'ios') {
       RNExitApp.exitApp();
     } else {
       BackHandler.exitApp();
@@ -487,6 +526,28 @@ class Esim extends Component<EsimProps, EsimState> {
     });
   }
 
+  renderNotiModal() {
+    const {popUp, closeType, popUpVisible} = this.state;
+
+    return (
+      <AppModal
+        titleStyle={styles.infoModalTitle}
+        title={popUp?.title}
+        closeButtonTitle={i18n.t(
+          closeType === 'close' ? closeType : 'home:exitApp',
+        )}
+        type="close"
+        onOkClose={() => this.exitApp(closeType)}
+        visible={popUpVisible}>
+        <View style={{marginHorizontal: 20}}>
+          <AppText style={styles.infoModalText}>
+            {utils.htmlToString(popUp?.notice?.body)}
+          </AppText>
+        </View>
+      </AppModal>
+    );
+  }
+
   render() {
     const {isSupportDev, darkMode, index, routes} = this.state;
 
@@ -526,6 +587,7 @@ class Esim extends Component<EsimProps, EsimState> {
           visible={!isSupportDev}>
           {this.modalBody()}
         </AppModal>
+        {this.renderNotiModal()}
       </View>
     );
   }

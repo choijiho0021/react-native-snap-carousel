@@ -50,9 +50,11 @@ type SimpleTextParams = {
 };
 type PurchaseDetailParams = {detail?: RkbOrder};
 
+type TutorialParams = {popUp: () => void};
+
 export type HomeStackParamList = {
   Home: undefined;
-  Tutorial: undefined;
+  Tutorial: TutorialParams;
   StoreSearch: undefined;
   Store: undefined;
   Cart: undefined;

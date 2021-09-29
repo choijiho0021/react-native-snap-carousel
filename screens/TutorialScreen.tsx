@@ -7,6 +7,7 @@ import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import i18n from '@/utils/i18n';
 import analytics, {firebase} from '@react-native-firebase/analytics';
+import {RouteProp} from '@react-navigation/core';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {Component} from 'react';
 import {
@@ -117,8 +118,11 @@ type TutorialScreenNavigationProp = StackNavigationProp<
   'Tutorial'
 >;
 
+type TutorialScreenRouteProp = RouteProp<HomeStackParamList, 'Tutorial'>;
+
 type TutorialScreenProps = {
   navigation: TutorialScreenNavigationProp;
+  route: TutorialScreenRouteProp;
 };
 
 type CarouselIndex = 'step1' | 'step2' | 'step3' | 'step4';
@@ -176,6 +180,7 @@ class TutorialScreen extends Component<
   skip = () => {
     if (this.state.status === 'authorized')
       AppEventsLogger.logEvent('튜토리얼 SKIP');
+    this.props.route.params.popUp();
     this.props.navigation.goBack();
   };
 
@@ -187,6 +192,7 @@ class TutorialScreen extends Component<
       AppEventsLogger.logEvent('fb_mobile_tutorial_completion');
       analytics().logEvent('tutorial_complete');
     }
+    this.props.route.params.popUp();
     this.props.navigation.goBack();
   };
 
