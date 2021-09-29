@@ -530,5 +530,8 @@
   "login:easyLogin": "간편 로그인",
   "settings:reqPushSet": "기기 알림이 꺼져 있어요.\n중요한 소식을 놓치지 마세요!",
   "settings:openSettings": "알림허용 바로가기",
-  "settings:deniedPush": "알림권한이 없어서 기능이 제한되었습니다."
+  "settings:deniedPush": "알림권한이 없어서 기능이 제한되었습니다.",
+
+  "loading:errNetworkTitle": "네트워크 지연",
+  "loading:errNetworkBody": "네트워크 불안정하여 상품정보를 가져올 수 없습니다.\n잠시 후 다시 시도해주세요"
 }
