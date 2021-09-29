@@ -130,11 +130,11 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [FIRApp configure];
+
   #if FB_SONARKIT_ENABLED
     InitializeFlipper(application);
   #endif
-
-  [FIRApp configure];
 
   [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
   
