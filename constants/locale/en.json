@@ -523,5 +523,8 @@
   "login:easyLogin": "Easy Login",
   "settings:reqPushSet": "Notification is turned off.\nDon't miss important notification for you!",
   "settings:openSettings": "Go to notification settings",
-  "settings:deniedPush": "Push Notification disabled"
+  "settings:deniedPush": "Push Notification disabled",
+
+  "loading:errNetworkTitle": "Network delay",
+  "loading:errNetworkBody": "Network is too slow to get product information.\nPlease retry after few minutes"
 }

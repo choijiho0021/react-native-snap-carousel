@@ -18,15 +18,15 @@ const getProdDetail = createAsyncThunk(
 
 const getProd = createAsyncThunk('product/getProd', API.Product.getProduct);
 
-const init = createAsyncThunk('product/init', (_, {dispatch}) => {
+const init = createAsyncThunk('product/init', async (_, {dispatch}) => {
   const {category} = API.Product;
 
-  dispatch(getLocalOp())
-    .then((_) => dispatch(getProd(category.asia)))
-    .then((_) => dispatch(getProd(category.europe)))
-    .then((_) => dispatch(getProd(category.usaAu)))
-    .then((_) => dispatch(getProd(category.multi)))
-    .then((_) => dispatch(PromotionActions.getPromotion()));
+  await dispatch(getLocalOp());
+  await dispatch(getProd(category.asia));
+  await dispatch(getProd(category.europe));
+  await dispatch(getProd(category.usaAu));
+  await dispatch(getProd(category.multi));
+  await dispatch(PromotionActions.getPromotion());
 });
 
 // const getProdListWithToast = reflectWithToast(getProdList, Toast.NOT_LOADED);
@@ -38,6 +38,7 @@ export interface ProductModelState {
   sortedProdList: RkbProduct[][];
   detailInfo: string;
   detailCommon: string;
+  ready: boolean;
 }
 
 const initialState = {
@@ -47,6 +48,7 @@ const initialState = {
   sortedProdList: [],
   detailInfo: '',
   detailCommon: '',
+  ready: false,
 };
 
 const slice = createSlice({
@@ -98,6 +100,13 @@ const slice = createSlice({
           objects.map((item) => [item.key, item]),
         );
       }
+    });
+
+    builder.addCase(init.rejected, (state, action) => {
+      state.ready = false;
+    });
+    builder.addCase(init.fulfilled, (state, action) => {
+      state.ready = true;
     });
   },
 });
