@@ -3,6 +3,7 @@ import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
+import AppUserPic from '@/components/AppUserPic';
 import StoreList, {StoreListRef} from '@/components/StoreList';
 import withBadge from '@/components/withBadge';
 import {colors} from '@/constants/Colors';
@@ -35,7 +36,6 @@ import {
 import {SyncModelState} from '@/redux/modules/sync';
 import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
-import {utils} from '@/utils/utils';
 import AsyncStorage from '@react-native-community/async-storage';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -47,6 +47,7 @@ import {
   ColorSchemeName,
   Dimensions,
   Platform,
+  Pressable,
   StatusBar,
   StyleSheet,
   View,
@@ -144,11 +145,11 @@ const styles = StyleSheet.create({
   infoModalTitle: {
     ...appStyles.normal20Text,
     marginHorizontal: 20,
-    marginBottom: 20,
   },
-  infoModalText: {
-    ...appStyles.normal14Text,
-    color: colors.warmGrey,
+  popupImg: {
+    width: 333,
+    height: 444,
+    marginVertical: 20,
   },
 });
 
@@ -181,6 +182,8 @@ type EsimState = {
   popUp?: RkbPromotion;
   closeType?: string;
   popUpVisible: boolean;
+  checked: boolean;
+  popupDisabled: boolean;
 };
 
 const TabHeader0 = ({
@@ -214,6 +217,7 @@ const TabHeader0 = ({
 };
 const TabHeader = memo(TabHeader0);
 
+const POPUP_DIS_DAYS = 7;
 class Esim extends Component<EsimProps, EsimState> {
   offset: number;
 
@@ -243,6 +247,8 @@ class Esim extends Component<EsimProps, EsimState> {
       darkMode: Appearance.getColorScheme(),
       time: moment(),
       popUpVisible: false,
+      checked: false,
+      popupDisabled: false,
     };
 
     this.refresh = this.refresh.bind(this);
@@ -266,7 +272,18 @@ class Esim extends Component<EsimProps, EsimState> {
   }
 
   componentDidMount() {
-    this.setState({time: moment()});
+    const now = moment();
+    this.setState({time: now});
+
+    AsyncStorage.getItem('popupDisabled').then((v) => {
+      if (v) {
+        const popupDisabled =
+          moment.duration(now.diff(v)).asDays() <= POPUP_DIS_DAYS;
+
+        if (popupDisabled) this.setState({popupDisabled});
+        else AsyncStorage.removeItem('popupDisabled');
+      }
+    });
 
     API.Device.getDevList().then(async (resp) => {
       if (resp.result === 0) {
@@ -340,7 +357,7 @@ class Esim extends Component<EsimProps, EsimState> {
   setNotiModal = () => {
     let closeType = 'close';
     const popUp = this.props.promotion.find((v) => {
-      const val = JSON.parse(v?.notice?.rule)['noti'];
+      const val = JSON.parse(v?.notice?.rule).noti;
       if (val) closeType = val;
       return val;
     });
@@ -527,7 +544,7 @@ class Esim extends Component<EsimProps, EsimState> {
   }
 
   renderNotiModal() {
-    const {popUp, closeType, popUpVisible} = this.state;
+    const {popUp, closeType, popUpVisible, checked} = this.state;
 
     return (
       <AppModal
@@ -537,19 +554,40 @@ class Esim extends Component<EsimProps, EsimState> {
           closeType === 'close' ? closeType : 'home:exitApp',
         )}
         type="close"
-        onOkClose={() => this.exitApp(closeType)}
+        closeButtonStyle={{margin: 20}}
+        onOkClose={() => {
+          this.exitApp(closeType);
+          if (checked)
+            AsyncStorage.setItem(
+              'popupDisabled',
+              moment().format('YYYY-MM-DD HH:mm'),
+            );
+        }}
         visible={popUpVisible}>
         <View style={{marginHorizontal: 20}}>
-          <AppText style={styles.infoModalText}>
-            {utils.htmlToString(popUp?.notice?.body)}
-          </AppText>
+          <AppUserPic
+            url={popUp?.notice?.image?.success || popUp?.notice?.image?.failure}
+            crop={false}
+            style={styles.popupImg}
+          />
+          <Pressable
+            style={{flexDirection: 'row', alignItems: 'center'}}
+            onPress={() => this.setState({checked: !checked})}>
+            <AppButton
+              iconName="btnCheck"
+              style={{marginRight: 10}}
+              checked={checked}
+              onPress={() => this.setState({checked: !checked})}
+            />
+            <AppText>{i18n.t('home:disablePopup')}</AppText>
+          </Pressable>
         </View>
       </AppModal>
     );
   }
 
   render() {
-    const {isSupportDev, darkMode, index, routes} = this.state;
+    const {isSupportDev, darkMode, index, routes, popupDisabled} = this.state;
 
     return (
       <View style={styles.container}>
@@ -587,7 +625,7 @@ class Esim extends Component<EsimProps, EsimState> {
           visible={!isSupportDev}>
           {this.modalBody()}
         </AppModal>
-        {this.renderNotiModal()}
+        {!popupDisabled && this.renderNotiModal()}
       </View>
     );
   }
