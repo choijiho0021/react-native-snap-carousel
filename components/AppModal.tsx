@@ -71,6 +71,7 @@ export interface AppModalProps {
   titleIcon?: string;
   toRokebiCash?: boolean;
   closeButtonTitle?: string;
+  closeButtonStyle?: ViewStyle;
   infoText?: string;
   contentStyle?: ViewStyle;
   buttonBackgroundColor?: ColorValue;
@@ -88,6 +89,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
   type = 'normal',
   toRokebiCash = false,
   closeButtonTitle = i18n.t('close'),
+  closeButtonStyle,
   contentStyle,
   buttonBackgroundColor,
   buttonTitleColor,
@@ -129,6 +131,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
           {type === 'close' ? (
             <AppButton
               style={[
+                closeButtonStyle,
                 styles.closeButton,
                 buttonBackgroundColor
                   ? {
