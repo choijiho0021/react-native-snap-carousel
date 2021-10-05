@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   View,
+  Dimensions,
 } from 'react-native';
 import Video from 'react-native-video';
 import {connect, DispatchProp} from 'react-redux';
@@ -28,6 +29,10 @@ import {RootState} from '@/redux';
 import AppModal from './AppModal';
 import {appStyles} from '@/constants/Styles';
 import {ProductModelState} from '../redux/modules/product';
+
+const {width: viewportWidth, height: viewportHeight} = Dimensions.get('window');
+const windowHeight = viewportHeight;
+const windowWidth = viewportWidth;
 
 const {esimApp, esimGlobal} = Env.get();
 
@@ -52,6 +57,21 @@ const styles = StyleSheet.create({
   modalBody: {
     marginHorizontal: 20,
     marginVertical: 20,
+  },
+  loadingVideo: {
+    width: 200,
+    height: 200,
+    position: 'absolute',
+    top: windowHeight - 400,
+    left: windowWidth / 2 - 100,
+  },
+  loadingText: {
+    ...appStyles.normal16Text,
+    width: '100%',
+    textAlign: 'center',
+    position: 'absolute',
+    // backgroundColor: 'red',
+    top: windowHeight - 200,
   },
 });
 
@@ -83,7 +103,8 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
 }) => {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
-  const [timeOut, setTimeOut] = useState(false);
+  const [networkErr, setNetworkErr] = useState(false);
+  const [loadingTextSec, setloadingTextSec] = useState(1);
 
   const login = useCallback(async () => {
     const iccid = await retrieveData(API.User.KEY_ICCID);
@@ -97,57 +118,67 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
     }
   }, [dispatch]);
 
+  useEffect(() => {
+    if (loadingTextSec < 65)
+      setTimeout(() => {
+        setloadingTextSec(loadingTextSec + 1);
+      }, 5000);
+  }, [loadingTextSec]);
+
   const renderMain = useCallback(() => {
     // 앱 시작 시 splash 화면 3초강 항상 출력
-    if (showSplash)
+    if (!product.ready && !networkErr) {
       return (
-        <Video
-          source={
-            esimGlobal
-              ? require('../assets/images/intro.mp4')
-              : require('../assets/images/rokebi_intro.mp4')
-          }
-          style={styles.backgroundVideo}
-          resizeMode="contain"
-        />
-      );
-
-    // 상품준비가 안된 경우
-    if (!product.ready) {
-      // timeout 까지 상품이 준비가 되지 않으면 앱 종료 모달 출력
-      if (timeOut)
-        return (
-          <View style={{flex: 1}}>
-            <AppModal
-              title={i18n.t('loading:errNetworkTitle')}
-              closeButtonTitle={i18n.t('home:exitApp')}
-              titleStyle={styles.modalTitle}
-              type="close"
-              onOkClose={() => RNExitApp.exitApp()}
-              visible>
-              <Text style={styles.modalBody}>
-                {i18n.t('loading:errNetworkBody')}
-              </Text>
-            </AppModal>
-          </View>
-        );
-      // timeout전까지 로딩화면 출력 (디자인 이후 수정 필요)
-      return (
-        <Video
-          repeat
-          source={
-            esimGlobal
-              ? require('../assets/images/rokebi_intro.mp4')
-              : require('../assets/images/intro.mp4')
-          }
-          style={styles.backgroundVideo}
-          resizeMode="contain"
-        />
+        <View style={{flex: 1}}>
+          <Video
+            source={
+              esimGlobal
+                ? require('../assets/images/intro.mp4')
+                : require('../assets/images/rokebi_intro.mp4')
+            }
+            style={styles.backgroundVideo}
+            resizeMode="contain"
+          />
+          {!showSplash && (
+            <Video
+              repeat
+              source={
+                esimGlobal
+                  ? require('../assets/images/global_loading.mp4')
+                  : require('../assets/images/esim_loading.mp4')
+              }
+              style={styles.loadingVideo}
+              resizeMode="contain"
+            />
+          )}
+          {!showSplash && (
+            <Text style={styles.loadingText}>
+              {i18n.t(`loading:text${loadingTextSec % 2}`)}
+            </Text>
+          )}
+        </View>
       );
     }
-    // 상품이 준비 되면 홈화면로 이동
+
+    // timeout 까지 상품이 준비가 되지 않으면 앱 종료 모달 출력
+    if (!product.ready && networkErr)
+      return (
+        <View style={{flex: 1}}>
+          <AppModal
+            title={i18n.t('loading:errNetworkTitle')}
+            closeButtonTitle={i18n.t('home:exitApp')}
+            titleStyle={styles.modalTitle}
+            type="close"
+            onOkClose={() => RNExitApp.exitApp()}
+            visible>
+            <Text style={styles.modalBody}>
+              {i18n.t('loading:errNetworkBody')}
+            </Text>
+          </AppModal>
+        </View>
+      );
     return <AppNavigator store={store} />;
-  }, [product.ready, showSplash, timeOut]);
+  }, [loadingTextSec, networkErr, product.ready, showSplash]);
 
   const loadResourcesAsync = useCallback(async () => {
     // clear caches
@@ -188,7 +219,7 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
       setShowSplash(false);
     }, 3000);
     setTimeout(() => {
-      setTimeOut(true);
+      setNetworkErr(true);
     }, 60000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
