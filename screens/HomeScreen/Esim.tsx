@@ -611,10 +611,10 @@ class Esim extends Component<EsimProps, EsimState> {
           }}
           renderTabBar={() => null}
         />
-        <AppActivityIndicator
+        {/* <AppActivityIndicator
           style={{top: 100}}
           visible={this.props.product.sortedProdList.length === 0}
-        />
+        /> */}
 
         <AppModal
           title={i18n.t('home:unsupportedTitle')}
