@@ -1,20 +1,3 @@
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {Map as ImmutableMap} from 'immutable';
-import React, {Component, memo} from 'react';
-import {
-  Appearance,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -32,6 +15,7 @@ import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
+import {RkbImage} from '@/redux/api/accountApi';
 import {ApiResult} from '@/redux/api/api';
 import {
   AccountAction,
@@ -42,7 +26,28 @@ import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import validationUtil from '@/utils/validationUtil';
-import {RkbImage} from '@/redux/api/accountApi';
+import analytics from '@react-native-firebase/analytics';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {Map as ImmutableMap} from 'immutable';
+import React, {Component, memo} from 'react';
+import {
+  Appearance,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {
+  getTrackingStatus,
+  TrackingStatus,
+} from 'react-native-tracking-transparency';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 
 const {esimGlobal, isProduction} = Env.get();
 // const esimGlobal = false;
@@ -240,6 +245,7 @@ type RegisterMobileScreenState = {
   email?: string;
   profileImageUrl?: string;
   isFocused?: boolean;
+  status?: TrackingStatus;
 };
 
 const initialState: RegisterMobileScreenState = {
@@ -295,8 +301,8 @@ class RegisterMobileScreen extends Component<
     this.mounted = false;
     this.controller = new AbortController();
     this.confirmList = [
-      ['contract', 'mandatory', 'setting:contract'],
-      ['personalInfo', 'mandatory', 'setting:privacy'],
+      ['contract', 'required', 'setting:contract'],
+      ['personalInfo', 'required', 'setting:privacy'],
     ]
       .concat(
         (!esimGlobal && [['marketing', 'optional', 'mkt:agreement']]) || [],
@@ -309,7 +315,7 @@ class RegisterMobileScreen extends Component<
             text: i18n.t(`cfm:${v[0]}`),
           },
           {
-            color: v[1] === 'mandatory' ? colors.clearBlue : colors.warmGrey,
+            color: v[1] === 'required' ? colors.clearBlue : colors.warmGrey,
             text: i18n.t(`cfm:${v[1]}`),
           },
         ],
@@ -320,8 +326,11 @@ class RegisterMobileScreen extends Component<
       }));
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.mounted = true;
+    this.setState({
+      status: await getTrackingStatus(),
+    });
   }
 
   componentDidUpdate(
@@ -362,7 +371,7 @@ class RegisterMobileScreen extends Component<
 
   onSubmit = async () => {
     const {email, domain} = this.email.current?.getValue() || {};
-    const {pin, mobile, confirm, loading} = this.state;
+    const {pin, mobile, confirm, loading, status} = this.state;
 
     const error = validationUtil.validate('email', `${email}@${domain}`);
     let isValid = true;
@@ -412,6 +421,8 @@ class RegisterMobileScreen extends Component<
         });
 
         if (resp.result === 0 && !_.isEmpty(resp.objects)) {
+          if (status === 'authorized') analytics().logEvent('SignUp');
+
           this.signIn({mobile, pin});
         } else {
           console.log('sign up failed', resp);

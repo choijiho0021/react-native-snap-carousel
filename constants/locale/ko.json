@@ -214,7 +214,7 @@
   "email:input": "직접 입력",
 
   "cfm:contract": "이용 약관 동의",
-  "cfm:mandatory": " (필수)",
+  "cfm:required": " (필수)",
   "cfm:personalInfo": "개인정보 수집목적 및 이용동의",
   "cfm:marketing": "맞춤안내 및 마케팅 정보 수신동의",
   "cfm:optional": " (선택)",
