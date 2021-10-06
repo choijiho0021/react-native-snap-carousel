@@ -41,6 +41,9 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import Env from '@/environment';
+
+const {esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -48,13 +51,10 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
   },
   notibox: {
-    height: 100,
+    height: esimGlobal ? 120 : 100,
     marginTop: 3,
-    paddingTop: 20,
-    paddingBottom: 10,
-    paddingLeft: 18,
-    paddingRight: 20,
-    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
     justifyContent: 'space-between',
     flexDirection: 'row',
   },
