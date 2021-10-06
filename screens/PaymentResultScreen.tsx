@@ -19,6 +19,7 @@ import {
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
+import analytics from '@react-native-firebase/analytics';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
@@ -174,6 +175,8 @@ class PaymentResultScreen extends Component<
     Analytics.trackEvent('Payment', {
       payment: `${mode} Payment${isSuccess ? ' Success' : ' Fail'}`,
     });
+
+    if (isSuccess) analytics().logEvent('Payment');
 
     this.init();
     this.props.action.noti.getNotiList({mobile: this.props.account.mobile});
