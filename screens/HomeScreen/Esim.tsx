@@ -1,5 +1,25 @@
 /* eslint-disable no-param-reassign */
-import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AsyncStorage from '@react-native-community/async-storage';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import {StackNavigationProp} from '@react-navigation/stack';
+import moment, {Moment} from 'moment';
+import React, {Component, memo} from 'react';
+import {
+  Appearance,
+  BackHandler,
+  ColorSchemeName,
+  Dimensions,
+  Platform,
+  Pressable,
+  StatusBar,
+  StyleSheet,
+  View,
+} from 'react-native';
+import DeviceInfo from 'react-native-device-info';
+import RNExitApp from 'react-native-exit-app';
+import {TabView} from 'react-native-tab-view';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -25,6 +45,7 @@ import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
+import {actions as infoActions, InfoAction} from '@/redux/modules/info';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
@@ -36,27 +57,6 @@ import {
 import {SyncModelState} from '@/redux/modules/sync';
 import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
-import AsyncStorage from '@react-native-community/async-storage';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import {StackNavigationProp} from '@react-navigation/stack';
-import moment, {Moment} from 'moment';
-import React, {Component, memo} from 'react';
-import {
-  Appearance,
-  BackHandler,
-  ColorSchemeName,
-  Dimensions,
-  Platform,
-  Pressable,
-  StatusBar,
-  StyleSheet,
-  View,
-} from 'react-native';
-import DeviceInfo from 'react-native-device-info';
-import RNExitApp from 'react-native-exit-app';
-import {TabView} from 'react-native-tab-view';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
 import {checkFistLaunch, requestPermission} from './component/permission';
 import PromotionCarousel from './component/PromotionCarousel';
 
@@ -167,6 +167,7 @@ type EsimProps = {
     order: OrderAction;
     noti: NotiAction;
     cart: CartAction;
+    info: InfoAction;
   };
 };
 
@@ -274,6 +275,8 @@ class Esim extends Component<EsimProps, EsimState> {
   componentDidMount() {
     const now = moment();
     this.setState({time: now});
+
+    this.props.action.info.getInfoList('info');
 
     AsyncStorage.getItem('popupDisabled').then((v) => {
       if (v) {
@@ -611,10 +614,6 @@ class Esim extends Component<EsimProps, EsimState> {
           }}
           renderTabBar={() => null}
         />
-        {/* <AppActivityIndicator
-          style={{top: 100}}
-          visible={this.props.product.sortedProdList.length === 0}
-        /> */}
 
         <AppModal
           title={i18n.t('home:unsupportedTitle')}
@@ -646,6 +645,7 @@ export default connect(
       noti: bindActionCreators(notiActions, dispatch),
       order: bindActionCreators(orderActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
+      info: bindActionCreators(infoActions, dispatch),
     },
   }),
 )(Esim);
