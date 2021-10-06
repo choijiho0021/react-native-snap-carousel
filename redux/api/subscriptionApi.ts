@@ -2,12 +2,12 @@ import i18n from '@/utils/i18n';
 import _, {isArray} from 'underscore';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 
-const STATUS_ACTIVE = 'A'; //사용중
-const STATUS_INACTIVE = 'I'; //미사용
-const STATUS_RESERVED = 'R'; //사용 대기중
-const STATUS_CANCELED = 'C'; //취소
-const STATUS_EXPIRED = 'E'; //사용 기간 종료
-const STATUS_USED = 'U'; //사용 완료
+const STATUS_ACTIVE = 'A'; // 사용중
+const STATUS_INACTIVE = 'I'; // 미사용
+export const STATUS_RESERVED = 'R'; // 사용 대기중
+const STATUS_CANCELED = 'C'; // 취소
+const STATUS_EXPIRED = 'E'; // 사용 기간 종료
+const STATUS_USED = 'U'; // 사용 완료
 
 const PAGE_SIZE = 10;
 const CALL_PRODUCT = 'rokebi_call_product';
@@ -30,7 +30,7 @@ const priority = {
 };
 
 const sortSubs = (a, b) => {
-  //status 우선순위, 구입날짜별로 정렬
+  // status 우선순위, 구입날짜별로 정렬
   if (a.statusCd === b.statusCd && a.purchaseDate > b.purchaseDate) {
     return -1;
   }

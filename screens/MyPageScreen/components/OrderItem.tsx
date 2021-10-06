@@ -1,12 +1,13 @@
-import React, {memo} from 'react';
-import {StyleSheet, Pressable, View} from 'react-native';
 import LabelText from '@/components/LabelText';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
+import {RkbOrder} from '@/redux/api/orderApi';
+import {STATUS_RESERVED} from '@/redux/api/subscriptionApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
-import {RkbOrder} from '@/redux/api/orderApi';
+import React, {memo} from 'react';
+import {Pressable, StyleSheet, View} from 'react-native';
 import _ from 'underscore';
 
 const styles = StyleSheet.create({
@@ -25,6 +26,12 @@ const styles = StyleSheet.create({
   },
 });
 
+const getStatus = (canceled: boolean, reserved?: string) => {
+  if (canceled) return [i18n.t('his:cancel'), colors.tomato];
+  if (reserved) return [i18n.t('his:ready'), colors.clearBlue];
+  return [undefined];
+};
+
 const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
   let label = '';
   if (_.isEmpty(item.orderItems)) return <View />;
@@ -37,6 +44,10 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
   }
 
   const isCanceled = item.state === 'canceled';
+  const [status, statusColor] = getStatus(
+    isCanceled,
+    item.usageList.find((v) => v.status === STATUS_RESERVED)?.status,
+  );
   const billingAmt = utils.addCurrency(item.totalPrice, item.dlvCost);
 
   return (
@@ -46,8 +57,8 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
           style={styles.orderValue}
           label={utils.toDateString(item.orderDate, 'YYYY-MM-DD')}
           labelStyle={styles.date}
-          valueStyle={{color: colors.tomato}}
-          value={isCanceled ? i18n.t('his:cancel') : undefined}
+          valueStyle={statusColor && {color: statusColor}}
+          value={status}
         />
         <LabelText
           style={styles.orderValue}

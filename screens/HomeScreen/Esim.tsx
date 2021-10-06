@@ -359,8 +359,9 @@ class Esim extends Component<EsimProps, EsimState> {
 
   setNotiModal = () => {
     let closeType = 'close';
-    const popUp = this.props.promotion.find((v) => {
-      const val = JSON.parse(v?.notice?.rule).noti;
+
+    const popUp = this.props.promotion?.find((v) => {
+      const val = v?.notice?.rule && JSON.parse(v?.notice?.rule)?.noti;
       if (val) closeType = val;
       return val;
     });
