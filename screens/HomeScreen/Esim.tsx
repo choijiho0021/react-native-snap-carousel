@@ -167,7 +167,6 @@ type EsimProps = {
     order: OrderAction;
     noti: NotiAction;
     cart: CartAction;
-    info: InfoAction;
   };
 };
 
@@ -275,8 +274,6 @@ class Esim extends Component<EsimProps, EsimState> {
   componentDidMount() {
     const now = moment();
     this.setState({time: now});
-
-    this.props.action.info.getInfoList('info');
 
     AsyncStorage.getItem('popupDisabled').then((v) => {
       if (v) {
@@ -632,10 +629,9 @@ class Esim extends Component<EsimProps, EsimState> {
 }
 
 export default connect(
-  ({account, product, info, promotion, sync}: RootState) => ({
+  ({account, product, promotion, sync}: RootState) => ({
     account,
     product,
-    info,
     promotion: promotion.promotion,
     sync,
   }),
@@ -646,7 +642,6 @@ export default connect(
       noti: bindActionCreators(notiActions, dispatch),
       order: bindActionCreators(orderActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
-      info: bindActionCreators(infoActions, dispatch),
     },
   }),
 )(Esim);
