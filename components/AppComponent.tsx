@@ -126,8 +126,26 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
   }, [loadingTextSec]);
 
   const renderMain = useCallback(() => {
+    // timeout 까지 상품이 준비가 되지 않으면 앱 종료 모달 출력
+    if (!product.ready && networkErr)
+      return (
+        <View style={{flex: 1}}>
+          <AppModal
+            title={i18n.t('loading:errNetworkTitle')}
+            closeButtonTitle={i18n.t('home:exitApp')}
+            titleStyle={styles.modalTitle}
+            type="close"
+            onOkClose={() => RNExitApp.exitApp()}
+            visible>
+            <Text style={styles.modalBody}>
+              {i18n.t('loading:errNetworkBody')}
+            </Text>
+          </AppModal>
+        </View>
+      );
+
     // 앱 시작 시 splash 화면 3초강 항상 출력
-    if (!product.ready && !networkErr) {
+    if (!product.ready || showSplash) {
       return (
         <View style={{flex: 1}}>
           <Video
@@ -160,23 +178,6 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
       );
     }
 
-    // timeout 까지 상품이 준비가 되지 않으면 앱 종료 모달 출력
-    if (!product.ready && networkErr)
-      return (
-        <View style={{flex: 1}}>
-          <AppModal
-            title={i18n.t('loading:errNetworkTitle')}
-            closeButtonTitle={i18n.t('home:exitApp')}
-            titleStyle={styles.modalTitle}
-            type="close"
-            onOkClose={() => RNExitApp.exitApp()}
-            visible>
-            <Text style={styles.modalBody}>
-              {i18n.t('loading:errNetworkBody')}
-            </Text>
-          </AppModal>
-        </View>
-      );
     return <AppNavigator store={store} />;
   }, [loadingTextSec, networkErr, product.ready, showSplash]);
 

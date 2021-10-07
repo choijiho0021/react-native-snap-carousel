@@ -1,3 +1,9 @@
+import {useNavigation} from '@react-navigation/native';
+import React, {memo, useCallback, useState} from 'react';
+import {Animated, Image, Pressable, StyleSheet, View} from 'react-native';
+import Carousel, {Pagination} from 'react-native-snap-carousel';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {sliderWidth} from '@/constants/SliderEntry.style';
@@ -7,11 +13,7 @@ import {API} from '@/redux/api';
 import {RkbPromotion} from '@/redux/api/promotionApi';
 import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
-import {useNavigation} from '@react-navigation/native';
-import React, {memo, useCallback, useState} from 'react';
-import {Animated, Image, Pressable, StyleSheet, View} from 'react-native';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
-import {connect} from 'react-redux';
+import {actions as infoActions, InfoAction} from '@/redux/modules/info';
 
 const DOT_MARGIN = 6;
 const INACTIVE_DOT_WIDTH = 6;
@@ -86,11 +88,15 @@ const PromotionImage = memo(
 type PromotionCarouselProps = {
   promotion: RkbPromotion[];
   product: ProductModelState;
+  action: {
+    info: InfoAction;
+  };
 };
 
 const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
   promotion,
   product,
+  action,
 }) => {
   const navigation = useNavigation();
   const [activeSlide, setActiveSlide] = useState(0);
@@ -108,6 +114,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
           navigation.navigate('Country', {prodOfCountry});
         }
       } else if (item.notice) {
+        action.info.getInfoList('info');
         navigation.navigate('SimpleText', {
           key: 'noti',
           title: i18n.t('set:noti'),
@@ -121,7 +128,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
         navigation.navigate('Faq');
       }
     },
-    [navigation, product],
+    [action.info, navigation, product],
   );
 
   const renderDots = useCallback(
@@ -201,7 +208,14 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
   );
 };
 
-export default connect(({promotion, product}: RootState) => ({
-  product,
-  promotion: promotion.promotion,
-}))(memo(PromotionCarousel));
+export default connect(
+  ({promotion, product}: RootState) => ({
+    product,
+    promotion: promotion.promotion,
+  }),
+  (dispatch) => ({
+    action: {
+      info: bindActionCreators(infoActions, dispatch),
+    },
+  }),
+)(memo(PromotionCarousel));
