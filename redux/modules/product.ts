@@ -11,9 +11,14 @@ const getLocalOp = createAsyncThunk(
   'product/getLocalOp',
   API.Product.getLocalOp,
 );
-const getProdDetail = createAsyncThunk(
-  'product/getProdDetail',
+const getProdDetailCommon = createAsyncThunk(
+  'product/getProdDetailCommon',
   API.Page.getProductDetails,
+);
+
+const getProdDetailInfo = createAsyncThunk(
+  'product/getProdDetailInfo',
+  API.Page.getProductDetailsBody,
 );
 
 const getProd = createAsyncThunk('product/getProd', API.Product.getProduct);
@@ -73,12 +78,21 @@ const slice = createSlice({
   },
 
   extraReducers: (builder) => {
-    builder.addCase(getProdDetail.fulfilled, (state, action) => {
+    builder.addCase(getProdDetailCommon.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
       const details = objects.map((item) => item.body);
       if (result === 0 && details.length > 0) {
-        state.detailInfo = details[0];
-        state.detailCommon = details.slice(1, details.length).join('');
+        // state.detailInfo = details[0] || '';
+        // state.detailCommon = details.slice(1, details.length).join('');
+        state.detailCommon = details.join('');
+      }
+    });
+
+    builder.addCase(getProdDetailInfo.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+      const details = objects.map((item) => item.body);
+      if (result === 0 && details.length > 0) {
+        state.detailInfo = details[0] || '';
       }
     });
 
@@ -113,7 +127,8 @@ const slice = createSlice({
 
 export const actions = {
   ...slice.actions,
-  getProdDetail,
+  getProdDetailCommon,
+  getProdDetailInfo,
   getLocalOp,
   getProd,
   init,

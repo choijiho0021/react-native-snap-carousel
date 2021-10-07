@@ -58,7 +58,12 @@ export type HomeStackParamList = {
   StoreSearch: undefined;
   Store: undefined;
   Cart: undefined;
-  ProductDetail: {title?: string; img?: string; localOpDetails?: string};
+  ProductDetail: {
+    title?: string;
+    img?: string;
+    localOpDetails?: string;
+    partnerId?: string;
+  };
 
   RegisterSim: {back: string; title: string};
   NewSim: undefined;

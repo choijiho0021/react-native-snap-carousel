@@ -53,6 +53,7 @@ const path = {
   userByEmail: 'json/user/email',
   promotion: 'json/promotion/list',
   productDetails: 'json/product/details',
+  localopBody: 'json/localop',
   esimDev: 'json/esim/dev/list',
 
   recharge: 'rokebi/rch',

@@ -73,8 +73,17 @@ const getProductDetails = (abortController?: AbortController) => {
   );
 };
 
+const getProductDetailsBody = (partnerId: string) => {
+  return api.callHttpGet(
+    `${api.httpUrl(api.path.localopBody)}/${partnerId}?_format=json`,
+    toProductDetails,
+    undefined,
+  );
+};
+
 export default {
   getPageByCategory,
   getPageByTitle,
   getProductDetails,
+  getProductDetailsBody,
 };
