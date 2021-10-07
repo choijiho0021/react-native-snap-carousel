@@ -82,8 +82,6 @@ const slice = createSlice({
       const {result, objects} = action.payload;
       const details = objects.map((item) => item.body);
       if (result === 0 && details.length > 0) {
-        // state.detailInfo = details[0] || '';
-        // state.detailCommon = details.slice(1, details.length).join('');
         state.detailCommon = details.join('');
       }
     });
