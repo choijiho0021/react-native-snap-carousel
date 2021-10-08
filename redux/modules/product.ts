@@ -13,7 +13,7 @@ const getLocalOp = createAsyncThunk(
 );
 const getProdDetailCommon = createAsyncThunk(
   'product/getProdDetailCommon',
-  API.Page.getProductDetails,
+  API.Page.getProdDetailCommon,
 );
 
 const getProdDetailInfo = createAsyncThunk(

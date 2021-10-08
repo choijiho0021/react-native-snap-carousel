@@ -64,7 +64,7 @@ const getPageByTitle = (title: string) => {
   );
 };
 
-const getProductDetails = (abortController?: AbortController) => {
+const getProdDetailCommon = (abortController?: AbortController) => {
   return api.callHttpGet(
     `${api.httpUrl(api.path.productDetails)}?_format=json`,
     toProductDetails,
@@ -84,6 +84,6 @@ const getProductDetailsBody = (partnerId: string) => {
 export default {
   getPageByCategory,
   getPageByTitle,
-  getProductDetails,
+  getProdDetailCommon,
   getProductDetailsBody,
 };
