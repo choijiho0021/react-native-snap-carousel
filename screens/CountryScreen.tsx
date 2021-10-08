@@ -53,7 +53,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 
-const {esimApp} = Env.get();
+const {esimApp, esimGlobal} = Env.get();
 const PURCHASE_LIMIT = 10;
 
 const styles = StyleSheet.create({
@@ -405,7 +405,7 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
       await firebase.analytics().setAnalyticsCollectionEnabled(true);
       await Settings.setAdvertiserTrackingEnabled(true);
 
-      analytics().logEvent('toCart', {
+      analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_to_cart`, {
         item: purchaseItems[0].title,
         count: 1,
       });
