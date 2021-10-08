@@ -37,7 +37,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 
-const {esimCurrency} = Env.get();
+const {esimCurrency, esimGlobal} = Env.get();
 const imgCheck = require('../assets/images/main/imgCheck.png');
 
 const styles = StyleSheet.create({
@@ -176,7 +176,8 @@ class PaymentResultScreen extends Component<
       payment: `${mode} Payment${isSuccess ? ' Success' : ' Fail'}`,
     });
 
-    if (isSuccess) analytics().logEvent('Payment');
+    if (isSuccess)
+      analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_payment`);
 
     this.init();
     this.props.action.noti.getNotiList({mobile: this.props.account.mobile});

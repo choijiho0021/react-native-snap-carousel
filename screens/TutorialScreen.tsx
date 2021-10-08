@@ -163,7 +163,7 @@ class TutorialScreen extends Component<
       await firebase.analytics().setAnalyticsCollectionEnabled(true);
       await Settings.setAdvertiserTrackingEnabled(true);
 
-      analytics().logEvent('tutorial_begin');
+      analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_tutorial_begin`);
     }
   }
 
@@ -186,11 +186,10 @@ class TutorialScreen extends Component<
 
   completed = async () => {
     if (this.state.status === 'authorized') {
-      await firebase.analytics().setAnalyticsCollectionEnabled(true);
-      await Settings.setAdvertiserTrackingEnabled(true);
-
       AppEventsLogger.logEvent('fb_mobile_tutorial_completion');
-      analytics().logEvent('tutorial_complete');
+      analytics().logEvent(
+        `${esimGlobal ? 'global' : 'esim'}_tutorial_complete`,
+      );
     }
     this.props.route.params.popUp();
     this.props.navigation.goBack();

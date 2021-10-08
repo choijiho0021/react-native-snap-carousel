@@ -26,7 +26,7 @@ import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import validationUtil from '@/utils/validationUtil';
-import analytics from '@react-native-firebase/analytics';
+import analytics, {firebase} from '@react-native-firebase/analytics';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Map as ImmutableMap} from 'immutable';
@@ -40,6 +40,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {Settings} from 'react-native-fbsdk';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {
   getTrackingStatus,
@@ -421,7 +422,11 @@ class RegisterMobileScreen extends Component<
         });
 
         if (resp.result === 0 && !_.isEmpty(resp.objects)) {
-          if (status === 'authorized') analytics().logEvent('SignUp');
+          if (status === 'authorized') {
+            await firebase.analytics().setAnalyticsCollectionEnabled(true);
+            await Settings.setAdvertiserTrackingEnabled(true);
+            analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_sign_up`);
+          }
 
           this.signIn({mobile, pin});
         } else {
