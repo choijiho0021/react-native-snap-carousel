@@ -11,9 +11,14 @@ const getLocalOp = createAsyncThunk(
   'product/getLocalOp',
   API.Product.getLocalOp,
 );
-const getProdDetail = createAsyncThunk(
-  'product/getProdDetail',
+const getProdDetailCommon = createAsyncThunk(
+  'product/getProdDetailCommon',
   API.Page.getProductDetails,
+);
+
+const getProdDetailInfo = createAsyncThunk(
+  'product/getProdDetailInfo',
+  API.Page.getProductDetailsBody,
 );
 
 const getProd = createAsyncThunk('product/getProd', API.Product.getProduct);
@@ -28,15 +33,13 @@ const init = createAsyncThunk('product/init', async (_, {dispatch}) => {
   await dispatch(getProd(category.multi));
   await dispatch(PromotionActions.getPromotion());
 });
-
-// const getProdListWithToast = reflectWithToast(getProdList, Toast.NOT_LOADED);
-
 export interface ProductModelState {
   prodList: ImmutableMap<string, RkbProduct>;
   localOpList: ImmutableMap<string, RkbLocalOp>;
   prodOfCountry: RkbProduct[];
   sortedProdList: RkbProduct[][];
   detailInfo: string;
+  partnerId: string;
   detailCommon: string;
   ready: boolean;
 }
@@ -48,6 +51,7 @@ const initialState = {
   sortedProdList: [],
   detailInfo: '',
   detailCommon: '',
+  partnerId: '',
   ready: false,
 };
 
@@ -73,12 +77,27 @@ const slice = createSlice({
   },
 
   extraReducers: (builder) => {
-    builder.addCase(getProdDetail.fulfilled, (state, action) => {
+    builder.addCase(getProdDetailCommon.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
       const details = objects.map((item) => item.body);
       if (result === 0 && details.length > 0) {
-        state.detailInfo = details[0];
-        state.detailCommon = details.slice(1, details.length).join('');
+        // todo : drupal - details에서 상품정보(prod:1)를 제거 후 else 부분 제거 필요
+        if (details.length === 2) {
+          state.detailCommon = details.join('');
+        } else {
+          state.detailInfo = details[0] || '';
+          state.detailCommon = details.slice(1, details.length).join('');
+        }
+      }
+    });
+
+    builder.addCase(getProdDetailInfo.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+      const details = objects.map((item) => item.body);
+      const partnerId = objects.map((item) => item.partnerId);
+      if (result === 0 && details.length > 0) {
+        state.detailInfo = details[0] || '';
+        state.partnerId = partnerId[0] || '';
       }
     });
 
@@ -113,7 +132,8 @@ const slice = createSlice({
 
 export const actions = {
   ...slice.actions,
-  getProdDetail,
+  getProdDetailCommon,
+  getProdDetailInfo,
   getLocalOp,
   getProd,
   init,

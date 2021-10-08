@@ -1,4 +1,24 @@
 /* eslint-disable no-plusplus */
+import KakaoSDK from '@actbase/react-native-kakaosdk';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import Analytics from 'appcenter-analytics';
+import React, {Component} from 'react';
+import {
+  Animated,
+  Clipboard,
+  Image,
+  Linking,
+  NativeScrollEvent,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import WebView, {WebViewMessageEvent} from 'react-native-webview';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -24,26 +44,6 @@ import {
   ToastAction,
 } from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
-import KakaoSDK from '@actbase/react-native-kakaosdk';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import Analytics from 'appcenter-analytics';
-import React, {Component} from 'react';
-import {
-  Animated,
-  Clipboard,
-  Image,
-  Linking,
-  NativeScrollEvent,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
-import WebView, {WebViewMessageEvent} from 'react-native-webview';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 
 const {baseUrl, channelId, isEng, esimGlobal, fbUser} = Env.get();
 
@@ -162,6 +162,9 @@ class ProductDetailScreen extends Component<
   }
 
   componentDidMount() {
+    const {detailCommon, partnerId} = this.props.product;
+    const {params = {}} = this.props.route;
+
     this.props.navigation.setOptions({
       title: null,
       headerLeft: () => (
@@ -169,7 +172,13 @@ class ProductDetailScreen extends Component<
       ),
     });
 
-    this.props.action.product.getProdDetail(this.controller);
+    if (!detailCommon) {
+      this.props.action.product.getProdDetailCommon(this.controller);
+    }
+
+    if (partnerId !== this.props.route.params?.partnerId) {
+      this.props.action.product.getProdDetailInfo(params?.partnerId || '');
+    }
   }
 
   // TODO : detailInfo 정보 비교 방법
@@ -368,7 +377,7 @@ class ProductDetailScreen extends Component<
         <ScrollView
           style={{backgroundColor: colors.whiteTwo}}
           ref={this.scrollView}
-          stickyHeaderIndices={[1]} //탭 버튼 고정
+          stickyHeaderIndices={[1]} // 탭 버튼 고정
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={100}
           onScroll={({nativeEvent}) => {
@@ -412,7 +421,10 @@ class ProductDetailScreen extends Component<
 export default connect(
   ({product, status, info}: RootState) => ({
     product,
-    pending: status.pending[productActions.getProdDetail.typePrefix] || false,
+    pending:
+      status.pending[productActions.getProdDetailCommon.typePrefix] ||
+      status.pending[productActions.getProdDetailInfo.typePrefix] ||
+      false,
     info,
   }),
   (dispatch) => ({

@@ -295,6 +295,7 @@ type CountryScreenState = {
   disabled: boolean;
   isFocused: boolean;
   status?: TrackingStatus;
+  partnerId?: string;
 };
 class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
   constructor(props: CountryScreenProps) {
@@ -309,6 +310,7 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
       localOpDetails: undefined,
       disabled: false,
       isFocused: true,
+      partnerId: undefined,
     };
 
     this.snackRef = React.createRef();
@@ -331,6 +333,7 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
         ? API.Product.getTitle(localOpList.get(prodList[0]?.partnerId))
         : '';
 
+    this.setState({partnerId: prodList[0]?.partnerId});
     navigation.setOptions({
       title: null,
       headerLeft: () => <AppBackButton title={title} />,
@@ -509,6 +512,7 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
       selected,
       showSnackBar,
       disabled,
+      partnerId,
     } = this.state;
 
     return (
@@ -526,6 +530,7 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
               title,
               img: imageUrl,
               localOpDetails,
+              partnerId,
             })
           }>
           <View style={styles.detail}>
