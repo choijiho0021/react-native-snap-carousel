@@ -162,6 +162,9 @@ class ProductDetailScreen extends Component<
   }
 
   componentDidMount() {
+    const {detailCommon, partnerId} = this.props.product;
+    const {params = {}} = this.props.route;
+
     this.props.navigation.setOptions({
       title: null,
       headerLeft: () => (
@@ -169,10 +172,13 @@ class ProductDetailScreen extends Component<
       ),
     });
 
-    this.props.action.product.getProdDetailCommon(this.controller);
-    this.props.action.product.getProdDetailInfo(
-      this.props.route.params?.partnerId || '',
-    );
+    if (!detailCommon) {
+      this.props.action.product.getProdDetailCommon(this.controller);
+    }
+
+    if (partnerId !== this.props.route.params?.partnerId) {
+      this.props.action.product.getProdDetailInfo(params?.partnerId || '');
+    }
   }
 
   // TODO : detailInfo 정보 비교 방법
