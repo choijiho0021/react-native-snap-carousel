@@ -5,7 +5,7 @@
 	<key>CFBundleAllowMixedLocalizations</key>
 	<string>true</string>
 	<key>CFBundleDisplayName</key>
-	<string>$(PRODUCT_NAME)</string>
+	<string>ROKEBI eSIM</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleGetInfoString</key>
@@ -53,17 +53,15 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>98</string>
+	<string>101</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
-	<key>FirebaseAppDelegateProxyEnabled</key>
-    <true/>
 	<key>FacebookAppID</key>
 	<string>147522690488197</string>
 	<key>FacebookClientToken</key>
 	<string>a516d23081ee3fb8db8bb9c006431ae6</string>
 	<key>FacebookDisplayName</key>
-	<string>Rokebi Global</string>
+	<string>ROKEBI eSIM</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<true/>
 	<key>FirebaseScreenReportingEnabled</key>

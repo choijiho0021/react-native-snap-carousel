@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>ko_KR</string>
 	<key>CFBundleDisplayName</key>
-	<string>$(PRODUCT_NAME)</string>
+	<string>ROKEBI eSIM</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleGetInfoString</key>
@@ -58,8 +58,6 @@
 	<string>78</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
-    <key>FirebaseAppDelegateProxyEnabled</key>
-    <true/>
 	<key>FacebookAppID</key>
 	<string>147522690488197</string>
 	<key>FacebookClientToken</key>
@@ -67,7 +65,9 @@
 	<key>FacebookCodelessDebugLogEnabled</key>
 	<true/>
 	<key>FacebookDisplayName</key>
-	<string>Rokebi Global</string>
+	<string>ROKEBI eSIM</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<true/>
 	<key>KAKAO_APP_KEY</key>
 	<string>20432406a5258ae68b9c9558a4ba23ef</string>
 	<key>LSApplicationCategoryType</key>
@@ -181,8 +181,6 @@
 	<string>연락처 접근을 허용해 주세요</string>
 	<key>NSMainNibFile</key>
 	<string>GlobalLaunchScreen</string>
-	<key>UILaunchStoryboardName</key>
-	<string>GlobalLaunchScreen</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow esim to access your microphone</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -202,6 +200,8 @@
 		<string>fetch</string>
 		<string>remote-notification</string>
 	</array>
+	<key>UILaunchStoryboardName</key>
+	<string>GlobalLaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
