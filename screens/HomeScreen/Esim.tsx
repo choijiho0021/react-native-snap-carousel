@@ -513,7 +513,7 @@ class Esim extends Component<EsimProps, EsimState> {
       headerLeft: () => (
         <AppText style={styles.title}>
           {i18n.t('esim')}
-          {esimGlobal ? ' Global' : ''}
+          {esimGlobal ? ' Store' : ''}
         </AppText>
       ),
       headerRight: () => (
