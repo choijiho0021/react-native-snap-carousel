@@ -109,7 +109,11 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 // Required for the registrationError event.
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-  [RNCPushNotificationIOS didFailToRegisterForRemoteNotificationsWithError:error];
+  if(error) {
+    [RNCPushNotificationIOS didFailToRegisterForRemoteNotificationsWithError:error];
+  }
+  
+  NSLog(@"didFailToRegisterForRemoteNotificationsWithError: %@", error);
 }
 // IOS 10+ Required for localNotification event
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
