@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
     color: colors.warmGrey,
     backgroundColor: colors.whiteTwo,
     padding: 20,
+    textAlign: 'justify',
   },
   button: {
     paddingHorizontal: 20,
