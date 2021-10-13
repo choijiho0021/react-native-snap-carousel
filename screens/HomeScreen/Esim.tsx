@@ -1,25 +1,5 @@
 /* eslint-disable no-param-reassign */
-import AsyncStorage from '@react-native-community/async-storage';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import {StackNavigationProp} from '@react-navigation/stack';
-import moment, {Moment} from 'moment';
-import React, {Component, memo} from 'react';
-import {
-  Appearance,
-  BackHandler,
-  ColorSchemeName,
-  Dimensions,
-  Platform,
-  Pressable,
-  StatusBar,
-  StyleSheet,
-  View,
-} from 'react-native';
-import DeviceInfo from 'react-native-device-info';
-import RNExitApp from 'react-native-exit-app';
-import {TabView} from 'react-native-tab-view';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -45,7 +25,6 @@ import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
-import {actions as infoActions, InfoAction} from '@/redux/modules/info';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
@@ -57,6 +36,32 @@ import {
 import {SyncModelState} from '@/redux/modules/sync';
 import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
+import AsyncStorage from '@react-native-community/async-storage';
+import analytics, {firebase} from '@react-native-firebase/analytics';
+import {StackNavigationProp} from '@react-navigation/stack';
+import moment, {Moment} from 'moment';
+import React, {Component, memo} from 'react';
+import {
+  Appearance,
+  BackHandler,
+  ColorSchemeName,
+  Dimensions,
+  Platform,
+  Pressable,
+  StatusBar,
+  StyleSheet,
+  View,
+} from 'react-native';
+import DeviceInfo from 'react-native-device-info';
+import RNExitApp from 'react-native-exit-app';
+import {Settings} from 'react-native-fbsdk';
+import {TabView} from 'react-native-tab-view';
+import {
+  getTrackingStatus,
+  requestTrackingPermission,
+} from 'react-native-tracking-transparency';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import {checkFistLaunch, requestPermission} from './component/permission';
 import PromotionCarousel from './component/PromotionCarousel';
 
@@ -275,6 +280,7 @@ class Esim extends Component<EsimProps, EsimState> {
     const now = moment();
     this.setState({time: now});
 
+    requestTrackingPermission();
     AsyncStorage.getItem('popupDisabled').then((v) => {
       if (v) {
         const popupDisabled =
@@ -314,6 +320,20 @@ class Esim extends Component<EsimProps, EsimState> {
               popUp: this.setNotiModal,
             });
           } else if (this.props.promotion) this.setNotiModal();
+        } else {
+          const status = await getTrackingStatus();
+          if (status === 'authorized') {
+            await firebase.analytics().setAnalyticsCollectionEnabled(true);
+            await Settings.setAdvertiserTrackingEnabled(true);
+
+            analytics().logEvent(
+              `${esimGlobal ? 'global' : 'esim'}_disabled_device`,
+              {
+                item: deviceModel,
+                count: 1,
+              },
+            );
+          }
         }
       }
     });

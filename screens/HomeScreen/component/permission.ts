@@ -9,12 +9,12 @@ const {esimApp} = Env.get();
 
 export async function requestPermission() {
   if (Platform.OS === 'ios') {
-    await request(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
     await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
     if (!esimApp) {
       await request(PERMISSIONS.IOS.CAMERA);
     }
     await messaging().requestPermission();
+    await request(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
   } else if (Platform.OS === 'android') {
     await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
     await requestTrackingPermission();
