@@ -323,25 +323,30 @@ class Esim extends Component<EsimProps, EsimState> {
   }
 
   componentDidUpdate(prevProps: EsimProps) {
+    const {product, account, promotion} = this.props;
     const focus = this.props.navigation.isFocused();
     const now = moment();
     const diff = moment.duration(now.diff(this.state.time)).asMinutes();
 
     if (diff > 60 && focus) {
+      // eslint-disable-next-line react/no-did-update-set-state
       this.setState({time: now});
       this.props.action.product.getProd();
     }
 
-    if (prevProps.promotion !== this.props.promotion) this.setNotiModal();
+    if (prevProps.promotion !== promotion) this.setNotiModal();
 
     if (
-      prevProps.product.prodList !== this.props.product.prodList
+      prevProps.product.prodList !== product.prodList
       // || (diff > 0.2 && this.props.product.sortedProdList.length === 0
     ) {
       this.refresh();
     }
 
-    if (prevProps.account.iccid !== this.props.account.iccid) {
+    if (
+      prevProps.account.iccid !== account.iccid ||
+      (prevProps.account.loggedIn !== account.loggedIn && !account.loggedIn)
+    ) {
       this.init();
     }
 
