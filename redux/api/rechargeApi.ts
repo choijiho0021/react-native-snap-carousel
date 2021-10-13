@@ -1,6 +1,6 @@
 import _ from 'underscore';
+import {utils} from '@/utils/utils';
 import api, {ApiResult} from './api';
-import utils from '../utils';
 
 const PAGE_SIZE = 10;
 
@@ -19,7 +19,7 @@ const toRecharge = (data): ApiResult<RkbRecharge> => {
       obj.map((item) => ({
         type: item.type,
         uuid: item.id,
-        //nid : item.attributes.drupal_internal__nid,
+        // nid : item.attributes.drupal_internal__nid,
         amount: utils.stringToNumber(item.attributes.field_amount),
         created: item.attributes.created,
         //updated : item.attributes.changed,

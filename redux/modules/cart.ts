@@ -2,12 +2,12 @@
 import {Reducer} from 'redux-actions';
 import {List as ImmutableList} from 'immutable';
 import {AnyAction} from 'redux';
+import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import Env from '@/environment';
 import {RkbOrderItem} from '@/redux/api/cartApi';
-import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {PaymentResult} from '@/redux/models/paymentResult';
 import api from '@/redux/api/api';

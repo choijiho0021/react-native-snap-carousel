@@ -1,3 +1,11 @@
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import IMP from 'iamport-react-native';
+import React, {Component} from 'react';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
+import Video from 'react-native-video';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
@@ -8,14 +16,6 @@ import {API} from '@/redux/api';
 import api from '@/redux/api/api';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import IMP from 'iamport-react-native';
-import React, {Component} from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
-import Video from 'react-native-video';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
 
 // const IMP = require('iamport-react-native').default;
 const loading = require('../assets/images/loading_1.mp4');
