@@ -1,3 +1,26 @@
+import Clipboard from '@react-native-community/clipboard';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import Analytics from 'appcenter-analytics';
+import React, {Component} from 'react';
+import {
+  FlatList,
+  Linking,
+  Platform,
+  Pressable,
+  RefreshControl,
+  StyleSheet,
+  View,
+} from 'react-native';
+import {
+  check,
+  openSettings,
+  PERMISSIONS,
+  RESULTS,
+} from 'react-native-permissions';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppButton from '@/components/AppButton';
@@ -28,29 +51,6 @@ import {
 } from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import validationUtil, {ValidationResult} from '@/utils/validationUtil';
-import Clipboard from '@react-native-community/clipboard';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import Analytics from 'appcenter-analytics';
-import React, {Component} from 'react';
-import {
-  FlatList,
-  Linking,
-  Platform,
-  Pressable,
-  RefreshControl,
-  StyleSheet,
-  View,
-} from 'react-native';
-import {
-  check,
-  openSettings,
-  PERMISSIONS,
-  RESULTS,
-} from 'react-native-permissions';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 import Info from './components/Info';
 import OrderItem from './components/OrderItem';
 

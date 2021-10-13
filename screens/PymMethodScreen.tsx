@@ -1,3 +1,15 @@
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import Analytics from 'appcenter-analytics';
+import React, {Component} from 'react';
+import {Platform, SafeAreaView, StyleSheet, View} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import RNPickerSelect from 'react-native-picker-select';
+import Video from 'react-native-video';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import AddressCard from '@/components/AddressCard';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -44,18 +56,6 @@ import {
   ProfileModelState,
 } from '@/redux/modules/profile';
 import i18n from '@/utils/i18n';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import Analytics from 'appcenter-analytics';
-import React, {Component} from 'react';
-import {Platform, SafeAreaView, StyleSheet, View} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import RNPickerSelect from 'react-native-picker-select';
-import Video from 'react-native-video';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 
 const {esimApp} = Env.get();
 const {deliveryText} = API.Order;

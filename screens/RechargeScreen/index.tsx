@@ -1,3 +1,18 @@
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import React, {Component} from 'react';
+import {
+  Image,
+  ImageBackground,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
@@ -28,21 +43,6 @@ import {
   OrderModelState,
 } from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import React, {Component} from 'react';
-import {
-  Image,
-  ImageBackground,
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 
 const styles = StyleSheet.create({
   buttonBox: {

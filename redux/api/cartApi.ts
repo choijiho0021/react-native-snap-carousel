@@ -1,5 +1,5 @@
-import Env from '@/environment';
 import _ from 'underscore';
+import Env from '@/environment';
 import {utils} from '@/utils/utils';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {PaymentResult} from '@/redux/models/paymentResult';

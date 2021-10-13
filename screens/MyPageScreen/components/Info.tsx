@@ -1,3 +1,8 @@
+import {useNavigation} from '@react-navigation/native';
+import {RootState} from '@reduxjs/toolkit';
+import React, {memo} from 'react';
+import {ImageBackground, Pressable, StyleSheet, View} from 'react-native';
+import {connect} from 'react-redux';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import Profile from '@/components/Profile';
@@ -7,11 +12,6 @@ import Env from '@/environment';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
-import {useNavigation} from '@react-navigation/native';
-import {RootState} from '@reduxjs/toolkit';
-import React, {memo} from 'react';
-import {ImageBackground, Pressable, StyleSheet, View} from 'react-native';
-import {connect} from 'react-redux';
 
 const {esimApp, esimCurrency} = Env.get();
 
