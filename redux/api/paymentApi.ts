@@ -4,7 +4,7 @@ import _ from 'underscore';
 import utils from '../utils';
 import api, {ApiResult, DrupalNodeJsonApi} from './api';
 
-const {esimApp, esimGlobal, isProduction} = Env.get();
+const {esimApp, esimGlobal} = Env.get();
 
 const PAGE_SIZE = 10;
 
@@ -29,6 +29,7 @@ const method = esimGlobal
           method: 'card',
           title: 'pym:paypal',
           language: 'en_US',
+          icon: 'paypal',
         },
       ],
     ]
