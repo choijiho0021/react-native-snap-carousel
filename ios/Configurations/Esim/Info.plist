@@ -58,6 +58,8 @@
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
 	<string>147522690488197</string>
+	<key>FacebookAutoLogAppEventsEnabled</key>
+	<true/>
 	<key>FacebookDisplayName</key>
 	<string>로밍도깨비 eSIM</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
@@ -160,7 +162,7 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>프로필 등록을 위해 사진 앨범 접근을 허용해 주세요</string>
 	<key>NSUserTrackingUsageDescription</key>
-	<string></string>
+	<string>맞춤 상품 추천을 위해 허용해 주세요</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Ionicons.ttf</string>
