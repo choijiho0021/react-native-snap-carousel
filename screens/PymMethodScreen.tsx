@@ -382,6 +382,7 @@ class PymMethodScreen extends Component<
     this.dropDownHeader = this.dropDownHeader.bind(this);
     this.inputMemo = this.inputMemo.bind(this);
     this.benefit = this.benefit.bind(this);
+    this.setValues = this.setValues.bind(this);
   }
 
   componentDidMount() {
@@ -401,30 +402,17 @@ class PymMethodScreen extends Component<
       this.props.action.profile.getCustomerProfile({uid, token});
     }
 
-    const {pymPrice, deduct} = this.props.cart;
-    const {content} = this.props.profile;
-    const mode = this.props.route.params?.mode;
+    Analytics.trackEvent('Page_View_Count', {
+      page: `Payment - ${this.props.route.params?.mode}`,
+    });
 
-    Analytics.trackEvent('Page_View_Count', {page: `Payment - ${mode}`});
+    this.setValues();
 
-    this.setState((state) => ({
-      pymPrice,
-      deduct,
-      isRecharge:
-        this.props.cart.purchaseItems.findIndex(
-          (item) => item.type === 'rch',
-        ) >= 0,
-      simIncluded:
-        this.props.cart.purchaseItems.findIndex(
-          (item) => item.type === 'sim_card',
-        ) >= 0,
-      deliveryMemo: {
-        ...state.deliveryMemo,
-        content,
-      },
-      mode,
-    }));
     this.benefit();
+  }
+
+  componentDidUpdate(prevProps: PymMethodScreenProps) {
+    if (this.props.cart !== prevProps.cart) this.setValues();
   }
 
   async onSubmit() {
@@ -502,6 +490,7 @@ class PymMethodScreen extends Component<
         app_scheme: esimApp ? 'rokebiesim' : 'Rokebi',
         profile_uuid: profileId,
         dlvCost: dlvCost.value,
+        language: selected?.language || 'KR',
         digital: !simIncluded, // 컨텐츠 - 데이터상품일 경우 true
         memo,
         // mode: 'test'
@@ -513,6 +502,30 @@ class PymMethodScreen extends Component<
       console.log('payment click', params);
       this.props.navigation.navigate('Payment', params);
     }
+  }
+
+  setValues() {
+    const {pymPrice, deduct} = this.props.cart;
+    const {content} = this.props.profile;
+    const mode = this.props.route.params?.mode;
+
+    this.setState((state) => ({
+      pymPrice,
+      deduct,
+      isRecharge:
+        this.props.cart.purchaseItems.findIndex(
+          (item) => item.type === 'rch',
+        ) >= 0,
+      simIncluded:
+        this.props.cart.purchaseItems.findIndex(
+          (item) => item.type === 'sim_card',
+        ) >= 0,
+      deliveryMemo: {
+        ...state.deliveryMemo,
+        content,
+      },
+      mode,
+    }));
   }
 
   onPress = (method: PaymentMethod, key: string, idx: number) => () => {
