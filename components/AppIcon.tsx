@@ -96,6 +96,7 @@ const images: Record<string, any[]> = {
   ssgpay: [require(`${paymentPath}logoSsg.png`)],
   toss: [require(`${paymentPath}logoToss.png`)],
   lpay: [require(`${paymentPath}logoLpay.png`)],
+  paypal: [require(`${paymentPath}logo_paypal.png`)],
   specialTip: [require(`${guidePath}iconHoney.png`)],
   imgAlarm: [require(`${esimPath}imgAlarm.png`)],
   btnQr: [require(`${esimPath}btnQr.png`)],
