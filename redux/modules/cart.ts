@@ -252,7 +252,7 @@ const payNorder = createAsyncThunk(
     dispatch(slice.actions.pymResult(result));
 
     // remove ordered items from the cart
-    const {orderId, orderItems, purchaseItems} = cart;
+    const {orderId, orderItems, purchaseItems, pymReq} = cart;
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
@@ -294,6 +294,22 @@ const payNorder = createAsyncThunk(
             // balance에서 차감한 경우에도 다시 읽어들인다.
             return dispatch(accountAction.getAccount({iccid, token}));
           }
+        }
+        if (resp.payload?.result === api.FAILED) {
+          console.log('@@@@ make order failed');
+
+          // 결제는 성공했을 경우 대비 account (로깨비캐시) 와 cart를 갱신한다.
+          const dlvCost = pymReq?.find((item) => item.key === 'dlvCost');
+          return dispatch(accountAction.getAccount({iccid, token})).then(
+            ({payload: p}) => {
+              const {balance} = p?.objects[0];
+              if (p?.result === 0)
+                dispatch(
+                  slice.actions.purchase({purchaseItems, dlvCost, balance}),
+                );
+              return resp;
+            },
+          );
         }
         return resp;
       })
