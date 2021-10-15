@@ -11,8 +11,7 @@ const bundleId = getBundleId();
 const appId = bundleId === 'com.uangel.rokebi-USIM' ? 'usim' : 'esim';
 const esimGlobal = appId === 'esim' && bundleId === 'com.uangel.rokebi-global';
 // 현재 test 목적(staging 용)으로 Production 기준으로 분리
-const impId = Config.NODE_ENV === 'production' ? 'imp53913318' : 'imp60215393';
-// const impId = esimGlobal ? 'imp60215393' : 'imp53913318';
+const impId = esimGlobal ? 'imp60215393' : 'imp53913318';
 
 // countryCode: "KR"
 // languageTag: "en-KR"
