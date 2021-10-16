@@ -84,7 +84,7 @@ export type HomeStackParamList = {
   Payment: PaymentParams;
   PymMethod: {isPaid?: boolean; pymPrice?: number; mode?: PymMethodScreenMode};
   FindAddress: undefined;
-  PaymentResult: {pymResult: PaymentResult; orderResult: object; mode?: string};
+  PaymentResult: {pymResult: boolean; mode?: string};
   CodePush: undefined;
   CustomerProfile: undefined;
   AddProfile: undefined;

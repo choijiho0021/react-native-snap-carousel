@@ -10,6 +10,7 @@ export type PaymentResult = {
   dlvCost: number;
   digital: boolean;
   memo?: string;
+  pg_provider: string;
   payment_type: string;
   currency_code: CurrencyCode;
 };

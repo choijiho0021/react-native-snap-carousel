@@ -1,3 +1,12 @@
+import analytics from '@react-native-firebase/analytics';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import Analytics from 'appcenter-analytics';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {Image, SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
+import {connect} from 'react-redux';
+import _ from 'underscore';
+import {bindActionCreators} from 'redux';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import PaymentItemInfo from '@/components/PaymentItemInfo';
@@ -6,36 +15,16 @@ import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
-import {Currency} from '@/redux/api/productApi';
 import utils from '@/redux/api/utils';
-import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {AccountModelState} from '@/redux/modules/account';
 import {
   actions as cartActions,
   CartAction,
   CartModelState,
-  PaymentReq,
 } from '@/redux/modules/cart';
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
-import analytics from '@react-native-firebase/analytics';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import Analytics from 'appcenter-analytics';
-import React, {Component} from 'react';
-import {
-  BackHandler,
-  Image,
-  NativeEventSubscription,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 
 const {esimCurrency, esimGlobal} = Env.get();
 const imgCheck = require('../assets/images/main/imgCheck.png');
@@ -122,181 +111,121 @@ type PaymentResultScreenProps = {
   };
 };
 
-type PaymentResultScreenState = {
-  pymReq?: PaymentReq[];
-  purchaseItems: PurchaseItem[];
-  pymPrice?: Currency;
-  deduct?: Currency;
-  isRecharge?: boolean;
-  screen: keyof HomeStackParamList;
-};
+const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
+  navigation,
+  route: {params, name: screen},
+  account,
+  cart,
+  action,
+}) => {
+  const [oldCart, setOldCart] = useState<Partial<CartModelState>>();
+  const [isRecharge, setIsRecharge] = useState(false);
+  const isSuccess = useMemo(() => params?.pymResult || false, [params]);
 
-class PaymentResultScreen extends Component<
-  PaymentResultScreenProps,
-  PaymentResultScreenState
-> {
-  backHandler: NativeEventSubscription | null;
-
-  constructor(props: PaymentResultScreenProps) {
-    super(props);
-
-    this.state = {
-      purchaseItems: [],
-      pymReq: [],
-      pymPrice: undefined,
-      deduct: undefined,
-      isRecharge: undefined,
-    };
-
-    this.init = this.init.bind(this);
-    this.moveScreen = this.moveScreen.bind(this);
-    this.backKeyHandler = this.backKeyHandler.bind(this);
-
-    this.backHandler = null;
-  }
-
-  componentDidMount() {
-    this.props.navigation.setOptions({
+  useEffect(() => {
+    navigation.setOptions({
       title: null,
       headerLeft: () => (
         <AppText style={styles.title}>{i18n.t('his:paymentCompleted')}</AppText>
       ),
     });
 
-    const {params} = this.props.route;
-    const {success} = params?.pymResult || {};
-    const {result} = params?.orderResult || {};
-    const mode = params?.mode;
-
-    const isSuccess = _.isEmpty(success)
-      ? result === 0
-      : success && result === 0;
-
-    Analytics.trackEvent('Payment', {
-      payment: `${mode} Payment${isSuccess ? ' Success' : ' Fail'}`,
-    });
-
-    if (isSuccess)
-      analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_payment`);
-
-    this.init();
-    this.props.action.noti.getNotiList({mobile: this.props.account.mobile});
-    this.backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      this.backKeyHandler,
-    );
-  }
-
-  backKeyHandler = () => {
-    console.log('Disabled back key');
-    return true;
-  };
-
-  moveScreen(name: keyof HomeStackParamList) {
-    this.backHandler?.remove();
-
-    this.props.navigation.reset({routes: [{name}]});
-  }
-
-  init() {
-    const {pymReq, purchaseItems, pymPrice, deduct} = this.props.cart;
-    const {iccid, token} = this.props.account;
-    const {name} = this.props.route;
-
-    this.setState({
-      purchaseItems,
-      pymReq,
-      pymPrice,
-      deduct,
-      isRecharge:
-        this.props.cart.purchaseItems.findIndex(
-          (item) => item.type === 'rch',
-        ) >= 0,
-      screen: name,
-    });
+    const {iccid, token} = account;
 
     // 구매 이력을 다시 읽어 온다.
     // this.props.action.order.getOrders(this.props.auth)
     // 사용 내역을 다시 읽어 온다.
-    this.props.action.order.getSubs({iccid, token});
-    // 카트를 비운다.
-    this.props.action.cart.empty();
-  }
+    action.order.getSubs({iccid, token});
 
-  render() {
-    const {params} = this.props.route;
-    const {pymReq, purchaseItems, pymPrice, deduct, isRecharge, screen} =
-      this.state;
-    const {success} = params?.pymResult || {};
-    const {result} = params?.orderResult || {};
-    const {balance = 0} = this.props.account;
+    action.noti.getNotiList({mobile: account.mobile});
+  }, [account, action.noti, action.order, navigation]);
 
-    // [WARNING: 이해를 돕기 위한 것일 뿐, imp_success 또는 success 파라미터로 결제 성공 여부를 장담할 수 없습니다.]
-    // 아임포트 서버로 결제내역 조회(GET /payments/${imp_uid})를 통해 그 응답(status)에 따라 결제 성공 여부를 판단하세요.
+  useEffect(() => {
+    const {pymReq, purchaseItems, pymPrice, deduct} = cart;
+    if (purchaseItems.length > 0) {
+      setOldCart({pymReq, purchaseItems, pymPrice, deduct});
+      setIsRecharge(
+        purchaseItems.findIndex((item) => item.type === 'rch') >= 0,
+      );
+      // 카트를 비운다.
+      action.cart.empty();
+    }
+  }, [action.cart, cart]);
 
-    const isSuccess = _.isEmpty(success)
-      ? result === 0
-      : success && result === 0;
+  useEffect(() => {
+    Analytics.trackEvent('Payment', {
+      payment: `${params?.mode} Payment${isSuccess ? ' Success' : ' Fail'}`,
+    });
 
-    return (
-      <SafeAreaView style={{flex: 1, alignItems: 'stretch'}}>
-        <ScrollView style={styles.scrollView}>
-          <View style={styles.paymentResultView}>
-            <Image
-              style={styles.image}
-              source={imgCheck}
-              resizeMode="contain"
-            />
-            <AppText style={styles.paymentResultText}>
-              {` ${i18n.t(isSuccess ? 'pym:success' : 'pym:fail')}`}
-            </AppText>
-            <AppButton
-              style={styles.btnOrderList}
-              // MyPage화면 이동 필요
-              onPress={() =>
-                this.moveScreen('MyPageStack' as keyof HomeStackParamList)
-              }
-              // title={i18n.t('cancel')}
-              title={i18n.t('pym:toOrderList')}
-              titleStyle={appStyles.normal16Text}
-            />
-          </View>
-          <View style={styles.container}>
-            <PaymentItemInfo
-              cart={purchaseItems}
-              pymReq={pymReq}
-              mode="result"
-              pymPrice={
-                isSuccess ? pymPrice : utils.toCurrency(0, esimCurrency)
-              }
-              deduct={isSuccess ? deduct : utils.toCurrency(0, esimCurrency)}
-              isRecharge={isRecharge}
-              screen={screen}
-            />
-            {screen === 'PaymentResult' && (
-              <View style={styles.result}>
-                <AppText style={[appStyles.normal16Text, {flex: 1}]}>
-                  {i18n.t('cart:afterDeductBalance')}
-                </AppText>
-                <AppText style={appStyles.normal16Text}>
-                  {utils.price(utils.toCurrency(balance, esimCurrency))}
-                </AppText>
-              </View>
-            )}
-          </View>
-        </ScrollView>
-        <AppButton
-          style={styles.btnHome}
-          title={i18n.t('pym:toHome')}
-          titleStyle={styles.btnHomeText}
-          onPress={() =>
-            this.moveScreen('HomeStack' as keyof HomeStackParamList)
-          }
-        />
-      </SafeAreaView>
-    );
-  }
-}
+    if (isSuccess)
+      analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_payment`);
+  }, [isSuccess, params?.mode]);
+
+  // [WARNING: 이해를 돕기 위한 것일 뿐, imp_success 또는 success 파라미터로 결제 성공 여부를 장담할 수 없습니다.]
+  // 아임포트 서버로 결제내역 조회(GET /payments/${imp_uid})를 통해 그 응답(status)에 따라 결제 성공 여부를 판단하세요.
+
+  return (
+    <SafeAreaView style={{flex: 1, alignItems: 'stretch'}}>
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.paymentResultView}>
+          <Image style={styles.image} source={imgCheck} resizeMode="contain" />
+          <AppText style={styles.paymentResultText}>
+            {` ${i18n.t(isSuccess ? 'pym:success' : 'pym:fail')}`}
+          </AppText>
+          <AppButton
+            style={styles.btnOrderList}
+            // MyPage화면 이동 필요
+            onPress={() =>
+              navigation.reset({
+                routes: [{name: 'MyPageStack' as keyof HomeStackParamList}],
+              })
+            }
+            // title={i18n.t('cancel')}
+            title={i18n.t('pym:toOrderList')}
+            titleStyle={appStyles.normal16Text}
+          />
+        </View>
+        <View style={styles.container}>
+          <PaymentItemInfo
+            cart={oldCart?.purchaseItems || []}
+            pymReq={oldCart?.pymReq}
+            mode="result"
+            pymPrice={
+              isSuccess ? oldCart?.pymPrice : utils.toCurrency(0, esimCurrency)
+            }
+            deduct={
+              isSuccess ? oldCart?.deduct : utils.toCurrency(0, esimCurrency)
+            }
+            isRecharge={isRecharge}
+            screen={screen}
+          />
+          {screen === 'PaymentResult' && (
+            <View style={styles.result}>
+              <AppText style={[appStyles.normal16Text, {flex: 1}]}>
+                {i18n.t('cart:afterDeductBalance')}
+              </AppText>
+              <AppText style={appStyles.normal16Text}>
+                {utils.price(
+                  utils.toCurrency(account.balance || 0, esimCurrency),
+                )}
+              </AppText>
+            </View>
+          )}
+        </View>
+      </ScrollView>
+      <AppButton
+        style={styles.btnHome}
+        title={i18n.t('pym:toHome')}
+        titleStyle={styles.btnHomeText}
+        onPress={() =>
+          navigation.reset({
+            routes: [{name: 'HomeStack' as keyof HomeStackParamList}],
+          })
+        }
+      />
+    </SafeAreaView>
+  );
+};
 
 export default connect(
   ({account, cart}: RootState) => ({

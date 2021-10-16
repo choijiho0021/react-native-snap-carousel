@@ -7,9 +7,8 @@ import {API} from '@/redux/api';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import Env from '@/environment';
-import {RkbOrderItem} from '@/redux/api/cartApi';
+import {PaymentInfo, RkbOrderItem} from '@/redux/api/cartApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
-import {PaymentResult} from '@/redux/models/paymentResult';
 import api from '@/redux/api/api';
 import {Currency} from '@/redux/api/productApi';
 import {actions as orderAction} from './order';
@@ -236,46 +235,99 @@ const slice = createSlice({
     //   return state;
     // },
 
-    builder.addCase(makeOrder.fulfilled, onSuccess);
+    builder.addCase(makeOrder.fulfilled, (state, action) => {
+      const {result, objects = []} = action.payload;
+
+      if (result === 0) {
+        // update orderId
+        state.orderId = objects[0]?.order_id[0]?.value;
+      }
+    });
 
     builder.addCase(rechargeAccount.fulfilled, onSuccess);
   },
 });
 
+const checkStockAndMakeOrder = createAsyncThunk(
+  'cart/checkStockAndMakeOrder',
+  (info: PaymentInfo, {dispatch, getState}) => {
+    const {account, cart} = getState() as RootState;
+    const {token, iccid, email, mobile} = account;
+    const {purchaseItems} = cart;
+
+    // make order in the server
+    // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
+    return dispatch(checkStock({purchaseItems, token})).then(
+      ({payload: res}) => {
+        if (res.result === 0) {
+          // 충전, 구매 모두 order 생성
+          return dispatch(
+            makeOrder({
+              items: purchaseItems,
+              info,
+              token,
+              iccid,
+              user: mobile,
+              mail: email,
+            }),
+          ).then((rsp) => rsp.payload);
+        }
+        return Promise.resolve({result: api.E_RESOURCE_NOT_FOUND});
+      },
+    );
+  },
+);
+
+const updateOrder = createAsyncThunk(
+  'cart/updateOrder',
+  (info: PaymentInfo, {dispatch, getState}) => {
+    const {account, cart} = getState() as RootState;
+    const {token, iccid, email, mobile} = account;
+    // remove ordered items from the cart
+    const {orderId, orderItems, purchaseItems, pymReq} = cart;
+
+    dispatch(orderAction.getOrders({user: mobile, token, page: 0}));
+    // cart에서 item 삭제
+    orderItems?.forEach((item) => {
+      if (purchaseItems.find((o) => o.orderItemId === item.orderItemId)) {
+        // remove ordered item
+        if (orderId)
+          dispatch(cartRemove({orderId, orderItemId: item.orderItemId}));
+      }
+    });
+
+    if (
+      purchaseItems.find((item) => item.type === 'rch') ||
+      info.rokebi_cash > 0
+    ) {
+      // 충전을 한 경우에는 account를 다시 읽어들인다.
+      // balance에서 차감한 경우에도 다시 읽어들인다.
+      dispatch(accountAction.getAccount({iccid, token}));
+    }
+
+    // return cart state
+    return dispatch(cartFetch());
+  },
+);
+
 const payNorder = createAsyncThunk(
   'cart/payNorder',
-  (result: PaymentResult, {dispatch, getState}) => {
+  (info: PaymentInfo, {dispatch, getState}) => {
     const {account, cart} = getState() as RootState;
     const {token, iccid, email, mobile} = account;
 
     // update payment result
-    dispatch(slice.actions.pymResult(result));
+    dispatch(slice.actions.pymResult(info));
 
     // remove ordered items from the cart
     const {orderId, orderItems, purchaseItems, pymReq} = cart;
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
-    return dispatch(checkStock({purchaseItems, token}))
-      .then(({payload: res}) => {
-        if (res.result === 0) {
-          // 충전, 구매 모두 order 생성
-          return dispatch(
-            makeOrder({
-              items: purchaseItems,
-              result,
-              token,
-              iccid,
-              user: mobile,
-              mail: email,
-            }),
-          );
-        }
-        throw new Error('Soldout');
-      })
-      .then((resp) => {
+    return dispatch(checkStockAndMakeOrder(info))
+      .then(({payload: resp}) => {
         console.log('@@@ make order ', resp, orderItems);
-        if (resp.payload?.result === 0) {
+        if (resp.result === 0) {
           dispatch(orderAction.getOrders({user: mobile, token, page: 0}));
           // cart에서 item 삭제
           orderItems?.forEach((item) => {
@@ -294,8 +346,7 @@ const payNorder = createAsyncThunk(
             // balance에서 차감한 경우에도 다시 읽어들인다.
             return dispatch(accountAction.getAccount({iccid, token}));
           }
-        }
-        if (resp.payload?.result === api.FAILED) {
+        } else {
           console.log('@@@@ make order failed');
 
           // 결제는 성공했을 경우 대비 account (로깨비캐시) 와 cart를 갱신한다.
@@ -321,6 +372,8 @@ const payNorder = createAsyncThunk(
   },
 );
 
+// 재고 확인 후 구매
+// 이후 결제 과정을 거친다.
 const checkStockAndPurchase = createAsyncThunk(
   'cart/checkStockAndPurchase',
   (
@@ -367,6 +420,8 @@ export const actions = {
   payNorder,
   cartAddAndGet,
   checkStockAndPurchase,
+  checkStockAndMakeOrder,
+  updateOrder,
 };
 export type CartAction = typeof actions;
 

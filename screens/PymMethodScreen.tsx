@@ -441,6 +441,7 @@ class PymMethodScreen extends Component<
 
     // 로깨비캐시 결제
     if (pymPrice?.value === 0) {
+      // if the payment amount is zero, call the old API payNorder
       this.setState({
         loading: true,
       });
@@ -459,8 +460,7 @@ class PymMethodScreen extends Component<
         if (resp.result === 0) {
           this.props.navigation.setParams({isPaid: true});
           this.props.navigation.replace('PaymentResult', {
-            pymResult: response,
-            orderResult: resp,
+            pymResult: true,
             mode,
           });
         } else {
@@ -476,6 +476,7 @@ class PymMethodScreen extends Component<
         }
       });
     } else {
+      // if the payment amount is not zero, make order first
       const params = {
         pg: selected?.key,
         pay_method: selected?.method,
@@ -499,7 +500,6 @@ class PymMethodScreen extends Component<
       this.setState({
         clickable: true,
       });
-      console.log('payment click', params);
       this.props.navigation.navigate('Payment', params);
     }
   }
