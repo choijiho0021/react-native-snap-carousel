@@ -25,6 +25,12 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>RokebiEsim</string>
+			</array>
+		</dict>
+		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
@@ -33,11 +39,8 @@
 			</array>
 		</dict>
 		<dict>
-			<key>CFBundleURLName</key>
-			<string></string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>rokebiesim</string>
 				<string>fb147522690488197</string>
 			</array>
 		</dict>
@@ -108,6 +111,7 @@
 		<string>citicardappkr</string>
 		<string>citimobileapp</string>
 		<string>kakaotalk</string>
+		<string>supertoss</string>
 		<string>payco</string>
 		<string>lpayapp</string>
 		<string>hanamopmoasign</string>

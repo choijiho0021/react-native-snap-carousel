@@ -25,12 +25,9 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
-			<key>CFBundleURLName</key>
-			<string></string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>rokebiesim</string>
-				<string>fb147522690488197</string>
+				<string>RokebiEsim</string>
 			</array>
 		</dict>
 		<dict>
@@ -51,21 +48,27 @@
 				<string>esimnaverlogin</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb147522690488197</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>53</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
-	<key>FirebaseAppDelegateProxyEnabled</key>
-	<true/>
 	<key>FacebookAppID</key>
 	<string>147522690488197</string>
-	<key>FacebookCodelessDebugLogEnabled</key>
-	<true/>
 	<key>FacebookAutoLogAppEventsEnabled</key>
+	<true/>
+	<key>FacebookCodelessDebugLogEnabled</key>
 	<true/>
 	<key>FacebookDisplayName</key>
 	<string>로밍도깨비 eSIM</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<true/>
 	<key>KAKAO_APP_KEY</key>
 	<string>f881469e3b4a140967dfaebe648ede8d</string>
 	<key>LSApplicationCategoryType</key>
@@ -106,6 +109,7 @@
 		<string>citicardappkr</string>
 		<string>citimobileapp</string>
 		<string>kakaotalk</string>
+		<string>supertoss</string>
 		<string>payco</string>
 		<string>lpayapp</string>
 		<string>hanamopmoasign</string>
