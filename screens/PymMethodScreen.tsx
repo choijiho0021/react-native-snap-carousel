@@ -333,6 +333,8 @@ type PymMethodScreenState = {
   column?: number;
 };
 
+const {esimGlobal} = Env.get();
+
 class PymMethodScreen extends Component<
   PymMethodScreenProps,
   PymMethodScreenState
@@ -439,6 +441,9 @@ class PymMethodScreen extends Component<
       this.props.cart.pymReq?.find((item) => item.key === 'dlvCost')?.amount ||
       utils.toCurrency(0, pymPrice?.currency);
 
+    let scheme = 'RokebiUsim';
+    if (esimApp) scheme = esimGlobal ? 'RokebiGlobal' : 'RokebiEsim';
+
     // 로깨비캐시 결제
     if (pymPrice?.value === 0) {
       this.setState({
@@ -487,7 +492,7 @@ class PymMethodScreen extends Component<
         buyer_name: mobile,
         buyer_email: email,
         escrow: false,
-        app_scheme: esimApp ? 'rokebiesim' : 'Rokebi',
+        app_scheme: scheme,
         profile_uuid: profileId,
         dlvCost: dlvCost.value,
         language: selected?.language || 'KR',
