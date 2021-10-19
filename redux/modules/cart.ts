@@ -312,63 +312,18 @@ const updateOrder = createAsyncThunk(
 
 const payNorder = createAsyncThunk(
   'cart/payNorder',
-  (info: PaymentInfo, {dispatch, getState}) => {
-    const {account, cart} = getState() as RootState;
-    const {token, iccid, email, mobile} = account;
-
+  (info: PaymentInfo, {dispatch}) => {
     // update payment result
     dispatch(slice.actions.pymResult(info));
 
     // remove ordered items from the cart
-    const {orderId, orderItems, purchaseItems, pymReq} = cart;
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
-    return dispatch(checkStockAndMakeOrder(info))
-      .then(({payload: resp}) => {
-        console.log('@@@ make order ', resp, orderItems);
-        if (resp.result === 0) {
-          dispatch(orderAction.getOrders({user: mobile, token, page: 0}));
-          // cart에서 item 삭제
-          orderItems?.forEach((item) => {
-            if (purchaseItems.find((o) => o.orderItemId === item.orderItemId)) {
-              // remove ordered item
-              if (orderId)
-                dispatch(cartRemove({orderId, orderItemId: item.orderItemId}));
-            }
-          });
-
-          if (
-            purchaseItems.find((item) => item.type === 'rch') ||
-            result.rokebi_cash > 0
-          ) {
-            // 충전을 한 경우에는 account를 다시 읽어들인다.
-            // balance에서 차감한 경우에도 다시 읽어들인다.
-            return dispatch(accountAction.getAccount({iccid, token}));
-          }
-        } else {
-          console.log('@@@@ make order failed');
-
-          // 결제는 성공했을 경우 대비 account (로깨비캐시) 와 cart를 갱신한다.
-          const dlvCost = pymReq?.find((item) => item.key === 'dlvCost');
-          return dispatch(accountAction.getAccount({iccid, token})).then(
-            ({payload: p}) => {
-              const {balance} = p?.objects[0];
-              if (p?.result === 0)
-                dispatch(
-                  slice.actions.purchase({purchaseItems, dlvCost, balance}),
-                );
-              return resp;
-            },
-          );
-        }
-        return resp;
-      })
-      .then(({payload}) => {
-        dispatch(cartFetch());
-        return payload;
-      })
-      .catch((err) => Promise.resolve({result: api.E_RESOURCE_NOT_FOUND}));
+    return dispatch(checkStockAndMakeOrder(info)).then(({payload: resp}) => {
+      dispatch(updateOrder(info));
+      return resp;
+    });
   },
 );
 

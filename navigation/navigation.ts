@@ -2,7 +2,6 @@ import {RkbOrder} from '@/redux/api/orderApi';
 import {RkbInfo} from '@/redux/api/pageApi';
 import {RkbProduct} from '@/redux/api/productApi';
 import {BoardMsgStatus} from '@/redux/api/boardApi';
-import {PaymentResult} from '@/redux/models/paymentResult';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html';

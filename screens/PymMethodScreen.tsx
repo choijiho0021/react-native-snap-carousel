@@ -35,7 +35,7 @@ import api from '@/redux/api/api';
 import {PaymentMethod} from '@/redux/api/paymentApi';
 import {Currency} from '@/redux/api/productApi';
 import utils from '@/redux/api/utils';
-import {createPaymentResultForRokebiCash} from '@/redux/models/paymentResult';
+import {createPaymentInfoForRokebiCash} from '@/redux/models/paymentResult';
 import {
   AccountModelState,
   actions as accountActions,
@@ -446,7 +446,7 @@ class PymMethodScreen extends Component<
         loading: true,
       });
       const {impId} = Env.get();
-      const response = createPaymentResultForRokebiCash({
+      const info = createPaymentInfoForRokebiCash({
         impId,
         mobile,
         profileId,
@@ -456,7 +456,7 @@ class PymMethodScreen extends Component<
         digital: !simIncluded,
       });
       // payNorder에서 재고 확인 - resp.result값으로 비교
-      this.props.action.cart.payNorder(response).then(({payload: resp}) => {
+      this.props.action.cart.payNorder(info).then(({payload: resp}) => {
         if (resp.result === 0) {
           this.props.navigation.setParams({isPaid: true});
           this.props.navigation.replace('PaymentResult', {

@@ -3,7 +3,7 @@ import Env from '@/environment';
 import {utils} from '@/utils/utils';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import api, {ApiResult, DrupalNode} from './api';
-import {Currency} from './productApi';
+import {Currency, CurrencyCode} from './productApi';
 
 export type RkbOrderItem = {
   orderItemId: number;
@@ -321,7 +321,7 @@ export type PaymentInfo = {
   amount: number;
   rokebi_cash: number;
   dlvCost: number;
-  currency_code?: string;
+  currency_code?: CurrencyCode;
   captured: boolean;
 };
 

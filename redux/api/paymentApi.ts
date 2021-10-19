@@ -1,8 +1,8 @@
-import Env from '@/environment';
 import {Platform} from 'react-native';
 import _ from 'underscore';
-import utils from '../utils';
+import Env from '@/environment';
 import api, {ApiResult, DrupalNodeJsonApi} from './api';
+import {utils} from '@/utils/utils';
 
 const {esimApp, esimGlobal} = Env.get();
 
@@ -198,94 +198,6 @@ const getHistory = ({
   );
 };
 
-const get = ({
-  uuid,
-  user,
-  pass,
-}: {
-  uuid: string;
-  user: string;
-  pass: string;
-}) => {
-  if (!uuid)
-    return api.reject(api.E_INVALID_ARGUMENT, `missing parameter: uuid`);
-
-  if (!user)
-    return api.reject(api.E_INVALID_ARGUMENT, `missing parameter: user`);
-
-  if (!pass)
-    return api.reject(api.E_INVALID_ARGUMENT, `missing parameter: pass`);
-
-  return api.callHttpGet(
-    `${api.httpUrl(api.path.payment)}/${uuid}?_format=hal_json`,
-    toPayment,
-    api.basicAuth(user, pass, 'hal+json'),
-  );
-};
-
-const add = (
-  type,
-  {amount, directPayment, prodList, simList, deliveryAddressId},
-  {user, pass},
-) => {
-  if (_.isEmpty(user) || _.isEmpty(pass))
-    return api.reject(api.E_INVALID_ARGUMENT, `Invalid auth: user(${user})`);
-
-  if (type !== 'R' && type !== 'P')
-    return api.reject(api.E_INVALID_ARGUMENT, 'Invalid parameter: type');
-
-  if (!_.isNumber(amount))
-    return api.reject(api.E_INVALID_ARGUMENT, 'Invalid parameter: amount');
-
-  if (type === 'P') {
-    // purchase
-    if (!_.isNumber(directPayment))
-      return api.reject(
-        api.E_INVALID_ARGUMENT,
-        'Invalid parameter: directPayment',
-      );
-
-    if (_.isEmpty(prodList) && _.isEmpty(simList))
-      return api.reject(
-        api.E_INVALID_ARGUMENT,
-        'missing parameter: prodList & simList',
-      );
-  }
-
-  const url = `${api.httpUrl(api.path.payment)}?_format=hal_json`;
-  const headers = api.basicAuth(user, pass, 'hal+json');
-  const body = {
-    type: {target_id: 'payment'},
-    title: {value: `${type === 'R' ? 'Recharge' : 'Purchase'}:${amount}`},
-    body: JSON.stringify({prodList, simList}),
-    field_amount: {value: amount},
-    field_payment_type: {value: type},
-  };
-
-  if (type === 'P') {
-    body.field_direct_payment = directPayment;
-    body.deliveryAddressId = deliveryAddressId;
-  }
-
-  return api.callHttp(
-    url,
-    {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(body),
-    },
-    toPayment,
-  );
-};
-
-const recharge = (amount, auth) => {
-  return add('R', amount, auth);
-};
-
-const buyProduct = (product, auth) => {
-  return add('P', product, auth);
-};
-
 const toPayCheck = (data) => {
   return data.response.map((item) => ({
     ...item,
@@ -302,8 +214,9 @@ const getImpToken = () => {
     'Content-Type': `application/json`,
   };
 
-  const imp_key = '';
-  const imp_secret = '';
+  const imp_key = '0272408165941078';
+  const imp_secret =
+    'GzwsCZGCcrRFvKS8jOCqRniysvG1PDpwdWZPVFs77kNC4FLouoPmL7VdDBftfE0sB0iwGKEN5sq98cyC';
   // impkey, secret formdata append (Production / Development)
 
   return api.callHttp(
@@ -337,10 +250,6 @@ export default {
   method,
 
   getHistory,
-  get,
-  recharge,
-  buyProduct,
-  add,
   getImpToken,
   getUid,
 };
