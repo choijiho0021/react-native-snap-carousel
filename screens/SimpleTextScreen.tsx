@@ -1,3 +1,17 @@
+import {RouteProp, useFocusEffect} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import React, {Component, memo, useState} from 'react';
+import {
+  Dimensions,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import WebView, {WebViewMessageEvent} from 'react-native-webview';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -21,20 +35,6 @@ import {
   InfoModelState,
 } from '@/redux/modules/info';
 import i18n from '@/utils/i18n';
-import {RouteProp, useFocusEffect} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import React, {Component, memo, useState} from 'react';
-import {
-  Dimensions,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
-import WebView, {WebViewMessageEvent} from 'react-native-webview';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
 
 const {baseUrl} = Env.get();
 const {width} = Dimensions.get('window');
@@ -357,18 +357,15 @@ class SimpleTextScreen extends Component<
 
 const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
   const [eventStatus, setEventStatus] = useState<EventStatus>('closed');
-  const [isProdEvent, setIsProdEvent] = useState<boolean>(false);
+  const [isProdEvent, setIsProdEvent] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
       const getPromo = async () => {
         const {rule} = props.route.params;
-        setIsProdEvent(
-          (rule && Object.keys(JSON.parse(rule))[0] === 'sku') || false,
-        );
-
-        if (rule && isProdEvent) {
-          const resp = await API.Promotion.check({rule});
+        if (rule?.sku) {
+          setIsProdEvent(true);
+          const resp = await API.Promotion.check(rule.sku);
           // available 값이 0보다 크면 프로모션 참여 가능하다.
           if (resp.result === 0) {
             if (resp.objects[0]?.hold > 0) setEventStatus('joined');
@@ -378,7 +375,7 @@ const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
         }
       };
       getPromo();
-    }, [isProdEvent, props.route.params]),
+    }, [props.route.params]),
   );
 
   return (

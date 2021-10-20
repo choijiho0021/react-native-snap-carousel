@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign */
-import {API} from '@/redux/api';
-import {RkbPromotion} from '@/redux/api/promotionApi';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Reducer} from 'react';
 import {AnyAction} from 'redux';
+import {RkbPromotion} from '@/redux/api/promotionApi';
+import {API} from '@/redux/api';
 
 const getPromotion = createAsyncThunk(
   'promotion/getPromotion',

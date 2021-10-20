@@ -42,7 +42,7 @@ type SimpleTextParams = {
   body?: string;
   bodyTitle?: string;
   text?: string;
-  rule?: string;
+  rule?: Record<string, string>;
   image?: {
     success?: string;
     failure?: string;
