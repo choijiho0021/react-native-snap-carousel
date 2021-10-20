@@ -380,13 +380,9 @@ class Esim extends Component<EsimProps, EsimState> {
   }
 
   setNotiModal = () => {
-    let closeType = 'close';
+    const closeType = 'close';
 
-    const popUp = this.props.promotion?.find((v) => {
-      const val = v?.notice?.rule && JSON.parse(v?.notice?.rule)?.noti;
-      if (val) closeType = val;
-      return val;
-    });
+    const popUp = this.props.promotion?.find((v) => v?.notice?.notiImage);
 
     if (popUp) {
       this.setState({
@@ -572,6 +568,7 @@ class Esim extends Component<EsimProps, EsimState> {
   renderNotiModal() {
     const {popUp, closeType, popUpVisible, checked} = this.state;
 
+    console.log('@@ pop', popUp);
     return (
       <AppModal
         titleStyle={styles.infoModalTitle}
@@ -592,9 +589,23 @@ class Esim extends Component<EsimProps, EsimState> {
         visible={popUpVisible}>
         <View style={{marginHorizontal: 20}}>
           <AppUserPic
-            url={popUp?.notice?.image?.success || popUp?.notice?.image?.failure}
+            url={popUp?.notice?.notiImage}
             crop={false}
             style={styles.popupImg}
+            onPress={() => {
+              if (popUp?.notice) {
+                this.setState({popUpVisible: false});
+                this.props.navigation.navigate('SimpleText', {
+                  key: 'noti',
+                  title: i18n.t('set:noti'),
+                  bodyTitle: popUp.notice.title,
+                  body: popUp.notice.body,
+                  rule: popUp.notice.rule,
+                  image: popUp.notice.image,
+                  mode: 'noti',
+                });
+              }
+            }}
           />
           <Pressable
             style={{flexDirection: 'row', alignItems: 'center'}}
