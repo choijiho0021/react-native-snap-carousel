@@ -1,5 +1,31 @@
 /* eslint-disable no-param-reassign */
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import AsyncStorage from '@react-native-community/async-storage';
+import analytics, {firebase} from '@react-native-firebase/analytics';
+import {StackNavigationProp} from '@react-navigation/stack';
+import moment, {Moment} from 'moment';
+import React, {Component, memo} from 'react';
+import {
+  Appearance,
+  BackHandler,
+  ColorSchemeName,
+  Dimensions,
+  Platform,
+  Pressable,
+  StatusBar,
+  StyleSheet,
+  View,
+} from 'react-native';
+import DeviceInfo from 'react-native-device-info';
+import RNExitApp from 'react-native-exit-app';
+import {Settings} from 'react-native-fbsdk';
+import {TabView} from 'react-native-tab-view';
+import {
+  getTrackingStatus,
+  requestTrackingPermission,
+} from 'react-native-tracking-transparency';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -36,32 +62,6 @@ import {
 import {SyncModelState} from '@/redux/modules/sync';
 import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
-import AsyncStorage from '@react-native-community/async-storage';
-import analytics, {firebase} from '@react-native-firebase/analytics';
-import {StackNavigationProp} from '@react-navigation/stack';
-import moment, {Moment} from 'moment';
-import React, {Component, memo} from 'react';
-import {
-  Appearance,
-  BackHandler,
-  ColorSchemeName,
-  Dimensions,
-  Platform,
-  Pressable,
-  StatusBar,
-  StyleSheet,
-  View,
-} from 'react-native';
-import DeviceInfo from 'react-native-device-info';
-import RNExitApp from 'react-native-exit-app';
-import {Settings} from 'react-native-fbsdk';
-import {TabView} from 'react-native-tab-view';
-import {
-  getTrackingStatus,
-  requestTrackingPermission,
-} from 'react-native-tracking-transparency';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
 import {checkFistLaunch, requestPermission} from './component/permission';
 import PromotionCarousel from './component/PromotionCarousel';
 
@@ -185,7 +185,7 @@ type EsimState = {
   deviceList?: string[];
   firstLaunch?: boolean;
   popUp?: RkbPromotion;
-  closeType?: string;
+  closeType?: 'close' | 'exit' | 'redirect';
   popUpVisible: boolean;
   checked: boolean;
   popupDisabled: boolean;
@@ -265,6 +265,7 @@ class Esim extends Component<EsimProps, EsimState> {
     this.modalBody = this.modalBody.bind(this);
     this.renderNotiModal = this.renderNotiModal.bind(this);
     this.setNotiModal = this.setNotiModal.bind(this);
+    this.exitApp = this.exitApp.bind(this);
 
     this.offset = 0;
     this.controller = new AbortController();
@@ -380,18 +381,12 @@ class Esim extends Component<EsimProps, EsimState> {
   }
 
   setNotiModal = () => {
-    let closeType = 'close';
-
-    const popUp = this.props.promotion?.find((v) => {
-      const val = v?.notice?.rule && JSON.parse(v?.notice?.rule)?.noti;
-      if (val) closeType = val;
-      return val;
-    });
+    const popUp = this.props.promotion?.find((v) => v?.notice?.image?.noti);
 
     if (popUp) {
       this.setState({
         popUp,
-        closeType,
+        closeType: popUp.notice?.rule?.sku ? 'redirect' : 'close',
         popUpVisible: true,
       });
     }
@@ -411,12 +406,32 @@ class Esim extends Component<EsimProps, EsimState> {
   };
 
   exitApp = (v?: string) => {
-    if (v === 'close')
-      this.setState({popUpVisible: false, closeType: undefined});
-    else if (Platform.OS === 'ios') {
-      RNExitApp.exitApp();
-    } else {
-      BackHandler.exitApp();
+    const {popUp} = this.state;
+
+    this.setState({popUpVisible: false, closeType: undefined});
+
+    switch (v) {
+      case 'redirect':
+        if (popUp?.notice) {
+          this.props.navigation.navigate('SimpleText', {
+            key: 'noti',
+            title: i18n.t('set:noti'),
+            bodyTitle: popUp.notice.title,
+            body: popUp.notice.body,
+            rule: popUp.notice.rule,
+            image: popUp.notice.image,
+            mode: 'noti',
+          });
+        }
+        break;
+      case 'exit':
+        if (Platform.OS === 'ios') {
+          RNExitApp.exitApp();
+        } else {
+          BackHandler.exitApp();
+        }
+        break;
+      default:
     }
   };
 
@@ -576,9 +591,7 @@ class Esim extends Component<EsimProps, EsimState> {
       <AppModal
         titleStyle={styles.infoModalTitle}
         title={popUp?.title}
-        closeButtonTitle={i18n.t(
-          closeType === 'close' ? closeType : 'home:exitApp',
-        )}
+        closeButtonTitle={i18n.t(closeType || 'close')}
         type="close"
         closeButtonStyle={{margin: 20}}
         onOkClose={() => {
@@ -592,9 +605,14 @@ class Esim extends Component<EsimProps, EsimState> {
         visible={popUpVisible}>
         <View style={{marginHorizontal: 20}}>
           <AppUserPic
-            url={popUp?.notice?.image?.success || popUp?.notice?.image?.failure}
+            url={popUp?.notice?.image?.noti}
             crop={false}
             style={styles.popupImg}
+            onPress={() => {
+              if (closeType === 'redirect') {
+                this.exitApp(closeType);
+              }
+            }}
           />
           <Pressable
             style={{flexDirection: 'row', alignItems: 'center'}}

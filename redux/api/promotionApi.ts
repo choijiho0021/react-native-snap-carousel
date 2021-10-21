@@ -1,4 +1,3 @@
-import i18n from '@/utils/i18n';
 import _ from 'underscore';
 import api, {ApiResult, DrupalNode, Langcode} from './api';
 
@@ -10,10 +9,11 @@ export type RkbPromotion = {
   notice?: {
     title?: string;
     body?: string;
-    rule?: string;
+    rule?: Record<string, string>;
     image?: {
       success?: string;
       failure?: string;
+      noti?: string;
     };
   };
   langcode?: Langcode;
@@ -30,23 +30,36 @@ export type RkbPromoInfo = {
 const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
   if (_.isArray(data)) {
     return api.success(
-      data.map((item) => ({
-        uuid: item.uuid,
-        title: item.title,
-        imageUrl: item.field_image,
-        product_uuid: item.field_product_uuid, // product variation id
-        notice: item.field_ref_content
-          ? {
-              title: item.field_notice_title,
-              body: item.field_notice_body,
-              rule: item.field_promotion_rule?.replace(/&quot;/g, '"'),
-              image: {
-                success: item.field_successful_image,
-                failure: item.field_failure_image,
-              },
-            }
-          : undefined,
-      })),
+      data.map((item) => {
+        let rule;
+        try {
+          rule = JSON.parse(item.field_promotion_rule?.replace(/&quot;/g, '"'));
+        } catch (err) {
+          console.log(
+            'Failed to parse promotion rule',
+            item.field_promotion_rule,
+          );
+        }
+
+        return {
+          uuid: item.uuid,
+          title: item.title,
+          imageUrl: item.field_image,
+          product_uuid: item.field_product_uuid, // product variation id
+          notice: item.field_ref_content
+            ? {
+                title: item.field_notice_title,
+                body: item.field_notice_body,
+                rule,
+                image: {
+                  success: item.field_successful_image,
+                  failure: item.field_failure_image,
+                  noti: item.field_noti_image,
+                },
+              }
+            : undefined,
+        };
+      }),
     );
   }
   return api.failure(api.E_NOT_FOUND);
@@ -66,17 +79,8 @@ const getPromotion = () => {
   );
 };
 
-const parseRule = (rule: string) => {
-  try {
-    return JSON.parse(rule);
-  } catch (err) {
-    return {};
-  }
-};
-
 // Promotion 참여를 위한 API
-const check = ({rule}: {rule: string}) => {
-  const {sku} = parseRule(rule);
+const check = (sku: string) => {
   if (sku) {
     return api.callHttpGet<RkbPromoInfo>(
       `${api.httpUrl(api.path.promo)}/${sku}?_format=json`,
@@ -91,7 +95,7 @@ const join = ({
   iccid,
   token,
 }: {
-  rule: string;
+  rule: Record<string, string>;
   iccid?: string;
   token?: string;
 }) => {
@@ -102,13 +106,12 @@ const join = ({
     );
   }
 
-  const {sku} = parseRule(rule);
   return api.callHttp<RkbPromoInfo>(
     `${api.httpUrl(api.path.promo)}?_format=json`,
     {
       method: 'POST',
       headers: api.withToken(token, 'json', {Accept: 'application/json'}),
-      body: JSON.stringify({sku, iccid}),
+      body: JSON.stringify({sku: rule.sku, iccid}),
     },
     toPromoInfo,
   );

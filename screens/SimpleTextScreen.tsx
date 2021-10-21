@@ -1,3 +1,17 @@
+import {RouteProp, useFocusEffect} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import React, {Component, memo, useState} from 'react';
+import {
+  Dimensions,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import WebView, {WebViewMessageEvent} from 'react-native-webview';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -21,20 +35,6 @@ import {
   InfoModelState,
 } from '@/redux/modules/info';
 import i18n from '@/utils/i18n';
-import {RouteProp, useFocusEffect} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import React, {Component, memo, useState} from 'react';
-import {
-  Dimensions,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
-import WebView, {WebViewMessageEvent} from 'react-native-webview';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
 
 const {baseUrl} = Env.get();
 const {width} = Dimensions.get('window');
@@ -91,6 +91,7 @@ type SimpleTextScreenProps = {
   info: InfoModelState;
   account: AccountModelState;
   eventStatus: EventStatus;
+  isProdEvent: boolean;
   pending: boolean;
 
   action: {
@@ -209,9 +210,12 @@ class SimpleTextScreen extends Component<
 
   async onPress() {
     const {rule} = this.props.route.params;
-    const {iccid, token, loggedIn} = this.props.account;
+    const {
+      account: {iccid, token, loggedIn},
+      isProdEvent,
+    } = this.props;
 
-    if (rule) {
+    if (rule && isProdEvent) {
       if (!loggedIn) {
         // 로그인 화면으로 이동
         this.props.navigation.navigate('Auth');
@@ -290,13 +294,14 @@ class SimpleTextScreen extends Component<
     const {
       pending,
       eventStatus,
+      isProdEvent,
       account: {loggedIn},
       navigation,
     } = this.props;
-    const {rule, image} = this.props.route.params;
+    const {image} = this.props.route.params;
 
     let title = 'ok';
-    if (rule) {
+    if (isProdEvent) {
       if (loggedIn) title = `promo:join:${eventStatus}`;
       else title = 'promo:login';
     }
@@ -352,13 +357,15 @@ class SimpleTextScreen extends Component<
 
 const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
   const [eventStatus, setEventStatus] = useState<EventStatus>('closed');
+  const [isProdEvent, setIsProdEvent] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
       const getPromo = async () => {
         const {rule} = props.route.params;
-        if (rule) {
-          const resp = await API.Promotion.check({rule});
+        if (rule?.sku) {
+          setIsProdEvent(true);
+          const resp = await API.Promotion.check(rule.sku);
           // available 값이 0보다 크면 프로모션 참여 가능하다.
           if (resp.result === 0) {
             if (resp.objects[0]?.hold > 0) setEventStatus('joined');
@@ -371,7 +378,13 @@ const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
     }, [props.route.params]),
   );
 
-  return <SimpleTextScreen {...props} eventStatus={eventStatus} />;
+  return (
+    <SimpleTextScreen
+      {...props}
+      eventStatus={eventStatus}
+      isProdEvent={isProdEvent}
+    />
+  );
 };
 
 // export default SimpleTextScreen;
