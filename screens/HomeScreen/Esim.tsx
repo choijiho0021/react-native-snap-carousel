@@ -662,7 +662,7 @@ class Esim extends Component<EsimProps, EsimState> {
           closeButtonTitle={i18n.t('home:exitApp')}
           titleStyle={styles.modalTitle}
           type="close"
-          onOkClose={this.exitApp}
+          onOkClose={() => this.exitApp('exit')}
           visible={!isSupportDev}>
           {this.modalBody()}
         </AppModal>
