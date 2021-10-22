@@ -592,8 +592,8 @@ class Esim extends Component<EsimProps, EsimState> {
         titleStyle={styles.infoModalTitle}
         title={popUp?.title}
         closeButtonTitle={i18n.t(closeType || 'close')}
-        type="close"
-        closeButtonStyle={{margin: 20}}
+        type="redirect"
+        closeButtonStyle={{flex: 1, margin: 20}}
         onOkClose={() => {
           this.exitApp(closeType);
           if (checked)
@@ -602,6 +602,7 @@ class Esim extends Component<EsimProps, EsimState> {
               moment().format('YYYY-MM-DD HH:mm'),
             );
         }}
+        onCancelClose={() => this.setState({popUpVisible: false})}
         visible={popUpVisible}>
         <View style={{marginHorizontal: 20}}>
           <AppUserPic
