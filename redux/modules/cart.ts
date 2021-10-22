@@ -282,9 +282,9 @@ const updateOrder = createAsyncThunk(
   'cart/updateOrder',
   (info: PaymentInfo, {dispatch, getState}) => {
     const {account, cart} = getState() as RootState;
-    const {token, iccid, email, mobile} = account;
+    const {token, iccid, mobile} = account;
     // remove ordered items from the cart
-    const {orderId, orderItems, purchaseItems, pymReq} = cart;
+    const {orderId, orderItems, purchaseItems} = cart;
 
     dispatch(orderAction.getOrders({user: mobile, token, page: 0}));
     // cart에서 item 삭제
@@ -302,7 +302,10 @@ const updateOrder = createAsyncThunk(
     ) {
       // 충전을 한 경우에는 account를 다시 읽어들인다.
       // balance에서 차감한 경우에도 다시 읽어들인다.
-      dispatch(accountAction.getAccount({iccid, token}));
+      setTimeout(
+        () => dispatch(accountAction.getAccount({iccid, token})),
+        5000,
+      );
     }
 
     // return cart state
