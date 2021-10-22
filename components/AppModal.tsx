@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
 
 export interface AppModalProps {
   visible: boolean;
-  type?: 'normal' | 'close' | 'info';
+  type?: 'normal' | 'close' | 'info' | 'redirect';
   justifyContent?: 'center' | 'flex-end';
   title?: string;
   titleStyle?: TextStyle;
@@ -99,6 +99,92 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
   onOkClose = () => {},
   onCancelClose = () => {},
 }) => {
+  const getButtonType = () => {
+    switch (type) {
+      case 'close':
+        return (
+          <AppButton
+            style={[
+              closeButtonStyle,
+              styles.closeButton,
+              buttonBackgroundColor
+                ? {
+                    backgroundColor: buttonBackgroundColor,
+                  }
+                : undefined,
+            ]}
+            onPress={onOkClose}
+            title={closeButtonTitle}
+            titleStyle={[
+              styles.closeButtonTitle,
+              buttonTitleColor ? {color: buttonTitleColor} : undefined,
+            ]}
+          />
+        );
+
+      case 'redirect':
+        return (
+          <View style={{flexDirection: 'row'}}>
+            <AppButton
+              style={[
+                closeButtonStyle,
+                styles.closeButton,
+                {backgroundColor: colors.lightGrey, marginRight: 0},
+              ]}
+              onPress={onCancelClose}
+              title={i18n.t('close')}
+              titleStyle={[styles.closeButtonTitle, {color: colors.black}]}
+            />
+
+            <AppButton
+              style={[
+                closeButtonStyle,
+                styles.closeButton,
+                buttonBackgroundColor
+                  ? {
+                      backgroundColor: buttonBackgroundColor,
+                    }
+                  : undefined,
+              ]}
+              onPress={onOkClose}
+              title={closeButtonTitle}
+              titleStyle={[
+                styles.closeButtonTitle,
+                buttonTitleColor ? {color: buttonTitleColor} : undefined,
+              ]}
+            />
+          </View>
+        );
+
+      default:
+        return (
+          // type == normal or info
+          <View style={styles.row}>
+            {type === 'normal' && (
+              <AppButton
+                style={styles.button}
+                onPress={onCancelClose}
+                title={i18n.t('cancel')}
+                titleStyle={styles.buttonTitle}
+              />
+            )}
+            <AppButton
+              style={styles.button}
+              disabled={disableOkButton}
+              onPress={onOkClose}
+              title={i18n.t('ok')}
+              disableBackgroundColor={colors.white}
+              disableColor={colors.warmGrey}
+              titleStyle={{
+                ...styles.buttonTitle,
+                color: disableOkButton ? colors.warmGrey : colors.clearBlue,
+              }}
+            />
+          </View>
+        );
+    }
+  };
+
   return (
     <Modal animationType="fade" transparent visible={visible}>
       <SafeAreaView
@@ -128,49 +214,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
           )}
           {children}
 
-          {type === 'close' ? (
-            <AppButton
-              style={[
-                closeButtonStyle,
-                styles.closeButton,
-                buttonBackgroundColor
-                  ? {
-                      backgroundColor: buttonBackgroundColor,
-                    }
-                  : undefined,
-              ]}
-              onPress={onOkClose}
-              title={closeButtonTitle}
-              titleStyle={[
-                styles.closeButtonTitle,
-                buttonTitleColor ? {color: buttonTitleColor} : undefined,
-              ]}
-            />
-          ) : (
-            // type == normal or info
-            <View style={styles.row}>
-              {type === 'normal' && (
-                <AppButton
-                  style={styles.button}
-                  onPress={onCancelClose}
-                  title={i18n.t('cancel')}
-                  titleStyle={styles.buttonTitle}
-                />
-              )}
-              <AppButton
-                style={styles.button}
-                disabled={disableOkButton}
-                onPress={onOkClose}
-                title={i18n.t('ok')}
-                disableBackgroundColor={colors.white}
-                disableColor={colors.warmGrey}
-                titleStyle={{
-                  ...styles.buttonTitle,
-                  color: disableOkButton ? colors.warmGrey : colors.clearBlue,
-                }}
-              />
-            </View>
-          )}
+          {getButtonType()}
         </View>
       </SafeAreaView>
       {justifyContent === 'flex-end' && (

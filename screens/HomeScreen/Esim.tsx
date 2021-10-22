@@ -306,22 +306,23 @@ class Esim extends Component<EsimProps, EsimState> {
 
         this.renderTitleBtn();
 
-        if (isSupportDev) {
-          pushNoti.add(this.notification);
+        // if (isSupportDev) {
+        pushNoti.add(this.notification);
 
-          this.refresh();
+        this.refresh();
 
-          requestPermission();
+        requestPermission();
 
-          // 앱 첫 실행 여부 확인
-          const firstLaunch = await checkFistLaunch();
-          this.setState({firstLaunch});
-          if (firstLaunch) {
-            this.props.navigation.navigate('Tutorial', {
-              popUp: this.setNotiModal,
-            });
-          } else if (this.props.promotion) this.setNotiModal();
-        } else {
+        // 앱 첫 실행 여부 확인
+        const firstLaunch = await checkFistLaunch();
+        this.setState({firstLaunch});
+        if (firstLaunch) {
+          this.props.navigation.navigate('Tutorial', {
+            popUp: this.setNotiModal,
+          });
+        } else if (this.props.promotion) this.setNotiModal();
+        // } else {
+        if (!isSupportDev) {
           const status = await getTrackingStatus();
           if (status === 'authorized') {
             await firebase.analytics().setAnalyticsCollectionEnabled(true);
@@ -336,6 +337,7 @@ class Esim extends Component<EsimProps, EsimState> {
             );
           }
         }
+        // }
       }
     });
 
@@ -425,11 +427,12 @@ class Esim extends Component<EsimProps, EsimState> {
         }
         break;
       case 'exit':
-        if (Platform.OS === 'ios') {
-          RNExitApp.exitApp();
-        } else {
-          BackHandler.exitApp();
-        }
+        this.setState({isSupportDev: true});
+        // if (Platform.OS === 'ios') {
+        //   RNExitApp.exitApp();
+        // } else {
+        //   BackHandler.exitApp();
+        // }
         break;
       default:
     }
@@ -592,8 +595,8 @@ class Esim extends Component<EsimProps, EsimState> {
         titleStyle={styles.infoModalTitle}
         title={popUp?.title}
         closeButtonTitle={i18n.t(closeType || 'close')}
-        type="close"
-        closeButtonStyle={{margin: 20}}
+        type="redirect"
+        closeButtonStyle={{flex: 1, margin: 20}}
         onOkClose={() => {
           this.exitApp(closeType);
           if (checked)
@@ -602,6 +605,7 @@ class Esim extends Component<EsimProps, EsimState> {
               moment().format('YYYY-MM-DD HH:mm'),
             );
         }}
+        onCancelClose={() => this.setState({popUpVisible: false})}
         visible={popUpVisible}>
         <View style={{marginHorizontal: 20}}>
           <AppUserPic
@@ -658,10 +662,10 @@ class Esim extends Component<EsimProps, EsimState> {
 
         <AppModal
           title={i18n.t('home:unsupportedTitle')}
-          closeButtonTitle={i18n.t('home:exitApp')}
+          closeButtonTitle={i18n.t('ok')}
           titleStyle={styles.modalTitle}
           type="close"
-          onOkClose={this.exitApp}
+          onOkClose={() => this.exitApp('exit')}
           visible={!isSupportDev}>
           {this.modalBody()}
         </AppModal>
