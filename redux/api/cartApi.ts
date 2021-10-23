@@ -332,6 +332,7 @@ const makeOrder = ({
   mail,
   token,
   iccid,
+  orderId,
 }: {
   items: PurchaseItem[];
   info: PaymentInfo;
@@ -339,6 +340,7 @@ const makeOrder = ({
   mail?: string;
   token?: string;
   iccid?: string;
+  orderId?: number;
 }) => {
   if (_.isEmpty(items))
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: items');
@@ -373,6 +375,7 @@ const makeOrder = ({
   const body = {
     iccid,
     order: {
+      orderId,
       type: orderType,
       field_memo: info.memo,
       order_items: items.map((item) => ({

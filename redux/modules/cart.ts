@@ -96,6 +96,10 @@ const onSuccess = (state, action) => {
     state.orderId = objects[0].orderId;
     state.orderItems = objects[0].orderItems;
     state.uuid = objects[0].uuid;
+  } else {
+    state.orderId = undefined;
+    state.orderItems = [];
+    state.uuid = undefined;
   }
 };
 
@@ -253,7 +257,7 @@ const checkStockAndMakeOrder = createAsyncThunk(
   (info: PaymentInfo, {dispatch, getState}) => {
     const {account, cart} = getState() as RootState;
     const {token, iccid, email, mobile} = account;
-    const {purchaseItems} = cart;
+    const {purchaseItems, orderId} = cart;
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
@@ -263,6 +267,7 @@ const checkStockAndMakeOrder = createAsyncThunk(
           // 충전, 구매 모두 order 생성
           return dispatch(
             makeOrder({
+              orderId,
               items: purchaseItems,
               info,
               token,
@@ -284,17 +289,9 @@ const updateOrder = createAsyncThunk(
     const {account, cart} = getState() as RootState;
     const {token, iccid, mobile} = account;
     // remove ordered items from the cart
-    const {orderId, orderItems, purchaseItems} = cart;
+    const {purchaseItems} = cart;
 
     dispatch(orderAction.getOrders({user: mobile, token, page: 0}));
-    // cart에서 item 삭제
-    orderItems?.forEach((item) => {
-      if (purchaseItems.find((o) => o.orderItemId === item.orderItemId)) {
-        // remove ordered item
-        if (orderId)
-          dispatch(cartRemove({orderId, orderItemId: item.orderItemId}));
-      }
-    });
 
     if (
       purchaseItems.find((item) => item.type === 'rch') ||
@@ -302,6 +299,7 @@ const updateOrder = createAsyncThunk(
     ) {
       // 충전을 한 경우에는 account를 다시 읽어들인다.
       // balance에서 차감한 경우에도 다시 읽어들인다.
+      // webhook에 의한 서버 처리 시간을 고려해서 5초후에 처리하는 걸로 변경함
       setTimeout(
         () => dispatch(accountAction.getAccount({iccid, token})),
         5000,
