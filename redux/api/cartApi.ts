@@ -6,6 +6,8 @@ import {PaymentResult} from '@/redux/models/paymentResult';
 import api, {ApiResult, DrupalNode} from './api';
 import {Currency} from './productApi';
 
+const KEY_INIT_CART = 'cart.initList';
+
 export type RkbOrderItem = {
   orderItemId: number;
   uuid: string;
@@ -419,4 +421,5 @@ export default {
   remove,
   updateQty,
   makeOrder,
+  KEY_INIT_CART,
 };

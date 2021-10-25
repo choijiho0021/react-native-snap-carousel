@@ -491,10 +491,11 @@ class Esim extends Component<EsimProps, EsimState> {
     const {mobile, loggedIn} = this.props.account;
 
     if (loggedIn) {
-      this.props.action.noti.getNotiList({mobile});
-      this.props.action.cart.cartFetch();
+      this.props.action.noti.init({mobile});
+      this.props.action.cart.init();
+      this.props.action.order.init();
     } else {
-      this.props.action.noti.init();
+      this.props.action.noti.initNotiList();
     }
   }
 
@@ -538,8 +539,8 @@ class Esim extends Component<EsimProps, EsimState> {
         Promise.all([
           this.props.action.cart.reset(),
           this.props.action.order.reset(),
+          this.props.action.noti.reset(),
           this.props.action.account.logout(),
-          this.props.action.noti.init(),
         ]).then(() => {
           PushNotificationIOS.setApplicationIconBadgeNumber(0);
         });
