@@ -174,9 +174,10 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
           <AppButton
             style={styles.btnOrderList}
             // MyPage화면 이동 필요
-            onPress={() =>
-              navigation.navigate('MyPageStack', {screen: 'MyPage'})
-            }
+            onPress={() => {
+              navigation.popToTop();
+              navigation.navigate('MyPageStack', {screen: 'MyPage'});
+            }}
             // title={i18n.t('cancel')}
             title={i18n.t('pym:toOrderList')}
             titleStyle={appStyles.normal16Text}
@@ -214,7 +215,10 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
         style={styles.btnHome}
         title={i18n.t('pym:toHome')}
         titleStyle={styles.btnHomeText}
-        onPress={() => navigation.navigate('HomeStack', {screen: 'Home'})}
+        onPress={() => {
+          navigation.popToTop();
+          navigation.navigate('HomeStack', {screen: 'Home'});
+        }}
       />
     </SafeAreaView>
   );
