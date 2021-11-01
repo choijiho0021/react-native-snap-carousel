@@ -1,3 +1,26 @@
+import {List} from 'immutable';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {
+  findNodeHandle,
+  Image,
+  InputAccessoryView,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import ImagePicker, {Image as CropImage} from 'react-native-image-crop-picker';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {
+  check,
+  openSettings,
+  PERMISSIONS,
+  RESULTS,
+} from 'react-native-permissions';
+import {connect} from 'react-redux';
+import _ from 'underscore';
+import {bindActionCreators} from 'redux';
 import {colors} from '@/constants/Colors';
 import {attachmentSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
@@ -12,30 +35,6 @@ import validationUtil, {
   ValidationResult,
   ValidationRule,
 } from '@/utils/validationUtil';
-import {List} from 'immutable';
-import React, {Component} from 'react';
-import {
-  findNodeHandle,
-  Image,
-  InputAccessoryView,
-  Platform,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
-import ImagePicker, {Image as CropImage} from 'react-native-image-crop-picker';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {
-  check,
-  openSettings,
-  PERMISSIONS,
-  RESULTS,
-} from 'react-native-permissions';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 import AppActivityIndicator from './AppActivityIndicator';
 import AppAlert from './AppAlert';
 import AppButton from './AppButton';
@@ -167,21 +166,6 @@ type BoardMsgAddProps = {
   };
 };
 
-type BoardMsgAddState = {
-  name?: string;
-  mobile: string;
-  title?: string;
-  msg?: string;
-  disable: boolean;
-  checkMobile: boolean;
-  checkEmail: boolean;
-  errors?: ValidationResult;
-  pin?: string;
-  attachment: List<CropImage>;
-  extraHeight: number;
-  hasPhotoPermission: boolean;
-};
-
 const validationRule: ValidationRule = {
   title: {
     presence: {
@@ -195,86 +179,62 @@ const validationRule: ValidationRule = {
   },
 };
 
-const initialState: BoardMsgAddState = {
-  name: undefined,
-  mobile: '',
-  title: undefined,
-  msg: undefined,
-  disable: false,
-  checkMobile: false,
-  checkEmail: false,
-  errors: {},
-  pin: undefined,
-  attachment: List<CropImage>(),
-  extraHeight: 80,
-  hasPhotoPermission: false,
-};
+const inputAccessoryViewID = 'doneKbd';
+const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
+  account,
+  success,
+  jumpTo,
+  onSubmit,
+  action,
+  pending,
+}) => {
+  const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
+  const [mobile, setMobile] = useState('');
+  const [errors, setErrors] = useState<ValidationResult>({});
+  const [title, setTitle] = useState<string>();
+  const [msg, setMsg] = useState<string>();
+  const [pin, setPin] = useState<string>();
+  const [attachment, setAttachment] = useState(List<CropImage>());
+  const [extraHeight, setExtraHeight] = useState(0);
+  const [disable, setDisable] = useState(false);
+  const scrollRef = useRef();
+  const keybd = useRef();
 
-class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
-  keybd: React.RefObject<TextInput>;
+  useEffect(() => {
+    const checkPermission = async () => {
+      const permission =
+        Platform.OS === 'ios'
+          ? PERMISSIONS.IOS.PHOTO_LIBRARY
+          : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
+      const result = await check(permission);
+      setHasPhotoPermission(result === RESULTS.GRANTED);
+    };
 
-  scrollRef: React.LegacyRef<KeyboardAwareScrollView>;
+    checkPermission();
 
-  constructor(props: BoardMsgAddProps) {
-    super(props);
+    const number = utils.toPhoneNumber(account.mobile);
+    setMobile(number);
 
-    this.state = initialState;
+    setErrors(validationUtil.validate('mobile', number));
+  }, [account]);
 
-    this.onSubmit = this.onSubmit.bind(this);
-    this.onCancel = this.onCancel.bind(this);
-    this.validate = this.validate.bind(this);
-    this.error = this.error.bind(this);
-    this.addAttachment = this.addAttachment.bind(this);
-    this.rmAttachment = this.rmAttachment.bind(this);
-    this.renderAttachment = this.renderAttachment.bind(this);
-    this.renderContact = this.renderContact.bind(this);
-
-    this.keybd = React.createRef<TextInput>();
-    this.scrollRef = null;
-  }
-
-  async componentDidMount() {
-    const permission =
-      Platform.OS === 'ios'
-        ? PERMISSIONS.IOS.PHOTO_LIBRARY
-        : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
-    const result = await check(permission);
-    const {mobile} = this.props.account;
-    const number = utils.toPhoneNumber(mobile);
-
-    this.setState({
-      hasPhotoPermission: result === RESULTS.GRANTED,
-      mobile: number,
-    });
-
-    const errors = validationUtil.validate('mobile', number);
-    if (errors) {
-      this.setState({
-        errors,
-      });
-    }
-  }
-
-  componentDidUpdate(prevProps: BoardMsgAddProps) {
-    if (this.props.success && this.props.success !== prevProps.success) {
+  useEffect(() => {
+    if (success) {
       // post가 완료되면 list 텝으로 전환한다.
-      this.props.jumpTo('list');
+      jumpTo('list');
     }
-  }
+  }, [jumpTo, success]);
 
-  validate = (key: string, value: string) => {
-    let {errors} = this.state;
+  const validate = useCallback((key: string, value: string) => {
     const valid = validationUtil.validate(key, value, validationRule);
 
-    if (!errors) errors = {};
-    errors[key] = valid ? valid[key] : [''];
-    this.setState({
-      errors,
-    });
-  };
+    setErrors((err) => ({
+      ...err,
+      [key]: valid ? valid[key] : [''],
+    }));
+  }, []);
 
-  onSubmit = async () => {
-    const {title, msg, mobile, attachment, pin} = this.state;
+  const onPress = useCallback(async () => {
     if (!title || !msg) {
       console.log('@@@ invalid issue', title, msg);
       return;
@@ -299,38 +259,30 @@ class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
         .toArray(),
     } as RkbIssue;
 
-    const rsp = await this.props.action.board.postAndGetList(issue);
+    const rsp = await action.board.postAndGetList(issue);
     console.log('@@@ rsp', rsp);
-    this.setState((state) => ({
-      msg: undefined,
-      title: undefined,
-      pin: undefined,
-      attachment: state.attachment.clear(),
-    }));
-  };
 
-  onCancel = () => {
-    const {onSubmit} = this.props;
-    if (onSubmit) onSubmit();
-  };
+    setMsg(undefined);
+    setTitle(undefined);
+    setPin(undefined);
+    setAttachment((a) => a.clear());
+  }, [action.board, attachment, mobile, msg, pin, title]);
 
-  onChangeText = (key: keyof BoardMsgAddState) => (value: string) => {
-    this.setState({
-      [key]: value,
-    });
+  const onCancel = useCallback(() => {
+    onSubmit?.();
+  }, [onSubmit]);
 
-    this.validate(key, value);
-  };
+  const error = useCallback(
+    (key: string) => {
+      return errors && errors[key] ? errors[key][0] : '';
+    },
+    [errors],
+  );
 
-  error(key: string) {
-    const {errors} = this.state;
-    return errors && errors[key] ? errors[key][0] : '';
-  }
-
-  async addAttachment() {
+  const addAttachment = useCallback(async () => {
     let checkNewPermission = false;
 
-    if (!this.state.hasPhotoPermission) {
+    if (!hasPhotoPermission) {
       const permission =
         Platform.OS === 'ios'
           ? PERMISSIONS.IOS.PHOTO_LIBRARY
@@ -340,7 +292,7 @@ class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
       checkNewPermission = result === RESULTS.GRANTED;
     }
 
-    if (this.state.hasPhotoPermission || checkNewPermission) {
+    if (hasPhotoPermission || checkNewPermission) {
       if (ImagePicker) {
         try {
           const image = await ImagePicker.openPicker({
@@ -355,9 +307,7 @@ class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
             cropperCancelText: i18n.t('cancel'),
           });
 
-          this.setState((state) => ({
-            attachment: state.attachment.push(image),
-          }));
+          setAttachment((a) => a.push(image));
         } catch (err) {
           console.log('failed to select', err);
         }
@@ -368,17 +318,10 @@ class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
         ok: () => openSettings(),
       });
     }
-  }
+  }, [hasPhotoPermission]);
 
-  rmAttachment(idx: number) {
-    this.setState((state) => ({
-      attachment: state.attachment.delete(idx),
-    }));
-  }
-
-  renderPass() {
-    const {pin} = this.state;
-    return (
+  const renderPass = useCallback(
+    () => (
       <View style={styles.passwordBox}>
         <AppText
           style={[
@@ -400,17 +343,20 @@ class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
           enablesReturnKeyAutomatically
           maxLength={4}
           secureTextEntry
-          onChangeText={this.onChangeText('pin')}
+          onChangeText={(v) => {
+            setPin(v);
+            validate('pin', v);
+          }}
           value={pin}
-          onFocus={() => this.setState({extraHeight: 20})}
+          onFocus={() => setExtraHeight(20)}
         />
       </View>
-    );
-  }
+    ),
+    [pin, validate],
+  );
 
-  renderAttachment() {
-    const {attachment} = this.state;
-    return (
+  const renderAttachment = useCallback(
+    () => (
       <View>
         <AppText style={styles.attachTitle}>{i18n.t('board:attach')}</AppText>
         <View style={styles.attachBox}>
@@ -419,7 +365,7 @@ class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
               // eslint-disable-next-line react/no-array-index-key
               key={image.filename}
               style={[styles.attach, idx < 2 && {marginRight: 33}]}
-              onPress={() => this.rmAttachment(idx)}>
+              onPress={() => setAttachment((a) => a.delete(idx))}>
               <Image
                 style={styles.imgSize}
                 source={{uri: `data:${image.mime};base64,${image.data}`}}
@@ -431,19 +377,18 @@ class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
             <Pressable
               key="add"
               style={[styles.attach, styles.plusButton]}
-              onPress={this.addAttachment}>
+              onPress={addAttachment}>
               <AppIcon name="btnPhotoPlus" />
             </Pressable>
           )}
         </View>
       </View>
-    );
-  }
+    ),
+    [addAttachment, attachment],
+  );
 
-  renderContact() {
-    const {disable, mobile} = this.state;
-
-    return (
+  const renderContact = useCallback(
+    () => (
       <View>
         <AppText style={styles.label}>{i18n.t('board:contact')}</AppText>
         <AppTextInput
@@ -455,137 +400,133 @@ class BoardMsgAdd extends Component<BoardMsgAddProps, BoardMsgAddState> {
           enablesReturnKeyAutomatically
           maxLength={13}
           editable={!disable}
-          onChangeText={(value) =>
-            this.onChangeText('mobile')(utils.toPhoneNumber(value))
-          }
-          onFocus={() => this.setState({extraHeight: 20})}
-          error={this.error('mobile')}
+          onChangeText={(v) => {
+            const value = utils.toPhoneNumber(v);
+            setMobile(value);
+            validate('mobile', value);
+          }}
+          onFocus={() => setExtraHeight(20)}
+          error={error('mobile')}
           value={mobile}
         />
       </View>
-    );
-  }
+    ),
+    [disable, error, mobile, validate],
+  );
 
-  render() {
-    const {
-      disable,
-      title,
-      msg,
-      extraHeight,
-      pin,
-      mobile,
-      errors = {},
-    } = this.state;
-    const {
-      account: {loggedIn},
-    } = this.props;
-    const inputAccessoryViewID = 'doneKbd';
-    // errors object의 모든 value 값들이 undefined인지 확인한다.
-    const hasError =
-      Object.values(errors).findIndex((val) => !_.isEmpty(val)) >= 0 ||
-      (!loggedIn && _.isEmpty(pin)) ||
+  // errors object의 모든 value 값들이 undefined인지 확인한다.
+  const hasError = useMemo(
+    () =>
+      (errors &&
+        Object.values(errors).findIndex((val) => !_.isEmpty(val)) >= 0) ||
+      (!account.loggedIn && _.isEmpty(pin)) ||
       _.isEmpty(msg) ||
       _.isEmpty(title) ||
-      _.isEmpty(mobile);
+      _.isEmpty(mobile),
+    [account.loggedIn, errors, mobile, msg, pin, title],
+  );
 
-    return (
-      <SafeAreaView style={styles.container}>
-        <AppActivityIndicator visible={this.props.pending} />
+  return (
+    <SafeAreaView style={styles.container}>
+      <AppActivityIndicator visible={pending} />
 
-        <KeyboardAwareScrollView
-          enableOnAndroid
-          enableResetScrollToCoords={false}
-          // resetScrollToCoords={{x: 0, y: 0}}
-          contentContainerStyle={styles.modalInner}
-          extraScrollHeight={extraHeight}
-          innerRef={(ref) => {
-            this.scrollRef = ref;
-          }}>
-          {loggedIn ? (
-            <View style={styles.notiView}>
-              <AppText style={styles.noti}>{i18n.t('board:noti')}</AppText>
-            </View>
-          ) : (
-            this.renderContact()
-          )}
-          <View style={{flex: 1}}>
-            <AppTextInput
-              style={[
-                styles.inputBox,
-                title ? {borderColor: colors.black} : undefined,
-              ]}
-              placeholder={i18n.t('title')}
-              placeholderTextColor={colors.greyish}
-              returnKeyType="next"
-              enablesReturnKeyAutomatically
-              clearTextOnFocus={false}
-              editable={!disable}
-              maxLength={25}
-              onChangeText={this.onChangeText('title')}
-              onFocus={() => this.setState({extraHeight: 20})}
-              error={this.error('title')}
-              autoCapitalize="none"
-              autoCorrect={false}
-              value={title}
-            />
-
-            <AppTextInput
-              style={[
-                styles.inputBox,
-                {height: 208, paddingTop: 5, textAlignVertical: 'top'},
-                msg ? {borderColor: colors.black} : undefined,
-              ]}
-              ref={this.keybd}
-              placeholder={i18n.t('content')}
-              placeholderTextColor={colors.greyish}
-              multiline
-              numberOfLines={8}
-              inputAccessoryViewID={inputAccessoryViewID}
-              enablesReturnKeyAutomatically
-              clearTextOnFocus={false}
-              editable={!disable}
-              maxLength={2000}
-              onChangeText={this.onChangeText('msg')}
-              onFocus={() => this.setState({extraHeight: 80})}
-              error={this.error('msg')}
-              autoCapitalize="none"
-              autoCorrect={false}
-              onContentSizeChange={({target}) =>
-                this.scrollRef?.props?.scrollToFocusedInput(
-                  findNodeHandle(target),
-                )
-              }
-              value={msg}
-            />
-
-            {loggedIn ? this.renderAttachment() : this.renderPass()}
+      <KeyboardAwareScrollView
+        enableOnAndroid
+        enableResetScrollToCoords={false}
+        // resetScrollToCoords={{x: 0, y: 0}}
+        contentContainerStyle={styles.modalInner}
+        extraScrollHeight={extraHeight}
+        innerRef={(ref) => (scrollRef.current = ref)}>
+        {account.loggedIn ? (
+          <View style={styles.notiView}>
+            <AppText style={styles.noti}>{i18n.t('board:noti')}</AppText>
           </View>
-        </KeyboardAwareScrollView>
+        ) : (
+          renderContact()
+        )}
+        <View style={{flex: 1}}>
+          <AppTextInput
+            style={[
+              styles.inputBox,
+              title ? {borderColor: colors.black} : undefined,
+            ]}
+            placeholder={i18n.t('title')}
+            placeholderTextColor={colors.greyish}
+            returnKeyType="next"
+            enablesReturnKeyAutomatically
+            clearTextOnFocus={false}
+            editable={!disable}
+            maxLength={25}
+            onChangeText={(v) => {
+              setTitle(v);
+              validate('title', v);
+            }}
+            onFocus={() => setExtraHeight(20)}
+            error={error('title')}
+            autoCapitalize="none"
+            autoCorrect={false}
+            value={title}
+          />
 
-        {Platform.OS === 'ios' ? (
-          <InputAccessoryView nativeID={inputAccessoryViewID}>
-            <AppButton
-              style={styles.inputAccessory}
-              title={i18n.t('done')}
-              titleStyle={[
-                styles.inputAccessoryText,
-                {color: _.isEmpty(this.state.msg) ? colors.white : colors.blue},
-              ]}
-              onPress={() => this.keybd.current?.blur()}
-            />
-          </InputAccessoryView>
-        ) : null}
+          <AppTextInput
+            style={[
+              styles.inputBox,
+              {height: 208, paddingTop: 5, textAlignVertical: 'top'},
+              msg ? {borderColor: colors.black} : undefined,
+            ]}
+            ref={keybd}
+            placeholder={i18n.t('content')}
+            placeholderTextColor={colors.greyish}
+            multiline
+            numberOfLines={8}
+            inputAccessoryViewID={inputAccessoryViewID}
+            enablesReturnKeyAutomatically
+            clearTextOnFocus={false}
+            editable={!disable}
+            maxLength={2000}
+            onChangeText={(v) => {
+              setMsg(v);
+              validate('msg', v);
+            }}
+            onFocus={() => setExtraHeight(80)}
+            error={error('msg')}
+            autoCapitalize="none"
+            autoCorrect={false}
+            onContentSizeChange={({target}) =>
+              scrollRef.current?.props?.scrollToFocusedInput(
+                findNodeHandle(target),
+              )
+            }
+            value={msg}
+          />
 
-        <AppButton
-          style={styles.confirm}
-          title={i18n.t('board:new')}
-          disabled={hasError}
-          onPress={this.onSubmit}
-        />
-      </SafeAreaView>
-    );
-  }
-}
+          {account.loggedIn ? renderAttachment() : renderPass()}
+        </View>
+      </KeyboardAwareScrollView>
+
+      {Platform.OS === 'ios' ? (
+        <InputAccessoryView nativeID={inputAccessoryViewID}>
+          <AppButton
+            style={styles.inputAccessory}
+            title={i18n.t('done')}
+            titleStyle={[
+              styles.inputAccessoryText,
+              {color: _.isEmpty(msg) ? colors.white : colors.blue},
+            ]}
+            onPress={() => keybd.current?.blur()}
+          />
+        </InputAccessoryView>
+      ) : null}
+
+      <AppButton
+        style={styles.confirm}
+        title={i18n.t('board:new')}
+        disabled={hasError}
+        onPress={onPress}
+      />
+    </SafeAreaView>
+  );
+};
 
 export default connect(
   ({account, status}: RootState) => ({

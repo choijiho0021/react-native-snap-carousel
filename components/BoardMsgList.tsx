@@ -1,3 +1,13 @@
+import React, {useCallback, useEffect, useState} from 'react';
+import {
+  FlatList,
+  RefreshControl,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
@@ -11,16 +21,6 @@ import {
 } from '@/redux/modules/board';
 import i18n from '@/utils/i18n';
 import {ValidationResult} from '@/utils/validationUtil';
-import React, {Component} from 'react';
-import {
-  FlatList,
-  RefreshControl,
-  SafeAreaView,
-  StyleSheet,
-  View,
-} from 'react-native';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
 import AppActivityIndicator from './AppActivityIndicator';
 import AppButton from './AppButton';
 import AppIcon from './AppIcon';
@@ -88,133 +88,87 @@ type BoardMsgListProps = {
     board: BoardAction;
   };
 };
-type BoardMsgListState = {
-  data: RkbBoard[];
-  mobile?: string;
-  showModal: boolean;
-  selected?: string;
-  refreshing: boolean;
-  status: string;
-};
 
-class BoardMsgList extends Component<BoardMsgListProps, BoardMsgListState> {
-  constructor(props: BoardMsgListProps) {
-    super(props);
+const BoardMsgList: React.FC<BoardMsgListProps> = ({
+  board,
+  action,
+  account,
+  uid,
+  pending,
+  onPress,
+}) => {
+  const [data, setData] = useState<RkbBoard[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [status, setStatus] = useState('');
+  const [selected, setSelected] = useState('');
+  const [mobile, setMobile] = useState('');
 
-    this.state = {
-      data: [],
-      showModal: false,
-      refreshing: false,
-      status: '',
-    };
+  useEffect(() => {
+    action.board.getIssueList();
 
-    this.renderItem = this.renderItem.bind(this);
-    this.onEndReached = this.onEndReached.bind(this);
-    this.header = this.header.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
-    this.onSubmitPin = this.onSubmitPin.bind(this);
-    this.onPress = this.onPress.bind(this);
-    this.onValidate = this.onValidate.bind(this);
-    this.init = this.init.bind(this);
-    this.onRefresh = this.onRefresh.bind(this);
-    this.empty = this.empty.bind(this);
-  }
+    setMobile(utils.toPhoneNumber(account?.mobile));
+  }, [account?.mobile, action.board, uid]);
 
-  componentDidMount() {
-    this.init();
-  }
+  useEffect(() => {
+    if (board?.list.length > 0) setData(board?.list);
+  }, [board.list]);
 
-  componentDidUpdate(prevProps: BoardMsgListProps) {
-    if (this.props.board.list !== prevProps.board.list) {
-      this.setState({
-        data: this.props.board.list,
-      });
-    }
-
-    if (this.props.uid !== prevProps.uid) {
-      this.init();
-    }
-
-    if (!this.props.pending && this.props.pending !== prevProps.pending) {
-      this.setState({
-        refreshing: false,
-      });
-    }
-  }
-
-  onSubmit() {
-    const {mobile} = this.state;
+  const onSubmit = useCallback(() => {
     if (mobile) {
       const number = mobile.replace(/-/g, '');
 
-      this.setState({
-        data: this.props.board.list.filter((item) =>
-          item.mobile.includes(number),
-        ),
-      });
+      setData(board.list.filter((item) => item.mobile.includes(number)));
     }
-  }
+  }, [board.list, mobile]);
 
   // 응답 메시지 화면으로 이동한다.
-  onSubmitPin() {
-    this.setState({
-      showModal: false,
-    });
+  const onSubmitPin = useCallback(() => {
+    setShowModal(false);
 
-    const {selected, status} = this.state;
-    if (selected) this.props.onPress(selected, status);
-  }
+    if (selected) onPress(selected, status);
+  }, [onPress, selected, status]);
 
-  onPress = (uuid: string, status: string) => () => {
-    if (this.props.uid === 0) {
-      // anonymous인 경우에는 비밀 번호를 입력받아서 일치하면 보여준다.
-      this.setState({
-        showModal: true,
-        selected: uuid,
-        status,
-      });
-    } else {
-      // login 한 경우에는 곧바로 응답 결과를 보여준다.
-      this.props.onPress(uuid, status);
-    }
-  };
+  const onPressItem = useCallback(
+    (uuid: string, st: string) => () => {
+      if (uid === 0) {
+        // anonymous인 경우에는 비밀 번호를 입력받아서 일치하면 보여준다.
+        setShowModal(true);
+        setSelected(uuid);
+        setStatus(st);
+      } else {
+        // login 한 경우에는 곧바로 응답 결과를 보여준다.
+        onPress(uuid, st);
+      }
+    },
+    [onPress, uid],
+  );
 
   // 입력된 PIN이 일치하는지 확인한다.
-  onValidate(value: string): ValidationResult {
-    const item = this.state.data.find((i) => i.uuid === this.state.selected);
+  const onValidate = useCallback(
+    (value: string): ValidationResult => {
+      const item = data.find((i) => i.uuid === selected);
 
-    // PIN match
-    if (item && item.pin === value) return undefined;
-    return {pin: [i18n.t('board:pinMismatch')]};
-  }
+      // PIN match
+      if (item && item.pin === value) return undefined;
+      return {pin: [i18n.t('board:pinMismatch')]};
+    },
+    [data, selected],
+  );
 
-  onEndReached() {
-    this.props.action.board.getNextIssueList();
-  }
+  const onEndReached = useCallback(() => {
+    action.board.getNextIssueList();
+  }, [action.board]);
 
-  onRefresh() {
-    this.setState({
-      refreshing: true,
-    });
-    this.props.action.board.getIssueList();
-  }
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    action.board.getIssueList();
+  }, [action.board]);
 
-  init() {
-    this.props.action.board.getIssueList();
-
-    const {mobile} = this.props.account;
-    const number = utils.toPhoneNumber(mobile);
-    this.setState({
-      mobile: number,
-    });
-  }
-
-  header() {
-    const {mobile} = this.state;
-
-    return (
+  const header = useCallback(
+    () => (
       <View>
-        {this.props.uid === 0 && (
+        {uid === 0 && (
           <View>
             <AppText style={styles.label}>{i18n.t('board:contact')}</AppText>
             <View style={styles.inputBox}>
@@ -226,13 +180,13 @@ class BoardMsgList extends Component<BoardMsgListProps, BoardMsgListState> {
                 returnKeyType="done"
                 maxLength={13}
                 value={mobile}
-                onSubmitEditing={this.onSubmit}
-                onChangeText={(v: string) => this.setState({mobile: v})}
+                onSubmitEditing={onSubmit}
+                onChangeText={setMobile}
               />
 
               <AppButton
                 iconName="btnSearchOn"
-                onPress={this.onSubmit}
+                onPress={onSubmit}
                 style={styles.button}
               />
             </View>
@@ -242,76 +196,77 @@ class BoardMsgList extends Component<BoardMsgListProps, BoardMsgListState> {
         )}
 
         <AppText style={styles.mylist}>
-          {this.props.uid === 0 ? i18n.t('board:list') : i18n.t('board:mylist')}
+          {uid === 0 ? i18n.t('board:list') : i18n.t('board:mylist')}
         </AppText>
       </View>
-    );
-  }
+    ),
+    [mobile, onSubmit, uid],
+  );
 
-  empty() {
-    return (
+  const empty = useCallback(
+    () => (
       <View style={{alignItems: 'center'}}>
         <AppIcon style={styles.mark} name="imgMark" />
         <AppText style={styles.noList}>
-          {this.state.refreshing
-            ? i18n.t('board:loading')
-            : i18n.t('board:nolist')}
+          {refreshing ? i18n.t('board:loading') : i18n.t('board:nolist')}
         </AppText>
       </View>
-    );
-  }
+    ),
+    [refreshing],
+  );
 
-  renderItem({item}: {item: RkbBoard}) {
-    return (
-      <BoardMsg
-        onPress={this.onPress(item.uuid, item.statusCode)}
-        item={item}
-        uid={this.props.uid}
+  const renderItem = useCallback(
+    ({item}: {item: RkbBoard}) => {
+      return (
+        <BoardMsg
+          onPress={onPressItem(item.uuid, item.statusCode)}
+          item={item}
+          uid={uid}
+        />
+      );
+    },
+    [onPressItem, uid],
+  );
+
+  // const {mobile, data, showModal, refreshing} = this.state;
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <FlatList
+        data={data}
+        ListHeaderComponent={header}
+        ListEmptyComponent={empty}
+        // onEndReached={this._onEndReached}
+        // onEndReachedThreshold={0.5}
+        onScrollEndDrag={onEndReached} // 검색 시 onEndReached가 발생하는 버그가 Flatlist에 있어 끝까지 스크롤한 경우 list를 더 가져오도록 변경
+        // onRefresh={this._onRefresh}
+        // refreshing={refreshing}
+        extraData={mobile}
+        renderItem={renderItem}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[colors.clearBlue]} // android 전용
+            tintColor={colors.clearBlue} // ios 전용
+          />
+        }
       />
-    );
-  }
 
-  render() {
-    const {mobile, data, showModal, refreshing} = this.state;
-
-    return (
-      <SafeAreaView style={styles.container}>
-        <FlatList
-          data={data}
-          ListHeaderComponent={this.header}
-          ListEmptyComponent={this.empty}
-          // onEndReached={this._onEndReached}
-          // onEndReachedThreshold={0.5}
-          onScrollEndDrag={this.onEndReached} // 검색 시 onEndReached가 발생하는 버그가 Flatlist에 있어 끝까지 스크롤한 경우 list를 더 가져오도록 변경
-          // onRefresh={this._onRefresh}
-          // refreshing={refreshing}
-          extraData={mobile}
-          renderItem={this.renderItem}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={this.onRefresh}
-              colors={[colors.clearBlue]} // android 전용
-              tintColor={colors.clearBlue} // ios 전용
-            />
-          }
-        />
-
-        <AppActivityIndicator visible={this.props.pending && !refreshing} />
-        <AppModalForm
-          visible={showModal}
-          title={i18n.t('board:inputPass')}
-          maxLength={4}
-          valueType="pin"
-          keyboardType="numeric"
-          onOkClose={this.onSubmitPin}
-          onCancelClose={() => this.setState({showModal: false})}
-          validate={this.onValidate}
-        />
-      </SafeAreaView>
-    );
-  }
-}
+      <AppActivityIndicator visible={pending && !refreshing} />
+      <AppModalForm
+        visible={showModal}
+        title={i18n.t('board:inputPass')}
+        maxLength={4}
+        valueType="pin"
+        keyboardType="numeric"
+        onOkClose={onSubmitPin}
+        onCancelClose={() => setShowModal(false)}
+        validate={onValidate}
+      />
+    </SafeAreaView>
+  );
+};
 
 export default connect(
   ({board, account, status}: RootState) => ({

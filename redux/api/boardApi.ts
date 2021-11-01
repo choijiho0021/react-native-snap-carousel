@@ -1,6 +1,6 @@
-import i18n from '@/utils/i18n';
 import _ from 'underscore';
 import {Buffer} from 'buffer';
+import i18n from '@/utils/i18n';
 import api, {ApiResult} from './api';
 import {RkbFile, RkbImage} from './accountApi';
 
@@ -40,6 +40,7 @@ export type RkbBoard = {
   statusCode: string;
   status: string;
   images: string[];
+  replyImages: string[];
 };
 
 const toBoard = (data: DrupalBoard[]): ApiResult<RkbBoard> => {
@@ -57,6 +58,7 @@ const toBoard = (data: DrupalBoard[]): ApiResult<RkbBoard> => {
         statusCode: item.field_issue_status || 'O',
         status: statusToString(item.field_issue_status || 'O'), // pin, status, statusCode
         images: item.field_images.split(', ') || [],
+        replyImages: item.field_reply_images.split(', ') || [],
       })),
     );
   }
