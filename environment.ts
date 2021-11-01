@@ -10,8 +10,12 @@ const bundleId = getBundleId();
 // rokebi esim App
 const appId = bundleId === 'com.uangel.rokebi-USIM' ? 'usim' : 'esim';
 const esimGlobal = appId === 'esim' && bundleId === 'com.uangel.rokebi-global';
-// 현재 test 목적(staging 용)으로 Production 기준으로 분리
-const impId = esimGlobal ? 'imp60215393' : 'imp53913318';
+
+// global / esim 계정
+let impId = esimGlobal ? 'imp60215393' : 'imp53913318';
+
+// test 계정
+impId = Config.NODE_ENV !== 'production' ? 'imp54175831' : impId;
 
 // countryCode: "KR"
 // languageTag: "en-KR"
@@ -21,8 +25,8 @@ const lc = RNLocalize.getLocales()[0];
 const isEng = lc.languageCode !== 'ko';
 
 const codePushLabel = {
-  stagingIOS: 'v83',
-  stagingAndroid: 'v82',
+  stagingIOS: 'v84',
+  stagingAndroid: 'v83',
   productionIOS: 'v22',
   productionAndroid: 'v15',
 };
