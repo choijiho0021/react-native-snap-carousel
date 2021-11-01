@@ -1,12 +1,12 @@
 /* eslint-disable no-param-reassign */
-import {Reducer} from 'redux-actions';
-import {AnyAction} from 'redux';
-import {Map as ImmutableMap} from 'immutable';
-import _ from 'underscore';
-import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
+import {Map as ImmutableMap} from 'immutable';
+import {AnyAction} from 'redux';
+import {Reducer} from 'redux-actions';
+import _ from 'underscore';
 import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
 
@@ -150,8 +150,9 @@ const slice = createSlice({
       const {objects, result} = action.payload;
 
       if (result === 0 && objects.length > 0) {
-        const orders = ImmutableMap(objects.map((o) => [o.orderId, o])).merge(
-          state.orders,
+        // 기존에 있던 order에 새로운 order로 갱신
+        const orders = ImmutableMap(state.orders).merge(
+          objects.map((o) => [o.orderId, o]),
         );
 
         state.orders = orders;
