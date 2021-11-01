@@ -81,5 +81,8 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
 
 export default memo(
   OrderItem,
-  (prevProps, nextProps) => prevProps.item.state === nextProps.item.state,
+  (prevProps, nextProps) =>
+    prevProps.item.state === nextProps.item.state &&
+    JSON.stringify(prevProps.item.usageList) ===
+      JSON.stringify(nextProps.item.usageList),
 );
