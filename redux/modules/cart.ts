@@ -396,13 +396,10 @@ export const actions = {
   payNorder,
   cartAddAndGet,
   checkStockAndPurchase,
-<<<<<<< HEAD
   init,
   initCart,
-=======
   checkStockAndMakeOrder,
   updateOrder,
->>>>>>> 8fe2aaf2e99de26bd4e6e56eb239fae260b7d715
 };
 export type CartAction = typeof actions;
 
