@@ -35,7 +35,7 @@ import api from '@/redux/api/api';
 import {PaymentMethod} from '@/redux/api/paymentApi';
 import {Currency} from '@/redux/api/productApi';
 import utils from '@/redux/api/utils';
-import {createPaymentResultForRokebiCash} from '@/redux/models/paymentResult';
+import {createPaymentInfoForRokebiCash} from '@/redux/models/paymentResult';
 import {
   AccountModelState,
   actions as accountActions,
@@ -446,11 +446,12 @@ class PymMethodScreen extends Component<
 
     // 로깨비캐시 결제
     if (pymPrice?.value === 0) {
+      // if the payment amount is zero, call the old API payNorder
       this.setState({
         loading: true,
       });
       const {impId} = Env.get();
-      const response = createPaymentResultForRokebiCash({
+      const info = createPaymentInfoForRokebiCash({
         impId,
         mobile,
         profileId,
@@ -460,12 +461,11 @@ class PymMethodScreen extends Component<
         digital: !simIncluded,
       });
       // payNorder에서 재고 확인 - resp.result값으로 비교
-      this.props.action.cart.payNorder(response).then(({payload: resp}) => {
+      this.props.action.cart.payNorder(info).then(({payload: resp}) => {
         if (resp.result === 0) {
           this.props.navigation.setParams({isPaid: true});
           this.props.navigation.replace('PaymentResult', {
-            pymResult: response,
-            orderResult: resp,
+            pymResult: true,
             mode,
           });
         } else {
@@ -481,6 +481,7 @@ class PymMethodScreen extends Component<
         }
       });
     } else {
+      // if the payment amount is not zero, make order first
       const params = {
         pg: selected?.key,
         pay_method: selected?.method,
@@ -504,7 +505,6 @@ class PymMethodScreen extends Component<
       this.setState({
         clickable: true,
       });
-      console.log('payment click', params);
       this.props.navigation.navigate('Payment', params);
     }
   }

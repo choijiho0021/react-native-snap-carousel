@@ -1,7 +1,7 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import IMP from 'iamport-react-native';
-import React, {Component} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import Video from 'react-native-video';
 import {connect} from 'react-redux';
@@ -16,6 +16,7 @@ import {API} from '@/redux/api';
 import api from '@/redux/api/api';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
+import {PaymentInfo} from '@/redux/api/cartApi';
 
 // const IMP = require('iamport-react-native').default;
 const loading = require('../assets/images/loading_1.mp4');
@@ -71,29 +72,68 @@ type PaymentScreenProps = {
   };
 };
 
-type PaymentScreenState = {
-  isPaid: boolean;
-  token?: string;
-};
+const {impId} = Env.get();
+const PaymentScreen: React.FC<PaymentScreenProps> = ({
+  route: {params},
+  navigation,
+  action,
+}) => {
+  const [token, setToken] = useState<string>();
+  const pymInfo = useRef<PaymentInfo>({
+    payment_type: params.pay_method,
+    merchant_uid: params.merchant_uid,
+    amount: params.amount,
+    rokebi_cash: params.rokebi_cash,
+    dlvCost: params.dlvCost,
+    profile_uuid: params.profile_uuid,
+    memo: params.memo,
+    captured: false,
+  }).current;
 
-class PaymentScreen extends Component<PaymentScreenProps, PaymentScreenState> {
-  constructor(props: PaymentScreenProps) {
-    super(props);
+  useEffect(() => {
+    if (!params.isPaid) {
+      action.cart.checkStockAndMakeOrder(pymInfo).then(({payload: resp}) => {
+        console.log('@@@ make order', resp);
+        if (resp.result < 0) {
+          AppAlert.info(
+            i18n.t(
+              resp?.result === api.E_RESOURCE_NOT_FOUND
+                ? 'cart:soldOut'
+                : 'cart:systemError',
+            ),
+          );
+          navigation.goBack();
+        }
+      });
+    }
+  }, [action.cart, navigation, params, pymInfo]);
 
-    this.state = {
-      isPaid: true,
-      token: undefined,
-    };
+  const callback = useCallback(
+    async (response) => {
+      const rsp = await API.Payment.getUid({
+        uid: response.imp_uid,
+        token,
+      });
 
-    this.callback = this.callback.bind(this);
-    this.isTrue = this.isTrue.bind(this);
-    this.setToken = this.setToken.bind(this);
-  }
+      console.log('payment getuid rsp: \n', rsp, response);
+      if (rsp[0]?.success) {
+        // 결제완료시 '다음' 버튼 연속클릭 방지 - 연속클릭시 추가 결제 없이 order 계속 생성
+        if (!params.isPaid) {
+          await navigation.setParams({isPaid: true});
 
-  componentDidMount() {
-    const {params} = this.props.route;
+          action.cart.updateOrder(pymInfo);
+        }
+      }
 
-    this.props.navigation.setOptions({
+      navigation.replace('PaymentResult', {
+        pymResult: rsp[0]?.success,
+      });
+    },
+    [action.cart, navigation, params.isPaid, pymInfo, token],
+  );
+
+  useEffect(() => {
+    navigation.setOptions({
       title: null,
       headerLeft: () => (
         <AppBackButton
@@ -105,20 +145,13 @@ class PaymentScreen extends Component<PaymentScreenProps, PaymentScreenState> {
       ),
     });
 
-    if (this.state.isPaid) {
-      this.setState({
-        isPaid: false,
-      });
-      this.props.navigation.setParams({isPaid: false});
-    }
     API.Payment.getImpToken().then((resp) => {
       if (resp.code === 0) {
-        this.setToken(resp.response.access_token);
+        setToken(resp.response.access_token);
       }
     });
 
     if (params.mode === 'test' || params.amount === 0) {
-      const {impId} = Env.get();
       const response = {
         success: true,
         imp_uid: impId,
@@ -129,97 +162,37 @@ class PaymentScreen extends Component<PaymentScreenProps, PaymentScreenState> {
         memo: params.memo,
       };
 
-      this.callback(response);
+      callback(response);
     }
-  }
+  }, [callback, navigation, params]);
 
-  setToken = (token: string) => {
-    this.setState({token});
-  };
-
-  isTrue = (val: string) => {
-    return val === 'true';
-  };
-
-  async callback(response) {
-    let rsp = {};
-
-    await API.Payment.getUid({
-      uid: response.imp_uid,
-      token: this.state.token,
-    }).then((res) => {
-      rsp = res;
-    });
-
-    console.log('payment getuid rsp: \n', rsp, response);
-    if (rsp[0].success) {
-      // 결제완료시 '다음' 버튼 연속클릭 방지 - 연속클릭시 추가 결제 없이 order 계속 생성
-      if (!this.props.route.params.isPaid) {
-        await this.props.navigation.setParams({isPaid: true});
-        const {params} = this.props.route;
-
-        this.props.action.cart
-          .payNorder({
-            imp_uid: rsp[0].imp_uid,
-            merchant_uid: rsp[0].merchant_uid,
-            pg_provider: params.pg,
-            payment_type: params.pay_method,
-            amount: params.amount,
-            profile_uuid: params.profile_uuid,
-            rokebi_cash: params.rokebi_cash,
-            dlvCost: params.dlvCost,
-            memo: params.memo,
-          })
-          .then(({payload: resp}) => {
-            console.log(' pay and order then ', resp);
-            if (resp?.result === 0) {
-              this.props.navigation.replace('PaymentResult', {
-                pymResult: rsp[0],
-                orderResult: resp,
-              });
-            } else {
-              if (resp?.result === api.E_RESOURCE_NOT_FOUND)
-                AppAlert.info(`${resp.title} ${i18n.t('cart:soldOut')}`);
-              else AppAlert.info(i18n.t('cart:systemError'));
-              this.props.navigation.goBack();
-            }
-          });
-      }
-    } else {
-      this.props.navigation.goBack();
-    }
-  }
-
-  render() {
-    const {impId} = Env.get();
-    const {params} = this.props.route;
-
+  const renderLoading = useCallback(() => {
     return (
-      <SafeAreaView style={styles.container}>
-        <IMP.Payment
-          userCode={impId}
-          loading={
-            <View style={{flex: 1, alignItems: 'stretch'}}>
-              <Video
-                source={loading}
-                repeat
-                style={styles.backgroundVideo}
-                resizeMode="cover"
-              />
-              <AppText style={styles.infoText}>
-                {i18n.t('pym:loadingInfo')}
-              </AppText>
-            </View>
-          }
-          startInLoadingState
-          data={params} // 결제 데이터
-          callback={this.callback}
-          style={styles.webview}
+      <View style={{flex: 1, alignItems: 'stretch'}}>
+        <Video
+          source={loading}
+          repeat
+          style={styles.backgroundVideo}
+          resizeMode="cover"
         />
-      </SafeAreaView>
+        <AppText style={styles.infoText}>{i18n.t('pym:loadingInfo')}</AppText>
+      </View>
     );
-  }
-}
+  }, []);
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <IMP.Payment
+        userCode={impId}
+        loading={renderLoading()}
+        startInLoadingState
+        data={params} // 결제 데이터
+        callback={callback}
+        style={styles.webview}
+      />
+    </SafeAreaView>
+  );
+};
 
 export default connect(undefined, (dispatch) => ({
   action: {

@@ -1,21 +1,8 @@
 import {Currency, CurrencyCode} from '@/redux/api/productApi';
+import {PaymentInfo} from '@/redux/api/cartApi';
 
-export type PaymentResult = {
-  success: boolean;
-  imp_uid: string;
-  merchant_uid: string;
-  profile_uuid?: string;
-  amount: number;
-  rokebi_cash: number;
-  dlvCost: number;
-  digital: boolean;
-  memo?: string;
-  payment_type: string;
-  currency_code: CurrencyCode;
-};
-
-export const createPaymentResult = ({
-  success,
+export const createPaymentInfo = ({
+  captured,
   paymentType,
   impId,
   mobile,
@@ -27,7 +14,7 @@ export const createPaymentResult = ({
   amount,
   currency_code,
 }: {
-  success: boolean;
+  captured: boolean;
   paymentType: string;
   impId: string;
   mobile?: string;
@@ -45,7 +32,7 @@ export const createPaymentResult = ({
   }
 
   return {
-    success,
+    captured,
     imp_uid: impId,
     merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
     profile_uuid: profileId,
@@ -56,10 +43,10 @@ export const createPaymentResult = ({
     memo,
     payment_type: paymentType,
     currency_code,
-  } as PaymentResult;
+  } as PaymentInfo;
 };
 
-export const createPaymentResultForRokebiCash = ({
+export const createPaymentInfoForRokebiCash = ({
   impId,
   mobile,
   profileId,
@@ -76,7 +63,7 @@ export const createPaymentResultForRokebiCash = ({
   digital: boolean;
   memo?: string;
 }) =>
-  createPaymentResult({
+  createPaymentInfo({
     impId,
     mobile,
     profileId,
@@ -85,7 +72,7 @@ export const createPaymentResultForRokebiCash = ({
     currency_code: deduct?.currency,
     digital,
     memo,
-    success: true,
+    captured: true,
     amount: 0,
     paymentType: 'rokebi_cash',
   });

@@ -2,9 +2,8 @@ import _ from 'underscore';
 import Env from '@/environment';
 import {utils} from '@/utils/utils';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
-import {PaymentResult} from '@/redux/models/paymentResult';
 import api, {ApiResult, DrupalNode} from './api';
-import {Currency} from './productApi';
+import {Currency, CurrencyCode} from './productApi';
 
 export type RkbOrderItem = {
   orderItemId: number;
@@ -39,26 +38,24 @@ const toCart = (data: DrupalNode): ApiResult<RkbCart> => {
         orderId: item.order_id,
         totalPrice:
           item.total_price && utils.stringToNumber(item.total_price.number),
-        orderItems:
-          item.order_items &&
-          item.order_items
-            .filter((o) => _.isObject(o))
-            .map((o) => ({
-              orderItemId: o.order_item_id,
-              uuid: o.uuid,
-              key: o.purchased_entity && o.purchased_entity.uuid,
-              type: o.purchased_entity && o.purchased_entity.type,
-              prod: o.purchased_entity && {
-                type: o.purchased_entity.type,
-                variationId: o.purchased_entity.variation_id,
-                uuid: o.purchased_entity.uuid,
-                sku: o.purchased_entity.sku,
-              },
-              title: o.title,
-              qty: utils.stringToNumber(o.quantity),
-              price: o.unit_price && utils.priceToCurrency(o.unit_price),
-              totalPrice: o.total_price && utils.priceToCurrency(o.total_price),
-            })),
+        orderItems: item.order_items
+          ?.filter((o) => _.isObject(o))
+          .map((o) => ({
+            orderItemId: o.order_item_id,
+            uuid: o.uuid,
+            key: o.purchased_entity && o.purchased_entity.uuid,
+            type: o.purchased_entity && o.purchased_entity.type,
+            prod: o.purchased_entity && {
+              type: o.purchased_entity.type,
+              variationId: o.purchased_entity.variation_id,
+              uuid: o.purchased_entity.uuid,
+              sku: o.purchased_entity.sku,
+            },
+            title: o.title,
+            qty: utils.stringToNumber(o.quantity),
+            price: o.unit_price && utils.priceToCurrency(o.unit_price),
+            totalPrice: o.total_price && utils.priceToCurrency(o.total_price),
+          })),
       })),
     );
   }
@@ -316,27 +313,40 @@ const updateQty = ({
  *    ],
  *  ];
  */
+export type PaymentInfo = {
+  memo?: string;
+  profile_uuid?: string;
+  payment_type: string;
+  merchant_uid: string;
+  amount: number;
+  rokebi_cash: number;
+  dlvCost: number;
+  currency_code?: CurrencyCode;
+  captured: boolean;
+};
 
 const makeOrder = ({
   items,
-  result,
+  info,
   user,
   mail,
   token,
   iccid,
+  orderId,
 }: {
   items: PurchaseItem[];
-  result: PaymentResult;
+  info: PaymentInfo;
   user?: string;
   mail?: string;
   token?: string;
   iccid?: string;
+  orderId?: number;
 }) => {
   if (_.isEmpty(items))
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: items');
 
-  if (_.isEmpty(result))
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: result');
+  if (_.isEmpty(info))
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: info');
 
   if (!user)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
@@ -365,8 +375,9 @@ const makeOrder = ({
   const body = {
     iccid,
     order: {
+      orderId,
       type: orderType,
-      field_memo: result.memo,
+      field_memo: info.memo,
       order_items: items.map((item) => ({
         quantity: item.qty,
         purchased_entity: {
@@ -375,7 +386,7 @@ const makeOrder = ({
       })),
     },
     profile: {
-      uuid: result.profile_uuid, // 주문에 사용된 profile id
+      uuid: info.profile_uuid, // 주문에 사용된 profile id
     },
     user: {
       mail,
@@ -383,14 +394,15 @@ const makeOrder = ({
     },
     payment: {
       gateway: 'iamport',
-      type: result.payment_type,
+      type: info.payment_type,
       details: {
-        merchant_uid: result.merchant_uid,
+        merchant_uid: info.merchant_uid,
+        captured: info.captured,
       },
-      amount: result.amount,
-      rokebi_cash: result.rokebi_cash,
-      shipping_cost: result.dlvCost,
-      currency_code: result.currency_code || esimCurrency,
+      amount: info.amount,
+      rokebi_cash: info.rokebi_cash,
+      shipping_cost: info.dlvCost,
+      currency_code: info.currency_code || esimCurrency,
     },
   };
 
@@ -402,10 +414,11 @@ const makeOrder = ({
       body: JSON.stringify(body),
     },
     (resp) => {
-      if (resp.result < 0) {
-        return api.failure<PurchaseItem>(resp.result, '', resp.desc);
+      if (resp.order_id.length > 0) {
+        // order_id 값이 있으면 성공한 것으로 간주한다.
+        return api.success([resp]);
       }
-      return api.success(items);
+      return api.failure<PurchaseItem>(-1, 'no result');
     },
   );
 };

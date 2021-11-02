@@ -1,3 +1,10 @@
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {Image, SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -16,14 +23,7 @@ import {
   BoardModelState,
 } from '@/redux/modules/board';
 import i18n from '@/utils/i18n';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import React, {Component} from 'react';
-import {Image, SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import _ from 'underscore';
-import {AccountModelState} from '../redux/modules/account';
+import {AccountModelState} from '@/redux/modules/account';
 
 const styles = StyleSheet.create({
   attachBox: {
@@ -66,6 +66,10 @@ const styles = StyleSheet.create({
   },
   resp: {
     flexDirection: 'row',
+    padding: 15,
+    justifyContent: 'flex-start',
+  },
+  respBox: {
     marginTop: 18,
     marginBottom: 36,
     marginHorizontal: 20,
@@ -109,77 +113,78 @@ type BoardMsgRespScreenProps = {
     board: BoardAction;
   };
 };
-type BoardMsgRespScreenState = {
-  idx?: number;
-};
-class BoardMsgRespScreen extends Component<
-  BoardMsgRespScreenProps,
-  BoardMsgRespScreenState
-> {
-  constructor(props: BoardMsgRespScreenProps) {
-    super(props);
 
-    this.state = {
-      idx: undefined,
-    };
-  }
+const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
+  route: {params},
+  navigation,
+  board,
+  account,
+  pending,
+  action,
+}) => {
+  const [idx, setIdx] = useState<number>();
+  const issue = useMemo(
+    () => (idx !== undefined && idx >= 0 ? board?.list[idx] : undefined),
+    [board?.list, idx],
+  );
+  const resp = useMemo(() => board?.comment?.[0] || {}, [board?.comment]);
 
-  componentDidMount() {
-    const {params} = this.props.route;
+  useEffect(() => {
     const {uuid, status} = params || {};
 
-    this.props.navigation.setOptions({
+    navigation.setOptions({
       title: null,
       headerLeft: () => <AppBackButton title={i18n.t('board:title')} />,
     });
 
     if (uuid) {
       // issue list를 아직 가져오지 않은 경우에는, 먼저 가져와서 처리한다.
-      this.props.action.board.getIssueList(false).then(() => {
-        this.setState({
-          idx: this.props.board.list.findIndex((item) => item.uuid === uuid),
-        });
+      action.board.getIssueList(false).then(() => {
+        setIdx(board.list.findIndex((item) => item.uuid === uuid));
 
         if (status === 'Closed') {
-          const {token} = this.props.account;
-          this.props.action.board.getIssueResp({uuid, token});
+          const {token} = account;
+          action.board.getIssueResp({uuid, token});
         } else {
-          this.props.action.board.resetIssueComment();
+          action.board.resetIssueComment();
         }
       });
     }
-  }
+  }, [account, action.board, board.list, navigation, params]);
 
-  render() {
-    const {idx} = this.state;
-    const {list = [], comment = []} = this.props.board;
-    const issue = idx !== undefined && idx >= 0 ? list[idx] : undefined;
-    const resp = comment[0] || {};
+  const renderImages = useCallback(
+    (images?: string[]) => (
+      <View style={styles.attachBox}>
+        {images &&
+          images
+            .filter((item) => !_.isEmpty(item))
+            .map((url, i) => (
+              <Image
+                key={`${url}${i}`}
+                source={{uri: API.default.httpImageUrl(url).toString()}}
+                style={styles.attach}
+              />
+            ))}
+      </View>
+    ),
+    [],
+  );
 
-    return (
-      <SafeAreaView style={styles.container}>
-        <ScrollView style={styles.container}>
-          <View style={{flex: 1}}>
-            <AppText style={[styles.inputBox, {marginTop: 30}]}>
-              {issue?.title}
-            </AppText>
-            <AppText
-              style={[styles.inputBox, {marginTop: 15, paddingBottom: 72}]}>
-              {utils.htmlToString(issue?.msg)}
-            </AppText>
-            <View style={styles.attachBox}>
-              {issue?.images
-                ?.filter((item) => !_.isEmpty(item))
-                .map((url, i) => (
-                  <Image
-                    key={`${url}${i}`}
-                    source={{uri: API.default.httpImageUrl(url).toString()}}
-                    style={styles.attach}
-                  />
-                ))}
-            </View>
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.container}>
+        <View style={{flex: 1}}>
+          <AppText style={[styles.inputBox, {marginTop: 30}]}>
+            {issue?.title}
+          </AppText>
+          <AppText
+            style={[styles.inputBox, {marginTop: 15, paddingBottom: 72}]}>
+            {utils.htmlToString(issue?.msg)}
+          </AppText>
+          {renderImages(issue?.images)}
 
-            {!_.isEmpty(resp) && (
+          {!_.isEmpty(resp) && (
+            <View style={styles.respBox}>
               <View style={styles.resp}>
                 <AppIcon
                   name="btnReply"
@@ -192,21 +197,22 @@ class BoardMsgRespScreen extends Component<
                   <AppText style={styles.reply}>{resp.body}</AppText>
                 </View>
               </View>
-            )}
-          </View>
+              {renderImages(issue?.replyImages)}
+            </View>
+          )}
+        </View>
 
-          <AppActivityIndicator visible={this.props.pending} />
-        </ScrollView>
+        <AppActivityIndicator visible={pending} />
+      </ScrollView>
 
-        <AppButton
-          style={styles.button}
-          title={i18n.t('ok')}
-          onPress={() => this.props.navigation.goBack()}
-        />
-      </SafeAreaView>
-    );
-  }
-}
+      <AppButton
+        style={styles.button}
+        title={i18n.t('ok')}
+        onPress={() => navigation.goBack()}
+      />
+    </SafeAreaView>
+  );
+};
 
 export default connect(
   ({board, account, status}: RootState) => ({

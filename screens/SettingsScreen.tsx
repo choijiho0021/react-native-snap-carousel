@@ -1,3 +1,15 @@
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import messaging from '@react-native-firebase/messaging';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import Analytics from 'appcenter-analytics';
+import React, {Component, memo} from 'react';
+import {FlatList, Pressable, StyleSheet, View} from 'react-native';
+import Config from 'react-native-config';
+import {openSettings} from 'react-native-permissions';
+import VersionCheck from 'react-native-version-check';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -15,23 +27,10 @@ import {
   AccountAction,
   actions as accountActions,
 } from '@/redux/modules/account';
-import {actions as cartActions, CartAction, Store} from '@/redux/modules/cart';
-import {actions as notiActions} from '@/redux/modules/noti';
+import {actions as cartActions, CartAction} from '@/redux/modules/cart';
+import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import messaging from '@react-native-firebase/messaging';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import Analytics from 'appcenter-analytics';
-import React, {Component, memo} from 'react';
-import {FlatList, Pressable, StyleSheet, View} from 'react-native';
-import Config from 'react-native-config';
-import {openSettings} from 'react-native-permissions';
-import VersionCheck from 'react-native-version-check';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {NotiAction} from '../redux/modules/noti';
 
 const {label = '', isProduction} = Env.get();
 const PUSH_ENABLED = 0;
@@ -120,7 +119,6 @@ type SettingsScreenProps = {
 
   isPushNotiEnabled?: boolean;
   loggedIn?: boolean;
-  store: Store;
   pending: boolean;
   action: {
     cart: CartAction;
@@ -297,18 +295,6 @@ class SettingsScreen extends Component<
 
         break;
 
-      case 'setting:globalMarket':
-        isEnabled = this.state.data.find((i) => i.key === key)?.toggle || false;
-
-        this.setData(key, {toggle: !isEnabled});
-
-        // flag == On 이면 market을 'global'로 바꾼다.
-        this.props.action.cart.changeStore({
-          store: !isEnabled ? 'global' : 'kr',
-        });
-
-        break;
-
       default:
         if (route) {
           Analytics.trackEvent('Page_View_Count', {page: `MyPage${key}`});
@@ -327,7 +313,7 @@ class SettingsScreen extends Component<
       this.props.action.account.logout(),
       this.props.action.noti.init(),
     ]).then(() => {
-      this.props.navigation.reset({index: 0, routes: [{name: 'HomeStack'}]});
+      this.props.navigation.navigate('HomeStack', {screen: 'Home'});
 
       // bhtak
       // firebase.notifications().setBadge(0);
@@ -373,10 +359,9 @@ class SettingsScreen extends Component<
 }
 
 export default connect(
-  ({account, cart, status}: RootState) => ({
+  ({account, status}: RootState) => ({
     loggedIn: account.loggedIn,
     isPushNotiEnabled: account.isPushNotiEnabled,
-    store: cart.store,
     pending: status.pending[accountActions.logout.typePrefix] || false,
   }),
   (dispatch) => ({
