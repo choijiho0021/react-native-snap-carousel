@@ -1,3 +1,26 @@
+import _ from 'underscore';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {
+  getTrackingStatus,
+  TrackingStatus,
+} from 'react-native-tracking-transparency';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {Settings} from 'react-native-fbsdk';
+import {
+  Appearance,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import React, {Component, memo} from 'react';
+import {Map as ImmutableMap} from 'immutable';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RouteProp} from '@react-navigation/native';
+import analytics, {firebase} from '@react-native-firebase/analytics';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -26,31 +49,8 @@ import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import validationUtil from '@/utils/validationUtil';
-import analytics, {firebase} from '@react-native-firebase/analytics';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {Map as ImmutableMap} from 'immutable';
-import React, {Component, memo} from 'react';
-import {
-  Appearance,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {Settings} from 'react-native-fbsdk';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {
-  getTrackingStatus,
-  TrackingStatus,
-} from 'react-native-tracking-transparency';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 
-const {esimGlobal, isProduction} = Env.get();
+const {esimGlobal} = Env.get();
 // const esimGlobal = false;
 
 const styles = StyleSheet.create({
@@ -473,9 +473,7 @@ class RegisterMobileScreen extends Component<
 
         API.User.sendSms({user: value, abortController: this.controller})
           .then((resp) => {
-            // bhtak
-            // temporary
-            if (resp.result === 0 || !isProduction) {
+            if (resp.result === 0) {
               this.setState({
                 authNoti: true,
                 timeout: false,
@@ -500,23 +498,9 @@ class RegisterMobileScreen extends Component<
   };
 
   onPressPin = (value: string) => {
-    const {mobile, authorized} = this.state;
+    const {mobile} = this.state;
     const pin = value;
     // PIN이 맞는지 먼저 확인한다.
-
-    console.log('@@@ press pin', mobile, value);
-
-    if (!isProduction) {
-      // bhtak, temporary
-      this.signIn({mobile, pin}).then((resp) => {
-        if (resp.result < 0) {
-          this.setState({newUser: true, authorized: true});
-        }
-      });
-      return;
-    }
-
-    if (authorized) return;
 
     this.setState({loading: true});
 
