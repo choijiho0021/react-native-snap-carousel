@@ -33,7 +33,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fb147522690488197</string>
+				<string>fb531615184696321</string>
 			</array>
 		</dict>
 		<dict>
@@ -56,11 +56,11 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2</string>
+	<string>5</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
-	<string>147522690488197</string>
+	<string>531615184696321</string>
 	<key>FacebookClientToken</key>
 	<string>a516d23081ee3fb8db8bb9c006431ae6</string>
 	<key>FacebookDisplayName</key>
