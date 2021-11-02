@@ -269,7 +269,7 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
     });
 
     const {
-      account: {mobile, token},
+      account: {mobile, token, iccid},
     } = this.props;
 
     this.props.action.account.getUserId({
@@ -281,8 +281,11 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
       .getOrders({user: mobile, token, page: 0})
       .then((resp) => {
         if (resp) {
-          this.setState({
-            refreshing: false,
+          this.props.action.account.getAccount({iccid, token}).then((r) => {
+            if (r)
+              this.setState({
+                refreshing: false,
+              });
           });
         }
       });

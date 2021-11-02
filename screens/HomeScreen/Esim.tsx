@@ -388,7 +388,7 @@ class Esim extends Component<EsimProps, EsimState> {
     if (popUp) {
       this.setState({
         popUp,
-        closeType: popUp.notice?.rule?.sku ? 'redirect' : 'close',
+        closeType: popUp.notice?.rule ? 'redirect' : 'close',
         popUpVisible: true,
       });
     }
@@ -591,6 +591,7 @@ class Esim extends Component<EsimProps, EsimState> {
   renderNotiModal() {
     const {popUp, closeType, popUpVisible, checked} = this.state;
 
+    console.log('aaaaa closeType', closeType);
     return (
       <AppModal
         titleStyle={styles.infoModalTitle}

@@ -1,8 +1,8 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable eqeqeq */
-import i18n from '@/utils/i18n';
 import {Buffer} from 'buffer';
 import _ from 'underscore';
+import i18n from '@/utils/i18n';
 import Env from '@/environment';
 
 export type Langcode = 'ko' | 'en';

@@ -173,9 +173,13 @@ const slice = createSlice({
     builder.addCase(getNextOrders.fulfilled, (state, action) => {
       const {objects, result} = action.payload;
 
-      if (result === 0) {
-        const orders = ImmutableMap(objects.map((o) => [o.orderId, o])).merge(
-          state.page === 0 ? [] : state.orders,
+      // if (result === 0) {
+      //   const orders = ImmutableMap(objects.map((o) => [o.orderId, o])).merge(
+      //     state.page === 0 ? [] : state.orders,
+      if (result === 0 && objects.length > 0) {
+        // 기존에 있던 order에 새로운 order로 갱신
+        const orders = ImmutableMap(state.orders).merge(
+          objects.map((o) => [o.orderId, o]),
         );
 
         if (orders && orders.size <= 10) {

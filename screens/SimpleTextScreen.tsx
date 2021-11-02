@@ -363,6 +363,7 @@ const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
     React.useCallback(() => {
       const getPromo = async () => {
         const {rule} = props.route.params;
+
         if (rule?.sku) {
           setIsProdEvent(true);
           const resp = await API.Promotion.check(rule.sku);
@@ -372,6 +373,9 @@ const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
             else if (resp.objects[0]?.available > 0) setEventStatus('open');
             else setEventStatus('closed');
           }
+        }
+        if (rule?.invite) {
+          console.log('aaaaa rule', rule);
         }
       };
       getPromo();
