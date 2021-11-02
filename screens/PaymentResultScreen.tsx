@@ -3,10 +3,11 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {useEffect, useMemo, useState} from 'react';
-import {Image, SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
+import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppButton from '@/components/AppButton';
+import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import PaymentItemInfo from '@/components/PaymentItemInfo';
 import {colors} from '@/constants/Colors';
@@ -26,7 +27,6 @@ import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 
 const {esimCurrency, esimGlobal} = Env.get();
-const imgCheck = require('../assets/images/main/imgCheck.png');
 
 const styles = StyleSheet.create({
   container: {
@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
   },
   image: {
     marginTop: 30,
+    justifyContent: 'center',
   },
   paymentResultView: {
     backgroundColor: colors.white,
@@ -167,8 +168,15 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
     <SafeAreaView style={{flex: 1, alignItems: 'stretch'}}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.paymentResultView}>
-          <Image style={styles.image} source={imgCheck} resizeMode="contain" />
-          <AppText style={styles.paymentResultText}>
+          <AppIcon
+            style={styles.image}
+            name={isSuccess ? 'imgCheck' : 'imgFail'}
+          />
+          <AppText
+            style={[
+              styles.paymentResultText,
+              !isSuccess && {color: colors.tomato},
+            ]}>
             {` ${i18n.t(isSuccess ? 'pym:success' : 'pym:fail')}`}
           </AppText>
           <AppButton
