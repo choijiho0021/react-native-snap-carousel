@@ -5,37 +5,33 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.RemoteException;
 
+import com.RNFetchBlob.RNFetchBlobPackage;
 import com.android.installreferrer.api.InstallReferrerClient;
 import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
-import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.facebook.react.ReactApplication;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
-import com.reactnativecommunity.clipboard.ClipboardPackage;
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.horcrux.svg.SvgPackage;
-import com.iamport.IamportPackage;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.analytics.Analytics;
 import com.microsoft.appcenter.reactnative.analytics.AppCenterReactNativeAnalyticsPackage;
 import com.microsoft.appcenter.reactnative.appcenter.AppCenterReactNativePackage;
 import com.microsoft.appcenter.reactnative.crashes.AppCenterReactNativeCrashesPackage;
 import com.microsoft.codepush.react.CodePush;
-import com.reactcommunity.rnlocalize.RNLocalizePackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
-import com.reactnativecommunity.rnpermissions.RNPermissionsPackage;
 import com.reactnativecommunity.webview.RNCWebViewPackage;
 import com.rokebiesim.generated.BasePackageList;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.swmansion.reanimated.ReanimatedPackage;
+import com.zoontek.rnlocalize.RNLocalizePackage;
 
 import org.reactnative.camera.RNCameraPackage;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
@@ -48,9 +44,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.actbase.kakaosdk.channel.ARNKakaoChannelPackage;
-import io.invertase.firebase.RNFirebasePackage;
-import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
-import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 import io.xogus.reactnative.versioncheck.RNVersionCheckPackage;
 //import com.facebook.flipper.reactnative.FlipperPackage;
 
@@ -130,31 +123,25 @@ public class MainApplication extends Application implements ReactApplication {
             return Arrays.<ReactPackage>asList(
                 new MainReactPackage(),
             new RNDeviceInfo(),
-            new ClipboardPackage(),
             new SafeAreaContextPackage(),
-            new RNLocalizePackage(),
             new AsyncStoragePackage(),
 //            new FlipperPackage(),
                 new SvgPackage(),
                 new PickerPackage(),
-                new RNPermissionsPackage(),
-                new IamportPackage(),
                 new AppCenterReactNativeCrashesPackage(getApplication(), getResources().getString(R.string.appCenterCrashes_whenToSendCrashes)),
                 new AppCenterReactNativeAnalyticsPackage(getApplication(), getResources().getString(R.string.appCenterAnalytics_whenToEnableAnalytics)),
                 new AppCenterReactNativePackage(getApplication()),
                 new RNVersionCheckPackage(),
                 new CodePush(BuildConfig.CODEPUSH_KEY, getApplicationContext(), BuildConfig.DEBUG),
                 new RNCameraPackage(),
-                new RNFirebasePackage(),
-                new RNFirebaseMessagingPackage(),
-                new RNFirebaseNotificationsPackage(),
-                new ReactNativePushNotificationPackage(),
                 new ReactVideoPackage(),
 //                new AsyncStoragePackage(),
                 new RNGestureHandlerPackage(),
                 new ReanimatedPackage(),
                 new RNCWebViewPackage(),
-                new ARNKakaoChannelPackage()
+                new ARNKakaoChannelPackage(),
+                new RNLocalizePackage(),
+                new RNFetchBlobPackage()
             );
         }
 
@@ -179,7 +166,6 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
     AppCenter.start(this,"ff7d5d5a-8b74-4ec2-99be-4dfd81b4b0fd", Analytics.class);
-    FirebaseMessaging.getInstance().subscribeToTopic("ALL");
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
 
       prefs = getSharedPreferences("Pref", MODE_PRIVATE);

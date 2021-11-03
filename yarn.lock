@@ -1629,11 +1629,6 @@
   "resolved" "https://registry.npmjs.org/@react-native-community/eslint-plugin/-/eslint-plugin-1.1.0.tgz"
   "version" "1.1.0"
 
-"@react-native-community/picker@^1.6.1":
-  "integrity" "sha512-Sj9DzX1CSnmYiuEQ5fQhExoo4XjSKoZkqLPAAybycq6RHtCuWppf+eJXRMCOJki25BlKSSt+qVqg0fIe//ujNQ=="
-  "resolved" "https://registry.npmjs.org/@react-native-community/picker/-/picker-1.8.1.tgz"
-  "version" "1.8.1"
-
 "@react-native-community/push-notification-ios@^1.10.1":
   "integrity" "sha512-k6bZWUKLif4GjenyTD3aQLwA2VT3bNmt22INO/34lexnpmqkPDZF7nreqbckTHG0Zso9wDTe4N/AZJUC/d8iRg=="
   "resolved" "https://registry.npmjs.org/@react-native-community/push-notification-ios/-/push-notification-ios-1.10.1.tgz"
@@ -1646,10 +1641,10 @@
   "resolved" "https://registry.npmjs.org/@react-native-community/toolbar-android/-/toolbar-android-0.2.1.tgz"
   "version" "0.2.1"
 
-"@react-native-cookies/cookies@^6.0.10":
-  "integrity" "sha512-a5Scgrs2VvWeCH2jVNWtuTjq77kDS0bJ2KJ6Qav4i+4h1McGkBWJsGBEX7jd4is4T+Jukx8/jnEOzvJCfLjjTQ=="
-  "resolved" "https://registry.npmjs.org/@react-native-cookies/cookies/-/cookies-6.0.10.tgz"
-  "version" "6.0.10"
+"@react-native-cookies/cookies@6.0.11":
+  "integrity" "sha512-FuRelau9wly5Neitnb5EZKiScnkNZgKydMyDxVsY4t7tOWRfNh0uiL7tiEI4jp2lD3ntAvicwzZB6L+NGYuuAQ=="
+  "resolved" "https://registry.npmjs.org/@react-native-cookies/cookies/-/cookies-6.0.11.tgz"
+  "version" "6.0.11"
   dependencies:
     "invariant" "^2.2.4"
 
@@ -1673,9 +1668,14 @@
   "version" "12.8.0"
 
 "@react-native-picker/picker@^1.8.3":
-  "integrity" "sha512-Qt40DBg7IEhBN5x2DYPV3B26j5fNhVZcpCestr1IuirneMNtOaIyA9+nPYniL/OBzd9YbpUKbS7XSy/MM9bP3w=="
-  "resolved" "https://registry.npmjs.org/@react-native-picker/picker/-/picker-1.16.3.tgz"
-  "version" "1.16.3"
+  "integrity" "sha512-pacdQDX6V6EmjF+HoiIh6u++qx4mTK0WnhgUHRc01B+Qt5eoeUwseBqmqfTSXTx/aHDEd6PiIw7UGvKgFoqgFQ=="
+  "resolved" "https://registry.npmjs.org/@react-native-picker/picker/-/picker-1.16.8.tgz"
+  "version" "1.16.8"
+
+"@react-native-picker/picker@^2.1.0":
+  "integrity" "sha512-iJ/QaDrBMBaW6cFuQyR3DXzcn2h7c5O7mGgmNLCBQHTTtLNBZR+Sxogy6YleFPeToNdysG5mTTkXqBmlWHMQqg=="
+  "resolved" "https://registry.npmjs.org/@react-native-picker/picker/-/picker-2.1.0.tgz"
+  "version" "2.1.0"
 
 "@react-native-seoul/kakao-login@^3.3.3":
   "integrity" "sha512-rDmeFkAg161kLOMcTO/z463pexZulUb6HJokDXKU+bQ2EiDnIk3KC0dqDgXaF2Yxn/1cfMUAu5ndl5YfPbla4w=="
@@ -2369,14 +2369,14 @@
     "normalize-path" "^3.0.0"
     "picomatch" "^2.0.4"
 
-"appcenter-analytics@^4.3.0":
+"appcenter-analytics@4.3.0":
   "integrity" "sha512-8UUkP0DWuL3SHSgVs3Vf08AW2Go02rLmJ9DDXzL+yLqTVp2CY+OBhePEXmeLdGkdAxc1Tz08juF4uvP1j7gtRw=="
   "resolved" "https://registry.npmjs.org/appcenter-analytics/-/appcenter-analytics-4.3.0.tgz"
   "version" "4.3.0"
   dependencies:
     "appcenter" "4.3.0"
 
-"appcenter-crashes@^4.3.0":
+"appcenter-crashes@4.3.0":
   "integrity" "sha512-q4wqvIL0HwFdnaATEGsAr+5+CSV9oRSaK/H+2TC6l9MLU9zi9nPmUaYVb+iJINxnFJZMUu0Xghhj8qyNIKA03w=="
   "resolved" "https://registry.npmjs.org/appcenter-crashes/-/appcenter-crashes-4.3.0.tgz"
   "version" "4.3.0"
@@ -2405,7 +2405,7 @@
     "which" "1.2.11"
     "xcode" "2.0.0"
 
-"appcenter@^4.3.0", "appcenter@4.3.0":
+"appcenter@4.3.0":
   "integrity" "sha512-g0L/fT0zjGxHvHYyvyaBdwMrDleR0Q/F+EUbpESZ0jYQeG5xg965bzjASq+CSs3dN0shWxRkvrx5DTIc73GtGg=="
   "resolved" "https://registry.npmjs.org/appcenter/-/appcenter-4.3.0.tgz"
   "version" "4.3.0"
@@ -8877,7 +8877,7 @@
     "react-shallow-renderer" "^16.13.1"
     "scheduler" "^0.20.2"
 
-"react@*", "react@^16.0", "react@^16.0.0 || ^17.0.0", "react@^16.14.0 || ^17.0.0", "react@^16.8", "react@^16.8.0 || ^17.0.0", "react@^16.8.3 || ^17", "react@>=15.0.0", "react@>=15.3.1", "react@>=16.0", "react@>=16.0.0", "react@>=16.13.1", "react@>=16.6.3", "react@>=17.0.1", "react@16 || 17", "react@17.0.2":
+"react@*", "react@^16.0.0 || ^17.0.0", "react@^16.14.0 || ^17.0.0", "react@^16.8", "react@^16.8.0 || ^17.0.0", "react@^16.8.3 || ^17", "react@>=15.0.0", "react@>=15.3.1", "react@>=16.0", "react@>=16.0.0", "react@>=16.13.1", "react@>=16.6.3", "react@>=17.0.1", "react@16 || 17", "react@17.0.2":
   "integrity" "sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA=="
   "resolved" "https://registry.npmjs.org/react/-/react-17.0.2.tgz"
   "version" "17.0.2"
