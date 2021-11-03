@@ -597,8 +597,10 @@ class Esim extends Component<EsimProps, EsimState> {
         titleStyle={styles.infoModalTitle}
         title={popUp?.title}
         closeButtonTitle={i18n.t(closeType || 'close')}
-        type="redirect"
-        closeButtonStyle={{flex: 1, margin: 20}}
+        type={closeType === 'redirect' ? closeType : 'close'}
+        closeButtonStyle={
+          closeType === 'redirect' ? {flex: 1, margin: 20} : {margin: 20}
+        }
         onOkClose={() => {
           this.exitApp(closeType);
           if (checked)
