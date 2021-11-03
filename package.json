@@ -30,6 +30,7 @@
     "@react-native-cookies/cookies": "^6.0.10",
     "@react-native-firebase/analytics": "^12.8.0",
     "@react-native-firebase/app": "^12.8.0",
+    "@react-native-firebase/dynamic-links": "^12.8.0",
     "@react-native-firebase/messaging": "^12.8.0",
     "@react-native-seoul/kakao-login": "^3.3.3",
     "@react-native-seoul/naver-login": "^2.1.1",

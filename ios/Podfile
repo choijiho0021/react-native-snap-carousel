@@ -21,6 +21,7 @@ target 'RokebiGlobal' do
   pod 'FBSDKShareKit'
 
   pod 'Firebase/Analytics'
+  pod 'Firebase/DynamicLinks'
 
   ENVFILES = {
     'Debug' => '$(PODS_ROOT)/../../.env',
@@ -69,6 +70,7 @@ target 'RokebiESIM' do
   pod 'FBSDKShareKit'
 
   pod 'Firebase/Analytics'
+  pod 'Firebase/DynamicLinks'
 
   ENVFILES = {
     'Debug' => '$(PODS_ROOT)/../../.env',

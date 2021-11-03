@@ -49,6 +49,14 @@
 			</array>
 		</dict>
 		<dict>
+			<key>CFBundleURLName</key>
+			<string>dynamicLink</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.uangel.rokebi-ESIM</string>
+			</array>
+		</dict>
+		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>fb147522690488197</string>
@@ -69,6 +77,11 @@
 	<string>로밍도깨비 eSIM</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<true/>
+	<key>FirebaseDynamicLinksCustomDomains</key>
+	<array>
+		<string>https://rokebi.page.link/eNh4</string>
+		<string>https://rokebi.page.link/youtube</string>
+	</array>
 	<key>KAKAO_APP_KEY</key>
 	<string>f881469e3b4a140967dfaebe648ede8d</string>
 	<key>LSApplicationCategoryType</key>
