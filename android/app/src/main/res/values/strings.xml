@@ -4,7 +4,7 @@
     <string moduleConfig="true" name="CodePushDeploymentKey">xesyWQUnruGqjQliPjlKF8hKEZEZa-pfLWOQ2</string>
     <string name="appCenterCrashes_whenToSendCrashes" moduleConfig="true" translatable="false">DO_NOT_ASK_JAVASCRIPT</string>
     <string name="appCenterAnalytics_whenToEnableAnalytics" moduleConfig="true" translatable="false">ALWAYS_SEND</string>
-    <string name="kakao_app_key">150021eafe4c18d2a51fb5ff97c38d9f</string>
-    <string name="facebook_app_id">fb147522690488197</string>
-    <string name="facebook_client_token">123</string>
+    <string name="kakao_app_key">20432406a5258ae68b9c9558a4ba23ef</string>
+    <string name="facebook_app_id">147522690488197</string>
+    <string name="facebook_client_token">a516d23081ee3fb8db8bb9c006431ae6</string>
 </resources>

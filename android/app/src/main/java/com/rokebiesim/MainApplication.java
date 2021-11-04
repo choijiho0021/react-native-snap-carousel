@@ -11,6 +11,9 @@ import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactApplication;
+import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
+import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
+import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
 import com.zoontek.rnpermissions.RNPermissionsPackage;
 import com.swmansion.rnscreens.RNScreensPackage;
 import com.reactnativecommunity.cookies.CookieManagerPackage;
@@ -126,6 +129,9 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.<ReactPackage>asList(
                 new MainReactPackage(),
+            new ReactNativeFirebaseAnalyticsPackage(),
+            new ReactNativeFirebaseMessagingPackage(),
+            new ReactNativeFirebaseAppPackage(),
             new RNPermissionsPackage(),
             new RNScreensPackage(),
             new CookieManagerPackage(),
@@ -173,8 +179,7 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
-    // ff7d5d5a-8b74-4ec2-99be-4dfd81b4b0fd
-      AppCenter.start(this,"xesyWQUnruGqjQliPjlKF8hKEZEZa-pfLWOQ2", Analytics.class);
+      AppCenter.start(this,"ff7d5d5a-8b74-4ec2-99be-4dfd81b4b0fd", Analytics.class);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
       prefs = getSharedPreferences("Pref", MODE_PRIVATE);
 
