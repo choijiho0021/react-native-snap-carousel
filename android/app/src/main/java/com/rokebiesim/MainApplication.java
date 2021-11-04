@@ -11,6 +11,9 @@ import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactApplication;
+import com.zoontek.rnpermissions.RNPermissionsPackage;
+import com.swmansion.rnscreens.RNScreensPackage;
+import com.reactnativecommunity.cookies.CookieManagerPackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 import com.facebook.react.ReactInstanceManager;
@@ -54,6 +57,7 @@ public class MainApplication extends Application implements ReactApplication {
     private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
             new BasePackageList().getPackageList(), Arrays.<SingletonModule>asList()
     );
+
 
     private final void getReferrer() {
         //referrer 유입경로 확인 코드
@@ -122,6 +126,9 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.<ReactPackage>asList(
                 new MainReactPackage(),
+            new RNPermissionsPackage(),
+            new RNScreensPackage(),
+            new CookieManagerPackage(),
             new RNDeviceInfo(),
             new SafeAreaContextPackage(),
             new AsyncStoragePackage(),
@@ -161,13 +168,14 @@ public class MainApplication extends Application implements ReactApplication {
     return mReactNativeHost;
   }
 
+
   @Override
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
-    AppCenter.start(this,"ff7d5d5a-8b74-4ec2-99be-4dfd81b4b0fd", Analytics.class);
+    // ff7d5d5a-8b74-4ec2-99be-4dfd81b4b0fd
+      AppCenter.start(this,"xesyWQUnruGqjQliPjlKF8hKEZEZa-pfLWOQ2", Analytics.class);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
-
       prefs = getSharedPreferences("Pref", MODE_PRIVATE);
 
 
