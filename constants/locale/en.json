@@ -361,6 +361,7 @@
   "cart:empty2": "Enjoy your travel with ROKEBI together!",
   "cart:remove": "Product not on sale has been removed from the list.",
   "cart:soldOut": "Due to out of stock, can't purchase at this time.",
+  "cart:cashChanged": "Due to ROKEBI cash issue, payment process is stopped. \nPlease try it again, after checking your balance.",
   "cart:notToCart": "Due to out of stock, can't add to the cart.",
   "cart:systemError": "Due to system error, The service does not work properly. \nPlease try again in a few min.",
 
