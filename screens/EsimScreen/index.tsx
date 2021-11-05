@@ -45,7 +45,11 @@ import EsimSubs from './components/EsimSubs';
 const {esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
-  container: {flex: 1},
+  container: {
+    flex: 1,
+    alignItems: 'stretch',
+    backgroundColor: colors.white,
+  },
   title: {
     ...appStyles.title,
     marginLeft: 20,
@@ -62,10 +66,7 @@ const styles = StyleSheet.create({
   },
   nolist: {
     flex: 1,
-    flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.white,
   },
   titleAndStatus: {
     flexDirection: 'row',
@@ -264,22 +265,18 @@ class EsimScreen extends Component<EsimScreenProps, EsimScreenState> {
     if (this.props.pending) return null;
 
     return (
-      <View style={{flex: 1}}>
-        {!esimGlobal && (
-          <View style={{flexDirection: 'row'}}>{this.info()}</View>
-        )}
-        <View style={styles.nolist}>
-          <AppIcon name="emptyESIM" />
-          <AppText style={styles.blueText}>{i18n.t('his:noUsage1')}</AppText>
-          <AppText style={{color: colors.warmGrey, textAlign: 'center'}}>
-            {i18n.t('his:noUsage2')}
-          </AppText>
-        </View>
+      <View style={styles.nolist}>
+        <AppIcon name="emptyESIM" />
+        <AppText style={styles.blueText}>{i18n.t('his:noUsage1')}</AppText>
+        <AppText style={{color: colors.warmGrey, textAlign: 'center'}}>
+          {i18n.t('his:noUsage2')}
+        </AppText>
       </View>
     );
   };
 
   info() {
+    if (esimGlobal) return null;
     const {
       account: {iccid, balance, expDate},
       navigation,
@@ -351,32 +348,30 @@ class EsimScreen extends Component<EsimScreenProps, EsimScreenState> {
     const {subs} = this.props.order;
     const {refreshing, showSnackBar, showModal, modal} = this.state;
 
-    return _.isEmpty(subs) ? (
-      this.empty()
-    ) : (
+    return (
       <View style={styles.container}>
-        <View style={{backgroundColor: colors.whiteTwo}}>
-          <FlatList
-            data={subs}
-            keyExtractor={(item) => item.key.toString()}
-            ListHeaderComponent={this.info}
-            renderItem={this.renderSubs}
-            // onRefresh={this.onRefresh}
-            // refreshing={refreshing}
-            extraData={subs}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={this.onRefresh}
-                colors={[colors.clearBlue]} // android 전용
-                tintColor={colors.clearBlue} // ios 전용
-              />
-            }
-          />
-          <AppActivityIndicator
-            visible={this.props.pending || this.props.loginPending}
-          />
-        </View>
+        <FlatList
+          data={subs}
+          keyExtractor={(item) => item.key.toString()}
+          ListHeaderComponent={this.info}
+          renderItem={this.renderSubs}
+          // onRefresh={this.onRefresh}
+          // refreshing={refreshing}
+          extraData={subs}
+          contentContainerStyle={{flex: 1}}
+          ListEmptyComponent={this.empty}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={this.onRefresh}
+              colors={[colors.clearBlue]} // android 전용
+              tintColor={colors.clearBlue} // ios 전용
+            />
+          }
+        />
+        <AppActivityIndicator
+          visible={this.props.pending || this.props.loginPending}
+        />
         <AppModal
           type="close"
           justifyContent="flex-end"
