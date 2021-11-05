@@ -275,7 +275,16 @@ const checkStockAndMakeOrder = createAsyncThunk(
               user: mobile,
               mail: email,
             }),
-          ).then((rsp) => rsp.payload);
+          ).then((rsp) => {
+
+            if(rsp.payload.status === api.API_STATUS_PREFAILED){
+              dispatch(accountAction.getAccount({iccid, token})).then(()=> {
+                const {account: {balance}} = getState() as RootState;
+                dispatch(slice.actions.purchase({purchaseItems, false, balance}));
+              })
+            }
+            return rsp.payload;
+          });
         }
         return Promise.resolve({result: api.E_RESOURCE_NOT_FOUND});
       },
@@ -346,6 +355,7 @@ const checkStockAndPurchase = createAsyncThunk(
 
     return dispatch(checkStock({purchaseItems, token})).then(
       ({payload: resp}) => {
+        console.log('@@@ check', resp);
         if (resp.result === 0) {
           dispatch(slice.actions.purchase({purchaseItems, dlvCost, balance}));
         }
