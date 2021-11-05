@@ -64,6 +64,7 @@ import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
 import {checkFistLaunch, requestPermission} from './component/permission';
 import PromotionCarousel from './component/PromotionCarousel';
+import AndroidEuccidModule from '@/components/NativeModule/AndroidEuccidModule';
 
 const {esimGlobal} = Env.get();
 
@@ -277,9 +278,25 @@ class Esim extends Component<EsimProps, EsimState> {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const now = moment();
     this.setState({time: now});
+
+    if (Platform.OS === 'android') {
+      console.log('EuccidManagerAppModule : ', AndroidEuccidModule);
+
+      await AndroidEuccidModule.isEnableEsim().then((result) => {
+        console.log('isEnableEsim result : ', result);
+      });
+
+      await AndroidEuccidModule.getTelephonyFeature().then((result) => {
+        console.log('getTelephonyFeature result : ', result);
+      });
+
+      await AndroidEuccidModule.getSystemAvailableFeatures().then((result) => {
+        console.log('getSystemAvailableFeatures result list : ', result);
+      });
+    }
 
     requestTrackingPermission();
     AsyncStorage.getItem('popupDisabled').then((v) => {

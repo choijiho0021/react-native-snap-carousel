@@ -14,6 +14,8 @@ import com.facebook.react.ReactApplication;
 import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
+
+import com.rokebiesim.generated.EuccidManagerAppPackage;
 import com.zoontek.rnpermissions.RNPermissionsPackage;
 import com.swmansion.rnscreens.RNScreensPackage;
 import com.reactnativecommunity.cookies.CookieManagerPackage;
@@ -129,6 +131,7 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.<ReactPackage>asList(
                 new MainReactPackage(),
+            new EuccidManagerAppPackage(),
             new ReactNativeFirebaseAnalyticsPackage(),
             new ReactNativeFirebaseMessagingPackage(),
             new ReactNativeFirebaseAppPackage(),
