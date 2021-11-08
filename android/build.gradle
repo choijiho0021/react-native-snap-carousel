@@ -2,21 +2,24 @@
 
 buildscript {
     ext {
-        buildToolsVersion = '29.0.2'
-        minSdkVersion = 23
-        compileSdkVersion = 29
-        targetSdkVersion = 29
-
-				googlePlayServicesVersion = "+"
-				firebaseVersion = "+"
+        buildToolsVersion = "30.0.2"
+        minSdkVersion = 21
+        compileSdkVersion = 30
+        targetSdkVersion = 30
+        ndkVersion = "21.4.7075529"
+        kotlinVersion = '1.4.21'
+        googlePlayServicesVersion = "+"
+        firebaseVersion = "+"
     }
     repositories {
         google()
+        mavenCentral()
         jcenter()
     }
     dependencies {
-        classpath('com.android.tools.build:gradle:4.0.0')
+        classpath('com.android.tools.build:gradle:4.2.2')
         classpath("com.google.gms:google-services:4.3.3")
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -36,6 +39,7 @@ allprojects {
         }
 
         google()
+        mavenCentral()
         jcenter()
 //        maven { url 'https://jitpack.io' }
 
@@ -48,6 +52,7 @@ allprojects {
 subprojects {
   repositories {
     google()
+    mavenCentral()
     jcenter()
     maven { url 'https://devrepo.kakao.com/nexus/content/groups/public/' }
   }
