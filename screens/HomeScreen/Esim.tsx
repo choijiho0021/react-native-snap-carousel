@@ -282,22 +282,6 @@ class Esim extends Component<EsimProps, EsimState> {
     const now = moment();
     this.setState({time: now});
 
-    if (Platform.OS === 'android') {
-      console.log('EuccidManagerAppModule : ', AndroidEuccidModule);
-
-      await AndroidEuccidModule.isEnableEsim().then((result) => {
-        console.log('isEnableEsim result : ', result);
-      });
-
-      await AndroidEuccidModule.getTelephonyFeature().then((result) => {
-        console.log('getTelephonyFeature result : ', result);
-      });
-
-      await AndroidEuccidModule.getSystemAvailableFeatures().then((result) => {
-        console.log('getSystemAvailableFeatures result list : ', result);
-      });
-    }
-
     requestTrackingPermission();
     AsyncStorage.getItem('popupDisabled').then((v) => {
       if (v) {
@@ -315,7 +299,10 @@ class Esim extends Component<EsimProps, EsimState> {
         const deviceName = DeviceInfo.getDeviceId();
 
         const isSupportDev =
-          resp.objects.includes(deviceModel) || deviceName === 'iPhone12,8'; // (2nd Generation iPhone SE)
+          Platform.OS === 'android'
+            ? await AndroidEuccidModule.isEnableEsim().then((result) => result)
+            : resp.objects.includes(deviceModel) || deviceName === 'iPhone12,8'; // (2nd Generation iPhone SE)
+
         this.setState({
           deviceList: resp.objects,
           isSupportDev,
