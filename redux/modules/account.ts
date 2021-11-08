@@ -91,6 +91,8 @@ export type AccountModelState = {
   simCardImage?: string;
   isUsedByOther?: boolean;
   isPushNotiEnabled?: boolean;
+  deviceModel?: string;
+  isSupportDev?: boolean;
 };
 
 export type AccountAuth = {
@@ -274,6 +276,8 @@ const updateAccountState = (
   if (payload.simCardImage) newState.simCardImage = payload.simCardImage;
   if (payload.isPushNotiEnabled)
     newState.isPushNotiEnabled = payload.isPushNotiEnabled;
+  if (payload.deviceModel) newState.deviceModel = payload.deviceModel;
+  if (payload.isSupportDev) newState.isSupportDev = payload.isSupportDev;
 
   if (_.isNumber(payload.balance)) newState.balance = payload.balance;
   if (_.isNumber(payload.simPartnerId))

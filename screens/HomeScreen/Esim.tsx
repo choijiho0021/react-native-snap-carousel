@@ -278,7 +278,7 @@ class Esim extends Component<EsimProps, EsimState> {
     };
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     const now = moment();
     this.setState({time: now});
 
@@ -307,6 +307,8 @@ class Esim extends Component<EsimProps, EsimState> {
           deviceList: resp.objects,
           isSupportDev,
         });
+
+        this.props.action.account.updateAccount({isSupportDev, deviceModel});
 
         this.renderTitleBtn();
 
