@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   rechargeBox: {
     marginHorizontal: 20,
     marginBottom: 20,
-    height: 130,
+    height: 108,
     flex: 1,
   },
   image: {
@@ -112,7 +112,11 @@ const Info: React.FC<InfoProps> = ({
                   {i18n.t('acc:remain')}
                 </AppText>
                 <AppText style={appStyles.bold30Text}>
-                  {utils.price(utils.toCurrency(balance || 0, esimCurrency))}
+                  {utils.numberToCommaString(balance || 0)}
+                  <AppText
+                    style={[appStyles.normal20Text, {fontWeight: 'normal'}]}>
+                    {i18n.t(esimCurrency)}
+                  </AppText>
                 </AppText>
               </View>
               <AppButton
