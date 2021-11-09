@@ -64,6 +64,7 @@ import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
 import {checkFistLaunch, requestPermission} from './component/permission';
 import PromotionCarousel from './component/PromotionCarousel';
+import AndroidEuccidModule from '@/components/NativeModule/AndroidEuccidModule';
 
 const {esimGlobal} = Env.get();
 
@@ -298,11 +299,16 @@ class Esim extends Component<EsimProps, EsimState> {
         const deviceName = DeviceInfo.getDeviceId();
 
         const isSupportDev =
-          resp.objects.includes(deviceModel) || deviceName === 'iPhone12,8'; // (2nd Generation iPhone SE)
+          Platform.OS === 'android'
+            ? await AndroidEuccidModule.isEnableEsim().then((result) => result)
+            : resp.objects.includes(deviceModel) || deviceName === 'iPhone12,8'; // (2nd Generation iPhone SE)
+
         this.setState({
           deviceList: resp.objects,
           isSupportDev,
         });
+
+        this.props.action.account.updateAccount({isSupportDev, deviceModel});
 
         this.renderTitleBtn();
 
