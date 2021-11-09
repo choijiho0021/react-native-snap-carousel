@@ -442,6 +442,8 @@
   "pym:systemError": "Payment failed due to system error",
   "pym:loadingInfo": "* Upon network speed on your location, delay time for 3-4 seconds can be occurred.",
   "pym:deductBalance": "Deduction from ROKEBI Cash",
+  "pym:unsupportDeviceModal": "ESIM unsupported device payment",
+  "pym:unsupportDeviceModalContent": "Your device is an unsupported device. \n  Still, if you want to continue purchasing, please click OK.",
 
   "err:login": "Let's get started",
   "err:body": "No body text",
