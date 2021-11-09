@@ -125,7 +125,7 @@ const join = ({
 // 다이나믹 링크를 활용한 초대링크 생성
 const buildLink = async (recommender: string) => {
   const link = await dynamicLinks().buildLink({
-    link: `${api.httpUrl('')}/?recommender=${recommender}`,
+    link: `${api.httpUrl('')}?recommender=${recommender}`,
     domainUriPrefix: dynamicLink,
     ios: {
       bundleId,
