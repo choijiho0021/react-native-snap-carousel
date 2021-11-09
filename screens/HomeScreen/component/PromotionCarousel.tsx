@@ -33,7 +33,8 @@ const dotStyle = (
 
 const styles = StyleSheet.create({
   carousel: {
-    marginBottom: 15,
+    paddingTop: 12,
+    marginBottom: 12,
     alignItems: 'center',
     width: '100%',
     backgroundColor: colors.white,
@@ -47,7 +48,8 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   paginationContainer: {
-    paddingVertical: 5,
+    paddingBottom: 0,
+    paddingTop: 2,
     paddingHorizontal: 0,
   },
   inactiveDot: {

@@ -34,13 +34,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 110,
     resizeMode: 'cover',
-    borderRadius: 10,
   },
   productList: {
     width: windowWidth - 40,
     flexDirection: 'row',
-    marginTop: 20,
-    marginBottom: 10,
+    marginTop: 15,
+    marginBottom: 15,
     marginHorizontal: 20,
   },
   lowPrice: {
