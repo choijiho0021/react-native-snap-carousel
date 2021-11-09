@@ -9,7 +9,6 @@ import {StyleSheet, View} from 'react-native';
 
 const styles = StyleSheet.create({
   notice: {
-    flex: 1,
     backgroundColor: colors.whiteThree,
     padding: 20,
     flexDirection: 'row',

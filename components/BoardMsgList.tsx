@@ -160,9 +160,10 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
     action.board.getNextIssueList();
   }, [action.board]);
 
-  const onRefresh = useCallback(() => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    action.board.getIssueList();
+    const res = await action.board.getIssueList();
+    if (res) setRefreshing(false);
   }, [action.board]);
 
   const header = useCallback(

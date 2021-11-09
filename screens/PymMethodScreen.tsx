@@ -413,6 +413,17 @@ class PymMethodScreen extends Component<
     this.benefit();
   }
 
+  shouldComponentUpdate(
+    nextProps: PymMethodScreenProps,
+    nextState: PymMethodScreenState,
+  ) {
+    return (
+      this.props.account.balance !== nextProps.account.balance ||
+      this.props.cart.pymPrice !== nextProps.cart.pymPrice ||
+      JSON.stringify(this.state) !== JSON.stringify(nextState)
+    );
+  }
+
   componentDidUpdate(prevProps: PymMethodScreenProps) {
     if (this.props.cart !== prevProps.cart) this.setValues();
   }

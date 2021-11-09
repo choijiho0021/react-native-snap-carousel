@@ -28,9 +28,11 @@ build/
 .gradle
 local.properties
 *.iml
-android/app/src/main/res/*
-android/app/src/main/assets/*
-android/app/src/main/java/com/rokebi/generated/*
+*.hprof
+and/
+android/app/src/main/res/**/*.png
+*.mp4
+
 
 # node.js
 #

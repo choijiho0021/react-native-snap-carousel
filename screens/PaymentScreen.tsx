@@ -95,13 +95,12 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
       action.cart.checkStockAndMakeOrder(pymInfo).then(({payload: resp}) => {
         console.log('@@@ make order', resp);
         if (resp.result < 0) {
-          AppAlert.info(
-            i18n.t(
-              resp?.result === api.E_RESOURCE_NOT_FOUND
-                ? 'cart:soldOut'
-                : 'cart:systemError',
-            ),
-          );
+          let text = 'cart:systemError';
+          if (resp?.result === api.E_RESOURCE_NOT_FOUND) text = 'cart:soldOut';
+          else if (resp?.status === api.API_STATUS_PREFAILED)
+            text = 'cart:cashChanged';
+
+          AppAlert.info(i18n.t(text));
           navigation.goBack();
         }
       });
