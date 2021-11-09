@@ -48,7 +48,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'stretch',
-    backgroundColor: colors.white,
   },
   title: {
     ...appStyles.title,
@@ -262,8 +261,6 @@ class EsimScreen extends Component<EsimScreenProps, EsimScreenState> {
   };
 
   empty = () => {
-    if (this.props.pending) return null;
-
     return (
       <View style={styles.nolist}>
         <AppIcon name="emptyESIM" />
@@ -358,7 +355,7 @@ class EsimScreen extends Component<EsimScreenProps, EsimScreenState> {
           // onRefresh={this.onRefresh}
           // refreshing={refreshing}
           extraData={subs}
-          contentContainerStyle={{flex: 1}}
+          contentContainerStyle={_.isEmpty(subs) && {flex: 1}}
           ListEmptyComponent={this.empty}
           refreshControl={
             <RefreshControl
