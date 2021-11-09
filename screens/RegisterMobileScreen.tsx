@@ -491,16 +491,16 @@ class RegisterMobileScreen extends Component<
 
         API.User.sendSms({user: value, abortController: this.controller})
           .then((resp) => {
-            // if (resp.result === 0) {
-            this.setState({
-              authNoti: true,
-              timeout: false,
-            });
-            this.authInputRef.current?.focus();
-            // } else {
-            //   console.log('send sms failed', resp);
-            //   throw new Error('failed to send sms');
-            // }
+            if (resp.result === 0) {
+              this.setState({
+                authNoti: true,
+                timeout: false,
+              });
+              this.authInputRef.current?.focus();
+            } else {
+              console.log('send sms failed', resp);
+              throw new Error('failed to send sms');
+            }
           })
           .catch((err) => {
             console.log('send sms failed', err);
