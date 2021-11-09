@@ -428,11 +428,6 @@ class Esim extends Component<EsimProps, EsimState> {
         break;
       case 'exit':
         this.setState({isSupportDev: true});
-        // if (Platform.OS === 'ios') {
-        //   RNExitApp.exitApp();
-        // } else {
-        //   BackHandler.exitApp();
-        // }
         break;
       default:
     }
@@ -591,7 +586,6 @@ class Esim extends Component<EsimProps, EsimState> {
   renderNotiModal() {
     const {popUp, closeType, popUpVisible, checked} = this.state;
 
-    console.log('aaaaa closeType', closeType);
     return (
       <AppModal
         titleStyle={styles.infoModalTitle}

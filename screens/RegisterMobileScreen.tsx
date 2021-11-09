@@ -21,6 +21,7 @@ import {Map as ImmutableMap} from 'immutable';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import analytics, {firebase} from '@react-native-firebase/analytics';
+import dynamicLinks from '@react-native-firebase/dynamic-links';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -247,6 +248,7 @@ type RegisterMobileScreenState = {
   profileImageUrl?: string;
   isFocused?: boolean;
   status?: TrackingStatus;
+  recommender?: string;
 };
 
 const initialState: RegisterMobileScreenState = {
@@ -269,6 +271,7 @@ const initialState: RegisterMobileScreenState = {
   darkMode: Appearance.getColorScheme() === 'dark',
   socialLogin: false,
   isFocused: true,
+  recommender: undefined,
 };
 
 class RegisterMobileScreen extends Component<
@@ -332,6 +335,20 @@ class RegisterMobileScreen extends Component<
     this.setState({
       status: await getTrackingStatus(),
     });
+
+    dynamicLinks()
+      .getInitialLink()
+      .then(async (l) => {
+        if (l?.url) {
+          const url = l.url.split(/[;?&]/);
+          url.shift();
+          const param = url.map((elm) => `"${elm.replace('=', '":"')}"`);
+          const json = JSON.parse(`{${param.join(',')}}`);
+
+          const {recommender} = json;
+          this.setState({recommender});
+        }
+      });
   }
 
   componentDidUpdate(
@@ -372,7 +389,7 @@ class RegisterMobileScreen extends Component<
 
   onSubmit = async () => {
     const {email, domain} = this.email.current?.getValue() || {};
-    const {pin, mobile, confirm, loading, status} = this.state;
+    const {pin, mobile, confirm, loading, status, recommender} = this.state;
 
     const error = validationUtil.validate('email', `${email}@${domain}`);
     let isValid = true;
@@ -419,6 +436,7 @@ class RegisterMobileScreen extends Component<
           pass: pin,
           email: `${email}@${domain}`,
           mktgOptIn: confirm.get('2'),
+          recommender,
         });
 
         if (resp.result === 0 && !_.isEmpty(resp.objects)) {
@@ -473,16 +491,16 @@ class RegisterMobileScreen extends Component<
 
         API.User.sendSms({user: value, abortController: this.controller})
           .then((resp) => {
-            if (resp.result === 0) {
-              this.setState({
-                authNoti: true,
-                timeout: false,
-              });
-              this.authInputRef.current?.focus();
-            } else {
-              console.log('send sms failed', resp);
-              throw new Error('failed to send sms');
-            }
+            // if (resp.result === 0) {
+            this.setState({
+              authNoti: true,
+              timeout: false,
+            });
+            this.authInputRef.current?.focus();
+            // } else {
+            //   console.log('send sms failed', resp);
+            //   throw new Error('failed to send sms');
+            // }
           })
           .catch((err) => {
             console.log('send sms failed', err);

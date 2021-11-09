@@ -92,6 +92,8 @@ type SimpleTextScreenProps = {
   account: AccountModelState;
   eventStatus: EventStatus;
   isProdEvent: boolean;
+  isInviteEvent: boolean;
+
   pending: boolean;
 
   action: {
@@ -211,8 +213,9 @@ class SimpleTextScreen extends Component<
   async onPress() {
     const {rule} = this.props.route.params;
     const {
-      account: {iccid, token, loggedIn},
+      account: {iccid, token, loggedIn, userId},
       isProdEvent,
+      isInviteEvent,
     } = this.props;
 
     if (rule && isProdEvent) {
@@ -228,6 +231,13 @@ class SimpleTextScreen extends Component<
               ? 'promo:join:joined'
               : 'promo:join:fail',
         });
+      }
+    } else if (rule && isInviteEvent && userId) {
+      if (!loggedIn) {
+        // 로그인 화면으로 이동
+        this.props.navigation.navigate('Auth');
+      } else {
+        await API.Promotion.invite(userId);
       }
     } else {
       this.props.navigation.goBack();
@@ -358,6 +368,7 @@ class SimpleTextScreen extends Component<
 const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
   const [eventStatus, setEventStatus] = useState<EventStatus>('closed');
   const [isProdEvent, setIsProdEvent] = useState(false);
+  const [isInviteEvent, setIsInviteEvent] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -375,7 +386,7 @@ const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
           }
         }
         if (rule?.invite) {
-          console.log('aaaaa rule', rule);
+          setIsInviteEvent(true);
         }
       };
       getPromo();
@@ -387,6 +398,7 @@ const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
       {...props}
       eventStatus={eventStatus}
       isProdEvent={isProdEvent}
+      isInviteEvent={isInviteEvent}
     />
   );
 };
