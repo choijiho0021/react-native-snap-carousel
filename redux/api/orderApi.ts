@@ -5,6 +5,7 @@ import api, {ApiResult, DrupalNode} from './api';
 import {Currency} from './productApi';
 
 const ORDER_PAGE_ITEMS = 10;
+const KEY_INIT_ORDER = 'order.init';
 
 const deliveryText = [
   {
@@ -199,6 +200,7 @@ const deliveryTrackingUrl = (company: string, trackingCode?: string) => {
 
 export default {
   ORDER_PAGE_ITEMS,
+  KEY_INIT_ORDER,
 
   deliveryText,
   shipmentState,

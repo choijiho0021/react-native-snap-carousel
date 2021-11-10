@@ -1,14 +1,20 @@
 /* eslint-disable no-param-reassign */
+import {Reducer} from 'redux-actions';
+import {AnyAction} from 'redux';
+import {Map as ImmutableMap} from 'immutable';
+import _ from 'underscore';
+import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
-import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
-import {Map as ImmutableMap} from 'immutable';
-import {AnyAction} from 'redux';
-import {Reducer} from 'redux-actions';
-import _ from 'underscore';
+import {storeData, retrieveData} from '@/utils/utils';
 import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
+
+const init = createAsyncThunk('order/init', async () => {
+  const oldData = await retrieveData(API.Order.KEY_INIT_ORDER);
+  return oldData;
+});
 
 const getNextOrders = createAsyncThunk('order/getOrders', API.Order.getOrders);
 const getOrderById = createAsyncThunk(
@@ -33,7 +39,6 @@ const updateSubsStatus = createAsyncThunk(
 );
 
 const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED);
-
 export interface OrderModelState {
   orders: ImmutableMap<number, RkbOrder>;
   orderList: number[];
@@ -41,6 +46,15 @@ export interface OrderModelState {
   usageProgress: object;
   page: number;
 }
+
+const updateOrders = (state, orders, page) => {
+  state.orders = orders;
+  state.orderList = orders
+    .keySeq()
+    .toArray()
+    .sort((a, b) => b - a);
+  state.page = page;
+};
 
 const checkAndGetOrderById = createAsyncThunk(
   'order/checkAndGetOrderById',
@@ -146,21 +160,33 @@ const slice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(init.fulfilled, (state, {payload}) => {
+      const orders = ImmutableMap(
+        JSON.parse(payload).map((o) => [o.orderId, o]),
+      ).merge(state.page === 0 ? [] : state.orders);
+
+      if (orders) {
+        updateOrders(state, orders, 0);
+      }
+    });
+
     builder.addCase(getNextOrders.fulfilled, (state, action) => {
       const {objects, result} = action.payload;
 
+      // if (result === 0) {
+      //   const orders = ImmutableMap(objects.map((o) => [o.orderId, o])).merge(
+      //     state.page === 0 ? [] : state.orders,
       if (result === 0 && objects.length > 0) {
         // 기존에 있던 order에 새로운 order로 갱신
         const orders = ImmutableMap(state.orders).merge(
           objects.map((o) => [o.orderId, o]),
         );
 
-        state.orders = orders;
-        state.orderList = orders
-          .keySeq()
-          .toArray()
-          .sort((a, b) => b - a);
-        state.page = action.meta.arg.page;
+        if (orders && orders.size <= 10) {
+          storeData(API.Order.KEY_INIT_ORDER, JSON.stringify(objects));
+        }
+
+        updateOrders(state, orders, action.meta.arg.page);
       }
     });
 
@@ -209,6 +235,7 @@ const slice = createSlice({
 export const actions = {
   ...slice.actions,
   getSubsWithToast,
+  init,
   getSubs,
   getOrders,
   updateSubsStatus,
