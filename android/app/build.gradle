@@ -73,6 +73,14 @@ import com.android.build.OutputFile
  * ]
  */
 
+project.ext.envConfigFiles = [
+        debug: ".env",
+        release: ".env.production",
+        anothercustombuild: ".env",
+]
+
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
+
 project.ext.react = [
     enableHermes: false,  // clean and rebuild if changing
 ]
@@ -272,7 +280,6 @@ dependencies {
     implementation 'com.google.android.gms:play-services-gcm:17.0.0'
     implementation "androidx.annotation:annotation:1.1.0"
     implementation 'com.facebook.android:facebook-android-sdk:latest.release'
-
 
 
     implementation group: 'com.kakao.sdk', name: 'usermgmt', version: '1.27.0'
