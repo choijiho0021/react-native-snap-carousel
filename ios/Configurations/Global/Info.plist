@@ -45,6 +45,14 @@
 			</array>
 		</dict>
 		<dict>
+			<key>CFBundleURLName</key>
+			<string>globalDynamicLink</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.uangel.rokebi-global</string>
+			</array>
+		</dict>
+		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
@@ -56,17 +64,23 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>5</string>
+	<string>3</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
 	<string>531615184696321</string>
+	<key>FacebookAutoLogAppEventsEnabled</key>
+	<true/>
 	<key>FacebookClientToken</key>
 	<string>a516d23081ee3fb8db8bb9c006431ae6</string>
 	<key>FacebookDisplayName</key>
 	<string>ROKEBI eSIM</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<true/>
+	<key>FirebaseDynamicLinksCustomDomains</key>
+	<array>
+		<string>https://rokebi.page.link/wv7o</string>
+	</array>
 	<key>FirebaseScreenReportingEnabled</key>
 	<true/>
 	<key>ITSAppUsesNonExemptEncryption</key>
