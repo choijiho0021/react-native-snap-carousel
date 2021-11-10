@@ -13,6 +13,10 @@ const esimGlobal = appId === 'esim' && bundleId === 'com.uangel.rokebi-global';
 
 // global / esim 계정
 let impId = esimGlobal ? 'imp60215393' : 'imp53913318';
+const appStoreId = esimGlobal ? '' : '1525664178';
+
+// Dynamic Link
+const dynamicLink = 'https://rokebi.page.link';
 
 // test 계정
 impId = Config.NODE_ENV !== 'production' ? 'imp54175831' : impId;
@@ -33,8 +37,11 @@ const codePushLabel = {
 const channelId = '_nzQhxb';
 
 type Env = {
+  bundleId: string;
   appId: string;
   impId: string;
+  appStoreId: string;
+  dynamicLink: string;
   channelId: string;
   esimApp: boolean;
   esimGlobal: boolean;
@@ -51,8 +58,11 @@ type Env = {
   fbUser?: string;
 };
 const env: Env = {
+  bundleId,
   appId,
   impId,
+  appStoreId,
+  dynamicLink,
   channelId,
   esimApp: appId === 'esim',
   esimGlobal,

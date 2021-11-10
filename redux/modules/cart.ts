@@ -11,10 +11,16 @@ import {PaymentInfo, RkbOrderItem} from '@/redux/api/cartApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import api from '@/redux/api/api';
 import {Currency} from '@/redux/api/productApi';
+import {storeData, retrieveData} from '@/utils/utils';
 import {actions as orderAction} from './order';
 import {actions as accountAction} from './account';
 
 const {esimApp, esimCurrency} = Env.get();
+
+const initCart = createAsyncThunk('cart/initCart', async () => {
+  const oldData = await retrieveData(API.Cart.KEY_INIT_CART);
+  return oldData;
+});
 
 const cartFetch = createAsyncThunk('cart/fetch', API.Cart.get);
 const cartAdd = createAsyncThunk('cart/add', API.Cart.add);
@@ -74,6 +80,11 @@ const cartAddAndGet = createAsyncThunk(
   },
 );
 
+const init = createAsyncThunk('cart/init', async (_, {dispatch}) => {
+  await dispatch(initCart());
+  await dispatch(cartFetch());
+});
+
 export type PaymentReq = {key: string; title: string; amount: Currency};
 
 export interface CartModelState {
@@ -91,6 +102,8 @@ export interface CartModelState {
 
 const onSuccess = (state, action) => {
   const {result, objects} = action.payload;
+  if (objects) storeData(API.Cart.KEY_INIT_CART, JSON.stringify(objects));
+
   state.result = result;
   if (result === 0 && objects.length > 0) {
     state.orderId = objects[0].orderId;
@@ -194,6 +207,13 @@ const slice = createSlice({
   },
 
   extraReducers: (builder) => {
+    builder.addCase(initCart.fulfilled, (state, {payload}) => {
+      const obj = JSON.parse(payload);
+      state.orderId = obj[0].orderId;
+      state.orderItems = obj[0].orderItems;
+      state.uuid = obj[0].uuid;
+    });
+
     builder.addCase(cartFetch.fulfilled, onSuccess);
 
     // onfailure ->api 실패
@@ -386,6 +406,8 @@ export const actions = {
   payNorder,
   cartAddAndGet,
   checkStockAndPurchase,
+  init,
+  initCart,
   checkStockAndMakeOrder,
   updateOrder,
 };

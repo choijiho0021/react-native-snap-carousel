@@ -6,6 +6,8 @@ import {RkbInfo} from './pageApi';
 
 const {appId, esimGlobal} = Env.get();
 
+const KEY_INIT_LIST = 'noti.initList';
+
 export type RkbNoti = RkbInfo & {
   bodyTitle?: string;
   notiType?: string;
@@ -217,4 +219,5 @@ export default {
   sendAlimTalk,
   sendLog,
   sendDisconnect,
+  KEY_INIT_LIST,
 };
