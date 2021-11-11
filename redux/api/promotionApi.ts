@@ -1,5 +1,10 @@
+import {Share} from 'react-native';
 import _ from 'underscore';
+import dynamicLinks from '@react-native-firebase/dynamic-links';
 import api, {ApiResult, DrupalNode, Langcode} from './api';
+import Env from '@/environment';
+
+const {bundleId, appStoreId, dynamicLink} = Env.get();
 
 export type RkbPromotion = {
   uuid: string;
@@ -117,4 +122,42 @@ const join = ({
   );
 };
 
-export default {getPromotion, join, check};
+// 다이나믹 링크를 활용한 초대링크 생성
+const buildLink = async (recommender: string) => {
+  const link = await dynamicLinks().buildLink({
+    link: `${api.httpUrl('')}?recommender=${recommender}`,
+    domainUriPrefix: dynamicLink,
+    ios: {
+      bundleId,
+      appStoreId,
+    },
+    navigation: {
+      forcedRedirectEnabled: true,
+    },
+  });
+
+  return link;
+};
+
+const invite = async (recommender: string) => {
+  const inviteLink = await buildLink(recommender);
+
+  try {
+    await Share.share({
+      url: inviteLink,
+    });
+    // if (result.action === Share.sharedAction) {
+    //   if (result.activityType) {
+    //     // shared with activity type of result.activityType
+    //   } else {
+    //     // shared
+    //   }
+    // } else if (result.action === Share.dismissedAction) {
+    //   // dismissed
+    // }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+export default {getPromotion, join, check, invite};

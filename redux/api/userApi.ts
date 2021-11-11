@@ -529,11 +529,13 @@ const signUp = ({
   pass,
   email,
   mktgOptIn = false,
+  recommender,
 }: {
   user?: string;
   pass?: string;
   email?: string;
   mktgOptIn?: boolean;
+  recommender?: string;
 }) => {
   if (!user)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
@@ -550,6 +552,7 @@ const signUp = ({
         pin: pass,
         email,
         mktgOptIn,
+        recommender,
       }),
     },
     (rsp = {}) => {

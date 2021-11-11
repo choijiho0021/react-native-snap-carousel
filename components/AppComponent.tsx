@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     position: 'absolute',
-    top: windowHeight - 400,
+    top: windowHeight < 700 ? windowHeight - 300 : windowHeight - 400,
     left: windowWidth / 2 - 100,
   },
   loadingText: {
@@ -70,8 +70,7 @@ const styles = StyleSheet.create({
     width: '100%',
     textAlign: 'center',
     position: 'absolute',
-    // backgroundColor: 'red',
-    top: windowHeight - 200,
+    top: windowHeight < 700 ? windowHeight - 100 : windowHeight - 200,
   },
 });
 

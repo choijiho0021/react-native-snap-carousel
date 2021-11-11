@@ -45,6 +45,14 @@
 			</array>
 		</dict>
 		<dict>
+			<key>CFBundleURLName</key>
+			<string>globalDynamicLink</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.uangel.rokebi-global</string>
+			</array>
+		</dict>
+		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
@@ -56,7 +64,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>78</string>
+	<string>2</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
@@ -71,6 +79,10 @@
 	<string>ROKEBI eSIM</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<true/>
+	<key>FirebaseDynamicLinksCustomDomains</key>
+	<array>
+		<string>https://rokebi.page.link/wv7o</string>
+	</array>
 	<key>KAKAO_APP_KEY</key>
 	<string>20432406a5258ae68b9c9558a4ba23ef</string>
 	<key>LSApplicationCategoryType</key>
