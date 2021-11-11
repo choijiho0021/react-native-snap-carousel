@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "build_release_android": "ENVFILE=.env.$1 & react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
     "build_android": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
     "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'",
     "build_prod": "react-native run-ios --configuration Release",
@@ -16,7 +17,8 @@
     "lint": "eslint .",
     "code_push_release": "sh ./code_push.sh release $1 $2",
     "code_push_patch": "sh ./code_push.sh patch $1 $2",
-    "code_push_promote": "sh ./code_push.sh promote production $1"
+    "code_push_promote": "sh ./code_push.sh promote production $1",
+    "postinstall": "node ./android//fixAndroid/android-release-fix.js"
   },
   "dependencies": {
     "@actbase/react-native-kakao-channel": "^1.0.1",

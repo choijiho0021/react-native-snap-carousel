@@ -152,7 +152,7 @@ public class MainApplication extends Application implements ReactApplication {
                 new AppCenterReactNativeAnalyticsPackage(getApplication(), getResources().getString(R.string.appCenterAnalytics_whenToEnableAnalytics)),
                 new AppCenterReactNativePackage(getApplication()),
                 new RNVersionCheckPackage(),
-                new CodePush(BuildConfig.CODEPUSH_KEY, getApplicationContext(), BuildConfig.DEBUG),
+                new CodePush(getResources().getString(com.rokebiesim.R.string.CodePushDeploymentKey), getApplicationContext(), BuildConfig.DEBUG),
                 new RNCameraPackage(),
                 new ReactVideoPackage(),
 //                new AsyncStoragePackage(),
@@ -187,7 +187,7 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
       AppCenter.start(this,"ff7d5d5a-8b74-4ec2-99be-4dfd81b4b0fd", Analytics.class);
-    // initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+      initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
       OkHttpClientProvider.setOkHttpClientFactory(new FetchApiClientFactory());
       prefs = getSharedPreferences("Pref", MODE_PRIVATE);
 
