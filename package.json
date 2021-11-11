@@ -8,6 +8,7 @@
     "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'",
     "build_prod": "react-native run-ios --configuration Release",
     "android": "react-native run-android",
+    "android_prod_bundle": "cd android;export ENVFILE=.env.production && ./gradlew bundleRelease;open ./app/build/outputs/bundle/release",
     "ios": "react-native run-ios --simulator 'iPhone 12'",
     "ios_usim": "react-native run-ios --simulator 'iPhone 12' --scheme USIM --configuration USIM.Debug",
     "ios_esim": "react-native run-ios --simulator 'iPhone 12' --scheme RokebiESIM --configuration ESIM.Debug",
