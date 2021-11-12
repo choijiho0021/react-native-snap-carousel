@@ -1,8 +1,11 @@
 package com.rokebiesim;
 
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.RemoteException;
 
 import com.RNFetchBlob.RNFetchBlobPackage;
@@ -191,6 +194,7 @@ public class MainApplication extends Application implements ReactApplication {
     SoLoader.init(this, /* native exopackage */ false);
       AppCenter.start(this,"ff7d5d5a-8b74-4ec2-99be-4dfd81b4b0fd", Analytics.class);
       initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+      createNotificationChannel(this);
       OkHttpClientProvider.setOkHttpClientFactory(new FetchApiClientFactory());
       prefs = getSharedPreferences("Pref", MODE_PRIVATE);
 
@@ -228,4 +232,20 @@ public class MainApplication extends Application implements ReactApplication {
       }
     }
   }
+
+    private void createNotificationChannel(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel("rokebi-android", "MainChannel", NotificationManager.IMPORTANCE_HIGH);
+            notificationChannel.setShowBadge(true);
+            notificationChannel.setDescription("AOS Android push noti channel");
+            notificationChannel.enableVibration(true);
+            notificationChannel.enableLights(true);
+            notificationChannel.setVibrationPattern(new long[]{400, 200, 400});
+            //notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+
+            manager.createNotificationChannel(notificationChannel);
+        }
+    }
+
 }

@@ -1,10 +1,11 @@
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import React, {memo, useEffect, useState} from 'react';
+import Icon from 'react-native-vector-icons/AntDesign';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
-import React, {memo} from 'react';
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
-import Icon from 'react-native-vector-icons/AntDesign';
 import AppText from './AppText';
+import {i18nEvent} from '@/utils/i18n';
 
 const styles = StyleSheet.create({
   container: {
@@ -51,6 +52,7 @@ const styles = StyleSheet.create({
 });
 
 Icon.loadFont();
+
 const InputNumber = ({
   value,
   onChange,
@@ -62,6 +64,13 @@ const InputNumber = ({
 }) => {
   const min = value <= minValue;
   const max = value >= maxValue;
+  const [draw, setDraw] = useState(false);
+
+  useEffect(() => {
+    i18nEvent.on('loaded', () => {
+      setDraw(true);
+    });
+  }, []);
 
   return (
     <View style={styles.container}>
