@@ -68,7 +68,7 @@
     "react-native-fbsdk": "^3.0.0",
     "react-native-gesture-handler": "^1.6.1",
     "react-native-image-crop-picker": "^0.36.3",
-    "react-native-keyboard-aware-scroll-view": "^0.9.4",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-localize": "^2.1.4",
     "react-native-pager-view": "^5.4.4",
     "react-native-pagination": "^1.5.5",
