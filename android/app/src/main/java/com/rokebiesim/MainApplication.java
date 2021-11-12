@@ -43,10 +43,11 @@ import com.rokebiesim.generated.BasePackageList;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.swmansion.reanimated.ReanimatedPackage;
 import com.zoontek.rnlocalize.RNLocalizePackage;
-
+import com.reactnativecommunity.clipboard.ClipboardPackage;
 import org.reactnative.camera.RNCameraPackage;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import org.unimodules.core.interfaces.SingletonModule;
+import com.oblador.vectoricons.VectorIconsPackage;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -145,6 +146,8 @@ public class MainApplication extends Application implements ReactApplication {
             new RNDeviceInfo(),
             new SafeAreaContextPackage(),
             new AsyncStoragePackage(),
+            new ClipboardPackage(),
+            new VectorIconsPackage(),
 //            new FlipperPackage(),
                 new SvgPackage(),
                 new PickerPackage(),

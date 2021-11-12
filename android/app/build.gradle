@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 import com.android.build.OutputFile
 /**
  * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets
@@ -293,7 +294,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-gcm:17.0.0'
     implementation "androidx.annotation:annotation:1.1.0"
     implementation 'com.facebook.android:facebook-android-sdk:latest.release'
-
+    implementation project(':@react-native-community-clipboard')
+    implementation project(':react-native-vector-icons')
 
     implementation group: 'com.kakao.sdk', name: 'usermgmt', version: '1.27.0'
     implementation group: 'com.kakao.sdk', name: 'kakaotalk', version: '1.27.0'
