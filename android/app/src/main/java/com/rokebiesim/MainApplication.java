@@ -14,12 +14,13 @@ import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactApplication;
+import com.reactnativegooglesignin.RNGoogleSigninPackage;
 import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
-
+import io.invertase.firebase.dynamiclinks.ReactNativeFirebaseDynamicLinksPackage;
 import com.rokebiesim.generated.EuccidManagerAppPackage;
 import com.rokebiesim.generated.FetchApiClientFactory;
 import com.zoontek.rnpermissions.RNPermissionsPackage;
@@ -138,11 +139,13 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.<ReactPackage>asList(
                 new MainReactPackage(),
+            new RNGoogleSigninPackage(),
             new ReactNativeConfigPackage(),
             new EuccidManagerAppPackage(),
             new ReactNativeFirebaseAnalyticsPackage(),
             new ReactNativeFirebaseMessagingPackage(),
             new ReactNativeFirebaseAppPackage(),
+            new ReactNativeFirebaseDynamicLinksPackage(),
             new RNPermissionsPackage(),
             new RNScreensPackage(),
             new CookieManagerPackage(),

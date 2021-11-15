@@ -729,7 +729,7 @@ class RegisterMobileScreen extends Component<
       <View style={{flex: 1}}>
         {this.renderTitle()}
         {!esimGlobal && this.renderInput()}
-        {!newUser && Platform.OS !== 'android' && (
+        {!newUser && (
           <View style={{flex: 1, justifyContent: 'center'}}>
             <SocialLogin onAuth={this.onAuth} />
           </View>

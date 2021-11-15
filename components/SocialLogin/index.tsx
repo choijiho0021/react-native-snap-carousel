@@ -6,6 +6,7 @@ import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import AppText from '../AppText';
 import AppleLogin from './AppleLogin';
+import GoogleLogin from './GoogleLogin';
 
 export type AuthCallback = ({
   user,
@@ -64,6 +65,7 @@ const SocialLogin = ({onAuth}: {onAuth: AuthCallback}) => {
         {/* <KakaoLogin onAuth={onAuth} /> */}
         {/* <NaverLoginButton onAuth={onAuth} /> */}
         {/* <FacebookLogin onAuth={onAuth} /> */}
+        <GoogleLogin onAuth={onAuth} />
         {appleAuth.isSupported && <AppleLogin onAuth={onAuth} />}
       </View>
     </View>
