@@ -5,7 +5,7 @@ import {
 } from '@react-native-google-signin/google-signin';
 
 import React, {memo, useCallback, useEffect, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {Platform, StyleSheet, View} from 'react-native';
 import {AuthCallback} from '.';
 import AppButton from '../AppButton';
 
@@ -35,7 +35,9 @@ const GoogleLogin = ({onAuth}: {onAuth: AuthCallback}) => {
   const googleSigininConfigure = async () => {
     await GoogleSignin.configure({
       webClientId:
-        '709736045062-jqtosfdqco0pgr620es7a4fgq9emokr9.apps.googleusercontent.com',
+        Platform.OS === 'ios'
+          ? '851340189695-vdasd78idkdeg77dgpb956r469ktrpqs.apps.googleusercontent.com'
+          : '709736045062-jqtosfdqco0pgr620es7a4fgq9emokr9.apps.googleusercontent.com',
       offlineAccess: true, // offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
     });
   };
