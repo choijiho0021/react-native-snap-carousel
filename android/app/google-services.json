@@ -15,7 +15,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "709736045062-k99985lu4rvc6j0cpf9q0kg7t6gjqtee.apps.googleusercontent.com",
+          "client_id": "709736045062-pkkavqeem97mnagj1d95qgb1crj4g9aj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rokebiesim",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "709736045062-tros6estoq04tjirlrqro8frkdlebffk.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.rokebiesim",
@@ -23,15 +31,7 @@
           }
         },
         {
-          "client_id": "709736045062-n6ngak1d1rl3850nmef7cujbc986b9qp.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.rokebiesim",
-            "certificate_hash": "e424a1acc7bd26ab4600aaf1a89052eef0cf18bd"
-          }
-        },
-        {
-          "client_id": "709736045062-jqtosfdqco0pgr620es7a4fgq9emokr9.apps.googleusercontent.com",
+          "client_id": "709736045062-9v8j5dfc12jj07bo9htaolhqc19l5dm7.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -44,7 +44,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "709736045062-jqtosfdqco0pgr620es7a4fgq9emokr9.apps.googleusercontent.com",
+              "client_id": "709736045062-9v8j5dfc12jj07bo9htaolhqc19l5dm7.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
@@ -60,7 +60,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "709736045062-jqtosfdqco0pgr620es7a4fgq9emokr9.apps.googleusercontent.com",
+          "client_id": "709736045062-9v8j5dfc12jj07bo9htaolhqc19l5dm7.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -73,7 +73,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "709736045062-jqtosfdqco0pgr620es7a4fgq9emokr9.apps.googleusercontent.com",
+              "client_id": "709736045062-9v8j5dfc12jj07bo9htaolhqc19l5dm7.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

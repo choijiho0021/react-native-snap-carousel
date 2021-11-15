@@ -37,8 +37,8 @@ const GoogleLogin = ({onAuth}: {onAuth: AuthCallback}) => {
       webClientId:
         Platform.OS === 'ios'
           ? '851340189695-vdasd78idkdeg77dgpb956r469ktrpqs.apps.googleusercontent.com'
-          : '709736045062-jqtosfdqco0pgr620es7a4fgq9emokr9.apps.googleusercontent.com',
-      offlineAccess: true, // offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+          : '709736045062-9v8j5dfc12jj07bo9htaolhqc19l5dm7.apps.googleusercontent.com',
+      offlineAccess: true,
     });
   };
 
