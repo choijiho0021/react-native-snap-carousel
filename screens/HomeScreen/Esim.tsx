@@ -543,7 +543,8 @@ class Esim extends Component<EsimProps, EsimState> {
           this.props.action.noti.reset(),
           this.props.action.account.logout(),
         ]).then(() => {
-          PushNotificationIOS.setApplicationIconBadgeNumber(0);
+          if (Platform.OS === 'ios')
+            PushNotificationIOS.setApplicationIconBadgeNumber(0);
         });
       },
     });

@@ -2,6 +2,7 @@ import Analytics from 'appcenter-analytics';
 import _ from 'underscore';
 import messaging from '@react-native-firebase/messaging';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import {Platform} from 'react-native';
 
 class PushNoti {
   constructor() {
@@ -73,7 +74,8 @@ class PushNoti {
     this.onMessage = messaging().onMessage((message) => {
       const {badge = 0, notiType, iccid} = message.data;
       // messaging().setBadge(Number(badge));
-      PushNotificationIOS.setApplicationIconBadgeNumber(Number(badge));
+      if (Platform.OS === 'ios')
+        PushNotificationIOS.setApplicationIconBadgeNumber(Number(badge));
       // sim 카드 해지 알림이 왓을 때 백그라운드
       if (notiType && iccid) {
         onNotification({data: {notiType, iccid}});

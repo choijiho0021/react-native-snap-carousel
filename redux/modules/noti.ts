@@ -7,6 +7,7 @@ import {RkbNoti} from '@/redux/api/notiApi';
 import {Reducer} from 'react';
 import {AnyAction} from 'redux';
 import {storeData, retrieveData} from '@/utils/utils';
+import {Platform} from 'react-native';
 
 const NOTI_TYPE_REPLY = 'reply';
 const NOTI_TYPE_PYM = 'pym';
@@ -38,7 +39,9 @@ const init = createAsyncThunk(
 );
 
 const setAppBadge = (notiCount: number) => {
-  PushNotificationIOS.setApplicationIconBadgeNumber(notiCount);
+  console.log('Platform.OS : ', Platform.OS);
+  if (Platform.OS === 'ios')
+    PushNotificationIOS.setApplicationIconBadgeNumber(notiCount);
   // messaging().setBadge(notiCount);
 };
 
@@ -117,9 +120,12 @@ const slice = createSlice({
       const {result, objects} = payload;
       if (result === 0 && objects && objects.length > 0) {
         // appBadge 업데이트
-        const badgeCnt = objects.filter((elm) => elm.isRead === 'F').length;
-        setAppBadge(badgeCnt);
-
+        try {
+          const badgeCnt = objects.filter((elm) => elm.isRead === 'F').length;
+          setAppBadge(badgeCnt);
+        } catch (e) {
+          console.log('Noti Badge error : ', e);
+        }
         storeData(API.Noti.KEY_INIT_LIST, JSON.stringify(objects));
 
         state.notiList = objects;
