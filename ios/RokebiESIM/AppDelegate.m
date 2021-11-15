@@ -7,7 +7,6 @@
 
 @import Firebase;
 @import AVFoundation;
-@import GoogleSignIn;
 
 #import "AppDelegate.h"
 
@@ -198,12 +197,6 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
                                                          openURL:url
                                                sourceApplication:sourceApplication
                                                       annotation:annotation];
-}
-
-- (BOOL)application:(nonnull UIApplication *)application
-            openURL:(nonnull NSURL *)url
-            options:(nonnull NSDictionary<NSString *, id> *)options {
-  return [[GIDSignIn sharedInstance] handleURL:url];
 }
 
 - (BOOL)handleWithUrl:(NSURL *)url {

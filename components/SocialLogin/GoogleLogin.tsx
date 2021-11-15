@@ -35,9 +35,7 @@ const GoogleLogin = ({onAuth}: {onAuth: AuthCallback}) => {
   const googleSigininConfigure = async () => {
     await GoogleSignin.configure({
       webClientId:
-        Platform.OS === 'ios'
-          ? '851340189695-vdasd78idkdeg77dgpb956r469ktrpqs.apps.googleusercontent.com'
-          : '709736045062-9v8j5dfc12jj07bo9htaolhqc19l5dm7.apps.googleusercontent.com',
+        '709736045062-9v8j5dfc12jj07bo9htaolhqc19l5dm7.apps.googleusercontent.com',
       offlineAccess: true,
     });
   };
