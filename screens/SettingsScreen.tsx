@@ -10,6 +10,7 @@ import {openSettings} from 'react-native-permissions';
 import VersionCheck from 'react-native-version-check';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -312,13 +313,20 @@ class SettingsScreen extends Component<
       this.props.action.order.reset(),
       this.props.action.account.logout(),
       this.props.action.noti.init(),
-    ]).then(() => {
+    ]).then(async () => {
       this.props.navigation.navigate('HomeStack', {screen: 'Home'});
-
+      const isSignedin = await GoogleSignin.isSignedIn();
       // bhtak
       // firebase.notifications().setBadge(0);
       if (Platform.OS === 'ios')
         PushNotificationIOS.setApplicationIconBadgeNumber(0);
+      else if (isSignedin) {
+        try {
+          GoogleSignin.signOut();
+        } catch (e) {
+          console.error(e);
+        }
+      }
 
       this.showModal(false);
     });

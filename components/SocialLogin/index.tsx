@@ -15,6 +15,7 @@ export type AuthCallback = ({
   email,
   mobile,
   profileImageUrl,
+  kind,
 }: {
   user: string;
   pass: string;
@@ -22,6 +23,7 @@ export type AuthCallback = ({
   email?: string;
   mobile?: string;
   profileImageUrl?: string;
+  kind: 'ios' | 'fb' | 'naver' | 'kakao' | 'google';
 }) => void;
 
 const styles = StyleSheet.create({
