@@ -31,12 +31,12 @@ const GoogleLogin = ({onAuth}: {onAuth: AuthCallback}) => {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfoPromise = await GoogleSignin.signIn();
-      const {user, idToken} = userInfoPromise;
+      const {user, serverAuthCode} = userInfoPromise;
 
       onAuth({
         email: user.email,
         authorized: true,
-        pass: idToken?.substring(0, 16) || '',
+        pass: serverAuthCode || '',
         user: user.id,
         profileImageUrl: user.photo || '',
         kind: 'google',
