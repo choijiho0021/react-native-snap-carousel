@@ -529,12 +529,14 @@ const signUp = ({
   pass,
   email,
   mktgOptIn = false,
+  deviceModel,
   recommender,
 }: {
   user?: string;
   pass?: string;
   email?: string;
   mktgOptIn?: boolean;
+  deviceModel?: string;
   recommender?: string;
 }) => {
   if (!user)
@@ -552,6 +554,7 @@ const signUp = ({
         pin: pass,
         email,
         mktgOptIn,
+        deviceModel,
         recommender,
       }),
     },

@@ -437,6 +437,7 @@ class RegisterMobileScreen extends Component<
           pass: pin,
           email: `${email}@${domain}`,
           mktgOptIn: confirm.get('2'),
+          deviceModel: this.props.account.deviceModel,
           recommender,
         });
 

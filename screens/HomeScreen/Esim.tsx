@@ -308,7 +308,13 @@ class Esim extends Component<EsimProps, EsimState> {
           isSupportDev,
         });
 
-        this.props.action.account.updateAccount({isSupportDev, deviceModel});
+        DeviceInfo.getDeviceName().then((name) => {
+          const deviceFullName = `${name},${deviceModel}`;
+          this.props.action.account.updateAccount({
+            isSupportDev,
+            deviceModel: deviceFullName,
+          });
+        });
 
         this.renderTitleBtn();
 
