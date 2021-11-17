@@ -69,6 +69,8 @@
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
 	<string>147522690488197</string>
+	<key>FacebookClientToken</key>
+	<string>a516d23081ee3fb8db8bb9c006431ae6</string>
 	<key>FacebookAutoLogAppEventsEnabled</key>
 	<true/>
 	<key>FacebookCodelessDebugLogEnabled</key>
