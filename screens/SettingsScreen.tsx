@@ -4,7 +4,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {Component, memo} from 'react';
-import {FlatList, Pressable, StyleSheet, View} from 'react-native';
+import {FlatList, Pressable, StyleSheet, View, Platform} from 'react-native';
 import Config from 'react-native-config';
 import {openSettings} from 'react-native-permissions';
 import VersionCheck from 'react-native-version-check';
@@ -317,7 +317,8 @@ class SettingsScreen extends Component<
 
       // bhtak
       // firebase.notifications().setBadge(0);
-      PushNotificationIOS.setApplicationIconBadgeNumber(0);
+      if (Platform.OS === 'ios')
+        PushNotificationIOS.setApplicationIconBadgeNumber(0);
 
       this.showModal(false);
     });

@@ -1,5 +1,0 @@
-Android Release version APK 실행중 Duplication error 발생 시 실행
-1. Project 홈 디렉토리에서 명령어 실행
-   - node ./fixAndroid/android-release-fix.js
-2. 아래 명령어 실행
-   - rm -rf android/app/src/main/res/drawable-*

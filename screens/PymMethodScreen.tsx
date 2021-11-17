@@ -56,6 +56,7 @@ import {
   ProfileModelState,
 } from '@/redux/modules/profile';
 import i18n from '@/utils/i18n';
+import AppModal from '@/components/AppModal';
 
 const {esimApp} = Env.get();
 const {deliveryText} = API.Order;
@@ -253,6 +254,10 @@ const styles = StyleSheet.create({
     padding: 15,
     marginTop: 20,
   },
+  modalBodyStyle: {
+    paddingTop: 15,
+    paddingHorizontal: 15,
+  },
 });
 
 const buttonStyle = (
@@ -307,7 +312,7 @@ type PymMethodScreenProps = {
   };
 };
 
-type ShowModal = 'address' | 'memo' | 'method';
+type ShowModal = 'address' | 'memo' | 'method' | 'alert';
 
 type PymMethodScreenState = {
   mode?: PymMethodScreenMode;
@@ -331,6 +336,7 @@ type PymMethodScreenState = {
   simIncluded?: boolean;
   row?: string;
   column?: number;
+  isPassingAlert?: boolean;
 };
 
 const {esimGlobal} = Env.get();
@@ -349,6 +355,7 @@ class PymMethodScreen extends Component<
         address: true,
         memo: true,
         method: true,
+        alert: false,
       },
       label: Platform.OS === 'android' ? undefined : i18n.t('pym:selectMemo'),
       deliveryMemo:
@@ -367,6 +374,7 @@ class PymMethodScreen extends Component<
             },
       consent: undefined,
       simIncluded: undefined,
+      isPassingAlert: false,
     };
 
     this.onSubmit = this.onSubmit.bind(this);
@@ -431,16 +439,21 @@ class PymMethodScreen extends Component<
   async onSubmit() {
     if (!this.state.clickable) return;
 
-    this.setState({
-      clickable: false,
-    });
-
     const {selected, pymPrice, deduct, deliveryMemo, simIncluded, mode} =
       this.state;
     const memo =
       deliveryMemo.selected === i18n.t('pym:input')
         ? deliveryMemo.content
         : deliveryMemo.selected;
+
+    if (!this.state.isPassingAlert && !this.props.account.isSupportDev) {
+      this.showModal('alert');
+      return;
+    }
+
+    this.setState({
+      clickable: false,
+    });
 
     if (_.isEmpty(selected) && pymPrice?.value !== 0) return;
 
@@ -853,6 +866,16 @@ class PymMethodScreen extends Component<
     }
   }
 
+  modalBody = () => {
+    return (
+      <View style={styles.modalBodyStyle}>
+        <AppText style={[appStyles.normal16Text]}>
+          {i18n.t('pym:unsupportDeviceModalContent')}
+        </AppText>
+      </View>
+    );
+  };
+
   consentBox() {
     return (
       <View style={{backgroundColor: colors.whiteTwo, paddingBottom: 45}}>
@@ -947,7 +970,22 @@ class PymMethodScreen extends Component<
             style={appStyles.confirm}
           />
         </KeyboardAwareScrollView>
-
+        <AppModal
+          title={i18n.t('pym:unsupportDeviceModal')}
+          type="normal"
+          onOkClose={async () => {
+            this.showModal('alert');
+            await this.setState({
+              isPassingAlert: true,
+            });
+            await this.onSubmit();
+          }}
+          onCancelClose={() => {
+            this.showModal('alert');
+          }}
+          visible={this.state.showModal.alert === true}>
+          {this.modalBody()}
+        </AppModal>
         {
           // 로깨비캐시 결제시 필요한 로딩처리
           this.state.loading && (

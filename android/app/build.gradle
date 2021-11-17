@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 import com.android.build.OutputFile
 /**
  * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets
@@ -72,6 +73,14 @@ import com.android.build.OutputFile
  *   extraPackagerArgs: []
  * ]
  */
+
+project.ext.envConfigFiles = [
+        debug: ".env",
+        release: ".env.production",
+        anothercustombuild: ".env",
+]
+
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
 project.ext.react = [
     enableHermes: false,  // clean and rebuild if changing
@@ -152,6 +161,7 @@ android {
             vectorDrawables.useSupportLibrary = true
             versionCode Code
             versionName "${versionMajor}.${versionMinor}"
+            resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
         }
 
         dexOptions {
@@ -190,17 +200,29 @@ android {
                     abiFilters nativeArchitectures.split(',')
                 }
             }
-            buildConfigField "String", "CODEPUSH_KEY", '"8RzsDJP5_63nkcvGO5yKweJAGMA3zliSBo3Hp"'
+            resValue "string", "CodePushDeploymentKey", ''
 
         }
         release {
             signingConfig signingConfigs.release
             // Caution! In production, you need to generate your own keystore file.
             // see https://facebook.github.io/react-native/docs/signed-apk-android.
-//            signingConfig signingConfigs.debug
-//            minifyEnabled enableProguardInReleaseBuilds
-//            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            buildConfigField "String", "CODEPUSH_KEY", '"8RzsDJP5_63nkcvGO5yKweJAGMA3zliSBo3Hp"'
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            resValue "string", "CodePushDeploymentKey", '8RzsDJP5_63nkcvGO5yKweJAGMA3zliSBo3Hp'
+        }
+        debugStaging {
+            initWith debug
+            matchingFallbacks = ['debug']
+            signingConfig signingConfigs.debug
+            resValue "string", "CodePushDeploymentKey", 'xesyWQUnruGqjQliPjlKF8hKEZEZa-pfLWOQ2'
+        }
+        releaseStaging {
+            initWith release
+            matchingFallbacks = ['release']
+            signingConfig signingConfigs.release
+//            buildConfigField "String", "CODEPUSH_KEY", 'xesyWQUnruGqjQliPjlKF8hKEZEZa-pfLWOQ2'
+//            buildConfigField "String", "CodePushDeploymentKey", 'xesyWQUnruGqjQliPjlKF8hKEZEZa'
+            resValue "string", "CodePushDeploymentKey", 'xesyWQUnruGqjQliPjlKF8hKEZEZa-pfLWOQ2'
         }
     }
 
@@ -272,8 +294,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-gcm:17.0.0'
     implementation "androidx.annotation:annotation:1.1.0"
     implementation 'com.facebook.android:facebook-android-sdk:latest.release'
-
-
+    implementation project(':@react-native-community-clipboard')
+    implementation project(':react-native-vector-icons')
 
     implementation group: 'com.kakao.sdk', name: 'usermgmt', version: '1.27.0'
     implementation group: 'com.kakao.sdk', name: 'kakaotalk', version: '1.27.0'

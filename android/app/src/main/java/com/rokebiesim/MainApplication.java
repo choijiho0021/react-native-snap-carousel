@@ -1,8 +1,11 @@
 package com.rokebiesim;
 
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.RemoteException;
 
 import com.RNFetchBlob.RNFetchBlobPackage;
@@ -11,11 +14,14 @@ import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactApplication;
+import com.facebook.react.modules.network.OkHttpClientProvider;
+import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
 
 import com.rokebiesim.generated.EuccidManagerAppPackage;
+import com.rokebiesim.generated.FetchApiClientFactory;
 import com.zoontek.rnpermissions.RNPermissionsPackage;
 import com.swmansion.rnscreens.RNScreensPackage;
 import com.reactnativecommunity.cookies.CookieManagerPackage;
@@ -40,10 +46,11 @@ import com.rokebiesim.generated.BasePackageList;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.swmansion.reanimated.ReanimatedPackage;
 import com.zoontek.rnlocalize.RNLocalizePackage;
-
+import com.reactnativecommunity.clipboard.ClipboardPackage;
 import org.reactnative.camera.RNCameraPackage;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import org.unimodules.core.interfaces.SingletonModule;
+import com.oblador.vectoricons.VectorIconsPackage;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -131,6 +138,7 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.<ReactPackage>asList(
                 new MainReactPackage(),
+            new ReactNativeConfigPackage(),
             new EuccidManagerAppPackage(),
             new ReactNativeFirebaseAnalyticsPackage(),
             new ReactNativeFirebaseMessagingPackage(),
@@ -141,6 +149,8 @@ public class MainApplication extends Application implements ReactApplication {
             new RNDeviceInfo(),
             new SafeAreaContextPackage(),
             new AsyncStoragePackage(),
+            new ClipboardPackage(),
+            new VectorIconsPackage(),
 //            new FlipperPackage(),
                 new SvgPackage(),
                 new PickerPackage(),
@@ -148,7 +158,7 @@ public class MainApplication extends Application implements ReactApplication {
                 new AppCenterReactNativeAnalyticsPackage(getApplication(), getResources().getString(R.string.appCenterAnalytics_whenToEnableAnalytics)),
                 new AppCenterReactNativePackage(getApplication()),
                 new RNVersionCheckPackage(),
-                new CodePush(BuildConfig.CODEPUSH_KEY, getApplicationContext(), BuildConfig.DEBUG),
+                new CodePush(getResources().getString(com.rokebiesim.R.string.CodePushDeploymentKey), getApplicationContext(), BuildConfig.DEBUG),
                 new RNCameraPackage(),
                 new ReactVideoPackage(),
 //                new AsyncStoragePackage(),
@@ -183,7 +193,9 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
       AppCenter.start(this,"ff7d5d5a-8b74-4ec2-99be-4dfd81b4b0fd", Analytics.class);
-    initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+      initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+      createNotificationChannel(this);
+      OkHttpClientProvider.setOkHttpClientFactory(new FetchApiClientFactory());
       prefs = getSharedPreferences("Pref", MODE_PRIVATE);
 
 
@@ -220,4 +232,20 @@ public class MainApplication extends Application implements ReactApplication {
       }
     }
   }
+
+    private void createNotificationChannel(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel("rokebi-android", "MainChannel", NotificationManager.IMPORTANCE_HIGH);
+            notificationChannel.setShowBadge(true);
+            notificationChannel.setDescription("AOS Android push noti channel");
+            notificationChannel.enableVibration(true);
+            notificationChannel.enableLights(true);
+            notificationChannel.setVibrationPattern(new long[]{400, 200, 400});
+            //notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+
+            manager.createNotificationChannel(notificationChannel);
+        }
+    }
+
 }
