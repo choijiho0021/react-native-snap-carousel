@@ -1,11 +1,12 @@
 import appleAuth from '@invertase/react-native-apple-authentication';
 import React, {memo} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {Platform, StyleSheet, View} from 'react-native';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import AppText from '../AppText';
 import AppleLogin from './AppleLogin';
+import GoogleLogin from './GoogleLogin';
 
 export type AuthCallback = ({
   user,
@@ -14,6 +15,7 @@ export type AuthCallback = ({
   email,
   mobile,
   profileImageUrl,
+  kind,
 }: {
   user: string;
   pass: string;
@@ -21,6 +23,7 @@ export type AuthCallback = ({
   email?: string;
   mobile?: string;
   profileImageUrl?: string;
+  kind: 'ios' | 'fb' | 'naver' | 'kakao' | 'google';
 }) => void;
 
 const styles = StyleSheet.create({
@@ -64,6 +67,7 @@ const SocialLogin = ({onAuth}: {onAuth: AuthCallback}) => {
         {/* <KakaoLogin onAuth={onAuth} /> */}
         {/* <NaverLoginButton onAuth={onAuth} /> */}
         {/* <FacebookLogin onAuth={onAuth} /> */}
+        {Platform.OS === 'android' && <GoogleLogin onAuth={onAuth} />}
         {appleAuth.isSupported && <AppleLogin onAuth={onAuth} />}
       </View>
     </View>

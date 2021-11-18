@@ -9,7 +9,6 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {Settings} from 'react-native-fbsdk';
 import {
   Appearance,
-  Platform,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -437,6 +436,7 @@ class RegisterMobileScreen extends Component<
           pass: pin,
           email: `${email}@${domain}`,
           mktgOptIn: confirm.get('2'),
+          deviceModel: this.props.account.deviceModel,
           recommender,
         });
 
@@ -582,20 +582,21 @@ class RegisterMobileScreen extends Component<
     email,
     mobile,
     profileImageUrl,
+    kind,
   }: {
-    authorized: boolean;
     user: string;
     pass: string;
     email?: string;
     mobile?: string;
     profileImageUrl?: string;
+    kind: 'ios' | 'fb' | 'naver' | 'kakao' | 'google';
   }) => {
     this.setState({loading: true});
 
     const resp = await API.User.socialLogin({
       user,
       pass,
-      kind: 'ios',
+      kind,
       mobile,
     });
 
@@ -724,24 +725,27 @@ class RegisterMobileScreen extends Component<
 
   renderLogin = () => {
     const {newUser} = this.state;
-    // android social 소셜 로그인 임시 비활성화 2021/11/12 jiho
     return (
-      <View style={{flex: 1}}>
-        {this.renderTitle()}
-        {!esimGlobal && this.renderInput()}
-        {!newUser && Platform.OS !== 'android' && (
-          <View style={{flex: 1, justifyContent: 'center'}}>
-            <SocialLogin onAuth={this.onAuth} />
-          </View>
-        )}
-        {esimGlobal && (
-          <View
-            key="imgRokebi"
-            style={{justifyContent: 'flex-end', paddingBottom: 52}}>
-            <AppIcon name="textLogo" />
-          </View>
-        )}
-      </View>
+      <SafeAreaView style={{flex: 1}}>
+        <KeyboardAwareScrollView
+          enableOnAndroid
+          enableResetScrollToCoords={false}>
+          {this.renderTitle()}
+          {!esimGlobal && this.renderInput()}
+          {!newUser && (
+            <View style={{flex: 1, justifyContent: 'center'}}>
+              <SocialLogin onAuth={this.onAuth} />
+            </View>
+          )}
+          {esimGlobal && (
+            <View
+              key="imgRokebi"
+              style={{justifyContent: 'flex-end', paddingBottom: 52}}>
+              <AppIcon name="textLogo" />
+            </View>
+          )}
+        </KeyboardAwareScrollView>
+      </SafeAreaView>
     );
   };
 
