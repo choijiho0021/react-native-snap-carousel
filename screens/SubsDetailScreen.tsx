@@ -17,6 +17,7 @@ import React, {Component} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {ApiToken} from '../redux/api/api';
 
 const activateBtn = 'activateBtn';
 const deactivateBtn = 'deactivateBtn';
@@ -129,11 +130,11 @@ class SubsDetailScreen extends Component {
     const {uuid} = this.state;
 
     if (modal === activateBtn) {
-      this.props.action.order.updateSubsStatus(
+      this.props.action.order.updateSubsStatus({
         uuid,
-        subsApi.STATUS_ACTIVE,
-        auth,
-      );
+        status: subsApi.STATUS_ACTIVE,
+        token: auth.token,
+      });
     } else {
       this.props.action.order
         .updateSubsStatus(uuid, subsApi.STATUS_USED, auth)
