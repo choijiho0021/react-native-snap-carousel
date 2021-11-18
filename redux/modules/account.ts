@@ -111,13 +111,14 @@ const changeNotiToken = createAsyncThunk(
   'account/changeNotiToken',
   (param, {dispatch, getState}) => {
     const {
-      account: {token, deviceToken, userId},
+      account: {token, deviceToken, userId, deviceModel},
     } = getState() as RootState;
 
     const attr = deviceToken;
     const attributes = {
       field_device_token: Platform.OS === 'ios' ? attr : '',
       field_fcm_token: Platform.OS === 'android' ? attr : '',
+      field_device_model: deviceModel,
     };
 
     return dispatch(changeUserAttr({userId, attributes, token})).then(

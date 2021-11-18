@@ -321,10 +321,12 @@ const update = ({
   userId,
   attributes,
   token,
+  deviceModel,
 }: {
   userId?: string;
   token?: string;
   attributes?: object;
+  deviceModel?: string;
 }) => {
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
@@ -343,6 +345,7 @@ const update = ({
           type: 'user--user',
           id: userId,
           attributes,
+          deviceModel,
         },
       }),
     },

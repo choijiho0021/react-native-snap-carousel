@@ -309,7 +309,7 @@ class Esim extends Component<EsimProps, EsimState> {
         });
 
         DeviceInfo.getDeviceName().then((name) => {
-          const deviceFullName = `${name},${deviceModel}`;
+          const deviceFullName = `${deviceModel},${name}`;
           this.props.action.account.updateAccount({
             isSupportDev,
             deviceModel: deviceFullName,
