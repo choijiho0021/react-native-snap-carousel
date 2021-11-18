@@ -9,7 +9,6 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {Settings} from 'react-native-fbsdk';
 import {
   Appearance,
-  Platform,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -726,7 +725,6 @@ class RegisterMobileScreen extends Component<
 
   renderLogin = () => {
     const {newUser} = this.state;
-    // android social 소셜 로그인 임시 비활성화 2021/11/12 jiho
     return (
       <SafeAreaView style={{flex: 1}}>
         <KeyboardAwareScrollView

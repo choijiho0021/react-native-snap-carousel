@@ -10,12 +10,12 @@ import {
 } from '@reduxjs/toolkit';
 import _ from 'underscore';
 import {batch} from 'react-redux';
+import messaging from '@react-native-firebase/messaging';
 import {API} from '@/redux/api';
 import {removeData, retrieveData, storeData} from '@/utils/utils';
 import Env from '@/environment';
 import {RkbAccount, RkbFile, RkbImage} from '@/redux/api/accountApi';
 import api, {ApiResult} from '@/redux/api/api';
-import messaging from '@react-native-firebase/messaging';
 import {actions as toastActions, reflectWithToast, Toast} from './toast';
 
 const {esimApp} = Env.get();
