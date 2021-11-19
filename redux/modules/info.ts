@@ -1,10 +1,15 @@
 /* eslint-disable no-param-reassign */
 import {API} from '@/redux/api';
 import {RkbInfo} from '@/redux/api/pageApi';
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSlice,
+  PayloadAction,
+  RootState,
+} from '@reduxjs/toolkit';
 import {Reducer} from 'react';
 import {AnyAction} from 'redux';
-import {Map as ImmutableMap} from 'immutable';
+import {Map as ImmutableMap, Map} from 'immutable';
 
 const getInfoList = createAsyncThunk(
   'info/getInfoList',
@@ -14,6 +19,26 @@ const getInfoList = createAsyncThunk(
 const getInfoByTitle = createAsyncThunk(
   'info/getInfoByTitle',
   API.Page.getPageByTitle,
+);
+
+const getItem = createAsyncThunk(
+  'info/getItem',
+  async (cmd: string, {dispatch, getState}) => {
+    const {
+      info: {infoMap},
+    } = getState() as RootState;
+
+    if (infoMap.size === 0) {
+      const infoList = await dispatch(getInfoList('info'));
+      // getInfoList가 성공한 경우
+      if (infoList.type === 'info/getInfoList/fulfilled') {
+        return infoList?.payload?.objects.find((elm) => elm.uuid === cmd);
+      }
+      return {};
+    }
+
+    return infoMap.get('info').find((elm) => elm.uuid === cmd);
+  },
 );
 
 export interface InfoModelState {
@@ -31,7 +56,6 @@ const slice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getInfoList.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
-
       if (result === 0) {
         state.infoMap = state.infoMap.set(action.meta.arg, objects || []);
       }
@@ -49,6 +73,7 @@ const slice = createSlice({
 export const actions = {
   getInfoList,
   getInfoByTitle,
+  getItem,
 };
 
 export type InfoAction = typeof actions;

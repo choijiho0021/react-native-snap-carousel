@@ -532,5 +532,7 @@
   "loading:errNetworkBody": "Network is too slow to get product information.\nPlease retry after few minutes",
 
   "loading:text0": "Product info is downloading.",
-  "loading:text1": "It might take more time \nin low speed network environment."
+  "loading:text1": "It might take more time \nin low speed network environment.",
+
+  "info:init:err": "Sorry, try again."
 }
