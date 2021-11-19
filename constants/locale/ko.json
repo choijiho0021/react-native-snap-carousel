@@ -534,6 +534,9 @@
   "promo:join:ing": "시도중 ...",
   "promo:login": "로그인 후 참여",
 
+  "invite:title": "로깨비ESIM 초대",
+  "invite:desc": "국내 최초 eSIM 데이터 스토어",
+
   "login:easyLogin": "간편 로그인",
   "googleLogin:inProgress": "이미 로그인 중 입니다.",
   "googleLogin:signInCanceled": "로그인이 취소 되었습니다.",

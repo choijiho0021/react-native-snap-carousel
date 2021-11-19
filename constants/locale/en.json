@@ -524,6 +524,9 @@
   "promo:join:ing": "Participating ...",
   "promo:login": "Login to participate",
 
+  "invite:title": "RokebiESIM Invitation",
+  "invite:desc": "The First eSIM Data Store Of Korea",
+
   "login:easyLogin": "Easy Login",
   "googleLogin:inProgress": "already logging.",
   "googleLogin:signInCanceled": "login has been canceled.",
