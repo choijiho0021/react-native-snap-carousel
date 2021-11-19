@@ -180,6 +180,7 @@
   "set:aboutus": "About Us",
   "set:logout": "로그아웃",
   "set:login": "로그인",
+  "set:afterLogin": "먼저 로그인이 필요합니다.\n로그인 후 참여하시겠습니까?",
   "set:fail": "시스템 연동에 실패했습니다. 나중에 다시 이용해 주세요",
   "set:confirmLogout": "로그아웃 하시겠습니까?",
   "set:sendAlimTalk": "알림톡이 발송되었습니다",
