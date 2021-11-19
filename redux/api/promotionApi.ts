@@ -1,8 +1,9 @@
+import dynamicLinks from '@react-native-firebase/dynamic-links';
 import {Share} from 'react-native';
 import _ from 'underscore';
-import dynamicLinks from '@react-native-firebase/dynamic-links';
 import api, {ApiResult, DrupalNode, Langcode} from './api';
 import Env from '@/environment';
+import i18n from '@/utils/i18n';
 
 const {bundleId, appStoreId, dynamicLink} = Env.get();
 
@@ -123,28 +124,41 @@ const join = ({
 };
 
 // 다이나믹 링크를 활용한 초대링크 생성
-const buildLink = async (recommender: string) => {
-  const link = await dynamicLinks().buildLink({
-    link: `${api.httpUrl('')}?recommender=${recommender}`,
+const buildLink = async (link: string, imageUrl: string) => {
+  const url = await dynamicLinks().buildShortLink({
+    link,
     domainUriPrefix: dynamicLink,
     ios: {
       bundleId,
       appStoreId,
+    },
+    social: {
+      // title, description 변경 예정
+      title: i18n.t('invite:title'),
+      descriptionText: i18n.t('invite:desc'),
+      imageUrl,
     },
     navigation: {
       forcedRedirectEnabled: true,
     },
   });
 
-  return link;
+  return url;
 };
 
-const invite = async (recommender: string) => {
-  const inviteLink = await buildLink(recommender);
+const invite = async (recommender: string, rule: Record<string, string>) => {
+  const {share, prodId} = rule;
+
+  // prodId 관련 추가 필요
+  const link = `${api.httpUrl('')}?recommender=${recommender}${
+    prodId?.length > 0 ? `&prodId=${prodId}` : ''
+  }`;
+
+  const url = await buildLink(link, share);
 
   try {
     await Share.share({
-      url: inviteLink,
+      url,
     });
     // if (result.action === Share.sharedAction) {
     //   if (result.activityType) {
