@@ -7,6 +7,7 @@
 
 @import Firebase;
 @import AVFoundation;
+
 #import "AppDelegate.h"
 
 #import <React/RCTBridge.h>

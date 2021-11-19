@@ -10,6 +10,10 @@ buildscript {
         kotlinVersion = '1.4.21'
         googlePlayServicesVersion = "+"
         firebaseVersion = "+"
+        // You can also create properties to specify versions for dependencies.
+        // Having consistent versions between modules can avoid conflicts with behavior.
+        supportLibVersion = "30.0.2"
+        googlePlayServicesAuthVersion = "19.2.0"
     }
     repositories {
         google()

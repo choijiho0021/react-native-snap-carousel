@@ -65,6 +65,7 @@ const AppleLogin = ({onAuth}: {onAuth: AuthCallback}) => {
             pass: nonce,
             authorized: true,
             email: storedEmail,
+            kind: 'ios',
           });
       }
     } catch (error) {

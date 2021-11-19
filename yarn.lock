@@ -1679,6 +1679,11 @@
   "resolved" "https://registry.npmjs.org/@react-native-firebase/messaging/-/messaging-12.9.3.tgz"
   "version" "12.9.3"
 
+"@react-native-google-signin/google-signin@7.0.1":
+  "integrity" "sha512-iG1OkFx1ohSupofWnlbV+Re74L2HF823SOL1KNl1gGDiVxzNKJTZm/wuaPuujzci4kr8GuwR9PRgxLShiAZwlg=="
+  "resolved" "https://registry.npmjs.org/@react-native-google-signin/google-signin/-/google-signin-7.0.1.tgz"
+  "version" "7.0.1"
+
 "@react-native-picker/picker@^1.8.3":
   "integrity" "sha512-pacdQDX6V6EmjF+HoiIh6u++qx4mTK0WnhgUHRc01B+Qt5eoeUwseBqmqfTSXTx/aHDEd6PiIw7UGvKgFoqgFQ=="
   "resolved" "https://registry.npmjs.org/@react-native-picker/picker/-/picker-1.16.8.tgz"
