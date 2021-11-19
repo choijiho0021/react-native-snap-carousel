@@ -525,6 +525,9 @@
   "promo:login": "Login to participate",
 
   "login:easyLogin": "Easy Login",
+  "googleLogin:inProgress": "already logging.",
+  "googleLogin:signInCanceled": "login has been canceled.",
+  "googleLogin:serviceUnavailable": "google service unavailable.",
   "settings:reqPushSet": "Notification is turned off.\nDon't miss important notification for you!",
   "settings:openSettings": "Go to notification settings",
   "settings:deniedPush": "Push Notification disabled",

@@ -1,3 +1,12 @@
+import Clipboard from '@react-native-community/clipboard';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import React, {Component} from 'react';
+import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
+import QRCode from 'react-native-qrcode-svg';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppButton from '@/components/AppButton';
 import AppColorText from '@/components/AppColorText';
@@ -30,15 +39,6 @@ import {
   ToastAction,
 } from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
-import Clipboard from '@react-native-community/clipboard';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import React, {Component} from 'react';
-import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
-import QRCode from 'react-native-qrcode-svg';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 import CardInfo from './components/CardInfo';
 import EsimSubs from './components/EsimSubs';
 

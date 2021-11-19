@@ -1,5 +1,13 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-nested-ternary */
+import {StackNavigationProp} from '@react-navigation/stack';
+import Analytics from 'appcenter-analytics';
+import moment, {Moment} from 'moment';
+import React, {Component} from 'react';
+import {Dimensions, StyleSheet, View} from 'react-native';
+import {TabBar, TabView} from 'react-native-tab-view';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import StoreList from '@/components/StoreList';
@@ -20,14 +28,6 @@ import {
   ProductModelState,
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
-import {StackNavigationProp} from '@react-navigation/stack';
-import Analytics from 'appcenter-analytics';
-import moment, {Moment} from 'moment';
-import React, {Component} from 'react';
-import {Dimensions, StyleSheet, View} from 'react-native';
-import {TabBar, TabView} from 'react-native-tab-view';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
 import {HomeStackParamList} from '../navigation/navigation';
 
 const styles = StyleSheet.create({

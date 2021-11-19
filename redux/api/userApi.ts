@@ -321,10 +321,12 @@ const update = ({
   userId,
   attributes,
   token,
+  deviceModel,
 }: {
   userId?: string;
   token?: string;
   attributes?: object;
+  deviceModel?: string;
 }) => {
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
@@ -343,6 +345,7 @@ const update = ({
           type: 'user--user',
           id: userId,
           attributes,
+          deviceModel,
         },
       }),
     },
@@ -529,12 +532,14 @@ const signUp = ({
   pass,
   email,
   mktgOptIn = false,
+  deviceModel,
   recommender,
 }: {
   user?: string;
   pass?: string;
   email?: string;
   mktgOptIn?: boolean;
+  deviceModel?: string;
   recommender?: string;
 }) => {
   if (!user)
@@ -552,6 +557,7 @@ const signUp = ({
         pin: pass,
         email,
         mktgOptIn,
+        deviceModel,
         recommender,
       }),
     },

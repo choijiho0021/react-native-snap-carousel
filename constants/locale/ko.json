@@ -535,6 +535,9 @@
   "promo:login": "로그인 후 참여",
 
   "login:easyLogin": "간편 로그인",
+  "googleLogin:inProgress": "이미 로그인 중 입니다.",
+  "googleLogin:signInCanceled": "로그인이 취소 되었습니다.",
+  "googleLogin:serviceUnavailable": "서비스 사용이 불가능합니다.",
   "settings:reqPushSet": "기기 알림이 꺼져 있어요.\n중요한 소식을 놓치지 마세요!",
   "settings:openSettings": "알림허용 바로가기",
   "settings:deniedPush": "알림권한이 없어서 기능이 제한되었습니다.",

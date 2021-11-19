@@ -10,12 +10,12 @@ import {
 } from '@reduxjs/toolkit';
 import _ from 'underscore';
 import {batch} from 'react-redux';
+import messaging from '@react-native-firebase/messaging';
 import {API} from '@/redux/api';
 import {removeData, retrieveData, storeData} from '@/utils/utils';
 import Env from '@/environment';
 import {RkbAccount, RkbFile, RkbImage} from '@/redux/api/accountApi';
 import api, {ApiResult} from '@/redux/api/api';
-import messaging from '@react-native-firebase/messaging';
 import {actions as toastActions, reflectWithToast, Toast} from './toast';
 
 const {esimApp} = Env.get();
@@ -111,13 +111,14 @@ const changeNotiToken = createAsyncThunk(
   'account/changeNotiToken',
   (param, {dispatch, getState}) => {
     const {
-      account: {token, deviceToken, userId},
+      account: {token, deviceToken, userId, deviceModel},
     } = getState() as RootState;
 
     const attr = deviceToken;
     const attributes = {
       field_device_token: Platform.OS === 'ios' ? attr : '',
       field_fcm_token: Platform.OS === 'android' ? attr : '',
+      field_device_model: deviceModel,
     };
 
     return dispatch(changeUserAttr({userId, attributes, token})).then(

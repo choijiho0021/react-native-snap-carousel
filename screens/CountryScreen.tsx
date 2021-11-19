@@ -1,4 +1,25 @@
 /* eslint-disable consistent-return */
+import analytics, {firebase} from '@react-native-firebase/analytics';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import Analytics from 'appcenter-analytics';
+import React, {Component, memo} from 'react';
+import {
+  FlatList,
+  Image,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import {Settings} from 'react-native-fbsdk';
+import {
+  getTrackingStatus,
+  TrackingStatus,
+} from 'react-native-tracking-transparency';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -31,27 +52,6 @@ import {
   ProductModelState,
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
-import analytics, {firebase} from '@react-native-firebase/analytics';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import Analytics from 'appcenter-analytics';
-import React, {Component, memo} from 'react';
-import {
-  FlatList,
-  Image,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  View,
-} from 'react-native';
-import {Settings} from 'react-native-fbsdk';
-import {
-  getTrackingStatus,
-  TrackingStatus,
-} from 'react-native-tracking-transparency';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 
 const {esimApp, esimGlobal} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   appPrice: {
     alignItems: 'flex-end',
     marginLeft: 10,
-    width: 80,
+    width: esimGlobal ? 60 : 80,
     justifyContent: 'center',
   },
   textView: {
