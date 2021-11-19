@@ -1,14 +1,16 @@
-import React, {memo} from 'react';
-import Analytics from 'appcenter-analytics';
+import analytics from '@react-native-firebase/analytics';
+import dynamicLinks from '@react-native-firebase/dynamic-links';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {actions as cartActions} from '@/redux/modules/cart';
+import Analytics from 'appcenter-analytics';
+import React, {memo, useEffect} from 'react';
 import Env from '@/environment';
-import MainTabNavigator from './MainTabNavigator';
-import EsimMainTabNavigator from './EsimMainTabNavigator';
+import {actions as cartActions} from '@/redux/modules/cart';
 import AuthStackNavigator from './AuthStackNavigator';
+import EsimMainTabNavigator from './EsimMainTabNavigator';
+import MainTabNavigator from './MainTabNavigator';
 
-const {esimApp} = Env.get();
+const {esimApp, esimGlobal} = Env.get();
 
 const MainStack = createStackNavigator();
 
@@ -38,6 +40,47 @@ function mainStack() {
 
 const CreateAppContainer = ({store}) => {
   const navigationRef = React.useRef();
+
+  const handleDynamicLink = (link) => {
+    let screen = link?.utmParameters?.utm_source;
+
+    if (screen.includes('Screen')) screen = screen.replace('Screen', '');
+
+    // Screen 별 동작 추가
+    if (navigationRef?.current) {
+      switch (screen) {
+        case 'Esim':
+          navigationRef.current.navigate('EsimStack', {
+            screen,
+          });
+          break;
+        default:
+      }
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
+    // When the component is unmounted, remove the listener
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    dynamicLinks()
+      .getInitialLink()
+      .then(async (l) => {
+        if (l?.utmParameters) {
+          analytics().logEvent(
+            `${esimGlobal ? 'global' : 'esim'}_dynamic_utm`,
+            {
+              item: l?.utmParameters.utm_source,
+              count: 1,
+            },
+          );
+        }
+      });
+  }, []);
+
   return (
     <NavigationContainer
       ref={navigationRef}
