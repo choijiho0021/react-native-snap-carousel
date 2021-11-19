@@ -233,12 +233,14 @@ class SimpleTextScreen extends Component<
               : 'promo:join:fail',
         });
       }
-    } else if (rule && isInviteEvent && userId) {
-      if (!loggedIn) {
+    } else if (rule && isInviteEvent) {
+      if (!loggedIn || !userId) {
         // 로그인 화면으로 이동
-        this.props.navigation.navigate('Auth');
+        AppAlert.confirm(i18n.t('set:login'), i18n.t('set:afterLogin'), {
+          ok: () => this.props.navigation.navigate('Auth'),
+        });
       } else {
-        await API.Promotion.invite(userId);
+        await API.Promotion.invite(userId, rule); // .share, 'P-KR-T-10-500MB-0'
       }
     } else {
       this.props.navigation.goBack();

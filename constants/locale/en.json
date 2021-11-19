@@ -179,6 +179,7 @@
   "set:aboutus": "About Us",
   "set:logout": "Log Out",
   "set:login": "Log In",
+  "set:afterLogin": "Please log in first.\nJoin after logging in?",
   "set:fail": "Failed to connect to the server. Please try again later",
   "set:confirmLogout": "Are you sure you want to log out?",
   "set:sendAlimTalk": "The KakaoTalk message has been sent",
@@ -522,6 +523,9 @@
   "promo:join:fail": "Sorry, try again.",
   "promo:join:ing": "Participating ...",
   "promo:login": "Login to participate",
+
+  "invite:title": "RokebiESIM Invitation",
+  "invite:desc": "The First eSIM Data Store Of Korea",
 
   "login:easyLogin": "Easy Login",
   "googleLogin:inProgress": "already logging.",
