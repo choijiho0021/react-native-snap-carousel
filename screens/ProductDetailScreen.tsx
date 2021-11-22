@@ -198,7 +198,7 @@ class ProductDetailScreen extends Component<
     );
   }
 
-  onMessage(event: WebViewMessageEvent) {
+  onMessage = (event: WebViewMessageEvent) => {
     const cmd = JSON.parse(event.nativeEvent.data);
 
     switch (cmd.key) {
@@ -207,15 +207,18 @@ class ProductDetailScreen extends Component<
         break;
       case 'moveToPage':
         if (cmd.value) {
-          const item = this.props.info.infoMap
-            .get('info')
-            ?.find((elm) => elm.uuid === cmd.value);
-          this.props.navigation.navigate('SimpleText', {
-            key: 'noti',
-            title: i18n.t('set:noti'),
-            bodyTitle: item?.title,
-            body: item?.body,
-            mode: 'html',
+          this.props.action.info.getItem(cmd.value).then(({payload: item}) => {
+            if (item?.title && item?.body) {
+              this.props.navigation.navigate('SimpleText', {
+                key: 'noti',
+                title: i18n.t('set:noti'),
+                bodyTitle: item?.title,
+                body: item?.body,
+                mode: 'html',
+              });
+            } else {
+              AppAlert.error(i18n.t('info:init:err'));
+            }
           });
         }
         break;
@@ -235,7 +238,7 @@ class ProductDetailScreen extends Component<
         Clipboard.setString(cmd.value);
         break;
     }
-  }
+  };
 
   openKTalk = () => {
     if (esimGlobal) {

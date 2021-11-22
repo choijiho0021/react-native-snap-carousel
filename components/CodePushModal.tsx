@@ -22,9 +22,6 @@ class CodePushModal extends Component<CodePushModalProps> {
   componentDidMount() {
     this.props.action.sync.init();
     this.codePushCheckForUpdate();
-    AppState.addEventListener('change', (state) => {
-      if (state === 'active') this.codePushCheckForUpdate();
-    });
   }
 
   codePushCheckForUpdate() {

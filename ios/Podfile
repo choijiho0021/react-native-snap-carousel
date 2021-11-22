@@ -87,3 +87,37 @@ target 'RokebiESIM' do
 
 end
 
+target 'RokebiUSIM' do
+  config = use_native_modules!
+
+  use_react_native!(:path => config[:reactNativePath], 
+    :hermes_enabled => false
+  )
+
+  permissions_path = '../node_modules/react-native-permissions/ios'
+
+  pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
+  pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary"
+  pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
+
+  # pod 'FBSDKCoreKit'
+  # pod 'FBSDKLoginKit'
+  # pod 'FBSDKShareKit'
+
+  # pod 'Firebase/Analytics'
+  # pod 'Firebase/DynamicLinks'
+
+  ENVFILES = {
+    'Debug' => '$(PODS_ROOT)/../../.env',
+    'Staging' => '$(PODS_ROOT)/../../.env.staging',
+    'Release' => '$(PODS_ROOT)/../../.env.production',
+  }
+
+	# Enables Flipper.
+  #
+  # Note that if you have use_frameworks! enabled, Flipper will not work and
+  # you should disable these next few lines.
+  # use_flipper!()
+  use_flipper!("Flipper" => "0.93.0", "Flipper-DoubleConversion" => "1.1.7")
+
+end

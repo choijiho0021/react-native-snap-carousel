@@ -134,7 +134,7 @@ class SimpleTextScreen extends Component<
 
   componentDidMount() {
     const {params} = this.props.route;
-    const {key, text: body, bodyTitle, mode = 'html'} = params || {};
+    const {key, text: body, bodyTitle, mode = 'html', cmd} = params || {};
 
     this.props.navigation.setOptions({
       title: null,
@@ -182,18 +182,18 @@ class SimpleTextScreen extends Component<
       // uuid를 받아서 해당 페이지로 이동 추가
       case 'moveToPage':
         if (cmd.value) {
-          const item = this.props.info.infoMap
-            .get('info')
-            ?.find((elm) => elm.uuid === cmd.value);
-
-          console.log('@@@ move to page', item);
-
-          this.props.navigation.navigate('SimpleText', {
-            key: 'noti',
-            title: i18n.t('set:noti'),
-            bodyTitle: item?.title,
-            body: item?.body,
-            mode: 'html',
+          this.props.action.info.getItem(cmd.value).then(({payload: item}) => {
+            if (item?.title && item?.body) {
+              this.props.navigation.navigate('SimpleText', {
+                key: 'noti',
+                title: i18n.t('set:noti'),
+                bodyTitle: item?.title,
+                body: item?.body,
+                mode: 'html',
+              });
+            } else {
+              AppAlert.error(i18n.t('info:init:err'));
+            }
           });
         }
         break;

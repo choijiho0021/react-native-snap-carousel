@@ -282,6 +282,10 @@ class Esim extends Component<EsimProps, EsimState> {
     const now = moment();
     this.setState({time: now});
 
+    this.props.navigation.addListener('blur', () => {
+      this.setState({popUpVisible: false});
+    });
+
     requestTrackingPermission();
     AsyncStorage.getItem('popupDisabled').then((v) => {
       if (v) {
