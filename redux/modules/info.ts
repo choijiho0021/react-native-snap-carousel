@@ -9,7 +9,7 @@ import {
 } from '@reduxjs/toolkit';
 import {Reducer} from 'react';
 import {AnyAction} from 'redux';
-import {Map as ImmutableMap, Map} from 'immutable';
+import {Map as ImmutableMap} from 'immutable';
 
 const getInfoList = createAsyncThunk(
   'info/getInfoList',
