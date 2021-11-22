@@ -528,8 +528,6 @@
   "invite:desc": "The First eSIM Data Store Of Korea",
 
   "noti:updateTitle": "Update Notification",
-  "noti:updateTitleReq": "Required Update Notification",
-  "noti:updateReq": "Available after an update.\nDo you want to update?",
   "noti:updateOpt": "An updated version is available.\nDo you want to update?",
 
   "login:easyLogin": "Easy Login",

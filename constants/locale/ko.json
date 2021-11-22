@@ -538,8 +538,6 @@
   "invite:desc": "국내 최초 eSIM 데이터 스토어",
 
   "noti:updateTitle": "업데이트 알림",
-  "noti:updateTitleReq": "필수 업데이트 알림",
-  "noti:updateReq": "업데이트 후 사용 가능합니다.\n업데이트 하시겠습니까?",
   "noti:updateOpt": "업데이트 버전이 있습니다.\n업데이트 하시겠습니까?",
 
   "login:easyLogin": "간편 로그인",
