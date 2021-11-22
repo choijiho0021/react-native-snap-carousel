@@ -332,8 +332,9 @@ class RegisterMobileScreen extends Component<
 
   async componentDidMount() {
     this.mounted = true;
+    const status = await getTrackingStatus();
     this.setState({
-      status: await getTrackingStatus(),
+      status,
     });
 
     dynamicLinks()
@@ -346,6 +347,13 @@ class RegisterMobileScreen extends Component<
           const json = JSON.parse(`{${param.join(',')}}`);
 
           const {recommender} = json;
+
+          if (status === 'authorized') {
+            analytics().logEvent(
+              `${esimGlobal ? 'global' : 'esim'}_recommender`,
+            );
+          }
+
           this.setState({recommender});
         }
       });
