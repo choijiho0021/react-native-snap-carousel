@@ -1,15 +1,10 @@
 /* eslint-disable no-param-reassign */
-import {API} from '@/redux/api';
-import {RkbInfo} from '@/redux/api/pageApi';
-import {
-  createAsyncThunk,
-  createSlice,
-  PayloadAction,
-  RootState,
-} from '@reduxjs/toolkit';
+import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {Reducer} from 'react';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
+import {RkbInfo} from '@/redux/api/pageApi';
+import {API} from '@/redux/api';
 
 const getInfoList = createAsyncThunk(
   'info/getInfoList',
