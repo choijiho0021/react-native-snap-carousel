@@ -425,7 +425,7 @@
   "pym:samsung": "삼성페이",
   "pym:ssgpay": "SSG페이",
   "pym:lpay": "L.Pay",
-  "pym:balPurchase": "로깨비캐시에서 결제됩니다.\n구매하시겠습니까?",
+  "pym:balPurchase": "로깨비캐시에서 결제됩니다.\n구매하시겠습니까?",
   "pym:balance": "로깨비캐시",
   "pym:success": "결제가 완료되었습니다.",
   "pym:fail": "결제에 실패하였습니다",
@@ -443,7 +443,7 @@
   "pym:security": "경비실",
   "pym:toSecurity": "경비실에 맡겨주세요.",
   "pym:input": "직접 입력",
-  "pym:tossInfo": "* 토스 결제는'신용카드'메뉴 내에서 이용할 수 있습니다.",
+  "pym:tossInfo": "* 토스 결제는 '신용카드'메뉴 내에서 이용할 수 있습니다.",
   "pym:kakaoInfo": "카카오페이 결제 혜택",
   "pym:kakaoInfoContent": "- 생애 첫 결제시 5천원 적립(4월 1일 ~ 4월 30일, 기간 내 1회)\n- 카카오페이는 앱 최신버전에서 가능합니다. 업데이트해주세요.",
   "pym:consentEssential": "결제 진행 필수사항 동의",
@@ -536,6 +536,11 @@
 
   "invite:title": "로깨비ESIM 초대",
   "invite:desc": "국내 최초 eSIM 데이터 스토어",
+
+  "noti:updateTitle": "업데이트 알림",
+  "noti:updateTitleReq": "필수 업데이트 알림",
+  "noti:updateReq": "업데이트 후 사용 가능합니다.\n업데이트 하시겠습니까?",
+  "noti:updateOpt": "업데이트 버전이 있습니다.\n업데이트 하시겠습니까?",
 
   "login:easyLogin": "간편 로그인",
   "googleLogin:inProgress": "이미 로그인 중 입니다.",
