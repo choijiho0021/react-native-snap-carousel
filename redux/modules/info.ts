@@ -31,7 +31,7 @@ const getItem = createAsyncThunk(
     if (infoMap.size === 0) {
       const infoList = await dispatch(getInfoList('info'));
       // getInfoList가 성공한 경우
-      if (infoList.type === 'info/getInfoList/fulfilled') {
+      if (infoList?.meta?.requestStatus === 'fulfilled') {
         return infoList?.payload?.objects.find((elm) => elm.uuid === cmd);
       }
       return {};
