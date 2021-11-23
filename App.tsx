@@ -14,20 +14,22 @@ const App = ({skipLoadingScreen}: {skipLoadingScreen: boolean}) => {
   useEffect(() => {
     setI18nConfig();
 
-    VersionCheck.needUpdate().then(async (res) => {
-      if (res.isNeeded) {
-        if (res.currentVersion < res.latestVersion)
-          AppAlert.confirm(
-            i18n.t('noti:updateTitle'),
-            i18n.t('noti:updateOpt'),
-            {
-              ok: () => Linking.openURL(res.storeUrl),
-            },
-            i18n.t('noti:cancel'),
-            i18n.t('noti:ok'),
-          );
-      }
-    });
+    if (process.env.NODE_ENV !== 'development') {
+      VersionCheck.needUpdate().then(async (res) => {
+        if (res.isNeeded) {
+          if (res.currentVersion < res.latestVersion)
+            AppAlert.confirm(
+              i18n.t('noti:updateTitle'),
+              i18n.t('noti:updateOpt'),
+              {
+                ok: () => Linking.openURL(res.storeUrl),
+              },
+              i18n.t('noti:cancel'),
+              i18n.t('noti:ok'),
+            );
+        }
+      });
+    }
   }, []);
 
   return (
