@@ -537,8 +537,10 @@
   "invite:title": "로깨비ESIM 초대",
   "invite:desc": "국내 최초 eSIM 데이터 스토어",
 
-  "noti:updateTitle": "업데이트 알림",
-  "noti:updateOpt": "업데이트 버전이 있습니다.\n업데이트 하시겠습니까?",
+  "noti:updateTitle": "새로운 버전이 업데이트 되었어요!",
+  "noti:updateOpt": "고객님들의 의견을 반영하여 사용성을 개선했어요.\n최신 버전으로 업데이트하고 안정적인 서비스를 즐기세요.",
+  "noti:cancel": "다음에 할래요",
+  "noti:ok": "업데이트",
 
   "login:easyLogin": "간편 로그인",
   "googleLogin:inProgress": "이미 로그인 중 입니다.",

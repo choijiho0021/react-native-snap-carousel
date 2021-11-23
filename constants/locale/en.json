@@ -527,8 +527,10 @@
   "invite:title": "RokebiESIM Invitation",
   "invite:desc": "The First eSIM Data Store Of Korea",
 
-  "noti:updateTitle": "Update Notification",
-  "noti:updateOpt": "An updated version is available.\nDo you want to update?",
+  "noti:updateTitle": "New Version Available!",
+  "noti:updateOpt": "We improved App for your better experience.\nPlease, enjoy the stable service after new version update.",
+  "noti:cancel": "Later",
+  "noti:ok": "Update",
 
   "login:easyLogin": "Easy Login",
   "googleLogin:inProgress": "already logging.",

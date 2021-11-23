@@ -22,14 +22,16 @@ const confirm = (
   title: string,
   message: string,
   {ok = () => {}, cancel = () => {}},
+  cancelText: string = i18n.t('cancel'),
+  okText: string = i18n.t('ok'),
 ) => {
   return Alert.alert(title, message, [
     {
-      text: i18n.t('cancel'),
+      text: cancelText,
       onPress: cancel,
     },
     {
-      text: i18n.t('ok'),
+      text: okText,
       onPress: ok,
     },
   ]);

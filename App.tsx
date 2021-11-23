@@ -23,6 +23,8 @@ const App = ({skipLoadingScreen}: {skipLoadingScreen: boolean}) => {
             {
               ok: () => Linking.openURL(res.storeUrl),
             },
+            i18n.t('noti:cancel'),
+            i18n.t('noti:ok'),
           );
       }
     });
