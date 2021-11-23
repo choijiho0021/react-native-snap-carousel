@@ -65,6 +65,7 @@ import pushNoti from '@/utils/pushNoti';
 import {checkFistLaunch, requestPermission} from './component/permission';
 import PromotionCarousel from './component/PromotionCarousel';
 import AndroidEuccidModule from '@/components/NativeModule/AndroidEuccidModule';
+import ShortcutBadge from 'react-native-app-badge';
 
 const {esimGlobal} = Env.get();
 
@@ -551,6 +552,7 @@ class Esim extends Component<EsimProps, EsimState> {
         ]).then(() => {
           if (Platform.OS === 'ios')
             PushNotificationIOS.setApplicationIconBadgeNumber(0);
+          else ShortcutBadge.setCount(0);
         });
       },
     });

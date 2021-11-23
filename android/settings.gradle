@@ -1,4 +1,6 @@
 rootProject.name = 'RokebiESIM'
+include ':react-native-app-badge'
+project(':react-native-app-badge').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-app-badge/android')
 include ':@react-native-picker_picker'
 project(':@react-native-picker_picker').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-picker/picker/android')
 include ':@react-native-google-signin_google-signin'

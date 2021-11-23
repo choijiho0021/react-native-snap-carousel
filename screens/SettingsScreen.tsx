@@ -32,6 +32,7 @@ import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
+import ShortcutBadge from 'react-native-app-badge';
 
 const {label = '', isProduction} = Env.get();
 const PUSH_ENABLED = 0;
@@ -312,7 +313,7 @@ class SettingsScreen extends Component<
       this.props.action.cart.reset(),
       this.props.action.order.reset(),
       this.props.action.account.logout(),
-      this.props.action.noti.init(),
+      this.props.action.noti.init({mobile: undefined}),
     ]).then(async () => {
       this.props.navigation.navigate('HomeStack', {screen: 'Home'});
       const isSignedin = await GoogleSignin.isSignedIn();
@@ -320,11 +321,14 @@ class SettingsScreen extends Component<
       // firebase.notifications().setBadge(0);
       if (Platform.OS === 'ios')
         PushNotificationIOS.setApplicationIconBadgeNumber(0);
-      else if (isSignedin) {
-        try {
-          GoogleSignin.signOut();
-        } catch (e) {
-          console.error(e);
+      else {
+        ShortcutBadge.setCount(0);
+        if (isSignedin) {
+          try {
+            GoogleSignin.signOut();
+          } catch (e) {
+            console.error(e);
+          }
         }
       }
 

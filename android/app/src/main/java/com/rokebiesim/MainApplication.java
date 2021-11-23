@@ -14,6 +14,7 @@ import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactApplication;
+import com.github.amarcruz.rnshortcutbadge.RNAppBadgePackage;
 import com.reactnativecommunity.picker.RNCPickerPackage;
 import com.reactnativegooglesignin.RNGoogleSigninPackage;
 import com.facebook.react.modules.network.OkHttpClientProvider;
@@ -140,6 +141,7 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.<ReactPackage>asList(
                 new MainReactPackage(),
+            new RNAppBadgePackage(),
             new RNCPickerPackage(),
             new RNGoogleSigninPackage(),
             new ReactNativeConfigPackage(),
