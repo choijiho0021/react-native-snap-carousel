@@ -1,8 +1,9 @@
 import {Component} from 'react';
-import {Alert, AppState} from 'react-native';
+import {Alert, AppState, Linking} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import codePush from 'react-native-code-push';
+import VersionCheck from 'react-native-version-check';
 import {
   actions as syncActions,
   SyncAction,
@@ -10,6 +11,7 @@ import {
 } from '@/redux/modules/sync';
 import i18n from '@/utils/i18n';
 import {RootState} from '@/redux';
+import AppAlert from './AppAlert';
 
 type CodePushModalProps = {
   sync: SyncModelState;
@@ -37,34 +39,48 @@ class CodePushModal extends Component<CodePushModalProps> {
       .then((update) => {
         if (this.props.sync.isSkipped) return;
 
-        if (update) {
-          const {isMandatory} = update;
-
-          if (isMandatory) {
-            Alert.alert(
-              i18n.t('codepush:title'),
-              i18n.t('codepush:mandatory'),
-              [
+        VersionCheck.needUpdate().then(async (res) => {
+          if (res.isNeeded) {
+            if (res.currentVersion < res.latestVersion) {
+              AppAlert.confirm(
+                i18n.t('noti:updateTitle'),
+                i18n.t('noti:updateOpt'),
                 {
-                  text: i18n.t('codepush:continue'),
+                  ok: () => Linking.openURL(res.storeUrl),
+                },
+                i18n.t('noti:cancel'),
+                i18n.t('noti:ok'),
+              );
+            }
+          } else if (update) {
+            const {isMandatory} = update;
+
+            if (isMandatory) {
+              Alert.alert(
+                i18n.t('codepush:title'),
+                i18n.t('codepush:mandatory'),
+                [
+                  {
+                    text: i18n.t('codepush:continue'),
+                    onPress: () => this.props.action.sync.progress(),
+                  },
+                ],
+              );
+            } else {
+              Alert.alert(i18n.t('codepush:title'), i18n.t('codepush:body'), [
+                {
+                  text: i18n.t('codepush:later'),
+                  onPress: () => this.props.action.sync.skip(),
+                  style: 'cancel',
+                },
+                {
+                  text: i18n.t('codepush:update'),
                   onPress: () => this.props.action.sync.progress(),
                 },
-              ],
-            );
-          } else {
-            Alert.alert(i18n.t('codepush:title'), i18n.t('codepush:body'), [
-              {
-                text: i18n.t('codepush:later'),
-                onPress: () => this.props.action.sync.skip(),
-                style: 'cancel',
-              },
-              {
-                text: i18n.t('codepush:update'),
-                onPress: () => this.props.action.sync.progress(),
-              },
-            ]);
+              ]);
+            }
           }
-        }
+        });
       })
       .catch((error) => {
         console.log('@@ codePush failed', error);
