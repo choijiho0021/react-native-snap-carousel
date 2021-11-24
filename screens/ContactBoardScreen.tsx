@@ -85,8 +85,10 @@ const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
     (props) => (
       <TabBar
         {...props}
-        tabStyle={{backgroundColor: colors.gray}}
+        tabStyle={{paddingVertical: 15}}
         labelStyle={[appStyles.normal16Text, {fontSize}]}
+        activeColor={colors.black}
+        inactiveColor={colors.warmGrey}
         indicatorStyle={{
           borderBottomColor: colors.clearBlue,
           borderBottomWidth: 2,
