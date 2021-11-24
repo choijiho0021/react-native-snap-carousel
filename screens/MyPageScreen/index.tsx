@@ -123,6 +123,11 @@ const styles = StyleSheet.create({
     color: colors.clearBlue,
     marginLeft: 20,
   },
+  email: {
+    marginHorizontal: 20,
+    paddingVertical: 25,
+    backgroundColor: 'white',
+  },
 });
 
 type MyPageScreenNavigationProp = StackNavigationProp<
@@ -591,6 +596,7 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
         <AppActivityIndicator visible={!refreshing && this.props.pending} />
 
         <AppModalForm
+          contentStyle={styles.email}
           title={i18n.t('acc:changeEmail')}
           defaultValue={this.props.account.email}
           valueType="email"
