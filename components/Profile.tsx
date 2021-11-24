@@ -70,6 +70,8 @@ const Profile: React.FC<ProfileProps> = ({
     width: 76,
     height: 76,
     borderRadius: 76 / 2,
+    borderWidth: 1,
+    borderColor: colors.whitefour,
   };
 
   return (
