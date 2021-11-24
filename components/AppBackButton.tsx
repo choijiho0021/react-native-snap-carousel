@@ -49,7 +49,7 @@ const AppBackButton = ({
         ) : (
           <View style={{marginLeft: 15}} />
         )}
-        <AppText style={[appStyles.subTitle, {marginLeft: 16}]}>
+        <AppText style={[appStyles.subTitle, {marginLeft: 16, fontSize: 20}]}>
           {title}
         </AppText>
       </View>
