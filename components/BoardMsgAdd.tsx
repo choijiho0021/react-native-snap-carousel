@@ -106,7 +106,6 @@ const styles = StyleSheet.create({
   },
   inputBox: {
     ...appStyles.normal14Text,
-    marginTop: 30,
     marginHorizontal: 20,
     height: 50,
     borderRadius: 3,
@@ -118,9 +117,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   notiView: {
-    flex: 1,
     flexDirection: 'row',
-    marginTop: 20,
+    marginBottom: 30,
+    paddingVertical: 15,
     paddingHorizontal: 20,
     backgroundColor: colors.whiteTwo,
     alignItems: 'center',
@@ -135,12 +134,14 @@ const styles = StyleSheet.create({
   label: {
     ...appStyles.normal14Text,
     marginLeft: 20,
-    marginTop: 20,
+    marginTop: 30,
   },
   button: {
     ...appStyles.normal16Text,
     height: 40,
-    marginTop: 10,
+    paddingLeft: 20,
+    marginTop: 15,
+    marginBottom: 20,
     marginHorizontal: 20,
     color: colors.black,
     borderBottomColor: colors.warmGrey,
@@ -437,18 +438,16 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         contentContainerStyle={styles.modalInner}
         extraScrollHeight={extraHeight}
         innerRef={(ref) => (scrollRef.current = ref)}>
-        {account.loggedIn ? (
+        {!account.loggedIn && renderContact()}
+        <View style={{flex: 1}}>
           <View style={styles.notiView}>
             <AppText style={styles.noti}>{i18n.t('board:noti')}</AppText>
           </View>
-        ) : (
-          renderContact()
-        )}
-        <View style={{flex: 1}}>
           <AppTextInput
             style={[
               styles.inputBox,
               title ? {borderColor: colors.black} : undefined,
+              {marginBottom: 15},
             ]}
             placeholder={i18n.t('title')}
             placeholderTextColor={colors.greyish}
