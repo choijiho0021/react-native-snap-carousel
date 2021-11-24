@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   inner: {
     marginHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 25,
     backgroundColor: 'white',
   },
   icon: {
