@@ -737,6 +737,7 @@ class RegisterMobileScreen extends Component<
       <SafeAreaView style={{flex: 1}}>
         <KeyboardAwareScrollView
           enableOnAndroid
+          keyboardShouldPersistTaps="handled"
           enableResetScrollToCoords={false}>
           {this.renderTitle()}
           {!esimGlobal && this.renderInput()}
