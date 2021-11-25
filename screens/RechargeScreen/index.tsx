@@ -92,14 +92,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   row: {
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 20,
-    marginHorizontal: 20,
+    marginHorizontal: 12.5,
   },
   button: {
     // iphon5s windowWidth == 320
-    width: isDeviceSize('small') ? 130 : 150,
+    // width: isDeviceSize('small') ? 130 : 150,
+    flex: 1,
+    marginHorizontal: 7.5,
     height: 48,
     borderRadius: 24,
     backgroundColor: colors.white,
@@ -110,7 +113,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     ...appStyles.price,
-    textAlign: 'center',
+    textAlign: 'right',
     color: colors.warmGrey,
   },
   image: {
@@ -120,7 +123,7 @@ const styles = StyleSheet.create({
   rechargeBox: {
     marginTop: 15,
     marginHorizontal: 20,
-    height: 130,
+    height: 108,
     flex: 1,
     justifyContent: 'center',
     flexDirection: 'row',
@@ -138,6 +141,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 28,
     marginVertical: 22,
     // justifyContent: 'center',
+  },
+  priceButtonText: {
+    ...appStyles.normal14Text,
+    marginLeft: 0,
+    textAlign: 'left',
   },
 });
 
@@ -260,7 +268,7 @@ class RechargeScreen extends Component<
               <AppPrice
                 style={styles.buttonBox}
                 balanceStyle={[styles.buttonText, {color}]}
-                currencyStyle={[appStyles.normal14Text, {color}]}
+                currencyStyle={[styles.priceButtonText, {color}]}
                 price={utils.toCurrency(v, esimCurrency)}
               />
             </Pressable>
@@ -289,11 +297,19 @@ class RechargeScreen extends Component<
                     name="rokIcon"
                   />
                   <View style={styles.rchTextBox}>
-                    <AppText style={appStyles.normal14Text}>
+                    <AppText
+                      style={[appStyles.normal14Text, {textAlign: 'left'}]}>
                       {i18n.t('acc:remain')}
                     </AppText>
                     <AppText style={appStyles.bold30Text}>
-                      {utils.price(utils.toCurrency(balance, esimCurrency))}
+                      {utils.numberToCommaString(balance || 0)}
+                      <AppText
+                        style={[
+                          appStyles.normal20Text,
+                          {fontWeight: 'normal'},
+                        ]}>
+                        {i18n.t(esimCurrency)}
+                      </AppText>
                     </AppText>
                   </View>
                 </View>
@@ -332,7 +348,7 @@ class RechargeScreen extends Component<
           <View style={[styles.divider, esimApp && {marginTop: 20}]} />
           <View style={{flex: 1}} />
           <AppText
-            style={[appStyles.normal16Text, {marginTop: 30, marginLeft: 40}]}>
+            style={[appStyles.normal16Text, {marginTop: 30, marginLeft: 20}]}>
             {i18n.t('rch:amount')}
           </AppText>
           <View style={{marginBottom: 40}}>
