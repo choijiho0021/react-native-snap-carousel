@@ -50,7 +50,7 @@
 		</dict>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>dynamicLink</string>
+			<string>rokebidynamiclink</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.uangel.rokebi-ESIM</string>
@@ -64,15 +64,15 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>53</string>
+	<string>1</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
 	<string>147522690488197</string>
-	<key>FacebookClientToken</key>
-	<string>a516d23081ee3fb8db8bb9c006431ae6</string>
 	<key>FacebookAutoLogAppEventsEnabled</key>
 	<true/>
+	<key>FacebookClientToken</key>
+	<string>a516d23081ee3fb8db8bb9c006431ae6</string>
 	<key>FacebookCodelessDebugLogEnabled</key>
 	<true/>
 	<key>FacebookDisplayName</key>
@@ -81,13 +81,7 @@
 	<true/>
 	<key>FirebaseDynamicLinksCustomDomains</key>
 	<array>
-		<string>https://rokebi.page.link/eNh4</string>
-		<string>https://rokebi.page.link/youtube</string>
-		<string>https://rokebi.page.link/2irR</string>
-		<string>https://rokebi.page.link/yCMn</string>
-		<string>https://rokebi.page.link/WGAX</string>
-		<string>https://rokebi.page.link/t8Jz</string>
-		<string>https://rokebi.page.link/UrhE</string>
+		<string>https://rokebi.page.link</string>
 	</array>
 	<key>KAKAO_APP_KEY</key>
 	<string>f881469e3b4a140967dfaebe648ede8d</string>
