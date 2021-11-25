@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   showSearchBar: {
-    marginRight: 30,
+    paddingRight: 30,
     justifyContent: 'flex-end',
     backgroundColor: colors.white,
   },
@@ -167,6 +167,15 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: 10,
     backgroundColor: colors.black,
+  },
+  divider: {
+    borderRightWidth: 1,
+    borderRightColor: colors.lightGrey,
+    height: 12,
+    marginRight: 20,
+    alignSelf: 'center',
+    justifyContent: 'flex-end',
+    backgroundColor: colors.white,
   },
 });
 
@@ -213,6 +222,17 @@ const HeaderTitle0 = ({
           }}
           value={word}
         />
+
+        {word.length > 0 && (
+          <View style={{flexDirection: 'row'}}>
+            <AppButton
+              style={[styles.showSearchBar, {paddingRight: 20}]}
+              onPress={() => search('', false)}
+              iconName="btnSearchCancel"
+            />
+            <View style={styles.divider} />
+          </View>
+        )}
         <AppButton
           style={styles.showSearchBar}
           onPress={() => search(word, true)}
