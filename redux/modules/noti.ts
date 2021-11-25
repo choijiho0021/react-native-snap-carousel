@@ -7,6 +7,7 @@ import {RkbNoti} from '@/redux/api/notiApi';
 import {Reducer} from 'react';
 import {AnyAction} from 'redux';
 import {storeData, retrieveData} from '@/utils/utils';
+import ShortcutBadge from 'react-native-app-badge';
 import {Platform} from 'react-native';
 
 const NOTI_TYPE_REPLY = 'reply';
@@ -42,6 +43,9 @@ const setAppBadge = (notiCount: number) => {
   console.log('Platform.OS : ', Platform.OS);
   if (Platform.OS === 'ios')
     PushNotificationIOS.setApplicationIconBadgeNumber(notiCount);
+  else {
+    ShortcutBadge.setCount(notiCount);
+  }
   // messaging().setBadge(notiCount);
 };
 
