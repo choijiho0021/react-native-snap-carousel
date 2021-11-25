@@ -7,6 +7,7 @@ const BadgedIcon = withBadge(
     cartItems: (cart.orderItems || []).reduce((acc, cur) => acc + cur.qty, 0),
   }),
   'cartItems',
+  {top: -1, right: -7},
 )(AppIcon);
 
 export default BadgedIcon;

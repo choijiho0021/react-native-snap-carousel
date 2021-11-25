@@ -44,7 +44,6 @@ const withBadge =
   ) =>
   (WrappedComponent: React.ReactNode) => {
     const badge = (props) => {
-      const {top, left, right, bottom} = styles.location;
       const badgeValue = props[key];
       const {hidden = !badgeValue} = options || {};
 
@@ -62,7 +61,7 @@ const withBadge =
                 // onPress={this.props.onPress}
                 containerStyle={[
                   styles.badgeContainer,
-                  {top, right, left, bottom},
+                  options || styles.location,
                 ]}
               />
             )}
@@ -81,7 +80,7 @@ const withBadge =
               onPress={props.onPress}
               containerStyle={[
                 styles.badgeContainer,
-                {top, right, left, bottom},
+                options || styles.location,
               ]}
             />
           )}
