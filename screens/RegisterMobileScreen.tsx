@@ -734,10 +734,15 @@ class RegisterMobileScreen extends Component<
   renderLogin = () => {
     const {newUser} = this.state;
     return (
-      <SafeAreaView style={{flex: 1}}>
+      <View style={{flex: 1}}>
         <KeyboardAwareScrollView
           enableOnAndroid
           keyboardShouldPersistTaps="handled"
+          contentContainerStyle={[
+            {
+              flexGrow: 1,
+            },
+          ]}
           enableResetScrollToCoords={false}>
           {this.renderTitle()}
           {!esimGlobal && this.renderInput()}
@@ -754,7 +759,7 @@ class RegisterMobileScreen extends Component<
             </View>
           )}
         </KeyboardAwareScrollView>
-      </SafeAreaView>
+      </View>
     );
   };
 
