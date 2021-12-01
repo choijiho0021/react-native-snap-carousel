@@ -33,6 +33,13 @@ export type RkbPromoInfo = {
   available: number;
 };
 
+export type RkbInviteStatInfo = {
+  inviteCount: string;
+  rokebiCash: string;
+  signupGift: string;
+  recommenderGift: string;
+};
+
 const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
   if (_.isArray(data)) {
     return api.success(
@@ -78,10 +85,38 @@ const toPromoInfo = (data: {
   return api.success(data.objects, [], data.result);
 };
 
+const toStatInfo = (data: {
+  result: number;
+  objects: [];
+}): ApiResult<RkbInviteStatInfo> => {
+  if (data.result === 0) {
+    return api.success(
+      data.objects.map((v) => {
+        return {
+          inviteCount: v.invite_count,
+          rokebiCash: v.rokebi_cash,
+          signupGift: v.signup_gift,
+          recommenderGift: v.recommender_gift,
+        };
+      }),
+      [],
+      data.result,
+    );
+  }
+  return api.failure(api.FAILED, data.result?.error);
+};
+
 const getPromotion = () => {
   return api.callHttpGet<RkbPromotion>(
     `${api.httpUrl(api.path.promotion)}?_format=hal_json`,
     toPromotion,
+  );
+};
+
+const getStat = () => {
+  return api.callHttpGet<RkbInviteStatInfo>(
+    `${api.httpUrl(api.path.invite)}?_format=json`,
+    toStatInfo,
   );
 };
 
@@ -123,10 +158,20 @@ const join = ({
   );
 };
 
+const inviteLink = (recommender: string, prodId: string = '') => {
+  return `${api.httpUrl('')}?recommender=${recommender}${
+    prodId?.length > 0 ? `&prodId=${prodId}` : ''
+  }`;
+};
+
 // 다이나믹 링크를 활용한 초대링크 생성
-const buildLink = async (link: string, imageUrl: string) => {
+const buildLink = async (
+  recommender: string,
+  imageUrl: string,
+  prodId: string = '',
+) => {
   const url = await dynamicLinks().buildShortLink({
-    link,
+    link: inviteLink(recommender, prodId),
     domainUriPrefix: dynamicLink,
     ios: {
       bundleId,
@@ -150,11 +195,8 @@ const invite = async (recommender: string, rule: Record<string, string>) => {
   const {share, prodId} = rule;
 
   // prodId 관련 추가 필요
-  const link = `${api.httpUrl('')}?recommender=${recommender}${
-    prodId?.length > 0 ? `&prodId=${prodId}` : ''
-  }`;
 
-  const url = await buildLink(link, share);
+  const url = await buildLink(recommender, share, prodId);
 
   try {
     await Share.share({
@@ -174,4 +216,11 @@ const invite = async (recommender: string, rule: Record<string, string>) => {
   }
 };
 
-export default {getPromotion, join, check, invite};
+export default {
+  getPromotion,
+  getStat,
+  join,
+  check,
+  invite,
+  buildLink,
+};

@@ -2,19 +2,35 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {Reducer} from 'react';
 import {AnyAction} from 'redux';
-import {RkbPromotion} from '@/redux/api/promotionApi';
+import _ from 'underscore';
+import {RkbInviteStatInfo, RkbPromotion} from '@/redux/api/promotionApi';
 import {API} from '@/redux/api';
 
 const getPromotion = createAsyncThunk(
   'promotion/getPromotion',
   API.Promotion.getPromotion,
 );
+
+const getPromotionStat = createAsyncThunk(
+  'promotion/getPromotionStat',
+  API.Promotion.getStat,
+);
+
 export interface PromotionModelState {
   promotion: RkbPromotion[];
+  invite?: RkbPromotion;
+  stat: RkbInviteStatInfo;
 }
 
 const initialState: PromotionModelState = {
   promotion: [],
+  invite: undefined,
+  stat: {
+    inviteCount: '0',
+    rokebiCash: '0',
+    signupGift: '0',
+    recommenderGift: '0',
+  },
 };
 
 const slice = createSlice({
@@ -24,16 +40,26 @@ const slice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getPromotion.fulfilled, (state, {payload}) => {
       const {result, objects} = payload;
+      const invite = objects.find((v) => !_.isEmpty(v.notice?.rule?.share));
 
       if (result === 0) {
         state.promotion = objects || [];
+        state.invite = invite;
+      }
+    });
+
+    builder.addCase(getPromotionStat.fulfilled, (state, {payload}) => {
+      const {result, objects} = payload;
+
+      if (result === 0) {
+        state.stat = objects[0];
       }
     });
   },
 });
 
 // const {actions} = slice;
-export const actions = {...slice.actions, getPromotion};
+export const actions = {...slice.actions, getPromotion, getPromotionStat};
 
 export type PromotionAction = typeof actions;
 

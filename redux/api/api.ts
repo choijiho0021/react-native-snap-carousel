@@ -59,6 +59,7 @@ const path = {
 
   recharge: 'rokebi/rch',
   resetPw: 'rokebi/user/pw',
+  invite: 'rokebi/stat/invite',
   regMobile: 'rokebi/reg',
   promo: 'rokebi/promo',
 
