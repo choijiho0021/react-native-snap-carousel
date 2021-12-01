@@ -177,7 +177,7 @@ class InviteScreen extends Component<InviteScreenProps, InviteScreenState> {
         {Object.keys(stat).map((v, idx) => {
           return (
             !v.includes('Gift') && (
-              <View style={[styles.box, !idx && styles.boxDivider]}>
+              <View key={v} style={[styles.box, !idx && styles.boxDivider]}>
                 <AppText style={appStyles.bold16Text}>
                   {i18n.t(`inv:${v}`)}
                 </AppText>
@@ -219,6 +219,7 @@ class InviteScreen extends Component<InviteScreenProps, InviteScreenState> {
             {['share', 'copy'].map((v, idx) => {
               return (
                 <AppButton
+                  key={v}
                   title={i18n.t(`inv:${v}`)}
                   titleStyle={[
                     appStyles.confirmText,
