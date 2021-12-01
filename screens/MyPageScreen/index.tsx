@@ -186,7 +186,6 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
     this.showIdModal = this.showIdModal.bind(this);
     this.validEmail = this.validEmail.bind(this);
     this.changeEmail = this.changeEmail.bind(this);
-    this.recharge = this.recharge.bind(this);
     this.didMount = this.didMount.bind(this);
     this.getNextOrder = this.getNextOrder.bind(this);
     this.onRefresh = this.onRefresh.bind(this);
@@ -497,14 +496,6 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
         ok: () => openSettings(),
       });
     }
-  }
-
-  recharge() {
-    if (!this.props.uid) {
-      return this.props.navigation.navigate('Auth');
-    }
-
-    return this.props.navigation.navigate('Recharge', {mode: 'MyPage'});
   }
 
   async validEmail(value: string): Promise<ValidationResult | undefined> {
