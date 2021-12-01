@@ -20,6 +20,7 @@ import i18n from '@/utils/i18n';
 import RechargeScreen from '@/screens/RechargeScreen';
 import CartScreen from '@/screens/CartScreen';
 import MyPageScreen from '@/screens/MyPageScreen/index';
+import InviteScreen from '@/screens/InviteScreen/index';
 import NotiScreen from '@/screens/NotiScreen';
 import PaymentScreen from '@/screens/PaymentScreen';
 import PaymentResultScreen from '@/screens/PaymentResultScreen';
@@ -126,6 +127,7 @@ function myPageStack() {
       <MyPageStack.Screen name="ContactBoard" component={ContactBoardScreen} />
       <MyPageStack.Screen name="BoardMsgResp" component={BoardMsgRespScreen} />
       <MyPageStack.Screen name="Recharge" component={RechargeScreen} />
+      <MyPageStack.Screen name="Invite" component={InviteScreen} />
       <MyPageStack.Screen name="Payment" component={PaymentScreen} />
       <MyPageStack.Screen name="PymMethod" component={PymMethodScreen} />
       <MyPageStack.Screen

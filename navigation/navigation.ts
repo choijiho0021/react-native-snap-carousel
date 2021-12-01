@@ -98,4 +98,5 @@ export type HomeStackParamList = {
 
   MyPage: undefined;
   Recharge: {mode: string};
+  Invite: undefined;
 };
