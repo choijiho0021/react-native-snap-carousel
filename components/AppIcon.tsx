@@ -48,6 +48,7 @@ const images: Record<string, any[]> = {
   iconArrowUp: [require(`${mainPath}iconArrowUp.png`)],
   iconArrowDown: [require(`${mainPath}iconArrowDown.png`)],
   iconArrowRightWhite: [require(`${mainPath}iconArrowRightWhite.png`)],
+  iconArrowRightBlack: [require(`${mainPath}iconArrowRightBlack.png`)],
   iconArrowRightBlue: [require(`${mainPath}iconArrowRightBlue.png`)],
   iconArrowLeftWhite: [require(`${mainPath}iconArrowLeftWhite.png`)],
   iconNotice: [require(`${mainPath}iconNotice.png`)],
