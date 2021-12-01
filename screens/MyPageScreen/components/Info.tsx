@@ -12,6 +12,7 @@ import Env from '@/environment';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
+import AppIcon from '@/components/AppIcon';
 
 const {esimApp, esimCurrency} = Env.get();
 
@@ -34,8 +35,7 @@ const styles = StyleSheet.create({
     color: colors.black,
   },
   btnContactBoard: {
-    marginRight: 20,
-    marginLeft: esimApp ? 3 : 20,
+    marginHorizontal: 7.5,
     flex: 1,
     borderColor: colors.lightGrey,
     borderWidth: 1,
@@ -43,9 +43,18 @@ const styles = StyleSheet.create({
     height: esimApp ? 40 : 30,
     justifyContent: 'center',
   },
+  btnInvite: {
+    marginHorizontal: 7.5,
+    paddingHorizontal: 26,
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: colors.whiteTwo,
+    borderRadius: 3,
+    height: esimApp ? 48 : 36,
+    alignItems: 'center',
+  },
   btnIdCheck: {
-    marginLeft: 20,
-    marginRight: 3,
+    marginHorizontal: 7.5,
     flex: 1,
     borderColor: colors.lightGrey,
     borderWidth: 1,
@@ -77,6 +86,27 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: colors.clearBlue,
   },
+  btnArrow: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  newMark: {
+    ...appStyles.bold14Text,
+    color: colors.clearBlue,
+    marginRight: 8,
+  },
+  rowBtn: {
+    flex: 1,
+    marginBottom: 15,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  column: {
+    flex: 1,
+    marginHorizontal: 12.5,
+    flexDirection: 'column',
+  },
 });
 
 type InfoProps = {
@@ -86,7 +116,7 @@ type InfoProps = {
 };
 
 const Info: React.FC<InfoProps> = ({
-  account: {balance},
+  account: {balance, userId},
   onChangePhoto,
   onPress,
 }) => {
@@ -130,21 +160,32 @@ const Info: React.FC<InfoProps> = ({
         </Pressable>
       )}
 
-      <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-        {esimApp && (
-          <Pressable style={styles.btnIdCheck} onPress={() => onPress('id')}>
+      <View style={styles.column}>
+        <View style={styles.rowBtn}>
+          {esimApp && (
+            <Pressable style={styles.btnIdCheck} onPress={() => onPress('id')}>
+              <AppText style={[appStyles.normal16Text, {textAlign: 'center'}]}>
+                {/* {i18n.t('mypage:idCheckTitle')} */}
+                {i18n.t('contact:faq')}
+              </AppText>
+            </Pressable>
+          )}
+          <Pressable
+            style={styles.btnContactBoard}
+            onPress={() => navigation.navigate('ContactBoard', {index: 1})}>
             <AppText style={[appStyles.normal16Text, {textAlign: 'center'}]}>
-              {/* {i18n.t('mypage:idCheckTitle')} */}
-              {i18n.t('contact:faq')}
+              {i18n.t('board:mylist')}
             </AppText>
           </Pressable>
-        )}
+        </View>
         <Pressable
-          style={styles.btnContactBoard}
-          onPress={() => navigation.navigate('ContactBoard', {index: 1})}>
-          <AppText style={[appStyles.normal16Text, {textAlign: 'center'}]}>
-            {i18n.t('board:mylist')}
+          style={styles.btnInvite}
+          onPress={() => navigation.navigate('Invite', {userId})}>
+          <AppText style={styles.newMark}>{i18n.t('acc:new')}</AppText>
+          <AppText style={appStyles.normal14Text}>
+            {i18n.t('acc:invite')}
           </AppText>
+          <AppIcon style={styles.btnArrow} name="iconArrowRightBlack" />
         </Pressable>
       </View>
       <View style={styles.divider} />
