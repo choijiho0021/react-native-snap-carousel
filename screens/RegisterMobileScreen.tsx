@@ -734,27 +734,30 @@ class RegisterMobileScreen extends Component<
   renderLogin = () => {
     const {newUser} = this.state;
     return (
-      <SafeAreaView style={{flex: 1}}>
-        <KeyboardAwareScrollView
-          enableOnAndroid
-          keyboardShouldPersistTaps="handled"
-          enableResetScrollToCoords={false}>
-          {this.renderTitle()}
-          {!esimGlobal && this.renderInput()}
-          {!newUser && (
-            <View style={{flex: 1, justifyContent: 'center'}}>
-              <SocialLogin onAuth={this.onAuth} />
-            </View>
-          )}
-          {esimGlobal && (
-            <View
-              key="imgRokebi"
-              style={{justifyContent: 'flex-end', paddingBottom: 52}}>
-              <AppIcon name="textLogo" />
-            </View>
-          )}
-        </KeyboardAwareScrollView>
-      </SafeAreaView>
+      <KeyboardAwareScrollView
+        enableOnAndroid
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={[
+          {
+            flexGrow: 1,
+          },
+        ]}
+        enableResetScrollToCoords={false}>
+        {this.renderTitle()}
+        {!esimGlobal && this.renderInput()}
+        {!newUser && (
+          <View style={{flex: 1, justifyContent: 'center'}}>
+            <SocialLogin onAuth={this.onAuth} />
+          </View>
+        )}
+        {esimGlobal && (
+          <View
+            key="imgRokebi"
+            style={{justifyContent: 'flex-end', paddingBottom: 52}}>
+            <AppIcon name="textLogo" />
+          </View>
+        )}
+      </KeyboardAwareScrollView>
     );
   };
 
