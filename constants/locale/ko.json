@@ -170,6 +170,8 @@
   "acc:duplicatedEmail": "이미 등록된 이메일 입니다",
   "acc:disconnectSim": "다른 기기에서 고객님의 계정으로 로그인되어 본 기기에서 자동 로그아웃 되었습니다.",
   "acc:moveToFbDown": "페이스북 메신저 앱이 없어서 다운로드 페이지로 이동합니다.",
+  "acc:new": "NEW",
+  "acc:invite": "친구와 함께 할인 받기",
 
   // "set:info" : "유심 정보",
   "set:noti": "알림",
@@ -536,6 +538,25 @@
 
   "invite:title": "로깨비ESIM 초대",
   "invite:desc": "국내 최초 eSIM 데이터 스토어",
+
+  "inv:title": "친구 초대",
+  "inv:share": "초대 링크 보내기",
+  "inv:copy": "초대 링크 복사하기",
+  "inv:statInv": "친구 초대 현황",
+  "inv:inviteCount": "친구 가입 현황",
+  "inv:rokebiCash": "누적 혜택 현황",
+  "inv:inviteCountUnit": "명",
+  "inv:rokebiCashUnit": "P",
+  "inv:withdrawalInfo": "* 탈퇴 후 재가입한 친구는 해당되지 않습니다.",
+
+  "inv:upper1": "고객님께 * 로깨비캐시,\n친구에게 * 로깨비캐시를 쏩니다!",
+  "inv:upper2": "친구가 고객님의 초대로,\n",
+  "inv:upper3": "로밍도깨비 eSIM을 최초 가입하면,\n",
+  "inv:upper4": "바로 적립됩니다.",
+
+  "inv:lower1": "초대 인원에 제한이 없어요,\n",
+  "inv:lower2": "한 명이 가입하면 * 로깨비캐시,\n열 명이 가입하면 * 로깨비캐시!",
+  "inv:lower3": "어쩌면 내 여행 데이터는 공짜!?",
 
   "noti:updateTitle": "새로운 버전이 업데이트 되었어요!",
   "noti:updateOpt": "고객님들의 의견을 반영하여 사용성을 개선했어요.\n최신 버전으로 업데이트하고 안정적인 서비스를 즐기세요.",

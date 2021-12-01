@@ -169,6 +169,8 @@
   "acc:duplicatedEmail": "your email was already used for registration",
   "acc:disconnectSim": "Your account has been logged in on other device and it is logged out on this device.",
   "acc:moveToFbDown": "Move to Facebook Messenger App download page",
+  "acc:new": "NEW",
+  "acc:invite": "Get points with friends",
 
   // "set:info" : "My SIM Info",
   "set:noti": "Notice",
@@ -526,6 +528,25 @@
 
   "invite:title": "RokebiESIM Invitation",
   "invite:desc": "The First eSIM Data Store Of Korea",
+
+  "inv:title": "Invite Friends",
+  "inv:share": "Send Invitation Link",
+  "inv:copy": "Copy Invitation Link",
+  "inv:statInv": "Friends Invitation Status",
+  "inv:inviteCount": "Friends registration",
+  "inv:rokebiCash": "Cumulative benefits",
+  "inv:inviteCountUnit": "", // (명) 단위 생략
+  "inv:rokebiCashUnit": "P",
+  "inv:withdrawalInfo": "* Friends who rejoin after withdrawal are not eligible.",
+
+  "inv:upper1": "* Rokebi Cash to customers,\nRokebi Cash to friends!",
+  "inv:upper2": "By your invitation,\n",
+  "inv:upper3": "when your friends join the ROKEBI eSIM for the first time,\n",
+  "inv:upper4": "it will be credited immediately.",
+
+  "inv:lower1": "There is no limit to the number of invitees,\n",
+  "inv:lower2": "If one person joins * Rokebi Cash,\nif ten people sign up, * Rokebi Cash!",
+  "inv:lower3": "Maybe my travel data is free!?",
 
   "noti:updateTitle": "New Version Available!",
   "noti:updateOpt": "We improved App for your better experience.\nPlease, enjoy the stable service after new version update.",
