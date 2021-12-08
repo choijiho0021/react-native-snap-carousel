@@ -23,6 +23,7 @@ import {
   PromotionModelState,
   actions as promotionActions,
 } from '@/redux/modules/promotion';
+import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 
@@ -36,17 +37,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  scrollView: {
-    flex: 1,
-    flexDirection: 'column',
-    paddingHorizontal: 20,
-    paddingBottom: 40,
-    paddingTop: 25,
-  },
   // 여기부터
-  bold24Text: {
+  bold23Text: {
     ...appStyles.bold18Text,
-    fontSize: 24,
+    fontSize: 23,
     lineHeight: 38,
   },
   text: {
@@ -82,6 +76,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'left',
     marginTop: 10,
+    marginBottom: 20,
     fontSize: 12,
   },
   statTitle: {
@@ -95,11 +90,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.warmGrey,
   },
-  bold26Highlight: {
+  bold23Highlight: {
     ...appStyles.bold18Text,
     color: colors.clearBlue,
     textAlign: 'center',
-    fontSize: 26,
+    fontSize: 23,
   },
 });
 
@@ -115,6 +110,7 @@ type InviteScreenProps = {
   route: InviteScreenRouteProp;
 
   promotion: PromotionModelState;
+  account: AccountModelState;
 
   pending: boolean;
 
@@ -132,11 +128,44 @@ class InviteScreen extends Component<InviteScreenProps, InviteScreenState> {
 
     this.state = {};
 
+    this.mountWithLogin = this.mountWithLogin.bind(this);
     this.sendLink = this.sendLink.bind(this);
     this.statBox = this.statBox.bind(this);
   }
 
   componentDidMount() {
+    const {navigation, account} = this.props;
+
+    if (!account.loggedIn && navigation.isFocused()) {
+      this.props.navigation.navigate('Auth', {
+        screen: 'RegisterMobile',
+        params: {
+          screen: 'Invite',
+        },
+      });
+    } else {
+      this.mountWithLogin();
+    }
+  }
+
+  shouldComponentUpdate(nextProps: InviteScreenProps) {
+    return (
+      this.props.account.loggedIn !== nextProps.account.loggedIn ||
+      this.props.promotion.stat !== nextProps.promotion.stat
+    );
+  }
+
+  componentDidUpdate(prevProps: InviteScreenProps) {
+    const {navigation, account} = this.props;
+
+    if (prevProps.account.loggedIn !== account.loggedIn) {
+      if (account.loggedIn && navigation.isFocused()) {
+        this.mountWithLogin();
+      }
+    }
+  }
+
+  mountWithLogin() {
     this.props.action.promotion.getPromotionStat();
 
     this.props.navigation.setOptions({
@@ -146,25 +175,33 @@ class InviteScreen extends Component<InviteScreenProps, InviteScreenState> {
   }
 
   async sendLink(method: string) {
-    const userId = this.props.route.params?.userId;
-    const {invite} = this.props.promotion;
+    const {
+      promotion: {invite, stat},
+      account: {userId},
+    } = this.props;
 
     if (userId && invite?.notice?.rule) {
       switch (method) {
         case 'copy': {
-          API.Promotion.buildLink(userId, invite.notice.rule?.share).then(
-            (url) => {
-              if (url) {
-                Clipboard.setString(url);
-                this.props.action.toast.push(Toast.COPY_SUCCESS);
-              }
-            },
-          );
+          API.Promotion.buildLink(
+            userId,
+            stat.signupGift,
+            invite.notice.rule?.share,
+          ).then((url) => {
+            if (url) {
+              Clipboard.setString(url);
+              this.props.action.toast.push(Toast.COPY_SUCCESS);
+            }
+          });
           break;
         }
         default:
           // share
-          await API.Promotion.invite(userId, invite.notice.rule);
+          await API.Promotion.invite(
+            userId,
+            stat.signupGift,
+            invite.notice.rule,
+          );
           break;
       }
     }
@@ -174,7 +211,7 @@ class InviteScreen extends Component<InviteScreenProps, InviteScreenState> {
     const {stat} = this.props.promotion;
     return (
       <View style={styles.benefitBox}>
-        {Object.keys(stat).map((v, idx) => {
+        {Object.keys(stat)?.map((v, idx) => {
           return (
             !v.includes('Gift') && (
               <View key={v} style={[styles.box, !idx && styles.boxDivider]}>
@@ -186,7 +223,7 @@ class InviteScreen extends Component<InviteScreenProps, InviteScreenState> {
                     appStyles.bold18Text,
                     {color: colors.clearBlue, fontSize: 26},
                   ]}>
-                  {`${utils.numberToCommaString(stat[v])} ${i18n.t(
+                  {`${utils.numberToCommaString(stat[v] || 0)} ${i18n.t(
                     `inv:${v}Unit`,
                   )}`}
                 </AppText>
@@ -203,9 +240,11 @@ class InviteScreen extends Component<InviteScreenProps, InviteScreenState> {
 
     return (
       <SafeAreaView style={styles.container}>
-        <ScrollView style={styles.scrollView}>
-          <AppText style={styles.bold24Text}>
-            {[signupGift, recommenderGift].reduce((arr, cur) => {
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={{paddingHorizontal: 20}}>
+          <AppText style={[styles.bold23Text, {marginTop: 20}]}>
+            {[recommenderGift, signupGift].reduce((arr, cur) => {
               return arr.replace('*', utils.numberToCommaString(cur));
             }, i18n.t('inv:upper1'))}
           </AppText>
@@ -234,12 +273,12 @@ class InviteScreen extends Component<InviteScreenProps, InviteScreenState> {
 
           <AppText style={[styles.text, {marginTop: 25, marginBottom: 30}]}>
             <AppText style={styles.highlighter}>{i18n.t('inv:lower1')}</AppText>
-            {[signupGift, signupGift * 10].reduce((arr, cur) => {
+            {[recommenderGift, recommenderGift * 10].reduce((arr, cur) => {
               return arr.replace('*', utils.numberToCommaString(cur));
             }, i18n.t('inv:lower2'))}
           </AppText>
 
-          <AppText style={styles.bold26Highlight}>
+          <AppText style={styles.bold23Highlight}>
             {i18n.t('inv:lower3')}
           </AppText>
 
@@ -255,7 +294,8 @@ class InviteScreen extends Component<InviteScreenProps, InviteScreenState> {
 }
 
 export default connect(
-  ({promotion}: RootState) => ({
+  ({account, promotion}: RootState) => ({
+    account,
     promotion,
   }),
   (dispatch) => ({
