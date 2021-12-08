@@ -312,8 +312,8 @@ class SettingsScreen extends Component<
     Promise.all([
       this.props.action.cart.reset(),
       this.props.action.order.reset(),
-      this.props.action.account.logout(),
       this.props.action.noti.init({mobile: undefined}),
+      this.props.action.account.logout(),
     ]).then(async () => {
       this.props.navigation.navigate('HomeStack', {screen: 'Home'});
       const isSignedin = await GoogleSignin.isSignedIn();
