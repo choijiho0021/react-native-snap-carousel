@@ -216,6 +216,7 @@ type RegisterMobileScreenRouteProp = RouteProp<
 
 type RegisterMobileScreenProps = {
   account: AccountModelState;
+  lastTab: string[];
   pending: boolean;
   focused: boolean;
   onSubmit: () => void;
@@ -374,12 +375,15 @@ class RegisterMobileScreen extends Component<
         if (this.mounted) {
           this.setState({authorized: true});
         }
-        this.props.navigation.navigate('Main', {
-          screen: 'MyPageStack',
-          params: {
-            screen: 'MyPage',
-          },
-        });
+
+        if (!this.props.lastTab.includes('Invite')) {
+          this.props.navigation.navigate('Main', {
+            screen: 'MyPageStack',
+            params: {
+              screen: 'MyPage',
+            },
+          });
+        }
       } else {
         AppAlert.error(i18n.t('reg:failedToLogIn'));
       }
@@ -777,6 +781,10 @@ class RegisterMobileScreen extends Component<
     const {isValid, error} = emailValidation || {};
     const disableButton =
       !authorized || (newUser && !(confirm.get('0') && confirm.get('1')));
+    const {
+      account: {loggedIn},
+      navigation,
+    } = this.props;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -789,7 +797,15 @@ class RegisterMobileScreen extends Component<
               ...initialState,
               isFocused: false,
             });
-            if (!socialLogin) this.props.navigation.goBack();
+
+            const screen = this.props.route?.params?.screen;
+
+            if (!socialLogin) navigation.goBack();
+
+            if (screen === 'Invite') {
+              if (loggedIn) navigation.replace(screen);
+              else navigation.popToTop();
+            }
           }}
         />
         <KeyboardAwareScrollView
@@ -849,7 +865,8 @@ class RegisterMobileScreen extends Component<
 }
 
 export default connect(
-  ({account, status}: RootState) => ({
+  ({cart, account, status}: RootState) => ({
+    lastTab: cart.lastTab.toArray(),
     account,
     pending:
       status.pending[accountActions.logInAndGetAccount.typePrefix] || false,
