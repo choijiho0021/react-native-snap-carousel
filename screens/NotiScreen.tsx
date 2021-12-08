@@ -234,6 +234,10 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
           });
           break;
 
+        case notiActions.NOTI_TYPE_INVITE:
+          navigation.navigate('MyPageStack', {screen: 'MyPage'});
+          break;
+
         case notiActions.NOTI_TYPE_PYM:
           // read orders if not read before
           Promise.resolve(
