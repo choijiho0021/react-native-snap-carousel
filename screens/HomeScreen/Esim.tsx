@@ -431,7 +431,9 @@ class Esim extends Component<EsimProps, EsimState> {
 
     switch (v) {
       case 'redirect':
-        if (popUp?.notice) {
+        if (popUp?.notice?.rule?.invite) {
+          this.props.navigation.navigate('Invite');
+        } else if (popUp?.notice) {
           this.props.navigation.navigate('SimpleText', {
             key: 'noti',
             title: i18n.t('set:noti'),
