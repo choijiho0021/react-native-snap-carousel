@@ -536,17 +536,21 @@
   "inv:inviteCount": "Friends registration",
   "inv:rokebiCash": "Cumulative benefits",
   "inv:inviteCountUnit": "", // (명) 단위 생략
-  "inv:rokebiCashUnit": "P",
-  "inv:withdrawalInfo": "* Friends who rejoin after withdrawal are not eligible.",
+  "inv:rokebiCashUnit": "C",
+  "inv:withdrawalInfo": "*Friends who rejoin after withdrawal are not eligible.",
 
-  "inv:upper1": "* Rokebi Cash to customers,\nRokebi Cash to friends!",
-  "inv:upper2": "By your invitation,\n",
-  "inv:upper3": "when your friends join the ROKEBI eSIM for the first time,\n",
-  "inv:upper4": "it will be credited immediately.",
+  "inv:upper1": "Invite your friends :)",
+  "inv:upper2": "* cash to you",
+  "inv:upper3": "* cash to your friends!",
+  "inv:upper4": "When your friends join the Rokebi eSIM with your invitation for the first time,\nit will be credited immediately.",
 
-  "inv:lower1": "There is no limit to the number of invitees,\n",
-  "inv:lower2": "If one person joins * Rokebi Cash,\nif ten people sign up, * Rokebi Cash!",
-  "inv:lower3": "Maybe my travel data is free!?",
+  "inv:lower1": "There is no limit to the number of invitees!",
+  "inv:lower2": "When one* signs up,",
+  "inv:lower3": "When ten* sign up,",
+  "inv:lower4": "Rokebi",
+  "inv:lower5": "cash",
+
+  "inv:statDesc": "Maybe my travel data is free!?",
 
   "noti:updateTitle": "New Version Available!",
   "noti:updateOpt": "We improved App for your better experience.\nPlease, enjoy the stable service after new version update.",
