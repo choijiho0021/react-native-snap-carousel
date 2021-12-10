@@ -23,6 +23,8 @@ target 'RokebiGlobal' do
   pod 'Firebase/Analytics'
   pod 'Firebase/DynamicLinks'
 
+  pod 'Adjust', '~> 4.29.2'
+
   ENVFILES = {
     'Debug' => '$(PODS_ROOT)/../../.env',
     'Staging' => '$(PODS_ROOT)/../../.env.staging',
@@ -72,6 +74,8 @@ target 'RokebiESIM' do
   pod 'Firebase/Analytics'
   pod 'Firebase/DynamicLinks'
 
+  pod 'Adjust', '~> 4.29.2'
+  
   ENVFILES = {
     'Debug' => '$(PODS_ROOT)/../../.env',
     'Staging' => '$(PODS_ROOT)/../../.env.staging',
@@ -100,6 +104,8 @@ target 'RokebiUSIM' do
   pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary"
   pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
 
+  pod 'Adjust', '~> 4.29.2'
+  
   # pod 'FBSDKCoreKit'
   # pod 'FBSDKLoginKit'
   # pod 'FBSDKShareKit'
