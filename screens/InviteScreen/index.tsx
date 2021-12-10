@@ -26,75 +26,140 @@ import {
 import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
+import AppIcon from '@/components/AppIcon';
 
 const styles = StyleSheet.create({
   copy: {
-    ...appStyles.confirm,
-    marginTop: 10,
-    borderRadius: 3,
+    height: 62,
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
   },
   container: {
     flex: 1,
     backgroundColor: colors.white,
   },
   // 여기부터
+  blueBg: {
+    height: 435,
+    paddingTop: 52,
+    paddingHorizontal: 20,
+    backgroundColor: colors.clearBlue,
+  },
+  shareBg: {
+    marginVertical: 40,
+    marginHorizontal: 20,
+  },
+  blueBgDetailText: {
+    ...appStyles.normal16Text,
+    color: colors.white,
+    marginTop: 20,
+    marginBottom: 30,
+    lineHeight: 22,
+  },
+  bold24WhiteText: {
+    ...appStyles.bold24Text,
+    color: colors.white,
+    // lineHeight: 42,
+  },
+  bold36whiteText: {
+    ...appStyles.robotoBold36Text,
+    color: colors.white,
+  },
   bold23Text: {
     ...appStyles.bold18Text,
     fontSize: 23,
     lineHeight: 38,
   },
   text: {
-    ...appStyles.normal16Text,
+    ...appStyles.normal18Text,
     lineHeight: 20,
-    marginTop: 20,
-    color: colors.warmGrey,
-    textAlign: 'center',
+    color: colors.black,
   },
   highlighter: {
-    ...appStyles.bold16Text,
+    ...appStyles.bold18Text,
     lineHeight: 20,
     color: colors.blue,
+  },
+  cashText: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+  },
+  share: {
+    height: 62,
+    marginBottom: 16,
+    backgroundColor: colors.clearBlue,
+  },
+  rowCenter: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  bold23Highlight: {
+    ...appStyles.bold24Text,
+    fontSize: 23,
+    color: colors.clearBlue,
+  },
+  highLightRow: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingRight: 0,
+  },
+  cashBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 45,
+    marginLeft: 10,
+    paddingHorizontal: 15,
+    borderWidth: 2,
+    borderColor: colors.clearBlue,
+    backgroundColor: colors.white,
+  },
+  cashBg: {
+    paddingVertical: 80,
+    paddingHorizontal: 20,
+    backgroundColor: colors.whiteTwo,
+  },
+  titleWithRokebi: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
   },
   benefitBox: {
     flex: 1,
     flexDirection: 'row',
-    height: 130,
-    paddingVertical: 20,
-    borderWidth: 1,
-    borderColor: colors.blue,
+    height: 125,
   },
-  box: {
-    flex: 1,
+  leftBox: {
+    width: '37%',
+    padding: 20,
+    paddingBottom: 30,
     alignItems: 'center',
     justifyContent: 'space-between',
+    backgroundColor: colors.paleBlue,
   },
-  boxDivider: {
-    borderRightWidth: 1,
-    borderRightColor: colors.blue,
-  },
-  withdrawal: {
+  rightBox: {
     flex: 1,
-    textAlign: 'left',
-    marginTop: 10,
-    marginBottom: 20,
-    fontSize: 12,
+    padding: 20,
+    paddingBottom: 30,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginLeft: 15,
+    backgroundColor: colors.paleGrey2,
   },
   statTitle: {
-    ...appStyles.bold18Text,
-    marginTop: 40,
+    ...appStyles.bold24Text,
+    marginTop: 5,
+    marginBottom: 15,
+  },
+  withdrawal: {
+    ...appStyles.normal12Text,
+    flex: 1,
+    textAlign: 'left',
+    marginTop: 15,
     marginBottom: 20,
-  },
-  share: {
-    borderRadius: 3,
-    height: 52,
-    borderWidth: 1,
-    borderColor: colors.warmGrey,
-  },
-  bold23Highlight: {
-    ...appStyles.bold18Text,
-    color: colors.clearBlue,
-    textAlign: 'center',
-    fontSize: 23,
+    color: colors.warmGrey,
   },
 });
 
@@ -165,6 +230,64 @@ class InviteScreen extends Component<InviteScreenProps, InviteScreenState> {
     }
   }
 
+  cashText = (text: string, cash: string) => {
+    return (
+      <View style={styles.cashText}>
+        {text.split('*').map((v, idx) => {
+          return (
+            <AppText style={styles.bold24WhiteText}>
+              {idx === 1 && (
+                <AppText style={styles.bold36whiteText}>{cash}</AppText>
+              )}
+              <AppText style={styles.bold24WhiteText}>{v}</AppText>
+            </AppText>
+          );
+        })}
+      </View>
+    );
+  };
+
+  highLightCash = (
+    highlight: string,
+    text: string,
+    isLast: boolean,
+    cash: string,
+  ) => {
+    return (
+      <View style={[isLast ? styles.highLightRow : {marginBottom: 20}]}>
+        <View style={{flexDirection: 'column'}}>
+          <AppText style={[appStyles.normal18Text, {flexDirection: 'row'}]}>
+            <AppText style={styles.highlighter}>{highlight}</AppText>
+            {text}
+          </AppText>
+
+          <View style={[styles.rowCenter, !isLast && {marginTop: 8}]}>
+            <AppText style={appStyles.normal16Text}>
+              {i18n.t('inv:lower4')}
+            </AppText>
+
+            <View style={styles.cashBox}>
+              <AppText
+                style={[
+                  appStyles.bold24Text,
+                  {marginRight: 20, color: colors.clearBlue},
+                ]}>
+                {isLast
+                  ? utils.numberToCommaString(cash * 10)
+                  : utils.numberToCommaString(cash)}
+              </AppText>
+              <AppText
+                style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
+                {i18n.t('inv:lower5')}
+              </AppText>
+            </View>
+          </View>
+        </View>
+        {isLast && <AppIcon name="coin" />}
+      </View>
+    );
+  };
+
   mountWithLogin() {
     this.props.action.promotion.getPromotionStat();
 
@@ -214,18 +337,16 @@ class InviteScreen extends Component<InviteScreenProps, InviteScreenState> {
         {Object.keys(stat)?.map((v, idx) => {
           return (
             !v.includes('Gift') && (
-              <View key={v} style={[styles.box, !idx && styles.boxDivider]}>
-                <AppText style={appStyles.bold16Text}>
+              <View key={v} style={[idx ? styles.rightBox : styles.leftBox]}>
+                <AppText style={appStyles.normal14Text}>
                   {i18n.t(`inv:${v}`)}
                 </AppText>
-                <AppText
-                  style={[
-                    appStyles.bold18Text,
-                    {color: colors.clearBlue, fontSize: 26},
-                  ]}>
-                  {`${utils.numberToCommaString(stat[v] || 0)} ${i18n.t(
-                    `inv:${v}Unit`,
-                  )}`}
+                <AppText style={appStyles.robotoBold32Text}>
+                  {utils.numberToCommaString(stat[v] || 0)}
+                  <AppText
+                    style={[appStyles.bold24Text, {color: colors.clearBlue}]}>
+                    {i18n.t(`inv:${v}Unit`)}
+                  </AppText>
                 </AppText>
               </View>
             )
@@ -240,53 +361,79 @@ class InviteScreen extends Component<InviteScreenProps, InviteScreenState> {
 
     return (
       <SafeAreaView style={styles.container}>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          style={{paddingHorizontal: 20}}>
-          <AppText style={[styles.bold23Text, {marginTop: 20}]}>
-            {[recommenderGift, signupGift].reduce((arr, cur) => {
-              return arr.replace('*', utils.numberToCommaString(cur));
-            }, i18n.t('inv:upper1'))}
-          </AppText>
-          <AppText style={styles.text}>
-            {i18n.t('inv:upper2')}
-            <AppText style={styles.highlighter}>{i18n.t('inv:upper3')}</AppText>
-            {i18n.t('inv:upper4')}
-          </AppText>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={styles.blueBg}>
+            <AppText style={[appStyles.normal20Text, {color: colors.white}]}>
+              {i18n.t('inv:upper1')}
+            </AppText>
+            {this.cashText(
+              i18n.t('inv:upper2'),
+              utils.numberToCommaString(recommenderGift),
+            )}
+            {this.cashText(
+              i18n.t('inv:upper3'),
+              utils.numberToCommaString(signupGift),
+            )}
+            <AppText style={styles.blueBgDetailText}>
+              {i18n.t('inv:upper4')}
+            </AppText>
+            <AppIcon name="inviteRokebi1" />
+          </View>
 
-          <View style={{marginTop: 30}}>
+          <View style={styles.shareBg}>
             {['share', 'copy'].map((v, idx) => {
+              const iconName = `icon${v[0].toUpperCase()}${v.substr(1)}`;
               return (
                 <AppButton
+                  iconName={iconName}
+                  iconStyle={{marginRight: 10}}
                   key={v}
                   title={i18n.t(`inv:${v}`)}
                   titleStyle={[
                     appStyles.confirmText,
-                    !idx && {color: colors.clearBlue},
+                    !!idx && {color: colors.black},
                   ]}
                   onPress={() => this.sendLink(v)}
+                  viewStyle={styles.rowCenter}
                   style={styles[v]}
                 />
               );
             })}
           </View>
 
-          <AppText style={[styles.text, {marginTop: 25, marginBottom: 30}]}>
-            <AppText style={styles.highlighter}>{i18n.t('inv:lower1')}</AppText>
-            {[recommenderGift, recommenderGift * 10].reduce((arr, cur) => {
-              return arr.replace('*', utils.numberToCommaString(cur));
-            }, i18n.t('inv:lower2'))}
-          </AppText>
+          <View style={styles.cashBg}>
+            <AppText style={[appStyles.bold24Text, {marginBottom: 30}]}>
+              {i18n.t('inv:lower1')}
+            </AppText>
+            {[i18n.t('inv:lower2'), i18n.t('inv:lower3')].map((v, idx) => {
+              const str = v.split('*');
+              return this.highLightCash(
+                str[0],
+                str[1],
+                idx === 1,
+                recommenderGift,
+              );
+            })}
+          </View>
 
-          <AppText style={styles.bold23Highlight}>
-            {i18n.t('inv:lower3')}
-          </AppText>
-
-          <AppText style={styles.statTitle}>{i18n.t('inv:statInv')}</AppText>
-          {this.statBox()}
-          <AppText style={[styles.text, styles.withdrawal]}>
-            {i18n.t('inv:withdrawalInfo')}
-          </AppText>
+          <View style={{marginVertical: 80, marginHorizontal: 20}}>
+            <View style={styles.titleWithRokebi}>
+              <View>
+                <AppText
+                  style={{...appStyles.bold16Text, color: colors.clearBlue}}>
+                  {i18n.t('inv:statDesc')}
+                </AppText>
+                <AppText style={styles.statTitle}>
+                  {i18n.t('inv:statInv')}
+                </AppText>
+              </View>
+              <AppIcon name="inviteRokebi2" />
+            </View>
+            {this.statBox()}
+            <AppText style={styles.withdrawal}>
+              {i18n.t('inv:withdrawalInfo')}
+            </AppText>
+          </View>
         </ScrollView>
       </SafeAreaView>
     );
