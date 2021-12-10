@@ -624,7 +624,14 @@ class Esim extends Component<EsimProps, EsimState> {
               moment().format('YYYY-MM-DD HH:mm'),
             );
         }}
-        onCancelClose={() => this.setState({popUpVisible: false})}
+        onCancelClose={() => {
+          this.setState({popUpVisible: false});
+          if (checked)
+            AsyncStorage.setItem(
+              'popupDisabled',
+              moment().format('YYYY-MM-DD HH:mm'),
+            );
+        }}
         visible={popUpVisible}>
         <View style={{marginHorizontal: 20}}>
           <AppUserPic
