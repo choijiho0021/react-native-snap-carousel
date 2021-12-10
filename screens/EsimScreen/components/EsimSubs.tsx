@@ -1,3 +1,5 @@
+import React, {memo} from 'react';
+import {Pressable, StyleSheet, View} from 'react-native';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -7,8 +9,6 @@ import {API} from '@/redux/api';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
-import React, {memo} from 'react';
-import {StyleSheet, View} from 'react-native';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
   usageListContainer: {
     backgroundColor: colors.white,
     marginHorizontal: 20,
-    marginBottom: 20,
+    marginTop: 20,
     borderRadius: 3,
     padding: 20,
   },
