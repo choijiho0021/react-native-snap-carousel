@@ -526,13 +526,13 @@
   "promo:join:ing": "Participating ...",
   "promo:login": "Login to participate",
 
-  "invite:title": "RokebiESIM Invitation",
-  "invite:desc": "The First eSIM Data Store Of Korea",
+  "invite:title": "*p of Rokebi Cash Received",
+  "invite:desc": "Maybe your overseas travel data is free!?",
 
   "inv:title": "Invite Friends",
   "inv:share": "Send Invitation Link",
   "inv:copy": "Copy Invitation Link",
-  "inv:statInv": "Friends Invitation Status",
+  "inv:statInv": "My Friends Invitation Status",
   "inv:inviteCount": "Friends registration",
   "inv:rokebiCash": "Cumulative benefits",
   "inv:inviteCountUnit": "", // (명) 단위 생략

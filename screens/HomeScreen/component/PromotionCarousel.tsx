@@ -116,16 +116,19 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
           navigation.navigate('Country', {prodOfCountry});
         }
       } else if (item.notice) {
-        action.info.getInfoList('info');
-        navigation.navigate('SimpleText', {
-          key: 'noti',
-          title: i18n.t('set:noti'),
-          bodyTitle: item.notice.title,
-          body: item.notice.body,
-          rule: item.notice.rule,
-          image: item.notice.image,
-          mode: 'noti',
-        });
+        if (item.notice.rule?.invite) navigation.navigate('Invite');
+        else {
+          action.info.getInfoList('info');
+          navigation.navigate('SimpleText', {
+            key: 'noti',
+            title: i18n.t('set:noti'),
+            bodyTitle: item.notice.title,
+            body: item.notice.body,
+            rule: item.notice.rule,
+            image: item.notice.image,
+            mode: 'noti',
+          });
+        }
       } else {
         navigation.navigate('Faq');
       }

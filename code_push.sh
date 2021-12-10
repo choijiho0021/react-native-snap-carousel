@@ -32,12 +32,14 @@ appnameios='Rokebi-iOS'
 appnameandroid='Rokebi-Android'
 xcodeproj='Rokebi.xcodeproj'
 appname='Rokebi'
+bundle='com.uangel.rokebi-USIM'
 
 if [[ "$simtype" = "esim" ]]; then
 	appnameios='RokebiEsim-iOS'
 	appnameandroid='RokebiEsim-Android'
 	xcodeproj='RokebiESIM.xcodeproj'
 	appname='RokebiESIM'
+	bundle='com.uangel.rokebi-ESIM'
 fi
 
 echo "\033[32m"[Info]"\033[0m" "Please enter the Android/iOS version manually before executing the command."
@@ -45,7 +47,8 @@ echo "\033[32m"[Info]"\033[0m" "Please check the CodePush Key again before pushi
 
 echo ""
 
-targetiOSBinaryVersion=`grep 'MARKETING_VERSION' $_dir/ios/$xcodeproj/project.pbxproj | tail -1 | awk  -F " |;" '{print $3}' `
+# targetiOSBinaryVersion=`grep 'MARKETING_VERSION' $_dir/ios/$xcodeproj/project.pbxproj | tail -1 | awk  -F " |;" '{print $3}' `
+targetiOSBinaryVersion=`grep -B 8 $bundle $_dir/ios/$xcodeproj/project.pbxproj | grep 'MARKETING_VERSION' | tail -1 | awk  -F " |;" '{print $3}' `
 
 androidMajorVersion=`grep 'VERSION_MAJOR' $_dir/android/app/version.properties | awk  -F "=" '{print $2}' `
 androidMinorVersion=`grep 'VERSION_MINOR' $_dir/android/app/version.properties | awk  -F "=" '{print $2}' `

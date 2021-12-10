@@ -4,6 +4,7 @@ import _ from 'underscore';
 import api, {ApiResult, DrupalNode, Langcode} from './api';
 import Env from '@/environment';
 import i18n from '@/utils/i18n';
+import {utils} from '@/utils/utils';
 
 const {bundleId, appStoreId, dynamicLink} = Env.get();
 
@@ -167,6 +168,7 @@ const inviteLink = (recommender: string, prodId: string = '') => {
 // 다이나믹 링크를 활용한 초대링크 생성
 const buildLink = async (
   recommender: string,
+  gift: string,
   imageUrl: string,
   prodId: string = '',
 ) => {
@@ -178,8 +180,9 @@ const buildLink = async (
       appStoreId,
     },
     social: {
-      // title, description 변경 예정
-      title: i18n.t('invite:title'),
+      title: i18n
+        .t('invite:title')
+        .replace('*', utils.numberToCommaString(gift)),
       descriptionText: i18n.t('invite:desc'),
       imageUrl,
     },
@@ -191,12 +194,16 @@ const buildLink = async (
   return url;
 };
 
-const invite = async (recommender: string, rule: Record<string, string>) => {
+const invite = async (
+  recommender: string,
+  gift: string,
+  rule: Record<string, string>,
+) => {
   const {share, prodId} = rule;
 
   // prodId 관련 추가 필요
 
-  const url = await buildLink(recommender, share, prodId);
+  const url = await buildLink(recommender, gift, share, prodId);
 
   try {
     await Share.share({

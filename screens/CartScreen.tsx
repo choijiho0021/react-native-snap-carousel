@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
   },
   emptyView: {
     flex: 1,
+    paddingBottom: 60,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',

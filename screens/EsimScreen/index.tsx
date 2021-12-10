@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
   nolist: {
     flex: 1,
     justifyContent: 'center',
+    paddingBottom: 60,
   },
   titleAndStatus: {
     flexDirection: 'row',

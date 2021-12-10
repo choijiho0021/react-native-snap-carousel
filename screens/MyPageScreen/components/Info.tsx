@@ -180,7 +180,7 @@ const Info: React.FC<InfoProps> = ({
         </View>
         <Pressable
           style={styles.btnInvite}
-          onPress={() => navigation.navigate('Invite', {userId})}>
+          onPress={() => navigation.navigate('Invite')}>
           <AppText style={styles.newMark}>{i18n.t('acc:new')}</AppText>
           <AppText style={appStyles.normal14Text}>
             {i18n.t('acc:invite')}

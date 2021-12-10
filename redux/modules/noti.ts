@@ -11,6 +11,7 @@ import ShortcutBadge from 'react-native-app-badge';
 import {Platform} from 'react-native';
 
 const NOTI_TYPE_REPLY = 'reply';
+const NOTI_TYPE_INVITE = 'invite';
 const NOTI_TYPE_PYM = 'pym';
 const NOTI_TYPE_ACCOUNT = 'account';
 const NOTI_TYPE_USIM = 'usim';
@@ -174,6 +175,7 @@ export const actions = {
   NOTI_TYPE_NOTI,
   NOTI_TYPE_PYM,
   NOTI_TYPE_REPLY,
+  NOTI_TYPE_INVITE,
   NOTI_TYPE_USIM,
   sendLog,
   getNotiList,

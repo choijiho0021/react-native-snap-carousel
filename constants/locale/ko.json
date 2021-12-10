@@ -536,13 +536,13 @@
   "promo:join:ing": "시도중 ...",
   "promo:login": "로그인 후 참여",
 
-  "invite:title": "로깨비ESIM 초대",
-  "invite:desc": "국내 최초 eSIM 데이터 스토어",
+  "invite:title": "로깨비 캐쉬 *p를 보냈어요.",
+  "invite:desc": "어쩌면 당신의 해외여행 데이터는 공짜!?",
 
   "inv:title": "친구 초대",
   "inv:share": "초대 링크 보내기",
   "inv:copy": "초대 링크 복사하기",
-  "inv:statInv": "친구 초대 현황",
+  "inv:statInv": "나의 친구 초대 현황",
   "inv:inviteCount": "친구 가입 현황",
   "inv:rokebiCash": "누적 혜택 현황",
   "inv:inviteCountUnit": "명",
