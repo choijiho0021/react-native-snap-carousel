@@ -116,7 +116,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
           navigation.navigate('Country', {prodOfCountry});
         }
       } else if (item.notice) {
-        if (item.notice.rule?.invite) navigation.navigate('Invite');
+        if (item.notice.rule?.invitation) navigation.navigate('Invite');
         else {
           action.info.getInfoList('info');
           navigation.navigate('SimpleText', {

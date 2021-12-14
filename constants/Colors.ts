@@ -31,4 +31,6 @@ export const colors = {
   lightPeriwinkle: '#bfc6f6',
   blue: '#2A7FF6',
   goldenYellow: '#ffc61b',
+  paleBlue: '#eaf3fe',
+  paleGrey2: '#f2f4f6',
 };

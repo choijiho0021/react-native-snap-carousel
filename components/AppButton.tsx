@@ -50,6 +50,7 @@ interface AppButtonProps {
   direction?: string;
   checkedColor?: string;
   iconStyle?: ViewStyle;
+  viewStyle?: ViewStyle;
 }
 
 const AppButton: React.FC<AppButtonProps> = ({
@@ -68,6 +69,7 @@ const AppButton: React.FC<AppButtonProps> = ({
   direction,
   checkedColor,
   iconStyle,
+  viewStyle,
 }) => {
   return (
     <TouchableOpacity
@@ -83,7 +85,7 @@ const AppButton: React.FC<AppButtonProps> = ({
       onPress={onPress}>
       <View
         style={[
-          styles.container,
+          viewStyle || styles.container,
           direction === 'row'
             ? {flexDirection: 'row', justifyContent: 'flex-start'}
             : {justifyContent: 'center'},

@@ -9,6 +9,8 @@ const headerPath = '../assets/images/header/';
 const paymentPath = '../assets/images/payment/';
 const esimPath = '../assets/images/esim/';
 const guidePath = '../assets/images/guide/';
+const invitePath = '../assets/images/invite/';
+
 const images: Record<string, any[]> = {
   btnHome: [
     require(`${tabbarPath}btnHome.png`),
@@ -108,6 +110,12 @@ const images: Record<string, any[]> = {
   rokIcon: [require(`${esimPath}icon.png`)],
   emptyCart: [require(`${esimPath}imgCart.png`)],
   emptyESIM: [require(`${esimPath}imgAirplane.png`)],
+
+  inviteRokebi1: [require(`${invitePath}inviteRokebi1.png`)],
+  inviteRokebi2: [require(`${invitePath}inviteRokebi2.png`)],
+  iconShare: [require(`${invitePath}iconShare.png`)],
+  iconCopy: [require(`${invitePath}iconCopy.png`)],
+  coin: [require(`${invitePath}coin.png`)],
 };
 
 interface AppIconProps {

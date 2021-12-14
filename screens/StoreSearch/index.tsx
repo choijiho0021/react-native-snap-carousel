@@ -214,7 +214,6 @@ const HeaderTitle0 = ({
           placeholderTextColor={colors.greyish}
           returnKeyType="search"
           enablesReturnKeyAutomatically
-          clearButtonMode="always"
           onSubmitEditing={() => search(word, true)}
           onChangeText={(value: string) => {
             search(value, false);
