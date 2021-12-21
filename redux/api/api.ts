@@ -65,6 +65,8 @@ const path = {
 
   simCard: 'json/smc/list',
   cart: 'cart',
+  gift: 'gift',
+  giftImages: 'rokebi/gift/images',
   order: 'json/orders',
   uploadFile: 'file/upload',
   board: 'json/contactboard',

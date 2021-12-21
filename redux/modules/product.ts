@@ -32,6 +32,7 @@ const init = createAsyncThunk('product/init', async (_, {dispatch}) => {
   await dispatch(getProd(category.usaAu));
   await dispatch(getProd(category.multi));
   await dispatch(PromotionActions.getPromotion());
+  await dispatch(PromotionActions.getGiftImages());
 });
 export interface ProductModelState {
   prodList: ImmutableMap<string, RkbProduct>;

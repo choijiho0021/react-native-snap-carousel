@@ -41,6 +41,11 @@ export type RkbInviteStatInfo = {
   recommenderGift: string;
 };
 
+export type RkbGiftImages = {
+  title: string;
+  image: string;
+};
+
 const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
   if (_.isArray(data)) {
     return api.success(
@@ -107,6 +112,22 @@ const toStatInfo = (data: {
   return api.failure(api.FAILED, data.result?.error);
 };
 
+const toGift = (data: []): ApiResult<RkbGiftImages> => {
+  // if (data.result === 0) {
+  return api.success(
+    data.map((v) => {
+      return {
+        title: v.title,
+        image: v.field_gift_images,
+      };
+    }),
+    // [],
+    // data.result,
+  );
+  // }
+  // return api.failure(api.FAILED, data.result?.error);
+};
+
 const getPromotion = () => {
   return api.callHttpGet<RkbPromotion>(
     `${api.httpUrl(api.path.promotion)}?_format=hal_json`,
@@ -121,6 +142,13 @@ const getStat = () => {
   );
 };
 
+const getGiftImages = () => {
+  return api.callHttpGet<RkbGiftImages>(
+    `${api.httpUrl(api.path.giftImages)}?_format=hal_json`,
+    toGift,
+  );
+};
+
 // Promotion 참여를 위한 API
 const check = (sku: string) => {
   if (sku) {
@@ -130,6 +158,20 @@ const check = (sku: string) => {
     );
   }
   return api.reject(api.E_INVALID_ARGUMENT, 'sku not found');
+};
+
+//
+const sendCheck = (prodId?: string, userId?: string) => {
+  if (prodId && userId) {
+    return api.callHttpGet(
+      `https://esim.rokebi.com/gift/userId=${userId}&prodId=${prodId}`, // ?_format=json
+      toPromoInfo,
+      {
+        Authorization: `KakaoAK ${'f881469e3b4a140967dfaebe648ede8d'}`,
+      },
+    );
+  }
+  return api.reject(api.E_INVALID_ARGUMENT, 'prodId | userId not found');
 };
 
 const join = ({
@@ -226,8 +268,10 @@ const invite = async (
 export default {
   getPromotion,
   getStat,
+  getGiftImages,
   join,
   check,
+  sendCheck,
   invite,
   buildLink,
 };

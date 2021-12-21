@@ -99,4 +99,6 @@ export type HomeStackParamList = {
   MyPage: undefined;
   Recharge: {mode: string};
   Invite: undefined;
+
+  Gift: {item: RkbSubscription};
 };
