@@ -9,7 +9,7 @@ import {StyleSheet, View} from 'react-native';
 
 const styles = StyleSheet.create({
   notice: {
-    backgroundColor: colors.whiteThree,
+    backgroundColor: colors.whiteTwo,
     padding: 20,
     flexDirection: 'row',
   },
