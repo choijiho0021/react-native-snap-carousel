@@ -44,6 +44,7 @@ export type RkbInviteStatInfo = {
 export type RkbGiftImages = {
   title: string;
   image: string;
+  uuid: string;
 };
 
 const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
@@ -119,6 +120,7 @@ const toGift = (data: []): ApiResult<RkbGiftImages> => {
       return {
         title: v.title,
         image: v.field_gift_images,
+        uuid: v.uuid,
       };
     }),
     // [],
