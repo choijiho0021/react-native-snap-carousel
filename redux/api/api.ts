@@ -100,6 +100,9 @@ const path = {
       call: 'rokebi/call',
       ota: 'rokebi/svc/ota',
     },
+    pv: {
+      cmiUsage: 'api/v1/pvd/pv/cmi/v2/usage',
+    },
   },
 };
 
@@ -120,8 +123,8 @@ const addrApiUrl = () => {
   return `${scheme}://www.juso.go.kr/addrlink/addrLinkApi.do`;
 };
 
-const rokHttpUrl = (path0: string) => {
-  return `${scheme}://${rokApiUrl}/${path0}?service=${
+const rokHttpUrl = (path0: string, port?: number) => {
+  return `${scheme}://${rokApiUrl}:${port || 80}/${path0}?service=${
     esimGlobal ? 'global' : appId
   }`;
 };

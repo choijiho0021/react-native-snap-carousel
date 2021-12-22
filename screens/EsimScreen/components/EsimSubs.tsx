@@ -1,6 +1,6 @@
 import React, {memo} from 'react';
 import {Dimensions, Pressable, StyleSheet, View} from 'react-native';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -10,6 +10,7 @@ import {API} from '@/redux/api';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
+
 const {width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
@@ -97,7 +98,11 @@ const styles = StyleSheet.create({
   },
 });
 
-const title = (item: RkbSubscription, expired: boolean, navigation) => {
+const title = (
+  item: RkbSubscription,
+  expired: boolean,
+  onPress: () => void,
+) => {
   // console.log('@@ item', item);
   return (
     <View style={styles.prodTitle}>
@@ -120,11 +125,9 @@ const title = (item: RkbSubscription, expired: boolean, navigation) => {
           </AppText>
         </View>
       ) : (
-        <Pressable
-          style={styles.expiredBg}
-          onPress={() => navigation.navigate('Gift', {item})}>
+        <Pressable style={styles.expiredBg} onPress={onPress}>
           <AppText key={item.nid} style={appStyles.normal12Text}>
-            선물하기
+            {i18n.t('usim:checkUsage')}
           </AppText>
         </Pressable>
       )}
@@ -179,22 +182,24 @@ const QRnCopyInfo = (onPress: (showQR: boolean) => void) => {
 
 const EsimSubs = ({
   item,
-  onPress,
+  onPressQR,
+  onPressUsage,
   expired,
 }: {
   item: RkbSubscription;
-  onPress: (showQR: boolean) => void;
+  onPressQR: (showQR: boolean) => void;
+  onPressUsage: () => void;
   expired: boolean;
 }) => {
   const navigation = useNavigation();
   return (
     <View style={styles.usageListContainer}>
       <View style={[styles.infoCard, expired && styles.cardExpiredBg]}>
-        {title(item, expired, navigation)}
+        {title(item, expired, onPressUsage)}
         {topInfo(item)}
         {!expired &&
           item.type !== API.Subscription.CALL_PRODUCT &&
-          QRnCopyInfo(onPress)}
+          QRnCopyInfo(onPressQR)}
       </View>
       {!expired && (
         <View

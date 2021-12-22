@@ -1,5 +1,5 @@
-import i18n from '@/utils/i18n';
 import _, {isArray} from 'underscore';
+import i18n from '@/utils/i18n';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 
 const STATUS_ACTIVE = 'A'; // 사용중
@@ -313,6 +313,7 @@ const updateSubscriptionStatus = ({
 };
 
 //그래프를 그리기 위해서 가져올 데이터
+// rokebi drupal 서버에서 수집한 CDR을 기반으로 처리하는 경우
 const getSubsUsage = ({id, token}: {id?: string; token?: string}) => {
   if (!id) return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: id');
   if (!token)
@@ -322,6 +323,32 @@ const getSubsUsage = ({id, token}: {id?: string; token?: string}) => {
     `${api.httpUrl(api.path.rokApi.rokebi.usage)}/${id}?_format=json`,
     toSubsUsage,
     api.withToken(token),
+  );
+};
+
+// get usage data from svc server
+// CMI API를 사용하는 경우
+const cmiGetSubsUsage = ({
+  iccid,
+  packageId,
+}: {
+  iccid: string;
+  packageId: string;
+}) => {
+  if (!iccid)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
+  if (!packageId)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: packageId');
+
+  return api.callHttpGet(
+    `${api.rokHttpUrl(
+      api.path.rokApi.pv.cmiUsage,
+      5000,
+    )}&iccid=${iccid}&packageId=${packageId}&quota`,
+    (rsp) => {
+      console.log('@@@ rsp', rsp);
+    },
+    new Headers({'Content-Type': 'application/json'}),
   );
 };
 
@@ -448,4 +475,5 @@ export default {
   getOtaSubscription,
   updateSubscriptionStatus,
   getSubsUsage,
+  cmiGetSubsUsage,
 };

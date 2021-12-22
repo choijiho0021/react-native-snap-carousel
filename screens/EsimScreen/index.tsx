@@ -1,7 +1,7 @@
 import Clipboard from '@react-native-community/clipboard';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {Component} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import {connect} from 'react-redux';
@@ -41,6 +41,7 @@ import {
 import i18n from '@/utils/i18n';
 import CardInfo from './components/CardInfo';
 import EsimSubs from './components/EsimSubs';
+import {API} from '@/redux/api';
 
 const {esimGlobal} = Env.get();
 
@@ -166,103 +167,49 @@ type EsimScreenProps = {
 
 export type ModalType = 'showQR' | 'manual';
 
-type EsimScreenState = {
-  refreshing: boolean;
-  showSnackBar: boolean;
-  showModal: boolean;
-  modal?: ModalType;
-  subs?: RkbSubscription;
-  copyString: string;
-};
+const EsimScreen: React.FC<EsimScreenProps> = ({
+  account: {iccid, token, balance, expDate},
+  navigation,
+  action,
+  order,
+  pending,
+  loginPending,
+}) => {
+  const [refreshing, setRefreshing] = useState(false);
+  const [showSnackBar, setShowSnackBar] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modal, setModal] = useState<ModalType>();
+  const [subs, setSubs] = useState<RkbSubscription>();
+  const [copyString, setCopyString] = useState('');
 
-class EsimScreen extends Component<EsimScreenProps, EsimScreenState> {
-  constructor(props: EsimScreenProps) {
-    super(props);
-
-    this.state = {
-      refreshing: false,
-      showSnackBar: false,
-      showModal: false,
-      modal: undefined,
-      subs: undefined,
-      copyString: '',
-    };
-
-    this.init = this.init.bind(this);
-    this.renderSubs = this.renderSubs.bind(this);
-    this.onRefresh = this.onRefresh.bind(this);
-    this.info = this.info.bind(this);
-    this.showModal = this.showModal.bind(this);
-    this.modalBody = this.modalBody.bind(this);
-    this.copyToClipboard = this.copyToClipboard.bind(this);
-  }
-
-  componentDidMount() {
-    const {
-      account: {iccid, token},
-    } = this.props;
-
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppText style={styles.title}>{i18n.t('esimList')}</AppText>
-      ),
-    });
-
-    this.init({iccid, token});
-  }
-
-  onRefresh() {
-    const {
-      account: {iccid, token},
-    } = this.props;
-
+  const onRefresh = useCallback(() => {
     if (iccid) {
-      this.setState({
-        refreshing: true,
-      });
+      setRefreshing(true);
 
-      this.props.action.order
+      action.order
         .getSubsWithToast({iccid, token})
         .then(() => {
-          this.props.action.account.getAccount({iccid, token});
+          action.account.getAccount({iccid, token});
         })
         .finally(() => {
-          this.setState({
-            refreshing: false,
-          });
+          setRefreshing(false);
         });
     }
-  }
+  }, [action.account, action.order, iccid, token]);
 
-  modalBody = () => {
-    const {modal, subs} = this.state;
+  const copyToClipboard = useCallback(
+    (value?: string) => () => {
+      console.log('@@@ copy', value);
+      if (value) {
+        Clipboard.setString(value);
+        setCopyString(value);
+        action.toast.push(Toast.COPY_SUCCESS);
+      }
+    },
+    [action.toast],
+  );
 
-    if (!subs) return null;
-
-    if (modal === 'showQR') {
-      return showQR(subs);
-    }
-
-    return (
-      <View style={styles.modalBody}>
-        {esimManualInputInfo()}
-        {this.copyInfo('smdp', subs.smdpAddr)}
-        {this.copyInfo('actCode', subs.actCode)}
-      </View>
-    );
-  };
-
-  copyToClipboard = (value?: string) => () => {
-    console.log('@@@ copy', value);
-    if (value) {
-      Clipboard.setString(value);
-      this.setState({copyString: value});
-      this.props.action.toast.push(Toast.COPY_SUCCESS);
-    }
-  };
-
-  empty = () => {
+  const empty = useCallback(() => {
     return (
       <View style={styles.nolist}>
         <AppIcon name="emptyESIM" />
@@ -272,14 +219,11 @@ class EsimScreen extends Component<EsimScreenProps, EsimScreenState> {
         </AppText>
       </View>
     );
-  };
+  }, []);
 
-  info() {
+  const info = useCallback(() => {
     if (esimGlobal) return null;
-    const {
-      account: {iccid, balance, expDate},
-      navigation,
-    } = this.props;
+
     return (
       <CardInfo
         iccid={iccid}
@@ -288,119 +232,154 @@ class EsimScreen extends Component<EsimScreenProps, EsimScreenState> {
         navigation={navigation}
       />
     );
-  }
+  }, [balance, expDate, iccid, navigation]);
 
-  showModal(flag: boolean, modal?: ModalType, subs?: RkbSubscription) {
-    this.setState({showModal: flag, modal, subs});
-  }
+  const copyInfo = useCallback(
+    (title: string, valToCopy?: string) => {
+      const selected = copyString === valToCopy;
 
-  copyInfo(title: string, valToCopy?: string) {
-    const {copyString} = this.state;
-    const selected = copyString === valToCopy;
+      return (
+        <View style={styles.titleAndStatus}>
+          <View style={{flex: 1}}>
+            <AppText style={styles.esimInfoKey}>
+              {i18n.t(`esim:${title}`)}
+            </AppText>
+            <AppText style={appStyles.normal16Text}>{valToCopy}</AppText>
+          </View>
+          <AppButton
+            title={i18n.t('copy')}
+            titleStyle={[
+              appStyles.normal14Text,
+              {color: selected ? colors.clearBlue : colors.black},
+            ]}
+            style={[
+              styles.btnCopy,
+              {
+                borderColor: selected ? colors.clearBlue : colors.whiteTwo,
+              },
+            ]}
+            onPress={copyToClipboard(valToCopy)}
+          />
+        </View>
+      );
+    },
+    [copyString, copyToClipboard],
+  );
+
+  const init = useCallback(
+    ({iccid, token}: {iccid?: string; token?: string}) => {
+      if (iccid && token) {
+        action.order.getSubsWithToast({iccid, token});
+      }
+    },
+    [action.order],
+  );
+
+  const modalBody = useCallback(() => {
+    if (!subs) return null;
+
+    if (modal === 'showQR') {
+      return showQR(subs);
+    }
 
     return (
-      <View style={styles.titleAndStatus}>
-        <View style={{flex: 1}}>
-          <AppText style={styles.esimInfoKey}>
-            {i18n.t(`esim:${title}`)}
-          </AppText>
-          <AppText style={appStyles.normal16Text}>{valToCopy}</AppText>
-        </View>
-        <AppButton
-          title={i18n.t('copy')}
-          titleStyle={[
-            appStyles.normal14Text,
-            {color: selected ? colors.clearBlue : colors.black},
-          ]}
-          style={[
-            styles.btnCopy,
-            {
-              borderColor: selected ? colors.clearBlue : colors.whiteTwo,
-            },
-          ]}
-          onPress={this.copyToClipboard(valToCopy)}
-        />
+      <View style={styles.modalBody}>
+        {esimManualInputInfo()}
+        {copyInfo('smdp', subs.smdpAddr)}
+        {copyInfo('actCode', subs.actCode)}
       </View>
     );
-  }
+  }, [copyInfo, modal, subs]);
 
-  init({iccid, token}: {iccid?: string; token?: string}) {
-    if (iccid && token) {
-      this.props.action.order.getSubsWithToast({iccid, token});
-    }
-  }
+  const onPressUsage = useCallback(() => {
+    console.log('@@@ check usage');
 
-  renderSubs({item}: {item: RkbSubscription}) {
-    return (
-      <EsimSubs
-        key={item.key}
-        item={item}
-        expired={new Date(item.expireDate) <= new Date()}
-        onPress={(qr: boolean) =>
-          this.showModal(true, qr ? 'showQR' : 'manual', item)
+    API.Subscription.cmiGetSubsUsage({
+      iccid: '89852340003821181097',
+      packageId: 'D190129023743_83416',
+    });
+  }, []);
+
+  const renderSubs = useCallback(
+    ({item}: {item: RkbSubscription}) => {
+      return (
+        <EsimSubs
+          key={item.key}
+          item={item}
+          expired={new Date(item.expireDate) <= new Date()}
+          onPressQR={(qr: boolean) => {
+            setShowModal(true);
+            setModal(qr ? 'showQR' : 'manual');
+            setSubs(item);
+          }}
+          onPressUsage={onPressUsage}
+        />
+      );
+    },
+    [onPressUsage],
+  );
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <AppText style={styles.title}>{i18n.t('esimList')}</AppText>
+      ),
+    });
+    init({iccid, token});
+  }, [iccid, init, navigation, token]);
+
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={order.subs}
+        keyExtractor={(item) => item.key.toString()}
+        ListHeaderComponent={info}
+        renderItem={renderSubs}
+        // onRefresh={this.onRefresh}
+        // refreshing={refreshing}
+        extraData={order.subs}
+        contentContainerStyle={_.isEmpty(order.subs) && {flex: 1}}
+        ListEmptyComponent={empty}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[colors.clearBlue]} // android 전용
+            tintColor={colors.clearBlue} // ios 전용
+          />
         }
       />
-    );
-  }
-
-  render() {
-    const {subs} = this.props.order;
-    const {refreshing, showSnackBar, showModal, modal} = this.state;
-
-    return (
-      <View style={styles.container}>
-        <FlatList
-          data={subs}
-          keyExtractor={(item) => item.key.toString()}
-          ListHeaderComponent={this.info}
-          renderItem={this.renderSubs}
-          // onRefresh={this.onRefresh}
-          // refreshing={refreshing}
-          extraData={subs}
-          contentContainerStyle={_.isEmpty(subs) && {flex: 1}}
-          ListEmptyComponent={this.empty}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={this.onRefresh}
-              colors={[colors.clearBlue]} // android 전용
-              tintColor={colors.clearBlue} // ios 전용
-            />
-          }
-        />
-        <AppActivityIndicator
-          visible={this.props.pending || this.props.loginPending}
-        />
-        <AppModal
-          type="close"
-          justifyContent="flex-end"
-          titleIcon={modal === 'showQR' ? 'btnQr' : 'btnPen'}
-          titleStyle={styles.titleStyle}
-          title={
-            modal === 'showQR'
-              ? i18n.t('esim:showQR:title')
-              : i18n.t('esim:manualInput:title')
-          }
-          contentStyle={{
-            marginHorizontal: 0,
-            backgroundColor: 'white',
-            borderTopLeftRadius: 8,
-            borderTopRightRadius: 8,
-            padding: 20,
-          }}
-          onOkClose={() => this.showModal(false)}
-          visible={showModal}>
-          {this.modalBody()}
-        </AppModal>
-        <AppSnackBar
-          visible={showSnackBar}
-          onClose={() => this.setState({showSnackBar: false})}
-          textMessage={i18n.t('usim:failSnackBar')}
-        />
-      </View>
-    );
-  }
-}
+      <AppActivityIndicator visible={pending || loginPending} />
+      <AppModal
+        type="close"
+        justifyContent="flex-end"
+        titleIcon={modal === 'showQR' ? 'btnQr' : 'btnPen'}
+        titleStyle={styles.titleStyle}
+        title={
+          modal === 'showQR'
+            ? i18n.t('esim:showQR:title')
+            : i18n.t('esim:manualInput:title')
+        }
+        contentStyle={{
+          marginHorizontal: 0,
+          backgroundColor: 'white',
+          borderTopLeftRadius: 8,
+          borderTopRightRadius: 8,
+          padding: 20,
+        }}
+        onOkClose={() => setShowModal(false)}
+        visible={showModal}>
+        {modalBody()}
+      </AppModal>
+      <AppSnackBar
+        visible={showSnackBar}
+        onClose={() => setShowSnackBar(false)}
+        textMessage={i18n.t('usim:failSnackBar')}
+      />
+    </View>
+  );
+};
 
 export default connect(
   ({account, order, noti, info, status, sync, cart}: RootState) => ({

@@ -1,6 +1,6 @@
 import _ from 'underscore';
-import Env from '@/environment';
 import Config from 'react-native-config';
+import Env from '@/environment';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import {RkbInfo} from './pageApi';
 
