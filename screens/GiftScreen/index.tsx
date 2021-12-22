@@ -76,12 +76,11 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   action,
 }) => {
   const [checked, setChecked] = useState('kakao');
-  const [showRight, setShowRight] = useState(true);
   const [num, setNum] = useState(0);
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const bgImages = useMemo(
-    () => promotion.giftImages?.filter((v) => v?.image),
+    () => (promotion.giftImages || []).filter((v) => v?.image),
     [promotion.giftImages],
   );
 
@@ -228,7 +227,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         }}
         imageStyle={{aspectRatio: 375 / 420}}
         source={{
-          uri: API.default.httpImageUrl(bgImages[num].image).toString(),
+          uri: API.default.httpImageUrl(bgImages[num]?.image).toString(),
         }}>
         <View
           style={{
