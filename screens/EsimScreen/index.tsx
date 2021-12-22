@@ -42,6 +42,7 @@ import i18n from '@/utils/i18n';
 import CardInfo from './components/CardInfo';
 import EsimSubs from './components/EsimSubs';
 import {API} from '@/redux/api';
+import UsageItem from '@/screens/UsimScreen/components/UsageItem';
 
 const {esimGlobal} = Env.get();
 
@@ -147,11 +148,8 @@ const esimManualInputInfo = () => {
 
 type EsimScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Esim'>;
 
-type EsimScreenRouteProp = RouteProp<HomeStackParamList, 'Esim'>;
-
 type EsimScreenProps = {
   navigation: EsimScreenNavigationProp;
-  route: EsimScreenRouteProp;
 
   loginPending: boolean;
   pending: boolean;
@@ -165,7 +163,13 @@ type EsimScreenProps = {
   };
 };
 
-export type ModalType = 'showQR' | 'manual';
+export type ModalType = 'showQR' | 'manual' | 'usage';
+const modalTitleIcon = {showQR: 'btnQr', manual: 'btnPen', usage: undefined};
+const modalTitle = {
+  showQR: i18n.t('esim:showQR:title'),
+  manual: i18n.t('esim:manualInput:title'),
+  usage: undefined,
+};
 
 const EsimScreen: React.FC<EsimScreenProps> = ({
   account: {iccid, token, balance, expDate},
@@ -178,7 +182,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [refreshing, setRefreshing] = useState(false);
   const [showSnackBar, setShowSnackBar] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [modal, setModal] = useState<ModalType>();
+  const [modal, setModal] = useState<ModalType>('');
   const [subs, setSubs] = useState<RkbSubscription>();
   const [copyString, setCopyString] = useState('');
 
@@ -277,26 +281,67 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const modalBody = useCallback(() => {
     if (!subs) return null;
+    const cmiUsage = {
+      subscriberQuota: {
+        qtavalue: '512000',
+        qtabalance: '73042',
+        qtaconsumption: '438958',
+      },
+      historyQuota: [
+        {time: '20211222', qtaconsumption: '376.44', mcc: '452'},
+        {time: '20211221', qtaconsumption: '1454.78', mcc: '452'},
+      ],
+      result: {code: 0},
+      trajectoriesList: [
+        {
+          mcc: '452',
+          country: 'Vietnam',
+          beginTime: '20211221',
+          useTime: '20220120',
+          himsi: '454120382118109',
+        },
+      ],
+    };
 
-    if (modal === 'showQR') {
-      return showQR(subs);
+    switch (modal) {
+      case 'showQR':
+        return showQR(subs);
+
+      case 'manual':
+        return (
+          <View style={styles.modalBody}>
+            {esimManualInputInfo()}
+            {copyInfo('smdp', subs.smdpAddr)}
+            {copyInfo('actCode', subs.actCode)}
+          </View>
+        );
+
+      default:
+        // usage
+        return (
+          <UsageItem
+            item={subs}
+            onPress={() => {}}
+            showSnackbar={() => {}}
+            usage={{quota: 100, used: 40}}
+          />
+        );
     }
-
-    return (
-      <View style={styles.modalBody}>
-        {esimManualInputInfo()}
-        {copyInfo('smdp', subs.smdpAddr)}
-        {copyInfo('actCode', subs.actCode)}
-      </View>
-    );
   }, [copyInfo, modal, subs]);
 
-  const onPressUsage = useCallback(() => {
-    console.log('@@@ check usage');
+  const onPressUsage = useCallback((item: RkbSubscription) => {
+    // {"subscriberQuota":{"qtavalue":"512000","qtabalance":"73042","qtaconsumption":"438958"},"historyQuota":[{"time":"20211222","qtaconsumption":"376.44","mcc":"452"},{"time":"20211221","qtaconsumption":"1454.78","mcc":"452"}],"result":{"code":0},"trajectoriesList":[{"mcc":"452","country":"Vietnam","beginTime":"20211221","useTime":"20220120","himsi":"454120382118109"}]}
+    setShowModal(true);
+    setModal('usage');
+    setSubs(item);
+
+    console.log('@@@ item', item);
 
     API.Subscription.cmiGetSubsUsage({
       iccid: '89852340003821181097',
       packageId: 'D190129023743_83416',
+    }).then((rsp) => {
+      console.log('@@@ rsp');
     });
   }, []);
 
@@ -312,7 +357,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             setModal(qr ? 'showQR' : 'manual');
             setSubs(item);
           }}
-          onPressUsage={onPressUsage}
+          onPressUsage={() => onPressUsage(item)}
         />
       );
     },
@@ -354,13 +399,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       <AppModal
         type="close"
         justifyContent="flex-end"
-        titleIcon={modal === 'showQR' ? 'btnQr' : 'btnPen'}
+        titleIcon={modalTitleIcon[modal]}
         titleStyle={styles.titleStyle}
-        title={
-          modal === 'showQR'
-            ? i18n.t('esim:showQR:title')
-            : i18n.t('esim:manualInput:title')
-        }
+        title={modalTitle[modal]}
         contentStyle={{
           marginHorizontal: 0,
           backgroundColor: 'white',

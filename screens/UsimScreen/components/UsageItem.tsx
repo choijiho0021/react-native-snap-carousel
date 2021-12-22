@@ -1,3 +1,9 @@
+import Analytics from 'appcenter-analytics';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {AnimatedCircularProgress} from 'react-native-circular-progress';
+import Svg, {Line} from 'react-native-svg';
+import {connect} from 'react-redux';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -5,17 +11,10 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
-import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import {RkbSubscription, RkbSubsUsage} from '@/redux/api/subscriptionApi';
 import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
-import Analytics from 'appcenter-analytics';
-import React, {Component} from 'react';
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
-import {AnimatedCircularProgress} from 'react-native-circular-progress';
-import Svg, {Line} from 'react-native-svg';
-import {connect} from 'react-redux';
-import _ from 'underscore';
 
 const styles = StyleSheet.create({
   usageListContainer: {
@@ -148,71 +147,46 @@ type UsageItemProps = {
   item: RkbSubscription;
   onPress: () => void;
   showSnackbar: () => void;
+  usage?: RkbSubsUsage;
 
   account: AccountModelState;
 };
-type UsageItemState = {
-  isShowUsage: boolean;
-  disableBtn: boolean;
-  quota?: number;
-  used?: number;
-};
 
-class UsageItem extends Component<UsageItemProps, UsageItemState> {
-  circularProgress: React.RefObject<AnimatedCircularProgress>;
+const UsageItem: React.FC<UsageItemProps> = ({
+  item,
+  showSnackbar,
+  onPress,
+  usage,
+  account: {token},
+}) => {
+  const [isShowUsage, setIsShowUsage] = useState(!!usage);
+  const [disableBtn, setDisableBtn] = useState(false);
+  const [quota, setQuota] = useState<number>(usage?.quota || 0);
+  const [used, setUsed] = useState<number>(usage?.used || 0);
+  const circularProgress = useRef();
 
-  constructor(props: UsageItemProps) {
-    super(props);
-
-    this.state = {
-      isShowUsage: false,
-      disableBtn: false,
-    };
-    this.usageRender = this.usageRender.bind(this);
-    this.getUsage = this.getUsage.bind(this);
-    this.expire = this.expire.bind(this);
-    this.expireBeforeUse = this.expireBeforeUse.bind(this);
-
-    this.circularProgress = React.createRef();
-  }
-
-  shouldComponentUpdate(nextProps: UsageItemProps, nextState: UsageItemState) {
-    return (
-      !_.isEqual(nextProps.item, this.props.item) ||
-      this.state.disableBtn !== nextState.disableBtn
-    );
-  }
-
-  componentDidUpdate() {
-    if (this.state.disableBtn) {
-      setTimeout(() => {
-        this.setState({
-          disableBtn: false,
-        });
-      }, 5000);
+  useEffect(() => {
+    if (disableBtn) {
+      setTimeout(() => setDisableBtn(false), 5000);
     }
-  }
+  }, [disableBtn]);
 
-  getUsage() {
-    const {
-      item,
-      showSnackbar,
-      account: {token},
-    } = this.props;
-
+  const getUsage = useCallback(() => {
     //그래프 테스트 nid = 1616
     if (item.statusCd === 'A') {
       API.Subscription.getSubsUsage({id: item.nid, token}).then((resp) => {
-        this.setState({disableBtn: true});
+        setDisableBtn(true);
         if (resp.result === 0) {
           console.log('getSubsUsage progress', resp.objects, item.nid);
           const {quota, used} = resp.objects[0];
           const progress =
             used > 0 ? 100 - Math.floor((used / quota) * 100) : 0;
 
-          this.setState({quota, used, isShowUsage: true});
+          setQuota(quota);
+          setUsed(used);
+          setIsShowUsage(true);
 
-          this.circularProgress.current?.animate(progress, 3000, null);
+          circularProgress.current?.animate(progress, 3000, null);
 
           Analytics.trackEvent('Page_View_Count', {page: 'Get Detail Data'});
         } else {
@@ -221,9 +195,9 @@ class UsageItem extends Component<UsageItemProps, UsageItemState> {
         }
       });
     }
-  }
+  }, [item.nid, item.statusCd, showSnackbar, token]);
 
-  expire = (item: RkbSubscription) => {
+  const expire = useCallback((item: RkbSubscription) => {
     return (
       <View style={styles.endDateContainer}>
         <AppText style={appStyles.normal12Text}>
@@ -234,9 +208,9 @@ class UsageItem extends Component<UsageItemProps, UsageItemState> {
         )} ${i18n.t('usim:until')}`}</AppText>
       </View>
     );
-  };
+  }, []);
 
-  expireBeforeUse = (item: RkbSubscription) => {
+  const expireBeforeUse = useCallback((item: RkbSubscription) => {
     return (
       <View style={styles.inactiveContainer}>
         <AppText style={appStyles.normal12Text}>
@@ -248,39 +222,37 @@ class UsageItem extends Component<UsageItemProps, UsageItemState> {
         )} ~ ${item.expireDate}`}</AppText>
       </View>
     );
-  };
+  }, []);
 
-  toMb = (kb: number) => {
+  const toMb = useCallback((kb: number) => {
     if (kb === 0) return 0;
     return utils.numberToCommaString(kb / 1024);
-  };
+  }, []);
 
-  toGb = (kb: number) => {
+  const toGb = useCallback((kb: number) => {
     if (kb === 0) return 0;
     return (kb / 1024 / 1024).toFixed(2);
-  };
+  }, []);
 
-  checkUsageButton() {
+  const checkUsageButton = useCallback(() => {
     return (
       <View style={styles.checkUsageBtnContainer}>
         <AppButton
           style={styles.checkUsageBtn}
-          disabled={this.state.disableBtn}
-          onPress={() => this.getUsage()}
+          disabled={disableBtn}
+          onPress={() => getUsage()}
           title={i18n.t('usim:checkUsage')}
           titleStyle={styles.checkUsageBtnTitle}
         />
       </View>
     );
-  }
+  }, [disableBtn, getUsage]);
 
-  usageRender() {
-    const {quota = 0, used = 0} = this.state;
-
+  const usageRender = useCallback(() => {
     return (
       <View style={styles.activeContainer}>
         <AnimatedCircularProgress
-          ref={this.circularProgress}
+          ref={circularProgress}
           style={styles.circular}
           size={130}
           width={25}
@@ -307,87 +279,81 @@ class UsageItem extends Component<UsageItemProps, UsageItemState> {
             {i18n.t('usim:remainData')}
           </AppText>
           <AppText style={appStyles.bold18Text}>
-            {`${this.toGb(quota - used)}GB ${i18n.t('usim:remain')}`}
+            {`${toGb(quota - used)}GB ${i18n.t('usim:remain')}`}
           </AppText>
-          <AppText style={styles.normal12WarmGrey}>{`(${this.toMb(
+          <AppText style={styles.normal12WarmGrey}>{`(${toMb(
             quota - used,
           )}MB)`}</AppText>
           <AppText style={[styles.normal14WarmGrey, {marginTop: 10}]}>
             {i18n.t('usim:usageAmount')}
           </AppText>
           <AppText style={styles.bold16WarmGrey}>
-            {`${this.toGb(used)}GB ${i18n.t('usim:used')}`}
+            {`${toGb(used)}GB ${i18n.t('usim:used')}`}
           </AppText>
-          <AppText style={styles.normal12WarmGrey}>{`(${this.toMb(
+          <AppText style={styles.normal12WarmGrey}>{`(${toMb(
             used,
           )}MB)`}</AppText>
         </View>
       </View>
     );
-  }
+  }, [quota, toGb, toMb, used]);
 
-  render() {
-    const {item, onPress} = this.props;
-    const {isShowUsage = false} = this.state;
-    const {statusColor = colors.warmGrey, isActive = false} = getStatusColor(
-      item.statusCd,
-    );
-    const isCallProduct = item.type === API.Subscription.CALL_PRODUCT;
+  const {statusColor = colors.warmGrey, isActive = false} = getStatusColor(
+    item.statusCd,
+  );
+  const isCallProduct = item.type === API.Subscription.CALL_PRODUCT;
 
-    return (
-      <TouchableOpacity onPress={onPress}>
-        <View style={styles.usageListContainer}>
-          <View style={{backgroundColor: colors.white}}>
-            <View style={styles.titleAndStatus}>
-              <AppText
-                key={item.key}
-                style={[
-                  styles.usageTitleNormal,
-                  {fontWeight: isActive ? 'bold' : 'normal'},
-                ]}>
-                {item.prodName}
-              </AppText>
-              <AppText
-                key={item.nid}
-                style={[styles.usageStatus, {color: statusColor}]}>
-                {' '}
-                • {item.status}
-              </AppText>
-            </View>
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <View style={styles.usageListContainer}>
+        <View style={{backgroundColor: colors.white}}>
+          <View style={styles.titleAndStatus}>
+            <AppText
+              key={item.key}
+              style={[
+                styles.usageTitleNormal,
+                {fontWeight: isActive ? 'bold' : 'normal'},
+              ]}>
+              {item.prodName}
+            </AppText>
+            <AppText
+              key={item.nid}
+              style={[styles.usageStatus, {color: statusColor}]}>
+              {' '}
+              • {item.status}
+            </AppText>
           </View>
-          {item.statusCd === 'A' ? (
-            <View>
-              {!isCallProduct && (
-                <View style={styles.topOfActiveContainer}>
-                  {isShowUsage ? this.usageRender() : this.checkUsageButton()}
-                  <AppText style={styles.warning}>
-                    {i18n.t('usim:warning')}
-                  </AppText>
-                  <Svg height={2} width="100%">
-                    <Line
-                      style={{marginLeft: 2}}
-                      stroke={colors.warmGrey}
-                      strokeWidth="2"
-                      strokeDasharray="5, 5"
-                      x1="2%"
-                      y1="0"
-                      x2="98%"
-                      y2="0"
-                    />
-                  </Svg>
-                </View>
-              )}
-              <View style={styles.bottomOfActiveContainer}>
-                {this.expire(item)}
-              </View>
-            </View>
-          ) : (
-            this.expireBeforeUse(item)
-          )}
         </View>
-      </TouchableOpacity>
-    );
-  }
-}
+        {item.statusCd === 'A' || usage ? (
+          <View>
+            {!isCallProduct && (
+              <View style={styles.topOfActiveContainer}>
+                {isShowUsage ? usageRender() : checkUsageButton()}
+                <AppText style={styles.warning}>
+                  {i18n.t('usim:warning')}
+                </AppText>
+                <Svg height={2} width="100%">
+                  <Line
+                    style={{marginLeft: 2}}
+                    stroke={colors.warmGrey}
+                    strokeWidth="2"
+                    strokeDasharray="5, 5"
+                    x1="2%"
+                    y1="0"
+                    x2="98%"
+                    y2="0"
+                  />
+                </Svg>
+              </View>
+            )}
+            <View style={styles.bottomOfActiveContainer}>{expire(item)}</View>
+          </View>
+        ) : (
+          expireBeforeUse(item)
+        )}
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 export default connect(({account}: RootState) => ({account}))(UsageItem);
