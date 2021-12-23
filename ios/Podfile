@@ -23,7 +23,7 @@ target 'RokebiGlobal' do
   pod 'Firebase/Analytics'
   pod 'Firebase/DynamicLinks'
 
-  pod 'Adjust', '~> 4.29.2'
+#  pod 'Adjust', '~> 4.29.2'
 
   ENVFILES = {
     'Debug' => '$(PODS_ROOT)/../../.env',
