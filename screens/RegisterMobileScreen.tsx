@@ -22,6 +22,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
+import {Adjust, AdjustEvent, AdjustConfig} from 'react-native-adjust';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -457,6 +458,11 @@ class RegisterMobileScreen extends Component<
             await firebase.analytics().setAnalyticsCollectionEnabled(true);
             await Settings.setAdvertiserTrackingEnabled(true);
             analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_sign_up`);
+
+            // adjust appEvent 추가
+            console.log('aaaaa signup adjust event add');
+            const adjustEvent = new AdjustEvent('6cm0e4');
+            Adjust.trackEvent(adjustEvent);
           }
 
           this.signIn({mobile, pin});
@@ -504,16 +510,16 @@ class RegisterMobileScreen extends Component<
 
         API.User.sendSms({user: value, abortController: this.controller})
           .then((resp) => {
-            if (resp.result === 0) {
-              this.setState({
-                authNoti: true,
-                timeout: false,
-              });
-              this.authInputRef.current?.focus();
-            } else {
-              console.log('send sms failed', resp);
-              throw new Error('failed to send sms');
-            }
+            // if (resp.result === 0) {
+            this.setState({
+              authNoti: true,
+              timeout: false,
+            });
+            this.authInputRef.current?.focus();
+            // } else {
+            //   console.log('send sms failed', resp);
+            //   throw new Error('failed to send sms');
+            // }
           })
           .catch((err) => {
             console.log('send sms failed', err);
@@ -821,6 +827,19 @@ class RegisterMobileScreen extends Component<
           ]}
           // resetScrollToCoords={{x: 0, y: 0}}
         >
+          <AppButton
+            style={styles.confirm}
+            title={'앱 이벤트 호출'}
+            titleStyle={styles.text}
+            disableColor={colors.black}
+            disableBackgroundColor={colors.lightGrey}
+            onPress={() => {
+              console.log('aaaaa signup adjust event add');
+              const adjustEvent = new AdjustEvent('6cm0e4');
+              Adjust.trackEvent(adjustEvent);
+            }}
+          />
+
           {socialLogin
             ? this.renderProfile(email, mobile, profileImageUrl)
             : this.renderLogin()}

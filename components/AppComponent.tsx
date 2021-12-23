@@ -11,6 +11,8 @@ import {
 import Video from 'react-native-video';
 import {connect, DispatchProp} from 'react-redux';
 import RNExitApp from 'react-native-exit-app';
+import {Adjust, AdjustEvent, AdjustConfig} from 'react-native-adjust';
+import messaging from '@react-native-firebase/messaging';
 import {API} from '@/redux/api';
 import AppAlert from '@/components/AppAlert';
 import AppToast from '@/components/AppToast';
@@ -104,6 +106,47 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
   const [showSplash, setShowSplash] = useState(true);
   const [networkErr, setNetworkErr] = useState(false);
   const [loadingTextSec, setloadingTextSec] = useState(1);
+
+  useEffect(() => {
+    const adjustConfig = new AdjustConfig(
+      'bqh6jm4ljcao',
+      AdjustConfig.EnvironmentSandbox,
+    );
+    adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+    messaging()
+      .getToken()
+      .then((deviceToken) => Adjust.setPushToken(deviceToken));
+
+    Adjust.create(adjustConfig);
+  }, []);
+
+  // adjust tracking 권한 요청
+  useEffect(() => {
+    Adjust.requestTrackingAuthorizationWithCompletionHandler((status) => {
+      switch (status) {
+        case 0:
+          console.log('tracking Determined');
+          // ATTrackingManagerAuthorizationStatusNotDetermined case
+          break;
+        case 1:
+          console.log('tracking Restricted');
+          // ATTrackingManagerAuthorizationStatusRestricted case
+          break;
+        case 2:
+          console.log('tracking Denied');
+          // ATTrackingManagerAuthorizationStatusDenied case
+          break;
+        case 3:
+          console.log('tracking Authorized');
+          // ATTrackingManagerAuthorizationStatusAuthorized case
+          break;
+        default:
+          console.log('tracking status', status);
+          // ATTrackingManagerAuthorizationStatusAuthorized case
+          break;
+      }
+    });
+  }, []);
 
   const login = useCallback(async () => {
     const iccid = await retrieveData(API.User.KEY_ICCID);
