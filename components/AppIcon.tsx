@@ -10,6 +10,7 @@ const paymentPath = '../assets/images/payment/';
 const esimPath = '../assets/images/esim/';
 const guidePath = '../assets/images/guide/';
 const invitePath = '../assets/images/invite/';
+const giftPath = '../assets/images/gift/';
 
 const images: Record<string, any[]> = {
   btnHome: [
@@ -116,6 +117,8 @@ const images: Record<string, any[]> = {
   iconShare: [require(`${invitePath}iconShare.png`)],
   iconCopy: [require(`${invitePath}iconCopy.png`)],
   coin: [require(`${invitePath}coin.png`)],
+  arrowRight: [require(`${giftPath}arrowRight.png`)],
+  arrowLeft: [require(`${giftPath}arrowLeft.png`)],
 };
 
 interface AppIconProps {

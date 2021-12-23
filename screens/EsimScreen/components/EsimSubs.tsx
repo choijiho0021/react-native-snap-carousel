@@ -1,5 +1,6 @@
 import React, {memo} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {Dimensions, Pressable, StyleSheet, View} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -9,6 +10,8 @@ import {API} from '@/redux/api';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
+
+const {width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -21,11 +24,28 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   usageListContainer: {
-    backgroundColor: colors.white,
-    marginHorizontal: 20,
     marginTop: 20,
-    borderRadius: 3,
+    marginHorizontal: 20,
+  },
+  infoCard: {
+    backgroundColor: colors.white,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
     padding: 20,
+    borderWidth: 1,
+    borderBottomWidth: 0,
+    borderColor: colors.whiteThree,
+  },
+  giftButton: {
+    flex: 1,
+    flexDirection: 'row',
+    // justifyCssssontent: 'center',
+    height: 50,
+    borderWidth: 1,
+    borderTopWidth: 0,
+    borderColor: colors.whiteThree,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
   prodTitle: {
     paddingBottom: 10,
@@ -78,7 +98,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const title = (item: RkbSubscription, expired: boolean) => {
+const title = (
+  item: RkbSubscription,
+  expired: boolean,
+  onPress: () => void,
+) => {
+  // console.log('@@ item', item);
   return (
     <View style={styles.prodTitle}>
       <AppText
@@ -86,12 +111,25 @@ const title = (item: RkbSubscription, expired: boolean) => {
         style={expired ? styles.usageTitleNormal : styles.usageTitleBold}>
         {item.prodName}
       </AppText>
-      {expired && (
+      {/* {expired && (
         <View style={styles.expiredBg}>
           <AppText key={item.nid} style={appStyles.normal12Text}>
             {i18n.t('esim:expired')}
           </AppText>
         </View>
+      )} */}
+      {expired ? (
+        <View style={styles.expiredBg}>
+          <AppText key={item.nid} style={appStyles.normal12Text}>
+            {i18n.t('esim:expired')}
+          </AppText>
+        </View>
+      ) : (
+        <Pressable style={styles.expiredBg} onPress={onPress}>
+          <AppText key={item.nid} style={appStyles.normal12Text}>
+            {i18n.t('usim:checkUsage')}
+          </AppText>
+        </Pressable>
       )}
     </View>
   );
@@ -144,20 +182,52 @@ const QRnCopyInfo = (onPress: (showQR: boolean) => void) => {
 
 const EsimSubs = ({
   item,
-  onPress,
+  onPressQR,
+  onPressUsage,
   expired,
 }: {
   item: RkbSubscription;
-  onPress: (showQR: boolean) => void;
+  onPressQR: (showQR: boolean) => void;
+  onPressUsage: () => void;
   expired: boolean;
 }) => {
+  const navigation = useNavigation();
   return (
-    <View style={[styles.usageListContainer, expired && styles.cardExpiredBg]}>
-      {title(item, expired)}
-      {topInfo(item)}
-      {!expired &&
-        item.type !== API.Subscription.CALL_PRODUCT &&
-        QRnCopyInfo(onPress)}
+    <View style={styles.usageListContainer}>
+      <View style={[styles.infoCard, expired && styles.cardExpiredBg]}>
+        {title(item, expired, onPressUsage)}
+        {topInfo(item)}
+        {!expired &&
+          item.type !== API.Subscription.CALL_PRODUCT &&
+          QRnCopyInfo(onPressQR)}
+      </View>
+      {!expired && (
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <View style={{flex: 1, width: width - 60}}>
+            <View
+              style={{
+                justifyContent: 'center',
+                borderWidth: 1,
+                borderStyle: 'dashed',
+                borderColor: colors.pinkishGrey,
+                width: width - 60, // - 20 * 2 - 10 * 2,
+              }}
+            />
+          </View>
+          <AppButton
+            title="선물하기"
+            titleStyle={{color: colors.black}}
+            style={styles.giftButton}
+            onPress={() => navigation.navigate('Gift', {item})}
+          />
+        </View>
+      )}
     </View>
   );
 };

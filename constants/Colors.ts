@@ -33,4 +33,5 @@ export const colors = {
   goldenYellow: '#ffc61b',
   paleBlue: '#eaf3fe',
   paleGrey2: '#f2f4f6',
+  pinkishGrey: '#bcbcbc',
 };

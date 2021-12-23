@@ -552,6 +552,12 @@
 
   "inv:statDesc": "Maybe my travel data is free!?",
 
+  "gift:title": "Send a gift",
+  "gift:messageInfo": "Send gifts by text message. If you click the gift button below and select a recipient in the text message window, it will be sent immediately.\n\n* Please be careful not to select multiple recipients.",
+  "gift:kakaoInfo": "Send gifts through KakaoTalk. If you click the gift button below and select a recipient on KakaoTalk, it will be sent immediately.\n\n* Please be careful not to select multiple recipients.",
+  "gift:kakao": "KakaoTalk",
+  "gift:message": "Message",
+
   "noti:updateTitle": "New Version Available!",
   "noti:updateOpt": "We improved App for your better experience.\nPlease, enjoy the stable service after new version update.",
   "noti:cancel": "Later",
