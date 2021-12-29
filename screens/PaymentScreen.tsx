@@ -73,7 +73,7 @@ type PaymentScreenProps = {
   };
 };
 
-const {impId, adjustPayment = ''} = Env.get();
+const {impId, adjustPayment = '', adjustRokebiCash = ''} = Env.get();
 const PaymentScreen: React.FC<PaymentScreenProps> = ({
   route: {params},
   navigation,
@@ -120,9 +120,13 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
         // 결제완료시 '다음' 버튼 연속클릭 방지 - 연속클릭시 추가 결제 없이 order 계속 생성
         if (!params.isPaid) {
           // adjust 결제 이벤트 추척
-          const adjustEvent = new AdjustEvent(adjustPayment);
-          adjustEvent.setRevenue(100, 'KRW');
-          Adjust.trackEvent(adjustEvent);
+          const adjustPaymentEvent = new AdjustEvent(adjustPayment);
+          adjustPaymentEvent.setRevenue(pymInfo.amount, 'KRW');
+          Adjust.trackEvent(adjustPaymentEvent);
+
+          const adjustRokebiCashEvent = new AdjustEvent(adjustRokebiCash);
+          adjustRokebiCashEvent.setRevenue(pymInfo.rokebi_cash, 'KRW');
+          Adjust.trackEvent(adjustRokebiCashEvent);
 
           await navigation.setParams({isPaid: true});
 

@@ -59,6 +59,7 @@ type Env = {
   adjustToken?: string;
   adjustSignUp?: string;
   adjustPayment?: string;
+  adjustRokebiCash?: string;
   adjustInvite?: string;
   adjustAppUpdate?: string;
 };
@@ -82,6 +83,7 @@ const env: Env = {
   adjustToken: 'bqh6jm4ljcao',
   adjustSignUp: '6cm0e4',
   adjustPayment: 'xg1smu',
+  adjustRokebiCash: '5wu24b',
   adjustInvite: 'u3zo2x',
   adjustAppUpdate: 'r0masz',
 };
