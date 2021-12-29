@@ -8,6 +8,7 @@
 @import Firebase;
 @import AVFoundation;
 
+//#import "Adjust.h"
 #import "AppDelegate.h"
 
 #import <React/RCTBridge.h>
@@ -184,6 +185,15 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   [FIRMessaging messaging].delegate = self;
 
   [RNSplashScreen show];
+  
+  // adjust 설정
+//  NSString *AppToken = @"bqh6jm4ljcao";
+//  NSString *environment = ADJEnvironmentSandbox;
+//  ADJConfig *adjustConfig = [ADJConfig configWithAppToken:AppToken
+//                                    environment:environment];
+//
+//  [Adjust appDidLaunch:adjustConfig];
+
   
   return YES;
 }
