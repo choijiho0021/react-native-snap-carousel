@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import codePush from 'react-native-code-push';
 import VersionCheck from 'react-native-version-check';
+import {Adjust, AdjustEvent} from 'react-native-adjust';
 import {
   actions as syncActions,
   SyncAction,
@@ -12,6 +13,9 @@ import {
 import i18n from '@/utils/i18n';
 import {RootState} from '@/redux';
 import AppAlert from './AppAlert';
+import Env from '@/environment';
+
+const {adjustAppUpdate = ''} = Env.get();
 
 type CodePushModalProps = {
   sync: SyncModelState;
@@ -46,7 +50,11 @@ class CodePushModal extends Component<CodePushModalProps> {
                 i18n.t('noti:updateTitle'),
                 i18n.t('noti:updateOpt'),
                 {
-                  ok: () => Linking.openURL(res.storeUrl),
+                  ok: () => {
+                    // adjust appEvent 앱 업데이트 추가
+                    Adjust.trackEvent(new AdjustEvent(adjustAppUpdate));
+                    Linking.openURL(res.storeUrl);
+                  },
                 },
                 i18n.t('noti:cancel'),
                 i18n.t('noti:ok'),

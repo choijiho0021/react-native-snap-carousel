@@ -6,6 +6,7 @@ import {SafeAreaView, StyleSheet, View} from 'react-native';
 import Video from 'react-native-video';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {Adjust, AdjustEvent} from 'react-native-adjust';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
@@ -72,7 +73,7 @@ type PaymentScreenProps = {
   };
 };
 
-const {impId} = Env.get();
+const {impId, adjustPayment = ''} = Env.get();
 const PaymentScreen: React.FC<PaymentScreenProps> = ({
   route: {params},
   navigation,
@@ -118,6 +119,11 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
       if (rsp[0]?.success) {
         // 결제완료시 '다음' 버튼 연속클릭 방지 - 연속클릭시 추가 결제 없이 order 계속 생성
         if (!params.isPaid) {
+          // adjust 결제 이벤트 추척
+          const adjustEvent = new AdjustEvent(adjustPayment);
+          adjustEvent.setRevenue(100, 'KRW');
+          Adjust.trackEvent(adjustEvent);
+
           await navigation.setParams({isPaid: true});
 
           action.cart.updateOrder(pymInfo);

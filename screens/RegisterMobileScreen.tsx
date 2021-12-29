@@ -22,7 +22,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
-import {Adjust, AdjustEvent, AdjustConfig} from 'react-native-adjust';
+import {Adjust, AdjustEvent} from 'react-native-adjust';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -52,7 +52,7 @@ import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import validationUtil from '@/utils/validationUtil';
 
-const {esimGlobal} = Env.get();
+const {esimGlobal, adjustSignUp = ''} = Env.get();
 // const esimGlobal = false;
 
 const styles = StyleSheet.create({
@@ -460,8 +460,7 @@ class RegisterMobileScreen extends Component<
             analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_sign_up`);
 
             // adjust appEvent 추가
-            console.log('aaaaa signup adjust event add');
-            const adjustEvent = new AdjustEvent('6cm0e4');
+            const adjustEvent = new AdjustEvent(adjustSignUp);
             Adjust.trackEvent(adjustEvent);
           }
 
@@ -827,19 +826,6 @@ class RegisterMobileScreen extends Component<
           ]}
           // resetScrollToCoords={{x: 0, y: 0}}
         >
-          <AppButton
-            style={styles.confirm}
-            title={'앱 이벤트 호출'}
-            titleStyle={styles.text}
-            disableColor={colors.black}
-            disableBackgroundColor={colors.lightGrey}
-            onPress={() => {
-              console.log('aaaaa signup adjust event add');
-              const adjustEvent = new AdjustEvent('6cm0e4');
-              Adjust.trackEvent(adjustEvent);
-            }}
-          />
-
           {socialLogin
             ? this.renderProfile(email, mobile, profileImageUrl)
             : this.renderLogin()}
