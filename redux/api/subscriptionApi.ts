@@ -9,16 +9,24 @@ const STATUS_CANCELED = 'C'; // 취소
 const STATUS_EXPIRED = 'E'; // 사용 기간 종료
 const STATUS_USED = 'U'; // 사용 완료
 
+const GIFT_STATUS_SEND = 'S'; // 선물 완료
+const GIFT_STATUS_RECEIVE = 'R'; // 선물 받기 완료
+
 const PAGE_SIZE = 10;
 const CALL_PRODUCT = 'rokebi_call_product';
 
-const code = {
+export const code = {
   A: 'active',
   I: 'inactive',
   C: 'canceled',
   R: 'reserved',
   E: 'expired',
   U: 'used',
+};
+
+export const giftCode = {
+  Send: 'S',
+  Receive: 'R',
 };
 
 const priority = {
@@ -58,6 +66,7 @@ export type RkbSubscription = {
   activationDate: string;
   statusCd: string;
   status: string;
+  giftStatusCd: string;
   type: string;
 
   endDate?: string;
@@ -70,6 +79,7 @@ export type RkbSubscription = {
   qrCode?: string;
   imsi?: string;
   subsIccid?: string;
+  packageId?: string;
 };
 
 const toSubscription = (
@@ -87,6 +97,9 @@ const toSubscription = (
           endDate: item.field_subs_expiration_date || '',
           statusCd: item.field_status || '',
           status: toStatus(item.field_status) || '',
+          giftStatusCd: item.field_gift_status
+            ? giftCode[item.field_gift_status]
+            : '',
           country: item.field_country || '',
           prodName: item.title || '',
           prodId: item.product_uuid || '',
@@ -97,6 +110,7 @@ const toSubscription = (
           imsi: item.field_imsi || '',
           type: item.type || '',
           subsIccid: item.field_iccid || '',
+          packegeId: item.field_cmi_package_id || '',
         }))
         .sort(sortSubs),
     );
@@ -347,6 +361,7 @@ const cmiGetSubsUsage = ({
     )}&iccid=${iccid}&packageId=${packageId}&quota`,
     (rsp) => {
       console.log('@@@ rsp', rsp);
+      return rsp;
     },
     new Headers({'Content-Type': 'application/json'}),
   );
@@ -461,6 +476,7 @@ const remainingTime = (endDate: Moment) => {
 export default {
   CALL_PRODUCT,
 
+  code,
   STATUS_ACTIVE,
   STATUS_INACTIVE,
   STATUS_RESERVED,
