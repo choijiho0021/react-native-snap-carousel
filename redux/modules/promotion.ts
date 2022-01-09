@@ -20,16 +20,25 @@ const getPromotionStat = createAsyncThunk(
   API.Promotion.getStat,
 );
 
-const getGiftImages = createAsyncThunk(
-  'promotion/getGiftImages',
-  API.Promotion.getGiftImages,
+const getGiftBgImages = createAsyncThunk(
+  'promotion/getGiftBgImages',
+  API.Promotion.getGiftBgImages,
+);
+
+const makeGiftContents = createAsyncThunk(
+  'promotion/makeGiftContents',
+  API.Promotion.createContent,
 );
 
 export interface PromotionModelState {
   promotion: RkbPromotion[];
   invite?: RkbPromotion;
   stat: RkbInviteStatInfo;
-  giftImages: RkbGiftImages[];
+  gift: {
+    bg: RkbGiftImages[];
+    uuid: string;
+    imageUrl: string;
+  };
 }
 
 const initialState: PromotionModelState = {
@@ -41,7 +50,11 @@ const initialState: PromotionModelState = {
     signupGift: '0',
     recommenderGift: '0',
   },
-  giftImages: [],
+  gift: {
+    bg: [],
+    uuid: '',
+    imageUrl: '',
+  },
 };
 
 const slice = createSlice({
@@ -67,11 +80,19 @@ const slice = createSlice({
       }
     });
 
-    builder.addCase(getGiftImages.fulfilled, (state, {payload}) => {
+    builder.addCase(getGiftBgImages.fulfilled, (state, {payload}) => {
       const {result, objects} = payload;
 
       if (result === 0 || result?.code === 0) {
-        state.giftImages = objects;
+        state.gift.bg = objects;
+      }
+    });
+
+    builder.addCase(makeGiftContents.fulfilled, (state, {payload}) => {
+      const {result, objects} = payload;
+
+      if (result === 0 || result?.code === 0) {
+        state.gift.uuid = objects[0].uuid;
       }
     });
   },
@@ -82,7 +103,8 @@ export const actions = {
   ...slice.actions,
   getPromotion,
   getPromotionStat,
-  getGiftImages,
+  getGiftBgImages,
+  makeGiftContents,
 };
 
 export type PromotionAction = typeof actions;
