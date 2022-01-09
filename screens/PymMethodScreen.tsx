@@ -511,7 +511,7 @@ class PymMethodScreen extends Component<
         pay_method: selected?.method,
         merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
         name: i18n.t('appTitle'),
-        amount: pymPrice?.value, // 최종 결제 금액
+        amount: pymPrice?.value, // 실제 결제 금액 (로깨비캐시 제외)
         rokebi_cash: deduct?.value, // balance 차감 금액
         buyer_tel: mobile,
         buyer_name: mobile,
@@ -525,6 +525,8 @@ class PymMethodScreen extends Component<
         memo,
         // mode: 'test'
       } as PaymentParams;
+
+      console.log('@@ para', params);
 
       this.setState({
         clickable: true,
