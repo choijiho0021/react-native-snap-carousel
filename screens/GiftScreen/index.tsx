@@ -1,3 +1,17 @@
+import {
+  AppState,
+  ImageBackground,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import {RouteProp} from '@react-navigation/native';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {bindActionCreators} from 'redux';
+import * as reactRedux from 'react-redux';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
@@ -7,6 +21,7 @@ import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
+import api from '@/redux/api/api';
 import {AccountModelState} from '@/redux/modules/account';
 import {
   actions as promotionActions,
@@ -15,19 +30,6 @@ import {
 } from '@/redux/modules/promotion';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {
-  AppState,
-  ImageBackground,
-  SafeAreaView,
-  StyleSheet,
-  View,
-} from 'react-native';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
 
 const styles = StyleSheet.create({
   container: {
@@ -41,6 +43,34 @@ const styles = StyleSheet.create({
     height: 52,
     borderWidth: 1,
     borderColor: colors.lightGrey,
+  },
+  msg: {
+    ...appStyles.normal16Text,
+    flex: 1,
+    lineHeight: 30,
+    textAlign: 'center',
+    height: 120,
+    paddingTop: 0,
+    paddingBottom: 0,
+    padding: 0,
+  },
+  msgLength: {
+    ...appStyles.normal12Text,
+    color: colors.warmGrey,
+    marginBottom: 14,
+    textAlign: 'center',
+  },
+  bg: {
+    height: 420,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+  },
+  msgBox: {
+    flex: 1,
+    height: 217,
+    margin: 20,
+    paddingTop: 50,
+    paddingHorizontal: 40,
   },
 });
 
@@ -63,10 +93,6 @@ type GiftScreenProps = {
   };
 };
 
-type GiftScreenState = {
-  checked: string;
-};
-
 const GiftScreen: React.FC<GiftScreenProps> = ({
   navigation,
   route,
@@ -76,13 +102,21 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   action,
 }) => {
   const [checked, setChecked] = useState('kakao');
+  const [msg, setMsg] = useState('');
   const [num, setNum] = useState(0);
+  const [prevMsg, setPrevMsg] = useState('');
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
+  const msgRef = useRef();
+  const [toastPending, setToastPending] = useState(false);
   const bgImages = useMemo(
-    () => (promotion.giftImages || []).filter((v) => v?.image),
-    [promotion.giftImages],
+    () => (promotion.gift.bg || []).filter((v) => v?.image),
+    [promotion.gift.bg],
   );
+
+  useEffect(() => {
+    if (!promotion.stat.signupGift) promotionActions.getPromotionStat();
+  }, [promotion.stat.signupGift]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
@@ -91,7 +125,6 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         nextAppState === 'active'
       ) {
         console.log('App has come to the foreground!');
-        API.Promotion.sendCheck(route.params.item.prodId, account.userId);
       }
 
       appState.current = nextAppState;
@@ -111,74 +144,54 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
     });
   }, [navigation]);
 
-  // const kakaoCallback = (err?: Error, res?: SendResultType) => {
-  //   console.log('@@ kakao callback', err, res);
-  // };
-
   const sendLink = useCallback(
     async (method: string) => {
       const {item} = route.params;
+      const imageUrl =
+        'http://tb-esim.rokebi.com/sites/default/files/giftImage.png';
 
-      switch (method) {
-        case 'message': {
-          //     // sms 보내기 check 하는 module 추가
-          //     SendSMS.send(
-          //       {
-          //         body: 'The default body of the SMS!',
-          //         // recipients: ['0123456789', '9876543210'],
-          //         successTypes: ['sent', 'queued'],
-          //         // allowAndroidSendWithoutReadPermission: true
-          //       },
-          //       (completed, cancelled, error) => {
-          //         console.log(
-          //           `SMS Callback: completed: ${completed} cancelled: ${cancelled}error: ${error}`,
-          //         );
-          //       },
-          //     );
+      const link = await API.Promotion.buildLink(
+        account.userId,
+        promotion.stat.signupGift,
+        imageUrl,
+        item.uuid, // subscription Id
+      );
 
-          break;
-        }
-        default: // kakao
+      // gift content 생성
+      const contRes = await API.Promotion.createContent({
+        msg,
+        nid: item?.nid,
+        image: bgImages[num].title,
+        token: account.token,
+        link,
+      });
 
-        {
-          // KakaoSDK.Link.sendFeed({
-          //   content: {
-          //     title: '디저트 사진',
-          //     desc: '아메리카노, 빵, 케익',
-          //     imageURL:
-          //       'http://mud-kage.kakao.co.kr/dn/NTmhS/btqfEUdFAUf/FjKzkZsnoeE4o19klTOVI1/openlink_640x640s.jpg',
-          //     link: {
-          //       webURL: 'https://developers.kakao.com',
-          //       mobileWebURL: 'https://developers.kakao.com',
-          //     },
-          //   },
-          //   social: {
-          //     likeCount: 10,
-          //     commentCount: 20,
-          //     sharedCount: 30,
-          //     viewCount: 40,
-          //   },
-          //   buttons: [
-          //     {
-          //       title: '앱에서 보기',
-          //       webURL: 'https://developers.kakao.com',
-          //       mobileWebURL: 'https://developers.kakao.com',
-          //       androidExecutionParams: 'key1=value1',
-          //       iosExecutionParams: 'key1=value1',
-          //     },
-          //   ],
-          //   // serverCallbackArgs: {
+      const webUrl = `${api.httpUrl(api.path.gift.web)}/${
+        contRes.objects[0].uuid
+      }`;
 
-          //   // }
-          // })
-          //   .then((r) => console.log('success', r))
-          //   .catch((e) => console.log(e));
+      const res = await API.Promotion.sendGift(webUrl, imageUrl);
 
-          break;
-        }
+      if (res) {
+        setToastPending(true);
+        action.toast.push('toast:sendSuccess');
+
+        setTimeout(() => {
+          setToastPending(false);
+          navigation.goBack();
+        }, 2000);
       }
     },
-    [account.userId, route.params],
+    [
+      account,
+      action.toast,
+      bgImages,
+      msg,
+      navigation,
+      num,
+      promotion.stat.signupGift,
+      route.params,
+    ],
   );
 
   const method = useCallback(() => {
@@ -212,55 +225,54 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
     );
   }, [checked]);
 
+  const onContentSizeChange = useCallback(
+    (e) => {
+      if (e?.nativeEvent?.contentSize?.height <= 120) {
+        setPrevMsg(msg);
+      }
+      if (e?.nativeEvent?.contentSize?.height > 120 && msgRef?.current) {
+        const msgArr = msg.split('\n').slice(0, 4);
+        let text = '';
+        if (msg.split('\n').length > 4) {
+          text = msgArr.reduce((arr, cur, idx) => {
+            if (idx !== 3 || cur !== '\n') return `${arr}${cur}\n`;
+            return `${arr}${cur}`;
+          }, '');
+        } else text = msg.length < prevMsg.length ? msg : prevMsg;
+
+        setMsg(text);
+        msgRef.current.setNativeProps({
+          maxHeight: 120,
+          text,
+          textAlign: 'center',
+        });
+      }
+    },
+    [msg, prevMsg],
+  );
+
   const cardDesign = useCallback(() => {
-    console.log('@@@ r num', num);
     return (
       <ImageBackground
-        style={{
-          width: '100%',
-          height: 420,
-          // height: '100%',
-          // width: '100%',
-          // flex: 1,
-          flexDirection: 'row',
-          alignItems: 'flex-end',
-        }}
+        style={styles.bg}
+        resizeMode="stretch"
         imageStyle={{aspectRatio: 375 / 420}}
         source={{
           uri: API.default.httpImageUrl(bgImages[num]?.image).toString(),
         }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'flex-end',
-            justifyContent: 'flex-start',
-          }}>
-          <View
-            style={{
-              flex: 1,
-              height: 217,
-              margin: 20,
-              paddingTop: 50,
-              paddingHorizontal: 40,
-              // backgroundColor: colors.clearBlue,
-            }}>
+        <View style={{flexDirection: 'row'}}>
+          <View style={styles.msgBox}>
             <AppTextInput
               multiline
-              numberOfLines={3}
+              ref={msgRef}
+              onChangeText={(txt) => setMsg(txt)}
               scrollEnabled={false}
-              // maxHeight={150}
-              style={{
-                ...appStyles.normal16Text,
-                lineHeight: 30,
-                textAlign: 'center',
-                textAlignVertical: 'center',
-                // height: 120,
-                // backgroundColor: colors.clearBlue,
-              }}
+              maxLength={80}
+              onContentSizeChange={(e) => onContentSizeChange(e)}
+              style={styles.msg}
             />
-            <AppText
-              style={{marginBottom: 15, marginTop: 10, textAlign: 'center'}}>
-              / 최대 80 자
+            <AppText style={styles.msgLength}>
+              {`${msg.length} ${i18n.t('gift:maxLength')}`}
             </AppText>
           </View>
 
@@ -281,7 +293,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         </View>
       </ImageBackground>
     );
-  }, [bgImages, num]);
+  }, [bgImages, msg.length, num, onContentSizeChange]);
 
   const {item} = route.params;
 
@@ -300,20 +312,23 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         </AppText>
         <View style={{height: 10, backgroundColor: colors.whiteTwo}} />
         <View style={{margin: 20, marginBottom: 30}}>
-          <AppText style={appStyles.bold18Text}>전송수단</AppText>
+          <AppText style={appStyles.bold18Text}>
+            {i18n.t('esim:method')}
+          </AppText>
           {method()}
         </View>
+        <AppActivityIndicator visible={toastPending} />
       </KeyboardAwareScrollView>
       <AppButton
         style={[appStyles.confirm]}
-        title="선물하기"
+        title={i18n.t('esim:sendGift')}
         onPress={() => sendLink(checked)}
       />
     </SafeAreaView>
   );
 };
 
-export default connect(
+export default reactRedux.connect(
   ({account, promotion}: RootState) => ({
     account,
     promotion,
