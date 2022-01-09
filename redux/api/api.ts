@@ -65,14 +65,18 @@ const path = {
 
   simCard: 'json/smc/list',
   cart: 'cart',
-  gift: 'gift',
-  giftImages: 'rokebi/gift/images',
   order: 'json/orders',
   uploadFile: 'file/upload',
   board: 'json/contactboard',
   subscription: 'json/subs',
   rkbtalk: 'json/rkbtalk',
   profile: 'json/profile',
+
+  gift: {
+    content: 'rokebi/gift',
+    images: 'rokebi/gift/images',
+    web: 'gift',
+  },
 
   commerce: {
     payment: 'commerce/payment',
