@@ -52,6 +52,10 @@ const changeUserAttr = createAsyncThunk(
   'account/changeUserAttr',
   API.User.update,
 );
+const receiveGift = createAsyncThunk(
+  'account/receiveGift',
+  API.User.receiveGift,
+);
 
 const changeUserAttrWithToast = reflectWithToast(
   changeUserAttr,
@@ -493,6 +497,7 @@ export const actions = {
   logInAndGetAccount,
   getToken,
   uploadAndChangePicture,
+  receiveGift,
   logout,
   changeEmail,
   changeNotiToken,

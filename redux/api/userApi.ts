@@ -494,6 +494,42 @@ const socialLogin = ({
   );
 };
 
+const receiveGift = ({
+  sender, // account userid
+  gift, // subs uuid ( dynamic link 생성시에 넣은 uuid )
+  iccid, // receiver iccid
+  token,
+}: {
+  sender: string;
+  gift: string;
+  iccid: string;
+  token?: string;
+}) => {
+  if (!gift || !iccid || !token) {
+    return api.reject(
+      api.E_INVALID_ARGUMENT,
+      `missing parameter: sender: ${sender} gift:${gift} iccid:${iccid} token:${token}`,
+    );
+  }
+
+  return api.callHttp(
+    `${api.httpUrl(api.path.gift.content)}/0?_format=json`,
+    {
+      method: 'PATCH',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({
+        sender,
+        receiver: iccid,
+        gift,
+      }),
+    },
+    (resp) => {
+      return resp;
+      // result: resp.status == '204' ? 0 : api.FAILED,
+    },
+  );
+};
+
 const confirmSmsCode = ({
   user,
   pass,
@@ -614,6 +650,7 @@ export default {
   getByMail,
   update,
   deleteUser,
+  receiveGift,
   changePicture,
   sendSms,
   confirmSmsCode,
