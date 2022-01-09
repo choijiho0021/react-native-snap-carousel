@@ -56,6 +56,12 @@ type Env = {
   isProduction: boolean;
   isIOS?: boolean;
   fbUser?: string;
+  adjustToken?: string;
+  adjustSignUp?: string;
+  adjustPayment?: string;
+  adjustRokebiCash?: string;
+  adjustInvite?: string;
+  adjustAppUpdate?: string;
 };
 const env: Env = {
   bundleId,
@@ -72,6 +78,14 @@ const env: Env = {
   isProduction: Config.NODE_ENV === 'production',
   isIOS: Platform.OS === 'ios',
   fbUser: '100751328128324',
+
+  // adjust
+  adjustToken: 'bqh6jm4ljcao',
+  adjustSignUp: '6cm0e4',
+  adjustPayment: 'xg1smu',
+  adjustRokebiCash: '5wu24b',
+  adjustInvite: 'u3zo2x',
+  adjustAppUpdate: 'r0masz',
 };
 
 function get() {

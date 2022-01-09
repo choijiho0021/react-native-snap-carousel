@@ -10,6 +10,7 @@ import Video from 'react-native-video';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import {Adjust, AdjustEvent} from 'react-native-adjust';
 import AddressCard from '@/components/AddressCard';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -474,7 +475,8 @@ class PymMethodScreen extends Component<
       this.setState({
         loading: true,
       });
-      const {impId} = Env.get();
+      const {impId, adjustRokebiCash = ''} = Env.get();
+
       const info = createPaymentInfoForRokebiCash({
         impId,
         mobile,
@@ -484,6 +486,11 @@ class PymMethodScreen extends Component<
         dlvCost,
         digital: !simIncluded,
       });
+
+      const adjustRokebiCashEvent = new AdjustEvent(adjustRokebiCash);
+      adjustRokebiCashEvent.setRevenue(info.rokebi_cash, 'KRW');
+      Adjust.trackEvent(adjustRokebiCashEvent);
+
       // payNorder에서 재고 확인 - resp.result값으로 비교
       this.props.action.cart.payNorder(info).then(({payload: resp}) => {
         if (resp.result === 0) {

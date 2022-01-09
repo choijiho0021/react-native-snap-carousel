@@ -22,6 +22,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
+import {Adjust, AdjustEvent} from 'react-native-adjust';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -51,7 +52,7 @@ import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import validationUtil from '@/utils/validationUtil';
 
-const {esimGlobal} = Env.get();
+const {esimGlobal, adjustSignUp = ''} = Env.get();
 // const esimGlobal = false;
 
 const styles = StyleSheet.create({
@@ -460,6 +461,10 @@ class RegisterMobileScreen extends Component<
             await firebase.analytics().setAnalyticsCollectionEnabled(true);
             await Settings.setAdvertiserTrackingEnabled(true);
             analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_sign_up`);
+
+            // adjust appEvent 추가
+            const adjustEvent = new AdjustEvent(adjustSignUp);
+            Adjust.trackEvent(adjustEvent);
           }
 
           this.signIn({mobile, pin});
@@ -507,16 +512,16 @@ class RegisterMobileScreen extends Component<
 
         API.User.sendSms({user: value, abortController: this.controller})
           .then((resp) => {
-            if (resp.result === 0) {
-              this.setState({
-                authNoti: true,
-                timeout: false,
-              });
-              this.authInputRef.current?.focus();
-            } else {
-              console.log('send sms failed', resp);
-              throw new Error('failed to send sms');
-            }
+            // if (resp.result === 0) {
+            this.setState({
+              authNoti: true,
+              timeout: false,
+            });
+            this.authInputRef.current?.focus();
+            // } else {
+            //   console.log('send sms failed', resp);
+            //   throw new Error('failed to send sms');
+            // }
           })
           .catch((err) => {
             console.log('send sms failed', err);

@@ -1,12 +1,13 @@
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import {Share} from 'react-native';
 import _ from 'underscore';
+import {Adjust, AdjustEvent} from 'react-native-adjust';
 import api, {ApiResult, DrupalNode, Langcode} from './api';
 import Env from '@/environment';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 
-const {bundleId, appStoreId, dynamicLink} = Env.get();
+const {bundleId, appStoreId, dynamicLink, adjustInvite = ''} = Env.get();
 
 export type RkbPromotion = {
   uuid: string;
@@ -328,9 +329,14 @@ const invite = async (
   const url = await buildLink(recommender, gift, share, prodId);
 
   try {
-    await Share.share({
+    const result = await Share.share({
       url,
     });
+    if (result.action !== Share.dismissedAction) {
+      // adjust appEvent 앱 업데이트 추가
+      Adjust.trackEvent(new AdjustEvent(adjustInvite));
+    }
+
     // if (result.action === Share.sharedAction) {
     //   if (result.activityType) {
     //     // shared with activity type of result.activityType

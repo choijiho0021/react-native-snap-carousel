@@ -11,6 +11,8 @@ import {
 import Video from 'react-native-video';
 import {connect, DispatchProp} from 'react-redux';
 import RNExitApp from 'react-native-exit-app';
+import {Adjust, AdjustConfig} from 'react-native-adjust';
+import messaging from '@react-native-firebase/messaging';
 import {API} from '@/redux/api';
 import AppAlert from '@/components/AppAlert';
 import AppToast from '@/components/AppToast';
@@ -34,7 +36,7 @@ const {width: viewportWidth, height: viewportHeight} = Dimensions.get('window');
 const windowHeight = viewportHeight;
 const windowWidth = viewportWidth;
 
-const {esimApp, esimGlobal} = Env.get();
+const {esimApp, esimGlobal, isProduction, adjustToken = ''} = Env.get();
 
 const SplashScreen = require('react-native-splash-screen').default;
 
@@ -104,6 +106,31 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
   const [showSplash, setShowSplash] = useState(true);
   const [networkErr, setNetworkErr] = useState(false);
   const [loadingTextSec, setloadingTextSec] = useState(1);
+
+  useEffect(() => {
+    const adjustEnv = isProduction
+      ? AdjustConfig.EnvironmentProduction
+      : AdjustConfig.EnvironmentSandbox;
+    const adjustConfig = new AdjustConfig(adjustToken, adjustEnv);
+    adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+    messaging()
+      .getToken()
+      .then((deviceToken) => Adjust.setPushToken(deviceToken));
+
+    Adjust.create(adjustConfig);
+  }, []);
+
+  // adjust tracking 권한 요청
+  useEffect(() => {
+    Adjust.requestTrackingAuthorizationWithCompletionHandler((status) => {
+      console.log('tracking permission request', status);
+
+      // 0 : 미결정 ATTrackingManagerAuthorizationStatusNotDetermined case
+      // 1 : 제한됨 ATTrackingManagerAuthorizationStatusRestricted case
+      // 2 : 거부됨 ATTrackingManagerAuthorizationStatusDenied case
+      // 3 : 허가함 ATTrackingManagerAuthorizationStatusAuthorized case
+    });
+  }, []);
 
   const login = useCallback(async () => {
     const iccid = await retrieveData(API.User.KEY_ICCID);
