@@ -201,7 +201,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [cmiStatusCd, quota, showSnackbar, used]);
 
   const getUsage = useCallback(() => {
-    //그래프 테스트 nid = 1616
+    // 그래프 테스트 nid = 1616
     if (!esimApp && item.statusCd === 'A') {
       API.Subscription.getSubsUsage({id: item.nid, token}).then((resp) => {
         setDisableBtn(true);
@@ -353,31 +353,30 @@ const UsageItem: React.FC<UsageItemProps> = ({
         </View>
 
         {
-          statusCd === 'A' ||
-            (usage && (
-              <View>
-                <View style={styles.titleAndStatus}>
-                  <AppText
-                    key={item.key}
-                    style={[
-                      styles.usageTitleBold,
-                      // {fontWeight: isActive ? 'bold' : 'normal'},
-                    ]}>
-                    {item.prodName}
-                  </AppText>
-                </View>
-                {!isCallProduct && (
-                  <View style={styles.topOfActiveContainer}>
-                    {isShowUsage ? usageRender() : checkUsageButton()}
-                    <AppText style={styles.warning}>
-                      {i18n.t('usim:warning')}
-                    </AppText>
-                    <View style={styles.divider} />
-                  </View>
-                )}
-                <View style={styles.bottomOfActiveContainer}>{expire()}</View>
+          (statusCd === 'A' || usage) && (
+            <View>
+              <View style={styles.titleAndStatus}>
+                <AppText
+                  key={item.key}
+                  style={[
+                    styles.usageTitleBold,
+                    // {fontWeight: isActive ? 'bold' : 'normal'},
+                  ]}>
+                  {item.prodName}
+                </AppText>
               </View>
-            ))
+              {!isCallProduct && (
+                <View style={styles.topOfActiveContainer}>
+                  {isShowUsage ? usageRender() : checkUsageButton()}
+                  <AppText style={styles.warning}>
+                    {i18n.t('usim:warning')}
+                  </AppText>
+                  <View style={styles.divider} />
+                </View>
+              )}
+              <View style={styles.bottomOfActiveContainer}>{expire()}</View>
+            </View>
+          )
           // : (
           //   expireBeforeUse()
           // )
