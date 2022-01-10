@@ -37,6 +37,10 @@ const updateSubsStatus = createAsyncThunk(
   'order/updateSubsStatus',
   API.Subscription.updateSubscriptionStatus,
 );
+const cmiGetSubsUsage = createAsyncThunk(
+  'order/cmiGetSubsUsage',
+  API.Subscription.cmiGetSubsUsage,
+);
 
 const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED);
 export interface OrderModelState {
@@ -229,6 +233,10 @@ const slice = createSlice({
         state.usageProgress = objects;
       }
     });
+
+    builder.addCase(cmiGetSubsUsage.fulfilled, (state, action) => {
+      return state;
+    });
   },
 });
 
@@ -241,6 +249,7 @@ export const actions = {
   updateSubsStatus,
   cancelAndGetOrder,
   checkAndGetOrderById,
+  cmiGetSubsUsage,
 };
 
 export type OrderAction = typeof actions;

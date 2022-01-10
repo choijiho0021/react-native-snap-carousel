@@ -393,8 +393,17 @@
   "usim:failSnackBar": "일시적으로 사용량을 조회할 수 없습니다. 잠시 후 다시 시도해주세요.",
   "usim:usingTime": "서비스 이용 시간",
 
-  "usim:until": "까지",
+  "sim:from": "부터",
+  "sim:until": "까지",
 
+  "esim:R": "등록 대기 중",
+  "esim:A": "사용중",
+  "esim:U": "사용 완료",
+  "esim:sendGift": "선물하기",
+  "esim:S": "선물 완료",
+  "esim:reservedInfo": "사용하지 않은 상품입니다.\n상품 사용 시 확인해 주세요.",
+  "esim:usedInfo": "사용이 완료된 상품입니다.",
+  "esim:method": "전송수단",
   "esim:usablePeriod": "사용기한",
   "esim:expired": "기한만료",
   "esim:notice": "통화 상품은 로깨비톡 앱에서 사용할 수 있습니다.",
@@ -519,6 +528,7 @@
   "toast:failedToLoad": "데이터 로딩에 실패했습니다.\n네트워크 연결 상태를 확인해주세요.",
   "toast:failedToOpen": "카카오톡 채널에 연결할 수 없습니다.",
   "toast:copySuccess": "복사되었습니다.",
+  "toast:sendSuccess": "상품을 선물하였습니다.",
 
   "mypage:idCheckTitle": "로깨비톡 ID 확인",
   "mypage:manualInput:body": "아래의 정보를 사용하여 <color:'#2a7ff6'>로깨비 톡</color>에 로그인할 수 있습니다",
@@ -567,6 +577,9 @@
   "gift:kakaoInfo": "카카오톡으로 선물을 전송합니다. 아래 선물하기 버튼을 누른 후 카카오톡에서 수신자를 선택하시면 즉시 전송됩니다.\n\n* 다수의 수신자가 선택되지 않도록 유의해주세요.",
   "gift:kakao": "카카오톡",
   "gift:message": "문자",
+  "gift:maxLength": "/ 최대 80 자",
+  "gift:linkTitle": "esim 상품이 도착했어요!",
+  "gift:linkDesc": "esim 상품을 선물받았습니다.",
 
   "noti:updateTitle": "새로운 버전이 업데이트 되었어요!",
   "noti:updateOpt": "고객님들의 의견을 반영하여 사용성을 개선했어요.\n최신 버전으로 업데이트하고 안정적인 서비스를 즐기세요.",

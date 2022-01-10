@@ -1,8 +1,14 @@
 import Clipboard from '@react-native-community/clipboard';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {
+  AppState,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  View,
+} from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -19,6 +25,7 @@ import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
+import {API} from '@/redux/api';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {
   AccountAction,
@@ -38,11 +45,10 @@ import {
   Toast,
   ToastAction,
 } from '@/redux/modules/toast';
+import UsageItem from '@/screens/UsimScreen/components/UsageItem';
 import i18n from '@/utils/i18n';
 import CardInfo from './components/CardInfo';
 import EsimSubs from './components/EsimSubs';
-import {API} from '@/redux/api';
-import UsageItem from '@/screens/UsimScreen/components/UsageItem';
 
 const {esimGlobal} = Env.get();
 
@@ -147,9 +153,11 @@ const esimManualInputInfo = () => {
 };
 
 type EsimScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Esim'>;
+type EsimScreenRouteProp = RouteProp<HomeStackParamList, 'Esim'>;
 
 type EsimScreenProps = {
   navigation: EsimScreenNavigationProp;
+  route: EsimScreenRouteProp;
 
   loginPending: boolean;
   pending: boolean;
@@ -174,6 +182,7 @@ const modalTitle = {
 const EsimScreen: React.FC<EsimScreenProps> = ({
   account: {iccid, token, balance, expDate},
   navigation,
+  route,
   action,
   order,
   pending,
@@ -185,6 +194,50 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [modal, setModal] = useState<ModalType>('');
   const [subs, setSubs] = useState<RkbSubscription>();
   const [copyString, setCopyString] = useState('');
+  const [cmiUsage, setCmiUsage] = useState();
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+
+  const receive = useCallback(
+    async (sender: string, gift: string) => {
+      const giftRes = await API.User.receiveGift({
+        sender,
+        gift,
+        iccid,
+        token,
+      });
+
+      if (giftRes?.result?.code === 0) {
+        action.order.getSubsWithToast({iccid, token});
+      }
+    },
+    [action.order, iccid, token],
+  );
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        console.log('App has come to the foreground!', recommender, gift);
+        if (route?.params) {
+          const {recommender, gift} = route?.params;
+          if (recommender && gift && iccid) {
+            receive(recommender, gift);
+          }
+        }
+      }
+
+      appState.current = nextAppState;
+      setAppStateVisible(appState.current);
+      console.log('AppState', appState.current);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [iccid, receive, route?.params]);
 
   const onRefresh = useCallback(() => {
     if (iccid) {
@@ -281,27 +334,50 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const modalBody = useCallback(() => {
     if (!subs) return null;
-    const cmiUsage = {
-      subscriberQuota: {
-        qtavalue: '512000',
-        qtabalance: '73042',
-        qtaconsumption: '438958',
-      },
-      historyQuota: [
-        {time: '20211222', qtaconsumption: '376.44', mcc: '452'},
-        {time: '20211221', qtaconsumption: '1454.78', mcc: '452'},
-      ],
-      result: {code: 0},
-      trajectoriesList: [
-        {
-          mcc: '452',
-          country: 'Vietnam',
-          beginTime: '20211221',
-          useTime: '20220120',
-          himsi: '454120382118109',
-        },
-      ],
-    };
+    // const cmiUsage = {
+    //   subscriberQuota: {
+    //     qtavalue: '512000',
+    //     qtabalance: '73042',
+    //     qtaconsumption: '438958',
+    //   },
+    //   // 여기가 []면 미사용
+    //   historyQuota: [
+    //     {time: '20211222', qtaconsumption: '376.44', mcc: '452'},
+    //     {time: '20211221', qtaconsumption: '1454.78', mcc: '452'},
+    //   ],
+    //   result: {code: 0},
+    //   // 여기가 []면 미사용
+    //   trajectoriesList: [
+    //     {
+    //       mcc: '452',
+    //       country: 'Vietnam',
+    //       beginTime: '20211221',
+    //       useTime: '20220120',
+    //       himsi: '454120382118109',
+    //     },
+    //   ],
+    // };
+
+    let status;
+    let quota;
+    let used;
+    let activeDate;
+    if (cmiUsage) {
+      const {subscriberQuota, trajectoriesList, result} = cmiUsage;
+
+      if (result?.code === 0) {
+        status = 'R';
+        if (!_.isEmpty(trajectoriesList)) {
+          status = 'U';
+          if (!_.isEmpty(subscriberQuota)) {
+            status = 'A';
+            quota = subscriberQuota.qtavalue;
+            used = subscriberQuota.qtaconsumption;
+            activeDate = trajectoriesList[0].beginTime;
+          }
+        }
+      }
+    }
 
     switch (modal) {
       case 'showQR':
@@ -323,11 +399,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             item={subs}
             onPress={() => {}}
             showSnackbar={() => {}}
-            usage={{quota: 100, used: 40}}
+            usage={{quota, used}}
+            cmiStatusCd={status}
+            activeDate={activeDate}
           />
         );
     }
-  }, [copyInfo, modal, subs]);
+  }, [cmiUsage, copyInfo, modal, subs]);
 
   const onPressUsage = useCallback((item: RkbSubscription) => {
     // {"subscriberQuota":{"qtavalue":"512000","qtabalance":"73042","qtaconsumption":"438958"},"historyQuota":[{"time":"20211222","qtaconsumption":"376.44","mcc":"452"},{"time":"20211221","qtaconsumption":"1454.78","mcc":"452"}],"result":{"code":0},"trajectoriesList":[{"mcc":"452","country":"Vietnam","beginTime":"20211221","useTime":"20220120","himsi":"454120382118109"}]}
@@ -336,13 +414,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     setSubs(item);
 
     console.log('@@@ item', item);
-
-    API.Subscription.cmiGetSubsUsage({
-      iccid: '89852340003821181097',
-      packageId: 'D190129023743_83416',
-    }).then((rsp) => {
-      console.log('@@@ rsp');
-    });
+    if (item?.subsIccid && item?.packageId)
+      API.Subscription.cmiGetSubsUsage({
+        iccid: item.subsIccid,
+        packageId: item.packageId,
+      }).then((rsp) => setCmiUsage(rsp));
   }, []);
 
   const renderSubs = useCallback(
@@ -433,7 +509,10 @@ export default connect(
       status.pending[accountActions.logInAndGetAccount.typePrefix] ||
       status.pending[accountActions.getAccount.typePrefix] ||
       false,
-    pending: status.pending[orderActions.getSubs.typePrefix] || false,
+    pending:
+      status.pending[orderActions.getSubs.typePrefix] ||
+      status.pending[orderActions.cmiGetSubsUsage.typePrefix] ||
+      false,
     sync,
     lastTab: cart.lastTab.toJS(),
   }),

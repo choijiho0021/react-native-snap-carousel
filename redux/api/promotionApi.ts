@@ -114,7 +114,17 @@ const toStatInfo = (data: {
   return api.failure(api.FAILED, data.result?.error);
 };
 
-const toGift = (data: []): ApiResult<RkbGiftImages> => {
+const toGift = (data: {
+  result: {code: number};
+  objects: [];
+}): ApiResult<object> => {
+  if (data.result.code === 0) {
+    return api.success(data.objects, [], data.result);
+  }
+  return api.failure(api.FAILED, data.result?.error);
+};
+
+const toGiftBgImages = (data: []): ApiResult<RkbGiftImages> => {
   // if (data.result === 0) {
   return api.success(
     data.map((v) => {
@@ -145,10 +155,10 @@ const getStat = () => {
   );
 };
 
-const getGiftImages = () => {
+const getGiftBgImages = () => {
   return api.callHttpGet<RkbGiftImages>(
-    `${api.httpUrl(api.path.giftImages)}?_format=hal_json`,
-    toGift,
+    `${api.httpUrl(api.path.gift.images)}?_format=hal_json`,
+    toGiftBgImages,
   );
 };
 
@@ -162,19 +172,41 @@ const check = (sku: string) => {
   }
   return api.reject(api.E_INVALID_ARGUMENT, 'sku not found');
 };
-
-//
-const sendCheck = (prodId?: string, userId?: string) => {
-  if (prodId && userId) {
-    return api.callHttpGet(
-      `https://esim.rokebi.com/gift/userId=${userId}&prodId=${prodId}`, // ?_format=json
-      toPromoInfo,
-      {
-        Authorization: `KakaoAK ${'f881469e3b4a140967dfaebe648ede8d'}`,
-      },
+// content type > Gift 생성
+const createContent = ({
+  msg, // text
+  nid, // subscription nid
+  image, // selected background image title
+  token,
+  link, // dynamic link with recommender, prodId
+}: {
+  msg: string;
+  nid?: string;
+  image: string;
+  token?: string;
+  link: string;
+}) => {
+  if (!msg || !nid || !image || !token) {
+    return api.reject(
+      api.E_INVALID_ARGUMENT,
+      `missing parameter: msg:${msg} nid:${nid} token:${token} image:${image}`,
     );
   }
-  return api.reject(api.E_INVALID_ARGUMENT, 'prodId | userId not found');
+
+  return api.callHttp<object>(
+    `${api.httpUrl(api.path.gift.content, '')}?_format=json`,
+    {
+      method: 'POST',
+      headers: api.withToken(token, 'json', {Accept: 'application/json'}),
+      body: JSON.stringify({
+        msg,
+        ref_subscription: nid,
+        image,
+        gift_link: link,
+      }),
+    },
+    toGift,
+  );
 };
 
 const join = ({
@@ -204,21 +236,21 @@ const join = ({
   );
 };
 
-const inviteLink = (recommender: string, prodId: string = '') => {
+const inviteLink = (recommender: string, gift: string = '') => {
   return `${api.httpUrl('')}?recommender=${recommender}${
-    prodId?.length > 0 ? `&prodId=${prodId}` : ''
+    gift?.length > 0 ? `&gift=${gift}` : ''
   }`;
 };
 
 // 다이나믹 링크를 활용한 초대링크 생성
 const buildLink = async (
   recommender: string,
-  gift: string,
+  cash: string,
   imageUrl: string,
-  prodId: string = '',
+  subsId: string = '',
 ) => {
   const url = await dynamicLinks().buildShortLink({
-    link: inviteLink(recommender, prodId),
+    link: inviteLink(recommender, subsId),
     domainUriPrefix: dynamicLink,
     ios: {
       bundleId,
@@ -227,7 +259,7 @@ const buildLink = async (
     social: {
       title: i18n
         .t('invite:title')
-        .replace('*', utils.numberToCommaString(gift)),
+        .replace('*', utils.numberToCommaString(cash)),
       descriptionText: i18n.t('invite:desc'),
       imageUrl,
     },
@@ -237,6 +269,52 @@ const buildLink = async (
   });
 
   return url;
+};
+
+// 다이나믹 링크를 활용한 선물하기 링크 생성
+// gift content link , gift image url
+const buildGiftLink = async (link: string, imageUrl: string) => {
+  const url = await dynamicLinks().buildShortLink({
+    link,
+    domainUriPrefix: dynamicLink,
+    social: {
+      title: i18n.t('gift:linkTitle'),
+      descriptionText: i18n.t('gift:linkDesc'),
+      imageUrl,
+    },
+    navigation: {
+      forcedRedirectEnabled: true,
+    },
+  });
+
+  return url;
+};
+
+const sendGift = async (webUrl: string, imageUrl: string) => {
+  const url = await buildGiftLink(webUrl, imageUrl);
+
+  try {
+    const result = await Share.share({
+      url,
+    });
+    if (result.action === Share.sharedAction) {
+      if (result.activityType) {
+        console.log('send success', result);
+        // shared with activity type of result.activityType
+      } else {
+        // shared
+      }
+      return true;
+    }
+    if (result.action === Share.dismissedAction) {
+      // dismissed
+      console.log('send cancel');
+      return false;
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+  return false;
 };
 
 const invite = async (
@@ -276,10 +354,12 @@ const invite = async (
 export default {
   getPromotion,
   getStat,
-  getGiftImages,
+  getGiftBgImages,
+  createContent,
+  buildGiftLink,
   join,
   check,
-  sendCheck,
+  sendGift,
   invite,
   buildLink,
 };

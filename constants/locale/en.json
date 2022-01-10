@@ -382,8 +382,18 @@
   "usim:checkUsage": "Usage Check",
   "usim:failSnackBar": "You can't check usage temporarily. Please try again in a few minutes.",
   "usim:usingTime": "Activation Time",
-  "usim:until": "until",
 
+  "sim:from": "from",
+  "sim:until": "until",
+
+  "esim:R": "UnUsed",
+  "esim:A": "Activated",
+  "esim:U": "Used",
+  "esim:sendGift": "Send a Gift",
+  "esim:S": "Gift",
+  "esim:reservedInfo": "This product has not been used.\nPlease check when using the product.",
+  "esim:usedInfo": "This product has been used.",
+  "esim:method": "Means Of Transport",
   "esim:usablePeriod": "Validity",
   "esim:expired": "Expired",
   "esim:notice": "Voice Plan can be used in the ROKEBI Talk App.",
@@ -509,6 +519,7 @@
   "toast:failedToLoad": "Failed to load the data.\nPlease check your network connectivity.",
   "toast:failedToOpen": "Failed to open the KakaoTalk Channel.",
   "toast:copySuccess": "Copied Successfully.",
+  "toast:sendSuccess": "Sent Gift Successfully.",
 
   "mypage:idCheckTitle": "ROKEBI Talk ID",
   "mypage:manualInput:body": "You can use below ID to login <color:'#2a7ff6'>ROKEBI Talk</color>.",
@@ -557,6 +568,9 @@
   "gift:kakaoInfo": "Send gifts through KakaoTalk. If you click the gift button below and select a recipient on KakaoTalk, it will be sent immediately.\n\n* Please be careful not to select multiple recipients.",
   "gift:kakao": "KakaoTalk",
   "gift:message": "Message",
+  "gift:maxLength": "Up to 80 characters",
+  "gift:linkTitle": "Esim merchandise has arrived!",
+  "gift:linkDesc": "You have received an Esim product.",
 
   "noti:updateTitle": "New Version Available!",
   "noti:updateOpt": "We improved App for your better experience.\nPlease, enjoy the stable service after new version update.",

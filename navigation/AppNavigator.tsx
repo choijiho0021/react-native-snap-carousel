@@ -3,7 +3,7 @@ import dynamicLinks from '@react-native-firebase/dynamic-links';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {memo, useEffect} from 'react';
+import React, {memo, useCallback, useEffect} from 'react';
 import Env from '@/environment';
 import {actions as cartActions} from '@/redux/modules/cart';
 import AuthStackNavigator from './AuthStackNavigator';
@@ -41,29 +41,50 @@ function mainStack() {
 const CreateAppContainer = ({store}) => {
   const navigationRef = React.useRef();
 
-  const handleDynamicLink = (link) => {
+  const getParam = (link: string) => {
+    const url = link.split(/[;?&]/);
+    url.shift();
+    const param = url.map((elm) => `"${elm.replace('=', '":"')}"`);
+    const json = JSON.parse(`{${param.join(',')}}`);
+    return json;
+  };
+
+  const handleDynamicLink = useCallback((link) => {
     let screen = link?.utmParameters?.utm_source;
+    const url = link?.url;
+    if (screen) {
+      if (screen.includes('Screen')) screen = screen.replace('Screen', '');
 
-    if (screen.includes('Screen')) screen = screen.replace('Screen', '');
+      // Screen 별 동작 추가
+      if (navigationRef?.current) {
+        switch (screen) {
+          case 'Esim':
+            navigationRef.current.navigate('EsimStack', {
+              screen,
+            });
+            break;
+          default:
+        }
+      }
+    } else if (url) {
+      const json = getParam(url);
+      console.log('@@ app navi url', json, navigationRef.current?.getState);
+      if (url.includes('recommender') && navigationRef?.current) {
+        navigationRef.current.setParams({
+          recommender: json?.recommender,
+          gift: json?.gift,
+        });
 
-    // Screen 별 동작 추가
-    if (navigationRef?.current) {
-      switch (screen) {
-        case 'Esim':
-          navigationRef.current.navigate('EsimStack', {
-            screen,
-          });
-          break;
-        default:
+        navigationRef.current.navigate('EsimStack');
       }
     }
-  };
+  }, []);
 
   useEffect(() => {
     const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
     // When the component is unmounted, remove the listener
     return () => unsubscribe();
-  }, []);
+  }, [handleDynamicLink]);
 
   useEffect(() => {
     dynamicLinks()

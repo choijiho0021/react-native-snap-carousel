@@ -251,6 +251,7 @@ type RegisterMobileScreenState = {
   isFocused?: boolean;
   status?: TrackingStatus;
   recommender?: string;
+  gift?: string;
 };
 
 const initialState: RegisterMobileScreenState = {
@@ -274,6 +275,7 @@ const initialState: RegisterMobileScreenState = {
   socialLogin: false,
   isFocused: true,
   recommender: undefined,
+  gift: undefined,
 };
 
 class RegisterMobileScreen extends Component<
@@ -302,6 +304,7 @@ class RegisterMobileScreen extends Component<
     this.renderItem = this.renderItem.bind(this);
     this.onPress = this.onPress.bind(this);
     this.onAuth = this.onAuth.bind(this);
+    this.signIn = this.signIn.bind(this);
 
     this.authInputRef = React.createRef();
     this.mounted = false;
@@ -348,7 +351,7 @@ class RegisterMobileScreen extends Component<
           const param = url.map((elm) => `"${elm.replace('=', '":"')}"`);
           const json = JSON.parse(`{${param.join(',')}}`);
 
-          const {recommender} = json;
+          const {recommender, gift} = json;
 
           if (status === 'authorized') {
             analytics().logEvent(
@@ -356,7 +359,7 @@ class RegisterMobileScreen extends Component<
             );
           }
 
-          this.setState({recommender});
+          this.setState({recommender, gift});
         }
       });
   }
@@ -650,6 +653,7 @@ class RegisterMobileScreen extends Component<
     mobile?: string;
     pin?: string;
   }): Promise<ApiResult<any>> => {
+    const {recommender, gift} = this.state;
     const {payload: resp} = await this.props.actions.account.logInAndGetAccount(
       {
         mobile,
@@ -657,8 +661,21 @@ class RegisterMobileScreen extends Component<
       },
     );
 
-    console.log('@@@ login', resp);
+    console.log('@@@ login', resp, this.state);
+    // 로그인 성공시 해당 상품 선물받기
     if (resp.result === 0) {
+      const {iccid, token} = this.props.account;
+
+      if (recommender && gift) {
+        const giftRes = await API.User.receiveGift({
+          sender: recommender,
+          gift,
+          iccid: `00001111${mobile}`,
+          token,
+        });
+        console.log('@@ receive gift res', giftRes);
+      }
+
       const profileImage: RkbImage = await utils.convertURLtoRkbImage(
         this.state.profileImageUrl!,
       );
