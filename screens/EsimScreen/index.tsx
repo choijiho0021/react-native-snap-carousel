@@ -220,7 +220,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         appState.current.match(/inactive|background/) &&
         nextAppState === 'active'
       ) {
-        console.log('App has come to the foreground!', recommender, gift);
+        console.log('App has come to the foreground!');
         if (route?.params) {
           const {recommender, gift} = route?.params;
           if (recommender && gift && iccid) {
