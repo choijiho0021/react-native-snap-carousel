@@ -3,7 +3,6 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import {connect} from 'react-redux';
-import moment from 'moment-with-locales-es6';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -162,8 +161,8 @@ type UsageItemProps = {
   onPress: () => void;
   showSnackbar: () => void;
   usage?: RkbSubsUsage;
-  activeDate?: string;
   cmiStatusCd?: string;
+  endTime?: string;
 
   account: AccountModelState;
 };
@@ -173,8 +172,9 @@ const UsageItem: React.FC<UsageItemProps> = ({
   showSnackbar,
   onPress,
   usage,
-  activeDate,
+
   cmiStatusCd,
+  endTime,
   account: {token},
 }) => {
   const [isShowUsage, setIsShowUsage] = useState(!!usage);
@@ -191,14 +191,19 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
   useEffect(() => {
     if (cmiStatusCd === 'A') {
-      const progress = used > 0 ? 100 - Math.floor((used / quota) * 100) : 0;
-      circularProgress.current?.animate(progress, 3000, null);
+      if (usage) {
+        setQuota(usage.quota);
+        setUsed(usage.used);
+
+        const progress = used > 0 ? 100 - Math.floor((used / quota) * 100) : 0;
+        circularProgress.current?.animate(progress, 3000, null);
+      }
     }
     if (esimApp && !cmiStatusCd) {
       console.log('@@ show snackbar');
       showSnackbar();
     }
-  }, [cmiStatusCd, quota, showSnackbar, used]);
+  }, [cmiStatusCd, quota, showSnackbar, usage, used]);
 
   const getUsage = useCallback(() => {
     // 그래프 테스트 nid = 1616
@@ -230,16 +235,16 @@ const UsageItem: React.FC<UsageItemProps> = ({
     return (
       <View style={styles.endDateContainer}>
         <AppText style={styles.normal14WarmGrey}>
-          {esimApp ? i18n.t('his:activationDate') : i18n.t('usim:usingTime')}
+          {i18n.t('usim:usingTime')}
         </AppText>
         <AppText style={appStyles.normal14Text}>{`${
           esimApp
-            ? moment(activeDate).format('ll')
+            ? endTime?.replace(/-/gi, '.')
             : utils.toDateString(item.endDate)
-        } ${esimApp ? '' : i18n.t(`sim:${'until'}`)}`}</AppText>
+        } ${i18n.t(`sim:${'until'}`)}`}</AppText>
       </View>
     );
-  }, [activeDate, item.endDate]);
+  }, [endTime, item.endDate]);
 
   const expireBeforeUse = useCallback(() => {
     return (
@@ -330,7 +335,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [quota, toGb, toMb, used]);
 
   const [status, statusCd] = esimApp
-    ? [i18n.t(`esim:${cmiStatusCd}`), cmiStatusCd]
+    ? [i18n.t(`esim:${cmiStatusCd || 'R'}`), cmiStatusCd]
     : [item.status, item.statusCd];
 
   const {statusColor = colors.warmGrey, isActive = false} =
@@ -353,7 +358,8 @@ const UsageItem: React.FC<UsageItemProps> = ({
         </View>
 
         {
-          (statusCd === 'A' || usage) && (
+          statusCd === 'A' && (
+            // || usage
             <View>
               <View style={styles.titleAndStatus}>
                 <AppText
@@ -384,7 +390,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
         {['R', 'U'].map((v) => {
           return (
             statusCd === v && (
-              <View>
+              <View key={v}>
                 <AppIcon name={`usage${v}`} />
                 <AppText style={styles.inactiveIcon}>
                   {i18n.t(`esim:${code[v]}Info`)}
