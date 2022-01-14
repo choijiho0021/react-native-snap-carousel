@@ -37,12 +37,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   // 여기부터
-
-  kakao: {
-    flex: 1,
-    height: 52,
-    borderWidth: 1,
-    borderColor: colors.lightGrey,
+  info: {
+    ...appStyles.normal12Text,
+    textAlign: 'left',
+    color: colors.warmGrey,
+    lineHeight: 18,
+    marginBottom: 3,
   },
   msg: {
     ...appStyles.normal16Text,
@@ -71,6 +71,27 @@ const styles = StyleSheet.create({
     margin: 20,
     paddingTop: 50,
     paddingHorizontal: 40,
+  },
+  arrowLeft: {
+    position: 'absolute',
+    bottom: 116,
+    left: 30,
+  },
+  arrowRight: {
+    position: 'absolute',
+    bottom: 116,
+    right: 30,
+  },
+  infoBox: {
+    paddingHorizontal: 20,
+    paddingTop: 30,
+    paddingBottom: 40,
+    backgroundColor: colors.whiteTwo,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.black,
+    marginVertical: 20,
   },
 });
 
@@ -101,10 +122,10 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   pending,
   action,
 }) => {
-  const [checked, setChecked] = useState('kakao');
-  const [msg, setMsg] = useState('');
+  const [msg, setMsg] = useState(i18n.t('gift:default'));
   const [num, setNum] = useState(0);
   const [prevMsg, setPrevMsg] = useState('');
+  const [contHeight, setContHeight] = useState(30);
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const msgRef = useRef();
@@ -112,6 +133,10 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   const bgImages = useMemo(
     () => (promotion.gift.bg || []).filter((v) => v?.image),
     [promotion.gift.bg],
+  );
+  const imageUrl = useMemo(
+    () => promotion?.gift?.imageUrl,
+    [promotion?.gift?.imageUrl],
   );
 
   useEffect(() => {
@@ -144,34 +169,31 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
     });
   }, [navigation]);
 
-  const sendLink = useCallback(
-    async (method: string) => {
-      const {item} = route.params;
-      const imageUrl =
-        'http://tb-esim.rokebi.com/sites/default/files/giftImage.png';
+  const sendLink = useCallback(async () => {
+    const {item} = route.params;
+    if (!account?.userId) return;
 
-      const link = await API.Promotion.buildLink(
-        account.userId,
-        promotion.stat.signupGift,
-        imageUrl,
-        item.uuid, // subscription Id
-      );
+    const link = await API.Promotion.buildLink(
+      account.userId,
+      promotion.stat.signupGift,
+      imageUrl,
+      item.uuid, // subscription Id
+    );
 
-      // gift content 생성
-      const contRes = await API.Promotion.createContent({
-        msg,
-        nid: item?.nid,
-        image: bgImages[num].title,
-        token: account.token,
-        link,
-      });
+    // gift content 생성
+    const contRes = await API.Promotion.createContent({
+      msg,
+      nid: item?.nid,
+      image: bgImages[num].title,
+      token: account.token,
+      link,
+    });
 
-      const webUrl = `${api.httpUrl(api.path.gift.web)}/${
-        contRes.objects[0].uuid
-      }`;
+    const webUrl = `${api.httpUrl(api.path.gift.web)}/${
+      contRes.objects[0].uuid
+    }`;
 
-      const res = await API.Promotion.sendGift(webUrl, imageUrl);
-
+    API.Promotion.sendGift(webUrl, imageUrl).then((res) => {
       if (res) {
         setToastPending(true);
         action.toast.push('toast:sendSuccess');
@@ -181,75 +203,33 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
           navigation.goBack();
         }, 2000);
       }
-    },
-    [
-      account,
-      action.toast,
-      bgImages,
-      msg,
-      navigation,
-      num,
-      promotion.stat.signupGift,
-      route.params,
-    ],
-  );
+    });
+  }, [
+    account.token,
+    account.userId,
+    action.toast,
+    bgImages,
+    imageUrl,
+    msg,
+    navigation,
+    num,
+    promotion.stat.signupGift,
+    route.params,
+  ]);
 
-  const method = useCallback(() => {
+  const info = useCallback(() => {
     return (
       <View>
-        <View style={{marginVertical: 20, flexDirection: 'row', flex: 1}}>
-          {['kakao', 'message'].map((v, idx) => {
-            return (
-              <AppButton
-                key={v}
-                title={i18n.t(`gift:${v}`)}
-                titleStyle={[appStyles.bold16Text, {color: colors.warmGrey}]}
-                checked={checked === v}
-                checkedColor={colors.black}
-                onPress={() => setChecked(v)}
-                style={styles.kakao}
-              />
-            );
-          })}
-        </View>
-        <AppText
-          style={{
-            ...appStyles.normal12Text,
-            textAlign: 'left',
-            color: colors.warmGrey,
-            lineHeight: 18,
-          }}>
-          {i18n.t(`gift:${checked}Info`)}
-        </AppText>
+        {Array.from({length: 5}, (_, i) => i + 1).map((v) => {
+          return (
+            <AppText key={`info${v}`} style={styles.info}>
+              {i18n.t(`gift:info${v}`)}
+            </AppText>
+          );
+        })}
       </View>
     );
-  }, [checked]);
-
-  const onContentSizeChange = useCallback(
-    (e) => {
-      if (e?.nativeEvent?.contentSize?.height <= 120) {
-        setPrevMsg(msg);
-      }
-      if (e?.nativeEvent?.contentSize?.height > 120 && msgRef?.current) {
-        const msgArr = msg.split('\n').slice(0, 4);
-        let text = '';
-        if (msg.split('\n').length > 4) {
-          text = msgArr.reduce((arr, cur, idx) => {
-            if (idx !== 3 || cur !== '\n') return `${arr}${cur}\n`;
-            return `${arr}${cur}`;
-          }, '');
-        } else text = msg.length < prevMsg.length ? msg : prevMsg;
-
-        setMsg(text);
-        msgRef.current.setNativeProps({
-          maxHeight: 120,
-          text,
-          textAlign: 'center',
-        });
-      }
-    },
-    [msg, prevMsg],
-  );
+  }, []);
 
   const cardDesign = useCallback(() => {
     return (
@@ -261,14 +241,28 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
           uri: API.default.httpImageUrl(bgImages[num]?.image).toString(),
         }}>
         <View style={{flexDirection: 'row'}}>
-          <View style={styles.msgBox}>
+          <View style={[styles.msgBox]}>
             <AppTextInput
               multiline
               ref={msgRef}
-              onChangeText={(txt) => setMsg(txt)}
+              value={msg}
+              onChangeText={(txt) => {
+                if (contHeight <= 120) setMsg(txt);
+                else setMsg(prevMsg);
+              }}
               scrollEnabled={false}
               maxLength={80}
-              onContentSizeChange={(e) => onContentSizeChange(e)}
+              autoFocus
+              defaultValue={msg}
+              onContentSizeChange={({nativeEvent: {contentSize}}) => {
+                const {height} = contentSize;
+                setContHeight(height);
+                if (height <= 120) setPrevMsg(msg);
+                else setMsg(prevMsg);
+              }}
+              onKeyPress={({nativeEvent: {key: keyValue}}) => {
+                if (contHeight >= 120 && keyValue === 'Enter') setPrevMsg(msg);
+              }}
               style={styles.msg}
             />
             <AppText style={styles.msgLength}>
@@ -278,14 +272,14 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
 
           {num > 0 && (
             <AppButton
-              style={[{position: 'absolute', bottom: 116, left: 30}]}
+              style={styles.arrowLeft}
               iconName="arrowLeft"
               onPress={() => setNum(num - 1)}
             />
           )}
           {num < bgImages.length - 1 && (
             <AppButton
-              style={[{position: 'absolute', bottom: 116, right: 30}]}
+              style={styles.arrowRight}
               iconName="arrowRight"
               onPress={() => setNum(num + 1)}
             />
@@ -293,7 +287,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         </View>
       </ImageBackground>
     );
-  }, [bgImages, msg.length, num, onContentSizeChange]);
+  }, [bgImages, contHeight, msg, num, prevMsg]);
 
   const {item} = route.params;
 
@@ -303,26 +297,25 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         showsVerticalScrollIndicator={false}
         style={styles.container}>
         {cardDesign()}
-        <AppText
-          style={[
-            appStyles.bold16Text,
-            {marginVertical: 25, marginHorizontal: 20},
-          ]}>
-          {item.prodName}
-        </AppText>
-        <View style={{height: 10, backgroundColor: colors.whiteTwo}} />
-        <View style={{margin: 20, marginBottom: 30}}>
+        <View style={{marginVertical: 30, marginHorizontal: 20}}>
           <AppText style={appStyles.bold18Text}>
-            {i18n.t('esim:method')}
+            {i18n.t('gift:giftInfo')}
           </AppText>
-          {method()}
+          <AppText style={[appStyles.normal16Text, {marginTop: 20}]}>
+            {item.prodName}
+          </AppText>
+        </View>
+        <View style={styles.infoBox}>
+          <AppText style={appStyles.bold18Text}>{i18n.t('esim:info')}</AppText>
+          <View style={styles.divider} />
+          {info()}
         </View>
         <AppActivityIndicator visible={toastPending} />
       </KeyboardAwareScrollView>
       <AppButton
         style={[appStyles.confirm]}
         title={i18n.t('esim:sendGift')}
-        onPress={() => sendLink(checked)}
+        onPress={sendLink}
       />
     </SafeAreaView>
   );
