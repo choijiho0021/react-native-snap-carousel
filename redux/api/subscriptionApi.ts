@@ -37,6 +37,13 @@ const priority = {
   E: 2,
 };
 
+export const cmiStatusCd = {
+  1: 'R',
+  2: 'E', // 사용여부와 관련 없이, 상품의 유효기간 만료
+  3: 'A', // 사용완료된 상태여도 Active 리턴
+  99: 'C',
+};
+
 const sortSubs = (a, b) => {
   // status 우선순위, 구입날짜별로 정렬
   if (a.statusCd === b.statusCd && a.purchaseDate > b.purchaseDate) {
@@ -150,6 +157,26 @@ const toSubsUpdate = (data) => {
         prodName: item.title[0].value,
       })),
     );
+  }
+  return data;
+};
+
+const toCmiUsage = (data) => {
+  if (data?.result?.code === 0) {
+    return api.success({
+      subscriberQuota: data?.subscriberQuota,
+      historyQuota: data?.historyQuota,
+      trajectoriesList: data?.trajectoriesList,
+    });
+  }
+  return data;
+};
+
+const toCmiStatus = (data) => {
+  if (data?.result?.code === 0) {
+    return api.success({
+      userDataBundles: data?.objects?.userDataBundles,
+    });
   }
   return data;
 };
@@ -359,10 +386,18 @@ const cmiGetSubsUsage = ({
       api.path.rokApi.pv.cmiUsage,
       5000,
     )}&iccid=${iccid}&packageId=${packageId}&quota`,
-    (rsp) => {
-      console.log('@@@ rsp', rsp);
-      return rsp;
-    },
+    toCmiUsage,
+    new Headers({'Content-Type': 'application/json'}),
+  );
+};
+
+const cmiGetSubsStatus = ({iccid}: {iccid: string}) => {
+  if (!iccid)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
+
+  return api.callHttpGet(
+    `${api.rokHttpUrl(api.path.rokApi.pv.cmiStatus, 5000)}&iccid=${iccid}`,
+    toCmiStatus,
     new Headers({'Content-Type': 'application/json'}),
   );
 };
@@ -477,6 +512,8 @@ export default {
   CALL_PRODUCT,
 
   code,
+  cmiStatusCd,
+
   STATUS_ACTIVE,
   STATUS_INACTIVE,
   STATUS_RESERVED,
@@ -492,4 +529,5 @@ export default {
   updateSubscriptionStatus,
   getSubsUsage,
   cmiGetSubsUsage,
+  cmiGetSubsStatus,
 };
