@@ -64,11 +64,14 @@ const slice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getPromotion.fulfilled, (state, {payload}) => {
       const {result, objects} = payload;
+      // invite, gift는 동일한 프로모션에 포함.
       const invite = objects.find((v) => !_.isEmpty(v.notice?.rule?.share));
+      const giftImage = invite?.notice?.rule?.gift;
 
       if (result === 0 || result?.code === 0) {
         state.promotion = objects || [];
         state.invite = invite;
+        state.gift.imageUrl = giftImage || '';
       }
     });
 
