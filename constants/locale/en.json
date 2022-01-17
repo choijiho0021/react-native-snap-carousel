@@ -571,6 +571,7 @@
   "gift:info3": "• In addition to the gift message you entered, you can enter an additional message after selecting a transmission method, and the message will be delivered along with the product URL.",
   "gift:info4": "• When the recipient clicks the product URL, it can be used after checking product information along with the gift message.",
   "gift:info5": "• When the recipient first signs up for the service for separate product registration, a small amount of Rokkaebi cash is given to both the sender and the recipient, so please recommend using product registration.",
+  "gift:info6": "• For this product, rate plan activation information is shared with the gift, and we are not responsible for the private distribution and transaction of the product.",
 
   "gift:maxLength": "Up to 80 characters",
   "gift:linkTitle": "The data gift has arrived!",
