@@ -106,6 +106,7 @@ const path = {
     },
     pv: {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/usage',
+      cmiStatus: 'api/v1/pvd/pv/cmi/v2/bundle/status',
     },
   },
 };

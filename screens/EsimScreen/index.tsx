@@ -26,7 +26,7 @@ import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
-import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import {cmiStatusCd, RkbSubscription} from '@/redux/api/subscriptionApi';
 import {
   AccountAction,
   AccountModelState,
@@ -194,7 +194,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [modal, setModal] = useState<ModalType>('');
   const [subs, setSubs] = useState<RkbSubscription>();
   const [copyString, setCopyString] = useState('');
-  const [cmiUsage, setCmiUsage] = useState();
+  const [cmiUsage, setCmiUsage] = useState({});
+  const [cmiStatus, setCmiStatus] = useState({});
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
@@ -358,27 +359,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     //   ],
     // };
 
-    let status;
-    let quota;
-    let used;
-    let activeDate;
-    if (cmiUsage) {
-      const {subscriberQuota, trajectoriesList, result} = cmiUsage;
-
-      if (result?.code === 0) {
-        status = 'R';
-        if (!_.isEmpty(trajectoriesList)) {
-          status = 'U';
-          if (!_.isEmpty(subscriberQuota)) {
-            status = 'A';
-            quota = subscriberQuota.qtavalue;
-            used = subscriberQuota.qtaconsumption;
-            activeDate = trajectoriesList[0].beginTime;
-          }
-        }
-      }
-    }
-
     switch (modal) {
       case 'showQR':
         return showQR(subs);
@@ -392,34 +372,66 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           </View>
         );
 
-      default:
+      default: {
+        const quota = cmiUsage?.subscriberQuota?.qtavalue;
+        const used = cmiUsage?.subscriberQuota?.qtaconsumption;
+
         // usage
         return (
-          <UsageItem
-            item={subs}
-            onPress={() => {}}
-            showSnackbar={() => {}}
-            usage={{quota, used}}
-            cmiStatusCd={status}
-            activeDate={activeDate}
-          />
+          cmiStatus &&
+          cmiUsage && (
+            <UsageItem
+              item={subs}
+              onPress={() => {}}
+              showSnackbar={() => {}}
+              usage={{quota, used}}
+              cmiStatusCd={cmiStatus.statusCd}
+              endTime={cmiStatus.endTime}
+            />
+          )
         );
+      }
     }
-  }, [cmiUsage, copyInfo, modal, subs]);
+  }, [subs, cmiUsage, modal, copyInfo, cmiStatus]);
 
-  const onPressUsage = useCallback((item: RkbSubscription) => {
-    // {"subscriberQuota":{"qtavalue":"512000","qtabalance":"73042","qtaconsumption":"438958"},"historyQuota":[{"time":"20211222","qtaconsumption":"376.44","mcc":"452"},{"time":"20211221","qtaconsumption":"1454.78","mcc":"452"}],"result":{"code":0},"trajectoriesList":[{"mcc":"452","country":"Vietnam","beginTime":"20211221","useTime":"20220120","himsi":"454120382118109"}]}
-    setShowModal(true);
-    setModal('usage');
-    setSubs(item);
+  const onPressUsage = useCallback(
+    (item: RkbSubscription) => {
+      // {"subscriberQuota":{"qtavalue":"512000","qtabalance":"73042","qtaconsumption":"438958"},"historyQuota":[{"time":"20211222","qtaconsumption":"376.44","mcc":"452"},{"time":"20211221","qtaconsumption":"1454.78","mcc":"452"}],"result":{"code":0},"trajectoriesList":[{"mcc":"452","country":"Vietnam","beginTime":"20211221","useTime":"20220120","himsi":"454120382118109"}]}
+      setShowModal(true);
+      setModal('usage');
+      setSubs(item);
 
-    console.log('@@@ item', item);
-    if (item?.subsIccid && item?.packageId)
       API.Subscription.cmiGetSubsUsage({
         iccid: item.subsIccid,
         packageId: item.packageId,
-      }).then((rsp) => setCmiUsage(rsp));
-  }, []);
+      }).then((rsp) => {
+        if (rsp?.result === 0) setCmiUsage(rsp?.objects);
+      });
+
+      // expire time은 사용시작 이후에 발생
+      // 사용 시작 했고, expireTime을 지났어도 'E' 로 바뀌지 않음.  endTime이후 'E'
+      API.Subscription.cmiGetSubsStatus({
+        iccid: item.subsIccid,
+      }).then((rsp) => {
+        const {userDataBundles} = rsp.objects;
+        if (rsp?.result === 0 && userDataBundles[0]) {
+          const {status, expireTime, endTime} = userDataBundles[0];
+          let statusCd = cmiStatusCd[status];
+          if (
+            cmiStatusCd[status] === 'A' &&
+            (new Date(expireTime) < new Date() || !cmiUsage.subscriberQuota)
+          )
+            statusCd = 'U';
+
+          setCmiStatus({
+            statusCd,
+            endTime: expireTime || endTime,
+          });
+        }
+      });
+    },
+    [cmiUsage.subscriberQuota],
+  );
 
   const renderSubs = useCallback(
     ({item}: {item: RkbSubscription}) => {
