@@ -7,7 +7,6 @@ import moment, {Moment} from 'moment';
 import React, {Component, memo} from 'react';
 import {
   Appearance,
-  BackHandler,
   ColorSchemeName,
   Dimensions,
   Platform,
@@ -17,15 +16,12 @@ import {
   View,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
-import RNExitApp from 'react-native-exit-app';
 import {Settings} from 'react-native-fbsdk';
 import {TabView} from 'react-native-tab-view';
-import {
-  getTrackingStatus,
-  requestTrackingPermission,
-} from 'react-native-tracking-transparency';
+import {getTrackingStatus} from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import ShortcutBadge from 'react-native-app-badge';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -65,7 +61,6 @@ import pushNoti from '@/utils/pushNoti';
 import {checkFistLaunch, requestPermission} from './component/permission';
 import PromotionCarousel from './component/PromotionCarousel';
 import AndroidEuccidModule from '@/components/NativeModule/AndroidEuccidModule';
-import ShortcutBadge from 'react-native-app-badge';
 
 const {esimGlobal} = Env.get();
 
@@ -287,7 +282,6 @@ class Esim extends Component<EsimProps, EsimState> {
       this.setState({popUpVisible: false});
     });
 
-    requestTrackingPermission();
     AsyncStorage.getItem('popupDisabled').then((v) => {
       if (v) {
         const popupDisabled =
@@ -323,7 +317,6 @@ class Esim extends Component<EsimProps, EsimState> {
 
         this.renderTitleBtn();
 
-        // if (isSupportDev) {
         pushNoti.add(this.notification);
 
         this.refresh();
@@ -338,7 +331,6 @@ class Esim extends Component<EsimProps, EsimState> {
             popUp: this.setNotiModal,
           });
         } else if (this.props.promotion) this.setNotiModal();
-        // } else {
         if (!isSupportDev) {
           const status = await getTrackingStatus();
           if (status === 'authorized') {
@@ -354,7 +346,6 @@ class Esim extends Component<EsimProps, EsimState> {
             );
           }
         }
-        // }
       }
     });
 
