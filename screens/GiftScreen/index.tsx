@@ -29,6 +29,7 @@ import {
   PromotionModelState,
 } from '@/redux/modules/promotion';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
+import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 
 const styles = StyleSheet.create({
@@ -111,6 +112,7 @@ type GiftScreenProps = {
   action: {
     promotion: PromotionAction;
     toast: ToastAction;
+    order: OrderAction;
   };
 };
 
@@ -196,8 +198,12 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
     API.Promotion.sendGift(webUrl, imageUrl).then((res) => {
       if (res) {
         setToastPending(true);
+        action.order.updateSubsGiftStatus({
+          uuid: item.uuid,
+          giftStatus: 'S',
+          token: account.token,
+        });
         action.toast.push('toast:sendSuccess');
-
         setTimeout(() => {
           setToastPending(false);
           navigation.goBack();
@@ -205,9 +211,8 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
       }
     });
   }, [
-    account.token,
-    account.userId,
-    action.toast,
+    account,
+    action,
     bgImages,
     imageUrl,
     msg,
@@ -329,6 +334,7 @@ export default reactRedux.connect(
     action: {
       promotion: bindActionCreators(promotionActions, dispatch),
       toast: bindActionCreators(toastActions, dispatch),
+      order: bindActionCreators(orderActions, dispatch),
     },
   }),
 )(GiftScreen);

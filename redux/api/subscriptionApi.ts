@@ -104,9 +104,8 @@ const toSubscription = (
           endDate: item.field_subs_expiration_date || '',
           statusCd: item.field_status || '',
           status: toStatus(item.field_status) || '',
-          giftStatusCd: item.field_gift_status
-            ? giftCode[item.field_gift_status]
-            : '',
+          giftStatusCd:
+            giftCode[item.field_gift_status] || item.field_gift_status || '',
           country: item.field_country || '',
           prodName: item.title || '',
           prodId: item.product_uuid || '',
@@ -128,16 +127,22 @@ const toSubscription = (
 
     return api.success(
       obj
-        .map((item) => ({
-          key: item.id,
-          uuid: item.id,
-          purchaseDate: item.field_purchase_date,
-          activationDate: item.field_subs_activation_date,
-          expireDate: item.field_subs_expiration_date,
-          statusCd: item.field_status,
-          status: item.field_status,
-          type: item.type,
-        }))
+        .map((item) => {
+          return {
+            key: item.id,
+            uuid: item.id,
+            purchaseDate: item.field_purchase_date,
+            activationDate: item.field_subs_activation_date,
+            expireDate: item.field_subs_expiration_date,
+            statusCd: item.field_status,
+            giftStatusCd:
+              giftCode[item.attributes?.field_gift_status] ||
+              item.attributes?.field_gift_status ||
+              '',
+            status: item.field_status,
+            type: item.type,
+          };
+        })
         .sort(sortSubs),
       data.links,
     );
@@ -154,6 +159,8 @@ const toSubsUpdate = (data) => {
         uuid: item.uuid[0].value,
         statusCd: item.field_status[0].value,
         status: toStatus(item.field_status[0].value),
+        giftStatusCd:
+          giftCode[item.field_gift_status] || item.field_gift_status || '',
         prodName: item.title[0].value,
       })),
     );
@@ -327,8 +334,8 @@ const getOtaSubscription = ({
 };
 
 const updateSubscriptionStatus = ({
-  uuid,
-  status,
+  uuid, // subs uuid
+  status, // target status
   token,
 }: {
   uuid: string;
@@ -350,6 +357,45 @@ const updateSubscriptionStatus = ({
       body: JSON.stringify({status}),
     },
     toSubsUpdate,
+  );
+};
+
+const updateSubscriptionGiftStatus = ({
+  uuid,
+  giftStatus,
+  token,
+}: {
+  uuid: string;
+  giftStatus: string;
+  token: string;
+}) => {
+  if (!uuid)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: uuid');
+  if (!giftStatus)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: giftStatus');
+  if (!token)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
+
+  const body = {
+    data: {
+      type: 'node--subscription',
+      id: uuid,
+      attributes: {
+        field_gift_status: giftStatus,
+      },
+    },
+  };
+
+  return api.callHttp(
+    `${api.httpUrl(api.path.jsonapi.subscription)}/${uuid}`,
+    {
+      method: 'PATCH',
+      headers: api.withToken(token, 'vnd.api+json', {
+        Accept: 'application/vnd.api+json',
+      }),
+      body: JSON.stringify(body),
+    },
+    toSubscription,
   );
 };
 
@@ -527,6 +573,7 @@ export default {
   otaSubscription,
   getOtaSubscription,
   updateSubscriptionStatus,
+  updateSubscriptionGiftStatus,
   getSubsUsage,
   cmiGetSubsUsage,
   cmiGetSubsStatus,
