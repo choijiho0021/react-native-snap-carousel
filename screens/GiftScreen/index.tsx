@@ -253,7 +253,6 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
               value={msg}
               onChangeText={(txt) => {
                 if (contHeight <= 120) setMsg(txt);
-                else setMsg(prevMsg);
               }}
               scrollEnabled={false}
               maxLength={80}
@@ -261,10 +260,10 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
               onContentSizeChange={({nativeEvent: {contentSize}}) => {
                 const {height} = contentSize;
                 setContHeight(height);
-                if (height <= 120) setPrevMsg(msg);
-                else setMsg(prevMsg);
+                if (height > 120) setMsg(prevMsg);
               }}
               onKeyPress={({nativeEvent: {key: keyValue}}) => {
+                if (contHeight <= 120) setPrevMsg(msg);
                 if (contHeight >= 120 && keyValue === 'Enter') setPrevMsg(msg);
               }}
               style={styles.msg}
