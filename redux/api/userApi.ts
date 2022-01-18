@@ -505,7 +505,7 @@ const receiveGift = ({
   iccid: string;
   token?: string;
 }) => {
-  if (!gift || !iccid || !token) {
+  if (!sender || !gift || !iccid || !token) {
     return api.reject(
       api.E_INVALID_ARGUMENT,
       `missing parameter: sender: ${sender} gift:${gift} iccid:${iccid} token:${token}`,
