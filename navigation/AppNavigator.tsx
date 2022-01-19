@@ -9,6 +9,7 @@ import {actions as cartActions} from '@/redux/modules/cart';
 import AuthStackNavigator from './AuthStackNavigator';
 import EsimMainTabNavigator from './EsimMainTabNavigator';
 import MainTabNavigator from './MainTabNavigator';
+import {API} from '@/redux/api';
 
 const {esimApp, esimGlobal} = Env.get();
 
@@ -49,36 +50,57 @@ const CreateAppContainer = ({store}) => {
     return json;
   };
 
-  const handleDynamicLink = useCallback((link) => {
-    let screen = link?.utmParameters?.utm_source;
-    const url = link?.url;
-    if (screen) {
-      if (screen.includes('Screen')) screen = screen.replace('Screen', '');
+  const goTo = useCallback((res: string) => {
+    navigationRef.current.setParams({
+      giftRes: res?.result?.code === 0,
+    });
+    navigationRef.current.navigate('EsimStack', {
+      screen: 'Esim',
+    });
+  }, []);
 
-      // Screen 별 동작 추가
-      if (navigationRef?.current) {
-        switch (screen) {
-          case 'Esim':
+  const handleDynamicLink = useCallback(
+    (link) => {
+      let screen = link?.utmParameters?.utm_source;
+      const url = link?.url;
+      if (screen) {
+        if (screen.includes('Screen')) screen = screen.replace('Screen', '');
+
+        // Screen 별 동작 추가
+        if (navigationRef?.current) {
+          switch (screen) {
+            case 'Esim':
+              navigationRef.current.navigate('EsimStack', {
+                screen,
+              });
+              break;
+            default:
+          }
+        }
+      } else if (url) {
+        const json = getParam(url);
+        if (url.includes('recommender') && navigationRef?.current) {
+          const {loggedIn, iccid, token} = store.getState().account;
+
+          if (loggedIn) {
+            API.User.receiveGift({
+              sender: json?.recommender,
+              gift: json?.gift,
+              iccid,
+              token,
+            }).then((res) => goTo(res));
+          } else {
             navigationRef.current.navigate('EsimStack', {
-              screen,
+              screen: 'RegisterMobile',
+              recommender: json?.recommender,
+              gift: json?.gift,
             });
-            break;
-          default:
+          }
         }
       }
-    } else if (url) {
-      const json = getParam(url);
-      console.log('@@ app navi url', json, navigationRef.current?.getState);
-      if (url.includes('recommender') && navigationRef?.current) {
-        navigationRef.current.setParams({
-          recommender: json?.recommender,
-          gift: json?.gift,
-        });
-
-        navigationRef.current.navigate('EsimStack');
-      }
-    }
-  }, []);
+    },
+    [goTo, store],
+  );
 
   useEffect(() => {
     const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
@@ -99,8 +121,9 @@ const CreateAppContainer = ({store}) => {
             },
           );
         }
+        handleDynamicLink(l);
       });
-  }, []);
+  }, [handleDynamicLink]);
 
   return (
     <NavigationContainer

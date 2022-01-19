@@ -1,7 +1,7 @@
 import Clipboard from '@react-native-community/clipboard';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   AppState,
   FlatList,
@@ -197,48 +197,21 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [cmiUsage, setCmiUsage] = useState({});
   const [cmiStatus, setCmiStatus] = useState({});
   const appState = useRef(AppState.currentState);
-  const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
-  const receive = useCallback(
-    async (sender: string, gift: string) => {
-      const giftRes = await API.User.receiveGift({
-        sender,
-        gift,
-        iccid,
-        token,
-      });
+  useEffect(() => {
+    const res = route?.params?.giftRes;
 
-      if (giftRes?.result?.code === 0) {
+    if (res) action.order.getSubsWithToast({iccid, token});
+  }, [action.order, iccid, route?.params?.giftRes, token]);
+
+  const init = useCallback(
+    ({iccid, token}: {iccid?: string; token?: string}) => {
+      if (iccid && token) {
         action.order.getSubsWithToast({iccid, token});
       }
     },
-    [action.order, iccid, token],
+    [action.order],
   );
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', (nextAppState) => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === 'active'
-      ) {
-        console.log('App has come to the foreground!');
-        if (route?.params) {
-          const {recommender, gift} = route?.params;
-          if (recommender && gift && iccid) {
-            receive(recommender, gift);
-          }
-        }
-      }
-
-      appState.current = nextAppState;
-      setAppStateVisible(appState.current);
-      console.log('AppState', appState.current);
-    });
-
-    return () => {
-      subscription.remove();
-    };
-  }, [iccid, receive, route?.params]);
 
   const onRefresh = useCallback(() => {
     if (iccid) {
@@ -324,15 +297,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [copyString, copyToClipboard],
   );
 
-  const init = useCallback(
-    ({iccid, token}: {iccid?: string; token?: string}) => {
-      if (iccid && token) {
-        action.order.getSubsWithToast({iccid, token});
-      }
-    },
-    [action.order],
-  );
-
   const modalBody = useCallback(() => {
     if (!subs) return null;
     // const cmiUsage = {
@@ -375,6 +339,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       default: {
         const quota = cmiUsage?.subscriberQuota?.qtavalue;
         const used = cmiUsage?.subscriberQuota?.qtaconsumption;
+        const statusCd = _.isEmpty(cmiUsage?.subscriberQuota)
+          ? 'U'
+          : cmiStatus?.statusCd;
 
         // usage
         return (
@@ -385,7 +352,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               onPress={() => {}}
               showSnackbar={() => {}}
               usage={{quota, used}}
-              cmiStatusCd={cmiStatus.statusCd}
+              cmiStatusCd={statusCd}
               endTime={cmiStatus.endTime}
             />
           )
@@ -394,44 +361,38 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     }
   }, [subs, cmiUsage, modal, copyInfo, cmiStatus]);
 
-  const onPressUsage = useCallback(
-    (item: RkbSubscription) => {
-      // {"subscriberQuota":{"qtavalue":"512000","qtabalance":"73042","qtaconsumption":"438958"},"historyQuota":[{"time":"20211222","qtaconsumption":"376.44","mcc":"452"},{"time":"20211221","qtaconsumption":"1454.78","mcc":"452"}],"result":{"code":0},"trajectoriesList":[{"mcc":"452","country":"Vietnam","beginTime":"20211221","useTime":"20220120","himsi":"454120382118109"}]}
-      setShowModal(true);
-      setModal('usage');
-      setSubs(item);
+  const onPressUsage = useCallback((item: RkbSubscription) => {
+    // {"subscriberQuota":{"qtavalue":"512000","qtabalance":"73042","qtaconsumption":"438958"},"historyQuota":[{"time":"20211222","qtaconsumption":"376.44","mcc":"452"},{"time":"20211221","qtaconsumption":"1454.78","mcc":"452"}],"result":{"code":0},"trajectoriesList":[{"mcc":"452","country":"Vietnam","beginTime":"20211221","useTime":"20220120","himsi":"454120382118109"}]}
+    setShowModal(true);
+    setModal('usage');
+    setSubs(item);
 
-      API.Subscription.cmiGetSubsUsage({
-        iccid: item.subsIccid,
-        packageId: item.packageId,
-      }).then((rsp) => {
-        if (rsp?.result === 0) setCmiUsage(rsp?.objects);
-      });
+    API.Subscription.cmiGetSubsUsage({
+      iccid: item.subsIccid,
+      packageId: item.packageId,
+    }).then((rsp) => {
+      if (rsp?.result === 0) setCmiUsage(rsp?.objects);
+    });
 
-      // expire time은 사용시작 이후에 발생
-      // 사용 시작 했고, expireTime을 지났어도 'E' 로 바뀌지 않음.  endTime이후 'E'
-      API.Subscription.cmiGetSubsStatus({
-        iccid: item.subsIccid,
-      }).then((rsp) => {
-        const {userDataBundles} = rsp.objects;
-        if (rsp?.result === 0 && userDataBundles[0]) {
-          const {status, expireTime, endTime} = userDataBundles[0];
-          let statusCd = cmiStatusCd[status];
-          if (
-            cmiStatusCd[status] === 'A' &&
-            (new Date(expireTime) < new Date() || !cmiUsage.subscriberQuota)
-          )
-            statusCd = 'U';
+    // expire time은 사용시작 이후에 발생
+    // 사용 시작 했고, expireTime을 지났어도 'E' 로 바뀌지 않음.  endTime이후 'E'
+    API.Subscription.cmiGetSubsStatus({
+      iccid: item.subsIccid,
+    }).then((rsp) => {
+      const {userDataBundles} = rsp.objects;
+      if (rsp?.result === 0 && userDataBundles[0]) {
+        const {status, expireTime, endTime} = userDataBundles[0];
+        let statusCd = cmiStatusCd[status];
+        if (cmiStatusCd[status] === 'A' && new Date(expireTime) < new Date())
+          statusCd = 'U';
 
-          setCmiStatus({
-            statusCd,
-            endTime: expireTime || endTime,
-          });
-        }
-      });
-    },
-    [cmiUsage.subscriberQuota],
-  );
+        setCmiStatus({
+          statusCd,
+          endTime: expireTime || endTime,
+        });
+      }
+    });
+  }, []);
 
   const renderSubs = useCallback(
     ({item}: {item: RkbSubscription}) => {
