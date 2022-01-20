@@ -93,7 +93,7 @@ export type HomeStackParamList = {
   Settings: undefined;
   Auth: {screen: string};
   HeaderTitle: undefined;
-  Esim: {recommender?: string; gift?: string};
+  Esim: {giftRes?: boolean; recommender?: string; gift?: string};
   SubsDetail: {detail?: RkbSubscription};
 
   MyPage: undefined;
