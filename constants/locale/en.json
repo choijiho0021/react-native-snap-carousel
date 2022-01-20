@@ -383,7 +383,6 @@
   "usim:failSnackBar": "You can't check usage temporarily. Please try again in a few minutes.",
   "usim:usingTime": "Activation Time",
 
-  "sim:from": "from",
   "sim:until": "until",
 
   "esim:R": "UnUsed",
@@ -563,7 +562,13 @@
 
   "inv:statDesc": "Maybe my travel data is free!?",
 
+  "gift:method": "Transfer method",
   "gift:title": "Send a gift",
+  "gift:messageInfo": "Send gifts by text message. If you click the gift button below and select a recipient in the text message window, it will be sent immediately.\n\n* Please be careful not to select multiple recipients.",
+  "gift:kakaoInfo": "Send gifts through KakaoTalk. If you click the gift button below and select a recipient on KakaoTalk, it will be sent immediately.\n\n* Please be careful not to select multiple recipients.",
+  "gift:kakao": "KakaoTalk",
+  "gift:message": "Message",
+
   "gift:giftInfo": "Gift Details",
   "gift:default": "The Rokebi data gift has arrived",
   "gift:info1": "• After clicking the gift button below, select a means of transmission (KakaoTalk or text message, etc) to express your heart to the gift giver.",
