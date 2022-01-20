@@ -243,14 +243,19 @@ const inviteLink = (recommender: string, gift: string = '') => {
 };
 
 // 다이나믹 링크를 활용한 초대링크 생성
-const buildLink = async (
-  recommender: string,
-  cash: string,
-  imageUrl: string,
-  subsId: string = '',
-) => {
+const buildLink = async ({
+  recommender,
+  cash,
+  imageUrl,
+  subsId = '',
+}: {
+  recommender: string;
+  cash: string;
+  imageUrl: string;
+  subsId?: string;
+}) => {
   const url = await dynamicLinks().buildShortLink({
-    link: inviteLink(recommender, subsId),
+    link: inviteLink(recommender, subsId || ''),
     domainUriPrefix: dynamicLink,
     ios: {
       bundleId,
@@ -273,7 +278,13 @@ const buildLink = async (
 
 // 다이나믹 링크를 활용한 선물하기 링크 생성
 // gift content link , gift image url
-const buildGiftLink = async (link: string, imageUrl: string) => {
+const buildGiftLink = async ({
+  link,
+  imageUrl,
+}: {
+  link: string;
+  imageUrl: string;
+}) => {
   const url = await dynamicLinks().buildShortLink({
     link,
     domainUriPrefix: dynamicLink,
@@ -288,33 +299,6 @@ const buildGiftLink = async (link: string, imageUrl: string) => {
   });
 
   return url;
-};
-
-const sendGift = async (webUrl: string, imageUrl: string) => {
-  const url = await buildGiftLink(webUrl, imageUrl);
-
-  try {
-    const result = await Share.share({
-      url,
-    });
-    if (result.action === Share.sharedAction) {
-      if (result.activityType) {
-        console.log('send success', result);
-        // shared with activity type of result.activityType
-      } else {
-        // shared
-      }
-      return true;
-    }
-    if (result.action === Share.dismissedAction) {
-      // dismissed
-      console.log('send cancel');
-      return false;
-    }
-  } catch (error) {
-    console.log(error.message);
-  }
-  return false;
 };
 
 const invite = async (
@@ -359,7 +343,6 @@ export default {
   buildGiftLink,
   join,
   check,
-  sendGift,
   invite,
   buildLink,
 };

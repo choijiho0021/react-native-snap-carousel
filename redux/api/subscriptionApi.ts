@@ -567,6 +567,8 @@ export default {
   STATUS_EXPIRED,
   STATUS_USED,
 
+  GIFT_STATUS_SEND,
+
   getSubscription,
   getRkbTalkSubscription,
   addSubscription,

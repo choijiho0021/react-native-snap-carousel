@@ -306,11 +306,11 @@ class InviteScreen extends Component<InviteScreenProps, InviteScreenState> {
     if (userId && invite?.notice?.rule) {
       switch (method) {
         case 'copy': {
-          API.Promotion.buildLink(
-            userId,
-            stat.signupGift,
-            invite.notice.rule?.share,
-          ).then((url) => {
+          API.Promotion.buildLink({
+            recommender: userId,
+            cash: stat.signupGift,
+            imageUrl: invite.notice.rule?.share,
+          }).then((url) => {
             if (url) {
               Clipboard.setString(url);
               this.props.action.toast.push(Toast.COPY_SUCCESS);

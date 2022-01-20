@@ -8545,6 +8545,11 @@
   "resolved" "https://registry.npmjs.org/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.3.1.tgz"
   "version" "1.3.1"
 
+"react-native-kakao-share-link@^1.0.6":
+  "integrity" "sha512-1jI6aIS1l6oZrc3kQ8OX0ehSvdyRosYcCzn7x3oJ/wqOy8DTeXvfsj3jexO6NdL3NfSQyNL81walRYFXhHlBfA=="
+  "resolved" "https://registry.npmjs.org/react-native-kakao-share-link/-/react-native-kakao-share-link-1.0.6.tgz"
+  "version" "1.0.6"
+
 "react-native-keyboard-aware-scroll-view@^0.9.5":
   "integrity" "sha512-XwfRn+T/qBH9WjTWIBiJD2hPWg0yJvtaEw6RtPCa5/PYHabzBaWxYBOl0usXN/368BL1XktnZPh8C2lmTpOREA=="
   "resolved" "https://registry.npmjs.org/react-native-keyboard-aware-scroll-view/-/react-native-keyboard-aware-scroll-view-0.9.5.tgz"
@@ -8625,6 +8630,11 @@
   "integrity" "sha512-mKOfBLIBFBcs9br1rlZDvxD5+mAl8Gfr5CounwJtxI6Z82rGrMO+Kgl9EIg3RMVf3G855a85YVqHJL2f5EDRlw=="
   "resolved" "https://registry.npmjs.org/react-native-size-matters/-/react-native-size-matters-0.3.1.tgz"
   "version" "0.3.1"
+
+"react-native-sms@^1.11.0":
+  "integrity" "sha512-G5q61qGknNyftN1cFkXfH46UkQWMf3fy/M1fxK/QJzLDJAgCSeBqge62FgJClw1FqzYGSjZeoZvkgpWGDCd3wQ=="
+  "resolved" "https://registry.npmjs.org/react-native-sms/-/react-native-sms-1.11.0.tgz"
+  "version" "1.11.0"
 
 "react-native-snackbar-component@^1.1.12":
   "integrity" "sha512-uF9Aw3lWVtFOxrd09YCXteTvIxBZ0IrwEluhhTsmNqWf3fYeJ7LbERVXYw/2p39H9tQUFGkrJcrkvDcQcUa3Pg=="

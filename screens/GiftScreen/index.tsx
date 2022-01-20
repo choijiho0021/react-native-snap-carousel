@@ -1,16 +1,12 @@
-import {
-  AppState,
-  ImageBackground,
-  SafeAreaView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {ImageBackground, SafeAreaView, StyleSheet, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {bindActionCreators} from 'redux';
-import * as reactRedux from 'react-redux';
+import SendSMS from 'react-native-sms';
+import {connect} from 'react-redux';
+import KakaoShareLink from 'react-native-kakao-share-link';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -21,7 +17,7 @@ import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
-import api from '@/redux/api/api';
+import subsApi, {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {AccountModelState} from '@/redux/modules/account';
 import {
   actions as promotionActions,
@@ -38,6 +34,23 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   // 여기부터
+  kakao: {
+    flex: 1,
+    height: 52,
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+  },
+  method: {
+    marginVertical: 20,
+    flexDirection: 'row',
+    flex: 1,
+  },
+  methodInfo: {
+    ...appStyles.normal12Text,
+    textAlign: 'left',
+    color: colors.warmGrey,
+    lineHeight: 18,
+  },
   info: {
     ...appStyles.normal12Text,
     textAlign: 'left',
@@ -94,6 +107,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.black,
     marginVertical: 20,
   },
+  thickDivider: {
+    height: 10,
+    backgroundColor: colors.whiteTwo,
+  },
 });
 
 type GiftScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Gift'>;
@@ -116,6 +133,9 @@ type GiftScreenProps = {
   };
 };
 
+const KAKAO = 'kakao';
+const MESSAGE = 'message';
+
 const GiftScreen: React.FC<GiftScreenProps> = ({
   navigation,
   route,
@@ -125,11 +145,10 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   action,
 }) => {
   const [msg, setMsg] = useState(i18n.t('gift:default'));
+  const [checked, setChecked] = useState(KAKAO);
   const [num, setNum] = useState(0);
   const [prevMsg, setPrevMsg] = useState('');
   const [contHeight, setContHeight] = useState(30);
-  const appState = useRef(AppState.currentState);
-  const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const msgRef = useRef();
   const [toastPending, setToastPending] = useState(false);
   const bgImages = useMemo(
@@ -146,81 +165,97 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   }, [promotion.stat.signupGift]);
 
   useEffect(() => {
-    const subscription = AppState.addEventListener('change', (nextAppState) => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === 'active'
-      ) {
-        console.log('App has come to the foreground!');
-      }
-
-      appState.current = nextAppState;
-      setAppStateVisible(appState.current);
-      console.log('AppState', appState.current);
-    });
-
-    return () => {
-      subscription.remove();
-    };
-  }, [account.userId, route.params.item.prodId]);
-
-  useEffect(() => {
     navigation.setOptions({
       title: null,
       headerLeft: () => <AppBackButton title={i18n.t('gift:title')} />,
     });
   }, [navigation]);
 
-  const sendLink = useCallback(async () => {
-    const {item} = route.params;
-    if (!account?.userId) return;
+  const createLink = useCallback(
+    async (item: RkbSubscription) => {
+      const image = bgImages[num]?.title;
+      return action.promotion
+        .makeContentAndLink({
+          msg,
+          item,
+          image,
+        })
+        .then((res) => res?.payload);
+    },
+    [action.promotion, bgImages, msg, num],
+  );
 
-    const link = await API.Promotion.buildLink(
-      account.userId,
-      promotion.stat.signupGift,
-      imageUrl,
-      item.uuid, // subscription Id
-    );
-
-    // gift content 생성
-    const contRes = await API.Promotion.createContent({
-      msg,
-      nid: item?.nid,
-      image: bgImages[num].title,
-      token: account.token,
-      link,
-    });
-
-    const webUrl = `${api.httpUrl(api.path.gift.web)}/${
-      contRes.objects[0].uuid
-    }`;
-
-    API.Promotion.sendGift(webUrl, imageUrl).then((res) => {
-      if (res) {
-        setToastPending(true);
+  const afterSend = useCallback(
+    (item: RkbSubscription, updateStatus: boolean = false) => {
+      setToastPending(true);
+      if (account?.token && updateStatus) {
         action.order.updateSubsGiftStatus({
           uuid: item.uuid,
-          giftStatus: 'S',
+          giftStatus: subsApi.GIFT_STATUS_SEND,
           token: account.token,
         });
-        action.toast.push('toast:sendSuccess');
-        setTimeout(() => {
+      }
+      setTimeout(
+        () => {
+          action.toast.push('toast:sendSuccess');
           setToastPending(false);
           navigation.goBack();
-        }, 2000);
+        },
+        updateStatus ? 2000 : 4000,
+      );
+    },
+    [account.token, action.order, action.toast, navigation],
+  );
+
+  const sendLink = useCallback(
+    async (method: string, item: RkbSubscription) => {
+      // 사용자에게 보낼 링크
+      const webUrl = await createLink(item);
+
+      switch (method) {
+        case MESSAGE: {
+          SendSMS.send(
+            {
+              body: webUrl,
+              successTypes: ['sent', 'queued'],
+            },
+            (success, cancel, err) => {
+              console.log(`SMS success:${success} cancel:${cancel} err:${err}`);
+              if (success) {
+                afterSend(item, true);
+              }
+            },
+          );
+          break;
+        }
+        default: // kakao
+        {
+          try {
+            const response = await KakaoShareLink.sendFeed({
+              content: {
+                title: i18n.t('gift:linkTitle'),
+                imageUrl,
+                link: {
+                  webUrl,
+                  mobileWebUrl: webUrl,
+                },
+                description: i18n.t('gift:linkDesc'),
+              },
+            });
+
+            // kakao 앱 이동 성공
+            if (response.result) {
+              afterSend(item);
+            }
+          } catch (e) {
+            console.error(e);
+          }
+          break;
+        }
       }
-    });
-  }, [
-    account,
-    action,
-    bgImages,
-    imageUrl,
-    msg,
-    navigation,
-    num,
-    promotion.stat.signupGift,
-    route.params,
-  ]);
+    },
+    [afterSend, createLink, imageUrl],
+  );
 
   const info = useCallback(() => {
     return (
@@ -236,6 +271,31 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
     );
   }, []);
 
+  const method = useCallback(() => {
+    return (
+      <View>
+        <View style={styles.method}>
+          {[KAKAO, MESSAGE].map((v, idx) => {
+            return (
+              <AppButton
+                key={v}
+                title={i18n.t(`gift:${v}`)}
+                titleStyle={[appStyles.bold16Text, {color: colors.warmGrey}]}
+                checked={checked === v}
+                checkedColor={colors.black}
+                onPress={() => setChecked(v)}
+                style={styles.kakao}
+              />
+            );
+          })}
+        </View>
+        <AppText style={styles.methodInfo}>
+          {i18n.t(`gift:${checked}Info`)}
+        </AppText>
+      </View>
+    );
+  }, [checked]);
+
   const cardDesign = useCallback(() => {
     return (
       <ImageBackground
@@ -246,7 +306,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
           uri: API.default.httpImageUrl(bgImages[num]?.image).toString(),
         }}>
         <View style={{flexDirection: 'row'}}>
-          <View style={[styles.msgBox]}>
+          <View style={styles.msgBox}>
             <AppTextInput
               multiline
               ref={msgRef}
@@ -300,34 +360,38 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         showsVerticalScrollIndicator={false}
         style={styles.container}>
         {cardDesign()}
-        <View style={{marginVertical: 30, marginHorizontal: 20}}>
+        <View style={{marginVertical: 25, marginHorizontal: 20}}>
+          <AppText style={appStyles.bold16Text}>{item.prodName}</AppText>
+        </View>
+        <View style={styles.thickDivider} />
+        <View style={{margin: 20, marginBottom: 30}}>
           <AppText style={appStyles.bold18Text}>
-            {i18n.t('gift:giftInfo')}
+            {i18n.t('gift:method')}
           </AppText>
-          <AppText style={[appStyles.normal16Text, {marginTop: 20}]}>
-            {item.prodName}
-          </AppText>
+          {method()}
         </View>
         <View style={styles.infoBox}>
           <AppText style={appStyles.bold18Text}>{i18n.t('esim:info')}</AppText>
           <View style={styles.divider} />
           {info()}
         </View>
-        <AppActivityIndicator visible={toastPending} />
+        <AppActivityIndicator visible={toastPending || pending} />
       </KeyboardAwareScrollView>
       <AppButton
         style={[appStyles.confirm]}
         title={i18n.t('esim:sendGift')}
-        onPress={sendLink}
+        onPress={() => sendLink(checked, item)}
       />
     </SafeAreaView>
   );
 };
 
-export default reactRedux.connect(
-  ({account, promotion}: RootState) => ({
+export default connect(
+  ({account, promotion, status}: RootState) => ({
     account,
     promotion,
+    pending:
+      status.pending[promotionActions.makeContentAndLink.typePrefix] || false,
   }),
   (dispatch) => ({
     action: {
