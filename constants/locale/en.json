@@ -571,11 +571,11 @@
 
   "gift:giftInfo": "Gift Details",
   "gift:default": "The Rokebi data gift has arrived",
-  "gift:info1": "• After clicking the gift button below, select a means of transmission (KakaoTalk or text message, etc) to express your heart to the gift giver.",
-  "gift:info2": "• At the same time as the gift is sent, the product is changed/processed as gift completion, and please be careful not to select multiple recipients when sending a gift.",
-  "gift:info3": "• In addition to the gift message you entered, you can enter an additional message after selecting a transmission method, and the message will be delivered along with the product URL.",
-  "gift:info4": "• When the recipient clicks the product URL, it can be used after checking product information along with the gift message.",
-  "gift:info5": "• When the recipient first signs up for the service for separate product registration, a small amount of Rokkaebi cash is given to both the sender and the recipient, so please recommend using product registration.",
+  "gift:info1": "• After selecting a delivery method, click the Send as a gift button below to express your feelings to the person you want to gift.",
+  "gift:info2": "• When sending a text message gift, the product is changed/processed as gift completed at the same time it is sent.",
+  "gift:info3": "• When the recipient clicks the gift view (product URL), they can use it after checking the product information along with the gift message.",
+  "gift:info4": "• When the recipient first signs up for the service for product registration, a small amount of Rokkaebi Cash is given to both the sender and the recipient, so please recommend using product registration.",
+  "gift:info5": "• After clicking the gift button below, select a means of transmission (KakaoTalk or text message, etc.)",
   "gift:info6": "• For this product, rate plan activation information is shared with the gift, and we are not responsible for the private distribution and transaction of the product.",
 
   "gift:maxLength": "Up to 80 characters",
