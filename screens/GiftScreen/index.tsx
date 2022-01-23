@@ -27,6 +27,7 @@ import {
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
+import api from '@/redux/api/api';
 
 const styles = StyleSheet.create({
   container: {
@@ -197,7 +198,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
       }
       setTimeout(
         () => {
-          action.toast.push('toast:sendSuccess');
+          if (updateStatus) action.toast.push('toast:sendSuccess');
           setToastPending(false);
           navigation.goBack();
         },
@@ -210,13 +211,18 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   const sendLink = useCallback(
     async (method: string, item: RkbSubscription) => {
       // 사용자에게 보낼 링크
-      const webUrl = await createLink(item);
+      const giftId = await createLink(item);
+      const webUrl = `${api.httpUrl(api.path.gift.web)}/${giftId}`;
+
+      const body = `${i18n.t('gift:msgBody1')}${
+        item.prodName
+      }\n${webUrl}${i18n.t('gift:msgBody2')}  `;
 
       switch (method) {
         case MESSAGE: {
           SendSMS.send(
             {
-              body: webUrl,
+              body,
               successTypes: ['sent', 'queued'],
             },
             (success, cancel, err) => {
@@ -231,16 +237,14 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         default: // kakao
         {
           try {
-            const response = await KakaoShareLink.sendFeed({
-              content: {
-                title: i18n.t('gift:linkTitle'),
-                imageUrl,
-                link: {
-                  webUrl,
-                  mobileWebUrl: webUrl,
+            const response = await KakaoShareLink.sendCustom({
+              templateId: 67017,
+              templateArgs: [
+                {
+                  key: 'gift',
+                  value: giftId,
                 },
-                description: i18n.t('gift:linkDesc'),
-              },
+              ],
             });
 
             // kakao 앱 이동 성공
@@ -254,7 +258,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         }
       }
     },
-    [afterSend, createLink, imageUrl],
+    [afterSend, createLink],
   );
 
   const info = useCallback(() => {

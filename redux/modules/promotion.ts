@@ -78,10 +78,7 @@ const makeContentAndLink = createAsyncThunk(
         if (payload?.result?.code === 0) {
           const giftId = payload?.objects[0]?.uuid;
           if (giftId) {
-            const url = `${api.httpUrl(api.path.gift.web)}/${giftId}`;
-            const res = await dispatch(buildGiftLink({link: url, imageUrl}));
-
-            return res?.payload;
+            return giftId;
           }
         }
       }

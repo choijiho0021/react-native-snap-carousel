@@ -17,6 +17,7 @@ import Env from '@/environment';
 import {RkbAccount, RkbFile, RkbImage} from '@/redux/api/accountApi';
 import api, {ApiResult} from '@/redux/api/api';
 import {actions as toastActions, reflectWithToast, Toast} from './toast';
+import {actions as orderActions, getSubsWithToast} from './order';
 
 const {esimApp} = Env.get();
 
@@ -52,9 +53,28 @@ const changeUserAttr = createAsyncThunk(
   'account/changeUserAttr',
   API.User.update,
 );
+
 const receiveGift = createAsyncThunk(
   'account/receiveGift',
   API.User.receiveGift,
+);
+
+const receiveAndGetGift = createAsyncThunk(
+  'account/receiveAndGetGift',
+  ({sender, gift}: {sender: string; gift: string}, {dispatch, getState}) => {
+    const {
+      account: {iccid, token},
+    } = getState() as RootState;
+
+    return dispatch(receiveGift({sender, gift, iccid, token})).then(
+      ({payload}) => {
+        if (payload?.result?.code === 0) {
+          return dispatch(orderActions.getSubsWithToast({iccid, token}));
+        }
+        return undefined;
+      },
+    );
+  },
 );
 
 const changeUserAttrWithToast = reflectWithToast(
@@ -147,7 +167,19 @@ const changeNotiToken = createAsyncThunk(
 const logInAndGetAccount = createAsyncThunk(
   'account/logInAndGetAccount',
   (
-    {mobile, pin, iccid}: {mobile?: string; pin?: string; iccid?: string},
+    {
+      mobile,
+      pin,
+      iccid,
+      sender,
+      gift,
+    }: {
+      mobile?: string;
+      pin?: string;
+      iccid?: string;
+      sender?: string;
+      gift?: string;
+    },
     {dispatch, getState},
   ) => {
     if (!mobile || !pin) {
@@ -155,7 +187,7 @@ const logInAndGetAccount = createAsyncThunk(
     }
 
     return dispatch(logIn({user: mobile, pass: pin})).then(
-      ({payload}) => {
+      async ({payload}) => {
         const {result, objects} = payload || {};
         if (result === 0 && objects && objects.length > 0) {
           const obj = objects[0];
@@ -192,15 +224,19 @@ const logInAndGetAccount = createAsyncThunk(
           if (iccid) {
             getAccountWithDisconnect({iccid, token});
           } else if (esimApp) {
-            dispatch(
+            await dispatch(
               registerMobile({iccid: 'esim', code: pin, mobile, token}),
             ).then(({payload: resp}) => {
-              if (resp.result === 0)
+              if (resp?.result === 0) {
+                if (sender && gift && resp?.objects[0]?.iccid) {
+                  dispatch(receiveAndGetGift({sender, gift}));
+                }
                 getAccountWithDisconnect({iccid: `00001111${mobile}`, token});
+              }
             });
           } else {
             // 가장 최근 사용한 SIM 카드 번호를 조회한다.
-            dispatch(getAccountByUser({mobile, token})).then(
+            await dispatch(getAccountByUser({mobile, token})).then(
               ({payload}: {payload: ApiResult<RkbAccount>}) => {
                 const {result: rst, objects: obj} = payload;
                 if (rst === 0 && obj && obj[0]?.status === 'A') {
@@ -497,7 +533,6 @@ export const actions = {
   logInAndGetAccount,
   getToken,
   uploadAndChangePicture,
-  receiveGift,
   logout,
   changeEmail,
   changeNotiToken,

@@ -654,28 +654,15 @@ class RegisterMobileScreen extends Component<
     pin?: string;
   }): Promise<ApiResult<any>> => {
     const {recommender, gift} = this.state;
-    const {payload: resp} = await this.props.actions.account.logInAndGetAccount(
-      {
-        mobile,
-        pin,
-      },
-    );
+    const {payload: resp} = this.props.actions.account.logInAndGetAccount({
+      mobile,
+      pin,
+      undefined,
+      sender: recommender,
+      gift,
+    });
 
-    console.log('@@@ login', resp, this.state);
-    // 로그인 성공시 해당 상품 선물받기
-    if (resp.result === 0) {
-      const {iccid, token} = this.props.account;
-
-      if (recommender && gift) {
-        const giftRes = await API.User.receiveGift({
-          sender: recommender,
-          gift,
-          iccid: `00001111${mobile}`,
-          token,
-        });
-        console.log('@@ receive gift res', giftRes);
-      }
-
+    if (resp?.result === 0) {
       const profileImage: RkbImage = await utils.convertURLtoRkbImage(
         this.state.profileImageUrl!,
       );
