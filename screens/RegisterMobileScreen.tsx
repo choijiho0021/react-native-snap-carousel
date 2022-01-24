@@ -251,7 +251,6 @@ type RegisterMobileScreenState = {
   isFocused?: boolean;
   status?: TrackingStatus;
   recommender?: string;
-  gift?: string;
 };
 
 const initialState: RegisterMobileScreenState = {
@@ -275,7 +274,6 @@ const initialState: RegisterMobileScreenState = {
   socialLogin: false,
   isFocused: true,
   recommender: undefined,
-  gift: undefined,
 };
 
 class RegisterMobileScreen extends Component<
@@ -351,7 +349,7 @@ class RegisterMobileScreen extends Component<
           const param = url.map((elm) => `"${elm.replace('=', '":"')}"`);
           const json = JSON.parse(`{${param.join(',')}}`);
 
-          const {recommender, gift} = json;
+          const {recommender} = json;
 
           if (status === 'authorized') {
             analytics().logEvent(
@@ -359,7 +357,7 @@ class RegisterMobileScreen extends Component<
             );
           }
 
-          this.setState({recommender, gift});
+          this.setState({recommender});
         }
       });
   }
@@ -653,13 +651,9 @@ class RegisterMobileScreen extends Component<
     mobile?: string;
     pin?: string;
   }): Promise<ApiResult<any>> => {
-    const {recommender, gift} = this.state;
     const {payload: resp} = this.props.actions.account.logInAndGetAccount({
       mobile,
       pin,
-      undefined,
-      sender: recommender,
-      gift,
     });
 
     if (resp?.result === 0) {

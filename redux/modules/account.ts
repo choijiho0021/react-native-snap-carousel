@@ -17,7 +17,8 @@ import Env from '@/environment';
 import {RkbAccount, RkbFile, RkbImage} from '@/redux/api/accountApi';
 import api, {ApiResult} from '@/redux/api/api';
 import {actions as toastActions, reflectWithToast, Toast} from './toast';
-import {actions as orderActions, getSubsWithToast} from './order';
+import {actions as orderActions} from './order';
+import {actions as promotionActions} from './promotion';
 
 const {esimApp} = Env.get();
 
@@ -69,6 +70,7 @@ const receiveAndGetGift = createAsyncThunk(
     return dispatch(receiveGift({sender, gift, iccid, token})).then(
       ({payload}) => {
         if (payload?.result?.code === 0) {
+          dispatch(promotionActions.removeGiftAndRecommender({sender, gift}));
           return dispatch(orderActions.getSubsWithToast({iccid, token}));
         }
         return undefined;
@@ -171,20 +173,22 @@ const logInAndGetAccount = createAsyncThunk(
       mobile,
       pin,
       iccid,
-      sender,
-      gift,
     }: {
       mobile?: string;
       pin?: string;
       iccid?: string;
-      sender?: string;
-      gift?: string;
     },
     {dispatch, getState},
   ) => {
     if (!mobile || !pin) {
       return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter');
     }
+
+    const {
+      promotion: {
+        receive: {sender, gift},
+      },
+    } = getState() as RootState;
 
     return dispatch(logIn({user: mobile, pass: pin})).then(
       async ({payload}) => {
@@ -229,7 +233,14 @@ const logInAndGetAccount = createAsyncThunk(
             ).then(({payload: resp}) => {
               if (resp?.result === 0) {
                 if (sender && gift && resp?.objects[0]?.iccid) {
-                  dispatch(receiveAndGetGift({sender, gift}));
+                  dispatch(
+                    getUserId({name: resp?.objects[0]?.mobile, token}),
+                  ).then(({payload}) => {
+                    if (payload?.result === 0) {
+                      if (payload?.objects[0]?.id !== sender)
+                        dispatch(receiveAndGetGift({sender, gift}));
+                    }
+                  });
                 }
                 getAccountWithDisconnect({iccid: `00001111${mobile}`, token});
               }
@@ -531,6 +542,7 @@ export const actions = {
   clearCookies,
   auth,
   logInAndGetAccount,
+  receiveAndGetGift,
   getToken,
   uploadAndChangePicture,
   logout,
