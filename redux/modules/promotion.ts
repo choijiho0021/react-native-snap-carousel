@@ -37,11 +37,6 @@ const buildLink = createAsyncThunk(
   API.Promotion.buildLink,
 );
 
-const buildGiftLink = createAsyncThunk(
-  'promotion/buildGiftLink',
-  API.Promotion.buildGiftLink,
-);
-
 const makeContentAndLink = createAsyncThunk(
   'promotion/makeContentAndLink',
   (

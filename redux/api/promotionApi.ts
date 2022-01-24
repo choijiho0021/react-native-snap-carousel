@@ -276,31 +276,6 @@ const buildLink = async ({
   return url;
 };
 
-// 다이나믹 링크를 활용한 선물하기 링크 생성
-// gift content link , gift image url
-const buildGiftLink = async ({
-  link,
-  imageUrl,
-}: {
-  link: string;
-  imageUrl: string;
-}) => {
-  const url = await dynamicLinks().buildShortLink({
-    link,
-    domainUriPrefix: dynamicLink,
-    social: {
-      title: i18n.t('gift:linkTitle'),
-      descriptionText: i18n.t('gift:linkDesc'),
-      imageUrl,
-    },
-    navigation: {
-      forcedRedirectEnabled: true,
-    },
-  });
-
-  return url;
-};
-
 const invite = async (
   recommender: string,
   gift: string,
@@ -340,7 +315,6 @@ export default {
   getStat,
   getGiftBgImages,
   createContent,
-  buildGiftLink,
   join,
   check,
   invite,
