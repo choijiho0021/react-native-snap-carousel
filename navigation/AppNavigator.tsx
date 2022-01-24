@@ -7,10 +7,10 @@ import React, {memo, useCallback, useEffect} from 'react';
 import Env from '@/environment';
 import {actions as cartActions} from '@/redux/modules/cart';
 import {actions as promotionActions} from '@/redux/modules/promotion';
+import {actions as accountActions} from '@/redux/modules/account';
 import AuthStackNavigator from './AuthStackNavigator';
 import EsimMainTabNavigator from './EsimMainTabNavigator';
 import MainTabNavigator from './MainTabNavigator';
-import {API} from '@/redux/api';
 
 const {esimApp, esimGlobal} = Env.get();
 
@@ -51,34 +51,24 @@ const CreateAppContainer = ({store}) => {
     return json;
   };
 
-  const goTo = useCallback((res: string) => {
-    navigationRef.current.setParams({
-      giftRes: res?.result?.code === 0,
-    });
-    navigationRef.current.navigate('EsimStack', {
-      screen: 'Esim',
-    });
-  }, []);
-
   const gift = useCallback(
     (url: string) => {
       const json = getParam(url);
       if (url.includes('recommender') && navigationRef?.current) {
-        const {loggedIn, iccid, token, userId} = store.getState().account;
+        const {loggedIn, userId} = store.getState().account;
 
         if (loggedIn) {
           if (userId !== json?.recommender) {
-            API.User.receiveGift({
-              sender: json?.recommender,
-              gift: json?.gift,
-              iccid,
-              token,
-            }).then((res) => goTo(res));
-          } else {
-            navigationRef.current.navigate('EsimStack', {
-              screen: 'Esim',
-            });
+            store.dispatch(
+              accountActions.receiveAndGetGift({
+                sender: json?.recommender,
+                gift: json?.gift,
+              }),
+            );
           }
+          navigationRef.current.navigate('EsimStack', {
+            screen: 'Esim',
+          });
         } else {
           store.dispatch(
             promotionActions.saveGiftAndRecommender({
@@ -92,7 +82,7 @@ const CreateAppContainer = ({store}) => {
         }
       }
     },
-    [goTo, store],
+    [store],
   );
 
   const handleDynamicLink = useCallback(
