@@ -96,6 +96,10 @@ export interface PromotionModelState {
     uuid: string;
     imageUrl: string;
   };
+  receive: {
+    sender?: string;
+    gift?: string;
+  };
 }
 
 const initialState: PromotionModelState = {
@@ -112,12 +116,28 @@ const initialState: PromotionModelState = {
     uuid: '',
     imageUrl: '',
   },
+  receive: {
+    sender: undefined,
+    gift: undefined,
+  },
 };
 
 const slice = createSlice({
   name: 'promotion',
   initialState,
-  reducers: {},
+  reducers: {
+    saveGiftAndRecommender: (state, {payload}) => {
+      const {recommender, gift} = payload;
+      if (recommender && gift) {
+        state.receive.gift = gift;
+        state.receive.sender = recommender;
+      }
+    },
+    removeGiftAndRecommender: (state) => {
+      state.receive.gift = undefined;
+      state.receive.sender = undefined;
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(getPromotion.fulfilled, (state, {payload}) => {
       const {result, objects} = payload;
@@ -158,6 +178,20 @@ const slice = createSlice({
   },
 });
 
+const saveGiftAndRecommender = createAsyncThunk(
+  'promotion/saveGiftAndRecommender',
+  ({recommender, gift}: {recommender: string; gift: string}, {dispatch}) => {
+    dispatch(slice.actions.saveGiftAndRecommender({recommender, gift}));
+  },
+);
+
+const removeGiftAndRecommender = createAsyncThunk(
+  'promotion/saveGiftAndRecommender',
+  ({sender, gift}: {sender: string; gift: string}, {dispatch}) => {
+    if (sender && gift) dispatch(slice.actions.removeGiftAndRecommender());
+  },
+);
+
 // const {actions} = slice;
 export const actions = {
   ...slice.actions,
@@ -165,6 +199,8 @@ export const actions = {
   getPromotionStat,
   getGiftBgImages,
   makeContentAndLink,
+  saveGiftAndRecommender,
+  removeGiftAndRecommender,
 };
 
 export type PromotionAction = typeof actions;
