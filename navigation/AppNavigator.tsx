@@ -1,10 +1,9 @@
 import analytics from '@react-native-firebase/analytics';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
-import {LinkingOptions, NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {memo, useCallback, useEffect, useMemo} from 'react';
-import {Linking} from 'react-native';
+import React, {memo, useCallback, useEffect} from 'react';
 import Env from '@/environment';
 import {actions as cartActions} from '@/redux/modules/cart';
 import {actions as promotionActions} from '@/redux/modules/promotion';
@@ -144,34 +143,8 @@ const CreateAppContainer = ({store}) => {
       });
   }, [handleDynamicLink]);
 
-  const linking: LinkingOptions = useMemo(
-    () => ({
-      prefixes: ['kakao://'],
-      config: {
-        screens: {
-          Esim: 'kakaolink',
-        },
-      },
-      subscribe(listener) {
-        const onReceiveURL = ({url}: {url: string}) => {
-          gift(url);
-          return listener(url);
-        };
-
-        Linking.addEventListener('url', onReceiveURL);
-
-        return () => {
-          // Clean up the event listeners
-          Linking.removeEventListener('url', onReceiveURL);
-        };
-      },
-    }),
-    [gift],
-  );
-
   return (
     <NavigationContainer
-      linking={linking}
       ref={navigationRef}
       onStateChange={(state) => {
         const lastTab = getActiveRouteName(state);
