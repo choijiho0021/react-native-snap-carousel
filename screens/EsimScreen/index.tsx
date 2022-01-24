@@ -1,5 +1,4 @@
 import Clipboard from '@react-native-community/clipboard';
-import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
@@ -153,11 +152,9 @@ const esimManualInputInfo = () => {
 };
 
 type EsimScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Esim'>;
-type EsimScreenRouteProp = RouteProp<HomeStackParamList, 'Esim'>;
 
 type EsimScreenProps = {
   navigation: EsimScreenNavigationProp;
-  route: EsimScreenRouteProp;
 
   loginPending: boolean;
   pending: boolean;
@@ -182,7 +179,6 @@ const modalTitle = {
 const EsimScreen: React.FC<EsimScreenProps> = ({
   account: {iccid, token, balance, expDate},
   navigation,
-  route,
   action,
   order,
   pending,
@@ -196,13 +192,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [copyString, setCopyString] = useState('');
   const [cmiUsage, setCmiUsage] = useState({});
   const [cmiStatus, setCmiStatus] = useState({});
-  const appState = useRef(AppState.currentState);
-
-  useEffect(() => {
-    const res = route?.params?.giftRes;
-
-    if (res) action.order.getSubsWithToast({iccid, token});
-  }, [action.order, iccid, route?.params?.giftRes, token]);
 
   const init = useCallback(
     ({iccid, token}: {iccid?: string; token?: string}) => {

@@ -88,12 +88,12 @@ export type HomeStackParamList = {
   CustomerProfile: undefined;
   AddProfile: undefined;
   PurchaseDetail: PurchaseDetailParams;
-  RegisterMobile: {screen: string; recommender?: string; gift?: string};
+  RegisterMobile: {screen: string};
   Main: undefined;
   Settings: undefined;
   Auth: {screen: string};
   HeaderTitle: undefined;
-  Esim: {giftRes?: boolean; recommender?: string; gift?: string};
+  Esim: undefined;
   SubsDetail: {detail?: RkbSubscription};
 
   MyPage: undefined;
