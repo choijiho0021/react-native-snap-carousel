@@ -1,11 +1,13 @@
 import analytics from '@react-native-firebase/analytics';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
-import {NavigationContainer} from '@react-navigation/native';
+import {LinkingOptions, NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {memo, useCallback, useEffect} from 'react';
+import React, {memo, useCallback, useEffect, useMemo} from 'react';
+import {Linking} from 'react-native';
 import Env from '@/environment';
 import {actions as cartActions} from '@/redux/modules/cart';
+import {actions as promotionActions} from '@/redux/modules/promotion';
 import AuthStackNavigator from './AuthStackNavigator';
 import EsimMainTabNavigator from './EsimMainTabNavigator';
 import MainTabNavigator from './MainTabNavigator';
@@ -59,6 +61,41 @@ const CreateAppContainer = ({store}) => {
     });
   }, []);
 
+  const gift = useCallback(
+    (url: string) => {
+      const json = getParam(url);
+      if (url.includes('recommender') && navigationRef?.current) {
+        const {loggedIn, iccid, token, userId} = store.getState().account;
+
+        if (loggedIn) {
+          if (userId !== json?.recommender) {
+            API.User.receiveGift({
+              sender: json?.recommender,
+              gift: json?.gift,
+              iccid,
+              token,
+            }).then((res) => goTo(res));
+          } else {
+            navigationRef.current.navigate('EsimStack', {
+              screen: 'Esim',
+            });
+          }
+        } else {
+          store.dispatch(
+            promotionActions.saveGiftAndRecommender({
+              recommender: json?.recommender,
+              gift: json?.gift,
+            }),
+          );
+          navigationRef.current.navigate('EsimStack', {
+            screen: 'RegisterMobile',
+          });
+        }
+      }
+    },
+    [goTo, store],
+  );
+
   const handleDynamicLink = useCallback(
     (link) => {
       let screen = link?.utmParameters?.utm_source;
@@ -78,28 +115,10 @@ const CreateAppContainer = ({store}) => {
           }
         }
       } else if (url) {
-        const json = getParam(url);
-        if (url.includes('recommender') && navigationRef?.current) {
-          const {loggedIn, iccid, token} = store.getState().account;
-
-          if (loggedIn) {
-            API.User.receiveGift({
-              sender: json?.recommender,
-              gift: json?.gift,
-              iccid,
-              token,
-            }).then((res) => goTo(res));
-          } else {
-            navigationRef.current.navigate('EsimStack', {
-              screen: 'RegisterMobile',
-              recommender: json?.recommender,
-              gift: json?.gift,
-            });
-          }
-        }
+        gift(url);
       }
     },
-    [goTo, store],
+    [gift],
   );
 
   useEffect(() => {
@@ -125,8 +144,34 @@ const CreateAppContainer = ({store}) => {
       });
   }, [handleDynamicLink]);
 
+  const linking: LinkingOptions = useMemo(
+    () => ({
+      prefixes: ['kakao://'],
+      config: {
+        screens: {
+          Esim: 'kakaolink',
+        },
+      },
+      subscribe(listener) {
+        const onReceiveURL = ({url}: {url: string}) => {
+          gift(url);
+          return listener(url);
+        };
+
+        Linking.addEventListener('url', onReceiveURL);
+
+        return () => {
+          // Clean up the event listeners
+          Linking.removeEventListener('url', onReceiveURL);
+        };
+      },
+    }),
+    [gift],
+  );
+
   return (
     <NavigationContainer
+      linking={linking}
       ref={navigationRef}
       onStateChange={(state) => {
         const lastTab = getActiveRouteName(state);
