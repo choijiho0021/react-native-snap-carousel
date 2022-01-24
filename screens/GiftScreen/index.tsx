@@ -244,8 +244,6 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
                   key: 'gift',
                   value: giftId,
                 },
-                {key: 'recommender', value: account?.userId},
-                {key: 'item', value: item.uuid},
               ],
             });
 
@@ -260,7 +258,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         }
       }
     },
-    [account?.userId, afterSend, createLink],
+    [afterSend, createLink],
   );
 
   const info = useCallback(() => {
