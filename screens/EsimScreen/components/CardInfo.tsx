@@ -24,7 +24,9 @@ const CardInfo = () => {
   return (
     <View style={styles.notice}>
       <AppIcon style={{marginRight: 10}} name="imgAlarm" />
-      <AppText style={styles.normal14WarmGrey}>{i18n.t('esim:notice')}</AppText>
+      <AppText style={styles.normal14WarmGrey}>
+        {i18n.t('esim:refresh')}
+      </AppText>
     </View>
   );
 };
