@@ -270,6 +270,11 @@ const UsageItem: React.FC<UsageItemProps> = ({
     return (kb / 1024 / 1024).toFixed(2);
   }, []);
 
+  const fromMbToGb = useCallback((mb: number) => {
+    if (mb === 0) return 0;
+    return (mb / 1024).toFixed(2);
+  }, []);
+
   const checkUsageButton = useCallback(() => {
     return (
       <View style={styles.checkUsageBtnContainer}>
@@ -315,24 +320,28 @@ const UsageItem: React.FC<UsageItemProps> = ({
             {i18n.t('usim:remainData')}
           </AppText>
           <AppText style={appStyles.bold18Text}>
-            {`${toGb(quota - used)}GB ${i18n.t('usim:remain')}`}
+            {`${
+              esimApp ? fromMbToGb(quota - used) : toGb(quota - used)
+            }GB ${i18n.t('usim:remain')}`}
           </AppText>
-          <AppText style={styles.normal14WarmGrey}>{`(${toMb(
-            quota - used,
-          )}MB)`}</AppText>
+          <AppText style={styles.normal14WarmGrey}>{`(${
+            esimApp ? (quota - used).toFixed(2) : toMb(quota - used)
+          }MB)`}</AppText>
           <AppText style={[styles.normal14WarmGrey, {marginTop: 15}]}>
             {i18n.t('usim:usageAmount')}
           </AppText>
           <AppText style={styles.bold16WarmGrey}>
-            {`${toGb(used)}GB ${i18n.t('usim:used')}`}
+            {`${esimApp ? fromMbToGb(used) : toGb(used)}GB ${i18n.t(
+              'usim:used',
+            )}`}
           </AppText>
-          <AppText style={styles.normal14WarmGrey}>{`(${toMb(
-            used,
-          )}MB)`}</AppText>
+          <AppText style={styles.normal14WarmGrey}>{`(${
+            esimApp ? used.toFixed(2) : toMb(used)
+          }MB)`}</AppText>
         </View>
       </View>
     );
-  }, [quota, toGb, toMb, used]);
+  }, [fromMbToGb, quota, toGb, toMb, used]);
 
   const [status, statusCd] = esimApp
     ? [i18n.t(`esim:${cmiStatusCd || 'R'}`), cmiStatusCd]
