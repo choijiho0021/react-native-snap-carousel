@@ -1,17 +1,12 @@
 import Clipboard from '@react-native-community/clipboard';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {
-  AppState,
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  View,
-} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import moment from 'moment';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppButton from '@/components/AppButton';
 import AppColorText from '@/components/AppColorText';
@@ -48,6 +43,7 @@ import UsageItem from '@/screens/UsimScreen/components/UsageItem';
 import i18n from '@/utils/i18n';
 import CardInfo from './components/CardInfo';
 import EsimSubs from './components/EsimSubs';
+import {ProductModelState} from '@/redux/modules/product';
 
 const {esimGlobal} = Env.get();
 
@@ -160,6 +156,7 @@ type EsimScreenProps = {
   pending: boolean;
   account: AccountModelState;
   order: OrderModelState;
+  product: ProductModelState;
 
   action: {
     toast: ToastAction;
@@ -181,6 +178,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   navigation,
   action,
   order,
+  product: {prodList},
   pending,
   loginPending,
 }) => {
@@ -326,11 +324,15 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         );
 
       default: {
-        const quota = cmiUsage?.subscriberQuota?.qtavalue;
-        const used = cmiUsage?.subscriberQuota?.qtaconsumption;
-        const statusCd = _.isEmpty(cmiUsage?.subscriberQuota)
-          ? 'U'
-          : cmiStatus?.statusCd;
+        const quota = cmiUsage?.quota;
+        const used = cmiUsage?.used;
+
+        const statusCd =
+          _.isEmpty(quota) && !_.isEmpty(used) ? 'U' : cmiStatus?.statusCd;
+        const end = new Date(
+          new Date(cmiStatus.endTime).getTime() + 9 * 60 * 60 * 1000,
+        );
+        const endTime = moment(end).format('YYYY.MM.DD HH:mm:ss');
 
         // usage
         return (
@@ -342,7 +344,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               showSnackbar={() => {}}
               usage={{quota, used}}
               cmiStatusCd={statusCd}
-              endTime={cmiStatus.endTime}
+              endTime={endTime}
             />
           )
         );
@@ -350,38 +352,75 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     }
   }, [subs, cmiUsage, modal, copyInfo, cmiStatus]);
 
-  const onPressUsage = useCallback((item: RkbSubscription) => {
-    // {"subscriberQuota":{"qtavalue":"512000","qtabalance":"73042","qtaconsumption":"438958"},"historyQuota":[{"time":"20211222","qtaconsumption":"376.44","mcc":"452"},{"time":"20211221","qtaconsumption":"1454.78","mcc":"452"}],"result":{"code":0},"trajectoriesList":[{"mcc":"452","country":"Vietnam","beginTime":"20211221","useTime":"20220120","himsi":"454120382118109"}]}
-    setShowModal(true);
-    setModal('usage');
-    setSubs(item);
+  const onPressUsage = useCallback(
+    async (item: RkbSubscription) => {
+      // {"subscriberQuota":{"qtavalue":"512000","qtabalance":"73042","qtaconsumption":"438958"},"historyQuota":[{"time":"20211222","qtaconsumption":"376.44","mcc":"452"},{"time":"20211221","qtaconsumption":"1454.78","mcc":"452"}],"result":{"code":0},"trajectoriesList":[{"mcc":"452","country":"Vietnam","beginTime":"20211221","useTime":"20220120","himsi":"454120382118109"}]}
+      setShowModal(true);
+      setModal('usage');
+      setSubs(item);
 
-    API.Subscription.cmiGetSubsUsage({
-      iccid: item.subsIccid,
-      packageId: item.packageId,
-    }).then((rsp) => {
-      if (rsp?.result === 0) setCmiUsage(rsp?.objects);
-    });
+      await API.Subscription.cmiGetSubsUsage({
+        iccid: item.subsIccid,
+        packageId: item.packageId,
+      }).then((rsp) => {
+        if (rsp?.result === 0 && rsp?.objects) {
+          const daily = item.prodId && prodList.get(item.prodId)?.field_daily;
+          const subscriberQuota = rsp?.objects?.find(
+            (v) => !_.isEmpty(v?.subscriberQuota),
+          )?.subscriberQuota;
 
-    // expire time은 사용시작 이후에 발생
-    // 사용 시작 했고, expireTime을 지났어도 'E' 로 바뀌지 않음.  endTime이후 'E'
-    API.Subscription.cmiGetSubsStatus({
-      iccid: item.subsIccid,
-    }).then((rsp) => {
-      const {userDataBundles} = rsp.objects;
-      if (rsp?.result === 0 && userDataBundles[0]) {
-        const {status, expireTime, endTime} = userDataBundles[0];
-        let statusCd = cmiStatusCd[status];
-        if (cmiStatusCd[status] === 'A' && new Date(expireTime) < new Date())
-          statusCd = 'U';
+          const used = rsp.objects.reduce((acc, cur) => {
+            // himsi
+            if (!_.isEmpty(cur?.subscriberQuota))
+              return acc + Number(cur?.subscriberQuota?.qtaconsumption) / 1024;
+            // vimsi
+            if (daily)
+              return (
+                acc +
+                Number(
+                  cur?.historyQuota?.find(
+                    (v) => v?.time === moment().format('YYYYMMDD'),
+                  )?.qtaconsumption || 0,
+                )
+              );
 
-        setCmiStatus({
-          statusCd,
-          endTime: expireTime || endTime,
-        });
-      }
-    });
-  }, []);
+            return (
+              acc +
+              cur?.historyQuota.reduce(
+                (a, c) => a + Number(c?.qtaconsumption),
+                0,
+              )
+            );
+          }, 0);
+
+          setCmiUsage({
+            quota: Number(subscriberQuota?.qtavalue) / 1024, // Mb
+            used, // Mb
+          });
+        }
+      });
+
+      // expire time은 사용시작 이후에 발생
+      // 사용 시작 했고, expireTime을 지났어도 'E' 로 바뀌지 않음.  endTime이후 'E'
+      API.Subscription.cmiGetSubsStatus({
+        iccid: item.subsIccid,
+      }).then((rsp) => {
+        const {userDataBundles} = rsp.objects;
+        if (rsp?.result === 0 && userDataBundles[0]) {
+          const {status, expireTime, endTime} = userDataBundles[0];
+          let statusCd = cmiStatusCd[status];
+          if (cmiStatusCd[status] === 'A' && new Date(expireTime) < new Date())
+            statusCd = 'U';
+
+          setCmiStatus({
+            statusCd,
+            endTime: expireTime || endTime,
+          });
+        }
+      });
+    },
+    [prodList],
+  );
 
   const renderSubs = useCallback(
     ({item}: {item: RkbSubscription}) => {
@@ -461,12 +500,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 };
 
 export default connect(
-  ({account, order, noti, info, status, sync, cart}: RootState) => ({
+  ({account, order, noti, info, status, sync, cart, product}: RootState) => ({
     order,
     account,
     auth: accountActions.auth(account),
     noti,
     info,
+    product,
     loginPending:
       status.pending[accountActions.logInAndGetAccount.typePrefix] ||
       status.pending[accountActions.getAccount.typePrefix] ||

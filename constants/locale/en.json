@@ -381,7 +381,7 @@
   "usim:warning": "※ It is only for reference. It may not exactly match with your actual usage.",
   "usim:checkUsage": "Usage Check",
   "usim:failSnackBar": "You can't check usage temporarily. Please try again in a few minutes.",
-  "usim:usingTime": "Activation Time",
+  "usim:usingTime": "Activation Time (Korean Time)",
 
   "sim:until": "until",
 
