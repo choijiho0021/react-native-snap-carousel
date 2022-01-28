@@ -168,17 +168,6 @@ const toSubsUpdate = (data) => {
   return data;
 };
 
-const toCmiUsage = (data) => {
-  if (data?.result?.code === 0) {
-    return api.success({
-      subscriberQuota: data?.subscriberQuota,
-      historyQuota: data?.historyQuota,
-      trajectoriesList: data?.trajectoriesList,
-    });
-  }
-  return data;
-};
-
 const toCmiStatus = (data) => {
   if (data?.result?.code === 0) {
     return api.success({
@@ -432,7 +421,12 @@ const cmiGetSubsUsage = ({
       api.path.rokApi.pv.cmiUsage,
       5000,
     )}&iccid=${iccid}&packageId=${packageId}&quota`,
-    toCmiUsage,
+    (data) => {
+      if (data?.result?.code === 0) {
+        return api.success(data?.objects);
+      }
+      return data;
+    },
     new Headers({'Content-Type': 'application/json'}),
   );
 };
