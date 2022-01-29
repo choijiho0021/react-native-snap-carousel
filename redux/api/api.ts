@@ -6,7 +6,7 @@ import i18n from '@/utils/i18n';
 import Env from '@/environment';
 
 export type Langcode = 'ko' | 'en';
-const {scheme, apiUrl, appId, esimGlobal, rokApiUrl} = Env.get();
+const {scheme, apiUrl, appId, esimGlobal, rokApiUrl, isProduction} = Env.get();
 
 const FAILED = -1000;
 const E_NOT_FOUND = -1001;
@@ -129,9 +129,9 @@ const addrApiUrl = () => {
 };
 
 const rokHttpUrl = (path0: string, port?: number) => {
-  return `${scheme}://${rokApiUrl}${port ? `:${port}` : ''}/${path0}?service=${
-    esimGlobal ? 'global' : appId
-  }`;
+  return `${scheme}://${rokApiUrl}${
+    isProduction ? '' : `:${port || 80}`
+  }/${path0}?service=${esimGlobal ? 'global' : appId}`;
 };
 
 const queryString = (obj: Record<string, string | number>) => {
