@@ -129,7 +129,7 @@ const addrApiUrl = () => {
 };
 
 const rokHttpUrl = (path0: string, port?: number) => {
-  return `${scheme}://${rokApiUrl}:${port || 80}/${path0}?service=${
+  return `${scheme}://${rokApiUrl}${port ? `:${port}` : ''}/${path0}?service=${
     esimGlobal ? 'global' : appId
   }`;
 };
