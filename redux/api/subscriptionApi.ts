@@ -116,7 +116,7 @@ const toSubscription = (
           imsi: item.field_imsi || '',
           type: item.type || '',
           subsIccid: item.field_iccid || '',
-          packegeId: item.field_cmi_package_id || '',
+          packageId: item.field_cmi_package_id || '',
         }))
         .sort(sortSubs),
     );
