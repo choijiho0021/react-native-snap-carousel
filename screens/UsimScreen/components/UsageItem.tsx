@@ -267,12 +267,12 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
   const toGb = useCallback((kb: number) => {
     if (kb === 0) return 0;
-    return (kb / 1024 / 1024).toFixed(2);
+    return (kb / 1024 / 1024)?.toFixed(2);
   }, []);
 
   const fromMbToGb = useCallback((mb: number) => {
     if (mb === 0) return 0;
-    return (mb / 1024).toFixed(2);
+    return (mb / 1024)?.toFixed(2);
   }, []);
 
   const checkUsageButton = useCallback(() => {
@@ -325,7 +325,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
             }GB ${i18n.t('usim:remain')}`}
           </AppText>
           <AppText style={styles.normal14WarmGrey}>{`(${
-            esimApp ? (quota - used).toFixed(2) : toMb(quota - used)
+            esimApp ? (quota - used)?.toFixed(2) : toMb(quota - used)
           }MB)`}</AppText>
           <AppText style={[styles.normal14WarmGrey, {marginTop: 15}]}>
             {i18n.t('usim:usageAmount')}
@@ -336,7 +336,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
             )}`}
           </AppText>
           <AppText style={styles.normal14WarmGrey}>{`(${
-            esimApp ? used.toFixed(2) : toMb(used)
+            esimApp ? used?.toFixed(2) : toMb(used)
           }MB)`}</AppText>
         </View>
       </View>
