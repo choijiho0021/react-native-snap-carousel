@@ -359,65 +359,80 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       setModal('usage');
       setSubs(item);
 
-      await API.Subscription.cmiGetSubsUsage({
-        iccid: item.subsIccid,
-        packageId: item.packageId,
-      }).then((rsp) => {
-        if (rsp?.result === 0 && rsp?.objects) {
-          const daily = item.prodId && prodList.get(item.prodId)?.field_daily;
-          const subscriberQuota = rsp?.objects?.find(
-            (v) => !_.isEmpty(v?.subscriberQuota),
-          )?.subscriberQuota;
+      if (item?.subsIccid && item?.packageId) {
+        await API.Subscription.cmiGetSubsUsage({
+          iccid: item?.subsIccid,
+          packageId: item?.packageId,
+        }).then((rsp) => {
+          if (rsp?.result === 0 && rsp?.objects) {
+            const daily = item.prodId && prodList.get(item.prodId)?.field_daily;
+            const subscriberQuota = rsp?.objects?.find(
+              (v) => !_.isEmpty(v?.subscriberQuota),
+            )?.subscriberQuota;
 
-          const used = rsp.objects.reduce((acc, cur) => {
-            // himsi
-            if (!_.isEmpty(cur?.subscriberQuota))
-              return acc + Number(cur?.subscriberQuota?.qtaconsumption) / 1024;
-            // vimsi
-            if (daily)
+            const used = rsp.objects.reduce((acc, cur) => {
+              // himsi
+              if (!_.isEmpty(cur?.subscriberQuota))
+                return (
+                  acc + Number(cur?.subscriberQuota?.qtaconsumption) / 1024
+                );
+              // vimsi
+              if (daily)
+                return (
+                  acc +
+                  Number(
+                    cur?.historyQuota?.find(
+                      (v) => v?.time === moment().format('YYYYMMDD'),
+                    )?.qtaconsumption || 0,
+                  )
+                );
+
               return (
                 acc +
-                Number(
-                  cur?.historyQuota?.find(
-                    (v) => v?.time === moment().format('YYYYMMDD'),
-                  )?.qtaconsumption || 0,
+                cur?.historyQuota.reduce(
+                  (a, c) => a + Number(c?.qtaconsumption),
+                  0,
                 )
               );
+            }, 0);
 
-            return (
-              acc +
-              cur?.historyQuota.reduce(
-                (a, c) => a + Number(c?.qtaconsumption),
-                0,
-              )
-            );
-          }, 0);
+            setCmiUsage({
+              quota: Number(subscriberQuota?.qtavalue) / 1024, // Mb
+              used, // Mb
+            });
+          }
+        });
 
-          setCmiUsage({
-            quota: Number(subscriberQuota?.qtavalue) / 1024, // Mb
-            used, // Mb
-          });
-        }
-      });
+        // expire time은 사용시작 이후에 발생
+        // 사용 시작 했고, expireTime을 지났어도 'E' 로 바뀌지 않음.  endTime이후 'E'
+        API.Subscription.cmiGetSubsStatus({
+          iccid: item.subsIccid,
+        }).then((rsp) => {
+          const {userDataBundles} = rsp.objects;
+          if (rsp?.result === 0 && userDataBundles[0]) {
+            const {status, expireTime, endTime} = userDataBundles[0];
+            let statusCd = cmiStatusCd[status];
+            if (
+              cmiStatusCd[status] === 'A' &&
+              new Date(expireTime) < new Date()
+            )
+              statusCd = 'U';
 
-      // expire time은 사용시작 이후에 발생
-      // 사용 시작 했고, expireTime을 지났어도 'E' 로 바뀌지 않음.  endTime이후 'E'
-      API.Subscription.cmiGetSubsStatus({
-        iccid: item.subsIccid,
-      }).then((rsp) => {
-        const {userDataBundles} = rsp.objects;
-        if (rsp?.result === 0 && userDataBundles[0]) {
-          const {status, expireTime, endTime} = userDataBundles[0];
-          let statusCd = cmiStatusCd[status];
-          if (cmiStatusCd[status] === 'A' && new Date(expireTime) < new Date())
-            statusCd = 'U';
-
-          setCmiStatus({
-            statusCd,
-            endTime: expireTime || endTime,
-          });
-        }
-      });
+            setCmiStatus({
+              statusCd,
+              endTime: expireTime || endTime,
+            });
+          } else {
+            setCmiStatus({
+              statusCd: 'U',
+            });
+          }
+        });
+      } else {
+        setCmiStatus({
+          statusCd: 'U',
+        });
+      }
     },
     [prodList],
   );
