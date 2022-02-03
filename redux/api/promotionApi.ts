@@ -284,8 +284,12 @@ const invite = async (
   const {share, prodId} = rule;
 
   // prodId 관련 추가 필요
-
-  const url = await buildLink(recommender, gift, share, prodId);
+  const url = await buildLink({
+    recommender,
+    cash: gift,
+    imageUrl: share,
+    subsId: prodId,
+  });
 
   try {
     const result = await Share.share({

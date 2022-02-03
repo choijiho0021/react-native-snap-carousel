@@ -232,7 +232,7 @@ class InviteScreen extends Component<InviteScreenProps, InviteScreenState> {
 
   cashText = (text: string, cash: string) => {
     return (
-      <View style={styles.cashText}>
+      <View key={text} style={styles.cashText}>
         {text.split('*').map((v, idx) => {
           return (
             <AppText style={styles.bold24WhiteText}>
