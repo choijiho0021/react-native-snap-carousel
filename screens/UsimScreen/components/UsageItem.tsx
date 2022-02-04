@@ -195,7 +195,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
         setQuota(usage.quota);
         setUsed(usage.used);
 
-        const progress = used > 0 ? 100 - Math.floor((used / quota) * 100) : 0;
+        const progress = used >= 0 ? 100 - Math.floor((used / quota) * 100) : 0;
         circularProgress.current?.animate(progress, 3000, null);
       }
     }
@@ -214,7 +214,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           console.log('getSubsUsage progress', resp.objects, item.nid);
           const {quota, used} = resp.objects[0];
           const progress =
-            used > 0 ? 100 - Math.floor((used / quota) * 100) : 0;
+            used >= 0 ? 100 - Math.floor((used / quota) * 100) : 0;
 
           setQuota(quota);
           setUsed(used);
