@@ -1,6 +1,6 @@
 import Clipboard from '@react-native-community/clipboard';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import {connect} from 'react-redux';
@@ -190,6 +190,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [copyString, setCopyString] = useState('');
   const [cmiUsage, setCmiUsage] = useState({});
   const [cmiStatus, setCmiStatus] = useState({});
+  const modalHeadTitle = useMemo(() => modalTitle[modal], [modal]);
 
   const init = useCallback(
     ({iccid, token}: {iccid?: string; token?: string}) => {
@@ -472,6 +473,28 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     init({iccid, token});
   }, [iccid, init, navigation, token]);
 
+  const esimModal = useCallback(() => {
+    return (
+      <AppModal
+        type="close"
+        justifyContent="flex-end"
+        titleIcon={modalTitleIcon[modal]}
+        titleStyle={styles.titleStyle}
+        title={modalHeadTitle}
+        contentStyle={{
+          marginHorizontal: 0,
+          backgroundColor: 'white',
+          borderTopLeftRadius: 8,
+          borderTopRightRadius: 8,
+          padding: 20,
+        }}
+        onOkClose={() => setShowModal(false)}
+        visible={showModal}>
+        {modalBody()}
+      </AppModal>
+    );
+  }, [modal, modalBody, modalHeadTitle, showModal]);
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -494,23 +517,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         }
       />
       <AppActivityIndicator visible={pending || loginPending} />
-      <AppModal
-        type="close"
-        justifyContent="flex-end"
-        titleIcon={modalTitleIcon[modal]}
-        titleStyle={styles.titleStyle}
-        title={modalTitle[modal]}
-        contentStyle={{
-          marginHorizontal: 0,
-          backgroundColor: 'white',
-          borderTopLeftRadius: 8,
-          borderTopRightRadius: 8,
-          padding: 20,
-        }}
-        onOkClose={() => setShowModal(false)}
-        visible={showModal}>
-        {modalBody()}
-      </AppModal>
+      {esimModal()}
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackBar(false)}
