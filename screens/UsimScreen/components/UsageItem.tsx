@@ -344,7 +344,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [fromMbToGb, quota, toGb, toMb, used]);
 
   const [status, statusCd] = esimApp
-    ? [i18n.t(`esim:${cmiStatusCd || 'R'}`), cmiStatusCd]
+    ? [i18n.t(`esim:${cmiStatusCd || 'R'}`), cmiStatusCd || 'R']
     : [item.status, item.statusCd];
 
   const {statusColor = colors.warmGrey, isActive = false} =
