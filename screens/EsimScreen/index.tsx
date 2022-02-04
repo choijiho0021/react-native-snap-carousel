@@ -424,7 +424,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
             setCmiStatus({
               statusCd: isExpired || isUsedByOther ? 'U' : statusCd,
-              endTime: isExpired ? exp.format('YYYY.MM.DD HH:mm:ss') : end,
+              endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
             });
           } else if (
             // cancel되고 다른 사용자에게 iccid가 할당되지 않은 상태
