@@ -326,13 +326,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       default: {
         const quota = cmiUsage?.quota;
         const used = cmiUsage?.used;
-
         const statusCd =
           _.isEmpty(quota) && !_.isEmpty(used) ? 'U' : cmiStatus?.statusCd;
-        const end = new Date(
-          new Date(cmiStatus.endTime).getTime() + 9 * 60 * 60 * 1000,
-        );
-        const endTime = moment(end).format('YYYY.MM.DD HH:mm:ss');
 
         // usage
         return (
@@ -344,13 +339,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               showSnackbar={() => {}}
               usage={{quota, used}}
               cmiStatusCd={statusCd}
-              endTime={endTime}
+              endTime={cmiStatus?.endTime}
             />
           )
         );
       }
     }
-  }, [subs, cmiUsage, modal, copyInfo, cmiStatus]);
+  }, [cmiStatus, cmiUsage, copyInfo, modal, subs]);
 
   const onPressUsage = useCallback(
     async (item: RkbSubscription) => {
@@ -358,12 +353,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       setShowModal(true);
       setModal('usage');
       setSubs(item);
+      let usageRsp = {};
 
       if (item?.subsIccid && item?.packageId) {
         await API.Subscription.cmiGetSubsUsage({
           iccid: item?.subsIccid,
           packageId: item?.packageId,
-        }).then((rsp) => {
+        }).then(async (rsp) => {
+          usageRsp = rsp;
           if (rsp?.result === 0 && rsp?.objects) {
             const daily = item.prodId && prodList.get(item.prodId)?.field_daily;
             const subscriberQuota = rsp?.objects?.find(
@@ -405,32 +402,41 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
         // expire time은 사용시작 이후에 발생
         // 사용 시작 했고, expireTime을 지났어도 'E' 로 바뀌지 않음.  endTime이후 'E'
-        API.Subscription.cmiGetSubsStatus({
+        await API.Subscription.cmiGetSubsStatus({
           iccid: item.subsIccid,
         }).then((rsp) => {
-          const {userDataBundles} = rsp.objects;
+          const userDataBundles = rsp?.objects?.userDataBundles;
           if (rsp?.result === 0 && userDataBundles[0]) {
-            const {status, expireTime, endTime} = userDataBundles[0];
-            let statusCd = cmiStatusCd[status];
-            if (
-              cmiStatusCd[status] === 'A' &&
-              new Date(expireTime) < new Date()
-            )
-              statusCd = 'U';
+            const statusCd =
+              !_.isUndefined(userDataBundles[0]?.status) &&
+              cmiStatusCd[userDataBundles[0]?.status];
+            const end = moment(userDataBundles[0]?.endTime)
+              .add(9, 'h')
+              .format('YYYY.MM.DD HH:mm:ss');
+            const exp = moment(userDataBundles[0]?.expireTime).add(9, 'h');
+            const now = moment();
+
+            const isExpired = statusCd === 'A' && exp < now;
+            // cancel 된 후, 다른 사용자에게 iccid가 넘어갔을 경우 packageId로 확인
+            const isUsedByOther =
+              userDataBundles[0]?.dataBundleId !== item.packageId;
 
             setCmiStatus({
-              statusCd,
-              endTime: expireTime || endTime,
+              statusCd: isExpired || isUsedByOther ? 'U' : statusCd,
+              endTime: isExpired ? exp.format('YYYY.MM.DD HH:mm:ss') : end,
             });
-          } else {
-            setCmiStatus({
-              statusCd: 'U',
-            });
+          } else if (
+            // cancel되고 다른 사용자에게 iccid가 할당되지 않은 상태
+            usageRsp?.result === 0 &&
+            _.isEmpty(usageRsp?.objects) &&
+            rsp?.result === 0
+          ) {
+            if (userDataBundles.length === 0) {
+              setCmiStatus({
+                statusCd: 'U',
+              });
+            }
           }
-        });
-      } else {
-        setCmiStatus({
-          statusCd: 'U',
         });
       }
     },
