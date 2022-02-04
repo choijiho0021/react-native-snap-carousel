@@ -167,11 +167,6 @@ type EsimScreenProps = {
 
 export type ModalType = 'showQR' | 'manual' | 'usage';
 const modalTitleIcon = {showQR: 'btnQr', manual: 'btnPen', usage: undefined};
-const modalTitle = {
-  showQR: i18n.t('esim:showQR:title'),
-  manual: i18n.t('esim:manualInput:title'),
-  usage: undefined,
-};
 
 const EsimScreen: React.FC<EsimScreenProps> = ({
   account: {iccid, token, balance, expDate},
@@ -190,7 +185,18 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [copyString, setCopyString] = useState('');
   const [cmiUsage, setCmiUsage] = useState({});
   const [cmiStatus, setCmiStatus] = useState({});
-  const modalHeadTitle = useMemo(() => modalTitle[modal], [modal]);
+  const modalHeadTitle = useMemo(() => {
+    switch (modal) {
+      case 'showQR':
+        return i18n.t('esim:showQRTitle');
+
+      case 'manual':
+        return i18n.t('esim:manualInputTitle');
+
+      default:
+        return undefined;
+    }
+  }, [modal]);
 
   const init = useCallback(
     ({iccid, token}: {iccid?: string; token?: string}) => {
