@@ -1,11 +1,4 @@
 /* eslint-disable global-require */
-import AppText from '@/components/AppText';
-import {colors} from '@/constants/Colors';
-import {sliderWidth} from '@/constants/SliderEntry.style';
-import {appStyles} from '@/constants/Styles';
-import Env from '@/environment';
-import {HomeStackParamList} from '@/navigation/navigation';
-import i18n from '@/utils/i18n';
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import {RouteProp} from '@react-navigation/core';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -25,6 +18,22 @@ import {
   TrackingStatus,
 } from 'react-native-tracking-transparency';
 import _ from 'underscore';
+import dynamicLinks from '@react-native-firebase/dynamic-links';
+import {connect} from 'react-redux';
+import {bindActionCreators, RootState} from 'redux';
+import i18n from '@/utils/i18n';
+import {sliderWidth} from '@/constants/SliderEntry.style';
+import AppText from '@/components/AppText';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import Env from '@/environment';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {
+  PromotionModelState,
+  actions as promotionActions,
+  PromotionAction,
+} from '@/redux/modules/promotion';
+import {AccountModelState} from '@/redux/modules/account';
 
 const {esimApp, esimGlobal} = Env.get();
 
@@ -123,6 +132,12 @@ type TutorialScreenRouteProp = RouteProp<HomeStackParamList, 'Tutorial'>;
 type TutorialScreenProps = {
   navigation: TutorialScreenNavigationProp;
   route: TutorialScreenRouteProp;
+
+  account: AccountModelState;
+  promotion: PromotionModelState;
+  action: {
+    promotion: PromotionAction;
+  };
 };
 
 type CarouselIndex = 'step1' | 'step2' | 'step3' | 'step4';
@@ -165,6 +180,32 @@ class TutorialScreen extends Component<
 
       analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_tutorial_begin`);
     }
+  }
+
+  componentWillUnmount() {
+    dynamicLinks()
+      .getInitialLink()
+      .then(async (l) => {
+        if (l?.url) {
+          const url = l?.url.split(/[;?&]/);
+          url.shift();
+          const param = url.map((elm) => `"${elm.replace('=', '":"')}"`);
+          const json = JSON.parse(`{${param.join(',')}}`);
+
+          if (l?.url.includes('recommender')) {
+            if (!this.props.account.loggedIn) {
+              this.props.action.promotion.saveGiftAndRecommender({
+                recommender: json?.recommender,
+                gift: json?.gift,
+              });
+
+              this.props.navigation.navigate('EsimStack', {
+                screen: 'RegisterMobile',
+              });
+            }
+          }
+        }
+      });
   }
 
   renderTutorial = ({item}: {item: CarouselIndex}) => {
@@ -274,4 +315,11 @@ class TutorialScreen extends Component<
   }
 }
 
-export default TutorialScreen;
+export default connect(
+  ({account, promotion}: RootState) => ({account, promotion}),
+  (dispatch) => ({
+    action: {
+      promotion: bindActionCreators(promotionActions, dispatch),
+    },
+  }),
+)(TutorialScreen);
