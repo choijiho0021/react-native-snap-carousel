@@ -107,6 +107,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
   },
+  sendable: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 const title = (
@@ -115,6 +121,7 @@ const title = (
   onPress: () => void,
 ) => {
   const {giftStatusCd} = item;
+  const usageCheckable = item.packageId?.startsWith('D');
   return (
     <View style={styles.prodTitle}>
       <AppText
@@ -135,11 +142,13 @@ const title = (
         </View>
       ) : (
         // expired 제외의 경우에는 사용량 확인 출력?
-        <Pressable onPress={onPress}>
-          <AppText key={item.nid} style={styles.checkUsage}>
-            {i18n.t('usim:checkUsage')}
-          </AppText>
-        </Pressable>
+        usageCheckable && (
+          <Pressable onPress={onPress}>
+            <AppText key={item.nid} style={styles.checkUsage}>
+              {i18n.t('usim:checkUsage')}
+            </AppText>
+          </Pressable>
+        )
       )}
     </View>
   );
@@ -203,7 +212,7 @@ const EsimSubs = ({
 }) => {
   const navigation = useNavigation();
   const {giftStatusCd} = item;
-  const sendable = !expired && !giftStatusCd;
+  const sendable = !expired && !giftStatusCd && item.packageId?.startsWith('D');
 
   return (
     <View style={styles.usageListContainer}>
@@ -220,13 +229,7 @@ const EsimSubs = ({
           QRnCopyInfo(onPressQR)}
       </View>
       {sendable && (
-        <View
-          style={{
-            flex: 1,
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
+        <View style={styles.sendable}>
           <View style={{flex: 1, width: width - 60}}>
             <Svg height={2} width="100%">
               <Line
