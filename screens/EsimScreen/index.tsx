@@ -183,6 +183,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [modal, setModal] = useState<ModalType>('');
   const [subs, setSubs] = useState<RkbSubscription>();
   const [copyString, setCopyString] = useState('');
+  const [cmiPending, setCmiPending] = useState(false);
   const [cmiUsage, setCmiUsage] = useState({});
   const [cmiStatus, setCmiStatus] = useState({});
   const modalHeadTitle = useMemo(() => {
@@ -344,6 +345,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               item={subs}
               onPress={() => {}}
               showSnackbar={() => {}}
+              cmiPending={cmiPending}
               usage={{quota, used}}
               cmiStatusCd={statusCd}
               endTime={cmiStatus?.endTime}
@@ -352,12 +354,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         );
       }
     }
-  }, [cmiStatus, cmiUsage, copyInfo, modal, subs]);
+  }, [cmiPending, cmiStatus, cmiUsage, copyInfo, modal, subs]);
 
   const onPressUsage = useCallback(
     async (item: RkbSubscription) => {
       // {"subscriberQuota":{"qtavalue":"512000","qtabalance":"73042","qtaconsumption":"438958"},"historyQuota":[{"time":"20211222","qtaconsumption":"376.44","mcc":"452"},{"time":"20211221","qtaconsumption":"1454.78","mcc":"452"}],"result":{"code":0},"trajectoriesList":[{"mcc":"452","country":"Vietnam","beginTime":"20211221","useTime":"20220120","himsi":"454120382118109"}]}
       setShowModal(true);
+      setCmiPending(true);
       setModal('usage');
       setSubs(item);
       let usageRsp = {};
@@ -445,6 +448,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             }
           }
         });
+        setCmiPending(false);
       }
     },
     [prodList],
@@ -494,7 +498,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           borderTopRightRadius: 8,
           padding: 20,
         }}
-        onOkClose={() => setShowModal(false)}
+        onOkClose={() => {
+          setShowModal(false);
+          setCmiStatus({});
+          setCmiUsage({});
+        }}
         visible={showModal}>
         {modalBody()}
       </AppModal>

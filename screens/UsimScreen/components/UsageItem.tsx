@@ -3,6 +3,7 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import {connect} from 'react-redux';
+import Video from 'react-native-video';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -135,9 +136,18 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     alignContent: 'center',
   },
+  backgroundVideo: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    paddingVertical: 30,
+  },
 });
 
 const {esimApp} = Env.get();
+const loadingImg = require('../assets/images/loading_1.mp4');
 
 function getStatusColor(statusCd) {
   let statusColor = colors.warmGrey;
@@ -160,6 +170,7 @@ type UsageItemProps = {
   item: RkbSubscription;
   onPress: () => void;
   showSnackbar: () => void;
+  cmiPending: Boolean;
   usage?: RkbSubsUsage;
   cmiStatusCd?: string;
   endTime?: string;
@@ -171,6 +182,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
   item,
   showSnackbar,
   onPress,
+  cmiPending,
   usage,
 
   cmiStatusCd,
@@ -343,13 +355,65 @@ const UsageItem: React.FC<UsageItemProps> = ({
     );
   }, [fromMbToGb, quota, toGb, toMb, used]);
 
+  const statusBox = useCallback(
+    (statusCd: string) => {
+      const isCallProduct = item.type === API.Subscription.CALL_PRODUCT;
+      return (
+        <View>
+          {
+            statusCd === 'A' && (
+              // || usage
+              <View>
+                <View style={styles.titleAndStatus}>
+                  <AppText
+                    key={item.key}
+                    style={[
+                      styles.usageTitleBold,
+                      // {fontWeight: isActive ? 'bold' : 'normal'},
+                    ]}>
+                    {item.prodName}
+                  </AppText>
+                </View>
+                {!isCallProduct && (
+                  <View style={styles.topOfActiveContainer}>
+                    {isShowUsage ? usageRender() : checkUsageButton()}
+                    <AppText style={styles.warning}>
+                      {i18n.t('usim:warning')}
+                    </AppText>
+                    <View style={styles.divider} />
+                  </View>
+                )}
+                <View style={styles.bottomOfActiveContainer}>{expire()}</View>
+              </View>
+            )
+            // : (
+            //   expireBeforeUse()
+            // )
+          }
+          {['R', 'U'].map((v) => {
+            return (
+              statusCd === v && (
+                <View key={v}>
+                  <AppIcon name={`usage${v}`} />
+                  <AppText style={styles.inactiveIcon}>
+                    {i18n.t(`esim:${code[v]}Info`)}
+                  </AppText>
+                </View>
+              )
+            );
+          })}
+        </View>
+      );
+    },
+    [checkUsageButton, expire, isShowUsage, item, usageRender],
+  );
+
   const [status, statusCd] = esimApp
     ? [i18n.t(`esim:${cmiStatusCd || 'R'}`), cmiStatusCd || 'R']
     : [item.status, item.statusCd];
 
   const {statusColor = colors.warmGrey, isActive = false} =
     getStatusColor(statusCd);
-  const isCallProduct = item.type === API.Subscription.CALL_PRODUCT;
 
   return (
     <TouchableOpacity onPress={onPress}>
@@ -358,56 +422,27 @@ const UsageItem: React.FC<UsageItemProps> = ({
           <AppText key={i18n.t('usim:checkUsage')} style={appStyles.bold18Text}>
             {i18n.t('usim:checkUsage')}
           </AppText>
-          <AppText
-            key={item.nid}
-            style={[styles.usageStatus, {color: statusColor}]}>
-            {' '}
-            • {status}
-          </AppText>
+          {!cmiPending && (
+            <AppText
+              key={item.nid}
+              style={[styles.usageStatus, {color: statusColor}]}>
+              {' '}
+              • {status}
+            </AppText>
+          )}
         </View>
-
-        {
-          statusCd === 'A' && (
-            // || usage
-            <View>
-              <View style={styles.titleAndStatus}>
-                <AppText
-                  key={item.key}
-                  style={[
-                    styles.usageTitleBold,
-                    // {fontWeight: isActive ? 'bold' : 'normal'},
-                  ]}>
-                  {item.prodName}
-                </AppText>
-              </View>
-              {!isCallProduct && (
-                <View style={styles.topOfActiveContainer}>
-                  {isShowUsage ? usageRender() : checkUsageButton()}
-                  <AppText style={styles.warning}>
-                    {i18n.t('usim:warning')}
-                  </AppText>
-                  <View style={styles.divider} />
-                </View>
-              )}
-              <View style={styles.bottomOfActiveContainer}>{expire()}</View>
-            </View>
-          )
-          // : (
-          //   expireBeforeUse()
-          // )
-        }
-        {['R', 'U'].map((v) => {
-          return (
-            statusCd === v && (
-              <View key={v}>
-                <AppIcon name={`usage${v}`} />
-                <AppText style={styles.inactiveIcon}>
-                  {i18n.t(`esim:${code[v]}Info`)}
-                </AppText>
-              </View>
-            )
-          );
-        })}
+        {cmiPending ? (
+          <View style={{paddingVertical: 30, height: 170}}>
+            <Video
+              source={loadingImg}
+              resizeMode="cover"
+              repeat
+              style={styles.backgroundVideo}
+            />
+          </View>
+        ) : (
+          statusBox(statusCd)
+        )}
       </View>
     </TouchableOpacity>
   );
