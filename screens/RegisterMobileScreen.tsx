@@ -368,7 +368,20 @@ class RegisterMobileScreen extends Component<
   ) {
     if (this.props.account !== prevProps.account) {
       if (this.props.account.loggedIn) {
-        this.props.navigation.navigate('Main');
+        dynamicLinks()
+          .getInitialLink()
+          .then((l) => {
+            if (l?.url.includes('gift')) {
+              this.props.navigation.navigate('Main');
+            } else {
+              this.props.navigation.navigate('Main', {
+                screen: 'MyPageStack',
+                params: {
+                  screen: 'MyPage',
+                },
+              });
+            }
+          });
       }
     }
 
