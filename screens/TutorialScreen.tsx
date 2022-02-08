@@ -221,7 +221,7 @@ class TutorialScreen extends Component<
   skip = () => {
     if (this.state.status === 'authorized')
       AppEventsLogger.logEvent('튜토리얼 SKIP');
-    // this.props.route.params.popUp();
+    this.props.route.params.popUp();
     this.props.navigation.goBack();
   };
 
