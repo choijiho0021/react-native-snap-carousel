@@ -31,8 +31,8 @@ const isEng = lc.languageCode !== 'ko';
 const codePushLabel = {
   stagingIOS: 'v104',
   stagingAndroid: 'v94',
-  productionIOS: "v46",
-  productionAndroid: "v39",
+  productionIOS: "v47",
+  productionAndroid: "v40",
 };
 const channelId = '_nzQhxb';
 
