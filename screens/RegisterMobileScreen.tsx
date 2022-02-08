@@ -372,7 +372,9 @@ class RegisterMobileScreen extends Component<
           .getInitialLink()
           .then((l) => {
             if (l?.url.includes('gift')) {
-              this.props.navigation.navigate('Main');
+              this.props.navigation.navigate('EsimStack', {
+                screen: 'Esim',
+              });
             } else {
               this.props.navigation.navigate('Main', {
                 screen: 'MyPageStack',
