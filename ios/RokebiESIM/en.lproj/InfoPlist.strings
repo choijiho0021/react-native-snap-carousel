@@ -1,0 +1,9 @@
+/* 
+  InfoPlist.strings
+  RokebiESIM
+
+  Created by soojeong on 2022/02/08.
+  Copyright © 2022 Facebook. All rights reserved.
+*/
+"NSPhotoLibraryUsageDescription"="This let you upload your photo in profile and 1:1 inquiry board.";
+"NSUserTrackingUsageDescription"="Your data will be used to deliver personalized product recommendation and benefits.";

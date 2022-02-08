@@ -1,0 +1,9 @@
+/* 
+  InfoPlist.strings
+  RokebiESIM
+
+  Created by soojeong on 2022/02/08.
+  Copyright © 2022 Facebook. All rights reserved.
+*/
+"NSPhotoLibraryUsageDescription"="프로필 등록 및 1:1 문의 게시판에 사진 업로드를 위해 사진 앨범 접근을 허용해 주세요.";
+"NSUserTrackingUsageDescription"="고객님께 맞춤 상품 추천 및 혜택을 안내 드리기 위해 권한을 허용해주세요.";

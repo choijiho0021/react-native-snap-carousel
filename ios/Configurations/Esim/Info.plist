@@ -14,6 +14,12 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>ko</string>
+		<string>Base</string>
+	</array>
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundlePackageType</key>
@@ -64,7 +70,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>20</string>
+	<string>21</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
@@ -178,9 +184,9 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow esim to access your microphone</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>프로필 등록을 위해 사진 앨범 접근을 허용해 주세요</string>
+	<string>프로필 등록 및 1:1 문의 게시판에 사진 업로드를 위해 사진 앨범 접근을 허용해 주세요.</string>
 	<key>NSUserTrackingUsageDescription</key>
-	<string>맞춤 상품 추천을 위해 허용해 주세요</string>
+	<string>고객님께 맞춤 상품 추천 및 혜택을 안내 드리기 위해 권한을 허용해주세요.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Ionicons.ttf</string>
