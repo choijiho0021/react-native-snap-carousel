@@ -28,6 +28,7 @@ import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import api from '@/redux/api/api';
+import Env from '@/environment';
 
 const styles = StyleSheet.create({
   container: {
@@ -136,6 +137,7 @@ type GiftScreenProps = {
 
 const KAKAO = 'kakao';
 const MESSAGE = 'message';
+const {isProduction} = Env.get();
 
 const GiftScreen: React.FC<GiftScreenProps> = ({
   navigation,
@@ -238,7 +240,8 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         {
           try {
             const response = await KakaoShareLink.sendCustom({
-              templateId: 67017,
+              // kakao template 상용: 67017, TB: 70053
+              templateId: isProduction ? 67017 : 70053,
               templateArgs: [
                 {
                   key: 'gift',
