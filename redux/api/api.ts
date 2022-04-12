@@ -129,9 +129,9 @@ const addrApiUrl = () => {
 };
 
 const rokHttpUrl = (path0: string, port?: number) => {
-  return `${scheme}://${rokApiUrl}${
-    isProduction ? '' : `:${port || 80}`
-  }/${path0}?service=${esimGlobal ? 'global' : appId}`;
+  return `${scheme}://${rokApiUrl}${port ? `:${port}` : ''}/${path0}?service=${
+    esimGlobal ? 'global' : appId
+  }`;
 };
 
 const queryString = (obj: Record<string, string | number>) => {
