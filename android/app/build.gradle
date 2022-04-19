@@ -76,8 +76,20 @@ import com.android.build.OutputFile
 
 project.ext.envConfigFiles = [
         debug: ".env",
+        staging: ".staging",
         release: ".env.production",
-        anothercustombuild: ".env",
+        esimdebug: ".env",
+        esimstaging: ".staging",
+        esimrelease: ".env.production",
+        usimdebug: ".env",
+        usimstaging: ".staging",
+        usimrelease: ".env.production",
+        globaldebug: ".env",
+        globalstaging: ".staging",
+        globalrelease: ".env.production",
+        talkdebug: ".env",
+        talkstaging: ".staging",
+        talkrelease: ".env.production",
 ]
 
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
