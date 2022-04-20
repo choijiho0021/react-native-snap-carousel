@@ -76,19 +76,19 @@ import com.android.build.OutputFile
 
 project.ext.envConfigFiles = [
         debug: ".env",
-        staging: ".staging",
+        staging: ".env.staging",
         release: ".env.production",
         esimdebug: ".env",
-        esimstaging: ".staging",
+        esimstaging: ".env.staging",
         esimrelease: ".env.production",
         usimdebug: ".env",
-        usimstaging: ".staging",
+        usimstaging: ".env.staging",
         usimrelease: ".env.production",
         globaldebug: ".env",
-        globalstaging: ".staging",
+        globalstaging: ".env.staging",
         globalrelease: ".env.production",
         talkdebug: ".env",
-        talkstaging: ".staging",
+        talkstaging: ".env.staging",
         talkrelease: ".env.production",
 ]
 
@@ -240,26 +240,18 @@ android {
             resValue "string", "CodePushDeploymentKey", ''
 
         }
+        staging {
+            initWith release
+            matchingFallbacks = ['release']
+            signingConfig signingConfigs.release
+            resValue "string", "CodePushDeploymentKey", 'xesyWQUnruGqjQliPjlKF8hKEZEZa-pfLWOQ2'
+        }
         release {
             signingConfig signingConfigs.release
             // Caution! In production, you need to generate your own keystore file.
             // see https://facebook.github.io/react-native/docs/signed-apk-android.
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             resValue "string", "CodePushDeploymentKey", '8RzsDJP5_63nkcvGO5yKweJAGMA3zliSBo3Hp'
-        }
-        debugStaging {
-            initWith debug
-            matchingFallbacks = ['debug']
-            signingConfig signingConfigs.debug
-            resValue "string", "CodePushDeploymentKey", 'xesyWQUnruGqjQliPjlKF8hKEZEZa-pfLWOQ2'
-        }
-        releaseStaging {
-            initWith release
-            matchingFallbacks = ['release']
-            signingConfig signingConfigs.release
-//            buildConfigField "String", "CODEPUSH_KEY", 'xesyWQUnruGqjQliPjlKF8hKEZEZa-pfLWOQ2'
-//            buildConfigField "String", "CodePushDeploymentKey", 'xesyWQUnruGqjQliPjlKF8hKEZEZa'
-            resValue "string", "CodePushDeploymentKey", 'xesyWQUnruGqjQliPjlKF8hKEZEZa-pfLWOQ2'
         }
     }
 
