@@ -122,11 +122,11 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
           // adjust 결제 이벤트 추척
           const adjustPaymentEvent = new AdjustEvent(adjustPayment);
           adjustPaymentEvent.setRevenue(pymInfo.amount, 'KRW');
-          Adjust.trackEvent(adjustPaymentEvent);
+          // Adjust.trackEvent(adjustPaymentEvent);
 
           const adjustRokebiCashEvent = new AdjustEvent(adjustRokebiCash);
           adjustRokebiCashEvent.setRevenue(pymInfo.rokebi_cash, 'KRW');
-          Adjust.trackEvent(adjustRokebiCashEvent);
+          // Adjust.trackEvent(adjustRokebiCashEvent);
 
           await navigation.setParams({isPaid: true});
 

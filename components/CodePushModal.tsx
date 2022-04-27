@@ -52,7 +52,7 @@ class CodePushModal extends Component<CodePushModalProps> {
                 {
                   ok: () => {
                     // adjust appEvent 앱 업데이트 추가
-                    Adjust.trackEvent(new AdjustEvent(adjustAppUpdate));
+                    // Adjust.trackEvent(new AdjustEvent(adjustAppUpdate));
                     Linking.openURL(res.storeUrl);
                   },
                 },

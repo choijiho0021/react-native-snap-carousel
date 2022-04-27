@@ -8,28 +8,12 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:709736045062:android:7d7b78d41ea7a36c058187",
+        "mobilesdk_app_id": "1:709736045062:android:922efa06385e8794058187",
         "android_client_info": {
-          "package_name": "com.rokebiesim"
+          "package_name": "com.rokebi.esim"
         }
       },
       "oauth_client": [
-        {
-          "client_id": "709736045062-pkkavqeem97mnagj1d95qgb1crj4g9aj.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.rokebiesim",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
-          }
-        },
-        {
-          "client_id": "709736045062-tros6estoq04tjirlrqro8frkdlebffk.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.rokebiesim",
-            "certificate_hash": "3483b65f7337e968728476b847e3b5fd1ac06991"
-          }
-        },
         {
           "client_id": "709736045062-9v8j5dfc12jj07bo9htaolhqc19l5dm7.apps.googleusercontent.com",
           "client_type": 3
@@ -53,9 +37,67 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:709736045062:android:3db40d0a8d054afd058187",
+        "mobilesdk_app_id": "1:709736045062:android:980ad5f2fce63eb9058187",
         "android_client_info": {
-          "package_name": "com.rokebitalk"
+          "package_name": "com.rokebi.global"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "709736045062-9v8j5dfc12jj07bo9htaolhqc19l5dm7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeA5WqW-1krqvpu9850ThvJFKVfrS6eck"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "709736045062-9v8j5dfc12jj07bo9htaolhqc19l5dm7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:709736045062:android:22c8710eacc7cff2058187",
+        "android_client_info": {
+          "package_name": "com.rokebi.talk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "709736045062-9v8j5dfc12jj07bo9htaolhqc19l5dm7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeA5WqW-1krqvpu9850ThvJFKVfrS6eck"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "709736045062-9v8j5dfc12jj07bo9htaolhqc19l5dm7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:709736045062:android:a83456a2e0c05e33058187",
+        "android_client_info": {
+          "package_name": "com.rokebi.usim"
         }
       },
       "oauth_client": [

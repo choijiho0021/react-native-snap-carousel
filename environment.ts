@@ -8,8 +8,13 @@ import {CurrencyCode} from './redux/api/productApi';
 const bundleId = getBundleId();
 
 // rokebi esim App
-const appId = bundleId === 'com.uangel.rokebi-USIM' ? 'usim' : 'esim';
-const esimGlobal = appId === 'esim' && bundleId === 'com.uangel.rokebi-global';
+const appId =
+  bundleId === 'com.uangel.rokebi-USIM' || bundleId === 'com.rokebi.usim'
+    ? 'usim'
+    : 'esim';
+const esimGlobal =
+  (appId === 'esim' && bundleId === 'com.uangel.rokebi-global') ||
+  bundleId === 'com.rokebi.global';
 
 // global / esim 계정
 let impId = esimGlobal ? 'imp60215393' : 'imp53913318';
@@ -29,10 +34,10 @@ const lc = RNLocalize.getLocales()[0];
 const isEng = lc.languageCode !== 'ko';
 
 const codePushLabel = {
-  stagingIOS: 'v104',
-  stagingAndroid: 'v94',
-  productionIOS: "v47",
-  productionAndroid: "v40",
+  stagingIOS: 'v87',
+  stagingAndroid: 'v86',
+  productionIOS: 'v24',
+  productionAndroid: 'v17',
 };
 const channelId = '_nzQhxb';
 
@@ -56,12 +61,6 @@ type Env = {
   isProduction: boolean;
   isIOS?: boolean;
   fbUser?: string;
-  adjustToken?: string;
-  adjustSignUp?: string;
-  adjustPayment?: string;
-  adjustRokebiCash?: string;
-  adjustInvite?: string;
-  adjustAppUpdate?: string;
 };
 const env: Env = {
   bundleId,
@@ -78,14 +77,6 @@ const env: Env = {
   isProduction: Config.NODE_ENV === 'production',
   isIOS: Platform.OS === 'ios',
   fbUser: '100751328128324',
-
-  // adjust
-  adjustToken: 'bqh6jm4ljcao',
-  adjustSignUp: '6cm0e4',
-  adjustPayment: 'xg1smu',
-  adjustRokebiCash: '5wu24b',
-  adjustInvite: 'u3zo2x',
-  adjustAppUpdate: 'r0masz',
 };
 
 function get() {

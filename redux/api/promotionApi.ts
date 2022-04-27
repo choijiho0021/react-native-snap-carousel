@@ -297,7 +297,7 @@ const invite = async (
     });
     if (result.action !== Share.dismissedAction) {
       // adjust appEvent 앱 업데이트 추가
-      Adjust.trackEvent(new AdjustEvent(adjustInvite));
+      // Adjust.trackEvent(new AdjustEvent(adjustInvite));
     }
 
     // if (result.action === Share.sharedAction) {

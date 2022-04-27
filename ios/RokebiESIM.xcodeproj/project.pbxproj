@@ -30,6 +30,7 @@
 		960365AF3517129F7303A7F2 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		A32580F52715115700C2F28A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A32580F42715115700C2F28A /* GoogleService-Info.plist */; };
 		A32580F62715273900C2F28A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A32580F42715115700C2F28A /* GoogleService-Info.plist */; };
+		A33A12C827BF1B0B007FBA87 /* iAd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A33A12C627BF1B03007FBA87 /* iAd.framework */; };
 		A39B6F392485F35C00EDBBB6 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39B6F382485F35C00EDBBB6 /* File.swift */; };
 		A3BF9FE1273B63DD00561187 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		A3BF9FE2273B63DD00561187 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39B6F382485F35C00EDBBB6 /* File.swift */; };
@@ -81,6 +82,7 @@
 		7BB1E67027B94FDA65F7B84B /* Pods-RokebiGlobal.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiGlobal.staging.xcconfig"; path = "Target Support Files/Pods-RokebiGlobal/Pods-RokebiGlobal.staging.xcconfig"; sourceTree = "<group>"; };
 		98488BCD22A80A09DE3B948C /* Pods-RokebiESIM.global.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.global.staging.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.global.staging.xcconfig"; sourceTree = "<group>"; };
 		A32580F42715115700C2F28A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		A33A12C627BF1B03007FBA87 /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = System/Library/Frameworks/iAd.framework; sourceTree = SDKROOT; };
 		A36F6F3026B8F0F100A69BF2 /* Configurations */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Configurations; sourceTree = "<group>"; };
 		A39B6F372485F35C00EDBBB6 /* Rokebi-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Rokebi-Bridging-Header.h"; sourceTree = "<group>"; };
 		A39B6F382485F35C00EDBBB6 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
@@ -107,6 +109,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A33A12C827BF1B0B007FBA87 /* iAd.framework in Frameworks */,
 				960365AF3517129F7303A7F2 /* (null) in Frameworks */,
 				F2563C5A06DECDA22B6640BD /* libPods-RokebiESIM.a in Frameworks */,
 			);
@@ -152,6 +155,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A33A12C627BF1B03007FBA87 /* iAd.framework */,
 				408CC8F526B8D23C000C8C8A /* libYogaKit.a */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				29A7EDBC81D1315CD93EEA18 /* libPods-RokebiGlobal.a */,
