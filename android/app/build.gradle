@@ -176,7 +176,8 @@ android {
             targetSdkVersion rootProject.ext.targetSdkVersion
             vectorDrawables.useSupportLibrary = true
             versionCode Code
-            versionName "${versionMajor}.${versionMinor}"
+//            versionName "${versionMajor}.${versionMinor}"
+            versionName "1.0.0"
             resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
         }
 
