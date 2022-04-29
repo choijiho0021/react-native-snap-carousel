@@ -152,20 +152,20 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     //자동 버전 증가
-    def versionPropsFile = file('version.properties')
+//    def versionPropsFile = file('version.properties')
 //    if (versionPropsFile.canRead()) {
-        def Properties versionProps = new Properties()
+//        def Properties versionProps = new Properties()
 
-        versionProps.load(new FileInputStream((versionPropsFile)))
+//        versionProps.load(new FileInputStream((versionPropsFile)))
 
-        def versionMajor = versionProps['VERSION_MAJOR'].toInteger()
-        def versionMinor = versionProps['VERSION_MINOR'].toInteger()
-        def versionBuild = versionProps['VERSION_BUILD'].toInteger() + 1
-        def Code = versionProps['VERSION_CODE'].toInteger()
+//        def versionMajor = versionProps['VERSION_MAJOR'].toInteger()
+//        def versionMinor = versionProps['VERSION_MINOR'].toInteger()
+//        def versionBuild = versionProps['VERSION_BUILD'].toInteger() + 1
+//        def Code = versionProps['VERSION_CODE'].toInteger()
 
         // Update the build number in the local file
-        versionProps['VERSION_BUILD'] = versionBuild.toString()
-        versionProps.store(versionPropsFile.newWriter(), null)
+//        versionProps['VERSION_BUILD'] = versionBuild.toString()
+//        versionProps.store(versionPropsFile.newWriter(), null)
 
 
         defaultConfig {
@@ -175,9 +175,9 @@ android {
             multiDexEnabled true
             targetSdkVersion rootProject.ext.targetSdkVersion
             vectorDrawables.useSupportLibrary = true
-            versionCode Code
+            versionCode 5
 //            versionName "${versionMajor}.${versionMinor}"
-            versionName "1.0.0"
+            versionName "1.0.3"
             resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
         }
 
