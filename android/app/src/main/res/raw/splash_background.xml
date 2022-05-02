@@ -5,7 +5,7 @@
     <item>
         <bitmap
             android:gravity="center"
-            android:src="@drawable/img_splash_background"/>
+            android:src="@raw/img_splash_background"/>
 <!--        android:src="@drawable/assets_images_main_btnarrowright2blue"/>-->
     </item>
 </layer-list>
