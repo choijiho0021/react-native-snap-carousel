@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		0D75258E2393BEBB000D9C77 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 0D75258D2393BEBB000D9C77 /* fonts */; };
 		0D9C212626D37D4D0082F077 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
-		0D9C212726D37D4D0082F077 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39B6F382485F35C00EDBBB6 /* File.swift */; };
 		0D9C212926D37D4D0082F077 /* AppDelegate+Iamport.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B508C824B8102B00213190 /* AppDelegate+Iamport.m */; };
 		0D9C212F26D37D4D0082F077 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 0D75258D2393BEBB000D9C77 /* fonts */; };
 		0D9C213026D37D4D0082F077 /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 405C1E9424D945870016B43C /* AppCenter-Config.plist */; };
@@ -27,13 +26,12 @@
 		40A621E926E85C740037EE37 /* GlobalLaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 40A621E726E85C740037EE37 /* GlobalLaunchScreen.xib */; };
 		40A621EA26E85C740037EE37 /* GlobalLaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 40A621E726E85C740037EE37 /* GlobalLaunchScreen.xib */; };
 		40B508C924B8102B00213190 /* AppDelegate+Iamport.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B508C824B8102B00213190 /* AppDelegate+Iamport.m */; };
-		960365AF3517129F7303A7F2 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		A31C8F2F282245F200CE16F6 /* Rokebi-Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31C8F2E282245F200CE16F6 /* Rokebi-Bridge.swift */; };
+		A31C8F30282245F200CE16F6 /* Rokebi-Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31C8F2E282245F200CE16F6 /* Rokebi-Bridge.swift */; };
+		A31C8F31282245F200CE16F6 /* Rokebi-Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31C8F2E282245F200CE16F6 /* Rokebi-Bridge.swift */; };
 		A32580F52715115700C2F28A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A32580F42715115700C2F28A /* GoogleService-Info.plist */; };
 		A32580F62715273900C2F28A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A32580F42715115700C2F28A /* GoogleService-Info.plist */; };
-		A33A12C827BF1B0B007FBA87 /* iAd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A33A12C627BF1B03007FBA87 /* iAd.framework */; };
-		A39B6F392485F35C00EDBBB6 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39B6F382485F35C00EDBBB6 /* File.swift */; };
 		A3BF9FE1273B63DD00561187 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
-		A3BF9FE2273B63DD00561187 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39B6F382485F35C00EDBBB6 /* File.swift */; };
 		A3BF9FE3273B63DD00561187 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		A3BF9FE4273B63DD00561187 /* AppDelegate+Iamport.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B508C824B8102B00213190 /* AppDelegate+Iamport.m */; };
 		A3BF9FE8273B63DD00561187 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
@@ -42,9 +40,6 @@
 		A3BF9FEB273B63DD00561187 /* GlobalLaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 40A621E726E85C740037EE37 /* GlobalLaunchScreen.xib */; };
 		A3BF9FEC273B63DD00561187 /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 405C1E9424D945870016B43C /* AppCenter-Config.plist */; };
 		A3BF9FED273B63DD00561187 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A32580F42715115700C2F28A /* GoogleService-Info.plist */; };
-		A3BF9FFA273B64F500561187 /* Bridge-Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BF9FF9273B64F500561187 /* Bridge-Header.swift */; };
-		A3BF9FFB273B64F500561187 /* Bridge-Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BF9FF9273B64F500561187 /* Bridge-Header.swift */; };
-		A3BF9FFC273B64F500561187 /* Bridge-Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BF9FF9273B64F500561187 /* Bridge-Header.swift */; };
 		C536689F08844F90365C65B9 /* libPods-RokebiGlobal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 29A7EDBC81D1315CD93EEA18 /* libPods-RokebiGlobal.a */; };
 		F2563C5A06DECDA22B6640BD /* libPods-RokebiESIM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CD12B247076E573C87AFC3 /* libPods-RokebiESIM.a */; };
 /* End PBXBuildFile section */
@@ -81,13 +76,11 @@
 		635A68C042C9712C824C7901 /* Pods-RokebiUSIM.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiUSIM.debug.xcconfig"; path = "Target Support Files/Pods-RokebiUSIM/Pods-RokebiUSIM.debug.xcconfig"; sourceTree = "<group>"; };
 		7BB1E67027B94FDA65F7B84B /* Pods-RokebiGlobal.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiGlobal.staging.xcconfig"; path = "Target Support Files/Pods-RokebiGlobal/Pods-RokebiGlobal.staging.xcconfig"; sourceTree = "<group>"; };
 		98488BCD22A80A09DE3B948C /* Pods-RokebiESIM.global.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.global.staging.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.global.staging.xcconfig"; sourceTree = "<group>"; };
+		A31C8F2E282245F200CE16F6 /* Rokebi-Bridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Rokebi-Bridge.swift"; sourceTree = "<group>"; };
 		A32580F42715115700C2F28A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A33A12C627BF1B03007FBA87 /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = System/Library/Frameworks/iAd.framework; sourceTree = SDKROOT; };
 		A36F6F3026B8F0F100A69BF2 /* Configurations */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Configurations; sourceTree = "<group>"; };
-		A39B6F372485F35C00EDBBB6 /* Rokebi-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Rokebi-Bridging-Header.h"; sourceTree = "<group>"; };
-		A39B6F382485F35C00EDBBB6 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		A3BF9FF7273B63DE00561187 /* RokebiUSIM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RokebiUSIM.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		A3BF9FF9273B64F500561187 /* Bridge-Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bridge-Header.swift"; sourceTree = "<group>"; };
 		A80C64EF0866C5F96A0875F8 /* Pods-RokebiUSIM.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiUSIM.staging.xcconfig"; path = "Target Support Files/Pods-RokebiUSIM/Pods-RokebiUSIM.staging.xcconfig"; sourceTree = "<group>"; };
 		ACC63B13A2EE50D80D796AB2 /* Pods-RokebiESIM.global.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.global.debug.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.global.debug.xcconfig"; sourceTree = "<group>"; };
 		D2D7F4A0BCB1BB84FB2272E8 /* Pods-RokebiESIM.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.staging.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.staging.xcconfig"; sourceTree = "<group>"; };
@@ -109,8 +102,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A33A12C827BF1B0B007FBA87 /* iAd.framework in Frameworks */,
-				960365AF3517129F7303A7F2 /* (null) in Frameworks */,
 				F2563C5A06DECDA22B6640BD /* libPods-RokebiESIM.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -175,9 +166,9 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				A31C8F2E282245F200CE16F6 /* Rokebi-Bridge.swift */,
 				0D83ED5D26BE0C6600C53610 /* Global */,
 				A36F6F3026B8F0F100A69BF2 /* Configurations */,
-				A39B6F382485F35C00EDBBB6 /* File.swift */,
 				0D75258D2393BEBB000D9C77 /* fonts */,
 				13B07FAE1A68108700A75B9A /* RokebiESIM */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -185,8 +176,6 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				AD4FA9CC069D292D65BE8DBA /* Pods */,
 				299DF120DA124036847D3C91 /* Resources */,
-				A39B6F372485F35C00EDBBB6 /* Rokebi-Bridging-Header.h */,
-				A3BF9FF9273B64F500561187 /* Bridge-Header.swift */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -908,9 +897,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A31C8F30282245F200CE16F6 /* Rokebi-Bridge.swift in Sources */,
 				0D9C212626D37D4D0082F077 /* AppDelegate.m in Sources */,
-				A3BF9FFB273B64F500561187 /* Bridge-Header.swift in Sources */,
-				0D9C212726D37D4D0082F077 /* File.swift in Sources */,
 				4060E90826DDAAD100E1C0AE /* main.m in Sources */,
 				0D9C212926D37D4D0082F077 /* AppDelegate+Iamport.m in Sources */,
 			);
@@ -920,9 +908,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A31C8F2F282245F200CE16F6 /* Rokebi-Bridge.swift in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
-				A3BF9FFA273B64F500561187 /* Bridge-Header.swift in Sources */,
-				A39B6F392485F35C00EDBBB6 /* File.swift in Sources */,
 				4060E90926DDAAF100E1C0AE /* main.m in Sources */,
 				40B508C924B8102B00213190 /* AppDelegate+Iamport.m in Sources */,
 			);
@@ -932,9 +919,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A31C8F31282245F200CE16F6 /* Rokebi-Bridge.swift in Sources */,
 				A3BF9FE1273B63DD00561187 /* AppDelegate.m in Sources */,
-				A3BF9FFC273B64F500561187 /* Bridge-Header.swift in Sources */,
-				A3BF9FE2273B63DD00561187 /* File.swift in Sources */,
 				A3BF9FE3273B63DD00561187 /* main.m in Sources */,
 				A3BF9FE4273B63DD00561187 /* AppDelegate+Iamport.m in Sources */,
 			);
@@ -989,7 +975,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = ESZYQX5P9N;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "$(inherited)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1124,7 +1110,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ESZYQX5P9N;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1235,7 +1221,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ESZYQX5P9N;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
@@ -1348,7 +1334,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 21;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = ESZYQX5P9N;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "$(inherited)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1483,7 +1469,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 21;
-				DEVELOPMENT_TEAM = ESZYQX5P9N;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1644,7 +1630,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 21;
-				DEVELOPMENT_TEAM = ESZYQX5P9N;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
@@ -1864,7 +1850,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = ESZYQX5P9N;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "$(inherited)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1999,7 +1985,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ESZYQX5P9N;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2110,7 +2096,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ESZYQX5P9N;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
