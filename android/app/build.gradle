@@ -177,6 +177,7 @@ android {
             vectorDrawables.useSupportLibrary = true
             versionCode 5
             versionName "1.0.3"
+            multiDexEnabled true
             resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
         }
 
