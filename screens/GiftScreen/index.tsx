@@ -267,7 +267,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   const info = useCallback(() => {
     return (
       <View>
-        {Array.from({length: 6}, (_, i) => i + 1).map((v) => {
+        {Array.from({length: 5}, (_, i) => i + 1).map((v) => {
           return (
             <AppText key={`info${v}`} style={styles.info}>
               {i18n.t(`gift:info${v}`)}
