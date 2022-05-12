@@ -477,7 +477,7 @@ class RegisterMobileScreen extends Component<
 
             // adjust appEvent 추가
             const adjustEvent = new AdjustEvent(adjustSignUp);
-            Adjust.trackEvent(adjustEvent);
+            // Adjust.trackEvent(adjustEvent);
           }
 
           this.signIn({mobile, pin});

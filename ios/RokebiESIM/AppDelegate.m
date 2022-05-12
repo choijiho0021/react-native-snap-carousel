@@ -11,6 +11,10 @@
 //#import "Adjust.h"
 #import "AppDelegate.h"
 
+#import <AppCenterReactNative.h>
+#import <AppCenterReactNativeAnalytics.h>
+#import <AppCenterReactNativeCrashes.h>
+
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
@@ -18,10 +22,6 @@
 #import "RNSplashScreen.h"  // here
 #import <CodePush/CodePush.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
-
-#import <AppCenterReactNative.h>
-#import <AppCenterReactNativeAnalytics.h>
-#import <AppCenterReactNativeCrashes.h>
 
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>

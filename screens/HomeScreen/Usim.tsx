@@ -327,7 +327,9 @@ class Usim extends Component<UsimProps, UsimState> {
     const firstLaunch = await checkFistLaunch();
     this.setState({firstLaunch});
     if (firstLaunch) {
-      this.props.navigation.navigate('Tutorial');
+      this.props.navigation.navigate('Tutorial', {
+        popUp: () => console.log('Tutorial close'),
+      });
     }
 
     // TODO: update

@@ -76,8 +76,20 @@ import com.android.build.OutputFile
 
 project.ext.envConfigFiles = [
         debug: ".env",
+        staging: ".env.staging",
         release: ".env.production",
-        anothercustombuild: ".env",
+        esimdebug: ".env",
+        esimstaging: ".env.staging",
+        esimrelease: ".env.production",
+        usimdebug: ".env",
+        usimstaging: ".env.staging",
+        usimrelease: ".env.production",
+        globaldebug: ".env",
+        globalstaging: ".env.staging",
+        globalrelease: ".env.production",
+        talkdebug: ".env",
+        talkstaging: ".env.staging",
+        talkrelease: ".env.production",
 ]
 
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
@@ -140,33 +152,55 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     //자동 버전 증가
-    def versionPropsFile = file('version.properties')
+//    def versionPropsFile = file('version.properties')
 //    if (versionPropsFile.canRead()) {
-        def Properties versionProps = new Properties()
+//        def Properties versionProps = new Properties()
 
-        versionProps.load(new FileInputStream((versionPropsFile)))
+//        versionProps.load(new FileInputStream((versionPropsFile)))
 
-        def versionMajor = versionProps['VERSION_MAJOR'].toInteger()
-        def versionMinor = versionProps['VERSION_MINOR'].toInteger()
-        def versionBuild = versionProps['VERSION_BUILD'].toInteger() + 1
-        def Code = versionProps['VERSION_CODE'].toInteger()
+//        def versionMajor = versionProps['VERSION_MAJOR'].toInteger()
+//        def versionMinor = versionProps['VERSION_MINOR'].toInteger()
+//        def versionBuild = versionProps['VERSION_BUILD'].toInteger() + 1
+//        def Code = versionProps['VERSION_CODE'].toInteger()
 
         // Update the build number in the local file
-        versionProps['VERSION_BUILD'] = versionBuild.toString()
-        versionProps.store(versionPropsFile.newWriter(), null)
+//        versionProps['VERSION_BUILD'] = versionBuild.toString()
+//        versionProps.store(versionPropsFile.newWriter(), null)
 
 
         defaultConfig {
             missingDimensionStrategy 'react-native-camera', 'general'
-            applicationId 'com.rokebiesim'
+            applicationId 'com.rokebi'
             minSdkVersion rootProject.ext.minSdkVersion
             multiDexEnabled true
             targetSdkVersion rootProject.ext.targetSdkVersion
             vectorDrawables.useSupportLibrary = true
-            versionCode Code
-            versionName "${versionMajor}.${versionMinor}"
+            versionCode 5
+            versionName "1.0.3"
+            multiDexEnabled true
             resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
         }
+
+    flavorDimensions "default"
+
+    productFlavors {
+        esim {
+            applicationIdSuffix "esim"
+            resValue "string", "app_name", "로깨비ESIM"
+        }
+        global {
+            applicationIdSuffix "global"
+            resValue "string", "app_name", "로깨비GLOBAL"
+        }
+        usim {
+            applicationIdSuffix "usim"
+            resValue "string", "app_name", "로깨비USIM"
+        }
+        talk {
+            applicationIdSuffix "talk"
+            resValue "string", "app_name", "로깨비TALK"
+        }
+    }
 
         dexOptions {
             jumboMode true
@@ -207,26 +241,18 @@ android {
             resValue "string", "CodePushDeploymentKey", ''
 
         }
+        staging {
+            initWith release
+            matchingFallbacks = ['release']
+            signingConfig signingConfigs.release
+            resValue "string", "CodePushDeploymentKey", 'xesyWQUnruGqjQliPjlKF8hKEZEZa-pfLWOQ2'
+        }
         release {
             signingConfig signingConfigs.release
             // Caution! In production, you need to generate your own keystore file.
             // see https://facebook.github.io/react-native/docs/signed-apk-android.
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             resValue "string", "CodePushDeploymentKey", '8RzsDJP5_63nkcvGO5yKweJAGMA3zliSBo3Hp'
-        }
-        debugStaging {
-            initWith debug
-            matchingFallbacks = ['debug']
-            signingConfig signingConfigs.debug
-            resValue "string", "CodePushDeploymentKey", 'xesyWQUnruGqjQliPjlKF8hKEZEZa-pfLWOQ2'
-        }
-        releaseStaging {
-            initWith release
-            matchingFallbacks = ['release']
-            signingConfig signingConfigs.release
-//            buildConfigField "String", "CODEPUSH_KEY", 'xesyWQUnruGqjQliPjlKF8hKEZEZa-pfLWOQ2'
-//            buildConfigField "String", "CodePushDeploymentKey", 'xesyWQUnruGqjQliPjlKF8hKEZEZa'
-            resValue "string", "CodePushDeploymentKey", 'xesyWQUnruGqjQliPjlKF8hKEZEZa-pfLWOQ2'
         }
     }
 
