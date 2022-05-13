@@ -34,10 +34,10 @@ const lc = RNLocalize.getLocales()[0];
 const isEng = lc.languageCode !== 'ko';
 
 const codePushLabel = {
-  stagingIOS: 'v87',
-  stagingAndroid: 'v86',
-  productionIOS: 'v24',
-  productionAndroid: 'v17',
+  stagingIOS: 'v104',
+  stagingAndroid: 'v94',
+  productionIOS: 'v47',
+  productionAndroid: 'v40',
 };
 const channelId = '_nzQhxb';
 
