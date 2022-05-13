@@ -419,7 +419,6 @@ const cmiGetSubsUsage = ({
   return api.callHttpGet(
     `${api.rokHttpUrl(
       api.path.rokApi.pv.cmiUsage,
-      5000,
     )}&iccid=${iccid}&packageId=${packageId}&quota`,
     (data) => {
       if (data?.result?.code === 0) {
@@ -436,7 +435,7 @@ const cmiGetSubsStatus = ({iccid}: {iccid: string}) => {
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
 
   return api.callHttpGet(
-    `${api.rokHttpUrl(api.path.rokApi.pv.cmiStatus, 5000)}&iccid=${iccid}`,
+    `${api.rokHttpUrl(api.path.rokApi.pv.cmiStatus)}&iccid=${iccid}`,
     toCmiStatus,
     new Headers({'Content-Type': 'application/json'}),
   );
