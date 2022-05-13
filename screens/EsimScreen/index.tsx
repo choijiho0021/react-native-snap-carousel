@@ -356,6 +356,55 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     }
   }, [cmiPending, cmiStatus, cmiUsage, copyInfo, modal, subs]);
 
+  const getCmiSubsUsage = useCallback(
+    async (usageIccid, packageId, childOrderId, item) => {
+      await API.Subscription.cmiGetSubsUsage({
+        iccid: usageIccid,
+        packageId,
+        childOrderId,
+      }).then(async (rsp) => {
+        usageRsp = rsp;
+        if (rsp?.result === 0 && rsp?.objects) {
+          const daily = item.prodId && prodList.get(item.prodId)?.field_daily;
+          const subscriberQuota = rsp?.objects?.find(
+            (v) => !_.isEmpty(v?.subscriberQuota),
+          )?.subscriberQuota;
+
+          const used = rsp.objects.reduce((acc, cur) => {
+            // himsi
+            if (!_.isEmpty(cur?.subscriberQuota))
+              return acc + Number(cur?.subscriberQuota?.qtaconsumption) / 1024;
+            // vimsi
+            if (daily) {
+              return (
+                acc +
+                Number(
+                  cur?.historyQuota?.find(
+                    (v) => v?.time === moment().format('YYYYMMDD'),
+                  )?.qtaconsumption || 0,
+                )
+              );
+            }
+
+            return (
+              acc +
+              cur?.historyQuota.reduce(
+                (a, c) => a + Number(c?.qtaconsumption),
+                0,
+              )
+            );
+          }, 0);
+
+          setCmiUsage({
+            quota: Number(subscriberQuota?.qtavalue) / 1024 || 0, // Mb
+            used, // Mb
+          });
+        }
+      });
+    },
+    [prodList],
+  );
+
   const onPressUsage = useCallback(
     async (item: RkbSubscription) => {
       // {"subscriberQuota":{"qtavalue":"512000","qtabalance":"73042","qtaconsumption":"438958"},"historyQuota":[{"time":"20211222","qtaconsumption":"376.44","mcc":"452"},{"time":"20211221","qtaconsumption":"1454.78","mcc":"452"}],"result":{"code":0},"trajectoriesList":[{"mcc":"452","country":"Vietnam","beginTime":"20211221","useTime":"20220120","himsi":"454120382118109"}]}
@@ -366,57 +415,20 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       let usageRsp = {};
 
       if (item?.subsIccid && item?.packageId) {
-        await API.Subscription.cmiGetSubsUsage({
-          iccid: item?.subsIccid,
-          packageId: item?.packageId,
-        }).then(async (rsp) => {
-          usageRsp = rsp;
-          if (rsp?.result === 0 && rsp?.objects) {
-            const daily = item.prodId && prodList.get(item.prodId)?.field_daily;
-            const subscriberQuota = rsp?.objects?.find(
-              (v) => !_.isEmpty(v?.subscriberQuota),
-            )?.subscriberQuota;
-
-            const used = rsp.objects.reduce((acc, cur) => {
-              // himsi
-              if (!_.isEmpty(cur?.subscriberQuota))
-                return (
-                  acc + Number(cur?.subscriberQuota?.qtaconsumption) / 1024
-                );
-              // vimsi
-              if (daily)
-                return (
-                  acc +
-                  Number(
-                    cur?.historyQuota?.find(
-                      (v) => v?.time === moment().format('YYYYMMDD'),
-                    )?.qtaconsumption || 0,
-                  )
-                );
-
-              return (
-                acc +
-                cur?.historyQuota.reduce(
-                  (a, c) => a + Number(c?.qtaconsumption),
-                  0,
-                )
-              );
-            }, 0);
-
-            setCmiUsage({
-              quota: Number(subscriberQuota?.qtavalue) / 1024 || 0, // Mb
-              used, // Mb
-            });
-          }
-        });
-
         // expire time은 사용시작 이후에 발생
         // 사용 시작 했고, expireTime을 지났어도 'E' 로 바뀌지 않음.  endTime이후 'E'
         await API.Subscription.cmiGetSubsStatus({
           iccid: item.subsIccid,
-        }).then((rsp) => {
+        }).then(async (rsp) => {
           const userDataBundles = rsp?.objects?.userDataBundles;
           if (rsp?.result === 0 && userDataBundles[0]) {
+            await getCmiSubsUsage(
+              item?.subsIccid,
+              item?.packageId,
+              userDataBundles[0]?.subscriptionKey,
+              item,
+            );
+
             const statusCd =
               !_.isUndefined(userDataBundles[0]?.status) &&
               cmiStatusCd[userDataBundles[0]?.status];
@@ -451,7 +463,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         setCmiPending(false);
       }
     },
-    [prodList],
+    [getCmiSubsUsage],
   );
 
   const renderSubs = useCallback(

@@ -407,19 +407,22 @@ const getSubsUsage = ({id, token}: {id?: string; token?: string}) => {
 const cmiGetSubsUsage = ({
   iccid,
   packageId,
+  childOrderId,
 }: {
   iccid: string;
   packageId: string;
+  childOrderId?: string;
 }) => {
   if (!iccid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
   if (!packageId)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: packageId');
 
+  const OptionParam = childOrderId ? `&childOrderId=${childOrderId}` : '';
   return api.callHttpGet(
     `${api.rokHttpUrl(
       api.path.rokApi.pv.cmiUsage,
-    )}&iccid=${iccid}&packageId=${packageId}&quota`,
+    )}&iccid=${iccid}&packageId=${packageId}${OptionParam}&quota`,
     (data) => {
       if (data?.result?.code === 0) {
         return api.success(data?.objects);
