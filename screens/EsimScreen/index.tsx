@@ -404,7 +404,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             }, 0);
 
             setCmiUsage({
-              quota: Number(subscriberQuota?.qtavalue) / 1024, // Mb
+              quota: Number(subscriberQuota?.qtavalue) / 1024 || 0, // Mb
               used, // Mb
             });
           }
