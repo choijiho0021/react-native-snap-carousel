@@ -95,6 +95,10 @@ const images: Record<string, any[]> = {
   facebookLogin: [require(`${mainPath}LoginImgFacebook.png`)],
   imgRokebiChar: [require(`${mainPath}imgRokebiChar.png`)],
   imgQuestion: [require(`${mainPath}imgQuestion.png`)],
+  radioBtn: [
+    require(`${mainPath}radioBtn.png`),
+    require(`${mainPath}radioBtnCheck.png`),
+  ],
   kakao: [require(`${paymentPath}logoKakao.png`)],
   naver: [require(`${paymentPath}logoNaver.png`)],
   payco: [require(`${paymentPath}logoPayco.png`)],

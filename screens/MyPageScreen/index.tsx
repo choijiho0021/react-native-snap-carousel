@@ -588,7 +588,7 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
 
         <AppModalForm
           contentStyle={styles.email}
-          title={i18n.t('acc:changeEmail')}
+          title={i18n.t('changeEmail')}
           defaultValue={this.props.account.email}
           valueType="email"
           onOkClose={this.changeEmail}

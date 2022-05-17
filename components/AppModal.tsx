@@ -18,6 +18,7 @@ import AppText from './AppText';
 const styles = StyleSheet.create({
   button: {
     backgroundColor: colors.white,
+    marginBottom: 20,
     width: 65,
     height: 36,
   },

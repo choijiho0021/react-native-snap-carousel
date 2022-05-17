@@ -633,6 +633,30 @@ const confirmEmail = ({
   );
 };
 
+const resign = async (
+  {uid = 0, token}: {uid?: number; token?: string},
+  reason?: string,
+) => {
+  if (uid <= 0 || !token) {
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: nid');
+  }
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.reg)}/${uid}`,
+    {
+      method: 'DELETE',
+      headers: api.withToken(token),
+      body: JSON.stringify({
+        reason,
+      }),
+    },
+    ({result}) => {
+      return result?.code === 0
+        ? api.success([])
+        : api.failure(result?.code, result?.error, result?.desc);
+    },
+  );
+};
+
 export default {
   KEY_ICCID,
   KEY_MOBILE,
@@ -657,4 +681,5 @@ export default {
   signUp,
   confirmEmail,
   socialLogin,
+  resign,
 };
