@@ -17,6 +17,7 @@ import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import Env from '@/environment';
 import AppIcon from '@/components/AppIcon';
+import _ from 'underscore';
 
 const styles = StyleSheet.create({
   usageListContainer: {
@@ -191,8 +192,8 @@ const UsageItem: React.FC<UsageItemProps> = ({
 }) => {
   const [isShowUsage, setIsShowUsage] = useState(!!usage);
   const [disableBtn, setDisableBtn] = useState(false);
-  const [quota, setQuota] = useState<number>(usage?.quota || 0);
-  const [used, setUsed] = useState<number>(usage?.used || 0);
+  const [quota, setQuota] = useState<number | undefined>(usage?.quota);
+  const [used, setUsed] = useState<number | undefined>(usage?.used);
   const circularProgress = useRef();
 
   useEffect(() => {
@@ -272,19 +273,16 @@ const UsageItem: React.FC<UsageItemProps> = ({
     );
   }, [item.expireDate, item.purchaseDate]);
 
-  const toMb = useCallback((kb: number) => {
-    if (kb === 0) return 0;
-    return utils.numberToCommaString(kb / 1024);
+  // data는 esim:Mb usim:kb 단위
+  const toMb = useCallback((data: number) => {
+    if (data === 0) return 0;
+    return esimApp ? data?.toFixed(2) : utils.numberToCommaString(data / 1024);
   }, []);
 
-  const toGb = useCallback((kb: number) => {
-    if (kb === 0) return 0;
-    return (kb / 1024 / 1024)?.toFixed(2);
-  }, []);
-
-  const fromMbToGb = useCallback((mb: number) => {
-    if (mb === 0) return 0;
-    return (mb / 1024)?.toFixed(2);
+  // data는 esim:Mb usim:kb 단위
+  const toGb = useCallback((data: number) => {
+    if (data === 0) return 0;
+    return (esimApp ? data / 1024 : data / 1024 / 1024)?.toFixed(2);
   }, []);
 
   const checkUsageButton = useCallback(() => {
@@ -332,28 +330,32 @@ const UsageItem: React.FC<UsageItemProps> = ({
             {i18n.t('usim:remainData')}
           </AppText>
           <AppText style={appStyles.bold18Text}>
-            {`${
-              esimApp ? fromMbToGb(quota - used) : toGb(quota - used)
-            }GB ${i18n.t('usim:remain')}`}
+            {!_.isUndefined(quota) && !_.isUndefined(used)
+              ? `${toGb(quota - used)}GB ${i18n.t('usim:remain')}`
+              : i18n.t('usim:usageErrorInfo1')}
           </AppText>
-          <AppText style={styles.normal14WarmGrey}>{`(${
-            esimApp ? (quota - used)?.toFixed(2) : toMb(quota - used)
-          }MB)`}</AppText>
+          <AppText style={styles.normal14WarmGrey}>
+            {!_.isUndefined(quota) && !_.isUndefined(used)
+              ? `(${toMb(quota - used)}MB)`
+              : i18n.t('usim:usageErrorInfo2')}
+          </AppText>
           <AppText style={[styles.normal14WarmGrey, {marginTop: 15}]}>
             {i18n.t('usim:usageAmount')}
           </AppText>
           <AppText style={styles.bold16WarmGrey}>
-            {`${esimApp ? fromMbToGb(used) : toGb(used)}GB ${i18n.t(
-              'usim:used',
-            )}`}
+            {!_.isUndefined(used)
+              ? `${toGb(used)}GB ${i18n.t('usim:used')}`
+              : i18n.t('usim:usageErrorInfo1')}
           </AppText>
-          <AppText style={styles.normal14WarmGrey}>{`(${
-            esimApp ? used?.toFixed(2) : toMb(used)
-          }MB)`}</AppText>
+          <AppText style={styles.normal14WarmGrey}>
+            {!_.isUndefined(used)
+              ? `(${esimApp ? used?.toFixed(2) : toMb(used)}MB)`
+              : i18n.t('usim:usageErrorInfo2')}
+          </AppText>
         </View>
       </View>
     );
-  }, [fromMbToGb, quota, toGb, toMb, used]);
+  }, [quota, toGb, toMb, used]);
 
   const statusBox = useCallback(
     (statusCd: string) => {
