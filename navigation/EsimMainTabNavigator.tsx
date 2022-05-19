@@ -43,6 +43,7 @@ import {RootState} from '@/redux';
 import AuthStack from './AuthStackNavigator';
 import {HomeStackParamList} from './navigation';
 import BadgedIcon from './component/BadgedIcon';
+import RedirectHKScreen from '@/screens/RedirectHKScreen';
 
 const styles = StyleSheet.create({
   tabBarIcon: {
@@ -116,6 +117,7 @@ function esimStack() {
     <EsimStack.Navigator screenOptions={{animationEnabled: false}}>
       <EsimStack.Screen name="Esim" component={EsimScreen} />
       <EsimStack.Screen name="Gift" component={GiftScreen} />
+      <EsimStack.Screen name="RedirectHK" component={RedirectHKScreen} />
       {/* <EsimStack.Screen name="SubsDetail" component={SubsDetailScreen} /> */}
     </EsimStack.Navigator>
   );

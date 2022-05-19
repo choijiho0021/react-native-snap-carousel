@@ -427,6 +427,16 @@
   "esim:manualInput": "Manual Input",
   "esim:manualInputTitle": "eSIM Info",
   "esim:manualInput:body": "Go to <color:'#2a7ff6'>Setting>Cellular>Add Cellular Plan</color> and Tap <color:'#2a7ff6'>\"Enter Details Manually\"</color>, then plz enter activation info below manually",
+  "esim:redirectHK": "Redirect to HongKong register",
+
+  "redirectHK": "HongKong Registration",
+  "redirectHK:info1": "Due to the change in the Hong Kong government's telecommunication policy, all users (including domestic and foreign nationals) who want to use Hong Kong local data can use local data after registering their real name on the Hong Kong local telecommunication company's web page.",
+  "redirectHK:info2": "",
+  "redirectHK:info3": "After checking the registration guide, ICCID, and order number at the bottom, please click the \"Registration Guide\" button.",
+  "redirectHK:iccid": "ICCID",
+  "redirectHK:orderNo": "Order Number",
+  "redirectHK:guide": "Registration Guide",
+
   "usim:usageErrorInfo1": "Error!",
   "usim:usageErrorInfo2": "Rokebi is working on this",
 

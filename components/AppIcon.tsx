@@ -84,6 +84,7 @@ const images: Record<string, any[]> = {
     require(`${mainPath}btnCheckNon.png`),
     require(`${mainPath}btnCheckSel.png`),
   ],
+  iconCheckSmall: [require(`${mainPath}iconCheckSmall.png`)],
   openKakao: [require(`${mainPath}imgKakao.png`)],
   openKakaoEng: [require(`${mainPath}imgKakaoEng.png`)],
   openFacebook: [require(`${mainPath}imgFacebook.png`)],

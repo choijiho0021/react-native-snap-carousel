@@ -87,6 +87,7 @@ export type RkbSubscription = {
   imsi?: string;
   subsIccid?: string;
   packageId?: string;
+  subsOrderNo?: string;
 };
 
 const toSubscription = (
@@ -117,6 +118,7 @@ const toSubscription = (
           type: item.type || '',
           subsIccid: item.field_iccid || '',
           packageId: item.field_cmi_package_id || '',
+          subsOrderNo: item.field_cmi_order_id || '',
         }))
         .sort(sortSubs),
     );

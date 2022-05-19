@@ -81,7 +81,6 @@ const styles = StyleSheet.create({
   }),
   buttonTitle: (isValid) => ({
     ...appStyles.normal18Text,
-    color: colors.white,
     textAlign: 'center',
     margin: 5,
     color: isValid ? colors.white : colors.warmGrey,

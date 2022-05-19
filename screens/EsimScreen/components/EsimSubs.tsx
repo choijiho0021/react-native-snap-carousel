@@ -1,5 +1,5 @@
 import React, {memo} from 'react';
-import {Dimensions, Pressable, StyleSheet, View} from 'react-native';
+import {Dimensions, Pressable, StyleSheet, View, Text} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {Line, Svg} from 'react-native-svg';
 import AppButton from '@/components/AppButton';
@@ -11,6 +11,7 @@ import {API} from '@/redux/api';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
+import AppIcon from '@/components/AppIcon';
 
 const {width} = Dimensions.get('window');
 
@@ -113,6 +114,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  redirectHK: {
+    flexDirection: 'row',
+    padding: 10,
+    marginTop: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.whiteTwo,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+  },
+  redirectText: {
+    ...appStyles.normal14Text,
+    marginLeft: 4,
+  },
 });
 
 const title = (
@@ -213,6 +229,7 @@ const EsimSubs = ({
   const navigation = useNavigation();
   const {giftStatusCd} = item;
   const sendable = !expired && !giftStatusCd && item.packageId?.startsWith('D');
+  const redirectable = !expired && !giftStatusCd && item.country === 'HK';
 
   return (
     <View style={styles.usageListContainer}>
@@ -227,6 +244,19 @@ const EsimSubs = ({
           giftStatusCd !== 'S' &&
           item.type !== API.Subscription.CALL_PRODUCT &&
           QRnCopyInfo(onPressQR)}
+        {redirectable && (
+          <Pressable
+            style={styles.redirectHK}
+            onPress={() =>
+              navigation.navigate('RedirectHK', {
+                iccid: item.subsIccid,
+                orderNo: item.subsOrderNo,
+              })
+            }>
+            <AppIcon name="iconCheckSmall" />
+            <Text style={styles.redirectText}>{i18n.t('esim:redirectHK')}</Text>
+          </Pressable>
+        )}
       </View>
       {sendable && (
         <View style={styles.sendable}>
