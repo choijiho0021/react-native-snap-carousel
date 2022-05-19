@@ -2,7 +2,14 @@ import Clipboard from '@react-native-community/clipboard';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {Component} from 'react';
-import {ScrollView, StyleSheet, View, Image, SafeAreaView} from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  Image,
+  SafeAreaView,
+  Linking,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
@@ -245,8 +252,11 @@ class RedirectHKScreen extends Component<
             style={styles.confirm}
             titleStyle={styles.confirmTitle}
             title={i18n.t('esim:redirectHK')}
-            onPress={() => {
-              console.log('aaaaa push');
+            onPress={async () => {
+              // 홍콩 실명인증 웹 페이지
+              await Linking.openURL(
+                'https://global.cmlink.com/store/realname?LT=en',
+              );
             }}
           />
         </ScrollView>
