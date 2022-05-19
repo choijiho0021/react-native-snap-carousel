@@ -9,6 +9,7 @@ import {
   View,
   Image,
   Platform,
+  SafeAreaView,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -220,116 +221,120 @@ class ResignScreen extends Component<ResignScreenProps, ResignScreenState> {
     const {reasonIdx, otherReason, isConfirm, showModal} = this.state;
     const editable = reasonIdx === radioButtons.length - 1;
     return (
-      <ScrollView style={styles.container}>
-        <AppActivityIndicator visible={this.props.pending} />
-        <View style={styles.blueContainer}>
-          <AppText style={styles.resignTitle}>{i18n.t('resign:title')}</AppText>
-          <Image
-            style={{
-              marginTop: 52,
-              marginRight: 32,
-              justifyContent: 'flex-end',
-            }}
-            source={require('../assets/images/esim/imgResignDokebi.png')}
-            resizeMode="stretch"
-          />
-        </View>
-        <View style={styles.radioBtnContainer}>
-          <View style={{width: '100%'}}>
-            <AppText style={styles.resignWhy}>{i18n.t('resign:why')}</AppText>
-            <AppText style={appStyles.normal14Text}>
-              {i18n.t('resign:info')}
+      <SafeAreaView style={styles.container}>
+        <ScrollView style={styles.container}>
+          <AppActivityIndicator visible={this.props.pending} />
+          <View style={styles.blueContainer}>
+            <AppText style={styles.resignTitle}>
+              {i18n.t('resign:title')}
             </AppText>
-            <View style={styles.divider} />
-            {radioButtons.map(({id}, idx) => (
-              <Pressable
-                style={{flexDirection: 'row', paddingVertical: 16}}
-                key={id}
-                hitSlop={10}
-                onPress={() => this.setState({reasonIdx: idx})}>
-                <AppIcon
-                  style={{marginRight: 6}}
-                  name="radioBtn"
-                  focused={idx === reasonIdx}
-                />
-                <AppText style={appStyles.normal16Text}>
-                  {i18n.t(radioButtons[idx].id)}
-                </AppText>
-              </Pressable>
-            ))}
-            <AppTextInput
-              style={styles.textInput(editable)}
-              multiline
-              onChangeText={(v) => {
-                this.setState({otherReason: v});
+            <Image
+              style={{
+                marginTop: 52,
+                marginRight: 32,
+                justifyContent: 'flex-end',
               }}
-              placeholder={i18n.t('resign:placeholder')}
-              placeholderTextColor={colors.greyish}
-              editable={editable}
-              value={otherReason}
-              // returnKeyType="done"
-              // enablesReturnKeyAutomatically
-
-              // maxLength={maxLength}
-              // keyboardType={keyboardType}
-              // value={value}
+              source={require('../assets/images/esim/imgResignDokebi.png')}
+              resizeMode="stretch"
             />
           </View>
-        </View>
-
-        <View style={styles.confirmResign}>
-          <AppText style={[appStyles.bold14Text, {marginBottom: 10}]}>
-            {i18n.t('resign:why')}
-          </AppText>
-          {['1', '2', '3'].map((elm) => (
-            <View style={{flexDirection: 'row', paddingRight: 20}}>
-              <AppText
-                style={[
-                  appStyles.normal14Text,
-                  {width: 20, textAlign: 'center'},
-                ]}>
-                *
-              </AppText>
+          <View style={styles.radioBtnContainer}>
+            <View style={{width: '100%'}}>
+              <AppText style={styles.resignWhy}>{i18n.t('resign:why')}</AppText>
               <AppText style={appStyles.normal14Text}>
-                {i18n.t(`resign:confirm${elm}`)}
+                {i18n.t('resign:info')}
               </AppText>
+              <View style={styles.divider} />
+              {radioButtons.map(({id}, idx) => (
+                <Pressable
+                  style={{flexDirection: 'row', paddingVertical: 16}}
+                  key={id}
+                  hitSlop={10}
+                  onPress={() => this.setState({reasonIdx: idx})}>
+                  <AppIcon
+                    style={{marginRight: 6}}
+                    name="radioBtn"
+                    focused={idx === reasonIdx}
+                  />
+                  <AppText style={appStyles.normal16Text}>
+                    {i18n.t(radioButtons[idx].id)}
+                  </AppText>
+                </Pressable>
+              ))}
+              <AppTextInput
+                style={styles.textInput(editable)}
+                multiline
+                onChangeText={(v) => {
+                  this.setState({otherReason: v});
+                }}
+                placeholder={i18n.t('resign:placeholder')}
+                placeholderTextColor={colors.greyish}
+                editable={editable}
+                value={otherReason}
+                // returnKeyType="done"
+                // enablesReturnKeyAutomatically
+
+                // maxLength={maxLength}
+                // keyboardType={keyboardType}
+                // value={value}
+              />
             </View>
-          ))}
+          </View>
 
-          <Pressable
-            style={{flexDirection: 'row', paddingVertical: 16}}
-            key={1}
-            hitSlop={10}
-            onPress={() =>
-              this.setState((prevState) => ({
-                isConfirm: !prevState.isConfirm,
-              }))
-            }>
-            <AppIcon
-              style={{marginRight: 6}}
-              name="btnCheck2"
-              focused={isConfirm}
-            />
-            <AppText style={appStyles.normal16Text}>
-              {i18n.t(`resign:isConfirm`)}
+          <View style={styles.confirmResign}>
+            <AppText style={[appStyles.bold14Text, {marginBottom: 10}]}>
+              {i18n.t('resign:why')}
             </AppText>
-          </Pressable>
-        </View>
+            {['1', '2', '3'].map((elm) => (
+              <View style={{flexDirection: 'row', paddingRight: 20}}>
+                <AppText
+                  style={[
+                    appStyles.normal14Text,
+                    {width: 20, textAlign: 'center'},
+                  ]}>
+                  *
+                </AppText>
+                <AppText style={appStyles.normal14Text}>
+                  {i18n.t(`resign:confirm${elm}`)}
+                </AppText>
+              </View>
+            ))}
 
-        <AppButton
-          style={styles.button(isConfirm)}
-          titleStyle={styles.buttonTitle(isConfirm)}
-          disabled={!isConfirm}
-          title={i18n.t('resign')}
-          onPress={this.onPress}
-        />
-        <AppModal
-          title={i18n.t('resign:finished')}
-          type="info"
-          onOkClose={this.logout}
-          visible={showModal}
-        />
-      </ScrollView>
+            <Pressable
+              style={{flexDirection: 'row', paddingVertical: 16}}
+              key={1}
+              hitSlop={10}
+              onPress={() =>
+                this.setState((prevState) => ({
+                  isConfirm: !prevState.isConfirm,
+                }))
+              }>
+              <AppIcon
+                style={{marginRight: 6}}
+                name="btnCheck2"
+                focused={isConfirm}
+              />
+              <AppText style={appStyles.normal16Text}>
+                {i18n.t(`resign:isConfirm`)}
+              </AppText>
+            </Pressable>
+          </View>
+
+          <AppButton
+            style={styles.button(isConfirm)}
+            titleStyle={styles.buttonTitle(isConfirm)}
+            disabled={!isConfirm}
+            title={i18n.t('resign')}
+            onPress={this.onPress}
+          />
+          <AppModal
+            title={i18n.t('resign:finished')}
+            type="info"
+            onOkClose={this.logout}
+            visible={showModal}
+          />
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 }

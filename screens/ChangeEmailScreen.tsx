@@ -1,19 +1,10 @@
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import messaging from '@react-native-firebase/messaging';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import Analytics from 'appcenter-analytics';
-import React, {Component, memo} from 'react';
-import {FlatList, Pressable, StyleSheet, View, Platform} from 'react-native';
+import React, {Component} from 'react';
+import {StyleSheet, View, SafeAreaView} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
-import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
-import AppIcon from '@/components/AppIcon';
-import AppModal from '@/components/AppModal';
-import AppSnackBar from '@/components/AppSnackBar';
-import AppSwitch from '@/components/AppSwitch';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -161,7 +152,7 @@ class ChangeEmailScreen extends Component<
     const {newEmail, inValid} = this.state;
 
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <View style={{padding: 20, flex: 1}}>
           <AppText style={appStyles.normal14Text}>
             {i18n.t('changeEmail:using')}
@@ -208,7 +199,7 @@ class ChangeEmailScreen extends Component<
           title={i18n.t('changeEmail:save')}
           onPress={this.changeEmail}
         />
-      </View>
+      </SafeAreaView>
     );
   }
 }

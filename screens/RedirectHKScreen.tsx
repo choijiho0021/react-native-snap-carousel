@@ -2,7 +2,7 @@ import Clipboard from '@react-native-community/clipboard';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {Component} from 'react';
-import {ScrollView, StyleSheet, View, Image} from 'react-native';
+import {ScrollView, StyleSheet, View, Image, SafeAreaView} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
@@ -29,8 +29,6 @@ import {
 import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
 import {sliderWidth} from '@/constants/SliderEntry.style';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
 
 const guideImage = {
   step1: require('../assets/images/guide_HK/step1/guideHK1.png'),
@@ -177,7 +175,6 @@ class RedirectHKScreen extends Component<
     const images = Object.keys(guideImage);
     return (
       <SafeAreaView style={{flex: 1}}>
-        <AppActivityIndicator visible={false} />
         <ScrollView style={styles.container}>
           <View style={{margin: 20}}>
             <AppText style={appStyles.normal14Text}>
