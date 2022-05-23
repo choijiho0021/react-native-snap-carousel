@@ -1,7 +1,7 @@
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import {Share} from 'react-native';
 import _ from 'underscore';
-import {Adjust, AdjustEvent} from 'react-native-adjust';
+// import {Adjust, AdjustEvent} from 'react-native-adjust';
 import api, {ApiResult, DrupalNode, Langcode} from './api';
 import Env from '@/environment';
 import i18n from '@/utils/i18n';

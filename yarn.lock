@@ -8434,11 +8434,6 @@
   "resolved" "https://registry.npmjs.org/react-is/-/react-is-17.0.2.tgz"
   "version" "17.0.2"
 
-"react-native-adjust@^4.29.5":
-  "integrity" "sha512-dZaPSAzyb/Oyi+GZFFV5juD9mpcRLL+5L2Bk8E7jM4sBut2Yu2e6R2hN/bVlgImLPs5sM8g5oHMaVDcq4EhF1g=="
-  "resolved" "https://registry.npmjs.org/react-native-adjust/-/react-native-adjust-4.29.5.tgz"
-  "version" "4.29.5"
-
 "react-native-app-badge@0.1.5":
   "integrity" "sha512-/UwTH7kmn55pfnA5n1U3ocjUMzx1eApPBPZkJFYG2UYnpqInWIltgtqHWhEQDbYMUqIjgqtXnPijsyuuozD2Iw=="
   "resolved" "https://registry.npmjs.org/react-native-app-badge/-/react-native-app-badge-0.1.5.tgz"
