@@ -87,6 +87,7 @@ export type RkbSubscription = {
   imsi?: string;
   subsIccid?: string;
   packageId?: string;
+  subsOrderNo?: string;
 };
 
 const toSubscription = (
@@ -117,6 +118,7 @@ const toSubscription = (
           type: item.type || '',
           subsIccid: item.field_iccid || '',
           packageId: item.field_cmi_package_id || '',
+          subsOrderNo: item.field_cmi_order_id || '',
         }))
         .sort(sortSubs),
     );
@@ -407,20 +409,22 @@ const getSubsUsage = ({id, token}: {id?: string; token?: string}) => {
 const cmiGetSubsUsage = ({
   iccid,
   packageId,
+  childOrderId,
 }: {
   iccid: string;
   packageId: string;
+  childOrderId?: string;
 }) => {
   if (!iccid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
   if (!packageId)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: packageId');
 
+  const OptionParam = childOrderId ? `&childOrderId=${childOrderId}` : '';
   return api.callHttpGet(
     `${api.rokHttpUrl(
       api.path.rokApi.pv.cmiUsage,
-      5000,
-    )}&iccid=${iccid}&packageId=${packageId}&quota`,
+    )}&iccid=${iccid}&packageId=${packageId}${OptionParam}&quota`,
     (data) => {
       if (data?.result?.code === 0) {
         return api.success(data?.objects);
@@ -436,7 +440,7 @@ const cmiGetSubsStatus = ({iccid}: {iccid: string}) => {
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
 
   return api.callHttpGet(
-    `${api.rokHttpUrl(api.path.rokApi.pv.cmiStatus, 5000)}&iccid=${iccid}`,
+    `${api.rokHttpUrl(api.path.rokApi.pv.cmiStatus)}&iccid=${iccid}`,
     toCmiStatus,
     new Headers({'Content-Type': 'application/json'}),
   );

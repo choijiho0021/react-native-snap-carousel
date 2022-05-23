@@ -16,6 +16,9 @@ import CountryScreen from '@/screens/CountryScreen';
 import ProductDetailScreen from '@/screens/ProductDetailScreen';
 
 import SettingsScreen from '@/screens/SettingsScreen';
+import AccountSettingsScreen from '@/screens/AccountSettingsScreen';
+import ResignScreen from '@/screens/ResignScreen';
+import ChangeEmailScreen from '@/screens/ChangeEmailScreen';
 import i18n from '@/utils/i18n';
 import RechargeScreen from '@/screens/RechargeScreen';
 import CartScreen from '@/screens/CartScreen';
@@ -40,6 +43,7 @@ import {RootState} from '@/redux';
 import AuthStack from './AuthStackNavigator';
 import {HomeStackParamList} from './navigation';
 import BadgedIcon from './component/BadgedIcon';
+import RedirectHKScreen from '@/screens/RedirectHKScreen';
 
 const styles = StyleSheet.create({
   tabBarIcon: {
@@ -113,6 +117,7 @@ function esimStack() {
     <EsimStack.Navigator screenOptions={{animationEnabled: false}}>
       <EsimStack.Screen name="Esim" component={EsimScreen} />
       <EsimStack.Screen name="Gift" component={GiftScreen} />
+      <EsimStack.Screen name="RedirectHK" component={RedirectHKScreen} />
       {/* <EsimStack.Screen name="SubsDetail" component={SubsDetailScreen} /> */}
     </EsimStack.Navigator>
   );
@@ -139,6 +144,12 @@ function myPageStack() {
       />
       <MyPageStack.Screen name="Faq" component={FaqScreen} />
       <MyPageStack.Screen name="Settings" component={SettingsScreen} />
+      <MyPageStack.Screen
+        name="AccountSettings"
+        component={AccountSettingsScreen}
+      />
+      <MyPageStack.Screen name="Resign" component={ResignScreen} />
+      <MyPageStack.Screen name="ChangeEmail" component={ChangeEmailScreen} />
       <MyPageStack.Screen name="MySim" component={MySimScreen} />
     </MyPageStack.Navigator>
   );

@@ -61,6 +61,7 @@ import pushNoti from '@/utils/pushNoti';
 import {checkFistLaunch, requestPermission} from './component/permission';
 import PromotionCarousel from './component/PromotionCarousel';
 import AndroidEuccidModule from '@/components/NativeModule/AndroidEuccidModule';
+import {ScrollView} from 'react-native';
 
 const {esimGlobal} = Env.get();
 
@@ -152,6 +153,12 @@ const styles = StyleSheet.create({
     width: 333,
     height: 444,
     marginVertical: 20,
+  },
+  deviceScrollView: {
+    backgroundColor: colors.whiteTwo,
+    height: 250,
+    paddingBottom: 15,
+    paddingHorizontal: 15,
   },
 });
 
@@ -263,6 +270,7 @@ class Esim extends Component<EsimProps, EsimState> {
     this.renderNotiModal = this.renderNotiModal.bind(this);
     this.setNotiModal = this.setNotiModal.bind(this);
     this.exitApp = this.exitApp.bind(this);
+    this.checkSupportIos = this.checkSupportIos.bind(this);
 
     this.offset = 0;
     this.controller = new AbortController();
@@ -295,12 +303,11 @@ class Esim extends Component<EsimProps, EsimState> {
     API.Device.getDevList().then(async (resp) => {
       if (resp.result === 0) {
         const deviceModel = DeviceInfo.getModel();
-        const deviceName = DeviceInfo.getDeviceId();
 
         const isSupportDev =
           Platform.OS === 'android'
-            ? await AndroidEuccidModule.isEnableEsim().then((result) => result)
-            : resp.objects.includes(deviceModel) || deviceName === 'iPhone12,8'; // (2nd Generation iPhone SE)
+            ? await AndroidEuccidModule.isEnableEsim()
+            : this.checkSupportIos();
 
         this.setState({
           deviceList: resp.objects,
@@ -390,6 +397,37 @@ class Esim extends Component<EsimProps, EsimState> {
     }
   }
 
+  checkSupportIos = () => {
+    const getDeviceId = DeviceInfo.getDeviceId();
+
+    // 가능한 iPad목록
+    const enableIpadList = [
+      'iPad4,2',
+      'iPad4,3',
+      'iPad5,4',
+      'iPad7,12',
+      'iPad8,3',
+      'iPad8,4',
+      'iPad8,7',
+      'iPad8,8',
+      'iPad11,2',
+      'iPad11,4',
+      'iPad13,2',
+    ];
+
+    if (getDeviceId.startsWith('AppleTV')) return false;
+
+    if (getDeviceId.startsWith('iPhone'))
+      return !!getDeviceId.localeCompare('iPhone11.1');
+    if (getDeviceId.startsWith('iPad'))
+      return (
+        enableIpadList.includes(getDeviceId) ||
+        !!getDeviceId.localeCompare('iPad13,2')
+      );
+
+    return true;
+  };
+
   setNotiModal = () => {
     const popUp = this.props.promotion?.find((v) => v?.notice?.image?.noti);
 
@@ -477,17 +515,14 @@ class Esim extends Component<EsimProps, EsimState> {
           {i18n.t('home:supportedDevice')}
         </AppText>
 
-        <View
-          style={{
-            backgroundColor: colors.whiteTwo,
-            paddingVertical: 15,
-            paddingHorizontal: 15,
-          }}>
+        <ScrollView
+          style={styles.deviceScrollView}
+          showsVerticalScrollIndicator={false}>
           <AppText style={[appStyles.normal16Text, {lineHeight: 24}]}>
             {deviceList && deviceList.join(', ')}
             {i18n.t('home:supportedDeviceBody')}
           </AppText>
-        </View>
+        </ScrollView>
       </View>
     );
   };

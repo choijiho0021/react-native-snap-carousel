@@ -67,7 +67,6 @@
     "moment-with-locales-es6": "^1.0.1",
     "react": "17.0.2",
     "react-native": "0.66.1",
-    "react-native-adjust": "^4.29.5",
     "react-native-app-badge": "0.1.5",
     "react-native-barcode-mask": "^1.2.2",
     "react-native-camera": "^4.2.1",

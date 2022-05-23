@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import codePush from 'react-native-code-push';
 import VersionCheck from 'react-native-version-check';
-import {Adjust, AdjustEvent} from 'react-native-adjust';
+// import {Adjust, AdjustEvent} from 'react-native-adjust';
 import {
   actions as syncActions,
   SyncAction,
@@ -15,7 +15,7 @@ import {RootState} from '@/redux';
 import AppAlert from './AppAlert';
 import Env from '@/environment';
 
-const {adjustAppUpdate = ''} = Env.get();
+// const {adjustAppUpdate = ''} = Env.get();
 
 type CodePushModalProps = {
   sync: SyncModelState;

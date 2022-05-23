@@ -6,7 +6,7 @@ import {SafeAreaView, StyleSheet, View} from 'react-native';
 import Video from 'react-native-video';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {Adjust, AdjustEvent} from 'react-native-adjust';
+// import {Adjust, AdjustEvent} from 'react-native-adjust';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
@@ -120,12 +120,12 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
         // 결제완료시 '다음' 버튼 연속클릭 방지 - 연속클릭시 추가 결제 없이 order 계속 생성
         if (!params.isPaid) {
           // adjust 결제 이벤트 추척
-          const adjustPaymentEvent = new AdjustEvent(adjustPayment);
-          adjustPaymentEvent.setRevenue(pymInfo.amount, 'KRW');
+          // const adjustPaymentEvent = new AdjustEvent(adjustPayment);
+          // adjustPaymentEvent.setRevenue(pymInfo.amount, 'KRW');
           // Adjust.trackEvent(adjustPaymentEvent);
 
-          const adjustRokebiCashEvent = new AdjustEvent(adjustRokebiCash);
-          adjustRokebiCashEvent.setRevenue(pymInfo.rokebi_cash, 'KRW');
+          // const adjustRokebiCashEvent = new AdjustEvent(adjustRokebiCash);
+          // adjustRokebiCashEvent.setRevenue(pymInfo.rokebi_cash, 'KRW');
           // Adjust.trackEvent(adjustRokebiCashEvent);
 
           await navigation.setParams({isPaid: true});

@@ -22,7 +22,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
-import {Adjust, AdjustEvent} from 'react-native-adjust';
+// import {Adjust, AdjustEvent} from 'react-native-adjust';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -476,7 +476,7 @@ class RegisterMobileScreen extends Component<
             analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_sign_up`);
 
             // adjust appEvent 추가
-            const adjustEvent = new AdjustEvent(adjustSignUp);
+            // const adjustEvent = new AdjustEvent(adjustSignUp);
             // Adjust.trackEvent(adjustEvent);
           }
 

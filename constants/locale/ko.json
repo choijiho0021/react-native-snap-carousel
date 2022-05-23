@@ -164,7 +164,6 @@
   "acc:rechargeHistory": "충전/차감 내역",
   "acc:chat": "채팅 상담 (24/7)",
   "acc:notfound": "등록되지 않은 ICCID 입니다.",
-  "acc:changeEmail": "이메일 변경",
   "acc:permPhoto": "사진 앨범 권한을 허가해 주세요",
   "acc:permCamera": "카메라 권한을 허가해 주세요",
   "acc:duplicatedEmail": "이미 등록된 이메일 입니다",
@@ -188,6 +187,26 @@
   "set:sendAlimTalk": "알림톡이 발송되었습니다",
   "set:failedToSendAlimTalk": "알림톡 발송에 실패했습니다. 나중에 다시 시도해 주세요",
   "set:pushnoti": "Push 알림 받기",
+  "set:accountSettings": "회원 정보 수정",
+  "set:changeMail": "이메일 주소 변경",
+
+  "resign": "계정 탈퇴",
+  "resign:why": "계정을 탈퇴하려는 이유를 알려주세요.",
+  "resign:info": "서비스 개선에 적극적으로 반영하도록 하겠습니다.",
+  "resign:title": "고객님\n정말 떠나시는 건가요?",
+  "resign:reason1": "원하는 지역 서비스 없음",
+  "resign:reason2": "서비스 이용 불편",
+  "resign:reason3": "가격 불만족",
+  "resign:reason4": "이벤트 행사 기간 만료",
+  "resign:reason5": "방문 횟수 거의 없음",
+  "resign:reason6": "기타",
+  "resign:confirm1": "계정을 탈퇴하시면 구매내역 및 상품정보 등의 사용내역 및 보유하고 계시는 로깨비 캐시는 삭제 및 자동 소멸하며, 재가입 시에도 복원되지 않습니다.",
+  "resign:confirm2": "계정 탈퇴 후 재가입 시, 회원가입 이벤트에 재참여하실 수 없습니다.",
+  "resign:confirm3": "계정 탈퇴 후 전자상거래법에 따라 보존해야 하는 정보는 해당 법률에 따른 기간 보관 후 폐기됩니다.",
+  "resign:isConfirm": "안내사항을 확인하였으며 동의합니다.",
+  "resign:finished": "계정 탈퇴가 정상적으로 처리되었습니다.\n이용해주셔서 감사합니다.",
+  "resign:placeholder": "기타인 경우 이유를 입력해주세요.\n서비스 개선에 적극적으로 반영하겠습니다.",
+
   "set:globalMarket": "Global Market",
 
   "rch:recharge": "충전 하기",
@@ -417,6 +436,18 @@
   "esim:iccid": "ICCID",
   "esim:manualInputTitle": "eSIM 정보 수동 입력",
   "esim:manualInput:body": "<color:'#2a7ff6'>설정>셀룰러>셀룰러요금제 추가</color>에서 <color:'#2a7ff6'>세부사항 직접 입력</color>을 선택하여 다음 내용을 붙여넣기 해 주세요",
+  "esim:redirectHK": "실명등록 바로가기",
+
+  "redirectHK": "홍콩 실명등록",
+  "redirectHK:info1": "홍콩 정부의 통신 정책 변경으로 인해, 홍콩 현지 데이터를 사용하고자 하는 모든 사용자(내/외국인 포함)는 홍콩 현지 통신사의 웹페이지에서 ",
+  "redirectHK:info2": "실명 등록 후 현지 데이터 사용이 가능합니다.",
+  "redirectHK:info3": "하단의 실명등록 가이드와 ICCID, Order Number을\n확인하신 후, 실명등록 바로가기 버튼을 눌러주세요.",
+  "redirectHK:iccid": "ICCID",
+  "redirectHK:orderNo": "Order Number",
+  "redirectHK:guide": "실명등록 가이드",
+
+  "usim:usageErrorInfo1": "오류 발생!",
+  "usim:usageErrorInfo2": "로깨비가 해결하고 있어요.",
 
   "pym:esimInfo": "* eSIM 상품은 결제와 동시에 상품이 이메일과 앱으로 고객님께 전송되는 관계로 결제 취소가 불가하오니, 유의하시기 바랍니다.",
   "pym:title": "결제 정보",
@@ -612,5 +643,12 @@
   "loading:text0": "상품 정보를 읽고 있습니다.",
   "loading:text1": "저속 네트워크 사용시, \n시간이 좀 더 걸릴 수 있습니다.",
 
-  "info:init:err": "공지사항을 가져오는 데 실패했습니다.\n다시 시도해 주세요"
+  "info:init:err": "공지사항을 가져오는 데 실패했습니다.\n다시 시도해 주세요",
+
+  "changeEmail": "이메일 변경",
+  "changeEmail:using": "사용 중인 이메일 주소",
+  "changeEmail:new": "새 이메일 주소",
+  "changeEmail:placeholder": "변경할 이메일 주소를 입력하세요.",
+  "changeEmail:info": "* 구매하신 eSIM 상품은 본 이메일로 발송됩니다.",
+  "changeEmail:save": "변경 내용 저장하기"
 }

@@ -487,8 +487,8 @@ class PymMethodScreen extends Component<
         digital: !simIncluded,
       });
 
-      const adjustRokebiCashEvent = new AdjustEvent(adjustRokebiCash);
-      adjustRokebiCashEvent.setRevenue(info.rokebi_cash, 'KRW');
+      // const adjustRokebiCashEvent = new AdjustEvent(adjustRokebiCash);
+      // adjustRokebiCashEvent.setRevenue(info.rokebi_cash, 'KRW');
       // Adjust.trackEvent(adjustRokebiCashEvent);
 
       // payNorder에서 재고 확인 - resp.result값으로 비교
