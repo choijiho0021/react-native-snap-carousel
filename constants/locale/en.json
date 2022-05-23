@@ -608,8 +608,7 @@
   "gift:info2": "• When sending a text message gift, the product is changed/processed as gift completed at the same time it is sent.",
   "gift:info3": "• When the recipient clicks the gift view (product URL), they can use it after checking the product information along with the gift message.",
   "gift:info4": "• When the recipient first signs up for the service for product registration, a small amount of Rokkaebi Cash is given to both the sender and the recipient, so please recommend using product registration.",
-  "gift:info5": "• After clicking the gift button below, select a means of transmission (KakaoTalk or text message, etc.)",
-  "gift:info6": "• For this product, rate plan activation information is shared with the gift, and we are not responsible for the private distribution and transaction of the product.",
+  "gift:info5": "• For this product, rate plan activation information is shared with the gift, and we are not responsible for the private distribution and transaction of the product.",
 
   "gift:msgBody1": "A data gift has arrived from Rokebi.\n\n-Received gift:",
   "gift:msgBody2": "\n\nFor detailed usage and gift registration, please access the above URL and check.",

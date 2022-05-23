@@ -54,6 +54,7 @@ const CreateAppContainer = ({store}) => {
   const gift = useCallback(
     (url: string) => {
       const json = getParam(url);
+      // gift 금액은 서버에서 처리
       if (url.includes('recommender') && navigationRef?.current) {
         const {loggedIn, userId} = store.getState().account;
 
@@ -62,7 +63,7 @@ const CreateAppContainer = ({store}) => {
             store.dispatch(
               accountActions.receiveAndGetGift({
                 sender: json?.recommender,
-                gift: json?.gift,
+                gift: json?.gift, // 선물하기 - 상품
               }),
             );
           }
@@ -89,19 +90,18 @@ const CreateAppContainer = ({store}) => {
     (link) => {
       let screen = link?.utmParameters?.utm_source;
       const url = link?.url;
-      if (screen) {
-        if (screen.includes('Screen')) screen = screen.replace('Screen', '');
 
-        // Screen 별 동작 추가
-        if (navigationRef?.current) {
-          switch (screen) {
-            case 'Esim':
-              navigationRef.current.navigate('EsimStack', {
-                screen,
-              });
-              break;
-            default:
-          }
+      if (screen?.includes('Screen')) {
+        screen = screen.replace('Screen', '');
+
+        // Screen 별 동작 추가 - Home, Cart,Esim, MyPage 이동 가능
+        if (
+          navigationRef?.current &&
+          ['Home', 'Cart', 'Esim', 'MyPage'].includes(screen)
+        ) {
+          navigationRef.current.navigate(`${screen}Stack`, {
+            screen,
+          });
         }
       } else if (url) {
         gift(url);
