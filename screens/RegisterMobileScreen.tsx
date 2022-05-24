@@ -248,7 +248,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const [loading, setLoading] = useState(false);
   const [pin, setPin] = useState('');
   const [mobile, setMobile] = useState('');
-  const [authorized, setAuthorized] = useState<boolean>();
+  const [authorized, setAuthorized] = useState<boolean | undefined>();
   const [authNoti, setAuthNoti] = useState(false);
   const [timeout, setTimeout] = useState(false);
   const [confirm, setConfirm] = useState(
@@ -507,8 +507,8 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     (value: string) => {
       setMobile(value);
 
-      const error = validationUtil.validate('mobileSms', `${value}`);
       if (authorized) return;
+      const error = validationUtil.validate('mobileSms', `${value}`);
 
       if (!_.isEmpty(error)) {
         AppAlert.error(
@@ -522,14 +522,14 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
         API.User.sendSms({user: value, abortController: controller.current})
           .then((resp) => {
-            // if (resp.result === 0) {
-            setAuthNoti(true);
-            setTimeout(false);
-            authInputRef.current?.focus();
-            // } else {
-            //   console.log('send sms failed', resp);
-            //   throw new Error('failed to send sms');
-            // }
+            if (resp.result === 0) {
+              setAuthNoti(true);
+              setTimeout(false);
+              authInputRef.current?.focus();
+            } else {
+              console.log('send sms failed', resp);
+              throw new Error('failed to send sms');
+            }
           })
           .catch((err) => {
             console.log('send sms failed', err);
