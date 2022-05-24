@@ -270,7 +270,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const authInputRef = useRef<TextInput>(null);
   const controller = useRef(new AbortController());
   const mounted = useRef(false);
-  const emailRef = useRef<InputEmailRef>();
+  const emailRef = useRef<InputEmailRef>(null);
 
   const confirmList = useMemo(
     () =>
@@ -418,9 +418,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   );
 
   const submitHandler = useCallback(async () => {
-    const {email, domain} = emailRef.current?.getValue() || {};
-
-    const error = validationUtil.validate('email', `${email}@${domain}`);
+    const error = validationUtil.validate('email', email);
     let isValid = true;
 
     if (loading || pending) return;
@@ -433,7 +431,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         setIsValidEmail(isValid);
         setEmailError(error?.email[0]);
       } else {
-        const resp = await API.User.confirmEmail({email: `${email}@${domain}`});
+        const resp = await API.User.confirmEmail({email});
 
         if (!mounted.current) return;
 
@@ -460,7 +458,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         const resp = await API.User.signUp({
           user: mobile,
           pass: pin,
-          email: `${email}@${domain}`,
+          email,
           mktgOptIn: confirm.get('2'),
           deviceModel,
           recommender,
@@ -494,6 +492,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   }, [
     confirm,
     deviceModel,
+    email,
     loading,
     mobile,
     pending,
@@ -601,7 +600,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       pass,
       email,
       mobile,
-      profileImageUrl,
+      profileImageUrl: profile,
       kind,
     }: {
       user: string;
@@ -631,7 +630,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         setAuthorized(authorized);
         setEmail(email);
         setSocialLogin(true);
-        setProfileImageUrl(profileImageUrl);
+        setProfileImageUrl(profile);
 
         if (newUser) {
           // new login
@@ -794,12 +793,13 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         {newUser && authorized && (
           <View>
             <InputEmail
-              email={email}
               style={{
                 marginTop: socialLogin ? 20 : 38,
                 paddingHorizontal: 20,
               }}
               inputRef={emailRef}
+              value={email}
+              onChange={setEmail}
             />
 
             <AppText style={[styles.helpText, {color: colors.errorBackground}]}>
