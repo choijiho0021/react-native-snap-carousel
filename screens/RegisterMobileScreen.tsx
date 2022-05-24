@@ -259,13 +259,8 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     }),
   );
   const [newUser, setNewUser] = useState(false);
-  const [emailValidation, setEmailValidation] = useState<{
-    isValid: boolean;
-    error?: string;
-  }>({
-    isValid: false,
-    error: undefined,
-  });
+  const [isValidEmail, setIsValidEmail] = useState(false);
+  const [emailError, setEmailError] = useState<string | undefined>('');
   const darkMode = useMemo(() => Appearance.getColorScheme() === 'dark', []);
   const [socialLogin, setSocialLogin] = useState(false);
   const [recommender, setRecommender] = useState('');
@@ -389,10 +384,8 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       }),
     );
     setNewUser(false);
-    setEmailValidation({
-      isValid: false,
-      error: undefined,
-    });
+    setIsValidEmail(false);
+    setEmailError('');
     setSocialLogin(false);
     setRecommender('');
   }, []);
@@ -437,7 +430,8 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     try {
       if (!_.isEmpty(error)) {
         isValid = false;
-        setEmailValidation({isValid, error: error?.email[0]});
+        setIsValidEmail(isValid);
+        setEmailError(error?.email[0]);
       } else {
         const resp = await API.User.confirmEmail({email: `${email}@${domain}`});
 
@@ -458,10 +452,8 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         console.log('@@@ confirm email', resp);
 
         // 정상이거나, duplicated email 인 경우는 화면 상태 갱신 필요
-        setEmailValidation({
-          isValid,
-          error: isValid ? undefined : i18n.t('acc:duplicatedEmail'),
-        });
+        setIsValidEmail(isValid);
+        setEmailError(isValid ? undefined : i18n.t('acc:duplicatedEmail'));
       }
 
       if (isValid && mounted.current) {
@@ -758,7 +750,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     );
   }, [newUser, onAuth, renderInput, renderTitle]);
 
-  const {isValid, error} = emailValidation || {};
   const disableButton = useMemo(
     () => !authorized || (newUser && !(confirm.get('0') && confirm.get('1'))),
     [authorized, confirm, newUser],
@@ -766,7 +757,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
+      <StatusBar barStyle={darkMode ? 'light-content' : 'dark-content'} />
 
       <AppBackButton
         title={i18n.t('mobile:header')}
@@ -812,7 +803,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
             />
 
             <AppText style={[styles.helpText, {color: colors.errorBackground}]}>
-              {isValid ? null : error}
+              {isValidEmail ? null : emailError}
             </AppText>
             <View key="divider" style={styles.divider} />
 
