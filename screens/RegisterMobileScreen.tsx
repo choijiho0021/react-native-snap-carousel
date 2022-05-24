@@ -16,13 +16,19 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {Component, memo} from 'react';
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {Map as ImmutableMap} from 'immutable';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
-// import {Adjust, AdjustEvent} from 'react-native-adjust';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -52,7 +58,7 @@ import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import validationUtil from '@/utils/validationUtil';
 
-const {esimGlobal, adjustSignUp = ''} = Env.get();
+const {esimGlobal} = Env.get();
 // const esimGlobal = false;
 
 const styles = StyleSheet.create({
@@ -219,7 +225,6 @@ type RegisterMobileScreenProps = {
   account: AccountModelState;
   lastTab: string[];
   pending: boolean;
-  focused: boolean;
   onSubmit: () => void;
 
   navigation: RegisterMobileScreenNavigationProp;
@@ -231,114 +236,85 @@ type RegisterMobileScreenProps = {
   };
 };
 
-type RegisterMobileScreenState = {
-  loading: boolean;
-  pin?: string;
-  mobile?: string;
-  authorized?: boolean;
-  authNoti: boolean;
-  timeout: boolean;
-  confirm: ImmutableMap<string, boolean>;
-  newUser: boolean;
-  emailValidation: {
+const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
+  account: {loggedIn, deviceModel},
+  navigation,
+  route,
+  actions,
+  pending,
+  onSubmit,
+  lastTab,
+}) => {
+  const [loading, setLoading] = useState(false);
+  const [pin, setPin] = useState('');
+  const [mobile, setMobile] = useState('');
+  const [authorized, setAuthorized] = useState<boolean>();
+  const [authNoti, setAuthNoti] = useState(false);
+  const [timeout, setTimeout] = useState(false);
+  const [confirm, setConfirm] = useState(
+    ImmutableMap({
+      0: false,
+      1: false,
+      2: false,
+    }),
+  );
+  const [newUser, setNewUser] = useState(false);
+  const [emailValidation, setEmailValidation] = useState<{
     isValid: boolean;
-    error: any;
-  };
-  darkMode: boolean;
-  socialLogin: boolean;
-  email?: string;
-  profileImageUrl?: string;
-  isFocused?: boolean;
-  status?: TrackingStatus;
-  recommender?: string;
-};
-
-const initialState: RegisterMobileScreenState = {
-  loading: false,
-  pin: undefined,
-  mobile: undefined,
-  authorized: undefined,
-  authNoti: false,
-  timeout: false,
-  confirm: ImmutableMap({
-    0: false,
-    1: false,
-    2: false,
-  }),
-  newUser: false,
-  emailValidation: {
+    error?: string;
+  }>({
     isValid: false,
     error: undefined,
-  },
-  darkMode: Appearance.getColorScheme() === 'dark',
-  socialLogin: false,
-  isFocused: true,
-  recommender: undefined,
-};
+  });
+  const darkMode = useMemo(() => Appearance.getColorScheme() === 'dark', []);
+  const [socialLogin, setSocialLogin] = useState(false);
+  const [isFocused, setIsFocused] = useState(true);
+  const [recommender, setRecommender] = useState('');
+  const [profileImageUrl, setProfileImageUrl] = useState('');
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<TrackingStatus>();
+  const authInputRef = useRef<TextInput>(null);
+  const controller = useRef(new AbortController());
+  const mounted = useRef(false);
+  const emailRef = useRef<InputEmailRef>();
 
-class RegisterMobileScreen extends Component<
-  RegisterMobileScreenProps,
-  RegisterMobileScreenState
-> {
-  email: React.RefObject<InputEmailRef>;
-
-  authInputRef: React.RefObject<TextInput>;
-
-  mounted: boolean;
-
-  controller: AbortController;
-
-  confirmList: ConfirmItem[];
-
-  constructor(props: RegisterMobileScreenProps) {
-    super(props);
-
-    this.state = initialState;
-
-    this.email = React.createRef();
-
-    this.onSubmit = this.onSubmit.bind(this);
-    this.onCancel = this.onCancel.bind(this);
-    this.renderItem = this.renderItem.bind(this);
-    this.onPress = this.onPress.bind(this);
-    this.onAuth = this.onAuth.bind(this);
-    this.signIn = this.signIn.bind(this);
-
-    this.authInputRef = React.createRef();
-    this.mounted = false;
-    this.controller = new AbortController();
-    this.confirmList = [
-      ['contract', 'required', 'setting:contract'],
-      ['personalInfo', 'required', 'setting:privacy'],
-    ]
-      .concat(
-        (!esimGlobal && [['marketing', 'optional', 'mkt:agreement']]) || [],
-      )
-      .map((v, i) => ({
-        key: `${i}`,
-        list: [
-          {
-            color: colors.warmGrey,
-            text: i18n.t(`cfm:${v[0]}`),
+  const confirmList = useMemo(
+    () =>
+      [
+        ['contract', 'required', 'setting:contract'],
+        ['personalInfo', 'required', 'setting:privacy'],
+      ]
+        .concat(
+          (!esimGlobal && [['marketing', 'optional', 'mkt:agreement']]) || [],
+        )
+        .map((v, i) => ({
+          key: `${i}`,
+          list: [
+            {
+              color: colors.warmGrey,
+              text: i18n.t(`cfm:${v[0]}`),
+            },
+            {
+              color: v[1] === 'required' ? colors.clearBlue : colors.warmGrey,
+              text: i18n.t(`cfm:${v[1]}`),
+            },
+          ],
+          navi: {
+            route: 'SimpleTextForAuth',
+            param: {key: v[2], title: i18n.t(`cfm:${v[0]}`)},
           },
-          {
-            color: v[1] === 'required' ? colors.clearBlue : colors.warmGrey,
-            text: i18n.t(`cfm:${v[1]}`),
-          },
-        ],
-        navi: {
-          route: 'SimpleTextForAuth',
-          param: {key: v[2], title: i18n.t(`cfm:${v[0]}`)},
-        },
-      }));
-  }
+        })),
+    [],
+  );
 
-  async componentDidMount() {
-    this.mounted = true;
-    const status = await getTrackingStatus();
-    this.setState({
-      status,
-    });
+  useEffect(() => {
+    async function trackingStatus() {
+      const st = await getTrackingStatus();
+      setStatus(st);
+    }
+
+    trackingStatus();
+    mounted.current = true;
 
     dynamicLinks()
       .getInitialLink()
@@ -348,93 +324,126 @@ class RegisterMobileScreen extends Component<
           url.shift();
           const param = url.map((elm) => `"${elm.replace('=', '":"')}"`);
           const json = JSON.parse(`{${param.join(',')}}`);
-
-          const {recommender} = json;
+          if (json) setRecommender(json.recommender);
 
           if (status === 'authorized') {
             analytics().logEvent(
               `${esimGlobal ? 'global' : 'esim'}_recommender`,
             );
           }
-
-          this.setState({recommender});
         }
       });
-  }
+  }, [status]);
 
-  componentDidUpdate(
-    prevProps: RegisterMobileScreenProps,
-    prevState: RegisterMobileScreenState,
-  ) {
-    if (this.props.account !== prevProps.account) {
-      if (this.props.account.loggedIn) {
-        dynamicLinks()
-          .getInitialLink()
-          .then((l) => {
-            if (l?.url.includes('gift')) {
-              this.props.navigation.navigate('EsimStack', {
-                screen: 'Esim',
-              });
-            } else {
-              this.props.navigation.navigate('Main', {
-                screen: 'MyPageStack',
-                params: {
-                  screen: 'MyPage',
-                },
-              });
-            }
-          });
+  useEffect(() => {
+    if (loggedIn) {
+      dynamicLinks()
+        .getInitialLink()
+        .then((l) => {
+          if (l?.url.includes('gift')) {
+            navigation.navigate('EsimStack', {
+              screen: 'Esim',
+            });
+          } else {
+            navigation.navigate('Main', {
+              screen: 'MyPageStack',
+              params: {
+                screen: 'MyPage',
+              },
+            });
+          }
+        });
+
+      setAuthorized(true);
+
+      if (!lastTab.includes('Invite')) {
+        navigation.navigate('Main', {
+          screen: 'MyPageStack',
+          params: {
+            screen: 'MyPage',
+          },
+        });
       }
     }
+    // AppAlert.error(i18n.t('reg:failedToLogIn'));
+  }, [lastTab, loggedIn, navigation]);
 
-    if (!this.props.pending && this.props.pending !== prevProps.pending) {
-      if (this.props.account.loggedIn) {
-        if (this.mounted) {
-          this.setState({authorized: true});
-        }
+  useEffect(() => {
+    return () => {
+      mounted.current = false;
+      controller.current?.abort();
+    };
+  }, []);
 
-        if (!this.props.lastTab.includes('Invite')) {
-          this.props.navigation.navigate('Main', {
-            screen: 'MyPageStack',
-            params: {
-              screen: 'MyPage',
-            },
-          });
+  const initState = useCallback(() => {
+    setLoading(false);
+    setPin('');
+    setMobile('');
+    setAuthorized(false);
+    setAuthNoti(false);
+    setTimeout(false);
+    setConfirm(
+      ImmutableMap({
+        0: false,
+        1: false,
+        2: false,
+      }),
+    );
+    setNewUser(false);
+    setEmailValidation({
+      isValid: false,
+      error: undefined,
+    });
+    setSocialLogin(false);
+    setIsFocused(true);
+    setRecommender('');
+  }, []);
+
+  const signIn = useCallback(
+    async ({
+      mobile,
+      pin,
+    }: {
+      mobile?: string;
+      pin?: string;
+    }): Promise<ApiResult<any>> => {
+      const {payload: resp} = actions.account.logInAndGetAccount({
+        mobile,
+        pin,
+      });
+
+      if (resp?.result === 0) {
+        const profileImage: RkbImage = await utils.convertURLtoRkbImage(
+          profileImageUrl!,
+        );
+        if (profileImage) {
+          actions.account.uploadAndChangePicture(profileImage);
         }
-      } else {
-        AppAlert.error(i18n.t('reg:failedToLogIn'));
+        actions.cart.cartFetch();
       }
-    }
-    if (prevState.isFocused !== this.state.isFocused) {
-      // eslint-disable-next-line react/no-did-update-set-state
-      this.setState({isFocused: true});
-    }
-  }
+      return resp;
+    },
+    [actions.account, actions.cart, profileImageUrl],
+  );
 
-  componentWillUnmount() {
-    this.mounted = false;
-    this.controller.abort();
-  }
-
-  onSubmit = async () => {
-    const {email, domain} = this.email.current?.getValue() || {};
-    const {pin, mobile, confirm, loading, status, recommender} = this.state;
+  const submitHandler = useCallback(async () => {
+    const {email, domain} = emailRef.current?.getValue() || {};
 
     const error = validationUtil.validate('email', `${email}@${domain}`);
     let isValid = true;
 
-    if (loading || this.props.pending) return;
+    if (loading || pending) return;
 
-    this.setState({loading: true});
+    setLoading(true);
 
     try {
       if (!_.isEmpty(error)) {
         isValid = false;
-        this.setState({emailValidation: {isValid, error: error?.email[0]}});
+        setEmailValidation({isValid, error: error?.email[0]});
       } else {
         const resp = await API.User.confirmEmail({email: `${email}@${domain}`});
 
-        if (!this.mounted) return;
+        if (!mounted.current) return;
 
         isValid = resp.result === 0;
         if (resp.result !== 0) {
@@ -451,21 +460,19 @@ class RegisterMobileScreen extends Component<
         console.log('@@@ confirm email', resp);
 
         // 정상이거나, duplicated email 인 경우는 화면 상태 갱신 필요
-        this.setState({
-          emailValidation: {
-            isValid,
-            error: isValid ? undefined : i18n.t('acc:duplicatedEmail'),
-          },
+        setEmailValidation({
+          isValid,
+          error: isValid ? undefined : i18n.t('acc:duplicatedEmail'),
         });
       }
 
-      if (isValid && this.mounted) {
+      if (isValid && mounted.current) {
         const resp = await API.User.signUp({
           user: mobile,
           pass: pin,
           email: `${email}@${domain}`,
           mktgOptIn: confirm.get('2'),
-          deviceModel: this.props.account.deviceModel,
+          deviceModel,
           recommender,
         });
 
@@ -480,7 +487,7 @@ class RegisterMobileScreen extends Component<
             // Adjust.trackEvent(adjustEvent);
           }
 
-          this.signIn({mobile, pin});
+          signIn({mobile, pin});
         } else {
           console.log('sign up failed', resp);
           throw new Error('failed to login');
@@ -491,23 +498,25 @@ class RegisterMobileScreen extends Component<
       AppAlert.error(i18n.t('reg:fail'));
     }
 
-    if (this.mounted) {
-      this.setState({loading: false});
+    if (mounted.current) {
+      setLoading(false);
     }
-  };
+  }, [
+    confirm,
+    deviceModel,
+    loading,
+    mobile,
+    pending,
+    pin,
+    recommender,
+    signIn,
+    status,
+  ]);
 
-  onCancel = () => {
-    this.props.onSubmit();
-  };
+  const onChangeText = useCallback(
+    (value: string) => {
+      setMobile(value);
 
-  onChangeText = (key: keyof RegisterMobileScreenState) => (value: string) => {
-    const {authorized} = this.state;
-
-    const val = {
-      [key]: value,
-    };
-
-    if (key === 'mobile') {
       const error = validationUtil.validate('mobileSms', `${value}`);
       if (authorized) return;
 
@@ -517,20 +526,16 @@ class RegisterMobileScreen extends Component<
           i18n.t('reg:unableToSendSms'),
         );
       } else {
-        this.setState({
-          pin: undefined,
-          authorized: undefined,
-          timeout: true,
-        });
+        setPin('');
+        setAuthorized(undefined);
+        setTimeout(true);
 
-        API.User.sendSms({user: value, abortController: this.controller})
+        API.User.sendSms({user: value, abortController: controller.current})
           .then((resp) => {
             // if (resp.result === 0) {
-            this.setState({
-              authNoti: true,
-              timeout: false,
-            });
-            this.authInputRef.current?.focus();
+            setAuthNoti(true);
+            setTimeout(false);
+            authInputRef.current?.focus();
             // } else {
             //   console.log('send sms failed', resp);
             //   throw new Error('failed to send sms');
@@ -544,180 +549,149 @@ class RegisterMobileScreen extends Component<
             );
           });
       }
-    }
+    },
+    [authorized],
+  );
 
-    this.setState(val);
-  };
+  const onPressPin = useCallback(
+    (value: string) => {
+      // PIN이 맞는지 먼저 확인한다.
 
-  onPressPin = (value: string) => {
-    const {mobile} = this.state;
-    const pin = value;
-    // PIN이 맞는지 먼저 확인한다.
+      setLoading(true);
 
-    this.setState({loading: true});
-
-    API.User.confirmSmsCode({
-      user: mobile,
-      pass: pin,
-      abortController: this.controller,
-    })
-      .then((resp) => {
-        if (this.mounted) {
-          this.setState({loading: false});
-        }
-
-        if (resp.result === 0 && this.mounted) {
-          this.setState({
-            authorized: _.isEmpty(resp.objects) ? true : undefined,
-            newUser: _.isEmpty(resp.objects),
-            pin,
-          });
-
-          if (!_.isEmpty(resp.objects)) {
-            this.signIn({mobile, pin});
-          } else {
-            this.email.current?.focus();
-          }
-        } else {
-          console.log('sms confirmation failed', resp);
-          throw new Error('failed to send sms');
-        }
+      API.User.confirmSmsCode({
+        user: mobile,
+        pass: value,
+        abortController: controller.current,
       })
-      .catch((err) => {
-        console.log('sms confirmation failed', err);
+        .then((resp) => {
+          if (mounted.current) {
+            setLoading(false);
+          }
 
-        if (!this.mounted) return;
+          if (resp.result === 0 && mounted.current) {
+            setAuthorized(_.isEmpty(resp.objects) ? true : undefined);
+            setNewUser(_.isEmpty(resp.objects));
+            setPin(value);
 
-        this.setState({
-          authorized: false,
+            if (!_.isEmpty(resp.objects)) {
+              signIn({mobile, pin: value});
+            } else {
+              emailRef.current?.focus();
+            }
+          } else {
+            console.log('sms confirmation failed', resp);
+            throw new Error('failed to confirm sms');
+          }
+        })
+        .catch((err) => {
+          console.log('sms confirmation failed', err);
+
+          if (!mounted.current) return;
+
+          setAuthorized(false);
         });
-      });
-  };
+    },
+    [mobile, signIn],
+  );
 
-  onPress = (key: string) => {
-    const {confirm} = this.state;
+  const onMove = useCallback(
+    (key: string, route: string, param: object) => () => {
+      if (!_.isEmpty(route)) {
+        navigation.navigate(route, param);
+      }
+    },
+    [navigation],
+  );
 
-    this.setState({
-      confirm: confirm.update(key, (value) => !value),
-    });
-  };
-
-  onMove = (key: string, route: string, param: object) => () => {
-    if (!_.isEmpty(route)) {
-      this.props.navigation.navigate(route, param);
-    }
-  };
-
-  onAuth = async ({
-    authorized,
-    user,
-    pass,
-    email,
-    mobile,
-    profileImageUrl,
-    kind,
-  }: {
-    user: string;
-    pass: string;
-    email?: string;
-    mobile?: string;
-    profileImageUrl?: string;
-    kind: 'ios' | 'fb' | 'naver' | 'kakao' | 'google';
-  }) => {
-    this.setState({loading: true});
-
-    const resp = await API.User.socialLogin({
+  const onAuth = useCallback(
+    async ({
+      authorized,
       user,
       pass,
-      kind,
+      email,
       mobile,
-    });
+      profileImageUrl,
+      kind,
+    }: {
+      user: string;
+      pass: string;
+      email?: string;
+      mobile?: string;
+      profileImageUrl?: string;
+      kind: 'ios' | 'fb' | 'naver' | 'kakao' | 'google';
+    }) => {
+      setLoading(true);
 
-    this.setState({loading: false});
-
-    if (resp.result === 0) {
-      const {mobile: drupalId, newUser} = resp.objects[0];
-
-      this.setState({
-        newUser,
-        mobile: drupalId,
-        pin: pass,
-        authorized,
-        email,
-        socialLogin: true,
-        profileImageUrl,
+      const resp = await API.User.socialLogin({
+        user,
+        pass,
+        kind,
+        mobile,
       });
 
-      if (newUser) {
-        // new login
-        // create account
-        this.email.current?.focus();
-      } else {
-        // account exist. try login
-        this.signIn({mobile: drupalId, pin: pass});
+      setLoading(false);
+
+      if (resp.result === 0) {
+        const {mobile: drupalId, newUser} = resp.objects[0];
+
+        setNewUser(newUser);
+        setMobile(drupalId);
+        setPin(pass);
+        setAuthorized(authorized);
+        setEmail(email);
+        setSocialLogin(true);
+        setProfileImageUrl(profileImageUrl);
+
+        if (newUser) {
+          // new login
+          // create account
+          emailRef.current?.focus();
+        } else {
+          // account exist. try login
+          signIn({mobile: drupalId, pin: pass});
+        }
       }
-    }
-  };
+    },
+    [signIn],
+  );
 
-  signIn = async ({
-    mobile,
-    pin,
-  }: {
-    mobile?: string;
-    pin?: string;
-  }): Promise<ApiResult<any>> => {
-    const {payload: resp} = this.props.actions.account.logInAndGetAccount({
-      mobile,
-      pin,
-    });
-
-    if (resp?.result === 0) {
-      const profileImage: RkbImage = await utils.convertURLtoRkbImage(
-        this.state.profileImageUrl!,
+  const renderItem = useCallback(
+    ({item}: {item: ConfirmItem}) => {
+      return (
+        <RegisterMobileListItem
+          key={item.key}
+          item={item}
+          confirm={confirm}
+          onPress={(key) =>
+            setConfirm((prev) => prev.update(key, (value) => !value))
+          }
+          onMove={onMove}
+        />
       );
-      if (profileImage) {
-        this.props.actions.account.uploadAndChangePicture(profileImage);
-      }
-      this.props.actions.cart.cartFetch();
-    }
-    return resp;
-  };
-
-  onTimeout = () => {
-    this.setState({
-      timeout: true,
-    });
-  };
-
-  renderItem({item}: {item: ConfirmItem}) {
-    return (
-      <RegisterMobileListItem
-        key={item.key}
-        item={item}
-        confirm={this.state.confirm}
-        onPress={this.onPress}
-        onMove={this.onMove}
-      />
-    );
-  }
-
-  renderTitle = () => (
-    <AppText style={styles.title}>{i18n.t('mobile:title')}</AppText>
+    },
+    [confirm, onMove],
   );
 
-  renderProfile = (
-    email?: string,
-    mobile?: string,
-    profileImageUrl?: string,
-  ) => (
-    <View style={{marginTop: 30}}>
-      <Profile email={email} mobile={mobile} userPictureUrl={profileImageUrl} />
-    </View>
+  const renderTitle = useCallback(
+    () => <AppText style={styles.title}>{i18n.t('mobile:title')}</AppText>,
+    [],
   );
 
-  renderInput = () => {
-    const {mobile, timeout, isFocused, authNoti, authorized, loading} =
-      this.state;
+  const renderProfile = useCallback(
+    (email?: string, mobile?: string, profileImageUrl?: string) => (
+      <View style={{marginTop: 30}}>
+        <Profile
+          email={email}
+          mobile={mobile}
+          userPictureUrl={profileImageUrl}
+        />
+      </View>
+    ),
+    [],
+  );
+
+  const renderInput = useCallback(() => {
     const editablePin = !!mobile && authNoti && !authorized && !loading;
 
     return (
@@ -728,7 +702,7 @@ class RegisterMobileScreen extends Component<
         {isFocused && (
           <InputMobile
             style={{marginTop: 30, paddingHorizontal: 20}}
-            onPress={this.onChangeText('mobile')}
+            onPress={onChangeText}
             authNoti={authNoti}
             disabled={(authNoti && authorized) || loading}
             authorized={authorized}
@@ -738,23 +712,31 @@ class RegisterMobileScreen extends Component<
         {isFocused && (
           <InputPinInTime
             style={{marginTop: 20, paddingHorizontal: 20}}
-            forwardRef={this.authInputRef}
+            forwardRef={authInputRef}
             editable={editablePin}
             // clickable={editablePin && !timeout}
             clickable
             authorized={mobile ? authorized : undefined}
             countdown={authNoti && !authorized && !timeout}
-            onTimeout={this.onTimeout}
-            onPress={this.onPressPin}
+            onTimeout={() => setTimeout(true)}
+            onPress={onPressPin}
             duration={180}
           />
         )}
       </View>
     );
-  };
+  }, [
+    authNoti,
+    authorized,
+    isFocused,
+    loading,
+    mobile,
+    onChangeText,
+    onPressPin,
+    timeout,
+  ]);
 
-  renderLogin = () => {
-    const {newUser} = this.state;
+  const renderLogin = useCallback(() => {
     return (
       <KeyboardAwareScrollView
         enableOnAndroid
@@ -765,11 +747,11 @@ class RegisterMobileScreen extends Component<
           },
         ]}
         enableResetScrollToCoords={false}>
-        {this.renderTitle()}
-        {!esimGlobal && this.renderInput()}
+        {renderTitle()}
+        {!esimGlobal && renderInput()}
         {!newUser && (
           <View style={{flex: 1, justifyContent: 'center'}}>
-            <SocialLogin onAuth={this.onAuth} />
+            <SocialLogin onAuth={onAuth} />
           </View>
         )}
         {esimGlobal && (
@@ -781,106 +763,87 @@ class RegisterMobileScreen extends Component<
         )}
       </KeyboardAwareScrollView>
     );
-  };
+  }, [newUser, onAuth, renderInput, renderTitle]);
 
-  render() {
-    const {
-      mobile,
-      authorized,
-      confirm,
-      newUser,
-      emailValidation,
-      loading,
-      darkMode,
-      email,
-      socialLogin,
-      profileImageUrl,
-    } = this.state;
-    const {isValid, error} = emailValidation || {};
-    const disableButton =
-      !authorized || (newUser && !(confirm.get('0') && confirm.get('1')));
-    const {
-      account: {loggedIn},
-      navigation,
-    } = this.props;
+  const {isValid, error} = emailValidation || {};
+  const disableButton = useMemo(
+    () => !authorized || (newUser && !(confirm.get('0') && confirm.get('1'))),
+    [authorized, confirm, newUser],
+  );
 
-    return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
 
-        <AppBackButton
-          title={i18n.t('mobile:header')}
-          onPress={() => {
-            this.setState({
-              ...initialState,
-              isFocused: false,
-            });
+      <AppBackButton
+        title={i18n.t('mobile:header')}
+        onPress={() => {
+          initState();
+          setIsFocused(false);
 
-            const screen = this.props.route?.params?.screen;
+          const screen = route?.params?.screen;
 
-            if (!socialLogin) navigation.goBack();
+          if (!socialLogin) navigation.goBack();
 
-            if (screen === 'Invite') {
-              if (loggedIn) navigation.replace(screen);
-              else navigation.popToTop();
-            }
-          }}
-        />
-        <KeyboardAwareScrollView
-          enableOnAndroid
-          enableResetScrollToCoords={false}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={[
-            {
-              flexDirection: 'column',
-              alignContent: 'stretch',
-            },
-            !socialLogin && !newUser && styles.flexStyle,
-          ]}
-          // resetScrollToCoords={{x: 0, y: 0}}
-        >
-          {socialLogin
-            ? this.renderProfile(email, mobile, profileImageUrl)
-            : this.renderLogin()}
+          if (screen === 'Invite') {
+            if (loggedIn) navigation.replace(screen);
+            else navigation.popToTop();
+          }
+        }}
+      />
+      <KeyboardAwareScrollView
+        enableOnAndroid
+        enableResetScrollToCoords={false}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={[
+          {
+            flexDirection: 'column',
+            alignContent: 'stretch',
+          },
+          !socialLogin && !newUser && styles.flexStyle,
+        ]}
+        // resetScrollToCoords={{x: 0, y: 0}}
+      >
+        {socialLogin
+          ? renderProfile(email, mobile, profileImageUrl)
+          : renderLogin()}
 
-          {newUser && authorized && (
-            <View>
-              <InputEmail
-                email={email}
-                style={{
-                  marginTop: socialLogin ? 20 : 38,
-                  paddingHorizontal: 20,
-                }}
-                inputRef={this.email}
-              />
-
-              <AppText
-                style={[styles.helpText, {color: colors.errorBackground}]}>
-                {isValid ? null : error}
-              </AppText>
-              <View key="divider" style={styles.divider} />
-
-              {this.confirmList.map((item) => this.renderItem({item}))}
-            </View>
-          )}
-        </KeyboardAwareScrollView>
         {newUser && authorized && (
-          <AppButton
-            style={styles.confirm}
-            title={i18n.t('ok')}
-            titleStyle={styles.text}
-            disabled={disableButton}
-            disableColor={colors.black}
-            disableBackgroundColor={colors.lightGrey}
-            onPress={this.onSubmit}
-          />
-        )}
+          <View>
+            <InputEmail
+              email={email}
+              style={{
+                marginTop: socialLogin ? 20 : 38,
+                paddingHorizontal: 20,
+              }}
+              inputRef={emailRef}
+            />
 
-        <AppActivityIndicator visible={this.props.pending || loading} />
-      </SafeAreaView>
-    );
-  }
-}
+            <AppText style={[styles.helpText, {color: colors.errorBackground}]}>
+              {isValid ? null : error}
+            </AppText>
+            <View key="divider" style={styles.divider} />
+
+            {confirmList.map((item) => renderItem({item}))}
+          </View>
+        )}
+      </KeyboardAwareScrollView>
+      {newUser && authorized && (
+        <AppButton
+          style={styles.confirm}
+          title={i18n.t('ok')}
+          titleStyle={styles.text}
+          disabled={disableButton}
+          disableColor={colors.black}
+          disableBackgroundColor={colors.lightGrey}
+          onPress={submitHandler}
+        />
+      )}
+
+      <AppActivityIndicator visible={pending || loading} />
+    </SafeAreaView>
+  );
+};
 
 export default connect(
   ({cart, account, status}: RootState) => ({
