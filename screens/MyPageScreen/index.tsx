@@ -27,7 +27,6 @@ import AppButton from '@/components/AppButton';
 import AppColorText from '@/components/AppColorText';
 import AppIcon from '@/components/AppIcon';
 import AppModal from '@/components/AppModal';
-import AppModalForm from '@/components/AppModalForm';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -50,7 +49,6 @@ import {
   ToastAction,
 } from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
-import validationUtil, {ValidationResult} from '@/utils/validationUtil';
 import Info from './components/Info';
 import OrderItem from './components/OrderItem';
 
@@ -157,7 +155,6 @@ type MyPageScreenProps = {
 
 type MyPageScreenState = {
   hasPhotoPermission: boolean;
-  showEmailModal: boolean;
   showIdModal: boolean;
   isFocused: boolean;
   refreshing: boolean;
@@ -172,7 +169,6 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
 
     this.state = {
       hasPhotoPermission: false,
-      showEmailModal: false,
       showIdModal: false,
       isFocused: false,
       refreshing: false,
@@ -182,10 +178,7 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
 
     this.renderOrder = this.renderOrder.bind(this);
     this.changePhoto = this.changePhoto.bind(this);
-    this.showEmailModal = this.showEmailModal.bind(this);
     this.showIdModal = this.showIdModal.bind(this);
-    this.validEmail = this.validEmail.bind(this);
-    this.changeEmail = this.changeEmail.bind(this);
     this.didMount = this.didMount.bind(this);
     this.getNextOrder = this.getNextOrder.bind(this);
     this.onRefresh = this.onRefresh.bind(this);
@@ -432,16 +425,6 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
     // if (this.props.uid) this.props.action.order.getOrders(this.props.auth)
   }
 
-  showEmailModal(flag: boolean) {
-    if (flag && !this.props.uid) {
-      this.props.navigation.navigate('Auth');
-    }
-
-    this.setState({
-      showEmailModal: flag,
-    });
-  }
-
   showIdModal(flag = false) {
     this.setState({showIdModal: flag});
   }
@@ -498,41 +481,6 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
     }
   }
 
-  async validEmail(value: string): Promise<ValidationResult | undefined> {
-    const err = validationUtil.validate('email', value);
-    if (!_.isEmpty(err)) return err;
-
-    const {email, token} = this.props.account;
-
-    if (email !== value) {
-      // check duplicated email
-      const resp = await API.User.getByMail({mail: value, token});
-      if (resp.result === 0 && resp.objects.length > 0) {
-        // duplicated email
-        return {email: [i18n.t('acc:duplicatedEmail')]};
-      }
-    } else {
-      this.setState({
-        showEmailModal: false,
-      });
-    }
-
-    return undefined;
-  }
-
-  changeEmail(mail?: string) {
-    const {email} = this.props.account;
-
-    if (mail && email !== mail) {
-      this.props.action.account.changeEmail(mail);
-      Analytics.trackEvent('Page_View_Count', {page: 'Change Email'});
-    }
-
-    this.setState({
-      showEmailModal: false,
-    });
-  }
-
   empty() {
     if (this.props.pending) return null;
 
@@ -551,7 +499,7 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
   }
 
   render() {
-    const {showEmailModal, showIdModal, refreshing = false} = this.state;
+    const {showIdModal, refreshing = false} = this.state;
     const {orderList} = this.props.order;
 
     return (
@@ -566,7 +514,6 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
               onPress={(key: 'id' | 'email') => {
                 if (key === 'id') this.props.navigation.navigate('Faq');
                 // if (key === 'id') this.showIdModal(true);
-                else this.showEmailModal(true);
               }}
             />
           }
@@ -585,18 +532,6 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
         />
 
         <AppActivityIndicator visible={!refreshing && this.props.pending} />
-
-        <AppModalForm
-          contentStyle={styles.email}
-          title={i18n.t('changeEmail')}
-          defaultValue={this.props.account.email}
-          valueType="email"
-          onOkClose={this.changeEmail}
-          onCancelClose={() => this.showEmailModal(false)}
-          validateAsync={this.validEmail}
-          visible={showEmailModal}
-          infoText={i18n.t('mypage:mailInfo')}
-        />
 
         <AppModal
           type="close"
@@ -624,7 +559,6 @@ export default connect(
     pending:
       status.pending[orderActions.getOrders.typePrefix] ||
       status.pending[orderActions.getSubs.typePrefix] ||
-      status.pending[accountActions.changeEmail.typePrefix] ||
       status.pending[accountActions.uploadPicture.typePrefix] ||
       status.pending[accountActions.uploadAndChangePicture.typePrefix] ||
       false,

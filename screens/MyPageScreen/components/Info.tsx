@@ -127,7 +127,7 @@ const Info: React.FC<InfoProps> = ({
       <Profile
         onChangePhoto={onChangePhoto}
         onPress={onPress}
-        icon="iconArrowRight"
+        // icon="iconArrowRight"
       />
       {esimApp && (
         <Pressable
