@@ -248,7 +248,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const [loading, setLoading] = useState(false);
   const [pin, setPin] = useState('');
   const [mobile, setMobile] = useState('');
-  const [authorized, setAuthorized] = useState<boolean>();
+  const [authorized, setAuthorized] = useState<boolean | undefined>();
   const [authNoti, setAuthNoti] = useState(false);
   const [timeout, setTimeout] = useState(false);
   const [confirm, setConfirm] = useState(
@@ -259,16 +259,10 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     }),
   );
   const [newUser, setNewUser] = useState(false);
-  const [emailValidation, setEmailValidation] = useState<{
-    isValid: boolean;
-    error?: string;
-  }>({
-    isValid: false,
-    error: undefined,
-  });
+  const [isValidEmail, setIsValidEmail] = useState(false);
+  const [emailError, setEmailError] = useState<string | undefined>('');
   const darkMode = useMemo(() => Appearance.getColorScheme() === 'dark', []);
   const [socialLogin, setSocialLogin] = useState(false);
-  const [isFocused, setIsFocused] = useState(true);
   const [recommender, setRecommender] = useState('');
   const [profileImageUrl, setProfileImageUrl] = useState('');
   const [email, setEmail] = useState('');
@@ -276,7 +270,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const authInputRef = useRef<TextInput>(null);
   const controller = useRef(new AbortController());
   const mounted = useRef(false);
-  const emailRef = useRef<InputEmailRef>();
+  const emailRef = useRef<InputEmailRef>(null);
 
   const confirmList = useMemo(
     () =>
@@ -390,12 +384,9 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       }),
     );
     setNewUser(false);
-    setEmailValidation({
-      isValid: false,
-      error: undefined,
-    });
+    setIsValidEmail(false);
+    setEmailError('');
     setSocialLogin(false);
-    setIsFocused(true);
     setRecommender('');
   }, []);
 
@@ -427,9 +418,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   );
 
   const submitHandler = useCallback(async () => {
-    const {email, domain} = emailRef.current?.getValue() || {};
-
-    const error = validationUtil.validate('email', `${email}@${domain}`);
+    const error = validationUtil.validate('email', email);
     let isValid = true;
 
     if (loading || pending) return;
@@ -439,9 +428,10 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     try {
       if (!_.isEmpty(error)) {
         isValid = false;
-        setEmailValidation({isValid, error: error?.email[0]});
+        setIsValidEmail(isValid);
+        setEmailError(error?.email[0]);
       } else {
-        const resp = await API.User.confirmEmail({email: `${email}@${domain}`});
+        const resp = await API.User.confirmEmail({email});
 
         if (!mounted.current) return;
 
@@ -460,17 +450,15 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         console.log('@@@ confirm email', resp);
 
         // 정상이거나, duplicated email 인 경우는 화면 상태 갱신 필요
-        setEmailValidation({
-          isValid,
-          error: isValid ? undefined : i18n.t('acc:duplicatedEmail'),
-        });
+        setIsValidEmail(isValid);
+        setEmailError(isValid ? undefined : i18n.t('acc:duplicatedEmail'));
       }
 
       if (isValid && mounted.current) {
         const resp = await API.User.signUp({
           user: mobile,
           pass: pin,
-          email: `${email}@${domain}`,
+          email,
           mktgOptIn: confirm.get('2'),
           deviceModel,
           recommender,
@@ -504,6 +492,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   }, [
     confirm,
     deviceModel,
+    email,
     loading,
     mobile,
     pending,
@@ -517,8 +506,8 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     (value: string) => {
       setMobile(value);
 
-      const error = validationUtil.validate('mobileSms', `${value}`);
       if (authorized) return;
+      const error = validationUtil.validate('mobileSms', `${value}`);
 
       if (!_.isEmpty(error)) {
         AppAlert.error(
@@ -532,14 +521,14 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
         API.User.sendSms({user: value, abortController: controller.current})
           .then((resp) => {
-            // if (resp.result === 0) {
-            setAuthNoti(true);
-            setTimeout(false);
-            authInputRef.current?.focus();
-            // } else {
-            //   console.log('send sms failed', resp);
-            //   throw new Error('failed to send sms');
-            // }
+            if (resp.result === 0) {
+              setAuthNoti(true);
+              setTimeout(false);
+              authInputRef.current?.focus();
+            } else {
+              console.log('send sms failed', resp);
+              throw new Error('failed to send sms');
+            }
           })
           .catch((err) => {
             console.log('send sms failed', err);
@@ -611,7 +600,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       pass,
       email,
       mobile,
-      profileImageUrl,
+      profileImageUrl: profile,
       kind,
     }: {
       user: string;
@@ -641,7 +630,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         setAuthorized(authorized);
         setEmail(email);
         setSocialLogin(true);
-        setProfileImageUrl(profileImageUrl);
+        setProfileImageUrl(profile);
 
         if (newUser) {
           // new login
@@ -699,36 +688,31 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         <AppText style={styles.mobileAuth}>
           {i18n.t('mobile:easyLogin')}
         </AppText>
-        {isFocused && (
-          <InputMobile
-            style={{marginTop: 30, paddingHorizontal: 20}}
-            onPress={onChangeText}
-            authNoti={authNoti}
-            disabled={(authNoti && authorized) || loading}
-            authorized={authorized}
-          />
-        )}
+        <InputMobile
+          style={{marginTop: 30, paddingHorizontal: 20}}
+          onPress={onChangeText}
+          authNoti={authNoti}
+          disabled={(authNoti && authorized) || loading}
+          authorized={authorized}
+        />
 
-        {isFocused && (
-          <InputPinInTime
-            style={{marginTop: 20, paddingHorizontal: 20}}
-            forwardRef={authInputRef}
-            editable={editablePin}
-            // clickable={editablePin && !timeout}
-            clickable
-            authorized={mobile ? authorized : undefined}
-            countdown={authNoti && !authorized && !timeout}
-            onTimeout={() => setTimeout(true)}
-            onPress={onPressPin}
-            duration={180}
-          />
-        )}
+        <InputPinInTime
+          style={{marginTop: 20, paddingHorizontal: 20}}
+          forwardRef={authInputRef}
+          editable={editablePin}
+          // clickable={editablePin && !timeout}
+          clickable
+          authorized={mobile ? authorized : undefined}
+          countdown={authNoti && !authorized && !timeout}
+          onTimeout={() => setTimeout(true)}
+          onPress={onPressPin}
+          duration={180}
+        />
       </View>
     );
   }, [
     authNoti,
     authorized,
-    isFocused,
     loading,
     mobile,
     onChangeText,
@@ -765,7 +749,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     );
   }, [newUser, onAuth, renderInput, renderTitle]);
 
-  const {isValid, error} = emailValidation || {};
   const disableButton = useMemo(
     () => !authorized || (newUser && !(confirm.get('0') && confirm.get('1'))),
     [authorized, confirm, newUser],
@@ -773,13 +756,12 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
+      <StatusBar barStyle={darkMode ? 'light-content' : 'dark-content'} />
 
       <AppBackButton
         title={i18n.t('mobile:header')}
         onPress={() => {
           initState();
-          setIsFocused(false);
 
           const screen = route?.params?.screen;
 
@@ -811,16 +793,17 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         {newUser && authorized && (
           <View>
             <InputEmail
-              email={email}
               style={{
                 marginTop: socialLogin ? 20 : 38,
                 paddingHorizontal: 20,
               }}
               inputRef={emailRef}
+              value={email}
+              onChange={setEmail}
             />
 
             <AppText style={[styles.helpText, {color: colors.errorBackground}]}>
-              {isValid ? null : error}
+              {isValidEmail ? null : emailError}
             </AppText>
             <View key="divider" style={styles.divider} />
 

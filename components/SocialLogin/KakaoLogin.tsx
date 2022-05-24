@@ -39,16 +39,15 @@ const KakaoLogin = ({onAuth}: {onAuth: AuthCallback}) => {
           storedEmail = (await AsyncStorage.getItem('login.kakao.email')) || '';
         }
 
-        if (onAuth)
-          onAuth({
-            kind: 'kakao',
-            user,
-            pass: accessToken,
-            mobile,
-            authorized: true,
-            email: storedEmail,
-            profileImageUrl,
-          });
+        onAuth?.({
+          kind: 'kakao',
+          user,
+          pass: accessToken,
+          mobile,
+          authorized: true,
+          email: storedEmail,
+          profileImageUrl,
+        });
       }
     } catch (error) {
       console.error('@@@ kakao login failed', error);

@@ -1,7 +1,4 @@
-import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
-import i18n, {i18nEvent} from '@/utils/i18n';
-import React, {Component} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   StyleProp,
   StyleSheet,
@@ -11,7 +8,9 @@ import {
   ViewStyle,
 } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
-import _ from 'underscore';
+import i18n, {i18nEvent} from '@/utils/i18n';
+import {appStyles} from '@/constants/Styles';
+import {colors} from '@/constants/Colors';
 import AppText from './AppText';
 import AppTextInput from './AppTextInput';
 import Triangle from './Triangle';
@@ -116,179 +115,166 @@ const styles = StyleSheet.create({
 
 export type InputEmailRef = {
   focus: () => void;
-  getValue: () => {email: string; domain: string};
 };
 
 type InputEmailProps = {
   style?: StyleProp<ViewStyle>;
   inputRef?: React.MutableRefObject<InputEmailRef | null>;
-  email?: string;
+  value?: string;
+  onChange?: (email: string) => void;
 };
-type InputEmailState = {
-  email: string;
-  domain: string;
-  domainIdx: string;
-};
-class InputEmail extends Component<InputEmailProps, InputEmailState> {
-  emailRef: React.RefObject<TextInput>;
 
-  domainRef: React.RefObject<TextInput>;
+const InputEmail: React.FC<InputEmailProps> = ({
+  style,
+  inputRef,
+  value,
+  onChange,
+}) => {
+  const emailRef = useRef<TextInput>(null);
 
-  pickerRef: React.RefObject<RNPickerSelect>;
+  const domainRef = useRef<TextInput>(null);
 
-  constructor(props: InputEmailProps) {
-    super(props);
+  const pickerRef = useRef<RNPickerSelect>(null);
 
-    const mail = props.email?.split('@');
+  const [email, setEmail] = useState('');
+  const [domain, setDomain] = useState('');
+  const [domainIdx, setDomainIdx] = useState(DIRECT_INPUT);
 
-    this.state = {
-      email: mail ? mail[0] : '',
-      domain: mail ? mail[1] : '',
-      domainIdx: DIRECT_INPUT,
-    };
+  useEffect(() => {
+    const m = value?.split('@');
+    if (m && m?.length > 1) {
+      setEmail(m[0]);
+      setDomain(m[1]);
+    }
+  }, [value]);
 
-    this.onChangeText = this.onChangeText.bind(this);
-    this.focusInput = this.focusInput.bind(this);
-    this.openPicker = this.openPicker.bind(this);
-    this.emailRef = React.createRef();
-    this.domainRef = React.createRef();
-    this.pickerRef = React.createRef();
-  }
+  const chgAddr = useCallback(
+    (v: string) => {
+      setEmail(v);
+      onChange?.(`${v}@${domain}`);
+    },
+    [domain, onChange],
+  );
 
-  componentDidMount() {
-    if (this.props.inputRef) {
-      this.props.inputRef.current = {
-        getValue: () => ({email: this.state.email, domain: this.state.domain}),
-        focus: () => this.emailRef.current?.focus(),
+  const chgDomain = useCallback(
+    (v: string) => {
+      setDomain(v);
+      onChange?.(`${email}@${v}`);
+    },
+    [email, onChange],
+  );
+
+  useEffect(() => {
+    if (inputRef?.current) {
+      inputRef.current = {
+        focus: () => emailRef.current?.focus(),
       };
     }
-  }
+  }, [domain, email, inputRef]);
 
-  onChangeText = (key: keyof InputEmailState) => (value: string) => {
-    const val = _.isEmpty(value) ? '' : value.replace(/\s+/g, '');
+  const inputStyle = useMemo(
+    () =>
+      domainIdx === DIRECT_INPUT ? styles.directInput : styles.noDirectInput,
+    [domainIdx],
+  );
 
-    this.setState({
-      [key]: val,
-    });
+  return (
+    <View style={style}>
+      <View style={styles.container}>
+        <TouchableOpacity
+          style={[
+            styles.textInputWrapper,
+            email ? {} : styles.emptyInput,
+            {flex: 1},
+          ]}
+          onPress={() => emailRef.current?.focus()}
+          activeOpacity={1}>
+          <AppTextInput
+            style={[styles.textInput, email ? {} : styles.emptyInput]}
+            placeholder={i18n.t('reg:email')}
+            placeholderTextColor={colors.greyish}
+            returnKeyType="next"
+            enablesReturnKeyAutomatically
+            onChangeText={chgAddr}
+            autoCapitalize="none"
+            ref={emailRef}
+            value={email}
+          />
+        </TouchableOpacity>
 
-    if (key === 'domainIdx' && value !== DIRECT_INPUT) {
-      // update domain name
-      this.setState({
-        domain: value,
-      });
-    }
-  };
+        <AppText
+          style={[
+            appStyles.normal12Text,
+            styles.textInput,
+            email ? {} : styles.emptyInput,
+          ]}>
+          @
+        </AppText>
 
-  focusInput = () => {
-    this.emailRef.current?.focus();
-  };
+        <TouchableOpacity
+          style={[
+            styles.textInputWrapper,
+            domain ? {} : styles.emptyInput,
+            {flex: 1, marginLeft: 10},
+          ]}
+          onPress={() => domainRef.current?.focus()}
+          activeOpacity={1}>
+          <AppTextInput
+            style={[styles.textInput, domain ? {} : styles.emptyInput]}
+            returnKeyType="next"
+            enablesReturnKeyAutomatically
+            editable={domainIdx === DIRECT_INPUT}
+            onChangeText={chgDomain}
+            autoCapitalize="none"
+            ref={domainRef}
+            value={domain}
+          />
+        </TouchableOpacity>
 
-  openPicker = () => {
-    this.pickerRef.current?.togglePicker();
-  };
-
-  render() {
-    const {domain, email, domainIdx} = this.state;
-    const inputStyle =
-      domainIdx === DIRECT_INPUT ? styles.directInput : styles.noDirectInput;
-
-    return (
-      <View style={this.props.style}>
-        <View style={styles.container}>
-          <TouchableOpacity
-            style={[
-              styles.textInputWrapper,
-              email ? {} : styles.emptyInput,
-              {flex: 1},
-            ]}
-            onPress={this.focusInput}
-            activeOpacity={1}>
-            <AppTextInput
-              style={[styles.textInput, email ? {} : styles.emptyInput]}
-              placeholder={i18n.t('reg:email')}
-              placeholderTextColor={colors.greyish}
-              returnKeyType="next"
-              enablesReturnKeyAutomatically
-              onChangeText={this.onChangeText('email')}
-              autoCapitalize="none"
-              ref={this.emailRef}
-              value={email}
-            />
-          </TouchableOpacity>
-
-          <AppText
-            style={[
-              appStyles.normal12Text,
-              styles.textInput,
-              email ? {} : styles.emptyInput,
-            ]}>
-            @
-          </AppText>
-
-          <TouchableOpacity
-            style={[
-              styles.textInputWrapper,
-              domain ? {} : styles.emptyInput,
-              {flex: 1, marginLeft: 10},
-            ]}
-            onPress={() => {
-              if (this.domainRef.current) this.domainRef.current.focus();
+        <TouchableOpacity
+          style={[
+            styles.pickerWrapper,
+            domainIdx === DIRECT_INPUT ? styles.emptyInput : {},
+          ]}
+          onPress={() => pickerRef.current?.togglePicker()}
+          activeOpacity={1}>
+          <RNPickerSelect
+            style={{
+              placeholder: styles.placeholder,
+              inputIOS: {
+                ...styles.inputIOS,
+                ...inputStyle,
+              },
+              inputAndroid: {
+                ...styles.placeholder,
+                ...inputStyle,
+              },
+              iconContainer: {
+                bottom: 14,
+                right: 10,
+              },
+              inputAndroidContainer: {
+                bottom: -1,
+              },
             }}
-            activeOpacity={1}>
-            <AppTextInput
-              style={[styles.textInput, domain ? {} : styles.emptyInput]}
-              returnKeyType="next"
-              enablesReturnKeyAutomatically
-              editable={domainIdx === DIRECT_INPUT}
-              onChangeText={this.onChangeText('domain')}
-              autoCapitalize="none"
-              ref={this.domainRef}
-              value={domain}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.pickerWrapper,
-              domainIdx === DIRECT_INPUT ? styles.emptyInput : {},
-            ]}
-            onPress={this.openPicker}
-            activeOpacity={1}>
-            <RNPickerSelect
-              style={{
-                placeholder: styles.placeholder,
-                inputIOS: {
-                  ...styles.inputIOS,
-                  ...inputStyle,
-                },
-                inputAndroid: {
-                  ...styles.placeholder,
-                  ...inputStyle,
-                },
-                iconContainer: {
-                  bottom: 14,
-                  right: 10,
-                },
-                inputAndroidContainer: {
-                  bottom: -1,
-                },
-              }}
-              placeholder={{}}
-              onValueChange={this.onChangeText('domainIdx')}
-              items={domains}
-              value={domainIdx}
-              useNativeAndroidPickerStyle={false}
-              ref={this.pickerRef}
-              Icon={() => (
-                <Triangle width={8} height={6} color={colors.warmGrey} />
-              )}
-            />
-          </TouchableOpacity>
-        </View>
-        <AppText style={styles.infoText}>{i18n.t('mypage:mailInfo')}</AppText>
+            placeholder={{}}
+            onValueChange={(val) => {
+              setDomainIdx(val);
+              if (val !== DIRECT_INPUT) chgDomain(val);
+            }}
+            items={domains}
+            value={domainIdx}
+            useNativeAndroidPickerStyle={false}
+            ref={pickerRef}
+            Icon={() => (
+              <Triangle width={8} height={6} color={colors.warmGrey} />
+            )}
+          />
+        </TouchableOpacity>
       </View>
-    );
-  }
-}
+      <AppText style={styles.infoText}>{i18n.t('mypage:mailInfo')}</AppText>
+    </View>
+  );
+};
 
 export default InputEmail;

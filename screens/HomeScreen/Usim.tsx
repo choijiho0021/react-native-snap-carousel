@@ -260,7 +260,7 @@ type UsimProps = {
   };
 };
 type UsimState = {
-  darkMode: ColorSchemeName;
+  darkMode: boolean;
   firstLaunch?: boolean;
 };
 class Usim extends Component<UsimProps, UsimState> {
@@ -270,7 +270,7 @@ class Usim extends Component<UsimProps, UsimState> {
     super(props);
 
     this.state = {
-      darkMode: Appearance.getColorScheme(),
+      darkMode: Appearance.getColorScheme() === 'dark',
       firstLaunch: undefined,
     };
 
@@ -628,7 +628,7 @@ class Usim extends Component<UsimProps, UsimState> {
 
     return (
       <SafeAreaView style={styles.container}>
-        <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
+        <StatusBar barStyle={darkMode ? 'light-content' : 'dark-content'} />
         <ScrollView>
           <PromotionCarousel />
           {this.userInfo()}

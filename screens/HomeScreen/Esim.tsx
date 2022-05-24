@@ -184,7 +184,7 @@ type EsimState = {
   index: number;
   routes: TabViewRoute[];
   scene: Record<TabViewRouteKey, ProductByCategory[]>;
-  darkMode: ColorSchemeName;
+  darkMode: boolean;
   time: Moment;
   deviceList?: string[];
   firstLaunch?: boolean;
@@ -253,7 +253,7 @@ class Esim extends Component<EsimProps, EsimState> {
         multi: [] as ProductByCategory[],
       },
       firstLaunch: false,
-      darkMode: Appearance.getColorScheme(),
+      darkMode: Appearance.getColorScheme() === 'dark',
       time: moment(),
       popUpVisible: false,
       checked: false,
@@ -691,7 +691,7 @@ class Esim extends Component<EsimProps, EsimState> {
 
     return (
       <View style={styles.container}>
-        <StatusBar barStyle={darkMode ? 'dark-content' : 'light-content'} />
+        <StatusBar barStyle={darkMode ? 'light-content' : 'dark-content'} />
         <PromotionCarousel />
         <TabHeader
           index={index}
