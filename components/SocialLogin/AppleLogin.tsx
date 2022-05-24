@@ -5,9 +5,7 @@ import appleAuth, {
 } from '@invertase/react-native-apple-authentication';
 import AsyncStorage from '@react-native-community/async-storage';
 import {AuthCallback} from '.';
-import AppButton from '../AppButton';
-import {appStyles} from '../../constants/Styles';
-import {Langcode} from '../../redux/api/api';
+import {appStyles} from '@/constants/Styles';
 
 const styles = StyleSheet.create({
   button: {
