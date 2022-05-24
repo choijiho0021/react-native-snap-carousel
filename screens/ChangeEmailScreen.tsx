@@ -21,6 +21,7 @@ import i18n from '@/utils/i18n';
 import AppTextInput from '@/components/AppTextInput';
 import AppButton from '@/components/AppButton';
 import validationUtil, {ValidationResult} from '@/utils/validationUtil';
+import AppAlert from '@/components/AppAlert';
 
 const styles = StyleSheet.create({
   title: {
@@ -142,10 +143,14 @@ class ChangeEmailScreen extends Component<
     const {email, navigation} = this.props;
 
     if (newEmail && email !== newEmail) {
-      this.props.action.account.changeEmail(newEmail);
+      this.props.action.account.changeEmail(newEmail).then((resp) => {
+        if (resp.payload.result === 0) {
+          AppAlert.info(i18n.t('changeEmail:saveInfo'), '', () =>
+            navigation.goBack(),
+          );
+        }
+      });
     }
-
-    navigation.goBack();
   }
 
   render() {

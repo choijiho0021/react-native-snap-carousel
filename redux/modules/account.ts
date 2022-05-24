@@ -504,7 +504,7 @@ const changeEmail = createAsyncThunk(
     return dispatch(changeUserAttrWithToast({userId, token, attributes})).then(
       ({payload}) => {
         if (payload.result === 0) {
-          return dispatch(slice.actions.updateAccount({email: mail}));
+          dispatch(slice.actions.updateAccount({email: mail}));
         }
         return Promise.resolve(payload);
       },
