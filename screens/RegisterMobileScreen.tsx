@@ -58,7 +58,7 @@ import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import validationUtil from '@/utils/validationUtil';
 
-const {esimGlobal} = Env.get();
+const {esimGlobal, isProduction} = Env.get();
 // const esimGlobal = false;
 
 const styles = StyleSheet.create({
@@ -699,7 +699,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         <InputPinInTime
           style={{marginTop: 20, paddingHorizontal: 20}}
           forwardRef={authInputRef}
-          editable={editablePin}
+          editable={editablePin || !isProduction}
           // clickable={editablePin && !timeout}
           clickable
           authorized={mobile ? authorized : undefined}
