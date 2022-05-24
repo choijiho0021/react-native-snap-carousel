@@ -229,7 +229,8 @@ const EsimSubs = ({
   const navigation = useNavigation();
   const {giftStatusCd} = item;
   const sendable = !expired && !giftStatusCd && item.packageId?.startsWith('D');
-  const redirectable = !expired && !giftStatusCd && item.country === 'HK';
+  const redirectable =
+    !expired && !giftStatusCd && item.country?.includes('HK');
 
   return (
     <View style={styles.usageListContainer}>
