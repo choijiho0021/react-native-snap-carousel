@@ -173,7 +173,7 @@ class ResignScreen extends Component<ResignScreenProps, ResignScreenState> {
   componentDidMount = async () => {
     this.props.navigation.setOptions({
       title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('set:accountSettings')} />,
+      headerLeft: () => <AppBackButton title={i18n.t('resign')} />,
     });
   };
 
@@ -225,7 +225,7 @@ class ResignScreen extends Component<ResignScreenProps, ResignScreenState> {
         <ScrollView style={styles.container}>
           <AppActivityIndicator visible={this.props.pending} />
           <View style={styles.blueContainer}>
-            <AppText style={styles.resignTitle}>
+            <AppText style={[styles.resignTitle, {color: colors.white}]}>
               {i18n.t('resign:title')}
             </AppText>
             <Image
