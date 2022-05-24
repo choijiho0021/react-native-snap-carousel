@@ -21,7 +21,7 @@ import i18n from '@/utils/i18n';
 import AppTextInput from '@/components/AppTextInput';
 import AppButton from '@/components/AppButton';
 import validationUtil, {ValidationResult} from '@/utils/validationUtil';
-import AppAlert from '@/components/AppAlert';
+import AppModal from '@/components/AppModal';
 
 const styles = StyleSheet.create({
   title: {
@@ -105,6 +105,7 @@ type ChangeEmailScreenProps = {
 
 type ChangeEmailScreenState = {
   newEmail: string;
+  showModal: boolean;
   inValid?: ValidationResult;
 };
 
@@ -117,6 +118,7 @@ class ChangeEmailScreen extends Component<
 
     this.state = {
       newEmail: '',
+      showModal: false,
     };
     this.onChangeText = this.onChangeText.bind(this);
     this.changeEmail = this.changeEmail.bind(this);
@@ -140,21 +142,20 @@ class ChangeEmailScreen extends Component<
 
   changeEmail() {
     const {newEmail} = this.state;
-    const {email, navigation} = this.props;
+    const {email} = this.props;
 
     if (newEmail && email !== newEmail) {
       this.props.action.account.changeEmail(newEmail).then((resp) => {
         if (resp.payload.result === 0) {
-          AppAlert.info(i18n.t('changeEmail:saveInfo'), '', () =>
-            navigation.goBack(),
-          );
+          this.setState({showModal: true});
         }
       });
     }
   }
 
   render() {
-    const {newEmail, inValid} = this.state;
+    const {navigation} = this.props;
+    const {newEmail, inValid, showModal} = this.state;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -203,6 +204,12 @@ class ChangeEmailScreen extends Component<
           disabled={!!inValid}
           title={i18n.t('changeEmail:save')}
           onPress={this.changeEmail}
+        />
+        <AppModal
+          title={i18n.t('changeEmail:saveInfo')}
+          type="info"
+          onOkClose={() => navigation.goBack()}
+          visible={showModal}
         />
       </SafeAreaView>
     );
