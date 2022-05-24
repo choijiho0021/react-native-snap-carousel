@@ -1,7 +1,3 @@
-import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
-import {API} from '@/redux/api';
-import i18n from '@/utils/i18n';
 import React, {memo} from 'react';
 import {
   Image,
@@ -12,6 +8,10 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import {API} from '@/redux/api';
+import i18n from '@/utils/i18n';
 import AppIcon from './AppIcon';
 import AppText from './AppText';
 

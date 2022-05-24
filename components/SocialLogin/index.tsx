@@ -7,6 +7,7 @@ import i18n from '@/utils/i18n';
 import AppText from '../AppText';
 import AppleLogin from './AppleLogin';
 import GoogleLogin from './GoogleLogin';
+import KakaoLogin from './KakaoLogin';
 
 export type AuthCallback = ({
   user,
@@ -46,7 +47,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   btnGroup: {
-    flexDirection: 'row',
+    // flexDirection: 'row',
     // justifyContent: 'space-between',
     justifyContent: 'center',
     marginHorizontal: 20,
@@ -64,7 +65,7 @@ const SocialLogin = ({onAuth}: {onAuth: AuthCallback}) => {
         <View style={styles.divider} />
       </View>
       <View style={styles.btnGroup}>
-        {/* <KakaoLogin onAuth={onAuth} /> */}
+        <KakaoLogin onAuth={onAuth} />
         {/* <NaverLoginButton onAuth={onAuth} /> */}
         {/* <FacebookLogin onAuth={onAuth} /> */}
         {Platform.OS === 'android' && <GoogleLogin onAuth={onAuth} />}
