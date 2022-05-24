@@ -268,7 +268,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   });
   const darkMode = useMemo(() => Appearance.getColorScheme() === 'dark', []);
   const [socialLogin, setSocialLogin] = useState(false);
-  const [isFocused, setIsFocused] = useState(true);
   const [recommender, setRecommender] = useState('');
   const [profileImageUrl, setProfileImageUrl] = useState('');
   const [email, setEmail] = useState('');
@@ -395,7 +394,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       error: undefined,
     });
     setSocialLogin(false);
-    setIsFocused(true);
     setRecommender('');
   }, []);
 
@@ -699,36 +697,31 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         <AppText style={styles.mobileAuth}>
           {i18n.t('mobile:easyLogin')}
         </AppText>
-        {isFocused && (
-          <InputMobile
-            style={{marginTop: 30, paddingHorizontal: 20}}
-            onPress={onChangeText}
-            authNoti={authNoti}
-            disabled={(authNoti && authorized) || loading}
-            authorized={authorized}
-          />
-        )}
+        <InputMobile
+          style={{marginTop: 30, paddingHorizontal: 20}}
+          onPress={onChangeText}
+          authNoti={authNoti}
+          disabled={(authNoti && authorized) || loading}
+          authorized={authorized}
+        />
 
-        {isFocused && (
-          <InputPinInTime
-            style={{marginTop: 20, paddingHorizontal: 20}}
-            forwardRef={authInputRef}
-            editable={editablePin}
-            // clickable={editablePin && !timeout}
-            clickable
-            authorized={mobile ? authorized : undefined}
-            countdown={authNoti && !authorized && !timeout}
-            onTimeout={() => setTimeout(true)}
-            onPress={onPressPin}
-            duration={180}
-          />
-        )}
+        <InputPinInTime
+          style={{marginTop: 20, paddingHorizontal: 20}}
+          forwardRef={authInputRef}
+          editable={editablePin}
+          // clickable={editablePin && !timeout}
+          clickable
+          authorized={mobile ? authorized : undefined}
+          countdown={authNoti && !authorized && !timeout}
+          onTimeout={() => setTimeout(true)}
+          onPress={onPressPin}
+          duration={180}
+        />
       </View>
     );
   }, [
     authNoti,
     authorized,
-    isFocused,
     loading,
     mobile,
     onChangeText,
@@ -779,7 +772,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         title={i18n.t('mobile:header')}
         onPress={() => {
           initState();
-          setIsFocused(false);
 
           const screen = route?.params?.screen;
 
