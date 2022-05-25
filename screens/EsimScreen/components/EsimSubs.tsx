@@ -230,7 +230,10 @@ const EsimSubs = ({
   const {giftStatusCd} = item;
   const sendable = !expired && !giftStatusCd && item.packageId?.startsWith('D');
   const redirectable =
-    !expired && !giftStatusCd && item.country?.includes('HK');
+    !expired &&
+    !giftStatusCd &&
+    item.country?.includes('HK') &&
+    item.partner === 'Quadcell';
 
   return (
     <View style={styles.usageListContainer}>
