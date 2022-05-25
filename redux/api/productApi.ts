@@ -90,26 +90,30 @@ const toPurchaseItem = (prod?: RkbProduct) => {
 };
 
 const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
+  const testProductReg = /test/;
+
   if (_.isArray(data)) {
     return api.success(
-      data.map((item, idx) => ({
-        key: item.uuid,
-        uuid: item.uuid,
-        name: item.title,
-        price: utils.stringToCurrency(item.price),
-        field_daily: item.field_daily === 'daily',
-        partnerId: item.partner_id,
-        categoryId: item.field_product_categories,
-        days: utils.stringToNumber(item.field_days) || 0,
-        variationId: item.variations && item.variations[0],
-        field_description: item.field_description,
-        promoFlag: item.field_special_categories
-          .split(',')
-          .map((v) => promoFlag[v.trim()])
-          .filter((v) => !_.isEmpty(v)),
-        sku: item.sku,
-        idx,
-      })),
+      data
+        .filter((elm) => testProductReg.test(elm.sku))
+        .map((item, idx) => ({
+          key: item.uuid,
+          uuid: item.uuid,
+          name: item.title,
+          price: utils.stringToCurrency(item.price),
+          field_daily: item.field_daily === 'daily',
+          partnerId: item.partner_id,
+          categoryId: item.field_product_categories,
+          days: utils.stringToNumber(item.field_days) || 0,
+          variationId: item.variations && item.variations[0],
+          field_description: item.field_description,
+          promoFlag: item.field_special_categories
+            .split(',')
+            .map((v) => promoFlag[v.trim()])
+            .filter((v) => !_.isEmpty(v)),
+          sku: item.sku,
+          idx,
+        })),
     );
   }
 
