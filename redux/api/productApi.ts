@@ -95,7 +95,7 @@ const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
   if (_.isArray(data)) {
     return api.success(
       data
-        .filter((elm) => testProductReg.test(elm.sku))
+        .filter((elm) => !testProductReg.test(elm.sku))
         .map((item, idx) => ({
           key: item.uuid,
           uuid: item.uuid,
