@@ -276,7 +276,7 @@ const callHttp = async <T>(
 
           try {
             const js = await response.json();
-            console.log('API response', response.status, js);
+            console.log('API response', url, response.status, js);
             return callback(js, response.headers.get('set-cookie'));
           } catch (ex) {
             return failure(

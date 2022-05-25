@@ -5,6 +5,7 @@ import {retrieveData, utils} from '@/utils/utils';
 import {AccountAuth} from '@/redux/modules/account';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import {RkbFile, RkbImage} from './accountApi';
+import {SocialAuthInfo} from '@/components/SocialLogin';
 
 const KEY_ICCID = 'account.iccid';
 
@@ -463,12 +464,9 @@ const socialLogin = ({
   pass,
   kind,
   mobile,
+  token,
   abortController,
-}: {
-  user: string;
-  pass: string;
-  kind: 'ios' | 'fb' | 'naver' | 'kakao' | 'google';
-  mobile?: string;
+}: SocialAuthInfo & {
   abortController?: AbortController;
 }) => {
   if (!user)
@@ -483,7 +481,7 @@ const socialLogin = ({
     {
       method: 'POST',
       headers: api.headers('json'),
-      body: JSON.stringify({user, pass, kind, mobile}),
+      body: JSON.stringify({user, pass, kind, mobile, token}),
     },
     (rsp = {}) => {
       return rsp.result.code === 0

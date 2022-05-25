@@ -6,7 +6,7 @@ import {
 } from '@react-native-seoul/kakao-login';
 import AsyncStorage from '@react-native-community/async-storage';
 import AppButton from '@/components/AppButton';
-import {AuthCallback} from '.';
+import {SocialAuthInfo} from '.';
 
 const styles = StyleSheet.create({
   button: {
@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const KakaoLogin = ({onAuth}: {onAuth: AuthCallback}) => {
+const KakaoLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
   const onPress = useCallback(async () => {
     try {
       // performs login request

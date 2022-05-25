@@ -6,10 +6,10 @@ import {
 
 import React, {memo, useEffect} from 'react';
 import {View} from 'react-native';
-import {AuthCallback} from '.';
+import {SocialAuthInfo} from '.';
 import i18n from '@/utils/i18n';
 
-const GoogleLogin = ({onAuth}: {onAuth: AuthCallback}) => {
+const GoogleLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
   const googleSigininConfigure = async () => {
     await GoogleSignin.configure({
       scopes: [
