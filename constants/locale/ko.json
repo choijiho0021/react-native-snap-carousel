@@ -651,5 +651,7 @@
   "changeEmail:placeholder": "변경할 이메일 주소를 입력하세요.",
   "changeEmail:info": "* 구매하신 eSIM 상품은 본 이메일로 발송됩니다.",
   "changeEmail:save": "변경 내용 저장하기",
-  "changeEmail:saveInfo": "저장이 완료되었습니다."
+  "changeEmail:saveInfo": "저장이 완료되었습니다.",
+
+  "socialLogin:kakao": "카카오 로그인"
 }
