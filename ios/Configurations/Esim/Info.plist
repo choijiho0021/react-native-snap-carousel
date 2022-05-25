@@ -70,7 +70,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>26</string>
+	<string>27</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
@@ -134,6 +134,7 @@
 		<string>supertoss</string>
 		<string>payco</string>
 		<string>lpayapp</string>
+		<string>lmslpay</string>
 		<string>shinsegaeeasypayment</string>
 		<string>hanamopmoasign</string>
 		<string>wooripay</string>
