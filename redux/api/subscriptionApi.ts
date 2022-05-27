@@ -44,6 +44,12 @@ export const cmiStatusCd = {
   99: 'C',
 };
 
+export const quadcellStatusCd = {
+  '01': 'A', // Normal
+  '02': 'R', // Suspend
+  '03': 'C', // Deleted
+};
+
 const sortSubs = (a, b) => {
   // status 우선순위, 구입날짜별로 정렬
   if (a.statusCd === b.statusCd && a.purchaseDate > b.purchaseDate) {
@@ -448,6 +454,30 @@ const cmiGetSubsStatus = ({iccid}: {iccid: string}) => {
   );
 };
 
+// get usage data from svc server
+// CMI API를 사용하는 경우
+const quadcellGetData = ({
+  imsi,
+  key,
+}: {
+  imsi: string;
+  key: 'quota' | 'info' | 'packlist' | 'hlrstate';
+}) => {
+  if (!imsi)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
+
+  return api.callHttpGet(
+    api.rokHttpUrl(`${api.path.rokApi.pv.quadcell}/imsi/${imsi}/${key}`),
+    (data) => {
+      if (data?.result?.code === 0) {
+        return api.success(data?.objects);
+      }
+      return data;
+    },
+    new Headers({'Content-Type': 'application/json'}),
+  );
+};
+
 // rokebi call products
 /* not used
 const toRokebiProd = (data) => {
@@ -579,4 +609,5 @@ export default {
   getSubsUsage,
   cmiGetSubsUsage,
   cmiGetSubsStatus,
+  quadcellGetData,
 };

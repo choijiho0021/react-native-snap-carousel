@@ -137,7 +137,8 @@ const title = (
   onPress: () => void,
 ) => {
   const {giftStatusCd} = item;
-  const usageCheckable = item.packageId?.startsWith('D');
+  const usageCheckable =
+    item.packageId?.startsWith('D') || item.partner === 'Quadcell';
   return (
     <View style={styles.prodTitle}>
       <AppText
