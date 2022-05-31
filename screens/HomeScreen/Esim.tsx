@@ -398,7 +398,7 @@ class Esim extends Component<EsimProps, EsimState> {
   }
 
   checkSupportIos = () => {
-    const getDeviceId = DeviceInfo.getDeviceId();
+    const DeviceId = DeviceInfo.getDeviceId();
 
     // 가능한 iPad목록
     const enableIpadList = [
@@ -415,14 +415,14 @@ class Esim extends Component<EsimProps, EsimState> {
       'iPad13,2',
     ];
 
-    if (getDeviceId.startsWith('AppleTV')) return false;
+    if (DeviceId.startsWith('AppleTV')) return false;
 
-    if (getDeviceId.startsWith('iPhone'))
-      return !!getDeviceId.localeCompare('iPhone11.1');
-    if (getDeviceId.startsWith('iPad'))
+    if (DeviceId.startsWith('iPhone'))
+      return !!DeviceId.localeCompare('iPhone11.1');
+    if (DeviceId.startsWith('iPad'))
       return (
-        enableIpadList.includes(getDeviceId) ||
-        !!getDeviceId.localeCompare('iPad13,2')
+        enableIpadList.includes(DeviceId) ||
+        !!DeviceId.localeCompare('iPad13,2')
       );
 
     return true;

@@ -356,7 +356,10 @@ const slice = createSlice({
     updateAccount: (state, action: PayloadAction<AccountModelState>) => {
       return updateAccountState(state, action.payload);
     },
-    resetAccount: () => initialState,
+    resetAccount: (state) => ({
+      ...initialState,
+      isSupportDev: state.isSupportDev,
+    }),
     clearAccount: (state) => ({
       ...state,
       expDate: undefined,
