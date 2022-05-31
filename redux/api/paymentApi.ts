@@ -80,13 +80,13 @@ const method = esimGlobal
         //   method: 'trans',
         //   title: 'pym:bank',
         // },
-        // {
-        //   // 확인필요
-        //   key: 'naverco',
-        //   method: 'naverco',
-        //   title: 'pym:naver',
-        //   icon: 'naver',
-        // },
+        {
+          // 확인필요
+          key: 'naverco',
+          method: 'naverco',
+          title: 'pym:naver',
+          icon: 'naver',
+        },
         !esimApp
           ? {
               key: 'danal',
