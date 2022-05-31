@@ -4,7 +4,7 @@ import appleAuth, {
   AppleButton,
 } from '@invertase/react-native-apple-authentication';
 import AsyncStorage from '@react-native-community/async-storage';
-import {AuthCallback} from '.';
+import {SocialAuthInfo} from '.';
 import {appStyles} from '@/constants/Styles';
 
 const styles = StyleSheet.create({
@@ -15,26 +15,21 @@ const styles = StyleSheet.create({
   },
 });
 
-const AppleLogin = ({onAuth}: {onAuth: AuthCallback}) => {
+const AppleLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
   const onPress = useCallback(async () => {
     try {
-      /* for testing
-      if (onAuth)
-        onAuth({
-          user: 'appleuser',
-          pass: '1234',
-          authorized: true,
-          email: 'app@test.com',
-        });
-        */
-
       // performs login request
       const appleAuthRequestResponse = await appleAuth.performRequest({
         requestedOperation: appleAuth.Operation.LOGIN,
         requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
       });
 
-      const {user: newUser, email, nonce} = appleAuthRequestResponse;
+      const {
+        user: newUser,
+        email,
+        nonce,
+        identityToken,
+      } = appleAuthRequestResponse;
 
       // get current authentication state for user
       // /!\ This method must be tested on a real device. On the iOS simulator it always throws an error.
@@ -45,8 +40,6 @@ const AppleLogin = ({onAuth}: {onAuth: AuthCallback}) => {
       // use credentialState response to ensure the user is authenticated
       if (credentialState === appleAuth.State.AUTHORIZED) {
         // user is authenticated
-        console.log('@@@ auth', appleAuthRequestResponse);
-
         await AsyncStorage.setItem('login.apple.user', newUser);
         if (nonce) await AsyncStorage.setItem('login.apple.pass', nonce);
 
@@ -61,13 +54,14 @@ const AppleLogin = ({onAuth}: {onAuth: AuthCallback}) => {
           onAuth({
             user: newUser,
             pass: nonce,
+            token: identityToken,
             authorized: true,
             email: storedEmail,
-            kind: 'ios',
+            kind: 'apple',
           });
       }
     } catch (error) {
-      if (error.code === appleAuth.Error.CANCELED) {
+      if (error?.code === appleAuth.Error.CANCELED) {
         console.warn('User canceled Apple Sign in');
       } else {
         console.error(error);

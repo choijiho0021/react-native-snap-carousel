@@ -39,7 +39,7 @@ import InputEmail, {InputEmailRef} from '@/components/InputEmail';
 import InputMobile from '@/components/InputMobile';
 import InputPinInTime from '@/components/InputPinInTime';
 import Profile from '@/components/Profile';
-import SocialLogin from '@/components/SocialLogin';
+import SocialLogin, {SocialAuthInfo} from '@/components/SocialLogin';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
@@ -600,22 +600,17 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       pass,
       email,
       mobile,
+      token,
       profileImageUrl: profile,
       kind,
-    }: {
-      user: string;
-      pass: string;
-      email?: string;
-      mobile?: string;
-      profileImageUrl?: string;
-      kind: 'ios' | 'fb' | 'naver' | 'kakao' | 'google';
-    }) => {
+    }: SocialAuthInfo) => {
       setLoading(true);
 
       const resp = await API.User.socialLogin({
         user,
         pass,
         kind,
+        token,
         mobile,
       });
 

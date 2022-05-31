@@ -9,23 +9,16 @@ import AppleLogin from './AppleLogin';
 import GoogleLogin from './GoogleLogin';
 import KakaoLogin from './KakaoLogin';
 
-export type AuthCallback = ({
-  user,
-  pass,
-  authorized,
-  email,
-  mobile,
-  profileImageUrl,
-  kind,
-}: {
+export type SocialAuthInfo = {
   user: string;
   pass: string;
+  token?: string | null;
   authorized: boolean;
   email?: string;
   mobile?: string;
   profileImageUrl?: string;
-  kind: 'ios' | 'fb' | 'naver' | 'kakao' | 'google';
-}) => void;
+  kind: 'kakao' | 'ios' | 'google' | 'apple';
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -54,7 +47,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const SocialLogin = ({onAuth}: {onAuth: AuthCallback}) => {
+const SocialLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
   return (
     <View style={styles.container}>
       <View style={styles.easyLoginTitle}>
