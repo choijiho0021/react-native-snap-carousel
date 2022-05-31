@@ -38,10 +38,11 @@ import AppButton from '@/components/AppButton';
 import {sliderWidth} from '@/constants/SliderEntry.style';
 
 const guideImage = {
-  step1: require('../assets/images/guide_HK/step1/guideHK1.png'),
-  step2: require('../assets/images/guide_HK/step2/guideHK2.png'),
-  step3: require('../assets/images/guide_HK/step3/guideHK3.png'),
-  step4: require('../assets/images/guide_HK/step4/guideHK4.png'),
+  step1: require('../assets/images/guide_HK/guideHK1.png'),
+  step2: require('../assets/images/guide_HK/guideHK2.png'),
+  step3: require('../assets/images/guide_HK/guideHK3.png'),
+  step4: require('../assets/images/guide_HK/guideHK4.png'),
+  step5: require('../assets/images/guide_HK/guideHK5.png'),
 };
 
 const styles = StyleSheet.create({

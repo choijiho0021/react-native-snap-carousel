@@ -103,16 +103,19 @@ function get() {
           : 'https://esim.rokebi.com';
         break;
       default:
-        env.scheme = 'http';
-        env.rokApiUrl = 'tb-svcapp.rokebi.com';
-        env.apiUrl = esimGlobal ? 'tb-global.rokebi.com' : 'tb-esim.rokebi.com';
+        // env.scheme = 'http';
+        // env.rokApiUrl = 'tb-svcapp.rokebi.com';
+        // env.apiUrl = esimGlobal ? 'tb-global.rokebi.com' : 'tb-esim.rokebi.com';
+        // env.baseUrl = esimGlobal
+        //   ? 'http://tb-global.rokebi.com'
+        //   : 'http://tb-esim.rokebi.com';
+        env.scheme = 'https';
+        env.rokApiUrl = 'svcapp.rokebi.com';
+        env.apiUrl = esimGlobal ? 'global.rokebi.com' : 'esim.rokebi.com';
         env.baseUrl = esimGlobal
-          ? 'http://tb-global.rokebi.com'
-          : 'http://tb-esim.rokebi.com';
-        // scheme: 'https',
-        // rokApiUrl:'svcapp.rokebi.com';
-        // apiUrl: 'esim.rokebi.com',
-        // baseUrl: 'https://esim.rokebi.com',
+          ? 'https://global.rokebi.com'
+          : 'https://esim.rokebi.com';
+        break;
         break;
     }
     return env;
