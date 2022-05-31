@@ -6,11 +6,24 @@ import {
 } from '@react-native-seoul/kakao-login';
 import AsyncStorage from '@react-native-community/async-storage';
 import AppButton from '@/components/AppButton';
+import i18n from '@/utils/i18n';
+import {appStyles} from '../../constants/Styles';
 import {SocialAuthInfo} from '.';
 
 const styles = StyleSheet.create({
-  button: {
+  container: {
+    flex: 1,
     alignItems: 'center',
+  },
+  viewStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F7E600',
+  },
+  btnStyle: {
+    height: 45,
+    width: '100%',
+    marginBottom: 20,
   },
 });
 
@@ -55,13 +68,13 @@ const KakaoLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
   }, [onAuth]);
 
   return (
-    <View style={styles.button}>
+    <View style={styles.container}>
       <AppButton
         iconName="kakaoLogin"
-        style={{
-          width: 44,
-          height: 44,
-        }}
+        title={i18n.t('socialLogin:kakao')}
+        titleStyle={appStyles.bold18Text}
+        viewStyle={styles.viewStyle}
+        style={styles.btnStyle}
         onPress={onPress}
       />
     </View>

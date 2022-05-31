@@ -20,7 +20,11 @@ import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
-import {cmiStatusCd, RkbSubscription} from '@/redux/api/subscriptionApi';
+import {
+  cmiStatusCd,
+  quadcellStatusCd,
+  RkbSubscription,
+} from '@/redux/api/subscriptionApi';
 import {
   AccountAction,
   AccountModelState,
@@ -44,6 +48,7 @@ import i18n from '@/utils/i18n';
 import CardInfo from './components/CardInfo';
 import EsimSubs from './components/EsimSubs';
 import {ProductModelState} from '@/redux/modules/product';
+import {code} from '../../redux/api/subscriptionApi';
 
 const {esimGlobal} = Env.get();
 
@@ -396,7 +401,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           }, 0);
 
           setCmiUsage({
-            quota: Number(subscriberQuota?.qtavalue) / 1024 || 0, // Mb
+            quota: Number(subscriberQuota?.qtavalue) || 0, // Mb
             used, // Mb
           });
         }
@@ -405,13 +410,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [prodList],
   );
 
-  const onPressUsage = useCallback(
+  const checkCmiData = useCallback(
     async (item: RkbSubscription) => {
       // {"subscriberQuota":{"qtavalue":"512000","qtabalance":"73042","qtaconsumption":"438958"},"historyQuota":[{"time":"20211222","qtaconsumption":"376.44","mcc":"452"},{"time":"20211221","qtaconsumption":"1454.78","mcc":"452"}],"result":{"code":0},"trajectoriesList":[{"mcc":"452","country":"Vietnam","beginTime":"20211221","useTime":"20220120","himsi":"454120382118109"}]}
-      setShowModal(true);
-      setCmiPending(true);
-      setModal('usage');
-      setSubs(item);
       let usageRsp = {};
 
       if (item?.subsIccid && item?.packageId) {
@@ -460,10 +461,70 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             }
           }
         });
-        setCmiPending(false);
+        // setCmiPending(false);
       }
     },
     [getCmiSubsUsage],
+  );
+
+  const checkQuadcellData = useCallback(async (item: RkbSubscription) => {
+    if (item?.imsi) {
+      const state = await API.Subscription.quadcellGetData({
+        imsi: item.imsi,
+        key: 'hlrstate',
+      });
+
+      await API.Subscription.quadcellGetData({
+        imsi: item.imsi,
+        key: 'quota',
+      }).then(async (rsp) => {
+        if (rsp.result === 0 && state.result === 0) {
+          const statusCd =
+            !_.isUndefined(state?.objects?.hlrState) &&
+            quadcellStatusCd[state?.objects?.hlrState];
+          const end = moment(state?.objects?.effTime)
+            .add(9, 'h')
+            .format('YYYY.MM.DD HH:mm:ss');
+          const exp = moment(state?.objects?.expTime).add(9, 'h');
+
+          const isExpired = statusCd === 'A' && exp < moment();
+
+          setCmiStatus({
+            // statusCd: isExpired ? 'U' : statusCd,
+            statusCd: 'A',
+            endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
+          });
+
+          setCmiUsage({
+            quota: Number(rsp?.objects?.packQuotaList[0]?.totalQuota) || 0, // Mb
+            used: Number(rsp?.objects?.packQuotaList[0]?.consumedQuota), // Mb
+          });
+        }
+      });
+    }
+  }, []);
+
+  const onPressUsage = useCallback(
+    async (item: RkbSubscription) => {
+      setShowModal(true);
+      setCmiPending(true);
+      setModal('usage');
+      setSubs(item);
+
+      switch (item.partner) {
+        case 'CMI':
+          await checkCmiData(item);
+          break;
+        case 'Quadcell':
+          await checkQuadcellData(item);
+          break;
+        default:
+          await checkCmiData(item);
+          break;
+      }
+      setCmiPending(false);
+    },
+    [checkCmiData, checkQuadcellData],
   );
 
   const renderSubs = useCallback(

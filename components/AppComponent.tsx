@@ -34,7 +34,7 @@ const {width: viewportWidth, height: viewportHeight} = Dimensions.get('window');
 const windowHeight = viewportHeight;
 const windowWidth = viewportWidth;
 
-const {esimApp, esimGlobal, isProduction, adjustToken = ''} = Env.get();
+const {esimApp, esimGlobal} = Env.get();
 
 const SplashScreen = require('react-native-splash-screen').default;
 

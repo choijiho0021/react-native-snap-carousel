@@ -74,12 +74,12 @@ const AppButton: React.FC<AppButtonProps> = ({
   return (
     <TouchableOpacity
       style={[
+        style || styles.button,
         disabled && {
           backgroundColor: disableBackgroundColor || colors.warmGrey,
         },
         checked &&
           (checkedStyle || {borderColor: checkedColor || colors.clearBlue}),
-        style || styles.button,
       ]}
       disabled={disabled}
       onPress={onPress}>
@@ -105,9 +105,9 @@ const AppButton: React.FC<AppButtonProps> = ({
         {title && (
           <AppText
             style={[
+              titleStyle || styles.text,
               disabled && {color: disableColor || colors.white},
               checked && {color: checkedColor || colors.clearBlue},
-              titleStyle || styles.text,
             ]}>
             {title || i18n.t('select')}
           </AppText>

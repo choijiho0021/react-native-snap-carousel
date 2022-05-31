@@ -356,7 +356,10 @@ const slice = createSlice({
     updateAccount: (state, action: PayloadAction<AccountModelState>) => {
       return updateAccountState(state, action.payload);
     },
-    resetAccount: () => initialState,
+    resetAccount: (state) => ({
+      ...initialState,
+      isSupportDev: state.isSupportDev,
+    }),
     clearAccount: (state) => ({
       ...state,
       expDate: undefined,
@@ -504,7 +507,7 @@ const changeEmail = createAsyncThunk(
     return dispatch(changeUserAttrWithToast({userId, token, attributes})).then(
       ({payload}) => {
         if (payload.result === 0) {
-          return dispatch(slice.actions.updateAccount({email: mail}));
+          dispatch(slice.actions.updateAccount({email: mail}));
         }
         return Promise.resolve(payload);
       },

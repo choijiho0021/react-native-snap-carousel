@@ -137,7 +137,8 @@ const title = (
   onPress: () => void,
 ) => {
   const {giftStatusCd} = item;
-  const usageCheckable = item.packageId?.startsWith('D');
+  const usageCheckable =
+    item.packageId?.startsWith('D') || item.partner === 'Quadcell';
   return (
     <View style={styles.prodTitle}>
       <AppText
@@ -229,7 +230,11 @@ const EsimSubs = ({
   const navigation = useNavigation();
   const {giftStatusCd} = item;
   const sendable = !expired && !giftStatusCd && item.packageId?.startsWith('D');
-  const redirectable = !expired && !giftStatusCd && item.country === 'HK';
+  const redirectable =
+    !expired &&
+    !giftStatusCd &&
+    item.country?.includes('HK') &&
+    item.partner === 'CMI';
 
   return (
     <View style={styles.usageListContainer}>
