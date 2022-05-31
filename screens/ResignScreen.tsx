@@ -104,6 +104,20 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     backgroundColor: colors.whiteTwo,
   },
+  button: {
+    ...appStyles.normal16Text,
+    height: 52,
+    backgroundColor: colors.clearBlue,
+    color: colors.white,
+    textAlign: 'center',
+    color: '#ffffff',
+  },
+  buttonTitle: {
+    ...appStyles.normal18Text,
+    textAlign: 'center',
+    margin: 5,
+    color: colors.white,
+  },
   textInput: (editable) => ({
     paddingHorizontal: 16,
     paddingTop: 16,
@@ -112,21 +126,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: editable ? colors.black : colors.lightGrey,
     backgroundColor: editable ? colors.white : colors.whiteTwo,
-  }),
-  button: (isConfirm) => ({
-    ...appStyles.normal16Text,
-    height: 52,
-    backgroundColor: isConfirm ? colors.clearBlue : colors.lightGrey,
-    color: isConfirm ? colors.white : colors.warmGrey,
-    textAlign: 'center',
-    color: '#ffffff',
-  }),
-  buttonTitle: (isConfirm) => ({
-    ...appStyles.normal18Text,
-    color: colors.white,
-    textAlign: 'center',
-    margin: 5,
-    color: isConfirm ? colors.white : colors.warmGrey,
   }),
 });
 
@@ -271,12 +270,6 @@ class ResignScreen extends Component<ResignScreenProps, ResignScreenState> {
                 placeholderTextColor={colors.greyish}
                 editable={editable}
                 value={otherReason}
-                // returnKeyType="done"
-                // enablesReturnKeyAutomatically
-
-                // maxLength={maxLength}
-                // keyboardType={keyboardType}
-                // value={value}
               />
             </View>
           </View>
@@ -321,8 +314,10 @@ class ResignScreen extends Component<ResignScreenProps, ResignScreenState> {
           </View>
 
           <AppButton
-            style={styles.button(isConfirm)}
-            titleStyle={styles.buttonTitle(isConfirm)}
+            style={styles.button}
+            titleStyle={styles.buttonTitle}
+            disableColor={colors.warmGrey}
+            disableBackgroundColor={colors.lightGrey}
             disabled={!isConfirm}
             title={i18n.t('resign')}
             onPress={this.onPress}

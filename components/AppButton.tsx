@@ -105,9 +105,9 @@ const AppButton: React.FC<AppButtonProps> = ({
         {title && (
           <AppText
             style={[
+              titleStyle || styles.text,
               disabled && {color: disableColor || colors.white},
               checked && {color: checkedColor || colors.clearBlue},
-              titleStyle || styles.text,
             ]}>
             {title || i18n.t('select')}
           </AppText>
