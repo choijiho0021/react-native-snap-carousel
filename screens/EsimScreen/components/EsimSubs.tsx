@@ -234,7 +234,7 @@ const EsimSubs = ({
     !expired &&
     !giftStatusCd &&
     item.country?.includes('HK') &&
-    item.partner === 'Quadcell';
+    item.partner === 'CMI';
 
   return (
     <View style={styles.usageListContainer}>
