@@ -75,6 +75,7 @@ export type HomeStackParamList = {
   SimpleText: SimpleTextParams;
   Contact: undefined;
   ContactBoard: ContactBoardRouteParam;
+  UserGuide: undefined;
   BoardMsgResp: {uuid: string; status?: BoardMsgStatus};
   BoardMsgAdd: {key: string; status: BoardMsgStatus};
   Faq: FaqRouteParam;

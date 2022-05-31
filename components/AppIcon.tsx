@@ -55,6 +55,7 @@ const images: Record<string, any[]> = {
   iconArrowRightBlue: [require(`${mainPath}iconArrowRightBlue.png`)],
   iconArrowLeftWhite: [require(`${mainPath}iconArrowLeftWhite.png`)],
   iconNotice: [require(`${mainPath}iconNotice.png`)],
+  btnNotice: [require(`${mainPath}btnNotice.png`)],
   imgCheck: [require(`${mainPath}imgCheck.png`)],
   imgFail: [require(`${mainPath}imgFail.png`)],
   imgPeople: [require(`${mainPath}imgPeople.png`)],
@@ -79,7 +80,7 @@ const images: Record<string, any[]> = {
   btnId: [require(`${mainPath}btnId.png`)],
   btnAlarm: [require(`${headerPath}btnAlarm.png`)],
   btnCnter: [require(`${headerPath}btnCnter.png`)],
-  btnSearchTop: [require(`${headerPath}btnSearchTop.png`)],
+
   btnCheck: [
     require(`${mainPath}btnCheckNon.png`),
     require(`${mainPath}btnCheckSel.png`),
@@ -113,11 +114,16 @@ const images: Record<string, any[]> = {
   btnQr: [require(`${esimPath}btnQr.png`)],
   btnPen: [require(`${esimPath}btnPen.png`)],
   imgDokebi2: [require(`${esimPath}imgDokebi2.png`)],
+  imgNotiDokebi: [require(`${esimPath}imgNotiDokebi.png`)],
   rokIcon: [require(`${esimPath}icon.png`)],
   emptyCart: [require(`${esimPath}imgCart.png`)],
   emptyESIM: [require(`${esimPath}imgAirplane.png`)],
   usageU: [require(`${esimPath}usageU.png`)],
   usageR: [require(`${esimPath}usageR.png`)],
+  imgFaq: [require(`${esimPath}imgFaq.png`)],
+  imgGuide: [require(`${esimPath}imgGuide.png`)],
+  kakaoChannel: [require(`${esimPath}kakaoChannel.png`)],
+  imgBoard: [require(`${esimPath}imgBoard.png`)],
 
   inviteRokebi1: [require(`${invitePath}inviteRokebi1.png`)],
   inviteRokebi2: [require(`${invitePath}inviteRokebi2.png`)],

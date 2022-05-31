@@ -44,6 +44,7 @@ import AuthStack from './AuthStackNavigator';
 import {HomeStackParamList} from './navigation';
 import BadgedIcon from './component/BadgedIcon';
 import RedirectHKScreen from '@/screens/RedirectHKScreen';
+import UserGuideScreen from '../screens/UserGuideScreen';
 
 const styles = StyleSheet.create({
   tabBarIcon: {
@@ -82,6 +83,7 @@ function homeStack() {
       <HomeStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <HomeStack.Screen name="Contact" component={ContactScreen} />
       <HomeStack.Screen name="ContactBoard" component={ContactBoardScreen} />
+      <HomeStack.Screen name="UserGuide" component={UserGuideScreen} />
 
       <HomeStack.Screen name="Invite" component={InviteScreen} />
       <HomeStack.Screen name="BoardMsgResp" component={BoardMsgRespScreen} />
