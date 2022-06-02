@@ -7,7 +7,6 @@ import moment, {Moment} from 'moment';
 import React, {Component, memo} from 'react';
 import {
   Appearance,
-  ColorSchemeName,
   Dimensions,
   Platform,
   Pressable,
@@ -22,6 +21,7 @@ import {getTrackingStatus} from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
+import {ScrollView} from 'react-native';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -61,7 +61,6 @@ import pushNoti from '@/utils/pushNoti';
 import {checkFistLaunch, requestPermission} from './component/permission';
 import PromotionCarousel from './component/PromotionCarousel';
 import AndroidEuccidModule from '@/components/NativeModule/AndroidEuccidModule';
-import {ScrollView} from 'react-native';
 
 const {esimGlobal} = Env.get();
 
@@ -159,6 +158,14 @@ const styles = StyleSheet.create({
     height: 250,
     paddingBottom: 15,
     paddingHorizontal: 15,
+  },
+  showSearchBar: {
+    margin: 20,
+    height: 56,
+    borderRadius: 2,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: colors.clearBlue,
   },
 });
 
@@ -605,13 +612,6 @@ class Esim extends Component<EsimProps, EsimState> {
       headerRight: () => (
         <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
           <AppButton
-            key="search"
-            style={styles.btnSearchBar}
-            onPress={() => navigation?.navigate('StoreSearch')}
-            iconName="btnSearchTop"
-          />
-
-          <AppButton
             key="cnter"
             style={styles.btnCnter}
             onPress={() => navigation?.navigate('Contact')}
@@ -693,6 +693,18 @@ class Esim extends Component<EsimProps, EsimState> {
       <View style={styles.container}>
         <StatusBar barStyle={darkMode ? 'light-content' : 'dark-content'} />
         <PromotionCarousel />
+
+        <AppButton
+          key="search"
+          title={i18n.t('home:searchPlaceholder')}
+          style={styles.showSearchBar}
+          titleStyle={[appStyles.normal16Text, {color: colors.clearBlue}]}
+          direction="row"
+          onPress={() => this.props.navigation.navigate('StoreSearch')}
+          iconName="btnSearchBlue"
+          iconStyle={{marginHorizontal: 24}}
+        />
+
         <TabHeader
           index={index}
           routes={routes}
