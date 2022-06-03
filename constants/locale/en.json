@@ -70,6 +70,7 @@
   "home:unsupportedBody2": "",
   "home:unsupportedBody3": "ROKEBI eSIM Service is only available on eSIM compatible Devices.",
   "home:unsupportedBody4": "The Users who are using incompatible device with eSIM, please use ROKEBI USIM service, which will be serviced later.",
+  "home:searchPlaceholder": "Search your destination",
 
   "store:dest": "Destination",
   "store:partnerName": "Local Operator",
