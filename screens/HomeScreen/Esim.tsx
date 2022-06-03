@@ -16,7 +16,6 @@ import {
   Animated,
   Dimensions,
   Platform,
-  Pressable,
   StatusBar,
   StyleSheet,
   View,
@@ -32,7 +31,6 @@ import ShortcutBadge from 'react-native-app-badge';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
-import AppUserPic from '@/components/AppUserPic';
 import StoreList from '@/components/StoreList';
 import withBadge from '@/components/withBadge';
 import {colors} from '@/constants/Colors';
@@ -68,6 +66,7 @@ import {checkFistLaunch, requestPermission} from './component/permission';
 import PromotionCarousel from './component/PromotionCarousel';
 import AndroidEuccidModule from '@/components/NativeModule/AndroidEuccidModule';
 import {useInterval} from '@/utils/useInterval';
+import NotiModal from './component/NotiModal';
 
 const {esimGlobal} = Env.get();
 
@@ -150,15 +149,6 @@ const styles = StyleSheet.create({
     // figure out your image aspect ratio
     aspectRatio: 335 / 100,
     width: '100%',
-  },
-  infoModalTitle: {
-    ...appStyles.normal20Text,
-    marginHorizontal: 20,
-  },
-  popupImg: {
-    width: 333,
-    height: 444,
-    marginVertical: 20,
   },
   deviceScrollView: {
     backgroundColor: colors.whiteTwo,
@@ -255,7 +245,6 @@ const Esim: React.FC<EsimProps> = ({
   });
   const [firstLaunch, setFirstLaunch] = useState<boolean | undefined>();
   const [popUpVisible, setPopUpVisible] = useState(false);
-  const [checked, setChecked] = useState(false);
   const [popupDisabled, setPopupDisabled] = useState(false);
   const [popUp, setPopUp] = useState<RkbPromotion>();
   const [closeType, setCloseType] = useState<'close' | 'exit' | 'redirect'>();
@@ -495,67 +484,6 @@ const Esim: React.FC<EsimProps> = ({
     ],
   );
 
-  const renderNotiModal = useCallback(() => {
-    return (
-      <AppModal
-        titleStyle={styles.infoModalTitle}
-        title={popUp?.title}
-        closeButtonTitle={i18n.t(closeType || 'close')}
-        type={closeType === 'redirect' ? closeType : 'close'}
-        closeButtonStyle={
-          closeType === 'redirect' ? {flex: 1, margin: 20} : {margin: 20}
-        }
-        onOkClose={() => {
-          exitApp(closeType);
-          if (checked)
-            AsyncStorage.setItem(
-              'popupDisabled',
-              moment().format('YYYY-MM-DD HH:mm'),
-            );
-        }}
-        onCancelClose={() => {
-          setPopUpVisible(false);
-          if (checked)
-            AsyncStorage.setItem(
-              'popupDisabled',
-              moment().format('YYYY-MM-DD HH:mm'),
-            );
-        }}
-        visible={popUpVisible}>
-        <View style={{marginHorizontal: 20}}>
-          <AppUserPic
-            url={popUp?.notice?.image?.noti}
-            crop={false}
-            style={styles.popupImg}
-            onPress={() => {
-              if (closeType === 'redirect') {
-                exitApp(closeType);
-              }
-            }}
-          />
-          <Pressable
-            style={{flexDirection: 'row', alignItems: 'center'}}
-            onPress={() => setChecked((prev) => !prev)}>
-            <AppButton
-              iconName="btnCheck"
-              style={{marginRight: 10}}
-              checked={checked}
-              onPress={() => setChecked((prev) => !prev)}
-            />
-            <AppText>{i18n.t('home:disablePopup')}</AppText>
-          </Pressable>
-        </View>
-      </AppModal>
-    );
-  }, [
-    checked,
-    closeType,
-    exitApp,
-    popUp?.notice?.image?.noti,
-    popUp?.title,
-    popUpVisible,
-  ]);
-
   useEffect(() => {
     navigation.addListener('blur', () => setPopUpVisible(false));
   }, [navigation]);
@@ -703,7 +631,15 @@ const Esim: React.FC<EsimProps> = ({
         visible={isSupportDev === false}>
         {modalBody()}
       </AppModal>
-      {!popupDisabled && renderNotiModal()}
+      {!popupDisabled && (
+        <NotiModal
+          visible={popUpVisible}
+          popUp={popUp}
+          closeType={closeType}
+          onOkClose={() => exitApp(closeType)}
+          onCancelClose={() => setPopUpVisible(false)}
+        />
+      )}
     </View>
   );
 };
