@@ -81,11 +81,11 @@ const method = esimGlobal
         //   title: 'pym:bank',
         // },
         {
-          key: 'naverco',
-          method: 'naverco',
+          key: 'html5_inicis',
+          method: 'naverpay',
           title: 'pym:naver',
           icon: 'naver',
-          language: 'ko',
+          // language: 'ko',
         },
         !esimApp
           ? {
