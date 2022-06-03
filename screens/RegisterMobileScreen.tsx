@@ -261,7 +261,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const [newUser, setNewUser] = useState(false);
   const [isValidEmail, setIsValidEmail] = useState(false);
   const [emailError, setEmailError] = useState<string | undefined>('');
-  const darkMode = useMemo(() => Appearance.getColorScheme() === 'dark', []);
   const [socialLogin, setSocialLogin] = useState(false);
   const [recommender, setRecommender] = useState('');
   const [profileImageUrl, setProfileImageUrl] = useState('');
@@ -751,7 +750,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle={darkMode ? 'light-content' : 'dark-content'} />
+      <StatusBar barStyle="dark-content" />
 
       <AppBackButton
         title={i18n.t('mobile:header')}
