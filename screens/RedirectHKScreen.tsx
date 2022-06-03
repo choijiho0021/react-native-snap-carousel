@@ -252,7 +252,7 @@ class RedirectHKScreen extends Component<
           <AppButton
             style={styles.confirm}
             titleStyle={styles.confirmTitle}
-            title={i18n.t('esim:redirectHK')}
+            title={i18n.t('esim:redirectHKRegister')}
             onPress={async () => {
               // 홍콩 실명인증 웹 페이지
               await Linking.openURL(
