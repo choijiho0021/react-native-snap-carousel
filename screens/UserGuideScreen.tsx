@@ -1,20 +1,13 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {StyleSheet, View, Dimensions, Image, Modal} from 'react-native';
-import {TabView, TabBar} from 'react-native-tab-view';
+import React, {useCallback, useEffect} from 'react';
+import {StyleSheet, Image, Modal, Pressable, SafeAreaView} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
-import i18n from '@/utils/i18n';
-import AppBackButton from '@/components/AppBackButton';
-import BoardMsgAdd from '@/components/BoardMsgAdd';
-import BoardMsgList from '@/components/BoardMsgList';
+import Carousel from 'react-native-snap-carousel';
 import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
-import {Utils} from '@/redux/api';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {sliderWidth} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
@@ -24,19 +17,35 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    // maxWidth: width,
-    // maxHeight: height,
     height: '100%',
     alignSelf: 'stretch',
   },
 });
-type CarouselIndex = 'step1' | 'step2' | 'step3' | 'step4';
+type CarouselIndex =
+  | 'step1'
+  | 'step2'
+  | 'step3'
+  | 'step4'
+  | 'step5'
+  | 'step6'
+  | 'step7'
+  | 'step8'
+  | 'step9'
+  | 'step10'
+  | 'step11';
 
 const guideImages = {
-  step1: require('../assets/images/usim/tutorial/step1/mT1.png'),
-  step2: require('../assets/images/usim/tutorial/step2/mT2.png'),
-  step3: require('../assets/images/usim/tutorial/step3/mT3.png'),
-  step4: require('../assets/images/usim/tutorial/step4/mT4.png'),
+  step1: require('../assets/images/esim/userGuide/eSIMUserGuide1.png'),
+  step2: require('../assets/images/esim/userGuide/eSIMUserGuide2.png'),
+  step3: require('../assets/images/esim/userGuide/eSIMUserGuide3.png'),
+  step4: require('../assets/images/esim/userGuide/eSIMUserGuide4.png'),
+  step5: require('../assets/images/esim/userGuide/eSIMUserGuide5.png'),
+  step6: require('../assets/images/esim/userGuide/eSIMUserGuide6.png'),
+  step7: require('../assets/images/esim/userGuide/eSIMUserGuide7.png'),
+  step8: require('../assets/images/esim/userGuide/eSIMUserGuide8.png'),
+  step9: require('../assets/images/esim/userGuide/eSIMUserGuide9.png'),
+  step10: require('../assets/images/esim/userGuide/eSIMUserGuide10.png'),
+  step11: require('../assets/images/esim/userGuide/eSIMUserGuide11.png'),
 };
 
 type UserGuideScreenNavigationProp = StackNavigationProp<
@@ -60,7 +69,8 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
   useEffect(() => {
     navigation.setOptions({
       title: null,
-      headerRight: () => <AppBackButton title={i18n.t('board:title')} />,
+      headerShown: false,
+      // headerRight: () => <AppBackButton title={i18n.t('board:title')} />,
     });
   }, [navigation]);
 
@@ -69,35 +79,36 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
       <Image
         style={styles.image}
         source={guideImages[item]}
-        resizeMode="cover"
+        resizeMode="stretch"
       />
     ),
     [],
   );
 
   return (
-    <Modal style={styles.container}>
-      <Image
-        style={styles.image}
-        source={guideImages.step1}
-        resizeMode="cover"
-      />
-      {/* <Carousel
-        // ref={this.carousel}
-        data={guideImages}
+    <SafeAreaView style={styles.container}>
+      <Carousel
+        data={Object.keys(guideImages)}
         renderItem={renderGuide}
         // onSnapToItem={(index) => this.setState({activeSlide: index})}
         autoplay={false}
-        // loop
         useScrollView
         lockScrollWhileSnapping
-        // resizeMode='stretch'
-        // overflow='hidden'
         sliderWidth={sliderWidth}
         itemWidth={sliderWidth}
-        // itemHeight={sliderHeight*0.5}
-      /> */}
-    </Modal>
+      />
+      {/* close 영역만 지정 */}
+      <Pressable
+        onPress={() => navigation.goBack()}
+        style={{
+          position: 'absolute',
+          width: 60,
+          height: 60,
+          top: 50,
+          right: 0,
+        }}
+      />
+    </SafeAreaView>
   );
 };
 

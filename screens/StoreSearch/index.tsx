@@ -1,4 +1,14 @@
 /* eslint-disable no-param-reassign */
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import Analytics from 'appcenter-analytics';
+import React, {Component, memo, useEffect, useState} from 'react';
+import {Dimensions, StyleSheet, View} from 'react-native';
+import {AppEventsLogger} from 'react-native-fbsdk';
+import {getTrackingStatus} from 'react-native-tracking-transparency';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -19,23 +29,6 @@ import {
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import {retrieveData, storeData} from '@/utils/utils';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import Analytics from 'appcenter-analytics';
-import React, {Component, memo, useEffect, useState} from 'react';
-import {
-  Dimensions,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {AppEventsLogger} from 'react-native-fbsdk';
-import {getTrackingStatus} from 'react-native-tracking-transparency';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -179,8 +172,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const MAX_HISTORY_LENGTH = 7;
-
 type HeaderTitleRef = {
   changeValue: (v: string) => void;
 };
@@ -214,9 +205,9 @@ const HeaderTitle0 = ({
           placeholderTextColor={colors.greyish}
           returnKeyType="search"
           enablesReturnKeyAutomatically
-          onSubmitEditing={() => search(word, true)}
+          onSubmitEditing={() => search(word)}
           onChangeText={(value: string) => {
-            search(value, false);
+            search(value);
             setWord(value);
           }}
           value={word}
@@ -226,7 +217,7 @@ const HeaderTitle0 = ({
           <View style={{flexDirection: 'row'}}>
             <AppButton
               style={[styles.showSearchBar, {paddingRight: 20}]}
-              onPress={() => search('', false)}
+              onPress={() => search('')}
               iconName="btnSearchCancel"
             />
             <View style={styles.divider} />
@@ -234,7 +225,7 @@ const HeaderTitle0 = ({
         )}
         <AppButton
           style={styles.showSearchBar}
-          onPress={() => search(word, true)}
+          onPress={() => search(word)}
           iconName="btnSearchOff"
         />
       </View>
@@ -263,8 +254,6 @@ type StoreSearchScreenProps = {
 };
 
 type StoreSearchScreenState = {
-  querying: boolean;
-  searching: boolean;
   searchWord: string;
   searchList: string[];
   recommendCountry: string[];
@@ -279,11 +268,7 @@ class StoreSearchScreen extends Component<
   constructor(props: StoreSearchScreenProps) {
     super(props);
     this.state = {
-      querying: true,
-      searching: false,
       searchWord: '',
-      searchList: [],
-      recommendCountry: [],
     };
 
     this.headerRef = React.createRef<HeaderTitleRef>();
@@ -291,11 +276,7 @@ class StoreSearchScreen extends Component<
   }
 
   componentDidMount() {
-    this.getRecommendation();
-
     Analytics.trackEvent('Page_View_Count', {page: 'Country Search'});
-
-    this.getSearchHist();
 
     this.props.navigation.setOptions({
       title: null,
@@ -304,46 +285,6 @@ class StoreSearchScreen extends Component<
         <HeaderTitle search={this.search} headerRef={this.headerRef} />
       ),
     });
-  }
-
-  componentDidUpdate(prevProps, prevState: StoreSearchScreenState) {
-    if (this.state.searching !== prevState.searching) {
-      this.getSearchHist();
-    }
-  }
-
-  async getSearchHist() {
-    const searchHist = await retrieveData('searchHist');
-    // searchHist 저장 형식 : ex) 대만,중국,일본
-    const searchList = _.isNull(searchHist)
-      ? []
-      : searchHist.split(',').slice(0, MAX_HISTORY_LENGTH);
-    this.setState({searchList});
-  }
-
-  getRecommendation() {
-    API.Page.getPageByCategory('store:search_key')
-      .then((resp) => {
-        if (resp.result === 0 && resp.objects.length > 0) {
-          const recommendation = resp.objects[0].body
-            ?.replace(/<\/p>/gi, '')
-            .replace(/<p>/gi, '')
-            .split(',');
-          if (recommendation) {
-            this.setState({
-              recommendCountry: recommendation,
-            });
-          }
-        }
-      })
-      .catch((err) => {
-        console.log('failed to get page', err);
-      })
-      .finally(() => {
-        this.setState({
-          querying: false,
-        });
-      });
   }
 
   onPressItem = async (prodOfCountry: RkbProduct[]) => {
@@ -372,126 +313,9 @@ class StoreSearchScreen extends Component<
     this.props.navigation.navigate('Country');
   };
 
-  async search(searchWord: string, searching = false) {
-    this.setState({searchWord, searching});
+  async search(searchWord: string) {
+    this.setState({searchWord});
     this.headerRef?.current?.changeValue(searchWord);
-
-    if (searching) {
-      // 최근 검색 기록
-      const oldsearchHist = await retrieveData('searchHist');
-
-      if (searchWord && !searchWord.match(',')) {
-        // 중복 제거 후 최대 7개까지 저장한다. 저장 형식 : ex) 대만,중국,일본
-        if (!_.isNull(oldsearchHist)) {
-          const oldHist = oldsearchHist.split(',');
-          searchWord = oldHist.includes(searchWord)
-            ? oldsearchHist
-            : `${searchWord},${oldHist
-                .slice(0, MAX_HISTORY_LENGTH - 1)
-                .join(',')}`;
-        }
-        storeData('searchHist', searchWord);
-      }
-    }
-  }
-
-  renderSearchWord() {
-    const {searchList, recommendCountry} = this.state;
-
-    const recommendCountryList = recommendCountry
-      .map((elm, idx, arr) => ({
-        key: elm,
-        data: [elm, arr[idx + 1], arr[idx + 2]],
-      }))
-      .filter((elm, idx) => idx % 3 === 0);
-
-    return (
-      <View style={styles.width100}>
-        {/* 최근 검색 */}
-        <View style={styles.searchListHeader}>
-          <AppText style={styles.searchListHeaderText}>
-            {i18n.t('search:list')}
-          </AppText>
-        </View>
-        {_.isEmpty(searchList) ? (
-          <View style={styles.noList}>
-            <AppText style={styles.searchListText}>
-              {' '}
-              {i18n.t('search:err')}{' '}
-            </AppText>
-          </View>
-        ) : (
-          searchList.map((elm) => (
-            <TouchableOpacity
-              key={elm}
-              style={styles.searchList}
-              onPress={() => this.search(elm, true)}>
-              <AppText key="Text" style={styles.searchListText}>
-                {elm}
-              </AppText>
-            </TouchableOpacity>
-          ))
-        )}
-        <View style={styles.recommendHeader}>
-          <AppText style={styles.searchListHeaderText}>
-            {i18n.t('search:recommend')}
-          </AppText>
-        </View>
-        {recommendCountryList.map((elm) => (
-          <View key={elm.key} style={styles.recommendRow}>
-            {elm.data.map((elm2, idx) =>
-              elm2 ? (
-                <TouchableOpacity
-                  key={elm2}
-                  style={styles.recommebdItem}
-                  onPress={() => this.search(elm2, true)}>
-                  <AppText style={styles.recommendText}>{elm2}</AppText>
-                </TouchableOpacity>
-              ) : (
-                <View key={`${idx}`} style={styles.recommebdEmpty} />
-              ),
-            )}
-          </View>
-        ))}
-      </View>
-    );
-  }
-
-  // 국가이름 자동완성
-  renderSearching() {
-    const {searchWord = ''} = this.state;
-    const allData = this.props.product.sortedProdList;
-    if (!allData) {
-      return null;
-    }
-
-    // 복수국가 이름 검색 추가
-    const searchResult = allData
-      .filter((elm) => elm.length > 0 && elm[0].search?.match(searchWord))
-      .map((elm) => ({
-        name: elm[0].name,
-        country: elm[0].search,
-        categoryId: elm[0].categoryId,
-        uuid: elm[0].uuid,
-      }));
-
-    return (
-      <View style={styles.width100}>
-        {searchResult.map((elm, idx) => (
-          <TouchableOpacity
-            key={elm.uuid}
-            onPress={() => this.search(elm.country, true)}>
-            <View key={`${idx}`} style={styles.autoList}>
-              <AppText key="text" style={styles.autoText}>
-                {elm.categoryId.includes(API.Product.category.multi)
-                  ? elm.name
-                  : elm.country}
-              </AppText>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </View>
-    );
   }
 
   // 국가 검색
@@ -514,20 +338,7 @@ class StoreSearchScreen extends Component<
   }
 
   render() {
-    const {querying, searching, searchWord} = this.state;
-
-    return (
-      <View style={styles.mainContainer}>
-        <AppActivityIndicator visible={querying} />
-        {searching ? (
-          this.renderStoreList()
-        ) : (
-          <ScrollView style={{width: '100%'}}>
-            {searchWord ? this.renderSearching() : this.renderSearchWord()}
-          </ScrollView>
-        )}
-      </View>
-    );
+    return <View style={styles.mainContainer}>{this.renderStoreList()}</View>;
   }
 }
 

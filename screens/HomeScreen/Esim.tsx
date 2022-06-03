@@ -14,7 +14,6 @@ import React, {
 } from 'react';
 import {
   Animated,
-  Appearance,
   Dimensions,
   Platform,
   Pressable,
@@ -34,7 +33,7 @@ import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
 import AppUserPic from '@/components/AppUserPic';
-import StoreList, {StoreListRef} from '@/components/StoreList';
+import StoreList from '@/components/StoreList';
 import withBadge from '@/components/withBadge';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -166,6 +165,14 @@ const styles = StyleSheet.create({
     height: 250,
     paddingBottom: 15,
     paddingHorizontal: 15,
+  },
+  showSearchBar: {
+    margin: 20,
+    height: 56,
+    borderRadius: 2,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: colors.clearBlue,
   },
 });
 
@@ -415,13 +422,6 @@ const Esim: React.FC<EsimProps> = ({
       ),
       headerRight: () => (
         <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
-          <AppButton
-            key="search"
-            style={styles.btnSearchBar}
-            onPress={() => navigation?.navigate('StoreSearch')}
-            iconName="btnSearchTop"
-          />
-
           <AppButton
             key="cnter"
             style={styles.btnCnter}
