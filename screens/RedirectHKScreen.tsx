@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteSix,
     paddingHorizontal: 20,
     marginBottom: 24,
+    height: 700,
   },
   dotStyle: {
     width: 6,
@@ -121,7 +122,6 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     maxWidth: width - 40,
-    // maxHeight: height,
     height: '100%',
     alignSelf: 'stretch',
   },
@@ -183,7 +183,7 @@ class RedirectHKScreen extends Component<
       <Image
         style={styles.image}
         source={guideImage[item]}
-        resizeMode="stretch"
+        resizeMode="contain"
       />
     );
   };
