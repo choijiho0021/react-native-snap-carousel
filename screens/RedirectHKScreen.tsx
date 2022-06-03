@@ -9,6 +9,7 @@ import {
   Image,
   SafeAreaView,
   Linking,
+  Dimensions,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -36,6 +37,8 @@ import {
 import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
 import {sliderWidth} from '@/constants/SliderEntry.style';
+
+const {width} = Dimensions.get('window');
 
 const guideImage = {
   step1: require('../assets/images/guide_HK/guideHK1.png'),
@@ -115,6 +118,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: 5,
   },
+  image: {
+    width: '100%',
+    maxWidth: width - 40,
+    // maxHeight: height,
+    height: '100%',
+    alignSelf: 'stretch',
+  },
 });
 
 type RedirectHKScreenNavigationProp = StackNavigationProp<
@@ -171,9 +181,9 @@ class RedirectHKScreen extends Component<
   renderGuideHK = ({item}: {item: CarouselIndex}) => {
     return (
       <Image
-        // style={styles.image}
+        style={styles.image}
         source={guideImage[item]}
-        resizeMode="contain"
+        resizeMode="stretch"
       />
     );
   };
