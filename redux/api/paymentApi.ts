@@ -85,6 +85,7 @@ const method = esimGlobal
           method: 'naverco',
           title: 'pym:naver',
           icon: 'naver',
+          language: 'ko',
         },
         !esimApp
           ? {
