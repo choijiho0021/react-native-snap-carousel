@@ -13,6 +13,7 @@ import React, {
   useState,
 } from 'react';
 import {
+  Animated,
   Appearance,
   Dimensions,
   Platform,
@@ -217,6 +218,7 @@ const TabHeader0 = ({
 const TabHeader = memo(TabHeader0);
 
 const POPUP_DIS_DAYS = 7;
+const HEADER_HEIGHT = 137;
 
 const Esim: React.FC<EsimProps> = ({
   navigation,
@@ -226,19 +228,6 @@ const Esim: React.FC<EsimProps> = ({
   account,
   sync,
 }) => {
-  const asiaRef = useRef<React.MutableRefObject<StoreListRef>>(null);
-  const europeRef = useRef<React.MutableRefObject<StoreListRef>>(null);
-  const usaAuRef = useRef<React.MutableRefObject<StoreListRef>>(null);
-  const multiRef = useRef<React.MutableRefObject<StoreListRef>>(null);
-  const tabViewRef = useMemo(
-    () => ({
-      asia: asiaRef,
-      europe: europeRef,
-      usaAu: usaAuRef,
-      multi: multiRef,
-    }),
-    [],
-  );
   const [isSupportDev, setIsSupportDev] = useState<boolean | undefined>();
   const [index, setIndex] = useState(0);
   const routes = useMemo(
@@ -258,7 +247,6 @@ const Esim: React.FC<EsimProps> = ({
     multi: [] as ProductByCategory[],
   });
   const [firstLaunch, setFirstLaunch] = useState<boolean | undefined>();
-  const darkMode = useMemo(() => Appearance.getColorScheme() === 'dark', []);
   const [popUpVisible, setPopUpVisible] = useState(false);
   const [checked, setChecked] = useState(false);
   const [popupDisabled, setPopupDisabled] = useState(false);
@@ -267,7 +255,6 @@ const Esim: React.FC<EsimProps> = ({
   const [deviceList, setDeviceList] = useState<string[]>([]);
   const initialized = useRef(false);
   const initNoti = useRef(false);
-
   const setNotiModal = useCallback(() => {
     const popUpPromo = promotion?.find((v) => v?.notice?.image?.noti);
 
@@ -319,14 +306,7 @@ const Esim: React.FC<EsimProps> = ({
     [action.product, navigation],
   );
 
-  const onIndexChange = useCallback(
-    (idx: number) => {
-      setIndex(idx);
-      const {key} = routes[index];
-      tabViewRef[key].current?.scrollToIndex({index: 0});
-    },
-    [index, routes, tabViewRef],
-  );
+  const onIndexChange = useCallback((idx: number) => setIndex(idx), []);
 
   const exitApp = useCallback(
     (v?: string) => {
@@ -358,6 +338,19 @@ const Esim: React.FC<EsimProps> = ({
     [navigation, popUp?.notice],
   );
 
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const clampedScrollY = scrollY.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 1],
+    extrapolateLeft: 'clamp',
+  });
+  const height = Animated.diffClamp(
+    Animated.subtract(HEADER_HEIGHT, clampedScrollY),
+    0,
+    HEADER_HEIGHT,
+  );
+
+  const ref = useRef<View>();
   const renderScene = useCallback(
     ({route}: {route: TabViewRoute}) => {
       const data = scene[route.key];
@@ -365,11 +358,17 @@ const Esim: React.FC<EsimProps> = ({
         <StoreList
           data={data}
           onPress={onPressItem}
-          storeListRef={tabViewRef[route.key]}
+          localOpList={product.localOpList}
+          onScroll={Animated.event(
+            [{nativeEvent: {contentOffset: {y: scrollY}}}],
+            {
+              useNativeDriver: false,
+            },
+          )}
         />
       );
     },
-    [onPressItem, scene, tabViewRef],
+    [onPressItem, product.localOpList, scene, scrollY],
   );
 
   const modalBody = useCallback(() => {
@@ -404,6 +403,7 @@ const Esim: React.FC<EsimProps> = ({
       </View>
     );
   }, [deviceList]);
+
   useEffect(() => {
     navigation?.setOptions({
       title: null,
@@ -556,7 +556,6 @@ const Esim: React.FC<EsimProps> = ({
     popUpVisible,
   ]);
 
-  // const {isSupportDev, darkMode, index, routes, popupDisabled} = this.state;
   useEffect(() => {
     navigation.addListener('blur', () => setPopUpVisible(false));
   }, [navigation]);
@@ -667,8 +666,19 @@ const Esim: React.FC<EsimProps> = ({
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle={darkMode ? 'light-content' : 'dark-content'} />
-      <PromotionCarousel />
+      <StatusBar barStyle="dark-content" />
+      <Animated.View
+        style={{height}}
+        ref={ref}
+        // onLayout={(event) => {
+        //   const {height} = event.nativeEvent.layout;
+        //   bannerHeight.setValue(height);
+        //   console.log('@@@ init height', height);
+        // }}
+        // android에서는 optimization을 위해서 불필요한 view를 제거할 수 있다. collapsable=false로 설정하여, view가 제거되지 않도록 처리한다.
+        collapsable={false}>
+        <PromotionCarousel />
+      </Animated.View>
       <TabHeader index={index} routes={routes} onIndexChange={onIndexChange} />
 
       <TabView
