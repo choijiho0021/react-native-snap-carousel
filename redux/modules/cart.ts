@@ -33,10 +33,6 @@ const getOutOfStockTitle = createAsyncThunk(
 const cartUpdateQty = createAsyncThunk('cart/update', API.Cart.updateQty);
 
 const makeOrder = createAsyncThunk('cart/makeOrder', API.Cart.makeOrder);
-const rechargeAccount = createAsyncThunk(
-  'cart/rechargeAccount',
-  API.Recharge.add,
-);
 
 const checkStock = createAsyncThunk(
   'cart/checkStock',
@@ -267,8 +263,6 @@ const slice = createSlice({
         state.orderId = objects[0]?.order_id[0]?.value;
       }
     });
-
-    builder.addCase(rechargeAccount.fulfilled, onSuccess);
   },
 });
 
