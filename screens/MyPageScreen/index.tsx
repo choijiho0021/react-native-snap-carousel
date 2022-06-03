@@ -1,7 +1,6 @@
 import Clipboard from '@react-native-community/clipboard';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import Analytics from 'appcenter-analytics';
 import React, {Component} from 'react';
 import {
   FlatList,
@@ -20,7 +19,6 @@ import {
 } from 'react-native-permissions';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppButton from '@/components/AppButton';
@@ -32,7 +30,6 @@ import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
-import {API} from '@/redux/api';
 import {
   AccountAction,
   AccountModelState,

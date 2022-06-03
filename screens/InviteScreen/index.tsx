@@ -4,6 +4,7 @@ import {RouteProp} from '@react-navigation/native';
 import React, {Component} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
@@ -15,7 +16,6 @@ import {
   Toast,
   ToastAction,
 } from '@/redux/modules/toast';
-import {bindActionCreators} from 'redux';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {
