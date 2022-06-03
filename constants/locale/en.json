@@ -648,10 +648,10 @@
   "changeEmail": "이메일 변경",
   "changeEmail:using": "Registered Email Address",
   "changeEmail:new": "New Email Address",
-  "changeEmail:placeholder": "변경할 이메일 주소를 입력하세요.",
+  "changeEmail:placeholder": "Plz, input your new email address.",
   "changeEmail:info": "* Activation info for your eSIM product will be sent to this email",
   "changeEmail:save": "Save Changes",
-  "changeEmail:saveInfo": "저장이 완료되었습니다.",
+  "changeEmail:saveInfo": "Email address change is completed.",
 
   "socialLogin:kakao": "Login with Kakao"
 }
