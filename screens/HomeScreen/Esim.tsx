@@ -418,11 +418,10 @@ class Esim extends Component<EsimProps, EsimState> {
     if (DeviceId.startsWith('AppleTV')) return false;
 
     if (DeviceId.startsWith('iPhone'))
-      return !!DeviceId.localeCompare('iPhone11.1');
+      return !DeviceId.localeCompare('iPhone11.1');
     if (DeviceId.startsWith('iPad'))
       return (
-        enableIpadList.includes(DeviceId) ||
-        !!DeviceId.localeCompare('iPad13,2')
+        enableIpadList.includes(DeviceId) || !DeviceId.localeCompare('iPad13,2')
       );
 
     return true;
