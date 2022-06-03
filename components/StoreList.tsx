@@ -186,19 +186,19 @@ type StoreListProps = {
 const StoreList = ({localOpList, data, onPress, onScroll}: StoreListProps) => {
   return (
     <View style={appStyles.container}>
-      <Animated.ScrollView
+      <Animated.FlatList
+        data={data}
         onScroll={onScroll}
         bounces={false}
-        scrollEventThrottle={16}>
-        {data.map((d) => (
+        renderItem={({item}) => (
           <CountryItem
-            key={d.key}
+            key={item.key}
             onPress={onPress}
-            item={d}
+            item={item}
             localOpList={localOpList}
           />
-        ))}
-      </Animated.ScrollView>
+        )}
+      />
     </View>
   );
 };
