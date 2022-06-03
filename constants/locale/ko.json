@@ -70,7 +70,7 @@
   "home:unsupportedBody2": "eSIM 모듈이 탑재된 eSIM 지원 단말에서 이용 가능",
   "home:unsupportedBody3": "합니다",
   "home:unsupportedBody4": "eSIM 미지원단말(일반 스마트폰) 사용자께서는 추후 서비스 될 로밍도깨비 유심서비스를 이용해주세요.",
-
+  "home:searchPlaceholder": "어느 나라로 떠날 예정이신가요?",
   "store:dest": "목적지",
   "store:partnerName": "로컬 사업자",
   "store:network": "네트워크",

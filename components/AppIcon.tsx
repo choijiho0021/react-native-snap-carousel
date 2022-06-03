@@ -67,6 +67,7 @@ const images: Record<string, any[]> = {
   btnSearchOn: [require(`${mainPath}btnSearchOn.png`)],
   btnSearchCancel: [require(`${mainPath}btnSearchCancel.png`)],
   btnSearchOff: [require(`${mainPath}btnSearchOff.png`)],
+  btnSearchBlue: [require(`${mainPath}btnSearchBlue.png`)],
   imgPeopleL: [require(`${mainPath}imgPeopleL.png`)],
   imgPeoplePlus: [require(`${mainPath}imgPeoplePlus.png`)],
   btnCancel: [require(`${mainPath}btnCancel.png`)],

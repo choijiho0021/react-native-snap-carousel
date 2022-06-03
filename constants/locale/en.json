@@ -188,10 +188,10 @@
   "set:failedToSendAlimTalk": "Failed to send a KakaoTalk message. Please try again later",
   "set:pushnoti": "Push Notifications",
   // 번역 필요 임시 추가
-  "set:accountSettings": "회원 정보 수정",
-  "set:changeMail": "이메일 주소 변경",
+  "set:accountSettings": "Account Settings",
+  "set:changeMail": "Email Address Change",
 
-  "resign": "계정 탈퇴",
+  "resign": "Delete Account",
   "resign:why": "계정을 탈퇴하려는 이유를 알려주세요.",
   "resign:info": "서비스 개선에 적극적으로 반영하도록 하겠습니다.",
   "resign:title": "고객님\n정말 떠나시는 건가요?",
@@ -205,7 +205,7 @@
   "resign:confirm2": "계정 탈퇴 후 재가입 시, 회원가입 이벤트에 재참여하실 수 없습니다.",
   "resign:confirm3": "계정 탈퇴 후 전자상거래법에 따라 보존해야 하는 정보는 해당 법률에 따른 기간 보관 후 폐기됩니다.",
   "resign:isConfirm": "안내사항을 확인하였으며 동의합니다.",
-  "resign:finished": "계정 탈퇴가 정상적으로 처리되었습니다.\n이용해주셔서 감사합니다.",
+  "resign:finished": "Account deletion is completed successfully",
   "resign:placeholder": "기타인 경우 이유를 입력해주세요.\n서비스 개선에 적극적으로 반영하겠습니다.",
   "set:globalMarket": "Global Market",
 
@@ -643,5 +643,15 @@
   "loading:text0": "Product info is downloading.",
   "loading:text1": "It might take more time \nin low speed network environment.",
 
-  "info:init:err": "Sorry, try again."
+  "info:init:err": "Sorry, try again.",
+
+  "changeEmail": "이메일 변경",
+  "changeEmail:using": "Registered Email Address",
+  "changeEmail:new": "New Email Address",
+  "changeEmail:placeholder": "Plz, input your new email address.",
+  "changeEmail:info": "* Activation info for your eSIM product will be sent to this email",
+  "changeEmail:save": "Save Changes",
+  "changeEmail:saveInfo": "Email address change is completed.",
+
+  "socialLogin:kakao": "Login with Kakao"
 }
