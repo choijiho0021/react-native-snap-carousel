@@ -65,10 +65,11 @@ const GiftModal: React.FC<GiftModalProps> = ({visible, onOkClose}) => {
             alignSelf: 'flex-end',
             marginRight: 20,
           }}
+          onPress={onOkClose}
         />
       </View>
     ),
-    [],
+    [onOkClose],
   );
 
   return (
@@ -79,7 +80,6 @@ const GiftModal: React.FC<GiftModalProps> = ({visible, onOkClose}) => {
         borderTopLeftRadius: 8,
         borderTopRightRadius: 8,
       }}
-      onOkClose={onOkClose}
       bottom={renderBottom}
       visible={visible}>
       <View>

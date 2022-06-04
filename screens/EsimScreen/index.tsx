@@ -96,6 +96,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [modal, setModal] = useState<ModalType>('');
   const [subs, setSubs] = useState<RkbSubscription>();
   const [cmiPending, setCmiPending] = useState(false);
+  const [showGiftModal, setShowGiftModal] = useState(true);
   const [cmiUsage, setCmiUsage] = useState({});
   const [cmiStatus, setCmiStatus] = useState({});
   const init = useCallback(
@@ -376,7 +377,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           setCmiUsage({});
         }}
       />
-      <GiftModal visible />
+      <GiftModal
+        visible={showGiftModal}
+        onOkClose={() => setShowGiftModal(false)}
+      />
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackBar(false)}
