@@ -1,6 +1,7 @@
 import React, {memo, useCallback} from 'react';
 import {Dimensions, Pressable, StyleSheet, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-community/async-storage';
 import AppModal from '@/components/AppModal';
 import AppIcon from '@/components/AppIcon';
 import AppButton from '@/components/AppButton';
@@ -56,6 +57,10 @@ const GiftModal: React.FC<GiftModalProps> = ({visible, onOkClose}) => {
             color: colors.warmGrey,
             alignSelf: 'flex-start',
             marginLeft: 20,
+          }}
+          onPress={() => {
+            AsyncStorage.setItem('gift.show.modal', 'false');
+            onOkClose?.();
           }}
         />
         <AppButton

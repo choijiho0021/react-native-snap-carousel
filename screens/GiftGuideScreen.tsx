@@ -126,9 +126,9 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
             {i18n.t('gift:guide2-title')}
           </AppText>
         </View>
-        {/* {renderStep('1')}
+        {renderStep('1')}
         {renderStep('2')}
-        {renderStep('3')} */}
+        {renderStep('3')}
         <View
           style={{
             backgroundColor: colors.whiteTwo,
@@ -191,6 +191,14 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
               marginTop: 32,
               backgroundColor: colors.clearBlue,
               height: 62,
+            }}
+          />
+          <AppIcon
+            name="giftCoin"
+            style={{
+              position: 'absolute',
+              top: 34,
+              right: 20,
             }}
           />
         </View>
