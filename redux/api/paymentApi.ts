@@ -214,10 +214,9 @@ const getImpToken = () => {
     'Content-Type': `application/json`,
   };
 
-  const imp_key = esimGlobal ? '0272408165941078' : '2354871690070639';
-  const imp_secret = esimGlobal
-    ? 'GzwsCZGCcrRFvKS8jOCqRniysvG1PDpwdWZPVFs77kNC4FLouoPmL7VdDBftfE0sB0iwGKEN5sq98cyC'
-    : 'THyweTbrgMU9w3Pt4Ue6vx21SX8clg3fYBMcvYEMLyWiCLLHFZNbxQcpOlCaCGqAicMNbrzW0veCgZjW';
+  const imp_key = '9603012818567165';
+  const imp_secret =
+    '21d8ef6b4daa18f5b0b305f7087066cd24f429a4f5b77c907bb4d260a03d257bb05219242bddf802';
 
   return api.callHttp(
     `https://api.iamport.kr/users/getToken`,
