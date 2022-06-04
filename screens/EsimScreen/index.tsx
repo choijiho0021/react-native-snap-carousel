@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import moment from 'moment';
+import AsyncStorage from '@react-native-community/async-storage';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppIcon from '@/components/AppIcon';
 import AppSnackBar from '@/components/AppSnackBar';
@@ -341,6 +342,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     });
     init({iccid, token});
   }, [iccid, init, navigation, token]);
+
+  useEffect(() => {
+    async function checkShowModal() {
+      const item = (await AsyncStorage.getItem('gift.show.modal')) || 'true';
+      setShowGiftModal(item === 'true');
+    }
+    checkShowModal();
+  }, []);
 
   return (
     <View style={styles.container}>
