@@ -625,6 +625,8 @@
   "gift:linkTitle": "The data gift has arrived!",
   "gift:linkDesc": "The moment you need data anytime, anywhere, Rokebi.",
   "gift:modal1": "구매한 상품을\n친구에게 선물하세요!",
+  "gift:modal2": "'선물하기'를 눌러 구매한 상품을\n선물할 수 있습니다.",
+  "gift:modalBtn": "자세히 보기",
 
   "noti:updateTitle": "New Version Available!",
   "noti:updateOpt": "We improved App for your better experience.\nPlease, enjoy the stable service after new version update.",
