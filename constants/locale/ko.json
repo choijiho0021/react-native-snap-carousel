@@ -602,8 +602,9 @@
   "inv:upper4": "친구가 고객님의 초대로 로밍도깨비 eSIM을\n최초 가입하면, 바로 적립됩니다.",
 
   "inv:lower1": "초대 인원에 제한이 없어요!",
-  "inv:lower2": "한명*이 가입하면,",
-  "inv:lower3": "열명*이 가입하면,",
+  "inv:lower2": "한명",
+  "inv:lower3": "열명",
+  "inv:suffix": "이 가입하면,",
   "inv:lower4": "로깨비",
   "inv:lower5": "cash",
 
