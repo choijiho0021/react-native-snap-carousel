@@ -1,10 +1,10 @@
-import Env from '@/environment';
-import i18n from '@/utils/i18n';
 import moment from 'moment-with-locales-es6';
 import {Image} from 'react-native';
 import {getFontScale} from 'react-native-device-info';
 import RNFetchBlob from 'rn-fetch-blob';
 import _ from 'underscore';
+import i18n from '@/utils/i18n';
+import Env from '@/environment';
 import {RkbImage} from './accountApi';
 import {Currency, CurrencyCode} from './productApi';
 
@@ -18,45 +18,10 @@ const fontScaling = async (size: number = 12): Promise<number> => {
   return size;
 };
 
-const numberToCommaString = (n?: number): string => {
-  if (typeof n === 'number') {
-    return n
-      .toString()
-      .replace(/,/g, '')
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  }
-
-  return typeof n === 'string' ? n : '';
-};
-
-const currencyString = (n?: number): string => {
-  if (n === undefined) return '';
-
-  const str = numberToCommaString(Math.round(n * 100) / 100);
-  if (esimCurrency === 'KRW') return str;
-  const digits = str.split('.');
-  return `${digits[0]}.${(digits[1] || '').padEnd(1, '0')}`;
-};
-
-const dlvCost = (totalPrice: Currency): Currency => {
-  if (totalPrice.currency === 'USD') {
-    return {
-      value: totalPrice.value < 30 && totalPrice.value > 0 ? 3 : 0,
-      currency: 'USD',
-    };
-  }
-
-  return {
-    value: totalPrice.value < 30000 && totalPrice.value > 0 ? 3000 : 0,
-    currency: 'KRW',
-  };
-};
-
 const isExist = (value: any) => {
   return value !== undefined && value !== null && !Number.isNaN(value);
 };
 
-// 숫자만 입력 받기
 const stringToNumber = (value: string): number | undefined => {
   if (typeof value === 'number') {
     return value;
@@ -82,6 +47,41 @@ const stringToNumber = (value: string): number | undefined => {
   return Number(num);
 };
 
+const numberToCommaString = (n?: number | string): string => {
+  const num = typeof n === 'string' ? stringToNumber(n) : n;
+  if (typeof num === 'number') {
+    return num
+      .toString()
+      .replace(/,/g, '')
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+  return '';
+};
+
+const currencyString = (n?: number): string => {
+  if (n === undefined) return '';
+
+  const str = numberToCommaString(Math.round(n * 100) / 100);
+  if (esimCurrency === 'KRW') return str;
+  const digits = str.split('.');
+  return `${digits[0]}.${(digits[1] || '').padEnd(1, '0')}`;
+};
+
+const dlvCost = (totalPrice: Currency): Currency => {
+  if (totalPrice.currency === 'USD') {
+    return {
+      value: totalPrice.value < 30 && totalPrice.value > 0 ? 3 : 0,
+      currency: 'USD',
+    };
+  }
+
+  return {
+    value: totalPrice.value < 30000 && totalPrice.value > 0 ? 3000 : 0,
+    currency: 'KRW',
+  };
+};
+
+// 숫자만 입력 받기
 const stringToCurrency = (value: string): Currency => {
   if (value.startsWith('USD')) {
     return {value: stringToNumber(value.substr(3)) || 0, currency: 'USD'};

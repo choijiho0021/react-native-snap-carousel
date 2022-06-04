@@ -204,7 +204,7 @@ class SubsDetailScreen extends Component {
         <AppButton
           style={styles.confirm}
           title={i18n.t('ok')}
-          titleStyle={appStyles.confirmText}
+          titleStyle={appStyles.medium18}
           onPress={() => this.props.navigation.goBack()}
         />
       </View>
@@ -233,14 +233,14 @@ class SubsDetailScreen extends Component {
               },
             ]}
             title={i18n.t('reg:cancelReservation')}
-            titleStyle={[appStyles.confirmText, {color: colors.black}]}
+            titleStyle={[appStyles.medium18, {color: colors.black}]}
             onPress={() => this.onSubmit(subsApi.STATUS_INACTIVE)}
           />
         )}
         {statusCd === subsApi.STATUS_INACTIVE && (
           <AppButton
             title={i18n.t('reg:toRokebiCash')}
-            titleStyle={[appStyles.confirmText, {color: colors.black}]}
+            titleStyle={[appStyles.medium18, {color: colors.black}]}
             style={{borderWidth: 1, borderColor: colors.lightGrey, flex: 1}}
             onPress={() => this.showModal(true, deactivateBtn)}
           />
@@ -248,7 +248,7 @@ class SubsDetailScreen extends Component {
         <AppButton
           style={styles.confirm}
           title={buttonTitle}
-          titleStyle={appStyles.confirmText}
+          titleStyle={appStyles.medium18}
           disabled={disable}
           onPress={() =>
             targetStatus === subsApi.STATUS_ACTIVE

@@ -1,3 +1,11 @@
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {Map as ImmutableMap} from 'immutable';
+import React, {Component} from 'react';
+import {Alert, SafeAreaView, SectionList, StyleSheet, View} from 'react-native';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -27,14 +35,6 @@ import {
 } from '@/redux/modules/cart';
 import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {Map as ImmutableMap} from 'immutable';
-import React, {Component} from 'react';
-import {Alert, SafeAreaView, SectionList, StyleSheet, View} from 'react-native';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 
 const {esimCurrency} = Env.get();
 const sectionTitle = ['sim', 'product'];
@@ -47,9 +47,10 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   sumBox: {
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
-    marginHorizontal: 30,
+    // marginHorizontal: 30,
   },
   sectionTitle: {
     ...appStyles.subTitle,

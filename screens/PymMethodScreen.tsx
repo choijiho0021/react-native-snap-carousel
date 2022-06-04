@@ -728,7 +728,7 @@ class PymMethodScreen extends Component<
               this.props.profile.profile.length === 0 && (
                 <AppButton
                   title={i18n.t('reg:address')}
-                  titleStyle={appStyles.confirmText}
+                  titleStyle={appStyles.medium18}
                   style={[appStyles.confirm, styles.addrBtn]}
                   onPress={() => this.props.navigation.navigate('AddProfile')}
                 />
@@ -968,7 +968,7 @@ class PymMethodScreen extends Component<
           {this.consentBox()}
           <AppButton
             title={i18n.t('payment')}
-            titleStyle={appStyles.confirmText}
+            titleStyle={appStyles.medium18}
             disabled={
               (pymPrice?.value !== 0 && _.isEmpty(selected)) ||
               (simIncluded && noProfile) ||

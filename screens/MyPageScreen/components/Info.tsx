@@ -44,14 +44,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   btnInvite: {
+    marginTop: 15,
     marginHorizontal: 7.5,
-    paddingHorizontal: 26,
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: colors.whiteTwo,
-    borderRadius: 3,
-    height: esimApp ? 48 : 36,
-    alignItems: 'center',
+    backgroundColor: colors.blue,
   },
   btnIdCheck: {
     marginHorizontal: 7.5,
@@ -178,15 +173,11 @@ const Info: React.FC<InfoProps> = ({
             </AppText>
           </Pressable>
         </View>
-        <Pressable
+        <AppButton
+          iconName="inviteBanner"
           style={styles.btnInvite}
-          onPress={() => navigation.navigate('Invite')}>
-          <AppText style={styles.newMark}>{i18n.t('acc:new')}</AppText>
-          <AppText style={appStyles.normal14Text}>
-            {i18n.t('acc:invite')}
-          </AppText>
-          <AppIcon style={styles.btnArrow} name="iconArrowRightBlack" />
-        </Pressable>
+          onPress={() => navigation.navigate('Invite')}
+        />
       </View>
       <View style={styles.divider} />
       <AppText style={styles.subTitle}>{i18n.t('acc:purchaseHistory')}</AppText>

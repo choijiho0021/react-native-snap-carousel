@@ -10,7 +10,6 @@ import Payment from './paymentApi';
 import Product from './productApi';
 import Profile from './profileApi';
 import Promotion from './promotionApi';
-import Recharge from './rechargeApi';
 import SimCard from './simCardApi';
 import Subscription from './subscriptionApi';
 import User from './userApi';
@@ -54,9 +53,6 @@ const API = {
   },
   get Promotion() {
     return Promotion;
-  },
-  get Recharge() {
-    return Recharge;
   },
   get SimCard() {
     return SimCard;

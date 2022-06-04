@@ -28,7 +28,11 @@ import {
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import utils from '@/redux/api/utils';
-import {AccountModelState} from '@/redux/modules/account';
+import {
+  AccountModelState,
+  AccountAction,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import {
   actions as infoActions,
   InfoAction,
@@ -98,6 +102,7 @@ type SimpleTextScreenProps = {
 
   action: {
     info: InfoAction;
+    account: AccountAction;
   };
 };
 
@@ -297,8 +302,9 @@ class SimpleTextScreen extends Component<
       pending,
       eventStatus,
       isProdEvent,
-      account: {loggedIn},
+      account: {loggedIn, iccid, token},
       navigation,
+      route,
     } = this.props;
     const {image} = this.props.route.params;
 
@@ -336,11 +342,19 @@ class SimpleTextScreen extends Component<
           buttonTitleColor={colors.black}
           onOkClose={() => {
             this.setState({promoResult: undefined});
-            if (promoResult === 'promo:join:joined')
-              navigation.navigate('EsimStack', {
-                screen: 'Esim',
-              });
-            else navigation.goBack();
+            if (promoResult === 'promo:join:joined') {
+              if (route.params?.rule?.sku?.startsWith('rch-')) {
+                this.props.action.account.getAccount({iccid, token});
+                // go to MyPage for recharge promotion
+                navigation.navigate('MyPageStack', {
+                  screen: 'MyPage',
+                });
+              } else {
+                navigation.navigate('EsimStack', {
+                  screen: 'Esim',
+                });
+              }
+            } else navigation.goBack();
           }}>
           <AppUserPic
             url={
@@ -403,6 +417,7 @@ export default connect(
   (dispatch) => ({
     action: {
       info: bindActionCreators(infoActions, dispatch),
+      account: bindActionCreators(accountActions, dispatch),
     },
   }),
 )(memo(SimpleTextScreen0));

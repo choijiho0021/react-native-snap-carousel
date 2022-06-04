@@ -3,16 +3,23 @@ import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import AsyncStorage from '@react-native-community/async-storage';
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import {StackNavigationProp} from '@react-navigation/stack';
-import moment, {Moment} from 'moment';
-import React, {Component, memo} from 'react';
+import moment from 'moment';
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
-  Appearance,
+  Animated,
   Dimensions,
   Platform,
-  Pressable,
   StatusBar,
   StyleSheet,
   View,
+  ScrollView,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {Settings} from 'react-native-fbsdk';
@@ -21,12 +28,10 @@ import {getTrackingStatus} from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
-import {ScrollView} from 'react-native';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
-import AppUserPic from '@/components/AppUserPic';
-import StoreList, {StoreListRef} from '@/components/StoreList';
+import StoreList from '@/components/StoreList';
 import withBadge from '@/components/withBadge';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -38,7 +43,6 @@ import {
   ProductByCategory,
   RkbProduct,
   TabViewRoute,
-  TabViewRouteKey,
 } from '@/redux/api/productApi';
 import {RkbPromotion} from '@/redux/api/promotionApi';
 import createHandlePushNoti from '@/redux/models/createHandlePushNoti';
@@ -61,6 +65,8 @@ import pushNoti from '@/utils/pushNoti';
 import {checkFistLaunch, requestPermission} from './component/permission';
 import PromotionCarousel from './component/PromotionCarousel';
 import AndroidEuccidModule from '@/components/NativeModule/AndroidEuccidModule';
+import {useInterval} from '@/utils/useInterval';
+import NotiModal from './component/NotiModal';
 
 const {esimGlobal} = Env.get();
 
@@ -144,15 +150,6 @@ const styles = StyleSheet.create({
     aspectRatio: 335 / 100,
     width: '100%',
   },
-  infoModalTitle: {
-    ...appStyles.normal20Text,
-    marginHorizontal: 20,
-  },
-  popupImg: {
-    width: 333,
-    height: 444,
-    marginVertical: 20,
-  },
   deviceScrollView: {
     backgroundColor: colors.whiteTwo,
     height: 250,
@@ -160,7 +157,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   showSearchBar: {
-    margin: 20,
+    marginBottom: 20,
+    marginHorizontal: 20,
+    // margin: 20,
     height: 56,
     borderRadius: 2,
     borderStyle: 'solid',
@@ -184,21 +183,6 @@ type EsimProps = {
     noti: NotiAction;
     cart: CartAction;
   };
-};
-
-type EsimState = {
-  isSupportDev: boolean;
-  index: number;
-  routes: TabViewRoute[];
-  scene: Record<TabViewRouteKey, ProductByCategory[]>;
-  time: Moment;
-  deviceList?: string[];
-  firstLaunch?: boolean;
-  popUp?: RkbPromotion;
-  closeType?: 'close' | 'exit' | 'redirect';
-  popUpVisible: boolean;
-  checked: boolean;
-  popupDisabled: boolean;
 };
 
 const TabHeader0 = ({
@@ -233,273 +217,159 @@ const TabHeader0 = ({
 const TabHeader = memo(TabHeader0);
 
 const POPUP_DIS_DAYS = 7;
-class Esim extends Component<EsimProps, EsimState> {
-  offset: number;
+const HEADER_HEIGHT = 137;
 
-  controller: AbortController;
-
-  tabViewRef: Record<TabViewRouteKey, React.RefObject<StoreListRef>>;
-
-  constructor(props: EsimProps) {
-    super(props);
-
-    this.state = {
-      isSupportDev: true,
-      index: 0,
-      routes: [
+const Esim: React.FC<EsimProps> = ({
+  navigation,
+  action,
+  promotion,
+  product,
+  account,
+  sync,
+}) => {
+  const [isSupportDev, setIsSupportDev] = useState<boolean | undefined>();
+  const [index, setIndex] = useState(0);
+  const routes = useMemo(
+    () =>
+      [
         {key: 'asia', title: i18n.t('store:asia'), category: '아시아'},
         {key: 'europe', title: i18n.t('store:europe'), category: '유럽'},
         {key: 'usaAu', title: i18n.t('store:usa/au'), category: '미주/호주'},
         {key: 'multi', title: i18n.t('store:multi'), category: '복수 국가'},
       ] as TabViewRoute[],
-      scene: {
-        asia: [] as ProductByCategory[],
-        europe: [] as ProductByCategory[],
-        usaAu: [] as ProductByCategory[],
-        multi: [] as ProductByCategory[],
-      },
-      firstLaunch: false,
-      time: moment(),
-      popUpVisible: false,
-      checked: false,
-      popupDisabled: false,
-    };
+    [],
+  );
+  const [scene, setScene] = useState({
+    asia: [] as ProductByCategory[],
+    europe: [] as ProductByCategory[],
+    usaAu: [] as ProductByCategory[],
+    multi: [] as ProductByCategory[],
+  });
+  const [firstLaunch, setFirstLaunch] = useState<boolean | undefined>();
+  const [popUpVisible, setPopUpVisible] = useState(false);
+  const [popupDisabled, setPopupDisabled] = useState(false);
+  const [popUp, setPopUp] = useState<RkbPromotion>();
+  const [closeType, setCloseType] = useState<'close' | 'exit' | 'redirect'>();
+  const [deviceList, setDeviceList] = useState<string[]>([]);
+  const initialized = useRef(false);
+  const initNoti = useRef(false);
+  const setNotiModal = useCallback(() => {
+    const popUpPromo = promotion?.find((v) => v?.notice?.image?.noti);
 
-    this.refresh = this.refresh.bind(this);
-    this.renderTitleBtn = this.renderTitleBtn.bind(this);
-    this.onIndexChange = this.onIndexChange.bind(this);
-    this.onPressItem = this.onPressItem.bind(this);
-    this.notification = this.notification.bind(this);
-    this.init = this.init.bind(this);
-    this.modalBody = this.modalBody.bind(this);
-    this.renderNotiModal = this.renderNotiModal.bind(this);
-    this.setNotiModal = this.setNotiModal.bind(this);
-    this.exitApp = this.exitApp.bind(this);
-    this.checkSupportIos = this.checkSupportIos.bind(this);
-
-    this.offset = 0;
-    this.controller = new AbortController();
-    this.tabViewRef = {
-      asia: React.createRef(),
-      europe: React.createRef(),
-      usaAu: React.createRef(),
-      multi: React.createRef(),
-    };
-  }
-
-  componentDidMount() {
-    const now = moment();
-    this.setState({time: now});
-
-    this.props.navigation.addListener('blur', () => {
-      this.setState({popUpVisible: false});
-    });
-
-    AsyncStorage.getItem('popupDisabled').then((v) => {
-      if (v) {
-        const popupDisabled =
-          moment.duration(now.diff(v)).asDays() <= POPUP_DIS_DAYS;
-
-        if (popupDisabled) this.setState({popupDisabled});
-        else AsyncStorage.removeItem('popupDisabled');
-      }
-    });
-
-    API.Device.getDevList().then(async (resp) => {
-      if (resp.result === 0) {
-        const deviceModel = DeviceInfo.getModel();
-
-        const isSupportDev =
-          Platform.OS === 'android'
-            ? await AndroidEuccidModule.isEnableEsim()
-            : this.checkSupportIos();
-
-        this.setState({
-          deviceList: resp.objects,
-          isSupportDev,
-        });
-
-        DeviceInfo.getDeviceName().then((name) => {
-          const deviceFullName = `${deviceModel},${name}`;
-          this.props.action.account.updateAccount({
-            isSupportDev,
-            deviceModel: deviceFullName,
-          });
-        });
-
-        this.renderTitleBtn();
-
-        pushNoti.add(this.notification);
-
-        this.refresh();
-
-        requestPermission();
-
-        // 앱 첫 실행 여부 확인
-        const firstLaunch = await checkFistLaunch();
-        this.setState({firstLaunch});
-        if (firstLaunch) {
-          this.props.navigation.navigate('Tutorial', {
-            popUp: this.setNotiModal,
-          });
-        } else if (this.props.promotion) this.setNotiModal();
-        if (!isSupportDev) {
-          const status = await getTrackingStatus();
-          if (status === 'authorized') {
-            await firebase.analytics().setAnalyticsCollectionEnabled(true);
-            await Settings.setAdvertiserTrackingEnabled(true);
-
-            analytics().logEvent(
-              `${esimGlobal ? 'global' : 'esim'}_disabled_device`,
-              {
-                item: deviceModel,
-                count: 1,
-              },
-            );
-          }
-        }
-      }
-    });
-
-    // 로그인 여부에 따라 달라지는 부분
-    this.init();
-  }
-
-  componentDidUpdate(prevProps: EsimProps) {
-    const {product, account, promotion} = this.props;
-    const focus = this.props.navigation.isFocused();
-    const now = moment();
-    const diff = moment.duration(now.diff(this.state.time)).asMinutes();
-
-    if (diff > 60 && focus) {
-      // eslint-disable-next-line react/no-did-update-set-state
-      this.setState({time: now});
-      this.props.action.product.getProd();
+    if (popUpPromo) {
+      setPopUp(popUpPromo);
+      setCloseType(popUpPromo.notice?.rule ? 'redirect' : 'close');
+      setPopUpVisible(true);
     }
+  }, [promotion]);
 
-    if (prevProps.promotion !== promotion) this.setNotiModal();
-
-    if (
-      prevProps.product.prodList !== product.prodList
-      // || (diff > 0.2 && this.props.product.sortedProdList.length === 0
-    ) {
-      this.refresh();
-    }
-
-    if (
-      prevProps.account.iccid !== account.iccid ||
-      (prevProps.account.loggedIn !== account.loggedIn && !account.loggedIn)
-    ) {
-      this.init();
-    }
-
-    if (this.props.sync.progress) {
-      if (this.state.firstLaunch) {
-        AsyncStorage.removeItem('alreadyLaunched');
-        this.setState({firstLaunch: false});
-      }
-      this.props.navigation.navigate('CodePush');
-    }
-  }
-
-  checkSupportIos = () => {
+  const checkSupportIos = useCallback(() => {
     const DeviceId = DeviceInfo.getDeviceId();
-
-    // 가능한 iPad목록
-    const enableIpadList = [
-      'iPad4,2',
-      'iPad4,3',
-      'iPad5,4',
-      'iPad7,12',
-      'iPad8,3',
-      'iPad8,4',
-      'iPad8,7',
-      'iPad8,8',
-      'iPad11,2',
-      'iPad11,4',
-      'iPad13,2',
-    ];
 
     if (DeviceId.startsWith('AppleTV')) return false;
 
     if (DeviceId.startsWith('iPhone'))
-      return DeviceId.length >= 10 && DeviceId.localeCompare('iPhone11,1') >= 0;
-    if (DeviceId.startsWith('iPad'))
+      return !!DeviceId.localeCompare('iPhone11.1');
+
+    if (DeviceId.startsWith('iPad')) {
+      // 가능한 iPad목록
+      const enableIpadList = [
+        'iPad4,2',
+        'iPad4,3',
+        'iPad5,4',
+        'iPad7,12',
+        'iPad8,3',
+        'iPad8,4',
+        'iPad8,7',
+        'iPad8,8',
+        'iPad11,2',
+        'iPad11,4',
+        'iPad13,2',
+      ];
+
       return (
         enableIpadList.includes(DeviceId) ||
         (DeviceId.length >= 8 && DeviceId.localeCompare('iPad13,2') >= 0)
       );
+    }
 
     return true;
-  };
+  }, []);
 
-  setNotiModal = () => {
-    const popUp = this.props.promotion?.find((v) => v?.notice?.image?.noti);
+  const onPressItem = useCallback(
+    (prodOfCountry: RkbProduct[]) => {
+      action.product.setProdOfCountry(prodOfCountry);
+      navigation.navigate('Country');
+    },
+    [action.product, navigation],
+  );
 
-    if (popUp) {
-      this.setState({
-        popUp,
-        closeType: popUp.notice?.rule ? 'redirect' : 'close',
-        popUpVisible: true,
-      });
-    }
-  };
+  const onIndexChange = useCallback((idx: number) => setIndex(idx), []);
 
-  onPressItem = (prodOfCountry: RkbProduct[]) => {
-    this.props.action.product.setProdOfCountry(prodOfCountry);
-    this.props.navigation.navigate('Country');
-  };
+  const exitApp = useCallback(
+    (v?: string) => {
+      setPopUpVisible(false);
+      setCloseType(undefined);
 
-  onIndexChange = (index: number) => {
-    this.setState({
-      index,
-    });
-    const {key} = this.state.routes[index];
-    this.tabViewRef[key].current?.scrollToIndex({index: 0});
-  };
+      switch (v) {
+        case 'redirect':
+          if (popUp?.notice?.rule?.invitation) {
+            navigation.navigate('Invite');
+          } else if (popUp?.notice) {
+            navigation.navigate('SimpleText', {
+              key: 'noti',
+              title: i18n.t('set:noti'),
+              bodyTitle: popUp.notice.title,
+              body: popUp.notice.body,
+              rule: popUp.notice.rule,
+              image: popUp.notice.image,
+              mode: 'noti',
+            });
+          }
+          break;
+        case 'exit':
+          setIsSupportDev(true);
+          break;
+        default:
+      }
+    },
+    [navigation, popUp?.notice],
+  );
 
-  exitApp = (v?: string) => {
-    const {popUp} = this.state;
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const clampedScrollY = scrollY.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 1],
+    extrapolateLeft: 'clamp',
+  });
+  const height = Animated.diffClamp(
+    Animated.subtract(HEADER_HEIGHT, clampedScrollY),
+    0,
+    HEADER_HEIGHT,
+  );
 
-    this.setState({popUpVisible: false, closeType: undefined});
+  const ref = useRef<View>();
+  const renderScene = useCallback(
+    ({route}: {route: TabViewRoute}) => {
+      const data = scene[route.key];
+      return (
+        <StoreList
+          data={data}
+          onPress={onPressItem}
+          localOpList={product.localOpList}
+          onScroll={Animated.event(
+            [{nativeEvent: {contentOffset: {y: scrollY}}}],
+            {
+              useNativeDriver: false,
+            },
+          )}
+        />
+      );
+    },
+    [onPressItem, product.localOpList, scene, scrollY],
+  );
 
-    switch (v) {
-      case 'redirect':
-        if (popUp?.notice?.rule?.invitation) {
-          this.props.navigation.navigate('Invite');
-        } else if (popUp?.notice) {
-          this.props.navigation.navigate('SimpleText', {
-            key: 'noti',
-            title: i18n.t('set:noti'),
-            bodyTitle: popUp.notice.title,
-            body: popUp.notice.body,
-            rule: popUp.notice.rule,
-            image: popUp.notice.image,
-            mode: 'noti',
-          });
-        }
-        break;
-      case 'exit':
-        this.setState({isSupportDev: true});
-        break;
-      default:
-    }
-  };
-
-  renderScene = ({route}: {route: TabViewRoute}) => {
-    const data = this.state.scene[route.key];
-    return (
-      <StoreList
-        data={data}
-        onPress={this.onPressItem}
-        storeListRef={this.tabViewRef[route.key]}
-      />
-    );
-  };
-
-  modalBody = () => {
-    const {deviceList} = this.state;
-
+  const modalBody = useCallback(() => {
     return (
       <View style={styles.modalBody}>
         <View style={{marginBottom: 10}}>
@@ -530,75 +400,9 @@ class Esim extends Component<EsimProps, EsimState> {
         </ScrollView>
       </View>
     );
-  };
+  }, [deviceList]);
 
-  init() {
-    const {mobile, loggedIn} = this.props.account;
-
-    if (loggedIn) {
-      this.props.action.noti.init({mobile});
-      this.props.action.cart.init();
-      this.props.action.order.init();
-    } else {
-      this.props.action.noti.initNotiList();
-    }
-  }
-
-  refresh() {
-    const {asia, europe, usaAu, multi} = API.Product.category;
-    const {prodList, localOpList} = this.props.product;
-
-    const list = API.Product.getProdGroup({prodList, localOpList});
-
-    const sorted = API.Product.sortProdGroup(localOpList, list);
-
-    this.renderTitleBtn();
-
-    this.props.action.product.setSortedProdList(sorted);
-
-    this.setState({
-      scene: {
-        asia: API.Product.filterByCategory(sorted, asia),
-        europe: API.Product.filterByCategory(sorted, europe),
-        usaAu: API.Product.filterByCategory(sorted, usaAu),
-        multi: API.Product.filterByCategory(sorted, multi),
-      },
-    });
-  }
-
-  notification(type: string, payload, isForeground = true) {
-    const {mobile, iccid, loggedIn} = this.props.account;
-    const {navigation} = this.props;
-
-    if (loggedIn) {
-      this.props.action.noti.getNotiList({mobile});
-    }
-
-    const pushNotiHandler = createHandlePushNoti(navigation, payload, {
-      mobile,
-      iccid,
-      isForeground,
-      isRegister: type === 'register',
-      updateAccount: this.props.action.account.updateAccount,
-      clearCurrentAccount: () => {
-        Promise.all([
-          this.props.action.cart.reset(),
-          this.props.action.order.reset(),
-          this.props.action.noti.reset(),
-          this.props.action.account.logout(),
-        ]).then(() => {
-          if (Platform.OS === 'ios')
-            PushNotificationIOS.setApplicationIconBadgeNumber(0);
-          else ShortcutBadge.setCount(0);
-        });
-      },
-    });
-    pushNotiHandler.sendLog();
-    pushNotiHandler.handleNoti();
-  }
-
-  renderTitleBtn() {
-    const {navigation} = this.props;
+  useEffect(() => {
     navigation?.setOptions({
       title: null,
       headerLeft: () => (
@@ -616,7 +420,7 @@ class Esim extends Component<EsimProps, EsimState> {
             iconName="btnCnter"
           />
 
-          {/* //BadgeAppButton을 사용했을 때 위치가 변동됨 수정이 필요함 */}
+          {/* BadgeAppButton을 사용했을 때 위치가 변동됨 수정이 필요함 */}
           <BadgeAppButton
             key="alarm"
             style={styles.btnAlarm}
@@ -626,116 +430,234 @@ class Esim extends Component<EsimProps, EsimState> {
         </View>
       ),
     });
-  }
+  }, [navigation]);
 
-  renderNotiModal() {
-    const {popUp, closeType, popUpVisible, checked} = this.state;
+  const refresh = useCallback(() => {
+    const {asia, europe, usaAu, multi} = API.Product.category;
+    const {prodList, localOpList} = product;
 
-    return (
-      <AppModal
-        titleStyle={styles.infoModalTitle}
-        title={popUp?.title}
-        closeButtonTitle={i18n.t(closeType || 'close')}
-        type={closeType === 'redirect' ? closeType : 'close'}
-        closeButtonStyle={
-          closeType === 'redirect' ? {flex: 1, margin: 20} : {margin: 20}
+    const list = API.Product.getProdGroup({prodList, localOpList});
+
+    const sorted = API.Product.sortProdGroup(localOpList, list);
+
+    action.product.setSortedProdList(sorted);
+
+    setScene({
+      asia: API.Product.filterByCategory(sorted, asia),
+      europe: API.Product.filterByCategory(sorted, europe),
+      usaAu: API.Product.filterByCategory(sorted, usaAu),
+      multi: API.Product.filterByCategory(sorted, multi),
+    });
+  }, [action.product, product]);
+
+  const notification = useCallback(
+    (type: string, payload, isForeground = true) => {
+      const {mobile, iccid} = account;
+
+      const pushNotiHandler = createHandlePushNoti(navigation, payload, {
+        mobile,
+        iccid,
+        isForeground,
+        isRegister: type === 'register',
+        updateAccount: action.account.updateAccount,
+        clearCurrentAccount: () => {
+          Promise.all([
+            action.cart.reset(),
+            action.order.reset(),
+            action.noti.reset(),
+            action.account.logout(),
+          ]).then(() => {
+            if (Platform.OS === 'ios')
+              PushNotificationIOS.setApplicationIconBadgeNumber(0);
+            else ShortcutBadge.setCount(0);
+          });
+        },
+      });
+      pushNotiHandler.sendLog();
+      pushNotiHandler.handleNoti();
+    },
+    [
+      account,
+      action.account,
+      action.cart,
+      action.noti,
+      action.order,
+      navigation,
+    ],
+  );
+
+  useEffect(() => {
+    navigation.addListener('blur', () => setPopUpVisible(false));
+  }, [navigation]);
+
+  useEffect(() => {
+    const now = moment();
+    AsyncStorage.getItem('popupDisabled').then((v) => {
+      if (v) {
+        const disabled =
+          moment.duration(now.diff(v)).asDays() <= POPUP_DIS_DAYS;
+
+        if (disabled) setPopupDisabled(disabled);
+        else AsyncStorage.removeItem('popupDisabled');
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    API.Device.getDevList().then(async (resp) => {
+      if (resp.result === 0) {
+        const isSupport =
+          Platform.OS === 'android'
+            ? await AndroidEuccidModule.isEnableEsim()
+            : checkSupportIos();
+
+        setIsSupportDev(isSupport);
+        setDeviceList(resp.objects);
+
+        const deviceModel = DeviceInfo.getModel();
+
+        DeviceInfo.getDeviceName().then((name) => {
+          const deviceFullName = `${deviceModel},${name}`;
+          action.account.updateAccount({
+            isSupportDev: isSupport,
+            deviceModel: deviceFullName,
+          });
+        });
+
+        // 앱 첫 실행 여부 확인
+        checkFistLaunch().then((first) => {
+          setFirstLaunch(first);
+          if (first) {
+            navigation.navigate('Tutorial', {
+              popUp: setNotiModal,
+            });
+          } else if (promotion) setNotiModal();
+        });
+
+        if (!isSupport) {
+          const status = await getTrackingStatus();
+          if (status === 'authorized') {
+            await firebase.analytics().setAnalyticsCollectionEnabled(true);
+            await Settings.setAdvertiserTrackingEnabled(true);
+
+            analytics().logEvent(
+              `${esimGlobal ? 'global' : 'esim'}_disabled_device`,
+              {
+                item: deviceModel,
+                count: 1,
+              },
+            );
+          }
         }
-        onOkClose={() => {
-          this.exitApp(closeType);
-          if (checked)
-            AsyncStorage.setItem(
-              'popupDisabled',
-              moment().format('YYYY-MM-DD HH:mm'),
-            );
-        }}
-        onCancelClose={() => {
-          this.setState({popUpVisible: false});
-          if (checked)
-            AsyncStorage.setItem(
-              'popupDisabled',
-              moment().format('YYYY-MM-DD HH:mm'),
-            );
-        }}
-        visible={popUpVisible}>
-        <View style={{marginHorizontal: 20}}>
-          <AppUserPic
-            url={popUp?.notice?.image?.noti}
-            crop={false}
-            style={styles.popupImg}
-            onPress={() => {
-              if (closeType === 'redirect') {
-                this.exitApp(closeType);
-              }
-            }}
-          />
-          <Pressable
-            style={{flexDirection: 'row', alignItems: 'center'}}
-            onPress={() => this.setState({checked: !checked})}>
-            <AppButton
-              iconName="btnCheck"
-              style={{marginRight: 10}}
-              checked={checked}
-              onPress={() => this.setState({checked: !checked})}
-            />
-            <AppText>{i18n.t('home:disablePopup')}</AppText>
-          </Pressable>
-        </View>
-      </AppModal>
-    );
-  }
+      }
+    });
+  }, [action.account, checkSupportIos, navigation, promotion, setNotiModal]);
 
-  render() {
-    const {isSupportDev, index, routes, popupDisabled} = this.state;
+  useEffect(() => {
+    // isSupportDev 값이 undefined가 아니면, 지원하는 단말 목록 확인이 끝난 것으로 간주한다
+    if (isSupportDev !== undefined && !initialized.current) {
+      initialized.current = true;
+      pushNoti.add(notification);
 
-    return (
-      <View style={styles.container}>
-        <StatusBar barStyle="dark-content" />
+      refresh();
+
+      requestPermission();
+    }
+  }, [isSupportDev, notification, refresh]);
+
+  useInterval(() => {
+    // update product for every 1 hour
+    if (navigation.isFocused()) action.product.getProd();
+  }, 3600 * 1000);
+
+  useEffect(() => {
+    if (sync.progress) {
+      if (firstLaunch) {
+        AsyncStorage.removeItem('alreadyLaunched');
+        setFirstLaunch(false);
+      }
+      navigation.navigate('CodePush');
+    }
+  }, [firstLaunch, navigation, sync.progress]);
+
+  useEffect(() => {
+    const {mobile, loggedIn, iccid} = account;
+    if (iccid) {
+      if (loggedIn && !initNoti.current) {
+        initNoti.current = true;
+        action.noti.init({mobile});
+        action.cart.init();
+        action.order.init();
+      } else {
+        action.noti.initNotiList();
+      }
+    }
+  }, [account, action.cart, action.noti, action.order]);
+
+  return (
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      <Animated.View
+        style={{height}}
+        ref={ref}
+        // onLayout={(event) => {
+        //   const {height} = event.nativeEvent.layout;
+        //   bannerHeight.setValue(height);
+        //   console.log('@@@ init height', height);
+        // }}
+        // android에서는 optimization을 위해서 불필요한 view를 제거할 수 있다. collapsable=false로 설정하여, view가 제거되지 않도록 처리한다.
+        collapsable={false}>
         <PromotionCarousel />
+      </Animated.View>
+      {/* Promotion Carousel Pagination을 가리기 위해 임시로 추가 */}
+      <View style={{backgroundColor: 'white', height: 20, width: '100%'}} />
+      <AppButton
+        key="search"
+        title={i18n.t('home:searchPlaceholder')}
+        style={styles.showSearchBar}
+        titleStyle={[appStyles.normal16Text, {color: colors.clearBlue}]}
+        direction="row"
+        onPress={() => navigation.navigate('StoreSearch')}
+        iconName="btnSearchBlue"
+        iconStyle={{marginHorizontal: 24}}
+      />
 
-        <AppButton
-          key="search"
-          title={i18n.t('home:searchPlaceholder')}
-          style={styles.showSearchBar}
-          titleStyle={[appStyles.normal16Text, {color: colors.clearBlue}]}
-          direction="row"
-          onPress={() => this.props.navigation.navigate('StoreSearch')}
-          iconName="btnSearchBlue"
-          iconStyle={{marginHorizontal: 24}}
+      <TabHeader index={index} routes={routes} onIndexChange={onIndexChange} />
+
+      <TabView
+        style={styles.container}
+        sceneContainerStyle={{flex: 1}}
+        navigationState={{index, routes}}
+        renderScene={renderScene}
+        onIndexChange={onIndexChange}
+        initialLayout={{
+          width: Dimensions.get('window').width,
+          height: 10,
+        }}
+        renderTabBar={() => null}
+      />
+
+      <AppModal
+        title={i18n.t('home:unsupportedTitle')}
+        closeButtonTitle={i18n.t('ok')}
+        titleStyle={styles.modalTitle}
+        type="close"
+        onOkClose={() => exitApp('exit')}
+        visible={isSupportDev === false}>
+        {modalBody()}
+      </AppModal>
+      {!popupDisabled && (
+        <NotiModal
+          visible={popUpVisible}
+          popUp={popUp}
+          closeType={closeType}
+          onOkClose={() => exitApp(closeType)}
+          onCancelClose={() => setPopUpVisible(false)}
         />
-
-        <TabHeader
-          index={index}
-          routes={routes}
-          onIndexChange={this.onIndexChange}
-        />
-
-        <TabView
-          style={styles.container}
-          sceneContainerStyle={{flex: 1}}
-          navigationState={{index, routes}}
-          renderScene={this.renderScene}
-          onIndexChange={this.onIndexChange}
-          initialLayout={{
-            width: Dimensions.get('window').width,
-            height: 10,
-          }}
-          renderTabBar={() => null}
-        />
-
-        <AppModal
-          title={i18n.t('home:unsupportedTitle')}
-          closeButtonTitle={i18n.t('ok')}
-          titleStyle={styles.modalTitle}
-          type="close"
-          onOkClose={() => this.exitApp('exit')}
-          visible={!isSupportDev}>
-          {this.modalBody()}
-        </AppModal>
-        {!popupDisabled && this.renderNotiModal()}
-      </View>
-    );
-  }
-}
+      )}
+    </View>
+  );
+};
 
 export default connect(
   ({account, product, promotion, sync}: RootState) => ({

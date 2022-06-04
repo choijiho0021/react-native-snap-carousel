@@ -450,7 +450,7 @@ class RegisterSimScreen extends Component<
         <AppButton
           style={appStyles.confirm}
           title={i18n.t('reg:confirm')}
-          titleStyle={appStyles.confirmText}
+          titleStyle={appStyles.medium18}
           onPress={this.onSubmit}
           disabled={disabled}
         />

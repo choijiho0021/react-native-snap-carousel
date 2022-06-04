@@ -1,8 +1,7 @@
 import Clipboard from '@react-native-community/clipboard';
-import {RouteProp} from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import Analytics from 'appcenter-analytics';
-import React, {Component} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   FlatList,
   Linking,
@@ -20,7 +19,7 @@ import {
 } from 'react-native-permissions';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import _ from 'underscore';
+import ImagePicker from 'react-native-image-crop-picker';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppButton from '@/components/AppButton';
@@ -32,7 +31,6 @@ import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
-import {API} from '@/redux/api';
 import {
   AccountAction,
   AccountModelState,
@@ -51,8 +49,7 @@ import {
 import i18n from '@/utils/i18n';
 import Info from './components/Info';
 import OrderItem from './components/OrderItem';
-
-const ImagePicker = require('react-native-image-crop-picker').default;
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const styles = StyleSheet.create({
   title: {
@@ -61,7 +58,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    alignItems: 'stretch',
     backgroundColor: colors.white,
   },
   nolist: {
@@ -133,18 +129,14 @@ type MyPageScreenNavigationProp = StackNavigationProp<
   'MyPage'
 >;
 
-type MyPageScreenRouteProp = RouteProp<HomeStackParamList, 'MyPage'>;
-
 type MyPageScreenProps = {
   navigation: MyPageScreenNavigationProp;
-  route: MyPageScreenRouteProp;
 
   account: AccountModelState;
   order: OrderModelState;
 
   pending: boolean;
   uid?: number;
-  lastTab: string[];
 
   action: {
     toast: ToastAction;
@@ -153,44 +145,43 @@ type MyPageScreenProps = {
   };
 };
 
-type MyPageScreenState = {
-  hasPhotoPermission: boolean;
-  showIdModal: boolean;
-  isFocused: boolean;
-  refreshing: boolean;
-  isRokebiInstalled: boolean;
-  copyString: string;
-};
-class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
-  flatListRef: React.RefObject<FlatList>;
+const MyPageScreen: React.FC<MyPageScreenProps> = ({
+  navigation,
+  account,
+  order,
+  pending,
+  uid,
+  action,
+}) => {
+  const flatListRef = useRef<FlatList>(null);
 
-  constructor(props: MyPageScreenProps) {
-    super(props);
+  const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
+  const [showIdModal, setShowIdModal] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [isRokebiInstalled, setIsRokebiInstalled] = useState(false);
+  const [copyString, setCopyString] = useState('');
 
-    this.state = {
-      hasPhotoPermission: false,
-      showIdModal: false,
-      isFocused: false,
-      refreshing: false,
-      isRokebiInstalled: false,
-      copyString: '',
-    };
+  const checkPhotoPermission = useCallback(async () => {
+    if (!hasPhotoPermission) {
+      const permission =
+        Platform.OS === 'ios'
+          ? PERMISSIONS.IOS.PHOTO_LIBRARY
+          : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
+      const result = await check(permission);
 
-    this.renderOrder = this.renderOrder.bind(this);
-    this.changePhoto = this.changePhoto.bind(this);
-    this.showIdModal = this.showIdModal.bind(this);
-    this.didMount = this.didMount.bind(this);
-    this.getNextOrder = this.getNextOrder.bind(this);
-    this.onRefresh = this.onRefresh.bind(this);
-    this.setFocus = this.setFocus.bind(this);
-    this.copyToClipboard = this.copyToClipboard.bind(this);
-    this.checkPhotoPermission = this.checkPhotoPermission.bind(this);
+      return result === RESULTS.GRANTED;
+    }
+    return true;
+  }, [hasPhotoPermission]);
 
-    this.flatListRef = React.createRef<FlatList>();
-  }
+  useEffect(() => {
+    async function didMount() {
+      const perm = await checkPhotoPermission();
 
-  componentDidMount() {
-    const {navigation, account} = this.props;
+      setHasPhotoPermission(perm);
+
+      // if (this.props.uid) this.props.action.order.getOrders(this.props.auth)
+    }
 
     navigation.setOptions({
       title: null,
@@ -198,11 +189,10 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
         <AppText style={styles.title}>{i18n.t('acc:title')}</AppText>
       ),
       headerRight: () => (
-        <AppButton
-          key="cnter"
+        <AppSvgIcon
+          name="btnSetup"
           style={styles.settings}
           onPress={() => navigation.navigate('Settings')}
-          iconName="btnSetup"
         />
       ),
     });
@@ -211,142 +201,98 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
     if (!account.loggedIn && navigation.isFocused()) {
       navigation.navigate('Auth');
     } else {
-      this.didMount();
+      didMount();
     }
-  }
+  }, [account.loggedIn, checkPhotoPermission, navigation]);
 
-  shouldComponentUpdate(nextProps: MyPageScreenProps) {
-    return (
-      this.props.account.userPictureUrl !== nextProps.account.userPictureUrl ||
-      this.props.order.orders !== nextProps.order.orders ||
-      this.props.navigation.isFocused() ||
-      this.props.pending !== nextProps.pending
-    );
-  }
-
-  componentDidUpdate(prevProps: MyPageScreenProps) {
-    const {
-      navigation,
-      lastTab,
-      uid,
-      account: {loggedIn, mobile, token},
-    } = this.props;
-
-    const focus = navigation.isFocused();
-
-    // 구매내역 원래 조건 확인
-    if (this.state.isFocused !== focus) {
-      this.setFocus(focus);
-      if (focus) {
-        if (!loggedIn) {
-          navigation.navigate('Auth');
-        } else {
-          this.props.action.order.getOrders({user: mobile, token, page: 0});
-        }
+  useFocusEffect(
+    React.useCallback(() => {
+      const {loggedIn, mobile, token} = account;
+      if (!loggedIn) {
+        navigation.navigate('Auth');
+      } else {
+        action.order.getOrders({user: mobile, token, page: 0});
+        flatListRef.current?.scrollToOffset({animated: false, offset: 0});
       }
-    }
+    }, [account, action.order, navigation]),
+  );
 
-    if (uid && uid !== prevProps.account.uid) {
-      // reload order history
-      this.props.action.order.getOrders({user: mobile, token, page: 0});
-    }
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
 
-    if (
-      lastTab[0] === 'MyPageStack' &&
-      lastTab[0] !== prevProps.lastTab[0] &&
-      this.flatListRef.current
-    ) {
-      this.flatListRef.current.scrollToOffset({animated: false, y: 0});
-    }
-  }
+    const {mobile, token, iccid} = account;
 
-  onRefresh() {
-    this.setState({
-      refreshing: true,
-    });
-
-    const {
-      account: {mobile, token, iccid},
-    } = this.props;
-
-    this.props.action.account.getUserId({
+    action.account.getUserId({
       name: mobile,
       token,
     });
 
-    this.props.action.order
-      .getOrders({user: mobile, token, page: 0})
-      .then((resp) => {
-        if (resp) {
-          this.props.action.account.getAccount({iccid, token}).then((r) => {
-            if (r)
-              this.setState({
-                refreshing: false,
-              });
-          });
-        }
-      });
-  }
-
-  setFocus(focus: boolean) {
-    this.setState({isFocused: focus});
-  }
-
-  getNextOrder() {
-    const {
-      account: {mobile, token},
-    } = this.props;
-    this.props.action.order.getOrders({user: mobile, token});
-  }
-
-  onPressOrderDetail = (orderId: number) => () => {
-    const {orders} = this.props.order;
-    this.props.navigation.navigate('PurchaseDetail', {
-      detail: orders.get(orderId),
+    action.order.getOrders({user: mobile, token, page: 0}).then((resp) => {
+      if (resp) {
+        action.account.getAccount({iccid, token}).then((r) => {
+          if (r) setRefreshing(false);
+        });
+      }
     });
-  };
+  }, [account, action.account, action.order]);
 
-  copyToClipboard = (value?: string) => () => {
-    if (value) {
-      Clipboard.setString(value);
-      this.setState({copyString: value});
-      this.props.action.toast.push(Toast.COPY_SUCCESS);
-    }
-  };
+  const getNextOrder = useCallback(() => {
+    const {mobile, token} = account;
+    action.order.getOrders({user: mobile, token});
+  }, [account, action.order]);
+
+  const onPressOrderDetail = useCallback(
+    (orderId: number) => {
+      navigation.navigate('PurchaseDetail', {
+        detail: order.orders.get(orderId),
+      });
+    },
+    [navigation, order],
+  );
+
+  const copyToClipboard = useCallback(
+    (value?: string) => {
+      if (value) {
+        Clipboard.setString(value);
+        setCopyString(value);
+        action.toast.push(Toast.COPY_SUCCESS);
+      }
+    },
+    [action.toast],
+  );
 
   // RokebiSIm에서 RokebiTalk 호출
-  openRokebiTalk = async () => {
-    const {iccid, pin} = this.props.account;
+  const openRokebiTalk = useCallback(async () => {
+    const {iccid, pin} = account;
 
-    let isRokebiInstalled;
+    // let isRokebiInstalled;
 
     // 네이버URL -> Store URL 변경필요
     if (Platform.OS === 'ios') {
       setTimeout(() => {
-        if (!this.state.isRokebiInstalled) {
+        if (!isRokebiInstalled) {
           Linking.openURL(`http://naver.com`);
         }
       }, 1000);
 
-      isRokebiInstalled = await Linking.openURL(
+      const installed = await Linking.openURL(
         `rokebitalk://?actCode=${pin}&iccidStr=${iccid}`,
       );
-      this.setState({isRokebiInstalled: true});
+      setIsRokebiInstalled(true);
     } else {
-      isRokebiInstalled = await Linking.canOpenURL(
+      const installed = await Linking.canOpenURL(
         `rokebitalk://rokebitalk.com?actCode=${pin}&iccidStr=${iccid}`,
       );
-      if (isRokebiInstalled)
+      if (installed)
         Linking.openURL(
           `rokebitalk://rokebitalk.com?actCode=${pin}&iccidStr=${iccid}`,
         );
-      Linking.openURL(`http://naver.com`);
+      else Linking.openURL(`http://naver.com`);
     }
-  };
+  }, [account, isRokebiInstalled]);
 
-  modalBody = () => {
-    const {iccid, pin} = this.props.account;
-    const {copyString} = this.state;
+  const modalBody = useCallback(() => {
+    const {iccid, pin} = account;
 
     return (
       <View style={styles.modalBody}>
@@ -372,7 +318,7 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
                   copyString === iccid ? colors.clearBlue : colors.whiteTwo,
               },
             ]}
-            onPress={this.copyToClipboard(iccid)}
+            onPress={() => copyToClipboard(iccid)}
           />
         </View>
         <View style={styles.titleAndStatus}>
@@ -395,7 +341,7 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
                   copyString === pin ? colors.clearBlue : colors.whiteTwo,
               },
             ]}
-            onPress={this.copyToClipboard(pin)}
+            onPress={() => copyToClipboard(pin)}
           />
         </View>
         <Pressable
@@ -415,41 +361,14 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
         </Pressable>
       </View>
     );
-  };
+  }, [account, copyString, copyToClipboard]);
 
-  async didMount() {
-    const hasPhotoPermission = await this.checkPhotoPermission();
+  const changePhoto = useCallback(async () => {
+    const checkNewPermission = await checkPhotoPermission();
 
-    this.setState({hasPhotoPermission});
-
-    // if (this.props.uid) this.props.action.order.getOrders(this.props.auth)
-  }
-
-  showIdModal(flag = false) {
-    this.setState({showIdModal: flag});
-  }
-
-  async checkPhotoPermission() {
-    if (!this.state.hasPhotoPermission) {
-      const permission =
-        Platform.OS === 'ios'
-          ? PERMISSIONS.IOS.PHOTO_LIBRARY
-          : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
-      const result = await check(permission);
-
-      return result === RESULTS.GRANTED;
-    }
-    return true;
-  }
-
-  async changePhoto() {
-    const checkNewPermission = await this.checkPhotoPermission();
-
-    if (!this.props.uid) {
-      this.props.navigation.navigate('Auth');
-    }
-
-    if (this.state.hasPhotoPermission || checkNewPermission) {
+    if (!uid) {
+      navigation.navigate('Auth');
+    } else if (hasPhotoPermission || checkNewPermission) {
       if (ImagePicker) {
         ImagePicker.openPicker({
           width: 76,
@@ -465,9 +384,7 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
         })
           .then((image) => {
             console.log('image', image);
-            return (
-              image && this.props.action.account.uploadAndChangePicture(image)
-            );
+            return image && action.account.uploadAndChangePicture(image);
           })
           .catch((err) => {
             console.log('failed to upload', err);
@@ -479,75 +396,81 @@ class MyPageScreen extends Component<MyPageScreenProps, MyPageScreenState> {
         ok: () => openSettings(),
       });
     }
-  }
+  }, [
+    action.account,
+    checkPhotoPermission,
+    hasPhotoPermission,
+    navigation,
+    uid,
+  ]);
 
-  empty() {
-    if (this.props.pending) return null;
+  const empty = useCallback(
+    () =>
+      pending ? null : (
+        <AppText style={styles.nolist}>{i18n.t('his:noPurchase')}</AppText>
+      ),
+    [pending],
+  );
 
-    return <AppText style={styles.nolist}>{i18n.t('his:noPurchase')}</AppText>;
-  }
-
-  renderOrder({item}: {item: number}) {
-    const {orders} = this.props.order;
-    const orderItem = orders.get(item);
-    return orderItem ? (
-      <OrderItem
-        item={orderItem}
-        onPress={this.onPressOrderDetail(orderItem.orderId)}
-      />
-    ) : null;
-  }
-
-  render() {
-    const {showIdModal, refreshing = false} = this.state;
-    const {orderList} = this.props.order;
-
-    return (
-      <View style={styles.container}>
-        <FlatList
-          ref={this.flatListRef}
-          data={orderList}
-          keyExtractor={(item) => `${item}`}
-          ListHeaderComponent={
-            <Info
-              onChangePhoto={this.changePhoto}
-              onPress={(key: 'id' | 'email') => {
-                if (key === 'id') this.props.navigation.navigate('Faq');
-                // if (key === 'id') this.showIdModal(true);
-              }}
-            />
-          }
-          ListEmptyComponent={this.empty()}
-          renderItem={this.renderOrder}
-          onEndReachedThreshold={0.4}
-          onEndReached={this.getNextOrder}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={this.onRefresh}
-              colors={[colors.clearBlue]} // android 전용
-              tintColor={colors.clearBlue} // ios 전용
-            />
-          }
+  const renderOrder = useCallback(
+    ({item}) => {
+      const orderItem = order.orders.get(item);
+      return orderItem ? (
+        <OrderItem
+          item={orderItem}
+          onPress={() => onPressOrderDetail(orderItem.orderId)}
         />
+      ) : null;
+    },
+    [onPressOrderDetail, order],
+  );
 
-        <AppActivityIndicator visible={!refreshing && this.props.pending} />
+  return (
+    <View style={styles.container}>
+      <FlatList
+        style={{flex: 1}}
+        ref={flatListRef}
+        data={order.orderList}
+        keyExtractor={(item) => `${item}`}
+        ListHeaderComponent={
+          <Info
+            onChangePhoto={changePhoto}
+            onPress={(key: 'id' | 'email') => {
+              if (key === 'id') navigation.navigate('Faq');
+              // if (key === 'id') this.showIdModal(true);
+            }}
+          />
+        }
+        ListEmptyComponent={empty()}
+        renderItem={renderOrder}
+        onEndReachedThreshold={0.4}
+        onEndReached={getNextOrder}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[colors.clearBlue]} // android 전용
+            tintColor={colors.clearBlue} // ios 전용
+          />
+        }
+      />
 
-        <AppModal
-          type="close"
-          title={i18n.t('mypage:idCheckTitle')}
-          titleStyle={styles.titleStyle}
-          titleIcon="btnId"
-          onOkClose={() => {
-            this.showIdModal(false);
-          }}
-          visible={showIdModal}>
-          {this.modalBody()}
-        </AppModal>
-      </View>
-    );
-  }
-}
+      <AppActivityIndicator visible={!refreshing && pending} />
+
+      <AppModal
+        type="close"
+        title={i18n.t('mypage:idCheckTitle')}
+        titleStyle={styles.titleStyle}
+        titleIcon="btnId"
+        onOkClose={() => {
+          setShowIdModal(false);
+        }}
+        visible={showIdModal}>
+        {modalBody()}
+      </AppModal>
+    </View>
+  );
+};
 
 export default connect(
   ({cart, account, order, status}: RootState) => ({

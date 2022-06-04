@@ -1,17 +1,12 @@
-import Clipboard from '@react-native-community/clipboard';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
-import QRCode from 'react-native-qrcode-svg';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import moment from 'moment';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import AppButton from '@/components/AppButton';
-import AppColorText from '@/components/AppColorText';
 import AppIcon from '@/components/AppIcon';
-import AppModal from '@/components/AppModal';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -38,17 +33,12 @@ import {
   OrderAction,
   OrderModelState,
 } from '@/redux/modules/order';
-import {
-  actions as toastActions,
-  Toast,
-  ToastAction,
-} from '@/redux/modules/toast';
-import UsageItem from '@/screens/UsimScreen/components/UsageItem';
 import i18n from '@/utils/i18n';
 import CardInfo from './components/CardInfo';
 import EsimSubs from './components/EsimSubs';
 import {ProductModelState} from '@/redux/modules/product';
-import {code} from '../../redux/api/subscriptionApi';
+import EsimModal, {ModalType} from './components/EsimModal';
+import GiftModal from './components/GiftModal';
 
 const {esimGlobal} = Env.get();
 
@@ -62,55 +52,10 @@ const styles = StyleSheet.create({
     ...appStyles.title,
     marginLeft: 20,
   },
-  center: {
-    marginTop: 20,
-    marginBottom: 30,
-    alignSelf: 'center',
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: colors.clearBlue,
-    paddingVertical: 13,
-    paddingHorizontal: 13,
-  },
   nolist: {
     flex: 1,
     justifyContent: 'center',
     paddingBottom: 60,
-  },
-  titleAndStatus: {
-    flexDirection: 'row',
-    marginBottom: 10,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.whiteTwo,
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-  },
-  btn: {
-    width: '45%',
-    paddingTop: 25,
-  },
-  titleStyle: {
-    fontSize: 20,
-  },
-  esimInfoKey: {
-    ...appStyles.normal16Text,
-    color: colors.warmGrey,
-    marginBottom: 6,
-  },
-  btnCopy: {
-    backgroundColor: colors.white,
-    width: 62,
-    height: 40,
-    borderStyle: 'solid',
-    borderWidth: 1,
-  },
-  modalBody: {
-    marginVertical: 20,
-  },
-  normal16BlueText: {
-    ...appStyles.normal16Text,
-    color: colors.clearBlue,
   },
   blueText: {
     color: colors.clearBlue,
@@ -118,39 +63,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
-
-const showQR = (subs: RkbSubscription) => {
-  return (
-    <View style={styles.modalBody}>
-      {_.isEmpty(subs.qrCode) ? (
-        <View style={styles.center}>
-          <AppText>{i18n.t('esim:showQR:nothing')}</AppText>
-        </View>
-      ) : (
-        <View>
-          <AppColorText
-            style={appStyles.normal16Text}
-            text={i18n.t('esim:showQR:body')}
-          />
-          <View style={styles.center}>
-            <QRCode value={subs.qrCode} />
-          </View>
-        </View>
-      )}
-    </View>
-  );
-};
-
-const esimManualInputInfo = () => {
-  return (
-    <View style={{marginBottom: 20}}>
-      <AppColorText
-        style={appStyles.normal16Text}
-        text={i18n.t('esim:manualInput:body')}
-      />
-    </View>
-  );
-};
 
 type EsimScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Esim'>;
 
@@ -164,14 +76,10 @@ type EsimScreenProps = {
   product: ProductModelState;
 
   action: {
-    toast: ToastAction;
     order: OrderAction;
     account: AccountAction;
   };
 };
-
-export type ModalType = 'showQR' | 'manual' | 'usage';
-const modalTitleIcon = {showQR: 'btnQr', manual: 'btnPen', usage: undefined};
 
 const EsimScreen: React.FC<EsimScreenProps> = ({
   account: {iccid, token, balance, expDate},
@@ -187,23 +95,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [showModal, setShowModal] = useState(false);
   const [modal, setModal] = useState<ModalType>('');
   const [subs, setSubs] = useState<RkbSubscription>();
-  const [copyString, setCopyString] = useState('');
   const [cmiPending, setCmiPending] = useState(false);
+  const [showGiftModal, setShowGiftModal] = useState(true);
   const [cmiUsage, setCmiUsage] = useState({});
   const [cmiStatus, setCmiStatus] = useState({});
-  const modalHeadTitle = useMemo(() => {
-    switch (modal) {
-      case 'showQR':
-        return i18n.t('esim:showQRTitle');
-
-      case 'manual':
-        return i18n.t('esim:manualInputTitle');
-
-      default:
-        return undefined;
-    }
-  }, [modal]);
-
   const init = useCallback(
     ({iccid, token}: {iccid?: string; token?: string}) => {
       if (iccid && token) {
@@ -227,18 +122,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         });
     }
   }, [action.account, action.order, iccid, token]);
-
-  const copyToClipboard = useCallback(
-    (value?: string) => () => {
-      console.log('@@@ copy', value);
-      if (value) {
-        Clipboard.setString(value);
-        setCopyString(value);
-        action.toast.push(Toast.COPY_SUCCESS);
-      }
-    },
-    [action.toast],
-  );
 
   const empty = useCallback(() => {
     return (
@@ -265,102 +148,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     );
   }, [balance, expDate, iccid, navigation]);
 
-  const copyInfo = useCallback(
-    (title: string, valToCopy?: string) => {
-      const selected = copyString === valToCopy;
-
-      return (
-        <View style={styles.titleAndStatus}>
-          <View style={{flex: 1}}>
-            <AppText style={styles.esimInfoKey}>
-              {i18n.t(`esim:${title}`)}
-            </AppText>
-            <AppText style={appStyles.normal16Text}>{valToCopy}</AppText>
-          </View>
-          <AppButton
-            title={i18n.t('copy')}
-            titleStyle={[
-              appStyles.normal14Text,
-              {color: selected ? colors.clearBlue : colors.black},
-            ]}
-            style={[
-              styles.btnCopy,
-              {
-                borderColor: selected ? colors.clearBlue : colors.whiteTwo,
-              },
-            ]}
-            onPress={copyToClipboard(valToCopy)}
-          />
-        </View>
-      );
-    },
-    [copyString, copyToClipboard],
-  );
-
-  const modalBody = useCallback(() => {
-    if (!subs) return null;
-    // const cmiUsage = {
-    //   subscriberQuota: {
-    //     qtavalue: '512000',
-    //     qtabalance: '73042',
-    //     qtaconsumption: '438958',
-    //   },
-    //   // 여기가 []면 미사용
-    //   historyQuota: [
-    //     {time: '20211222', qtaconsumption: '376.44', mcc: '452'},
-    //     {time: '20211221', qtaconsumption: '1454.78', mcc: '452'},
-    //   ],
-    //   result: {code: 0},
-    //   // 여기가 []면 미사용
-    //   trajectoriesList: [
-    //     {
-    //       mcc: '452',
-    //       country: 'Vietnam',
-    //       beginTime: '20211221',
-    //       useTime: '20220120',
-    //       himsi: '454120382118109',
-    //     },
-    //   ],
-    // };
-
-    switch (modal) {
-      case 'showQR':
-        return showQR(subs);
-
-      case 'manual':
-        return (
-          <View style={styles.modalBody}>
-            {esimManualInputInfo()}
-            {copyInfo('smdp', subs.smdpAddr)}
-            {copyInfo('actCode', subs.actCode)}
-          </View>
-        );
-
-      default: {
-        const quota = cmiUsage?.quota;
-        const used = cmiUsage?.used;
-        const statusCd =
-          _.isEmpty(quota) && !_.isEmpty(used) ? 'U' : cmiStatus?.statusCd;
-
-        // usage
-        return (
-          cmiStatus &&
-          cmiUsage && (
-            <UsageItem
-              item={subs}
-              onPress={() => {}}
-              showSnackbar={() => {}}
-              cmiPending={cmiPending}
-              usage={{quota, used}}
-              cmiStatusCd={statusCd}
-              endTime={cmiStatus?.endTime}
-            />
-          )
-        );
-      }
-    }
-  }, [cmiPending, cmiStatus, cmiUsage, copyInfo, modal, subs]);
-
   const getCmiSubsUsage = useCallback(
     async (usageIccid, packageId, childOrderId, item) => {
       await API.Subscription.cmiGetSubsUsage({
@@ -368,7 +155,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         packageId,
         childOrderId,
       }).then(async (rsp) => {
-        usageRsp = rsp;
         if (rsp?.result === 0 && rsp?.objects) {
           const daily = item.prodId && prodList.get(item.prodId)?.field_daily;
           const subscriberQuota = rsp?.objects?.find(
@@ -413,7 +199,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const checkCmiData = useCallback(
     async (item: RkbSubscription) => {
       // {"subscriberQuota":{"qtavalue":"512000","qtabalance":"73042","qtaconsumption":"438958"},"historyQuota":[{"time":"20211222","qtaconsumption":"376.44","mcc":"452"},{"time":"20211221","qtaconsumption":"1454.78","mcc":"452"}],"result":{"code":0},"trajectoriesList":[{"mcc":"452","country":"Vietnam","beginTime":"20211221","useTime":"20220120","himsi":"454120382118109"}]}
-      let usageRsp = {};
+      const usageRsp = {};
 
       if (item?.subsIccid && item?.packageId) {
         // expire time은 사용시작 이후에 발생
@@ -556,32 +342,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     init({iccid, token});
   }, [iccid, init, navigation, token]);
 
-  const esimModal = useCallback(() => {
-    return (
-      <AppModal
-        type="close"
-        justifyContent="flex-end"
-        titleIcon={modalTitleIcon[modal]}
-        titleStyle={styles.titleStyle}
-        title={modalHeadTitle}
-        contentStyle={{
-          marginHorizontal: 0,
-          backgroundColor: 'white',
-          borderTopLeftRadius: 8,
-          borderTopRightRadius: 8,
-          padding: 20,
-        }}
-        onOkClose={() => {
-          setShowModal(false);
-          setCmiStatus({});
-          setCmiUsage({});
-        }}
-        visible={showModal}>
-        {modalBody()}
-      </AppModal>
-    );
-  }, [modal, modalBody, modalHeadTitle, showModal]);
-
   return (
     <View style={styles.container}>
       <FlatList
@@ -604,7 +364,23 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         }
       />
       <AppActivityIndicator visible={pending || loginPending} />
-      {esimModal()}
+      <EsimModal
+        visible={showModal}
+        modal={modal}
+        subs={subs}
+        cmiPending={cmiPending}
+        cmiUsage={cmiUsage}
+        cmiStatus={cmiStatus}
+        onOkClose={() => {
+          setShowModal(false);
+          setCmiStatus({});
+          setCmiUsage({});
+        }}
+      />
+      <GiftModal
+        visible={showGiftModal}
+        onOkClose={() => setShowGiftModal(false)}
+      />
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackBar(false)}
@@ -640,7 +416,6 @@ export default connect(
       noti: bindActionCreators(notiActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
       info: bindActionCreators(infoActions, dispatch),
-      toast: bindActionCreators(toastActions, dispatch),
     },
   }),
 )(EsimScreen);

@@ -1,7 +1,17 @@
+import {Map as ImmutableMap} from 'immutable';
+import React, {memo, useCallback} from 'react';
+import {
+  Animated,
+  Image,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
-import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {
   Currency,
@@ -10,11 +20,6 @@ import {
   RkbProduct,
 } from '@/redux/api/productApi';
 import i18n from '@/utils/i18n';
-import {Map as ImmutableMap} from 'immutable';
-import React, {memo, useCallback, useEffect, useRef} from 'react';
-import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
-import {connect} from 'react-redux';
 import AppPrice from './AppPrice';
 import AppText from './AppText';
 
@@ -168,38 +173,23 @@ const CountryItem0 = ({
 const CountryItem = memo(CountryItem0);
 
 export type StoreListRef = {
-  scrollToIndex: ({index}: {index: number}) => void;
+  scrollToTop: () => void;
 };
+
 type StoreListProps = {
   localOpList: ImmutableMap<string, RkbLocalOp>;
   data: ProductByCategory[];
   onPress: (p: RkbProduct[]) => void;
-  storeListRef?: React.MutableRefObject<StoreListRef | null>;
+  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 };
 
-const StoreList: React.FC<StoreListProps> = ({
-  localOpList,
-  data,
-  onPress,
-  storeListRef,
-}) => {
-  const ref = useRef<FlatList<any>>(null);
-  useEffect(() => {
-    if (storeListRef) {
-      storeListRef.current = {
-        scrollToIndex: ({index}) => {
-          if (data.length > 0)
-            ref.current?.scrollToIndex({index, animated: false});
-        },
-      };
-    }
-  }, [data.length, storeListRef]);
-
+const StoreList = ({localOpList, data, onPress, onScroll}: StoreListProps) => {
   return (
     <View style={appStyles.container}>
-      <FlatList
+      <Animated.FlatList
         data={data}
-        ref={ref}
+        onScroll={onScroll}
+        bounces={false}
         renderItem={({item}) => (
           <CountryItem
             key={item.key}
@@ -213,6 +203,4 @@ const StoreList: React.FC<StoreListProps> = ({
   );
 };
 
-export default connect(({product}: RootState) => ({
-  localOpList: product.localOpList,
-}))(memo(StoreList));
+export default memo(StoreList);

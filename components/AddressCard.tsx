@@ -1,8 +1,8 @@
-import {RkbProfile} from '@/redux/api/profileApi';
-import utils from '@/redux/api/utils';
 import React, {memo} from 'react';
 import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from 'react-native';
 import _ from 'underscore';
+import utils from '@/redux/api/utils';
+import {RkbProfile} from '@/redux/api/profileApi';
 import AppText from './AppText';
 
 const styles = StyleSheet.create({

@@ -357,7 +357,7 @@ class RechargeScreen extends Component<
         </ScrollView>
         <AppButton
           title={i18n.t('rch:recharge')}
-          titleStyle={appStyles.confirmText}
+          titleStyle={appStyles.medium18}
           disabled={_.isEmpty(selected)}
           onPress={this.onSubmit}
           style={styles.confirm}

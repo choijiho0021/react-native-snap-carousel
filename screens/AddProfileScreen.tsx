@@ -589,7 +589,7 @@ class AddProfileScreen extends Component {
         <AppButton
           style={appStyles.confirm}
           title={i18n.t('save')}
-          textStyle={appStyles.confirmText}
+          textStyle={appStyles.medium18}
           disabled={this.state.disabled}
           onPress={this.onSubmit}
         />

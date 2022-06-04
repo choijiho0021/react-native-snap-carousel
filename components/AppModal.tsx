@@ -1,7 +1,4 @@
-import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
-import i18n from '@/utils/i18n';
-import React, {memo, PropsWithChildren} from 'react';
+import React, {memo, PropsWithChildren, useCallback} from 'react';
 import {
   ColorValue,
   Modal,
@@ -11,6 +8,9 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
 import AppButton from './AppButton';
 import AppIcon from './AppIcon';
 import AppText from './AppText';
@@ -80,6 +80,7 @@ export interface AppModalProps {
   disableOkButton?: boolean;
   onOkClose?: (v?: string) => void;
   onCancelClose?: () => void;
+  bottom?: () => React.ReactNode;
 }
 
 const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
@@ -99,8 +100,9 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
   disableOkButton,
   onOkClose = () => {},
   onCancelClose = () => {},
+  bottom,
 }) => {
-  const getButtonType = () => {
+  const getButtonType = useCallback(() => {
     switch (type) {
       case 'close':
         return (
@@ -184,7 +186,16 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
           </View>
         );
     }
-  };
+  }, [
+    buttonBackgroundColor,
+    buttonTitleColor,
+    closeButtonStyle,
+    closeButtonTitle,
+    disableOkButton,
+    onCancelClose,
+    onOkClose,
+    type,
+  ]);
 
   return (
     <Modal animationType="fade" transparent visible={visible}>
@@ -215,7 +226,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
           )}
           {children}
 
-          {getButtonType()}
+          {bottom ? bottom() : getButtonType()}
         </View>
       </SafeAreaView>
       {justifyContent === 'flex-end' && (
