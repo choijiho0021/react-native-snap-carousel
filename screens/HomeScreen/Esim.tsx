@@ -156,6 +156,16 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
     paddingHorizontal: 15,
   },
+  showSearchBar: {
+    marginBottom: 20,
+    marginHorizontal: 20,
+    // margin: 20,
+    height: 56,
+    borderRadius: 2,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: colors.clearBlue,
+  },
 });
 
 type HomeScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Home'>;
@@ -259,7 +269,7 @@ const Esim: React.FC<EsimProps> = ({
     if (DeviceId.startsWith('AppleTV')) return false;
 
     if (DeviceId.startsWith('iPhone'))
-      return !!DeviceId.localeCompare('iPhone11.1');
+      return DeviceId.length >= 10 && DeviceId.localeCompare('iPhone11,1') >= 0;
 
     if (DeviceId.startsWith('iPad')) {
       // 가능한 iPad목록
@@ -403,13 +413,6 @@ const Esim: React.FC<EsimProps> = ({
       ),
       headerRight: () => (
         <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
-          <AppButton
-            key="search"
-            style={styles.btnSearchBar}
-            onPress={() => navigation?.navigate('StoreSearch')}
-            iconName="btnSearchTop"
-          />
-
           <AppButton
             key="cnter"
             style={styles.btnCnter}
@@ -606,6 +609,19 @@ const Esim: React.FC<EsimProps> = ({
         collapsable={false}>
         <PromotionCarousel />
       </Animated.View>
+      {/* Promotion Carousel Pagination을 가리기 위해 임시로 추가 */}
+      <View style={{backgroundColor: 'white', height: 20, width: '100%'}} />
+      <AppButton
+        key="search"
+        title={i18n.t('home:searchPlaceholder')}
+        style={styles.showSearchBar}
+        titleStyle={[appStyles.normal16Text, {color: colors.clearBlue}]}
+        direction="row"
+        onPress={() => navigation.navigate('StoreSearch')}
+        iconName="btnSearchBlue"
+        iconStyle={{marginHorizontal: 24}}
+      />
+
       <TabHeader index={index} routes={routes} onIndexChange={onIndexChange} />
 
       <TabView
