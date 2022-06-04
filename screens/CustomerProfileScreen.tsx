@@ -302,7 +302,7 @@ class CustomerProfileScreen extends Component {
 
         <AppButton
           title={i18n.t('add')}
-          textStyle={appStyles.confirmText}
+          textStyle={appStyles.medium18}
           onPress={() => this.props.navigation.navigate('AddProfile')}
           style={[appStyles.confirm, {marginTop: 20}]}
         />

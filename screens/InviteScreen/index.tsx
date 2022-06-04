@@ -384,7 +384,7 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
                 key={v}
                 title={i18n.t(`inv:${v}`)}
                 titleStyle={[
-                  appStyles.confirmText,
+                  appStyles.medium18,
                   !!idx && {color: colors.black},
                 ]}
                 onPress={() => sendLink(v)}
