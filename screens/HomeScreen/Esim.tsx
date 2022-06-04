@@ -269,7 +269,7 @@ const Esim: React.FC<EsimProps> = ({
     if (DeviceId.startsWith('AppleTV')) return false;
 
     if (DeviceId.startsWith('iPhone'))
-      return !!DeviceId.localeCompare('iPhone11.1');
+      return DeviceId.length >= 10 && DeviceId.localeCompare('iPhone11,1') >= 0;
 
     if (DeviceId.startsWith('iPad')) {
       // 가능한 iPad목록
