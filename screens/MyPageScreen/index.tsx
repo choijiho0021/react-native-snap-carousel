@@ -415,7 +415,6 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
   const renderOrder = useCallback(
     ({item}) => {
       const orderItem = order.orders.get(item);
-      console.log('@@@ order', orderItem);
       return orderItem ? (
         <OrderItem
           item={orderItem}
