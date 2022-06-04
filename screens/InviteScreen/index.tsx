@@ -1,7 +1,7 @@
 import Clipboard from '@react-native-community/clipboard';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
-import React, {Component} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -185,163 +185,159 @@ type InviteScreenProps = {
   };
 };
 
-type InviteScreenState = {};
+const InviteScreen: React.FC<InviteScreenProps> = ({
+  navigation,
+  route,
+  promotion,
+  account,
+  pending,
+  action,
+}) => {
+  const mountWithLogin = useCallback(() => {
+    action.promotion.getPromotionStat();
 
-class InviteScreen extends Component<InviteScreenProps, InviteScreenState> {
-  constructor(props: InviteScreenProps) {
-    super(props);
+    navigation.setOptions({
+      title: null,
+      headerLeft: () => <AppBackButton title={i18n.t('inv:title')} />,
+    });
+  }, [action.promotion, navigation]);
 
-    this.state = {};
-
-    this.mountWithLogin = this.mountWithLogin.bind(this);
-    this.sendLink = this.sendLink.bind(this);
-    this.statBox = this.statBox.bind(this);
-  }
-
-  componentDidMount() {
-    const {navigation, account} = this.props;
-
+  useEffect(() => {
     if (!account.loggedIn && navigation.isFocused()) {
-      this.props.navigation.navigate('Auth', {
+      navigation.navigate('Auth', {
         screen: 'RegisterMobile',
         params: {
           screen: 'Invite',
         },
       });
     } else {
-      this.mountWithLogin();
+      mountWithLogin();
     }
-  }
+  }, [account.loggedIn, mountWithLogin, navigation]);
 
+  /*
   shouldComponentUpdate(nextProps: InviteScreenProps) {
     return (
       this.props.account.loggedIn !== nextProps.account.loggedIn ||
       this.props.promotion.stat !== nextProps.promotion.stat
     );
   }
+  */
 
-  componentDidUpdate(prevProps: InviteScreenProps) {
-    const {navigation, account} = this.props;
-
-    if (prevProps.account.loggedIn !== account.loggedIn) {
-      if (account.loggedIn && navigation.isFocused()) {
-        this.mountWithLogin();
-      }
+  useEffect(() => {
+    if (account.loggedIn && navigation.isFocused()) {
+      mountWithLogin();
     }
-  }
+  }, [account.loggedIn, mountWithLogin, navigation]);
 
-  cashText = (text: string, cash: string) => {
-    return (
+  const cashText = useCallback(
+    (text: string, cash: string) => (
       <View key={text} style={styles.cashText}>
-        {text.split('*').map((v, idx) => {
-          return (
-            <AppText style={styles.bold24WhiteText}>
-              {idx === 1 && (
-                <AppText style={styles.bold36whiteText}>{cash}</AppText>
-              )}
-              <AppText style={styles.bold24WhiteText}>{v}</AppText>
+        {text.split('*').map((v, idx) => (
+          <AppText style={styles.bold24WhiteText}>
+            {idx === 1 && (
+              <AppText key="label" style={styles.bold36whiteText}>
+                {cash}
+              </AppText>
+            )}
+            <AppText key="value" style={styles.bold24WhiteText}>
+              {v}
             </AppText>
-          );
-        })}
-      </View>
-    );
-  };
-
-  highLightCash = (
-    highlight: string,
-    text: string,
-    isLast: boolean,
-    cash: string,
-  ) => {
-    return (
-      <View style={[isLast ? styles.highLightRow : {marginBottom: 20}]}>
-        <View style={{flexDirection: 'column'}}>
-          <AppText style={[appStyles.normal18Text, {flexDirection: 'row'}]}>
-            <AppText style={styles.highlighter}>{highlight}</AppText>
-            {text}
           </AppText>
+        ))}
+      </View>
+    ),
+    [],
+  );
 
-          <View style={[styles.rowCenter, !isLast && {marginTop: 8}]}>
-            <AppText style={appStyles.normal16Text}>
-              {i18n.t('inv:lower4')}
+  const highLightCash = useCallback(
+    (v: string, isLast: boolean, gift: string) => {
+      const cash = utils.stringToNumber(gift) || 0;
+      return (
+        <View style={[isLast ? styles.highLightRow : {marginBottom: 20}]}>
+          <View style={{flexDirection: 'column'}}>
+            <AppText style={[appStyles.normal18Text, {flexDirection: 'row'}]}>
+              <AppText style={styles.highlighter}>{v}</AppText>
+              {i18n.t('inv:suffix')}
             </AppText>
 
-            <View style={styles.cashBox}>
-              <AppText
-                style={[
-                  appStyles.bold24Text,
-                  {marginRight: 20, color: colors.clearBlue},
-                ]}>
-                {isLast
-                  ? utils.numberToCommaString(cash * 10)
-                  : utils.numberToCommaString(cash)}
+            <View style={[styles.rowCenter, !isLast && {marginTop: 8}]}>
+              <AppText style={appStyles.normal16Text}>
+                {i18n.t('inv:lower4')}
               </AppText>
-              <AppText
-                style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
-                {i18n.t('inv:lower5')}
-              </AppText>
+
+              <View style={styles.cashBox}>
+                <AppText
+                  key="1"
+                  style={[
+                    appStyles.bold24Text,
+                    {marginRight: 20, color: colors.clearBlue},
+                  ]}>
+                  {isLast
+                    ? utils.numberToCommaString(cash * 10)
+                    : utils.numberToCommaString(cash)}
+                </AppText>
+                <AppText
+                  key="2"
+                  style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
+                  {i18n.t('inv:lower5')}
+                </AppText>
+              </View>
             </View>
           </View>
+          {isLast && <AppIcon name="coin" />}
         </View>
-        {isLast && <AppIcon name="coin" />}
-      </View>
-    );
-  };
+      );
+    },
+    [],
+  );
 
-  mountWithLogin() {
-    this.props.action.promotion.getPromotionStat();
+  const sendLink = useCallback(
+    async (method: string) => {
+      const {invite, stat} = promotion;
+      const {userId} = account;
 
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('inv:title')} />,
-    });
-  }
-
-  async sendLink(method: string) {
-    const {
-      promotion: {invite, stat},
-      account: {userId},
-    } = this.props;
-
-    if (userId && invite?.notice?.rule) {
-      switch (method) {
-        case 'copy': {
-          API.Promotion.buildLink({
-            recommender: userId,
-            cash: stat.signupGift,
-            imageUrl: invite.notice.rule?.share,
-          }).then((url) => {
-            if (url) {
-              Clipboard.setString(url);
-              this.props.action.toast.push(Toast.COPY_SUCCESS);
-            }
-          });
-          break;
+      if (userId && invite?.notice?.rule) {
+        switch (method) {
+          case 'copy': {
+            API.Promotion.buildLink({
+              recommender: userId,
+              cash: stat.signupGift,
+              imageUrl: invite.notice.rule?.share,
+            }).then((url) => {
+              if (url) {
+                Clipboard.setString(url);
+                action.toast.push(Toast.COPY_SUCCESS);
+              }
+            });
+            break;
+          }
+          default:
+            // share
+            await API.Promotion.invite(
+              userId,
+              stat.signupGift,
+              invite.notice.rule,
+            );
+            break;
         }
-        default:
-          // share
-          await API.Promotion.invite(
-            userId,
-            stat.signupGift,
-            invite.notice.rule,
-          );
-          break;
       }
-    }
-  }
+    },
+    [account, action.toast, promotion],
+  );
 
-  statBox() {
-    const {stat} = this.props.promotion;
+  const statBox = useCallback(() => {
+    const {stat} = promotion;
     return (
       <View style={styles.benefitBox}>
-        {Object.keys(stat)?.map((v, idx) => {
-          return (
+        {Object.keys(stat)?.map(
+          (v, idx) =>
             !v.includes('Gift') && (
               <View key={v} style={[idx ? styles.rightBox : styles.leftBox]}>
-                <AppText style={appStyles.normal14Text}>
+                <AppText key="1" style={appStyles.normal14Text}>
                   {i18n.t(`inv:${v}`)}
                 </AppText>
-                <AppText style={appStyles.robotoBold32Text}>
+                <AppText key="2" style={appStyles.robotoBold32Text}>
                   {utils.numberToCommaString(stat[v] || 0)}
                   <AppText
                     style={[appStyles.bold24Text, {color: colors.clearBlue}]}>
@@ -349,96 +345,87 @@ class InviteScreen extends Component<InviteScreenProps, InviteScreenState> {
                   </AppText>
                 </AppText>
               </View>
-            )
-          );
-        })}
+            ),
+        )}
       </View>
     );
-  }
+  }, [promotion]);
 
-  render() {
-    const {signupGift, recommenderGift} = this.props.promotion.stat;
+  const {signupGift, recommenderGift} = promotion.stat;
 
-    return (
-      <SafeAreaView style={styles.container}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.blueBg}>
-            <AppText style={[appStyles.normal20Text, {color: colors.white}]}>
-              {i18n.t('inv:upper1')}
-            </AppText>
-            {this.cashText(
-              i18n.t('inv:upper2'),
-              utils.numberToCommaString(recommenderGift),
-            )}
-            {this.cashText(
-              i18n.t('inv:upper3'),
-              utils.numberToCommaString(signupGift),
-            )}
-            <AppText style={styles.blueBgDetailText}>
-              {i18n.t('inv:upper4')}
-            </AppText>
-            <AppIcon name="inviteRokebi1" />
-          </View>
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.blueBg}>
+          <AppText style={[appStyles.normal20Text, {color: colors.white}]}>
+            {i18n.t('inv:upper1')}
+          </AppText>
+          {cashText(
+            i18n.t('inv:upper2'),
+            utils.numberToCommaString(recommenderGift),
+          )}
+          {cashText(
+            i18n.t('inv:upper3'),
+            utils.numberToCommaString(signupGift),
+          )}
+          <AppText style={styles.blueBgDetailText}>
+            {i18n.t('inv:upper4')}
+          </AppText>
+          <AppIcon name="inviteRokebi1" />
+        </View>
 
-          <View style={styles.shareBg}>
-            {['share', 'copy'].map((v, idx) => {
-              const iconName = `icon${v[0].toUpperCase()}${v.substr(1)}`;
-              return (
-                <AppButton
-                  iconName={iconName}
-                  iconStyle={{marginRight: 10}}
-                  key={v}
-                  title={i18n.t(`inv:${v}`)}
-                  titleStyle={[
-                    appStyles.confirmText,
-                    !!idx && {color: colors.black},
-                  ]}
-                  onPress={() => this.sendLink(v)}
-                  viewStyle={styles.rowCenter}
-                  style={styles[v]}
-                />
-              );
-            })}
-          </View>
+        <View style={styles.shareBg}>
+          {['share', 'copy'].map((v, idx) => {
+            const iconName = `icon${v[0].toUpperCase()}${v.substring(1)}`;
+            return (
+              <AppButton
+                iconName={iconName}
+                iconStyle={{marginRight: 10}}
+                key={v}
+                title={i18n.t(`inv:${v}`)}
+                titleStyle={[
+                  appStyles.confirmText,
+                  !!idx && {color: colors.black},
+                ]}
+                onPress={() => sendLink(v)}
+                viewStyle={styles.rowCenter}
+                style={styles[v]}
+              />
+            );
+          })}
+        </View>
 
-          <View style={styles.cashBg}>
-            <AppText style={[appStyles.bold24Text, {marginBottom: 30}]}>
-              {i18n.t('inv:lower1')}
-            </AppText>
-            {[i18n.t('inv:lower2'), i18n.t('inv:lower3')].map((v, idx) => {
-              const str = v.split('*');
-              return this.highLightCash(
-                str[0],
-                str[1],
-                idx === 1,
-                recommenderGift,
-              );
-            })}
-          </View>
+        <View style={styles.cashBg}>
+          <AppText style={[appStyles.bold24Text, {marginBottom: 30}]}>
+            {i18n.t('inv:lower1')}
+          </AppText>
+          {['inv:lower2', 'inv:lower3'].map((k, idx) =>
+            highLightCash(i18n.t(k), idx === 1, recommenderGift),
+          )}
+        </View>
 
-          <View style={{marginVertical: 80, marginHorizontal: 20}}>
-            <View style={styles.titleWithRokebi}>
-              <View>
-                <AppText
-                  style={{...appStyles.bold16Text, color: colors.clearBlue}}>
-                  {i18n.t('inv:statDesc')}
-                </AppText>
-                <AppText style={styles.statTitle}>
-                  {i18n.t('inv:statInv')}
-                </AppText>
-              </View>
-              <AppIcon name="inviteRokebi2" />
+        <View style={{marginVertical: 80, marginHorizontal: 20}}>
+          <View style={styles.titleWithRokebi}>
+            <View>
+              <AppText
+                style={{...appStyles.bold16Text, color: colors.clearBlue}}>
+                {i18n.t('inv:statDesc')}
+              </AppText>
+              <AppText style={styles.statTitle}>
+                {i18n.t('inv:statInv')}
+              </AppText>
             </View>
-            {this.statBox()}
-            <AppText style={styles.withdrawal}>
-              {i18n.t('inv:withdrawalInfo')}
-            </AppText>
+            <AppIcon name="inviteRokebi2" />
           </View>
-        </ScrollView>
-      </SafeAreaView>
-    );
-  }
-}
+          {statBox()}
+          <AppText style={styles.withdrawal}>
+            {i18n.t('inv:withdrawalInfo')}
+          </AppText>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
 
 export default connect(
   ({account, promotion}: RootState) => ({
