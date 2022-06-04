@@ -133,6 +133,7 @@ const images: Record<string, any[]> = {
   coin: [require(`${invitePath}coin.png`)],
   arrowRight: [require(`${giftPath}arrowRight.png`)],
   arrowLeft: [require(`${giftPath}arrowLeft.png`)],
+  inviteBanner: [require(`${invitePath}banner_friends.png`)],
 };
 
 interface AppIconProps {
