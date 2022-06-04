@@ -64,6 +64,25 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  pin: [
+    <Svg
+      width="10"
+      height="16"
+      viewBox="0 0 10 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M4 6.5h2V14l-.553 1.106a.5.5 0 0 1-.894 0L4 14V6.5z"
+        fill="#777"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M9.512 1.842A1 1 0 0 0 8.572.5H1.428a1 1 0 0 0-.94 1.342L2 6l-.5 1.25a.911.911 0 0 0 .846 1.25h5.177a1 1 0 0 0 .928-1.371L8 6l1.512-4.158z"
+        fill="#ED4847"
+      />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;

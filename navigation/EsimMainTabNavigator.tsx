@@ -37,6 +37,7 @@ import SimpleTextScreen from '@/screens/SimpleTextScreen';
 import CodePushScreen from '@/screens/CodePushScreen';
 import EsimScreen from '@/screens/EsimScreen';
 import GiftScreen from '@/screens/GiftScreen';
+import GiftGuideScreen from '@/screens/GiftGuideScreen';
 import FaqScreen from '@/screens/FaqScreen';
 import GuideScreen from '@/screens/GuideScreen';
 import {RootState} from '@/redux';
@@ -118,6 +119,7 @@ function esimStack() {
   return (
     <EsimStack.Navigator screenOptions={{animationEnabled: false}}>
       <EsimStack.Screen name="Esim" component={EsimScreen} />
+      <EsimStack.Screen name="GiftGuide" component={GiftGuideScreen} />
       <EsimStack.Screen name="Gift" component={GiftScreen} />
       <EsimStack.Screen name="RedirectHK" component={RedirectHKScreen} />
       {/* <EsimStack.Screen name="SubsDetail" component={SubsDetailScreen} /> */}

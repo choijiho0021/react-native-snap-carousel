@@ -1,5 +1,6 @@
 import React, {memo, useCallback} from 'react';
 import {Dimensions, Pressable, StyleSheet, View} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import AppModal from '@/components/AppModal';
 import AppIcon from '@/components/AppIcon';
 import AppButton from '@/components/AppButton';
@@ -43,6 +44,7 @@ type GiftModalProps = {
   onOkClose?: () => void;
 };
 const GiftModal: React.FC<GiftModalProps> = ({visible, onOkClose}) => {
+  const navigation = useNavigation();
   const renderBottom = useCallback(
     () => (
       <View style={styles.bottom}>
@@ -106,7 +108,12 @@ const GiftModal: React.FC<GiftModalProps> = ({visible, onOkClose}) => {
           }}>
           {i18n.t('gift:modal2')}
         </AppText>
-        <Pressable style={styles.btn2}>
+        <Pressable
+          style={styles.btn2}
+          onPress={() => {
+            onOkClose?.();
+            navigation.navigate('GiftGuide');
+          }}>
           <AppText style={{...appStyles.medium14, color: 'white'}}>
             {i18n.t('gift:modalBtn')}
           </AppText>

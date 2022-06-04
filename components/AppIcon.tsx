@@ -137,6 +137,10 @@ const images: Record<string, any[]> = {
   arrowLeft: [require(`${giftPath}arrowLeft.png`)],
   inviteBanner: [require(`${invitePath}banner_friends.png`)],
   giftModalBg: [require(`${giftPath}img_bg.png`)],
+  giftGuideTop: [require(`${giftPath}img_top.png`)],
+  giftGuideStep1: [require(`${giftPath}img_step1.png`)],
+  giftGuideStep2: [require(`${giftPath}img_step2.png`)],
+  giftGuideStep3: [require(`${giftPath}img_step3.png`)],
 };
 
 interface AppIconProps {
