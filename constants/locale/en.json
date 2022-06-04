@@ -624,6 +624,7 @@
   "gift:maxLength": "Up to 80 characters",
   "gift:linkTitle": "The data gift has arrived!",
   "gift:linkDesc": "The moment you need data anytime, anywhere, Rokebi.",
+  "gift:modal1": "구매한 상품을\n친구에게 선물하세요!",
 
   "noti:updateTitle": "New Version Available!",
   "noti:updateOpt": "We improved App for your better experience.\nPlease, enjoy the stable service after new version update.",

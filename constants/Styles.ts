@@ -154,6 +154,14 @@ export const appStyles = StyleSheet.create({
     padding: 0,
     margin: 0,
   },
+  medium14: {
+    // fontFamily: "AppleSDGothicNeo",
+    fontSize: 14,
+    fontWeight: '500',
+    fontStyle: 'normal',
+    lineHeight: 22,
+    letterSpacing: 0,
+  },
   normal14Text: {
     //        fontFamily: "AppleSDGothicNeo",
     fontSize: 14,

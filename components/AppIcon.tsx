@@ -1,7 +1,8 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
-import React, {memo} from 'react';
+import React, {memo, useMemo} from 'react';
 import {View, Image, ViewStyle, StyleProp} from 'react-native';
+import _ from 'underscore';
 
 const tabbarPath = '../assets/images/tabbar/';
 const mainPath = '../assets/images/main/';
@@ -134,13 +135,14 @@ const images: Record<string, any[]> = {
   arrowRight: [require(`${giftPath}arrowRight.png`)],
   arrowLeft: [require(`${giftPath}arrowLeft.png`)],
   inviteBanner: [require(`${invitePath}banner_friends.png`)],
+  giftModalBg: [require(`${giftPath}img_bg.png`)],
 };
 
 interface AppIconProps {
   name: string;
   focused?: boolean;
   style?: StyleProp<ViewStyle>;
-  size?: number;
+  size?: number | number[];
   checked?: boolean;
 }
 
@@ -151,15 +153,19 @@ const AppIcon: React.FC<AppIconProps> = ({
   size,
   checked,
 }) => {
-  const source = images[name];
+  const source = useMemo(() => images[name], [name]);
+  const sz = useMemo(() => {
+    if (typeof size === 'number') return {width: size, height: size};
+    if (_.isArray(size) && size.length === 2)
+      return {width: size[0], height: size[1]};
+    return undefined;
+  }, [size]);
 
   return source ? (
-    <View
-      style={[
-        style || {justifyContent: 'center', alignItems: 'center'},
-        size ? {width: size, height: size} : undefined,
-      ]}>
+    <View style={style || {justifyContent: 'center', alignItems: 'center'}}>
       <Image
+        resizeMode="cover"
+        style={sz}
         source={
           (focused || checked) && source.length > 1 ? source[1] : source[0]
         }

@@ -49,6 +49,21 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </G>
     </Svg>,
   ],
+  arrowRight: [
+    <Svg
+      width="10"
+      height="11"
+      viewBox="0 0 10 11"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M4.5.7 9 5.2 4.5 9.7"
+        stroke="#fff"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;

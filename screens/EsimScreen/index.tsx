@@ -38,6 +38,7 @@ import CardInfo from './components/CardInfo';
 import EsimSubs from './components/EsimSubs';
 import {ProductModelState} from '@/redux/modules/product';
 import EsimModal, {ModalType} from './components/EsimModal';
+import GiftModal from './components/GiftModal';
 
 const {esimGlobal} = Env.get();
 
@@ -375,6 +376,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           setCmiUsage({});
         }}
       />
+      <GiftModal visible />
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackBar(false)}
