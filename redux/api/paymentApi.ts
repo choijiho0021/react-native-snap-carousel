@@ -80,13 +80,13 @@ const method = esimGlobal
         //   method: 'trans',
         //   title: 'pym:bank',
         // },
-        {
-          // 확인필요
-          key: 'naverco',
-          method: 'naverco',
-          title: 'pym:naver',
-          icon: 'naver',
-        },
+        // {
+        //   key: 'html5_inicis',
+        //   method: 'naverpay',
+        //   title: 'pym:naver',
+        //   icon: 'naver',
+        //   // language: 'ko',
+        // },
         !esimApp
           ? {
               key: 'danal',
@@ -214,10 +214,10 @@ const getImpToken = () => {
     'Content-Type': `application/json`,
   };
 
-  const imp_key = '0272408165941078';
-  const imp_secret =
-    'GzwsCZGCcrRFvKS8jOCqRniysvG1PDpwdWZPVFs77kNC4FLouoPmL7VdDBftfE0sB0iwGKEN5sq98cyC';
-  // impkey, secret formdata append (Production / Development)
+  const imp_key = esimGlobal ? '0272408165941078' : '2354871690070639';
+  const imp_secret = esimGlobal
+    ? 'GzwsCZGCcrRFvKS8jOCqRniysvG1PDpwdWZPVFs77kNC4FLouoPmL7VdDBftfE0sB0iwGKEN5sq98cyC'
+    : 'THyweTbrgMU9w3Pt4Ue6vx21SX8clg3fYBMcvYEMLyWiCLLHFZNbxQcpOlCaCGqAicMNbrzW0veCgZjW';
 
   return api.callHttp(
     `https://api.iamport.kr/users/getToken`,

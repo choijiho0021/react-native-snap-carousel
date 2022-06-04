@@ -9,6 +9,7 @@ import {
   Image,
   SafeAreaView,
   Linking,
+  Dimensions,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -36,6 +37,8 @@ import {
 import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
 import {sliderWidth} from '@/constants/SliderEntry.style';
+
+const {width} = Dimensions.get('window');
 
 const guideImage = {
   step1: require('../assets/images/guide_HK/guideHK1.png'),
@@ -89,6 +92,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteSix,
     paddingHorizontal: 20,
     marginBottom: 24,
+    height: 700,
   },
   dotStyle: {
     width: 6,
@@ -114,6 +118,12 @@ const styles = StyleSheet.create({
     color: colors.white,
     textAlign: 'center',
     margin: 5,
+  },
+  image: {
+    width: '100%',
+    maxWidth: width - 40,
+    height: '100%',
+    alignSelf: 'stretch',
   },
 });
 
@@ -171,7 +181,7 @@ class RedirectHKScreen extends Component<
   renderGuideHK = ({item}: {item: CarouselIndex}) => {
     return (
       <Image
-        // style={styles.image}
+        style={styles.image}
         source={guideImage[item]}
         resizeMode="contain"
       />
@@ -252,7 +262,7 @@ class RedirectHKScreen extends Component<
           <AppButton
             style={styles.confirm}
             titleStyle={styles.confirmTitle}
-            title={i18n.t('esim:redirectHK')}
+            title={i18n.t('esim:redirectHKRegister')}
             onPress={async () => {
               // 홍콩 실명인증 웹 페이지
               await Linking.openURL(

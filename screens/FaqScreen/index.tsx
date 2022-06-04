@@ -9,7 +9,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootState} from '@reduxjs/toolkit';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {Dimensions, StyleSheet, View} from 'react-native';
+import {Dimensions, StyleSheet, View, SafeAreaView} from 'react-native';
 import {TabBar, TabView} from 'react-native-tab-view';
 import {connect, DispatchProp} from 'react-redux';
 import FaqList from './components/FaqList';
@@ -120,7 +120,7 @@ const FaqScreen: React.FC<FaqScreenProps & DispatchProp> = ({
   }, []);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <AppActivityIndicator visible={pending} />
       <TabView
         style={styles.container}
@@ -140,7 +140,7 @@ const FaqScreen: React.FC<FaqScreenProps & DispatchProp> = ({
           />
         )}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 

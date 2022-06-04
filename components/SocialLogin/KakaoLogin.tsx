@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#F7E600',
+    borderRadius: 5,
   },
   btnStyle: {
     height: 45,
