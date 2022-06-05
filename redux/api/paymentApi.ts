@@ -40,18 +40,6 @@ const method = esimGlobal
           method: 'card',
           title: 'pym:ccard',
         },
-        {
-          key: 'html5_inicis',
-          method: 'ssgpay',
-          title: 'pym:ssgpay',
-          icon: 'ssgpay',
-        },
-        {
-          key: 'html5_inicis',
-          method: 'lpay',
-          title: 'pym:lpay',
-          icon: 'lpay',
-        },
       ] as PaymentMethod[],
       [
         {
@@ -74,37 +62,49 @@ const method = esimGlobal
         },
       ] as PaymentMethod[],
       [
+        {
+          key: 'html5_inicis',
+          method: 'naverpay',
+          title: 'pym:naver',
+          icon: 'naver',
+          // language: 'ko',
+        },
+        {
+          key: 'html5_inicis',
+          method: 'ssgpay',
+          title: 'pym:ssgpay',
+          icon: 'ssgpay',
+        },
+        {
+          key: 'html5_inicis',
+          method: 'lpay',
+          title: 'pym:lpay',
+          icon: 'lpay',
+        },
         // {
         //   // method 확인
         //   key: 'html5_inicis',
         //   method: 'trans',
         //   title: 'pym:bank',
         // },
-        // {
-        //   key: 'html5_inicis',
-        //   method: 'naverpay',
-        //   title: 'pym:naver',
-        //   icon: 'naver',
-        //   // language: 'ko',
-        // },
-        !esimApp
-          ? {
-              key: 'danal',
-              method: 'phone',
-              title: 'pym:mobile',
-            }
-          : undefined,
+        // !esimApp
+        //   ? {
+        //       key: 'danal',
+        //       method: 'phone',
+        //       title: 'pym:mobile',
+        //     }
+        //   : undefined,
       ] as PaymentMethod[],
-      [
-        Platform.OS === 'android'
-          ? {
+      Platform.OS === 'android'
+        ? [
+            {
               key: 'html5_inicis',
               method: 'samsung',
               title: 'pym:samsung',
               icon: 'samsung',
-            }
-          : undefined,
-      ] as PaymentMethod[],
+            },
+          ]
+        : [],
     ];
 
 type RkbPayment = {
