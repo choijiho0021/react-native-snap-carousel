@@ -199,7 +199,13 @@ class StoreScreen extends Component<StoreScreenProps, StoreScreenState> {
 
   renderScene = ({route}: {route: TabViewRoute}) => {
     const data = this.state.scene[route.key];
-    return <StoreList data={data} onPress={this.onPressItem} />;
+    return (
+      <StoreList
+        data={data}
+        onPress={this.onPressItem}
+        localOpList={this.props.product.localOpList}
+      />
+    );
   };
 
   render() {
