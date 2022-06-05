@@ -1,15 +1,13 @@
 /* eslint-disable no-param-reassign */
-import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {Component, memo, useEffect, useState} from 'react';
+import React, {memo, useCallback, useEffect, useRef, useState} from 'react';
 import {Dimensions, StyleSheet, View} from 'react-native';
 import {AppEventsLogger} from 'react-native-fbsdk';
 import {getTrackingStatus} from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
@@ -28,7 +26,6 @@ import {
   ProductModelState,
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
-import {retrieveData, storeData} from '@/utils/utils';
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -241,11 +238,8 @@ type StoreSearchScreenNavigationProp = StackNavigationProp<
   'StoreSearch'
 >;
 
-type StoreSearchScreenRouteProp = RouteProp<HomeStackParamList, 'StoreSearch'>;
-
 type StoreSearchScreenProps = {
   navigation: StoreSearchScreenNavigationProp;
-  route: StoreSearchScreenRouteProp;
 
   product: ProductModelState;
   action: {
@@ -253,75 +247,58 @@ type StoreSearchScreenProps = {
   };
 };
 
-type StoreSearchScreenState = {
-  searchWord: string;
-  searchList: string[];
-  recommendCountry: string[];
-};
+const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
+  navigation,
+  action,
+  product,
+}) => {
+  const headerRef = useRef<HeaderTitleRef>(null);
+  const [searchWord, setSearchWord] = useState('');
 
-class StoreSearchScreen extends Component<
-  StoreSearchScreenProps,
-  StoreSearchScreenState
-> {
-  headerRef: React.RefObject<HeaderTitleRef>;
+  const onPressItem = useCallback(
+    async (prodOfCountry: RkbProduct[]) => {
+      if (searchWord.length > 0) {
+        Analytics.trackEvent('Page_View_Count', {
+          page: 'Move To Country with Searching',
+        });
 
-  constructor(props: StoreSearchScreenProps) {
-    super(props);
-    this.state = {
-      searchWord: '',
-    };
+        const status = await getTrackingStatus();
+        if (status === 'authorized') {
+          const params = {
+            _valueToSum: 1,
+            fb_search_string: searchWord,
+            fb_content_type: 'Country',
+            success: 1,
+          };
+          AppEventsLogger.logEvent('fb_mobile_search', params);
+          console.log('@@ search events', prodOfCountry, searchWord);
+        }
+      }
 
-    this.headerRef = React.createRef<HeaderTitleRef>();
-    this.search = this.search.bind(this);
-  }
+      action.product.setProdOfCountry(prodOfCountry);
+      navigation.navigate('Country');
+    },
+    [action.product, navigation, searchWord],
+  );
 
-  componentDidMount() {
+  const search = useCallback((word: string) => {
+    setSearchWord(word);
+    headerRef?.current?.changeValue(word);
+  }, []);
+
+  useEffect(() => {
     Analytics.trackEvent('Page_View_Count', {page: 'Country Search'});
 
-    this.props.navigation.setOptions({
+    navigation.setOptions({
       title: null,
       headerLeft: null,
-      headerTitle: () => (
-        <HeaderTitle search={this.search} headerRef={this.headerRef} />
-      ),
+      headerTitle: () => <HeaderTitle search={search} headerRef={headerRef} />,
     });
-  }
-
-  onPressItem = async (prodOfCountry: RkbProduct[]) => {
-    if (this.state.searchWord.length > 0) {
-      Analytics.trackEvent('Page_View_Count', {
-        page: 'Move To Country with Searching',
-      });
-
-      // * logEvent(eventName: string, valueToSum: number, parameters: {[key:string]:string|number});
-      const {searchWord} = this.state;
-
-      const status = await getTrackingStatus();
-      if (status === 'authorized') {
-        const params = {
-          _valueToSum: 1,
-          fb_search_string: searchWord,
-          fb_content_type: 'Country',
-          success: 1,
-        };
-        AppEventsLogger.logEvent('fb_mobile_search', params);
-        console.log('@@ search events', prodOfCountry, searchWord);
-      }
-    }
-
-    this.props.action.product.setProdOfCountry(prodOfCountry);
-    this.props.navigation.navigate('Country');
-  };
-
-  async search(searchWord: string) {
-    this.setState({searchWord});
-    this.headerRef?.current?.changeValue(searchWord);
-  }
+  }, [navigation, search]);
 
   // 국가 검색
-  renderStoreList() {
-    const {searchWord = ''} = this.state;
-    const allData = this.props.product.sortedProdList;
+  const renderStoreList = useCallback(() => {
+    const allData = product.sortedProdList;
     const filtered = allData.filter(
       (elm) => _.isEmpty(searchWord) || elm[0].search?.match(searchWord),
     );
@@ -329,18 +306,20 @@ class StoreSearchScreen extends Component<
     const list = API.Product.toColumnList(filtered);
 
     return list.length > 0 ? (
-      <StoreList data={list} onPress={this.onPressItem} />
+      <StoreList
+        data={list}
+        onPress={onPressItem}
+        localOpList={product.localOpList}
+      />
     ) : (
       <View style={styles.emptyViewPage}>
         <AppText style={styles.emptyPage}>{i18n.t('country:empty')}</AppText>
       </View>
     );
-  }
+  }, [onPressItem, product.localOpList, product.sortedProdList, searchWord]);
 
-  render() {
-    return <View style={styles.mainContainer}>{this.renderStoreList()}</View>;
-  }
-}
+  return <View style={styles.mainContainer}>{renderStoreList()}</View>;
+};
 
 export default connect(
   ({product}: RootState) => ({product}),
