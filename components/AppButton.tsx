@@ -1,10 +1,10 @@
 import React, {memo} from 'react';
 import {
   Image,
+  Pressable,
   StyleProp,
   StyleSheet,
   TextStyle,
-  TouchableOpacity,
   View,
   ViewStyle,
 } from 'react-native';
@@ -72,7 +72,7 @@ const AppButton: React.FC<AppButtonProps> = ({
   viewStyle,
 }) => {
   return (
-    <TouchableOpacity
+    <Pressable
       style={[
         style || styles.button,
         disabled && {
@@ -113,7 +113,7 @@ const AppButton: React.FC<AppButtonProps> = ({
           </AppText>
         )}
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
