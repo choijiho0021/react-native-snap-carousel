@@ -271,7 +271,10 @@ class ContactScreen extends Component<ContactScreenProps, ContactScreenState> {
 
         <View style={styles.absoluteView}>
           {['Faq', 'Guide'].map((elm) => (
-            <Pressable style={styles.btnBlue} onPress={() => this.onPress(elm)}>
+            <Pressable
+              key={elm}
+              style={styles.btnBlue}
+              onPress={() => this.onPress(elm)}>
               <AppIcon style={{marginBottom: 16}} name={`img${elm}`} />
               <AppText style={[appStyles.bold16Text, {color: colors.white}]}>
                 {i18n.t(`contact:${elm.toLowerCase()}`)}
@@ -289,7 +292,11 @@ class ContactScreen extends Component<ContactScreenProps, ContactScreenState> {
             {i18n.t('contact:info2')}
           </AppText>
           {data.map((item) => (
-            <ContactListItem item={item} onPress={this.onPress} />
+            <ContactListItem
+              key={item.key}
+              item={item}
+              onPress={this.onPress}
+            />
           ))}
         </View>
 
