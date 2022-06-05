@@ -4,14 +4,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   Animated,
   Dimensions,
@@ -67,6 +60,7 @@ import PromotionCarousel from './component/PromotionCarousel';
 import AndroidEuccidModule from '@/components/NativeModule/AndroidEuccidModule';
 import {useInterval} from '@/utils/useInterval';
 import NotiModal from './component/NotiModal';
+import AppTabHeader from '@/components/AppTabHeader';
 
 const {esimGlobal} = Env.get();
 
@@ -86,17 +80,6 @@ const styles = StyleSheet.create({
     ...appStyles.title,
     marginLeft: 20,
   },
-  btnSearchBar: {
-    width: 40,
-    height: 40,
-    backgroundColor: colors.white,
-  },
-  carousel: {
-    marginBottom: 15,
-    alignItems: 'center',
-    width: '100%',
-    backgroundColor: colors.white,
-  },
   btnAlarm: {
     width: 40,
     height: 40,
@@ -106,27 +89,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     marginHorizontal: 18,
-  },
-  whiteTwoBackground: {
-    backgroundColor: colors.whiteTwo,
-  },
-  tabView: {
-    height: 60,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginHorizontal: 20,
-  },
-  normal16WarmGrey: {
-    ...appStyles.normal16Text,
-    color: colors.warmGrey,
-  },
-  boldClearBlue: {
-    color: colors.clearBlue,
-    fontWeight: 'bold',
-  },
-  scrollView: {
-    backgroundColor: colors.white,
   },
   normal16BlueText: {
     ...appStyles.normal16Text,
@@ -144,11 +106,6 @@ const styles = StyleSheet.create({
     ...appStyles.bold16Text,
     marginTop: 30,
     marginBottom: 10,
-  },
-  imgRatio: {
-    // figure out your image aspect ratio
-    aspectRatio: 335 / 100,
-    width: '100%',
   },
   deviceScrollView: {
     backgroundColor: colors.whiteTwo,
@@ -184,37 +141,6 @@ type EsimProps = {
     cart: CartAction;
   };
 };
-
-const TabHeader0 = ({
-  index,
-  routes,
-  onIndexChange,
-}: {
-  index: number;
-  routes: TabViewRoute[];
-  onIndexChange: (n: number) => void;
-}) => {
-  return (
-    <View style={styles.whiteTwoBackground}>
-      <View style={styles.tabView}>
-        {routes.map((elm, idx) => (
-          <AppButton
-            key={elm.key}
-            style={styles.whiteTwoBackground}
-            titleStyle={[
-              styles.normal16WarmGrey,
-              idx === index ? styles.boldClearBlue : {},
-            ]}
-            title={elm.title}
-            // title={i18n.t(`prodDetail:${elm}`)}
-            onPress={() => onIndexChange(idx)}
-          />
-        ))}
-      </View>
-    </View>
-  );
-};
-const TabHeader = memo(TabHeader0);
 
 const POPUP_DIS_DAYS = 7;
 const HEADER_HEIGHT = 137;
@@ -622,7 +548,11 @@ const Esim: React.FC<EsimProps> = ({
         iconStyle={{marginHorizontal: 24}}
       />
 
-      <TabHeader index={index} routes={routes} onIndexChange={onIndexChange} />
+      <AppTabHeader
+        index={index}
+        routes={routes}
+        onIndexChange={onIndexChange}
+      />
 
       <TabView
         style={styles.container}

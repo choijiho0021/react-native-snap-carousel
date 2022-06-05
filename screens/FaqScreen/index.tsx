@@ -1,18 +1,18 @@
-import AppActivityIndicator from '@/components/AppActivityIndicator';
-import AppBackButton from '@/components/AppBackButton';
-import {colors} from '@/constants/Colors';
-import {HomeStackParamList} from '@/navigation/navigation';
-import {Utils} from '@/redux/api';
-import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
-import i18n from '@/utils/i18n';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootState} from '@reduxjs/toolkit';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {Dimensions, StyleSheet, View, SafeAreaView} from 'react-native';
-import {TabBar, TabView} from 'react-native-tab-view';
+import {Dimensions, StyleSheet, SafeAreaView} from 'react-native';
+import {TabView} from 'react-native-tab-view';
 import {connect, DispatchProp} from 'react-redux';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppBackButton from '@/components/AppBackButton';
+import {colors} from '@/constants/Colors';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
+import i18n from '@/utils/i18n';
 import FaqList from './components/FaqList';
+import AppTabHeader from '@/components/AppTabHeader';
 
 const styles = StyleSheet.create({
   container: {
@@ -64,7 +64,6 @@ const FaqScreen: React.FC<FaqScreenProps & DispatchProp> = ({
       ] as TabViewRoute[],
     [],
   );
-  const [fontSize, setFontSize] = useState<number>();
 
   const refreshData = useCallback(
     (idx: number) => {
@@ -115,30 +114,22 @@ const FaqScreen: React.FC<FaqScreenProps & DispatchProp> = ({
     refreshData(idx > 0 ? idx : 0);
   }, [navigation, refreshData, route.params, routes]);
 
-  useEffect(() => {
-    Utils.fontScaling(14).then((v) => setFontSize(v));
-  }, []);
-
   return (
     <SafeAreaView style={styles.container}>
       <AppActivityIndicator visible={pending} />
+      <AppTabHeader
+        index={index}
+        routes={routes}
+        onIndexChange={onIndexChange}
+        style={{height: 52, backgroundColor: colors.whiteTwo}}
+      />
       <TabView
         style={styles.container}
         navigationState={{index, routes}}
         renderScene={renderScene}
         onIndexChange={onIndexChange}
         initialLayout={{width: Dimensions.get('window').width}}
-        renderTabBar={(props) => (
-          <TabBar
-            {...props}
-            tabStyle={{backgroundColor: colors.whiteTwo}}
-            labelStyle={{fontSize}}
-            activeColor={colors.clearBlue}
-            inactiveColor={colors.warmGrey}
-            pressColor={colors.white}
-            style={styles.tabBar}
-          />
-        )}
+        renderTabBar={() => null}
       />
     </SafeAreaView>
   );
