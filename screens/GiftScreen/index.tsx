@@ -1,4 +1,10 @@
-import {ImageBackground, SafeAreaView, StyleSheet, View} from 'react-native';
+import {
+  ImageBackground,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -29,6 +35,7 @@ import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import api from '@/redux/api/api';
 import Env from '@/environment';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const styles = StyleSheet.create({
   container: {
@@ -38,9 +45,9 @@ const styles = StyleSheet.create({
   // 여기부터
   kakao: {
     flex: 1,
-    height: 52,
-    borderWidth: 1,
-    borderColor: colors.lightGrey,
+    height: 36,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   method: {
     marginVertical: 20,
@@ -52,6 +59,14 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     color: colors.warmGrey,
     lineHeight: 18,
+  },
+  warn: {
+    height: 42,
+    backgroundColor: colors.whiteTwo,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    marginTop: 16,
+    paddingLeft: 12,
   },
   info: {
     ...appStyles.normal12Text,
@@ -158,10 +173,6 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
     () => (promotion.gift.bg || []).filter((v) => v?.image),
     [promotion.gift.bg],
   );
-  const imageUrl = useMemo(
-    () => promotion?.gift?.imageUrl,
-    [promotion?.gift?.imageUrl],
-  );
 
   useEffect(() => {
     if (!promotion.stat.signupGift) promotionActions.getPromotionStat();
@@ -264,47 +275,54 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
     [afterSend, createLink],
   );
 
-  const info = useCallback(() => {
-    return (
+  const info = useCallback(
+    () => (
       <View>
-        {Array.from({length: 5}, (_, i) => i + 1).map((v) => {
-          return (
-            <AppText key={`info${v}`} style={styles.info}>
-              {i18n.t(`gift:info${v}`)}
-            </AppText>
-          );
-        })}
+        {Array.from({length: 5}, (_, i) => i + 1).map((v) => (
+          <AppText key={`info${v}`} style={styles.info}>
+            {i18n.t(`gift:info${v}`)}
+          </AppText>
+        ))}
       </View>
-    );
-  }, []);
+    ),
+    [],
+  );
 
-  const method = useCallback(() => {
-    return (
+  const method = useCallback(
+    () => (
       <View>
         <View style={styles.method}>
-          {[KAKAO, MESSAGE].map((v, idx) => {
-            return (
-              <AppButton
-                key={v}
-                title={i18n.t(`gift:${v}`)}
-                titleStyle={[appStyles.bold16Text, {color: colors.warmGrey}]}
-                checked={checked === v}
-                checkedColor={colors.black}
-                onPress={() => setChecked(v)}
-                style={styles.kakao}
-              />
-            );
-          })}
+          {[KAKAO, MESSAGE].map((v) => (
+            <Pressable
+              key={v}
+              style={styles.kakao}
+              onPress={() => setChecked(v)}>
+              <AppSvgIcon name="radioBtn" focused={checked === v} />
+              <AppText
+                style={[
+                  appStyles.bold16Text,
+                  {color: colors.warmGrey, marginLeft: 8},
+                ]}>
+                {i18n.t(`gift:${v}`)}
+              </AppText>
+            </Pressable>
+          ))}
         </View>
-        <AppText style={styles.methodInfo}>
+        <AppText key="info" style={styles.methodInfo}>
           {i18n.t(`gift:${checked}Info`)}
         </AppText>
+        <View key="warn" style={styles.warn}>
+          <AppText style={appStyles.normal12Text}>
+            {i18n.t(`gift:warn`)}
+          </AppText>
+        </View>
       </View>
-    );
-  }, [checked]);
+    ),
+    [checked],
+  );
 
-  const cardDesign = useCallback(() => {
-    return (
+  const cardDesign = useCallback(
+    () => (
       <ImageBackground
         style={styles.bg}
         resizeMode="stretch"
@@ -356,8 +374,9 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
           )}
         </View>
       </ImageBackground>
-    );
-  }, [bgImages, contHeight, msg, num, prevMsg]);
+    ),
+    [bgImages, contHeight, msg, num, prevMsg],
+  );
 
   const {item} = route.params;
 
@@ -367,8 +386,13 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         showsVerticalScrollIndicator={false}
         style={styles.container}>
         {cardDesign()}
-        <View style={{marginVertical: 25, marginHorizontal: 20}}>
-          <AppText style={appStyles.bold16Text}>{item.prodName}</AppText>
+        <View style={{marginVertical: 30, marginHorizontal: 20}}>
+          <AppText style={appStyles.bold18Text}>
+            {i18n.t('gift:giftInfo')}
+          </AppText>
+          <AppText style={[appStyles.normal16Text, {marginTop: 20}]}>
+            {item.prodName}
+          </AppText>
         </View>
         <View style={styles.thickDivider} />
         <View style={{margin: 20, marginBottom: 30}}>
