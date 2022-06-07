@@ -38,20 +38,29 @@ const TabHeader = ({
   style?: ViewStyle;
 }) => {
   return (
-    <View style={style || styles.whiteTwoBackground}>
+    <View style={[style || styles.whiteTwoBackground, {paddingHorizontal: 20}]}>
       <View style={styles.tabView}>
         {routes.map((elm, idx) => (
-          <AppButton
-            key={elm.key}
-            style={{flex: 1}}
-            titleStyle={[
-              styles.normal16WarmGrey,
-              idx === index ? styles.boldClearBlue : {},
-            ]}
-            title={elm.title}
-            // title={i18n.t(`prodDetail:${elm}`)}
-            onPress={() => onIndexChange(idx)}
-          />
+          <View style={{flex: 1}}>
+            <AppButton
+              key={elm.key}
+              style={{flex: 1}}
+              titleStyle={[
+                styles.normal16WarmGrey,
+                idx === index ? styles.boldClearBlue : {},
+              ]}
+              title={elm.title}
+              onPress={() => onIndexChange(idx)}
+            />
+            {idx === index ? (
+              <View
+                style={{
+                  height: 3,
+                  backgroundColor: colors.clearBlue,
+                }}
+              />
+            ) : null}
+          </View>
         ))}
       </View>
     </View>
