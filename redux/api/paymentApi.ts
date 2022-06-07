@@ -80,13 +80,13 @@ const method = esimGlobal
         //   method: 'trans',
         //   title: 'pym:bank',
         // },
-        // {
-        //   key: 'html5_inicis',
-        //   method: 'naverpay',
-        //   title: 'pym:naver',
-        //   icon: 'naver',
-        //   // language: 'ko',
-        // },
+        {
+          key: 'html5_inicis',
+          method: 'card',
+          title: 'pym:naver',
+          icon: 'naver',
+          // language: 'ko',
+        },
         !esimApp
           ? {
               key: 'danal',
