@@ -8,7 +8,6 @@ import {
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {Settings} from 'react-native-fbsdk';
 import {
-  Appearance,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -225,7 +224,6 @@ type RegisterMobileScreenProps = {
   account: AccountModelState;
   lastTab: string[];
   pending: boolean;
-  onSubmit: () => void;
 
   navigation: RegisterMobileScreenNavigationProp;
   route: RegisterMobileScreenRouteProp;
@@ -242,7 +240,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   route,
   actions,
   pending,
-  onSubmit,
   lastTab,
 }) => {
   const [loading, setLoading] = useState(false);
@@ -250,7 +247,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const [mobile, setMobile] = useState('');
   const [authorized, setAuthorized] = useState<boolean | undefined>();
   const [authNoti, setAuthNoti] = useState(false);
-  const [timeout, setTimeout] = useState(false);
+  const [timeoutFlag, setTimeoutFlag] = useState(false);
   const [confirm, setConfirm] = useState(
     ImmutableMap({
       0: false,
@@ -267,6 +264,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<TrackingStatus>();
   const authInputRef = useRef<TextInput>(null);
+  const inputMobileRef = useRef<TextInput>(null);
   const controller = useRef(new AbortController());
   const mounted = useRef(false);
   const emailRef = useRef<InputEmailRef>(null);
@@ -362,6 +360,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   }, [lastTab, loggedIn, navigation]);
 
   useEffect(() => {
+    inputMobileRef.current?.focus();
     return () => {
       mounted.current = false;
       controller.current?.abort();
@@ -374,7 +373,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     setMobile('');
     setAuthorized(false);
     setAuthNoti(false);
-    setTimeout(false);
+    setTimeoutFlag(false);
     setConfirm(
       ImmutableMap({
         0: false,
@@ -506,7 +505,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       setMobile(value);
 
       if (authorized) return;
-      const error = validationUtil.validate('mobileSms', `${value}`);
+      const error = validationUtil.validate('mobileSms', value);
 
       if (!_.isEmpty(error)) {
         AppAlert.error(
@@ -516,13 +515,13 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       } else {
         setPin('');
         setAuthorized(undefined);
-        setTimeout(true);
+        setTimeoutFlag(true);
 
         API.User.sendSms({user: value, abortController: controller.current})
           .then((resp) => {
             if (resp.result === 0) {
               setAuthNoti(true);
-              setTimeout(false);
+              setTimeoutFlag(false);
               authInputRef.current?.focus();
             } else {
               console.log('send sms failed', resp);
@@ -656,24 +655,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     [confirm, onMove],
   );
 
-  const renderTitle = useCallback(
-    () => <AppText style={styles.title}>{i18n.t('mobile:title')}</AppText>,
-    [],
-  );
-
-  const renderProfile = useCallback(
-    (email?: string, mobile?: string, profileImageUrl?: string) => (
-      <View style={{marginTop: 30}}>
-        <Profile
-          email={email}
-          mobile={mobile}
-          userPictureUrl={profileImageUrl}
-        />
-      </View>
-    ),
-    [],
-  );
-
   const renderInput = useCallback(() => {
     const editablePin = !!mobile && authNoti && !authorized && !loading;
 
@@ -688,6 +669,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           authNoti={authNoti}
           disabled={(authNoti && authorized) || loading}
           authorized={authorized}
+          forwardRef={inputMobileRef}
         />
 
         <InputPinInTime
@@ -697,8 +679,8 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           // clickable={editablePin && !timeout}
           clickable
           authorized={mobile ? authorized : undefined}
-          countdown={authNoti && !authorized && !timeout}
-          onTimeout={() => setTimeout(true)}
+          countdown={authNoti && !authorized && !timeoutFlag}
+          onTimeout={() => setTimeoutFlag(true)}
           onPress={onPressPin}
           duration={180}
         />
@@ -711,37 +693,17 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     mobile,
     onChangeText,
     onPressPin,
-    timeout,
+    timeoutFlag,
   ]);
 
   const renderLogin = useCallback(() => {
     return (
-      <KeyboardAwareScrollView
-        enableOnAndroid
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={[
-          {
-            flexGrow: 1,
-          },
-        ]}
-        enableResetScrollToCoords={false}>
-        {renderTitle()}
+      <View>
+        <AppText style={styles.title}>{i18n.t('mobile:title')}</AppText>
         {!esimGlobal && renderInput()}
-        {!newUser && (
-          <View style={{flex: 1, justifyContent: 'center'}}>
-            <SocialLogin onAuth={onAuth} />
-          </View>
-        )}
-        {esimGlobal && (
-          <View
-            key="imgRokebi"
-            style={{justifyContent: 'flex-end', paddingBottom: 52}}>
-            <AppIcon name="textLogo" />
-          </View>
-        )}
-      </KeyboardAwareScrollView>
+      </View>
     );
-  }, [newUser, onAuth, renderInput, renderTitle]);
+  }, [renderInput]);
 
   const disableButton = useMemo(
     () => !authorized || (newUser && !(confirm.get('0') && confirm.get('1'))),
@@ -771,18 +733,20 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         enableOnAndroid
         enableResetScrollToCoords={false}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={[
-          {
-            flexDirection: 'column',
-            alignContent: 'stretch',
-          },
-          !socialLogin && !newUser && styles.flexStyle,
-        ]}
+        // contentContainerStyle={{backgroundColor: 'lightgray'}}
         // resetScrollToCoords={{x: 0, y: 0}}
       >
-        {socialLogin
-          ? renderProfile(email, mobile, profileImageUrl)
-          : renderLogin()}
+        {socialLogin ? (
+          <View style={{marginTop: 30}}>
+            <Profile
+              email={email}
+              mobile={mobile}
+              userPictureUrl={profileImageUrl}
+            />
+          </View>
+        ) : (
+          renderLogin()
+        )}
 
         {newUser && authorized && (
           <View>
@@ -805,6 +769,18 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           </View>
         )}
       </KeyboardAwareScrollView>
+      {!newUser && (
+        <View style={{justifyContent: 'center'}}>
+          <SocialLogin onAuth={onAuth} />
+        </View>
+      )}
+      {esimGlobal && (
+        <View
+          key="imgRokebi"
+          style={{justifyContent: 'flex-end', paddingBottom: 52}}>
+          <AppIcon name="textLogo" />
+        </View>
+      )}
       {newUser && authorized && (
         <AppButton
           style={styles.confirm}
