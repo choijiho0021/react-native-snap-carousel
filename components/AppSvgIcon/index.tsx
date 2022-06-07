@@ -4,12 +4,20 @@ import {
   Insets,
   Pressable,
   StyleProp,
+  StyleSheet,
   View,
   ViewStyle,
 } from 'react-native';
 import AppText from '../AppText';
 import toggleIcons from './toggleIcon';
 import pressIcons from './pressIcon';
+
+const styles = StyleSheet.create({
+  icon: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 interface AppSvgIconProps {
   name: string;
@@ -45,7 +53,7 @@ const AppSvgIcon: React.FC<AppSvgIconProps> = ({
     const svg = icon[focused || icon.length < 2 ? 0 : 1];
     return onPress ? (
       <Pressable
-        style={style}
+        style={[styles.icon, style]}
         onPress={onPress}
         onPressIn={onPressIn}
         onPressOut={onPressOut}
@@ -67,7 +75,7 @@ const AppSvgIcon: React.FC<AppSvgIconProps> = ({
 
     return onPress ? (
       <Pressable
-        style={style}
+        style={[styles.icon, style]}
         onPress={onPress}
         onLongPress={onLongPress}
         hitSlop={hitSlop}
