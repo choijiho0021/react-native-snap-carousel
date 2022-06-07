@@ -1,13 +1,22 @@
 /* eslint-disable no-param-reassign */
+import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {memo, useCallback, useEffect, useRef, useState} from 'react';
-import {Dimensions, StyleSheet, View} from 'react-native';
+import {
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {AppEventsLogger} from 'react-native-fbsdk';
 import {getTrackingStatus} from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
@@ -26,6 +35,7 @@ import {
   ProductModelState,
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
+import {retrieveData, storeData} from '@/utils/utils';
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -169,6 +179,8 @@ const styles = StyleSheet.create({
   },
 });
 
+const MAX_HISTORY_LENGTH = 7;
+
 type HeaderTitleRef = {
   changeValue: (v: string) => void;
 };
@@ -202,9 +214,9 @@ const HeaderTitle0 = ({
           placeholderTextColor={colors.greyish}
           returnKeyType="search"
           enablesReturnKeyAutomatically
-          onSubmitEditing={() => search(word)}
+          onSubmitEditing={() => search(word, true)}
           onChangeText={(value: string) => {
-            search(value);
+            search(value, false);
             setWord(value);
           }}
           value={word}
@@ -214,7 +226,7 @@ const HeaderTitle0 = ({
           <View style={{flexDirection: 'row'}}>
             <AppButton
               style={[styles.showSearchBar, {paddingRight: 20}]}
-              onPress={() => search('')}
+              onPress={() => search('', false)}
               iconName="btnSearchCancel"
             />
             <View style={styles.divider} />
@@ -222,7 +234,7 @@ const HeaderTitle0 = ({
         )}
         <AppButton
           style={styles.showSearchBar}
-          onPress={() => search(word)}
+          onPress={() => search(word, true)}
           iconName="btnSearchOff"
         />
       </View>
@@ -238,8 +250,11 @@ type StoreSearchScreenNavigationProp = StackNavigationProp<
   'StoreSearch'
 >;
 
+type StoreSearchScreenRouteProp = RouteProp<HomeStackParamList, 'StoreSearch'>;
+
 type StoreSearchScreenProps = {
   navigation: StoreSearchScreenNavigationProp;
+  route: StoreSearchScreenRouteProp;
 
   product: ProductModelState;
   action: {
@@ -249,11 +264,48 @@ type StoreSearchScreenProps = {
 
 const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
   navigation,
-  action,
+  route,
   product,
+  action,
 }) => {
-  const headerRef = useRef<HeaderTitleRef>(null);
-  const [searchWord, setSearchWord] = useState('');
+  const [querying, setQuerying] = useState<boolean>(false);
+  const [searching, setSearching] = useState<boolean>(false);
+  const [searchWord, setSearchWord] = useState<string>('');
+  const [searchList, setSearchList] = useState<string[]>([]);
+  const [recommendCountry, setRecommendCountry] = useState<string[]>([]);
+  const headerRef = useRef<HeaderTitleRef>();
+
+  const getSearchHist = useCallback(async () => {
+    const searchHist = await retrieveData('searchHist');
+    // searchHist 저장 형식 : ex) 대만,중국,일본
+
+    setSearchList(
+      _.isNull(searchHist)
+        ? []
+        : searchHist.split(',').slice(0, MAX_HISTORY_LENGTH),
+    );
+  }, []);
+
+  const getRecommendation = useCallback(() => {
+    API.Page.getPageByCategory('store:search_key')
+      .then((resp) => {
+        if (resp.result === 0 && resp.objects.length > 0) {
+          const recommendation = resp.objects[0].body
+            ?.replace(/<\/p>/gi, '')
+            .replace(/<p>/gi, '')
+            .split(',');
+          if (recommendation) {
+            setRecommendCountry(recommendation);
+          }
+        }
+      })
+      .catch((err) => {
+        console.log('failed to get page', err);
+      })
+      .finally(() => {
+        setQuerying(false);
+      });
+  }, []);
 
   const onPressItem = useCallback(
     async (prodOfCountry: RkbProduct[]) => {
@@ -281,20 +333,86 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
     [action.product, navigation, searchWord],
   );
 
-  const search = useCallback((word: string) => {
+  const search = useCallback(async (word: string, isSearching = false) => {
     setSearchWord(word);
+    setSearching(isSearching);
     headerRef?.current?.changeValue(word);
+
+    if (isSearching) {
+      // 최근 검색 기록
+      const oldsearchHist = await retrieveData('searchHist');
+
+      if (word && !word.match(',')) {
+        // 중복 제거 후 최대 7개까지 저장한다. 저장 형식 : ex) 대만,중국,일본
+        if (!_.isNull(oldsearchHist)) {
+          const oldHist = oldsearchHist.split(',');
+          word = oldHist.includes(word)
+            ? oldsearchHist
+            : `${word},${oldHist.slice(0, MAX_HISTORY_LENGTH - 1).join(',')}`;
+        }
+        storeData('searchHist', word);
+      }
+    }
   }, []);
 
-  useEffect(() => {
-    Analytics.trackEvent('Page_View_Count', {page: 'Country Search'});
+  const renderSearchWord = useCallback(() => {
+    const recommendCountryList = recommendCountry
+      .map((elm, idx, arr) => ({
+        key: elm,
+        data: [elm, arr[idx + 1], arr[idx + 2]],
+      }))
+      .filter((elm, idx) => idx % 3 === 0);
 
-    navigation.setOptions({
-      title: null,
-      headerLeft: null,
-      headerTitle: () => <HeaderTitle search={search} headerRef={headerRef} />,
-    });
-  }, [navigation, search]);
+    return (
+      <View style={styles.width100}>
+        {/* 최근 검색 */}
+        <View style={styles.searchListHeader}>
+          <AppText style={styles.searchListHeaderText}>
+            {i18n.t('search:list')}
+          </AppText>
+        </View>
+        {_.isEmpty(searchList) ? (
+          <View style={styles.noList}>
+            <AppText style={styles.searchListText}>
+              {i18n.t('search:err')}
+            </AppText>
+          </View>
+        ) : (
+          searchList.map((elm) => (
+            <TouchableOpacity
+              key={elm}
+              style={styles.searchList}
+              onPress={() => search(elm, true)}>
+              <AppText key="Text" style={styles.searchListText}>
+                {elm}
+              </AppText>
+            </TouchableOpacity>
+          ))
+        )}
+        <View style={styles.recommendHeader}>
+          <AppText style={styles.searchListHeaderText}>
+            {i18n.t('search:recommend')}
+          </AppText>
+        </View>
+        {recommendCountryList.map((elm) => (
+          <View key={elm.key} style={styles.recommendRow}>
+            {elm.data.map((elm2, idx) =>
+              elm2 ? (
+                <TouchableOpacity
+                  key={elm2}
+                  style={styles.recommebdItem}
+                  onPress={() => search(elm2, true)}>
+                  <AppText style={styles.recommendText}>{elm2}</AppText>
+                </TouchableOpacity>
+              ) : (
+                <View key={`${idx}`} style={styles.recommebdEmpty} />
+              ),
+            )}
+          </View>
+        ))}
+      </View>
+    );
+  }, [recommendCountry, search, searchList]);
 
   // 국가 검색
   const renderStoreList = useCallback(() => {
@@ -306,19 +424,38 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
     const list = API.Product.toColumnList(filtered);
 
     return list.length > 0 ? (
-      <StoreList
-        data={list}
-        onPress={onPressItem}
-        localOpList={product.localOpList}
-      />
+      <StoreList data={list} onPress={onPressItem} />
     ) : (
       <View style={styles.emptyViewPage}>
         <AppText style={styles.emptyPage}>{i18n.t('country:empty')}</AppText>
       </View>
     );
-  }, [onPressItem, product.localOpList, product.sortedProdList, searchWord]);
+  }, [onPressItem, product.sortedProdList, searchWord]);
 
-  return <View style={styles.mainContainer}>{renderStoreList()}</View>;
+  useEffect(() => {
+    getRecommendation();
+
+    Analytics.trackEvent('Page_View_Count', {page: 'Country Search'});
+
+    getSearchHist();
+
+    navigation.setOptions({
+      title: null,
+      headerLeft: null,
+      headerTitle: () => <HeaderTitle search={search} headerRef={headerRef} />,
+    });
+  }, [getRecommendation, getSearchHist, navigation, search]);
+
+  return (
+    <View style={styles.mainContainer}>
+      <AppActivityIndicator visible={querying} />
+      {searchWord ? (
+        renderStoreList()
+      ) : (
+        <ScrollView style={{width: '100%'}}>{renderSearchWord()}</ScrollView>
+      )}
+    </View>
+  );
 };
 
 export default connect(
