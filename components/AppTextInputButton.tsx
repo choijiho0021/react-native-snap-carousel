@@ -41,6 +41,7 @@ type AppTextInputButtonProps = {
   titleStyle: StyleProp<TextStyle>;
   title?: string;
   titleDisableColor?: string;
+  forwardRef?: React.MutableRefObject<TextInput | null>;
 };
 
 const AppTextInputButton: React.FC<AppTextInputButtonProps> = ({
@@ -56,6 +57,7 @@ const AppTextInputButton: React.FC<AppTextInputButtonProps> = ({
   titleStyle,
   title,
   titleDisableColor,
+  forwardRef,
   ...props
 }) => {
   return (
@@ -66,6 +68,7 @@ const AppTextInputButton: React.FC<AppTextInputButtonProps> = ({
         style={[styles.input, inputStyle]}
         editable={!disabled}
         selectTextOnFocus={!disabled}
+        ref={forwardRef}
       />
       <AppButton
         disabled={typeof clickable === 'boolean' ? !clickable : disabled}

@@ -61,6 +61,7 @@ import AndroidEuccidModule from '@/components/NativeModule/AndroidEuccidModule';
 import {useInterval} from '@/utils/useInterval';
 import NotiModal from './component/NotiModal';
 import AppTabHeader from '@/components/AppTabHeader';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const {esimGlobal} = Env.get();
 
@@ -339,11 +340,11 @@ const Esim: React.FC<EsimProps> = ({
       ),
       headerRight: () => (
         <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
-          <AppButton
+          <AppSvgIcon
             key="cnter"
             style={styles.btnCnter}
             onPress={() => navigation?.navigate('Contact')}
-            iconName="btnCnter"
+            name="btnCnter"
           />
 
           {/* BadgeAppButton을 사용했을 때 위치가 변동됨 수정이 필요함 */}

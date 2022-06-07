@@ -1,19 +1,15 @@
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {StyleProp, StyleSheet, TextInput, View, ViewStyle} from 'react-native';
+import _ from 'underscore';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import utils from '@/redux/api/utils';
 import i18n from '@/utils/i18n';
-import validationUtil from '@/utils/validationUtil';
-import React, {Component} from 'react';
-import {StyleProp, StyleSheet, View, ViewStyle} from 'react-native';
-import _ from 'underscore';
+import validationUtil, {ValidationResult} from '@/utils/validationUtil';
 import AppText from './AppText';
 import AppTextInputButton from './AppTextInputButton';
 
 const styles = StyleSheet.create({
-  button: {
-    width: 90,
-    height: 40,
-  },
   helpText: {
     ...appStyles.normal14Text,
     color: colors.clearBlue,
@@ -24,13 +20,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignContent: 'stretch',
-  },
-  pickerWrapper: {
-    ...appStyles.borderWrapper,
-    width: 76,
-    paddingLeft: 10,
-    paddingVertical: 8,
-    marginRight: 10,
   },
   text: {
     ...appStyles.normal12Text,
@@ -54,146 +43,80 @@ type InputMobileProps = {
   authorized?: boolean;
   disabled: boolean;
   style?: StyleProp<ViewStyle>;
+  forwardRef?: React.MutableRefObject<TextInput | null>;
 };
-type InputMobileState = {
-  mobile: string;
-  waiting: boolean;
-  errors?: object;
-};
-class InputMobile extends Component<InputMobileProps, InputMobileState> {
-  mounted: boolean;
 
-  timer?: NodeJS.Timeout;
+const InputMobile: React.FC<InputMobileProps> = ({
+  onPress,
+  authNoti,
+  authorized,
+  disabled,
+  style,
+  forwardRef,
+}) => {
+  const [mobile, setMobile] = useState('');
+  const [errors, setErrors] = useState<ValidationResult>();
+  const [timer, setTimer] = useState<NodeJS.Timeout>();
 
-  constructor(props: InputMobileProps) {
-    super(props);
+  const onChangeText = useCallback((value) => {
+    setMobile(value);
+    setErrors(validationUtil.validateAll({mobile: value}));
+  }, []);
 
-    this.state = {
-      // prefix: "010",
-      mobile: '',
-      errors: undefined,
-      waiting: false,
-    };
-
-    this.onChangeText = this.onChangeText.bind(this);
-    this.validate = this.validate.bind(this);
-    this.onPress = this.onPress.bind(this);
-    this.onTimer = this.onTimer.bind(this);
-
-    this.mounted = false;
-    this.timer = undefined;
-  }
-
-  componentDidMount() {
-    this.mounted = true;
-    this.validate();
-  }
-
-  componentWillUnmount() {
-    this.mounted = false;
-    if (this.timer) {
-      clearTimeout(this.timer);
-      this.timer = undefined;
-    }
-  }
-
-  onChangeText = (key: keyof InputMobileState) => (value) => {
-    this.setState({
-      [key]: value,
-    });
-
-    if (key === 'mobile') value = utils.toPhoneNumber(value);
-
-    this.validate(key, value);
-  };
-
-  onPress() {
-    const {mobile} = this.state;
+  const onPressInput = useCallback(() => {
     const value = mobile.replace(/-/g, '');
-
-    if (typeof this.props.onPress === 'function' && !this.timer) {
-      this.props.onPress(value);
-    }
-    const error = validationUtil.validate('mobileSms', `${value}`);
+    onPress?.(value);
+    const error = validationUtil.validate('mobileSms', value);
     if (!error) {
-      this.onTimer();
+      setTimer(
+        setTimeout(() => {
+          setTimer(undefined);
+        }, 15000),
+      );
     }
-  }
+  }, [mobile, onPress, setTimer]);
 
-  validate = (key: keyof InputMobileState, value) => {
-    const {mobile} = this.state;
-    const val = {
-      mobile,
-      [key]: value,
+  useEffect(() => {
+    return () => {
+      if (timer) clearTimeout(timer);
     };
+  }, [timer]);
 
-    const errors = validationUtil.validateAll(val);
-    this.setState({
-      errors,
-    });
+  const clickable = useMemo(
+    () => _.isEmpty(errors?.mobile) && !authNoti && !disabled && !timer,
+    [authNoti, disabled, errors?.mobile, timer],
+  );
 
-    return errors;
-  };
-
-  onTimer = () => {
-    this.setState({waiting: true});
-    this.timer = setTimeout(() => {
-      if (this.mounted) {
-        this.setState({waiting: false});
-      }
-      this.timer = undefined;
-    }, 15000);
-  };
-
-  error(key: keyof InputMobileState) {
-    const {errors} = this.state;
-    return !_.isEmpty(errors) && errors[key] ? errors[key][0] : '';
-  }
-
-  render() {
-    const {mobile, waiting} = this.state;
-    const {authNoti, authorized, style} = this.props;
-
-    const disabled = this.props.disabled || waiting;
-    const clickable =
-      _.isEmpty(this.error('mobile')) &&
-      (!authNoti || !waiting) &&
-      !this.props.disabled;
-
-    return (
-      <View>
-        <View style={[styles.container, style]}>
-          <View style={{flex: 1}}>
-            <AppTextInputButton
-              placeholder={i18n.t('mobile:input')}
-              placeholderTextColor={colors.greyish}
-              keyboardType="numeric"
-              // returnKeyType='done'
-              enablesReturnKeyAutomatically
-              maxLength={13}
-              blurOnSubmit={false}
-              onChangeText={this.onChangeText('mobile')}
-              error={this.error('mobile')}
-              onPress={this.onPress}
-              title={
-                authNoti
-                  ? i18n.t('mobile:resendAuth')
-                  : i18n.t('mobile:sendAuth')
-              }
-              disabled={disabled}
-              clickable={clickable}
-              titleStyle={styles.text}
-              inputStyle={[styles.inputStyle, mobile ? {} : styles.emptyInput]}
-              value={utils.toPhoneNumber(mobile)}
-            />
-          </View>
-        </View>
-        {authNoti && typeof authorized === undefined && (
-          <AppText style={styles.helpText}>{i18n.t('reg:authNoti')}</AppText>
-        )}
+  return (
+    <View>
+      <View style={[styles.container, style]}>
+        <AppTextInputButton
+          style={{flex: 1}}
+          placeholder={i18n.t('mobile:input')}
+          placeholderTextColor={colors.greyish}
+          keyboardType="numeric"
+          forwardRef={forwardRef}
+          // returnKeyType='done'
+          enablesReturnKeyAutomatically
+          maxLength={13}
+          blurOnSubmit={false}
+          onChangeText={onChangeText}
+          onPress={onPressInput}
+          title={
+            authNoti ? i18n.t('mobile:resendAuth') : i18n.t('mobile:sendAuth')
+          }
+          disabled={disabled}
+          clickable={clickable}
+          titleStyle={styles.text}
+          inputStyle={[styles.inputStyle, mobile ? {} : styles.emptyInput]}
+          value={utils.toPhoneNumber(mobile)}
+        />
       </View>
-    );
-  }
-}
+      {authNoti && typeof authorized === undefined && (
+        <AppText style={styles.helpText}>{i18n.t('reg:authNoti')}</AppText>
+      )}
+    </View>
+  );
+};
 
 export default InputMobile;

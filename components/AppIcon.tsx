@@ -81,7 +81,6 @@ const images: Record<string, any[]> = {
   btnReply: [require(`${mainPath}btnReply.png`)],
   btnId: [require(`${mainPath}btnId.png`)],
   btnAlarm: [require(`${headerPath}btnAlarm.png`)],
-  btnCnter: [require(`${headerPath}btnCnter.png`)],
   btnSearchTop: [require(`${headerPath}btnSearchTop.png`)],
 
   btnCheck: [

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   StyleSheet,
   TextInput,
@@ -7,9 +7,10 @@ import {
   ViewStyle,
 } from 'react-native';
 import _ from 'underscore';
-import {colors} from '../constants/Colors';
-import {appStyles} from '../constants/Styles';
-import i18n from '../utils/i18n';
+import {useInterval} from '@/utils/useInterval';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
 import AppButton from './AppButton';
 import AppText from './AppText';
 import AppTextInput from './AppTextInput';
@@ -71,199 +72,134 @@ type InputPinInTimeProps = {
   style?: ViewStyle;
 };
 
-type InputPinInTimeState = {
-  pin: string;
-  duration: number;
-  timeout: boolean;
-};
+const InputPinInTime: React.FC<InputPinInTimeProps> = (props) => {
+  const {
+    countdown,
+    authorized,
+    editable,
+    onTimeout,
+    onPress,
+    forwardRef,
+    style,
+  } = props;
+  const [pin, setPin] = useState('');
+  const [duration, setDuration] = useState(0);
+  const [timeoutFlag, setTimeoutFlag] = useState(false);
 
-class InputPinInTime extends Component<
-  InputPinInTimeProps,
-  InputPinInTimeState
-> {
-  interval: NodeJS.Timeout | null;
+  useInterval(
+    () => {
+      if (duration > 0) setDuration((prev) => prev - 1);
+      else onTimeout();
+    },
+    duration > 0 ? 1000 : null,
+  );
 
-  constructor(props: InputPinInTimeProps) {
-    super(props);
+  const init = useCallback(() => {
+    setPin('');
+    setTimeoutFlag(false);
 
-    this.state = {
-      pin: '',
-      duration: 0,
-      timeout: false,
+    if (countdown) setDuration(props.duration);
+  }, [countdown, props.duration]);
+
+  const onClick = useCallback(() => {
+    if (forwardRef?.current) forwardRef.current.focus();
+  }, [forwardRef]);
+
+  const clickable = props.clickable && _.size(pin) === 6;
+  const min = Math.floor(duration / 60);
+  const sec = Math.floor(duration - min * 60);
+
+  useEffect(() => {
+    init();
+    return () => {
+      setDuration(0);
     };
+  }, [init]);
 
-    this.interval = null;
-
-    this.init = this.init.bind(this);
-    this.start = this.start.bind(this);
-    this.pause = this.pause.bind(this);
-    this.timeout = this.timeout.bind(this);
-    this.onClick = this.onClick.bind(this);
-  }
-
-  componentDidMount() {
-    this.init();
-  }
-
-  componentDidUpdate(prevProps: InputPinInTimeProps) {
-    if (this.props.countdown !== prevProps.countdown) {
-      if (this.props.countdown) {
-        this.init();
-      } else {
-        this.pause();
-      }
-    }
-
-    if (
-      this.props.authorized &&
-      this.props.authorized !== prevProps.authorized
-    ) {
-      this.pause();
-      this.setState({
-        timeout: false,
-      });
-    }
-  }
-
-  componentWillUnmount() {
-    this.pause();
-  }
-
-  init = () => {
-    const {duration, countdown} = this.props;
-
-    this.setState({
-      pin: '',
-      duration,
-      timeout: false,
-    });
-
+  useEffect(() => {
     if (countdown) {
-      this.pause();
-      this.start();
+      init();
+    } else {
+      setDuration(0);
     }
-  };
+  }, [countdown, init]);
 
-  start = () => {
-    this.interval = setInterval(() => {
-      const {duration} = this.state;
-
-      if (duration - 1 <= 0) {
-        this.setState({
-          duration: 0,
-          timeout: true,
-        });
-        this.pause();
-        this.timeout();
-      } else {
-        this.setState({
-          duration: duration - 1,
-        });
-      }
-    }, 1000);
-  };
-
-  pause = () => {
-    if (this.interval) {
-      clearInterval(this.interval);
-      this.interval = null;
+  useEffect(() => {
+    if (authorized) {
+      setDuration(0);
+      setTimeoutFlag(false);
     }
-  };
+  }, [authorized]);
 
-  timeout = () => {
-    const {onTimeout} = this.props;
-
-    if (_.isFunction(onTimeout)) {
-      onTimeout();
-    }
-  };
-
-  onClick = () => {
-    if (this.props.forwardRef && this.props.forwardRef.current)
-      this.props.forwardRef.current.focus();
-  };
-
-  render() {
-    const {pin, duration, timeout} = this.state;
-    const {style, forwardRef, authorized, countdown, editable, onPress} =
-      this.props;
-    const clickable = this.props.clickable && _.size(pin) === 6;
-
-    const min = Math.floor(duration / 60);
-    const sec = Math.floor(duration - min * 60);
-
-    return (
-      <View>
-        <View style={[styles.container, style]}>
-          <TouchableOpacity
-            style={[
-              styles.inputWrapper,
-              _.size(pin) <= 0 ? styles.emptyWrapper : {},
-            ]}
-            onPress={this.onClick}
-            activeOpacity={1}>
-            <AppTextInput
-              {...this.props}
-              placeholder={i18n.t('mobile:auth')}
-              placeholderTextColor={colors.greyish}
-              ref={forwardRef}
-              keyboardType="numeric"
-              enablesReturnKeyAutomatically
-              maxLength={6}
-              clearTextOnFocus
-              autoFocus={editable}
-              onFocus={() => {
-                this.setState({pin: ''});
-              }} //  android - clearTextOnFocus 수동적용
-              onChangeText={(value: string) => this.setState({pin: value})}
-              value={pin}
-              style={styles.input}
-              textContentType="oneTimeCode"
-            />
-
-            {countdown ? (
-              <AppText style={styles.timer}>
-                {' '}
-                {min > 0 ? min + i18n.t('min') : ''}{' '}
-                {sec.toString().padStart(2, '0')}
-                {i18n.t('sec')}{' '}
-              </AppText>
-            ) : null}
-          </TouchableOpacity>
-          <AppButton
-            disabled={!clickable}
-            onPress={() => onPress && onPress(pin)}
-            titleStyle={styles.title}
-            title={i18n.t('ok')}
-            disableColor={colors.white}
+  return (
+    <View>
+      <View style={[styles.container, style]}>
+        <TouchableOpacity
+          style={[
+            styles.inputWrapper,
+            _.size(pin) <= 0 ? styles.emptyWrapper : {},
+          ]}
+          onPress={onClick}
+          activeOpacity={1}>
+          <AppTextInput
+            {...props}
+            placeholder={i18n.t('mobile:auth')}
+            placeholderTextColor={colors.greyish}
+            ref={forwardRef}
+            keyboardType="numeric"
+            enablesReturnKeyAutomatically
+            maxLength={6}
+            clearTextOnFocus
+            autoFocus={editable}
+            onFocus={() => setPin('')} //  android - clearTextOnFocus 수동적용
+            onChangeText={setPin}
+            value={pin}
+            style={styles.input}
+            textContentType="oneTimeCode"
           />
-        </View>
-        <View style={styles.helpBox}>
-          <AppText
-            style={[
-              styles.helpText,
-              {color: authorized ? colors.clearBlue : colors.tomato},
-            ]}>
-            {typeof authorized === 'undefined' && !timeout
-              ? null
-              : i18n.t(
-                  // eslint-disable-next-line no-nested-ternary
-                  timeout
-                    ? 'mobile:timeout'
-                    : authorized
-                    ? 'mobile:authMatch'
-                    : 'mobile:authMismatch',
-                )}
-          </AppText>
-          {authorized ? null : (
-            <AppText style={[styles.helpText, {color: colors.warmGrey}]}>
-              {i18n.t('mobile:inputInTime')}
+
+          {countdown ? (
+            <AppText style={styles.timer}>
+              {' '}
+              {min > 0 ? min + i18n.t('min') : ''}{' '}
+              {sec.toString().padStart(2, '0')}
+              {i18n.t('sec')}{' '}
             </AppText>
-          )}
-        </View>
+          ) : null}
+        </TouchableOpacity>
+        <AppButton
+          disabled={!clickable}
+          onPress={() => onPress && onPress(pin)}
+          titleStyle={styles.title}
+          title={i18n.t('ok')}
+          disableColor={colors.white}
+        />
       </View>
-    );
-  }
-}
+      <View style={styles.helpBox}>
+        <AppText
+          style={[
+            styles.helpText,
+            {color: authorized ? colors.clearBlue : colors.tomato},
+          ]}>
+          {typeof authorized === 'undefined' && !timeoutFlag
+            ? null
+            : i18n.t(
+                // eslint-disable-next-line no-nested-ternary
+                timeoutFlag
+                  ? 'mobile:timeout'
+                  : authorized
+                  ? 'mobile:authMatch'
+                  : 'mobile:authMismatch',
+              )}
+        </AppText>
+        {authorized ? null : (
+          <AppText style={[styles.helpText, {color: colors.warmGrey}]}>
+            {i18n.t('mobile:inputInTime')}
+          </AppText>
+        )}
+      </View>
+    </View>
+  );
+};
 
 export default InputPinInTime;

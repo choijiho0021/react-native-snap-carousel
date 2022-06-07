@@ -22,9 +22,8 @@ export type SocialAuthInfo = {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'flex-end',
     paddingBottom: 60,
+    height: 200,
   },
   divider: {
     marginHorizontal: 20,
@@ -35,15 +34,14 @@ const styles = StyleSheet.create({
   },
   easyLoginTitle: {
     flexDirection: 'row',
-    height: 30,
+    // height: 30,
     marginVertical: 20,
     alignItems: 'center',
   },
   btnGroup: {
-    // flexDirection: 'row',
-    // justifyContent: 'space-between',
-    justifyContent: 'center',
+    marginTop: 20,
     marginHorizontal: 20,
+    height: 100,
   },
 });
 
