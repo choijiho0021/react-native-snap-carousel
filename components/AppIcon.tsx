@@ -3,6 +3,7 @@
 import React, {memo, useMemo} from 'react';
 import {View, Image, ViewStyle, StyleProp} from 'react-native';
 import _ from 'underscore';
+import AppSvgIcon from './AppSvgIcon';
 
 const tabbarPath = '../assets/images/tabbar/';
 const mainPath = '../assets/images/main/';
@@ -176,7 +177,9 @@ const AppIcon: React.FC<AppIconProps> = ({
         }
       />
     </View>
-  ) : null;
+  ) : (
+    <AppSvgIcon name={name} focused={focused || checked} style={style} />
+  );
 };
 
 export default memo(AppIcon);
