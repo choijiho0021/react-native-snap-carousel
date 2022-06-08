@@ -1,7 +1,7 @@
 /* eslint-disable no-plusplus */
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {Component} from 'react';
+import React, {Component, useState} from 'react';
 import Clipboard from '@react-native-community/clipboard';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
@@ -34,8 +34,29 @@ import {
 } from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import AppSnackBar from '@/components/AppSnackBar';
+import {useCallback, useEffect} from 'react';
+import AppButton from '@/components/AppButton';
+import AppText from '@/components/AppText';
+import analytics, {firebase} from '@react-native-firebase/analytics';
+import Analytics from 'appcenter-analytics';
+import {Settings} from 'react-native-fbsdk';
 
-const {baseUrl, esimGlobal} = Env.get();
+import {
+  getTrackingStatus,
+  TrackingStatus,
+} from 'react-native-tracking-transparency';
+import {API} from '@/redux/api';
+import {ApiResult} from '@/redux/api/api';
+import {RkbProduct} from '../redux/api/productApi';
+import {PurchaseItem} from '../redux/models/purchaseItem';
+import {
+  actions as cartActions,
+  CartAction,
+  CartModelState,
+} from '@/redux/modules/cart';
+
+const {baseUrl, esimApp, esimGlobal} = Env.get();
+const PURCHASE_LIMIT = 10;
 
 const styles = StyleSheet.create({
   screen: {
@@ -47,22 +68,43 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingHorizontal: 20,
   },
-  questionImage: {
-    marginBottom: 14,
-    marginTop: 45,
+  buttonBox: {
+    flexDirection: 'row',
   },
-  kakaoImage: {},
-  kakaoContainer: {
-    alignItems: 'center',
-    backgroundColor: colors.whiteTwo,
-    height: 350,
+  btnCart: {
+    width: '50%',
+    height: 52,
+    backgroundColor: '#ffffff',
+    borderColor: colors.lightGrey,
+    borderTopWidth: 1,
   },
-  kakaoPlus: {
-    ...appStyles.normal14Text,
-    marginTop: 56,
-    marginBottom: 10,
-    color: colors.warmGrey,
+  btnCartText: {
+    ...appStyles.normal18Text,
     textAlign: 'center',
+    color: colors.black,
+  },
+  btnBuy: {
+    width: '50%',
+    height: 52,
+    backgroundColor: colors.clearBlue,
+  },
+  btnBuyText: {
+    ...appStyles.normal18Text,
+    textAlign: 'center',
+    color: colors.white,
+  },
+  regCard: {
+    ...appStyles.normal18Text,
+    textAlign: 'center',
+    textAlignVertical: 'bottom',
+    width: '100%',
+  },
+  regCardView: {
+    width: '100%',
+    height: 52,
+    justifyContent: 'center',
+    borderTopWidth: 1,
+    borderColor: colors.lightGrey,
   },
 });
 
@@ -84,209 +126,273 @@ type ProductDetailScreenProps = {
   product: ProductModelState;
   info: InfoModelState;
   account: AccountModelState;
+  cart: CartModelState;
 
   action: {
     toast: ToastAction;
     product: ProductAction;
+    cart: CartAction;
   };
 };
 
-type ProductDetailScreenState = {
-  querying: boolean;
-};
+const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
+  navigation,
+  route,
+  pending,
+  product,
+  cart,
+  info,
+  action,
+  account,
+}) => {
+  const [showSnackBar, setShowSnackBar] = useState(false);
+  const [disabled, setDisabled] = useState(false);
+  const [status, setStatus] = useState<TrackingStatus>();
+  const [purchaseItems, setPurchaseItems] = useState<PurchaseItem[]>([]);
+  console.log('aaaaa params.route.item', route.params);
 
-class ProductDetailScreen extends Component<
-  ProductDetailScreenProps,
-  ProductDetailScreenState
-> {
-  controller: AbortController;
+  useEffect(() => {
+    const {detailCommon, partnerId} = product;
+    const {params = {}} = route;
 
-  scrollView: React.RefObject<ScrollView>;
-
-  constructor(props: ProductDetailScreenProps) {
-    super(props);
-
-    this.state = {
-      querying: true,
-    };
-
-    this.renderWebView = this.renderWebView.bind(this);
-    this.onMessage = this.onMessage.bind(this);
-    this.checkWindowSize = this.checkWindowSize.bind(this);
-
-    this.controller = new AbortController();
-    this.scrollView = React.createRef<ScrollView>();
-  }
-
-  componentDidMount() {
-    const {detailCommon, partnerId} = this.props.product;
-    const {params = {}} = this.props.route;
-
-    this.props.navigation.setOptions({
+    navigation.setOptions({
       title: null,
-      headerLeft: () => (
-        <AppBackButton title={this.props.route.params?.title} />
-      ),
+      headerLeft: () => <AppBackButton title={route.params?.title} />,
     });
 
-    if (!detailCommon) {
-      this.props.action.product.getProdDetailCommon(this.controller);
+    // if (!detailCommon) {
+    //   action.product.getProdDetailCommon(this.controller);
+    // }
+
+    if (partnerId !== route.params?.partnerId) {
+      action.product.getProdDetailInfo(params?.partnerId || '');
     }
 
-    if (partnerId !== this.props.route.params?.partnerId) {
-      this.props.action.product.getProdDetailInfo(params?.partnerId || '');
-    }
-  }
+    const item = API.Product.toPurchaseItem(route.params.item);
+    setPurchaseItems(item ? [item] : []);
+    getTrackingStatus().then((elm) => setStatus(elm));
+  }, [action.product, navigation, product, route, route.params?.partnerId]);
 
-  onMessage = (event: WebViewMessageEvent) => {
-    const cmd = JSON.parse(event.nativeEvent.data);
+  const onMessage = useCallback(
+    (event: WebViewMessageEvent) => {
+      const cmd = JSON.parse(event.nativeEvent.data);
 
-    switch (cmd.key) {
-      case 'dimension':
-        this.checkWindowSize(cmd.value);
-        break;
-      case 'moveToPage':
-        if (cmd.value) {
-          this.props.action.info.getItem(cmd.value).then(({payload: item}) => {
-            if (item?.title && item?.body) {
-              this.props.navigation.navigate('SimpleText', {
-                key: 'noti',
-                title: i18n.t('set:noti'),
-                bodyTitle: item?.title,
-                body: item?.body,
-                mode: 'html',
-              });
-            } else {
-              AppAlert.error(i18n.t('info:init:err'));
-            }
-          });
-        }
-        break;
-      case 'moveToFaq':
-        if (cmd.value) {
-          const moveTo = cmd.value.split('/');
-          this.props.navigation.navigate('Faq', {
-            key: moveTo[0],
-            num: moveTo[1],
-          });
-        }
-        break;
-      case 'copy':
-        this.props.action.toast.push(Toast.COPY_SUCCESS);
-        break;
-      default:
-        Clipboard.setString(cmd.value);
-        break;
-    }
-  };
+      switch (cmd.key) {
+        case 'moveToPage':
+          if (cmd.value) {
+            action.info.getItem(cmd.value).then(({payload: item}) => {
+              if (item?.title && item?.body) {
+                navigation.navigate('SimpleText', {
+                  key: 'noti',
+                  title: i18n.t('set:noti'),
+                  bodyTitle: item?.title,
+                  body: item?.body,
+                  mode: 'html',
+                });
+              } else {
+                AppAlert.error(i18n.t('info:init:err'));
+              }
+            });
+          }
+          break;
+        case 'moveToFaq':
+          if (cmd.value) {
+            const moveTo = cmd.value.split('/');
+            navigation.navigate('Faq', {
+              key: moveTo[0],
+              num: moveTo[1],
+            });
+          }
+          break;
+        case 'copy':
+          action.toast.push(Toast.COPY_SUCCESS);
+          break;
+        default:
+          Clipboard.setString(cmd.value);
+          break;
+      }
+    },
+    [action, navigation],
+  );
 
-  checkWindowSize(sizeString = '') {
-    const sz = sizeString.split(',');
-    const scale = windowWidth / Number(sz[0]);
-
-    let i = 3;
-    for (; i < sz.length; i++) {
-      // 각 tab별로 시작 위치를 설정한다.
-      this.setState({
-        [`height${i - 2}`]: Math.ceil(Number(sz[i]) * scale),
-      });
-    }
-    // 전체 화면의 높이를 저장한다.
-    this.setState({
-      [`height${i - 2}`]: Math.ceil(Number(sz[1]) * scale),
-    });
-  }
-
-  renderWebView() {
-    const {height3} = this.state;
-    const {route, product} = this.props;
+  const renderWebView = useCallback(() => {
     const localOpDetails = route.params?.localOpDetails;
     const detail = _.isEmpty(localOpDetails)
       ? product.detailInfo + product.detailCommon
       : localOpDetails + product.detailCommon;
 
     return (
-      <WebView
-        automaticallyAdjustContentInsets={false}
-        javaScriptEnabled
-        domStorageEnabled
-        scalesPageToFit
-        startInLoadingState
-        // injectedJavaScript={script}
-        decelerationRate="normal"
-        // onNavigationStateChange={(navState) => this.onNavigationStateChange(navState)}
-        scrollEnabled
-        // source={{html: body + html + script} }
-        onMessage={this.onMessage}
-        source={{html: htmlDetailWithCss(detail), baseUrl}}
-        style={{height: height3 || 1000}}
-      />
-    );
-  }
-
-  render() {
-    const {tabIdx} = this.state;
-    const {
-      pending,
-      route,
-      account: {iccid, loggedIn},
-    } = this.props;
-
-    return (
-      <SafeAreaView style={styles.screen}>
-        <AppActivityIndicator visible={pending} />
-        <ScrollView
-          style={{backgroundColor: colors.whiteTwo}}
-          ref={this.scrollView}
-          // stickyHeaderIndices={[1]} // 탭 버튼 고정
-          // showsVerticalScrollIndicator={false}
-          scrollEventThrottle={100}>
-          {this.renderWebView()}
-        </ScrollView>
-        {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
-        {/* <AppSnackBar
-          visible={showSnackBar}
-          onClose={() => this.setState({showSnackBar: false})}
-          textMessage={i18n.t('country:addCart')}
+      <View style={{flex: 1}}>
+        <WebView
+          automaticallyAdjustContentInsets={false}
+          javaScriptEnabled
+          domStorageEnabled
+          scalesPageToFit
+          startInLoadingState
+          // injectedJavaScript={script}
+          decelerationRate="normal"
+          // onNavigationStateChange={(navState) => this.onNavigationStateChange(navState)}
+          scrollEnabled
+          // source={{html: body + html + script} }
+          onMessage={onMessage}
+          source={{html: htmlDetailWithCss(detail), baseUrl}}
+          style={{height: 2000}}
         />
-        {iccid || (esimApp && loggedIn) ? (
-          <View style={styles.buttonBox}>
-            <AppButton
-              style={styles.btnCart}
-              title={i18n.t('cart:toCart')}
-              titleStyle={styles.btnCartText}
-              disabled={pending || disabled}
-              disableColor={colors.black}
-              disableBackgroundColor={colors.whiteTwo}
-              onPress={this.onPressBtnCart}
-            />
-            <AppButton
-              style={styles.btnBuy}
-              title={i18n.t('cart:buy')}
-              titleStyle={styles.btnBuyText}
-              onPress={this.onPressBtnPurchase}
-            />
-          </View>
-        ) : (
-          <View style={styles.buttonBox}>
-            <AppButton
-              style={styles.regCardView}
-              title={loggedIn ? i18n.t('reg:card') : i18n.t('err:login')}
-              titleStyle={styles.regCard}
-              onPress={this.onPressBtnRegCard}
-            />
-            <AppText style={styles.regCard}>{i18n.t('reg:card')}</AppText>
-          </View>
-        )} */}
-      </SafeAreaView>
+      </View>
     );
-  }
-}
+  }, [
+    onMessage,
+    product.detailCommon,
+    product.detailInfo,
+    route.params?.localOpDetails,
+  ]);
+
+  const soldOut = useCallback((payload: ApiResult<any>, message: string) => {
+    if (payload.result === api.E_RESOURCE_NOT_FOUND) {
+      AppAlert.info(i18n.t(message));
+    } else {
+      AppAlert.info(i18n.t('cart:systemError'));
+    }
+  }, []);
+
+  const onPressBtnCart = useCallback(async () => {
+    const {loggedIn} = account;
+    const {params = {}} = route;
+    // 다른 버튼 클릭으로 스낵바 종료될 경우, 재출력 안되는 부분이 있어 추가
+    setShowSnackBar(false);
+
+    if (status === 'authorized') {
+      Analytics.trackEvent('Click_cart');
+      await firebase.analytics().setAnalyticsCollectionEnabled(true);
+      await Settings.setAdvertiserTrackingEnabled(true);
+
+      analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_to_cart`, {
+        item: purchaseItems[0].title,
+        count: 1,
+      });
+    }
+
+    if (!loggedIn) {
+      return navigation.navigate('Auth');
+    }
+
+    // if (selected) {
+    action.cart.cartAddAndGet({purchaseItems}).then(({payload: resp}) => {
+      console.log('@@@ add and get', resp);
+      if (resp.result === 0) {
+        setShowSnackBar(true);
+        if (
+          resp.objects[0].orderItems.find((v) => v.key === selected).qty >=
+          PURCHASE_LIMIT
+        ) {
+          setDisabled(true);
+        }
+      } else {
+        soldOut(resp, 'cart:notToCart');
+      }
+    });
+    // }
+  }, [account, action.cart, navigation, purchaseItems, route, soldOut, status]);
+
+  const onPressBtnRegCard = useCallback(() => {
+    Analytics.trackEvent('Click_regCard');
+
+    if (!account.loggedIn) {
+      return navigation.navigate('Auth');
+    }
+
+    navigation.navigate('RegisterSim');
+  }, [account.loggedIn, navigation]);
+
+  const onPressBtnPurchase = useCallback(() => {
+    const {loggedIn, balance} = account;
+
+    // 다른 버튼 클릭으로 스낵바 종료될 경우, 재출력 안되는 부분이 있어 추가
+    setShowSnackBar(false);
+
+    Analytics.trackEvent('Click_purchase');
+
+    if (!loggedIn) {
+      return navigation.navigate('Auth');
+    }
+
+    // if (selected) {
+    // 구매 품목을 갱신한다.
+    return action.cart
+      .checkStockAndPurchase({
+        purchaseItems,
+        balance,
+      })
+      .then(({payload: resp}) => {
+        if (resp.result === 0) {
+          navigation.navigate('PymMethod', {
+            mode: 'roaming_product',
+          });
+        } else {
+          soldOut(resp, 'cart:soldOut');
+        }
+      })
+      .catch((err) => {
+        console.log('failed to check stock', err);
+      });
+    // }
+  }, [account, action.cart, navigation, purchaseItems, soldOut]);
+
+  return (
+    <SafeAreaView style={styles.screen}>
+      <AppActivityIndicator visible={pending} />
+      <ScrollView
+        style={{backgroundColor: colors.whiteTwo, flex: 1}}
+        // ref={scrollView}
+        // stickyHeaderIndices={[1]} // 탭 버튼 고정
+        // showsVerticalScrollIndicator={false}
+        scrollEventThrottle={100}>
+        {renderWebView()}
+      </ScrollView>
+      {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
+      <AppSnackBar
+        visible={showSnackBar}
+        onClose={() => setShowSnackBar(false)}
+        textMessage={i18n.t('country:addCart')}
+      />
+      {account.iccid || (esimApp && account.loggedIn) ? (
+        <View style={styles.buttonBox}>
+          <AppButton
+            style={styles.btnCart}
+            title={i18n.t('cart:toCart')}
+            titleStyle={styles.btnCartText}
+            disabled={pending || disabled}
+            disableColor={colors.black}
+            disableBackgroundColor={colors.whiteTwo}
+            onPress={onPressBtnCart}
+          />
+          <AppButton
+            style={styles.btnBuy}
+            title={i18n.t('cart:buy')}
+            titleStyle={styles.btnBuyText}
+            onPress={onPressBtnPurchase}
+          />
+        </View>
+      ) : (
+        <View style={styles.buttonBox}>
+          <AppButton
+            style={styles.regCardView}
+            title={account.loggedIn ? i18n.t('reg:card') : i18n.t('err:login')}
+            titleStyle={styles.regCard}
+            onPress={onPressBtnRegCard}
+          />
+          <AppText style={styles.regCard}>{i18n.t('reg:card')}</AppText>
+        </View>
+      )}
+    </SafeAreaView>
+  );
+};
 
 export default connect(
-  ({product, account, status, info}: RootState) => ({
+  ({product, account, cart, status, info}: RootState) => ({
     product,
     account,
+    cart,
     pending:
       status.pending[productActions.getProdDetailCommon.typePrefix] ||
       status.pending[productActions.getProdDetailInfo.typePrefix] ||
@@ -298,6 +404,7 @@ export default connect(
       product: bindActionCreators(productActions, dispatch),
       toast: bindActionCreators(toastActions, dispatch),
       info: bindActionCreators(infoActions, dispatch),
+      cart: bindActionCreators(cartActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
     },
   }),
