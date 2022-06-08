@@ -1,4 +1,4 @@
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {RootState} from '@reduxjs/toolkit';
 import React, {memo} from 'react';
 import {ImageBackground, Pressable, StyleSheet, View} from 'react-native';
@@ -12,6 +12,7 @@ import Env from '@/environment';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
+import {navigate} from '@/navigation/navigation';
 
 const {esimApp, esimCurrency} = Env.get();
 
@@ -110,6 +111,7 @@ type InfoProps = {
 
 const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
   const navigation = useNavigation();
+  const route = useRoute();
 
   return (
     <View style={{marginBottom: 10}}>
@@ -149,7 +151,13 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
         <View style={styles.rowBtn}>
           <Pressable
             style={styles.btnContactBoard}
-            onPress={() => navigation.navigate('ContactBoard', {index: 1})}>
+            onPress={() =>
+              navigate(navigation, route, 'MyPageStack', {
+                tab: 'HomeStack',
+                screen: 'ContactBoard',
+                params: {index: 1},
+              })
+            }>
             <AppText style={[appStyles.normal16Text, {textAlign: 'center'}]}>
               {i18n.t('board:mylist')}
             </AppText>
@@ -157,7 +165,12 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
           {esimApp && (
             <Pressable
               style={styles.btnIdCheck}
-              onPress={() => navigation.navigate('Contact')}>
+              onPress={() =>
+                navigate(navigation, route, 'MyPageStack', {
+                  tab: 'HomeStack',
+                  screen: 'Contact',
+                })
+              }>
               <AppText style={[appStyles.normal16Text, {textAlign: 'center'}]}>
                 {i18n.t('contact:title')}
               </AppText>
@@ -167,7 +180,12 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
         <AppButton
           iconName="inviteBanner"
           style={styles.btnInvite}
-          onPress={() => navigation.navigate('Invite')}
+          onPress={() =>
+            navigate(navigation, route, 'MyPageStack', {
+              tab: 'HomeStack',
+              screen: 'Invite',
+            })
+          }
         />
       </View>
       <View style={styles.divider} />

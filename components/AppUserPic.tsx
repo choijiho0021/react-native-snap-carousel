@@ -1,11 +1,10 @@
-import React, {memo} from 'react';
+import React, {memo, useCallback} from 'react';
 import {Image, ImageResizeMode, ImageStyle, Pressable} from 'react-native';
 import {API} from '@/redux/api';
 import AppIcon from './AppIcon';
 
 type AppUserPicProps = {
   style: ImageStyle;
-  crop?: boolean;
   url?: string;
   icon?: string;
   resizeMode?: ImageResizeMode;
@@ -18,20 +17,27 @@ const AppUserPic: React.FC<AppUserPicProps> = ({
   icon,
   resizeMode = 'cover',
   isAbsolutePath = false,
-  onPress = () => {},
+  onPress,
 }) => {
-  return (
-    <Pressable style={{alignSelf: 'center'}} onPress={onPress}>
-      {url ? (
+  const render = useCallback(() => {
+    if (url)
+      return (
         <Image
           style={style}
           source={{uri: isAbsolutePath ? url : API.default.httpImageUrl(url)}}
           resizeMode={resizeMode}
         />
-      ) : (
-        icon && <AppIcon name={icon} />
-      )}
+      );
+
+    return icon ? <AppIcon name={icon} /> : null;
+  }, [icon, isAbsolutePath, resizeMode, style, url]);
+
+  return onPress ? (
+    <Pressable style={{alignSelf: 'center'}} onPress={onPress}>
+      {render()}
     </Pressable>
+  ) : (
+    render()
   );
 };
 

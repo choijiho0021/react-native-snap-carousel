@@ -3,6 +3,7 @@
 import React, {memo, useMemo} from 'react';
 import {View, Image, ViewStyle, StyleProp} from 'react-native';
 import _ from 'underscore';
+import AppSvgIcon from './AppSvgIcon';
 
 const tabbarPath = '../assets/images/tabbar/';
 const mainPath = '../assets/images/main/';
@@ -12,6 +13,7 @@ const esimPath = '../assets/images/esim/';
 const guidePath = '../assets/images/guide/';
 const invitePath = '../assets/images/invite/';
 const giftPath = '../assets/images/gift/';
+const mypagePath = '../assets/images/mypage/';
 
 const images: Record<string, any[]> = {
   btnHome: [
@@ -141,6 +143,7 @@ const images: Record<string, any[]> = {
   giftGuideStep2: [require(`${giftPath}img_step2.png`)],
   giftGuideStep3: [require(`${giftPath}img_step3.png`)],
   giftCoin: [require(`${giftPath}coin.png`)],
+  profileImg: [require(`${mypagePath}img_rokebi_profile_2.png`)],
 };
 
 interface AppIconProps {
@@ -176,7 +179,9 @@ const AppIcon: React.FC<AppIconProps> = ({
         }
       />
     </View>
-  ) : null;
+  ) : (
+    <AppSvgIcon name={name} focused={focused || checked} style={style} />
+  );
 };
 
 export default memo(AppIcon);

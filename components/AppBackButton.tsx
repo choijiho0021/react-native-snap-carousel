@@ -1,43 +1,30 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {memo, useCallback} from 'react';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import React, {memo} from 'react';
 import {Image, Pressable, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@/redux';
 import {appStyles} from '@/constants/Styles';
 import AppText from './AppText';
+import {goBack} from '@/navigation/navigation';
 
 const AppBackButton = ({
   title,
   isPaid = false,
-  back,
-  lastTab = ['0', '1'],
   onPress,
 }: {
-  back?: string;
   title?: string;
   isPaid?: boolean;
-  lastTab: string[];
   onPress?: () => void;
 }) => {
   const navigation = useNavigation();
-
-  const goBack = useCallback(() => {
-    // 활성화 안된 AppBackButton의 핸들러가 작동하지 않도록 추가
-    if (navigation.isFocused()) {
-      if (back === 'Home') navigation.navigate('Home');
-      // if ( back == 'home') return navigation.reset({routes: [{ name: 'Home' }] });
-      else if (back === 'top') navigation.popToTop();
-      else if (back === 'lastTab') navigation.navigate(lastTab[1]);
-      else navigation.goBack();
-    }
-  }, [back, lastTab, navigation]);
+  const route = useRoute();
 
   return (
     <Pressable
       style={{justifyContent: 'center'}}
       onPress={() => {
         if (onPress) onPress();
-        else if (!isPaid) goBack();
+        else if (!isPaid) goBack(navigation, route);
       }}
       disabled={isPaid}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>

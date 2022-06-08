@@ -371,8 +371,8 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
     } else if (hasPhotoPermission || checkNewPermission) {
       if (ImagePicker) {
         ImagePicker.openPicker({
-          width: 76,
-          height: 76,
+          width: 76 * 3,
+          height: 76 * 3,
           cropping: true,
           cropperCircleOverlay: true,
           includeBase64: true,

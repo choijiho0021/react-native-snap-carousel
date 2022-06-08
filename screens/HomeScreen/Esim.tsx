@@ -29,7 +29,7 @@ import withBadge from '@/components/withBadge';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {HomeStackParamList} from '@/navigation/navigation';
+import {HomeStackParamList, navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {
@@ -62,6 +62,11 @@ import {useInterval} from '@/utils/useInterval';
 import NotiModal from './component/NotiModal';
 import AppTabHeader from '@/components/AppTabHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import {
+  NavigationProp,
+  ParamListBase,
+  RouteProp,
+} from '@react-navigation/native';
 
 const {esimGlobal} = Env.get();
 
@@ -126,10 +131,9 @@ const styles = StyleSheet.create({
   },
 });
 
-type HomeScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Home'>;
-
 type EsimProps = {
-  navigation: HomeScreenNavigationProp;
+  navigation: NavigationProp<any>;
+  route: RouteProp<ParamListBase, string>;
   promotion: RkbPromotion[];
   product: ProductModelState;
   account: AccountModelState;
@@ -148,6 +152,7 @@ const HEADER_HEIGHT = 137;
 
 const Esim: React.FC<EsimProps> = ({
   navigation,
+  route,
   action,
   promotion,
   product,
@@ -344,7 +349,12 @@ const Esim: React.FC<EsimProps> = ({
           <AppSvgIcon
             key="cnter"
             style={styles.btnCnter}
-            onPress={() => navigation?.navigate('Contact')}
+            onPress={() =>
+              navigate(navigation, route, 'HomeStack', {
+                tab: 'HomeStack',
+                screen: 'Contact',
+              })
+            }
             name="btnCnter"
           />
 
@@ -358,7 +368,7 @@ const Esim: React.FC<EsimProps> = ({
         </View>
       ),
     });
-  }, [navigation]);
+  }, [navigation, route]);
 
   const refresh = useCallback(() => {
     const {asia, europe, usaAu, multi} = API.Product.category;

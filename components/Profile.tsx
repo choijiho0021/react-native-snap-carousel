@@ -55,7 +55,6 @@ type ProfileProps = {
   mobile?: string;
   email?: string;
   userPictureUrl?: string;
-  icon?: string;
   onChangePhoto?: () => void;
   onPress?: (v: 'id' | 'email') => void;
 };
@@ -74,16 +73,15 @@ const Profile: React.FC<ProfileProps> = ({
 }) => {
   return (
     <View style={styles.container}>
-      <Pressable style={styles.photo} onPress={onChangePhoto}>
+      <View style={styles.photo}>
         <AppUserPic
           url={userPictureUrl || accountUserPictureUrl}
-          icon="imgPeopleL"
+          icon="profileImg"
           style={styles.userPicture}
-          onPress={onChangePhoto}
           isAbsolutePath={userPictureUrl !== undefined}
+          onPress={onChangePhoto}
         />
-        <AppIcon name="imgPeoplePlus" style={styles.icon} />
-      </Pressable>
+      </View>
       <View style={{flex: 3, justifyContent: 'center'}}>
         <AppText style={styles.label}>
           {utils.toPhoneNumber(mobile || accountMobile)}
