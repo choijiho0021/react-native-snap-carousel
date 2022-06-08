@@ -149,7 +149,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const [disabled, setDisabled] = useState(false);
   const [status, setStatus] = useState<TrackingStatus>();
   const [purchaseItems, setPurchaseItems] = useState<PurchaseItem[]>([]);
-  console.log('aaaaa params.route.item', route.params);
 
   useEffect(() => {
     const {detailCommon, partnerId} = product;
