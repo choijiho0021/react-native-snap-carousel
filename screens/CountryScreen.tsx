@@ -180,7 +180,7 @@ const CountryListItem0 = ({
       myStyle = {borderTopColor: 'white'};
       break;
     default:
-      myStyle = {borderTopColor: 'white'};
+      myStyle = {};
       break;
   }
 
@@ -245,9 +245,12 @@ const CountryListItem0 = ({
 const CountryListItem = memo(CountryListItem0);
 
 const position = (idx, arr) => {
-  if (idx === 0) return 'head';
-  if (idx === arr.length - 1) return 'tail';
-  return 'middle';
+  if (arr.length > 1) {
+    if (idx === 0) return 'head';
+    if (idx === arr.length - 1) return 'tail';
+    return 'middle';
+  }
+  return 'onlyOne';
 };
 
 type CountryScreenNavigationProp = StackNavigationProp<
