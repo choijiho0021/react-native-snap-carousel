@@ -12,7 +12,6 @@ import Env from '@/environment';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
-import AppIcon from '@/components/AppIcon';
 
 const {esimApp, esimCurrency} = Env.get();
 
