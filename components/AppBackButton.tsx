@@ -1,9 +1,9 @@
-import {appStyles} from '@/constants/Styles';
-import {RootState} from '@/redux';
 import {useNavigation} from '@react-navigation/native';
 import React, {memo, useCallback} from 'react';
 import {Image, Pressable, View} from 'react-native';
 import {connect} from 'react-redux';
+import {RootState} from '@/redux';
+import {appStyles} from '@/constants/Styles';
 import AppText from './AppText';
 
 const AppBackButton = ({

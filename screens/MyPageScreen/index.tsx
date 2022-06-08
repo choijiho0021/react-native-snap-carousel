@@ -432,15 +432,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
         ref={flatListRef}
         data={order.orderList}
         keyExtractor={(item) => `${item}`}
-        ListHeaderComponent={
-          <Info
-            onChangePhoto={changePhoto}
-            onPress={(key: 'id' | 'email') => {
-              if (key === 'id') navigation.navigate('Faq');
-              // if (key === 'id') this.showIdModal(true);
-            }}
-          />
-        }
+        ListHeaderComponent={<Info onChangePhoto={changePhoto} />}
         ListEmptyComponent={empty()}
         renderItem={renderOrder}
         onEndReachedThreshold={0.4}
