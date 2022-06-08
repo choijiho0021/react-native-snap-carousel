@@ -12,7 +12,6 @@ import Env from '@/environment';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
-import AppIcon from '@/components/AppIcon';
 
 const {esimApp, esimCurrency} = Env.get();
 
@@ -107,23 +106,14 @@ const styles = StyleSheet.create({
 type InfoProps = {
   account: AccountModelState;
   onChangePhoto: () => void;
-  onPress: (v: 'id' | 'email') => void;
 };
 
-const Info: React.FC<InfoProps> = ({
-  account: {balance, userId},
-  onChangePhoto,
-  onPress,
-}) => {
+const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
   const navigation = useNavigation();
 
   return (
     <View style={{marginBottom: 10}}>
-      <Profile
-        onChangePhoto={onChangePhoto}
-        onPress={onPress}
-        // icon="iconArrowRight"
-      />
+      <Profile onChangePhoto={onChangePhoto} />
       {esimApp && (
         <Pressable
           style={styles.rechargeBox}
@@ -157,14 +147,6 @@ const Info: React.FC<InfoProps> = ({
 
       <View style={styles.column}>
         <View style={styles.rowBtn}>
-          {esimApp && (
-            <Pressable style={styles.btnIdCheck} onPress={() => onPress('id')}>
-              <AppText style={[appStyles.normal16Text, {textAlign: 'center'}]}>
-                {/* {i18n.t('mypage:idCheckTitle')} */}
-                {i18n.t('contact:faq')}
-              </AppText>
-            </Pressable>
-          )}
           <Pressable
             style={styles.btnContactBoard}
             onPress={() => navigation.navigate('ContactBoard', {index: 1})}>
@@ -172,6 +154,15 @@ const Info: React.FC<InfoProps> = ({
               {i18n.t('board:mylist')}
             </AppText>
           </Pressable>
+          {esimApp && (
+            <Pressable
+              style={styles.btnIdCheck}
+              onPress={() => navigation.navigate('Contact')}>
+              <AppText style={[appStyles.normal16Text, {textAlign: 'center'}]}>
+                {i18n.t('contact:title')}
+              </AppText>
+            </Pressable>
+          )}
         </View>
         <AppButton
           iconName="inviteBanner"

@@ -1,14 +1,13 @@
-import AppIcon from '@/components/AppIcon';
-import AppUserPic from '@/components/AppUserPic';
-import LabelTextTouchable from '@/components/LabelTextTouchable';
-import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
-import utils from '@/redux/api/utils';
-import {AccountModelState} from '@/redux/modules/account';
 import {RootState} from '@reduxjs/toolkit';
 import React, {memo} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
+import AppIcon from '@/components/AppIcon';
+import AppUserPic from '@/components/AppUserPic';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import utils from '@/redux/api/utils';
+import {AccountModelState} from '@/redux/modules/account';
 import AppText from './AppText';
 
 const styles = StyleSheet.create({
@@ -35,11 +34,19 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
     lineHeight: 40,
     color: colors.black,
+    marginRight: 20,
   },
   icon: {
     bottom: 20,
     right: -29,
     alignSelf: 'center',
+  },
+  userPicture: {
+    width: 76,
+    height: 76,
+    borderRadius: 76 / 2,
+    borderWidth: 1,
+    borderColor: colors.whitefour,
   },
 });
 
@@ -62,25 +69,16 @@ const Profile: React.FC<ProfileProps> = ({
   mobile,
   email,
   userPictureUrl,
-  icon,
   onChangePhoto = () => {},
   onPress = () => {},
 }) => {
-  const userPicture = {
-    width: 76,
-    height: 76,
-    borderRadius: 76 / 2,
-    borderWidth: 1,
-    borderColor: colors.whitefour,
-  };
-
   return (
     <View style={styles.container}>
       <Pressable style={styles.photo} onPress={onChangePhoto}>
         <AppUserPic
           url={userPictureUrl || accountUserPictureUrl}
           icon="imgPeopleL"
-          style={userPicture}
+          style={styles.userPicture}
           onPress={onChangePhoto}
           isAbsolutePath={userPictureUrl !== undefined}
         />
@@ -90,15 +88,11 @@ const Profile: React.FC<ProfileProps> = ({
         <AppText style={styles.label}>
           {utils.toPhoneNumber(mobile || accountMobile)}
         </AppText>
-        <LabelTextTouchable
-          key="email"
-          label={email || accountEmail || ''}
-          labelStyle={styles.value}
-          value=""
-          arrowStyle={{paddingRight: 20}}
-          onPress={() => onPress('email')}
-          arrow={icon}
-        />
+        <Pressable onPress={() => onPress('email')}>
+          <AppText style={styles.value} numberOfLines={1} ellipsizeMode="tail">
+            {email || accountEmail || ''}
+          </AppText>
+        </Pressable>
       </View>
     </View>
   );

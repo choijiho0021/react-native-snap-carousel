@@ -54,7 +54,7 @@ const TabHeader = ({
             {idx === index ? (
               <View
                 style={{
-                  height: 3,
+                  height: 2,
                   backgroundColor: colors.clearBlue,
                 }}
               />

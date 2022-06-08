@@ -379,7 +379,7 @@
   "board:pass": "비밀 번호",
   "board:inputPass": "비밀 번호를 입력하세요",
   "board:list": "문의 내역",
-  "board:mylist": "내 문의 내역",
+  "board:mylist": "1:1 문의 내역",
   "board:nolist": "문의 내역이 없습니다",
   "board:pinMismatch": "비밀 번호가 일치하지 않습니다",
   "board:loading": "문의내역을 불러오고 있습니다.",
