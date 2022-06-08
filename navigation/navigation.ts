@@ -4,7 +4,7 @@ import {RkbProduct} from '@/redux/api/productApi';
 import {BoardMsgStatus} from '@/redux/api/boardApi';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 
-export type SimpleTextScreenMode = 'text' | 'uri' | 'html';
+export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti';
 export type PymMethodScreenMode =
   | 'cart'
   | 'roaming_product'
@@ -42,6 +42,7 @@ type SimpleTextParams = {
   bodyTitle?: string;
   text?: string;
   rule?: Record<string, string>;
+  nid?: number;
   image?: {
     success?: string;
     failure?: string;

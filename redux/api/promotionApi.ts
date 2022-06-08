@@ -5,7 +5,7 @@ import _ from 'underscore';
 import api, {ApiResult, DrupalNode, Langcode} from './api';
 import Env from '@/environment';
 import i18n from '@/utils/i18n';
-import {utils} from '@/utils/utils';
+import {parseJson, utils} from '@/utils/utils';
 
 const {bundleId, appStoreId, dynamicLink, adjustInvite = ''} = Env.get();
 
@@ -18,6 +18,7 @@ export type RkbPromotion = {
     title?: string;
     body?: string;
     rule?: Record<string, string>;
+    nid: number;
     image?: {
       success?: string;
       failure?: string;
@@ -52,15 +53,9 @@ const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
   if (_.isArray(data)) {
     return api.success(
       data.map((item) => {
-        let rule;
-        try {
-          rule = JSON.parse(item.field_promotion_rule?.replace(/&quot;/g, '"'));
-        } catch (err) {
-          console.log(
-            'Failed to parse promotion rule',
-            item.field_promotion_rule,
-          );
-        }
+        const rule = parseJson(
+          item.field_promotion_rule?.replace(/&quot;/g, '"'),
+        );
 
         return {
           uuid: item.uuid,
@@ -69,6 +64,7 @@ const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
           product_uuid: item.field_product_uuid, // product variation id
           notice: item.field_ref_content
             ? {
+                nid: parseInt(item.nid, 10),
                 title: item.field_notice_title,
                 body: item.field_notice_body,
                 rule,

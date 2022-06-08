@@ -4,6 +4,7 @@ import {Animated, Image, Pressable, StyleSheet, View} from 'react-native';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {sliderWidth} from '@/constants/SliderEntry.style';
@@ -124,6 +125,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
             title: i18n.t('set:noti'),
             bodyTitle: item.notice.title,
             body: item.notice.body,
+            nid: item.notice.nid,
             rule: item.notice.rule,
             image: item.notice.image,
             mode: 'noti',
