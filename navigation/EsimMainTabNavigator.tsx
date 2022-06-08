@@ -74,7 +74,7 @@ const MyPageStack = createStackNavigator();
 
 function homeStack() {
   return (
-    <HomeStack.Navigator screenOptions={{animationEnabled: false}}>
+    <HomeStack.Navigator screenOptions={{animationEnabled: false}} mode="modal">
       <HomeStack.Screen name="Home" component={HomeScreenEsim} />
       <HomeStack.Screen name="Tutorial" component={TutorialScreen} />
       <HomeStack.Screen name="StoreSearch" component={StoreSearchScreen} />
@@ -84,7 +84,11 @@ function homeStack() {
       <HomeStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <HomeStack.Screen name="Contact" component={ContactScreen} />
       <HomeStack.Screen name="ContactBoard" component={ContactBoardScreen} />
-      <HomeStack.Screen name="UserGuide" component={UserGuideScreen} />
+      <HomeStack.Screen
+        name="UserGuide"
+        component={UserGuideScreen}
+        options={{animationEnabled: true}}
+      />
 
       <HomeStack.Screen name="Invite" component={InviteScreen} />
       <HomeStack.Screen name="BoardMsgResp" component={BoardMsgRespScreen} />
