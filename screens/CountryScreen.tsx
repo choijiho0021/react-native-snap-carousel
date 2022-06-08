@@ -5,10 +5,10 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {Component, memo} from 'react';
 import {
-  FlatList,
   Image,
   Pressable,
   SafeAreaView,
+  SectionList,
   StyleSheet,
   View,
 } from 'react-native';
@@ -20,12 +20,12 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import {ViewStyle} from 'react-native';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppCartButton from '@/components/AppCartButton';
-import AppIcon from '@/components/AppIcon';
 import AppPrice from '@/components/AppPrice';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppText from '@/components/AppText';
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor: colors.lightGrey,
-    marginVertical: 7,
+    // marginVertical: 7,
     marginHorizontal: 20,
     padding: 15,
     flexDirection: 'row',
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   divider: {
     height: 10,
     backgroundColor: colors.whiteTwo,
-    marginBottom: 30,
+    marginTop: 32,
   },
   priceStyle: {
     height: 24,
@@ -169,50 +169,84 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   badge: {
-    position: 'absolute',
-    right: 0,
-    marginRight: 20,
-    width: 38,
+    // position: 'absolute',
+    // right: 0,
+    // marginRight: 20,
+    // width: 38,
+    paddingHorizontal: 8,
     height: 22,
     borderRadius: 2,
-    backgroundColor: colors.white,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: colors.tomato,
+    // backgroundColor: colors.white,
+    // borderStyle: 'solid',
+    // borderWidth: 1,
+    // borderColor: colors.tomato,
     alignItems: 'center',
     paddingTop: 2,
+
+    marginLeft: 8,
   },
   badgeText: {
-    color: colors.tomato,
+    color: colors.white,
     fontSize: 13,
     fontWeight: 'bold',
     fontStyle: 'normal',
     lineHeight: 16,
   },
+  itemDivider: {
+    marginHorizontal: 40,
+    height: 1,
+    backgroundColor: colors.whiteTwo,
+  },
+  sectionHeader: {
+    paddingTop: 32,
+    paddingBottom: 20,
+    marginHorizontal: 20,
+    backgroundColor: colors.white,
+  },
 });
+const toVolumeStr = (volume: number) => {
+  if (volume <= 1000) return `${volume}MB`;
+  return `${volume / 1024}GB`;
+};
 
 const CountryListItem0 = ({
   item,
-  selected,
+  position,
   onPress,
 }: {
   item: RkbProduct;
-  selected?: string;
+  position?: string;
   onPress: (v: string) => () => void;
 }) => {
-  let borderColor = {};
-  let color = {};
+  const color = {
+    color: item.field_daily === 'total' ? colors.purplyBlue : colors.clearBlue,
+  };
+  const title =
+    item.field_daily === 'total'
+      ? toVolumeStr(Number(item.volume))
+      : item.days + i18n.t('day');
+  let myStyle: ViewStyle = {};
 
-  if (selected === item.uuid) {
-    borderColor = {borderColor: colors.clearBlue};
-    color = {color: colors.clearBlue};
+  switch (position) {
+    case 'head':
+      myStyle = {borderBottomColor: 'white'};
+      break;
+    case 'middle':
+      myStyle = {borderTopColor: 'white', borderBottomColor: 'white'};
+      break;
+    case 'tail':
+      myStyle = {borderTopColor: 'white'};
+      break;
+    default:
+      myStyle = {borderTopColor: 'white'};
+      break;
   }
 
   return (
     <Pressable onPress={onPress(item.uuid)}>
-      <View>
-        <View key="product" style={[styles.card, borderColor]}>
-          <View key="text" style={styles.textView}>
+      <View key="product" style={[styles.card, myStyle]}>
+        <View key="text" style={styles.textView}>
+          <View style={{flexDirection: 'row'}}>
             <AppText
               key="name"
               style={[
@@ -221,36 +255,47 @@ const CountryListItem0 = ({
                   : appStyles.bold14Text,
                 color,
               ]}>
-              {item.name}
+              {title}
             </AppText>
-            <AppText
-              key="desc"
-              style={[
-                windowWidth > device.medium.window.width
-                  ? appStyles.normal14Text
-                  : appStyles.normal12Text,
-                {marginTop: 5},
-              ]}>
-              {item.field_description}
-            </AppText>
+            {!_.isEmpty(item.promoFlag) && (
+              <View
+                style={[
+                  styles.badge,
+                  {
+                    backgroundColor:
+                      item.promoFlag[0] === 'hot'
+                        ? colors.tomato
+                        : colors.clearBlue,
+                  },
+                ]}>
+                <AppText key="name" style={styles.badgeText}>
+                  {i18n.t(item.promoFlag[0])}
+                </AppText>
+              </View>
+            )}
           </View>
-          <View key="priceText" style={styles.appPrice}>
-            <AppPrice
-              key="price"
-              price={item.price}
-              balanceStyle={styles.priceStyle}
-              currencyStyle={styles.wonStyle}
-            />
-          </View>
+
+          <AppText
+            key="desc"
+            style={[
+              windowWidth > device.medium.window.width
+                ? appStyles.normal14Text
+                : appStyles.normal12Text,
+              {marginTop: 5},
+            ]}>
+            {item.field_description}
+          </AppText>
         </View>
-        {!_.isEmpty(item.promoFlag) && (
-          <View style={styles.badge}>
-            <AppText key="name" style={styles.badgeText}>
-              {i18n.t(item.promoFlag[0])}
-            </AppText>
-          </View>
-        )}
+        <View key="priceText" style={styles.appPrice}>
+          <AppPrice
+            key="price"
+            price={item.price}
+            balanceStyle={styles.priceStyle}
+            currencyStyle={styles.wonStyle}
+          />
+        </View>
       </View>
+      <View style={styles.itemDivider} />
     </Pressable>
   );
 };
@@ -264,6 +309,12 @@ function soldOut(payload: ApiResult<any>, message: string) {
     AppAlert.info(i18n.t('cart:systemError'));
   }
 }
+
+const position = (idx, arr) => {
+  if (idx === 0) return 'head';
+  if (idx === arr.length - 1) return 'tail';
+  return 'middle';
+};
 
 type CountryScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
@@ -286,7 +337,7 @@ type CountryScreenProps = {
 };
 
 type CountryScreenState = {
-  prodData: RkbProduct[];
+  prodData: {title: string; data: RkbProduct[]}[];
   selected?: string;
   imageUrl?: string;
   title?: string;
@@ -342,9 +393,23 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
       ),
     });
 
+    const prodData = prodList.reduce((carry, el) => {
+      const daily = el.field_daily;
+
+      if (carry[daily] === undefined) {
+        carry[daily] = [];
+      }
+
+      carry[daily].push(el);
+      return carry;
+    }, {});
+
     if (!_.isEmpty(prodList)) {
       this.setState({
-        prodData: prodList,
+        prodData: [
+          {title: 'daily', data: prodData.daily || []},
+          {title: 'total', data: prodData.total || []},
+        ],
         imageUrl: localOp?.imageUrl,
         localOpDetails: localOp?.detail,
         selected: prodList[0]?.uuid,
@@ -489,12 +554,20 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
     this.props.navigation.navigate('RegisterSim');
   };
 
-  renderItem = ({item}: {item: RkbProduct}) => {
+  renderItem = ({
+    item,
+    index,
+    section,
+  }: {
+    item: RkbProduct;
+    index: number;
+    section: {title; data};
+  }) => {
     return (
       <CountryListItem
         item={item}
-        selected={this.state.selected}
         onPress={this.onPress}
+        position={position(index, section.data)}
       />
     );
   };
@@ -524,7 +597,7 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
           />
         )}
 
-        <Pressable
+        {/* <Pressable
           onPress={() =>
             this.props.navigation.navigate('ProductDetail', {
               title,
@@ -548,15 +621,30 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
               size={10}
             />
           </View>
-        </Pressable>
-
-        <View style={styles.divider} />
+        </Pressable> */}
 
         <View style={{flex: 1}}>
-          <FlatList
-            data={prodData}
+          <SectionList
+            sections={prodData}
+            // keyExtractor={(item, index) => item + index}
             renderItem={this.renderItem}
-            extraData={selected}
+            renderSectionHeader={({section: {title, data}}) =>
+              data.length >= 1 ? (
+                <View style={styles.sectionHeader}>
+                  <AppText
+                    style={{
+                      ...appStyles.bold20Text,
+                    }}>
+                    {i18n.t(`country:${title}`)}
+                  </AppText>
+                </View>
+              ) : null
+            }
+            renderSectionFooter={({section: {title, data}}) =>
+              title === 'daily' && prodData[1].data.length >= 1 ? (
+                <View style={styles.divider} />
+              ) : null
+            }
           />
         </View>
         {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}

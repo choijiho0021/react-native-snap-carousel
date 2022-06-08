@@ -51,6 +51,7 @@
   "latest": "최신",
   "sale": "할인",
   "hot": "추천",
+  "sizeup": "SIZE UP",
   "copy": "복사",
   "close": "닫기",
   "closeForever": "다시 보지 않기",
@@ -90,6 +91,8 @@
   "country:detail": "상세보기",
   "country:empty": "상품검색 결과가 없습니다",
   "country:addCart": "장바구니에 담겼습니다.",
+  "country:total": "종량제",
+  "country:daily": "데이터 무제한",
 
   "view:detail": "상세보기",
 

@@ -51,6 +51,7 @@
   "now": "now",
   "latest": "latest",
   "sale": "Discount",
+  "sizeup": "SIZE UP",
   "hot": "Hot",
   "copy": "Copy",
   "close": "Close",
@@ -90,6 +91,8 @@
   "country:detail": "Detail Info",
   "country:empty": "No search result",
   "country:addCart": "Added to the Cart",
+  "country:total": "데이터 종량제",
+  "country:daily": "데이터 무제한",
 
   "view:detail": "Detail Info",
 

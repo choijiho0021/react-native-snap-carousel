@@ -167,7 +167,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             if (!_.isEmpty(cur?.subscriberQuota))
               return acc + Number(cur?.subscriberQuota?.qtaconsumption) / 1024;
             // vimsi
-            if (daily) {
+            if (daily === 'daily') {
               return (
                 acc +
                 Number(
