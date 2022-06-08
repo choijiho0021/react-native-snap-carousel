@@ -136,6 +136,7 @@ function myPageStack() {
         component={PurchaseDetailScreen}
       />
       <MyPageStack.Screen name="SimpleText" component={SimpleTextScreen} />
+      <MyPageStack.Screen name="Contact" component={ContactScreen} />
       <MyPageStack.Screen name="ContactBoard" component={ContactBoardScreen} />
       <MyPageStack.Screen name="BoardMsgResp" component={BoardMsgRespScreen} />
       <MyPageStack.Screen name="Recharge" component={RechargeScreen} />
@@ -146,7 +147,6 @@ function myPageStack() {
         name="PaymentResult"
         component={PaymentResultScreen}
       />
-      <MyPageStack.Screen name="Faq" component={FaqScreen} />
       <MyPageStack.Screen name="Settings" component={SettingsScreen} />
       <MyPageStack.Screen
         name="AccountSettings"

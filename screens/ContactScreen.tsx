@@ -1,11 +1,15 @@
 import KakaoSDK from '@actbase/react-native-kakaosdk';
-import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {Component, memo} from 'react';
 import {Linking, Pressable, StyleSheet, View, ScrollView} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import {
+  NavigationProp,
+  ParamListBase,
+  RouteProp,
+} from '@react-navigation/native';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -15,7 +19,6 @@ import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
 import {actions as notiActions, NotiModelState} from '@/redux/modules/noti';
@@ -25,6 +28,7 @@ import {
   ToastAction,
 } from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
+import {navigate} from '@/navigation/navigation';
 
 const {channelId, esimGlobal, fbUser} = Env.get();
 
@@ -129,13 +133,9 @@ const ContactListItem0 = ({
 
 const ContactListItem = memo(ContactListItem0);
 
-type ContactScreenNavigationProp = StackNavigationProp<
-  HomeStackParamList,
-  'Contact'
->;
-
 type ContactScreenProps = {
-  navigation: ContactScreenNavigationProp;
+  navigation: NavigationProp<any>;
+  route: RouteProp<ParamListBase, string>;
 
   info: InfoModelState;
   noti: NotiModelState;
@@ -216,14 +216,17 @@ class ContactScreen extends Component<ContactScreenProps, ContactScreenState> {
   }
 
   onPress = (key: string) => {
-    const {navigation} = this.props;
+    const {navigation, route} = this.props;
 
     switch (key) {
       case 'Faq':
         navigation.navigate('Faq');
         break;
       case 'Board':
-        navigation.navigate('ContactBoard');
+        navigate(navigation, route, 'HomeStack', {
+          tab: 'HomeStack',
+          screen: 'ContactBoard',
+        });
         break;
       case 'Guide':
         navigation.navigate('UserGuide');

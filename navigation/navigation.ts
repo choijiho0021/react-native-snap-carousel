@@ -1,3 +1,8 @@
+import {
+  NavigationProp,
+  ParamListBase,
+  RouteProp,
+} from '@react-navigation/native';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {RkbInfo} from '@/redux/api/pageApi';
 import {RkbProduct} from '@/redux/api/productApi';
@@ -103,4 +108,46 @@ export type HomeStackParamList = {
   Invite: undefined;
 
   Gift: {item: RkbSubscription};
+};
+
+export const navigate = (
+  navigation: NavigationProp<any>,
+  route: RouteProp<ParamListBase, string>,
+  returnTab: string,
+  {
+    tab,
+    screen,
+    params,
+    closeKey,
+  }: {tab?: string; screen: string; params?: object; closeKey?: string},
+) => {
+  navigation.navigate(tab || returnTab, {
+    screen,
+    params: {
+      ...params,
+      returnRoute: {
+        tab: returnTab,
+        screen: route.name,
+      },
+    },
+  });
+};
+
+export const goBack = (
+  navigation: NavigationProp<any>,
+  route: RouteProp<ParamListBase, string>,
+) => {
+  navigation.goBack();
+  if (route.params?.returnRoute) {
+    const {tab, screen, params = {}} = route.params?.returnRoute;
+    if (tab) {
+      navigation.navigate(tab, {
+        screen,
+        params: {
+          ...params,
+          fromRoute: route.name,
+        },
+      });
+    }
+  }
 };
