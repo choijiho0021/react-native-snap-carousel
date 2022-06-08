@@ -10,7 +10,6 @@ import {
 } from '@/redux/api/promotionApi';
 import {API} from '@/redux/api';
 import {RkbSubscription} from '../api/subscriptionApi';
-import api from '../api/api';
 
 const getPromotion = createAsyncThunk(
   'promotion/getPromotion',

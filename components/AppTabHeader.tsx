@@ -41,9 +41,8 @@ const TabHeader = ({
     <View style={[style || styles.whiteTwoBackground, {paddingHorizontal: 20}]}>
       <View style={styles.tabView}>
         {routes.map((elm, idx) => (
-          <View style={{flex: 1}}>
+          <View key={elm.key} style={{flex: 1}}>
             <AppButton
-              key={elm.key}
               style={{flex: 1}}
               titleStyle={[
                 styles.normal16WarmGrey,

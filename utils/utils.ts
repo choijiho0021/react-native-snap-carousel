@@ -32,5 +32,13 @@ const removeData = async (key: string) => {
   }
 };
 
+const parseJson = (str?: string) => {
+  try {
+    return str ? JSON.parse(str) : undefined;
+  } catch (err) {
+    return '';
+  }
+};
+
 export {utils};
-export {storeData, retrieveData, removeData};
+export {storeData, retrieveData, removeData, parseJson};

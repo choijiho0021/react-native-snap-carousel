@@ -249,6 +249,7 @@ const Esim: React.FC<EsimProps> = ({
               bodyTitle: popUp.notice.title,
               body: popUp.notice.body,
               rule: popUp.notice.rule,
+              nid: popUp.notice.nid,
               image: popUp.notice.image,
               mode: 'noti',
             });
