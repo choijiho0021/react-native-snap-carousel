@@ -7,7 +7,6 @@ import {
   Dimensions,
   ScrollView,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -434,7 +433,7 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
         <AppText style={styles.emptyPage}>{i18n.t('country:empty')}</AppText>
       </View>
     );
-  }, [onPressItem, product.sortedProdList, searchWord]);
+  }, [onPressItem, product.localOpList, product.sortedProdList, searchWord]);
 
   useEffect(() => {
     getRecommendation();
