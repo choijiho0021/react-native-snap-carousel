@@ -424,7 +424,11 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
     const list = API.Product.toColumnList(filtered);
 
     return list.length > 0 ? (
-      <StoreList data={list} onPress={onPressItem} />
+      <StoreList
+        data={list}
+        onPress={onPressItem}
+        localOpList={product.localOpList}
+      />
     ) : (
       <View style={styles.emptyViewPage}>
         <AppText style={styles.emptyPage}>{i18n.t('country:empty')}</AppText>
