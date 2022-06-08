@@ -164,7 +164,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
         key: 'Call',
         title: i18n.t('contact:callTitle'),
         desc: i18n.t('contact:callDesc'),
-        icon: 'btnCnter',
+        icon: 'callCenter',
         page: 'Call Center',
       },
     ],
