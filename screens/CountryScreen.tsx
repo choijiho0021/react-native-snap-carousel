@@ -243,7 +243,7 @@ const CountryListItem0 = ({
   }
 
   return (
-    <Pressable onPress={onPress(item.uuid)}>
+    <Pressable onPress={onPress(item)}>
       <View key="product" style={[styles.card, myStyle]}>
         <View key="text" style={styles.textView}>
           <View style={{flexDirection: 'row'}}>
@@ -438,16 +438,15 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
     }
   }
 
-  onPress = (uuid?: string) => () => {
-    this.setState({selected: uuid});
-    if (
-      (this.props.cart.orderItems?.find((v) => v.key === uuid)?.qty || 0) >=
-      PURCHASE_LIMIT
-    ) {
-      this.setState({disabled: true});
-    } else {
-      this.setState({disabled: false});
-    }
+  onPress = (item: RkbProduct) => () => {
+    const {imageUrl, localOpDetails, partnerId} = this.state;
+
+    this.props.navigation.navigate('ProductDetail', {
+      title: item.name,
+      img: imageUrl,
+      localOpDetails,
+      partnerId,
+    });
   };
 
   selectedProduct = (selected: string) => {
@@ -648,7 +647,7 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
           />
         </View>
         {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
-        <AppSnackBar
+        {/* <AppSnackBar
           visible={showSnackBar}
           onClose={() => this.setState({showSnackBar: false})}
           textMessage={i18n.t('country:addCart')}
@@ -681,7 +680,7 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
             />
             <AppText style={styles.regCard}>{i18n.t('reg:card')}</AppText>
           </View>
-        )}
+        )} */}
         <AppActivityIndicator visible={pending} />
       </SafeAreaView>
     );

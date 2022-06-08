@@ -1,20 +1,9 @@
 /* eslint-disable no-plusplus */
-import KakaoSDK from '@actbase/react-native-kakaosdk';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import Analytics from 'appcenter-analytics';
 import React, {Component} from 'react';
-import {
-  Animated,
-  Clipboard,
-  Image,
-  Linking,
-  NativeScrollEvent,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import Clipboard from '@react-native-community/clipboard';
+import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -22,17 +11,17 @@ import _ from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
-import AppButton from '@/components/AppButton';
-import AppIcon from '@/components/AppIcon';
-import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {windowWidth} from '@/constants/SliderEntry.style';
 import {appStyles, htmlDetailWithCss} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
-import {API} from '@/redux/api';
 import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
+import {
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import {
   actions as productActions,
   ProductAction,
@@ -44,12 +33,9 @@ import {
   ToastAction,
 } from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
+import AppSnackBar from '@/components/AppSnackBar';
 
-const {baseUrl, channelId, isEng, esimGlobal, fbUser} = Env.get();
-
-const HEADER_IMG_HEIGHT = 200;
-const TAB_IDX_ASK_BY_KAKAO = 3; // KakaoTalk으로 물어보기 Tab의 index
-const tabList = ['ProdInfo', 'Tip', 'Caution', 'Ask with KakaoTalk'];
+const {baseUrl, esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   screen: {
@@ -60,24 +46,6 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     paddingTop: 40,
     paddingHorizontal: 20,
-  },
-  tabView: {
-    height: 60,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginHorizontal: 20,
-  },
-  whiteBackground: {
-    backgroundColor: colors.white,
-  },
-  normal16WarmGrey: {
-    ...appStyles.normal16Text,
-    color: colors.warmGrey,
-  },
-  boldClearBlue: {
-    color: colors.clearBlue,
-    fontWeight: 'bold',
   },
   questionImage: {
     marginBottom: 14,
@@ -115,6 +83,7 @@ type ProductDetailScreenProps = {
   pending: boolean;
   product: ProductModelState;
   info: InfoModelState;
+  account: AccountModelState;
 
   action: {
     toast: ToastAction;
@@ -123,12 +92,7 @@ type ProductDetailScreenProps = {
 };
 
 type ProductDetailScreenState = {
-  scrollY: Animated.Value;
-  tabIdx: number;
   querying: boolean;
-  height1?: number;
-  height2?: number;
-  height3?: number;
 };
 
 class ProductDetailScreen extends Component<
@@ -143,19 +107,12 @@ class ProductDetailScreen extends Component<
     super(props);
 
     this.state = {
-      scrollY: new Animated.Value(0),
-      tabIdx: 0,
       querying: true,
     };
 
-    this.openKTalk = this.openKTalk.bind(this);
-    this.checkIdx = this.checkIdx.bind(this);
-    this.scrollTo = this.scrollTo.bind(this);
-    this.renderContactKakao = this.renderContactKakao.bind(this);
     this.renderWebView = this.renderWebView.bind(this);
     this.onMessage = this.onMessage.bind(this);
     this.checkWindowSize = this.checkWindowSize.bind(this);
-    this.clickTab = this.clickTab.bind(this);
 
     this.controller = new AbortController();
     this.scrollView = React.createRef<ScrollView>();
@@ -179,23 +136,6 @@ class ProductDetailScreen extends Component<
     if (partnerId !== this.props.route.params?.partnerId) {
       this.props.action.product.getProdDetailInfo(params?.partnerId || '');
     }
-  }
-
-  // TODO : detailInfo 정보 비교 방법
-  shouldComponentUpdate(
-    nextProps: ProductDetailScreenProps,
-    nextState: ProductDetailScreenState,
-  ) {
-    const {tabIdx, height2} = this.state;
-    const {detailInfo, detailCommon} = this.props.product;
-
-    return (
-      nextState.tabIdx !== tabIdx ||
-      nextState.height2 !== height2 ||
-      nextProps.product.detailInfo !== detailInfo ||
-      nextProps.product.detailCommon !== detailCommon ||
-      nextProps.pending !== this.props.pending
-    );
   }
 
   onMessage = (event: WebViewMessageEvent) => {
@@ -240,35 +180,6 @@ class ProductDetailScreen extends Component<
     }
   };
 
-  openKTalk = () => {
-    if (esimGlobal) {
-      Linking.openURL(`fb-messenger-public://user-thread/${fbUser}`).catch(() =>
-        AppAlert.info(i18n.t('acc:moveToFbDown'), '', () =>
-          Linking.openURL(
-            'https://apps.apple.com/kr/app/messenger/id454638411',
-          ),
-        ),
-      );
-    } else {
-      KakaoSDK.Channel.chat(channelId).catch((_) => {
-        this.props.action.toast.push(Toast.NOT_OPENED);
-      });
-    }
-  };
-
-  clickTab = (idx: number) => () => {
-    // console.log('@@@ click tab', this._webView1)
-
-    Analytics.trackEvent('Page_View_Count', {page: tabList[idx]});
-
-    const height =
-      idx < TAB_IDX_ASK_BY_KAKAO
-        ? (this.state[`height${idx}`] || 0) + HEADER_IMG_HEIGHT
-        : 0;
-    this.scrollTo(height);
-    this.setState({tabIdx: idx});
-  };
-
   checkWindowSize(sizeString = '') {
     const sz = sizeString.split(',');
     const scale = windowWidth / Number(sz[0]);
@@ -284,63 +195,6 @@ class ProductDetailScreen extends Component<
     this.setState({
       [`height${i - 2}`]: Math.ceil(Number(sz[1]) * scale),
     });
-  }
-
-  checkIdx(event: NativeScrollEvent) {
-    const {contentOffset} = event;
-    let offset = contentOffset.y;
-
-    // console.log('@@@ offset', offset, event)
-
-    offset -= HEADER_IMG_HEIGHT;
-    if (this.state.tabIdx !== TAB_IDX_ASK_BY_KAKAO) {
-      for (let idx = 0; idx < TAB_IDX_ASK_BY_KAKAO; idx++) {
-        // 어떤 tab 위치를 스크롤하고 있는지 계산한다.
-        if (offset < this.state[`height${idx + 1}`]) {
-          if (this.state.tabIdx !== idx) this.setState({tabIdx: idx});
-          break;
-        }
-      }
-    }
-  }
-
-  scrollTo(y: number) {
-    // console.log('@@@ scroll to', y)
-
-    if (this.scrollView.current)
-      this.scrollView.current.scrollTo({x: 0, y, animated: true});
-  }
-
-  renderContactKakao() {
-    return (
-      <View style={styles.kakaoContainer}>
-        <AppIcon style={styles.questionImage} name="imgQuestion" />
-        <AppText style={appStyles.normal16Text}>
-          <AppText style={{...appStyles.normal16Text, color: colors.clearBlue}}>
-            {i18n.t('prodDetail:Rokebi')}
-          </AppText>
-          {i18n.t('prodDetail:On')}
-        </AppText>
-        <AppText style={appStyles.normal16Text}>
-          {i18n.t('prodDetail:Question')}
-        </AppText>
-
-        <AppText style={styles.kakaoPlus}>
-          {i18n.t(
-            esimGlobal ? 'prodDetail:FacebookMessage' : 'prodDetail:KakaoPlus',
-          )}
-        </AppText>
-        <AppButton
-          iconName={
-            esimGlobal
-              ? `openFacebook${isEng ? 'Eng' : ''}`
-              : `openKakao${isEng ? 'Eng' : ''}`
-          }
-          onPress={this.openKTalk}
-          style={{flex: 1}}
-        />
-      </View>
-    );
   }
 
   renderWebView() {
@@ -372,7 +226,11 @@ class ProductDetailScreen extends Component<
 
   render() {
     const {tabIdx} = this.state;
-    const {pending, route} = this.props;
+    const {
+      pending,
+      route,
+      account: {iccid, loggedIn},
+    } = this.props;
 
     return (
       <SafeAreaView style={styles.screen}>
@@ -380,50 +238,55 @@ class ProductDetailScreen extends Component<
         <ScrollView
           style={{backgroundColor: colors.whiteTwo}}
           ref={this.scrollView}
-          stickyHeaderIndices={[1]} // 탭 버튼 고정
-          showsVerticalScrollIndicator={false}
-          scrollEventThrottle={100}
-          onScroll={({nativeEvent}) => {
-            this.checkIdx(nativeEvent);
-          }}>
-          <View style={{height: HEADER_IMG_HEIGHT}}>
-            <Image
-              style={{height: HEADER_IMG_HEIGHT}}
-              source={{
-                uri: API.default.httpImageUrl(route.params?.img),
-              }}
+          // stickyHeaderIndices={[1]} // 탭 버튼 고정
+          // showsVerticalScrollIndicator={false}
+          scrollEventThrottle={100}>
+          {this.renderWebView()}
+        </ScrollView>
+        {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
+        {/* <AppSnackBar
+          visible={showSnackBar}
+          onClose={() => this.setState({showSnackBar: false})}
+          textMessage={i18n.t('country:addCart')}
+        />
+        {iccid || (esimApp && loggedIn) ? (
+          <View style={styles.buttonBox}>
+            <AppButton
+              style={styles.btnCart}
+              title={i18n.t('cart:toCart')}
+              titleStyle={styles.btnCartText}
+              disabled={pending || disabled}
+              disableColor={colors.black}
+              disableBackgroundColor={colors.whiteTwo}
+              onPress={this.onPressBtnCart}
+            />
+            <AppButton
+              style={styles.btnBuy}
+              title={i18n.t('cart:buy')}
+              titleStyle={styles.btnBuyText}
+              onPress={this.onPressBtnPurchase}
             />
           </View>
-
-          {/* ScrollView  stickyHeaderIndices로 상단 탭을 고정하기 위해서 View한번 더 사용 */}
-          <View style={styles.whiteBackground}>
-            <View style={styles.tabView}>
-              {tabList.map((elm, idx) => (
-                <AppButton
-                  key={elm + idx}
-                  style={styles.whiteBackground}
-                  titleStyle={[
-                    styles.normal16WarmGrey,
-                    idx === tabIdx ? styles.boldClearBlue : {},
-                  ]}
-                  title={i18n.t(`prodDetail:${elm}`)}
-                  onPress={this.clickTab(idx)}
-                />
-              ))}
-            </View>
+        ) : (
+          <View style={styles.buttonBox}>
+            <AppButton
+              style={styles.regCardView}
+              title={loggedIn ? i18n.t('reg:card') : i18n.t('err:login')}
+              titleStyle={styles.regCard}
+              onPress={this.onPressBtnRegCard}
+            />
+            <AppText style={styles.regCard}>{i18n.t('reg:card')}</AppText>
           </View>
-          {tabIdx === TAB_IDX_ASK_BY_KAKAO
-            ? this.renderContactKakao()
-            : this.renderWebView()}
-        </ScrollView>
+        )} */}
       </SafeAreaView>
     );
   }
 }
 
 export default connect(
-  ({product, status, info}: RootState) => ({
+  ({product, account, status, info}: RootState) => ({
     product,
+    account,
     pending:
       status.pending[productActions.getProdDetailCommon.typePrefix] ||
       status.pending[productActions.getProdDetailInfo.typePrefix] ||
@@ -435,6 +298,7 @@ export default connect(
       product: bindActionCreators(productActions, dispatch),
       toast: bindActionCreators(toastActions, dispatch),
       info: bindActionCreators(infoActions, dispatch),
+      account: bindActionCreators(accountActions, dispatch),
     },
   }),
 )(ProductDetailScreen);
