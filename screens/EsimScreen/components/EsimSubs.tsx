@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
   activeBottomBox: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   usageListContainer: {
     marginTop: 20,
@@ -160,10 +161,13 @@ const title = (
       ) : (
         // expired 제외의 경우에는 사용량 확인 출력?
         usageCheckable && (
-          <Pressable onPress={onPress}>
+          <Pressable
+            onPress={onPress}
+            style={{flexDirection: 'row', alignItems: 'center'}}>
             <AppText key={item.nid} style={styles.checkUsage}>
               {i18n.t('usim:checkUsage')}
             </AppText>
+            <AppIcon name="iconArrowRightBlue" style={{marginLeft: 4}} />
           </Pressable>
         )
       )}
@@ -204,6 +208,9 @@ const QRnCopyInfo = (onPress: (showQR: boolean) => void) => {
         title={i18n.t('esim:showQR')}
         titleStyle={styles.btnTitle}
         iconName="btnQr"
+      />
+      <View
+        style={{height: 32, backgroundColor: colors.whiteThree, width: 1}}
       />
       <AppButton
         style={styles.btn}

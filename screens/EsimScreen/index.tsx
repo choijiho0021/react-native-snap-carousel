@@ -1,4 +1,3 @@
-import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
@@ -6,6 +5,11 @@ import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import moment from 'moment';
 import AsyncStorage from '@react-native-community/async-storage';
+import {
+  NavigationProp,
+  ParamListBase,
+  RouteProp,
+} from '@react-navigation/native';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppIcon from '@/components/AppIcon';
 import AppSnackBar from '@/components/AppSnackBar';
@@ -13,7 +17,7 @@ import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {HomeStackParamList} from '@/navigation/navigation';
+import {navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {
@@ -26,9 +30,6 @@ import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
-import {actions as cartActions} from '@/redux/modules/cart';
-import {actions as infoActions} from '@/redux/modules/info';
-import {actions as notiActions} from '@/redux/modules/noti';
 import {
   actions as orderActions,
   OrderAction,
@@ -40,6 +41,7 @@ import EsimSubs from './components/EsimSubs';
 import {ProductModelState} from '@/redux/modules/product';
 import EsimModal, {ModalType} from './components/EsimModal';
 import GiftModal from './components/GiftModal';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const {esimGlobal} = Env.get();
 
@@ -63,12 +65,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
   },
+  btnCnter: {
+    width: 40,
+    height: 40,
+    marginHorizontal: 18,
+  },
 });
 
-type EsimScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Esim'>;
-
 type EsimScreenProps = {
-  navigation: EsimScreenNavigationProp;
+  navigation: NavigationProp<any>;
+  route: RouteProp<ParamListBase, string>;
 
   loginPending: boolean;
   pending: boolean;
@@ -83,9 +89,10 @@ type EsimScreenProps = {
 };
 
 const EsimScreen: React.FC<EsimScreenProps> = ({
-  account: {iccid, token, balance, expDate},
   navigation,
+  route,
   action,
+  account: {iccid, token, balance, expDate},
   order,
   product: {prodList},
   pending,
@@ -124,8 +131,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     }
   }, [action.account, action.order, iccid, token]);
 
-  const empty = useCallback(() => {
-    return (
+  const empty = useCallback(
+    () => (
       <View style={styles.nolist}>
         <AppIcon name="emptyESIM" />
         <AppText style={styles.blueText}>{i18n.t('his:noUsage1')}</AppText>
@@ -133,66 +140,66 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           {i18n.t('his:noUsage2')}
         </AppText>
       </View>
-    );
-  }, []);
+    ),
+    [],
+  );
 
-  const info = useCallback(() => {
-    if (esimGlobal) return null;
-
-    return (
-      <CardInfo
-        iccid={iccid}
-        balance={balance}
-        expDate={expDate}
-        navigation={navigation}
-      />
-    );
-  }, [balance, expDate, iccid, navigation]);
+  const info = useCallback(
+    () =>
+      esimGlobal ? null : (
+        <CardInfo
+          iccid={iccid}
+          balance={balance}
+          expDate={expDate}
+          navigation={navigation}
+        />
+      ),
+    [balance, expDate, iccid, navigation],
+  );
 
   const getCmiSubsUsage = useCallback(
     async (usageIccid, packageId, childOrderId, item) => {
-      await API.Subscription.cmiGetSubsUsage({
+      const rsp = await API.Subscription.cmiGetSubsUsage({
         iccid: usageIccid,
         packageId,
         childOrderId,
-      }).then(async (rsp) => {
-        if (rsp?.result === 0 && rsp?.objects) {
-          const daily = item.prodId && prodList.get(item.prodId)?.field_daily;
-          const subscriberQuota = rsp?.objects?.find(
-            (v) => !_.isEmpty(v?.subscriberQuota),
-          )?.subscriberQuota;
+      });
 
-          const used = rsp.objects.reduce((acc, cur) => {
-            // himsi
-            if (!_.isEmpty(cur?.subscriberQuota))
-              return acc + Number(cur?.subscriberQuota?.qtaconsumption) / 1024;
-            // vimsi
-            if (daily) {
-              return (
-                acc +
-                Number(
-                  cur?.historyQuota?.find(
-                    (v) => v?.time === moment().format('YYYYMMDD'),
-                  )?.qtaconsumption || 0,
-                )
-              );
-            }
+      if (rsp?.result === 0 && rsp?.objects) {
+        const daily = item.prodId && prodList.get(item.prodId)?.field_daily;
+        const subscriberQuota = rsp?.objects?.find(
+          (v) => !_.isEmpty(v?.subscriberQuota),
+        )?.subscriberQuota;
 
+        const used = rsp.objects.reduce((acc: number, cur) => {
+          // himsi
+          if (!_.isEmpty(cur?.subscriberQuota))
+            return (
+              acc + Number(cur?.subscriberQuota?.qtaconsumption || 0) / 1024
+            );
+          // vimsi
+          if (daily) {
             return (
               acc +
-              cur?.historyQuota.reduce(
-                (a, c) => a + Number(c?.qtaconsumption),
-                0,
+              Number(
+                cur?.historyQuota?.find(
+                  (v) => v?.time === moment().format('YYYYMMDD'),
+                )?.qtaconsumption || 0,
               )
             );
-          }, 0);
+          }
 
-          setCmiUsage({
-            quota: Number(subscriberQuota?.qtavalue) || 0, // Mb
-            used, // Mb
-          });
-        }
-      });
+          return (
+            acc +
+            cur?.historyQuota.reduce((a, c) => a + Number(c?.qtaconsumption), 0)
+          );
+        }, 0);
+
+        setCmiUsage({
+          quota: Number(subscriberQuota?.qtavalue) || 0, // Mb
+          used, // Mb
+        });
+      }
     },
     [prodList],
   );
@@ -339,9 +346,21 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       headerLeft: () => (
         <AppText style={styles.title}>{i18n.t('esimList')}</AppText>
       ),
+      headerRight: () => (
+        <AppSvgIcon
+          name="btnCnter"
+          style={styles.btnCnter}
+          onPress={() =>
+            navigate(navigation, route, 'EsimStack', {
+              tab: 'HomeStack',
+              screen: 'Contact',
+            })
+          }
+        />
+      ),
     });
     init({iccid, token});
-  }, [iccid, init, navigation, token]);
+  }, [iccid, init, navigation, route, token]);
 
   useEffect(() => {
     async function checkShowModal() {
@@ -400,12 +419,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 };
 
 export default connect(
-  ({account, order, noti, info, status, sync, cart, product}: RootState) => ({
+  ({account, order, status, product}: RootState) => ({
     order,
     account,
-    auth: accountActions.auth(account),
-    noti,
-    info,
     product,
     loginPending:
       status.pending[accountActions.logInAndGetAccount.typePrefix] ||
@@ -415,16 +431,11 @@ export default connect(
       status.pending[orderActions.getSubs.typePrefix] ||
       status.pending[orderActions.cmiGetSubsUsage.typePrefix] ||
       false,
-    sync,
-    lastTab: cart.lastTab.toJS(),
   }),
   (dispatch) => ({
     action: {
       order: bindActionCreators(orderActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
-      noti: bindActionCreators(notiActions, dispatch),
-      cart: bindActionCreators(cartActions, dispatch),
-      info: bindActionCreators(infoActions, dispatch),
     },
   }),
 )(EsimScreen);
