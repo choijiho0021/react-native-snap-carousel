@@ -1,6 +1,6 @@
 import KakaoSDK from '@actbase/react-native-kakaosdk';
 import Analytics from 'appcenter-analytics';
-import React, {Component, memo} from 'react';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {Linking, Pressable, StyleSheet, View, ScrollView} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -20,7 +20,6 @@ import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {RootState} from '@/redux';
-import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
 import {actions as notiActions, NotiModelState} from '@/redux/modules/noti';
 import {
   actions as toastActions,
@@ -137,55 +136,44 @@ type ContactScreenProps = {
   navigation: NavigationProp<any>;
   route: RouteProp<ParamListBase, string>;
 
-  info: InfoModelState;
   noti: NotiModelState;
   action: {
     toast: ToastAction;
   };
 };
 
-type ContactScreenState = {
-  data: MenuItem[];
-  showModal: boolean;
-};
+const ContactScreen: React.FC<ContactScreenProps> = (props) => {
+  const {navigation, route, noti, action} = props;
+  const data = useMemo(
+    () => [
+      {
+        key: 'Board',
+        title: i18n.t('contact:boardTitle'),
+        desc: i18n.t('contact:boardDesc'),
+        icon: 'imgBoard',
+        page: 'Contact Board',
+      },
+      {
+        key: 'Ktalk',
+        title: i18n.t('contact:ktalkTitle'),
+        desc: i18n.t('contact:ktalkDesc'),
+        icon: 'kakaoChannel',
+        page: 'Open Kakao Talk',
+      },
+      {
+        key: 'Call',
+        title: i18n.t('contact:callTitle'),
+        desc: i18n.t('contact:callDesc'),
+        icon: 'btnCnter',
+        page: 'Call Center',
+      },
+    ],
+    [],
+  );
+  const [showModal, setShowModal] = useState(false);
 
-class ContactScreen extends Component<ContactScreenProps, ContactScreenState> {
-  constructor(props: ContactScreenProps) {
-    super(props);
-
-    this.state = {
-      data: [
-        {
-          key: 'Board',
-          title: i18n.t('contact:boardTitle'),
-          desc: i18n.t('contact:boardDesc'),
-          icon: 'imgBoard',
-          page: 'Contact Board',
-        },
-        {
-          key: 'Ktalk',
-          title: i18n.t('contact:ktalkTitle'),
-          desc: i18n.t('contact:ktalkDesc'),
-          icon: 'kakaoChannel',
-          page: 'Open Kakao Talk',
-        },
-        {
-          key: 'Call',
-          title: i18n.t('contact:callTitle'),
-          desc: i18n.t('contact:callDesc'),
-          icon: 'btnCnter',
-          page: 'Call Center',
-        },
-      ],
-      showModal: false,
-    };
-
-    this.showModal = this.showModal.bind(this);
-    this.onPress = this.onPress.bind(this);
-  }
-
-  componentDidMount() {
-    this.props.navigation.setOptions({
+  useEffect(() => {
+    navigation.setOptions({
       title: null,
       headerLeft: () => <AppBackButton title={i18n.t('contact:title')} />,
       headerRight: () => (
@@ -193,7 +181,7 @@ class ContactScreen extends Component<ContactScreenProps, ContactScreenState> {
           key="search"
           style={styles.showSearchBar}
           onPress={() =>
-            this.props.navigation.navigate('Noti', {
+            navigation.navigate('Noti', {
               mode: 'info',
               title: i18n.t('contact:notice'),
             })
@@ -204,132 +192,113 @@ class ContactScreen extends Component<ContactScreenProps, ContactScreenState> {
     });
 
     Analytics.trackEvent('Page_View_Count', {page: 'Service Center'});
-  }
+  }, [navigation]);
 
-  componentDidUpdate(prevProps: ContactScreenProps) {
-    if (
-      !!this.props.noti.result &&
-      prevProps.noti.result !== this.props.noti.result
-    ) {
-      this.showModal(true);
-    }
-  }
+  useEffect(() => {
+    if (noti.result) setShowModal(true);
+  }, [noti.result]);
 
-  onPress = (key: string) => {
-    const {navigation, route} = this.props;
-
-    switch (key) {
-      case 'Faq':
-        navigation.navigate('Faq');
-        break;
-      case 'Board':
-        navigate(navigation, route, 'HomeStack', {
-          tab: 'HomeStack',
-          screen: 'ContactBoard',
-        });
-        break;
-      case 'Guide':
-        navigation.navigate('UserGuide');
-        break;
-      case 'Ktalk':
-        if (esimGlobal) {
-          Linking.openURL(`fb-messenger-public://user-thread/${fbUser}`).catch(
-            () =>
+  const onPress = useCallback(
+    (key: string) => {
+      switch (key) {
+        case 'Faq':
+          navigation.navigate('Faq');
+          break;
+        case 'Board':
+          navigate(navigation, route, 'HomeStack', {
+            tab: 'HomeStack',
+            screen: 'ContactBoard',
+          });
+          break;
+        case 'Guide':
+          navigation.navigate('UserGuide');
+          break;
+        case 'Ktalk':
+          if (esimGlobal) {
+            Linking.openURL(
+              `fb-messenger-public://user-thread/${fbUser}`,
+            ).catch(() =>
               AppAlert.info(i18n.t('acc:moveToFbDown'), '', () =>
                 Linking.openURL(
                   'https://apps.apple.com/kr/app/messenger/id454638411',
                 ),
               ),
-          );
-        } else {
-          KakaoSDK.Channel.chat(channelId).catch((_) => {
-            this.props.action.toast.push(Toast.NOT_OPENED);
-          });
-        }
-
-        break;
-      case 'Call':
-        Linking.openURL(`tel:0317103969`);
-        break;
-      default:
-        break;
-    }
-  };
-
-  showModal = (value: boolean) => {
-    this.setState({showModal: value});
-  };
-
-  render() {
-    const {showModal, data} = this.state;
-
-    return (
-      <ScrollView style={styles.container}>
-        <View style={styles.infoContainer}>
-          <AppText style={[appStyles.bold18Text, {paddingTop: 14}]}>
-            {i18n.t('contact:info')}
-          </AppText>
-          <AppIcon name="imgNotiDokebi" style={{marginRight: 12}} />
-        </View>
-
-        <View style={styles.absoluteView}>
-          {['Faq', 'Guide'].map((elm) => (
-            <Pressable
-              key={elm}
-              style={styles.btnBlue}
-              onPress={() => this.onPress(elm)}>
-              <AppIcon style={{marginBottom: 16}} name={`img${elm}`} />
-              <AppText style={[appStyles.bold16Text, {color: colors.white}]}>
-                {i18n.t(`contact:${elm.toLowerCase()}`)}
-              </AppText>
-            </Pressable>
-          ))}
-        </View>
-
-        <View style={styles.bottomContainer}>
-          <AppText
-            style={[
-              appStyles.bold16Text,
-              {color: colors.black, marginBottom: 24},
-            ]}>
-            {i18n.t('contact:info2')}
-          </AppText>
-          {data.map((item) => (
-            <ContactListItem
-              key={item.key}
-              item={item}
-              onPress={this.onPress}
-            />
-          ))}
-        </View>
-
-        <AppModal
-          title={
-            this.props.noti.result === 0 ||
-            _.isUndefined(this.props.noti.result)
-              ? i18n.t('set:sendAlimTalk')
-              : i18n.t('set:failedToSendAlimTalk')
+            );
+          } else {
+            KakaoSDK.Channel.chat(channelId).catch((_) => {
+              action.toast.push(Toast.NOT_OPENED);
+            });
           }
-          type="info"
-          onOkClose={() => this.showModal(false)}
-          visible={showModal}
-        />
-      </ScrollView>
-    );
-  }
-}
+
+          break;
+        case 'Call':
+          Linking.openURL(`tel:0317103969`);
+          break;
+        default:
+          break;
+      }
+    },
+    [action.toast, navigation, route],
+  );
+
+  return (
+    <ScrollView style={styles.container}>
+      <View style={styles.infoContainer}>
+        <AppText style={[appStyles.bold18Text, {paddingTop: 14}]}>
+          {i18n.t('contact:info')}
+        </AppText>
+        <AppIcon name="imgNotiDokebi" style={{marginRight: 12}} />
+      </View>
+
+      <View style={styles.absoluteView}>
+        {['Faq', 'Guide'].map((elm) => (
+          <Pressable
+            key={elm}
+            style={styles.btnBlue}
+            onPress={() => onPress(elm)}>
+            <AppIcon style={{marginBottom: 16}} name={`img${elm}`} />
+            <AppText style={[appStyles.bold16Text, {color: colors.white}]}>
+              {i18n.t(`contact:${elm.toLowerCase()}`)}
+            </AppText>
+          </Pressable>
+        ))}
+      </View>
+
+      <View style={styles.bottomContainer}>
+        <AppText
+          style={[
+            appStyles.bold16Text,
+            {color: colors.black, marginBottom: 24},
+          ]}>
+          {i18n.t('contact:info2')}
+        </AppText>
+        {data.map((item) => (
+          <ContactListItem key={item.key} item={item} onPress={onPress} />
+        ))}
+      </View>
+
+      <AppModal
+        title={
+          noti.result === 0 || _.isUndefined(noti.result)
+            ? i18n.t('set:sendAlimTalk')
+            : i18n.t('set:failedToSendAlimTalk')
+        }
+        type="info"
+        onOkClose={() => setShowModal(false)}
+        visible={showModal}
+      />
+    </ScrollView>
+  );
+};
 
 export default connect(
-  ({info, account, noti, status}: RootState) => ({
-    info,
+  ({account, noti, status}: RootState) => ({
     account,
     noti,
     pending: status.pending[notiActions.sendAlimTalk.typePrefix] || false,
   }),
   (dispatch) => ({
     action: {
-      info: bindActionCreators(infoActions, dispatch),
-      noti: bindActionCreators(notiActions, dispatch),
       toast: bindActionCreators(toastActions, dispatch),
     },
   }),
