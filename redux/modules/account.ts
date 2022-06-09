@@ -327,7 +327,7 @@ const updateAccountState = (
 
   if (payload.simCardName) newState.simCardName = payload.simCardName;
   if (payload.simCardImage) newState.simCardImage = payload.simCardImage;
-  if (payload.isPushNotiEnabled)
+  if (payload.isPushNotiEnabled !== undefined)
     newState.isPushNotiEnabled = payload.isPushNotiEnabled;
   if (payload.deviceModel) newState.deviceModel = payload.deviceModel;
   if (payload.isSupportDev) newState.isSupportDev = payload.isSupportDev;
@@ -531,6 +531,7 @@ const changePushNoti = createAsyncThunk(
 
     return dispatch(changeUserAttrWithToast({userId, token, attributes})).then(
       ({payload}) => {
+        console.log('@@@ push noti', payload);
         if (payload.result === 0) {
           return dispatch(slice.actions.updateAccount({isPushNotiEnabled}));
         }
