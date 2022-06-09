@@ -163,28 +163,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         iccid: usageIccid,
         packageId,
         childOrderId,
-      }).then(async (rsp) => {
-        if (rsp?.result === 0 && rsp?.objects) {
-          const daily = item.prodId && prodList.get(item.prodId)?.field_daily;
-          const subscriberQuota = rsp?.objects?.find(
-            (v) => !_.isEmpty(v?.subscriberQuota),
-          )?.subscriberQuota;
-
-          const used = rsp.objects.reduce((acc, cur) => {
-            // himsi
-            if (!_.isEmpty(cur?.subscriberQuota))
-              return acc + Number(cur?.subscriberQuota?.qtaconsumption) / 1024;
-            // vimsi
-            if (daily === 'daily') {
-              return (
-                acc +
-                Number(
-                  cur?.historyQuota?.find(
-                    (v) => v?.time === moment().format('YYYYMMDD'),
-                  )?.qtaconsumption || 0,
-                )
-              );
-            }
+      });
 
       if (rsp?.result === 0 && rsp?.objects) {
         const daily = item.prodId && prodList.get(item.prodId)?.field_daily;
@@ -199,7 +178,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               acc + Number(cur?.subscriberQuota?.qtaconsumption || 0) / 1024
             );
           // vimsi
-          if (daily) {
+          if (daily === 'daily') {
             return (
               acc +
               Number(
