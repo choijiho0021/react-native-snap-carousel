@@ -347,8 +347,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
     );
     setChecked((prev) =>
       orderItems.reduce(
-        (acc, cur) =>
-          acc.update(cur.key, (v) => (v === 'undefined' ? true : v)),
+        (acc, cur) => acc.update(cur.key, (v) => (v === undefined ? true : v)),
         prev,
       ),
     );
