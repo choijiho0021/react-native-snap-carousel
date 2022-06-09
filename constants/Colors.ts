@@ -36,4 +36,5 @@ export const colors = {
   paleBlue: '#eaf3fe',
   paleGrey2: '#f2f4f6',
   pinkishGrey: '#bcbcbc',
+  purplyBlue: '#5b16ef',
 };

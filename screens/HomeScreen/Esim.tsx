@@ -123,12 +123,27 @@ const styles = StyleSheet.create({
   showSearchBar: {
     marginBottom: 20,
     marginHorizontal: 20,
-    // margin: 20,
+    backgroundColor: colors.white,
     height: 56,
     borderRadius: 2,
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor: colors.clearBlue,
+
+    ...Platform.select({
+      ios: {
+        shadowColor: 'rgb(52, 62, 95)',
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+        shadowOffset: {
+          height: 4,
+          width: 1,
+        },
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
   },
 });
 
@@ -543,20 +558,12 @@ const Esim: React.FC<EsimProps> = ({
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <Animated.View
-        style={{height}}
-        ref={ref}
-        // onLayout={(event) => {
-        //   const {height} = event.nativeEvent.layout;
-        //   bannerHeight.setValue(height);
-        //   console.log('@@@ init height', height);
-        // }}
-        // android에서는 optimization을 위해서 불필요한 view를 제거할 수 있다. collapsable=false로 설정하여, view가 제거되지 않도록 처리한다.
-        collapsable={false}>
+      <Animated.View style={{height}} ref={ref} collapsable={false}>
         <PromotionCarousel />
       </Animated.View>
       {/* Promotion Carousel Pagination을 가리기 위해 임시로 추가 */}
       <View style={{backgroundColor: 'white', height: 20, width: '100%'}} />
+
       <AppButton
         key="search"
         title={i18n.t('home:searchPlaceholder')}

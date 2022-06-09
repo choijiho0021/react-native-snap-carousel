@@ -98,6 +98,36 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  callCenter: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M5 19a4 4 0 0 1 0-8v8zM19 19a4 4 0 0 0 0-8v8z"
+        stroke="#2C2C2C"
+        stroke-width="2"
+        stroke-linejoin="round"
+      />
+      <Mask id="tmfbrruh2a" fill="#fff">
+        <Path d="M3 11.039V9.503c0-4.655 4.03-8.429 9-8.429s9 3.774 9 8.429v1.571" />
+      </Mask>
+      <Path
+        d="M5 11.039V9.503H1V11.039h4zm0-1.536c0-3.429 3.008-6.429 7-6.429v-4C6.05-.926 1 3.622 1 9.503h4zm7-6.429c3.992 0 7 3 7 6.429h4C23 3.622 17.95-.926 12-.926v4zm7 6.429V11.074h4V9.503h-4z"
+        fill="#2C2C2C"
+        mask="url(#tmfbrruh2a)"
+      />
+      <Path
+        d="M20 19v4h-7"
+        stroke="#2C2C2C"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;

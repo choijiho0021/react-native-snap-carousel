@@ -66,6 +66,7 @@ export type HomeStackParamList = {
   ProductDetail: {
     title?: string;
     img?: string;
+    item?: RkbProduct;
     localOpDetails?: string;
     partnerId?: string;
   };

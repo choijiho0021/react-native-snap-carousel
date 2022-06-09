@@ -30,10 +30,11 @@ const storeId: Record<Store, number> = {
   global: 3,
 };
 
-type PromoFlag = 'hot' | 'sale';
+type PromoFlag = 'hot' | 'sale' | 'sizeup';
 const promoFlag: Record<string, PromoFlag> = {
   53: 'hot', // 운용자 추천
   57: 'sale', // 할인
+  181: 'sizeup', // 사이즈업
 };
 
 const callStatus = {
@@ -48,6 +49,7 @@ type DrupalProduct = {
   title: string;
   price: string;
   field_daily: string;
+  field_data_volume: string;
   partner_id: string;
   field_product_categories: string[];
   field_days: string;
@@ -67,7 +69,8 @@ export type RkbProduct = {
   uuid: string;
   name: string;
   price: Currency;
-  field_daily: boolean;
+  field_daily: string;
+  volume: string;
   partnerId: string;
   categoryId: string[];
   days: number;
@@ -101,7 +104,8 @@ const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
           uuid: item.uuid,
           name: item.title,
           price: utils.stringToCurrency(item.price),
-          field_daily: item.field_daily === 'daily',
+          field_daily: item.field_daily,
+          volume: item.field_data_volume,
           partnerId: item.partner_id,
           categoryId: item.field_product_categories,
           days: utils.stringToNumber(item.field_days) || 0,
@@ -124,6 +128,7 @@ type DrupalLocalOp = {
   nid: string;
   body: string;
   title: string;
+  field_mcc_mnc: string;
   field_country: string[];
   field_image: string;
   field_network: string;
@@ -148,6 +153,7 @@ const toLocalOp = (data: DrupalLocalOp[]): ApiResult<RkbLocalOp> => {
         key: item.nid,
         name: item.title,
         ccode: item.field_country.sort(),
+        mccmnc: item.field_mcc_mnc,
         apn: item.field_apn_setting,
         imageUrl: item.field_image,
         network: item.field_network,
