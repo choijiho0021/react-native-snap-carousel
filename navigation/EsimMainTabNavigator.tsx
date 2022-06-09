@@ -46,6 +46,7 @@ import {HomeStackParamList} from './navigation';
 import BadgedIcon from './component/BadgedIcon';
 import RedirectHKScreen from '@/screens/RedirectHKScreen';
 import UserGuideScreen from '../screens/UserGuideScreen';
+import {CartModelState} from '@/redux/modules/cart';
 
 const styles = StyleSheet.create({
   tabBarIcon: {
@@ -165,9 +166,11 @@ const Tab = createBottomTabNavigator();
 const TabNavigator = ({
   loggedIn,
   iccid,
+  cart,
 }: {
   loggedIn?: boolean;
   iccid?: string;
+  cart: CartModelState;
 }) => {
   return (
     <Tab.Navigator
@@ -194,8 +197,12 @@ const TabNavigator = ({
       <Tab.Screen
         name="CartStack"
         component={iccid && loggedIn ? cartStack : AuthStack}
-        options={() => ({
-          tabBarVisible: false,
+        options={({route}) => ({
+          tabBarVisible:
+            !!iccid &&
+            !!loggedIn &&
+            cart?.orderItems?.length === 0 &&
+            (getFocusedRouteNameFromRoute(route) || 'Cart') === 'Cart',
           tabBarBadgeStyle: {allowFontScaling: false},
           tabBarLabel: i18n.t('cart'),
           tabBarIcon: ({focused}) => (
@@ -247,7 +254,8 @@ const TabNavigator = ({
   );
 };
 
-export default connect(({account}: RootState) => ({
+export default connect(({account, cart}: RootState) => ({
   loggedIn: account.loggedIn,
   iccid: account.iccid,
+  cart,
 }))(TabNavigator);

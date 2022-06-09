@@ -54,13 +54,11 @@
   "sizeup": "SIZE UP",
   "copy": "복사",
   "close": "닫기",
-  "closeForever": "다시 보지 않기",
+  "close:week": "일주일간 보지 않기",
   "redirect": "바로 가기",
   "KRW": "원",
   "USD": "$",
   "exit": "앱 종료",
-
-  "home:disablePopup": "일주일간 보지 않기",
 
   "home:exitApp": "앱 종료",
   "home:guide": "로밍도깨비 사용가이드 !",
@@ -435,7 +433,7 @@
   "esim:usablePeriod": "사용기한",
   "esim:expired": "기한만료",
   // "esim:notice": "통화 상품은 로깨비톡 앱에서 사용할 수 있습니다.",
-  "esim:refresh": "업데이트 하시려면 아래로 당기세요",
+  "esim:refresh": " \u00B7  업데이트 하시려면 아래로 당기세요\n \u00B7  도움이 필요하시면 상단 오른쪽의 물음표를 눌러주세요",
   "esim:showQR": "QR 코드 보기",
   "esim:manualInput": "수동 입력 정보",
   "esim:showQRTitle": "QR 코드 보기",

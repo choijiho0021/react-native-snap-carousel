@@ -2,6 +2,7 @@ import React, {memo, useCallback} from 'react';
 import {Dimensions, Pressable, StyleSheet, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
+import moment from 'moment';
 import AppModal from '@/components/AppModal';
 import AppIcon from '@/components/AppIcon';
 import AppButton from '@/components/AppButton';
@@ -50,7 +51,7 @@ const GiftModal: React.FC<GiftModalProps> = ({visible, onOkClose}) => {
     () => (
       <View style={styles.bottom}>
         <AppButton
-          title={i18n.t('closeForever')}
+          title={i18n.t('close:week')}
           style={styles.btn}
           titleStyle={{
             ...appStyles.medium14,
@@ -59,7 +60,10 @@ const GiftModal: React.FC<GiftModalProps> = ({visible, onOkClose}) => {
             marginLeft: 20,
           }}
           onPress={() => {
-            AsyncStorage.setItem('gift.show.modal', 'false');
+            AsyncStorage.setItem(
+              'gift.show.modal',
+              moment().format('YYYY-MM-DD HH:mm:ss'),
+            );
             onOkClose?.();
           }}
         />

@@ -21,6 +21,12 @@ import {getTrackingStatus} from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
+import {
+  NavigationProp,
+  ParamListBase,
+  RouteProp,
+} from '@react-navigation/native';
+import VersionCheck from 'react-native-version-check';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -29,7 +35,7 @@ import withBadge from '@/components/withBadge';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {HomeStackParamList, navigate} from '@/navigation/navigation';
+import {navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {
@@ -62,11 +68,6 @@ import {useInterval} from '@/utils/useInterval';
 import NotiModal from './component/NotiModal';
 import AppTabHeader from '@/components/AppTabHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {
-  NavigationProp,
-  ParamListBase,
-  RouteProp,
-} from '@react-navigation/native';
 
 const {esimGlobal} = Env.get();
 
@@ -546,6 +547,13 @@ const Esim: React.FC<EsimProps> = ({
       }
     }
   }, [account, action.cart, action.noti, action.order]);
+
+  useEffect(() => {
+    const ver = VersionCheck.getCurrentVersion();
+    API.AppVersion.getAppVersion(ver).then((rsp) =>
+      console.log('@@@ app', rsp, ver),
+    );
+  }, []);
 
   return (
     <View style={styles.container}>

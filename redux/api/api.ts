@@ -36,6 +36,7 @@ const path = {
     payment: 'jsonapi/node/payment',
     noti: 'jsonapi/node/notification',
     page: 'jsonapi/node/page',
+    app: 'jsonapi/node/app_version',
   },
   account: 'json/account/list',
   accountOfUser: 'json/account/ofuser',

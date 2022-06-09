@@ -16,6 +16,7 @@ import User from './userApi';
 import Api from './api';
 import Country from './country';
 import Utils from './utils';
+import AppVersion from './appVersionApi';
 
 const API = {
   get default() {
@@ -65,6 +66,9 @@ const API = {
   },
   get Device() {
     return Device;
+  },
+  get AppVersion() {
+    return AppVersion;
   },
 };
 
