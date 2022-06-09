@@ -23,15 +23,11 @@ const API_STATUS_FAIL = 3;
 
 const path = {
   jsonapi: {
-    product: 'jsonapi/node/product',
-    account: 'jsonapi/node/account',
-    recharge: 'jsonapi/node/recharge',
     simPartner: 'jsonapi/taxonomy_term/bootstrap_sim_partner',
-    user: 'jsonapi/user/user',
+    user: 'jsonapi/user',
     board: 'jsonapi/node/contact_board',
     comment: 'jsonapi/comment/comment',
     profile: 'jsonapi/profile/customer',
-    addr: 'jsonapi',
     subscription: 'jsonapi/node/subscription',
     payment: 'jsonapi/node/payment',
     noti: 'jsonapi/node/notification',

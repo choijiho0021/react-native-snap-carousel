@@ -81,35 +81,6 @@ const toLogin =
     return api.failure(api.E_NOT_FOUND, login.message);
   };
 
-// not used
-const findUser = ({
-  name,
-  email,
-  user,
-  pass,
-}: {
-  name: string;
-  email: string;
-  user: string;
-  pass: string;
-}) => {
-  if (!user)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
-
-  // const url = `${API.httpUrl(API.path.userList)}/${user}?_format=json`
-  const url =
-    `${api.httpUrl(api.path.jsonapi.user)}?` +
-    'filter[agroup][group][conjunction]=OR&' +
-    'filter[name][condition][path]=name&' +
-    `filter[name][condition][value]=${name}&` +
-    'filter[name][condition][memberOf]=agroup&' +
-    'filter[email][condition][path]=mail&' +
-    `filter[email][condition][value]=${email}&` +
-    'filter[email][condition][memberOf]=agroup';
-
-  return api.callHttpGet(url, toUser, api.basicAuth(user, pass));
-};
-
 const getToken = () => {
   return api.callHttpGet(api.httpUrl(api.path.token, ''));
 };
@@ -207,13 +178,6 @@ const getByFilter = ({filter, token}: {filter: string; token?: string}) => {
     toUser,
     api.withToken(token, 'vnd.api+json'),
   );
-};
-
-const getByUUID = ({uuid, token}: {uuid: string; token?: string}) => {
-  if (!uuid)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: uuid');
-
-  return getByFilter({filter: `/${uuid}`, token});
 };
 
 const getByUid = ({uid, token}: {uid: string; token?: string}) => {
@@ -666,7 +630,6 @@ export default {
   logOut,
   logIn,
   getByFilter,
-  getByUUID,
   getByUid,
   getByName,
   getByMail,

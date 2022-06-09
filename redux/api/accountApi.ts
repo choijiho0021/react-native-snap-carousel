@@ -151,16 +151,6 @@ const validateActCode = (iccid: string, actCode: string, {token}: ApiToken) => {
   );
 };
 
-const getByUUID = (uuid: string) => {
-  if (!uuid)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: uuid');
-
-  return api.callHttpGet(
-    `${api.httpUrl(api.path.jsonapi.account)}/${uuid}`,
-    toAccount,
-  );
-};
-
 const getByUser = ({mobile, token}: {mobile: string; token: string}) => {
   if (!mobile)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: mobile');
@@ -202,51 +192,6 @@ const registerMobile = ({
         Accept: 'application/json',
       }),
       body: JSON.stringify({iccid, code, mobile}),
-    },
-    toAccount,
-  );
-};
-
-// Update User of ContentType Account
-const update = ({
-  uuid,
-  attributes,
-  relationships,
-  token,
-}: {
-  uuid: string;
-  attributes: object;
-  relationships: object;
-  token: string;
-}) => {
-  if (!uuid)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: uuid');
-  if (!token)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
-  if (_.isEmpty(attributes))
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: attributes');
-  if (_.isEmpty(relationships))
-    return api.reject(
-      api.E_INVALID_ARGUMENT,
-      'missing parameter: relationships',
-    );
-
-  const body = {
-    data: {
-      type: 'node--account',
-      id: uuid,
-      attributes,
-      relationships,
-    },
-  };
-  return api.callHttp(
-    `${api.httpUrl(api.path.jsonapi.account)}/${uuid}`,
-    {
-      method: 'PATCH',
-      headers: api.withToken(token, 'vnd.api+json', {
-        Accept: 'application/vnd.api+json',
-      }),
-      body: JSON.stringify(body),
     },
     toAccount,
   );
@@ -319,9 +264,7 @@ export default {
   toFile,
   getAccount,
   validateActCode,
-  getByUUID,
   getByUser,
   registerMobile,
-  update,
   uploadPicture,
 };
