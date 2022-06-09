@@ -234,7 +234,7 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
     (text: string, cash: string) => (
       <View key={text} style={styles.cashText}>
         {text.split('*').map((v, idx) => (
-          <AppText style={styles.bold24WhiteText}>
+          <AppText key={idx} style={styles.bold24WhiteText}>
             {idx === 1 && (
               <AppText key="label" style={styles.bold36whiteText}>
                 {cash}
