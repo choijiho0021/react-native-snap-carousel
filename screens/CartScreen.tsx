@@ -1,7 +1,7 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Map as ImmutableMap} from 'immutable';
-import React, {Component} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Alert, SafeAreaView, SectionList, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -24,10 +24,7 @@ import {RkbOrderItem} from '@/redux/api/cartApi';
 import {Currency} from '@/redux/api/productApi';
 import utils from '@/redux/api/utils';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
-import {
-  AccountModelState,
-  actions as accountActions,
-} from '@/redux/modules/account';
+import {AccountModelState} from '@/redux/modules/account';
 import {
   actions as cartActions,
   CartAction,
@@ -40,21 +37,11 @@ const {esimCurrency} = Env.get();
 const sectionTitle = ['sim', 'product'];
 
 const styles = StyleSheet.create({
-  header: {
-    ...appStyles.bold18Text,
-    color: colors.black,
-    marginTop: 30,
-    marginLeft: 20,
-  },
   sumBox: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
     // marginHorizontal: 30,
-  },
-  sectionTitle: {
-    ...appStyles.subTitle,
-    padding: 20,
   },
   container: {
     flex: 1,
@@ -70,10 +57,6 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     textAlign: 'center',
   },
-  delete: {
-    paddingVertical: 12,
-    width: '10%',
-  },
   buttonBox: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -82,16 +65,12 @@ const styles = StyleSheet.create({
     borderTopColor: colors.lightGrey,
     borderTopWidth: 1,
   },
-  button: {
-    ...appStyles.button,
-    width: 100,
-    alignSelf: 'center',
-  },
   emptyView: {
     flex: 1,
+    paddingTop: '20%',
     paddingBottom: 60,
     flexDirection: 'column',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: colors.white,
   },
@@ -120,72 +99,46 @@ type CartScreenProps = {
 
 type ItemTotal = {cnt: number; price: Currency};
 type ItemSection = {data: RkbOrderItem[]; title: string};
-type CartScreenState = {
-  section: ItemSection[];
-  checked: ImmutableMap<string, boolean>;
-  qty: ImmutableMap<string, number>;
-  total: ItemTotal;
-  showSnackBar: boolean;
-};
-class CartScreen extends Component<CartScreenProps, CartScreenState> {
-  constructor(props: CartScreenProps) {
-    super(props);
 
-    this.state = {
-      section: [],
-      checked: ImmutableMap<string, boolean>(),
-      qty: ImmutableMap<string, number>(),
-      total: {cnt: 0, price: utils.toCurrency(0, esimCurrency)},
-      showSnackBar: false,
-    };
+const CartScreen: React.FC<CartScreenProps> = (props) => {
+  const {navigation, route, cart, account, product, pending, action} = props;
+  const [section, setSection] = useState<ItemSection[]>([]);
+  const [checked, setChecked] = useState(ImmutableMap<string, boolean>());
+  const [qty, setQty] = useState(ImmutableMap<string, number>());
+  const [total, setTotal] = useState({
+    cnt: 0,
+    price: utils.toCurrency(0, esimCurrency),
+  });
+  const [showSnackBar, setShowSnackbar] = useState(false);
 
-    this.onPurchase = this.onPurchase.bind(this);
-    this.onChangeQty = this.onChangeQty.bind(this);
-    this.removeItem = this.removeItem.bind(this);
-    this.checkDeletedItem = this.checkDeletedItem.bind(this);
-    this.calculate = this.calculate.bind(this);
-    this.init = this.init.bind(this);
-    this.sim = this.sim.bind(this);
-    this.registerSimAlert = this.registerSimAlert.bind(this);
-  }
+  const onChecked = useCallback((key: string) => {
+    setChecked((prev) => prev.update(key, (v) => !v));
+  }, []);
 
-  componentDidMount() {
-    this.props.navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('cart')} />,
-    });
+  const getDlvCost = useCallback(
+    (
+      chk: ImmutableMap<string, boolean>,
+      qt: ImmutableMap<string, number>,
+      tot: ItemTotal,
+      sec: ItemSection[],
+    ) => {
+      const simList = sec?.find((item) => item.title === 'sim');
+      return simList &&
+        simList.data.findIndex(
+          (item) => chk.get(item.key) && (qt.get(item.key) || 0) > 0,
+        ) >= 0
+        ? utils.dlvCost(tot.price)
+        : utils.toCurrency(0, tot?.price.currency);
+    },
+    [],
+  );
 
-    this.init();
-  }
-
-  componentDidUpdate(prevProps: CartScreenProps) {
-    const {cart, pending} = this.props;
-
-    if (cart && cart !== prevProps.cart && cart.orderItems && !pending) {
-      this.init();
-    }
-  }
-
-  onChecked(key: string) {
-    this.setState((state) => {
-      const checked = state.checked.update(key, (value) => !value);
-      const {qty} = state;
-      const total = this.calculate(checked, qty);
-
-      return {
-        total,
-        checked,
-      };
-    });
-  }
-
-  onPurchase() {
-    const {section, qty, checked, total} = this.state;
-    const dlvCost = this.getDlvCost(checked, qty, total, section);
-    const {loggedIn, balance} = this.props.account;
+  const onPurchase = useCallback(() => {
+    const dlvCost = getDlvCost(checked, qty, total, section);
+    const {loggedIn, balance} = account;
 
     if (!loggedIn) {
-      this.props.navigation.navigate('Auth');
+      navigation.navigate('Auth');
     } else {
       const purchaseItems = section
         ?.reduce(
@@ -207,11 +160,15 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
             } as PurchaseItem),
         );
 
-      this.props.action.cart
-        .checkStockAndPurchase({purchaseItems, balance, dlvCost: dlvCost > 0})
+      action.cart
+        .checkStockAndPurchase({
+          purchaseItems,
+          balance,
+          dlvCost: dlvCost.value > 0,
+        })
         .then(({payload: resp}) => {
           if (resp.result === 0) {
-            this.props.navigation.navigate('PymMethod', {mode: 'cart'});
+            navigation.navigate('PymMethod', {mode: 'cart'});
           } else if (resp.result === api.E_RESOURCE_NOT_FOUND)
             AppAlert.info(`${resp.title} ${i18n.t('cart:soldOut')}`);
           else AppAlert.info(i18n.t('cart:systemError'));
@@ -220,33 +177,37 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
           console.log('failed to check stock', err);
         });
     }
-  }
+  }, [
+    account,
+    action.cart,
+    checked,
+    getDlvCost,
+    navigation,
+    qty,
+    section,
+    total,
+  ]);
 
-  onChangeQty(key: string, orderItemId: number, cnt: number) {
-    this.setState((state) => {
-      const qty = state.qty.set(key, cnt);
-      const checked = state.checked.set(key, true);
-      const total = this.calculate(checked, qty);
-      return {
-        qty,
-        checked,
-        total,
-      };
-    });
+  const onChangeQty = useCallback(
+    (key: string, orderItemId: number, cnt: number) => {
+      setQty((prev) => prev.set(key, cnt));
+      setChecked((prev) => prev.set(key, true));
 
-    const {orderId} = this.props.cart;
-    if (orderItemId && orderId) {
-      this.props.action.cart.cartUpdateQty({
-        orderId,
-        orderItemId,
-        qty: cnt,
-        abortController: new AbortController(),
-      });
-    }
-  }
+      const {orderId} = cart;
+      if (orderItemId && orderId) {
+        action.cart.cartUpdateQty({
+          orderId,
+          orderItemId,
+          qty: cnt,
+          abortController: new AbortController(),
+        });
+      }
+    },
+    [action.cart, cart],
+  );
 
-  isEmptyList = () => {
-    return (
+  const empty = useCallback(
+    () => (
       <View style={styles.emptyView}>
         <AppIcon name="emptyCart" />
         <View style={{marginTop: 20}}>
@@ -258,40 +219,112 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
           </AppText>
         </View>
       </View>
-    );
-  };
+    ),
+    [],
+  );
 
-  getDlvCost = (
-    checked: ImmutableMap<string, boolean>,
-    qty: ImmutableMap<string, number>,
-    total: ItemTotal,
-    section: ItemSection[],
-  ) => {
-    const simList = section?.find((item) => item.title === 'sim');
-    return simList &&
-      simList.data.findIndex(
-        (item) => checked.get(item.key) && (qty.get(item.key) || 0) > 0,
-      ) >= 0
-      ? utils.dlvCost(total.price)
-      : utils.toCurrency(0, total?.price.currency);
-  };
+  const sim = useCallback(() => {
+    return cart.orderItems
+      ?.filter(
+        (item) =>
+          item.prod.type === 'sim_card' &&
+          checked.get(item.key) &&
+          qty.get(item.key),
+      )
+      ?.map((item) => item.totalPrice)
+      ?.reduce(
+        (acc, cur) => utils.toCurrency(acc.value + cur.value, cur.currency),
+        utils.toCurrency(0, 'KRW'),
+      );
+  }, [cart.orderItems, checked, qty]);
 
-  section = (args: RkbOrderItem[][]) => {
-    return args
-      ?.map((item, idx) => ({
-        title: sectionTitle[idx],
-        data: item,
-      }))
-      ?.filter((item) => item.data.length > 0);
-  };
+  const removeItem = useCallback(
+    (key: string, orderItemId: number) => {
+      setSection((prev) =>
+        prev?.map((item) => ({
+          title: item.title,
+          data: item.data?.filter((i) => i.orderItemId !== orderItemId),
+        })),
+      );
 
-  init() {
-    const {orderItems} = this.props.cart;
+      setChecked((prev) => prev.remove(key));
+      setQty((prev) => prev.remove(key));
 
-    this.checkDeletedItem(orderItems);
+      const {orderId} = cart;
+      if (orderItemId && orderId) {
+        action.cart.cartRemove({
+          orderId,
+          orderItemId,
+        });
+      }
+    },
+    [action.cart, cart],
+  );
 
-    let {qty, checked} = this.state;
-    const total = this.calculate(checked, qty);
+  const checkDeletedItem = useCallback(
+    (items: RkbOrderItem[]) => {
+      const {prodList} = product;
+      const toRemove = (items || []).filter(
+        (item) => typeof prodList.get(item.key) === 'undefined',
+      );
+
+      if (!_.isEmpty(toRemove)) {
+        toRemove.forEach((item) => removeItem(item.key, item.orderItemId));
+        setShowSnackbar(true);
+      }
+    },
+    [product, removeItem],
+  );
+
+  const renderItem = useCallback(
+    ({item}: {item: RkbOrderItem}) => {
+      const partnerId = product.prodList.get(item.key)?.partnerId;
+      const imageUrl =
+        partnerId && product.localOpList.get(partnerId)?.imageUrl;
+
+      // return  item.key && <CartItem checked={checked.get(item.key) || false}
+      return (
+        <CartItem
+          checked={checked.get(item.key, false)}
+          onChange={(value) => onChangeQty(item.key, item.orderItemId, value)}
+          onDelete={() => removeItem(item.key, item.orderItemId)}
+          onChecked={() => onChecked(item.key)}
+          name={item.title}
+          price={item.price}
+          image={imageUrl}
+          qty={qty.get(item.key, 0)}
+        />
+      );
+    },
+    [
+      checked,
+      onChangeQty,
+      onChecked,
+      product.localOpList,
+      product.prodList,
+      qty,
+      removeItem,
+    ],
+  );
+
+  const registerSimAlert = useCallback(() => {
+    Alert.alert(i18n.t('reg:ICCID'), i18n.t('reg:noICCID'), [
+      {
+        text: i18n.t('cancel'),
+        // style: 'cancel',
+      },
+      {
+        text: i18n.t('ok'),
+        onPress: () => navigation.navigate('RegisterSim'),
+      },
+    ]);
+  }, [navigation]);
+
+  const init = useCallback(() => {
+    const {orderItems} = cart;
+
+    checkDeletedItem(orderItems);
+
     const list = orderItems?.reduce(
       (acc, cur) => {
         return cur.type === 'sim_card'
@@ -301,113 +334,47 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
       [[] as RkbOrderItem[], [] as RkbOrderItem[]],
     );
 
-    this.setState({
-      total,
-      section: this.section(list),
-    });
-
-    orderItems?.forEach((item) => {
-      qty = qty.set(item.key, item.qty);
-      checked = checked.update(item.key, (value) =>
-        typeof value === 'undefined' ? true : value,
-      );
-    });
-
-    this.setState({
-      qty,
-      checked,
-    });
-  }
-
-  sim() {
-    return this.props.cart.orderItems
-      ?.filter(
-        (item) =>
-          item.prod.type === 'sim_card' &&
-          this.state.checked.get(item.key) &&
-          this.state.qty.get(item.key),
-      )
-      ?.map((item) => item.totalPrice)
-      ?.reduce(
-        (acc, cur) => utils.toCurrency(acc.value + cur.value, cur.currency),
-        utils.toCurrency(0, 'KRW'),
-      );
-  }
-
-  checkDeletedItem(items: RkbOrderItem[]) {
-    const {prodList} = this.props.product;
-    const toRemove = (items || []).filter(
-      (item) => typeof prodList.get(item.key) === 'undefined',
+    setSection(
+      list
+        ?.map((item, idx) => ({
+          title: sectionTitle[idx],
+          data: item,
+        }))
+        ?.filter((item) => item.data.length > 0),
     );
+    setQty((prev) =>
+      orderItems.reduce((acc, cur) => acc.set(cur.key, cur.qty), prev),
+    );
+    setChecked((prev) =>
+      orderItems.reduce(
+        (acc, cur) =>
+          acc.update(cur.key, (v) => (v === 'undefined' ? true : v)),
+        prev,
+      ),
+    );
+  }, [cart, checkDeletedItem]);
 
-    if (!_.isEmpty(toRemove)) {
-      toRemove.forEach((item) => this.removeItem(item.key, item.orderItemId));
-      this.setState({
-        showSnackBar: true,
-      });
-    }
-  }
-
-  removeItem(key: string, orderItemId: number) {
-    this.setState((state) => {
-      const section = state.section?.map((item) => ({
-        title: item.title,
-        data: item.data?.filter((i) => i.orderItemId !== orderItemId),
-      }));
-      const checked = state.checked.remove(key);
-      const qty = state.qty.remove(key);
-      const total = this.calculate(checked, qty, section);
-
-      return {
-        total,
-        checked,
-        qty,
-        section,
-      };
+  useEffect(() => {
+    navigation.setOptions({
+      title: null,
+      headerLeft: () => <AppBackButton title={i18n.t('cart')} />,
     });
 
-    const {orderId} = this.props.cart;
-    if (orderItemId && orderId) {
-      this.props.action.cart.cartRemove({
-        orderId,
-        orderItemId,
-      });
+    init();
+  }, [init, navigation]);
+
+  useEffect(() => {
+    if (cart?.orderItems && !pending) {
+      init();
     }
-  }
+  }, [cart?.orderItems, init, pending]);
 
-  renderItem = ({item}: {item: RkbOrderItem}) => {
-    const {qty, checked} = this.state;
-    const partnerId = this.props.product.prodList.get(item.key)?.partnerId;
-    const imageUrl =
-      partnerId && this.props.product.localOpList.get(partnerId)?.imageUrl;
-
-    // return  item.key && <CartItem checked={checked.get(item.key) || false}
-    return (
-      <CartItem
-        checked={checked.get(item.key, false)}
-        onChange={(value) =>
-          this.onChangeQty(item.key, item.orderItemId, value)
-        }
-        onDelete={() => this.removeItem(item.key, item.orderItemId)}
-        onChecked={() => this.onChecked(item.key)}
-        name={item.title}
-        price={item.price}
-        image={imageUrl}
-        qty={qty.get(item.key, 0)}
-      />
-    );
-  };
-
-  calculate(
-    checked: ImmutableMap<string, boolean>,
-    qty: ImmutableMap<string, number>,
-    section = this.state.section,
-  ) {
+  useEffect(() => {
     // 초기 기동시에는 checked = new Map() 으로 선언되어 있어서
     // checked.get() == undefined를 반환할 수 있다.
     // 따라서, checked.get() 값이 false인 경우(사용자가 명확히 uncheck 한 경우)에만 계산에서 제외한다.
 
-    return section
+    const tot = section
       ?.reduce(
         (acc, cur) =>
           acc.concat(
@@ -431,102 +398,91 @@ class CartScreen extends Component<CartScreenProps, CartScreenState> {
         }),
         {cnt: 0, price: utils.toCurrency(0, esimCurrency)},
       );
-  }
 
-  registerSimAlert() {
-    Alert.alert(i18n.t('reg:ICCID'), i18n.t('reg:noICCID'), [
-      {
-        text: i18n.t('cancel'),
-        // style: 'cancel',
-      },
-      {
-        text: i18n.t('ok'),
-        onPress: () => this.props.navigation.navigate('RegisterSim'),
-      },
-    ]);
-  }
+    setTotal(tot);
+  }, [checked, qty, section]);
 
-  render() {
-    const {qty, checked, section, total, showSnackBar} = this.state;
-    const {iccid} = this.props.account;
-    const dlvCost = this.getDlvCost(checked, qty, total, section);
-    const balance = this.props.account.balance || 0;
+  const dlvCost = useMemo(
+    () => getDlvCost(checked, qty, total, section),
+    [checked, getDlvCost, qty, section, total],
+  );
+  const balance = useMemo(() => account.balance || 0, [account.balance]);
+  const pymPrice = useMemo(() => {
     const amount = total
       ? utils.toCurrency(
           total.price.value + dlvCost.value,
           total.price.currency,
         )
-      : 0;
-    const pymPrice = utils.toCurrency(
+      : ({value: 0, currency: 'KRW'} as Currency);
+    return utils.toCurrency(
       amount.value > balance ? amount.value - balance : 0,
       amount.currency,
     );
+  }, [balance, dlvCost.value, total]);
 
-    const data = this.props.cart.orderItems?.find(
-      (item) =>
-        (item.prod || {}).type === 'roaming_product' &&
-        this.state.checked.get(item.key),
-    );
+  const data = useMemo(
+    () =>
+      cart.orderItems?.find(
+        (item) =>
+          (item.prod || {}).type === 'roaming_product' && checked.get(item.key),
+      ),
+    [cart.orderItems, checked],
+  );
 
-    return _.isEmpty(section) ? (
-      this.isEmptyList()
-    ) : (
-      <SafeAreaView style={styles.container}>
-        <SectionList
-          sections={section}
-          renderItem={this.renderItem}
-          extraData={[qty, checked]}
-          stickySectionHeadersEnabled={false}
-          ListFooterComponent={
-            <ChargeSummary
-              totalCnt={total.cnt}
-              totalPrice={total.price}
-              balance={balance}
-              dlvCost={dlvCost}
-            />
+  return _.isEmpty(section) ? (
+    empty()
+  ) : (
+    <SafeAreaView style={styles.container}>
+      <SectionList
+        sections={section}
+        renderItem={renderItem}
+        extraData={[qty, checked]}
+        stickySectionHeadersEnabled={false}
+        ListFooterComponent={
+          <ChargeSummary
+            totalCnt={total.cnt}
+            totalPrice={total.price}
+            balance={balance}
+            dlvCost={dlvCost}
+          />
+        }
+      />
+      <AppSnackBar
+        visible={showSnackBar}
+        onClose={() => setShowSnackbar(false)}
+        textMessage={i18n.t('cart:remove')}
+      />
+      <View style={styles.buttonBox}>
+        <View style={styles.sumBox}>
+          <AppText style={[styles.btnBuyText, {color: colors.black}]}>
+            {`${i18n.t('cart:pymAmount')}: `}
+          </AppText>
+          <AppText style={[styles.btnBuyText, {color: colors.black}]}>
+            {utils.price(pymPrice)}
+          </AppText>
+        </View>
+        <AppButton
+          style={styles.btnBuy}
+          title={`${i18n.t('cart:purchase')} (${total.cnt})`}
+          titleStyle={{
+            ...appStyles.normal18Text,
+            color: colors.white,
+            textAlign: 'center',
+            margin: 5,
+          }}
+          checkedColor={colors.white}
+          disabled={total.price.value === 0}
+          onPress={
+            !_.isEmpty(!account.iccid && data) ? registerSimAlert : onPurchase
           }
         />
-        <AppSnackBar
-          visible={showSnackBar}
-          onClose={() => this.setState({showSnackBar: false})}
-          textMessage={i18n.t('cart:remove')}
-        />
-        <View style={styles.buttonBox}>
-          <View style={styles.sumBox}>
-            <AppText style={[styles.btnBuyText, {color: colors.black}]}>
-              {`${i18n.t('cart:pymAmount')}: `}
-            </AppText>
-            <AppText style={[styles.btnBuyText, {color: colors.black}]}>
-              {utils.price(pymPrice)}
-            </AppText>
-          </View>
-          <AppButton
-            style={styles.btnBuy}
-            title={`${i18n.t('cart:purchase')} (${total.cnt})`}
-            titleStyle={{
-              ...appStyles.normal18Text,
-              color: colors.white,
-              textAlign: 'center',
-              margin: 5,
-            }}
-            checkedColor={colors.white}
-            disabled={total.price.value === 0}
-            onPress={
-              !_.isEmpty(!iccid && data)
-                ? this.registerSimAlert
-                : this.onPurchase
-            }
-          />
-        </View>
-      </SafeAreaView>
-    );
-  }
-}
+      </View>
+    </SafeAreaView>
+  );
+};
 
 export default connect(
-  ({account, cart, sim, product, status}: RootState) => ({
-    lastTab: cart.lastTab.toJS(),
-    sim,
+  ({account, cart, product, status}: RootState) => ({
     product,
     cart,
     account,
@@ -540,7 +496,6 @@ export default connect(
   (dispatch) => ({
     action: {
       cart: bindActionCreators(cartActions, dispatch),
-      account: bindActionCreators(accountActions, dispatch),
     },
   }),
 )(CartScreen);

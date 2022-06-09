@@ -191,7 +191,7 @@ const TabNavigator = ({
         name="CartStack"
         component={iccid && loggedIn ? cartStack : AuthStack}
         options={() => ({
-          tabBarVisible: false,
+          // tabBarVisible: false,
           tabBarBadgeStyle: {allowFontScaling: false},
           tabBarLabel: i18n.t('cart'),
           tabBarIcon: ({focused}) => (
