@@ -26,6 +26,7 @@ import {
   ParamListBase,
   RouteProp,
 } from '@react-navigation/native';
+import VersionCheck from 'react-native-version-check';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -531,6 +532,13 @@ const Esim: React.FC<EsimProps> = ({
       }
     }
   }, [account, action.cart, action.noti, action.order]);
+
+  useEffect(() => {
+    const ver = VersionCheck.getCurrentVersion();
+    API.AppVersion.getAppVersion(ver).then((rsp) =>
+      console.log('@@@ app', rsp, ver),
+    );
+  }, []);
 
   return (
     <View style={styles.container}>
