@@ -256,32 +256,44 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const checkQuadcellData = useCallback(async (item: RkbSubscription) => {
     if (item?.imsi) {
-      const state = await API.Subscription.quadcellGetData({
+      await API.Subscription.quadcellGetData({
         imsi: item.imsi,
         key: 'hlrstate',
+      }).then((state) => {
+        if (state.result === 0) {
+          API.Subscription.quadcellGetData({
+            imsi: item.imsi,
+            key: 'info',
+          }).then((info) => {
+            if (info.result === 0) {
+              const statusCd =
+                !_.isUndefined(state?.objects?.hlrState) &&
+                quadcellStatusCd[state?.objects?.hlrState];
+
+              const end = moment(info?.objects?.effTime, 'YYYYMMDDHHmmss')
+                .add(1, 'h')
+                .format('YYYY-MM-DD HH:mm:ss');
+              const exp = moment(info?.objects?.expTime, 'YYYYMMDDHHmmss').add(
+                1,
+                'h',
+              );
+
+              const isExpired = statusCd === 'A' && exp < moment();
+
+              setCmiStatus({
+                statusCd: isExpired ? 'U' : statusCd,
+                endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
+              });
+            }
+          });
+        }
       });
 
       await API.Subscription.quadcellGetData({
         imsi: item.imsi,
         key: 'quota',
       }).then(async (rsp) => {
-        if (rsp.result === 0 && state.result === 0) {
-          const statusCd =
-            !_.isUndefined(state?.objects?.hlrState) &&
-            quadcellStatusCd[state?.objects?.hlrState];
-          const end = moment(state?.objects?.effTime)
-            .add(9, 'h')
-            .format('YYYY.MM.DD HH:mm:ss');
-          const exp = moment(state?.objects?.expTime).add(9, 'h');
-
-          const isExpired = statusCd === 'A' && exp < moment();
-
-          setCmiStatus({
-            // statusCd: isExpired ? 'U' : statusCd,
-            statusCd: 'A',
-            endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
-          });
-
+        if (rsp.result === 0) {
           setCmiUsage({
             quota: Number(rsp?.objects?.packQuotaList[0]?.totalQuota) || 0, // Mb
             used: Number(rsp?.objects?.packQuotaList[0]?.consumedQuota), // Mb
