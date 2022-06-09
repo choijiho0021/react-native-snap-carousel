@@ -104,7 +104,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [modal, setModal] = useState<ModalType>('');
   const [subs, setSubs] = useState<RkbSubscription>();
   const [cmiPending, setCmiPending] = useState(false);
-  const [showGiftModal, setShowGiftModal] = useState(true);
+  const [showGiftModal, setShowGiftModal] = useState(false);
   const [cmiUsage, setCmiUsage] = useState({});
   const [cmiStatus, setCmiStatus] = useState({});
   const init = useCallback(
@@ -364,8 +364,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   useEffect(() => {
     async function checkShowModal() {
-      const item = (await AsyncStorage.getItem('gift.show.modal')) || 'true';
-      setShowGiftModal(item === 'true');
+      const item = await AsyncStorage.getItem('gift.show.modal');
+      const tm = moment(item, 'YYYY-MM-DD HH:mm:ss');
+      if (!tm.isValid() || tm.add(7, 'day').isBefore(moment()))
+        setShowGiftModal(true);
     }
     checkShowModal();
   }, []);

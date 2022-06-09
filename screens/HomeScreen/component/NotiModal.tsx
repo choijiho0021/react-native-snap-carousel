@@ -84,7 +84,7 @@ const NotiModal: React.FC<NotiModalProps> = ({
             checked={checked}
             onPress={() => setChecked((prev) => !prev)}
           />
-          <AppText>{i18n.t('home:disablePopup')}</AppText>
+          <AppText>{i18n.t('close:week')}</AppText>
         </Pressable>
       </View>
     </AppModal>

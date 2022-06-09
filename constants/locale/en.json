@@ -54,11 +54,10 @@
   "hot": "Hot",
   "copy": "Copy",
   "close": "Close",
+  "close:week": "Disable For A Week",
   "redirect": "Get Shortcut",
   "KRW": "KRW",
   "USD": "USD",
-
-  "home:disablePopup": "Disable For A Week",
 
   "home:exitApp": "Close App",
   "home:guide": "User Guide",

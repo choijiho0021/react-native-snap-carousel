@@ -2,6 +2,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import React, {memo, useCallback, useEffect} from 'react';
 import {
   Dimensions,
+  ImageBackground,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -169,18 +170,20 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
               </AppText>
             </AppText>
           </AppText>
-          <View
+          <ImageBackground
+            source={require('../assets/images/gift/box.png')}
             style={{
-              backgroundColor: 'white',
-              height: 47,
+              height: 48,
+              width: width - 40,
               flexDirection: 'row',
-              alignItems: 'center',
+              alignItems: 'flex-end',
+              paddingBottom: 10,
             }}>
             <AppSvgIcon name="pin" style={{marginLeft: 8, marginRight: 6}} />
             <AppText style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
               {i18n.t('gift:tip-5')}
             </AppText>
-          </View>
+          </ImageBackground>
           <AppText style={[appStyles.normal13, {marginTop: 16}]}>
             {i18n.t('gift:tip-6')}
           </AppText>
@@ -191,6 +194,10 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
               marginTop: 32,
               backgroundColor: colors.clearBlue,
               height: 62,
+            }}
+            onPress={() => {
+              navigation.goBack();
+              navigation.navigate('HomeStack', {screen: 'Home'});
             }}
           />
           <AppIcon
