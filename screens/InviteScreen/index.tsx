@@ -168,16 +168,11 @@ type InviteScreenNavigationProp = StackNavigationProp<
   'Invite'
 >;
 
-type InviteScreenRouteProp = RouteProp<HomeStackParamList, 'Invite'>;
-
 type InviteScreenProps = {
   navigation: InviteScreenNavigationProp;
-  route: InviteScreenRouteProp;
 
   promotion: PromotionModelState;
   account: AccountModelState;
-
-  pending: boolean;
 
   action: {
     promotion: PromotionAction;
@@ -187,10 +182,8 @@ type InviteScreenProps = {
 
 const InviteScreen: React.FC<InviteScreenProps> = ({
   navigation,
-  route,
   promotion,
   account,
-  pending,
   action,
 }) => {
   const mountWithLogin = useCallback(() => {
@@ -215,15 +208,6 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
     }
   }, [account.loggedIn, mountWithLogin, navigation]);
 
-  /*
-  shouldComponentUpdate(nextProps: InviteScreenProps) {
-    return (
-      this.props.account.loggedIn !== nextProps.account.loggedIn ||
-      this.props.promotion.stat !== nextProps.promotion.stat
-    );
-  }
-  */
-
   useEffect(() => {
     if (account.loggedIn && navigation.isFocused()) {
       mountWithLogin();
@@ -231,20 +215,17 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
   }, [account.loggedIn, mountWithLogin, navigation]);
 
   const cashText = useCallback(
-    (text: string, cash: string) => (
-      <View key={text} style={styles.cashText}>
-        {text.split('*').map((v, idx) => (
-          <AppText key={idx} style={styles.bold24WhiteText}>
-            {idx === 1 && (
-              <AppText key="label" style={styles.bold36whiteText}>
-                {cash}
-              </AppText>
-            )}
-            <AppText key="value" style={styles.bold24WhiteText}>
-              {v}
-            </AppText>
-          </AppText>
-        ))}
+    (text1: string, cash: string, text2: string) => (
+      <View key={text1} style={styles.cashText}>
+        <AppText key="text1" style={styles.bold24WhiteText}>
+          {text1}
+        </AppText>
+        <AppText key="label" style={styles.bold36whiteText}>
+          {cash}
+        </AppText>
+        <AppText key="value" style={styles.bold24WhiteText}>
+          {text2}
+        </AppText>
       </View>
     ),
     [],
@@ -254,7 +235,9 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
     (v: string, isLast: boolean, gift: string) => {
       const cash = utils.stringToNumber(gift) || 0;
       return (
-        <View style={[isLast ? styles.highLightRow : {marginBottom: 20}]}>
+        <View
+          key={v}
+          style={[isLast ? styles.highLightRow : {marginBottom: 20}]}>
           <View style={{flexDirection: 'column'}}>
             <AppText style={[appStyles.normal18Text, {flexDirection: 'row'}]}>
               <AppText style={styles.highlighter}>{v}</AppText>
@@ -363,10 +346,12 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
           {cashText(
             i18n.t('inv:upper2'),
             utils.numberToCommaString(recommenderGift),
+            i18n.t('inv:upper2-1'),
           )}
           {cashText(
             i18n.t('inv:upper3'),
             utils.numberToCommaString(signupGift),
+            i18n.t('inv:upper3-1'),
           )}
           <AppText style={styles.blueBgDetailText}>
             {i18n.t('inv:upper4')}

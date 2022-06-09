@@ -594,8 +594,10 @@
   "inv:withdrawalInfo": "*탈퇴 후 재가입한 친구는 해당되지 않습니다.",
 
   "inv:upper1": "친구를 초대해보세요 :)",
-  "inv:upper2": "고객님께 * 캐시",
-  "inv:upper3": "친구에게 * 캐시를 드려요!",
+  "inv:upper2": "고객님께 ",
+  "inv:upper2-1": " 캐시",
+  "inv:upper3": "친구에게 ",
+  "inv:upper3-1": " 캐시를 드려요!",
   "inv:upper4": "친구가 고객님의 초대로 로밍도깨비 eSIM을\n최초 가입하면, 바로 적립됩니다.",
 
   "inv:lower1": "초대 인원에 제한이 없어요!",
