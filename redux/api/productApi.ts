@@ -128,6 +128,7 @@ type DrupalLocalOp = {
   nid: string;
   body: string;
   title: string;
+  field_mcc_mnc: string;
   field_country: string[];
   field_image: string;
   field_network: string;
@@ -152,6 +153,7 @@ const toLocalOp = (data: DrupalLocalOp[]): ApiResult<RkbLocalOp> => {
         key: item.nid,
         name: item.title,
         ccode: item.field_country.sort(),
+        mccmnc: item.field_mcc_mnc,
         apn: item.field_apn_setting,
         imageUrl: item.field_image,
         network: item.field_network,
