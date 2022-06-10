@@ -455,6 +455,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         // payNorder에서 재고 확인 - resp.result값으로 비교
         action.cart.payNorder(pymInfo).then(({payload: resp}) => {
           if (resp.result === 0) {
+            // init cart
+            action.cart.init();
             navigation.setParams({isPaid: true});
             navigation.replace('PaymentResult', {
               pymResult: true,
