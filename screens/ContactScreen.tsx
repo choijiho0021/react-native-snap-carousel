@@ -33,12 +33,11 @@ const {channelId, esimGlobal, fbUser} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.whiteTwo,
     flex: 1,
   },
   bottomContainer: {
     backgroundColor: colors.whiteTwo,
-    marginTop: 156,
     flex: 1,
     paddingVertical: 32,
     paddingHorizontal: 20,
@@ -60,15 +59,18 @@ const styles = StyleSheet.create({
   infoContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginHorizontal: 20,
-    marginVertical: 24,
+    backgroundColor:colors.white,
+    paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom:156,
   },
   absoluteView: {
     flex: 1,
     flexDirection: 'row',
     position: 'absolute',
+    backgroundColor:colors.white,
     marginTop: 114,
-    marginHorizontal: 12,
+    paddingHorizontal: 12,
   },
   btnBlue: {
     flex: 1,
