@@ -68,6 +68,7 @@ import {useInterval} from '@/utils/useInterval';
 import NotiModal from './component/NotiModal';
 import AppTabHeader from '@/components/AppTabHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import AppVerModal from './component/AppVerModal';
 
 const {esimGlobal} = Env.get();
 
@@ -196,6 +197,7 @@ const Esim: React.FC<EsimProps> = ({
   const [firstLaunch, setFirstLaunch] = useState<boolean | undefined>();
   const [popUpVisible, setPopUpVisible] = useState(false);
   const [popupDisabled, setPopupDisabled] = useState(false);
+  const [appUpdate, setAppUpdate] = useState('');
   const [popUp, setPopUp] = useState<RkbPromotion>();
   const [closeType, setCloseType] = useState<'close' | 'exit' | 'redirect'>();
   const [deviceList, setDeviceList] = useState<string[]>([]);
@@ -318,8 +320,8 @@ const Esim: React.FC<EsimProps> = ({
     [onPressItem, product.localOpList, scene, scrollY],
   );
 
-  const modalBody = useCallback(() => {
-    return (
+  const modalBody = useCallback(
+    () => (
       <View style={styles.modalBody}>
         <View style={{marginBottom: 10}}>
           <AppText style={appStyles.normal16Text}>
@@ -348,8 +350,9 @@ const Esim: React.FC<EsimProps> = ({
           </AppText>
         </ScrollView>
       </View>
-    );
-  }, [deviceList]);
+    ),
+    [deviceList],
+  );
 
   useEffect(() => {
     navigation?.setOptions({
@@ -550,9 +553,12 @@ const Esim: React.FC<EsimProps> = ({
 
   useEffect(() => {
     const ver = VersionCheck.getCurrentVersion();
-    API.AppVersion.getAppVersion(ver).then((rsp) =>
-      console.log('@@@ app', rsp, ver),
-    );
+    API.AppVersion.getAppVersion(ver).then((rsp) => {
+      console.log('@@@ app', rsp, ver);
+      if (rsp.result === 0 && rsp.objects.length > 0) {
+        setAppUpdate(rsp.objects[0].updateOption);
+      }
+    });
   }, []);
 
   return (
@@ -603,14 +609,18 @@ const Esim: React.FC<EsimProps> = ({
         visible={isSupportDev === false}>
         {modalBody()}
       </AppModal>
-      {!popupDisabled && (
-        <NotiModal
-          visible={popUpVisible}
-          popUp={popUp}
-          closeType={closeType}
-          onOkClose={() => exitApp(closeType)}
-          onCancelClose={() => setPopUpVisible(false)}
-        />
+      {appUpdate ? (
+        <AppVerModal option={appUpdate} onOkClose={() => setAppUpdate('')} />
+      ) : (
+        !popupDisabled && (
+          <NotiModal
+            visible={popUpVisible}
+            popUp={popUp}
+            closeType={closeType}
+            onOkClose={() => exitApp(closeType)}
+            onCancelClose={() => setPopUpVisible(false)}
+          />
+        )
       )}
     </View>
   );

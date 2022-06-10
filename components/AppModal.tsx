@@ -70,7 +70,6 @@ export interface AppModalProps {
   title?: string;
   titleStyle?: TextStyle;
   titleIcon?: string;
-  toRokebiCash?: boolean;
   closeButtonTitle?: string;
   closeButtonStyle?: ViewStyle;
   infoText?: string;
@@ -89,7 +88,6 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
   titleIcon,
   children,
   type = 'normal',
-  toRokebiCash = false,
   closeButtonTitle = i18n.t('close'),
   closeButtonStyle,
   contentStyle,
@@ -212,16 +210,13 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
             />
           )}
           {title && (
-            <AppText style={titleStyle || styles.title}>{title}</AppText>
-          )}
-          {toRokebiCash && (
-            <View style={{marginTop: 30}}>
-              <AppText style={styles.blueCenter}>
-                {i18n.t('usim:toRokebiCash')}
-              </AppText>
-              <AppText style={styles.blueCenter}>
-                {toRokebiCash} {i18n.t('usim:balance')}
-              </AppText>
+            <View
+              style={{
+                marginTop: 30,
+                marginBottom: 20,
+                alignSelf: 'center',
+              }}>
+              <AppText style={titleStyle || styles.title}>{title}</AppText>
             </View>
           )}
           {children}

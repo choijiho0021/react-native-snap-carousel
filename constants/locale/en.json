@@ -72,6 +72,12 @@
   "home:unsupportedBody4": "The Users who are using incompatible device with eSIM, please use ROKEBI USIM service, which will be serviced later.",
   "home:searchPlaceholder": "Search your destination",
 
+  "app:updateTitle": "App Updated",
+  "app:updateMandatory": "New version of ROKEBI eSIM including mandatory update is launched.\nPlease, use ROKEBI service after updating App.",
+  "app:updateOptional": "New version of ROKEBI eSIM is launched.\nPlease, use ROKEBI service after updating App.",
+  "app:updateNow": "Update Now",
+  "app:updateLater": "Update Later",
+
   "store:dest": "Destination",
   "store:partnerName": "Local Operator",
   "store:network": "Network",
