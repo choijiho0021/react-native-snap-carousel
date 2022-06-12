@@ -24,7 +24,7 @@ const API_STATUS_FAIL = 3;
 const path = {
   jsonapi: {
     simPartner: 'jsonapi/taxonomy_term/bootstrap_sim_partner',
-    user: 'jsonapi/user',
+    user: 'jsonapi/user/user',
     board: 'jsonapi/node/contact_board',
     comment: 'jsonapi/comment/comment',
     profile: 'jsonapi/profile/customer',
