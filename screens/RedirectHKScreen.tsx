@@ -67,13 +67,13 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey,
   },
   keyTitle: {
-    ...appStyles.normal18Text,
+    ...appStyles.normal16Text,
     marginBottom: 10,
     color: colors.warmGrey,
   },
   guide: {
     ...appStyles.bold18Text,
-    marginVertical: 16,
+    marginBottom: 16,
   },
   copyBox: {
     flexDirection: 'row',
@@ -91,8 +91,7 @@ const styles = StyleSheet.create({
   guideContainer: {
     backgroundColor: colors.whiteSix,
     paddingHorizontal: 20,
-    marginBottom: 24,
-    height: 700,
+    paddingVertical: 36,
   },
   dotStyle: {
     width: 6,
@@ -122,8 +121,6 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     maxWidth: width - 40,
-    height: '100%',
-    alignSelf: 'stretch',
   },
 });
 
@@ -195,10 +192,17 @@ class RedirectHKScreen extends Component<
       <SafeAreaView style={{flex: 1}}>
         <ScrollView style={styles.container}>
           <View style={{margin: 20}}>
-            <AppText style={appStyles.normal14Text}>
+            <AppText
+              style={[
+                appStyles.normal14Text,
+                {lineHeight: 20, letterSpacing: 0},
+              ]}>
               {i18n.t('redirectHK:info1')}
               <AppText
-                style={[appStyles.normal14Text, {color: colors.clearBlue}]}>
+                style={[
+                  appStyles.normal14Text,
+                  {lineHeight: 20, letterSpacing: 0, color: colors.clearBlue},
+                ]}>
                 {i18n.t('redirectHK:info2')}
               </AppText>
             </AppText>
@@ -219,7 +223,7 @@ class RedirectHKScreen extends Component<
               useScrollView
               lockScrollWhileSnapping
               resizeMode="contain"
-              // overflow='hidden'
+              overflow="hidden"
               sliderWidth={sliderWidth}
               itemWidth={sliderWidth}
             />
@@ -227,17 +231,18 @@ class RedirectHKScreen extends Component<
             <Pagination
               dotsLength={images.length}
               activeDotIndex={this.state.activeSlide}
-              dotContainerStyle={{width: 10, height: 15}}
+              dotContainerStyle={{width: 2, height: 15}}
               dotStyle={styles.dotStyle}
               inactiveDotStyle={styles.inactiveDotStyle}
               inactiveDotOpacity={0.4}
               inactiveDotScale={1.0}
               carouselRef={this.carousel}
               tappableDots={!_.isEmpty(this.carousel?.current)}
-              // containerStyle={styles.pagination}
+              containerStyle={{paddingTop: 16, paddingBottom: 0}}
             />
           </View>
-          <View style={{paddingHorizontal: 20, marginBottom: 32}}>
+          <View
+            style={{paddingHorizontal: 20, marginBottom: 32, marginTop: 24}}>
             {['iccid', 'orderNo'].map((elm) => (
               <View style={styles.copyBox}>
                 <View style={{flex: 9}}>
