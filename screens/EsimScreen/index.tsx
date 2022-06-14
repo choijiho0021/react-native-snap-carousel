@@ -387,8 +387,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   return (
     <View style={styles.container}>
       <FlatList
-        // data={order.subs}
-        data={[]}
+        data={order.subs}
         keyExtractor={(item) => item.key.toString()}
         ListHeaderComponent={info}
         renderItem={renderSubs}
