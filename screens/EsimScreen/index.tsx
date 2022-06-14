@@ -133,8 +133,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const empty = useCallback(
     () => (
-      <View style={styles.nolist}>
-        <AppIcon name="emptyESIM" />
+      <View style={[styles.nolist, {marginTop: '20%'}]}>
+        <AppIcon name="emptyESIM" size={176} />
         <AppText style={styles.blueText}>{i18n.t('his:noUsage1')}</AppText>
         <AppText style={{color: colors.warmGrey, textAlign: 'center'}}>
           {i18n.t('his:noUsage2')}
@@ -387,7 +387,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   return (
     <View style={styles.container}>
       <FlatList
-        data={order.subs}
+        // data={order.subs}
+        data={[]}
         keyExtractor={(item) => item.key.toString()}
         ListHeaderComponent={info}
         renderItem={renderSubs}
