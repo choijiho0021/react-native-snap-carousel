@@ -42,7 +42,6 @@ const styles = StyleSheet.create({
     // resizeMode: 'cover'
   },
   card: {
-    height: windowWidth > device.small.window.width ? 71 : 60,
     borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: 'solid',
@@ -50,7 +49,8 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey,
     // marginVertical: 7,
     marginHorizontal: 20,
-    padding: 15,
+    paddingHorizontal: 15,
+    paddingVertical:20,
     flexDirection: 'row',
   },
   divider: {
@@ -109,6 +109,16 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: colors.whiteTwo,
   },
+  itemOutDivider: {
+    marginHorizontal: 20,
+    height: 1,
+    borderStyle: 'solid',
+    borderLeftWidth:1,
+    borderRightWidth:1,
+    borderColor:colors.lightGrey
+
+    // backgroundColor:'red'
+  },
   sectionHeader: {
     paddingTop: 32,
     paddingBottom: 20,
@@ -155,7 +165,7 @@ const CountryListItem0 = ({
   }
 
   return (
-    <Pressable onPress={onPress(item)}>
+    <Pressable onPress={onPress(item)} style={styles.productBox}>
       <View key="product" style={[styles.card, myStyle]}>
         <View key="text" style={styles.textView}>
           <View style={{flexDirection: 'row'}}>
@@ -207,7 +217,9 @@ const CountryListItem0 = ({
           />
         </View>
       </View>
+      <View style={styles.itemOutDivider}>
       <View style={styles.itemDivider} />
+      </View>
     </Pressable>
   );
 };

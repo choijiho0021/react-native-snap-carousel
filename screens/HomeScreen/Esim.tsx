@@ -567,9 +567,6 @@ const Esim: React.FC<EsimProps> = ({
       <Animated.View style={{height}} ref={ref} collapsable={false}>
         <PromotionCarousel />
       </Animated.View>
-      {/* Promotion Carousel Pagination을 가리기 위해 임시로 추가 */}
-      <View style={{backgroundColor: 'white', height: 20, width: '100%'}} />
-
       <AppButton
         key="search"
         title={i18n.t('home:searchPlaceholder')}

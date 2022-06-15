@@ -14,6 +14,7 @@ import MySimScreen from '@/screens/MySimScreen';
 
 import CountryScreen from '@/screens/CountryScreen';
 import ProductDetailScreen from '@/screens/ProductDetailScreen';
+import ProductDetailOpScreen from '@/screens/ProductDetailOpScreen';
 
 import SettingsScreen from '@/screens/SettingsScreen';
 import AccountSettingsScreen from '@/screens/AccountSettingsScreen';
@@ -73,14 +74,35 @@ const CartStack = createStackNavigator();
 const EsimStack = createStackNavigator();
 const MyPageStack = createStackNavigator();
 
+const screenOptions = {
+  animationEnabled: false,
+  headerStyle: {
+    elevation: 0,
+    shadowOpacity: 0,
+  },
+};
 function homeStack() {
   return (
-    <HomeStack.Navigator screenOptions={{animationEnabled: false}} mode="modal">
-      <HomeStack.Screen name="Home" component={HomeScreenEsim} />
+    <HomeStack.Navigator screenOptions={screenOptions} mode="modal">
+      <HomeStack.Screen
+        name="Home"
+        component={HomeScreenEsim}
+        options={({route}) => ({
+          headerShadowVisible: false,
+          headerBackTitleVisible: false,
+          headerStyle: {
+            shadowColor: 'transparent',
+          },
+        })}
+      />
       <HomeStack.Screen name="Tutorial" component={TutorialScreen} />
       <HomeStack.Screen name="StoreSearch" component={StoreSearchScreen} />
       <HomeStack.Screen name="Cart" component={CartScreen} />
       <HomeStack.Screen name="ProductDetail" component={ProductDetailScreen} />
+      <HomeStack.Screen
+        name="ProductDetailOp"
+        component={ProductDetailOpScreen}
+      />
       <HomeStack.Screen name="Noti" component={NotiScreen} />
       <HomeStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <HomeStack.Screen name="Contact" component={ContactScreen} />
@@ -110,7 +132,7 @@ function homeStack() {
 
 function cartStack() {
   return (
-    <CartStack.Navigator screenOptions={{animationEnabled: false}}>
+    <CartStack.Navigator screenOptions={screenOptions}>
       <CartStack.Screen name="Cart" component={CartScreen} />
       <CartStack.Screen name="Payment" component={PaymentScreen} />
       <CartStack.Screen name="PymMethod" component={PymMethodScreen} />
@@ -122,7 +144,7 @@ function cartStack() {
 
 function esimStack() {
   return (
-    <EsimStack.Navigator screenOptions={{animationEnabled: false}}>
+    <EsimStack.Navigator screenOptions={screenOptions}>
       <EsimStack.Screen name="Esim" component={EsimScreen} />
       <EsimStack.Screen name="GiftGuide" component={GiftGuideScreen} />
       <EsimStack.Screen name="Gift" component={GiftScreen} />
@@ -133,7 +155,7 @@ function esimStack() {
 
 function myPageStack() {
   return (
-    <MyPageStack.Navigator screenOptions={{animationEnabled: false}}>
+    <MyPageStack.Navigator screenOptions={screenOptions}>
       <MyPageStack.Screen name="MyPage" component={MyPageScreen} />
       <MyPageStack.Screen
         name="PurchaseDetail"
