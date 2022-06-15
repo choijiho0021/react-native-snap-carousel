@@ -57,6 +57,8 @@ type DrupalProduct = {
   field_description: string;
   field_special_categories: string;
   body: string;
+  field_hotspot: string;
+  field_weight: string;
   sku: string;
 };
 
@@ -81,7 +83,8 @@ export type RkbProduct = {
   sku: string;
   idx: number;
   body: {desc1: string; desc2: string; apn: string};
-
+  hotspot: boolean;
+  weight: number;
   // additional
   ccodeStr?: string;
   search?: string;
@@ -119,6 +122,8 @@ const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
             .filter((v) => !_.isEmpty(v)),
           sku: item.sku,
           body: item.body ? JSON.parse(item.body.replace(/&quot;/g, '"')) : {},
+          hotspot: item.field_hotspot === 'On',
+          weight: item.field_weight,
           idx,
         })),
     );
@@ -271,22 +276,10 @@ const sortProdGroup = (
   return list
     .map((item) =>
       item.sort((a, b) => {
-        // 동일 국가내의 상품을 정렬한다.
-        // field_daily == true 인 무제한 상품 우선, 사용 날짜는 오름차순
-        // if (a.field_daily) return b.field_daily ? a.days - b.days : -1;
-        // return b.field_daily ? 1 : a.days - b.days;
-
-        // 일일 사용량 상품, 사용 날짜, 이름 정렬
-        if (a.field_daily === b.field_daily) {
-          if (a.days === b.days) {
-            return a.name < b.name ? 1 : -1;
-          }
-          return a.days - b.days;
+        if (a.weight === b.weight) {
+          return a.days > b.days ? 1 : -1;
         }
-        if (a.field_daily) {
-          return -1;
-        }
-        return 1;
+        return a.weight < b.weight ? 1 : -1;
       }),
     )
     .sort((a, b) => {
