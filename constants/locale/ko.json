@@ -59,6 +59,7 @@
   "KRW": "원",
   "USD": "$",
   "exit": "앱 종료",
+  "apn": "APN",
 
   "home:exitApp": "앱 종료",
   "home:guide": "로밍도깨비 사용가이드 !",
@@ -569,6 +570,7 @@
   "prodDetailOp:title": "사용 가능 지역 및 통신사 확인하기",
   "prodDetailOp:subTitle": "해당 국가를 클릭하면 APN 정보가 보여요!",
   "prodDetailOp:search": "국가명을 검색해주세요",
+  "prodDetailOp:copyApn": "APN이 복사 되었습니다.",
   "set:failedOpenKakao": "카카오 상담 연결에 실패했습니다.\n 잠시 후 다시 시도해주세요.",
 
   "loading:error": "로딩 불가",
