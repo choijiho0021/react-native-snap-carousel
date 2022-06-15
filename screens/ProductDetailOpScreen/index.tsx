@@ -103,6 +103,10 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingLeft: 15,
   },
+  nolist: {
+    marginVertical: 60,
+    textAlign: 'center',
+  },
 });
 
 type ProductDetailOpScreenNavigationProp = StackNavigationProp<
@@ -137,22 +141,24 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
       headerLeft: () => <AppBackButton title={route.params?.title} />,
     });
 
-    const dataFormat = route?.params?.apn
-      .split(',')
-      .map((elm) => elm.split('/'))
-      .map((elm2) => ({
-        country: elm2[0],
-        operator: elm2[1],
-        apn: elm2[2] ? elm2[2].split('&') : [],
-      }));
+    if (route?.params?.apn) {
+      const dataFormat = route?.params?.apn
+        .split(',')
+        .map((elm) => elm.split('/'))
+        .map((elm2) => ({
+          country: elm2[0],
+          operator: elm2[1],
+          apn: elm2[2] ? elm2[2].split('&') : [],
+        }));
 
-    const testProductReg = new RegExp(searchWord!, 'gi');
+      const testProductReg = new RegExp(searchWord!, 'gi');
 
-    setData(
-      searchWord
-        ? dataFormat.filter((elm) => testProductReg.test(elm.country))
-        : dataFormat,
-    );
+      setData(
+        searchWord
+          ? dataFormat.filter((elm) => testProductReg.test(elm.country))
+          : dataFormat,
+      );
+    }
   }, [navigation, route.params.apn, route.params?.title, searchWord]);
 
   const copyToClipboard = useCallback(
@@ -234,6 +240,13 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
     [copyToClipboard, toggleIndex, toggledList],
   );
 
+  const empty = useCallback(
+    () => (
+      <AppText style={styles.nolist}>{i18n.t('prodDetailOp:empty')}</AppText>
+    ),
+    [],
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <AppText style={styles.title}>{i18n.t('prodDetailOp:title')}</AppText>
@@ -259,6 +272,7 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
         data={data}
         renderItem={renderItem}
         extraData={[toggleIndex, searchWord]}
+        ListEmptyComponent={empty}
       />
       <AppSnackBar
         visible={showSnackBar}
