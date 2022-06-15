@@ -9,16 +9,12 @@ import {
   SectionList,
   StyleSheet,
   View,
+  ViewStyle,
 } from 'react-native';
 import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import {ViewStyle} from 'react-native';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
-import AppButton from '@/components/AppButton';
-import AppCartButton from '@/components/AppCartButton';
 import AppPrice from '@/components/AppPrice';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -28,21 +24,9 @@ import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
-import api, {ApiResult} from '@/redux/api/api';
 import {RkbProduct} from '@/redux/api/productApi';
-import {
-  AccountModelState,
-  actions as accountActions,
-} from '@/redux/modules/account';
-import {
-  actions as cartActions,
-  CartAction,
-  CartModelState,
-} from '@/redux/modules/cart';
-import {
-  actions as productActions,
-  ProductModelState,
-} from '@/redux/modules/product';
+import {actions as cartActions} from '@/redux/modules/cart';
+import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 
 const {esimGlobal} = Env.get();
@@ -67,20 +51,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     paddingHorizontal: 15,
     paddingVertical:20,
-    flexDirection: 'row',
-  },
-  detail: {
-    height: windowWidth > device.small.window.width ? 48 : 36,
-    borderRadius: 3,
-    backgroundColor: colors.white,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: colors.black,
-    marginVertical: 20,
-    marginHorizontal: 20,
-    alignItems: 'center',
-    paddingLeft: 20,
-    justifyContent: 'space-between',
     flexDirection: 'row',
   },
   divider: {
@@ -275,14 +245,9 @@ type CountryScreenRouteProp = RouteProp<HomeStackParamList, 'Country'>;
 type CountryScreenProps = {
   navigation: CountryScreenNavigationProp;
   route: CountryScreenRouteProp;
-  product: ProductModelState;
-  cart: CartModelState;
-  account: AccountModelState;
-  pending: boolean;
 
-  action: {
-    cart: CartAction;
-  };
+  product: ProductModelState;
+  pending: boolean;
 };
 
 type CountryScreenState = {
@@ -322,9 +287,6 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
     navigation.setOptions({
       title: null,
       headerLeft: () => <AppBackButton title={title} />,
-      headerRight: () => (
-        <AppCartButton onPress={() => navigation.navigate('Cart')} />
-      ),
     });
 
     const prodData: {daily: RkbProduct[]; total: RkbProduct[]} =
@@ -431,21 +393,10 @@ class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
   }
 }
 
-export default connect(
-  ({account, cart, product, status}: RootState) => ({
-    product,
-    cart,
-    account,
-    pending:
-      status.pending[cartActions.cartAddAndGet.typePrefix] ||
-      status.pending[cartActions.checkStockAndPurchase.typePrefix] ||
-      false,
-  }),
-  (dispatch) => ({
-    action: {
-      product: bindActionCreators(productActions, dispatch),
-      cart: bindActionCreators(cartActions, dispatch),
-      account: bindActionCreators(accountActions, dispatch),
-    },
-  }),
-)(CountryScreen);
+export default connect(({product, status}: RootState) => ({
+  product,
+  pending:
+    status.pending[cartActions.cartAddAndGet.typePrefix] ||
+    status.pending[cartActions.checkStockAndPurchase.typePrefix] ||
+    false,
+}))(CountryScreen);

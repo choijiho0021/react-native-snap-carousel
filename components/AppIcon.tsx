@@ -121,7 +121,7 @@ const images: Record<string, any[]> = {
   imgNotiDokebi: [require(`${esimPath}imgNotiDokebi.png`)],
   rokIcon: [require(`${esimPath}icon.png`)],
   emptyCart: [require(`${esimPath}imgCart.png`)],
-  emptyESIM: [require(`${esimPath}imgAirplane.png`)],
+  emptyESIM: [require(`${esimPath}img_airplane.png`)],
   usageU: [require(`${esimPath}usageU.png`)],
   usageR: [require(`${esimPath}usageR.png`)],
   imgFaq: [require(`${esimPath}imgFaq.png`)],

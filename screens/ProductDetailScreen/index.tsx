@@ -1,7 +1,7 @@
 /* eslint-disable no-plusplus */
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {Component, useState} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import Clipboard from '@react-native-community/clipboard';
 import {
   PixelRatio,
@@ -14,20 +14,23 @@ import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import analytics, {firebase} from '@react-native-firebase/analytics';
+import Analytics from 'appcenter-analytics';
+import {Settings} from 'react-native-fbsdk';
+import {
+  getTrackingStatus,
+  TrackingStatus,
+} from 'react-native-tracking-transparency';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
-import {windowWidth} from '@/constants/SliderEntry.style';
 import {appStyles, htmlDetailWithCss} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
-import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
-import {
-  AccountModelState,
-  actions as accountActions,
-} from '@/redux/modules/account';
+import {actions as infoActions, InfoAction} from '@/redux/modules/info';
+import {AccountModelState} from '@/redux/modules/account';
 import {
   actions as productActions,
   ProductAction,
@@ -40,26 +43,13 @@ import {
 } from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import AppSnackBar from '@/components/AppSnackBar';
-import {useCallback, useEffect} from 'react';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
-import analytics, {firebase} from '@react-native-firebase/analytics';
-import Analytics from 'appcenter-analytics';
-import {Settings} from 'react-native-fbsdk';
-
-import {
-  getTrackingStatus,
-  TrackingStatus,
-} from 'react-native-tracking-transparency';
 import {API} from '@/redux/api';
-import {ApiResult} from '@/redux/api/api';
-import {RkbProduct} from '../redux/api/productApi';
+import api, {ApiResult} from '@/redux/api/api';
 import {PurchaseItem} from '../redux/models/purchaseItem';
-import {
-  actions as cartActions,
-  CartAction,
-  CartModelState,
-} from '@/redux/modules/cart';
+import {actions as cartActions, CartAction} from '@/redux/modules/cart';
+import AppCartButton from '@/components/AppCartButton';
 
 const {baseUrl, esimApp, esimGlobal} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -130,14 +120,13 @@ type ProductDetailScreenProps = {
 
   pending: boolean;
   product: ProductModelState;
-  info: InfoModelState;
   account: AccountModelState;
-  cart: CartModelState;
 
   action: {
     toast: ToastAction;
     product: ProductAction;
     cart: CartAction;
+    info: InfoAction;
   };
 };
 const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
@@ -145,8 +134,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   route,
   pending,
   product,
-  cart,
-  info,
   action,
   account,
 }) => {
@@ -158,12 +145,15 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const [webViewHeight, setWebViewHeight] = useState<number>(500);
 
   useEffect(() => {
-    const {detailCommon, partnerId} = product;
+    const {partnerId} = product;
     const {params = {}} = route;
 
     navigation.setOptions({
       title: null,
       headerLeft: () => <AppBackButton title={route.params?.title} />,
+      headerRight: () => (
+        <AppCartButton onPress={() => navigation.navigate('Cart')} />
+      ),
     });
 
     if (partnerId !== route.params?.partnerId) {
@@ -272,7 +262,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   const onPressBtnCart = useCallback(async () => {
     const {loggedIn} = account;
-    const {params = {}} = route;
     // 다른 버튼 클릭으로 스낵바 종료될 경우, 재출력 안되는 부분이 있어 추가
     setShowSnackBar(false);
 
@@ -307,16 +296,13 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       }
     });
     // }
-  }, [account, action.cart, navigation, purchaseItems, route, soldOut, status]);
+  }, [account, action.cart, navigation, purchaseItems, soldOut, status]);
 
   const onPressBtnRegCard = useCallback(() => {
     Analytics.trackEvent('Click_regCard');
 
-    if (!account.loggedIn) {
-      return navigation.navigate('Auth');
-    }
-
-    navigation.navigate('RegisterSim');
+    if (!account.loggedIn) navigation.navigate('Auth');
+    else navigation.navigate('RegisterSim');
   }, [account.loggedIn, navigation]);
 
   const onPressBtnPurchase = useCallback(() => {
@@ -399,15 +385,13 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 };
 
 export default connect(
-  ({product, account, cart, status, info}: RootState) => ({
+  ({product, account, status}: RootState) => ({
     product,
     account,
-    cart,
     pending:
       status.pending[productActions.getProdDetailCommon.typePrefix] ||
       status.pending[productActions.getProdDetailInfo.typePrefix] ||
       false,
-    info,
   }),
   (dispatch) => ({
     action: {
@@ -415,7 +399,6 @@ export default connect(
       toast: bindActionCreators(toastActions, dispatch),
       info: bindActionCreators(infoActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
-      account: bindActionCreators(accountActions, dispatch),
     },
   }),
 )(ProductDetailScreen);
