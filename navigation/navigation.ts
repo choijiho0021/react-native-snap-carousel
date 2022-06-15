@@ -74,7 +74,7 @@ export type HomeStackParamList = {
     title: string;
     desc1: string;
     desc2: string;
-    apn?: string;
+    apn: string;
   };
   RegisterSim: {back: string; title: string};
   NewSim: undefined;

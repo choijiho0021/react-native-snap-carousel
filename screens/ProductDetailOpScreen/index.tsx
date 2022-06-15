@@ -120,12 +120,14 @@ type ProductDetailOpScreenProps = {
   route: ProductDetailOpScreenRouteProp;
 };
 
+type detailOp = {country: string; operator: string; apn?: string[]};
+
 const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
   navigation,
   route,
 }) => {
-  const [data, setData] = useState([]);
-  const [searchWord, setSearchWord] = useState<string>();
+  const [data, setData] = useState<detailOp[]>([]);
+  const [searchWord, setSearchWord] = useState<string>('');
   const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
   const [toggledList, setToggledList] = useState<Set<number>>(new Set([]));
 
@@ -135,7 +137,7 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
       headerLeft: () => <AppBackButton title={route.params?.title} />,
     });
 
-    const dataFormat = route.params?.apn
+    const dataFormat = route?.params?.apn
       .split(',')
       .map((elm) => elm.split('/'))
       .map((elm2) => ({
