@@ -1,4 +1,4 @@
-import React, {memo} from 'react';
+import React, {memo, useMemo} from 'react';
 import {Dimensions, Pressable, StyleSheet, View, Text} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {Line, Svg} from 'react-native-svg';
@@ -236,12 +236,18 @@ const EsimSubs = ({
 }) => {
   const navigation = useNavigation();
   const {giftStatusCd} = item;
-  const sendable = !expired && !giftStatusCd && item.packageId?.startsWith('D');
-  const redirectable =
-    !expired &&
-    !giftStatusCd &&
-    item.country?.includes('HK') &&
-    item.partner === 'CMI';
+  const sendable = useMemo(
+    () => !expired && !giftStatusCd,
+    [expired, giftStatusCd],
+  );
+  const redirectable = useMemo(
+    () =>
+      !expired &&
+      !giftStatusCd &&
+      item.country?.includes('HK') &&
+      item.partner === 'CMI',
+    [expired, giftStatusCd, item.country, item.partner],
+  );
 
   return (
     <View style={styles.usageListContainer}>

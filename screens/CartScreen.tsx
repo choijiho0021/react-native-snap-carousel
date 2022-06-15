@@ -1,4 +1,4 @@
-import {RouteProp} from '@react-navigation/native';
+import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Map as ImmutableMap} from 'immutable';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
@@ -361,6 +361,12 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
 
     init();
   }, [init, navigation]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      action.cart.cartFetch();
+    }, [action.cart]),
+  );
 
   useEffect(() => {
     if (cart?.orderItems && !pending) {

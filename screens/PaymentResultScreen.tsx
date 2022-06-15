@@ -1,5 +1,5 @@
 import analytics from '@react-native-firebase/analytics';
-import {RouteProp} from '@react-navigation/native';
+import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {useEffect, useMemo, useState} from 'react';
@@ -129,16 +129,27 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
         <AppText style={styles.title}>{i18n.t('his:paymentCompleted')}</AppText>
       ),
     });
+  }, [navigation]);
 
+  useEffect(() => {
     const {iccid, token} = account;
 
     // 구매 이력을 다시 읽어 온다.
     // this.props.action.order.getOrders(this.props.auth)
     // 사용 내역을 다시 읽어 온다.
     action.order.getSubs({iccid, token});
-
     action.noti.getNotiList({mobile: account.mobile});
-  }, [account, action.noti, action.order, navigation]);
+  }, [account, action.noti, action.order]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // init cart 5 sec later
+      setTimeout(() => {
+        console.log('@@@ refresh cart');
+        action.cart.cartFetch();
+      }, 5000);
+    }, [action.cart]),
+  );
 
   useEffect(() => {
     const {pymReq, purchaseItems, pymPrice, deduct} = cart;
