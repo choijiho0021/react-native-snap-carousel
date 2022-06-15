@@ -285,10 +285,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
                 'h',
               );
 
+              const isReserved = statusCd === 'A' && exp > moment().add(1, 'y');
               const isExpired = statusCd === 'A' && exp < moment();
 
               setCmiStatus({
-                statusCd: isExpired ? 'U' : statusCd,
+                // eslint-disable-next-line no-nested-ternary
+                statusCd: isReserved ? 'R' : isExpired ? 'U' : statusCd,
                 endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
               });
             }

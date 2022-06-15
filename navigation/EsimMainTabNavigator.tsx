@@ -14,6 +14,7 @@ import MySimScreen from '@/screens/MySimScreen';
 
 import CountryScreen from '@/screens/CountryScreen';
 import ProductDetailScreen from '@/screens/ProductDetailScreen';
+import ProductDetailOpScreen from '@/screens/ProductDetailOpScreen';
 
 import SettingsScreen from '@/screens/SettingsScreen';
 import AccountSettingsScreen from '@/screens/AccountSettingsScreen';
@@ -98,6 +99,10 @@ function homeStack() {
       <HomeStack.Screen name="StoreSearch" component={StoreSearchScreen} />
       <HomeStack.Screen name="Cart" component={CartScreen} />
       <HomeStack.Screen name="ProductDetail" component={ProductDetailScreen} />
+      <HomeStack.Screen
+        name="ProductDetailOp"
+        component={ProductDetailOpScreen}
+      />
       <HomeStack.Screen name="Noti" component={NotiScreen} />
       <HomeStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <HomeStack.Screen name="Contact" component={ContactScreen} />

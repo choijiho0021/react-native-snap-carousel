@@ -3,7 +3,13 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {Component, useState} from 'react';
 import Clipboard from '@react-native-community/clipboard';
-import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
+import {
+  PixelRatio,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -134,7 +140,6 @@ type ProductDetailScreenProps = {
     cart: CartAction;
   };
 };
-
 const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   navigation,
   route,
@@ -150,6 +155,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const [status, setStatus] = useState<TrackingStatus>();
   const [purchaseItems, setPurchaseItems] = useState<PurchaseItem[]>([]);
 
+  const [webViewHeight, setWebViewHeight] = useState<number>(500);
+
   useEffect(() => {
     const {detailCommon, partnerId} = product;
     const {params = {}} = route;
@@ -158,10 +165,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       title: null,
       headerLeft: () => <AppBackButton title={route.params?.title} />,
     });
-
-    // if (!detailCommon) {
-    //   action.product.getProdDetailCommon(this.controller);
-    // }
 
     if (partnerId !== route.params?.partnerId) {
       action.product.getProdDetailInfo(params?.partnerId || '');
@@ -174,12 +177,18 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
-      const cmd = JSON.parse(event.nativeEvent.data);
+      const {
+        key,
+        value,
+        screen,
+        params,
+      }: {key: string; value: string; screen: string; params: object} =
+        JSON.parse(event.nativeEvent.data);
 
-      switch (cmd.key) {
+      switch (key) {
         case 'moveToPage':
-          if (cmd.value) {
-            action.info.getItem(cmd.value).then(({payload: item}) => {
+          if (value) {
+            action.info.getItem(value).then(({payload: item}) => {
               if (item?.title && item?.body) {
                 navigation.navigate('SimpleText', {
                   key: 'noti',
@@ -195,8 +204,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           }
           break;
         case 'moveToFaq':
-          if (cmd.value) {
-            const moveTo = cmd.value.split('/');
+          if (value) {
+            const moveTo = value.split('/');
             navigation.navigate('Faq', {
               key: moveTo[0],
               num: moveTo[1],
@@ -204,47 +213,54 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           }
           break;
         case 'copy':
+          Clipboard.setString(value);
           action.toast.push(Toast.COPY_SUCCESS);
           break;
+        case 'navigate':
+          navigation.navigate(screen, params);
+          break;
+        case 'apn':
+          navigation.navigate('ProductDetailOp', {
+            title: route.params?.title,
+            ...route.params.item?.body,
+          });
+          break;
+        // 기본적으로 화면 크기 가져오도록 함
         default:
-          Clipboard.setString(cmd.value);
+          setWebViewHeight(event.nativeEvent.data / PixelRatio.get());
           break;
       }
     },
-    [action, navigation],
+    [action.info, action.toast, navigation, route.params.item?.body],
   );
 
   const renderWebView = useCallback(() => {
     const localOpDetails = route.params?.localOpDetails;
-    const detail = _.isEmpty(localOpDetails)
-      ? product.detailInfo + product.detailCommon
-      : localOpDetails + product.detailCommon;
+    // const detail = _.isEmpty(localOpDetails)
+    //   ? product.detailInfo + product.detailCommon
+    //   : localOpDetails + product.detailCommon;
 
+    // console.log('aaaaa detail', detail);
     return (
       <View style={{flex: 1}}>
         <WebView
-          automaticallyAdjustContentInsets={false}
+          // automaticallyAdjustContentInsets={true}
           javaScriptEnabled
           domStorageEnabled
-          scalesPageToFit
+          // scalesPageToFit
           startInLoadingState
-          // injectedJavaScript={script}
           decelerationRate="normal"
           // onNavigationStateChange={(navState) => this.onNavigationStateChange(navState)}
           scrollEnabled
-          // source={{html: body + html + script} }
           onMessage={onMessage}
-          source={{html: htmlDetailWithCss(detail), baseUrl}}
-          style={{height: 2000}}
+          // source={{uri: 'http://146.56.139.208/#/product/desc/1'}}
+          source={{uri: 'http://localhost:8000/#/product/desc/2'}}
+          // source={{html: detail}}
+          style={{height: webViewHeight}}
         />
       </View>
     );
-  }, [
-    onMessage,
-    product.detailCommon,
-    product.detailInfo,
-    route.params?.localOpDetails,
-  ]);
+  }, [onMessage, route.params?.localOpDetails, webViewHeight]);
 
   const soldOut = useCallback((payload: ApiResult<any>, message: string) => {
     if (payload.result === api.E_RESOURCE_NOT_FOUND) {
@@ -340,14 +356,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   return (
     <SafeAreaView style={styles.screen}>
       <AppActivityIndicator visible={pending} />
-      <ScrollView
-        style={{backgroundColor: colors.whiteTwo, flex: 1}}
-        // ref={scrollView}
-        // stickyHeaderIndices={[1]} // 탭 버튼 고정
-        // showsVerticalScrollIndicator={false}
-        scrollEventThrottle={100}>
+      <View style={{backgroundColor: colors.whiteTwo, flex: 1}}>
         {renderWebView()}
-      </ScrollView>
+      </View>
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
       <AppSnackBar
         visible={showSnackBar}

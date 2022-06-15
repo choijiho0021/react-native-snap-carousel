@@ -56,6 +56,7 @@ type DrupalProduct = {
   variations: string[];
   field_description: string;
   field_special_categories: string;
+  body: string;
   sku: string;
 };
 
@@ -79,6 +80,7 @@ export type RkbProduct = {
   promoFlag: PromoFlag[];
   sku: string;
   idx: number;
+  body: {desc1: string; desc2: string; apn: string};
 
   // additional
   ccodeStr?: string;
@@ -116,6 +118,7 @@ const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
             .map((v) => promoFlag[v.trim()])
             .filter((v) => !_.isEmpty(v)),
           sku: item.sku,
+          body: item.body ? JSON.parse(item.body.replace(/&quot;/g, '"')) : {},
           idx,
         })),
     );
