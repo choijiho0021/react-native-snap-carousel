@@ -13,8 +13,8 @@ const styles = StyleSheet.create({
 
 export type StyledText = {
   text: string;
-  textStyle: TextStyle;
-  viewStyle: ViewStyle;
+  textStyle?: TextStyle;
+  viewStyle?: ViewStyle;
 };
 
 const AppTextJoin = ({
