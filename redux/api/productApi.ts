@@ -59,6 +59,7 @@ type DrupalProduct = {
   body: string;
   field_hotspot: string;
   field_weight: string;
+  field_desc: string;
   sku: string;
 };
 
@@ -82,9 +83,10 @@ export type RkbProduct = {
   promoFlag: PromoFlag[];
   sku: string;
   idx: number;
-  body: {desc1: string; desc2: string; apn: string};
+  body: any;
   hotspot: boolean;
   weight: number;
+  desc: {desc1: string; desc2: string; apn: string};
   // additional
   ccodeStr?: string;
   search?: string;
@@ -121,10 +123,13 @@ const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
             .map((v) => promoFlag[v.trim()])
             .filter((v) => !_.isEmpty(v)),
           sku: item.sku,
-          body: item.body ? JSON.parse(item.body.replace(/&quot;/g, '"')) : {},
-          hotspot: item.field_hotspot === 'On',
-          weight: item.field_weight,
+          body: item.body,
           idx,
+          hotspot: item.field_hotspot === 'On',
+          weight: utils.stringToNumber(item.field_weight),
+          desc: item.field_desc
+            ? JSON.parse(item.field_desc.replace(/&quot;/g, '"'))
+            : {},
         })),
     );
   }
@@ -196,6 +201,7 @@ const getTitle = (localOp?: RkbLocalOp) => {
 
 const getProduct = (categoryCode?: string) => {
   const id = categoryCode ?? '';
+
   return api.callHttpGet(
     api.httpUrl(`${api.path.prodList}${id ? `/${id}` : ''}?_format=hal_json`),
     toProduct,

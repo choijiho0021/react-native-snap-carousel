@@ -37,6 +37,7 @@ import {API} from '@/redux/api';
 import AppTextInput from '@/components/AppTextInput';
 import AppModal from '@/components/AppModal';
 import {useEffect, useState, useCallback, useMemo} from 'react';
+import {OrderModelState} from '../redux/modules/order';
 
 const radioButtons = [
   {id: 'resign:reason1'},
@@ -141,6 +142,7 @@ type ResignScreenProps = {
   navigation: ResignScreenNavigationProp;
   route: ResignScreenRouteProp;
   account: AccountModelState;
+  order: OrderModelState;
   pending: boolean;
   action: {
     account: AccountAction;
@@ -171,6 +173,13 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
   const [showFinishModal, setShowFinishModal] = useState<boolean>(false);
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
   const editable = useMemo(() => reasonIdx === radioButtons.length - 1, []);
+  const purchaseCnt = useMemo(() => {
+    const reg = new RegExp(i18n.t('acc:balance'), 'gi');
+
+    return Array.from(order.orders.values()).filter(
+      (elm) => !(elm.state === 'canceled' || reg.test(elm.orderItems[0].title)),
+    ).length;
+  }, [order.orders]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -181,20 +190,26 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
 
   const resign = useCallback(async () => {
     const {uid, token} = account;
+    setShowConfirmModal(false);
 
     if (isConfirm) {
-      await API.User.resign(
+      const rsp = await API.User.resign(
         {uid, token},
         reasonIdx === radioButtons.length - 1
           ? otherReason
           : i18n.t(radioButtons[reasonIdx].id),
       );
 
+      // 탈퇴 실패한 경우 무시
+      if (rsp.result && rsp.result < 0) {
+        console.log('@@@fail to resign');
+      }
       setShowFinishModal(true);
     }
   }, [account, isConfirm, otherReason, reasonIdx]);
 
   const logout = useCallback(() => {
+    setShowFinishModal(false);
     Promise.all([
       action.cart.reset(),
       action.order.reset(),
@@ -214,7 +229,6 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
           }
         }
       }
-      setShowFinishModal(false);
     });
   }, [action.account, action.cart, action.noti, action.order]);
 
@@ -322,7 +336,7 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
           visible={showFinishModal}
         />
         <AppModal
-          title={i18n.t('resign:confirmModal', {count: 1})}
+          title={i18n.t('resign:confirmModal', {count: purchaseCnt})}
           type="normal"
           onOkClose={resign}
           onCancelClose={() => setShowConfirmModal(false)}
