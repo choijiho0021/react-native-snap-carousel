@@ -7,6 +7,8 @@ import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import AppText from '@/components/AppText';
 import Env from '@/environment';
+import AppTextJoin from '@/components/AppTextJoin';
+import AppIcon from '@/components/AppIcon';
 
 const {appStoreUrl} = Env.get();
 
@@ -90,14 +92,35 @@ const AppVerModal: React.FC<AppVerModalProps> = ({
         borderTopRightRadius: 8,
         backgroundColor: 'white',
       }}
-      title={i18n.t('app:updateTitle')}
-      titleStyle={appStyles.bold18Text}
       bottom={renderBottom}
       visible={visible || true}>
-      <View style={{marginBottom: 30, alignSelf: 'center', marginTop: 10}}>
-        <AppText
-          key="1"
-          style={{...appStyles.normal16Text, textAlign: 'center'}}>
+      <View style={{marginBottom: 20, marginTop: 32, marginHorizontal: 20}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginRight: 12,
+          }}>
+          <View>
+            <AppText style={appStyles.bold22Text}>
+              {i18n.t('app:updateTitle-1')}
+            </AppText>
+            <AppTextJoin
+              data={[
+                {
+                  text: i18n.t('app:updateTitle-2'),
+                  style: {...appStyles.bold22Text, color: colors.clearBlue},
+                },
+                {
+                  text: i18n.t('app:updateTitle-3'),
+                  style: appStyles.bold22Text,
+                },
+              ]}
+            />
+          </View>
+          <AppIcon name="updateImg" />
+        </View>
+        <AppText key="1" style={{...appStyles.normal16Text, marginTop: 12}}>
           {i18n.t('app:updateMandatory')}
         </AppText>
       </View>

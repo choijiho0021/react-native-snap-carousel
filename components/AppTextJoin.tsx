@@ -4,29 +4,29 @@ import AppText from './AppText';
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection:'row',
+    flexDirection: 'row',
   },
-  text:{
-    alignSelf:'flex-end'
-  }
+  text: {
+    alignSelf: 'flex-end',
+  },
 });
 
 type StyledText = {
-  text:string,
-  style:TextStyle,
+  text: string;
+  style: TextStyle;
 };
 
 const AppTextJoin = ({
   data,
   style,
 }: {
-  data:StyledText[],
+  data: StyledText[];
   style?: ViewStyle;
 }) => {
   return (
     <View style={[style || styles.container]}>
-      {data.map(elm => (
-        <AppText style={[styles.text, elm.style]}>{elm.text} </AppText>
+      {data.map((elm) => (
+        <AppText style={[styles.text, elm.style]}>{elm.text}</AppText>
       ))}
     </View>
   );

@@ -85,6 +85,7 @@ const images: Record<string, any[]> = {
   btnAlarm: [require(`${headerPath}btnAlarm.png`)],
   btnSearchTop: [require(`${headerPath}btnSearchTop.png`)],
 
+  updateImg: [require(`${mainPath}update.png`)],
   btnCheck: [
     require(`${mainPath}btnCheckNon.png`),
     require(`${mainPath}btnCheckSel.png`),

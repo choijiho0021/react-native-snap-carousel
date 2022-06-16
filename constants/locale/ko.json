@@ -72,8 +72,10 @@
   "home:unsupportedBody4": "eSIM 미지원단말(일반 스마트폰) 사용자께서는 추후 서비스 될 로밍도깨비 유심서비스를 이용해주세요.",
   "home:searchPlaceholder": "어느 나라로 떠날 예정이신가요?",
 
-  "app:updateTitle": "앱 업데이트",
-  "app:updateMandatory": "로깨비 최신 버전이 출시되었습니다.\n업데이트를 실행하지 않으면 서비스를 이용할 수\n없습니다. 업데이트 후, 이용하세요.",
+  "app:updateTitle-1": "새로운 버전이",
+  "app:updateTitle-2": "업데이트 ",
+  "app:updateTitle-3": "되었어요!",
+  "app:updateMandatory": "로밍도깨비가 유저분들에게 더 좋은 상품과 서비스를\n제공하기 위해 앱 사용성을 개선했어요.\n지금 바로 업데이트하고 즐겨보세요!",
   "app:updateOptional": "로깨비 최신 버전이 출시되었습니다.\n업데이트 후, 이용하세요.",
   "app:updateNow": "지금 업데이트",
   "app:updateLater": "나중에 업데이트",
