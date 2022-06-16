@@ -11,7 +11,6 @@ import {
   SafeAreaView,
   StatusBar,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -497,7 +496,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     status,
   ]);
 
-  const onChangeText = useCallback(
+  const sendSms = useCallback(
     (value: string) => {
       setMobile(value);
 
@@ -661,7 +660,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         </AppText>
         <InputMobile
           style={{marginTop: 30, paddingHorizontal: 20}}
-          onPress={onChangeText}
+          onPress={sendSms}
           authNoti={authNoti}
           disabled={(authNoti && authorized) || loading}
           authorized={authorized}
@@ -670,7 +669,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         <InputPinInTime
           style={{marginTop: 20, paddingHorizontal: 20}}
           editable={editablePin || !isProduction}
-          // clickable={editablePin && !timeout}
           clickable
           authorized={mobile ? authorized : undefined}
           countdown={authNoti && !authorized && !timeoutFlag}
@@ -680,15 +678,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         />
       </View>
     );
-  }, [
-    authNoti,
-    authorized,
-    loading,
-    mobile,
-    onChangeText,
-    onPressPin,
-    timeoutFlag,
-  ]);
+  }, [authNoti, authorized, loading, mobile, sendSms, onPressPin, timeoutFlag]);
 
   const renderLogin = useCallback(() => {
     return (

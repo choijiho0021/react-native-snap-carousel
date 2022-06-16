@@ -28,10 +28,10 @@ const AppTextJoin = ({
 }) => {
   return (
     <View style={[styles.container, style]}>
-      {data.map((elm) => (
-        <View style={elm.viewStyle}>
-          <AppText style={[styles.text, elm.textStyle, textStyle]}>
-            {elm.text}{' '}
+      {data.map((elm, idx) => (
+        <View key={idx} style={elm.viewStyle}>
+          <AppText style={[styles.text, textStyle, elm.textStyle]}>
+            {elm.text}
           </AppText>
         </View>
       ))}

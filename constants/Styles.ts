@@ -459,6 +459,11 @@ export const appStyles = StyleSheet.create({
     color: colors.white,
     textAlign: 'center',
   },
+  underline: {
+    borderStyle: 'solid',
+    borderBottomWidth: 10,
+    borderBottomColor: '#b8d1f5',
+  },
 });
 
 // document.body.clientWidth : 화면의 너비

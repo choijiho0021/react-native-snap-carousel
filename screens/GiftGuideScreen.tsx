@@ -1,5 +1,5 @@
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {memo, useCallback, useEffect} from 'react';
+import React, {memo, PropsWithChildren, useEffect} from 'react';
 import {
   Dimensions,
   ImageBackground,
@@ -17,6 +17,7 @@ import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
 import AppButton from '@/components/AppButton';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import AppTextJoin from '@/components/AppTextJoin';
 
 const {width} = Dimensions.get('window');
 
@@ -38,7 +39,42 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: colors.black,
   },
+  text: {
+    ...appStyles.semiBold16Text,
+    top: 10,
+  },
 });
+
+type Step0Props = {
+  step: string;
+};
+const Step0: React.FC<PropsWithChildren<Step0Props>> = ({step, children}) => (
+  <View style={{alignItems: 'center'}}>
+    <View style={[styles.step, {marginTop: 36}]}>
+      <AppText
+        style={[
+          appStyles.bold16Text,
+          {
+            flex: 1,
+            color: 'white',
+            justifyContent: 'center',
+            alignSelf: 'center',
+            textAlign: 'center',
+            letterSpacing: -0.5,
+          },
+        ]}>
+        {`Step. ${step}`}
+      </AppText>
+    </View>
+    {children}
+    <AppIcon
+      name={`giftGuideStep${step}`}
+      style={{marginTop: 22}}
+      size={[width, (width * 404) / 375]}
+    />
+  </View>
+);
+const Step = memo(Step0);
 
 type GiftScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Gift'>;
 type GiftGuideProps = {
@@ -52,41 +88,6 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
       headerLeft: () => <AppBackButton title={i18n.t('gift:title')} />,
     });
   }, [navigation]);
-
-  const renderStep = useCallback(
-    (step: string) => (
-      <View style={{alignItems: 'center'}}>
-        <View style={[styles.step, {marginTop: 36}]}>
-          <AppText
-            style={[
-              appStyles.bold16Text,
-              {
-                flex: 1,
-                color: 'white',
-                justifyContent: 'center',
-                alignSelf: 'center',
-                textAlign: 'center',
-              },
-            ]}>
-            {`Step. ${step}`}
-          </AppText>
-        </View>
-        <AppText
-          style={[
-            appStyles.semiBold16Text,
-            {marginTop: 12, textAlign: 'center'},
-          ]}>
-          {i18n.t(`gift:guide2-${step}`)}
-        </AppText>
-        <AppIcon
-          name={`giftGuideStep${step}`}
-          style={{marginTop: 22}}
-          size={[width, (width * 404) / 375]}
-        />
-      </View>
-    ),
-    [],
-  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -127,9 +128,64 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
             {i18n.t('gift:guide2-title')}
           </AppText>
         </View>
-        {renderStep('1')}
-        {renderStep('2')}
-        {renderStep('3')}
+        <Step key="1" step="1">
+          <AppTextJoin
+            textStyle={styles.text}
+            data={[
+              {
+                text: i18n.t('gift:guide2-1-1'),
+              },
+              {
+                text: i18n.t('gift:guide2-1-2'),
+                viewStyle: appStyles.underline,
+              },
+              {
+                text: i18n.t('gift:guide2-1-3'),
+              },
+            ]}
+          />
+        </Step>
+        <Step key="2" step="2">
+          <AppText style={styles.text}>{i18n.t('gift:guide2-2-1')}</AppText>
+          <AppTextJoin
+            textStyle={styles.text}
+            data={[
+              {
+                text: i18n.t('gift:guide2-2-2'),
+                viewStyle: appStyles.underline,
+              },
+              {
+                text: i18n.t('gift:guide2-2-3'),
+              },
+            ]}
+          />
+        </Step>
+        <Step key="3" step="3">
+          <AppTextJoin
+            textStyle={styles.text}
+            data={[
+              {
+                text: i18n.t('gift:guide2-3-1'),
+                viewStyle: appStyles.underline,
+              },
+              {
+                text: i18n.t('gift:guide2-3-2'),
+              },
+            ]}
+          />
+          <AppTextJoin
+            textStyle={styles.text}
+            data={[
+              {
+                text: i18n.t('gift:guide2-3-3'),
+                viewStyle: appStyles.underline,
+              },
+              {
+                text: i18n.t('gift:guide2-3-4'),
+              },
+            ]}
+          />
+        </Step>
         <View
           style={{
             backgroundColor: colors.whiteTwo,
@@ -163,8 +219,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
               <AppText
                 style={[appStyles.semiBold24Text, {color: colors.clearBlue}]}>
                 {i18n.t('gift:cash')}
-                <AppText
-                  style={[appStyles.normal24, {color: colors.clearBlue}]}>
+                <AppText style={{fontWeight: 'normal'}}>
                   {i18n.t('gift:tip-4')}
                 </AppText>
               </AppText>
