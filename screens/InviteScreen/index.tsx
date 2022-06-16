@@ -1,6 +1,5 @@
 import Clipboard from '@react-native-community/clipboard';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {RouteProp} from '@react-navigation/native';
 import React, {useCallback, useEffect} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
@@ -29,11 +28,6 @@ import {utils} from '@/utils/utils';
 import AppIcon from '@/components/AppIcon';
 
 const styles = StyleSheet.create({
-  copy: {
-    height: 62,
-    borderWidth: 1,
-    borderColor: colors.lightGrey,
-  },
   container: {
     flex: 1,
     backgroundColor: colors.white,
@@ -65,16 +59,6 @@ const styles = StyleSheet.create({
     ...appStyles.robotoBold36Text,
     color: colors.white,
   },
-  bold23Text: {
-    ...appStyles.bold18Text,
-    fontSize: 23,
-    lineHeight: 38,
-  },
-  text: {
-    ...appStyles.normal18Text,
-    lineHeight: 20,
-    color: colors.black,
-  },
   highlighter: {
     ...appStyles.bold18Text,
     lineHeight: 20,
@@ -84,20 +68,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
   },
-  share: {
-    height: 62,
-    marginBottom: 16,
-    backgroundColor: colors.clearBlue,
-  },
   rowCenter: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  bold23Highlight: {
-    ...appStyles.bold24Text,
-    fontSize: 23,
-    color: colors.clearBlue,
   },
   highLightRow: {
     flex: 1,
@@ -374,7 +348,18 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
                 ]}
                 onPress={() => sendLink(v)}
                 viewStyle={styles.rowCenter}
-                style={styles[v]}
+                style={[
+                  {height: 62},
+                  v === 'copy'
+                    ? {
+                        borderWidth: 1,
+                        borderColor: colors.lightGrey,
+                      }
+                    : {
+                        marginBottom: 16,
+                        backgroundColor: colors.clearBlue,
+                      },
+                ]}
               />
             );
           })}
