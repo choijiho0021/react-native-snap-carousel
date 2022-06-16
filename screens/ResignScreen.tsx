@@ -36,6 +36,7 @@ import AppButton from '@/components/AppButton';
 import {API} from '@/redux/api';
 import AppTextInput from '@/components/AppTextInput';
 import AppModal from '@/components/AppModal';
+import {useEffect, useState, useCallback, useMemo} from 'react';
 
 const radioButtons = [
   {id: 'resign:reason1'},
@@ -140,6 +141,7 @@ type ResignScreenProps = {
   navigation: ResignScreenNavigationProp;
   route: ResignScreenRouteProp;
   account: AccountModelState;
+  pending: boolean;
   action: {
     account: AccountAction;
     cart: CartAction;
@@ -152,52 +154,52 @@ type ResignScreenState = {
   reasonIdx: number;
   otherReason: string;
   isConfirm: boolean;
-  showModal: boolean;
+  showFinishModal: boolean;
+  showConfirmModal: boolean;
 };
 
-class ResignScreen extends Component<ResignScreenProps, ResignScreenState> {
-  constructor(props: ResignScreenProps) {
-    super(props);
+const ResignScreen: React.FC<ResignScreenProps> = ({
+  navigation,
+  account,
+  order,
+  action,
+  pending,
+}) => {
+  const [reasonIdx, setReasonIdx] = useState<number>(0);
+  const [otherReason, setOtherReason] = useState<string>('');
+  const [isConfirm, setIsConfirm] = useState<boolean>(false);
+  const [showFinishModal, setShowFinishModal] = useState<boolean>(false);
+  const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
+  const editable = useMemo(() => reasonIdx === radioButtons.length - 1, []);
 
-    this.state = {
-      reasonIdx: 0,
-      otherReason: '',
-      isConfirm: false,
-      showModal: false,
-    };
-    this.onPress = this.onPress.bind(this);
-    this.logout = this.logout.bind(this);
-  }
-
-  componentDidMount = async () => {
-    this.props.navigation.setOptions({
+  useEffect(() => {
+    navigation.setOptions({
       title: null,
       headerLeft: () => <AppBackButton title={i18n.t('resign')} />,
     });
-  };
+  }, [navigation]);
 
-  async onPress() {
-    const {uid, token} = this.props.account;
-    const {reasonIdx, isConfirm, otherReason} = this.state;
+  const resign = useCallback(async () => {
+    const {uid, token} = account;
 
     if (isConfirm) {
       await API.User.resign(
         {uid, token},
         reasonIdx === radioButtons.length - 1
           ? otherReason
-          : i18n.t(radioButtons[this.state.reasonIdx].id),
+          : i18n.t(radioButtons[reasonIdx].id),
       );
 
-      this.setState({showModal: true});
+      setShowFinishModal(true);
     }
-  }
+  }, [account, isConfirm, otherReason, reasonIdx]);
 
-  logout() {
+  const logout = useCallback(() => {
     Promise.all([
-      this.props.action.cart.reset(),
-      this.props.action.order.reset(),
-      this.props.action.noti.init({mobile: undefined}),
-      this.props.action.account.logout(),
+      action.cart.reset(),
+      action.order.reset(),
+      action.noti.init({mobile: undefined}),
+      action.account.logout(),
     ]).then(async () => {
       const isSignedin = await GoogleSignin.isSignedIn();
       if (Platform.OS === 'ios')
@@ -212,131 +214,129 @@ class ResignScreen extends Component<ResignScreenProps, ResignScreenState> {
           }
         }
       }
-      this.setState({showModal: false});
+      setShowFinishModal(false);
     });
-  }
+  }, [action.account, action.cart, action.noti, action.order]);
 
-  render() {
-    const {reasonIdx, otherReason, isConfirm, showModal} = this.state;
-    const editable = reasonIdx === radioButtons.length - 1;
-    return (
-      <SafeAreaView style={styles.container}>
-        <ScrollView style={styles.container}>
-          <AppActivityIndicator visible={this.props.pending} />
-          <View style={styles.blueContainer}>
-            <AppText style={[styles.resignTitle, {color: colors.white}]}>
-              {i18n.t('resign:title')}
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.container}>
+        <AppActivityIndicator visible={pending} />
+        <View style={styles.blueContainer}>
+          <AppText style={[styles.resignTitle, {color: colors.white}]}>
+            {i18n.t('resign:title')}
+          </AppText>
+          <Image
+            style={{
+              marginTop: 52,
+              marginRight: 32,
+              justifyContent: 'flex-end',
+            }}
+            source={require('../assets/images/esim/imgResignDokebi.png')}
+            resizeMode="stretch"
+          />
+        </View>
+        <View style={styles.radioBtnContainer}>
+          <View style={{width: '100%'}}>
+            <AppText style={styles.resignWhy}>{i18n.t('resign:why')}</AppText>
+            <AppText style={appStyles.normal14Text}>
+              {i18n.t('resign:info')}
             </AppText>
-            <Image
-              style={{
-                marginTop: 52,
-                marginRight: 32,
-                justifyContent: 'flex-end',
-              }}
-              source={require('../assets/images/esim/imgResignDokebi.png')}
-              resizeMode="stretch"
+            <View style={styles.divider} />
+            {radioButtons.map(({id}, idx) => (
+              <Pressable
+                style={{flexDirection: 'row', paddingVertical: 16}}
+                key={id}
+                hitSlop={10}
+                onPress={() => setReasonIdx(idx)}>
+                <AppIcon
+                  style={{marginRight: 6}}
+                  name="radioBtn"
+                  focused={idx === reasonIdx}
+                />
+                <AppText style={appStyles.normal16Text}>
+                  {i18n.t(radioButtons[idx].id)}
+                </AppText>
+              </Pressable>
+            ))}
+            <AppTextInput
+              style={styles.textInput(editable)}
+              multiline
+              onChangeText={(v) => setOtherReason(v)}
+              placeholder={i18n.t('resign:placeholder')}
+              placeholderTextColor={colors.greyish}
+              editable={editable}
+              value={otherReason}
             />
           </View>
-          <View style={styles.radioBtnContainer}>
-            <View style={{width: '100%'}}>
-              <AppText style={styles.resignWhy}>{i18n.t('resign:why')}</AppText>
+        </View>
+
+        <View style={styles.confirmResign}>
+          <AppText style={[appStyles.bold14Text, {marginBottom: 10}]}>
+            {i18n.t('resign:why')}
+          </AppText>
+          {['1', '2', '3'].map((elm) => (
+            <View style={{flexDirection: 'row', paddingRight: 20}}>
+              <AppText
+                style={[
+                  appStyles.normal14Text,
+                  {width: 20, textAlign: 'center'},
+                ]}>
+                *
+              </AppText>
               <AppText style={appStyles.normal14Text}>
-                {i18n.t('resign:info')}
+                {i18n.t(`resign:confirm${elm}`)}
               </AppText>
-              <View style={styles.divider} />
-              {radioButtons.map(({id}, idx) => (
-                <Pressable
-                  style={{flexDirection: 'row', paddingVertical: 16}}
-                  key={id}
-                  hitSlop={10}
-                  onPress={() => this.setState({reasonIdx: idx})}>
-                  <AppIcon
-                    style={{marginRight: 6}}
-                    name="radioBtn"
-                    focused={idx === reasonIdx}
-                  />
-                  <AppText style={appStyles.normal16Text}>
-                    {i18n.t(radioButtons[idx].id)}
-                  </AppText>
-                </Pressable>
-              ))}
-              <AppTextInput
-                style={styles.textInput(editable)}
-                multiline
-                onChangeText={(v) => {
-                  this.setState({otherReason: v});
-                }}
-                placeholder={i18n.t('resign:placeholder')}
-                placeholderTextColor={colors.greyish}
-                editable={editable}
-                value={otherReason}
-              />
             </View>
-          </View>
+          ))}
 
-          <View style={styles.confirmResign}>
-            <AppText style={[appStyles.bold14Text, {marginBottom: 10}]}>
-              {i18n.t('resign:why')}
+          <Pressable
+            style={{flexDirection: 'row', paddingVertical: 16}}
+            key={1}
+            hitSlop={10}
+            onPress={() => setIsConfirm((value) => !value)}>
+            <AppIcon
+              style={{marginRight: 6}}
+              name="btnCheck2"
+              focused={isConfirm}
+            />
+            <AppText style={appStyles.normal16Text}>
+              {i18n.t(`resign:isConfirm`)}
             </AppText>
-            {['1', '2', '3'].map((elm) => (
-              <View style={{flexDirection: 'row', paddingRight: 20}}>
-                <AppText
-                  style={[
-                    appStyles.normal14Text,
-                    {width: 20, textAlign: 'center'},
-                  ]}>
-                  *
-                </AppText>
-                <AppText style={appStyles.normal14Text}>
-                  {i18n.t(`resign:confirm${elm}`)}
-                </AppText>
-              </View>
-            ))}
+          </Pressable>
+        </View>
 
-            <Pressable
-              style={{flexDirection: 'row', paddingVertical: 16}}
-              key={1}
-              hitSlop={10}
-              onPress={() =>
-                this.setState((prevState) => ({
-                  isConfirm: !prevState.isConfirm,
-                }))
-              }>
-              <AppIcon
-                style={{marginRight: 6}}
-                name="btnCheck2"
-                focused={isConfirm}
-              />
-              <AppText style={appStyles.normal16Text}>
-                {i18n.t(`resign:isConfirm`)}
-              </AppText>
-            </Pressable>
-          </View>
-
-          <AppButton
-            style={styles.button}
-            titleStyle={styles.buttonTitle}
-            disableColor={colors.warmGrey}
-            disableBackgroundColor={colors.lightGrey}
-            disabled={!isConfirm}
-            title={i18n.t('resign')}
-            onPress={this.onPress}
-          />
-          <AppModal
-            title={i18n.t('resign:finished')}
-            type="info"
-            onOkClose={this.logout}
-            visible={showModal}
-          />
-        </ScrollView>
-      </SafeAreaView>
-    );
-  }
-}
+        <AppButton
+          style={styles.button}
+          titleStyle={styles.buttonTitle}
+          disableColor={colors.warmGrey}
+          disableBackgroundColor={colors.lightGrey}
+          disabled={!isConfirm}
+          title={i18n.t('resign')}
+          onPress={() => setShowConfirmModal(true)}
+        />
+        <AppModal
+          title={i18n.t('resign:finished')}
+          type="info"
+          onOkClose={logout}
+          visible={showFinishModal}
+        />
+        <AppModal
+          title={i18n.t('resign:confirmModal', {count: 1})}
+          type="normal"
+          onOkClose={resign}
+          onCancelClose={() => setShowConfirmModal(false)}
+          visible={showConfirmModal}
+        />
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
 
 export default connect(
-  ({account, status}: RootState) => ({
+  ({account, order, status}: RootState) => ({
     account,
+    order,
     pending: status.pending[accountActions.logout.typePrefix] || false,
   }),
   (dispatch) => ({
