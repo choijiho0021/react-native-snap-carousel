@@ -11,9 +11,10 @@ const styles = StyleSheet.create({
   },
 });
 
-type StyledText = {
+export type StyledText = {
   text: string;
-  style: TextStyle;
+  textStyle: TextStyle;
+  viewStyle: ViewStyle;
 };
 
 const AppTextJoin = ({
@@ -24,11 +25,37 @@ const AppTextJoin = ({
   style?: ViewStyle;
 }) => {
   return (
-    <View style={[style || styles.container]}>
+    <View style={[styles.container, style]}>
       {data.map((elm) => (
-        <AppText style={[styles.text, elm.style]}>{elm.text}</AppText>
+        <View style={elm.viewStyle}>
+          <AppText style={[styles.text, elm.textStyle]}>{elm.text} </AppText>
+        </View>
       ))}
     </View>
   );
 };
 export default memo(AppTextJoin);
+
+// 사용예시
+// const data: StyledText[] = [
+//   {
+//     text: 'QR코드',
+//     viewStyle: {
+//       borderStyle: 'solid',
+//       borderBottomWidth: 10,
+//       borderBottomColor: '#b8d1f5',
+//     },
+//     textStyle: {
+//       ...appStyles.bold24Text,
+//       top: 10,
+//     },
+//   },
+//   {
+//     text: '혹은',
+//     viewStyle: {},
+//     textStyle: {
+//       ...appStyles.bold20Text,
+//       top: 10,
+//     },
+//   },
+// ];

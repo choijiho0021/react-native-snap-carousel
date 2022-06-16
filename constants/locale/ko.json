@@ -60,7 +60,8 @@
   "KRW": "원",
   "USD": "$",
   "exit": "앱 종료",
-
+  "apn": "APN",
+  "startFrom": "부터",
   "home:exitApp": "앱 종료",
   "home:guide": "로밍도깨비 사용가이드 !",
   "home:checkGuide": "확인하기",
@@ -99,7 +100,7 @@
   "country:detail": "상세보기",
   "country:empty": "상품검색 결과가 없습니다",
   "country:addCart": "장바구니에 담겼습니다.",
-  "country:total": "종량제",
+  "country:total": "데이터 종량제",
   "country:daily": "데이터 무제한",
 
   "view:detail": "상세보기",
@@ -216,6 +217,7 @@
   "resign:confirm2": "계정 탈퇴 후 재가입 시, 회원가입 이벤트에 재참여하실 수 없습니다.",
   "resign:confirm3": "계정 탈퇴 후 전자상거래법에 따라 보존해야 하는 정보는 해당 법률에 따른 기간 보관 후 폐기됩니다.",
   "resign:isConfirm": "안내사항을 확인하였으며 동의합니다.",
+  "resign:confirmModal": "고객님은 로밍도깨비와 {{count}}번의 여행을 함께했어요.\n\n정말 탈퇴하시겠습니까?",
   "resign:finished": "계정 탈퇴가 정상적으로 처리되었습니다.\n이용해주셔서 감사합니다.",
   "resign:placeholder": "기타인 경우 이유를 입력해주세요.\n서비스 개선에 적극적으로 반영하겠습니다.",
 
@@ -571,6 +573,8 @@
   "prodDetailOp:title": "사용 가능 지역 및 통신사 확인하기",
   "prodDetailOp:subTitle": "해당 국가를 클릭하면 APN 정보가 보여요!",
   "prodDetailOp:search": "국가명을 검색해주세요",
+  "prodDetailOp:copyApn": "APN이 복사 되었습니다.",
+  "prodDetailOp:empty": "APN 항목이 없습니다",
   "set:failedOpenKakao": "카카오 상담 연결에 실패했습니다.\n 잠시 후 다시 시도해주세요.",
 
   "loading:error": "로딩 불가",

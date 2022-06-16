@@ -118,7 +118,7 @@ const CountryItem0 = ({
             currencyStyle={styles.text}
           />,
           <AppText key="days" style={styles.text}>
-            /Day
+            {i18n.t('startFrom')}
           </AppText>,
         ]}
       </View>
@@ -132,15 +132,14 @@ const CountryItem0 = ({
         // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
         if (elm && elm.length > 0) {
           const localOp = localOpList && localOpList.get(elm[0].partnerId);
-          const bestPrice = elm.reduce((acc, {pricePerDay}) => {
-            if (!acc) return pricePerDay;
-            if (!pricePerDay || acc.currency !== pricePerDay.currency)
-              return acc;
+          const bestPrice: Currency = elm.reduce((acc, {price}) => {
+            if (!acc) return price;
+            if (!price || acc.currency !== price.currency) return acc;
             return {
-              value: Math.min(acc.value, pricePerDay.value),
-              currency: pricePerDay.currency,
+              value: Math.min(acc.value, price.value),
+              currency: price.currency,
             };
-          }, elm[0].pricePerDay);
+          }, elm[0].price);
 
           return (
             <View
