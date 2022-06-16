@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
 interface AppButtonProps {
   style?: StyleProp<ViewStyle>;
   disabled?: boolean;
-  size?: number;
+  size?: number | number[];
   title?: string;
   iconName?: string;
   uri?: string;

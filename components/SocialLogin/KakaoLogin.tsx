@@ -19,12 +19,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#F7E600',
-    borderRadius: 5,
+    borderRadius: 2,
+    height: 52,
   },
   btnStyle: {
-    height: 45,
     width: '100%',
-    marginBottom: 20,
+    marginBottom: 22,
   },
 });
 
@@ -73,7 +73,7 @@ const KakaoLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
       <AppButton
         iconName="kakaoLogin"
         title={i18n.t('socialLogin:kakao')}
-        titleStyle={appStyles.bold18Text}
+        titleStyle={{...appStyles.medium16, marginLeft: 5}}
         viewStyle={styles.viewStyle}
         style={styles.btnStyle}
         onPress={onPress}

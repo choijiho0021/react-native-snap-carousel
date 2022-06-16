@@ -150,7 +150,6 @@ const InputPinInTime: React.FC<InputPinInTimeProps> = (props) => {
             enablesReturnKeyAutomatically
             maxLength={6}
             clearTextOnFocus
-            autoFocus={editable}
             onFocus={() => setPin('')} //  android - clearTextOnFocus 수동적용
             onChangeText={setPin}
             value={pin}

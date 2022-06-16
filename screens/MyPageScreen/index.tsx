@@ -136,7 +136,6 @@ type MyPageScreenProps = {
   order: OrderModelState;
 
   pending: boolean;
-  uid?: number;
 
   action: {
     toast: ToastAction;
@@ -150,11 +149,10 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
   account,
   order,
   pending,
-  uid,
   action,
 }) => {
+  const {uid} = account;
   const flatListRef = useRef<FlatList>(null);
-
   const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
   const [showIdModal, setShowIdModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -465,12 +463,9 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
 };
 
 export default connect(
-  ({cart, account, order, status}: RootState) => ({
+  ({account, order, status}: RootState) => ({
     account,
-    lastTab: cart.lastTab.toArray(),
     order,
-    auth: accountActions.auth(account),
-    uid: account.uid,
     pending:
       status.pending[orderActions.getOrders.typePrefix] ||
       status.pending[orderActions.getSubs.typePrefix] ||
