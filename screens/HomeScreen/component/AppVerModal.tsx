@@ -23,10 +23,14 @@ const styles = StyleSheet.create({
   btn: {
     height: 52,
     flex: 1,
-    borderWidth: 1,
-    borderColor: colors.warmGrey,
-    borderRadius: 8,
     marginHorizontal: 10,
+  },
+  laterBtn: {
+    height: 52,
+    flex: 1,
+    marginHorizontal: 10,
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
   },
 });
 type AppVerModalProps = {
@@ -46,10 +50,14 @@ const AppVerModal: React.FC<AppVerModalProps> = ({
         {option === 'O' && (
           <AppButton
             title={i18n.t('app:updateLater')}
-            style={styles.btn}
+            style={styles.laterBtn}
+            pressedStyle={{
+              ...styles.laterBtn,
+              backgroundColor: colors.whiteTwo,
+            }}
             titleStyle={{
-              ...appStyles.medium14,
-              color: colors.warmGrey,
+              ...appStyles.medium18,
+              color: colors.black,
               alignSelf: 'center',
             }}
             onPress={() => onOkClose?.()}
@@ -57,10 +65,14 @@ const AppVerModal: React.FC<AppVerModalProps> = ({
         )}
         <AppButton
           title={i18n.t('app:updateNow')}
-          style={styles.btn}
+          style={[styles.btn, {backgroundColor: colors.clearBlue}]}
+          pressedStyle={{
+            ...styles.btn,
+            backgroundColor: colors.dodgerBlue,
+          }}
           titleStyle={{
-            ...appStyles.medium14,
-            color: colors.black,
+            ...appStyles.medium18,
+            color: 'white',
             alignSelf: 'center',
           }}
           onPress={() => {
@@ -109,11 +121,11 @@ const AppVerModal: React.FC<AppVerModalProps> = ({
               data={[
                 {
                   text: i18n.t('app:updateTitle-2'),
-                  style: {...appStyles.bold22Text, color: colors.clearBlue},
+                  textStyle: {...appStyles.bold22Text, color: colors.clearBlue},
                 },
                 {
                   text: i18n.t('app:updateTitle-3'),
-                  style: appStyles.bold22Text,
+                  textStyle: appStyles.bold22Text,
                 },
               ]}
             />

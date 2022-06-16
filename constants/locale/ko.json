@@ -79,8 +79,8 @@
   "app:updateTitle-3": "되었어요!",
   "app:updateMandatory": "로밍도깨비가 유저분들에게 더 좋은 상품과 서비스를\n제공하기 위해 앱 사용성을 개선했어요.\n지금 바로 업데이트하고 즐겨보세요!",
   "app:updateOptional": "로깨비 최신 버전이 출시되었습니다.\n업데이트 후, 이용하세요.",
-  "app:updateNow": "지금 업데이트",
-  "app:updateLater": "나중에 업데이트",
+  "app:updateNow": "업데이트",
+  "app:updateLater": "나중에",
 
   "store:dest": "목적지",
   "store:partnerName": "로컬 사업자",

@@ -186,13 +186,14 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
           </AppText>
           <AppTextJoin
             data={[
-              {text: i18n.t('invite:btn-2-1'), style: styles.inviteText},
+              {text: i18n.t('invite:btn-2-1')},
               {
                 text: i18n.t('invite:btn-2-2'),
-                style: {...styles.inviteText, fontWeight: 'bold'},
+                textStyle: {fontWeight: 'bold'},
               },
-              {text: i18n.t('invite:btn-2-3'), style: styles.inviteText},
+              {text: i18n.t('invite:btn-2-3')},
             ]}
+            textStyle={styles.inviteText}
           />
         </View>
       </Pressable>

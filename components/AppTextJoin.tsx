@@ -13,22 +13,26 @@ const styles = StyleSheet.create({
 
 export type StyledText = {
   text: string;
-  textStyle: TextStyle;
-  viewStyle: ViewStyle;
+  textStyle?: TextStyle;
+  viewStyle?: ViewStyle;
 };
 
 const AppTextJoin = ({
   data,
   style,
+  textStyle,
 }: {
   data: StyledText[];
   style?: ViewStyle;
+  textStyle?: TextStyle;
 }) => {
   return (
     <View style={[styles.container, style]}>
       {data.map((elm) => (
         <View style={elm.viewStyle}>
-          <AppText style={[styles.text, elm.textStyle]}>{elm.text} </AppText>
+          <AppText style={[styles.text, elm.textStyle, textStyle]}>
+            {elm.text}{' '}
+          </AppText>
         </View>
       ))}
     </View>

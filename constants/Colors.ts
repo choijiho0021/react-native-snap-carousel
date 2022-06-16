@@ -17,6 +17,7 @@ export const colors = {
 
   black: '#2c2c2c',
   clearBlue: '#2a7ff6',
+  dodgerBlue: '#4f99ff',
   warmGrey: '#777777',
   disabled: '#777777',
   lightGrey: '#d8d8d8',

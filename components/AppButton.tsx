@@ -1,4 +1,4 @@
-import React, {memo} from 'react';
+import React, {memo, useState} from 'react';
 import {
   Image,
   Pressable,
@@ -51,6 +51,7 @@ interface AppButtonProps {
   checkedColor?: string;
   iconStyle?: ViewStyle;
   viewStyle?: ViewStyle;
+  pressedStyle?: ViewStyle;
 }
 
 const AppButton: React.FC<AppButtonProps> = ({
@@ -70,7 +71,9 @@ const AppButton: React.FC<AppButtonProps> = ({
   checkedColor,
   iconStyle,
   viewStyle,
+  pressedStyle,
 }) => {
+  const [pressed, setPressed] = useState(false);
   return (
     <Pressable
       style={[
@@ -80,8 +83,11 @@ const AppButton: React.FC<AppButtonProps> = ({
         },
         checked &&
           (checkedStyle || {borderColor: checkedColor || colors.clearBlue}),
+        pressed && pressedStyle,
       ]}
       disabled={disabled}
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
       onPress={onPress}>
       <View
         style={[
