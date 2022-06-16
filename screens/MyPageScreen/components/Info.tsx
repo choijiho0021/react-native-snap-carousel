@@ -13,6 +13,8 @@ import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
 import {navigate} from '@/navigation/navigation';
+import AppIcon from '@/components/AppIcon';
+import AppTextJoin from '@/components/AppTextJoin';
 
 const {esimApp, esimCurrency} = Env.get();
 
@@ -90,6 +92,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginHorizontal: 12.5,
   },
+  inviteText: {
+    ...appStyles.normal17,
+    color: 'white',
+  },
 });
 
 type InfoProps = {
@@ -164,16 +170,32 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
           </Pressable>
         )}
       </View>
-      <AppButton
-        iconName="inviteBanner"
+      <Pressable
         style={styles.btnInvite}
         onPress={() =>
           navigate(navigation, route, 'MyPageStack', {
             tab: 'HomeStack',
             screen: 'Invite',
           })
-        }
-      />
+        }>
+        <AppIcon name="inviteBanner" />
+        <View style={{position: 'absolute', left: 16, bottom: 20}}>
+          <AppText
+            style={{...appStyles.medium13, color: 'white', marginBottom: 3}}>
+            {i18n.t('invite:btn-1')}
+          </AppText>
+          <AppTextJoin
+            data={[
+              {text: i18n.t('invite:btn-2-1'), style: styles.inviteText},
+              {
+                text: i18n.t('invite:btn-2-2'),
+                style: {...styles.inviteText, fontWeight: 'bold'},
+              },
+              {text: i18n.t('invite:btn-2-3'), style: styles.inviteText},
+            ]}
+          />
+        </View>
+      </Pressable>
       <View style={styles.divider} />
       <AppText style={styles.subTitle}>{i18n.t('acc:purchaseHistory')}</AppText>
       <View style={styles.dividerSmall} />

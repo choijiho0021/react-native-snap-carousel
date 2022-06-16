@@ -68,7 +68,7 @@ type InputPinInTimeProps = {
   duration: number;
   onTimeout: () => void;
   onPress: (v: string) => void;
-  forwardRef: React.MutableRefObject<TextInput | null>;
+  forwardRef?: React.MutableRefObject<TextInput | null>;
   style?: ViewStyle;
 };
 
