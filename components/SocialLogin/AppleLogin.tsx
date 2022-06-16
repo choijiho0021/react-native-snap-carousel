@@ -1,17 +1,28 @@
 import React, {memo, useCallback, useEffect} from 'react';
 import {StyleSheet, View} from 'react-native';
-import appleAuth, {
-  AppleButton,
-} from '@invertase/react-native-apple-authentication';
+import appleAuth from '@invertase/react-native-apple-authentication';
 import AsyncStorage from '@react-native-community/async-storage';
 import {SocialAuthInfo} from '.';
 import {appStyles} from '@/constants/Styles';
+import AppButton from '../AppButton';
+import i18n from '@/utils/i18n';
 
 const styles = StyleSheet.create({
   button: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  viewStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'black',
+    borderRadius: 2,
+    height: 52,
+  },
+  btnStyle: {
+    width: '100%',
+    marginBottom: 22,
   },
 });
 
@@ -80,24 +91,12 @@ const AppleLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
 
   return (
     <View style={styles.button}>
-      {/* <AppButton
+      <AppButton
         iconName="appleLogin"
-        style={{
-          width: 44,
-          height: 44,
-        }}
-        onPress={onPress}
-      /> */}
-      <AppleButton
-        buttonStyle={AppleButton.Style.BLACK}
-        buttonType={AppleButton.Type.SIGN_IN}
-        // style={{
-        //   width: 160, // You must specify a width
-        //   height: 45, // You must specify a height
-        // }}
-        // style={{width: 200, height: 45}}
-        style={{flex: 1, height: 45}}
-        textStyle={appStyles.bold18Text}
+        title={i18n.t('socialLogin:apple')}
+        titleStyle={{...appStyles.medium16, marginLeft: 5, color: 'white'}}
+        viewStyle={styles.viewStyle}
+        style={styles.btnStyle}
         onPress={onPress}
       />
     </View>

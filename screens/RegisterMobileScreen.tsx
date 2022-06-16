@@ -263,8 +263,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const [profileImageUrl, setProfileImageUrl] = useState('');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<TrackingStatus>();
-  const authInputRef = useRef<TextInput>(null);
-  const inputMobileRef = useRef<TextInput>(null);
   const controller = useRef(new AbortController());
   const mounted = useRef(false);
   const emailRef = useRef<InputEmailRef>(null);
@@ -360,7 +358,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   }, [lastTab, loggedIn, navigation]);
 
   useEffect(() => {
-    inputMobileRef.current?.focus();
     return () => {
       mounted.current = false;
       controller.current?.abort();
@@ -522,7 +519,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
             if (resp.result === 0) {
               setAuthNoti(true);
               setTimeoutFlag(false);
-              authInputRef.current?.focus();
             } else {
               console.log('send sms failed', resp);
               throw new Error('failed to send sms');
@@ -669,12 +665,10 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           authNoti={authNoti}
           disabled={(authNoti && authorized) || loading}
           authorized={authorized}
-          forwardRef={inputMobileRef}
         />
 
         <InputPinInTime
           style={{marginTop: 20, paddingHorizontal: 20}}
-          forwardRef={authInputRef}
           editable={editablePin || !isProduction}
           // clickable={editablePin && !timeout}
           clickable
@@ -732,10 +726,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       <KeyboardAwareScrollView
         enableOnAndroid
         enableResetScrollToCoords={false}
-        keyboardShouldPersistTaps="handled"
-        // contentContainerStyle={{backgroundColor: 'lightgray'}}
-        // resetScrollToCoords={{x: 0, y: 0}}
-      >
+        keyboardShouldPersistTaps="handled">
         {socialLogin ? (
           <View style={{marginTop: 30}}>
             <Profile

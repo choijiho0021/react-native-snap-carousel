@@ -68,7 +68,7 @@ type InputPinInTimeProps = {
   duration: number;
   onTimeout: () => void;
   onPress: (v: string) => void;
-  forwardRef: React.MutableRefObject<TextInput | null>;
+  forwardRef?: React.MutableRefObject<TextInput | null>;
   style?: ViewStyle;
 };
 
@@ -150,7 +150,6 @@ const InputPinInTime: React.FC<InputPinInTimeProps> = (props) => {
             enablesReturnKeyAutomatically
             maxLength={6}
             clearTextOnFocus
-            autoFocus={editable}
             onFocus={() => setPin('')} //  android - clearTextOnFocus 수동적용
             onChangeText={setPin}
             value={pin}

@@ -13,6 +13,8 @@ import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
 import {navigate} from '@/navigation/navigation';
+import AppIcon from '@/components/AppIcon';
+import AppTextJoin from '@/components/AppTextJoin';
 
 const {esimApp, esimCurrency} = Env.get();
 
@@ -25,7 +27,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 10,
-    marginTop: 40,
+    marginTop: 32,
     backgroundColor: colors.whiteTwo,
   },
   subTitle: {
@@ -45,8 +47,10 @@ const styles = StyleSheet.create({
   },
   btnInvite: {
     marginTop: 15,
-    marginHorizontal: 7.5,
-    backgroundColor: colors.blue,
+    marginHorizontal: 20,
+    backgroundColor: colors.clearBlue,
+    overflow: 'hidden',
+    borderRadius: 3,
   },
   btnIdCheck: {
     marginHorizontal: 7.5,
@@ -81,26 +85,16 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: colors.clearBlue,
   },
-  btnArrow: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-  },
-  newMark: {
-    ...appStyles.bold14Text,
-    color: colors.clearBlue,
-    marginRight: 8,
-  },
   rowBtn: {
     flex: 1,
     marginBottom: 15,
     flexDirection: 'row',
     justifyContent: 'center',
-  },
-  column: {
-    flex: 1,
     marginHorizontal: 12.5,
-    flexDirection: 'column',
+  },
+  inviteText: {
+    ...appStyles.normal17,
+    color: 'white',
   },
 });
 
@@ -147,47 +141,61 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
         </Pressable>
       )}
 
-      <View style={styles.column}>
-        <View style={styles.rowBtn}>
-          <Pressable
-            style={styles.btnContactBoard}
-            onPress={() =>
-              navigate(navigation, route, 'MyPageStack', {
-                tab: 'HomeStack',
-                screen: 'ContactBoard',
-                params: {index: 1},
-              })
-            }>
-            <AppText style={[appStyles.normal16Text, {textAlign: 'center'}]}>
-              {i18n.t('board:mylist')}
-            </AppText>
-          </Pressable>
-          {esimApp && (
-            <Pressable
-              style={styles.btnIdCheck}
-              onPress={() =>
-                navigate(navigation, route, 'MyPageStack', {
-                  tab: 'HomeStack',
-                  screen: 'Contact',
-                })
-              }>
-              <AppText style={[appStyles.normal16Text, {textAlign: 'center'}]}>
-                {i18n.t('contact:title')}
-              </AppText>
-            </Pressable>
-          )}
-        </View>
-        <AppButton
-          iconName="inviteBanner"
-          style={styles.btnInvite}
+      <View style={styles.rowBtn}>
+        <Pressable
+          style={styles.btnContactBoard}
           onPress={() =>
             navigate(navigation, route, 'MyPageStack', {
               tab: 'HomeStack',
-              screen: 'Invite',
+              screen: 'ContactBoard',
+              params: {index: 1},
             })
-          }
-        />
+          }>
+          <AppText style={[appStyles.normal16Text, {textAlign: 'center'}]}>
+            {i18n.t('board:mylist')}
+          </AppText>
+        </Pressable>
+        {esimApp && (
+          <Pressable
+            style={styles.btnIdCheck}
+            onPress={() =>
+              navigate(navigation, route, 'MyPageStack', {
+                tab: 'HomeStack',
+                screen: 'Contact',
+              })
+            }>
+            <AppText style={[appStyles.normal16Text, {textAlign: 'center'}]}>
+              {i18n.t('contact:title')}
+            </AppText>
+          </Pressable>
+        )}
       </View>
+      <Pressable
+        style={styles.btnInvite}
+        onPress={() =>
+          navigate(navigation, route, 'MyPageStack', {
+            tab: 'HomeStack',
+            screen: 'Invite',
+          })
+        }>
+        <AppIcon name="inviteBanner" />
+        <View style={{position: 'absolute', left: 16, bottom: 20}}>
+          <AppText
+            style={{...appStyles.medium13, color: 'white', marginBottom: 3}}>
+            {i18n.t('invite:btn-1')}
+          </AppText>
+          <AppTextJoin
+            data={[
+              {text: i18n.t('invite:btn-2-1'), style: styles.inviteText},
+              {
+                text: i18n.t('invite:btn-2-2'),
+                style: {...styles.inviteText, fontWeight: 'bold'},
+              },
+              {text: i18n.t('invite:btn-2-3'), style: styles.inviteText},
+            ]}
+          />
+        </View>
+      </Pressable>
       <View style={styles.divider} />
       <AppText style={styles.subTitle}>{i18n.t('acc:purchaseHistory')}</AppText>
       <View style={styles.dividerSmall} />

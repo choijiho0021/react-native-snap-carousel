@@ -85,6 +85,7 @@ const images: Record<string, any[]> = {
   btnAlarm: [require(`${headerPath}btnAlarm.png`)],
   btnSearchTop: [require(`${headerPath}btnSearchTop.png`)],
 
+  updateImg: [require(`${mainPath}update.png`)],
   btnCheck: [
     require(`${mainPath}btnCheckNon.png`),
     require(`${mainPath}btnCheckSel.png`),
@@ -95,8 +96,8 @@ const images: Record<string, any[]> = {
   openFacebook: [require(`${mainPath}imgFacebook.png`)],
   openFacebookEng: [require(`${mainPath}imgFacebookEng.png`)],
   textLogo: [require(`${mainPath}rokebiLogoText1ColorEn.png`)],
-  kakaoLogin: [require(`${mainPath}LoginImgKako.png`)],
-  appleLogin: [require(`${mainPath}LoginImgApple.png`)],
+  kakaoLogin: [require(`${mainPath}img_kakao.png`)],
+  appleLogin: [require(`${mainPath}img_apple.png`)],
   naverLogin: [require(`${mainPath}LoginImgNaver.png`)],
   facebookLogin: [require(`${mainPath}LoginImgFacebook.png`)],
   imgRokebiChar: [require(`${mainPath}imgRokebiChar.png`)],
@@ -136,7 +137,7 @@ const images: Record<string, any[]> = {
   coin: [require(`${invitePath}coin.png`)],
   arrowRight: [require(`${giftPath}arrowRight.png`)],
   arrowLeft: [require(`${giftPath}arrowLeft.png`)],
-  inviteBanner: [require(`${invitePath}banner_friends.png`)],
+  inviteBanner: [require(`${invitePath}banner_img.png`)],
   giftModalBg: [require(`${giftPath}img_bg.png`)],
   giftGuideTop: [require(`${giftPath}img_top.png`)],
   giftGuideStep1: [require(`${giftPath}img_step1.png`)],
