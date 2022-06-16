@@ -221,16 +221,25 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           break;
       }
     },
-    [action.info, action.toast, navigation, route.params.item?.body],
+    [
+      action.info,
+      action.toast,
+      navigation,
+      route.params.item?.body,
+      route.params?.title,
+    ],
   );
 
   const renderWebView = useCallback(() => {
+    const {category} = API.Product;
+
     const localOpDetails = route.params?.localOpDetails;
     // const detail = _.isEmpty(localOpDetails)
     //   ? product.detailInfo + product.detailCommon
     //   : localOpDetails + product.detailCommon;
 
-    // console.log('aaaaa detail', detail);
+    const isMulti = route.params.item?.categoryId[0] === category.multi ? 2 : 1;
+
     return (
       <View style={{flex: 1}}>
         <WebView
@@ -243,14 +252,19 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           // onNavigationStateChange={(navState) => this.onNavigationStateChange(navState)}
           scrollEnabled
           onMessage={onMessage}
-          // source={{uri: 'http://146.56.139.208/#/product/desc/1'}}
-          source={{uri: 'http://localhost:8000/#/product/desc/2'}}
+          source={{uri: `http://146.56.139.208/#/product/desc/${isMulti}`}}
+          // source={{uri: 'http://localhost:8000/#/product/desc/2'}}
           // source={{html: detail}}
           style={{height: webViewHeight}}
         />
       </View>
     );
-  }, [onMessage, route.params?.localOpDetails, webViewHeight]);
+  }, [
+    onMessage,
+    route.params.item?.categoryId,
+    route.params?.localOpDetails,
+    webViewHeight,
+  ]);
 
   const soldOut = useCallback((payload: ApiResult<any>, message: string) => {
     if (payload.result === api.E_RESOURCE_NOT_FOUND) {

@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     // marginVertical: 7,
     marginHorizontal: 20,
     paddingHorizontal: 15,
-    paddingVertical:20,
+    paddingVertical: 20,
     flexDirection: 'row',
   },
   divider: {
@@ -113,9 +113,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     height: 1,
     borderStyle: 'solid',
-    borderLeftWidth:1,
-    borderRightWidth:1,
-    borderColor:colors.lightGrey
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderColor: colors.lightGrey,
 
     // backgroundColor:'red'
   },
@@ -179,22 +179,22 @@ const CountryListItem0 = ({
               ]}>
               {title}
             </AppText>
-            {!_.isEmpty(item.promoFlag) && (
-              <View
-                style={[
-                  styles.badge,
-                  {
-                    backgroundColor:
-                      item.promoFlag[0] === 'hot'
-                        ? colors.tomato
-                        : colors.clearBlue,
-                  },
-                ]}>
-                <AppText key="name" style={styles.badgeText}>
-                  {i18n.t(item.promoFlag[0])}
-                </AppText>
-              </View>
-            )}
+
+            {!_.isEmpty(item.promoFlag) &&
+              item.promoFlag.map((elm) => (
+                <View
+                  style={[
+                    styles.badge,
+                    {
+                      backgroundColor:
+                        elm === 'hot' ? colors.tomato : colors.clearBlue,
+                    },
+                  ]}>
+                  <AppText key="name" style={styles.badgeText}>
+                    {i18n.t(elm)}
+                  </AppText>
+                </View>
+              ))}
           </View>
 
           <AppText
@@ -218,7 +218,7 @@ const CountryListItem0 = ({
         </View>
       </View>
       <View style={styles.itemOutDivider}>
-      <View style={styles.itemDivider} />
+        <View style={styles.itemDivider} />
       </View>
     </Pressable>
   );
