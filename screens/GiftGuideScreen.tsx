@@ -1,5 +1,5 @@
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {memo, PropsWithChildren, useEffect} from 'react';
+import React, {memo, PropsWithChildren, useEffect, useState} from 'react';
 import {
   Dimensions,
   ImageBackground,
@@ -18,6 +18,7 @@ import {appStyles} from '@/constants/Styles';
 import AppButton from '@/components/AppButton';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppTextJoin from '@/components/AppTextJoin';
+import {API} from '@/redux/api';
 
 const {width} = Dimensions.get('window');
 
@@ -82,6 +83,7 @@ type GiftGuideProps = {
 };
 
 const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
+  const [gift, setGift] = useState('');
   useEffect(() => {
     navigation.setOptions({
       title: null,
@@ -89,10 +91,18 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
     });
   }, [navigation]);
 
+  useEffect(() => {
+    API.Promotion.getStat().then((rsp) => {
+      if (rsp.result === 0 && rsp.objects?.length > 0) {
+        setGift(rsp.objects[0].recommenderGift);
+      }
+    });
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <View key="1">
+        <View key="top">
           <AppIcon name="giftGuideTop" size={[width, (width * 440) / 375]} />
           <AppText
             style={{
@@ -215,7 +225,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
             {i18n.t('gift:tip-3')}
             <AppText
               style={[appStyles.robotoBold38, {color: colors.clearBlue}]}>
-              500
+              {gift}
               <AppText
                 style={[appStyles.semiBold24Text, {color: colors.clearBlue}]}>
                 {i18n.t('gift:cash')}
