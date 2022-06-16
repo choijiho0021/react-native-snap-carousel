@@ -703,6 +703,8 @@
   "changeEmail:info": "* 구매하신 eSIM 상품은 본 이메일로 발송됩니다.",
   "changeEmail:save": "변경 내용 저장하기",
   "changeEmail:saveInfo": "저장이 완료되었습니다.",
+  "changeEmail:duplicate": "이미 사용하고 있는 이메일 주소입니다.",
+  "changeEmail:fail": "이메일 등록에 실패했습니다.",
 
   "socialLogin:kakao": "KaKao 로그인",
   "socialLogin:apple": "Apple 로그인"
