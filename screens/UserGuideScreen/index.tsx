@@ -15,7 +15,7 @@ import {RouteProp} from '@react-navigation/native';
 import Carousel from 'react-native-snap-carousel';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
-import {sliderWidth} from '@/constants/SliderEntry.style';
+import {isDeviceSize, sliderWidth} from '@/constants/SliderEntry.style';
 import AppText from '@/components/AppText';
 import {appStyles} from '../constants/Styles';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -77,7 +77,6 @@ const styles = StyleSheet.create({
     height: 25,
     borderRadius: 20,
     backgroundColor: colors.black,
-    marginTop: 8,
     marginBottom: 4,
   },
   stepText: {
@@ -88,6 +87,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     textAlign: 'center',
     letterSpacing: -0.5,
+  },
+  tailImages: {
+    justifyContent: 'space-between',
+    paddingBottom: 64,
+    flex: 1,
   },
 });
 type CarouselIndex =
@@ -250,7 +254,8 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
   const renderStepPage = useCallback((data, index) => {
     return (
       <View style={[styles.container, {alignItems: 'center'}]}>
-        <View style={styles.step}>
+        <View
+          style={[styles.step, {marginTop: isDeviceSize('small') ? 8 : 32}]}>
           <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
         </View>
 
@@ -258,9 +263,33 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
           <AppTextJoin data={elm} />
         ))}
 
-        <View style={{flex: 1, marginTop: 24}}>{data.tip && data.tip()}</View>
+        <View style={{flex: 1, marginTop: isDeviceSize('small') ? 24 : 42}}>
+          {data.tip && data.tip()}
+        </View>
 
         <Image style={styles.image} source={data.image} resizeMode="contain" />
+      </View>
+    );
+  }, []);
+
+  const renderTailPage = useCallback((data, index) => {
+    const image1 = require('../assets/images/esim/userGuide/eSIMUserGuide11_1.png');
+    const image2 = require('../assets/images/esim/userGuide/eSIMUserGuide11_2.png');
+    return (
+      <View style={[styles.container, {alignItems: 'center'}]}>
+        <View
+          style={[styles.step, {marginTop: isDeviceSize('small') ? 8 : 32}]}>
+          <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
+        </View>
+
+        {data?.title.map((elm) => (
+          <AppTextJoin data={elm} />
+        ))}
+        <View style={styles.tailImages}>
+          <Image style={styles.image} source={image1} resizeMode="contain" />
+
+          <Image style={styles.image} source={image2} resizeMode="contain" />
+        </View>
       </View>
     );
   }, []);
@@ -270,10 +299,14 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
       <View style={styles.container}>
         {renderModalHeader(index)}
         {index === 0 && renderHeadPage(guideImages[item])}
-        {index > 0 && renderStepPage(guideImages[item], index)}
+        {index > 0 &&
+          index !== Object.keys(guideImages).length - 1 &&
+          renderStepPage(guideImages[item], index)}
+        {index === Object.keys(guideImages).length - 1 &&
+          renderTailPage(guideImages[item], index)}
       </View>
     ),
-    [renderHeadPage, renderModalHeader, renderStepPage],
+    [renderHeadPage, renderModalHeader, renderStepPage, renderTailPage],
   );
 
   return (

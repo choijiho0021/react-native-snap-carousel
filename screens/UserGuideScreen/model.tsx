@@ -45,6 +45,11 @@ const styles = StyleSheet.create({
   },
 });
 
+const renderTips = () => (
+  <AppText style={{...appStyles.bold14Text, color: colors.clearBlue}}>
+    {i18n.t('userGuide:tip')}
+  </AppText>
+);
 const stepsTitle = {
   step0: [
     [
@@ -206,16 +211,14 @@ export const guideImages = {
     step: 2,
     tip: () => (
       <View style={{alignItems: 'center', marginHorizontal: 40}}>
-        <AppText style={{...appStyles.bold14Text, color: colors.clearBlue}}>
-          {i18n.t('userGuide:tip')}
-        </AppText>
+        {renderTips()}
         <View style={{flexDirection: 'row', marginHorizontal: 40}}>
           <View style={styles.step}>
             <AppText style={styles.stepText}>1</AppText>
           </View>
           <AppText style={appStyles.normal13}>
             {i18n.t('userGuide:tipPage3_1')}
-            <AppText style={appStyles.bold14Text}>
+            <AppText style={appStyles.bold13Text}>
               {i18n.t('userGuide:tipPage3_2')}
             </AppText>
             {i18n.t('userGuide:tipPage3_3')}
@@ -227,7 +230,7 @@ export const guideImages = {
           </View>
           <AppText style={appStyles.normal13}>
             {i18n.t('userGuide:tipPage3_4')}
-            <AppText style={appStyles.bold14Text}>
+            <AppText style={appStyles.bold13Text}>
               {i18n.t('userGuide:tipPage3_5')}
             </AppText>
             {i18n.t('userGuide:tipPage3_6')}
@@ -240,13 +243,58 @@ export const guideImages = {
     image: require('../assets/images/esim/userGuide/eSIMUserGuide4.png'),
     title: stepsTitle.step2,
     step: 2,
-    tip: () => null,
+    tip: () => (
+      <View style={{alignItems: 'center', marginHorizontal: 40}}>
+        {renderTips()}
+        <View style={{flexDirection: 'row', marginHorizontal: 20}}>
+          <AppText style={[appStyles.normal14Text, {marginHorizontal: 5}]}>
+            •
+          </AppText>
+          <AppText style={appStyles.bold13Text}>
+            {i18n.t('userGuide:tipPage4_1')}
+            <AppText style={appStyles.normal13}>
+              {i18n.t('userGuide:tipPage4_2')}
+            </AppText>
+          </AppText>
+        </View>
+      </View>
+    ),
   },
   page5: {
     image: require('../assets/images/esim/userGuide/eSIMUserGuide5.png'),
     title: stepsTitle.step3,
     step: 3,
-    tip: () => null,
+    tip: () => (
+      <View style={{alignItems: 'center', marginHorizontal: 40}}>
+        {renderTips()}
+        <View>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginHorizontal: 20,
+            }}>
+            <AppText style={[appStyles.normal14Text, {marginRight: 5}]}>
+              •
+            </AppText>
+            <AppText style={appStyles.medium13}>
+              {i18n.t('userGuide:tipPage5_1')}
+            </AppText>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginHorizontal: 20,
+            }}>
+            <AppText style={[appStyles.normal14Text, {marginRight: 5}]}>
+              •
+            </AppText>
+            <AppText style={appStyles.bold13Text}>
+              {i18n.t('userGuide:tipPage5_2')}
+            </AppText>
+          </View>
+        </View>
+      </View>
+    ),
   },
   page6: {
     image: require('../assets/images/esim/userGuide/eSIMUserGuide6.png'),
@@ -264,22 +312,80 @@ export const guideImages = {
     image: require('../assets/images/esim/userGuide/eSIMUserGuide8.png'),
     title: stepsTitle.step4,
     step: 4,
-    tip: () => null,
+    tip: () => (
+      <View style={{alignItems: 'center', marginHorizontal: 40}}>
+        {renderTips()}
+        <View style={{flexDirection: 'row', marginHorizontal: 20}}>
+          <AppText style={[appStyles.normal14Text, {marginHorizontal: 5}]}>
+            •
+          </AppText>
+          <AppText style={appStyles.normal13}>
+            {i18n.t('userGuide:tipPage8_1')}
+            <AppText style={appStyles.bold13Text}>
+              {i18n.t('userGuide:tipPage8_2')}
+            </AppText>
+            <AppText style={[appStyles.bold13Text, {color: colors.tomato}]}>
+              {i18n.t('userGuide:tipPage8_3')}
+            </AppText>
+          </AppText>
+        </View>
+      </View>
+    ),
   },
   page9: {
     image: require('../assets/images/esim/userGuide/eSIMUserGuide9.png'),
     title: stepsTitle.step5,
     step: 5,
-    tip: () => null,
+    tip: () => (
+      <View
+        style={{
+          alignItems: 'center',
+          marginHorizontal: 40,
+        }}>
+        {renderTips()}
+        <View style={{flexDirection: 'row', marginHorizontal: 20}}>
+          <AppText style={[appStyles.normal14Text, {marginHorizontal: 5}]}>
+            •
+          </AppText>
+          <AppText style={appStyles.normal13}>
+            {i18n.t('userGuide:tipPage9_1')}
+            <AppText style={appStyles.bold13Text}>
+              {i18n.t('userGuide:tipPage9_2')}
+            </AppText>
+            {i18n.t('userGuide:tipPage9_3')}
+          </AppText>
+        </View>
+      </View>
+    ),
   },
   page10: {
     image: require('../assets/images/esim/userGuide/eSIMUserGuide10.png'),
     title: stepsTitle.step5,
     step: 5,
-    tip: () => null,
+    tip: () => (
+      <View
+        style={{
+          alignItems: 'center',
+          marginHorizontal: 40,
+        }}>
+        {renderTips()}
+        <View style={{flexDirection: 'row', marginHorizontal: 20}}>
+          <AppText style={[appStyles.normal14Text, {marginHorizontal: 5}]}>
+            •
+          </AppText>
+          <AppText style={appStyles.normal13}>
+            {i18n.t('userGuide:tipPage9_1')}
+            <AppText style={appStyles.bold13Text}>
+              {i18n.t('userGuide:tipPage9_2')}
+            </AppText>
+            {i18n.t('userGuide:tipPage9_3')}
+          </AppText>
+        </View>
+      </View>
+    ),
   },
   page11: {
-    image: require('../assets/images/esim/userGuide/eSIMUserGuide11.png'),
+    image: require('../assets/images/esim/userGuide/eSIMUserGuide11_1.png'),
     title: stepsTitle.step6,
     step: 6,
     tip: () => null,
