@@ -8,7 +8,6 @@ import {AppDispatch} from '@/store';
 export const Toast = {
   NOT_LOADED: 'toast:failedToLoad',
   NOT_UPDATED: 'toast:failedToUpdate',
-  NOT_OPENED: 'toast:failedToOpen',
   COPY_SUCCESS: 'toast:copySuccess',
 };
 
@@ -39,23 +38,23 @@ const slice = createSlice({
   },
 });
 
-export const reflectWithToast = <T, S>(
-  action: AsyncThunk<T, S, {}>,
-  toastType: string,
-) => (args: S) => (dispatch: AppDispatch) =>
-  dispatch(action(args)).then(
-    (resp) => {
-      const result = resp.payload ? resp.payload.result : resp.result;
-      if (result !== 0) {
+export const reflectWithToast =
+  <T, S>(action: AsyncThunk<T, S, {}>, toastType: string) =>
+  (args: S) =>
+  (dispatch: AppDispatch) =>
+    dispatch(action(args)).then(
+      (resp) => {
+        const result = resp.payload ? resp.payload.result : resp.result;
+        if (result !== 0) {
+          dispatch(slice.actions.push(toastType));
+        }
+        return resp;
+      },
+      (err) => {
         dispatch(slice.actions.push(toastType));
-      }
-      return resp;
-    },
-    (err) => {
-      dispatch(slice.actions.push(toastType));
-      return err;
-    },
-  );
+        return err;
+      },
+    );
 
 export const actions = {...slice.actions, reflectWithToast};
 export type ToastAction = typeof actions;

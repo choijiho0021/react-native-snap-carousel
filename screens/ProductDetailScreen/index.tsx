@@ -36,11 +36,6 @@ import {
   ProductAction,
   ProductModelState,
 } from '@/redux/modules/product';
-import {
-  actions as toastActions,
-  Toast,
-  ToastAction,
-} from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppButton from '@/components/AppButton';
@@ -123,7 +118,6 @@ type ProductDetailScreenProps = {
   account: AccountModelState;
 
   action: {
-    toast: ToastAction;
     product: ProductAction;
     cart: CartAction;
     info: InfoAction;
@@ -137,7 +131,10 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   action,
   account,
 }) => {
-  const [showSnackBar, setShowSnackBar] = useState(false);
+  const [showSnackBar, setShowSnackBar] = useState<{
+    text: string;
+    visible: boolean;
+  }>({text: '', visible: false});
   const [disabled, setDisabled] = useState(false);
   const [status, setStatus] = useState<TrackingStatus>();
   const [purchaseItems, setPurchaseItems] = useState<PurchaseItem[]>([]);
@@ -204,7 +201,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           break;
         case 'copy':
           Clipboard.setString(value);
-          action.toast.push(Toast.COPY_SUCCESS);
+          setShowSnackBar({text: i18n.t('prodDetail:copy'), visible: true});
           break;
         case 'navigate':
           navigation.navigate(screen, params);
@@ -221,13 +218,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           break;
       }
     },
-    [
-      action.info,
-      action.toast,
-      navigation,
-      route.params.item?.body,
-      route.params?.title,
-    ],
+    [action.info, navigation, route.params.item?.desc, route.params?.title],
   );
 
   const renderWebView = useCallback(() => {
@@ -276,8 +267,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   const onPressBtnCart = useCallback(async () => {
     const {loggedIn} = account;
-    // 다른 버튼 클릭으로 스낵바 종료될 경우, 재출력 안되는 부분이 있어 추가
-    setShowSnackBar(false);
 
     if (status === 'authorized') {
       Analytics.trackEvent('Click_cart');
@@ -298,7 +287,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     action.cart.cartAddAndGet({purchaseItems}).then(({payload: resp}) => {
       console.log('@@@ add and get', resp);
       if (resp.result === 0) {
-        setShowSnackBar(true);
+        setShowSnackBar({text: i18n.t('country:addCart'), visible: true});
         if (
           resp.objects[0].orderItems.find((v) => v.key === selected).qty >=
           PURCHASE_LIMIT
@@ -321,10 +310,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   const onPressBtnPurchase = useCallback(() => {
     const {loggedIn, balance} = account;
-
-    // 다른 버튼 클릭으로 스낵바 종료될 경우, 재출력 안되는 부분이 있어 추가
-    setShowSnackBar(false);
-
     Analytics.trackEvent('Click_purchase');
 
     if (!loggedIn) {
@@ -361,9 +346,11 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       </View>
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
       <AppSnackBar
-        visible={showSnackBar}
-        onClose={() => setShowSnackBar(false)}
-        textMessage={i18n.t('country:addCart')}
+        visible={showSnackBar.visible}
+        onClose={() =>
+          setShowSnackBar((pre) => ({text: pre.text, visible: false}))
+        }
+        textMessage={showSnackBar.text}
       />
       {account.iccid || (esimApp && account.loggedIn) ? (
         <View style={styles.buttonBox}>
@@ -410,7 +397,6 @@ export default connect(
   (dispatch) => ({
     action: {
       product: bindActionCreators(productActions, dispatch),
-      toast: bindActionCreators(toastActions, dispatch),
       info: bindActionCreators(infoActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
     },

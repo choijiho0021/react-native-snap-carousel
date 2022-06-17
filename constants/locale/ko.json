@@ -363,6 +363,7 @@
   "contact:guide": "eSIM 사용 가이드",
   "contact:info": "잠깐!\n먼저 확인해주세요 : )",
   "contact:info2": "걱정 마세요\n로밍도깨비가 친절하게 도와드릴게요!",
+  "contact:kakaoOpenChFail": "카카오톡 채널에 연결할 수 없습니다.",
 
   "faq:general": "사용방법",
   "faq:config": "설정",
@@ -465,6 +466,7 @@
   "redirectHK:iccid": "ICCID",
   "redirectHK:orderNo": "Order Number",
   "redirectHK:guide": "실명등록 가이드",
+  "redirectHK:copySuccess": "복사되었습니다.",
 
   "usim:usageErrorInfo1": "오류 발생!",
   "usim:usageErrorInfo2": "로깨비가 해결하고 있어요.",
@@ -569,6 +571,7 @@
   "prodDetail:Question": "궁금하신점이 있으신가요?",
   "prodDetail:KakaoPlus": "카카오톡 플러스 친구로\n 편하게 물어보세요!",
   "prodDetail:FacebookMessage": "페이스북 메신저로\n 편하게 물어보세요!",
+  "prodDetail:copy": "복사되었습니다",
 
   "prodDetailOp:title": "사용 가능 지역 및 통신사 확인하기",
   "prodDetailOp:subTitle": "해당 국가를 클릭하면 APN 정보가 보여요!",
@@ -583,7 +586,6 @@
 
   "toast:failedToUpdate": "설정 변경에 실패했습니다.\n네트워크 연결 상태를 확인해주세요.",
   "toast:failedToLoad": "데이터 로딩에 실패했습니다.\n네트워크 연결 상태를 확인해주세요.",
-  "toast:failedToOpen": "카카오톡 채널에 연결할 수 없습니다.",
   "toast:copySuccess": "복사되었습니다.",
   "toast:sendSuccess": "상품을 선물하였습니다.",
 
