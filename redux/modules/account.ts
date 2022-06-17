@@ -494,17 +494,12 @@ const changeEmail = createAsyncThunk(
   'account/changeEmail',
   (mail: string, {dispatch, getState}) => {
     const {
-      account: {userId, token, pin},
+      account: {uid, token, pin},
     } = getState() as RootState;
 
-    const attributes = {
-      mail,
-      pass: {
-        existing: pin,
-      },
-    };
-
-    return dispatch(changeUserAttrWithToast({userId, token, attributes})).then(
+    return dispatch(
+      changeUserAttrWithToast({uid, token, attributes: {mail}}),
+    ).then(
       ({payload}) => {
         if (payload.result === 0) {
           dispatch(slice.actions.updateAccount({email: mail}));
@@ -522,14 +517,14 @@ const changePushNoti = createAsyncThunk(
   'account/changePushNoti',
   ({isPushNotiEnabled}: {isPushNotiEnabled: boolean}, {dispatch, getState}) => {
     const {
-      account: {userId, token},
+      account: {uid, token},
     } = getState() as RootState;
 
     const attributes = {
       field_is_notification_enabled: isPushNotiEnabled,
     };
 
-    return dispatch(changeUserAttrWithToast({userId, token, attributes})).then(
+    return dispatch(changeUserAttrWithToast({uid, token, attributes})).then(
       ({payload}) => {
         console.log('@@@ push noti', payload);
         if (payload.result === 0) {
