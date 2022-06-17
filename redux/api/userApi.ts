@@ -1,10 +1,10 @@
 /* eslint-disable eqeqeq */
 import _ from 'underscore';
 import CookieManager from '@react-native-cookies/cookies';
-import {retrieveData, utils} from '@/utils/utils';
+import {retrieveData} from '@/utils/utils';
 import {AccountAuth} from '@/redux/modules/account';
-import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
-import {RkbFile, RkbImage} from './accountApi';
+import api, {ApiResult} from './api';
+import {RkbFile} from './accountApi';
 import {SocialAuthInfo} from '@/components/SocialLogin';
 
 const KEY_ICCID = 'account.iccid';
@@ -23,39 +23,25 @@ export type RkbUser = {
   uuid?: string;
 };
 
-const toUser = (data: DrupalNode[] | DrupalNodeJsonApi): ApiResult<RkbUser> => {
-  if (_.isArray(data)) {
-    return api.success(data);
-  }
+const toUser = (rsp): ApiResult<RkbUser> => {
+  // jsonapi result
+  // const userPictureUrl =
+  //   _.isArray(data.included) && data.included.length > 0
+  //     ? data.included[0].attributes?.uri?.url
+  //     : '';
 
-  if (!_.isEmpty(data.uid)) {
-    return api.success([
-      {
-        uid: utils.stringToNumber(data.uid[0].value),
-        uuid: data.uuid[0].value,
-      },
-    ]);
-  }
-
-  if (!_.isEmpty(data.jsonapi)) {
-    // jsonapi result
-    const obj = _.isArray(data.data) ? data.data : [data.data];
-    const userPictureUrl =
-      _.isArray(data.included) && data.included.length > 0
-        ? data.included[0].attributes?.uri?.url
-        : '';
-
+  if (rsp.result === 0) {
     return api.success(
-      obj.map((item) => ({
-        ...item.attributes,
-        id: item.id,
-        isPushNotiEnabled: item.attributes?.field_is_notification_enabled,
-        userPictureUrl,
+      rsp.objects?.map((item) => ({
+        ...item,
+        uid: parseInt(item.uid, 10),
+        isPushNotiEnabled: item.field_is_notification_enabled === 'O',
+        // userPictureUrl,
       })),
     );
   }
 
-  return api.failure(api.E_NOT_FOUND, data.message);
+  return api.failure(rsp.result);
 };
 
 export type RkbLogin = {
@@ -87,55 +73,7 @@ const getToken = () => {
 
 const clearCookies = () => {
   CookieManager.clearAll(true);
-  /*
-    return CookieManager.getAll().then((cookies) => {
-      console.log('CookieManager.getAll =>', cookies);
-      Object.keys(cookies).forEach((c) =>
-        CookieManager.clearByName('https://esim.rokebi.com', c).then(
-          (success) => {
-            console.log('CookieManager.clearAll =>', c, success);
-          },
-        ),
-      );
-    });
-    */
 };
-
-// API for User
-// not used
-/*
-    signUp = ({user, pass}) => {
-
-        console.log('signUp', user, pass)
-
-        if ( _.isEmpty(user) || _.isEmpty(pass)) 
-            return api.reject( api.E_INVALID_ARGUMENT, `user or pass`)
-
-        return this.getToken().then( token => {
-            console.log('token', token)
-            const url = `${api.httpUrl(api.path.userRegister)}?_format=hal_json`
-            const headers = api.headers({
-                "X-CSRF-Token": token,
-            })
-            const body = {
-                _links: {
-                    type : {
-                        href : api.httpUrl('rest/type/user/user')
-                    }
-                },
-                name:{value: user},
-                pass:{value: pass},
-                mail:{value: `${user}@rokebi.com`},
-            }
-
-            return api.callHttp(url, {
-                method: 'POST',
-                headers,
-                body: JSON.stringify(body)
-            }, this.toUser)
-        })
-    }
-    */
 
 const resetPw = ({user, pass}: AccountAuth) => {
   if (!user)
@@ -165,41 +103,24 @@ const logOut = async (token: string) => {
   });
 };
 
-const getByFilter = ({filter, token}: {filter: string; token?: string}) => {
-  if (!token) {
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
-  }
-
-  return api.callHttpGet(
-    `${api.httpUrl(
-      api.path.jsonapi.user,
-      '',
-    )}${filter}&include=user_picture&fields[user--user]=drupal_internal__uid,name,mail,field_fcm_token,field_device_token,field_is_notification_enabled&fields[file--file]=uri`,
-    toUser,
-    api.withToken(token, 'vnd.api+json'),
-  );
-};
-
-const getByUid = ({uid, token}: {uid: string; token?: string}) => {
-  if (!_.isNumber(uid) && _.isEmpty(uid)) {
-    return api.reject(api.E_INVALID_ARGUMENT, 'invalid parameter: uid');
-  }
-
-  return getByFilter({filter: `?filter[uid][value]=${uid}`, token});
-};
-
 const getByName = ({name, token}: {name?: string; token?: string}) => {
   if (!name)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: name');
 
-  return getByFilter({filter: `?filter[name][value]=${name}`, token});
+  return api.callHttpGet(
+    `${api.httpUrl(api.path.rokApi.rokebi.user)}/0?_format=json&name=${name}`,
+    toUser,
+  );
 };
 
 const getByMail = ({mail, token}: {mail: string; token?: string}) => {
   if (!mail)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: mail');
 
-  return getByFilter({filter: `?filter[mail][value]=${mail}`, token});
+  return api.callHttpGet(
+    `${api.httpUrl(api.path.rokApi.rokebi.user)}/0?_format=json&mail=${mail}`,
+    toUser,
+  );
 };
 
 const logIn = async ({user, pass}: {user: string; pass: string}) => {
@@ -283,108 +204,52 @@ const logIn = async ({user, pass}: {user: string; pass: string}) => {
 };
 
 const update = ({
-  userId,
+  uid,
   attributes,
   token,
-  deviceModel,
 }: {
-  userId?: string;
+  uid?: number;
   token?: string;
   attributes?: object;
-  deviceModel?: string;
 }) => {
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
-  if (!userId)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: userId');
+  if (!uid) return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: uid');
   if (_.isEmpty(attributes))
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: attributes');
 
   return api.callHttp(
-    `${api.httpUrl(api.path.jsonapi.user, '')}/${userId}`,
+    api.httpUrl(api.path.rokApi.rokebi.user, ''),
     {
-      method: 'PATCH',
-      headers: api.withToken(token, 'vnd.api+json'),
-      body: JSON.stringify({
-        data: {
-          type: 'user--user',
-          id: userId,
-          attributes,
-          deviceModel,
-        },
-      }),
+      method: 'POST',
+      body: JSON.stringify({uid, ...attributes}),
+      headers: api.withToken(token, 'json'),
     },
     toUser,
   );
 };
 
-const deleteUser = ({uid, token, user, pass}: AccountAuth & {uid: number}) => {
-  const missing = api.missingParameters({uid, token, user, pass});
-  if (missing.length > 0) {
-    return api.reject(
-      api.E_INVALID_ARGUMENT,
-      `missing parameter: ${missing.join(',')}`,
-    );
-  }
-
-  return api.callHttp(
-    `${api.httpUrl(api.path.user)}/${uid}?_format=hal_json`,
-    {
-      method: 'DELETE',
-      headers: api.basicAuth(user, pass, 'hal+json', {
-        'X-CSRF-Token': token,
-      }),
-    },
-    (resp) => ({
-      result: resp.status == '204' ? 0 : api.FAILED,
-    }),
-    {isJson: false},
-  );
-};
-
 const changePicture = ({
-  userId,
+  uid,
   userPicture,
-  image,
   token,
 }: {
-  userId: string;
+  uid: number;
   userPicture: RkbFile;
-  image: RkbImage;
   token: string;
 }) => {
-  if (!userId)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: userId');
+  if (!uid) return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: uid');
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
   if (!userPicture)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: userPicture');
 
-  const body = {
-    data: {
-      type: 'user--user',
-      id: userId,
-      relationships: {
-        user_picture: {
-          data: {
-            type: 'file--image',
-            id: userPicture.uuid,
-            meta: {
-              width: image.width,
-              height: image.height,
-            },
-          },
-        },
-      },
-    },
-  };
-
   return api.callHttp(
-    `${api.httpUrl(api.path.jsonapi.user, '')}/${userId}`,
+    api.httpUrl(api.path.rokApi.rokebi.user, ''),
     {
-      method: 'PATCH',
-      headers: api.withToken(token, 'vnd.api+json'),
-      body: JSON.stringify(body),
+      method: 'POST',
+      body: JSON.stringify({uid, userPicture}),
+      headers: api.withToken(token, 'json'),
     },
     toUser,
   );
@@ -629,12 +494,9 @@ export default {
   resetPw,
   logOut,
   logIn,
-  getByFilter,
-  getByUid,
   getByName,
   getByMail,
   update,
-  deleteUser,
   receiveGift,
   changePicture,
   sendSms,
