@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   StyleSheet,
   TextInput,
@@ -60,31 +60,27 @@ const styles = StyleSheet.create({
   },
 });
 
+export type InputPinRef = {
+  focus: () => void;
+};
+
 type InputPinInTimeProps = {
   countdown: boolean;
   authorized?: boolean;
-  editable: boolean;
   clickable: boolean;
   duration: number;
   onTimeout: () => void;
   onPress: (v: string) => void;
-  forwardRef?: React.MutableRefObject<TextInput | null>;
+  inputRef?: React.MutableRefObject<InputPinRef | null>;
   style?: ViewStyle;
 };
 
 const InputPinInTime: React.FC<InputPinInTimeProps> = (props) => {
-  const {
-    countdown,
-    authorized,
-    editable,
-    onTimeout,
-    onPress,
-    forwardRef,
-    style,
-  } = props;
+  const {countdown, authorized, onTimeout, onPress, inputRef, style} = props;
   const [pin, setPin] = useState('');
   const [duration, setDuration] = useState(0);
   const [timeoutFlag, setTimeoutFlag] = useState(false);
+  const ref = useRef<TextInput>();
 
   useInterval(
     () => {
@@ -94,6 +90,14 @@ const InputPinInTime: React.FC<InputPinInTimeProps> = (props) => {
     duration > 0 ? 1000 : null,
   );
 
+  useEffect(() => {
+    if (inputRef) {
+      inputRef.current = {
+        focus: () => ref.current?.focus(),
+      };
+    }
+  }, [inputRef]);
+
   const init = useCallback(() => {
     setPin('');
     setTimeoutFlag(false);
@@ -102,8 +106,8 @@ const InputPinInTime: React.FC<InputPinInTimeProps> = (props) => {
   }, [countdown, props.duration]);
 
   const onClick = useCallback(() => {
-    if (forwardRef?.current) forwardRef.current.focus();
-  }, [forwardRef]);
+    ref.current?.focus();
+  }, []);
 
   const clickable = props.clickable && _.size(pin) === 6;
   const min = Math.floor(duration / 60);
@@ -145,7 +149,7 @@ const InputPinInTime: React.FC<InputPinInTimeProps> = (props) => {
             {...props}
             placeholder={i18n.t('mobile:auth')}
             placeholderTextColor={colors.greyish}
-            ref={forwardRef}
+            ref={ref}
             keyboardType="numeric"
             enablesReturnKeyAutomatically
             maxLength={6}
