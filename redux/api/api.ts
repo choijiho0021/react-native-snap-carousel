@@ -101,6 +101,7 @@ const path = {
       call: 'rokebi/call',
       ota: 'rokebi/svc/ota',
       reg: 'rokebi/reg',
+      user: 'rokebi/user',
     },
     pv: {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/usage',

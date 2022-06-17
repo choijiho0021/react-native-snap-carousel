@@ -2,7 +2,6 @@ import {RootState} from '@reduxjs/toolkit';
 import React, {memo} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
-import AppIcon from '@/components/AppIcon';
 import AppUserPic from '@/components/AppUserPic';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';

@@ -137,7 +137,7 @@ const changeNotiToken = createAsyncThunk(
   'account/changeNotiToken',
   (param: string, {dispatch, getState}) => {
     const {
-      account: {token, deviceToken, userId, deviceModel},
+      account: {token, deviceToken, uid, deviceModel},
     } = getState() as RootState;
 
     const pushToken = param || deviceToken || '';
@@ -148,7 +148,7 @@ const changeNotiToken = createAsyncThunk(
       field_device_model: deviceModel,
     };
 
-    return dispatch(changeUserAttr({userId, attributes, token})).then(
+    return dispatch(changeUserAttr({uid, attributes, token})).then(
       (rsp) => {
         const result = rsp.payload ? rsp.payload.result : rsp.result;
         if (result === 0) {
@@ -210,6 +210,7 @@ const logInAndGetAccount = createAsyncThunk(
               const {
                 account: {old_deviceToken},
               } = getState() as RootState;
+
               messaging()
                 .getToken()
                 .then((deviceToken) => {
@@ -275,10 +276,10 @@ const uploadAndChangePicture = createAsyncThunk(
   'account/uploadAndChangePicture',
   (image: RkbImage, {dispatch, getState}) => {
     const {
-      account: {userId, token, mobile},
+      account: {uid, token, mobile},
     } = getState() as RootState;
 
-    if (userId && mobile && token) {
+    if (uid && mobile && token) {
       return dispatch(
         uploadPictureWithToast({image, user: mobile, token}),
       ).then(
@@ -287,8 +288,7 @@ const uploadAndChangePicture = createAsyncThunk(
           if (result === 0 && objects && objects.length > 0) {
             return dispatch(
               changePictureWithToast({
-                userId,
-                image,
+                uid,
                 userPicture: objects[0],
                 token,
               }),
