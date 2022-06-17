@@ -67,7 +67,6 @@ export type InputPinRef = {
 type InputPinInTimeProps = {
   countdown: boolean;
   authorized?: boolean;
-  editable: boolean;
   clickable: boolean;
   duration: number;
   onTimeout: () => void;
@@ -77,8 +76,7 @@ type InputPinInTimeProps = {
 };
 
 const InputPinInTime: React.FC<InputPinInTimeProps> = (props) => {
-  const {countdown, authorized, editable, onTimeout, onPress, inputRef, style} =
-    props;
+  const {countdown, authorized, onTimeout, onPress, inputRef, style} = props;
   const [pin, setPin] = useState('');
   const [duration, setDuration] = useState(0);
   const [timeoutFlag, setTimeoutFlag] = useState(false);

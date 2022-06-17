@@ -670,8 +670,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
         <InputPinInTime
           style={{marginTop: 20, paddingHorizontal: 20}}
-          editable={editablePin || !isProduction}
-          clickable
+          clickable={editablePin || !isProduction}
           authorized={mobile ? authorized : undefined}
           countdown={authNoti && !authorized && !timeoutFlag}
           onTimeout={() => setTimeoutFlag(true)}
