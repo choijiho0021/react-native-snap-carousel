@@ -50,6 +50,7 @@ import i18n from '@/utils/i18n';
 import Info from './components/Info';
 import OrderItem from './components/OrderItem';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const styles = StyleSheet.create({
   title: {
@@ -158,6 +159,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
   const [refreshing, setRefreshing] = useState(false);
   const [isRokebiInstalled, setIsRokebiInstalled] = useState(false);
   const [copyString, setCopyString] = useState('');
+  const [showSnackBar, setShowSnackbar] = useState(false);
 
   const checkPhotoPermission = useCallback(async () => {
     if (!hasPhotoPermission) {
@@ -248,16 +250,13 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
     [navigation, order],
   );
 
-  const copyToClipboard = useCallback(
-    (value?: string) => {
-      if (value) {
-        Clipboard.setString(value);
-        setCopyString(value);
-        action.toast.push(Toast.COPY_SUCCESS);
-      }
-    },
-    [action.toast],
-  );
+  const copyToClipboard = useCallback((value?: string) => {
+    if (value) {
+      Clipboard.setString(value);
+      setCopyString(value);
+      setShowSnackbar(true);
+    }
+  }, []);
 
   // RokebiSIm에서 RokebiTalk 호출
   const openRokebiTalk = useCallback(async () => {
@@ -458,6 +457,11 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
         visible={showIdModal}>
         {modalBody()}
       </AppModal>
+      <AppSnackBar
+        visible={showSnackBar}
+        onClose={() => setShowSnackbar(false)}
+        textMessage={i18n.t('copyMsg')}
+      />
     </View>
   );
 };

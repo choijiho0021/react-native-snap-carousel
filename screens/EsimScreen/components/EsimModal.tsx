@@ -19,6 +19,7 @@ import {
   Toast,
   ToastAction,
 } from '@/redux/modules/toast';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const styles = StyleSheet.create({
   center: {
@@ -119,6 +120,7 @@ const EsimModal: React.FC<EsimModalProps> = ({
   action,
 }) => {
   const [copyString, setCopyString] = useState('');
+  const [showSnackBar, setShowSnackbar] = useState(false);
   const modalHeadTitle = useMemo(() => {
     switch (modal) {
       case 'showQR':
@@ -137,10 +139,10 @@ const EsimModal: React.FC<EsimModalProps> = ({
       if (value) {
         Clipboard.setString(value);
         setCopyString(value);
-        action.toast.push(Toast.COPY_SUCCESS);
+        setShowSnackbar(true);
       }
     },
-    [action.toast],
+    [],
   );
 
   const copyInfo = useCallback(
@@ -256,6 +258,11 @@ const EsimModal: React.FC<EsimModalProps> = ({
       onOkClose={onOkClose}
       visible={visible}>
       {modalBody()}
+      <AppSnackBar
+        visible={showSnackBar}
+        onClose={() => setShowSnackbar(false)}
+        textMessage={i18n.t('copyMsg')}
+      />
     </AppModal>
   );
 };
