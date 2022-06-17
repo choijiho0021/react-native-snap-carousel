@@ -212,7 +212,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         case 'apn':
           navigation.navigate('ProductDetailOp', {
             title: route.params?.title,
-            ...route.params.item?.body,
+            ...route.params.item?.desc,
           });
           break;
         // 기본적으로 화면 크기 가져오도록 함
