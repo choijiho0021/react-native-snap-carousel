@@ -35,7 +35,7 @@ import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import InputEmail, {InputEmailRef} from '@/components/InputEmail';
 import InputMobile from '@/components/InputMobile';
-import InputPinInTime from '@/components/InputPinInTime';
+import InputPinInTime, {InputPinRef} from '@/components/InputPinInTime';
 import Profile from '@/components/Profile';
 import SocialLogin, {SocialAuthInfo} from '@/components/SocialLogin';
 import {colors} from '@/constants/Colors';
@@ -265,6 +265,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const controller = useRef(new AbortController());
   const mounted = useRef(false);
   const emailRef = useRef<InputEmailRef>(null);
+  const inputRef = useRef<InputPinRef>(null);
 
   const confirmList = useMemo(
     () =>
@@ -518,6 +519,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
             if (resp.result === 0) {
               setAuthNoti(true);
               setTimeoutFlag(false);
+              inputRef.current?.focus();
             } else {
               console.log('send sms failed', resp);
               throw new Error('failed to send sms');
@@ -675,6 +677,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           onTimeout={() => setTimeoutFlag(true)}
           onPress={onPressPin}
           duration={180}
+          inputRef={inputRef}
         />
       </View>
     );
