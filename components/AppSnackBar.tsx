@@ -30,12 +30,20 @@ class AppSnackBar extends PureComponent<AppSnackBarProps> {
     this.snackRef = React.createRef();
   }
 
+  componentDidUpdate() {
+    if (this.props.visible) {
+      setTimeout(() => {
+        this.props.onClose();
+      }, 3000);
+    }
+  }
+
   render() {
     return (
       <SnackBar
         ref={this.snackRef}
         visible={this.props.visible}
-        backgroundColor={this.props.backgroundColor || colors.clearBlue}
+        backgroundColor={this.props.backgroundColor || colors.black}
         messageColor={this.props.messageColor || colors.white}
         position="bottom"
         bottom={100}
