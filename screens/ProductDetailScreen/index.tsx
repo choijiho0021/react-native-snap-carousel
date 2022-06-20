@@ -265,14 +265,14 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       return navigation.navigate('Auth');
     }
 
-    // if (selected) {
     action.cart.cartAddAndGet({purchaseItems}).then(({payload: resp}) => {
       console.log('@@@ add and get', resp);
       if (resp.result === 0) {
         setShowSnackBar({text: i18n.t('country:addCart'), visible: true});
         if (
-          resp.objects[0].orderItems.find((v) => v.key === selected).qty >=
-          PURCHASE_LIMIT
+          resp.objects[0].orderItems.find(
+            (v) => v.key === route.params.item?.key,
+          ).qty >= PURCHASE_LIMIT
         ) {
           setDisabled(true);
         }
@@ -280,8 +280,15 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         soldOut(resp, 'cart:notToCart');
       }
     });
-    // }
-  }, [account, action.cart, navigation, purchaseItems, soldOut, status]);
+  }, [
+    account,
+    action.cart,
+    navigation,
+    purchaseItems,
+    route.params.item,
+    soldOut,
+    status,
+  ]);
 
   const onPressBtnRegCard = useCallback(() => {
     Analytics.trackEvent('Click_regCard');
