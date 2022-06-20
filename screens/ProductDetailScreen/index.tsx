@@ -231,8 +231,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           decelerationRate="normal"
           scrollEnabled
           onMessage={onMessage}
-          // source={{uri: `http://146.56.139.208/#/product/${prodUuid}`}}
-          source={{uri: `http://localhost:8000/#/product/${prodUuid}`}}
+          source={{uri: `http://146.56.139.208/#/product/${prodUuid}`}}
+          // source={{uri: `http://localhost:8000/#/product/${prodUuid}`}}
           style={{height: webViewHeight}}
         />
       </View>
