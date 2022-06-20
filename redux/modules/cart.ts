@@ -290,12 +290,19 @@ const checkStockAndMakeOrder = createAsyncThunk(
               mail: email,
             }),
           ).then((rsp) => {
-
-            if(rsp.payload.status === api.API_STATUS_PREFAILED){
-              dispatch(accountAction.getAccount({iccid, token})).then(()=> {
-                const {account: {balance}} = getState() as RootState;
-                dispatch(slice.actions.purchase({purchaseItems, false, balance}));
-              })
+            if (rsp.payload.status === api.API_STATUS_PREFAILED) {
+              dispatch(accountAction.getAccount({iccid, token})).then(() => {
+                const {
+                  account: {balance},
+                } = getState() as RootState;
+                dispatch(
+                  slice.actions.purchase({
+                    purchaseItems,
+                    dlvCost: false,
+                    balance,
+                  }),
+                );
+              });
             }
             return rsp.payload;
           });
