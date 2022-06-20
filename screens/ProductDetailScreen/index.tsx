@@ -3,13 +3,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useState, useEffect, useCallback} from 'react';
 import Clipboard from '@react-native-community/clipboard';
-import {
-  PixelRatio,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {PixelRatio, SafeAreaView, StyleSheet, View} from 'react-native';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -25,7 +19,7 @@ import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
-import {appStyles, htmlDetailWithCss} from '@/constants/Styles';
+import {appStyles, htmlDetailWithCss, injectedScript} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
@@ -46,7 +40,7 @@ import {PurchaseItem} from '../redux/models/purchaseItem';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import AppCartButton from '@/components/AppCartButton';
 
-const {baseUrl, esimApp, esimGlobal} = Env.get();
+const {esimApp, esimGlobal} = Env.get();
 const PURCHASE_LIMIT = 10;
 
 const styles = StyleSheet.create({
@@ -123,6 +117,7 @@ type ProductDetailScreenProps = {
     info: InfoAction;
   };
 };
+
 const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   navigation,
   route,
@@ -139,7 +134,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const [status, setStatus] = useState<TrackingStatus>();
   const [purchaseItems, setPurchaseItems] = useState<PurchaseItem[]>([]);
 
-  const [webViewHeight, setWebViewHeight] = useState<number>(500);
+  const [webViewHeight, setWebViewHeight] = useState<number>(3000);
 
   useEffect(() => {
     const {partnerId} = product;
@@ -164,15 +159,11 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
-      const {
-        key,
-        value,
-        screen,
-        params,
-      }: {key: string; value: string; screen: string; params: object} =
-        JSON.parse(event.nativeEvent.data);
-
+      const [key, value] = event.nativeEvent.data.split(',');
       switch (key) {
+        case 'dimension':
+          setWebViewHeight(Number(value) / PixelRatio.get());
+          break;
         case 'moveToPage':
           if (value) {
             action.info.getItem(value).then(({payload: item}) => {
@@ -203,9 +194,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           Clipboard.setString(value);
           setShowSnackBar({text: i18n.t('prodDetail:copy'), visible: true});
           break;
-        case 'navigate':
-          navigation.navigate(screen, params);
-          break;
         case 'apn':
           navigation.navigate('ProductDetailOp', {
             title: route.params?.title,
@@ -214,7 +202,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           break;
         // 기본적으로 화면 크기 가져오도록 함
         default:
-          setWebViewHeight(event.nativeEvent.data / PixelRatio.get());
+          console.log('@@@ Please check key');
           break;
       }
     },
@@ -222,14 +210,14 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   );
 
   const renderWebView = useCallback(() => {
-    const {category} = API.Product;
+    // const {category} = API.Product;
 
-    const localOpDetails = route.params?.localOpDetails;
+    // const localOpDetails = route.params?.localOpDetails;
     // const detail = _.isEmpty(localOpDetails)
     //   ? product.detailInfo + product.detailCommon
     //   : localOpDetails + product.detailCommon;
 
-    const isMulti = route.params.item?.categoryId[0] === category.multi ? 2 : 1;
+    const prodUuid = route.params.item.uuid;
 
     return (
       <View style={{flex: 1}}>
@@ -237,25 +225,19 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           // automaticallyAdjustContentInsets={true}
           javaScriptEnabled
           domStorageEnabled
+          injectedJavaScript={injectedScript}
           // scalesPageToFit
           startInLoadingState
           decelerationRate="normal"
-          // onNavigationStateChange={(navState) => this.onNavigationStateChange(navState)}
           scrollEnabled
           onMessage={onMessage}
-          source={{uri: `http://146.56.139.208/#/product/desc/${isMulti}`}}
-          // source={{uri: 'http://localhost:8000/#/product/desc/2'}}
-          // source={{html: detail}}
+          // source={{uri: `http://146.56.139.208/#/product/${prodUuid}`}}
+          source={{uri: `http://localhost:8000/#/product/${prodUuid}`}}
           style={{height: webViewHeight}}
         />
       </View>
     );
-  }, [
-    onMessage,
-    route.params.item?.categoryId,
-    route.params?.localOpDetails,
-    webViewHeight,
-  ]);
+  }, [onMessage, route.params.item.uuid, webViewHeight]);
 
   const soldOut = useCallback((payload: ApiResult<any>, message: string) => {
     if (payload.result === api.E_RESOURCE_NOT_FOUND) {
