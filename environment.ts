@@ -61,6 +61,7 @@ type Env = {
   isProduction: boolean;
   isIOS?: boolean;
   fbUser?: string;
+  webViewHost?: string;
   appStoreUrl: {
     ios: string;
     android: string;
@@ -109,6 +110,7 @@ function get() {
         env.baseUrl = esimGlobal
           ? 'https://global.rokebi.com'
           : 'https://esim.rokebi.com';
+        env.webViewHost = 'http://rokebi.com';
         break;
       default:
         env.scheme = 'http';
@@ -117,6 +119,7 @@ function get() {
         env.baseUrl = esimGlobal
           ? 'http://tb-global.rokebi.com'
           : 'http://tb-esim.rokebi.com';
+        env.webViewHost = 'http://tb.rokebi.com';
         break;
     }
     return env;
@@ -129,12 +132,14 @@ function get() {
       env.rokApiUrl = 'svcapp.rokebi.com';
       env.apiUrl = 'usim.rokebi.com';
       env.baseUrl = 'https://usim.rokebi.com';
+      env.webViewHost = 'http://rokebi.com';
       break;
     default:
       env.scheme = 'http';
       env.rokApiUrl = 'svcapp.rokebi.com';
       env.apiUrl = 'tb-usim.rokebi.com';
       env.baseUrl = 'http://tb-usim.rokebi.com';
+      env.webViewHost = 'http://tb.rokebi.com';
       break;
   }
   return env;

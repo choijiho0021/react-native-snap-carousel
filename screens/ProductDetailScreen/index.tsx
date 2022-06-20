@@ -40,7 +40,7 @@ import {PurchaseItem} from '../redux/models/purchaseItem';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import AppCartButton from '@/components/AppCartButton';
 
-const {esimApp, esimGlobal} = Env.get();
+const {esimApp, esimGlobal, webViewHost} = Env.get();
 const PURCHASE_LIMIT = 10;
 
 const styles = StyleSheet.create({
@@ -231,7 +231,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           decelerationRate="normal"
           scrollEnabled
           onMessage={onMessage}
-          source={{uri: `http://146.56.139.208/#/product/${prodUuid}`}}
+          source={{uri: `${webViewHost}/#/product/${prodUuid}`}}
           // source={{uri: `http://localhost:8000/#/product/${prodUuid}`}}
           style={{height: webViewHeight}}
         />
