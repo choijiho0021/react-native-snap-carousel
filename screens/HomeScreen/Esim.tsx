@@ -2,7 +2,6 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import AsyncStorage from '@react-native-community/async-storage';
 import analytics, {firebase} from '@react-native-firebase/analytics';
-import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
@@ -176,7 +175,7 @@ const Esim: React.FC<EsimProps> = ({
   account,
   sync,
 }) => {
-  const [isSupportDev, setIsSupportDev] = useState<boolean | undefined>();
+  const [isSupportDev, setIsSupportDev] = useState<boolean>(true);
   const [index, setIndex] = useState(0);
   const routes = useMemo(
     () =>
@@ -198,6 +197,7 @@ const Esim: React.FC<EsimProps> = ({
   const [popUpVisible, setPopUpVisible] = useState(false);
   const [popupDisabled, setPopupDisabled] = useState(false);
   const [appUpdate, setAppUpdate] = useState('');
+  const [appUpdateVisible, setAppUpdateVisible] = useState(false);
   const [popUp, setPopUp] = useState<RkbPromotion>();
   const [closeType, setCloseType] = useState<'close' | 'exit' | 'redirect'>();
   const [deviceList, setDeviceList] = useState<string[]>([]);
@@ -557,6 +557,7 @@ const Esim: React.FC<EsimProps> = ({
       console.log('@@@ app', rsp, ver);
       if (rsp.result === 0 && rsp.objects.length > 0) {
         setAppUpdate(rsp.objects[0].updateOption);
+        setAppUpdateVisible(true);
       }
     });
   }, []);
@@ -603,22 +604,23 @@ const Esim: React.FC<EsimProps> = ({
         titleStyle={styles.modalTitle}
         type="close"
         onOkClose={() => exitApp('exit')}
-        visible={isSupportDev === false}>
+        visible={!isSupportDev}>
         {modalBody()}
       </AppModal>
-      {appUpdate ? (
-        <AppVerModal option={appUpdate} onOkClose={() => setAppUpdate('')} />
-      ) : (
-        !popupDisabled && (
-          <NotiModal
-            visible={popUpVisible}
-            popUp={popUp}
-            closeType={closeType}
-            onOkClose={() => exitApp(closeType)}
-            onCancelClose={() => setPopUpVisible(false)}
-          />
-        )
-      )}
+
+      <AppVerModal
+        visible={isSupportDev && appUpdateVisible}
+        option={appUpdate}
+        onOkClose={() => setAppUpdateVisible(false)}
+      />
+
+      <NotiModal
+        visible={isSupportDev && !appUpdateVisible && popUpVisible}
+        popUp={popUp}
+        closeType={closeType}
+        onOkClose={() => exitApp(closeType)}
+        onCancelClose={() => setPopUpVisible(false)}
+      />
     </View>
   );
 };

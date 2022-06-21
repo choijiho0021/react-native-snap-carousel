@@ -105,7 +105,7 @@ const AppVerModal: React.FC<AppVerModalProps> = ({
         backgroundColor: 'white',
       }}
       bottom={renderBottom}
-      visible={visible || true}>
+      visible={visible}>
       <View style={{marginBottom: 20, marginTop: 32, marginHorizontal: 20}}>
         <View
           style={{
