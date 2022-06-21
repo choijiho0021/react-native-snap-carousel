@@ -109,7 +109,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
               ...appStyles.bold16Text,
               color: 'white',
               position: 'absolute',
-              top: 291,
+              bottom: 125,
               left: 0,
               right: 0,
               textAlign: 'center',
@@ -257,6 +257,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
             titleStyle={appStyles.medium18}
             style={{
               marginTop: 32,
+              marginBottom: 40,
               backgroundColor: colors.clearBlue,
               height: 62,
             }}
