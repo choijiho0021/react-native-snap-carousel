@@ -58,7 +58,6 @@ const styles = StyleSheet.create({
   nolist: {
     flex: 1,
     justifyContent: 'center',
-    paddingBottom: 60,
   },
   blueText: {
     color: colors.clearBlue,
@@ -133,7 +132,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const empty = useCallback(
     () => (
-      <View style={[styles.nolist, {marginTop: '20%'}]}>
+      <View style={styles.nolist}>
         <AppIcon name="emptyESIM" size={176} />
         <AppText style={styles.blueText}>{i18n.t('his:noUsage1')}</AppText>
         <AppText style={{color: colors.warmGrey, textAlign: 'center'}}>
