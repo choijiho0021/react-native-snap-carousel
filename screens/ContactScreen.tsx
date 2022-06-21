@@ -243,7 +243,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
           break;
       }
     },
-    [action.toast, navigation, route],
+    [navigation, route],
   );
 
   return (
