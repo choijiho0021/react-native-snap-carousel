@@ -25,7 +25,11 @@ const {width} = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.whiteTwo,
+  },
+  whiteContainer: {
     backgroundColor: colors.white,
+    paddingBottom: 64,
   },
   step: {
     width: 76,
@@ -102,104 +106,106 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <View key="top">
-          <AppIcon name="giftGuideTop" size={[width, (width * 440) / 375]} />
-          <AppText
-            style={{
-              ...appStyles.bold16Text,
-              color: 'white',
-              position: 'absolute',
-              bottom: 125,
-              left: 0,
-              right: 0,
-              textAlign: 'center',
-            }}>
-            {i18n.t('gift:guide1')}
-          </AppText>
-          <AppText
-            style={{
-              ...appStyles.bold32Text,
-              position: 'absolute',
-              bottom: 32,
-              color: 'white',
-              left: 0,
-              right: 0,
-              textAlign: 'center',
-            }}>
-            {i18n.t('gift:guide1-1')}
-          </AppText>
+        <View style={styles.whiteContainer}>
+          <View key="top">
+            <AppIcon name="giftGuideTop" size={[width, (width * 440) / 375]} />
+            <AppText
+              style={{
+                ...appStyles.bold16Text,
+                color: 'white',
+                position: 'absolute',
+                bottom: 125,
+                left: 0,
+                right: 0,
+                textAlign: 'center',
+              }}>
+              {i18n.t('gift:guide1')}
+            </AppText>
+            <AppText
+              style={{
+                ...appStyles.bold32Text,
+                position: 'absolute',
+                bottom: 32,
+                color: 'white',
+                left: 0,
+                right: 0,
+                textAlign: 'center',
+              }}>
+              {i18n.t('gift:guide1-1')}
+            </AppText>
+          </View>
+          <View style={{alignItems: 'center'}}>
+            <AppText
+              style={[
+                appStyles.semiBold24Text,
+                {marginTop: 40, textAlign: 'center'},
+              ]}>
+              {i18n.t('gift:guide2-title')}
+            </AppText>
+          </View>
+          <Step key="1" step="1">
+            <AppTextJoin
+              textStyle={styles.text}
+              data={[
+                {
+                  text: i18n.t('gift:guide2-1-1'),
+                },
+                {
+                  text: i18n.t('gift:guide2-1-2'),
+                  viewStyle: appStyles.underline,
+                },
+                {
+                  text: i18n.t('gift:guide2-1-3'),
+                },
+              ]}
+            />
+          </Step>
+          <Step key="2" step="2">
+            <AppText style={styles.text}>{i18n.t('gift:guide2-2-1')}</AppText>
+            <AppTextJoin
+              textStyle={styles.text}
+              data={[
+                {
+                  text: i18n.t('gift:guide2-2-2'),
+                  viewStyle: appStyles.underline,
+                },
+                {
+                  text: i18n.t('gift:guide2-2-3'),
+                },
+              ]}
+            />
+          </Step>
+          <Step key="3" step="3">
+            <AppTextJoin
+              textStyle={styles.text}
+              data={[
+                {
+                  text: i18n.t('gift:guide2-3-1'),
+                  viewStyle: appStyles.underline,
+                },
+                {
+                  text: i18n.t('gift:guide2-3-2'),
+                },
+              ]}
+            />
+            <AppTextJoin
+              textStyle={styles.text}
+              data={[
+                {
+                  text: i18n.t('gift:guide2-3-3'),
+                  viewStyle: appStyles.underline,
+                },
+                {
+                  text: i18n.t('gift:guide2-3-4'),
+                },
+              ]}
+            />
+          </Step>
         </View>
-        <View style={{alignItems: 'center'}}>
-          <AppText
-            style={[
-              appStyles.semiBold24Text,
-              {marginTop: 40, textAlign: 'center'},
-            ]}>
-            {i18n.t('gift:guide2-title')}
-          </AppText>
-        </View>
-        <Step key="1" step="1">
-          <AppTextJoin
-            textStyle={styles.text}
-            data={[
-              {
-                text: i18n.t('gift:guide2-1-1'),
-              },
-              {
-                text: i18n.t('gift:guide2-1-2'),
-                viewStyle: appStyles.underline,
-              },
-              {
-                text: i18n.t('gift:guide2-1-3'),
-              },
-            ]}
-          />
-        </Step>
-        <Step key="2" step="2">
-          <AppText style={styles.text}>{i18n.t('gift:guide2-2-1')}</AppText>
-          <AppTextJoin
-            textStyle={styles.text}
-            data={[
-              {
-                text: i18n.t('gift:guide2-2-2'),
-                viewStyle: appStyles.underline,
-              },
-              {
-                text: i18n.t('gift:guide2-2-3'),
-              },
-            ]}
-          />
-        </Step>
-        <Step key="3" step="3">
-          <AppTextJoin
-            textStyle={styles.text}
-            data={[
-              {
-                text: i18n.t('gift:guide2-3-1'),
-                viewStyle: appStyles.underline,
-              },
-              {
-                text: i18n.t('gift:guide2-3-2'),
-              },
-            ]}
-          />
-          <AppTextJoin
-            textStyle={styles.text}
-            data={[
-              {
-                text: i18n.t('gift:guide2-3-3'),
-                viewStyle: appStyles.underline,
-              },
-              {
-                text: i18n.t('gift:guide2-3-4'),
-              },
-            ]}
-          />
-        </Step>
         <View
           style={{
             backgroundColor: colors.whiteTwo,
-            marginTop: 64,
+
             paddingHorizontal: 20,
           }}>
           <View style={styles.tip}>
