@@ -68,6 +68,7 @@ import NotiModal from './component/NotiModal';
 import AppTabHeader from '@/components/AppTabHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppVerModal from './component/AppVerModal';
+import {isDeviceSize} from '../../constants/SliderEntry.style';
 
 const {esimGlobal} = Env.get();
 
@@ -122,6 +123,7 @@ const styles = StyleSheet.create({
   },
   showSearchBar: {
     marginBottom: 20,
+    marginTop: isDeviceSize('medium') ? 0 : 10,
     marginHorizontal: 20,
     backgroundColor: colors.white,
     height: 56,
