@@ -4,7 +4,7 @@ import {StyleSheet} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
-
+import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppIcon from '@/components/AppIcon';
 
@@ -48,6 +48,8 @@ import BadgedIcon from './component/BadgedIcon';
 import RedirectHKScreen from '@/screens/RedirectHKScreen';
 import UserGuideScreen from '../screens/UserGuideScreen';
 import {CartModelState} from '@/redux/modules/cart';
+import LabelText from '@/components/LabelText';
+import AppText from '@/components/AppText';
 
 const styles = StyleSheet.create({
   tabBarIcon: {
@@ -67,6 +69,11 @@ const styles = StyleSheet.create({
     height: 40,
     marginHorizontal: 18,
   },
+  tabBarLabel: (focused: boolean) => ({
+    marginBottom: 2,
+    ...appStyles.normal12Text,
+    color: focused ? colors.clearBlue : colors.black,
+  }),
 });
 
 const HomeStack = createStackNavigator<HomeStackParamList>();
@@ -81,6 +88,7 @@ const screenOptions = {
     shadowOpacity: 0,
   },
 };
+
 function homeStack() {
   return (
     <HomeStack.Navigator screenOptions={screenOptions} mode="modal">
@@ -183,7 +191,9 @@ function myPageStack() {
 }
 
 const Tab = createBottomTabNavigator();
-
+// screenOptions: {
+//   tabBarStyle: { height: 300 },
+// },
 const TabNavigator = ({
   loggedIn,
   iccid,
@@ -204,7 +214,12 @@ const TabNavigator = ({
         options={({route}) => ({
           tabBarVisible:
             (getFocusedRouteNameFromRoute(route) || 'Home') === 'Home',
-          tabBarLabel: i18n.t('home'),
+          // tabBarLabel: i18n.t('home'),
+          tabBarLabel: ({focused}) => (
+            <AppText style={styles.tabBarLabel(focused)}>
+              {i18n.t('home')}
+            </AppText>
+          ),
           animationEnabled: false,
           tabBarIcon: ({focused}) => (
             <AppIcon
@@ -225,7 +240,12 @@ const TabNavigator = ({
             cart?.orderItems?.length === 0 &&
             (getFocusedRouteNameFromRoute(route) || 'Cart') === 'Cart',
           tabBarBadgeStyle: {allowFontScaling: false},
-          tabBarLabel: i18n.t('cart'),
+          // tabBarLabel: i18n.t('cart'),
+          tabBarLabel: ({focused}) => (
+            <AppText style={styles.tabBarLabel(focused)}>
+              {i18n.t('cart')}
+            </AppText>
+          ),
           tabBarIcon: ({focused}) => (
             <BadgedIcon
               focused={focused}
@@ -243,7 +263,12 @@ const TabNavigator = ({
             !!iccid &&
             !!loggedIn &&
             (getFocusedRouteNameFromRoute(route) || 'Esim') === 'Esim',
-          tabBarLabel: i18n.t('esim'),
+          // tabBarLabel: i18n.t('esim'),
+          tabBarLabel: ({focused}) => (
+            <AppText style={styles.tabBarLabel(focused)}>
+              {i18n.t('esim')}
+            </AppText>
+          ),
           tabBarIcon: ({focused}) => (
             <AppIcon
               focused={focused}
@@ -261,7 +286,12 @@ const TabNavigator = ({
             !!iccid &&
             !!loggedIn &&
             (getFocusedRouteNameFromRoute(route) || 'MyPage') === 'MyPage',
-          tabBarLabel: i18n.t('mypage'),
+          // tabBarLabel: i18n.t('mypage'),
+          tabBarLabel: ({focused}) => (
+            <AppText style={styles.tabBarLabel(focused)}>
+              {i18n.t('mypage')}
+            </AppText>
+          ),
           tabBarIcon: ({focused}) => (
             <AppIcon
               focused={focused}
