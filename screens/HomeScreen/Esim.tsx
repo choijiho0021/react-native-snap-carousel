@@ -176,6 +176,7 @@ const Esim: React.FC<EsimProps> = ({
   sync,
 }) => {
   const [isSupportDev, setIsSupportDev] = useState<boolean>(true);
+  const [isDevModalVisible, setIsDevModalVisible] = useState<boolean>(true);
   const [index, setIndex] = useState(0);
   const routes = useMemo(
     () =>
@@ -279,7 +280,7 @@ const Esim: React.FC<EsimProps> = ({
           }
           break;
         case 'exit':
-          setIsSupportDev(true);
+          setIsDevModalVisible(false);
           break;
         default:
       }
@@ -468,6 +469,7 @@ const Esim: React.FC<EsimProps> = ({
             ? await AndroidEuccidModule.isEnableEsim()
             : checkSupportIos();
 
+        setIsDevModalVisible(!isSupport);
         setIsSupportDev(isSupport);
         setDeviceList(resp.objects);
 
@@ -511,8 +513,7 @@ const Esim: React.FC<EsimProps> = ({
   }, [action.account, checkSupportIos, navigation, promotion, setNotiModal]);
 
   useEffect(() => {
-    // isSupportDev 값이 undefined가 아니면, 지원하는 단말 목록 확인이 끝난 것으로 간주한다
-    if (isSupportDev !== undefined && !initialized.current) {
+    if (isSupportDev && !initialized.current) {
       initialized.current = true;
       pushNoti.add(notification);
 
@@ -604,12 +605,12 @@ const Esim: React.FC<EsimProps> = ({
         titleStyle={styles.modalTitle}
         type="close"
         onOkClose={() => exitApp('exit')}
-        visible={!isSupportDev}>
+        visible={isDevModalVisible}>
         {modalBody()}
       </AppModal>
 
       <AppVerModal
-        visible={isSupportDev && appUpdateVisible}
+        visible={!isDevModalVisible && appUpdateVisible}
         option={appUpdate}
         onOkClose={() => setAppUpdateVisible(false)}
       />
