@@ -30,11 +30,12 @@ const styles = StyleSheet.create({
   },
   text: {
     ...(isDeviceSize('small')
-      ? appStyles.normal14Text
-      : appStyles.normal16Text),
+      ? appStyles.normal16Text
+      : appStyles.normal18Text),
     textAlign: 'left',
     color: colors.clearBlue,
   },
+
   image: {
     width: '100%',
     height: 110,
@@ -117,7 +118,7 @@ const CountryItem0 = ({
             balanceStyle={styles.priceNumber}
             currencyStyle={styles.text}
           />,
-          <AppText key="days" style={styles.text}>
+          <AppText key="days" style={[styles.text, {marginLeft: 3, top: -2}]}>
             {i18n.t('startFrom')}
           </AppText>,
         ]}

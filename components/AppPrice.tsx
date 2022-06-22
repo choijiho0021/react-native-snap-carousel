@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   },
   won: {
     ...appStyles.normal14Text,
-    marginLeft: 5,
+    marginLeft: 0,
   },
 });
 
@@ -40,7 +40,7 @@ const AppPrice = ({
       {esimGlobal || i18n.locale !== 'ko'
         ? [
             <AppText key="won" style={[styles.won, currencyStyle]}>
-              {`${i18n.t(price.currency)} `}
+              {`${i18n.t(price.currency)}`}
             </AppText>,
             <AppText key="balance" style={[styles.price, balanceStyle]}>
               {utils.currencyString(price.value)}
