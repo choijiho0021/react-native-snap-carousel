@@ -61,6 +61,11 @@ const styles = StyleSheet.create({
   icon: {
     marginVertical: 15,
   },
+  titleViewStyle: {
+    marginTop: 30,
+    marginBottom: 20,
+    alignSelf: 'center',
+  },
 });
 
 export interface AppModalProps {
@@ -69,6 +74,7 @@ export interface AppModalProps {
   justifyContent?: 'center' | 'flex-end';
   title?: string;
   titleStyle?: TextStyle;
+  titleViewStyle?: ViewStyle;
   titleIcon?: string;
   closeButtonTitle?: string;
   closeButtonStyle?: ViewStyle;
@@ -85,6 +91,7 @@ export interface AppModalProps {
 const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
   title,
   titleStyle,
+  titleViewStyle,
   titleIcon,
   children,
   type = 'normal',
@@ -210,12 +217,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
             />
           )}
           {title && (
-            <View
-              style={{
-                marginTop: 30,
-                marginBottom: 20,
-                alignSelf: 'center',
-              }}>
+            <View style={titleViewStyle || styles.titleViewStyle}>
               <AppText style={titleStyle || styles.title}>{title}</AppText>
             </View>
           )}

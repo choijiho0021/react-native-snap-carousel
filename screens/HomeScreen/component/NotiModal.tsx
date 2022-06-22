@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
 import React, {memo, useState} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -9,6 +9,8 @@ import AppUserPic from '@/components/AppUserPic';
 import {appStyles} from '@/constants/Styles';
 import {RkbPromotion} from '@/redux/api/promotionApi';
 import i18n from '@/utils/i18n';
+import {colors} from '@/constants/Colors';
+import {isDeviceSize} from '../constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   infoModalTitle: {
@@ -16,9 +18,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   popupImg: {
-    width: 333,
-    height: 444,
-    marginVertical: 20,
+    width: 444,
+    height: isDeviceSize('medium') ? 446 : 500,
+    marginBottom: 20,
   },
 });
 
@@ -40,8 +42,15 @@ const NotiModal: React.FC<NotiModalProps> = ({
 
   return (
     <AppModal
-      titleStyle={styles.infoModalTitle}
-      title={popUp?.title}
+      // titleStyle={styles.infoModalTitle}
+      // title={popUp?.title}
+      contentStyle={{
+        paddingTop: 0,
+        marginTop: 0,
+        marginHorizontal: 20,
+        backgroundColor: colors.white,
+      }}
+      // titleViewStyle={{marginTop: 0}}
       closeButtonTitle={i18n.t(closeType || 'close')}
       type={closeType === 'redirect' ? closeType : 'close'}
       closeButtonStyle={
@@ -69,6 +78,7 @@ const NotiModal: React.FC<NotiModalProps> = ({
           url={popUp?.notice?.image?.noti}
           crop={false}
           style={styles.popupImg}
+          resizeMode="contain"
           onPress={() => {
             if (closeType === 'redirect') {
               onOkClose?.();
@@ -76,7 +86,10 @@ const NotiModal: React.FC<NotiModalProps> = ({
           }}
         />
         <Pressable
-          style={{flexDirection: 'row', alignItems: 'center'}}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
           onPress={() => setChecked((prev) => !prev)}>
           <AppButton
             iconName="btnCheck"
