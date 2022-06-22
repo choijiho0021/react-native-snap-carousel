@@ -36,6 +36,7 @@ import i18n from '@/utils/i18n';
 import api from '@/redux/api/api';
 import Env from '@/environment';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const styles = StyleSheet.create({
   container: {
@@ -173,6 +174,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
     () => (promotion.gift.bg || []).filter((v) => v?.image),
     [promotion.gift.bg],
   );
+  const [showSnackBar, setShowSnackbar] = useState(false);
 
   useEffect(() => {
     if (!promotion.stat.signupGift) promotionActions.getPromotionStat();
@@ -211,14 +213,14 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
       }
       setTimeout(
         () => {
-          if (updateStatus) action.toast.push('toast:sendSuccess');
+          if (updateStatus) setShowSnackbar(true);
           setToastPending(false);
           navigation.goBack();
         },
         updateStatus ? 2000 : 4000,
       );
     },
-    [account.token, action.order, action.toast, navigation],
+    [account.token, action.order, navigation],
   );
 
   const sendLink = useCallback(
@@ -412,6 +414,11 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         style={[appStyles.confirm]}
         title={i18n.t('esim:sendGift')}
         onPress={() => sendLink(checked, item)}
+      />
+      <AppSnackBar
+        visible={showSnackBar}
+        onClose={() => setShowSnackbar(false)}
+        textMessage={i18n.t('toast:sendSuccess')}
       />
     </SafeAreaView>
   );

@@ -1,6 +1,6 @@
 import Clipboard from '@react-native-community/clipboard';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -10,11 +10,6 @@ import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
-import {
-  actions as toastActions,
-  Toast,
-  ToastAction,
-} from '@/redux/modules/toast';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {
@@ -26,6 +21,7 @@ import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import AppIcon from '@/components/AppIcon';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const styles = StyleSheet.create({
   container: {
@@ -150,7 +146,6 @@ type InviteScreenProps = {
 
   action: {
     promotion: PromotionAction;
-    toast: ToastAction;
   };
 };
 
@@ -160,6 +155,8 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
   account,
   action,
 }) => {
+  const [showSnackBar, setShowSnackbar] = useState(false);
+
   const mountWithLogin = useCallback(() => {
     action.promotion.getPromotionStat();
 
@@ -264,7 +261,7 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
             }).then((url) => {
               if (url) {
                 Clipboard.setString(url);
-                action.toast.push(Toast.COPY_SUCCESS);
+                setShowSnackbar(true);
               }
             });
             break;
@@ -280,7 +277,7 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
         }
       }
     },
-    [account, action.toast, promotion],
+    [account, promotion],
   );
 
   const statBox = useCallback(() => {
@@ -393,6 +390,11 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
           </AppText>
         </View>
       </ScrollView>
+      <AppSnackBar
+        visible={showSnackBar}
+        onClose={() => setShowSnackbar(false)}
+        textMessage={i18n.t('copyMsg')}
+      />
     </SafeAreaView>
   );
 };
@@ -405,7 +407,6 @@ export default connect(
   (dispatch) => ({
     action: {
       promotion: bindActionCreators(promotionActions, dispatch),
-      toast: bindActionCreators(toastActions, dispatch),
     },
   }),
 )(InviteScreen);

@@ -8,7 +8,6 @@ import {AppDispatch} from '@/store';
 export const Toast = {
   NOT_LOADED: 'toast:failedToLoad',
   NOT_UPDATED: 'toast:failedToUpdate',
-  NOT_OPENED: 'toast:failedToOpen',
   COPY_SUCCESS: 'toast:copySuccess',
 };
 

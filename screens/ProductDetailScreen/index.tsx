@@ -3,13 +3,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useState, useEffect, useCallback} from 'react';
 import Clipboard from '@react-native-community/clipboard';
-import {
-  PixelRatio,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {PixelRatio, SafeAreaView, StyleSheet, View} from 'react-native';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -25,7 +19,7 @@ import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
-import {appStyles, htmlDetailWithCss} from '@/constants/Styles';
+import {appStyles, htmlDetailWithCss, injectedScript} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
@@ -36,11 +30,6 @@ import {
   ProductAction,
   ProductModelState,
 } from '@/redux/modules/product';
-import {
-  actions as toastActions,
-  Toast,
-  ToastAction,
-} from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppButton from '@/components/AppButton';
@@ -51,7 +40,7 @@ import {PurchaseItem} from '../redux/models/purchaseItem';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import AppCartButton from '@/components/AppCartButton';
 
-const {baseUrl, esimApp, esimGlobal} = Env.get();
+const {esimApp, esimGlobal, webViewHost} = Env.get();
 const PURCHASE_LIMIT = 10;
 
 const styles = StyleSheet.create({
@@ -123,12 +112,12 @@ type ProductDetailScreenProps = {
   account: AccountModelState;
 
   action: {
-    toast: ToastAction;
     product: ProductAction;
     cart: CartAction;
     info: InfoAction;
   };
 };
+
 const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   navigation,
   route,
@@ -137,12 +126,15 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   action,
   account,
 }) => {
-  const [showSnackBar, setShowSnackBar] = useState(false);
+  const [showSnackBar, setShowSnackBar] = useState<{
+    text: string;
+    visible: boolean;
+  }>({text: '', visible: false});
   const [disabled, setDisabled] = useState(false);
   const [status, setStatus] = useState<TrackingStatus>();
   const [purchaseItems, setPurchaseItems] = useState<PurchaseItem[]>([]);
 
-  const [webViewHeight, setWebViewHeight] = useState<number>(500);
+  const [webViewHeight, setWebViewHeight] = useState<number>(3000);
 
   useEffect(() => {
     const {partnerId} = product;
@@ -167,15 +159,11 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
-      const {
-        key,
-        value,
-        screen,
-        params,
-      }: {key: string; value: string; screen: string; params: object} =
-        JSON.parse(event.nativeEvent.data);
-
+      const [key, value] = event.nativeEvent.data.split(',');
       switch (key) {
+        case 'dimension':
+          setWebViewHeight(Number(value) / PixelRatio.get());
+          break;
         case 'moveToPage':
           if (value) {
             action.info.getItem(value).then(({payload: item}) => {
@@ -204,41 +192,32 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           break;
         case 'copy':
           Clipboard.setString(value);
-          action.toast.push(Toast.COPY_SUCCESS);
-          break;
-        case 'navigate':
-          navigation.navigate(screen, params);
+          setShowSnackBar({text: i18n.t('prodDetail:copy'), visible: true});
           break;
         case 'apn':
           navigation.navigate('ProductDetailOp', {
             title: route.params?.title,
-            ...route.params.item?.body,
+            ...route.params.item?.desc,
           });
           break;
         // 기본적으로 화면 크기 가져오도록 함
         default:
-          setWebViewHeight(event.nativeEvent.data / PixelRatio.get());
+          console.log('@@@ Please check key');
           break;
       }
     },
-    [
-      action.info,
-      action.toast,
-      navigation,
-      route.params.item?.body,
-      route.params?.title,
-    ],
+    [action.info, navigation, route.params.item?.desc, route.params?.title],
   );
 
   const renderWebView = useCallback(() => {
-    const {category} = API.Product;
+    // const {category} = API.Product;
 
-    const localOpDetails = route.params?.localOpDetails;
+    // const localOpDetails = route.params?.localOpDetails;
     // const detail = _.isEmpty(localOpDetails)
     //   ? product.detailInfo + product.detailCommon
     //   : localOpDetails + product.detailCommon;
 
-    const isMulti = route.params.item?.categoryId[0] === category.multi ? 2 : 1;
+    const prodUuid = route.params.item.uuid;
 
     return (
       <View style={{flex: 1}}>
@@ -246,25 +225,19 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           // automaticallyAdjustContentInsets={true}
           javaScriptEnabled
           domStorageEnabled
+          injectedJavaScript={injectedScript}
           // scalesPageToFit
           startInLoadingState
           decelerationRate="normal"
-          // onNavigationStateChange={(navState) => this.onNavigationStateChange(navState)}
           scrollEnabled
           onMessage={onMessage}
-          source={{uri: `http://146.56.139.208/#/product/desc/${isMulti}`}}
-          // source={{uri: 'http://localhost:8000/#/product/desc/2'}}
-          // source={{html: detail}}
+          source={{uri: `${webViewHost}/#/product/${prodUuid}`}}
+          // source={{uri: `http://localhost:8000/#/product/${prodUuid}`}}
           style={{height: webViewHeight}}
         />
       </View>
     );
-  }, [
-    onMessage,
-    route.params.item?.categoryId,
-    route.params?.localOpDetails,
-    webViewHeight,
-  ]);
+  }, [onMessage, route.params.item.uuid, webViewHeight]);
 
   const soldOut = useCallback((payload: ApiResult<any>, message: string) => {
     if (payload.result === api.E_RESOURCE_NOT_FOUND) {
@@ -276,8 +249,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   const onPressBtnCart = useCallback(async () => {
     const {loggedIn} = account;
-    // 다른 버튼 클릭으로 스낵바 종료될 경우, 재출력 안되는 부분이 있어 추가
-    setShowSnackBar(false);
 
     if (status === 'authorized') {
       Analytics.trackEvent('Click_cart');
@@ -294,14 +265,14 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       return navigation.navigate('Auth');
     }
 
-    // if (selected) {
     action.cart.cartAddAndGet({purchaseItems}).then(({payload: resp}) => {
       console.log('@@@ add and get', resp);
       if (resp.result === 0) {
-        setShowSnackBar(true);
+        setShowSnackBar({text: i18n.t('country:addCart'), visible: true});
         if (
-          resp.objects[0].orderItems.find((v) => v.key === selected).qty >=
-          PURCHASE_LIMIT
+          resp.objects[0].orderItems.find(
+            (v) => v.key === route.params.item?.key,
+          ).qty >= PURCHASE_LIMIT
         ) {
           setDisabled(true);
         }
@@ -309,8 +280,15 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         soldOut(resp, 'cart:notToCart');
       }
     });
-    // }
-  }, [account, action.cart, navigation, purchaseItems, soldOut, status]);
+  }, [
+    account,
+    action.cart,
+    navigation,
+    purchaseItems,
+    route.params.item,
+    soldOut,
+    status,
+  ]);
 
   const onPressBtnRegCard = useCallback(() => {
     Analytics.trackEvent('Click_regCard');
@@ -321,10 +299,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   const onPressBtnPurchase = useCallback(() => {
     const {loggedIn, balance} = account;
-
-    // 다른 버튼 클릭으로 스낵바 종료될 경우, 재출력 안되는 부분이 있어 추가
-    setShowSnackBar(false);
-
     Analytics.trackEvent('Click_purchase');
 
     if (!loggedIn) {
@@ -361,9 +335,11 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       </View>
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
       <AppSnackBar
-        visible={showSnackBar}
-        onClose={() => setShowSnackBar(false)}
-        textMessage={i18n.t('country:addCart')}
+        visible={showSnackBar.visible}
+        onClose={() =>
+          setShowSnackBar((pre) => ({text: pre.text, visible: false}))
+        }
+        textMessage={showSnackBar.text}
       />
       {account.iccid || (esimApp && account.loggedIn) ? (
         <View style={styles.buttonBox}>
@@ -410,7 +386,6 @@ export default connect(
   (dispatch) => ({
     action: {
       product: bindActionCreators(productActions, dispatch),
-      toast: bindActionCreators(toastActions, dispatch),
       info: bindActionCreators(infoActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
     },

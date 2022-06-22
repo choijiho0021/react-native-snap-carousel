@@ -37,6 +37,7 @@ import {
 import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
 import {sliderWidth} from '@/constants/SliderEntry.style';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const {width} = Dimensions.get('window');
 
@@ -146,6 +147,7 @@ type RedirectHKScreenProps = {
 type CarouselIndex = 'step1' | 'step2' | 'step3' | 'step4';
 type RedirectHKScreenState = {
   activeSlide: number;
+  showSnackBar: boolean;
 };
 
 class RedirectHKScreen extends Component<
@@ -157,7 +159,7 @@ class RedirectHKScreen extends Component<
   constructor(props: RedirectHKScreenProps) {
     super(props);
     this.carousel = React.createRef();
-    this.state = {activeSlide: 0};
+    this.state = {activeSlide: 0, showSnackBar: false};
   }
 
   componentDidMount = async () => {
@@ -170,8 +172,7 @@ class RedirectHKScreen extends Component<
   copyToClipboard = (value?: string) => () => {
     if (value) {
       Clipboard.setString(value);
-      // this.setState({copyString: value});
-      this.props.action.toast.push(Toast.COPY_SUCCESS);
+      this.setState({showSnackBar: true});
     }
   };
 
@@ -276,6 +277,11 @@ class RedirectHKScreen extends Component<
             }}
           />
         </ScrollView>
+        <AppSnackBar
+          visible={this.state.showSnackBar}
+          onClose={() => this.setState({showSnackBar: false})}
+          textMessage={i18n.t('redirectHK:copySuccess')}
+        />
       </SafeAreaView>
     );
   }

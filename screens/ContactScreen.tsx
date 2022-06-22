@@ -28,6 +28,7 @@ import {
 } from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import {navigate} from '@/navigation/navigation';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const {channelId, esimGlobal, fbUser} = Env.get();
 
@@ -59,16 +60,16 @@ const styles = StyleSheet.create({
   infoContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor:colors.white,
+    backgroundColor: colors.white,
     paddingHorizontal: 20,
     paddingTop: 24,
-    paddingBottom:156,
+    paddingBottom: 156,
   },
   absoluteView: {
     flex: 1,
     flexDirection: 'row',
     position: 'absolute',
-    backgroundColor:colors.white,
+    backgroundColor: colors.white,
     marginTop: 114,
     paddingHorizontal: 12,
   },
@@ -146,6 +147,7 @@ type ContactScreenProps = {
 
 const ContactScreen: React.FC<ContactScreenProps> = (props) => {
   const {navigation, route, noti, action} = props;
+
   const data = useMemo(
     () => [
       {
@@ -173,6 +175,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
     [],
   );
   const [showModal, setShowModal] = useState(false);
+  const [showSnackBar, setShowSnackbar] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({
@@ -228,7 +231,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
             );
           } else {
             KakaoSDK.Channel.chat(channelId).catch((_) => {
-              action.toast.push(Toast.NOT_OPENED);
+              setShowSnackbar(true);
             });
           }
 
@@ -240,7 +243,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
           break;
       }
     },
-    [action.toast, navigation, route],
+    [navigation, route],
   );
 
   return (
@@ -288,6 +291,11 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
         type="info"
         onOkClose={() => setShowModal(false)}
         visible={showModal}
+      />
+      <AppSnackBar
+        visible={showSnackBar}
+        onClose={() => setShowSnackbar(false)}
+        textMessage={i18n.t('contact:kakaoOpenChFail')}
       />
     </ScrollView>
   );

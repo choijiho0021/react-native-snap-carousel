@@ -67,10 +67,8 @@ const styles = StyleSheet.create({
   },
   emptyView: {
     flex: 1,
-    paddingTop: '20%',
-    paddingBottom: 60,
     flexDirection: 'column',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.white,
   },

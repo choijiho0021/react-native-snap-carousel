@@ -58,9 +58,9 @@ const SocialLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
       <View style={styles.btnGroup}>
         {/* <NaverLoginButton onAuth={onAuth} /> */}
         {/* <FacebookLogin onAuth={onAuth} /> */}
+        <KakaoLogin onAuth={onAuth} />
         {Platform.OS === 'android' && <GoogleLogin onAuth={onAuth} />}
         {appleAuth.isSupported && <AppleLogin onAuth={onAuth} />}
-        <KakaoLogin onAuth={onAuth} />
       </View>
     </View>
   );
