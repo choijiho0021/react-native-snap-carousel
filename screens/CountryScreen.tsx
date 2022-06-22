@@ -45,8 +45,8 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: colors.lightGrey,
+    // borderWidth: 1,
+    // borderColor: 'transparent',
     // marginVertical: 7,
     marginHorizontal: 20,
     paddingHorizontal: 15,
@@ -151,13 +151,32 @@ const CountryListItem0 = ({
 
   switch (position) {
     case 'head':
-      myStyle = {borderBottomColor: 'white'};
+      myStyle = {
+        borderLeftWidth: 1,
+        borderTopWidth: 1,
+        borderRightWidth: 1,
+        borderLeftColor: colors.lightGrey,
+        borderTopColor: colors.lightGrey,
+        borderRightColor: colors.lightGrey,
+      };
       break;
     case 'middle':
-      myStyle = {borderTopColor: 'white', borderBottomColor: 'white'};
+      myStyle = {
+        borderLeftWidth: 1,
+        borderRightWidth: 1,
+        borderLeftColor: colors.lightGrey,
+        borderRightColor: colors.lightGrey,
+      };
       break;
     case 'tail':
-      myStyle = {borderTopColor: 'white'};
+      myStyle = {
+        borderLeftWidth: 1,
+        borderBottomWidth: 1,
+        borderRightWidth: 1,
+        borderLeftColor: colors.lightGrey,
+        borderBottomColor: colors.lightGrey,
+        borderRightColor: colors.lightGrey,
+      };
       break;
     default:
       myStyle = {};
