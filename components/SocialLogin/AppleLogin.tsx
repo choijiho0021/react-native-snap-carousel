@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   },
   btnStyle: {
     width: '100%',
-    marginBottom: 22,
+    marginTop: 22,
   },
 });
 
