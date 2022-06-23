@@ -110,7 +110,7 @@ function get() {
         env.baseUrl = esimGlobal
           ? 'https://global.rokebi.com'
           : 'https://esim.rokebi.com';
-        env.webViewHost = 'http://rokebi.com';
+        env.webViewHost = 'https://www.rokebi.com';
         break;
       default:
         env.scheme = 'http';
