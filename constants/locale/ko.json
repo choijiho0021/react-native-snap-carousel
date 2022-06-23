@@ -769,5 +769,7 @@
   "userGuide:tipPage8_3": "반드시 OFF로 설정해주세요.",
   "userGuide:tipPage9_1": "'보조’의 데이터 ",
   "userGuide:tipPage9_2": "로밍을 ON",
-  "userGuide:tipPage9_3": "으로 설정해주셔야 데이터 사용이가능합니다."
+  "userGuide:tipPage9_3": "으로 설정해주셔야 데이터 사용이가능합니다.",
+  "userGuide:tipPage11_1": "사용 완료된 상품은 꼭 삭제해주세요!\n",
+  "userGuide:tipPage11_2": "새로운 상품을 등록할 때 기존에 삭제하지 않은 상품\n때문에 헷갈릴 수 있어요."
 }

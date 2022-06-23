@@ -393,6 +393,25 @@ export const guideImages = {
     image: require('../assets/images/esim/userGuide/eSIMUserGuide11_1.png'),
     title: stepsTitle.step6,
     step: 6,
-    tip: () => null,
+    tip: () => (
+      <View
+        style={{
+          alignItems: 'center',
+          marginHorizontal: 40,
+        }}>
+        {renderTips()}
+        <View style={{flexDirection: 'row', marginHorizontal: 20}}>
+          <AppText style={[appStyles.normal14Text, {marginHorizontal: 5}]}>
+            •
+          </AppText>
+          <AppText style={appStyles.bold13Text}>
+            {i18n.t('userGuide:tipPage11_1')}
+            <AppText style={appStyles.normal13}>
+              {i18n.t('userGuide:tipPage11_2')}
+            </AppText>
+          </AppText>
+        </View>
+      </View>
+    ),
   },
 };

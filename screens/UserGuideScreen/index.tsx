@@ -68,6 +68,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 20,
     marginTop: 55,
+    marginBottom: 24,
   },
   checkInfoText: {
     ...appStyles.normal14Text,
@@ -270,7 +271,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
 
         {index === 3 && (
           <AppText style={{marginBottom: 8, color: colors.warmGrey}}>
-            {i18n.t('userGuide:tipPage4_3')}{' '}
+            {i18n.t('userGuide:tipPage4_3')}
           </AppText>
         )}
         <Image style={styles.image} source={data.image} resizeMode="contain" />
@@ -291,6 +292,10 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
         {data?.title.map((elm) => (
           <AppTextJoin data={elm} />
         ))}
+
+        <View style={{marginTop: isDeviceSize('medium') ? 12 : 42}}>
+          {data.tip && data.tip()}
+        </View>
         <View style={styles.tailImages}>
           <Image style={{marginTop: 50}} source={image1} resizeMode="contain" />
 
