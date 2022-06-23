@@ -178,7 +178,7 @@ const Esim: React.FC<EsimProps> = ({
   sync,
 }) => {
   const [isSupportDev, setIsSupportDev] = useState<boolean>(true);
-  const [isDevModalVisible, setIsDevModalVisible] = useState<boolean>(true);
+  const [isDevModalVisible, setIsDevModalVisible] = useState<boolean>(false);
   const [index, setIndex] = useState(0);
   const routes = useMemo(
     () =>
@@ -601,33 +601,29 @@ const Esim: React.FC<EsimProps> = ({
         renderTabBar={() => null}
       />
 
-      <AppModal
-        title={i18n.t('home:unsupportedTitle')}
-        closeButtonTitle={i18n.t('ok')}
-        titleStyle={styles.modalTitle}
-        type="close"
-        onOkClose={() => exitApp('exit')}
-        visible={isDevModalVisible}>
-        {modalBody()}
-      </AppModal>
-
+      {isDevModalVisible && !isSupportDev ? (
+        <AppModal
+          title={i18n.t('home:unsupportedTitle')}
+          closeButtonTitle={i18n.t('ok')}
+          titleStyle={styles.modalTitle}
+          type="close"
+          onOkClose={() => exitApp('exit')}
+          visible={isDevModalVisible}>
+          {modalBody()}
+        </AppModal>
+      ) : (
+        <NotiModal
+          visible={!appUpdateVisible && popUpVisible}
+          popUp={popUp}
+          closeType={closeType}
+          onOkClose={() => exitApp(closeType)}
+          onCancelClose={() => setPopUpVisible(false)}
+        />
+      )}
       <AppVerModal
         visible={!isDevModalVisible && appUpdateVisible}
         option={appUpdate}
         onOkClose={() => setAppUpdateVisible(false)}
-      />
-
-      <NotiModal
-        visible={
-          isSupportDev &&
-          !isDevModalVisible &&
-          !appUpdateVisible &&
-          popUpVisible
-        }
-        popUp={popUp}
-        closeType={closeType}
-        onOkClose={() => exitApp(closeType)}
-        onCancelClose={() => setPopUpVisible(false)}
       />
     </View>
   );
