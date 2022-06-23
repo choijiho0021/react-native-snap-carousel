@@ -223,14 +223,14 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
                 <View>
                   <AppText style={styles.apnTitle}>{i18n.t('apn')}</AppText>
                   <View style={styles.apnValue}>
-                    <AppText style={appStyles.bold16Text}>{elm[idx]}</AppText>
+                    <AppText style={appStyles.bold16Text}>{elm}</AppText>
                   </View>
                 </View>
                 <AppButton
                   title={i18n.t('copy')}
                   titleStyle={[appStyles.normal14Text]}
                   style={styles.btnCopy}
-                  onPress={copyToClipboard(elm[idx])}
+                  onPress={copyToClipboard(elm)}
                 />
               </View>
             ))}
