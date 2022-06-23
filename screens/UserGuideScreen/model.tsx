@@ -19,7 +19,13 @@ const styles = StyleSheet.create({
   underLine: {
     borderStyle: 'solid',
     borderBottomWidth: 10,
-    borderBottomColor: '#b8d1f5',
+    borderBottomColor: colors.babyBlue,
+  },
+  noneLine: {
+    borderStyle: 'solid',
+    borderBottomWidth: 10,
+    borderBottomColor: colors.white,
+    top: 0,
   },
   titleText: {
     ...appStyles.bold22Text,
@@ -27,11 +33,10 @@ const styles = StyleSheet.create({
   },
   step: {
     width: 25,
-    height: 18,
+    height: 20,
     borderRadius: 20,
     backgroundColor: colors.black,
     marginTop: 8,
-    marginBottom: 4,
     marginRight: 8,
   },
   stepText: {
@@ -62,6 +67,7 @@ const stepsTitle = {
     [
       {
         text: i18n.t('userGuide:stepsTitle0_2'),
+        viewStyle: styles.noneLine,
         textStyle: styles.titleText,
       },
     ],
@@ -77,6 +83,7 @@ const stepsTitle = {
     [
       {
         text: '버튼을 눌러주세요.',
+        viewStyle: styles.noneLine,
         textStyle: styles.titleText,
       },
     ],
@@ -90,8 +97,8 @@ const stepsTitle = {
       },
       {
         text: '혹은',
-        // viewStyle: styles.underLine,
-        textStyle: styles.titleText,
+        viewStyle: styles.noneLine,
+        textStyle: {...appStyles.bold22Text, top: 12},
       },
       {
         text: '세부사항  직접 입력',
@@ -100,13 +107,14 @@ const stepsTitle = {
       },
       {
         text: '을',
-        // viewStyle: styles.underLine,
-        textStyle: styles.titleText,
+        viewStyle: styles.noneLine,
+        textStyle: {...appStyles.bold22Text, top: 12},
       },
     ],
     [
       {
         text: '이용하여 요금제를 추가해주세요.',
+        viewStyle: styles.noneLine,
         textStyle: styles.titleText,
       },
     ],
@@ -115,7 +123,7 @@ const stepsTitle = {
     [
       {
         text: '셀룰러 ',
-        // viewStyle: styles.underLine,
+        viewStyle: styles.noneLine,
         textStyle: styles.titleText,
       },
       {
@@ -125,7 +133,7 @@ const stepsTitle = {
       },
       {
         text: '해주세요.',
-        // viewStyle: styles.underLine,
+        viewStyle: styles.noneLine,
         textStyle: styles.titleText,
       },
     ],
@@ -134,7 +142,7 @@ const stepsTitle = {
     [
       {
         text: '아래그림처럼',
-        // viewStyle: styles.underLine,
+        viewStyle: styles.noneLine,
         textStyle: styles.titleText,
       },
     ],
@@ -146,6 +154,7 @@ const stepsTitle = {
       },
       {
         text: '해주세요.',
+        viewStyle: styles.noneLine,
         textStyle: styles.titleText,
       },
     ],
@@ -154,7 +163,7 @@ const stepsTitle = {
     [
       {
         text: '아래그림처럼',
-        // viewStyle: styles.underLine,
+        viewStyle: styles.underLine,
         textStyle: styles.titleText,
       },
     ],
@@ -166,6 +175,7 @@ const stepsTitle = {
       },
       {
         text: '해주세요.',
+        viewStyle: styles.noneLine,
         textStyle: styles.titleText,
       },
     ],
@@ -179,14 +189,14 @@ const stepsTitle = {
       },
       {
         text: '가',
-        // viewStyle: styles.underLine,
+        viewStyle: styles.noneLine,
         textStyle: styles.titleText,
       },
     ],
     [
       {
         text: '잘 잡히는지 확인해주세요',
-        // viewStyle: styles.underLine,
+        viewStyle: styles.noneLine,
         textStyle: styles.titleText,
       },
     ],
@@ -210,13 +220,23 @@ export const guideImages = {
     title: stepsTitle.step2,
     step: 2,
     tip: () => (
-      <View style={{alignItems: 'center', marginHorizontal: 40}}>
+      <View
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
         {renderTips()}
-        <View style={{flexDirection: 'row', marginHorizontal: 40}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            marginRight: 20,
+            width: '70%',
+            marginBottom: 5,
+          }}>
           <View style={styles.step}>
             <AppText style={styles.stepText}>1</AppText>
           </View>
-          <AppText style={appStyles.normal13}>
+          <AppText style={[appStyles.normal13, {lineHeight: 0}]}>
             {i18n.t('userGuide:tipPage3_1')}
             <AppText style={appStyles.bold13Text}>
               {i18n.t('userGuide:tipPage3_2')}
@@ -224,11 +244,16 @@ export const guideImages = {
             {i18n.t('userGuide:tipPage3_3')}
           </AppText>
         </View>
-        <View style={{flexDirection: 'row', marginHorizontal: 40}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            width: '70%',
+            marginRight: 20,
+          }}>
           <View style={styles.step}>
             <AppText style={styles.stepText}>2</AppText>
           </View>
-          <AppText style={appStyles.normal13}>
+          <AppText style={[appStyles.normal13, {lineHeight: 0}]}>
             {i18n.t('userGuide:tipPage3_4')}
             <AppText style={appStyles.bold13Text}>
               {i18n.t('userGuide:tipPage3_5')}
@@ -336,27 +361,7 @@ export const guideImages = {
     image: require('../assets/images/esim/userGuide/eSIMUserGuide9.png'),
     title: stepsTitle.step5,
     step: 5,
-    tip: () => (
-      <View
-        style={{
-          alignItems: 'center',
-          marginHorizontal: 40,
-        }}>
-        {renderTips()}
-        <View style={{flexDirection: 'row', marginHorizontal: 20}}>
-          <AppText style={[appStyles.normal14Text, {marginHorizontal: 5}]}>
-            •
-          </AppText>
-          <AppText style={appStyles.normal13}>
-            {i18n.t('userGuide:tipPage9_1')}
-            <AppText style={appStyles.bold13Text}>
-              {i18n.t('userGuide:tipPage9_2')}
-            </AppText>
-            {i18n.t('userGuide:tipPage9_3')}
-          </AppText>
-        </View>
-      </View>
-    ),
+    tip: null,
   },
   page10: {
     image: require('../assets/images/esim/userGuide/eSIMUserGuide10.png'),

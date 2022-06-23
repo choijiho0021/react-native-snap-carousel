@@ -30,10 +30,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   image: {
-    // width: '100%',
+    width: '100%',
     // height: '100%',
-    alignSelf: 'stretch',
-    marginTop: 50,
+    // alignSelf: 'stretch',
+    // marginTop: 50,
+    // flex: 1,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -255,18 +256,23 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
     return (
       <View style={[styles.container, {alignItems: 'center'}]}>
         <View
-          style={[styles.step, {marginTop: isDeviceSize('small') ? 8 : 32}]}>
+          style={[styles.step, {marginTop: isDeviceSize('medium') ? 0 : 32}]}>
           <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
         </View>
 
-        {data?.title.map((elm) => (
-          <AppTextJoin data={elm} />
+        {data?.title.map((elm, idx) => (
+          <AppTextJoin data={elm} style={{bottom: idx === 0 ? 0 : 10}} />
         ))}
 
-        <View style={{flex: 1, marginTop: isDeviceSize('small') ? 24 : 42}}>
+        <View style={{flex: 1, marginTop: isDeviceSize('medium') ? 12 : 42}}>
           {data.tip && data.tip()}
         </View>
 
+        {index === 3 && (
+          <AppText style={{marginBottom: 8, color: colors.warmGrey}}>
+            {i18n.t('userGuide:tipPage4_3')}{' '}
+          </AppText>
+        )}
         <Image style={styles.image} source={data.image} resizeMode="contain" />
       </View>
     );
@@ -286,9 +292,9 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
           <AppTextJoin data={elm} />
         ))}
         <View style={styles.tailImages}>
-          <Image style={styles.image} source={image1} resizeMode="contain" />
+          <Image style={{marginTop: 50}} source={image1} resizeMode="contain" />
 
-          <Image style={styles.image} source={image2} resizeMode="contain" />
+          <Image source={image2} resizeMode="contain" />
         </View>
       </View>
     );
