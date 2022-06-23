@@ -337,9 +337,6 @@ const Esim: React.FC<EsimProps> = ({
             </AppText>
           </AppText>
         </View>
-        <AppText style={appStyles.normal16Text}>
-          {i18n.t('home:unsupportedBody4')}
-        </AppText>
         <AppText style={styles.supportDevTitle}>
           {i18n.t('home:supportedDevice')}
         </AppText>
