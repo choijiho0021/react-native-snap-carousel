@@ -83,7 +83,7 @@ type SimpleTextScreenNavigationProp = StackNavigationProp<
 
 type SimpleTextScreenRouteProp = RouteProp<HomeStackParamList, 'SimpleText'>;
 
-type EventStatus = 'open' | 'closed' | 'joined';
+type EventStatus = 'open' | 'closed' | 'joined' | 'invalid';
 
 type SimpleTextScreenProps = {
   navigation: SimpleTextScreenNavigationProp;
@@ -169,7 +169,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
     const {rule} = route.params;
     const {iccid, token, loggedIn} = account;
 
-    if (rule && isProdEvent) {
+    if (rule && isProdEvent && eventStatus === 'open') {
       if (!loggedIn) {
         // 로그인 화면으로 이동
         navigation.navigate('Auth');
@@ -177,7 +177,9 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
         setPromoResult('promo:join:ing');
         const resp = await API.Promotion.join({rule, iccid, token});
         setPromoResult(
-          resp.result === 0 && resp.objects[0]?.available > 0
+          resp.result === 0 &&
+            resp.objects[0]?.hold === 0 &&
+            resp.objects[0]?.available > 0
             ? 'promo:join:joined'
             : 'promo:join:fail',
         );
@@ -185,7 +187,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
     } else {
       navigation.goBack();
     }
-  }, [account, isProdEvent, navigation, route.params]);
+  }, [account, eventStatus, isProdEvent, navigation, route.params]);
 
   const getContent = useCallback(
     ({key, bodyTitle}: {key: string; bodyTitle?: string}) => {
@@ -321,7 +323,6 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
               ? image?.success
               : image?.failure
           }
-          crop={false}
           style={{width: 333, height: 444}}
         />
       </AppModal>
@@ -347,6 +348,8 @@ const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
             if (resp.objects[0]?.hold > 0) setEventStatus('joined');
             else if (resp.objects[0]?.available > 0) setEventStatus('open');
             else setEventStatus('closed');
+          } else {
+            setEventStatus('invalid');
           }
         }
       };
