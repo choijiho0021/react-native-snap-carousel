@@ -176,7 +176,9 @@ const Esim: React.FC<EsimProps> = ({
   sync,
 }) => {
   const [isSupportDev, setIsSupportDev] = useState<boolean>(true);
-  const [isDevModalVisible, setIsDevModalVisible] = useState<boolean>(true);
+  const [isDevModalVisible, setIsDevModalVisible] = useState<
+    boolean | undefined
+  >();
   const [index, setIndex] = useState(0);
   const routes = useMemo(
     () =>
@@ -605,12 +607,12 @@ const Esim: React.FC<EsimProps> = ({
         titleStyle={styles.modalTitle}
         type="close"
         onOkClose={() => exitApp('exit')}
-        visible={isDevModalVisible}>
+        visible={isDevModalVisible === true}>
         {modalBody()}
       </AppModal>
 
       <AppVerModal
-        visible={!isDevModalVisible && appUpdateVisible}
+        visible={isDevModalVisible === false && appUpdateVisible}
         option={appUpdate}
         onOkClose={() => setAppUpdateVisible(false)}
       />
