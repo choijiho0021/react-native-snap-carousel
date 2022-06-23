@@ -68,6 +68,7 @@ import NotiModal from './component/NotiModal';
 import AppTabHeader from '@/components/AppTabHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppVerModal from './component/AppVerModal';
+import {isDeviceSize} from '../../constants/SliderEntry.style';
 
 const {esimGlobal} = Env.get();
 
@@ -122,6 +123,7 @@ const styles = StyleSheet.create({
   },
   showSearchBar: {
     marginBottom: 20,
+    marginTop: isDeviceSize('medium') ? 0 : 10,
     marginHorizontal: 20,
     backgroundColor: colors.white,
     height: 56,
@@ -176,9 +178,7 @@ const Esim: React.FC<EsimProps> = ({
   sync,
 }) => {
   const [isSupportDev, setIsSupportDev] = useState<boolean>(true);
-  const [isDevModalVisible, setIsDevModalVisible] = useState<
-    boolean | undefined
-  >();
+  const [isDevModalVisible, setIsDevModalVisible] = useState<boolean>(false);
   const [index, setIndex] = useState(0);
   const routes = useMemo(
     () =>
@@ -337,9 +337,6 @@ const Esim: React.FC<EsimProps> = ({
             </AppText>
           </AppText>
         </View>
-        <AppText style={appStyles.normal16Text}>
-          {i18n.t('home:unsupportedBody4')}
-        </AppText>
         <AppText style={styles.supportDevTitle}>
           {i18n.t('home:supportedDevice')}
         </AppText>
@@ -601,28 +598,29 @@ const Esim: React.FC<EsimProps> = ({
         renderTabBar={() => null}
       />
 
-      <AppModal
-        title={i18n.t('home:unsupportedTitle')}
-        closeButtonTitle={i18n.t('ok')}
-        titleStyle={styles.modalTitle}
-        type="close"
-        onOkClose={() => exitApp('exit')}
-        visible={isDevModalVisible === true}>
-        {modalBody()}
-      </AppModal>
-
+      {isDevModalVisible && !isSupportDev ? (
+        <AppModal
+          title={i18n.t('home:unsupportedTitle')}
+          closeButtonTitle={i18n.t('ok')}
+          titleStyle={styles.modalTitle}
+          type="close"
+          onOkClose={() => exitApp('exit')}
+          visible={isDevModalVisible}>
+          {modalBody()}
+        </AppModal>
+      ) : (
+        <NotiModal
+          visible={!appUpdateVisible && popUpVisible}
+          popUp={popUp}
+          closeType={closeType}
+          onOkClose={() => exitApp(closeType)}
+          onCancelClose={() => setPopUpVisible(false)}
+        />
+      )}
       <AppVerModal
         visible={isDevModalVisible === false && appUpdateVisible}
         option={appUpdate}
         onOkClose={() => setAppUpdateVisible(false)}
-      />
-
-      <NotiModal
-        visible={isSupportDev && !appUpdateVisible && popUpVisible}
-        popUp={popUp}
-        closeType={closeType}
-        onOkClose={() => exitApp(closeType)}
-        onCancelClose={() => setPopUpVisible(false)}
       />
     </View>
   );

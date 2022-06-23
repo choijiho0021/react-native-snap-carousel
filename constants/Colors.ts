@@ -38,4 +38,5 @@ export const colors = {
   paleGrey2: '#f2f4f6',
   pinkishGrey: '#bcbcbc',
   purplyBlue: '#5b16ef',
+  babyBlue: '#B7D8FF',
 };

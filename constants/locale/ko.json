@@ -74,7 +74,6 @@
   "home:unsupportedBody1": "로밍도깨비 eSIM 서비스는 ",
   "home:unsupportedBody2": "eSIM 모듈이 탑재된 eSIM 지원 단말에서 이용 가능",
   "home:unsupportedBody3": "합니다",
-  "home:unsupportedBody4": "eSIM 미지원단말(일반 스마트폰) 사용자께서는 추후 서비스 될 로밍도깨비 유심서비스를 이용해주세요.",
   "home:searchPlaceholder": "어느 나라로 떠날 예정이신가요?",
 
   "app:updateTitle-1": "새로운 버전이",
@@ -575,7 +574,6 @@
   "prodDetail:KakaoPlus": "카카오톡 플러스 친구로\n 편하게 물어보세요!",
   "prodDetail:FacebookMessage": "페이스북 메신저로\n 편하게 물어보세요!",
   "prodDetail:copy": "복사되었습니다",
-
   "prodDetailOp:title": "사용 가능 지역 및 통신사 확인하기",
   "prodDetailOp:subTitle": "해당 국가를 클릭하면 APN 정보가 보여요!",
   "prodDetailOp:search": "국가명을 검색해주세요",
@@ -763,6 +761,7 @@
   "userGuide:tipPage3_6": "해주세요.",
   "userGuide:tipPage4_1": "로밍도깨비 앱 > 구매 eSIM 목록 > 수동 입력 정보",
   "userGuide:tipPage4_2": "에서 해당 정보를 복사 붙여 넣기 해 주세요.",
+  "userGuide:tipPage4_3": "[ 세부사항 직접 입력 ]",
   "userGuide:tipPage5_1": "셀룰러 요금제 레이블을 설정하면, 각 요금제를\n구별하기 쉬워요.",
   "userGuide:tipPage5_2": "가이드 상에서는 편의를 위해 새로 추가한\n로밍도깨비 eSIM을 ‘보조’라고 지정하고 있어요.",
   "userGuide:tipPage8_1": "셀룰러 데이터 전환을 허용하게 되는 경우, ",
@@ -770,5 +769,7 @@
   "userGuide:tipPage8_3": "반드시 OFF로 설정해주세요.",
   "userGuide:tipPage9_1": "'보조’의 데이터 ",
   "userGuide:tipPage9_2": "로밍을 ON",
-  "userGuide:tipPage9_3": "으로 설정해주셔야 데이터 사용이가능합니다."
+  "userGuide:tipPage9_3": "으로 설정해주셔야 데이터 사용이가능합니다.",
+  "userGuide:tipPage11_1": "사용 완료된 상품은 꼭 삭제해주세요!\n",
+  "userGuide:tipPage11_2": "새로운 상품을 등록할 때 기존에 삭제하지 않은 상품\n때문에 헷갈릴 수 있어요."
 }
