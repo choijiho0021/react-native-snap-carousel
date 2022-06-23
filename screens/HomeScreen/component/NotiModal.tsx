@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
 import React, {memo, useState} from 'react';
-import {Pressable, StyleSheet, Text, View} from 'react-native';
+import {Pressable, StyleSheet, View} from 'react-native';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -10,7 +10,7 @@ import {appStyles} from '@/constants/Styles';
 import {RkbPromotion} from '@/redux/api/promotionApi';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
-import {isDeviceSize} from '../constants/SliderEntry.style';
+import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   infoModalTitle: {
@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   popupImg: {
-    width: 444,
+    width: windowWidth - 40,
     height: isDeviceSize('medium') ? 446 : 500,
     marginBottom: 20,
   },
@@ -76,9 +76,8 @@ const NotiModal: React.FC<NotiModalProps> = ({
       <View style={{marginHorizontal: 20}}>
         <AppUserPic
           url={popUp?.notice?.image?.noti}
-          crop={false}
           style={styles.popupImg}
-          resizeMode="contain"
+          resizeMode="cover"
           onPress={() => {
             if (closeType === 'redirect') {
               onOkClose?.();
