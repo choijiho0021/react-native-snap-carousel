@@ -178,13 +178,7 @@ const Esim: React.FC<EsimProps> = ({
   sync,
 }) => {
   const [isSupportDev, setIsSupportDev] = useState<boolean>(true);
-<<<<<<< HEAD
   const [isDevModalVisible, setIsDevModalVisible] = useState<boolean>(false);
-=======
-  const [isDevModalVisible, setIsDevModalVisible] = useState<
-    boolean | undefined
-  >();
->>>>>>> e5ab75f6b33ba0411600ba18779a20bab602e4d6
   const [index, setIndex] = useState(0);
   const routes = useMemo(
     () =>
@@ -604,7 +598,6 @@ const Esim: React.FC<EsimProps> = ({
         renderTabBar={() => null}
       />
 
-<<<<<<< HEAD
       {isDevModalVisible && !isSupportDev ? (
         <AppModal
           title={i18n.t('home:unsupportedTitle')}
@@ -624,18 +617,6 @@ const Esim: React.FC<EsimProps> = ({
           onCancelClose={() => setPopUpVisible(false)}
         />
       )}
-=======
-      <AppModal
-        title={i18n.t('home:unsupportedTitle')}
-        closeButtonTitle={i18n.t('ok')}
-        titleStyle={styles.modalTitle}
-        type="close"
-        onOkClose={() => exitApp('exit')}
-        visible={isDevModalVisible === true}>
-        {modalBody()}
-      </AppModal>
-
->>>>>>> e5ab75f6b33ba0411600ba18779a20bab602e4d6
       <AppVerModal
         visible={isDevModalVisible === false && appUpdateVisible}
         option={appUpdate}
