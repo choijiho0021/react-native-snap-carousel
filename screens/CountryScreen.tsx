@@ -311,8 +311,6 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         [],
       );
 
-      console.log('@@@ prod list', list);
-
       setProdData([
         {title: 'daily', data: list[0] || []},
         {title: 'total', data: list[1] || []},
