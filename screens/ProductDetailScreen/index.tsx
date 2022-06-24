@@ -7,7 +7,6 @@ import {PixelRatio, SafeAreaView, StyleSheet, View} from 'react-native';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import Analytics from 'appcenter-analytics';
 import {Settings} from 'react-native-fbsdk';
@@ -19,7 +18,7 @@ import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
-import {appStyles, htmlDetailWithCss, injectedScript} from '@/constants/Styles';
+import {appStyles, injectedScript} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
@@ -36,7 +35,7 @@ import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {API} from '@/redux/api';
 import api, {ApiResult} from '@/redux/api/api';
-import {PurchaseItem} from '../redux/models/purchaseItem';
+import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import AppCartButton from '@/components/AppCartButton';
 
@@ -209,35 +208,28 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     [action.info, navigation, route.params.item?.desc, route.params?.title],
   );
 
-  const renderWebView = useCallback(() => {
-    // const {category} = API.Product;
-
-    // const localOpDetails = route.params?.localOpDetails;
-    // const detail = _.isEmpty(localOpDetails)
-    //   ? product.detailInfo + product.detailCommon
-    //   : localOpDetails + product.detailCommon;
-
-    const prodUuid = route.params.item.uuid;
-
-    return (
-      <View style={{flex: 1}}>
-        <WebView
-          // automaticallyAdjustContentInsets={true}
-          javaScriptEnabled
-          domStorageEnabled
-          injectedJavaScript={injectedScript}
-          // scalesPageToFit
-          startInLoadingState
-          decelerationRate="normal"
-          scrollEnabled
-          onMessage={onMessage}
-          source={{uri: `${webViewHost}/#/product/${prodUuid}`}}
-          // source={{uri: `http://localhost:8000/#/product/${prodUuid}`}}
-          style={{height: webViewHeight}}
-        />
-      </View>
-    );
-  }, [onMessage, route.params.item.uuid, webViewHeight]);
+  const renderWebView = useCallback(
+    (sku?: string) =>
+      sku ? (
+        <View style={{flex: 1}}>
+          <WebView
+            // automaticallyAdjustContentInsets={true}
+            javaScriptEnabled
+            domStorageEnabled
+            injectedJavaScript={injectedScript}
+            // scalesPageToFit
+            startInLoadingState
+            decelerationRate="normal"
+            scrollEnabled
+            onMessage={onMessage}
+            source={{uri: `${webViewHost}/#/product/${sku}`}}
+            // source={{uri: `http://localhost:8000/#/product/${prodUuid}`}}
+            style={{height: webViewHeight}}
+          />
+        </View>
+      ) : null,
+    [onMessage, webViewHeight],
+  );
 
   const soldOut = useCallback((payload: ApiResult<any>, message: string) => {
     if (payload.result === api.E_RESOURCE_NOT_FOUND) {
@@ -331,7 +323,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     <SafeAreaView style={styles.screen}>
       <AppActivityIndicator visible={pending} />
       <View style={{backgroundColor: colors.whiteTwo, flex: 1}}>
-        {renderWebView()}
+        {renderWebView(route.params?.item?.sku)}
       </View>
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
       <AppSnackBar
