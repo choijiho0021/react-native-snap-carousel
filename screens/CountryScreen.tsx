@@ -1,7 +1,7 @@
 /* eslint-disable consistent-return */
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {Component, memo} from 'react';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {
   Image,
   Pressable,
@@ -138,7 +138,7 @@ const CountryListItem0 = ({
 }: {
   item: RkbProduct;
   position?: string;
-  onPress: (v: string) => () => void;
+  onPress: () => void;
 }) => {
   const color = {
     color: item.field_daily === 'total' ? colors.purplyBlue : colors.clearBlue,
@@ -184,7 +184,7 @@ const CountryListItem0 = ({
   }
 
   return (
-    <Pressable onPress={onPress(item)} style={styles.productBox}>
+    <Pressable onPress={onPress}>
       <View key="product" style={[styles.card, myStyle]}>
         <View key="text" style={styles.textView}>
           <View style={{flexDirection: 'row'}}>
@@ -269,148 +269,117 @@ type CountryScreenProps = {
   pending: boolean;
 };
 
-type CountryScreenState = {
-  prodData: {title: string; data: RkbProduct[]}[];
-  imageUrl?: string;
-  title?: string;
-  localOpDetails?: string;
-  partnerId?: string;
-};
-class CountryScreen extends Component<CountryScreenProps, CountryScreenState> {
-  constructor(props: CountryScreenProps) {
-    super(props);
+type ProdDataType = {title: string; data: RkbProduct[]};
 
-    this.state = {
-      prodData: [],
-      imageUrl: undefined,
-      localOpDetails: undefined,
-      partnerId: undefined,
-    };
+const CountryScreen: React.FC<CountryScreenProps> = (props) => {
+  const {navigation, route, product} = props;
+  const {localOpList, prodOfCountry} = product;
 
-    this.onPress = this.onPress.bind(this);
-  }
+  const [prodData, setProdData] = useState<ProdDataType[]>([]);
+  const [imageUrl, setImageUrl] = useState<string>();
+  const [localOpDetails, setLocalOpDetails] = useState<string>();
+  const [partnerId, setPartnerId] = useState<string>();
 
-  async componentDidMount() {
-    const {navigation, route, product} = this.props;
-    const {localOpList, prodOfCountry} = product;
-    const prodList =
-      prodOfCountry.length > 0 ? prodOfCountry : route.params?.prodOfCountry;
+  const prodList = useMemo(
+    () =>
+      prodOfCountry.length > 0 ? prodOfCountry : route.params?.prodOfCountry,
+    [prodOfCountry, route.params?.prodOfCountry],
+  );
 
-    const localOp = localOpList.get(prodList[0]?.partnerId);
+  useEffect(() => {
     const title =
       prodList && prodList.length > 0
         ? API.Product.getTitle(localOpList.get(prodList[0]?.partnerId))
         : '';
 
-    this.setState({partnerId: prodList[0]?.partnerId});
     navigation.setOptions({
       title: null,
       headerLeft: () => <AppBackButton title={title} />,
     });
+  }, [localOpList, navigation, prodList]);
 
-    const prodData: {daily: RkbProduct[]; total: RkbProduct[]} =
-      prodList.reduce((group: {[key: string]: RkbProduct[]}, el) => {
-        const daily = el.field_daily;
-
-        if (group[daily] === undefined) {
-          group[daily] = [];
-        }
-
-        group[daily].push(el);
-        return group;
-      }, {});
-
+  useEffect(() => {
     if (!_.isEmpty(prodList)) {
-      this.setState({
-        prodData: [
-          {title: 'daily', data: prodData.daily || []},
-          {title: 'total', data: prodData.total || []},
-        ],
-        imageUrl: localOp?.imageUrl,
-        localOpDetails: localOp?.detail,
-      });
+      const localOp = localOpList.get(prodList[0]?.partnerId);
+      setPartnerId(prodList[0]?.partnerId);
+
+      const list = prodList.reduce(
+        (group: RkbProduct[][], el) =>
+          el.field_daily === 'daily'
+            ? [(group[0] || []).concat(el), group[1] || []]
+            : [group[0] || [], (group[1] || []).concat(el)],
+        [],
+      );
+
+      console.log('@@@ prod list', list);
+
+      setProdData([
+        {title: 'daily', data: list[0] || []},
+        {title: 'total', data: list[1] || []},
+      ]);
+      setImageUrl(localOp?.imageUrl);
+      setLocalOpDetails(localOp?.detail);
     }
-  }
+  }, [localOpList, prodList]);
 
-  shouldComponentUpdate(
-    nextProps: CountryScreenProps,
-    nextState: CountryScreenState,
-  ) {
-    return this.props !== nextProps || this.state !== nextState;
-  }
+  const renderItem = useCallback(
+    ({item, index, section}) => {
+      return (
+        <CountryListItem
+          item={item}
+          onPress={() =>
+            navigation.navigate('ProductDetail', {
+              title: item.name,
+              item,
+              img: imageUrl,
+              localOpDetails,
+              partnerId,
+            })
+          }
+          position={position(index, section.data)}
+        />
+      );
+    },
+    [imageUrl, localOpDetails, navigation, partnerId],
+  );
 
-  onPress = (item: RkbProduct) => () => {
-    const {imageUrl, localOpDetails, partnerId} = this.state;
+  return (
+    <SafeAreaView style={styles.container}>
+      {imageUrl && (
+        <Image
+          style={styles.box}
+          source={{uri: API.default.httpImageUrl(imageUrl)}}
+        />
+      )}
 
-    this.props.navigation.navigate('ProductDetail', {
-      title: item.name,
-      item,
-      img: imageUrl,
-      localOpDetails,
-      partnerId,
-    });
-  };
-
-  renderItem = ({
-    item,
-    index,
-    section,
-  }: {
-    item: RkbProduct;
-    index: number;
-    section: {title: string; data};
-  }) => {
-    return (
-      <CountryListItem
-        item={item}
-        onPress={this.onPress}
-        position={position(index, section.data)}
-      />
-    );
-  };
-
-  render() {
-    const {pending} = this.props;
-    const {prodData, imageUrl} = this.state;
-
-    return (
-      <SafeAreaView style={styles.container}>
-        {imageUrl && (
-          <Image
-            style={styles.box}
-            source={{uri: API.default.httpImageUrl(imageUrl)}}
-          />
-        )}
-
-        <View style={{flex: 1}}>
-          <SectionList
-            sections={prodData}
-            // keyExtractor={(item, index) => item + index}
-            renderItem={this.renderItem}
-            renderSectionHeader={({section: {title, data}}) =>
-              data.length >= 1 ? (
-                <View style={styles.sectionHeader}>
-                  <AppText
-                    style={{
-                      ...appStyles.bold20Text,
-                    }}>
-                    {i18n.t(`country:${title}`)}
-                  </AppText>
-                </View>
-              ) : null
-            }
-            renderSectionFooter={({section: {title, data}}) =>
-              title === 'daily' && prodData[1].data.length >= 1 ? (
-                <View style={styles.divider} />
-              ) : null
-            }
-          />
-        </View>
-        <AppActivityIndicator visible={pending} />
-      </SafeAreaView>
-    );
-  }
-}
+      <View style={{flex: 1}}>
+        <SectionList
+          sections={prodData}
+          // keyExtractor={(item, index) => item + index}
+          renderItem={renderItem}
+          renderSectionHeader={({section: {title, data}}) =>
+            data.length >= 1 ? (
+              <View style={styles.sectionHeader}>
+                <AppText
+                  style={{
+                    ...appStyles.bold20Text,
+                  }}>
+                  {i18n.t(`country:${title}`)}
+                </AppText>
+              </View>
+            ) : null
+          }
+          renderSectionFooter={({section: {title, data}}) =>
+            title === 'daily' && prodData[1].data.length >= 1 ? (
+              <View style={styles.divider} />
+            ) : null
+          }
+        />
+      </View>
+      <AppActivityIndicator visible={props.pending} />
+    </SafeAreaView>
+  );
+};
 
 export default connect(({product, status}: RootState) => ({
   product,
