@@ -202,7 +202,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
     type,
   ]);
 
-  return (
+  return visible ? (
     <Modal animationType="fade" transparent visible={visible}>
       <SafeAreaView
         style={[
@@ -230,7 +230,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
         <SafeAreaView style={{backgroundColor: 'white'}} />
       )}
     </Modal>
-  );
+  ) : null;
 };
 
 export default memo(AppModal);
