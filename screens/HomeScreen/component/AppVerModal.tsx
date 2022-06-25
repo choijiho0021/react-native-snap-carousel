@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   },
 });
 type AppVerModalProps = {
-  visible?: boolean;
+  visible: boolean;
   option?: string;
   onOkClose?: () => void;
 };
