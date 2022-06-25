@@ -610,7 +610,7 @@ const Esim: React.FC<EsimProps> = ({
         </AppModal>
       ) : (
         <NotiModal
-          visible={!appUpdateVisible && popUpVisible}
+          visible={!appUpdateVisible && popUpVisible && !popupDisabled}
           popUp={popUp}
           closeType={closeType}
           onOkClose={() => exitApp(closeType)}
