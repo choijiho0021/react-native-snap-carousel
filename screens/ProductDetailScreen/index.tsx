@@ -33,7 +33,6 @@ import i18n from '@/utils/i18n';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
-import {API} from '@/redux/api';
 import api, {ApiResult} from '@/redux/api/api';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
@@ -151,10 +150,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       action.product.getProdDetailInfo(params?.partnerId || '');
     }
 
-    const item = API.Product.toPurchaseItem(route.params.item);
-    setPurchaseItems(item ? [item] : []);
+    setPurchaseItems(params.item ? [params.item] : []);
     getTrackingStatus().then((elm) => setStatus(elm));
-  }, [action.product, navigation, product, route, route.params?.partnerId]);
+  }, [action.product, navigation, product, route]);
 
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
@@ -196,7 +194,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         case 'apn':
           navigation.navigate('ProductDetailOp', {
             title: route.params?.title,
-            ...route.params.item?.desc,
+            ...route.params.desc,
           });
           break;
         // 기본적으로 화면 크기 가져오도록 함
@@ -205,7 +203,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           break;
       }
     },
-    [action.info, navigation, route.params.item?.desc, route.params?.title],
+    [action.info, navigation, route.params.desc, route.params?.title],
   );
 
   const renderWebView = useCallback(
@@ -223,7 +221,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             scrollEnabled
             onMessage={onMessage}
             source={{uri: `${webViewHost}/#/product/${sku}`}}
-            // source={{uri: `http://localhost:8000/#/product/${prodUuid}`}}
+            // source={{uri: `http://localhost:8000/#/product/${sku}`}}
             style={{height: webViewHeight}}
           />
         </View>

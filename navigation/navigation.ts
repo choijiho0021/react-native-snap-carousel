@@ -8,6 +8,7 @@ import {RkbInfo} from '@/redux/api/pageApi';
 import {RkbProduct} from '@/redux/api/productApi';
 import {BoardMsgStatus} from '@/redux/api/boardApi';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import {PurchaseItem} from '@/redux/models/purchaseItem';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti';
 export type PymMethodScreenMode =
@@ -66,9 +67,10 @@ export type HomeStackParamList = {
   ProductDetail: {
     title?: string;
     img?: string;
-    item?: RkbProduct;
+    item?: PurchaseItem;
     localOpDetails?: string;
     partnerId?: string;
+    desc?: Record<string, string>;
   };
   ProductDetailOp: {
     title: string;

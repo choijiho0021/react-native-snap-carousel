@@ -328,8 +328,9 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           onPress={() =>
             navigation.navigate('ProductDetail', {
               title: item.name,
-              item,
+              item: API.Product.toPurchaseItem(item),
               img: imageUrl,
+              desc: item.desc,
               localOpDetails,
               partnerId,
             })
