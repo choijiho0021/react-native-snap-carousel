@@ -198,7 +198,7 @@ const Esim: React.FC<EsimProps> = ({
   });
   const [firstLaunch, setFirstLaunch] = useState<boolean | undefined>();
   const [popUpVisible, setPopUpVisible] = useState(false);
-  const [popupDisabled, setPopupDisabled] = useState(false);
+  const [popupDisabled, setPopupDisabled] = useState(true);
   const [appUpdate, setAppUpdate] = useState('');
   const [appUpdateVisible, setAppUpdateVisible] = useState(false);
   const [popUp, setPopUp] = useState<RkbPromotion>();
@@ -453,10 +453,11 @@ const Esim: React.FC<EsimProps> = ({
       if (v) {
         const disabled =
           moment.duration(now.diff(v)).asDays() <= POPUP_DIS_DAYS;
-
-        if (disabled) setPopupDisabled(disabled);
-        else AsyncStorage.removeItem('popupDisabled');
-      }
+        if (!disabled) {
+          setPopupDisabled(false);
+          AsyncStorage.removeItem('popupDisabled');
+        }
+      } else setPopupDisabled(false);
     });
   }, []);
 
@@ -554,7 +555,6 @@ const Esim: React.FC<EsimProps> = ({
   useEffect(() => {
     const ver = VersionCheck.getCurrentVersion();
     API.AppVersion.getAppVersion(ver).then((rsp) => {
-      console.log('@@@ app', rsp, ver);
       if (rsp.result === 0 && rsp.objects.length > 0) {
         setAppUpdate(rsp.objects[0].updateOption);
         setAppUpdateVisible(true);
