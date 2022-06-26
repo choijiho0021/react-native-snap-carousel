@@ -24,10 +24,11 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     height: 55,
-    backgroundColor: colors.clearBlue,
+    margin: 20,
+    flex: 1,
   },
   closeButtonTitle: {
-    ...appStyles.normal18Text,
+    ...appStyles.medium18,
     color: colors.white,
     textAlign: 'center',
     width: '100%',
@@ -46,12 +47,6 @@ const styles = StyleSheet.create({
   title: {
     ...appStyles.normal18Text,
     marginHorizontal: 30,
-  },
-  blueCenter: {
-    ...appStyles.normal18Text,
-    marginHorizontal: 30,
-    color: colors.clearBlue,
-    alignSelf: 'center',
   },
   inner: {
     marginHorizontal: 20,
@@ -77,7 +72,6 @@ export interface AppModalProps {
   titleViewStyle?: ViewStyle;
   titleIcon?: string;
   closeButtonTitle?: string;
-  closeButtonStyle?: ViewStyle;
   infoText?: string;
   contentStyle?: ViewStyle;
   buttonBackgroundColor?: ColorValue;
@@ -96,7 +90,6 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
   children,
   type = 'normal',
   closeButtonTitle = i18n.t('close'),
-  closeButtonStyle,
   contentStyle,
   buttonBackgroundColor,
   buttonTitleColor,
@@ -111,23 +104,21 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
     switch (type) {
       case 'close':
         return (
-          <AppButton
-            style={[
-              closeButtonStyle,
-              styles.closeButton,
-              buttonBackgroundColor
-                ? {
-                    backgroundColor: buttonBackgroundColor,
-                  }
-                : undefined,
-            ]}
-            onPress={onOkClose}
-            title={closeButtonTitle}
-            titleStyle={[
-              styles.closeButtonTitle,
-              buttonTitleColor ? {color: buttonTitleColor} : undefined,
-            ]}
-          />
+          <View style={{height: 92, padding: 20}}>
+            <AppButton
+              style={{
+                height: 52,
+                backgroundColor: colors.clearBlue,
+              }}
+              pressedStyle={{backgroundColor: colors.dodgerBlue}}
+              onPress={onOkClose}
+              title={closeButtonTitle || i18n.t('close')}
+              titleStyle={[
+                styles.closeButtonTitle,
+                {color: buttonTitleColor || colors.white},
+              ]}
+            />
+          </View>
         );
 
       case 'redirect':
@@ -135,10 +126,10 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
           <View style={{flexDirection: 'row'}}>
             <AppButton
               style={[
-                closeButtonStyle,
                 styles.closeButton,
-                {backgroundColor: colors.lightGrey, marginRight: 0},
+                {marginRight: 0, borderWidth: 1, borderColor: colors.lightGrey},
               ]}
+              pressedStyle={{backgroundColor: colors.whiteTwo}}
               onPress={onCancelClose}
               title={i18n.t('close')}
               titleStyle={[styles.closeButtonTitle, {color: colors.black}]}
@@ -146,14 +137,12 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
 
             <AppButton
               style={[
-                closeButtonStyle,
                 styles.closeButton,
-                buttonBackgroundColor
-                  ? {
-                      backgroundColor: buttonBackgroundColor,
-                    }
-                  : undefined,
+                {
+                  backgroundColor: buttonBackgroundColor || colors.clearBlue,
+                },
               ]}
+              pressedStyle={{backgroundColor: colors.dodgerBlue}}
               onPress={onOkClose}
               title={closeButtonTitle}
               titleStyle={[
@@ -194,7 +183,6 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
   }, [
     buttonBackgroundColor,
     buttonTitleColor,
-    closeButtonStyle,
     closeButtonTitle,
     disableOkButton,
     onCancelClose,
