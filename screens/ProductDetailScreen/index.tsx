@@ -7,7 +7,6 @@ import {PixelRatio, SafeAreaView, StyleSheet, View} from 'react-native';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import Analytics from 'appcenter-analytics';
 import {Settings} from 'react-native-fbsdk';
@@ -19,7 +18,7 @@ import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
-import {appStyles, htmlDetailWithCss, injectedScript} from '@/constants/Styles';
+import {appStyles, injectedScript} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
@@ -33,10 +32,8 @@ import {
 import i18n from '@/utils/i18n';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppButton from '@/components/AppButton';
-import AppText from '@/components/AppText';
-import {API} from '@/redux/api';
 import api, {ApiResult} from '@/redux/api/api';
-import {PurchaseItem} from '../redux/models/purchaseItem';
+import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import AppCartButton from '@/components/AppCartButton';
 
@@ -46,12 +43,7 @@ const PURCHASE_LIMIT = 10;
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-  },
-  container: {
-    flex: 1,
-    alignItems: 'stretch',
-    paddingTop: 40,
-    paddingHorizontal: 20,
+    backgroundColor: 'white',
   },
   buttonBox: {
     flexDirection: 'row',
@@ -152,10 +144,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       action.product.getProdDetailInfo(params?.partnerId || '');
     }
 
-    const item = API.Product.toPurchaseItem(route.params.item);
-    setPurchaseItems(item ? [item] : []);
+    setPurchaseItems(params.item ? [params.item] : []);
     getTrackingStatus().then((elm) => setStatus(elm));
-  }, [action.product, navigation, product, route, route.params?.partnerId]);
+  }, [action.product, navigation, product, route]);
 
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
@@ -197,7 +188,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         case 'apn':
           navigation.navigate('ProductDetailOp', {
             title: route.params?.title,
-            ...route.params.item?.desc,
+            ...route.params.desc,
           });
           break;
         // 기본적으로 화면 크기 가져오도록 함
@@ -206,21 +197,12 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           break;
       }
     },
-    [action.info, navigation, route.params.item?.desc, route.params?.title],
+    [action.info, navigation, route.params.desc, route.params?.title],
   );
 
-  const renderWebView = useCallback(() => {
-    // const {category} = API.Product;
-
-    // const localOpDetails = route.params?.localOpDetails;
-    // const detail = _.isEmpty(localOpDetails)
-    //   ? product.detailInfo + product.detailCommon
-    //   : localOpDetails + product.detailCommon;
-
-    const prodUuid = route.params.item.uuid;
-
-    return (
-      <View style={{flex: 1}}>
+  const renderWebView = useCallback(
+    (sku?: string) =>
+      sku ? (
         <WebView
           // automaticallyAdjustContentInsets={true}
           javaScriptEnabled
@@ -231,13 +213,13 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           decelerationRate="normal"
           scrollEnabled
           onMessage={onMessage}
-          source={{uri: `${webViewHost}/#/product/${prodUuid}`}}
-          // source={{uri: `http://localhost:8000/#/product/${prodUuid}`}}
+          source={{uri: `${webViewHost}/#/product/${sku}`}}
+          // source={{uri: `http://localhost:8000/#/product/${sku}`}}
           style={{height: webViewHeight}}
         />
-      </View>
-    );
-  }, [onMessage, route.params.item.uuid, webViewHeight]);
+      ) : null,
+    [onMessage, webViewHeight],
+  );
 
   const soldOut = useCallback((payload: ApiResult<any>, message: string) => {
     if (payload.result === api.E_RESOURCE_NOT_FOUND) {
@@ -329,10 +311,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.screen}>
-      <AppActivityIndicator visible={pending} />
-      <View style={{backgroundColor: colors.whiteTwo, flex: 1}}>
-        {renderWebView()}
-      </View>
+      {renderWebView(route.params?.item?.sku)}
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
       <AppSnackBar
         visible={showSnackBar.visible}
@@ -367,9 +346,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             titleStyle={styles.regCard}
             onPress={onPressBtnRegCard}
           />
-          <AppText style={styles.regCard}>{i18n.t('reg:card')}</AppText>
         </View>
       )}
+      <AppActivityIndicator visible={pending} />
     </SafeAreaView>
   );
 };

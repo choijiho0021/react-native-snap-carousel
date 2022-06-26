@@ -83,7 +83,7 @@ type SimpleTextScreenNavigationProp = StackNavigationProp<
 
 type SimpleTextScreenRouteProp = RouteProp<HomeStackParamList, 'SimpleText'>;
 
-type EventStatus = 'open' | 'closed' | 'joined' | 'invalid';
+type EventStatus = 'open' | 'closed' | 'joined' | 'invalid' | 'unknown';
 
 type SimpleTextScreenProps = {
   navigation: SimpleTextScreenNavigationProp;
@@ -184,6 +184,9 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
             : 'promo:join:fail',
         );
       }
+    } else if (eventStatus === 'unknown' && !loggedIn) {
+      // 로그인 화면으로 이동
+      navigation.navigate('Auth');
     } else {
       navigation.goBack();
     }
@@ -339,7 +342,6 @@ const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
       const getPromo = async () => {
         const {nid, rule} = props.route.params;
 
-        console.log('@@@ check promo', nid, rule);
         if (rule?.sku) {
           setIsProdEvent(true);
           const resp = await API.Promotion.check(nid);
@@ -349,7 +351,7 @@ const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
             else if (resp.objects[0]?.available > 0) setEventStatus('open');
             else setEventStatus('closed');
           } else {
-            setEventStatus('invalid');
+            setEventStatus(resp.status === 403 ? 'unknown' : 'invalid');
           }
         }
       };

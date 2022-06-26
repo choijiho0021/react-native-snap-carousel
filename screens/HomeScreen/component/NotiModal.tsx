@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
-import React, {memo, useState} from 'react';
+import React, {memo, useCallback, useState} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
@@ -39,6 +39,13 @@ const NotiModal: React.FC<NotiModalProps> = ({
   onCancelClose,
 }) => {
   const [checked, setChecked] = useState(false);
+  const setPopupDisabled = useCallback(() => {
+    if (checked)
+      AsyncStorage.setItem(
+        'popupDisabled',
+        moment().format('YYYY-MM-DD HH:mm'),
+      );
+  }, [checked]);
 
   return (
     <AppModal
@@ -53,24 +60,13 @@ const NotiModal: React.FC<NotiModalProps> = ({
       // titleViewStyle={{marginTop: 0}}
       closeButtonTitle={i18n.t(closeType || 'close')}
       type={closeType === 'redirect' ? closeType : 'close'}
-      closeButtonStyle={
-        closeType === 'redirect' ? {flex: 1, margin: 20} : {margin: 20}
-      }
       onOkClose={() => {
         onOkClose?.();
-        if (checked)
-          AsyncStorage.setItem(
-            'popupDisabled',
-            moment().format('YYYY-MM-DD HH:mm'),
-          );
+        setPopupDisabled();
       }}
       onCancelClose={() => {
         onCancelClose?.();
-        if (checked)
-          AsyncStorage.setItem(
-            'popupDisabled',
-            moment().format('YYYY-MM-DD HH:mm'),
-          );
+        setPopupDisabled();
       }}
       visible={visible}>
       <View style={{marginHorizontal: 20}}>

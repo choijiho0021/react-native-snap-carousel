@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   },
 });
 type AppVerModalProps = {
-  visible?: boolean;
+  visible: boolean;
   option?: string;
   onOkClose?: () => void;
 };
@@ -51,10 +51,7 @@ const AppVerModal: React.FC<AppVerModalProps> = ({
           <AppButton
             title={i18n.t('app:updateLater')}
             style={styles.laterBtn}
-            pressedStyle={{
-              ...styles.laterBtn,
-              backgroundColor: colors.whiteTwo,
-            }}
+            pressedStyle={{backgroundColor: colors.whiteTwo}}
             titleStyle={{
               ...appStyles.medium18,
               color: colors.black,
@@ -66,10 +63,7 @@ const AppVerModal: React.FC<AppVerModalProps> = ({
         <AppButton
           title={i18n.t('app:updateNow')}
           style={[styles.btn, {backgroundColor: colors.clearBlue}]}
-          pressedStyle={{
-            ...styles.btn,
-            backgroundColor: colors.dodgerBlue,
-          }}
+          pressedStyle={{backgroundColor: colors.dodgerBlue}}
           titleStyle={{
             ...appStyles.medium18,
             color: 'white',
