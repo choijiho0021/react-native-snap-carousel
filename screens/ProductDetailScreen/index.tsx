@@ -32,7 +32,6 @@ import {
 import i18n from '@/utils/i18n';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppButton from '@/components/AppButton';
-import AppText from '@/components/AppText';
 import api, {ApiResult} from '@/redux/api/api';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
@@ -44,12 +43,7 @@ const PURCHASE_LIMIT = 10;
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-  },
-  container: {
-    flex: 1,
-    alignItems: 'stretch',
-    paddingTop: 40,
-    paddingHorizontal: 20,
+    backgroundColor: 'white',
   },
   buttonBox: {
     flexDirection: 'row',
@@ -209,22 +203,20 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const renderWebView = useCallback(
     (sku?: string) =>
       sku ? (
-        <View style={{flex: 1}}>
-          <WebView
-            // automaticallyAdjustContentInsets={true}
-            javaScriptEnabled
-            domStorageEnabled
-            injectedJavaScript={injectedScript}
-            // scalesPageToFit
-            startInLoadingState
-            decelerationRate="normal"
-            scrollEnabled
-            onMessage={onMessage}
-            source={{uri: `${webViewHost}/#/product/${sku}`}}
-            // source={{uri: `http://localhost:8000/#/product/${sku}`}}
-            style={{height: webViewHeight}}
-          />
-        </View>
+        <WebView
+          // automaticallyAdjustContentInsets={true}
+          javaScriptEnabled
+          domStorageEnabled
+          injectedJavaScript={injectedScript}
+          // scalesPageToFit
+          startInLoadingState
+          decelerationRate="normal"
+          scrollEnabled
+          onMessage={onMessage}
+          source={{uri: `${webViewHost}/#/product/${sku}`}}
+          // source={{uri: `http://localhost:8000/#/product/${sku}`}}
+          style={{height: webViewHeight}}
+        />
       ) : null,
     [onMessage, webViewHeight],
   );
@@ -319,10 +311,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.screen}>
-      <AppActivityIndicator visible={pending} />
-      <View style={{backgroundColor: colors.whiteTwo, flex: 1}}>
-        {renderWebView(route.params?.item?.sku)}
-      </View>
+      {renderWebView(route.params?.item?.sku)}
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
       <AppSnackBar
         visible={showSnackBar.visible}
@@ -357,9 +346,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             titleStyle={styles.regCard}
             onPress={onPressBtnRegCard}
           />
-          <AppText style={styles.regCard}>{i18n.t('reg:card')}</AppText>
         </View>
       )}
+      <AppActivityIndicator visible={pending} />
     </SafeAreaView>
   );
 };
