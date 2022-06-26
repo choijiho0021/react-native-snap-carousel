@@ -140,48 +140,52 @@ const CountryListItem0 = ({
   position?: string;
   onPress: () => void;
 }) => {
-  const color = {
-    color: item.field_daily === 'total' ? colors.purplyBlue : colors.clearBlue,
-  };
-  const title =
-    item.field_daily === 'total'
-      ? toVolumeStr(Number(item.volume))
-      : item.days + i18n.t('day');
-  let myStyle: ViewStyle = {};
+  const color = useMemo(
+    () => ({
+      color:
+        item.field_daily === 'total' ? colors.purplyBlue : colors.clearBlue,
+    }),
+    [item.field_daily],
+  );
+  const title = useMemo(
+    () =>
+      item.field_daily === 'total'
+        ? toVolumeStr(Number(item.volume))
+        : item.days + i18n.t('day'),
+    [item.days, item.field_daily, item.volume],
+  );
 
-  switch (position) {
-    case 'head':
-      myStyle = {
-        borderLeftWidth: 1,
-        borderTopWidth: 1,
-        borderRightWidth: 1,
-        borderLeftColor: colors.lightGrey,
-        borderTopColor: colors.lightGrey,
-        borderRightColor: colors.lightGrey,
-      };
-      break;
-    case 'middle':
-      myStyle = {
-        borderLeftWidth: 1,
-        borderRightWidth: 1,
-        borderLeftColor: colors.lightGrey,
-        borderRightColor: colors.lightGrey,
-      };
-      break;
-    case 'tail':
-      myStyle = {
-        borderLeftWidth: 1,
-        borderBottomWidth: 1,
-        borderRightWidth: 1,
-        borderLeftColor: colors.lightGrey,
-        borderBottomColor: colors.lightGrey,
-        borderRightColor: colors.lightGrey,
-      };
-      break;
-    default:
-      myStyle = {};
-      break;
-  }
+  const myStyle = useMemo(() => {
+    switch (position) {
+      case 'head':
+        return {
+          borderLeftWidth: 1,
+          borderTopWidth: 1,
+          borderRightWidth: 1,
+          borderLeftColor: colors.lightGrey,
+          borderTopColor: colors.lightGrey,
+          borderRightColor: colors.lightGrey,
+        };
+      case 'middle':
+        return {
+          borderLeftWidth: 1,
+          borderRightWidth: 1,
+          borderLeftColor: colors.lightGrey,
+          borderRightColor: colors.lightGrey,
+        };
+      case 'tail':
+        return {
+          borderLeftWidth: 1,
+          borderBottomWidth: 1,
+          borderRightWidth: 1,
+          borderLeftColor: colors.lightGrey,
+          borderBottomColor: colors.lightGrey,
+          borderRightColor: colors.lightGrey,
+        };
+      default:
+        return {};
+    }
+  }, [position]);
 
   return (
     <Pressable onPress={onPress}>
@@ -202,6 +206,7 @@ const CountryListItem0 = ({
             {!_.isEmpty(item.promoFlag) &&
               item.promoFlag.map((elm) => (
                 <View
+                  key={elm}
                   style={[
                     styles.badge,
                     {
@@ -321,24 +326,23 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   }, [localOpList, prodList]);
 
   const renderItem = useCallback(
-    ({item, index, section}) => {
-      return (
-        <CountryListItem
-          item={item}
-          onPress={() =>
-            navigation.navigate('ProductDetail', {
-              title: item.name,
-              item: API.Product.toPurchaseItem(item),
-              img: imageUrl,
-              desc: item.desc,
-              localOpDetails,
-              partnerId,
-            })
-          }
-          position={position(index, section.data)}
-        />
-      );
-    },
+    ({item, index, section}) => (
+      <CountryListItem
+        key={item.sku}
+        item={item}
+        onPress={() =>
+          navigation.navigate('ProductDetail', {
+            title: item.name,
+            item: API.Product.toPurchaseItem(item),
+            img: imageUrl,
+            desc: item.desc,
+            localOpDetails,
+            partnerId,
+          })
+        }
+        position={position(index, section.data)}
+      />
+    ),
     [imageUrl, localOpDetails, navigation, partnerId],
   );
 
