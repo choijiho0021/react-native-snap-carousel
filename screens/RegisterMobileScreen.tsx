@@ -386,26 +386,17 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   }, []);
 
   const signIn = useCallback(
-    async ({
-      mobile,
-      pin,
-    }: {
-      mobile?: string;
-      pin?: string;
-    }): Promise<ApiResult<any>> => {
-      const {payload: resp} = actions.account.logInAndGetAccount({
-        mobile,
-        pin,
-      });
+    async (auth: {mobile?: string; pin?: string}): Promise<ApiResult<any>> => {
+      const {payload: resp} = actions.account.logInAndGetAccount(auth);
 
       if (resp?.result === 0) {
+        actions.cart.cartFetch();
         const profileImage: RkbImage = await utils.convertURLtoRkbImage(
           profileImageUrl!,
         );
         if (profileImage) {
           actions.account.uploadAndChangePicture(profileImage);
         }
-        actions.cart.cartFetch();
       }
       return resp;
     },
