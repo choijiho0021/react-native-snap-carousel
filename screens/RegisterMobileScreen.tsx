@@ -753,7 +753,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         )}
       </KeyboardAwareScrollView>
       {!newUser && (
-        <View style={{justifyContent: 'center'}}>
+        <View style={{justifyContent: 'center', marginBottom: 36}}>
           <SocialLogin onAuth={onAuth} />
         </View>
       )}
