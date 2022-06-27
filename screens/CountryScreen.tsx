@@ -335,6 +335,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
             title: item.name,
             item: API.Product.toPurchaseItem(item),
             img: imageUrl,
+            uuid: item.uuid,
             desc: item.desc,
             localOpDetails,
             partnerId,
