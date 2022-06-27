@@ -522,6 +522,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         title={i18n.t('board:new')}
         disabled={hasError}
         onPress={onPress}
+        type="primary"
       />
     </SafeAreaView>
   );

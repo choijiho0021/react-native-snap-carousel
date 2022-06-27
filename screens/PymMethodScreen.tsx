@@ -312,13 +312,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [column, setColumn] = useState(0);
   const [clickable, setClickable] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [showModalAddress, setShowModalAddress] = useState(true);
-  const [showModalMemo, setShowModalMemo] = useState(true);
   const [showModalMethod, setShowModalMethod] = useState(true);
   const [showModalAlert, setShowModalAlert] = useState(false);
-  const [label, setLabel] = useState(
-    Platform.OS === 'android' ? undefined : i18n.t('pym:selectMemo'),
-  );
   const [deliveryMemo, setDeliveryMemo] = useState<{
     directInput: boolean;
     header?: string;
@@ -340,7 +335,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         },
   );
   const [consent, setConsent] = useState<boolean>();
-  const [simIncluded, setSimIncluded] = useState<boolean>();
   const [isRecharge, setIsRecharge] = useState<boolean>();
   const [isPassingAlert, setIsPassingAlert] = useState(false);
 
@@ -350,9 +344,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     setMode(route.params.mode);
     setIsRecharge(
       cart.purchaseItems.findIndex((item) => item.type === 'rch') >= 0,
-    );
-    setSimIncluded(
-      cart.purchaseItems.findIndex((item) => item.type === 'sim_card') >= 0,
     );
     setDeliveryMemo((prev) => ({...prev, content: profile.content}));
   }, [cart, profile, route.params?.mode]);
@@ -445,7 +436,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           memo,
           deduct,
           dlvCost,
-          digital: !simIncluded,
+          digital: true,
         });
 
         // const adjustRokebiCashEvent = new AdjustEvent(adjustRokebiCash);
@@ -487,7 +478,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           profile_uuid: profileId,
           dlvCost: dlvCost.value,
           language: selected?.language || 'KR',
-          digital: !simIncluded, // 컨텐츠 - 데이터상품일 경우 true
+          digital: true,
           memo,
           // mode: 'test'
         } as PaymentParams;
@@ -510,7 +501,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       profile,
       pymPrice,
       selected,
-      simIncluded,
     ],
   );
 
@@ -567,27 +557,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     [column, row, selected.title],
   );
 
-  const saveMemo = useCallback((value: string) => {
-    const selectedMemo = deliveryText.find((item) => item.value === value);
-
-    if (!!selectedMemo) {
-      if (deliveryText.indexOf(selectedMemo) + 1 === deliveryText.length) {
-        setDeliveryMemo((prev) => ({
-          ...prev,
-          directInput: true,
-          header: selectedMemo?.key,
-          selected: value,
-        }));
-      } else {
-        setDeliveryMemo({
-          directInput: false,
-          header: selectedMemo?.key,
-          selected: value,
-        });
-      }
-    }
-  }, []);
-
   const dropDownHeader = useCallback(
     (
       showModal,
@@ -617,154 +586,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     },
     [],
   );
-
-  const address = useCallback(() => {
-    const selectedAddr = profile.selectedAddr || undefined;
-    const item =
-      profile.profile.find((i) => i.uuid === selectedAddr) ||
-      profile.profile.find((i) => i.isBasicAddr);
-
-    return item ? (
-      <View>
-        {dropDownHeader(
-          showModalAddress,
-          setShowModalAddress,
-          i18n.t('pym:delivery'),
-          item.alias,
-        )}
-        {showModalAddress && (
-          <View style={styles.beforeDrop}>
-            <View style={styles.thickBar} />
-            {
-              // 주소
-              profile.profile.length > 0 && (
-                <View>
-                  <View style={styles.profileTitle}>
-                    <AppText style={styles.profileTitleText}>
-                      {item.alias}
-                    </AppText>
-                    {item.isBasicAddr && (
-                      <View style={styles.basicAddrBox}>
-                        <AppText style={styles.basicAddr}>
-                          {i18n.t('addr:basicAddr')}
-                        </AppText>
-                      </View>
-                    )}
-                    <View style={{flex: 1, alignItems: 'flex-end'}}>
-                      <AppButton
-                        title={i18n.t('change')}
-                        titleStyle={styles.chgButtonText}
-                        style={[styles.chgButton]}
-                        onPress={() => navigation.navigate('CustomerProfile')}
-                      />
-                    </View>
-                  </View>
-                  <AddressCard
-                    textStyle={styles.addrCardText}
-                    mobileStyle={[
-                      styles.addrCardText,
-                      {color: colors.warmGrey},
-                    ]}
-                    profile={item}
-                  />
-                </View>
-              )
-            }
-            {
-              // 주소 등록
-              // == 0
-              profile.profile.length === 0 && (
-                <AppButton
-                  title={i18n.t('reg:address')}
-                  titleStyle={appStyles.medium18}
-                  style={[appStyles.confirm, styles.addrBtn]}
-                  onPress={() => navigation.navigate('AddProfile')}
-                />
-              )
-            }
-          </View>
-        )}
-        <View style={styles.divider} />
-      </View>
-    ) : null;
-  }, [
-    dropDownHeader,
-    navigation,
-    profile.profile,
-    profile.selectedAddr,
-    showModalAddress,
-  ]);
-
-  const changePlaceHolder = useCallback(() => {
-    if (_.isEmpty(deliveryMemo.selected)) {
-      setLabel('');
-      saveMemo(deliveryText[0].key);
-    }
-  }, [deliveryMemo.selected, saveMemo]);
-
-  const memo = useCallback(() => {
-    return (
-      <View>
-        {dropDownHeader(
-          showModalMemo,
-          setShowModalMemo,
-          i18n.t('pym:deliveryMemo'),
-          deliveryMemo.header,
-        )}
-        {showModalMemo && (
-          <View style={styles.beforeDrop}>
-            <View style={styles.thickBar} />
-            <View style={styles.pickerWrapper}>
-              <RNPickerSelect
-                style={pickerSelectStyles}
-                useNativeAndroidPickerStyle={false}
-                placeholder={!_.isEmpty(label) ? {label} : {}}
-                placeholderTextColor={colors.warmGrey}
-                onValueChange={saveMemo}
-                onOpen={changePlaceHolder}
-                items={deliveryText.map((item) => ({
-                  label: item.value,
-                  value: item.value,
-                }))}
-                value={deliveryMemo.selected}
-                Icon={() => (
-                  <Triangle width={8} height={6} color={colors.warmGrey} />
-                )}
-              />
-            </View>
-            {deliveryMemo.directInput && (
-              <AppTextInputButton
-                placeholder={i18n.t('pym:IputMemo')}
-                placeholderTextColor={colors.warmGrey}
-                style={styles.textField}
-                // clearTextOnFocus={true}
-                maxLength={50}
-                returnKeyType="done"
-                multiline
-                value={deliveryMemo.content || ''}
-                enablesReturnKeyAutomatically
-                onChangeText={(content) =>
-                  setDeliveryMemo((prev) => ({...prev, content}))
-                }
-                // maxFontSizeMultiplier
-              />
-            )}
-          </View>
-        )}
-        <View style={styles.divider} />
-      </View>
-    );
-  }, [
-    changePlaceHolder,
-    deliveryMemo.content,
-    deliveryMemo.directInput,
-    deliveryMemo.header,
-    deliveryMemo.selected,
-    dropDownHeader,
-    label,
-    saveMemo,
-    showModalMemo,
-  ]);
 
   const method = useCallback(() => {
     const benefit = selected
@@ -888,7 +709,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   }, [consent, move]);
 
   const {purchaseItems = [], pymReq} = cart;
-  const noProfile = profile.profile.length === 0;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -906,8 +726,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           isRecharge={isRecharge}
         />
 
-        {simIncluded && address()}
-        {simIncluded && memo()}
         {pymPrice?.value !== 0 ? (
           method()
         ) : (
@@ -921,14 +739,11 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         <AppButton
           title={i18n.t('payment')}
           titleStyle={appStyles.medium18}
-          disabled={
-            (pymPrice?.value !== 0 && _.isEmpty(selected)) ||
-            (simIncluded && noProfile) ||
-            !consent
-          }
+          disabled={(pymPrice?.value !== 0 && _.isEmpty(selected)) || !consent}
           key={i18n.t('payment')}
           onPress={() => onSubmit(isPassingAlert)}
           style={appStyles.confirm}
+          type="primary"
         />
       </KeyboardAwareScrollView>
       <AppModal

@@ -41,11 +41,7 @@ import {
   OrderAction,
   OrderModelState,
 } from '@/redux/modules/order';
-import {
-  actions as toastActions,
-  Toast,
-  ToastAction,
-} from '@/redux/modules/toast';
+import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import Info from './components/Info';
 import OrderItem from './components/OrderItem';

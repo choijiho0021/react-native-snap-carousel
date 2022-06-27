@@ -208,6 +208,7 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
       <AppButton
         style={styles.button}
         title={i18n.t('ok')}
+        type="primary"
         onPress={() => navigation.goBack()}
       />
     </SafeAreaView>

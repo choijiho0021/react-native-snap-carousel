@@ -401,7 +401,7 @@ const slice = createSlice({
     builder.addCase(getUserId.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
       if (result === 0 && objects && objects.length > 0) {
-        state.userId = objects[0].id;
+        state.userId = objects[0].name;
         state.email = objects[0].mail;
         state.isPushNotiEnabled = objects[0].isPushNotiEnabled;
         state.userPictureUrl = objects[0].userPictureUrl;

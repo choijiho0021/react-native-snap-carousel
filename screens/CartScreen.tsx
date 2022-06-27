@@ -473,6 +473,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
             textAlign: 'center',
             margin: 5,
           }}
+          type="primary"
           checkedColor={colors.white}
           disabled={total.price.value === 0}
           onPress={

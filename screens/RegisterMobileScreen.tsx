@@ -773,6 +773,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           disableColor={colors.black}
           disableBackgroundColor={colors.lightGrey}
           onPress={submitHandler}
+          type="primary"
         />
       )}
 

@@ -13,12 +13,8 @@ import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
 import AppColorText from '@/components/AppColorText';
 import AppButton from '@/components/AppButton';
-import UsageItem from '@/screens/UsimScreen/components/UsageItem';
-import {
-  actions as toastActions,
-  Toast,
-  ToastAction,
-} from '@/redux/modules/toast';
+import UsageItem from '@/screens/EsimScreen/components/UsageItem';
+import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import AppSnackBar from '@/components/AppSnackBar';
 
 const styles = StyleSheet.create({

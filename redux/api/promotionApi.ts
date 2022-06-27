@@ -14,10 +14,10 @@ export type RkbPromotion = {
   title: string;
   imageUrl?: string;
   product_uuid?: string;
+  rule?: Record<string, string>;
   notice?: {
     title?: string;
     body?: string;
-    rule?: Record<string, string>;
     nid: number;
     image?: {
       success?: string;
@@ -62,12 +62,12 @@ const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
           title: item.title,
           imageUrl: item.field_image,
           product_uuid: item.field_product_uuid, // product variation id
+          rule,
           notice: item.field_ref_content
             ? {
                 nid: parseInt(item.nid, 10),
                 title: item.field_notice_title,
                 body: item.field_notice_body,
-                rule,
                 image: {
                   success: item.field_successful_image,
                   failure: item.field_failure_image,

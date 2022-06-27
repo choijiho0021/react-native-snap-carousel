@@ -1,6 +1,6 @@
 import React, {memo, useCallback} from 'react';
 import {Dimensions, Pressable, StyleSheet, View} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
 import AppModal from '@/components/AppModal';
@@ -11,6 +11,7 @@ import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import AppText from '@/components/AppText';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import {navigate} from '@/navigation/navigation';
 
 const {width} = Dimensions.get('window');
 
@@ -47,6 +48,7 @@ type GiftModalProps = {
 };
 const GiftModal: React.FC<GiftModalProps> = ({visible, onOkClose}) => {
   const navigation = useNavigation();
+  const route = useRoute();
   const renderBottom = useCallback(
     () => (
       <View style={styles.bottom}>
@@ -121,7 +123,10 @@ const GiftModal: React.FC<GiftModalProps> = ({visible, onOkClose}) => {
           style={styles.btn2}
           onPress={() => {
             onOkClose?.();
-            navigation.navigate('GiftGuide');
+            navigate(navigation, route, 'EsimStack', {
+              tab: 'HomeStack',
+              screen: 'GiftGuide',
+            });
           }}>
           <AppText style={{...appStyles.medium14, color: 'white'}}>
             {i18n.t('gift:modalBtn')}

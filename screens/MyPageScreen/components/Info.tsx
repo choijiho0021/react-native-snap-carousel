@@ -135,6 +135,7 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
                 titleStyle={[appStyles.normal14Text, {color: colors.white}]}
                 style={styles.rchBtn}
                 onPress={() => navigation.navigate('Recharge')}
+                type="primary"
               />
             </View>
           </ImageBackground>
@@ -142,32 +143,32 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
       )}
 
       <View style={styles.rowBtn}>
-        <Pressable
+        <AppButton
+          title={i18n.t('board:mylist')}
           style={styles.btnContactBoard}
+          titleStyle={appStyles.normal16Text}
+          type="secondary"
           onPress={() =>
             navigate(navigation, route, 'MyPageStack', {
               tab: 'HomeStack',
               screen: 'ContactBoard',
               params: {index: 1},
             })
-          }>
-          <AppText style={[appStyles.normal16Text, {textAlign: 'center'}]}>
-            {i18n.t('board:mylist')}
-          </AppText>
-        </Pressable>
+          }
+        />
         {esimApp && (
-          <Pressable
+          <AppButton
             style={styles.btnIdCheck}
             onPress={() =>
               navigate(navigation, route, 'MyPageStack', {
                 tab: 'HomeStack',
                 screen: 'Contact',
               })
-            }>
-            <AppText style={[appStyles.normal16Text, {textAlign: 'center'}]}>
-              {i18n.t('contact:title')}
-            </AppText>
-          </Pressable>
+            }
+            titleStyle={appStyles.normal16Text}
+            title={i18n.t('contact:title')}
+            type="secondary"
+          />
         )}
       </View>
       <Pressable

@@ -275,9 +275,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const onPressBtnRegCard = useCallback(() => {
     Analytics.trackEvent('Click_regCard');
 
-    if (!account.loggedIn) navigation.navigate('Auth');
-    else navigation.navigate('RegisterSim');
-  }, [account.loggedIn, navigation]);
+    navigation.navigate('Auth');
+  }, [navigation]);
 
   const onPressBtnPurchase = useCallback(() => {
     const {loggedIn, balance} = account;
@@ -330,21 +329,24 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             disableColor={colors.black}
             disableBackgroundColor={colors.whiteTwo}
             onPress={onPressBtnCart}
+            type="secondary"
           />
           <AppButton
             style={styles.btnBuy}
             title={i18n.t('cart:buy')}
             titleStyle={styles.btnBuyText}
             onPress={onPressBtnPurchase}
+            type="primary"
           />
         </View>
       ) : (
         <View style={styles.buttonBox}>
           <AppButton
             style={styles.regCardView}
-            title={account.loggedIn ? i18n.t('reg:card') : i18n.t('err:login')}
+            title={i18n.t('err:login')}
             titleStyle={styles.regCard}
             onPress={onPressBtnRegCard}
+            type="secondary"
           />
         </View>
       )}

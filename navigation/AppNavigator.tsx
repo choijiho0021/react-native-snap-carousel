@@ -10,7 +10,6 @@ import {actions as promotionActions} from '@/redux/modules/promotion';
 import {actions as accountActions} from '@/redux/modules/account';
 import AuthStackNavigator from './AuthStackNavigator';
 import EsimMainTabNavigator from './EsimMainTabNavigator';
-import MainTabNavigator from './MainTabNavigator';
 
 const {esimApp, esimGlobal} = Env.get();
 
@@ -31,10 +30,7 @@ function mainStack() {
   return (
     <MainStack.Navigator
       screenOptions={{animationEnabled: false, headerShown: false}}>
-      <MainStack.Screen
-        name="Main"
-        component={esimApp ? EsimMainTabNavigator : MainTabNavigator}
-      />
+      <MainStack.Screen name="Main" component={EsimMainTabNavigator} />
       <MainStack.Screen name="Auth" component={AuthStackNavigator} />
     </MainStack.Navigator>
   );

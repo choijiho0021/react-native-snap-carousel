@@ -137,7 +137,6 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
         key: 'setting:pushnoti',
         value: i18n.t('set:pushnoti'),
       },
-      // { "key": "info", "value": i18n.t('set:info'), route: 'MySim'},
       {
         key: 'setting:contract',
         value: i18n.t('set:contract'),

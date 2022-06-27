@@ -285,6 +285,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
       {Platform.OS === 'ios' && (
         <AppButton
           style={styles.button}
+          type="primary"
           title={i18n.t(title)}
           disabled={
             eventStatus === 'joined' || promoResult === 'promo:join:ing'

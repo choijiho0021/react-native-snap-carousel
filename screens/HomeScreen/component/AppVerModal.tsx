@@ -51,7 +51,7 @@ const AppVerModal: React.FC<AppVerModalProps> = ({
           <AppButton
             title={i18n.t('app:updateLater')}
             style={styles.laterBtn}
-            pressedStyle={{backgroundColor: colors.whiteTwo}}
+            type="secondary"
             titleStyle={{
               ...appStyles.medium18,
               color: colors.black,
@@ -63,7 +63,7 @@ const AppVerModal: React.FC<AppVerModalProps> = ({
         <AppButton
           title={i18n.t('app:updateNow')}
           style={[styles.btn, {backgroundColor: colors.clearBlue}]}
-          pressedStyle={{backgroundColor: colors.dodgerBlue}}
+          type="primary"
           titleStyle={{
             ...appStyles.medium18,
             color: 'white',
