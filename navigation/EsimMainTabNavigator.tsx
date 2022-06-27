@@ -10,7 +10,6 @@ import AppIcon from '@/components/AppIcon';
 
 import HomeScreenEsim from '@/screens/HomeScreen/Esim';
 import TutorialScreen from '@/screens/TutorialScreen';
-import MySimScreen from '@/screens/MySimScreen';
 
 import CountryScreen from '@/screens/CountryScreen';
 import ProductDetailScreen from '@/screens/ProductDetailScreen';
@@ -183,7 +182,6 @@ function myPageStack() {
       />
       <MyPageStack.Screen name="Resign" component={ResignScreen} />
       <MyPageStack.Screen name="ChangeEmail" component={ChangeEmailScreen} />
-      <MyPageStack.Screen name="MySim" component={MySimScreen} />
     </MyPageStack.Navigator>
   );
 }
