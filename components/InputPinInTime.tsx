@@ -1,11 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from 'react-native';
+import {Pressable, StyleSheet, TextInput, View, ViewStyle} from 'react-native';
 import _ from 'underscore';
 import {useInterval} from '@/utils/useInterval';
 import {colors} from '@/constants/Colors';
@@ -28,7 +22,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     flex: 1,
-    marginRight: 20,
+    marginRight: 10,
     paddingBottom: 9,
   },
   emptyWrapper: {
@@ -138,13 +132,12 @@ const InputPinInTime: React.FC<InputPinInTimeProps> = (props) => {
   return (
     <View>
       <View style={[styles.container, style]}>
-        <TouchableOpacity
+        <Pressable
           style={[
             styles.inputWrapper,
-            _.size(pin) <= 0 ? styles.emptyWrapper : {},
+            _.size(pin) <= 0 ? styles.emptyWrapper : undefined,
           ]}
-          onPress={onClick}
-          activeOpacity={1}>
+          onPress={onClick}>
           <AppTextInput
             {...props}
             placeholder={i18n.t('mobile:auth')}
@@ -169,7 +162,7 @@ const InputPinInTime: React.FC<InputPinInTimeProps> = (props) => {
               {i18n.t('sec')}{' '}
             </AppText>
           ) : null}
-        </TouchableOpacity>
+        </Pressable>
         <AppButton
           disabled={!clickable}
           onPress={() => onPress && onPress(pin)}

@@ -1,14 +1,14 @@
 /* eslint-disable no-param-reassign */
 import {createAsyncThunk, createAction, createSlice} from '@reduxjs/toolkit';
 import moment from 'moment';
-import {API} from '@/redux/api';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import {RkbNoti} from '@/redux/api/notiApi';
 import {Reducer} from 'react';
 import {AnyAction} from 'redux';
-import {storeData, retrieveData} from '@/utils/utils';
 import ShortcutBadge from 'react-native-app-badge';
 import {Platform} from 'react-native';
+import {storeData, retrieveData} from '@/utils/utils';
+import {RkbNoti} from '@/redux/api/notiApi';
+import {API} from '@/redux/api';
 
 const NOTI_TYPE_REPLY = 'reply';
 const NOTI_TYPE_INVITE = 'invite';

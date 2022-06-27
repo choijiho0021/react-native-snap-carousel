@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 12,
   },
   viewStyle: {
     flexDirection: 'row',
@@ -22,7 +23,6 @@ const styles = StyleSheet.create({
   },
   btnStyle: {
     width: '100%',
-    marginTop: 12,
   },
 });
 

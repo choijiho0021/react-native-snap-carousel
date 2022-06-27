@@ -22,8 +22,7 @@ export type SocialAuthInfo = {
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 60,
-    height: 214,
+    paddingBottom: 36,
   },
   divider: {
     marginHorizontal: 20,
@@ -41,7 +40,7 @@ const styles = StyleSheet.create({
   btnGroup: {
     marginTop: 20,
     marginHorizontal: 20,
-    height: 114,
+    height: 116,
   },
 });
 
@@ -58,9 +57,9 @@ const SocialLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
       <View style={styles.btnGroup}>
         {/* <NaverLoginButton onAuth={onAuth} /> */}
         {/* <FacebookLogin onAuth={onAuth} /> */}
-        <KakaoLogin onAuth={onAuth} />
         {Platform.OS === 'android' && <GoogleLogin onAuth={onAuth} />}
         {appleAuth.isSupported && <AppleLogin onAuth={onAuth} />}
+        <KakaoLogin onAuth={onAuth} />
       </View>
     </View>
   );
