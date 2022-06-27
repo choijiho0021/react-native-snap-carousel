@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
-import React, {useCallback, useEffect, useMemo} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   StyleSheet,
   Image,
@@ -26,7 +26,6 @@ import {guideImages} from './model';
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.paleGreyTwo,
     flex: 1,
   },
   image: {
@@ -44,34 +43,37 @@ const styles = StyleSheet.create({
     height: 56,
   },
   logo: {
+    flex: 2,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 24,
-    marginBottom: 18,
   },
   checkInfo: {
-    flex: 1,
+    flex: 3,
     backgroundColor: colors.white,
-    justifyContent: 'flex-end',
     alignSelf: 'flex-start',
     marginHorizontal: 20,
   },
   slideGuide: {
+    flex: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    justifyContent: 'center',
+    marginRight: 20,
+  },
+  slideGuideBox: {
     flexDirection: 'row',
     width: 141,
     height: 39,
     borderRadius: 20,
     borderColor: colors.black,
-    borderWidth: 1,
-    alignItems: 'center',
-    alignSelf: 'flex-end',
     justifyContent: 'center',
-    marginRight: 20,
-    marginTop: 55,
-    marginBottom: 24,
+    alignItems: 'center',
+    borderWidth: 1,
   },
   checkInfoText: {
-    ...appStyles.normal14Text,
+    ...appStyles.normal16Text,
+    fontSize: isDeviceSize('medium') ? 14 : 16,
     lineHeight: 22,
   },
   step: {
@@ -125,7 +127,8 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
   route: {params},
   navigation,
 }) => {
-  // const [email, setEmail] = useState('');
+  const [carouselIdx, setCarouselIdx] = useState(0);
+  console.log('aaaaa carouselIdx', carouselIdx);
   const checkInfoList = useMemo(
     () => [
       [
@@ -207,17 +210,21 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
         <View style={[styles.container, {alignItems: 'center'}]}>
           <AppSvgIcon key="esimLogo" style={styles.logo} name="esimLogo" />
 
-          {data?.title.map((elm) => (
-            <AppTextJoin data={elm} />
-          ))}
+          <View style={{flex: 2}}>
+            {data?.title.map((elm) => (
+              <AppTextJoin data={elm} />
+            ))}
+          </View>
 
-          <Image
-            style={{marginTop: 34}}
-            source={require('../assets/images/esim/userGuide/userGuide1_1.png')}
-            resizeMode="contain"
-          />
+          <View style={{flex: 4}}>
+            <Image
+              source={require('../assets/images/esim/userGuide/userGuide1_1.png')}
+              resizeMode="contain"
+            />
+          </View>
+
           <View style={styles.checkInfo}>
-            <AppText style={appStyles.bold16Text}>
+            <AppText style={appStyles.bold18Text}>
               {i18n.t('userGuide:checkInfo')}
             </AppText>
             <View
@@ -228,7 +235,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
               {checkInfoList.map((elm) => (
                 <View style={{flexDirection: 'row'}}>
                   <AppText
-                    style={[appStyles.normal14Text, {marginHorizontal: 5}]}>
+                    style={[appStyles.normal16Text, {marginHorizontal: 5}]}>
                     •
                   </AppText>
                   <AppText>
@@ -241,8 +248,9 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
                 </View>
               ))}
             </View>
-
-            <View style={styles.slideGuide}>
+          </View>
+          <View style={styles.slideGuide}>
+            <View style={styles.slideGuideBox}>
               <AppSvgIcon key="leftArrow" name="leftArrow" />
               <AppText>{i18n.t('userGuide:slideLeft')}</AppText>
             </View>
@@ -321,11 +329,15 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={{
+        ...styles.container,
+        backgroundColor: carouselIdx === 0 ? colors.white : colors.paleGreyTwo,
+      }}>
       <Carousel
         data={Object.keys(guideImages)}
         renderItem={renderGuide}
-        // onSnapToItem={(index) => this.setState({activeSlide: index})}
+        onSnapToItem={(index) => setCarouselIdx(index)}
         autoplay={false}
         useScrollView
         lockScrollWhileSnapping
