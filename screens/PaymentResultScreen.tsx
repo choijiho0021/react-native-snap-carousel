@@ -192,6 +192,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
           </AppText>
           <AppButton
             style={styles.btnOrderList}
+            type="secondary"
             // MyPage화면 이동 필요
             onPress={() => {
               navigation.popToTop();
@@ -234,6 +235,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
         style={styles.btnHome}
         title={i18n.t('pym:toHome')}
         titleStyle={styles.btnHomeText}
+        type="primary"
         onPress={() => {
           navigation.popToTop();
           navigation.navigate('HomeStack', {screen: 'Home'});

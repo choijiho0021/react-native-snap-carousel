@@ -267,6 +267,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
               backgroundColor: colors.clearBlue,
               height: 62,
             }}
+            type="primary"
             onPress={() => {
               navigation.goBack();
               navigation.navigate('HomeStack', {screen: 'Home'});

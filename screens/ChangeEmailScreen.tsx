@@ -81,20 +81,17 @@ const styles = StyleSheet.create({
     height: 10,
     backgroundColor: '#f5f5f5',
   },
-  button: (isValid) => ({
+  button: {
     ...appStyles.normal16Text,
     height: 52,
-    backgroundColor: isValid ? colors.clearBlue : colors.lightGrey,
-    color: isValid ? colors.white : colors.warmGrey,
     textAlign: 'center',
     color: '#ffffff',
-  }),
-  buttonTitle: (isValid) => ({
+  },
+  buttonTitle: {
     ...appStyles.normal18Text,
     textAlign: 'center',
     margin: 5,
-    color: isValid ? colors.white : colors.warmGrey,
-  }),
+  },
 });
 
 type ChangeEmailScreenNavigationProp = StackNavigationProp<
@@ -183,11 +180,18 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
         </View>
       </View>
       <AppButton
-        style={styles.button(!inValid)}
-        titleStyle={styles.buttonTitle(!inValid)}
+        style={[
+          styles.button,
+          {backgroundColor: !inValid ? colors.clearBlue : colors.lightGrey},
+        ]}
+        titleStyle={[
+          styles.buttonTitle,
+          {color: !inValid ? colors.white : colors.warmGrey},
+        ]}
         disabled={!!inValid}
         title={i18n.t('changeEmail:save')}
         onPress={changeEmail}
+        type="primary"
       />
       <AppModal
         title={i18n.t('changeEmail:saveInfo')}

@@ -231,6 +231,7 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
                   titleStyle={[appStyles.normal14Text]}
                   style={styles.btnCopy}
                   onPress={copyToClipboard(elm)}
+                  type="secondary"
                 />
               </View>
             ))}

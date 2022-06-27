@@ -332,7 +332,7 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
             iconStyle={{marginRight: 10}}
             title={i18n.t('inv:share')}
             titleStyle={appStyles.medium18}
-            pressedStyle={{backgroundColor: colors.dodgerBlue}}
+            type="primary"
             onPress={() => sendLink('share')}
             viewStyle={styles.rowCenter}
             style={{
@@ -346,7 +346,7 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
             iconStyle={{marginRight: 10}}
             title={i18n.t('inv:copy')}
             titleStyle={[appStyles.medium18, {color: colors.black}]}
-            pressedStyle={{backgroundColor: colors.whiteTwo}}
+            type="secondary"
             onPress={() => sendLink('copy')}
             viewStyle={styles.rowCenter}
             style={{height: 62, borderWidth: 1, borderColor: colors.lightGrey}}

@@ -322,6 +322,7 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
 
         <AppButton
           style={styles.button}
+          type="primary"
           titleStyle={styles.buttonTitle}
           disableColor={colors.warmGrey}
           disableBackgroundColor={colors.lightGrey}

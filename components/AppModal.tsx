@@ -110,7 +110,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
                 height: 52,
                 backgroundColor: colors.clearBlue,
               }}
-              pressedStyle={{backgroundColor: colors.dodgerBlue}}
+              type="primary"
               onPress={onOkClose}
               title={closeButtonTitle || i18n.t('close')}
               titleStyle={[
@@ -129,7 +129,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
                 styles.closeButton,
                 {marginRight: 0, borderWidth: 1, borderColor: colors.lightGrey},
               ]}
-              pressedStyle={{backgroundColor: colors.whiteTwo}}
+              type="secondary"
               onPress={onCancelClose}
               title={i18n.t('close')}
               titleStyle={[styles.closeButtonTitle, {color: colors.black}]}
@@ -142,7 +142,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
                   backgroundColor: buttonBackgroundColor || colors.clearBlue,
                 },
               ]}
-              pressedStyle={{backgroundColor: colors.dodgerBlue}}
+              type="primary"
               onPress={onOkClose}
               title={closeButtonTitle}
               titleStyle={[

@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
 });
 
 interface AppButtonProps {
+  type?: 'primary' | 'secondary';
   style?: StyleProp<ViewStyle>;
   disabled?: boolean;
   size?: number | number[];
@@ -55,6 +56,7 @@ interface AppButtonProps {
 }
 
 const AppButton: React.FC<AppButtonProps> = ({
+  type,
   style,
   disabled = false,
   size,
@@ -83,7 +85,16 @@ const AppButton: React.FC<AppButtonProps> = ({
         },
         checked &&
           (checkedStyle || {borderColor: checkedColor || colors.clearBlue}),
-        pressed && pressedStyle,
+        pressed &&
+          (pressedStyle || {
+            backgroundColor:
+              // eslint-disable-next-line no-nested-ternary
+              type === 'primary'
+                ? colors.dodgerBlue
+                : type === 'secondary'
+                ? colors.whiteTwo
+                : undefined,
+          }),
       ]}
       disabled={disabled}
       onPressIn={() => setPressed(true)}
