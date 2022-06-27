@@ -14,6 +14,7 @@ import {colors} from '@/constants/Colors';
 import {appStyles} from '../../constants/Styles';
 import i18n from '@/utils/i18n';
 import AppText from '@/components/AppText';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   underLine: {
@@ -48,10 +49,33 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: -0.5,
   },
+  tipText: {
+    ...appStyles.normal15Text,
+    fontSize: isDeviceSize('medium') ? 13 : 15,
+  },
+  tipBoldText: {
+    ...appStyles.bold15Text,
+    fontSize: isDeviceSize('medium') ? 13 : 15,
+  },
+  tipContainer: {
+    alignItems: 'center',
+    flex: 1,
+    width: '100%',
+  },
+  tipTextContainer: {
+    flexDirection: 'row',
+    marginHorizontal: 40,
+    marginBottom: 5,
+  },
 });
 
 const renderTips = () => (
-  <AppText style={{...appStyles.bold14Text, color: colors.clearBlue}}>
+  <AppText
+    style={{
+      ...appStyles.bold16Text,
+      fontSize: isDeviceSize('medium') ? 14 : 16,
+      color: colors.clearBlue,
+    }}>
     {i18n.t('userGuide:tip')}
   </AppText>
 );
@@ -220,46 +244,35 @@ export const guideImages = {
     title: stepsTitle.step2,
     step: 2,
     tip: () => (
-      <View
-        style={{
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
+      <View style={styles.tipContainer}>
         {renderTips()}
-        <View
-          style={{
-            flexDirection: 'row',
-            marginRight: 20,
-            width: '70%',
-            marginBottom: 5,
-          }}>
+        <View style={styles.tipTextContainer}>
           <View style={styles.step}>
             <AppText style={styles.stepText}>1</AppText>
           </View>
-          <AppText style={[appStyles.normal13, {lineHeight: 0}]}>
-            {i18n.t('userGuide:tipPage3_1')}
-            <AppText style={appStyles.bold13Text}>
-              {i18n.t('userGuide:tipPage3_2')}
+          <View style={{flexDirection: 'row', flex: 1}}>
+            <AppText style={styles.tipText}>
+              {i18n.t('userGuide:tipPage3_1')}
+              <AppText style={styles.tipBoldText}>
+                {i18n.t('userGuide:tipPage3_2')}
+              </AppText>
+              {i18n.t('userGuide:tipPage3_3')}
             </AppText>
-            {i18n.t('userGuide:tipPage3_3')}
-          </AppText>
+          </View>
         </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            width: '70%',
-            marginRight: 20,
-          }}>
+        <View style={styles.tipTextContainer}>
           <View style={styles.step}>
             <AppText style={styles.stepText}>2</AppText>
           </View>
-          <AppText style={[appStyles.normal13, {lineHeight: 0}]}>
-            {i18n.t('userGuide:tipPage3_4')}
-            <AppText style={appStyles.bold13Text}>
-              {i18n.t('userGuide:tipPage3_5')}
+          <View style={{flexDirection: 'row', flex: 1}}>
+            <AppText style={styles.tipText}>
+              {i18n.t('userGuide:tipPage3_4')}
+              <AppText style={styles.tipBoldText}>
+                {i18n.t('userGuide:tipPage3_5')}
+              </AppText>
+              {i18n.t('userGuide:tipPage3_6')}
             </AppText>
-            {i18n.t('userGuide:tipPage3_6')}
-          </AppText>
+          </View>
         </View>
       </View>
     ),
@@ -269,18 +282,20 @@ export const guideImages = {
     title: stepsTitle.step2,
     step: 2,
     tip: () => (
-      <View style={{alignItems: 'center', marginHorizontal: 40}}>
+      <View style={styles.tipContainer}>
         {renderTips()}
-        <View style={{flexDirection: 'row', marginHorizontal: 20}}>
-          <AppText style={[appStyles.normal14Text, {marginHorizontal: 5}]}>
-            •
+        <View style={styles.tipTextContainer}>
+          <AppText style={[styles.tipText, {marginHorizontal: 5}]}>
+            {i18n.t('centerDot')}
           </AppText>
-          <AppText style={appStyles.bold13Text}>
-            {i18n.t('userGuide:tipPage4_1')}
-            <AppText style={appStyles.normal13}>
-              {i18n.t('userGuide:tipPage4_2')}
+          <View style={{flexDirection: 'row', flex: 1}}>
+            <AppText style={styles.tipBoldText}>
+              {i18n.t('userGuide:tipPage4_1')}
+              <AppText style={styles.tipText}>
+                {i18n.t('userGuide:tipPage4_2')}
+              </AppText>
             </AppText>
-          </AppText>
+          </View>
         </View>
       </View>
     ),
@@ -290,30 +305,24 @@ export const guideImages = {
     title: stepsTitle.step3,
     step: 3,
     tip: () => (
-      <View style={{alignItems: 'center', marginHorizontal: 40}}>
+      <View style={styles.tipContainer}>
         {renderTips()}
-        <View>
-          <View
-            style={{
-              flexDirection: 'row',
-              marginHorizontal: 20,
-            }}>
-            <AppText style={[appStyles.normal14Text, {marginRight: 5}]}>
-              •
-            </AppText>
-            <AppText style={appStyles.medium13}>
+        <View style={styles.tipTextContainer}>
+          <AppText style={[styles.tipText, {marginRight: 5}]}>
+            {i18n.t('centerDot')}
+          </AppText>
+          <View style={{flexDirection: 'row', flex: 1}}>
+            <AppText style={styles.tipText}>
               {i18n.t('userGuide:tipPage5_1')}
             </AppText>
           </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              marginHorizontal: 20,
-            }}>
-            <AppText style={[appStyles.normal14Text, {marginRight: 5}]}>
-              •
-            </AppText>
-            <AppText style={appStyles.bold13Text}>
+        </View>
+        <View style={styles.tipTextContainer}>
+          <AppText style={[styles.tipText, {marginRight: 5}]}>
+            {i18n.t('centerDot')}
+          </AppText>
+          <View style={{flexDirection: 'row', flex: 1}}>
+            <AppText style={styles.tipBoldText}>
               {i18n.t('userGuide:tipPage5_2')}
             </AppText>
           </View>
@@ -338,21 +347,20 @@ export const guideImages = {
     title: stepsTitle.step4,
     step: 4,
     tip: () => (
-      <View style={{alignItems: 'center', marginHorizontal: 40}}>
+      <View style={styles.tipContainer}>
         {renderTips()}
-        <View style={{flexDirection: 'row', marginHorizontal: 20}}>
-          <AppText style={[appStyles.normal14Text, {marginHorizontal: 5}]}>
-            •
+        <View style={styles.tipTextContainer}>
+          <AppText style={[styles.tipText, {marginHorizontal: 5}]}>
+            {i18n.t('centerDot')}
           </AppText>
-          <AppText style={appStyles.normal13}>
-            {i18n.t('userGuide:tipPage8_1')}
-            <AppText style={appStyles.bold13Text}>
-              {i18n.t('userGuide:tipPage8_2')}
+          <View style={{flexDirection: 'row', flex: 1}}>
+            <AppText style={styles.tipBoldText}>
+              {i18n.t('userGuide:tipPage8_1')}
+              <AppText style={[styles.tipBoldText, {color: colors.tomato}]}>
+                {i18n.t('userGuide:tipPage8_2')}
+              </AppText>
             </AppText>
-            <AppText style={[appStyles.bold13Text, {color: colors.tomato}]}>
-              {i18n.t('userGuide:tipPage8_3')}
-            </AppText>
-          </AppText>
+          </View>
         </View>
       </View>
     ),
@@ -368,23 +376,21 @@ export const guideImages = {
     title: stepsTitle.step5,
     step: 5,
     tip: () => (
-      <View
-        style={{
-          alignItems: 'center',
-          marginHorizontal: 40,
-        }}>
+      <View style={styles.tipContainer}>
         {renderTips()}
-        <View style={{flexDirection: 'row', marginHorizontal: 20}}>
-          <AppText style={[appStyles.normal14Text, {marginHorizontal: 5}]}>
-            •
+        <View style={styles.tipTextContainer}>
+          <AppText style={[styles.tipText, {marginHorizontal: 5}]}>
+            {i18n.t('centerDot')}
           </AppText>
-          <AppText style={appStyles.normal13}>
-            {i18n.t('userGuide:tipPage9_1')}
-            <AppText style={appStyles.bold13Text}>
-              {i18n.t('userGuide:tipPage9_2')}
+          <View style={{flexDirection: 'row', flex: 1}}>
+            <AppText style={styles.tipText}>
+              {i18n.t('userGuide:tipPage9_1')}
+              <AppText style={styles.tipBoldText}>
+                {i18n.t('userGuide:tipPage9_2')}
+              </AppText>
+              {i18n.t('userGuide:tipPage9_3')}
             </AppText>
-            {i18n.t('userGuide:tipPage9_3')}
-          </AppText>
+          </View>
         </View>
       </View>
     ),
@@ -394,22 +400,20 @@ export const guideImages = {
     title: stepsTitle.step6,
     step: 6,
     tip: () => (
-      <View
-        style={{
-          alignItems: 'center',
-          marginHorizontal: 40,
-        }}>
+      <View style={styles.tipContainer}>
         {renderTips()}
-        <View style={{flexDirection: 'row', marginHorizontal: 20}}>
-          <AppText style={[appStyles.normal14Text, {marginHorizontal: 5}]}>
-            •
+        <View style={styles.tipTextContainer}>
+          <AppText style={[styles.tipText, {marginHorizontal: 5}]}>
+            {i18n.t('centerDot')}
           </AppText>
-          <AppText style={appStyles.bold13Text}>
-            {i18n.t('userGuide:tipPage11_1')}
-            <AppText style={appStyles.normal13}>
-              {i18n.t('userGuide:tipPage11_2')}
+          <View style={{flexDirection: 'row', flex: 1}}>
+            <AppText style={styles.tipBoldText}>
+              {i18n.t('userGuide:tipPage11_1')}
+              <AppText style={styles.tipText}>
+                {i18n.t('userGuide:tipPage11_2')}
+              </AppText>
             </AppText>
-          </AppText>
+          </View>
         </View>
       </View>
     ),

@@ -29,6 +29,7 @@ import {
 import i18n from '@/utils/i18n';
 import {navigate} from '@/navigation/navigation';
 import AppSnackBar from '@/components/AppSnackBar';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 
 const {channelId, esimGlobal, fbUser} = Env.get();
 
@@ -40,15 +41,17 @@ const styles = StyleSheet.create({
   bottomContainer: {
     backgroundColor: colors.whiteTwo,
     flex: 1,
-    paddingVertical: 32,
+    paddingVertical: isDeviceSize('medium') ? 32 : 40,
     paddingHorizontal: 20,
   },
   itemTitle: {
     ...appStyles.bold16Text,
+    fontSize: isDeviceSize('medium') ? 16 : 18,
     color: colors.black,
   },
   itemDesc: {
     ...appStyles.normal12Text,
+    fontSize: isDeviceSize('medium') ? 12 : 14,
     color: colors.warmGrey,
     textAlign: 'left',
   },
@@ -62,15 +65,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: colors.white,
     paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 156,
+    paddingTop: 30,
+    paddingBottom: isDeviceSize('medium') ? 156 : 182,
   },
   absoluteView: {
     flex: 1,
     flexDirection: 'row',
     position: 'absolute',
     backgroundColor: colors.white,
-    marginTop: 114,
+    marginTop: 120,
     paddingHorizontal: 12,
   },
   btnBlue: {
@@ -81,8 +84,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.clearBlue,
     alignItems: 'center',
   },
+  contactInfo: {
+    ...appStyles.bold22Text,
+    fontSize: isDeviceSize('medium') ? 22 : 24,
+    paddingTop: 14,
+  },
+  contactInfo2: {
+    ...appStyles.bold18Text,
+    fontSize: isDeviceSize('medium') ? 18 : 20,
+    color: colors.black,
+    marginBottom: 24,
+  },
 });
-
 type MenuItem = {
   key: string;
   title: string;
@@ -108,7 +121,7 @@ const ContactListItem0 = ({
       <View
         style={{
           flexDirection: 'row',
-          height: 78,
+          height: isDeviceSize('medium') ? 78 : 92,
           alignItems: 'center',
           justifyContent: 'space-between',
         }}>
@@ -249,9 +262,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.infoContainer}>
-        <AppText style={[appStyles.bold18Text, {paddingTop: 14}]}>
-          {i18n.t('contact:info')}
-        </AppText>
+        <AppText style={styles.contactInfo}>{i18n.t('contact:info')}</AppText>
         <AppIcon name="imgNotiDokebi" style={{marginRight: 12}} />
       </View>
 
@@ -270,13 +281,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
       </View>
 
       <View style={styles.bottomContainer}>
-        <AppText
-          style={[
-            appStyles.bold16Text,
-            {color: colors.black, marginBottom: 24},
-          ]}>
-          {i18n.t('contact:info2')}
-        </AppText>
+        <AppText style={styles.contactInfo2}>{i18n.t('contact:info2')}</AppText>
         {data.map((item) => (
           <ContactListItem key={item.key} item={item} onPress={onPress} />
         ))}
