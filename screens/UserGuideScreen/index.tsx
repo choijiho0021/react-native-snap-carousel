@@ -28,12 +28,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  stepPage: {
+    flex: 1,
+    alignItems: 'center',
+    marginTop: isDeviceSize('medium') ? 0 : 40,
+    marginBottom: isDeviceSize('medium') ? 0 : 32,
+  },
   image: {
     width: '100%',
-    // height: '100%',
-    // alignSelf: 'stretch',
-    // marginTop: 50,
-    // flex: 1,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -91,11 +93,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     textAlign: 'center',
     letterSpacing: -0.5,
-  },
-  tailImages: {
-    justifyContent: 'space-between',
-    paddingBottom: 64,
-    flex: 1,
   },
 });
 type CarouselIndex =
@@ -210,7 +207,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
         <View style={[styles.container, {alignItems: 'center'}]}>
           <AppSvgIcon key="esimLogo" style={styles.logo} name="esimLogo" />
 
-          <View style={{flex: 2}}>
+          <View style={{flex: 2, alignItems: 'center'}}>
             {data?.title.map((elm) => (
               <AppTextJoin data={elm} />
             ))}
@@ -263,22 +260,32 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
 
   const renderStepPage = useCallback((data, index) => {
     return (
-      <View style={[styles.container, {alignItems: 'center'}]}>
-        <View
-          style={[styles.step, {marginTop: isDeviceSize('medium') ? 0 : 32}]}>
-          <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
+      <View style={styles.stepPage}>
+        <View style={{flex: 1, alignItems: 'center'}}>
+          <View
+            style={[styles.step, {marginTop: isDeviceSize('medium') ? 0 : 32}]}>
+            <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
+          </View>
+
+          {data?.title.map((elm, idx) => (
+            <AppTextJoin data={elm} style={{bottom: idx === 0 ? 0 : 10}} />
+          ))}
         </View>
 
-        {data?.title.map((elm, idx) => (
-          <AppTextJoin data={elm} style={{bottom: idx === 0 ? 0 : 10}} />
-        ))}
-
-        <View style={{flex: 1, marginTop: isDeviceSize('medium') ? 12 : 42}}>
+        <View
+          style={{
+            flex: 1.5,
+            top: 20,
+          }}>
           {data.tip && data.tip()}
         </View>
 
         {index === 3 && (
-          <AppText style={{marginBottom: 8, color: colors.warmGrey}}>
+          <AppText
+            style={{
+              color: colors.warmGrey,
+              marginBottom: 8,
+            }}>
             {i18n.t('userGuide:tipPage4_3')}
           </AppText>
         )}
@@ -291,22 +298,24 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
     const image1 = require('../assets/images/esim/userGuide/eSIMUserGuide11_1.png');
     const image2 = require('../assets/images/esim/userGuide/eSIMUserGuide11_2.png');
     return (
-      <View style={[styles.container, {alignItems: 'center'}]}>
-        <View
-          style={[styles.step, {marginTop: isDeviceSize('small') ? 8 : 32}]}>
-          <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
+      <View style={{flex: 1, alignItems: 'center'}}>
+        <View style={{flex: 1, alignItems: 'center'}}>
+          <View
+            style={[styles.step, {marginTop: isDeviceSize('medium') ? 0 : 32}]}>
+            <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
+          </View>
+
+          {data?.title.map((elm, idx) => (
+            <AppTextJoin data={elm} style={{bottom: idx === 0 ? 0 : 10}} />
+          ))}
         </View>
 
-        {data?.title.map((elm) => (
-          <AppTextJoin data={elm} />
-        ))}
+        <View style={{flex: 1, top: 20}}>{data.tip && data.tip()}</View>
 
-        <View style={{marginTop: isDeviceSize('medium') ? 12 : 42}}>
-          {data.tip && data.tip()}
+        <View style={{flex: 1}}>
+          <Image source={image1} resizeMode="contain" />
         </View>
-        <View style={styles.tailImages}>
-          <Image style={{marginTop: 50}} source={image1} resizeMode="contain" />
-
+        <View style={{flex: 2, justifyContent: 'center'}}>
           <Image source={image2} resizeMode="contain" />
         </View>
       </View>

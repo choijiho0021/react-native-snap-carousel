@@ -252,6 +252,17 @@ export const appStyles = StyleSheet.create({
     padding: 0,
     margin: 0,
   },
+  bold15Text: {
+    //        fontFamily: "AppleSDGothicNeo",
+    fontSize: 15,
+    fontWeight: 'bold',
+    fontStyle: 'normal',
+    lineHeight: 20,
+    letterSpacing: 0,
+    color: colors.black,
+    padding: 0,
+    margin: 0,
+  },
   bold16Text: {
     //        fontFamily: "AppleSDGothicNeo",
     fontSize: 16,
