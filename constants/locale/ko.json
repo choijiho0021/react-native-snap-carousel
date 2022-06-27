@@ -717,8 +717,8 @@
   "changeEmail:duplicate": "이미 사용하고 있는 이메일 주소입니다.",
   "changeEmail:fail": "이메일 등록에 실패했습니다.",
 
-  "socialLogin:kakao": "카카오 계정으로 로그인",
-  "socialLogin:apple": "Apple ID로 로그인",
+  "socialLogin:kakao": "카카오 로그인",
+  "socialLogin:apple": "Apple ID 로그인",
 
   "userGuide:checkInfo": "잠깐! 먼저 확인해주세요",
   "userGuide:checkInfo1_1": "반드시",

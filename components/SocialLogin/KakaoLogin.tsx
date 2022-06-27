@@ -7,7 +7,7 @@ import {
 import AsyncStorage from '@react-native-community/async-storage';
 import AppButton from '@/components/AppButton';
 import i18n from '@/utils/i18n';
-import {appStyles} from '../../constants/Styles';
+import {appStyles} from '@/constants/Styles';
 import {SocialAuthInfo} from '.';
 
 const styles = StyleSheet.create({
@@ -24,7 +24,6 @@ const styles = StyleSheet.create({
   },
   btnStyle: {
     width: '100%',
-    marginBottom: 22,
   },
 });
 

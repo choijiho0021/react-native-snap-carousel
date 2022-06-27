@@ -86,15 +86,13 @@ const AppButton: React.FC<AppButtonProps> = ({
         checked &&
           (checkedStyle || {borderColor: checkedColor || colors.clearBlue}),
         pressed &&
-          (pressedStyle || {
-            backgroundColor:
-              // eslint-disable-next-line no-nested-ternary
-              type === 'primary'
-                ? colors.dodgerBlue
-                : type === 'secondary'
-                ? colors.whiteTwo
-                : undefined,
-          }),
+          (pressedStyle ||
+            // eslint-disable-next-line no-nested-ternary
+            (type === 'primary'
+              ? {backgroundColor: colors.dodgerBlue}
+              : type === 'secondary'
+              ? {backgroundColor: colors.whiteTwo}
+              : undefined)),
       ]}
       disabled={disabled}
       onPressIn={() => setPressed(true)}
