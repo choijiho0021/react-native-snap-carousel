@@ -67,11 +67,6 @@ const styles = StyleSheet.create({
     height: 40,
     marginHorizontal: 18,
   },
-  tabBarLabel: (focused: boolean) => ({
-    marginBottom: 2,
-    ...appStyles.normal12Text,
-    color: focused ? colors.clearBlue : colors.black,
-  }),
 });
 
 const HomeStack = createStackNavigator<HomeStackParamList>();
@@ -86,6 +81,17 @@ const screenOptions = {
     shadowOpacity: 0,
   },
 };
+
+const tabBarLabel = (focused: boolean, textId: string) => (
+  <AppText
+    style={{
+      marginBottom: 2,
+      ...appStyles.normal12Text,
+      color: focused ? colors.clearBlue : colors.black,
+    }}>
+    {i18n.t(textId)}
+  </AppText>
+);
 
 function homeStack() {
   return (
@@ -211,11 +217,7 @@ const TabNavigator = ({
           tabBarVisible:
             (getFocusedRouteNameFromRoute(route) || 'Home') === 'Home',
           // tabBarLabel: i18n.t('home'),
-          tabBarLabel: ({focused}) => (
-            <AppText style={styles.tabBarLabel(focused)}>
-              {i18n.t('home')}
-            </AppText>
-          ),
+          tabBarLabel: ({focused}) => tabBarLabel(focused, 'home'),
           animationEnabled: false,
           tabBarIcon: ({focused}) => (
             <AppIcon
@@ -237,11 +239,7 @@ const TabNavigator = ({
             (getFocusedRouteNameFromRoute(route) || 'Cart') === 'Cart',
           tabBarBadgeStyle: {allowFontScaling: false},
           // tabBarLabel: i18n.t('cart'),
-          tabBarLabel: ({focused}) => (
-            <AppText style={styles.tabBarLabel(focused)}>
-              {i18n.t('cart')}
-            </AppText>
-          ),
+          tabBarLabel: ({focused}) => tabBarLabel(focused, 'cart'),
           tabBarIcon: ({focused}) => (
             <BadgedIcon
               focused={focused}
@@ -260,11 +258,7 @@ const TabNavigator = ({
             !!loggedIn &&
             (getFocusedRouteNameFromRoute(route) || 'Esim') === 'Esim',
           // tabBarLabel: i18n.t('esim'),
-          tabBarLabel: ({focused}) => (
-            <AppText style={styles.tabBarLabel(focused)}>
-              {i18n.t('esim')}
-            </AppText>
-          ),
+          tabBarLabel: ({focused}) => tabBarLabel(focused, 'esim'),
           tabBarIcon: ({focused}) => (
             <AppIcon
               focused={focused}
@@ -283,11 +277,7 @@ const TabNavigator = ({
             !!loggedIn &&
             (getFocusedRouteNameFromRoute(route) || 'MyPage') === 'MyPage',
           // tabBarLabel: i18n.t('mypage'),
-          tabBarLabel: ({focused}) => (
-            <AppText style={styles.tabBarLabel(focused)}>
-              {i18n.t('mypage')}
-            </AppText>
-          ),
+          tabBarLabel: ({focused}) => tabBarLabel(focused, 'mypage'),
           tabBarIcon: ({focused}) => (
             <AppIcon
               focused={focused}
