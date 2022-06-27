@@ -19,6 +19,7 @@ import api, {ApiResult} from '@/redux/api/api';
 import {actions as toastActions, reflectWithToast, Toast} from './toast';
 import {actions as orderActions} from './order';
 import {actions as promotionActions} from './promotion';
+import {actions as notiActions} from './noti';
 
 const {esimApp} = Env.get();
 
@@ -487,6 +488,9 @@ const logout = createAsyncThunk('account/logout', async (param, {dispatch}) => {
     dispatch(slice.actions.resetAccount());
     // reset 한 후에 token을 다시 읽어 온다.
     dispatch(getToken());
+
+    // reset noti
+    dispatch(notiActions.reset());
   });
 });
 
