@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginTop: 12,
   },
   viewStyle: {
     flexDirection: 'row',
