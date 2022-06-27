@@ -48,7 +48,6 @@ import BadgedIcon from './component/BadgedIcon';
 import RedirectHKScreen from '@/screens/RedirectHKScreen';
 import UserGuideScreen from '../screens/UserGuideScreen';
 import {CartModelState} from '@/redux/modules/cart';
-import LabelText from '@/components/LabelText';
 import AppText from '@/components/AppText';
 
 const styles = StyleSheet.create({
@@ -120,7 +119,7 @@ function homeStack() {
         component={UserGuideScreen}
         options={{animationEnabled: true}}
       />
-
+      <HomeStack.Screen name="GiftGuide" component={GiftGuideScreen} />
       <HomeStack.Screen name="Invite" component={InviteScreen} />
       <HomeStack.Screen name="BoardMsgResp" component={BoardMsgRespScreen} />
       <HomeStack.Screen name="Faq" component={FaqScreen} />
@@ -154,7 +153,6 @@ function esimStack() {
   return (
     <EsimStack.Navigator screenOptions={screenOptions}>
       <EsimStack.Screen name="Esim" component={EsimScreen} />
-      <EsimStack.Screen name="GiftGuide" component={GiftGuideScreen} />
       <EsimStack.Screen name="Gift" component={GiftScreen} />
       <EsimStack.Screen name="RedirectHK" component={RedirectHKScreen} />
     </EsimStack.Navigator>
