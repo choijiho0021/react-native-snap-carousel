@@ -26,7 +26,7 @@ import {guideImages} from './model';
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.paleGreyTwo,
     flex: 1,
   },
   image: {
