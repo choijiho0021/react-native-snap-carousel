@@ -211,7 +211,7 @@ const Esim: React.FC<EsimProps> = ({
 
     if (popUpPromo) {
       setPopUp(popUpPromo);
-      setCloseType(popUpPromo.notice?.rule ? 'redirect' : 'close');
+      setCloseType(popUpPromo.rule ? 'redirect' : 'close');
       setPopUpVisible(true);
     }
   }, [promotion]);
@@ -266,15 +266,15 @@ const Esim: React.FC<EsimProps> = ({
 
       switch (v) {
         case 'redirect':
-          if (popUp?.notice?.rule?.invitation) {
-            navigation.navigate('Invite');
+          if (popUp?.rule?.navigate) {
+            navigation.navigate(popUp.rule.navigate);
           } else if (popUp?.notice) {
             navigation.navigate('SimpleText', {
               key: 'noti',
               title: i18n.t('set:noti'),
               bodyTitle: popUp.notice.title,
               body: popUp.notice.body,
-              rule: popUp.notice.rule,
+              rule: popUp.rule,
               nid: popUp.notice.nid,
               image: popUp.notice.image,
               mode: 'noti',
@@ -287,7 +287,7 @@ const Esim: React.FC<EsimProps> = ({
         default:
       }
     },
-    [navigation, popUp?.notice],
+    [navigation, popUp?.notice, popUp?.rule],
   );
 
   const scrollY = useRef(new Animated.Value(0)).current;

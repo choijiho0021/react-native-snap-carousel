@@ -251,13 +251,13 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
       const {invite, stat} = promotion;
       const {userId} = account;
 
-      if (userId && invite?.notice?.rule) {
+      if (userId && invite?.rule) {
         switch (method) {
           case 'copy': {
             API.Promotion.buildLink({
               recommender: userId,
               cash: stat.signupGift,
-              imageUrl: invite.notice.rule?.share,
+              imageUrl: invite.rule?.share,
             }).then((url) => {
               if (url) {
                 Clipboard.setString(url);
@@ -268,11 +268,7 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
           }
           default:
             // share
-            await API.Promotion.invite(
-              userId,
-              stat.signupGift,
-              invite.notice.rule,
-            );
+            await API.Promotion.invite(userId, stat.signupGift, invite.rule);
             break;
         }
       }
@@ -331,35 +327,30 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
         </View>
 
         <View style={styles.shareBg}>
-          {['share', 'copy'].map((v, idx) => {
-            const iconName = `icon${v[0].toUpperCase()}${v.substring(1)}`;
-            return (
-              <AppButton
-                iconName={iconName}
-                iconStyle={{marginRight: 10}}
-                key={v}
-                title={i18n.t(`inv:${v}`)}
-                titleStyle={[
-                  appStyles.medium18,
-                  !!idx && {color: colors.black},
-                ]}
-                onPress={() => sendLink(v)}
-                viewStyle={styles.rowCenter}
-                style={[
-                  {height: 62},
-                  v === 'copy'
-                    ? {
-                        borderWidth: 1,
-                        borderColor: colors.lightGrey,
-                      }
-                    : {
-                        marginBottom: 16,
-                        backgroundColor: colors.clearBlue,
-                      },
-                ]}
-              />
-            );
-          })}
+          <AppButton
+            iconName="iconShare"
+            iconStyle={{marginRight: 10}}
+            title={i18n.t('inv:share')}
+            titleStyle={appStyles.medium18}
+            pressedStyle={{backgroundColor: colors.dodgerBlue}}
+            onPress={() => sendLink('share')}
+            viewStyle={styles.rowCenter}
+            style={{
+              height: 62,
+              marginBottom: 16,
+              backgroundColor: colors.clearBlue,
+            }}
+          />
+          <AppButton
+            iconName="iconCopy"
+            iconStyle={{marginRight: 10}}
+            title={i18n.t('inv:copy')}
+            titleStyle={[appStyles.medium18, {color: colors.black}]}
+            pressedStyle={{backgroundColor: colors.whiteTwo}}
+            onPress={() => sendLink('copy')}
+            viewStyle={styles.rowCenter}
+            style={{height: 62, borderWidth: 1, borderColor: colors.lightGrey}}
+          />
         </View>
 
         <View style={styles.cashBg}>

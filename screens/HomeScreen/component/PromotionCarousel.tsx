@@ -1,4 +1,4 @@
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {memo, useCallback, useState} from 'react';
 import {Animated, Image, Pressable, StyleSheet, View} from 'react-native';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
@@ -102,6 +102,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
   action,
 }) => {
   const navigation = useNavigation();
+  const route = useRoute();
   const [activeSlide, setActiveSlide] = useState(0);
   const onPress = useCallback(
     (item: RkbPromotion) => {
@@ -116,21 +117,20 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
             .toArray();
           navigation.navigate('Country', {prodOfCountry});
         }
+      } else if (item.rule?.navigate) {
+        navigation.navigate(item.rule.navigate);
       } else if (item.notice) {
-        if (item.notice.rule?.invitation) navigation.navigate('Invite');
-        else {
-          action.info.getInfoList('info');
-          navigation.navigate('SimpleText', {
-            key: 'noti',
-            title: i18n.t('set:noti'),
-            bodyTitle: item.notice.title,
-            body: item.notice.body,
-            nid: item.notice.nid,
-            rule: item.notice.rule,
-            image: item.notice.image,
-            mode: 'noti',
-          });
-        }
+        action.info.getInfoList('info');
+        navigation.navigate('SimpleText', {
+          key: 'noti',
+          title: i18n.t('set:noti'),
+          bodyTitle: item.notice.title,
+          body: item.notice.body,
+          nid: item.notice.nid,
+          rule: item.rule,
+          image: item.notice.image,
+          mode: 'noti',
+        });
       } else {
         navigation.navigate('Faq');
       }
