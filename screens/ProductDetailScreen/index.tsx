@@ -3,7 +3,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useState, useEffect, useCallback} from 'react';
 import Clipboard from '@react-native-community/clipboard';
-import {PixelRatio, SafeAreaView, StyleSheet, View} from 'react-native';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -18,7 +18,7 @@ import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
-import {appStyles, injectedScript} from '@/constants/Styles';
+import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
@@ -126,8 +126,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const [status, setStatus] = useState<TrackingStatus>();
   const [purchaseItems, setPurchaseItems] = useState<PurchaseItem[]>([]);
 
-  const [webViewHeight, setWebViewHeight] = useState<number>(3000);
-
   useEffect(() => {
     const {partnerId} = product;
     const {params = {}} = route;
@@ -152,9 +150,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     (event: WebViewMessageEvent) => {
       const [key, value] = event.nativeEvent.data.split(',');
       switch (key) {
-        case 'dimension':
-          setWebViewHeight(Number(value) / PixelRatio.get());
-          break;
         case 'moveToPage':
           if (value) {
             action.info.getItem(value).then(({payload: item}) => {
@@ -201,24 +196,23 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   );
 
   const renderWebView = useCallback(
-    (sku?: string) =>
-      sku ? (
+    (uuid?: string) =>
+      uuid ? (
         <WebView
           // automaticallyAdjustContentInsets={true}
           javaScriptEnabled
           domStorageEnabled
-          injectedJavaScript={injectedScript}
+          // injectedJavaScript={injectedScript}
           // scalesPageToFit
           startInLoadingState
           decelerationRate="normal"
           scrollEnabled
           onMessage={onMessage}
-          source={{uri: `${webViewHost}/#/product/${sku}`}}
+          source={{uri: `${webViewHost}/#/product/${uuid}`}}
           // source={{uri: `http://localhost:8000/#/product/${sku}`}}
-          style={{height: webViewHeight}}
         />
       ) : null,
-    [onMessage, webViewHeight],
+    [onMessage],
   );
 
   const soldOut = useCallback((payload: ApiResult<any>, message: string) => {
@@ -310,7 +304,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.screen}>
-      {renderWebView(route.params?.item?.sku)}
+      {renderWebView(route.params?.uuid)}
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
       <AppSnackBar
         visible={showSnackBar.visible}
