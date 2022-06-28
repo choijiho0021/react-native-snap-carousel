@@ -1,5 +1,11 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
+import {
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  View,
+  Pressable,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
@@ -71,6 +77,20 @@ const styles = StyleSheet.create({
     height: 40,
     marginHorizontal: 18,
   },
+  usrGuideBtn: {
+    flexDirection: 'row',
+    marginHorizontal: 20,
+    marginTop: 16,
+    paddingHorizontal: 20,
+    height: 56,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.iceBlue,
+  },
+  rowCenter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
 });
 
 type EsimScreenProps = {
@@ -108,6 +128,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [showGiftModal, setShowGiftModal] = useState(false);
   const [cmiUsage, setCmiUsage] = useState({});
   const [cmiStatus, setCmiStatus] = useState({});
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
   const isFocused = useIsFocused();
 
   const init = useCallback(
@@ -130,12 +151,16 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         })
         .finally(() => {
           setRefreshing(false);
+          setIsFirstLoad(false);
         });
     }
   }, [action.account, action.order, iccid, token]);
 
   useEffect(() => {
-    if (isFocused) onRefresh();
+    if (isFocused) {
+      onRefresh();
+      setIsFirstLoad(true);
+    }
   }, [isFocused, onRefresh]);
 
   const empty = useCallback(
@@ -154,12 +179,31 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const info = useCallback(
     () =>
       esimGlobal ? null : (
-        <CardInfo
-          iccid={iccid}
-          balance={balance}
-          expDate={expDate}
-          navigation={navigation}
-        />
+        <View>
+          <CardInfo
+            iccid={iccid}
+            balance={balance}
+            expDate={expDate}
+            navigation={navigation}
+          />
+          <Pressable
+            style={styles.usrGuideBtn}
+            onPress={() =>
+              navigate(navigation, route, 'EsimStack', {
+                tab: 'HomeStack',
+                screen: 'Contact',
+              })
+            }>
+            <View style={styles.rowCenter}>
+              <AppSvgIcon name="flag" style={{marginRight: 11}} />
+              <AppText style={appStyles.normal16Text}>
+                {i18n.t('esim:moveToGuide')}
+              </AppText>
+            </View>
+
+            <AppIcon name="iconArrowRight" />
+          </Pressable>
+        </View>
       ),
     [balance, expDate, iccid, navigation],
   );
@@ -407,14 +451,16 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         ListEmptyComponent={empty}
         refreshControl={
           <RefreshControl
-            refreshing={refreshing}
+            refreshing={refreshing && !isFirstLoad}
             onRefresh={onRefresh}
             colors={[colors.clearBlue]} // android 전용
             tintColor={colors.clearBlue} // ios 전용
           />
         }
       />
-      <AppActivityIndicator visible={pending || loginPending} />
+      <AppActivityIndicator
+        visible={isFirstLoad && (pending || loginPending || refreshing)}
+      />
       <EsimModal
         visible={showModal}
         modal={modal}

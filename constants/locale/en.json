@@ -459,6 +459,7 @@
   "esim:manualInput:body": "Go to <color:'#2a7ff6'>Setting>Cellular>Add Cellular Plan</color> and Tap <color:'#2a7ff6'>\"Enter Details Manually\"</color>, then plz enter activation info below manually",
   "esim:redirectHK": "Real Name Registration",
   "esim:redirectHKRegister": "Register Now",
+  "esim:moveToGuide": "eSIM 사용이 처음이라면! 가이드 보기",
 
   // 홍콩 실명인증
   "redirectHK": "Real Name Registration",
