@@ -50,13 +50,23 @@ export const quadcellStatusCd = {
   '03': 'C', // Deleted
 };
 
+// 선물안한 상품(구매,선물받음) - 구매일자별 정렬, 선물한 상품 구매일자별 정렬
 const sortSubs = (a, b) => {
-  // status 우선순위, 구입날짜별로 정렬
-  if (a.statusCd === b.statusCd && a.purchaseDate > b.purchaseDate) {
+  if (a.giftStatusCd !== b.giftStatusCd && b.giftStatusCd === 'S') {
     return -1;
   }
 
-  if ((priority[a.statusCd] || 1) > (priority[b.statusCd] || 1)) {
+  if (
+    a.giftStatusCd !== b.giftStatusCd &&
+    a.giftStatusCd !== 'S' &&
+    b.giftStatusCd !== 'S' &&
+    a.purchaseDate > b.purchaseDate
+  ) {
+    return -1;
+  }
+
+  //  구입날짜별로 정렬
+  if (a.giftStatusCd === b.giftStatusCd && a.purchaseDate > b.purchaseDate) {
     return -1;
   }
 

@@ -72,13 +72,13 @@ const styles = StyleSheet.create({
   },
   usageTitleNormal: {
     ...appStyles.normal16Text,
-    fontSize: isDeviceSize('small') ? 14 : 16,
+    fontSize: isDeviceSize('small') ? 16 : 18,
     maxWidth: '70%',
     color: colors.warmGrey,
   },
   usageTitleBold: {
     ...appStyles.normal16Text,
-    fontSize: isDeviceSize('small') ? 14 : 16,
+    fontSize: isDeviceSize('small') ? 16 : 18,
     maxWidth: '70%',
     fontWeight: 'bold',
   },
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     height: '90%',
   },
   checkUsage: {
-    ...appStyles.normal14Text,
+    ...appStyles.bold14Text,
     color: colors.clearBlue,
   },
   normal14WarmGrey: {
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   },
   btn: {
     width: '45%',
-    paddingTop: 25,
+    paddingTop: 24,
   },
   btnTitle: {
     ...appStyles.normal14Text,
@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
   },
   redirectHK: {
     flexDirection: 'row',
+    height: 41,
     padding: 10,
     marginTop: 16,
     justifyContent: 'center',
@@ -181,14 +182,14 @@ const topInfo = (item: RkbSubscription) => {
     <View>
       {item.type !== API.Subscription.CALL_PRODUCT && (
         <View style={styles.inactiveContainer}>
-          <AppText style={styles.normal12WarmGrey}>
+          <AppText style={styles.normal14WarmGrey}>
             {i18n.t('esim:iccid')}
           </AppText>
           <AppText style={styles.normal14WarmGrey}>{item.subsIccid}</AppText>
         </View>
       )}
       <View style={styles.inactiveContainer}>
-        <AppText style={styles.normal12WarmGrey}>
+        <AppText style={styles.normal14WarmGrey}>
           {i18n.t('esim:usablePeriod')}
         </AppText>
         <AppText style={styles.normal14WarmGrey}>{`${utils.toDateString(

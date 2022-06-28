@@ -59,7 +59,6 @@ const styles = StyleSheet.create({
   },
   tipContainer: {
     alignItems: 'center',
-    flex: 1,
     width: '100%',
   },
   tipTextContainer: {
@@ -75,6 +74,7 @@ const renderTips = () => (
       ...appStyles.bold16Text,
       fontSize: isDeviceSize('medium') ? 14 : 16,
       color: colors.clearBlue,
+      marginBottom: 4,
     }}>
     {i18n.t('userGuide:tip')}
   </AppText>
@@ -146,17 +146,19 @@ const stepsTitle = {
   step3: [
     [
       {
-        text: '셀룰러 ',
-        viewStyle: styles.noneLine,
-        textStyle: styles.titleText,
-      },
-      {
-        text: '요금제 레이블을 지정',
+        text: '셀룰러 요금제 레이블',
         viewStyle: styles.underLine,
         textStyle: styles.titleText,
       },
       {
-        text: '해주세요.',
+        text: '을',
+        viewStyle: styles.noneLine,
+        textStyle: styles.titleText,
+      },
+    ],
+    [
+      {
+        text: '지정해주세요.',
         viewStyle: styles.noneLine,
         textStyle: styles.titleText,
       },
@@ -237,7 +239,8 @@ export const guideImages = {
     image: require('../assets/images/esim/userGuide/eSIMUserGuide2.png'),
     title: stepsTitle.step1,
     step: 1,
-    tip: () => null,
+    tip: () =>
+      isDeviceSize('medium') && <View style={{height: 39, width: '100%'}} />,
   },
   page3: {
     image: require('../assets/images/esim/userGuide/eSIMUserGuide3.png'),
@@ -264,7 +267,12 @@ export const guideImages = {
           <View style={styles.step}>
             <AppText style={styles.stepText}>2</AppText>
           </View>
-          <View style={{flexDirection: 'row', flex: 1}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              flex: 1,
+              marginBottom: isDeviceSize('medium') ? 44 : 65,
+            }}>
             <AppText style={styles.tipText}>
               {i18n.t('userGuide:tipPage3_4')}
               <AppText style={styles.tipBoldText}>
@@ -288,7 +296,12 @@ export const guideImages = {
           <AppText style={[styles.tipText, {marginHorizontal: 5}]}>
             {i18n.t('centerDot')}
           </AppText>
-          <View style={{flexDirection: 'row', flex: 1}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              flex: 1,
+              marginBottom: isDeviceSize('medium') ? 62 : 0,
+            }}>
             <AppText style={styles.tipBoldText}>
               {i18n.t('userGuide:tipPage4_1')}
               <AppText style={styles.tipText}>
@@ -321,7 +334,12 @@ export const guideImages = {
           <AppText style={[styles.tipText, {marginRight: 5}]}>
             {i18n.t('centerDot')}
           </AppText>
-          <View style={{flexDirection: 'row', flex: 1}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              flex: 1,
+              marginBottom: isDeviceSize('medium') ? 46 : 0,
+            }}>
             <AppText style={styles.tipBoldText}>
               {i18n.t('userGuide:tipPage5_2')}
             </AppText>
@@ -334,13 +352,17 @@ export const guideImages = {
     image: require('../assets/images/esim/userGuide/eSIMUserGuide6.png'),
     title: stepsTitle.step4,
     step: 4,
-    tip: () => null,
+    tip: () => (
+      <View style={{height: isDeviceSize('medium') ? 75 : 0, width: '100%'}} />
+    ),
   },
   page7: {
     image: require('../assets/images/esim/userGuide/eSIMUserGuide7.png'),
     title: stepsTitle.step4,
     step: 4,
-    tip: () => null,
+    tip: () => (
+      <View style={{height: isDeviceSize('medium') ? 75 : 0, width: '100%'}} />
+    ),
   },
   page8: {
     image: require('../assets/images/esim/userGuide/eSIMUserGuide8.png'),
@@ -353,7 +375,12 @@ export const guideImages = {
           <AppText style={[styles.tipText, {marginHorizontal: 5}]}>
             {i18n.t('centerDot')}
           </AppText>
-          <View style={{flexDirection: 'row', flex: 1}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              flex: 1,
+              marginBottom: isDeviceSize('medium') ? 36 : 0,
+            }}>
             <AppText style={styles.tipBoldText}>
               {i18n.t('userGuide:tipPage8_1')}
               <AppText style={[styles.tipBoldText, {color: colors.tomato}]}>
@@ -369,7 +396,9 @@ export const guideImages = {
     image: require('../assets/images/esim/userGuide/eSIMUserGuide9.png'),
     title: stepsTitle.step5,
     step: 5,
-    tip: null,
+    tip: () => (
+      <View style={{height: isDeviceSize('medium') ? 75 : 0, width: '100%'}} />
+    ),
   },
   page10: {
     image: require('../assets/images/esim/userGuide/eSIMUserGuide10.png'),
@@ -382,7 +411,12 @@ export const guideImages = {
           <AppText style={[styles.tipText, {marginHorizontal: 5}]}>
             {i18n.t('centerDot')}
           </AppText>
-          <View style={{flexDirection: 'row', flex: 1}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              flex: 1,
+              marginBottom: isDeviceSize('medium') ? 59 : 0,
+            }}>
             <AppText style={styles.tipText}>
               {i18n.t('userGuide:tipPage9_1')}
               <AppText style={styles.tipBoldText}>
@@ -406,7 +440,12 @@ export const guideImages = {
           <AppText style={[styles.tipText, {marginHorizontal: 5}]}>
             {i18n.t('centerDot')}
           </AppText>
-          <View style={{flexDirection: 'row', flex: 1}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              flex: 1,
+              marginBottom: isDeviceSize('medium') ? 32 : 0,
+            }}>
             <AppText style={styles.tipBoldText}>
               {i18n.t('userGuide:tipPage11_1')}
               <AppText style={styles.tipText}>

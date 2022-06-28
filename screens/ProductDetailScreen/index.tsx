@@ -36,6 +36,7 @@ import api, {ApiResult} from '@/redux/api/api';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import AppCartButton from '@/components/AppCartButton';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 
 const {esimApp, esimGlobal, webViewHost} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -312,6 +313,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           setShowSnackBar((pre) => ({text: pre.text, visible: false}))
         }
         textMessage={showSnackBar.text}
+        bottom={isDeviceSize('medium') ? 60 : 100}
       />
       {account.iccid || (esimApp && account.loggedIn) ? (
         <View style={styles.buttonBox}>

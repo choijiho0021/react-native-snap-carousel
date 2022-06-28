@@ -243,6 +243,7 @@ const EsimModal: React.FC<EsimModalProps> = ({
       justifyContent="flex-end"
       titleIcon={modalTitleIcon[modal]}
       titleStyle={styles.titleStyle}
+      titleViewStyle={{justifyContent: 'flex-start'}}
       title={modalHeadTitle}
       contentStyle={{
         marginHorizontal: 0,
@@ -257,7 +258,7 @@ const EsimModal: React.FC<EsimModalProps> = ({
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackbar(false)}
-        textMessage={i18n.t('copyMsg')}
+        textMessage={i18n.t('esim:copyMsg')}
       />
     </AppModal>
   );

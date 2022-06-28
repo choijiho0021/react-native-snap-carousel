@@ -384,7 +384,7 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackbar(false)}
-        textMessage={i18n.t('copyMsg')}
+        textMessage={i18n.t('inv:copyMsg')}
       />
     </SafeAreaView>
   );
