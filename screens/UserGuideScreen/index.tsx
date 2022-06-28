@@ -23,6 +23,7 @@ import AppTextJoin, {StyledText} from '@/components/AppTextJoin';
 import AppIcon from '@/components/AppIcon';
 import i18n from '@/utils/i18n';
 import {guideImages} from './model';
+import {ScrollView} from 'react-native-gesture-handler';
 
 const styles = StyleSheet.create({
   container: {
@@ -31,11 +32,11 @@ const styles = StyleSheet.create({
   stepPage: {
     flex: 1,
     alignItems: 'center',
-    marginTop: isDeviceSize('medium') ? 0 : 40,
-    marginBottom: isDeviceSize('medium') ? 0 : 32,
+    marginBottom: isDeviceSize('medium') ? 16 : 32,
   },
   image: {
-    width: '100%',
+    // width: '100%',
+    flex: 1,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -48,12 +49,14 @@ const styles = StyleSheet.create({
     flex: 2,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 40,
   },
   checkInfo: {
     flex: 3,
-    backgroundColor: colors.white,
+    backgroundColor: colors.paleGreyTwo,
     alignSelf: 'flex-start',
     marginHorizontal: 20,
+    marginTop: 77,
   },
   slideGuide: {
     flex: 2,
@@ -62,6 +65,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     justifyContent: 'center',
     marginRight: 20,
+    marginVertical: 40,
   },
   slideGuideBox: {
     flexDirection: 'row',
@@ -207,13 +211,13 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
         <View style={[styles.container, {alignItems: 'center'}]}>
           <AppSvgIcon key="esimLogo" style={styles.logo} name="esimLogo" />
 
-          <View style={{flex: 2, alignItems: 'center'}}>
+          <View style={{flex: 2, alignItems: 'center', marginTop: 46}}>
             {data?.title.map((elm) => (
               <AppTextJoin data={elm} />
             ))}
           </View>
 
-          <View style={{flex: 4}}>
+          <View style={{flex: 4, marginTop: 40}}>
             <Image
               source={require('../assets/images/esim/userGuide/userGuide1_1.png')}
               resizeMode="contain"
@@ -261,9 +265,8 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
   const renderStepPage = useCallback((data, index) => {
     return (
       <View style={styles.stepPage}>
-        <View style={{flex: 1, alignItems: 'center'}}>
-          <View
-            style={[styles.step, {marginTop: isDeviceSize('medium') ? 0 : 32}]}>
+        <View style={{alignItems: 'center'}}>
+          <View style={[styles.step, {marginTop: 40}]}>
             <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
           </View>
 
@@ -274,8 +277,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
 
         <View
           style={{
-            flex: 1.5,
-            top: 20,
+            marginTop: 22,
           }}>
           {data.tip && data.tip()}
         </View>
@@ -289,7 +291,20 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
             {i18n.t('userGuide:tipPage4_3')}
           </AppText>
         )}
-        <Image style={styles.image} source={data.image} resizeMode="contain" />
+
+        <View
+          style={{
+            width: '100%',
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'flex-end',
+          }}>
+          <Image
+            style={[styles.image, !isDeviceSize('medium') && {height: '90%'}]}
+            source={data.image}
+            resizeMode="cover"
+          />
+        </View>
       </View>
     );
   }, []);
@@ -300,8 +315,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
     return (
       <View style={{flex: 1, alignItems: 'center'}}>
         <View style={{flex: 1, alignItems: 'center'}}>
-          <View
-            style={[styles.step, {marginTop: isDeviceSize('medium') ? 0 : 32}]}>
+          <View style={[styles.step, {marginTop: 40}]}>
             <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
           </View>
 
@@ -322,19 +336,29 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
     );
   }, []);
 
+  const renderBody = useCallback(
+    (item: CarouselIndex, index: number) => {
+      if (index === 0) return renderHeadPage(guideImages[item]);
+      if (index !== Object.keys(guideImages).length - 1)
+        return renderStepPage(guideImages[item], index);
+      return renderTailPage(guideImages[item], index);
+    },
+    [renderHeadPage, renderStepPage, renderTailPage],
+  );
+
   const renderGuide = useCallback(
     ({item, index}: {item: CarouselIndex; index: number}) => (
       <View style={styles.container}>
         {renderModalHeader(index)}
-        {index === 0 && renderHeadPage(guideImages[item])}
-        {index > 0 &&
-          index !== Object.keys(guideImages).length - 1 &&
-          renderStepPage(guideImages[item], index)}
-        {index === Object.keys(guideImages).length - 1 &&
-          renderTailPage(guideImages[item], index)}
+
+        {isDeviceSize('medium') ? (
+          <ScrollView>{renderBody(item, index)}</ScrollView>
+        ) : (
+          renderBody(item, index)
+        )}
       </View>
     ),
-    [renderHeadPage, renderModalHeader, renderStepPage, renderTailPage],
+    [renderBody, renderModalHeader],
   );
 
   return (
