@@ -258,7 +258,7 @@ const EsimModal: React.FC<EsimModalProps> = ({
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackbar(false)}
-        textMessage={i18n.t('copyMsg')}
+        textMessage={i18n.t('esim:copyMsg')}
       />
     </AppModal>
   );

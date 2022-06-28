@@ -460,6 +460,7 @@
   "esim:redirectHK": "Real Name Registration",
   "esim:redirectHKRegister": "Register Now",
   "esim:moveToGuide": "eSIM 사용이 처음이라면! 가이드 보기",
+  "esim:copyMsg": "수동 입력정보가 복사되었습니다.",
 
   // 홍콩 실명인증
   "redirectHK": "Real Name Registration",
@@ -624,6 +625,7 @@
   "inv:inviteCountUnit": "명",
   "inv:rokebiCashUnit": "C",
   "inv:withdrawalInfo": "*탈퇴 후 재가입한 친구는 해당되지 않습니다.",
+  "inv:copyMsg": "초대 링크가 복사되었습니다.",
 
   "inv:upper1": "친구를 초대해보세요 :)",
   "inv:upper2": "고객님께 ",

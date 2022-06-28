@@ -102,7 +102,7 @@
 
   "country:detail": "상세보기",
   "country:empty": "상품검색 결과가 없습니다",
-  "country:addCart": "장바구니에 담겼습니다.",
+  "country:addCart": "카트에 담겼습니다.",
   "country:total": "데이터 종량제",
   "country:daily": "데이터 무제한",
 
@@ -462,6 +462,7 @@
   "esim:redirectHK": "실명등록 바로가기",
   "esim:redirectHKRegister": "실명등록 바로가기",
   "esim:moveToGuide": "eSIM 사용이 처음이라면! 가이드 보기",
+  "esim:copyMsg": "수동 입력정보가 복사되었습니다.",
 
   "redirectHK": "홍콩 실명등록",
   "redirectHK:info1": "홍콩 정부의 통신 정책 변경으로 인해, 홍콩 현지 데이터를 사용하고자 하는 모든 사용자(내/외국인 포함)는 홍콩 현지 통신사의 웹페이지에서 ",
@@ -575,11 +576,11 @@
   "prodDetail:Question": "궁금하신점이 있으신가요?",
   "prodDetail:KakaoPlus": "카카오톡 플러스 친구로\n 편하게 물어보세요!",
   "prodDetail:FacebookMessage": "페이스북 메신저로\n 편하게 물어보세요!",
-  "prodDetail:copy": "복사되었습니다",
+  "prodDetail:copy": "APN이 복사되었습니다.",
   "prodDetailOp:title": "사용 가능 지역 및 통신사 확인하기",
   "prodDetailOp:subTitle": "해당 국가를 클릭하면 APN 정보가 보여요!",
   "prodDetailOp:search": "국가명을 검색해주세요",
-  "prodDetailOp:copyApn": "APN이 복사 되었습니다.",
+  "prodDetailOp:copyApn": "APN이 복사되었습니다.",
   "prodDetailOp:empty": "APN 항목이 없습니다",
   "set:failedOpenKakao": "카카오 상담 연결에 실패했습니다.\n 잠시 후 다시 시도해주세요.",
 
@@ -625,6 +626,7 @@
   "inv:inviteCountUnit": "명",
   "inv:rokebiCashUnit": "C",
   "inv:withdrawalInfo": "*탈퇴 후 재가입한 친구는 해당되지 않습니다.",
+  "inv:copyMsg": "초대 링크가 복사되었습니다.",
 
   "inv:upper1": "친구를 초대해보세요 :)",
   "inv:upper2": "고객님께 ",
