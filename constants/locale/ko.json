@@ -524,7 +524,7 @@
   "pym:unsupportDeviceModal": "eSIM 미지원 단말 결제",
   "pym:unsupportDeviceModalContent": "사용하고 계신 기기는 eSIM을 지원하지 않습니다. 계속 구매를 원하신다면, 확인을 눌러주세요.",
 
-  "err:login": "먼저 로그인이 필요해요",
+  "err:login": "로그인 후 상품 구매하기",
   "err:body": "본문이 없습니다",
 
   "guide:title": "사용 가이드",
@@ -606,7 +606,7 @@
 
   "promo:join:fail": "이벤트 참여 실패",
   "promo:join:ing": "시도중 ...",
-  "promo:login": "로그인 후 참여",
+  "promo:login": "로그인 후 이벤트 참여하기",
 
   "invite:title": "로깨비 캐쉬 *p를 보냈어요.",
   "invite:desc": "어쩌면 당신의 해외여행 데이터는 공짜!?",
