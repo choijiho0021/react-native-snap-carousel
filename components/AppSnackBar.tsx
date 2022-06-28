@@ -18,6 +18,7 @@ type AppSnackBarProps = {
   visible: boolean;
   backgroundColor?: string;
   messageColor?: string;
+  bottom?: number;
   onClose: () => void;
 };
 
@@ -46,7 +47,7 @@ class AppSnackBar extends PureComponent<AppSnackBarProps> {
         backgroundColor={this.props.backgroundColor || colors.black}
         messageColor={this.props.messageColor || colors.white}
         position="bottom"
-        bottom={100}
+        bottom={this.props.bottom || 50}
         containerStyle={styles.containerStyle}
         actionText="X"
         actionStyle={{paddingHorizontal: 20}}
