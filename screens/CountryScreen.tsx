@@ -183,7 +183,7 @@ const CountryListItem0 = ({
           borderRightColor: colors.lightGrey,
         };
       default:
-        return {};
+        return {borderWidth: 1, borderColor: colors.lightGrey};
     }
   }, [position]);
 
