@@ -243,6 +243,7 @@ const EsimModal: React.FC<EsimModalProps> = ({
       justifyContent="flex-end"
       titleIcon={modalTitleIcon[modal]}
       titleStyle={styles.titleStyle}
+      titleViewStyle={{justifyContent: 'flex-start'}}
       title={modalHeadTitle}
       contentStyle={{
         marginHorizontal: 0,
