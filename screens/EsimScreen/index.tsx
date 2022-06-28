@@ -9,6 +9,7 @@ import {
   NavigationProp,
   ParamListBase,
   RouteProp,
+  useIsFocused,
 } from '@react-navigation/native';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppIcon from '@/components/AppIcon';
@@ -42,6 +43,7 @@ import {ProductModelState} from '@/redux/modules/product';
 import EsimModal, {ModalType} from './components/EsimModal';
 import GiftModal from './components/GiftModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import {useFocusEffect} from '@react-navigation/native';
 
 const {esimGlobal} = Env.get();
 
@@ -106,6 +108,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [showGiftModal, setShowGiftModal] = useState(false);
   const [cmiUsage, setCmiUsage] = useState({});
   const [cmiStatus, setCmiStatus] = useState({});
+  const isFocused = useIsFocused();
+
   const init = useCallback(
     ({iccid, token}: {iccid?: string; token?: string}) => {
       if (iccid && token) {
@@ -129,6 +133,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         });
     }
   }, [action.account, action.order, iccid, token]);
+
+  useEffect(() => {
+    if (isFocused) onRefresh();
+  }, [isFocused, onRefresh]);
 
   const empty = useCallback(
     () => (
