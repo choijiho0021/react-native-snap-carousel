@@ -129,7 +129,6 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
   navigation,
 }) => {
   const [carouselIdx, setCarouselIdx] = useState(0);
-  console.log('aaaaa carouselIdx', carouselIdx);
   const checkInfoList = useMemo(
     () => [
       [
