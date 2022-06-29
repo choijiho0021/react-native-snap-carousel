@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   },
   date: {
     ...appStyles.normal14Text,
-    fontSize: isDeviceSize('small') ? 12 : 14,
+    fontSize: isDeviceSize('small') ? 14 : 16,
     alignSelf: 'flex-start',
     color: colors.warmGrey,
   },
@@ -65,13 +65,22 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
           label={label}
           labelStyle={[
             {width: '70%'},
-            isDeviceSize('small')
-              ? appStyles.normal14Text
-              : appStyles.normal16Text,
+            isDeviceSize('medium')
+              ? appStyles.normal16Text
+              : appStyles.normal18Text,
           ]}
           value={billingAmt}
           color={isCanceled ? colors.warmGrey : colors.black}
           valueStyle={appStyles.price}
+          balanceStyle={{
+            ...appStyles.normal16Text,
+            fontSize: isDeviceSize('medium') ? 22 : 24,
+          }}
+          currencyStyle={{
+            ...appStyles.normal16Text,
+            fontSize: isDeviceSize('medium') ? 16 : 18,
+            top: 1,
+          }}
           format="price"
         />
       </View>

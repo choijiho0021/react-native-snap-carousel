@@ -194,7 +194,12 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
                   <AppText style={styles.replyTitle}>
                     {i18n.t('board:resp')}
                   </AppText>
-                  <AppText style={styles.reply}>{resp.body}</AppText>
+                  <AppText style={styles.reply}>
+                    {resp.body
+                      ?.replace(/&amp;/gi, '&')
+                      .replace(/&lt;/gi, '<')
+                      .replace(/&gt;/gi, '>')}
+                  </AppText>
                 </View>
               </View>
               {renderImages(issue?.replyImages)}

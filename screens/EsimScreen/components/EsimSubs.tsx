@@ -1,5 +1,12 @@
 import React, {memo, useMemo} from 'react';
-import {Dimensions, Pressable, StyleSheet, View, Text} from 'react-native';
+import {
+  Dimensions,
+  Pressable,
+  StyleSheet,
+  View,
+  Text,
+  Platform,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {Line, Svg} from 'react-native-svg';
 import AppButton from '@/components/AppButton';
@@ -115,6 +122,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: colors.white,
   },
   redirectHK: {
     flexDirection: 'row',
@@ -131,6 +139,22 @@ const styles = StyleSheet.create({
   redirectText: {
     ...appStyles.normal14Text,
     marginLeft: 4,
+  },
+  shadow: {
+    ...Platform.select({
+      ios: {
+        shadowColor: 'rgb(52, 62, 95)',
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        shadowOffset: {
+          height: 1,
+          width: 1,
+        },
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
   },
 });
 
@@ -259,6 +283,7 @@ const EsimSubs = ({
         style={[
           sendable ? styles.infoRadiusBorder : styles.infoCard,
           (expired || giftStatusCd === 'S') && styles.cardExpiredBg,
+          styles.shadow,
         ]}>
         {title(item, expired, onPressUsage)}
         {topInfo(item)}
@@ -281,7 +306,7 @@ const EsimSubs = ({
         )}
       </View>
       {sendable && (
-        <View style={styles.sendable}>
+        <View style={[styles.sendable, styles.shadow]}>
           <View style={{flex: 1, width: width - 60}}>
             <Svg height={2} width="100%">
               <Line

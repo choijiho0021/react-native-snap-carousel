@@ -188,12 +188,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           />
           <Pressable
             style={styles.usrGuideBtn}
-            onPress={() =>
-              navigate(navigation, route, 'EsimStack', {
-                tab: 'HomeStack',
-                screen: 'Contact',
-              })
-            }>
+            onPress={() => navigation.navigate('UserGuide')}>
             <View style={styles.rowCenter}>
               <AppSvgIcon name="flag" style={{marginRight: 11}} />
               <AppText style={appStyles.normal16Text}>

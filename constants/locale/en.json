@@ -354,15 +354,15 @@
   "contact:notice": "Announcement",
   "contact:noticeDetail": "Announcement Details",
   "contact:faq": "FAQ",
-  "contact:boardTitle": "1:1 Inquiry board",
-  "contact:boardDesc": "ROKEBI is trying to give you right answer\nas fast as he can : )",
-  "contact:ktalkTitle": "1:1 Inquiry via Kakao Messenger",
-  "contact:ktalkDesc": "Open (GMT+9) / Weekday 09:00 - 18:00\nLunch Time Open (GMT+9) / 12:30 - 13:30",
-  "contact:callTitle": "Help Center 031-710-3969",
-  "contact:callDesc": "Open (GMT+9) / Weekday 09:00 – 18:00\nLunch Time Open (GMT+9) / 12:30 – 13:30",
-  "contact:facebookMsg": "1:1 Inquiry via Facebook Messenger",
+  "contact:boardTitle": "Inquiry board",
+  "contact:boardDesc": "We will get back to you shortly : )",
+  "contact:ktalkTitle": "Kakao Messenger",
+  "contact:ktalkDesc": "Open (GMT+9) / Weekday 09:00 - 18:00\nLunch Time(GMT+9) / 12:30 - 13:30",
+  "contact:callTitle": "Help Center +82-31-710-3969",
+  "contact:callDesc": "Open (GMT+9) / Weekday 09:00 - 18:00\nLunch Time(GMT+9) / 12:30 - 13:30",
+  "contact:facebookMsg": "Facebook Messenger",
   "contact:guide": "User Guide",
-  "contact:info": "Just a Moment!\nCheck this first before using App : )",
+  "contact:info": "Sir,\nCan I help you?",
   "contact:info2": "Don't worry\nROKEBI is always with you!",
   "contact:kakaoOpenChFail": "It can't connect to Kakao Talk Channel.",
 
@@ -371,7 +371,7 @@
   "faq:payment": "Payment",
   "faq:etc": "ETC",
 
-  "board:title": "1:1 Inquiry board ",
+  "board:title": "Inquiry board",
   "board:new": "New Inquiry",
   "board:open": "Waiting",
   "board:closed": "Answered",
@@ -576,12 +576,12 @@
   "prodDetail:KakaoPlus": "Ask via KakaoTalk Plus like a friend!",
   "prodDetail:FacebookMessage": "Ask via Facebook message like a friend!",
   "prodDetail:copy": "Copied",
-  "prodDetailOp:title": "Check for service areas and local operators",
+  "prodDetailOp:title": "Destination and local operator",
   "prodDetailOp:subTitle": "If you click your destinations, APN will be shown up!",
-  "prodDetailOp:search": "Search your destinations(countries)",
+  "prodDetailOp:search": "Search your destination",
   "prodDetailOp:copyApn": "APN is copied.",
   "prodDetailOp:empty": "APN is not existing",
-  "set:failedOpenKakao": "Connection to 1:1 inquiry via Kakao Talk is failed.\n Try it again a few minutes later.",
+  "set:failedOpenKakao": "Connection to Kakao Messenger is failed.\n Try it again a few minutes later.",
 
   "loading:error": "Loading Error",
   "loading:terminate": "Due to error on loading process, App will be closed.",
@@ -775,5 +775,8 @@
   "userGuide:tipPage9_2": "로밍을 ON",
   "userGuide:tipPage9_3": "으로 설정해주셔야 데이터 사용이가능합니다.",
   "userGuide:tipPage11_1": "사용 완료된 상품은 꼭 삭제해주세요!\n",
-  "userGuide:tipPage11_2": "새로운 상품을 등록할 때 기존에 삭제하지 않은 상품\n때문에 헷갈릴 수 있어요."
+  "userGuide:tipPage11_2": "새로운 상품을 등록할 때 기존에 삭제하지 않은 상품\n때문에 헷갈릴 수 있어요.",
+
+  "quadcell:usageInfo1": "\u00B7 실 사용량과 정확히 일치하지 않을 수 있습니다.",
+  "quadcell:usageInfo2": " 현지 네트워크 접속 일시부터 사용량 조회가 가능합니다."
 }
