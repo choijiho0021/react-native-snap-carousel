@@ -8,7 +8,7 @@ import i18n from '@/utils/i18n';
 
 const styles = StyleSheet.create({
   notice: {
-    backgroundColor: colors.whiteTwo,
+    backgroundColor: colors.white,
     paddingHorizontal: 20,
     paddingVertical: 10,
     flexDirection: 'row',

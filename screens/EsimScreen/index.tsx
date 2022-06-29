@@ -205,7 +205,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           </Pressable>
         </View>
       ),
-    [balance, expDate, iccid, navigation],
+    [balance, expDate, iccid, navigation, route],
   );
 
   const getCmiSubsUsage = useCallback(
