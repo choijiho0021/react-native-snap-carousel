@@ -21,15 +21,18 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderBottomWidth: 10,
     borderBottomColor: colors.babyBlue,
+    backgroundColor: 'transparent',
   },
   noneLine: {
     borderStyle: 'solid',
     borderBottomWidth: 10,
-    borderBottomColor: colors.white,
+    borderBottomColor: 'transparent',
+    backgroundColor: 'transparent',
     top: 0,
   },
   titleText: {
     ...appStyles.bold22Text,
+    backgroundColor: 'transparent',
     top: 10,
   },
   step: {
@@ -115,14 +118,14 @@ const stepsTitle = {
   step2: [
     [
       {
-        text: 'QR코드 ',
+        text: 'QR코드',
         viewStyle: styles.underLine,
         textStyle: styles.titleText,
       },
       {
-        text: '혹은',
+        text: ' 혹은 ',
         viewStyle: styles.noneLine,
-        textStyle: {...appStyles.bold22Text, top: 12},
+        textStyle: styles.titleText,
       },
       {
         text: '세부사항  직접 입력',
@@ -153,7 +156,7 @@ const stepsTitle = {
       {
         text: '을',
         viewStyle: styles.noneLine,
-        textStyle: styles.titleText,
+        textStyle: {...appStyles.bold22Text, top: 12},
       },
     ],
     [
@@ -167,7 +170,7 @@ const stepsTitle = {
   step4: [
     [
       {
-        text: '아래그림처럼',
+        text: '아래 그림처럼',
         viewStyle: styles.noneLine,
         textStyle: styles.titleText,
       },
@@ -188,8 +191,8 @@ const stepsTitle = {
   step5: [
     [
       {
-        text: '아래그림처럼',
-        viewStyle: styles.underLine,
+        text: '아래 그림처럼',
+        viewStyle: styles.noneLine,
         textStyle: styles.titleText,
       },
     ],
@@ -216,7 +219,7 @@ const stepsTitle = {
       {
         text: '가',
         viewStyle: styles.noneLine,
-        textStyle: styles.titleText,
+        textStyle: {...appStyles.bold22Text, top: 12},
       },
     ],
     [
@@ -381,10 +384,13 @@ export const guideImages = {
               flex: 1,
               marginBottom: isDeviceSize('medium') ? 36 : 0,
             }}>
-            <AppText style={styles.tipBoldText}>
+            <AppText style={styles.tipText}>
               {i18n.t('userGuide:tipPage8_1')}
-              <AppText style={[styles.tipBoldText, {color: colors.tomato}]}>
+              <AppText style={styles.tipBoldText}>
                 {i18n.t('userGuide:tipPage8_2')}
+                <AppText style={[styles.tipBoldText, {color: colors.tomato}]}>
+                  {i18n.t('userGuide:tipPage8_3')}
+                </AppText>
               </AppText>
             </AppText>
           </View>

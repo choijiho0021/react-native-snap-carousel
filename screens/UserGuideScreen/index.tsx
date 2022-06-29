@@ -270,7 +270,13 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
           </View>
 
           {data?.title.map((elm, idx) => (
-            <AppTextJoin data={elm} style={{bottom: idx === 0 ? 0 : 10}} />
+            <AppTextJoin
+              data={elm}
+              style={{
+                bottom: idx === 0 ? 0 : 10,
+                backgroundColor: 'transparent',
+              }}
+            />
           ))}
         </View>
 
