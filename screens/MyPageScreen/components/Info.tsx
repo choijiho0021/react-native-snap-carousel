@@ -15,6 +15,7 @@ import i18n from '@/utils/i18n';
 import {navigate} from '@/navigation/navigation';
 import AppIcon from '@/components/AppIcon';
 import AppTextJoin from '@/components/AppTextJoin';
+import {isDeviceSize} from '../../../constants/SliderEntry.style';
 
 const {esimApp, esimCurrency} = Env.get();
 
@@ -32,6 +33,7 @@ const styles = StyleSheet.create({
   },
   subTitle: {
     ...appStyles.bold18Text,
+    fontSize: isDeviceSize('medium') ? 18 : 20,
     marginTop: 40,
     marginLeft: 20,
     color: colors.black,

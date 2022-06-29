@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
   checkInfo: {
     flex: 3,
-    backgroundColor: colors.paleGreyTwo,
+    backgroundColor: colors.white,
     alignSelf: 'flex-start',
     marginHorizontal: 20,
     marginTop: 77,

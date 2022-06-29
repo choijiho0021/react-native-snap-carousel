@@ -160,6 +160,7 @@ function esimStack() {
       <EsimStack.Screen name="Esim" component={EsimScreen} />
       <EsimStack.Screen name="Gift" component={GiftScreen} />
       <EsimStack.Screen name="RedirectHK" component={RedirectHKScreen} />
+      <EsimStack.Screen name="UserGuide" component={UserGuideScreen} />
     </EsimStack.Navigator>
   );
 }

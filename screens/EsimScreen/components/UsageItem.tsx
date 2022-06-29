@@ -385,7 +385,22 @@ const UsageItem: React.FC<UsageItemProps> = ({
                     <View style={styles.divider} />
                   </View>
                 )}
-                <View style={styles.bottomOfActiveContainer}>{expire()}</View>
+                {item.partner !== 'Quadcell' ? (
+                  <View style={styles.bottomOfActiveContainer}>{expire()}</View>
+                ) : (
+                  <View>
+                    <AppText style={appStyles.medium14}>
+                      {i18n.t(`quadcell:usageInfo1`)}
+                    </AppText>
+                    <AppText
+                      style={{...appStyles.medium14, color: colors.clearBlue}}>
+                      <AppText style={appStyles.medium14}>
+                        {i18n.t(`centerDot`)}
+                      </AppText>
+                      {i18n.t(`quadcell:usageInfo2`)}
+                    </AppText>
+                  </View>
+                )}
               </View>
             )
             // : (
@@ -424,11 +439,10 @@ const UsageItem: React.FC<UsageItemProps> = ({
           <AppText key={i18n.t('usim:checkUsage')} style={appStyles.bold18Text}>
             {i18n.t('usim:checkUsage')}
           </AppText>
-          {!cmiPending && (
+          {!cmiPending && item.partner !== 'Quadcell' && (
             <AppText
               key={item.nid}
               style={[styles.usageStatus, {color: statusColor}]}>
-              {' '}
               • {status}
             </AppText>
           )}
