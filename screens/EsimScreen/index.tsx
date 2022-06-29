@@ -188,12 +188,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           />
           <Pressable
             style={styles.usrGuideBtn}
-            onPress={() =>
-              navigate(navigation, route, 'EsimStack', {
-                tab: 'HomeStack',
-                screen: 'UserGuide',
-              })
-            }>
+            onPress={() => navigation.navigate('UserGuide')}>
             <View style={styles.rowCenter}>
               <AppSvgIcon name="flag" style={{marginRight: 11}} />
               <AppText style={appStyles.normal16Text}>
@@ -205,7 +200,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           </Pressable>
         </View>
       ),
-    [balance, expDate, iccid, navigation, route],
+    [balance, expDate, iccid, navigation],
   );
 
   const getCmiSubsUsage = useCallback(
