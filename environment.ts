@@ -55,7 +55,6 @@ type Env = {
   label?: string;
   scheme?: string;
   apiUrl?: string;
-  baseUrl?: string;
   rokApiUrl?: string;
   sipServer: string;
   isProduction: boolean;
@@ -107,18 +106,12 @@ function get() {
         env.scheme = 'https';
         env.rokApiUrl = 'svcapp.rokebi.com';
         env.apiUrl = esimGlobal ? 'global.rokebi.com' : 'esim.rokebi.com';
-        env.baseUrl = esimGlobal
-          ? 'https://global.rokebi.com'
-          : 'https://esim.rokebi.com';
         env.webViewHost = 'https://www.rokebi.com';
         break;
       default:
         env.scheme = 'http';
         env.rokApiUrl = 'tb-svcapp.rokebi.com';
         env.apiUrl = esimGlobal ? 'tb-global.rokebi.com' : 'tb-esim.rokebi.com';
-        env.baseUrl = esimGlobal
-          ? 'http://tb-global.rokebi.com'
-          : 'http://tb-esim.rokebi.com';
         env.webViewHost = 'http://tb.rokebi.com';
         break;
     }
@@ -131,14 +124,12 @@ function get() {
       env.scheme = 'https';
       env.rokApiUrl = 'svcapp.rokebi.com';
       env.apiUrl = 'usim.rokebi.com';
-      env.baseUrl = 'https://usim.rokebi.com';
       env.webViewHost = 'http://rokebi.com';
       break;
     default:
       env.scheme = 'http';
       env.rokApiUrl = 'svcapp.rokebi.com';
       env.apiUrl = 'tb-usim.rokebi.com';
-      env.baseUrl = 'http://tb-usim.rokebi.com';
       env.webViewHost = 'http://tb.rokebi.com';
       break;
   }
