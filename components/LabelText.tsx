@@ -70,6 +70,7 @@ const LabelText = ({
           currency,
         )}
         balanceStyle={{color}}
+        currencyStyle={{color}}
       />
     );
   }, [color, deduct, label, value]);
