@@ -191,7 +191,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             onPress={() =>
               navigate(navigation, route, 'EsimStack', {
                 tab: 'HomeStack',
-                screen: 'Contact',
+                screen: 'UserGuide',
               })
             }>
             <View style={styles.rowCenter}>
