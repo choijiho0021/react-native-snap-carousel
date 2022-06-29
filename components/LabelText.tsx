@@ -47,6 +47,8 @@ export type LabelTextProps = {
   color?: ColorValue;
   labelStyle?: StyleProp<TextStyle>;
   valueStyle?: StyleProp<TextStyle>;
+  balanceStyle?: StyleProp<TextStyle>;
+  currencyStyle?: StyleProp<TextStyle>;
 };
 const LabelText = ({
   label,
@@ -57,6 +59,8 @@ const LabelText = ({
   color = colors.black,
   labelStyle,
   valueStyle,
+  balanceStyle,
+  currencyStyle,
 }: LabelTextProps) => {
   const renderValue = useCallback(() => {
     const isDeduct = label === i18n.t('cart:deductBalance');
@@ -69,11 +73,11 @@ const LabelText = ({
           isDeduct && deduct ? -deduct : val || 0,
           currency,
         )}
-        balanceStyle={{color}}
-        currencyStyle={{color}}
+        balanceStyle={[balanceStyle, {color}]}
+        currencyStyle={[currencyStyle, {color}]}
       />
     );
-  }, [color, deduct, label, value]);
+  }, [balanceStyle, color, currencyStyle, deduct, label, value]);
 
   return (
     <View
