@@ -52,10 +52,15 @@ const styles = StyleSheet.create({
 
 type Step0Props = {
   step: string;
+  marginTop: number;
 };
-const Step0: React.FC<PropsWithChildren<Step0Props>> = ({step, children}) => (
+const Step0: React.FC<PropsWithChildren<Step0Props>> = ({
+  step,
+  marginTop,
+  children,
+}) => (
   <View style={{alignItems: 'center'}}>
-    <View style={[styles.step, {marginTop: 36}]}>
+    <View style={[styles.step, {marginTop}]}>
       <AppText
         style={[
           appStyles.bold16Text,
@@ -143,7 +148,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
               {i18n.t('gift:guide2-title')}
             </AppText>
           </View>
-          <Step key="1" step="1">
+          <Step key="1" step="1" marginTop={36}>
             <AppTextJoin
               textStyle={styles.text}
               data={[
@@ -160,7 +165,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
               ]}
             />
           </Step>
-          <Step key="2" step="2">
+          <Step key="2" step="2" marginTop={31}>
             <AppText style={styles.text}>{i18n.t('gift:guide2-2-1')}</AppText>
             <AppTextJoin
               textStyle={styles.text}
@@ -175,7 +180,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
               ]}
             />
           </Step>
-          <Step key="3" step="3">
+          <Step key="3" step="3" marginTop={64}>
             <AppTextJoin
               textStyle={styles.text}
               data={[
