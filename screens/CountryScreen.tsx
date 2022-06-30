@@ -245,9 +245,11 @@ const CountryListItem0 = ({
           />
         </View>
       </View>
-      <View style={styles.itemOutDivider}>
-        <View style={styles.itemDivider} />
-      </View>
+      {position !== 'tail' && (
+        <View style={styles.itemOutDivider}>
+          <View style={styles.itemDivider} />
+        </View>
+      )}
     </Pressable>
   );
 };
