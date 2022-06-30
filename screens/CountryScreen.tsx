@@ -28,6 +28,7 @@ import {RkbProduct} from '@/redux/api/productApi';
 import {actions as cartActions} from '@/redux/modules/cart';
 import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
+import {isDeviceSize} from '../constants/SliderEntry.style';
 
 const {esimGlobal} = Env.get();
 
@@ -42,7 +43,7 @@ const styles = StyleSheet.create({
     // resizeMode: 'cover'
   },
   card: {
-    borderRadius: 3,
+    // borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: 'solid',
     // borderWidth: 1,
@@ -61,7 +62,7 @@ const styles = StyleSheet.create({
   priceStyle: {
     height: 24,
     // fontFamily: "Roboto",
-    fontSize: windowWidth > device.small.window.width ? 20 : 16,
+    fontSize: isDeviceSize('medium') ? 20 : 22,
     fontWeight: 'bold',
     fontStyle: 'normal',
     lineHeight: 22,
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
   wonStyle: {
     height: 24,
     // fontFamily: "Roboto",
-    fontSize: windowWidth > device.small.window.width ? 14 : 12,
+    fontSize: isDeviceSize('medium') ? 14 : 16,
     fontWeight: 'bold',
     fontStyle: 'normal',
     lineHeight: 22,
@@ -165,6 +166,7 @@ const CountryListItem0 = ({
           borderLeftColor: colors.lightGrey,
           borderTopColor: colors.lightGrey,
           borderRightColor: colors.lightGrey,
+          paddingVertical: 26,
         };
       case 'middle':
         return {
@@ -172,6 +174,7 @@ const CountryListItem0 = ({
           borderRightWidth: 1,
           borderLeftColor: colors.lightGrey,
           borderRightColor: colors.lightGrey,
+          paddingVertical: 20,
         };
       case 'tail':
         return {
@@ -181,6 +184,7 @@ const CountryListItem0 = ({
           borderLeftColor: colors.lightGrey,
           borderBottomColor: colors.lightGrey,
           borderRightColor: colors.lightGrey,
+          paddingVertical: 26,
         };
       default:
         return {borderWidth: 1, borderColor: colors.lightGrey};
@@ -195,9 +199,9 @@ const CountryListItem0 = ({
             <AppText
               key="name"
               style={[
-                windowWidth > device.small.window.width
-                  ? appStyles.bold16Text
-                  : appStyles.bold14Text,
+                isDeviceSize('medium')
+                  ? appStyles.bold14Text
+                  : appStyles.bold16Text,
                 color,
               ]}>
               {title}
@@ -224,9 +228,9 @@ const CountryListItem0 = ({
           <AppText
             key="desc"
             style={[
-              windowWidth > device.medium.window.width
-                ? appStyles.normal14Text
-                : appStyles.normal12Text,
+              isDeviceSize('medium')
+                ? appStyles.normal12Text
+                : appStyles.normal14Text,
               {marginTop: 5},
             ]}>
             {item.field_description}

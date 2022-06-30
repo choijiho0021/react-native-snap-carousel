@@ -50,23 +50,15 @@ export const quadcellStatusCd = {
   '03': 'C', // Deleted
 };
 
+const isDisabled = (item: RkbSubscription) => {
+  return item.giftStatusCd === 'S' || new Date(item.expireDate) <= new Date();
+};
+
 // 선물안한 상품(구매,선물받음) - 구매일자별 정렬, 선물한 상품 구매일자별 정렬
 const sortSubs = (a, b) => {
-  if (a.giftStatusCd !== b.giftStatusCd && b.giftStatusCd === 'S') {
-    return -1;
-  }
+  if (!isDisabled(a) && isDisabled(b)) return -1;
 
-  if (
-    a.giftStatusCd !== b.giftStatusCd &&
-    a.giftStatusCd !== 'S' &&
-    b.giftStatusCd !== 'S' &&
-    a.purchaseDate > b.purchaseDate
-  ) {
-    return -1;
-  }
-
-  //  구입날짜별로 정렬
-  if (a.giftStatusCd === b.giftStatusCd && a.purchaseDate > b.purchaseDate) {
+  if (isDisabled(a) === isDisabled(b) && a.purchaseDate > b.purchaseDate) {
     return -1;
   }
 

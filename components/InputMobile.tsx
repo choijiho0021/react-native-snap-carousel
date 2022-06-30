@@ -8,6 +8,7 @@ import i18n from '@/utils/i18n';
 import validationUtil, {ValidationResult} from '@/utils/validationUtil';
 import AppText from './AppText';
 import AppTextInputButton from './AppTextInputButton';
+import AppButton from './AppButton';
 
 const styles = StyleSheet.create({
   helpText: {
@@ -34,6 +35,14 @@ const styles = StyleSheet.create({
   },
   emptyInput: {
     borderBottomColor: colors.lightGrey,
+  },
+  input: {
+    ...appStyles.normal16Text,
+    color: colors.black,
+    paddingHorizontal: 10,
+    borderBottomColor: colors.black,
+    borderBottomWidth: 1,
+    marginRight: 20,
   },
 });
 
@@ -83,35 +92,49 @@ const InputMobile: React.FC<InputMobileProps> = ({
   }, [timer]);
 
   const clickable = useMemo(
-    () => _.isEmpty(errors?.mobile) && !authNoti && !disabled && !timer,
-    [authNoti, disabled, errors?.mobile, timer],
+    () => _.isEmpty(errors?.mobile) && !disabled && !timer,
+    [disabled, errors?.mobile, timer],
   );
-
   return (
     <View>
-      <View style={[styles.container, style]}>
-        <AppTextInputButton
-          style={{flex: 1}}
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+          alignItems: 'flex-end',
+          marginHorizontal: 20,
+          marginTop: 20,
+        }}>
+        <TextInput
           placeholder={i18n.t('mobile:input')}
           placeholderTextColor={colors.greyish}
           keyboardType="numeric"
-          forwardRef={forwardRef}
-          // returnKeyType='done'
           enablesReturnKeyAutomatically
           maxLength={13}
           blurOnSubmit={false}
           onChangeText={onChangeText}
+          value={utils.toPhoneNumber(mobile)}
+          allowFontScaling={false}
+          style={[
+            styles.input,
+            styles.inputStyle,
+            mobile ? {} : styles.emptyInput,
+          ]}
+          editable={!disabled}
+          selectTextOnFocus={!disabled}
+          ref={forwardRef}
+        />
+        <AppButton
+          disabled={!clickable}
           onPress={onPressInput}
+          titleStyle={styles.text}
           title={
             authNoti ? i18n.t('mobile:resendAuth') : i18n.t('mobile:sendAuth')
           }
-          disabled={disabled}
-          clickable={clickable}
-          titleStyle={styles.text}
-          inputStyle={[styles.inputStyle, mobile ? {} : styles.emptyInput]}
-          value={utils.toPhoneNumber(mobile)}
+          disableColor={colors.white}
         />
       </View>
+
       {authNoti && typeof authorized === undefined && (
         <AppText style={styles.helpText}>{i18n.t('reg:authNoti')}</AppText>
       )}
