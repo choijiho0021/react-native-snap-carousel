@@ -605,6 +605,7 @@
   "promo:join:open": "Paticipate the Event",
   "promo:join:joined": "Successfully Participated.",
   "promo:join:closed": "End of participation",
+  "promo:join:invalid": "Not eligible for this promotion",
 
   "promo:join:fail": "Sorry, try again.",
   "promo:join:ing": "Participating ...",
