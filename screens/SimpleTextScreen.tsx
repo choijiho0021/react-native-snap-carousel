@@ -42,7 +42,7 @@ import i18n from '@/utils/i18n';
 import AppAlert from '@/components/AppAlert';
 import {parseJson} from '@/utils/utils';
 
-const {baseUrl} = Env.get();
+const {scheme, apiUrl} = Env.get();
 const {width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
@@ -237,7 +237,10 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
           style={styles.container}
           originWhitelist={['*']}
           onMessage={onMessage}
-          source={{html: htmlDetailWithCss(body), baseUrl}}
+          source={{
+            html: htmlDetailWithCss(body),
+            baseUrl: `${scheme}://${apiUrl}`,
+          }}
           onLoadEnd={({nativeEvent: {loading}}) => setLoading(loading)}
         />
       );
