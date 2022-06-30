@@ -106,12 +106,12 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   itemDivider: {
-    marginHorizontal: 40,
+    marginHorizontal: 20,
     height: 1,
     backgroundColor: colors.whiteTwo,
   },
   itemOutDivider: {
-    marginHorizontal: 20,
+    marginHorizontal: 16,
     height: 1,
     borderStyle: 'solid',
     borderLeftWidth: 1,
