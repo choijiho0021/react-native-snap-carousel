@@ -315,7 +315,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           backgroundColor={colors.whiteTwo}>
           {(fill) => (
             <View style={{alignItems: 'center'}}>
-              <AppText style={styles.normal12WarmGrey}>
+              <AppText style={[styles.normal12WarmGrey, {textAlign: 'center'}]}>
                 {i18n.t('usim:remainAmount')}
               </AppText>
               <AppText style={styles.bold18ClearBlue}>
