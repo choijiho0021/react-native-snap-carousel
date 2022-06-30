@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     // resizeMode: 'cover'
   },
   card: {
-    borderRadius: 3,
+    // borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: 'solid',
     // borderWidth: 1,
