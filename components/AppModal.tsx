@@ -108,7 +108,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
             <AppButton
               style={{
                 height: 52,
-                backgroundColor: colors.clearBlue,
+                backgroundColor: buttonBackgroundColor || colors.clearBlue,
               }}
               type="primary"
               onPress={onOkClose}

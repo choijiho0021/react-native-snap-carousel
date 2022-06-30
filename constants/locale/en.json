@@ -447,7 +447,7 @@
   "esim:usablePeriod": "Validity",
   "esim:expired": "Expired",
   // "esim:notice": "Voice Plan can be used in the ROKEBI Talk App.",
-  "esim:refresh": "Pull to refresh",
+  "esim:refresh": " \u00B7  If you need help, push the question mark in the upper right.",
   "esim:showQR": "QR Code",
   "esim:manualInput": "QR Info",
   "esim:showQRTitle": "QR Code",
