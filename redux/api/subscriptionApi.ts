@@ -58,7 +58,7 @@ const isDisabled = (item: RkbSubscription) => {
 const sortSubs = (a, b) => {
   if (!isDisabled(a) && isDisabled(b)) return -1;
 
-  if (isDisabled(a) && isDisabled(b) && a.purchaseDate > b.purchaseDate) {
+  if (isDisabled(a) === isDisabled(b) && a.purchaseDate > b.purchaseDate) {
     return -1;
   }
 
