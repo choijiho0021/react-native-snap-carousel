@@ -166,7 +166,8 @@ const CountryListItem0 = ({
           borderLeftColor: colors.lightGrey,
           borderTopColor: colors.lightGrey,
           borderRightColor: colors.lightGrey,
-          paddingVertical: 26,
+          paddingTop: 26,
+          paddingBottom: 20,
         };
       case 'middle':
         return {
@@ -184,7 +185,8 @@ const CountryListItem0 = ({
           borderLeftColor: colors.lightGrey,
           borderBottomColor: colors.lightGrey,
           borderRightColor: colors.lightGrey,
-          paddingVertical: 26,
+          paddingTop: 20,
+          paddingBottom: 26,
         };
       default:
         return {borderWidth: 1, borderColor: colors.lightGrey};
