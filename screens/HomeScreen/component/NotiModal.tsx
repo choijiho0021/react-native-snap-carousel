@@ -57,7 +57,7 @@ const NotiModal: React.FC<NotiModalProps> = ({
         marginHorizontal: 20,
         backgroundColor: colors.white,
       }}
-      // titleViewStyle={{marginTop: 0}}
+      titleViewStyle={{marginTop: 20}}
       closeButtonTitle={i18n.t(closeType || 'close')}
       type={closeType === 'redirect' ? closeType : 'close'}
       onOkClose={() => {

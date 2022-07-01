@@ -111,14 +111,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteTwo,
   },
   itemOutDivider: {
-    marginHorizontal: 16,
+    marginHorizontal: 20,
     height: 1,
     borderStyle: 'solid',
     borderLeftWidth: 1,
     borderRightWidth: 1,
-    borderColor: colors.lightGrey,
-
-    // backgroundColor:'red'
+    borderLeftColor: colors.lightGrey,
+    borderRightColor: colors.lightGrey,
   },
   sectionHeader: {
     paddingTop: 32,
@@ -247,7 +246,7 @@ const CountryListItem0 = ({
           />
         </View>
       </View>
-      {position !== 'tail' && (
+      {position !== 'tail' && position !== 'onlyOne' && (
         <View style={styles.itemOutDivider}>
           <View style={styles.itemDivider} />
         </View>
