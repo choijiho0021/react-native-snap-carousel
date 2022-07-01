@@ -1,8 +1,9 @@
+import _ from 'underscore';
 import i18n from '@/utils/i18n';
 import utils from '@/redux/api/utils';
-import _ from 'underscore';
 import api, {ApiResult, DrupalNode} from './api';
 import {Currency} from './productApi';
+import {parseJson} from '@/utils/utils';
 
 const ORDER_PAGE_ITEMS = 10;
 const KEY_INIT_ORDER = 'order.init';
@@ -50,6 +51,7 @@ export type RkbPayment = {
   amount: Currency;
   paymentGateway: string;
   paymentMethod: string;
+  remote_id?: string;
 };
 export type RkbOrder = {
   key: string;
@@ -76,7 +78,7 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
     return api.success(
       data
         .map((item) => {
-          const paymentList = JSON.parse(item.payment_list);
+          const paymentList = parseJson(item.payment_list) || [];
           const balanceCharge = paymentList.find(
             (value) => value.payment_gateway === 'rokebi_cash',
           );
@@ -95,19 +97,20 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
             shipmentState: item.shipment_state,
             memo: item.memo || '',
             state: item.state,
-            orderItems: JSON.parse(item.order_items).map((value) => ({
+            orderItems: (parseJson(item.order_items) || []).map((value) => ({
               title: value.title,
               qty: parseInt(value.quantity, 10),
               price: utils.stringToNumber(value.total_price__number),
             })),
-            usageList: JSON.parse(item.usage_list).map((value) => ({
+            usageList: (parseJson(item.usage_list) || []).map((value) => ({
               status: value.field_status,
               nid: value.nid,
             })),
-            paymentList: JSON.parse(item.payment_list).map((value) => ({
+            paymentList: paymentList.map((value) => ({
               amount: utils.stringToCurrency(value.amount__number),
               paymentGateway: value.payment_gateway,
               paymentMethod: value.payment_method, // 결제 수단
+              remote_id: value.remote_id,
             })),
             dlvCost: utils.stringToCurrency(item.dlv_cost),
             balanceCharge: utils.toCurrency(

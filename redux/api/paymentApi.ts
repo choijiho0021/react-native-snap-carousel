@@ -245,10 +245,27 @@ const getUid = ({uid, token}: {uid: string; token?: string}) => {
   );
 };
 
+const getMerchantId = ({id, token}: {id: string; token?: string}) => {
+  if (!id) return api.reject(api.E_INVALID_ARGUMENT, `missing parameter: id`);
+  if (!token)
+    return api.reject(api.E_INVALID_ARGUMENT, `missing parameter: token`);
+
+  const headers = {
+    'X-ImpTokenHeader': token,
+    'Content-Type': `application/hal+json`,
+  };
+  return api.callHttpGet(
+    `https://api.iamport.kr/payments/find/${id}`,
+    toPayCheck,
+    headers,
+  );
+};
+
 export default {
   method,
 
   getHistory,
   getImpToken,
   getUid,
+  getMerchantId,
 };
