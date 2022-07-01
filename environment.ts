@@ -34,8 +34,8 @@ const lc = RNLocalize.getLocales()[0];
 const isEng = lc.languageCode !== 'ko';
 
 const codePushLabel = {
-  stagingIOS: 'v104',
-  stagingAndroid: 'v94',
+  stagingIOS: "v107",
+  stagingAndroid: "v97",
   productionIOS: 'v47',
   productionAndroid: 'v40',
 };
