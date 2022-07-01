@@ -409,10 +409,9 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
             token: resp.response?.access_token,
           });
 
+          console.log('@@@ order', rsp);
           if (rsp.code === 0 && rsp.response?.receipt_url) {
-            navigation.navigate('Receipt', {
-              uri: rsp.response?.receipt_url,
-            });
+            navigation.navigate('Receipt', rsp.response);
           }
         }
         setLoading(false);
