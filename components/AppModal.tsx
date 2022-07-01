@@ -104,7 +104,10 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
     switch (type) {
       case 'close':
         return (
-          <View style={{height: 92, padding: !contentStyle && 20}}>
+          <View
+            style={
+              titleViewStyle || {height: 92, padding: !contentStyle && 20}
+            }>
             <AppButton
               style={{
                 height: 52,
