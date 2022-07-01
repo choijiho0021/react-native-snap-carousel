@@ -246,7 +246,7 @@ const CountryListItem0 = ({
           />
         </View>
       </View>
-      {position !== 'tail' && (
+      {position !== 'tail' && position !== 'onlyOne' && (
         <View style={styles.itemOutDivider}>
           <View style={styles.itemDivider} />
         </View>
