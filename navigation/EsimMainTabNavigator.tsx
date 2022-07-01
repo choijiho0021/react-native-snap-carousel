@@ -19,6 +19,7 @@ import SettingsScreen from '@/screens/SettingsScreen';
 import AccountSettingsScreen from '@/screens/AccountSettingsScreen';
 import ResignScreen from '@/screens/ResignScreen';
 import ChangeEmailScreen from '@/screens/ChangeEmailScreen';
+import ReceiptScreen from '@/screens/ReceiptScreen';
 import i18n from '@/utils/i18n';
 import RechargeScreen from '@/screens/RechargeScreen';
 import CartScreen from '@/screens/CartScreen';
@@ -189,6 +190,7 @@ function myPageStack() {
       />
       <MyPageStack.Screen name="Resign" component={ResignScreen} />
       <MyPageStack.Screen name="ChangeEmail" component={ChangeEmailScreen} />
+      <MyPageStack.Screen name="Receipt" component={ReceiptScreen} />
     </MyPageStack.Navigator>
   );
 }

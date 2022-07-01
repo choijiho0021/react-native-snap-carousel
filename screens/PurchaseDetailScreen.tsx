@@ -197,6 +197,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   const [method, setMethod] = useState<RkbPayment>();
   const [balanceCharge, setBalanceCharge] = useState<Currency>();
   const [order, setOrder] = useState<RkbOrder>();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({
@@ -400,19 +401,26 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
 
   const showReciept = useCallback(
     (id: string) => {
-      console.log('@@ order', order, id);
-      API.Payment.getImpToken().then((resp) => {
+      async function getReceipt() {
+        const resp = await API.Payment.getImpToken();
         if (resp.code === 0) {
-          API.Payment.getMerchantId({
+          const rsp = await API.Payment.getMerchantId({
             id,
-            token: resp.response.access_token,
-          }).then((rsp) => {
-            console.log('@@@ payment', rsp);
+            token: resp.response?.access_token,
           });
+
+          if (rsp.code === 0 && rsp.response?.receipt_url) {
+            navigation.navigate('Receipt', {
+              uri: rsp.response?.receipt_url,
+            });
+          }
         }
-      });
+        setLoading(false);
+      }
+      setLoading(true);
+      getReceipt();
     },
-    [order],
+    [navigation],
   );
 
   const headerInfo = useCallback(() => {

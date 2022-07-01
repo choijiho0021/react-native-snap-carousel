@@ -256,7 +256,7 @@ const getMerchantId = ({id, token}: {id: string; token?: string}) => {
   };
   return api.callHttpGet(
     `https://api.iamport.kr/payments/find/${id}`,
-    toPayCheck,
+    (v) => v,
     headers,
   );
 };
