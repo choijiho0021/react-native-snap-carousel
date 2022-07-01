@@ -306,7 +306,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
         closeButtonTitle={i18n.t(
           promoResult === 'promo:join:joined' ? 'redirect' : 'close',
         )}
-        buttonBackgroundColor="white"
+        buttonBackgroundColor={colors.white}
         buttonTitleColor={colors.black}
         onOkClose={() => {
           setPromoResult('');
@@ -345,7 +345,6 @@ const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
     React.useCallback(() => {
       const getPromo = async () => {
         const {nid, rule} = props.route.params;
-
         if (rule?.sku) {
           setIsProdEvent(true);
           const resp = await API.Promotion.check(nid);

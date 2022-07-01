@@ -64,6 +64,7 @@
   "startFrom": "~",
   "copyMsg": "Copied",
   "hongkong": "hongkong",
+  "centerDot": "\u00B7",
 
   "home:exitApp": "Close App",
   "home:guide": "User Guide",
@@ -445,8 +446,9 @@
   "esim:info": "사용 방법 및 유의 사항",
   "esim:usablePeriod": "Validity",
   "esim:expired": "Expired",
+
   // "esim:notice": "Voice Plan can be used in the ROKEBI Talk App.",
-  "esim:refresh": "Pull to refresh",
+  "esim:refresh": " \u00B7  Pull to refresh!\n \u00B7  If you need help, push the question mark.",
   "esim:showQR": "QR Code",
   "esim:manualInput": "QR Info",
   "esim:showQRTitle": "QR Code",
@@ -604,6 +606,7 @@
   "promo:join:open": "Paticipate the Event",
   "promo:join:joined": "Successfully Participated.",
   "promo:join:closed": "End of participation",
+  "promo:join:invalid": "Not eligible for this promotion",
 
   "promo:join:fail": "Sorry, try again.",
   "promo:join:ing": "Participating ...",
@@ -777,6 +780,5 @@
   "userGuide:tipPage11_1": "사용 완료된 상품은 꼭 삭제해주세요!\n",
   "userGuide:tipPage11_2": "새로운 상품을 등록할 때 기존에 삭제하지 않은 상품\n때문에 헷갈릴 수 있어요.",
 
-  "quadcell:usageInfo1": "\u00B7 실 사용량과 정확히 일치하지 않을 수 있습니다.",
-  "quadcell:usageInfo2": " 현지 네트워크 접속 일시부터 사용량 조회가 가능합니다."
+  "quadcell:usageInfo2": " From the time of local network access, data usage is available to check."
 }

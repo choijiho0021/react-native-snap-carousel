@@ -315,7 +315,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           backgroundColor={colors.whiteTwo}>
           {(fill) => (
             <View style={{alignItems: 'center'}}>
-              <AppText style={styles.normal12WarmGrey}>
+              <AppText style={[styles.normal12WarmGrey, {textAlign: 'center'}]}>
                 {i18n.t('usim:remainAmount')}
               </AppText>
               <AppText style={styles.bold18ClearBlue}>
@@ -389,11 +389,12 @@ const UsageItem: React.FC<UsageItemProps> = ({
                   <View style={styles.bottomOfActiveContainer}>{expire()}</View>
                 ) : (
                   <View>
-                    <AppText style={appStyles.medium14}>
-                      {i18n.t(`quadcell:usageInfo1`)}
-                    </AppText>
                     <AppText
-                      style={{...appStyles.medium14, color: colors.clearBlue}}>
+                      style={{
+                        ...appStyles.medium14,
+                        color: colors.clearBlue,
+                        marginTop: 15,
+                      }}>
                       <AppText style={appStyles.medium14}>
                         {i18n.t(`centerDot`)}
                       </AppText>

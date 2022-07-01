@@ -106,12 +106,12 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   itemDivider: {
-    marginHorizontal: 40,
+    marginHorizontal: 20,
     height: 1,
     backgroundColor: colors.whiteTwo,
   },
   itemOutDivider: {
-    marginHorizontal: 20,
+    marginHorizontal: 16,
     height: 1,
     borderStyle: 'solid',
     borderLeftWidth: 1,
@@ -166,7 +166,8 @@ const CountryListItem0 = ({
           borderLeftColor: colors.lightGrey,
           borderTopColor: colors.lightGrey,
           borderRightColor: colors.lightGrey,
-          paddingVertical: 26,
+          paddingTop: 26,
+          paddingBottom: 20,
         };
       case 'middle':
         return {
@@ -184,7 +185,8 @@ const CountryListItem0 = ({
           borderLeftColor: colors.lightGrey,
           borderBottomColor: colors.lightGrey,
           borderRightColor: colors.lightGrey,
-          paddingVertical: 26,
+          paddingTop: 20,
+          paddingBottom: 26,
         };
       default:
         return {borderWidth: 1, borderColor: colors.lightGrey};
@@ -245,9 +247,11 @@ const CountryListItem0 = ({
           />
         </View>
       </View>
-      <View style={styles.itemOutDivider}>
-        <View style={styles.itemDivider} />
-      </View>
+      {position !== 'tail' && (
+        <View style={styles.itemOutDivider}>
+          <View style={styles.itemDivider} />
+        </View>
+      )}
     </Pressable>
   );
 };

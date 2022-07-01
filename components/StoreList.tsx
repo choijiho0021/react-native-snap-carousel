@@ -165,7 +165,7 @@ const CountryItem0 = ({
           );
         }
 
-        return <View key="unknown" style={{flex: 1}} />;
+        return <View key="unknown" style={{flex: 1, marginLeft: 14}} />;
       })}
     </View>
   );
