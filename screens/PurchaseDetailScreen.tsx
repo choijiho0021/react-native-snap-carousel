@@ -466,7 +466,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           value={pg}
           valueStyle={styles.labelValue}
         />
-        {uid && (
+        {/* {uid && (
           <View style={{alignItems: 'flex-end', marginHorizontal: 20}}>
             <AppButton
               title={i18n.t('pym:reciept')}
@@ -474,11 +474,11 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
               onPress={() => showReciept(uid)}
             />
           </View>
-        )}
+        )} */}
         <View style={styles.divider} />
       </View>
     );
-  }, [isCanceled, method?.paymentMethod, order, showReciept]);
+  }, [isCanceled, method?.paymentMethod, order]);
 
   if (!order || !order.orderItems) return <View />;
 
