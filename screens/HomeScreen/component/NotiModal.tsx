@@ -47,7 +47,7 @@ const NotiModal: React.FC<NotiModalProps> = ({
       );
   }, [checked]);
 
-  return (
+  return visible ? (
     <AppModal
       // titleStyle={styles.infoModalTitle}
       // title={popUp?.title}
@@ -96,7 +96,7 @@ const NotiModal: React.FC<NotiModalProps> = ({
         </Pressable>
       </View>
     </AppModal>
-  );
+  ) : null;
 };
 
 export default memo(NotiModal);

@@ -200,7 +200,7 @@ const Esim: React.FC<EsimProps> = ({
   const [popUpVisible, setPopUpVisible] = useState(false);
   const [popupDisabled, setPopupDisabled] = useState(true);
   const [appUpdate, setAppUpdate] = useState('');
-  const [appUpdateVisible, setAppUpdateVisible] = useState(false);
+  const [appUpdateVisible, setAppUpdateVisible] = useState<boolean>();
   const [popUp, setPopUp] = useState<RkbPromotion>();
   const [closeType, setCloseType] = useState<'close' | 'exit' | 'redirect'>();
   const [deviceList, setDeviceList] = useState<string[]>([]);
@@ -554,12 +554,14 @@ const Esim: React.FC<EsimProps> = ({
 
   useEffect(() => {
     const ver = VersionCheck.getCurrentVersion();
-    API.AppVersion.getAppVersion(ver).then((rsp) => {
-      if (rsp.result === 0 && rsp.objects.length > 0) {
-        setAppUpdate(rsp.objects[0].updateOption);
-        setAppUpdateVisible(true);
-      }
-    });
+    API.AppVersion.getAppVersion(ver)
+      .then((rsp) => {
+        if (rsp.result === 0 && rsp.objects.length > 0) {
+          setAppUpdate(rsp.objects[0].updateOption);
+          setAppUpdateVisible(true);
+        } else setAppUpdateVisible(false);
+      })
+      .catch((err) => setAppUpdateVisible(false));
   }, []);
 
   return (
@@ -598,30 +600,34 @@ const Esim: React.FC<EsimProps> = ({
         renderTabBar={() => null}
       />
 
-      {isDevModalVisible && !isSupportDev ? (
-        <AppModal
-          title={i18n.t('home:unsupportedTitle')}
-          closeButtonTitle={i18n.t('ok')}
-          titleStyle={styles.modalTitle}
-          type="close"
-          onOkClose={() => exitApp('exit')}
-          visible={isDevModalVisible}>
-          {modalBody()}
-        </AppModal>
-      ) : (
-        <NotiModal
-          visible={!appUpdateVisible && popUpVisible && !popupDisabled}
-          popUp={popUp}
-          closeType={closeType}
-          onOkClose={() => exitApp(closeType)}
-          onCancelClose={() => setPopUpVisible(false)}
-        />
-      )}
-      <AppVerModal
-        visible={isDevModalVisible === false && appUpdateVisible}
-        option={appUpdate}
-        onOkClose={() => setAppUpdateVisible(false)}
-      />
+      {
+        // eslint-disable-next-line no-nested-ternary
+        isDevModalVisible && !isSupportDev ? (
+          <AppModal
+            title={i18n.t('home:unsupportedTitle')}
+            closeButtonTitle={i18n.t('ok')}
+            titleStyle={styles.modalTitle}
+            type="close"
+            onOkClose={() => exitApp('exit')}
+            visible={isDevModalVisible}>
+            {modalBody()}
+          </AppModal>
+        ) : appUpdateVisible === false ? (
+          <NotiModal
+            visible={popUpVisible && !popupDisabled}
+            popUp={popUp}
+            closeType={closeType}
+            onOkClose={() => exitApp(closeType)}
+            onCancelClose={() => setPopUpVisible(false)}
+          />
+        ) : (
+          <AppVerModal
+            visible={appUpdateVisible || false}
+            option={appUpdate}
+            onOkClose={() => setAppUpdateVisible(false)}
+          />
+        )
+      }
     </View>
   );
 };
