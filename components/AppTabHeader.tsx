@@ -1,5 +1,5 @@
 import React, {memo} from 'react';
-import {StyleSheet, View, ViewStyle} from 'react-native';
+import {StyleSheet, View, ViewStyle, TextStyle} from 'react-native';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppButton from './AppButton';
@@ -31,11 +31,15 @@ const TabHeader = ({
   routes,
   onIndexChange,
   style,
+  titleStyle = styles.normal16WarmGrey,
+  tintColor = colors.clearBlue,
 }: {
   index: number;
   routes: {key: string; title: string}[];
   onIndexChange: (n: number) => void;
   style?: ViewStyle;
+  titleStyle?: TextStyle;
+  tintColor?: string;
 }) => {
   return (
     <View style={[style || styles.whiteTwoBackground, {paddingHorizontal: 20}]}>
@@ -44,10 +48,7 @@ const TabHeader = ({
           <View key={elm.key} style={{flex: 1}}>
             <AppButton
               style={{flex: 1}}
-              titleStyle={[
-                styles.normal16WarmGrey,
-                idx === index ? styles.boldClearBlue : {},
-              ]}
+              titleStyle={[titleStyle, idx === index ? {color: tintColor} : {}]}
               title={elm.title}
               onPress={() => onIndexChange(idx)}
             />
@@ -55,7 +56,7 @@ const TabHeader = ({
               <View
                 style={{
                   height: 2,
-                  backgroundColor: colors.clearBlue,
+                  backgroundColor: tintColor,
                 }}
               />
             ) : null}
