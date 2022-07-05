@@ -147,15 +147,15 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
         .map((elm) => elm.split('/'))
         .map((elm2) => ({
           country: elm2[0],
-          operator: elm2[1],
+          operator: elm2[1].replace('&amp;', '&'),
           apn: elm2[2] ? elm2[2].split('&amp;') : [],
         }));
 
-      const testProductReg = new RegExp(searchWord!, 'gi');
-
       setData(
         searchWord
-          ? dataFormat.filter((elm) => testProductReg.test(elm.country))
+          ? dataFormat.filter((elm) =>
+              new RegExp(searchWord, 'gi').test(elm.country),
+            )
           : dataFormat,
       );
     }
