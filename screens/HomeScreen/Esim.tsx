@@ -69,6 +69,7 @@ import AppTabHeader from '@/components/AppTabHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppVerModal from './component/AppVerModal';
 import {isDeviceSize} from '../../constants/SliderEntry.style';
+import {TextStyle} from 'react-native';
 
 const {esimGlobal} = Env.get();
 
@@ -585,6 +586,8 @@ const Esim: React.FC<EsimProps> = ({
         index={index}
         routes={routes}
         onIndexChange={onIndexChange}
+        style={{backgroundColor: colors.white, height: 60}}
+        tintColor={colors.black}
       />
 
       <TabView
