@@ -16,6 +16,7 @@ import AppButton from '@/components/AppButton';
 import UsageItem from '@/screens/EsimScreen/components/UsageItem';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import AppSnackBar from '@/components/AppSnackBar';
+import {isDeviceSize} from '../../../constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   center: {
@@ -259,6 +260,7 @@ const EsimModal: React.FC<EsimModalProps> = ({
         visible={showSnackBar}
         onClose={() => setShowSnackbar(false)}
         textMessage={i18n.t('esim:copyMsg')}
+        bottom={88}
       />
     </AppModal>
   );
