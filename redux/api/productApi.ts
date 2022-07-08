@@ -30,11 +30,12 @@ const storeId: Record<Store, number> = {
   global: 3,
 };
 
-type PromoFlag = 'hot' | 'sale' | 'sizeup';
+type PromoFlag = 'hot' | 'sale' | 'sizeup' | 'doubleSizeup';
 const promoFlag: Record<string, PromoFlag> = {
   53: 'hot', // 운용자 추천
   57: 'sale', // 할인
   181: 'sizeup', // 사이즈업
+  182: 'doubleSizeup', // 더블 사이즈업
 };
 
 const callStatus = {

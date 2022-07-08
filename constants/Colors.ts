@@ -41,4 +41,8 @@ export const colors = {
   babyBlue: '#B7D8FF',
   paleGreyTwo: '#F5F6F7',
   iceBlue: '#ECF5FF',
+  veryLightPink: '#FFE3DD', // rgb 255 227 221
+  shamrock: '#00AD50', // rgb 0 173 80
+  lightSage: '#D6F3E3', // rgb 214 243 227
+  veryLightBlue: '#DAEEFF', // rgb 218 238 255
 };

@@ -155,6 +155,30 @@ const CountryListItem0 = ({
     [item.days, item.field_daily, item.volume],
   );
 
+  const getBadgeColor = useCallback((key) => {
+    if (key === 'hot')
+      return {
+        backgroundColor: colors.veryLightPink,
+        fontColor: colors.tomato,
+      };
+
+    if (key === 'sizeup')
+      return {
+        backgroundColor: colors.veryLightBlue,
+        fontColor: colors.clearBlue,
+      };
+    if (key === 'doubleSizeup')
+      return {
+        backgroundColor: colors.lightSage,
+        fontColor: colors.shamrock,
+      };
+
+    return {
+      backgroundColor: colors.veryLightPink,
+      fontColor: colors.tomato,
+    };
+  }, []);
+
   const myStyle = useMemo(() => {
     switch (position) {
       case 'head':
@@ -207,23 +231,26 @@ const CountryListItem0 = ({
               ]}>
               {title}
             </AppText>
-
             {!_.isEmpty(item.promoFlag) &&
-              item.promoFlag.map((elm) => (
-                <View
-                  key={elm}
-                  style={[
-                    styles.badge,
-                    {
-                      backgroundColor:
-                        elm === 'hot' ? colors.tomato : colors.clearBlue,
-                    },
-                  ]}>
-                  <AppText key="name" style={styles.badgeText}>
-                    {i18n.t(elm)}
-                  </AppText>
-                </View>
-              ))}
+              item.promoFlag.map((elm) => {
+                const badgeColor = getBadgeColor(elm);
+                return (
+                  <View
+                    key={elm}
+                    style={[
+                      styles.badge,
+                      {
+                        backgroundColor: badgeColor.backgroundColor,
+                      },
+                    ]}>
+                    <AppText
+                      key="name"
+                      style={[styles.badgeText, {color: badgeColor.fontColor}]}>
+                      {i18n.t(elm)}
+                    </AppText>
+                  </View>
+                );
+              })}
           </View>
 
           <AppText
