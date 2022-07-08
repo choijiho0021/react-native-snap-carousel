@@ -2,6 +2,7 @@ import {actions as notiActions} from '@/redux/modules/noti';
 import HandleRegisterPushNoti from './handleRegisterPushNoti';
 import HandleAccountPushNoti from './handleAccountPushNoti';
 import HandleNormalPushNoti from './handleNormalPushNoti';
+import HandleProvisionPushNoti from './handleProvisionPushNoti';
 
 export default function createHandlePushNoti(
   navigation,
@@ -15,6 +16,10 @@ export default function createHandlePushNoti(
   if (type === notiActions.NOTI_TYPE_ACCOUNT) {
     return new HandleAccountPushNoti(navigation, payload, options);
   }
+  if (type === notiActions.NOTI_TYPE_PROVISION) {
+    return new HandleProvisionPushNoti(navigation, payload, options);
+  }
+
   // else if (type == notiActions.NOTI_TYPE_REPLY) {
   //   return new HandleReplyPushNoti(navigation, payload, options);
   // } else if (type == notiActions.NOTI_TYPE_PYM) {
