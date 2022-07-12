@@ -19,7 +19,7 @@ import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {HomeStackParamList} from '@/navigation/navigation';
+import {HomeStackParamList, navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {
   AccountAction,
@@ -38,6 +38,7 @@ import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
 import {sliderWidth} from '@/constants/SliderEntry.style';
 import AppSnackBar from '@/components/AppSnackBar';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const {width} = Dimensions.get('window');
 
@@ -123,6 +124,11 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: width - 40,
   },
+  btnCnter: {
+    width: 40,
+    height: 40,
+    marginHorizontal: 18,
+  },
 });
 
 type RedirectHKScreenNavigationProp = StackNavigationProp<
@@ -163,9 +169,22 @@ class RedirectHKScreen extends Component<
   }
 
   componentDidMount = async () => {
+    const {navigation, route} = this.props;
     this.props.navigation.setOptions({
       title: null,
       headerLeft: () => <AppBackButton title={i18n.t('redirectHK')} />,
+      headerRight: () => (
+        <AppSvgIcon
+          name="btnCnter"
+          style={styles.btnCnter}
+          onPress={() =>
+            navigate(navigation, route, 'EsimStack', {
+              tab: 'HomeStack',
+              screen: 'Contact',
+            })
+          }
+        />
+      ),
     });
   };
 
