@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderStyle: 'solid',
     borderWidth: 1,
-    borderColor: colors.whiteTwo,
+    borderColor: colors.lightGrey,
   },
   apnTitle: {
     ...appStyles.normal16Text,
@@ -106,6 +106,12 @@ const styles = StyleSheet.create({
   nolist: {
     marginVertical: 60,
     textAlign: 'center',
+  },
+  searchDivider: {
+    backgroundColor: colors.lightGrey,
+    width: 2,
+    height: '40%',
+    marginHorizontal: 20,
   },
 });
 
@@ -258,13 +264,20 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
       <View style={styles.showSearchBar}>
         <AppTextInput
           style={styles.textInput}
+          clearButtonMode="while-editing"
           placeholder={i18n.t('prodDetailOp:search')}
           onChangeText={(val: string) => {
             setSearchWord(val);
           }}
           value={searchWord}
         />
-        <AppIcon name="btnSearchOn" style={{marginRight: 15}} />
+        {searchWord !== '' && <View style={styles.searchDivider} />}
+        <AppIcon
+          name="btnSearchOn"
+          style={{
+            marginRight: 15,
+          }}
+        />
       </View>
 
       <View style={styles.divider} />
