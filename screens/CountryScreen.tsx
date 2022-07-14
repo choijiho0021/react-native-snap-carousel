@@ -15,7 +15,6 @@ import {connect} from 'react-redux';
 import _ from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
-import AppPrice from '@/components/AppPrice';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {device, windowWidth} from '@/constants/SliderEntry.style';
@@ -29,6 +28,7 @@ import {actions as cartActions} from '@/redux/modules/cart';
 import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import {isDeviceSize} from '../constants/SliderEntry.style';
+import utils from '@/redux/api/utils';
 
 const {esimGlobal} = Env.get();
 
@@ -62,29 +62,23 @@ const styles = StyleSheet.create({
   priceStyle: {
     height: 24,
     // fontFamily: "Roboto",
-    fontSize: isDeviceSize('medium') ? 20 : 22,
+    fontSize: isDeviceSize('medium') ? 24 : 26,
     fontWeight: 'bold',
     fontStyle: 'normal',
-    lineHeight: 22,
-    letterSpacing: 0.19,
+    // lineHeight: 22,
+    // letterSpacing: 0.19,
     textAlign: 'right',
     color: colors.black,
   },
   wonStyle: {
-    height: 24,
+    // height: 24,
     // fontFamily: "Roboto",
-    fontSize: isDeviceSize('medium') ? 14 : 16,
+    fontSize: isDeviceSize('medium') ? 24 : 26,
     fontWeight: 'bold',
     fontStyle: 'normal',
-    lineHeight: 22,
-    letterSpacing: 0.19,
+    // lineHeight: 22,
+    // letterSpacing: 0.19,
     color: colors.black,
-  },
-  appPrice: {
-    alignItems: 'flex-end',
-    marginLeft: 10,
-    width: esimGlobal ? 60 : 80,
-    justifyContent: 'center',
   },
   textView: {
     flex: 1,
@@ -92,18 +86,13 @@ const styles = StyleSheet.create({
   },
   badge: {
     paddingHorizontal: 8,
-    height: 22,
     borderRadius: 2,
     alignItems: 'center',
-    paddingTop: 2,
+    justifyContent: 'center',
     marginLeft: 8,
   },
   badgeText: {
-    color: colors.white,
-    fontSize: 13,
-    fontWeight: 'bold',
-    fontStyle: 'normal',
-    lineHeight: 16,
+    ...appStyles.bold13Text,
   },
   itemDivider: {
     marginHorizontal: 20,
@@ -124,6 +113,11 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     marginHorizontal: 20,
     backgroundColor: colors.white,
+  },
+  titleAndPrice: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });
 const toVolumeStr = (volume: number) => {
@@ -220,57 +214,64 @@ const CountryListItem0 = ({
     <Pressable onPress={onPress}>
       <View key="product" style={[styles.card, myStyle]}>
         <View key="text" style={styles.textView}>
-          <View style={{flexDirection: 'row'}}>
+          <View style={styles.titleAndPrice}>
+            <View style={{flexDirection: 'row'}}>
+              <AppText
+                key="name"
+                style={[
+                  isDeviceSize('medium')
+                    ? appStyles.bold18Text
+                    : appStyles.bold20Text,
+                  color,
+                ]}>
+                {title}
+              </AppText>
+              {!_.isEmpty(item.promoFlag) &&
+                item.promoFlag.map((elm) => {
+                  const badgeColor = getBadgeColor(elm);
+                  return (
+                    <View
+                      key={elm}
+                      style={[
+                        styles.badge,
+                        {
+                          backgroundColor: badgeColor.backgroundColor,
+                        },
+                      ]}>
+                      <AppText
+                        key="name"
+                        style={[
+                          styles.badgeText,
+                          {color: badgeColor.fontColor},
+                        ]}>
+                        {i18n.t(elm)}
+                      </AppText>
+                    </View>
+                  );
+                })}
+            </View>
             <AppText
-              key="name"
+              key="price"
               style={[
-                isDeviceSize('medium')
-                  ? appStyles.bold14Text
-                  : appStyles.bold16Text,
-                color,
+                appStyles.bold24Text,
+                {
+                  fontSize: isDeviceSize('medium') ? 22 : 24,
+                },
               ]}>
-              {title}
+              {`${utils.currencyString(item.price.value)}${i18n.t(
+                item.price.currency,
+              )}`}
             </AppText>
-            {!_.isEmpty(item.promoFlag) &&
-              item.promoFlag.map((elm) => {
-                const badgeColor = getBadgeColor(elm);
-                return (
-                  <View
-                    key={elm}
-                    style={[
-                      styles.badge,
-                      {
-                        backgroundColor: badgeColor.backgroundColor,
-                      },
-                    ]}>
-                    <AppText
-                      key="name"
-                      style={[styles.badgeText, {color: badgeColor.fontColor}]}>
-                      {i18n.t(elm)}
-                    </AppText>
-                  </View>
-                );
-              })}
           </View>
 
           <AppText
             key="desc"
             style={[
-              isDeviceSize('medium')
-                ? appStyles.normal12Text
-                : appStyles.normal14Text,
-              {marginTop: 5},
+              appStyles.normal13,
+              {marginTop: 5, fontSize: isDeviceSize('medium') ? 13 : 15},
             ]}>
             {item.field_description}
           </AppText>
-        </View>
-        <View key="priceText" style={styles.appPrice}>
-          <AppPrice
-            key="price"
-            price={item.price}
-            balanceStyle={styles.priceStyle}
-            currencyStyle={styles.wonStyle}
-          />
         </View>
       </View>
       {position !== 'tail' && position !== 'onlyOne' && (
