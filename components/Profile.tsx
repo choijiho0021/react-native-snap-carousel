@@ -8,6 +8,7 @@ import {appStyles} from '@/constants/Styles';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import AppText from './AppText';
+import {isDeviceSize} from '../constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   container: {
@@ -29,6 +30,7 @@ const styles = StyleSheet.create({
   },
   value: {
     ...appStyles.roboto16Text,
+    fontSize: isDeviceSize('medium') ? 17 : 19,
     marginLeft: 20,
     maxWidth: '100%',
     lineHeight: 40,
@@ -83,7 +85,7 @@ const Profile: React.FC<ProfileProps> = ({
       </View>
       <View style={{flex: 3, justifyContent: 'center'}}>
         <AppText style={styles.label}>
-          {utils.toPhoneNumber(mobile || accountMobile)}
+          {utils.toPhoneNumber(mobile || accountMobile).slice(0, -4)}****
         </AppText>
         <Pressable onPress={() => onPress('email')}>
           <AppText style={styles.value} numberOfLines={1} ellipsizeMode="tail">
