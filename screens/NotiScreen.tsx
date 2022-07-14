@@ -42,6 +42,8 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import Env from '@/environment';
+import moment from 'moment';
+import {SafeAreaView} from 'react-native';
 
 const {esimGlobal} = Env.get();
 
@@ -51,7 +53,8 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
   },
   notibox: {
-    height: esimGlobal ? 120 : 100,
+    // height: esimGlobal ? 120 : 100,
+
     marginTop: 3,
     paddingHorizontal: 20,
     paddingVertical: 10,
@@ -73,7 +76,7 @@ const styles = StyleSheet.create({
   },
   notiText: {
     width: '90%',
-    height: 98,
+    // height: 98,
   },
   body: {
     ...appStyles.normal14Text,
@@ -109,7 +112,9 @@ const NotiListItem0 = ({
   onPress: (n: RkbNoti) => void;
 }) => {
   return (
-    <TouchableOpacity onPress={() => onPress(item)}>
+    <TouchableOpacity
+      onPress={() => onPress(item)}
+      style={{backgroundColor: colors.white}}>
       <View
         key={item.uuid}
         style={[
@@ -120,15 +125,24 @@ const NotiListItem0 = ({
           },
         ]}>
         <View key="notitext" style={styles.notiText}>
+          <AppText
+            key="titleText"
+            style={[appStyles.bold13Text, {color: colors.warmGrey}]}>
+            {moment(item.created).format('M월 DD일')}
+          </AppText>
           <View style={styles.title}>
-            <AppText key="titleText" style={styles.titleText}>
+            <AppText
+              key="titleText"
+              style={styles.titleText}
+              numberOfLines={2}
+              ellipsizeMode="tail">
               {item.title}
             </AppText>
           </View>
           <AppText
             key="body"
             style={styles.body}
-            numberOfLines={3}
+            numberOfLines={2}
             ellipsizeMode="tail">
             {utils.htmlToString(item.summary || item.body)}
           </AppText>
@@ -297,7 +311,7 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
     const data = mode === 'info' ? infoMap.get('info') : notiList;
 
     return (
-      <View key="container" style={styles.container}>
+      <SafeAreaView key="container" style={styles.container}>
         <FlatList
           data={data}
           renderItem={this.renderItem}
@@ -313,7 +327,7 @@ class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
             />
           }
         />
-      </View>
+      </SafeAreaView>
     );
   }
 }
