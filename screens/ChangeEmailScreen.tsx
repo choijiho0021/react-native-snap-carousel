@@ -101,6 +101,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: 5,
   },
+  infoText: {
+    marginTop: 15,
+    color: colors.clearBlue,
+  },
 });
 
 type ChangeEmailScreenNavigationProp = StackNavigationProp<
@@ -192,6 +196,10 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
 
             <AppText style={[styles.helpText, {color: colors.errorBackground}]}>
               {inValid && inValid.email?.length > 0 ? inValid.email[0] : null}
+            </AppText>
+
+            <AppText style={styles.infoText}>
+              {i18n.t('mypage:mailInfo')}
             </AppText>
             {/* <View key="divider" style={styles.divider} /> */}
           </View>
