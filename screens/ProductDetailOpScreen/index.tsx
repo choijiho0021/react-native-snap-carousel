@@ -136,6 +136,7 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
   navigation,
   route,
 }) => {
+  const [copyBtnKey, setCopyBtnKey] = useState('');
   const [data, setData] = useState<detailOp[]>([]);
   const [searchWord, setSearchWord] = useState<string>('');
   const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
@@ -168,9 +169,10 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
   }, [navigation, route.params.apn, route.params?.title, searchWord]);
 
   const copyToClipboard = useCallback(
-    (value?: string) => () => {
+    (value?: string, key?: string) => () => {
       if (value) {
         Clipboard.setString(value);
+        setCopyBtnKey(value + key);
         setShowSnackBar(true);
         setTimeout(() => {
           setShowSnackBar(false);
@@ -224,27 +226,44 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
           </View>
 
           {isToggled &&
-            item.apn?.map((elm, idx) => (
-              <View style={styles.apn} key={elm}>
-                <View>
-                  <AppText style={styles.apnTitle}>{i18n.t('apn')}</AppText>
-                  <View style={styles.apnValue}>
-                    <AppText style={appStyles.bold16Text}>{elm}</AppText>
+            item.apn?.map((elm, idx) => {
+              const seleced = copyBtnKey === elm + item.country + item.operator;
+
+              return (
+                <View style={styles.apn} key={elm}>
+                  <View>
+                    <AppText style={styles.apnTitle}>{i18n.t('apn')}</AppText>
+                    <View style={styles.apnValue}>
+                      <AppText style={appStyles.bold16Text}>{elm}</AppText>
+                    </View>
                   </View>
+                  <AppButton
+                    key={elm + item.country + item.operator}
+                    title={i18n.t('copy')}
+                    titleStyle={[
+                      appStyles.normal14Text,
+                      {
+                        color: seleced ? colors.clearBlue : colors.black,
+                      },
+                    ]}
+                    style={[
+                      styles.btnCopy,
+                      {
+                        borderColor: seleced
+                          ? colors.clearBlue
+                          : colors.lightGrey,
+                      },
+                    ]}
+                    onPress={copyToClipboard(elm, item.country + item.operator)}
+                    type="secondary"
+                  />
                 </View>
-                <AppButton
-                  title={i18n.t('copy')}
-                  titleStyle={[appStyles.normal14Text]}
-                  style={styles.btnCopy}
-                  onPress={copyToClipboard(elm)}
-                  type="secondary"
-                />
-              </View>
-            ))}
+              );
+            })}
         </Pressable>
       );
     },
-    [copyToClipboard, toggleIndex, toggledList],
+    [copyBtnKey, copyToClipboard, toggleIndex, toggledList],
   );
 
   const empty = useCallback(
