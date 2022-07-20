@@ -154,6 +154,7 @@ type CarouselIndex = 'step1' | 'step2' | 'step3' | 'step4';
 type RedirectHKScreenState = {
   activeSlide: number;
   showSnackBar: boolean;
+  copyString: string;
 };
 
 class RedirectHKScreen extends Component<
@@ -191,7 +192,7 @@ class RedirectHKScreen extends Component<
   copyToClipboard = (value?: string) => () => {
     if (value) {
       Clipboard.setString(value);
-      this.setState({showSnackBar: true});
+      this.setState({showSnackBar: true, copyString: value});
     }
   };
 
@@ -207,6 +208,7 @@ class RedirectHKScreen extends Component<
 
   render() {
     const {params} = this.props.route;
+    const {copyString} = this.state;
     const images = Object.keys(guideImage);
     return (
       <SafeAreaView style={{flex: 1}}>
@@ -277,8 +279,24 @@ class RedirectHKScreen extends Component<
                 </View>
                 <AppButton
                   title={i18n.t('copy')}
-                  titleStyle={appStyles.normal14Text}
-                  style={styles.btnCopy}
+                  titleStyle={[
+                    appStyles.normal14Text,
+                    {
+                      color:
+                        copyString === params[elm]
+                          ? colors.clearBlue
+                          : colors.black,
+                    },
+                  ]}
+                  style={[
+                    styles.btnCopy,
+                    {
+                      borderColor:
+                        copyString === params[elm]
+                          ? colors.clearBlue
+                          : colors.lightGrey,
+                    },
+                  ]}
                   onPress={this.copyToClipboard(params[elm])}
                 />
               </View>
@@ -300,6 +318,7 @@ class RedirectHKScreen extends Component<
           visible={this.state.showSnackBar}
           onClose={() => this.setState({showSnackBar: false})}
           textMessage={i18n.t('redirectHK:copySuccess')}
+          bottom={90}
         />
       </SafeAreaView>
     );
