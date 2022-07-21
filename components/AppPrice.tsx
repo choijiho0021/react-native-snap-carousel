@@ -1,10 +1,10 @@
+import React, {memo} from 'react';
+import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from 'react-native';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {Currency} from '@/redux/api/productApi';
 import utils from '@/redux/api/utils';
 import i18n from '@/utils/i18n';
-import React, {memo} from 'react';
-import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from 'react-native';
 import AppText from './AppText';
 
 const {esimGlobal} = Env.get();

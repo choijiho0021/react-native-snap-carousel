@@ -37,11 +37,7 @@ import Env from '@/environment';
 import {navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
-import {
-  ProductByCategory,
-  RkbProduct,
-  TabViewRoute,
-} from '@/redux/api/productApi';
+import {TabViewRoute} from '@/redux/api/productApi';
 import {RkbPromotion} from '@/redux/api/promotionApi';
 import createHandlePushNoti from '@/redux/models/createHandlePushNoti';
 import {
@@ -56,6 +52,7 @@ import {
   actions as productActions,
   ProductAction,
   ProductModelState,
+  RkbPriceInfo,
 } from '@/redux/modules/product';
 import {SyncModelState} from '@/redux/modules/sync';
 import i18n from '@/utils/i18n';
@@ -183,19 +180,29 @@ const Esim: React.FC<EsimProps> = ({
   const routes = useMemo(
     () =>
       [
-        {key: 'asia', title: i18n.t('store:asia'), category: '아시아'},
-        {key: 'europe', title: i18n.t('store:europe'), category: '유럽'},
-        {key: 'usaAu', title: i18n.t('store:usa/au'), category: '미주/호주'},
-        {key: 'multi', title: i18n.t('store:multi'), category: '복수 국가'},
+        {
+          key: API.Product.category.asia,
+          title: i18n.t('store:asia'),
+          category: '아시아',
+        },
+        {
+          key: API.Product.category.europe,
+          title: i18n.t('store:europe'),
+          category: '유럽',
+        },
+        {
+          key: API.Product.category.usaAu,
+          title: i18n.t('store:usa/au'),
+          category: '미주/호주',
+        },
+        {
+          key: API.Product.category.multi,
+          title: i18n.t('store:multi'),
+          category: '복수 국가',
+        },
       ] as TabViewRoute[],
     [],
   );
-  const [scene, setScene] = useState({
-    asia: [] as ProductByCategory[],
-    europe: [] as ProductByCategory[],
-    usaAu: [] as ProductByCategory[],
-    multi: [] as ProductByCategory[],
-  });
   const [firstLaunch, setFirstLaunch] = useState<boolean | undefined>();
   const [popUpVisible, setPopUpVisible] = useState(false);
   const [popupDisabled, setPopupDisabled] = useState(true);
@@ -250,9 +257,9 @@ const Esim: React.FC<EsimProps> = ({
   }, []);
 
   const onPressItem = useCallback(
-    (prodOfCountry: RkbProduct[]) => {
-      action.product.setProdOfCountry(prodOfCountry);
-      navigation.navigate('Country');
+    (info: RkbPriceInfo) => {
+      action.product.getProdOfPartner(info.partner);
+      navigation.navigate('Country', {partner: info.partner});
     },
     [action.product, navigation],
   );
@@ -304,23 +311,20 @@ const Esim: React.FC<EsimProps> = ({
 
   const ref = useRef<View>();
   const renderScene = useCallback(
-    ({route}: {route: TabViewRoute}) => {
-      const data = scene[route.key];
-      return (
-        <StoreList
-          data={data}
-          onPress={onPressItem}
-          localOpList={product.localOpList}
-          onScroll={Animated.event(
-            [{nativeEvent: {contentOffset: {y: scrollY}}}],
-            {
-              useNativeDriver: false,
-            },
-          )}
-        />
-      );
-    },
-    [onPressItem, product.localOpList, scene, scrollY],
+    ({route}: {route: TabViewRoute}) => (
+      <StoreList
+        data={product.priceInfo.get(route.key) || []}
+        onPress={onPressItem}
+        localOpList={product.localOpList}
+        onScroll={Animated.event(
+          [{nativeEvent: {contentOffset: {y: scrollY}}}],
+          {
+            useNativeDriver: false,
+          },
+        )}
+      />
+    ),
+    [onPressItem, product.localOpList, product.priceInfo, scrollY],
   );
 
   const modalBody = useCallback(
@@ -388,24 +392,6 @@ const Esim: React.FC<EsimProps> = ({
       ),
     });
   }, [navigation, route]);
-
-  const refresh = useCallback(() => {
-    const {asia, europe, usaAu, multi} = API.Product.category;
-    const {prodList, localOpList} = product;
-
-    const list = API.Product.getProdGroup({prodList, localOpList});
-
-    const sorted = API.Product.sortProdGroup(localOpList, list);
-
-    action.product.setSortedProdList(sorted);
-
-    setScene({
-      asia: API.Product.filterByCategory(sorted, asia),
-      europe: API.Product.filterByCategory(sorted, europe),
-      usaAu: API.Product.filterByCategory(sorted, usaAu),
-      multi: API.Product.filterByCategory(sorted, multi),
-    });
-  }, [action.product, product]);
 
   const notification = useCallback(
     (type: string, payload, isForeground = true) => {
@@ -517,11 +503,24 @@ const Esim: React.FC<EsimProps> = ({
       initialized.current = true;
       pushNoti.add(notification);
 
-      refresh();
-
       requestPermission();
     }
-  }, [isSupportDev, notification, refresh]);
+  }, [isSupportDev, notification]);
+
+  useEffect(() => {
+    if (
+      product.localOpList.size > 0 &&
+      product.prodByCountry.length > 0 &&
+      product.priceInfo.size === 0
+    ) {
+      action.product.updatePriceInfo({});
+    }
+  }, [
+    action.product,
+    product.localOpList.size,
+    product.priceInfo.size,
+    product.prodByCountry.length,
+  ]);
 
   useInterval(() => {
     // update product for every 1 hour

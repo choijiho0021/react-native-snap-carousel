@@ -40,6 +40,7 @@ const path = {
   prodByCntry: 'json/product/ccode',
   prodList: 'json/product/list',
   prodSku: 'json/product/sku',
+  prodByLocalOp: 'json/product/localop',
   localOp: 'json/localop/list',
   token: 'rest/session/token',
   userRegister: 'user/register',
@@ -102,6 +103,7 @@ const path = {
       ota: 'rokebi/svc/ota',
       reg: 'rokebi/reg',
       user: 'rokebi/user',
+      prodByCountry: 'rokebi/prod/bycntry',
     },
     pv: {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/usage',
@@ -241,7 +243,7 @@ type CallHttpOption = {isJson?: boolean; abortController?: AbortController};
 const callHttp = async <T>(
   url: string,
   param: object,
-  callback?: CallHttpCallback<T>,
+  callback?: CallHttpCallback<T> = (a) => a,
   option: CallHttpOption = {isJson: true},
 ): Promise<ApiResult<T>> => {
   const config: RequestInit = {

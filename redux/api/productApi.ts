@@ -2,7 +2,6 @@
 import _ from 'underscore';
 import {Set, Map as ImmutableMap} from 'immutable';
 import utils from '@/redux/api/utils';
-import {Store} from '@/redux/modules/cart';
 import {createFromProduct} from '@/redux/models/purchaseItem';
 import api, {ApiResult} from './api';
 import {Country} from '.';
@@ -25,24 +24,12 @@ const category = {
   multi: '67',
 };
 
-const storeId: Record<Store, number> = {
-  kr: 2,
-  global: 3,
-};
-
 type PromoFlag = 'hot' | 'sale' | 'sizeup';
 const promoFlag: Record<string, PromoFlag> = {
   53: 'hot', // 운용자 추천
   57: 'sale', // 할인
   181: 'sizeup', // 사이즈업
 };
-
-const callStatus = {
-  OK: 'OK',
-  FORBIDDEN: 'Forbidden',
-};
-
-const untilConnected = ['CALLING', 'EARLY', 'CONNECTING', 'CONFIRMED'];
 
 type DrupalProduct = {
   uuid: string;
@@ -208,6 +195,13 @@ const getProduct = (categoryCode?: string) => {
   );
 };
 
+const getProductByLocalOp = (partnerId: string) => {
+  return api.callHttpGet(
+    api.httpUrl(`${api.path.prodByLocalOp}/${partnerId}?_format=hal_json`),
+    toProduct,
+  );
+};
+
 const getProductBySku = (sku: string) => {
   if (_.isEmpty(sku))
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: sku');
@@ -307,15 +301,29 @@ const filterByCategory = (list: RkbProduct[][], key: string) => {
   return toColumnList(filtered);
 };
 
+export type RkbProdByCountry = {
+  category: string;
+  country: string;
+  price: string;
+  partner_list: string;
+};
+const productByCountry = () => {
+  return api.callHttpGet<RkbProdByCountry>(
+    api.httpUrl(`${api.path.rokApi.rokebi.prodByCountry}?_format=json`),
+  );
+};
+
 export default {
   category,
   toPurchaseItem,
   toColumnList,
   getTitle,
   getProduct,
+  getProductByLocalOp,
   getProductBySku,
   getLocalOp,
   getProdGroup,
   sortProdGroup,
   filterByCategory,
+  productByCountry,
 };

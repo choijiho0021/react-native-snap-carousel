@@ -9,7 +9,6 @@ import {
   SectionList,
   StyleSheet,
   View,
-  ViewStyle,
 } from 'react-native';
 import {connect} from 'react-redux';
 import _ from 'underscore';
@@ -18,7 +17,6 @@ import AppBackButton from '@/components/AppBackButton';
 import AppPrice from '@/components/AppPrice';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
-import {device, windowWidth} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
@@ -285,43 +283,44 @@ type ProdDataType = {title: string; data: RkbProduct[]};
 
 const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const {navigation, route, product} = props;
-  const {localOpList, prodOfCountry} = product;
+  const {localOpList, prodByLocalOp, prodList} = product;
 
   const [prodData, setProdData] = useState<ProdDataType[]>([]);
   const [imageUrl, setImageUrl] = useState<string>();
   const [localOpDetails, setLocalOpDetails] = useState<string>();
   const [partnerId, setPartnerId] = useState<string>();
 
-  const prodList = useMemo(
-    () =>
-      prodOfCountry.length > 0 ? prodOfCountry : route.params?.prodOfCountry,
-    [prodOfCountry, route.params?.prodOfCountry],
-  );
-
   useEffect(() => {
-    const title =
-      prodList && prodList.length > 0
-        ? API.Product.getTitle(localOpList.get(prodList[0]?.partnerId))
-        : '';
+    const title = API.Product.getTitle(
+      localOpList.get(route.params?.partner[0]),
+    );
 
     navigation.setOptions({
       title: null,
       headerLeft: () => <AppBackButton title={title} />,
     });
-  }, [localOpList, navigation, prodList]);
+  }, [localOpList, navigation, route.params?.partner]);
 
   useEffect(() => {
-    if (!_.isEmpty(prodList)) {
-      const localOp = localOpList.get(prodList[0]?.partnerId);
-      setPartnerId(prodList[0]?.partnerId);
+    if (route.params?.partner) {
+      const partnerIds = route.params.partner;
+      const list =
+        partnerIds
+          .map((p) => prodByLocalOp.get(p)?.map((p) => prodList.get(p)))
+          .reduce(
+            (acc, cur) => (cur ? acc.concat(cur.filter((c) => !!c)) : acc),
+            [],
+          )
+          .reduce(
+            (acc, cur) =>
+              cur?.field_daily === 'daily'
+                ? [(acc[0] || []).concat(cur), acc[1] || []]
+                : [acc[0] || [], (acc[1] || []).concat(cur)],
+            [],
+          ) || [];
 
-      const list = prodList.reduce(
-        (group: RkbProduct[][], el) =>
-          el.field_daily === 'daily'
-            ? [(group[0] || []).concat(el), group[1] || []]
-            : [group[0] || [], (group[1] || []).concat(el)],
-        [],
-      );
+      const localOp = localOpList.get(partnerIds[0]);
+      setPartnerId(partnerIds[0]);
 
       setProdData([
         {title: 'daily', data: list[0] || []},
@@ -330,7 +329,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
       setImageUrl(localOp?.imageUrl);
       setLocalOpDetails(localOp?.detail);
     }
-  }, [localOpList, prodList]);
+  }, [localOpList, prodByLocalOp, product.prodList, route.params.partner]);
 
   const renderItem = useCallback(
     ({item, index, section}) => (
