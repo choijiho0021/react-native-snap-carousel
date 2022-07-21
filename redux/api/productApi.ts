@@ -1,10 +1,10 @@
 /* eslint-disable no-param-reassign */
 import _ from 'underscore';
-import {Set, Map as ImmutableMap} from 'immutable';
+import {Set} from 'immutable';
 import utils from '@/redux/api/utils';
 import {createFromProduct} from '@/redux/models/purchaseItem';
 import api, {ApiResult} from './api';
-import {Country} from '.';
+import {RkbPriceInfo} from '../modules/product';
 
 export type TabViewRouteKey = 'asia' | 'europe' | 'usaAu' | 'multi';
 export type TabViewRoute = {
@@ -166,20 +166,25 @@ const toLocalOp = (data: DrupalLocalOp[]): ApiResult<RkbLocalOp> => {
   return api.failure(api.E_NOT_FOUND);
 };
 
-const toColumnList = (list: RkbProduct[][]) => {
-  const result: {key: string; data: RkbProduct[][]}[] = [];
-  list.forEach((elm) => {
-    if (result.length > 0 && !result[result.length - 1].data[1]) {
-      result[result.length - 1].data[1] = elm;
-    } else {
-      result.push({
-        key: elm[0].uuid,
-        data: [elm, undefined],
-      });
-    }
-  });
-
-  return result;
+const toColumnList = (v: RkbPriceInfo[]) => {
+  return v
+    .reduce((acc, cur) => {
+      // grouping by country
+      const idx = acc.findIndex((a) => a.country === cur.country);
+      if (idx < 0) return acc.concat(cur);
+      acc[idx].weight = Math.max(acc[idx].weight, cur.weight);
+      acc[idx].partnerList.push(cur.partner);
+      return acc;
+    }, [] as RkbPriceInfo[])
+    .sort((a, b) => b.weight - a.weight)
+    .reduce((acc, cur) => {
+      // 2단 list로 변환
+      if (acc.length === 0) return [[cur]];
+      const last = acc[acc.length - 1];
+      return last.length <= 1
+        ? acc.slice(0, acc.length - 1).concat([last.concat(cur)])
+        : acc.concat([[cur]]);
+    }, [] as RkbPriceInfo[][]);
 };
 
 const getTitle = (localOp?: RkbLocalOp) => {
@@ -218,88 +223,6 @@ const getLocalOp = (op?: string) => {
     toLocalOp,
   );
 };
-const getProdGroup = ({
-  prodList,
-  localOpList,
-}: {
-  prodList: ImmutableMap<string, RkbProduct>;
-  localOpList: ImmutableMap<string, RkbLocalOp>;
-}) => {
-  const list: RkbProduct[][] = [];
-
-  prodList
-    .valueSeq()
-    .toArray()
-    .forEach((item) => {
-      if (localOpList.has(item.partnerId)) {
-        const localOp = localOpList.get(item.partnerId);
-        item.ccodeStr = (localOp?.ccode || []).join(',');
-        item.cntry = Set(Country.getName(localOp?.ccode));
-        item.search = [...item.cntry]
-          .concat([...Set(Country.getName(localOp?.ccode, 'en'))])
-          .join(',');
-        item.pricePerDay =
-          item.price && item.days
-            ? {
-                value:
-                  item.price.currency === 'KRW'
-                    ? Math.round(item.price.value / item.days / 10) * 10
-                    : Math.round((item.price.value / item.days) * 100) / 100,
-                currency: item.price.currency,
-              }
-            : {value: 0, currency: item.price.currency};
-
-        const idxCcode = list.findIndex(
-          (elm) => elm.length > 0 && elm[0].ccodeStr === item.ccodeStr,
-        );
-
-        if (idxCcode < 0) {
-          // new item, insert it
-          list.push([item]);
-        } else {
-          // 이미 같은 country code를 갖는 데이터가 존재하면, 그 아래에 추가한다. (2차원 배열)
-          list[idxCcode].push(item);
-        }
-      }
-    });
-
-  return list;
-};
-
-const sortProdGroup = (
-  localOpList: ImmutableMap<string, RkbLocalOp>,
-  list: RkbProduct[][],
-) => {
-  const getMaxWeight = (item: RkbProduct[]) =>
-    Math.max(...item.map((p) => localOpList.get(p.partnerId)?.weight || 0));
-
-  return list
-    .map((item) =>
-      item.sort((a, b) => {
-        if (a.weight === b.weight) {
-          return a.days > b.days ? 1 : -1;
-        }
-        return a.weight < b.weight ? 1 : -1;
-      }),
-    )
-    .sort((a, b) => {
-      // 국가는 weight 값이 높은 순서가 우선, weight 값이 같으면 이름 순서
-      const weightA = getMaxWeight(a);
-      const weightB = getMaxWeight(b);
-      if (weightA === weightB) {
-        return a[0].search < b[0].search ? -1 : 1;
-      }
-      return weightB - weightA;
-    });
-};
-
-const filterByCategory = (list: RkbProduct[][], key: string) => {
-  const filtered = list.filter(
-    (elm) => elm.length > 0 && elm[0].categoryId.includes(key),
-  );
-
-  return toColumnList(filtered);
-};
 
 export type RkbProdByCountry = {
   category: string;
@@ -322,8 +245,5 @@ export default {
   getProductByLocalOp,
   getProductBySku,
   getLocalOp,
-  getProdGroup,
-  sortProdGroup,
-  filterByCategory,
   productByCountry,
 };

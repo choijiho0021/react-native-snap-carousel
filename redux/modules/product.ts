@@ -3,7 +3,7 @@ import {Reducer} from 'redux-actions';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
-import {API} from '@/redux/api';
+import {API, Country} from '@/redux/api';
 import {
   Currency,
   RkbLocalOp,
@@ -11,10 +11,7 @@ import {
   RkbProduct,
 } from '@/redux/api/productApi';
 import {actions as PromotionActions} from './promotion';
-import Env from '@/environment';
 import utils from '@/redux/api/utils';
-
-const {esimCurrency} = Env.get();
 
 const getLocalOp = createAsyncThunk(
   'product/getLocalOp',
@@ -46,7 +43,6 @@ const init = createAsyncThunk('product/init', async (_, {dispatch}) => {
   dispatch(getLocalOp());
   dispatch(getProductByCountry());
 
-  // await dispatch(getProd(API.Product.category.asia));
   dispatch(PromotionActions.getPromotion());
   dispatch(PromotionActions.getPromotionStat());
   dispatch(PromotionActions.getGiftBgImages());
@@ -71,14 +67,11 @@ export type RkbPriceInfo = Partial<RkbProdByCountry> & {
   minPrice: Currency;
   partnerList: string[];
   weight: number;
-  search: string;
 };
 
 export interface ProductModelState {
   prodList: ImmutableMap<string, RkbProduct>; // uuid -> RkbProduct
   localOpList: ImmutableMap<string, RkbLocalOp>;
-  prodOfCountry: RkbProduct[];
-  sortedProdList: RkbProduct[][];
   detailInfo: string;
   partnerId: string;
   detailCommon: string;
@@ -91,8 +84,6 @@ export interface ProductModelState {
 const initialState: ProductModelState = {
   prodList: ImmutableMap(),
   localOpList: ImmutableMap(),
-  prodOfCountry: [],
-  sortedProdList: [],
   detailInfo: '',
   detailCommon: '',
   partnerId: '',
@@ -106,12 +97,6 @@ const slice = createSlice({
   name: 'product',
   initialState,
   reducers: {
-    setSortedProdList: (state, action) => {
-      state.sortedProdList = action.payload;
-    },
-    setProdOfCountry: (state, action) => {
-      state.prodOfCountry = action.payload;
-    },
     updateProduct: (state, action) => {
       const {result, objects} = action.payload;
 
@@ -125,39 +110,21 @@ const slice = createSlice({
       state.priceInfo = state.prodByCountry
         .reduce((acc, cur) => {
           // 먼저 category 별로 분리
+          const country = cur.country.split(',');
           const elm = {
             ...cur,
             weight: state.localOpList.get(cur.partner)?.weight || 0,
+            search: `${cur.country},${Country.getName(country)
+              .concat(Country.getName(country, 'en'))
+              .join(',')}`,
             partnerList: [cur.partner],
-            minPrice: {
-              value: utils.stringToNumber(cur.price),
-              currency: esimCurrency,
-            } as Currency,
+            minPrice: utils.stringToCurrency(cur.price),
           } as RkbPriceInfo;
           return acc.update(cur.category, (prev) =>
             prev ? prev.concat(elm) : [elm],
           );
         }, ImmutableMap<string, RkbPriceInfo[]>())
-        .map((v) =>
-          v
-            .reduce((acc, cur) => {
-              // grouping by country
-              const idx = acc.findIndex((a) => a.country === cur.country);
-              if (idx < 0) return acc.concat(cur);
-              acc[idx].weight = Math.max(acc[idx].weight, cur.weight);
-              acc[idx].partnerList.push(cur.partner);
-              return acc;
-            }, [] as RkbPriceInfo[])
-            .sort((a, b) => b.weight - a.weight)
-            .reduce((acc, cur) => {
-              // 2단 list로 변환
-              if (acc.length === 0) return [[cur]];
-              const last = acc[acc.length - 1];
-              return last.length <= 1
-                ? acc.slice(0, acc.length - 1).concat([last.concat(cur)])
-                : acc.concat([[cur]]);
-            }, [] as RkbPriceInfo[][]),
-        );
+        .map((v) => API.Product.toColumnList(v));
     },
   },
 
@@ -209,7 +176,15 @@ const slice = createSlice({
     builder.addCase(getProductByCountry.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
       if (result === 0) {
-        state.prodByCountry = objects;
+        state.prodByCountry = objects.map((o) => {
+          const country = o.country.split(',');
+          return {
+            ...o,
+            search: `${o.country},${Country.getName(country)
+              .concat(Country.getName(country, 'en'))
+              .join(',')}`,
+          };
+        });
       }
     });
 

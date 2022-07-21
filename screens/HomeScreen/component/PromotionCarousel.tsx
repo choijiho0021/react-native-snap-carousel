@@ -102,7 +102,6 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
   action,
 }) => {
   const navigation = useNavigation();
-  const route = useRoute();
   const [activeSlide, setActiveSlide] = useState(0);
   const onPress = useCallback(
     (item: RkbPromotion) => {
