@@ -104,7 +104,7 @@ const path = {
       user: 'rokebi/user',
     },
     pv: {
-      cmiUsage: 'api/v1/pvd/pv/cmi/v2/usage',
+      cmiUsage: 'api/v1/pvd/pv/cmi/v2/quota',
       cmiStatus: 'api/v1/pvd/pv/cmi/v2/bundle/status',
       quadcell: 'api/v1/pvd/pv/quadcell',
     },

@@ -2,6 +2,10 @@ import _, {isArray} from 'underscore';
 import i18n from '@/utils/i18n';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 
+import Env from '@/environment';
+
+const {isProduction} = Env.get();
+
 const STATUS_ACTIVE = 'A'; // 사용중
 const STATUS_INACTIVE = 'I'; // 미사용
 export const STATUS_RESERVED = 'R'; // 사용 대기중
@@ -419,28 +423,21 @@ const getSubsUsage = ({id, token}: {id?: string; token?: string}) => {
 const cmiGetSubsUsage = ({
   iccid,
   packageId,
-  childOrderId,
 }: {
   iccid: string;
   packageId: string;
-  childOrderId?: string;
 }) => {
   if (!iccid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
   if (!packageId)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: packageId');
 
-  const OptionParam = childOrderId ? `&childOrderId=${childOrderId}` : '';
   return api.callHttpGet(
     `${api.rokHttpUrl(
       api.path.rokApi.pv.cmiUsage,
-    )}&iccid=${iccid}&packageId=${packageId}${OptionParam}&quota`,
-    (data) => {
-      if (data?.result?.code === 0) {
-        return api.success(data?.objects);
-      }
-      return data;
-    },
+      isProduction ? undefined : 5000,
+    )}&iccid=${iccid}&packageId=${packageId}&quota`,
+    (data) => data,
     new Headers({'Content-Type': 'application/json'}),
   );
 };
@@ -450,7 +447,10 @@ const cmiGetSubsStatus = ({iccid}: {iccid: string}) => {
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
 
   return api.callHttpGet(
-    `${api.rokHttpUrl(api.path.rokApi.pv.cmiStatus)}&iccid=${iccid}`,
+    `${api.rokHttpUrl(
+      api.path.rokApi.pv.cmiStatus,
+      isProduction ? undefined : 5000,
+    )}&iccid=${iccid}`,
     toCmiStatus,
     new Headers({'Content-Type': 'application/json'}),
   );

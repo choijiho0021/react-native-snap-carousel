@@ -203,109 +203,48 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [balance, expDate, iccid, navigation],
   );
 
-  const getCmiSubsUsage = useCallback(
-    async (usageIccid, packageId, childOrderId, item) => {
+  const checkCmiData = useCallback(async (item: RkbSubscription) => {
+    const usageRsp = {};
+
+    if (item?.subsIccid && item?.packageId) {
       const rsp = await API.Subscription.cmiGetSubsUsage({
-        iccid: usageIccid,
-        packageId,
-        childOrderId,
+        iccid: item?.subsIccid,
+        packageId: item?.packageId,
       });
 
-      if (rsp?.result === 0 && rsp?.objects) {
-        const daily = item.prodId && prodList.get(item.prodId)?.field_daily;
-        const subscriberQuota = rsp?.objects?.find(
-          (v) => !_.isEmpty(v?.subscriberQuota),
-        )?.subscriberQuota;
+      const {result, userDataBundles, subscriberQuota} = rsp;
 
-        const used = rsp.objects.reduce((acc: number, cur) => {
-          // himsi
-          if (!_.isEmpty(cur?.subscriberQuota))
-            return (
-              acc + Number(cur?.subscriberQuota?.qtaconsumption || 0) / 1024
-            );
-          // vimsi
-          if (daily === 'daily') {
-            return (
-              acc +
-              Number(
-                cur?.historyQuota?.find(
-                  (v) => v?.time === moment().format('YYYYMMDD'),
-                )?.qtaconsumption || 0,
-              )
-            );
-          }
+      if (result?.code === 0 && userDataBundles[0]) {
+        const statusCd =
+          !_.isUndefined(userDataBundles[0]?.status) &&
+          cmiStatusCd[userDataBundles[0]?.status];
+        const end = moment(userDataBundles[0]?.endTime)
+          .add(9, 'h')
+          .format('YYYY.MM.DD HH:mm:ss');
+        const exp = moment(userDataBundles[0]?.expireTime).add(9, 'h');
+        const now = moment();
 
-          return (
-            acc +
-            cur?.historyQuota.reduce((a, c) => a + Number(c?.qtaconsumption), 0)
-          );
-        }, 0);
+        const isExpired = statusCd === 'A' && exp < now;
+        // cancel 된 후, 다른 사용자에게 iccid가 넘어갔을 경우 packageId로 확인
+        const isUsedByOther =
+          userDataBundles[0]?.dataBundleId !== item.packageId;
 
+        setCmiStatus({
+          statusCd: isExpired || isUsedByOther ? 'U' : statusCd,
+          endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
+        });
         setCmiUsage({
           quota: Number(subscriberQuota?.qtavalue) || 0, // Mb
-          used, // Mb
+          used: Number(subscriberQuota?.qtaconsumption) || 0, // Mb
+        });
+      } else if (!item.subsOrderNo || userDataBundles.length === 0) {
+        setCmiStatus({
+          statusCd: 'U',
         });
       }
-    },
-    [prodList],
-  );
-
-  const checkCmiData = useCallback(
-    async (item: RkbSubscription) => {
-      // {"subscriberQuota":{"qtavalue":"512000","qtabalance":"73042","qtaconsumption":"438958"},"historyQuota":[{"time":"20211222","qtaconsumption":"376.44","mcc":"452"},{"time":"20211221","qtaconsumption":"1454.78","mcc":"452"}],"result":{"code":0},"trajectoriesList":[{"mcc":"452","country":"Vietnam","beginTime":"20211221","useTime":"20220120","himsi":"454120382118109"}]}
-      const usageRsp = {};
-
-      if (item?.subsIccid && item?.packageId) {
-        // expire time은 사용시작 이후에 발생
-        // 사용 시작 했고, expireTime을 지났어도 'E' 로 바뀌지 않음.  endTime이후 'E'
-        await API.Subscription.cmiGetSubsStatus({
-          iccid: item.subsIccid,
-        }).then(async (rsp) => {
-          const userDataBundles = rsp?.objects?.userDataBundles;
-          if (rsp?.result === 0 && userDataBundles[0]) {
-            await getCmiSubsUsage(
-              item?.subsIccid,
-              item?.packageId,
-              userDataBundles[0]?.subscriptionKey,
-              item,
-            );
-
-            const statusCd =
-              !_.isUndefined(userDataBundles[0]?.status) &&
-              cmiStatusCd[userDataBundles[0]?.status];
-            const end = moment(userDataBundles[0]?.endTime)
-              .add(9, 'h')
-              .format('YYYY.MM.DD HH:mm:ss');
-            const exp = moment(userDataBundles[0]?.expireTime).add(9, 'h');
-            const now = moment();
-
-            const isExpired = statusCd === 'A' && exp < now;
-            // cancel 된 후, 다른 사용자에게 iccid가 넘어갔을 경우 packageId로 확인
-            const isUsedByOther =
-              userDataBundles[0]?.dataBundleId !== item.packageId;
-
-            setCmiStatus({
-              statusCd: isExpired || isUsedByOther ? 'U' : statusCd,
-              endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
-            });
-          } else if (
-            // cancel되고 다른 사용자에게 iccid가 할당되지 않은 상태
-            usageRsp?.result === 0 &&
-            _.isEmpty(usageRsp?.objects) &&
-            rsp?.result === 0
-          ) {
-            if (userDataBundles.length === 0) {
-              setCmiStatus({
-                statusCd: 'U',
-              });
-            }
-          }
-        });
-        // setCmiPending(false);
-      }
-    },
-    [getCmiSubsUsage],
-  );
+      setCmiPending(false);
+    }
+  }, []);
 
   const checkQuadcellData = useCallback(async (item: RkbSubscription) => {
     if (item?.imsi) {
