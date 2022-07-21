@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build_release_android": "ENVFILE=.env.$1 & react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
-    "build:android": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res;rm -rf ./android/app/src/main/res/drawable* && rm -rf ./android/app/src/main/res/raw/*.mp4",
+    "build:android": "react-native bundle --platform android --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --dev false --reset-cache --assets-dest android/app/src/main/res/",
     "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'",
     "build_prod": "react-native run-ios --configuration Release",
     "android": "react-native run-android",
@@ -19,7 +19,7 @@
     "lint": "eslint .",
     "android_esim_debug_apk": "cd android;./gradlew assembleEsimDebug;open ./app/build/outputs/apk/esim/debug",
     "android_esim_prod_apk": "cd android;./gradlew assembleEsimRelease;open ./app/build/outputs/apk/esim/release",
-    "android_esim_staging_apk": "cd android;./gradlew assembleEsimReleaseStaging;open ./app/build/outputs/apk/esim/releaseStaging",
+    "android_esim_staging_apk": "cd android;./gradlew assembleEsimStaging;open ./app/build/outputs/apk/esim/staging",
     "android_esim_prod_bundle": "cd android;./gradlew bundleEsimRelease;open ./app/build/outputs/bundle/esim/release",
     "android_usim_debug_apk": "cd android;./gradlew assembleUsimDebug;open ./app/build/outputs/apk/usim/debug",
     "android_usim_prod_apk": "cd android;./gradlew assembleUsimRelease;open ./app/build/outputs/apk/usim/release",
