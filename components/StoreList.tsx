@@ -131,7 +131,7 @@ const CountryItem0 = ({
     <View key={item[0].country} style={styles.productList}>
       {item.map((elm, idx) => {
         // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
-        const localOp = localOpList && localOpList.get(elm.partner[0]);
+        const localOp = localOpList && localOpList.get(elm.partner);
 
         return (
           <View

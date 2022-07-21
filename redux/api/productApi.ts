@@ -305,7 +305,7 @@ export type RkbProdByCountry = {
   category: string;
   country: string;
   price: string;
-  partner_list: string;
+  partner: string;
 };
 const productByCountry = () => {
   return api.callHttpGet<RkbProdByCountry>(

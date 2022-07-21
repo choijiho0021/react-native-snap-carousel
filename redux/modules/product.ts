@@ -54,7 +54,7 @@ const init = createAsyncThunk('product/init', async (_, {dispatch}) => {
 
 const getProdOfPartner = createAsyncThunk(
   'product/getProdOfPartner',
-  async (partnerId: string[], {dispatch, getState}) => {
+  (partnerId: string[], {dispatch, getState}) => {
     const {
       product: {prodByLocalOp},
     } = getState() as RootState;
@@ -69,8 +69,9 @@ const getProdOfPartner = createAsyncThunk(
 
 export type RkbPriceInfo = Partial<RkbProdByCountry> & {
   minPrice: Currency;
-  partner: string[];
+  partnerList: string[];
   weight: number;
+  search: string;
 };
 
 export interface ProductModelState {
@@ -123,13 +124,11 @@ const slice = createSlice({
     updatePriceInfo: (state, action) => {
       state.priceInfo = state.prodByCountry
         .reduce((acc, cur) => {
-          const partner = cur.partner_list.split(',');
+          // 먼저 category 별로 분리
           const elm = {
             ...cur,
-            partner,
-            weight: Math.max(
-              ...partner.map((p) => state.localOpList.get(p)?.weight || 0),
-            ),
+            weight: state.localOpList.get(cur.partner)?.weight || 0,
+            partnerList: [cur.partner],
             minPrice: {
               value: utils.stringToNumber(cur.price),
               currency: esimCurrency,
@@ -141,13 +140,22 @@ const slice = createSlice({
         }, ImmutableMap<string, RkbPriceInfo[]>())
         .map((v) =>
           v
+            .reduce((acc, cur) => {
+              // grouping by country
+              const idx = acc.findIndex((a) => a.country === cur.country);
+              if (idx < 0) return acc.concat(cur);
+              acc[idx].weight = Math.max(acc[idx].weight, cur.weight);
+              acc[idx].partnerList.push(cur.partner);
+              return acc;
+            }, [] as RkbPriceInfo[])
             .sort((a, b) => b.weight - a.weight)
             .reduce((acc, cur) => {
+              // 2단 list로 변환
               if (acc.length === 0) return [[cur]];
               const last = acc[acc.length - 1];
-              if (last.length <= 1)
-                return acc.slice(0, acc.length - 1).concat([last.concat(cur)]);
-              return acc.concat([[cur]]);
+              return last.length <= 1
+                ? acc.slice(0, acc.length - 1).concat([last.concat(cur)])
+                : acc.concat([[cur]]);
             }, [] as RkbPriceInfo[][]),
         );
     },

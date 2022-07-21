@@ -329,7 +329,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
       setImageUrl(localOp?.imageUrl);
       setLocalOpDetails(localOp?.detail);
     }
-  }, [localOpList, prodByLocalOp, product.prodList, route.params.partner]);
+  }, [localOpList, prodByLocalOp, prodList, route.params.partner]);
 
   const renderItem = useCallback(
     ({item, index, section}) => (
