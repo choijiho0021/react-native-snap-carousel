@@ -726,6 +726,7 @@
 
   "socialLogin:kakao": "Login with Kakao",
   "socialLogin:apple": "Login with Apple",
+  "socialLogin:google": "Login with Google",
 
   "userGuide:checkInfo": "잠깐! 먼저 확인해주세요",
   "userGuide:checkInfo1_1": "반드시",
