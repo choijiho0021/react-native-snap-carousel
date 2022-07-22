@@ -45,7 +45,11 @@ import {
   actions as accountActions,
 } from '@/redux/modules/account';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
-import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
+import {
+  actions as notiActions,
+  NotiAction,
+  NotiModelState,
+} from '@/redux/modules/noti';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import {
   actions as productActions,
@@ -64,8 +68,7 @@ import NotiModal from './component/NotiModal';
 import AppTabHeader from '@/components/AppTabHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppVerModal from './component/AppVerModal';
-import {isDeviceSize} from '../../constants/SliderEntry.style';
-import {TextStyle} from 'react-native';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 
 const {esimGlobal} = Env.get();
 
@@ -154,6 +157,7 @@ type EsimProps = {
   product: ProductModelState;
   account: AccountModelState;
   sync: SyncModelState;
+  noti: NotiModelState;
   action: {
     product: ProductAction;
     account: AccountAction;
