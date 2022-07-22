@@ -27,14 +27,14 @@ import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
-import {RkbProduct} from '@/redux/api/productApi';
 import {
   actions as productActions,
   ProductAction,
   ProductModelState,
+  RkbPriceInfo,
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
-import {retrieveData, storeData} from '@/utils/utils';
+import {retrieveData, storeData, utils} from '@/utils/utils';
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -307,7 +307,7 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
   }, []);
 
   const onPressItem = useCallback(
-    async (prodOfCountry: RkbProduct[]) => {
+    async (info: RkbPriceInfo) => {
       if (searchWord.length > 0) {
         Analytics.trackEvent('Page_View_Count', {
           page: 'Move To Country with Searching',
@@ -322,12 +322,11 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
             success: 1,
           };
           AppEventsLogger.logEvent('fb_mobile_search', params);
-          console.log('@@ search events', prodOfCountry, searchWord);
         }
       }
 
-      action.product.setProdOfCountry(prodOfCountry);
-      navigation.navigate('Country');
+      action.product.getProdOfPartner(info.partnerList);
+      navigation.navigate('Country', {partner: info.partnerList});
     },
     [action.product, navigation, searchWord],
   );
@@ -414,26 +413,35 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
   }, [recommendCountry, search, searchList]);
 
   // 국가 검색
-  const renderStoreList = useCallback(() => {
-    const allData = product.sortedProdList;
-    const filtered = allData.filter(
-      (elm) => _.isEmpty(searchWord) || elm[0].search?.match(searchWord),
-    );
+  const renderStoreList = useCallback(
+    (key: string) => {
+      const filtered = product.prodByCountry
+        .filter((v) => v.search?.match(key))
+        .map(
+          (v) =>
+            ({
+              ...v,
+              partnerList: [v.partner],
+              minPrice: utils.stringToCurrency(v.price),
+            } as RkbPriceInfo),
+        );
 
-    const list = API.Product.toColumnList(filtered);
+      const list = API.Product.toColumnList(filtered);
 
-    return list.length > 0 ? (
-      <StoreList
-        data={list}
-        onPress={onPressItem}
-        localOpList={product.localOpList}
-      />
-    ) : (
-      <View style={styles.emptyViewPage}>
-        <AppText style={styles.emptyPage}>{i18n.t('country:empty')}</AppText>
-      </View>
-    );
-  }, [onPressItem, product.localOpList, product.sortedProdList, searchWord]);
+      return list.length > 0 ? (
+        <StoreList
+          data={list}
+          onPress={onPressItem}
+          localOpList={product.localOpList}
+        />
+      ) : (
+        <View style={styles.emptyViewPage}>
+          <AppText style={styles.emptyPage}>{i18n.t('country:empty')}</AppText>
+        </View>
+      );
+    },
+    [onPressItem, product.localOpList, product.prodByCountry],
+  );
 
   useEffect(() => {
     getRecommendation();
@@ -453,7 +461,7 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
     <View style={styles.mainContainer}>
       <AppActivityIndicator visible={querying} />
       {searchWord ? (
-        renderStoreList()
+        renderStoreList(searchWord)
       ) : (
         <ScrollView style={{width: '100%'}}>{renderSearchWord()}</ScrollView>
       )}

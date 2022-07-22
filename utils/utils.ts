@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import utils from '@/redux/api/utils';
 import AppAlert from '@/components/AppAlert';
 import i18n from './i18n';

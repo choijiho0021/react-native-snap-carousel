@@ -5,23 +5,19 @@ import {
   Image,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  Pressable,
   StyleSheet,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {API} from '@/redux/api';
-import {
-  Currency,
-  ProductByCategory,
-  RkbLocalOp,
-  RkbProduct,
-} from '@/redux/api/productApi';
+import {Currency, RkbLocalOp} from '@/redux/api/productApi';
 import i18n from '@/utils/i18n';
 import AppPrice from './AppPrice';
 import AppText from './AppText';
+import {RkbPriceInfo} from '@/redux/modules/product';
 
 const styles = StyleSheet.create({
   container: {
@@ -94,9 +90,9 @@ const CountryItem0 = ({
   localOpList,
   onPress,
 }: {
-  item: ProductByCategory;
+  item: RkbPriceInfo[];
   localOpList: ImmutableMap<string, RkbLocalOp>;
-  onPress?: (p: RkbProduct[]) => void;
+  onPress?: (p: RkbPriceInfo) => void;
 }) => {
   const renderLowest = useCallback(
     () => (
@@ -108,65 +104,60 @@ const CountryItem0 = ({
   );
 
   const renderPrice = useCallback(
-    (bestPrice?: Currency) => (
+    (bestPrice: Currency) => (
       <View key="price" style={styles.price}>
-        {bestPrice && [
-          <AppPrice
-            key="price"
-            style={styles.price}
-            price={bestPrice}
-            balanceStyle={styles.priceNumber}
-            currencyStyle={styles.text}
-          />,
-          <AppText key="days" style={[styles.text, {marginLeft: 3, top: -2}]}>
-            {i18n.t('startFrom')}
-          </AppText>,
-        ]}
+        {bestPrice !== undefined
+          ? [
+              <AppPrice
+                key="price"
+                style={styles.price}
+                price={bestPrice}
+                balanceStyle={styles.priceNumber}
+                currencyStyle={styles.text}
+              />,
+              <AppText
+                key="days"
+                style={[styles.text, {marginLeft: 3, top: -2}]}>
+                {i18n.t('startFrom')}
+              </AppText>,
+            ]
+          : null}
       </View>
     ),
     [],
   );
 
   return (
-    <View key={item.key} style={styles.productList}>
-      {item.data.map((elm, idx) => {
+    <View key={item[0].country} style={styles.productList}>
+      {item.map((elm, idx) => {
         // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
-        if (elm && elm.length > 0) {
-          const localOp = localOpList && localOpList.get(elm[0].partnerId);
-          const bestPrice: Currency = elm.reduce((acc, {price}) => {
-            if (!acc) return price;
-            if (!price || acc.currency !== price.currency) return acc;
-            return {
-              value: Math.min(acc.value, price.value),
-              currency: price.currency,
-            };
-          }, elm[0].price);
+        const localOp = localOpList && localOpList.get(elm.partner);
 
-          return (
-            <View
-              key={elm[0].key}
-              style={{flex: 1, marginLeft: idx === 1 ? 14 : 0}}>
-              <TouchableOpacity onPress={() => onPress && onPress(elm)}>
-                <Image
-                  key="img"
-                  source={{uri: API.default.httpImageUrl(localOp?.imageUrl)}}
-                  style={styles.image}
-                />
-                <AppText key="cntry" style={styles.cntry}>
-                  {API.Product.getTitle(localOp)}
-                </AppText>
-                <View style={styles.priceRow}>
-                  {i18n.locale === 'ko'
-                    ? [renderPrice(bestPrice), renderLowest()]
-                    : [renderLowest(), renderPrice(bestPrice)]}
-                </View>
-              </TouchableOpacity>
-            </View>
-          );
-        }
-
-        return <View key="unknown" style={{flex: 1, marginLeft: 14}} />;
+        return (
+          <View
+            key={elm.country}
+            style={{flex: 1, marginLeft: idx === 1 ? 14 : 0}}>
+            <Pressable onPress={() => onPress?.(elm)}>
+              <Image
+                key="img"
+                source={{uri: API.default.httpImageUrl(localOp?.imageUrl)}}
+                style={styles.image}
+              />
+              <AppText key="cntry" style={styles.cntry}>
+                {API.Product.getTitle(localOp)}
+              </AppText>
+              <View style={styles.priceRow}>
+                {i18n.locale === 'ko'
+                  ? [renderPrice(elm.minPrice), renderLowest()]
+                  : [renderLowest(), renderPrice(elm.minPrice)]}
+              </View>
+            </Pressable>
+          </View>
+        );
       })}
+      {item.length === 1 && (
+        <View key="unknown" style={{flex: 1, marginLeft: 14}} />
+      )}
     </View>
   );
 };
@@ -178,8 +169,8 @@ export type StoreListRef = {
 
 type StoreListProps = {
   localOpList: ImmutableMap<string, RkbLocalOp>;
-  data: ProductByCategory[];
-  onPress: (p: RkbProduct[]) => void;
+  data: RkbPriceInfo[][];
+  onPress: (p: RkbPriceInfo) => void;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 };
 
@@ -192,7 +183,7 @@ const StoreList = ({localOpList, data, onPress, onScroll}: StoreListProps) => {
         bounces={false}
         renderItem={({item}) => (
           <CountryItem
-            key={item.key}
+            key={item[0].country}
             onPress={onPress}
             item={item}
             localOpList={localOpList}

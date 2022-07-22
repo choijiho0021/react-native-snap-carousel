@@ -95,7 +95,7 @@ export type HomeStackParamList = {
   BoardMsgAdd: {key: string; status: BoardMsgStatus};
   Faq: FaqRouteParam;
   Guide: undefined;
-  Country: {prodOfCountry: RkbProduct[]};
+  Country: {partner: string[]};
   Payment: PaymentParams;
   PymMethod: {isPaid?: boolean; pymPrice?: number; mode?: PymMethodScreenMode};
   FindAddress: undefined;

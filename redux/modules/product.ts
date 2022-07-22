@@ -1,11 +1,17 @@
 /* eslint-disable no-param-reassign */
 import {Reducer} from 'redux-actions';
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
-import {API} from '@/redux/api';
-import {RkbLocalOp, RkbProduct} from '@/redux/api/productApi';
+import {API, Country} from '@/redux/api';
+import {
+  Currency,
+  RkbLocalOp,
+  RkbProdByCountry,
+  RkbProduct,
+} from '@/redux/api/productApi';
 import {actions as PromotionActions} from './promotion';
+import utils from '@/redux/api/utils';
 
 const getLocalOp = createAsyncThunk(
   'product/getLocalOp',
@@ -21,52 +27,76 @@ const getProdDetailInfo = createAsyncThunk(
   API.Page.getProductDetailsBody,
 );
 
+const getProductByCountry = createAsyncThunk(
+  'product/getProdByCountry',
+  API.Product.productByCountry,
+);
+
 const getProd = createAsyncThunk('product/getProd', API.Product.getProduct);
 
-const init = createAsyncThunk('product/init', async (_, {dispatch}) => {
-  const {category} = API.Product;
+const getProductByLocalOp = createAsyncThunk(
+  'product/getProductByLocalOp',
+  API.Product.getProductByLocalOp,
+);
 
-  await dispatch(getLocalOp());
-  await dispatch(getProd(category.asia));
-  await dispatch(getProd(category.europe));
-  await dispatch(getProd(category.usaAu));
-  await dispatch(getProd(category.multi));
-  await dispatch(PromotionActions.getPromotion());
-  await dispatch(PromotionActions.getPromotionStat());
-  await dispatch(PromotionActions.getGiftBgImages());
+const init = createAsyncThunk('product/init', async (_, {dispatch}) => {
+  dispatch(getLocalOp());
+  dispatch(getProductByCountry());
+
+  dispatch(PromotionActions.getPromotion());
+  dispatch(PromotionActions.getPromotionStat());
+  dispatch(PromotionActions.getGiftBgImages());
 });
+
+const getProdOfPartner = createAsyncThunk(
+  'product/getProdOfPartner',
+  (partnerId: string[], {dispatch, getState}) => {
+    const {
+      product: {prodByLocalOp},
+    } = getState() as RootState;
+
+    for (let i = 0; i < partnerId.length; i++) {
+      if (!prodByLocalOp.has(partnerId[i])) {
+        dispatch(getProductByLocalOp(partnerId[i]));
+      }
+    }
+  },
+);
+
+export type RkbPriceInfo = Partial<RkbProdByCountry> & {
+  minPrice: Currency;
+  partnerList: string[];
+  weight: number;
+};
+
 export interface ProductModelState {
-  prodList: ImmutableMap<string, RkbProduct>;
+  prodList: ImmutableMap<string, RkbProduct>; // uuid -> RkbProduct
   localOpList: ImmutableMap<string, RkbLocalOp>;
-  prodOfCountry: RkbProduct[];
-  sortedProdList: RkbProduct[][];
   detailInfo: string;
   partnerId: string;
   detailCommon: string;
   ready: boolean;
+  prodByCountry: RkbProdByCountry[];
+  priceInfo: ImmutableMap<string, RkbPriceInfo[][]>;
+  prodByLocalOp: ImmutableMap<string, string[]>;
 }
 
-const initialState = {
-  prodList: ImmutableMap<string, RkbProduct>(),
-  localOpList: ImmutableMap<string, RkbLocalOp>(),
-  prodOfCountry: [],
-  sortedProdList: [],
+const initialState: ProductModelState = {
+  prodList: ImmutableMap(),
+  localOpList: ImmutableMap(),
   detailInfo: '',
   detailCommon: '',
   partnerId: '',
   ready: false,
+  prodByCountry: [],
+  priceInfo: ImmutableMap(),
+  prodByLocalOp: ImmutableMap(),
 };
 
 const slice = createSlice({
   name: 'product',
   initialState,
   reducers: {
-    setSortedProdList: (state, action) => {
-      state.sortedProdList = action.payload;
-    },
-    setProdOfCountry: (state, action) => {
-      state.prodOfCountry = action.payload;
-    },
     updateProduct: (state, action) => {
       const {result, objects} = action.payload;
 
@@ -75,6 +105,26 @@ const slice = createSlice({
           ImmutableMap(objects.map((item) => [item.key, item])),
         );
       }
+    },
+    updatePriceInfo: (state, action) => {
+      state.priceInfo = state.prodByCountry
+        .reduce((acc, cur) => {
+          // 먼저 category 별로 분리
+          const country = cur.country.split(',');
+          const elm = {
+            ...cur,
+            weight: state.localOpList.get(cur.partner)?.weight || 0,
+            search: `${cur.country},${Country.getName(country)
+              .concat(Country.getName(country, 'en'))
+              .join(',')}`,
+            partnerList: [cur.partner],
+            minPrice: utils.stringToCurrency(cur.price),
+          } as RkbPriceInfo;
+          return acc.update(cur.category, (prev) =>
+            prev ? prev.concat(elm) : [elm],
+          );
+        }, ImmutableMap<string, RkbPriceInfo[]>())
+        .map((v) => API.Product.toColumnList(v));
     },
   },
 
@@ -123,6 +173,34 @@ const slice = createSlice({
       }
     });
 
+    builder.addCase(getProductByCountry.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+      if (result === 0) {
+        state.prodByCountry = objects.map((o) => {
+          const country = o.country.split(',');
+          return {
+            ...o,
+            search: `${o.country},${Country.getName(country)
+              .concat(Country.getName(country, 'en'))
+              .join(',')}`,
+          };
+        });
+      }
+    });
+
+    builder.addCase(getProductByLocalOp.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+      if (result === 0 && objects.length > 0) {
+        state.prodByLocalOp = state.prodByLocalOp.set(
+          objects[0].partnerId,
+          objects.map((o) => o.key),
+        );
+        state.prodList = state.prodList.merge(
+          ImmutableMap(objects.map((o) => [o.key, o])),
+        );
+      }
+    });
+
     builder.addCase(init.rejected, (state, action) => {
       state.ready = false;
     });
@@ -138,7 +216,9 @@ export const actions = {
   getProdDetailInfo,
   getLocalOp,
   getProd,
+  getProductByCountry,
   init,
+  getProdOfPartner,
 };
 export type ProductAction = typeof actions;
 

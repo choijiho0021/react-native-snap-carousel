@@ -49,7 +49,6 @@ import {ProductModelState} from '@/redux/modules/product';
 import EsimModal, {ModalType} from './components/EsimModal';
 import GiftModal from './components/GiftModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {useFocusEffect} from '@react-navigation/native';
 
 const {esimGlobal} = Env.get();
 
