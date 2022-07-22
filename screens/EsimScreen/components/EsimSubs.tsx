@@ -21,7 +21,6 @@ import {utils} from '@/utils/utils';
 import AppIcon from '@/components/AppIcon';
 
 const {width} = Dimensions.get('window');
-const reg = new RegExp(i18n.t('hongkong'), 'gi');
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -272,7 +271,7 @@ const EsimSubs = ({
       !expired &&
       !giftStatusCd &&
       item.country?.includes('HK') &&
-      reg.test(item.prodName!) &&
+      /홍콩/gi.test(item.prodName!) &&
       item.partner === 'CMI',
     [expired, giftStatusCd, item.country, item.partner, item.prodName],
   );

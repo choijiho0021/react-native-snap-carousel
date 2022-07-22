@@ -1,7 +1,12 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {StyleSheet, View, SafeAreaView} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {
+  StyleSheet,
+  View,
+  SafeAreaView,
+  KeyboardAvoidingView,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppBackButton from '@/components/AppBackButton';
@@ -19,7 +24,8 @@ import AppButton from '@/components/AppButton';
 import validationUtil, {ValidationResult} from '@/utils/validationUtil';
 import AppModal from '@/components/AppModal';
 import {API} from '@/redux/api';
-import InputEmail, {InputEmailRef} from '@/components/InputEmail';
+import AppTextInput from '@/components/AppTextInput';
+import {isDeviceSize} from '../constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   title: {
@@ -45,8 +51,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   textInput: {
-    ...appStyles.normal16Text,
-    flex: 1,
+    marginTop: 10,
+    fontSize: 16,
+    borderBottomColor: colors.black,
+    borderBottomWidth: 1,
     paddingVertical: 12,
     paddingHorizontal: 15,
   },
@@ -67,13 +75,13 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     backgroundColor: colors.whiteTwo,
     paddingHorizontal: 15,
-    paddingVertical: 12,
+    justifyContent: 'center',
   },
   helpText: {
     ...appStyles.normal14Text,
     color: colors.clearBlue,
     marginTop: 13,
-    marginLeft: 30,
+    // marginLeft: 30,
   },
   divider: {
     marginTop: 30,
@@ -86,11 +94,16 @@ const styles = StyleSheet.create({
     height: 52,
     textAlign: 'center',
     color: '#ffffff',
+    justifyContent: 'flex-end',
   },
   buttonTitle: {
     ...appStyles.normal18Text,
     textAlign: 'center',
     margin: 5,
+  },
+  infoText: {
+    marginTop: 15,
+    color: colors.clearBlue,
   },
 });
 
@@ -119,7 +132,6 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
   const [newEmail, setNewEmail] = useState<string>('');
   const [showModal, setShowModal] = useState<boolean>(false);
   const [inValid, setInValid] = useState<ValidationResult>({});
-  const emailRef = useRef<InputEmailRef>(null);
 
   useEffect(() => {
     navigation.setOptions({
@@ -153,53 +165,69 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
   }, [actions.account, newEmail]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={{padding: 20, flex: 1}}>
-        <AppText style={appStyles.normal14Text}>
-          {i18n.t('changeEmail:using')}
-        </AppText>
-        <AppText style={styles.oldEmail}>{email}</AppText>
-        <AppText style={appStyles.normal14Text}>
-          {i18n.t('changeEmail:new')}
-        </AppText>
-
-        <View>
-          <InputEmail
-            style={{
-              marginTop: 10,
-            }}
-            inputRef={emailRef}
-            value={newEmail}
-            onChange={onChangeText}
-          />
-
-          <AppText style={[styles.helpText, {color: colors.errorBackground}]}>
-            {inValid && inValid.email?.length > 0 ? inValid.email[0] : null}
+    <KeyboardAvoidingView
+      style={{flex: 1}}
+      behavior="padding"
+      keyboardVerticalOffset={isDeviceSize('medium') ? 65 : 90}>
+      <SafeAreaView style={styles.container}>
+        <View
+          style={{
+            padding: 20,
+            flex: 1,
+          }}>
+          <AppText style={appStyles.normal14Text}>
+            {i18n.t('changeEmail:using')}
           </AppText>
-          {/* <View key="divider" style={styles.divider} /> */}
+          <View style={styles.oldEmail}>
+            <AppText>{email}</AppText>
+          </View>
+
+          <AppText style={appStyles.normal14Text}>
+            {i18n.t('changeEmail:new')}
+          </AppText>
+
+          <View>
+            <AppTextInput
+              style={styles.textInput}
+              value={newEmail}
+              onChangeText={onChangeText}
+              placeholder={i18n.t('changeEmail:placeholder')}
+            />
+
+            <AppText style={[styles.helpText, {color: colors.errorBackground}]}>
+              {inValid && inValid.email?.length > 0 ? inValid.email[0] : null}
+            </AppText>
+
+            <AppText style={styles.infoText}>
+              {i18n.t('mypage:mailInfo')}
+            </AppText>
+            {/* <View key="divider" style={styles.divider} /> */}
+          </View>
         </View>
-      </View>
-      <AppButton
-        style={[
-          styles.button,
-          {backgroundColor: !inValid ? colors.clearBlue : colors.lightGrey},
-        ]}
-        titleStyle={[
-          styles.buttonTitle,
-          {color: !inValid ? colors.white : colors.warmGrey},
-        ]}
-        disabled={!!inValid}
-        title={i18n.t('changeEmail:save')}
-        onPress={changeEmail}
-        type="primary"
-      />
-      <AppModal
-        title={i18n.t('changeEmail:saveInfo')}
-        type="info"
-        onOkClose={() => navigation.goBack()}
-        visible={showModal}
-      />
-    </SafeAreaView>
+
+        <AppButton
+          style={[
+            styles.button,
+            {backgroundColor: !inValid ? colors.clearBlue : colors.lightGrey},
+          ]}
+          titleStyle={[
+            styles.buttonTitle,
+            {color: !inValid ? colors.white : colors.warmGrey},
+          ]}
+          disabled={!!inValid}
+          title={i18n.t('changeEmail:save')}
+          onPress={changeEmail}
+          type="primary"
+        />
+
+        <AppModal
+          title={i18n.t('changeEmail:saveInfo')}
+          type="info"
+          onOkClose={() => navigation.goBack()}
+          visible={showModal}
+        />
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 

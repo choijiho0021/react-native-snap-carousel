@@ -53,6 +53,7 @@
   "sale": "Discount",
   "hot": "Hot",
   "sizeup": "SIZE UP",
+  "doubleSizeup": "DOUBLE SIZE UP",
   "copy": "Copy",
   "close": "Close",
   "close:week": "Disable For A Week",
@@ -725,6 +726,7 @@
 
   "socialLogin:kakao": "Login with Kakao",
   "socialLogin:apple": "Login with Apple",
+  "socialLogin:google": "Login with Google",
 
   "userGuide:checkInfo": "잠깐! 먼저 확인해주세요",
   "userGuide:checkInfo1_1": "반드시",

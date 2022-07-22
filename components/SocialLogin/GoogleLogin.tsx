@@ -5,9 +5,28 @@ import {
 } from '@react-native-google-signin/google-signin';
 
 import React, {memo, useEffect} from 'react';
-import {View} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {SocialAuthInfo} from '.';
 import i18n from '@/utils/i18n';
+
+const styles = StyleSheet.create({
+  button: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  viewStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'black',
+    borderRadius: 2,
+    height: 52,
+  },
+  btnStyle: {
+    width: '100%',
+  },
+});
 
 const GoogleLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
   const googleSigininConfigure = async () => {
@@ -61,7 +80,7 @@ const GoogleLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
   return (
     <View>
       <GoogleSigninButton
-        style={{width: 218, height: 48}}
+        style={{width: '100%', height: 52, padding: 0}}
         size={GoogleSigninButton.Size.Wide}
         color={GoogleSigninButton.Color.Dark}
         onPress={signIn}

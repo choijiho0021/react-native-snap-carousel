@@ -52,7 +52,8 @@
   "latest": "최신",
   "sale": "할인",
   "hot": "추천",
-  "sizeup": "SIZE UP",
+  "sizeup": "사이즈업",
+  "doubleSizeup": "더블 사이즈업",
   "copy": "복사",
   "close": "닫기",
   "close:week": "일주일간 보지 않기",
@@ -724,6 +725,7 @@
 
   "socialLogin:kakao": "카카오 로그인",
   "socialLogin:apple": "Apple ID 로그인",
+  "socialLogin:google": "Google ID 로그인",
 
   "userGuide:checkInfo": "잠깐! 먼저 확인해주세요",
   "userGuide:checkInfo1_1": "반드시 ",

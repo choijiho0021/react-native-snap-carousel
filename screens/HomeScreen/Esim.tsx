@@ -30,7 +30,6 @@ import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
 import StoreList from '@/components/StoreList';
-import withBadge from '@/components/withBadge';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
@@ -66,15 +65,9 @@ import AppTabHeader from '@/components/AppTabHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppVerModal from './component/AppVerModal';
 import {isDeviceSize} from '../../constants/SliderEntry.style';
+import {TextStyle} from 'react-native';
 
 const {esimGlobal} = Env.get();
-
-const BadgeAppButton = withBadge(
-  ({noti}: RootState) => ({
-    notReadNoti: noti.notiList.filter((elm) => elm.isRead === 'F').length,
-  }),
-  'notReadNoti',
-)(AppButton);
 
 const styles = StyleSheet.create({
   container: {
@@ -144,6 +137,14 @@ const styles = StyleSheet.create({
       },
     }),
   },
+  notiBadge: {
+    position: 'absolute',
+    width: 7,
+    height: 7,
+    borderRadius: 7,
+    backgroundColor: 'red',
+    right: 15,
+  },
 });
 
 type EsimProps = {
@@ -173,6 +174,7 @@ const Esim: React.FC<EsimProps> = ({
   product,
   account,
   sync,
+  noti,
 }) => {
   const [isSupportDev, setIsSupportDev] = useState<boolean>(true);
   const [isDevModalVisible, setIsDevModalVisible] = useState<boolean>(false);
@@ -380,18 +382,19 @@ const Esim: React.FC<EsimProps> = ({
             }
             name="btnCnter"
           />
-
-          {/* BadgeAppButton을 사용했을 때 위치가 변동됨 수정이 필요함 */}
-          <BadgeAppButton
+          <AppButton
             key="alarm"
             style={styles.btnAlarm}
             onPress={() => navigation?.navigate('Noti', {mode: 'noti'})}
             iconName="btnAlarm"
           />
+          {noti.notiList.filter((elm) => elm.isRead === 'F').length > 1 && (
+            <View style={styles.notiBadge} />
+          )}
         </View>
       ),
     });
-  }, [navigation, route]);
+  }, [navigation, noti.notiList, route]);
 
   const notification = useCallback(
     (type: string, payload, isForeground = true) => {
@@ -584,6 +587,8 @@ const Esim: React.FC<EsimProps> = ({
         index={index}
         routes={routes}
         onIndexChange={onIndexChange}
+        style={{backgroundColor: colors.white, height: 60}}
+        tintColor={colors.black}
       />
 
       <TabView
@@ -632,11 +637,12 @@ const Esim: React.FC<EsimProps> = ({
 };
 
 export default connect(
-  ({account, product, promotion, sync}: RootState) => ({
+  ({account, product, promotion, sync, noti}: RootState) => ({
     account,
     product,
     promotion: promotion.promotion,
     sync,
+    noti,
   }),
   (dispatch) => ({
     action: {

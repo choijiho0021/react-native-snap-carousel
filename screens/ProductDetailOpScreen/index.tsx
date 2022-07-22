@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderStyle: 'solid',
     borderWidth: 1,
-    borderColor: colors.whiteTwo,
+    borderColor: colors.lightGrey,
   },
   apnTitle: {
     ...appStyles.normal16Text,
@@ -106,6 +106,12 @@ const styles = StyleSheet.create({
   nolist: {
     marginVertical: 60,
     textAlign: 'center',
+  },
+  searchDivider: {
+    backgroundColor: colors.lightGrey,
+    width: 2,
+    height: '40%',
+    marginHorizontal: 20,
   },
 });
 
@@ -130,6 +136,7 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
   navigation,
   route,
 }) => {
+  const [copyBtnKey, setCopyBtnKey] = useState('');
   const [data, setData] = useState<detailOp[]>([]);
   const [searchWord, setSearchWord] = useState<string>('');
   const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
@@ -147,24 +154,25 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
         .map((elm) => elm.split('/'))
         .map((elm2) => ({
           country: elm2[0],
-          operator: elm2[1],
+          operator: elm2[1].replace('&amp;', '&'),
           apn: elm2[2] ? elm2[2].split('&amp;') : [],
         }));
 
-      const testProductReg = new RegExp(searchWord!, 'gi');
-
       setData(
         searchWord
-          ? dataFormat.filter((elm) => testProductReg.test(elm.country))
+          ? dataFormat.filter((elm) =>
+              new RegExp(searchWord, 'gi').test(elm.country),
+            )
           : dataFormat,
       );
     }
   }, [navigation, route.params.apn, route.params?.title, searchWord]);
 
   const copyToClipboard = useCallback(
-    (value?: string) => () => {
+    (value?: string, key?: string) => () => {
       if (value) {
         Clipboard.setString(value);
+        setCopyBtnKey(value + key);
         setShowSnackBar(true);
         setTimeout(() => {
           setShowSnackBar(false);
@@ -218,27 +226,44 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
           </View>
 
           {isToggled &&
-            item.apn?.map((elm, idx) => (
-              <View style={styles.apn} key={elm}>
-                <View>
-                  <AppText style={styles.apnTitle}>{i18n.t('apn')}</AppText>
-                  <View style={styles.apnValue}>
-                    <AppText style={appStyles.bold16Text}>{elm}</AppText>
+            item.apn?.map((elm, idx) => {
+              const seleced = copyBtnKey === elm + item.country + item.operator;
+
+              return (
+                <View style={styles.apn} key={elm}>
+                  <View>
+                    <AppText style={styles.apnTitle}>{i18n.t('apn')}</AppText>
+                    <View style={styles.apnValue}>
+                      <AppText style={appStyles.bold16Text}>{elm}</AppText>
+                    </View>
                   </View>
+                  <AppButton
+                    key={elm + item.country + item.operator}
+                    title={i18n.t('copy')}
+                    titleStyle={[
+                      appStyles.normal14Text,
+                      {
+                        color: seleced ? colors.clearBlue : colors.black,
+                      },
+                    ]}
+                    style={[
+                      styles.btnCopy,
+                      {
+                        borderColor: seleced
+                          ? colors.clearBlue
+                          : colors.lightGrey,
+                      },
+                    ]}
+                    onPress={copyToClipboard(elm, item.country + item.operator)}
+                    type="secondary"
+                  />
                 </View>
-                <AppButton
-                  title={i18n.t('copy')}
-                  titleStyle={[appStyles.normal14Text]}
-                  style={styles.btnCopy}
-                  onPress={copyToClipboard(elm)}
-                  type="secondary"
-                />
-              </View>
-            ))}
+              );
+            })}
         </Pressable>
       );
     },
-    [copyToClipboard, toggleIndex, toggledList],
+    [copyBtnKey, copyToClipboard, toggleIndex, toggledList],
   );
 
   const empty = useCallback(
@@ -258,13 +283,20 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
       <View style={styles.showSearchBar}>
         <AppTextInput
           style={styles.textInput}
+          clearButtonMode="while-editing"
           placeholder={i18n.t('prodDetailOp:search')}
           onChangeText={(val: string) => {
             setSearchWord(val);
           }}
           value={searchWord}
         />
-        <AppIcon name="btnSearchOn" style={{marginRight: 15}} />
+        {searchWord !== '' && <View style={styles.searchDivider} />}
+        <AppIcon
+          name="btnSearchOn"
+          style={{
+            marginRight: 15,
+          }}
+        />
       </View>
 
       <View style={styles.divider} />

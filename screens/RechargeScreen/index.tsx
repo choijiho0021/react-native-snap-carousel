@@ -155,11 +155,13 @@ const rechargeChoice =
         [5000, 10000],
         [15000, 20000],
         [25000, 30000],
+        [50000, 100000],
       ]
     : [
         [5, 10],
         [15, 20],
         [25, 30],
+        [40, 50],
       ];
 
 const RechargeScreen: React.FC<RechargeScreenProps> = ({

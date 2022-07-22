@@ -19,7 +19,7 @@ import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {HomeStackParamList} from '@/navigation/navigation';
+import {HomeStackParamList, navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {
   AccountAction,
@@ -38,6 +38,7 @@ import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
 import {sliderWidth} from '@/constants/SliderEntry.style';
 import AppSnackBar from '@/components/AppSnackBar';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const {width} = Dimensions.get('window');
 
@@ -123,6 +124,11 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: width - 40,
   },
+  btnCnter: {
+    width: 40,
+    height: 40,
+    marginHorizontal: 18,
+  },
 });
 
 type RedirectHKScreenNavigationProp = StackNavigationProp<
@@ -148,6 +154,7 @@ type CarouselIndex = 'step1' | 'step2' | 'step3' | 'step4';
 type RedirectHKScreenState = {
   activeSlide: number;
   showSnackBar: boolean;
+  copyString: string;
 };
 
 class RedirectHKScreen extends Component<
@@ -163,16 +170,29 @@ class RedirectHKScreen extends Component<
   }
 
   componentDidMount = async () => {
+    const {navigation, route} = this.props;
     this.props.navigation.setOptions({
       title: null,
       headerLeft: () => <AppBackButton title={i18n.t('redirectHK')} />,
+      headerRight: () => (
+        <AppSvgIcon
+          name="btnCnter"
+          style={styles.btnCnter}
+          onPress={() =>
+            navigate(navigation, route, 'EsimStack', {
+              tab: 'HomeStack',
+              screen: 'Contact',
+            })
+          }
+        />
+      ),
     });
   };
 
   copyToClipboard = (value?: string) => () => {
     if (value) {
       Clipboard.setString(value);
-      this.setState({showSnackBar: true});
+      this.setState({showSnackBar: true, copyString: value});
     }
   };
 
@@ -188,6 +208,7 @@ class RedirectHKScreen extends Component<
 
   render() {
     const {params} = this.props.route;
+    const {copyString} = this.state;
     const images = Object.keys(guideImage);
     return (
       <SafeAreaView style={{flex: 1}}>
@@ -258,8 +279,24 @@ class RedirectHKScreen extends Component<
                 </View>
                 <AppButton
                   title={i18n.t('copy')}
-                  titleStyle={appStyles.normal14Text}
-                  style={styles.btnCopy}
+                  titleStyle={[
+                    appStyles.normal14Text,
+                    {
+                      color:
+                        copyString === params[elm]
+                          ? colors.clearBlue
+                          : colors.black,
+                    },
+                  ]}
+                  style={[
+                    styles.btnCopy,
+                    {
+                      borderColor:
+                        copyString === params[elm]
+                          ? colors.clearBlue
+                          : colors.lightGrey,
+                    },
+                  ]}
                   onPress={this.copyToClipboard(params[elm])}
                 />
               </View>
@@ -281,6 +318,7 @@ class RedirectHKScreen extends Component<
           visible={this.state.showSnackBar}
           onClose={() => this.setState({showSnackBar: false})}
           textMessage={i18n.t('redirectHK:copySuccess')}
+          bottom={90}
         />
       </SafeAreaView>
     );

@@ -14,6 +14,7 @@ const NOTI_TYPE_REPLY = 'reply';
 const NOTI_TYPE_INVITE = 'invite';
 const NOTI_TYPE_PYM = 'pym';
 const NOTI_TYPE_ACCOUNT = 'account';
+const NOTI_TYPE_PROVISION = 'provision';
 const NOTI_TYPE_USIM = 'usim';
 const NOTI_TYPE_NOTI = 'noti';
 
@@ -172,6 +173,7 @@ const slice = createSlice({
 export const actions = {
   ...slice.actions,
   NOTI_TYPE_ACCOUNT,
+  NOTI_TYPE_PROVISION,
   NOTI_TYPE_NOTI,
   NOTI_TYPE_PYM,
   NOTI_TYPE_REPLY,
