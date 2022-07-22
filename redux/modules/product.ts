@@ -40,12 +40,12 @@ const getProductByLocalOp = createAsyncThunk(
 );
 
 const init = createAsyncThunk('product/init', async (_, {dispatch}) => {
-  dispatch(getLocalOp());
-  dispatch(getProductByCountry());
+  await dispatch(getLocalOp());
+  await dispatch(getProductByCountry());
 
-  dispatch(PromotionActions.getPromotion());
-  dispatch(PromotionActions.getPromotionStat());
-  dispatch(PromotionActions.getGiftBgImages());
+  await dispatch(PromotionActions.getPromotion());
+  await dispatch(PromotionActions.getPromotionStat());
+  await dispatch(PromotionActions.getGiftBgImages());
 });
 
 const getProdOfPartner = createAsyncThunk(
