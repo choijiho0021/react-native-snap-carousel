@@ -14,6 +14,7 @@
 		0D9C213026D37D4D0082F077 /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 405C1E9424D945870016B43C /* AppCenter-Config.plist */; };
 		0DB1EF13288BDB1800B18BFF /* KakaoShareLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DB1EF12288BDB1800B18BFF /* KakaoShareLink.m */; };
 		0DB1EF16288BE44A00B18BFF /* KakaoShareLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB1EF15288BE44A00B18BFF /* KakaoShareLink.swift */; };
+		0DB1EF1D288C05EC00B18BFF /* RCTNetworkInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DB1EF1C288C05EC00B18BFF /* RCTNetworkInfo.m */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		33AE367FCC133DCB970A5330 /* libPods-RokebiUSIM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2EDE63E33A8F6D206BDB4CF1 /* libPods-RokebiUSIM.a */; };
@@ -56,6 +57,8 @@
 		0D9C213B26D37D4D0082F077 /* RokebiGlobal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RokebiGlobal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0DB1EF12288BDB1800B18BFF /* KakaoShareLink.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KakaoShareLink.m; sourceTree = "<group>"; };
 		0DB1EF15288BE44A00B18BFF /* KakaoShareLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakaoShareLink.swift; sourceTree = "<group>"; };
+		0DB1EF1C288C05EC00B18BFF /* RCTNetworkInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTNetworkInfo.m; sourceTree = "<group>"; };
+		0DB1EF1E288C099700B18BFF /* RCTNetworkInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTNetworkInfo.h; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* RokebiESIM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RokebiESIM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = RokebiESIM/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = RokebiESIM/AppDelegate.m; sourceTree = "<group>"; };
@@ -126,6 +129,8 @@
 			children = (
 				0DB1EF12288BDB1800B18BFF /* KakaoShareLink.m */,
 				0DB1EF15288BE44A00B18BFF /* KakaoShareLink.swift */,
+				0DB1EF1C288C05EC00B18BFF /* RCTNetworkInfo.m */,
+				0DB1EF1E288C099700B18BFF /* RCTNetworkInfo.h */,
 			);
 			path = ExternalLibs;
 			sourceTree = "<group>";
@@ -927,6 +932,7 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				0DB1EF16288BE44A00B18BFF /* KakaoShareLink.swift in Sources */,
 				4060E90926DDAAF100E1C0AE /* main.m in Sources */,
+				0DB1EF1D288C05EC00B18BFF /* RCTNetworkInfo.m in Sources */,
 				40B508C924B8102B00213190 /* AppDelegate+Iamport.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1350,7 +1356,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "$(inherited)";
 				FRAMEWORK_SEARCH_PATHS = (

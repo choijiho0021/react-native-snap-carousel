@@ -36,7 +36,7 @@ import api from '@/redux/api/api';
 import Env from '@/environment';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppSnackBar from '@/components/AppSnackBar';
-import KakaoSDK from '@/components/KakaoSDK';
+import KakaoSDK from '@/components/NativeModule/KakaoSDK';
 
 const styles = StyleSheet.create({
   container: {
