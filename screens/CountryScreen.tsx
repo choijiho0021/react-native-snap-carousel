@@ -17,7 +17,6 @@ import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
@@ -27,8 +26,6 @@ import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import {isDeviceSize} from '../constants/SliderEntry.style';
 import utils from '@/redux/api/utils';
-
-const {esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -393,6 +390,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
       <View style={{flex: 1}}>
         <SectionList
           sections={prodData}
+          stickySectionHeadersEnabled
           // keyExtractor={(item, index) => item + index}
           renderItem={renderItem}
           renderSectionHeader={({section: {title, data}}) =>
