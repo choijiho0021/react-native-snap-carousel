@@ -283,17 +283,13 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
     <SafeAreaView style={styles.screen}>
       {defineSource(mode)}
       <AppActivityIndicator visible={pending || loading} />
-      {Platform.OS === 'ios' && (
-        <AppButton
-          style={styles.button}
-          type="primary"
-          title={i18n.t(title)}
-          disabled={
-            eventStatus === 'joined' || promoResult === 'promo:join:ing'
-          }
-          onPress={onPress}
-        />
-      )}
+      <AppButton
+        style={styles.button}
+        type="primary"
+        title={i18n.t(title)}
+        disabled={eventStatus === 'joined' || promoResult === 'promo:join:ing'}
+        onPress={onPress}
+      />
       <AppModal
         type="close"
         visible={!!promoResult && promoResult !== 'promo:join:ing'}
