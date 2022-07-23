@@ -2,14 +2,7 @@
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {
-  StyleSheet,
-  Image,
-  Modal,
-  Pressable,
-  SafeAreaView,
-  View,
-} from 'react-native';
+import {StyleSheet, Image, SafeAreaView, View, ScrollView} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import Carousel from 'react-native-snap-carousel';
@@ -17,13 +10,11 @@ import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {isDeviceSize, sliderWidth} from '@/constants/SliderEntry.style';
 import AppText from '@/components/AppText';
-import {appStyles} from '../constants/Styles';
+import {appStyles} from '@/constants/Styles';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import AppTextJoin, {StyledText} from '@/components/AppTextJoin';
-import AppIcon from '@/components/AppIcon';
+import AppTextJoin from '@/components/AppTextJoin';
 import i18n from '@/utils/i18n';
 import {guideImages} from './model';
-import {ScrollView} from 'react-native-gesture-handler';
 
 const styles = StyleSheet.create({
   container: {
@@ -99,18 +90,8 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
 });
-type CarouselIndex =
-  | 'page1'
-  | 'page2'
-  | 'page3'
-  | 'page4'
-  | 'page5'
-  | 'page6'
-  | 'page7'
-  | 'page8'
-  | 'page9'
-  | 'page10'
-  | 'page11';
+
+type CarouselIndex = keyof typeof guideImages;
 
 type UserGuideScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
@@ -211,8 +192,8 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
           <AppSvgIcon key="esimLogo" style={styles.logo} name="esimLogo" />
 
           <View style={{flex: 2, alignItems: 'center', marginTop: 46}}>
-            {data?.title.map((elm) => (
-              <AppTextJoin data={elm} />
+            {data?.title.map((elm, i) => (
+              <AppTextJoin key={i} data={elm} />
             ))}
           </View>
 
@@ -271,6 +252,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
 
           {data?.title.map((elm, idx) => (
             <AppTextJoin
+              key={idx}
               data={elm}
               style={{
                 bottom: idx === 0 ? 0 : 10,
@@ -325,7 +307,11 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
           </View>
 
           {data?.title.map((elm, idx) => (
-            <AppTextJoin data={elm} style={{bottom: idx === 0 ? 0 : 10}} />
+            <AppTextJoin
+              key={idx}
+              data={elm}
+              style={{bottom: idx === 0 ? 0 : 10}}
+            />
           ))}
         </View>
 
