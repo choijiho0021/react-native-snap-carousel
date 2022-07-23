@@ -1,3 +1,19 @@
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import Analytics from 'appcenter-analytics';
+import React, {memo, useCallback, useMemo, useEffect, useState} from 'react';
+import {
+  FlatList,
+  Pressable,
+  RefreshControl,
+  StyleSheet,
+  View,
+  SafeAreaView,
+} from 'react-native';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import moment from 'moment';
+import _ from 'underscore';
 import AppBackButton from '@/components/AppBackButton';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
@@ -28,24 +44,6 @@ import {
   OrderModelState,
 } from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import Analytics from 'appcenter-analytics';
-import React, {Component, memo} from 'react';
-import {
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import Env from '@/environment';
-import moment from 'moment';
-import {SafeAreaView} from 'react-native';
-
-const {esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -54,7 +52,6 @@ const styles = StyleSheet.create({
   },
   notibox: {
     // height: esimGlobal ? 120 : 100,
-
     marginTop: 3,
     paddingHorizontal: 20,
     paddingVertical: 10,
@@ -80,7 +77,7 @@ const styles = StyleSheet.create({
   },
   body: {
     ...appStyles.normal14Text,
-    height: 48,
+    // height: 48,
     width: '100%',
     lineHeight: 24,
     letterSpacing: 0.23,
@@ -112,7 +109,7 @@ const NotiListItem0 = ({
   onPress: (n: RkbNoti) => void;
 }) => {
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={() => onPress(item)}
       style={{backgroundColor: colors.white}}>
       <View
@@ -128,7 +125,7 @@ const NotiListItem0 = ({
           <AppText
             key="titleText"
             style={[appStyles.bold13Text, {color: colors.warmGrey}]}>
-            {moment(item.created).format('M월 DD일')}
+            {moment(item.created).format('Y년 M월 DD일')}
           </AppText>
           <View style={styles.title}>
             <AppText
@@ -144,14 +141,16 @@ const NotiListItem0 = ({
             style={styles.body}
             numberOfLines={2}
             ellipsizeMode="tail">
-            {utils.htmlToString(item.summary || item.body)}
+            {utils.htmlToString(
+              (item.summary || item.body)?.replace(/\n{1,}/g, '\n'),
+            )}
           </AppText>
         </View>
         <View key="iconview" style={styles.icon}>
           <AppIcon key="icon" name="iconArrowRight" size={10} />
         </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
@@ -176,161 +175,143 @@ type NotiScreenProps = {
   };
 };
 
-type NotiScreenState = {
-  mode: 'noti' | 'info';
-};
+const NotiScreen: React.FC<NotiScreenProps> = ({
+  account,
+  order,
+  info,
+  noti,
+  navigation,
+  route,
+  action,
+  pending,
+}) => {
+  const [mode, setMode] = useState<'noti' | 'info'>('noti');
 
-class NotiScreen extends Component<NotiScreenProps, NotiScreenState> {
-  constructor(props: NotiScreenProps) {
-    super(props);
+  useEffect(() => {
+    if (route.params?.mode === 'info' && !info.infoMap.has('info')) {
+      action.info.getInfoList('info');
+    }
 
-    this.state = {
-      mode: 'noti',
-    };
+    action.board.getIssueList();
+    setMode(route.params?.mode);
+  }, [action.board, action.info, info.infoMap, route.params?.mode]);
 
-    this.onRefresh = this.onRefresh.bind(this);
-  }
-
-  componentDidMount() {
-    const {
-      info: {infoMap},
-      route: {params},
-    } = this.props;
-    const {mode = 'info'} = params || {};
-
-    this.props.navigation.setOptions({
+  useEffect(() => {
+    navigation.setOptions({
       title: null,
       headerLeft: () => (
-        <AppBackButton title={params?.title || i18n.t('set:noti')} />
+        <AppBackButton title={route.params?.title || i18n.t('set:noti')} />
       ),
     });
 
     Analytics.trackEvent('Page_View_Count', {page: 'Noti'});
-
-    if (mode === 'info' && !infoMap.has('info')) {
-      this.props.action.info.getInfoList('info');
-    }
-
-    this.props.action.board.getIssueList();
-    this.setState({mode});
-  }
+  }, [navigation, route.params?.title]);
 
   // 공지사항의 경우 notiType이 없으므로 Notice/0으로 기본값 설정
-  onPress = async ({
-    uuid,
-    isRead,
-    bodyTitle,
-    body,
-    notiType = 'Notice/0',
-  }: RkbNoti) => {
-    const {
-      account: {mobile, token},
-      navigation,
-      order,
-    } = this.props;
-    const {mode} = this.state;
-    const split = notiType.split('/');
-    const type = split[0];
-    const orderId = split[1];
+  const onPress = useCallback(
+    async ({uuid, isRead, bodyTitle, body, notiType = 'Notice/0'}: RkbNoti) => {
+      const {mobile, token} = account;
+      const split = notiType.split('/');
+      const type = split[0];
+      const orderId = split[1];
 
-    Analytics.trackEvent('Page_View_Count', {page: 'Noti Detail'});
+      Analytics.trackEvent('Page_View_Count', {page: 'Noti Detail'});
 
-    if (uuid) {
-      // if ( mode != MODE_NOTIFICATION) this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
-      if (mode !== 'info' && isRead === 'F')
-        this.props.action.noti.readNoti({uuid, token});
+      if (uuid) {
+        // if ( mode != MODE_NOTIFICATION) this.props.action.noti.notiReadAndGet(uuid, this.props.account.mobile, this.props.auth )
+        if (mode !== 'info' && isRead === 'F')
+          action.noti.readNoti({uuid, token});
 
-      switch (type) {
-        case notiActions.NOTI_TYPE_REPLY:
-          navigation.navigate('BoardMsgResp', {
-            uuid: orderId,
-            status: 'Closed',
-          });
-          break;
+        switch (type) {
+          case notiActions.NOTI_TYPE_REPLY:
+            navigation.navigate('BoardMsgResp', {
+              uuid: orderId,
+              status: 'Closed',
+            });
+            break;
 
-        case notiActions.NOTI_TYPE_INVITE:
-          navigation.navigate('MyPageStack', {screen: 'MyPage'});
-          break;
+          case notiActions.NOTI_TYPE_INVITE:
+            navigation.navigate('MyPageStack', {screen: 'MyPage'});
+            break;
 
-        case notiActions.NOTI_TYPE_PYM:
-          // read orders if not read before
-          Promise.resolve(
-            this.props.action.order.checkAndGetOrderById({
-              user: mobile,
-              token,
-              orderId: utils.stringToNumber(orderId),
-            }),
-          ).then(() => {
-            const ord = order.orders.get(Number(orderId));
-            if (ord) {
-              navigation.navigate('PurchaseDetail', {
-                detail: ord,
-              });
-            }
-          });
-          break;
+          case notiActions.NOTI_TYPE_PYM:
+            // read orders if not read before
+            Promise.resolve(
+              action.order.checkAndGetOrderById({
+                user: mobile,
+                token,
+                orderId: utils.stringToNumber(orderId),
+              }),
+            ).then(() => {
+              const ord = order.orders.get(Number(orderId));
+              if (ord) {
+                navigation.navigate('PurchaseDetail', {
+                  detail: ord,
+                });
+              }
+            });
+            break;
 
-        case notiActions.NOTI_TYPE_USIM:
-          navigation.navigate('Usim');
-          break;
+          case notiActions.NOTI_TYPE_USIM:
+            navigation.navigate('Usim');
+            break;
 
-        default:
-          // 아직 일반 Noti 알림은 없으므로 공지사항 용으로만 사용, 후에 일반 Noti 상세페이지(notitype = noti)가 사용될 수 있도록 함
-          navigation.navigate('SimpleText', {
-            key: 'noti',
-            title:
-              type === notiActions.NOTI_TYPE_NOTI ||
-              type === notiActions.NOTI_TYPE_ACCOUNT
-                ? i18n.t('set:noti')
-                : i18n.t('contact:noticeDetail'),
-            bodyTitle,
-            text: body,
-            mode: 'html',
-          });
-          break;
+          default:
+            // 아직 일반 Noti 알림은 없으므로 공지사항 용으로만 사용, 후에 일반 Noti 상세페이지(notitype = noti)가 사용될 수 있도록 함
+            navigation.navigate('SimpleText', {
+              key: 'noti',
+              title:
+                type === notiActions.NOTI_TYPE_NOTI ||
+                type === notiActions.NOTI_TYPE_ACCOUNT
+                  ? i18n.t('set:noti')
+                  : i18n.t('contact:noticeDetail'),
+              bodyTitle,
+              text: body,
+              mode: 'html',
+            });
+            break;
+        }
       }
-    }
-  };
+    },
+    [account, action.noti, action.order, mode, navigation, order.orders],
+  );
 
-  onRefresh() {
-    const {mobile} = this.props.account;
-    this.props.action.noti.getNotiList({mobile});
-  }
+  const onRefresh = useCallback(() => {
+    action.noti.getNotiList({mobile: account.mobile});
+  }, [account.mobile, action.noti]);
 
-  renderItem = ({item}: {item: RkbNoti}) => {
-    return <NotiListItem item={item} onPress={this.onPress} />;
-  };
+  const renderItem = useCallback(
+    ({item}: {item: RkbNoti}) => <NotiListItem item={item} onPress={onPress} />,
+    [onPress],
+  );
 
-  render() {
-    const {
-      info: {infoMap},
-      noti: {notiList},
-      pending,
-    } = this.props;
-    const {mode} = this.state;
-    const data = mode === 'info' ? infoMap.get('info') : notiList;
+  const data = useMemo(() => {
+    // clone the list to sort
+    const list =
+      mode === 'info' ? info.infoMap.get('info') : _.clone(noti.notiList);
+    return list?.sort((a, b) => -a.created.localeCompare(b.created));
+  }, [info.infoMap, mode, noti.notiList]);
 
-    return (
-      <SafeAreaView key="container" style={styles.container}>
-        <FlatList
-          data={data}
-          renderItem={this.renderItem}
-          ListEmptyComponent={
-            <AppText style={styles.emptyPage}>{i18n.t('noti:empty')}</AppText>
-          }
-          refreshControl={
-            <RefreshControl
-              refreshing={pending}
-              onRefresh={this.onRefresh}
-              colors={[colors.clearBlue]} // android 전용
-              tintColor={colors.clearBlue} // ios 전용
-            />
-          }
-        />
-      </SafeAreaView>
-    );
-  }
-}
+  return (
+    <SafeAreaView key="container" style={styles.container}>
+      <FlatList
+        data={data}
+        renderItem={renderItem}
+        ListEmptyComponent={
+          <AppText style={styles.emptyPage}>{i18n.t('noti:empty')}</AppText>
+        }
+        refreshControl={
+          <RefreshControl
+            refreshing={pending}
+            onRefresh={onRefresh}
+            colors={[colors.clearBlue]} // android 전용
+            tintColor={colors.clearBlue} // ios 전용
+          />
+        }
+      />
+    </SafeAreaView>
+  );
+};
 
 export default connect(
   ({account, order, board, noti, info, status}: RootState) => ({
