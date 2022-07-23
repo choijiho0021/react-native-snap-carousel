@@ -12,7 +12,6 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {bindActionCreators} from 'redux';
 import SendSMS from 'react-native-sms';
 import {connect} from 'react-redux';
-import KakaoShareLink from 'react-native-kakao-share-link';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -37,6 +36,7 @@ import api from '@/redux/api/api';
 import Env from '@/environment';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppSnackBar from '@/components/AppSnackBar';
+import KakaoSDK from '@/components/KakaoSDK';
 
 const styles = StyleSheet.create({
   container: {
@@ -252,7 +252,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         default: // kakao
         {
           try {
-            const response = await KakaoShareLink.sendCustom({
+            const response = await KakaoSDK.sendCustom({
               // kakao template 상용: 67017, TB: 70053
               templateId: isProduction ? 67017 : 70053,
               templateArgs: [
