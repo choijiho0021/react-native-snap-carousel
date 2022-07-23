@@ -21,11 +21,7 @@ import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {RootState} from '@/redux';
 import {actions as notiActions, NotiModelState} from '@/redux/modules/noti';
-import {
-  actions as toastActions,
-  Toast,
-  ToastAction,
-} from '@/redux/modules/toast';
+import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import {navigate} from '@/navigation/navigation';
 import AppSnackBar from '@/components/AppSnackBar';
