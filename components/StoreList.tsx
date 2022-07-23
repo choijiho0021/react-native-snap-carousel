@@ -20,14 +20,9 @@ import AppText from './AppText';
 import {RkbPriceInfo} from '@/redux/modules/product';
 
 const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    flex: 1,
-  },
   text: {
-    ...(isDeviceSize('small')
-      ? appStyles.normal16Text
-      : appStyles.normal18Text),
+    ...appStyles.normal16Text,
+    fontSize: isDeviceSize('small') ? 16 : 18,
     textAlign: 'left',
     color: colors.clearBlue,
   },
