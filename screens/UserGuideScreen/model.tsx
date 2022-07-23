@@ -1,17 +1,10 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
-import React, {useCallback, useEffect, useMemo} from 'react';
-import {
-  StyleSheet,
-  Image,
-  Modal,
-  Pressable,
-  SafeAreaView,
-  View,
-} from 'react-native';
+import React from 'react';
+import {StyleSheet, View} from 'react-native';
 import {colors} from '@/constants/Colors';
-import {appStyles} from '../../constants/Styles';
+import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import AppText from '@/components/AppText';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
@@ -231,6 +224,7 @@ const stepsTitle = {
     ],
   ],
 };
+
 export const guideImages = {
   page1: {
     image: require('../assets/images/esim/userGuide/eSIMUserGuide1.png'),
