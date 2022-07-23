@@ -120,10 +120,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconWithText: {
-    flex: 6,
     marginHorizontal: 28,
     marginVertical: 22,
-    // justifyContent: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
   },
   priceButtonText: {
     ...appStyles.normal14Text,
@@ -258,15 +259,20 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
               source={require('../assets/images/esim/card.png')}
               style={styles.image}>
               <View style={styles.iconWithText}>
-                <AppIcon
-                  style={{width: '100%', justifyContent: 'flex-end'}}
-                  name="rokIcon"
-                />
-                <View style={styles.rchTextBox}>
+                <View>
+                  <AppIcon
+                    style={{width: '100%', justifyContent: 'flex-end'}}
+                    name="rokIcon"
+                  />
                   <AppText
-                    style={[appStyles.normal14Text, {textAlign: 'left'}]}>
+                    style={[
+                      appStyles.normal14Text,
+                      {textAlign: 'left', marginTop: 12},
+                    ]}>
                     {i18n.t('acc:remain')}
                   </AppText>
+                </View>
+                <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
                   <AppText style={appStyles.bold30Text}>
                     {utils.numberToCommaString(balance || 0)}
                     <AppText
