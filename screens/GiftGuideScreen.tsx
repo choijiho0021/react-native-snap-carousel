@@ -231,19 +231,24 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
           <AppText
             style={[
               appStyles.normal24,
-              {lineHeight: 40, color: colors.clearBlue, marginTop: 12},
+              {
+                lineHeight: 40,
+                color: colors.clearBlue,
+                marginTop: 12,
+                textAlignVertical: 'bottom',
+              },
             ]}>
             {i18n.t('gift:tip-3')}
             <AppText
               style={[appStyles.robotoBold38, {color: colors.clearBlue}]}>
               {gift}
-              <AppText
-                style={[appStyles.semiBold24Text, {color: colors.clearBlue}]}>
-                {i18n.t('gift:cash')}
-                <AppText style={{fontWeight: 'normal'}}>
-                  {i18n.t('gift:tip-4')}
-                </AppText>
-              </AppText>
+            </AppText>
+            <AppText
+              style={[appStyles.semiBold24Text, {color: colors.clearBlue}]}>
+              {i18n.t('gift:cash')}
+            </AppText>
+            <AppText style={{fontWeight: 'normal'}}>
+              {i18n.t('gift:tip-4')}
             </AppText>
           </AppText>
           <ImageBackground
@@ -254,6 +259,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
               flexDirection: 'row',
               alignItems: 'flex-end',
               paddingBottom: 10,
+              marginTop: -10,
             }}>
             <AppSvgIcon name="pin" style={{marginLeft: 8, marginRight: 6}} />
             <AppText style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
