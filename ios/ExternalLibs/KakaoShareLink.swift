@@ -104,6 +104,172 @@ class KakaoShareLink: NSObject {
         return CommerceDetail(regularPrice: regularPrice, discountPrice: discountPrice, discountRate: discountRate, fixedDiscountPrice: fixedDiscountPrice)
     }
 
+    @objc(sendCommerce:withResolver:withRejecter:)
+    func sendCommerce(dict:NSDictionary,resolve:@escaping RCTPromiseResolveBlock,reject:@escaping RCTPromiseRejectBlock) -> Void {
+        let buttons = createButtons(dict: dict)
+        let buttonTitle = (dict["buttonTitle"] as? String)
+        let commerceTemplate = CommerceTemplate(content: createContent(dict: (dict["content"] as! NSDictionary)), commerce: createCommerce(dict: (dict["commerce"] as! NSDictionary)), buttonTitle: buttonTitle, buttons: buttons)
+        if let commerceTemplateJsonData = (try? SdkJSONEncoder.custom.encode(commerceTemplate)) {
+            if let templateJsonObject = SdkUtils.toJsonObject(commerceTemplateJsonData) {
+                if LinkApi.isKakaoLinkAvailable() == true {
+                    LinkApi.shared.defaultLink(templateObject:templateJsonObject) {(linkResult, error) in
+                        if let error = error {
+                            reject("E_Kakao_Link", error.localizedDescription, nil)
+                        }
+                        else {
+                            //do something
+                            guard let linkResult = linkResult else { return }
+                            UIApplication.shared.open(linkResult.url, options: [:], completionHandler: nil)
+                            resolve(["result": true])
+                        }
+                    }
+                } else {
+                    if let url = LinkApi.shared.makeSharerUrlforDefaultLink(templateObject: templateJsonObject) {
+                        if UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                            resolve(["result": true])
+                        } else {
+                            reject("E_KAKAO_BROWSER_ERROR", "", nil)
+                            return
+                        }
+                    }
+                }
+            }
+        }
+    }
+    @objc(sendList:withResolver:withRejecter:)
+    func sendList(dict:NSDictionary,resolve:@escaping RCTPromiseResolveBlock,reject:@escaping RCTPromiseRejectBlock) -> Void {
+        let buttons = createButtons(dict: dict)
+        let buttonTitle = (dict["buttonTitle"] as? String)
+        let headerTitle = (dict["headerTitle"] as! String)
+        let listTemplate = ListTemplate(headerTitle: headerTitle, headerLink: createLink(dict: dict, key: "headerLink"), contents: createContents(dictArr: (dict["contents"] as! NSArray)), buttonTitle: buttonTitle, buttons: buttons)
+        if let listTemplateJsonData = (try? SdkJSONEncoder.custom.encode(listTemplate)) {
+            if let templateJsonObject = SdkUtils.toJsonObject(listTemplateJsonData) {
+                if LinkApi.isKakaoLinkAvailable() == true {
+                    LinkApi.shared.defaultLink(templateObject:templateJsonObject) {(linkResult, error) in
+                        if let error = error {
+                            reject("E_Kakao_Link", error.localizedDescription, nil)
+                        }
+                        else {
+                            //do something
+                            guard let linkResult = linkResult else { return }
+                            UIApplication.shared.open(linkResult.url, options: [:], completionHandler: nil)
+                            resolve(["result": true])
+                        }
+                    }
+                } else {
+                    if let url = LinkApi.shared.makeSharerUrlforDefaultLink(templateObject: templateJsonObject) {
+                        if UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                            resolve(["result": true])
+                        } else {
+                            reject("E_KAKAO_BROWSER_ERROR", "", nil)
+                            return
+                        }
+                    }
+                }
+            }
+        }
+    }
+    @objc(sendFeed:withResolver:withRejecter:)
+    func sendFeed(dict:NSDictionary,resolve:@escaping RCTPromiseResolveBlock,reject:@escaping RCTPromiseRejectBlock) -> Void {
+        let buttons = createButtons(dict: dict)
+        let buttonTitle = (dict["buttonTitle"] as? String)
+        let feedTemplate = FeedTemplate(content: createContent(dict: (dict["content"] as! NSDictionary)), social: createSocial(dict: dict), buttonTitle: buttonTitle, buttons: buttons)
+        if let feedTemplateJsonData = (try? SdkJSONEncoder.custom.encode(feedTemplate)) {
+            if let templateJsonObject = SdkUtils.toJsonObject(feedTemplateJsonData) {
+                if LinkApi.isKakaoLinkAvailable() == true {
+                    LinkApi.shared.defaultLink(templateObject:templateJsonObject) {(linkResult, error) in
+                        if let error = error {
+                            reject("E_Kakao_Link", error.localizedDescription, nil)
+                        }
+                        else {
+                            //do something
+                            guard let linkResult = linkResult else { return }
+                            UIApplication.shared.open(linkResult.url, options: [:], completionHandler: nil)
+                            resolve(["result": true])
+                        }
+                    }
+                } else {
+                    if let url = LinkApi.shared.makeSharerUrlforDefaultLink(templateObject: templateJsonObject) {
+                        if UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                            resolve(["result": true])
+                        } else {
+                            reject("E_KAKAO_BROWSER_ERROR", "", nil)
+                            return
+                        }
+                    }
+                }
+            }
+        }
+    }
+    @objc(sendLocation:withResolver:withRejecter:)
+    func sendLocation(dict:NSDictionary,resolve:@escaping RCTPromiseResolveBlock,reject:@escaping RCTPromiseRejectBlock) -> Void {
+        let buttons = createButtons(dict: dict)
+        let buttonTitle = (dict["buttonTitle"] as? String)
+        let locationTemplate = LocationTemplate(address: (dict["address"] as! String), addressTitle: (dict["addressTitle"] as? String), content: createContent(dict: (dict["content"] as! NSDictionary)), social: createSocial(dict: dict), buttonTitle: buttonTitle, buttons: buttons)
+        if let locationTemplateJsonData = (try? SdkJSONEncoder.custom.encode(locationTemplate)) {
+            if let templateJsonObject = SdkUtils.toJsonObject(locationTemplateJsonData) {
+                if LinkApi.isKakaoLinkAvailable() == true {
+                    LinkApi.shared.defaultLink(templateObject:templateJsonObject) {(linkResult, error) in
+                        if let error = error {
+                            reject("E_Kakao_Link", error.localizedDescription, nil)
+                        }
+                        else {
+                            //do something
+                            guard let linkResult = linkResult else { return }
+                            UIApplication.shared.open(linkResult.url, options: [:], completionHandler: nil)
+                            resolve(["result": true])
+                        }
+                    }
+                } else {
+                    if let url = LinkApi.shared.makeSharerUrlforDefaultLink(templateObject: templateJsonObject) {
+                        if UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                            resolve(["result": true])
+                        } else {
+                            reject("E_KAKAO_BROWSER_ERROR", "", nil)
+                            return
+                        }
+                    }
+                }
+            }
+        }
+    }
+    @objc(sendText:withResolver:withRejecter:)
+    func sendText(dict:NSDictionary,resolve:@escaping RCTPromiseResolveBlock,reject:@escaping RCTPromiseRejectBlock) -> Void {
+        let buttons = createButtons(dict: dict)
+        let buttonTitle = (dict["buttonTitle"] as? String)
+        let textTemplate = TextTemplate(text: (dict["text"] as! String), link: createLink(dict: dict, key: "link"), buttonTitle: buttonTitle, buttons: buttons)
+        if let textTemplateJsonData = (try? SdkJSONEncoder.custom.encode(textTemplate)) {
+            if let templateJsonObject = SdkUtils.toJsonObject(textTemplateJsonData) {
+                if LinkApi.isKakaoLinkAvailable() == true {
+                    LinkApi.shared.defaultLink(templateObject:templateJsonObject) {(linkResult, error) in
+                        if let error = error {
+                            reject("E_Kakao_Link", error.localizedDescription, nil)
+                        }
+                        else {
+                            //do something
+                            guard let linkResult = linkResult else { return }
+                            UIApplication.shared.open(linkResult.url, options: [:], completionHandler: nil)
+                            resolve(["result": true])
+                        }
+                    }
+                } else {
+                    if let url = LinkApi.shared.makeSharerUrlforDefaultLink(templateObject: templateJsonObject) {
+                        if UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                            resolve(["result": true])
+                        } else {
+                            reject("E_KAKAO_BROWSER_ERROR", "", nil)
+                            return
+                        }
+                    }
+                }
+            }
+        }
+    }
     @objc(sendCustom:withResolver:withRejecter:)
     func sendCustom(dict:NSDictionary,resolve:@escaping RCTPromiseResolveBlock,reject:@escaping RCTPromiseRejectBlock) -> Void {
         let templateId = Int64(dict["templateId"] as! Int)
