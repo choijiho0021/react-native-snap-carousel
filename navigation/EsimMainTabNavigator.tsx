@@ -40,7 +40,6 @@ import EsimScreen from '@/screens/EsimScreen';
 import GiftScreen from '@/screens/GiftScreen';
 import GiftGuideScreen from '@/screens/GiftGuideScreen';
 import FaqScreen from '@/screens/FaqScreen';
-import GuideScreen from '@/screens/GuideScreen';
 import {RootState} from '@/redux';
 import AuthStack from './AuthStackNavigator';
 import {HomeStackParamList} from './navigation';
@@ -129,7 +128,6 @@ function homeStack() {
       <HomeStack.Screen name="Invite" component={InviteScreen} />
       <HomeStack.Screen name="BoardMsgResp" component={BoardMsgRespScreen} />
       <HomeStack.Screen name="Faq" component={FaqScreen} />
-      <HomeStack.Screen name="Guide" component={GuideScreen} />
       <HomeStack.Screen name="Country" component={CountryScreen} />
       <HomeStack.Screen name="Payment" component={PaymentScreen} />
       <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
