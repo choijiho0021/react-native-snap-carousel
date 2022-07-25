@@ -1,6 +1,7 @@
 import appleAuth from '@invertase/react-native-apple-authentication';
 import React, {memo} from 'react';
 import {Platform, StyleSheet, View} from 'react-native';
+import Env from '@/environment';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
@@ -8,6 +9,9 @@ import AppText from '../AppText';
 import AppleLogin from './AppleLogin';
 import GoogleLogin from './GoogleLogin';
 import KakaoLogin from './KakaoLogin';
+import FacebookLogin from './FacebookLogin';
+
+const {esimGlobal} = Env.get();
 
 export type SocialAuthInfo = {
   user: string;
@@ -56,8 +60,11 @@ const SocialLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
       </View>
       <View style={styles.btnGroup}>
         {/* <NaverLoginButton onAuth={onAuth} /> */}
-        {/* <FacebookLogin onAuth={onAuth} /> */}
-        <KakaoLogin onAuth={onAuth} />
+        {esimGlobal ? (
+          <FacebookLogin onAuth={onAuth} />
+        ) : (
+          <KakaoLogin onAuth={onAuth} />
+        )}
         {Platform.OS === 'android' && <GoogleLogin onAuth={onAuth} />}
         {appleAuth.isSupported && <AppleLogin onAuth={onAuth} />}
       </View>

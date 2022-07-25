@@ -33,7 +33,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fb531615184696321</string>
+				<string>fb735220017741218</string>
 			</array>
 		</dict>
 		<dict>
@@ -68,13 +68,13 @@
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
-	<string>531615184696321</string>
+	<string>735220017741218</string>
 	<key>FacebookAutoLogAppEventsEnabled</key>
 	<true/>
 	<key>FacebookClientToken</key>
-	<string>894c3f612ec0ebd095aa7ed24f47ad3c</string>
+	<string>f540ca73d1d43fd5257dbaa113c2d5a7</string>
 	<key>FacebookDisplayName</key>
-	<string>ROKEBI eSIM</string>
+	<string>Rokebi Global</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<true/>
 	<key>FirebaseDynamicLinksCustomDomains</key>
@@ -93,9 +93,8 @@
 	<array>
 		<string>fbshareextension</string>
 		<string>fbauth2</string>
-		<string>fb-messenger-api</string>
-		<string>fb-messenger-public</string>
 		<string>fbapi</string>
+		<string>fb-messenger-share-api</string>
 		<string>rokebitalk</string>
 		<string>naversearchapp</string>
 		<string>naversearchthirdlogin</string>

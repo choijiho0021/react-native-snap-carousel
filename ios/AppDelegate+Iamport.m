@@ -10,6 +10,7 @@
 #import "AppDelegate+Iamport.h"
 #import <RNKakaoLogins.h>
 #import <React/RCTLinkingManager.h>
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
 
 @implementation AppDelegate(Rokebi)
 
@@ -19,6 +20,10 @@
 {
   if([RNKakaoLogins isKakaoTalkLoginUrl:url]) {
     return [RNKakaoLogins handleOpenUrl: url];
+  }
+  
+  if ([[FBSDKApplicationDelegate sharedInstance] application:application openURL:url options:options]) {
+    return YES;
   }
 
   return [RCTLinkingManager application:application openURL:url options:options];
