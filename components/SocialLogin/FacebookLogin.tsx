@@ -7,8 +7,8 @@ import {
   GraphRequestManager,
   LoginManager,
 } from 'react-native-fbsdk';
-import {AuthCallback} from '.';
 import AppButton from '../AppButton';
+import {SocialAuthInfo} from '.';
 
 const styles = StyleSheet.create({
   button: {
@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const FacebookLogin = ({onAuth}: {onAuth: AuthCallback}) => {
+const FacebookLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
   const getPublicProfile = useCallback(
     (data) => {
       const infoRequest = new GraphRequest(

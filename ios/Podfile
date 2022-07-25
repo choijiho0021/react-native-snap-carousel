@@ -25,9 +25,9 @@ ENVFILES = {
   pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
 
   # pod 'AppCenter/Core', '4.3.0'
-  pod 'FBSDKCoreKit'
-  pod 'FBSDKLoginKit'
-  pod 'FBSDKShareKit'
+  # pod 'FBSDKCoreKit'
+  # pod 'FBSDKLoginKit', '~> 14.0.0'
+  # pod 'FBSDKShareKit'
 
   pod 'Firebase/Analytics'
   pod 'Firebase/DynamicLinks'

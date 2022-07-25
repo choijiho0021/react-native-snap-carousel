@@ -118,7 +118,7 @@
     "@types/iamport-react-native": "^1.5.1",
     "@types/react-combine-reducers": "^1.0.0",
     "@types/react-native": "^0.66.18",
-    "@types/react-native-fbsdk": "^3.0.0",
+    "@types/react-native-fbsdk": "^3.0.2",
     "@types/react-native-snackbar-component": "^1.1.0",
     "@types/react-native-snap-carousel": "^3.8.3",
     "@types/react-native-version-check": "^3.4.3",
