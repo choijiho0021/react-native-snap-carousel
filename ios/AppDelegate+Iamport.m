@@ -22,7 +22,7 @@
     return [RNKakaoLogins handleOpenUrl: url];
   }
   
-  if ([[FBSDKApplicationDelegate sharedInstance] application:applicationㄴ openURL:url options:options]) {
+  if ([[FBSDKApplicationDelegate sharedInstance] application:application openURL:url options:options]) {
     return YES;
   }
 
