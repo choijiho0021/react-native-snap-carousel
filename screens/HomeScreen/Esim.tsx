@@ -69,6 +69,7 @@ import AppTabHeader from '@/components/AppTabHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppVerModal from './component/AppVerModal';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
 
 const {esimGlobal} = Env.get();
 
@@ -319,7 +320,7 @@ const Esim: React.FC<EsimProps> = ({
   const renderScene = useCallback(
     ({route}: {route: TabViewRoute}) => (
       <StoreList
-        data={product.priceInfo.get(route.key) || []}
+        data={product.priceInfo.get(route.key, [])}
         onPress={onPressItem}
         localOpList={product.localOpList}
         onScroll={Animated.event(
@@ -438,6 +439,10 @@ const Esim: React.FC<EsimProps> = ({
 
   useEffect(() => {
     navigation.addListener('blur', () => setPopUpVisible(false));
+
+    if (Platform.OS === 'ios') {
+      RCTNetworkInfo.supportEsim((v) => console.log('@@@ esim', v));
+    }
   }, [navigation]);
 
   useEffect(() => {

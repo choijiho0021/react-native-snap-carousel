@@ -329,20 +329,19 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   useEffect(() => {
     if (route.params?.partner) {
       const partnerIds = route.params.partner;
-      const list =
-        partnerIds
-          .map((p) => prodByLocalOp.get(p)?.map((p) => prodList.get(p)))
-          .reduce(
-            (acc, cur) => (cur ? acc.concat(cur.filter((c) => !!c)) : acc),
-            [],
-          )
-          .reduce(
-            (acc, cur) =>
-              cur?.field_daily === 'daily'
-                ? [(acc[0] || []).concat(cur), acc[1] || []]
-                : [acc[0] || [], (acc[1] || []).concat(cur)],
-            [],
-          ) || [];
+      const list = partnerIds
+        .map((p) => prodByLocalOp.get(p)?.map((p) => prodList.get(p)))
+        .reduce(
+          (acc, cur) => (cur ? acc.concat(cur.filter((c) => !!c)) : acc),
+          [],
+        )
+        .reduce(
+          (acc, cur) =>
+            cur?.field_daily === 'daily'
+              ? [acc[0].concat(cur), acc[1]]
+              : [acc[0], acc[1].concat(cur)],
+          [[], []],
+        ) || [[], []];
 
       const localOp = localOpList.get(partnerIds[0]);
       setPartnerId(partnerIds[0]);
