@@ -13,6 +13,7 @@ import TutorialScreen from '@/screens/TutorialScreen';
 
 import CountryScreen from '@/screens/CountryScreen';
 import ProductDetailScreen from '@/screens/ProductDetailScreen';
+import ProductDetailGlobalScreen from '@/screens/ProductDetailScreen/global';
 import ProductDetailOpScreen from '@/screens/ProductDetailOpScreen';
 
 import SettingsScreen from '@/screens/SettingsScreen';
@@ -111,6 +112,10 @@ function homeStack() {
       <HomeStack.Screen name="StoreSearch" component={StoreSearchScreen} />
       <HomeStack.Screen name="Cart" component={CartScreen} />
       <HomeStack.Screen name="ProductDetail" component={ProductDetailScreen} />
+      <HomeStack.Screen
+        name="ProductDetailGlobal"
+        component={ProductDetailGlobalScreen}
+      />
       <HomeStack.Screen
         name="ProductDetailOp"
         component={ProductDetailOpScreen}

@@ -24,8 +24,12 @@ import {RkbProduct} from '@/redux/api/productApi';
 import {actions as cartActions} from '@/redux/modules/cart';
 import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
-import {isDeviceSize} from '../constants/SliderEntry.style';
-import utils from '@/redux/api/utils';
+import {device, isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
+import AppIcon from '@/components/AppIcon';
+import Env from '@/environment';
+import AppPrice from '@/components/AppPrice';
+
+const {esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -114,6 +118,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  detail: {
+    height: windowWidth > device.small.window.width ? 48 : 36,
+    borderRadius: 3,
+    backgroundColor: colors.white,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: colors.black,
+    marginTop: 20,
+    marginHorizontal: 20,
+    alignItems: 'center',
+    paddingLeft: 20,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+  },
 });
 const toVolumeStr = (volume: number) => {
   if (volume <= 1000) return `${volume}MB`;
@@ -140,7 +158,7 @@ const CountryListItem0 = ({
     () =>
       item.field_daily === 'total'
         ? toVolumeStr(Number(item.volume))
-        : item.days + i18n.t('day'),
+        : item.days + i18n.t(item.days > 1 ? 'days' : 'day'),
     [item.days, item.field_daily, item.volume],
   );
 
@@ -245,18 +263,13 @@ const CountryListItem0 = ({
                   );
                 })}
             </View>
-            <AppText
-              key="price"
-              style={[
-                appStyles.bold24Text,
-                {
-                  fontSize: isDeviceSize('medium') ? 22 : 24,
-                },
-              ]}>
-              {`${utils.currencyString(item.price.value)}${i18n.t(
-                item.price.currency,
-              )}`}
-            </AppText>
+            <AppPrice
+              price={item.price}
+              balanceStyle={{
+                ...appStyles.bold24Text,
+                fontSize: isDeviceSize('medium') ? 22 : 24,
+              }}
+            />
           </View>
 
           <AppText
@@ -377,6 +390,49 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     [imageUrl, localOpDetails, navigation, partnerId],
   );
 
+  const renderProdDetailButton = useCallback(
+    () => (
+      <View>
+        <Pressable
+          onPress={() =>
+            navigation.navigate('ProductDetailGlobal', {
+              title: API.Product.getTitle(
+                localOpList.get(route.params?.partner[0]),
+              ),
+              img: imageUrl,
+              localOpDetails,
+              partnerId,
+            })
+          }>
+          <View style={styles.detail}>
+            <AppText
+              style={
+                windowWidth > device.small.window.width
+                  ? appStyles.normal14Text
+                  : appStyles.normal12Text
+              }>
+              {i18n.t('country:detail')}
+            </AppText>
+            <AppIcon
+              style={{marginRight: 20}}
+              name="iconArrowRight"
+              size={10}
+            />
+          </View>
+        </Pressable>
+        <View style={styles.divider} />
+      </View>
+    ),
+    [
+      imageUrl,
+      localOpDetails,
+      localOpList,
+      navigation,
+      partnerId,
+      route.params?.partner,
+    ],
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       {imageUrl && (
@@ -385,6 +441,8 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           source={{uri: API.default.httpImageUrl(imageUrl)}}
         />
       )}
+
+      {esimGlobal && renderProdDetailButton()}
 
       <View style={{flex: 1}}>
         <SectionList
