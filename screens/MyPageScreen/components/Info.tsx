@@ -15,9 +15,9 @@ import i18n from '@/utils/i18n';
 import {navigate} from '@/navigation/navigation';
 import AppIcon from '@/components/AppIcon';
 import AppTextJoin from '@/components/AppTextJoin';
-import {isDeviceSize} from '../../../constants/SliderEntry.style';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 
-const {esimApp, esimCurrency} = Env.get();
+const {esimGlobal, esimApp, esimCurrency} = Env.get();
 
 const styles = StyleSheet.create({
   dividerSmall: {
@@ -158,48 +158,48 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
             })
           }
         />
-        {esimApp && (
-          <AppButton
-            style={styles.btnIdCheck}
-            onPress={() =>
-              navigate(navigation, route, 'MyPageStack', {
-                tab: 'HomeStack',
-                screen: 'Contact',
-              })
-            }
-            titleStyle={appStyles.normal16Text}
-            title={i18n.t('contact:title')}
-            type="secondary"
-          />
-        )}
+        <AppButton
+          style={styles.btnIdCheck}
+          onPress={() =>
+            navigate(navigation, route, 'MyPageStack', {
+              tab: 'HomeStack',
+              screen: 'Contact',
+            })
+          }
+          titleStyle={appStyles.normal16Text}
+          title={i18n.t('contact:title')}
+          type="secondary"
+        />
       </View>
-      <Pressable
-        style={styles.btnInvite}
-        onPress={() =>
-          navigate(navigation, route, 'MyPageStack', {
-            tab: 'HomeStack',
-            screen: 'Invite',
-          })
-        }>
-        <AppIcon name="inviteBanner" />
-        <View style={{position: 'absolute', left: 16, bottom: 20}}>
-          <AppText
-            style={{...appStyles.medium13, color: 'white', marginBottom: 3}}>
-            {i18n.t('invite:btn-1')}
-          </AppText>
-          <AppTextJoin
-            data={[
-              {text: i18n.t('invite:btn-2-1')},
-              {
-                text: i18n.t('invite:btn-2-2'),
-                textStyle: {fontWeight: 'bold'},
-              },
-              {text: i18n.t('invite:btn-2-3')},
-            ]}
-            textStyle={styles.inviteText}
-          />
-        </View>
-      </Pressable>
+      {!esimGlobal && (
+        <Pressable
+          style={styles.btnInvite}
+          onPress={() =>
+            navigate(navigation, route, 'MyPageStack', {
+              tab: 'HomeStack',
+              screen: 'Invite',
+            })
+          }>
+          <AppIcon name="inviteBanner" />
+          <View style={{position: 'absolute', left: 16, bottom: 20}}>
+            <AppText
+              style={{...appStyles.medium13, color: 'white', marginBottom: 3}}>
+              {i18n.t('invite:btn-1')}
+            </AppText>
+            <AppTextJoin
+              data={[
+                {text: i18n.t('invite:btn-2-1')},
+                {
+                  text: i18n.t('invite:btn-2-2'),
+                  textStyle: {fontWeight: 'bold'},
+                },
+                {text: i18n.t('invite:btn-2-3')},
+              ]}
+              textStyle={styles.inviteText}
+            />
+          </View>
+        </Pressable>
+      )}
       <View style={styles.divider} />
       <AppText style={styles.subTitle}>{i18n.t('acc:purchaseHistory')}</AppText>
       <View style={styles.dividerSmall} />

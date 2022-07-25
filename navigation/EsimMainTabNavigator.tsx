@@ -31,6 +31,7 @@ import PaymentScreen from '@/screens/PaymentScreen';
 import PaymentResultScreen from '@/screens/PaymentResultScreen';
 import PurchaseDetailScreen from '@/screens/PurchaseDetailScreen';
 import ContactScreen from '@/screens/ContactScreen';
+import ContactGlobalScreen from '@/screens/ContactGlobalScreen';
 import ContactBoardScreen from '@/screens/ContactBoardScreen';
 import PymMethodScreen from '@/screens/PymMethodScreen';
 import StoreSearchScreen from '@/screens/StoreSearch';
@@ -49,6 +50,9 @@ import RedirectHKScreen from '@/screens/RedirectHKScreen';
 import UserGuideScreen from '../screens/UserGuideScreen';
 import {CartModelState} from '@/redux/modules/cart';
 import AppText from '@/components/AppText';
+import Env from '@/environment';
+
+const {esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   tabBarIcon: {
@@ -111,10 +115,9 @@ function homeStack() {
       <HomeStack.Screen name="Tutorial" component={TutorialScreen} />
       <HomeStack.Screen name="StoreSearch" component={StoreSearchScreen} />
       <HomeStack.Screen name="Cart" component={CartScreen} />
-      <HomeStack.Screen name="ProductDetail" component={ProductDetailScreen} />
       <HomeStack.Screen
-        name="ProductDetailGlobal"
-        component={ProductDetailGlobalScreen}
+        name="ProductDetail"
+        component={esimGlobal ? ProductDetailGlobalScreen : ProductDetailScreen}
       />
       <HomeStack.Screen
         name="ProductDetailOp"
@@ -122,7 +125,10 @@ function homeStack() {
       />
       <HomeStack.Screen name="Noti" component={NotiScreen} />
       <HomeStack.Screen name="SimpleText" component={SimpleTextScreen} />
-      <HomeStack.Screen name="Contact" component={ContactScreen} />
+      <HomeStack.Screen
+        name="Contact"
+        component={esimGlobal ? ContactGlobalScreen : ContactScreen}
+      />
       <HomeStack.Screen name="ContactBoard" component={ContactBoardScreen} />
       <HomeStack.Screen
         name="UserGuide"

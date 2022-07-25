@@ -395,7 +395,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
       <View>
         <Pressable
           onPress={() =>
-            navigation.navigate('ProductDetailGlobal', {
+            navigation.navigate('ProductDetail', {
               title: API.Product.getTitle(
                 localOpList.get(route.params?.partner[0]),
               ),
