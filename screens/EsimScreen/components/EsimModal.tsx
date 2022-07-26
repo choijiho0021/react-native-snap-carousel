@@ -165,7 +165,7 @@ const EsimModal: React.FC<EsimModalProps> = ({
             style={[
               styles.btnCopy,
               {
-                borderColor: selected ? colors.clearBlue : colors.whiteTwo,
+                borderColor: selected ? colors.clearBlue : colors.lightGrey,
                 borderRadius: 3,
               },
             ]}
