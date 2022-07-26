@@ -101,31 +101,16 @@ const pressIcons: Record<string, React.ReactElement[]> = {
   ],
   callCenter: [
     <Svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
+      width="26"
+      height="26"
+      viewBox="0 0 26 26"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <Path
-        d="M5 19a4 4 0 0 1 0-8v8zM19 19a4 4 0 0 0 0-8v8z"
-        stroke="#2C2C2C"
-        stroke-width="2"
-        stroke-linejoin="round"
-      />
-      <Mask id="tmfbrruh2a" fill="#fff">
-        <Path d="M3 11.039V9.503c0-4.655 4.03-8.429 9-8.429s9 3.774 9 8.429v1.571" />
-      </Mask>
-      <Path
-        d="M5 11.039V9.503H1V11.039h4zm0-1.536c0-3.429 3.008-6.429 7-6.429v-4C6.05-.926 1 3.622 1 9.503h4zm7-6.429c3.992 0 7 3 7 6.429h4C23 3.622 17.95-.926 12-.926v4zm7 6.429V11.074h4V9.503h-4z"
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M4 10.503v.913A5.001 5.001 0 0 0 6 21a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1v-.497c0-3.429 3.008-6.429 7-6.429s7 3 7 6.429V11a1 1 0 0 0-1 1v11h-6a1 1 0 1 0 0 2h7a1 1 0 0 0 1-1v-3.1a5.002 5.002 0 0 0 1-9.484v-.913c0-4.655-4.03-8.429-9-8.429s-9 3.774-9 8.429zM3 16c0-1.306.835-2.418 2-2.83v5.66A3.001 3.001 0 0 1 3 16zm20 0a3.001 3.001 0 0 0-2-2.83v5.66A3.001 3.001 0 0 0 23 16z"
         fill="#2C2C2C"
-        mask="url(#tmfbrruh2a)"
-      />
-      <Path
-        d="M20 19v4h-7"
-        stroke="#2C2C2C"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
       />
     </Svg>,
   ],

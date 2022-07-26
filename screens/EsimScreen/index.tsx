@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   usrGuideBtn: {
     flexDirection: 'row',
     marginHorizontal: 20,
-    marginTop: 16,
+    marginTop: 6,
     paddingHorizontal: 20,
     height: 56,
     alignItems: 'center',
@@ -195,7 +195,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               </AppText>
             </View>
 
-            <AppIcon name="iconArrowRight" />
+            <AppIcon name="iconArrowRightBlack" />
           </Pressable>
         </View>
       ),

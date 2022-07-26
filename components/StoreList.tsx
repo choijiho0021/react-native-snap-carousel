@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
     fontSize: isDeviceSize('small') ? 16 : 18,
     textAlign: 'left',
     color: colors.clearBlue,
+    fontWeight: '600',
   },
 
   image: {
@@ -74,9 +75,10 @@ const styles = StyleSheet.create({
   },
   cntry: {
     ...appStyles.bold14Text,
-    fontSize: isDeviceSize('small') ? 12 : 14,
-    marginTop: 11,
-    marginBottom: isDeviceSize('small') ? 4 : 9,
+    fontSize: isDeviceSize('medium') ? 14 : 16,
+    marginTop: 10,
+    marginBottom: 2,
+    fontWeight: '600',
   },
 });
 

@@ -121,7 +121,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     backgroundColor: colors.white,
     height: 56,
-    borderRadius: 2,
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor: colors.clearBlue,
