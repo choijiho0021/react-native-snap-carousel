@@ -20,8 +20,8 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <Path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M12 10.125A1.877 1.877 0 0 0 10.125 12c0 1.033.84 1.876 1.875 1.876A1.878 1.878 0 0 0 13.875 12 1.877 1.877 0 0 0 12 10.125zm0 5.625A3.754 3.754 0 0 1 8.25 12 3.754 3.754 0 0 1 12 8.25 3.754 3.754 0 0 1 15.75 12 3.754 3.754 0 0 1 12 15.75z"
         fill="#2C2C2C"
       />
@@ -149,26 +149,26 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <Path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M36 28.278C34.52 6.595 21.75 1.487 21.75 1.487S8.98 6.595 7.5 28.278c0 0 2.452 3.857 14.25 3.857S36 28.278 36 28.278z"
         fill="#FFD300"
       />
       <Path
-        clip-rule="evenodd"
+        clipRule="evenodd"
         d="M21.75 32.135c11.798 0 14.25-3.857 14.25-3.857C34.52 6.595 21.75 1.487 21.75 1.487S8.98 6.595 7.5 28.278c0 0 2.452 3.857 14.25 3.857z"
         stroke="#FFD300"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
       <Path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M21.5 36.514c24.877 0 21.727-13.837 19.577-16.58-2.15-2.744-5.765-2.592-8.107-1.396-2.342 1.196-4.014.585-5.727-2.784-1.92-3.773-5.743-3.563-5.743-3.563s-3.823-.21-5.742 3.563c-1.714 3.369-3.386 3.98-5.728 2.784-2.341-1.196-5.956-1.348-8.107 1.396-2.15 2.743-5.3 16.58 19.577 16.58z"
         fill="#2A7FF6"
       />
       <Path
-        clip-rule="evenodd"
+        clipRule="evenodd"
         d="M21.5 36.514c24.877 0 21.727-13.837 19.577-16.58-2.15-2.744-5.765-2.592-8.107-1.396-2.342 1.196-4.014.585-5.727-2.784-1.92-3.773-5.743-3.563-5.743-3.563s-3.823-.21-5.742 3.563c-1.714 3.369-3.386 3.98-5.728 2.784-2.341-1.196-5.956-1.348-8.107 1.396-2.15 2.743-5.3 16.58 19.577 16.58z"
         stroke="#2A7FF6"
       />
@@ -182,8 +182,8 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <Path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M4.646 12.354a.5.5 0 0 0 .708-.708L1.707 8H13a.5.5 0 0 0 0-1H1.707l3.647-3.646a.5.5 0 1 0-.708-.708l-4.5 4.5a.5.5 0 0 0 0 .708l4.5 4.5z"
         fill="#2C2C2C"
       />
@@ -197,13 +197,40 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <Path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M1.372 2.586A.881.881 0 0 0 1 3.324V21.5a1.5 1.5 0 0 0 3 0v-3.862a8.965 8.965 0 0 1 2.5-.359c2.006 0 3.753.93 5.5 1.86 1.747.93 3.494 1.861 5.5 1.861 2.5 0 4.369-1.068 5.128-1.585a.882.882 0 0 0 .372-.74V5.016c0-.85-1.073-1.408-1.854-1.068a9.138 9.138 0 0 1-3.646.774c-2.006 0-3.753-.93-5.5-1.86C10.253 1.93 8.506 1 6.5 1 4 1 2.131 2.068 1.372 2.586z"
         fill="#0029FF"
       />
       <Circle cx="12" cy="14.8" r="1" fill="#fff" />
       <Rect x="11" y="6" width="2" height="7" rx="1" fill="#fff" />
+    </Svg>,
+  ],
+  closeSnackBar: [
+    <Svg
+      width="12"
+      height="13"
+      viewBox="0 0 12 13"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect
+        x="10.596"
+        y="1.197"
+        width="1"
+        height="14"
+        rx=".5"
+        transform="rotate(45 10.596 1.197)"
+        fill="#fff"
+      />
+      <Rect
+        x=".697"
+        y="1.904"
+        width="1"
+        height="14"
+        rx=".5"
+        transform="rotate(-45 .697 1.904)"
+        fill="#fff"
+      />
     </Svg>,
   ],
 };
