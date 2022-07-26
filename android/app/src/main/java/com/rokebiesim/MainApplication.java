@@ -15,19 +15,12 @@ import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactApplication;
 import com.github.amarcruz.rnshortcutbadge.RNAppBadgePackage;
-import com.reactnativecommunity.picker.RNCPickerPackage;
-import com.reactnativegooglesignin.RNGoogleSigninPackage;
 import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
-import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
-import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
-import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
-import io.invertase.firebase.dynamiclinks.ReactNativeFirebaseDynamicLinksPackage;
 import com.rokebiesim.generated.EuccidManagerAppPackage;
 import com.rokebiesim.generated.FetchApiClientFactory;
 import com.zoontek.rnpermissions.RNPermissionsPackage;
 import com.swmansion.rnscreens.RNScreensPackage;
-import com.reactnativecommunity.cookies.CookieManagerPackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 import com.facebook.react.ReactInstanceManager;
@@ -50,10 +43,11 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.swmansion.reanimated.ReanimatedPackage;
 import com.zoontek.rnlocalize.RNLocalizePackage;
 import com.reactnativecommunity.clipboard.ClipboardPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+
 import org.reactnative.camera.RNCameraPackage;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import org.unimodules.core.interfaces.SingletonModule;
-import com.oblador.vectoricons.VectorIconsPackage;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -63,7 +57,15 @@ import java.util.Map;
 
 import io.actbase.kakaosdk.channel.ARNKakaoChannelPackage;
 import io.xogus.reactnative.versioncheck.RNVersionCheckPackage;
+import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
+import io.invertase.firebase.dynamiclinks.ReactNativeFirebaseDynamicLinksPackage;
+
 //import com.facebook.flipper.reactnative.FlipperPackage;
+import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
+import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
+import com.reactnativecommunity.picker.RNCPickerPackage;
+import com.reactnativegooglesignin.RNGoogleSigninPackage;
+import com.reactnativecommunity.cookies.CookieManagerPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -101,21 +103,21 @@ public class MainApplication extends Application implements ReactApplication {
 
                         properties.put("유입경로", referrerUrl);
 
-                        Analytics.trackEvent("유입경로",properties);
+                        Analytics.trackEvent("유입경로", properties);
 
                         break;
                     case InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED:
                         // API not available on the current Play Store app.
                         properties.put("유입경로 TEST", "FEATURE_NOT_SUPPORTED");
 
-                        Analytics.trackEvent("유입경로",properties);
+                        Analytics.trackEvent("유입경로", properties);
 
                         break;
                     case InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE:
                         // Connection couldn't be established.
                         properties.put("유입경로", "SERVICE_UNAVAILABLE");
 
-                        Analytics.trackEvent("유입경로",properties);
+                        Analytics.trackEvent("유입경로", properties);
                         break;
                 }
             }
@@ -129,116 +131,117 @@ public class MainApplication extends Application implements ReactApplication {
 
         });
 
-        prefs.edit().putBoolean("isFirstRun",false).apply();
+        prefs.edit().putBoolean("isFirstRun", false).apply();
     }
 
-  private final ReactNativeHost mReactNativeHost =
-      new ReactNativeHost(this) {
-        @Override
-        public boolean getUseDeveloperSupport() { return BuildConfig.DEBUG;}
+    private final ReactNativeHost mReactNativeHost =
+            new ReactNativeHost(this) {
+                @Override
+                public boolean getUseDeveloperSupport() {
+                    return BuildConfig.DEBUG;
+                }
 
-        @Override
-        protected List<ReactPackage> getPackages() {
-            return Arrays.<ReactPackage>asList(
-                new MainReactPackage(),
-            new RNAppBadgePackage(),
-            new RNCPickerPackage(),
-            new RNGoogleSigninPackage(),
-            new ReactNativeConfigPackage(),
-            new EuccidManagerAppPackage(),
-            new ReactNativeFirebaseAnalyticsPackage(),
-            new ReactNativeFirebaseMessagingPackage(),
-            new ReactNativeFirebaseAppPackage(),
-            new ReactNativeFirebaseDynamicLinksPackage(),
-            new RNPermissionsPackage(),
-            new RNScreensPackage(),
-            new CookieManagerPackage(),
-            new RNDeviceInfo(),
-            new SafeAreaContextPackage(),
-            new AsyncStoragePackage(),
-            new ClipboardPackage(),
-            new VectorIconsPackage(),
-//            new FlipperPackage(),
-                new SvgPackage(),
-                new PickerPackage(),
-                new AppCenterReactNativeCrashesPackage(getApplication(), getResources().getString(R.string.appCenterCrashes_whenToSendCrashes)),
-                new AppCenterReactNativeAnalyticsPackage(getApplication(), getResources().getString(R.string.appCenterAnalytics_whenToEnableAnalytics)),
-                new AppCenterReactNativePackage(getApplication()),
-                new RNVersionCheckPackage(),
-                new CodePush(getResources().getString(com.rokebiesim.R.string.CodePushDeploymentKey), getApplicationContext(), BuildConfig.DEBUG),
-                new RNCameraPackage(),
-                new ReactVideoPackage(),
-//                new AsyncStoragePackage(),
-                new RNGestureHandlerPackage(),
-                new ReanimatedPackage(),
-                new RNCWebViewPackage(),
-                new ARNKakaoChannelPackage(),
-                new RNLocalizePackage(),
-                new RNFetchBlobPackage()
-            );
+                @Override
+                protected List<ReactPackage> getPackages() {
+                    return Arrays.<ReactPackage>asList(
+                            new MainReactPackage(),
+                            new RNAppBadgePackage(),
+                            new ReactNativeConfigPackage(),
+                            new EuccidManagerAppPackage(),
+                            new ReactNativeFirebaseAppPackage(),
+                            new ReactNativeFirebaseDynamicLinksPackage(),
+                            new RNPermissionsPackage(),
+                            new RNScreensPackage(),
+                            new RNDeviceInfo(),
+                            new SafeAreaContextPackage(),
+                            new AsyncStoragePackage(),
+                            new ClipboardPackage(),
+                            new VectorIconsPackage(),
+                            new SvgPackage(),
+                            new PickerPackage(),
+                            new AppCenterReactNativeCrashesPackage(getApplication(), getResources().getString(R.string.appCenterCrashes_whenToSendCrashes)),
+                            new AppCenterReactNativeAnalyticsPackage(getApplication(), getResources().getString(R.string.appCenterAnalytics_whenToEnableAnalytics)),
+                            new AppCenterReactNativePackage(getApplication()),
+                            new RNVersionCheckPackage(),
+                            new CodePush(getResources().getString(com.rokebiesim.R.string.CodePushDeploymentKey), getApplicationContext(), BuildConfig.DEBUG),
+                            new RNCameraPackage(),
+                            new ReactVideoPackage(),
+                            new RNGestureHandlerPackage(),
+                            new ReanimatedPackage(),
+                            new RNCWebViewPackage(),
+                            new ARNKakaoChannelPackage(),
+                            new RNLocalizePackage(),
+                            new RNFetchBlobPackage(),
+                            new MyAppPackage(),
+                            new RNCPickerPackage(),
+                            new RNGoogleSigninPackage(),
+                            new ReactNativeFirebaseAnalyticsPackage(),
+                            new ReactNativeFirebaseMessagingPackage(),
+                            new CookieManagerPackage()
+//                            new FlipperPackage()
+                    );
+                }
+
+                @Override
+                protected String getJSMainModuleName() {
+                    return "index";
+                }
+
+                @Override
+                protected String getJSBundleFile() {
+                    return CodePush.getJSBundleFile();
+                }
+            };
+
+    @Override
+    public ReactNativeHost getReactNativeHost() {
+        return mReactNativeHost;
+    }
+
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        SoLoader.init(this, /* native exopackage */ false);
+        AppCenter.start(this, "ff7d5d5a-8b74-4ec2-99be-4dfd81b4b0fd", Analytics.class);
+        initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+        createNotificationChannel(this);
+        OkHttpClientProvider.setOkHttpClientFactory(new FetchApiClientFactory());
+        prefs = getSharedPreferences("Pref", MODE_PRIVATE);
+
+
+        boolean isFirstRun = prefs.getBoolean("isFirstRun", true);
+        if (isFirstRun) {
+            getReferrer();
         }
+    }
 
-        @Override
-        protected String getJSMainModuleName() {
-          return "index";
-        }
-
-        @Override
-        protected String getJSBundleFile() {
-          return CodePush.getJSBundleFile();
-        }
-      };
-
-  @Override
-  public ReactNativeHost getReactNativeHost() {
-    return mReactNativeHost;
-  }
-
-
-  @Override
-  public void onCreate() {
-    super.onCreate();
-    SoLoader.init(this, /* native exopackage */ false);
-      AppCenter.start(this,"ff7d5d5a-8b74-4ec2-99be-4dfd81b4b0fd", Analytics.class);
-      initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
-      createNotificationChannel(this);
-      OkHttpClientProvider.setOkHttpClientFactory(new FetchApiClientFactory());
-      prefs = getSharedPreferences("Pref", MODE_PRIVATE);
-
-
-      boolean isFirstRun = prefs.getBoolean("isFirstRun",true);
-      if(isFirstRun)
-      {
-          getReferrer();
-      }
-  }
-
-  /**
-   * Loads Flipper in React Native templates.
-   *
-   * @param context
-   */
-  private static void initializeFlipper(
-          Context context, ReactInstanceManager reactInstanceManager) {
-    if (BuildConfig.DEBUG) {
-      try {
+    /**
+     * Loads Flipper in React Native templates.
+     *
+     * @param context
+     */
+    private static void initializeFlipper(
+            Context context, ReactInstanceManager reactInstanceManager) {
+        if (BuildConfig.DEBUG) {
+            try {
         /*
          We use reflection here to pick up the class that initializes Flipper,
         since Flipper library is not available in release mode
         */
-        Class<?> aClass = Class.forName("com.rokebiesim.ReactNativeFlipper");
-        aClass.getMethod("initializeFlipper", Context.class, ReactInstanceManager.class).invoke(null, context, reactInstanceManager);
-      } catch (ClassNotFoundException e) {
-        e.printStackTrace();
-      } catch (NoSuchMethodException e) {
-        e.printStackTrace();
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
-      } catch (InvocationTargetException e) {
-        e.printStackTrace();
-      }
+                Class<?> aClass = Class.forName("com.rokebiesim.ReactNativeFlipper");
+                aClass.getMethod("initializeFlipper", Context.class, ReactInstanceManager.class).invoke(null, context, reactInstanceManager);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
     }
-  }
 
     private void createNotificationChannel(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
