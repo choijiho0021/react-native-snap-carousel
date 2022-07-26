@@ -29,18 +29,22 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   title: {
+    ...appStyles.normal18Text,
+    lineHeight: 22,
+    fontWeight: '600',
     marginHorizontal: 20,
     marginTop: 30,
-    ...appStyles.normal18Text,
+    marginBottom: 4,
   },
   subTitle: {
-    marginHorizontal: 20,
-    marginTop: 4,
-    marginBottom: 36,
     ...appStyles.normal14Text,
+    lineHeight: 20,
+    marginHorizontal: 20,
+    marginBottom: 24,
   },
   divider: {
     height: 10,
+    marginBottom: 8,
     backgroundColor: colors.whiteTwo,
   },
   showSearchBar: {
@@ -54,7 +58,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   row: {
-    height: 60,
+    height: 62,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -68,7 +72,8 @@ const styles = StyleSheet.create({
   },
   operator: {
     ...appStyles.bold16Text,
-    color: colors.warmGrey,
+    fontWeight: '600',
+    lineHeight: 22,
     marginRight: 16,
   },
   apn: {
@@ -214,7 +219,7 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
               <AppText
                 style={[
                   styles.operator,
-                  {color: isToggled ? colors.clearBlue : colors.black},
+                  {color: isToggled ? colors.clearBlue : colors.warmGrey},
                 ]}>
                 {item.operator}
               </AppText>
