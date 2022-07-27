@@ -46,4 +46,5 @@ export const colors = {
   shamrock: '#00AD50', // rgb 0 173 80
   lightSage: '#D6F3E3', // rgb 214 243 227
   veryLightBlue: '#DAEEFF', // rgb 218 238 255
+  greyishBrown: '#575757',
 };

@@ -11,7 +11,7 @@ import AppSvgIcon from './AppSvgIcon';
 const styles = StyleSheet.create({
   containerStyle: {
     borderRadius: 3,
-    height: 48,
+    height: 55,
     marginHorizontal: 20,
   },
 });
@@ -47,12 +47,11 @@ class AppSnackBar extends PureComponent<AppSnackBarProps> {
       <SnackBar
         ref={this.snackRef}
         visible={this.props.visible}
-        backgroundColor={this.props.backgroundColor || colors.black}
+        backgroundColor={this.props.backgroundColor || colors.greyishBrown}
         messageColor={this.props.messageColor || colors.white}
         position="bottom"
         bottom={this.props.bottom || 50}
         containerStyle={styles.containerStyle}
-        // actionText="X"
         actionStyle={{paddingHorizontal: 20}}
         accentColor={colors.white}
         autoHidingTime={timer.snackBarHidingTime}
