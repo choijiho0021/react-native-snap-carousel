@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
   },
   box: {
     height: 150,
+    marginBottom: 8,
     // resizeMode: 'cover'
   },
   card: {

@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
   container: {
     ...appStyles.container,
     alignItems: 'stretch',
+    backgroundColor: colors.white,
   },
   notibox: {
     // height: esimGlobal ? 120 : 100,
