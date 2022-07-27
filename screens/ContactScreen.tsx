@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
   },
   itemTitle: {
     ...appStyles.bold16Text,
+    fontWeight: '600',
     fontSize: isDeviceSize('medium') ? 16 : 18,
     color: colors.black,
     lineHeight: 22,

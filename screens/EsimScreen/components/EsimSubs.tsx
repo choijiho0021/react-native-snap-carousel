@@ -59,6 +59,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderWidth: 1,
     borderTopWidth: 0,
+    backgroundColor: colors.white,
     borderColor: colors.whiteThree,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
