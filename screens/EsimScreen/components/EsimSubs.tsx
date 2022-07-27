@@ -220,7 +220,7 @@ const topInfo = (item: RkbSubscription) => {
         <AppText style={styles.normal14WarmGrey}>{`${utils.toDateString(
           item.purchaseDate,
           'YYYY.MM.DD',
-        )} ~ ${utils.toDateString(item.expireDate, 'YYYY.MM.DD')}`}</AppText>
+        )} - ${utils.toDateString(item.expireDate, 'YYYY.MM.DD')}`}</AppText>
       </View>
     </View>
   );
