@@ -271,7 +271,7 @@ const EsimSubs = ({
   const redirectable = useMemo(
     () =>
       !expired &&
-      !giftStatusCd &&
+      giftStatusCd !== 'S' &&
       item.country?.includes('HK') &&
       /홍콩/gi.test(item.prodName!) &&
       item.partner === 'CMI',
