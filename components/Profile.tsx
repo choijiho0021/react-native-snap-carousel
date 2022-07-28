@@ -87,7 +87,7 @@ const Profile: React.FC<ProfileProps> = ({
       </View>
       <View style={{flex: 3, justifyContent: 'center'}}>
         <AppText style={styles.label}>
-          {utils.toPhoneNumber(mobile || accountMobile).slice(0, -4)}****
+          {utils.toPhoneNumber(mobile || accountMobile)}
         </AppText>
         <Pressable onPress={() => onPress('email')}>
           <AppText style={styles.value} numberOfLines={1} ellipsizeMode="tail">
