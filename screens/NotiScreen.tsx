@@ -49,12 +49,13 @@ const styles = StyleSheet.create({
   container: {
     ...appStyles.container,
     alignItems: 'stretch',
+    backgroundColor: colors.white,
   },
   notibox: {
     // height: esimGlobal ? 120 : 100,
-    marginTop: 3,
+    marginTop: 4,
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 14,
     justifyContent: 'space-between',
     flexDirection: 'row',
   },
@@ -118,14 +119,14 @@ const NotiListItem0 = ({
           styles.notibox,
           {
             backgroundColor:
-              item.isRead === 'F' ? colors.whiteTwo : colors.white,
+              item.isRead === 'F' ? colors.paleGrey3 : colors.white,
           },
         ]}>
         <View key="notitext" style={styles.notiText}>
           <AppText
             key="titleText"
             style={[appStyles.bold13Text, {color: colors.warmGrey}]}>
-            {moment(item.created).format('Y년 M월 DD일')}
+            {moment(item.created).format('M월 DD일')}
           </AppText>
           <View style={styles.title}>
             <AppText

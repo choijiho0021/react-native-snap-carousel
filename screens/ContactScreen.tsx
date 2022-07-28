@@ -42,14 +42,17 @@ const styles = StyleSheet.create({
   },
   itemTitle: {
     ...appStyles.bold16Text,
+    fontWeight: '600',
     fontSize: isDeviceSize('medium') ? 16 : 18,
     color: colors.black,
+    lineHeight: 22,
   },
   itemDesc: {
     ...appStyles.normal12Text,
     fontSize: isDeviceSize('medium') ? 12 : 14,
     color: colors.warmGrey,
     textAlign: 'left',
+    lineHeight: 20,
   },
   showSearchBar: {
     marginRight: 20,
@@ -78,15 +81,20 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
     justifyContent: 'center',
     backgroundColor: colors.clearBlue,
+    borderRadius: 3,
     alignItems: 'center',
   },
   contactInfo: {
     ...appStyles.bold22Text,
+    lineHeight: 30,
+    fontWeight: '600',
     fontSize: isDeviceSize('medium') ? 22 : 24,
     paddingTop: 14,
   },
   contactInfo2: {
     ...appStyles.bold18Text,
+    lineHeight: 24,
+    fontWeight: '600',
     fontSize: isDeviceSize('medium') ? 18 : 20,
     color: colors.black,
     marginBottom: 24,
@@ -110,7 +118,11 @@ const ContactListItem0 = ({
 }) => {
   return (
     <Pressable
-      style={{backgroundColor: colors.white, marginVertical: 8}}
+      style={{
+        backgroundColor: colors.white,
+        marginVertical: 8,
+        borderRadius: 3,
+      }}
       onPress={() => {
         if (onPress) onPress(item.key);
       }}>

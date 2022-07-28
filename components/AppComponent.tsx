@@ -11,6 +11,7 @@ import {
 import Video from 'react-native-video';
 import {connect, DispatchProp} from 'react-redux';
 import RNExitApp from 'react-native-exit-app';
+import {Adjust, AdjustConfig} from 'react-native-adjust';
 import {API} from '@/redux/api';
 import AppAlert from '@/components/AppAlert';
 import AppToast from '@/components/AppToast';
@@ -34,7 +35,7 @@ const {width: viewportWidth, height: viewportHeight} = Dimensions.get('window');
 const windowHeight = viewportHeight;
 const windowWidth = viewportWidth;
 
-const {esimApp, esimGlobal} = Env.get();
+const {esimApp, esimGlobal, adjustToken, isProduction} = Env.get();
 
 const SplashScreen = require('react-native-splash-screen').default;
 
@@ -116,6 +117,16 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
       dispatch(accountActions.getToken());
     }
   }, [dispatch]);
+
+  useEffect(() => {
+    const adjustConfig = new AdjustConfig(
+      adjustToken,
+      isProduction
+        ? AdjustConfig.EnvironmentProduction
+        : AdjustConfig.EnvironmentSandbox,
+    );
+    Adjust.create(adjustConfig);
+  }, []);
 
   useEffect(() => {
     if (loadingTextSec < 65)

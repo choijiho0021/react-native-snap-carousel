@@ -37,6 +37,8 @@ import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import AppCartButton from '@/components/AppCartButton';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {utils} from '@/utils/utils';
+import {eventToken} from '@/constants/Adjust';
 
 const {esimApp, esimGlobal, webViewHost} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -245,6 +247,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     action.cart.cartAddAndGet({purchaseItems}).then(({payload: resp}) => {
       console.log('@@@ add and get', resp);
       if (resp.result === 0) {
+        utils.adjustEventadd(eventToken.Add_Cart);
         setShowSnackBar({text: i18n.t('country:addCart'), visible: true});
         if (
           resp.objects[0].orderItems.find(

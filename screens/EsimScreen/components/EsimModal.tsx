@@ -37,9 +37,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteTwo,
     paddingHorizontal: 20,
     paddingVertical: 15,
+    borderRadius: 3,
   },
   titleStyle: {
     fontSize: 20,
+    marginBottom: 10,
   },
   esimInfoKey: {
     ...appStyles.normal16Text,
@@ -163,7 +165,8 @@ const EsimModal: React.FC<EsimModalProps> = ({
             style={[
               styles.btnCopy,
               {
-                borderColor: selected ? colors.clearBlue : colors.whiteTwo,
+                borderColor: selected ? colors.clearBlue : colors.lightGrey,
+                borderRadius: 3,
               },
             ]}
             onPress={copyToClipboard(valToCopy)}

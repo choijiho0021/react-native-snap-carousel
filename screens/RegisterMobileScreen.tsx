@@ -55,6 +55,7 @@ import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import validationUtil from '@/utils/validationUtil';
+import {eventToken} from '@/constants/Adjust';
 
 const {esimGlobal, isProduction} = Env.get();
 // const esimGlobal = false;
@@ -545,6 +546,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           }
 
           if (resp.result === 0 && mounted.current) {
+            utils.adjustEventadd(eventToken.SMS_Confirm);
             setAuthorized(_.isEmpty(resp.objects) ? true : undefined);
             setNewUser(_.isEmpty(resp.objects));
             setPin(value);

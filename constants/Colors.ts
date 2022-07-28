@@ -22,6 +22,8 @@ export const colors = {
   disabled: '#777777',
   lightGrey: '#d8d8d8',
   paleGrey: '#f7f8f9',
+  paleGrey2: '#f2f4f6',
+  paleGrey3: '#f7f8f9',
   white: '#ffffff',
   whiteTwo: '#f5f5f5',
   whiteThree: '#e3e3e3',
@@ -35,7 +37,6 @@ export const colors = {
   blue: '#2A7FF6',
   goldenYellow: '#ffc61b',
   paleBlue: '#eaf3fe',
-  paleGrey2: '#f2f4f6',
   pinkishGrey: '#bcbcbc',
   purplyBlue: '#5b16ef',
   babyBlue: '#B7D8FF',
@@ -45,4 +46,5 @@ export const colors = {
   shamrock: '#00AD50', // rgb 0 173 80
   lightSage: '#D6F3E3', // rgb 214 243 227
   veryLightBlue: '#DAEEFF', // rgb 218 238 255
+  greyishBrown: '#575757',
 };

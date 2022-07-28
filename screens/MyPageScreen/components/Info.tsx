@@ -121,10 +121,10 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
             style={styles.image}>
             <View style={styles.rechargeText}>
               <View style={{flexDirection: 'column', flex: 9}}>
-                <AppText style={[appStyles.normal14Text, {paddingBottom: 10}]}>
+                <AppText style={appStyles.normal14Text}>
                   {i18n.t('acc:remain')}
                 </AppText>
-                <AppText style={[appStyles.bold30Text, {paddingTop: 10}]}>
+                <AppText style={[appStyles.bold30Text, {paddingTop: 4}]}>
                   {utils.numberToCommaString(balance || 0)}
                   <AppText
                     style={[appStyles.normal20Text, {fontWeight: 'normal'}]}>

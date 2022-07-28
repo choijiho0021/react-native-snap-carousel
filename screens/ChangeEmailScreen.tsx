@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     ...appStyles.normal14Text,
     color: colors.clearBlue,
     marginTop: 13,
-    // marginLeft: 30,
+    marginLeft: 10,
   },
   divider: {
     marginTop: 30,

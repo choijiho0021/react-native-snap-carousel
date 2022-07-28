@@ -34,8 +34,8 @@ const lc = RNLocalize.getLocales()[0];
 const isEng = lc.languageCode !== 'ko';
 
 const codePushLabel = {
-  stagingIOS: "v107",
-  stagingAndroid: "v97",
+  stagingIOS: 'v107',
+  stagingAndroid: 'v97',
   productionIOS: 'v47',
   productionAndroid: 'v40',
 };
@@ -61,6 +61,7 @@ type Env = {
   isIOS?: boolean;
   fbUser?: string;
   webViewHost?: string;
+  adjustToken: string;
   appStoreUrl: {
     ios: string;
     android: string;
@@ -81,6 +82,7 @@ const env: Env = {
   isProduction: Config.NODE_ENV === 'production',
   isIOS: Platform.OS === 'ios',
   fbUser: '100751328128324',
+  adjustToken: 'hu4tkjd8im0w',
   appStoreUrl: {
     ios: 'https://apps.apple.com/kr/app/%EB%A1%9C%EB%B0%8D%EB%8F%84%EA%B9%A8%EB%B9%84-esim-%EB%8D%B0%EC%9D%B4%ED%84%B0%EA%B0%80-%ED%95%84%EC%9A%94%ED%95%9C-%EC%88%9C%EA%B0%84/id1525664178',
     android: '',

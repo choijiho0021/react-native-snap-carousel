@@ -1,5 +1,4 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 buildscript {
     ext {
         buildToolsVersion = "30.0.2"
@@ -7,11 +6,9 @@ buildscript {
         compileSdkVersion = 30
         targetSdkVersion = 30
         ndkVersion = "21.4.7075529"
-        kotlinVersion = '1.4.21'
+        kotlin_version = '1.4.21'
         googlePlayServicesVersion = "+"
         firebaseVersion = "+"
-        // You can also create properties to specify versions for dependencies.
-        // Having consistent versions between modules can avoid conflicts with behavior.
         supportLibVersion = "30.0.2"
         googlePlayServicesAuthVersion = "19.2.0"
     }
@@ -23,7 +20,7 @@ buildscript {
     dependencies {
         classpath('com.android.tools.build:gradle:4.2.2')
         classpath("com.google.gms:google-services:4.3.3")
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

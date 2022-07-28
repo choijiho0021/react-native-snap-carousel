@@ -1,8 +1,9 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {StyleSheet, View, TouchableOpacity} from 'react-native';
-import {Badge} from 'react-native-elements';
+import {Badge, colors} from 'react-native-elements';
 import {RootState} from '../redux';
+import {appStyles} from '../constants/Styles';
 
 const styles = StyleSheet.create({
   badge: {
@@ -17,8 +18,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   badgeText: {
-    fontSize: 10,
+    ...appStyles.bold12Text,
     paddingHorizontal: 0,
+    color: colors.white,
   },
   location: {
     top: -4,

@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   usageListContainer: {
-    marginTop: 20,
+    marginTop: 24,
     marginHorizontal: 20,
   },
   infoCard: {
@@ -59,18 +59,19 @@ const styles = StyleSheet.create({
     height: 50,
     borderWidth: 1,
     borderTopWidth: 0,
+    backgroundColor: colors.white,
     borderColor: colors.whiteThree,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
   },
   prodTitle: {
-    paddingBottom: 10,
+    paddingBottom: 13,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   inactiveContainer: {
-    // paddingTop: 10,
+    marginBottom: 6,
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
@@ -96,7 +97,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteThree,
     borderRadius: 3,
     padding: 5,
-    height: '90%',
+    justifyContent: 'center',
   },
   checkUsage: {
     ...appStyles.bold14Text,
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
   },
   btn: {
     width: '45%',
-    paddingTop: 24,
+    paddingTop: 19,
   },
   btnTitle: {
     ...appStyles.normal14Text,
@@ -121,7 +122,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.white,
   },
   redirectHK: {
     flexDirection: 'row',
@@ -169,6 +169,8 @@ const title = (
     <View style={styles.prodTitle}>
       <AppText
         key={item.key}
+        numberOfLines={1}
+        ellipsizeMode="tail"
         style={
           expired || giftStatusCd === 'S'
             ? styles.usageTitleNormal
@@ -217,8 +219,8 @@ const topInfo = (item: RkbSubscription) => {
         </AppText>
         <AppText style={styles.normal14WarmGrey}>{`${utils.toDateString(
           item.purchaseDate,
-          'YYYY-MM-DD',
-        )} ~ ${item.expireDate}`}</AppText>
+          'YYYY.MM.DD',
+        )} - ${utils.toDateString(item.expireDate, 'YYYY.MM.DD')}`}</AppText>
       </View>
     </View>
   );
@@ -269,7 +271,7 @@ const EsimSubs = ({
   const redirectable = useMemo(
     () =>
       !expired &&
-      !giftStatusCd &&
+      giftStatusCd !== 'S' &&
       item.country?.includes('HK') &&
       /홍콩/gi.test(item.prodName!) &&
       item.partner === 'CMI',
@@ -281,8 +283,9 @@ const EsimSubs = ({
       <View
         style={[
           sendable ? styles.infoRadiusBorder : styles.infoCard,
-          (expired || giftStatusCd === 'S') && styles.cardExpiredBg,
-          styles.shadow,
+          expired || giftStatusCd === 'S'
+            ? styles.cardExpiredBg
+            : styles.shadow,
         ]}>
         {title(item, expired, onPressUsage)}
         {topInfo(item)}
@@ -321,7 +324,7 @@ const EsimSubs = ({
           </View>
           <AppButton
             title={i18n.t('esim:sendGift')}
-            titleStyle={{color: colors.black}}
+            titleStyle={appStyles.bold14Text}
             style={styles.giftButton}
             onPress={() => navigation.navigate('Gift', {item})}
           />

@@ -26,14 +26,16 @@ const styles = StyleSheet.create({
   label: {
     ...appStyles.normal14Text,
     marginHorizontal: 20,
+    lineHeight: 22,
     color: colors.warmGrey,
+    marginBottom: 4,
   },
   value: {
     ...appStyles.roboto16Text,
     fontSize: isDeviceSize('medium') ? 17 : 19,
     marginLeft: 20,
     maxWidth: '100%',
-    lineHeight: 40,
+    lineHeight: 25,
     color: colors.black,
     marginRight: 20,
   },
@@ -85,7 +87,7 @@ const Profile: React.FC<ProfileProps> = ({
       </View>
       <View style={{flex: 3, justifyContent: 'center'}}>
         <AppText style={styles.label}>
-          {utils.toPhoneNumber(mobile || accountMobile).slice(0, -4)}****
+          {utils.toPhoneNumber(mobile || accountMobile)}
         </AppText>
         <Pressable onPress={() => onPress('email')}>
           <AppText style={styles.value} numberOfLines={1} ellipsizeMode="tail">

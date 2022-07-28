@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     height: 55,
-    margin: 20,
+    marginVertical: 20,
     flex: 1,
   },
   closeButtonTitle: {
@@ -130,7 +130,12 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
             <AppButton
               style={[
                 styles.closeButton,
-                {marginRight: 0, borderWidth: 1, borderColor: colors.lightGrey},
+                {
+                  marginLeft: 20,
+                  marginRight: 0,
+                  borderWidth: 1,
+                  borderColor: colors.lightGrey,
+                },
               ]}
               type="secondary"
               onPress={onCancelClose}
@@ -142,6 +147,8 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
               style={[
                 styles.closeButton,
                 {
+                  marginLeft: 12,
+                  marginRight: 20,
                   backgroundColor: buttonBackgroundColor || colors.clearBlue,
                 },
               ]}

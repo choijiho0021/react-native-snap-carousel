@@ -35,6 +35,7 @@ import {
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import {retrieveData, storeData, utils} from '@/utils/utils';
+import {eventToken} from '@/constants/Adjust';
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -192,6 +193,10 @@ const HeaderTitle0 = ({
   headerRef: React.MutableRefObject<HeaderTitleRef | null>;
 }) => {
   const [word, setWord] = useState('');
+
+  useEffect(() => {
+    utils.adjustEventadd(eventToken.Search_Country);
+  }, []);
 
   useEffect(() => {
     if (headerRef) {

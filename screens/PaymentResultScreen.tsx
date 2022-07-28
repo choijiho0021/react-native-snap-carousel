@@ -25,6 +25,7 @@ import {
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
+import {eventToken} from '@/constants/Adjust';
 
 const {esimCurrency, esimGlobal} = Env.get();
 
@@ -164,13 +165,20 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   }, [action.cart, cart]);
 
   useEffect(() => {
+    const {pymPrice, deduct} = cart;
     Analytics.trackEvent('Payment', {
       payment: `${params?.mode} Payment${isSuccess ? ' Success' : ' Fail'}`,
     });
 
-    if (isSuccess)
+    if (pymPrice && deduct && isSuccess) {
+      utils.adjustEventadd(
+        eventToken.But_Now,
+        pymPrice.value + deduct.value,
+        'KRW',
+      ); // pymPrice.value 실결제금액, deduct.value 로깨비캐시 차감금액
       analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_payment`);
-  }, [isSuccess, params?.mode]);
+    }
+  }, [cart, isSuccess, params?.mode]);
 
   // [WARNING: 이해를 돕기 위한 것일 뿐, imp_success 또는 success 파라미터로 결제 성공 여부를 장담할 수 없습니다.]
   // 아임포트 서버로 결제내역 조회(GET /payments/${imp_uid})를 통해 그 응답(status)에 따라 결제 성공 여부를 판단하세요.

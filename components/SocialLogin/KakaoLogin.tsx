@@ -9,6 +9,8 @@ import AppButton from '@/components/AppButton';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import {SocialAuthInfo} from '.';
+import {utils} from '@/utils/utils';
+import {eventToken} from '@/constants/Adjust';
 
 const styles = StyleSheet.create({
   container: {
@@ -61,6 +63,8 @@ const KakaoLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
           email: storedEmail,
           profileImageUrl,
         });
+
+        utils.adjustEventadd(eventToken.Kakao_Login);
       }
     } catch (error) {
       console.error('@@@ kakao login failed', error);
