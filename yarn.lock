@@ -2010,10 +2010,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-native-fbsdk@^3.0.0":
-  "integrity" "sha512-e7wDnT/64bFv8w16xHGpW2SEhE3N08pCIIRLVFpRttBucfYmAbWohNtovoEfKIr3VgSsldy0xdfJZdIyhsWC+A=="
-  "resolved" "https://registry.npmjs.org/@types/react-native-fbsdk/-/react-native-fbsdk-3.0.1.tgz"
-  "version" "3.0.1"
+"@types/react-native-fbsdk@^3.0.2":
+  "integrity" "sha512-1Y4MYIQ5Kg0qxz25KFOl8d4p2oHdTm7ad7e6za4nBuFOmMOaKrhJeK3f/eG17zQ37yFMZpd7vf35DeEZckH+Mg=="
+  "resolved" "https://registry.npmjs.org/@types/react-native-fbsdk/-/react-native-fbsdk-3.0.2.tgz"
+  "version" "3.0.2"
   dependencies:
     "@types/react" "*"
     "@types/react-native" "*"
@@ -8433,6 +8433,11 @@
   "integrity" "sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w=="
   "resolved" "https://registry.npmjs.org/react-is/-/react-is-17.0.2.tgz"
   "version" "17.0.2"
+
+"react-native-adjust@^4.29.6":
+  "integrity" "sha512-6XShRFrqx/kif0iPutaS4gj6LhZtzPIpH3MAxxKOoqwWWX0UPVQ9boQC4j2BtFjmerVQG1p2LGwsdylsGOiJ2g=="
+  "resolved" "https://registry.npmjs.org/react-native-adjust/-/react-native-adjust-4.29.6.tgz"
+  "version" "4.29.6"
 
 "react-native-app-badge@0.1.5":
   "integrity" "sha512-/UwTH7kmn55pfnA5n1U3ocjUMzx1eApPBPZkJFYG2UYnpqInWIltgtqHWhEQDbYMUqIjgqtXnPijsyuuozD2Iw=="

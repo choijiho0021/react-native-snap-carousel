@@ -3,6 +3,7 @@ import {Image} from 'react-native';
 import {getFontScale} from 'react-native-device-info';
 import RNFetchBlob from 'rn-fetch-blob';
 import _ from 'underscore';
+import {Adjust, AdjustEvent} from 'react-native-adjust';
 import i18n from '@/utils/i18n';
 import Env from '@/environment';
 import {RkbImage} from './accountApi';
@@ -242,6 +243,14 @@ const convertURLtoRkbImage = async (url: string) => {
   });
 };
 
+const adjustEventadd = (key: string, pymAmount?: number, currency?: string) => {
+  const adjustEvent = new AdjustEvent(key);
+  if (pymAmount && currency) {
+    adjustEvent.setRevenue(pymAmount, currency);
+  }
+  Adjust.trackEvent(adjustEvent);
+};
+
 export default {
   fontScaling,
   numberToCommaString,
@@ -262,4 +271,5 @@ export default {
   addCurrency,
   currencyString,
   convertURLtoRkbImage,
+  adjustEventadd,
 };

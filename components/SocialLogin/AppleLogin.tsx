@@ -6,6 +6,8 @@ import {SocialAuthInfo} from '.';
 import {appStyles} from '@/constants/Styles';
 import AppButton from '../AppButton';
 import i18n from '@/utils/i18n';
+import {utils} from '@/utils/utils';
+import {eventToken} from '@/constants/Adjust';
 
 const styles = StyleSheet.create({
   button: {
@@ -70,6 +72,8 @@ const AppleLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
             email: storedEmail,
             kind: 'apple',
           });
+
+        utils.adjustEventadd(eventToken.Apple_Login);
       }
     } catch (error) {
       if (error?.code === appleAuth.Error.CANCELED) {

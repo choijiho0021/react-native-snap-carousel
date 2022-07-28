@@ -37,6 +37,11 @@
 		A31C8F31282245F200CE16F6 /* Rokebi-Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31C8F2E282245F200CE16F6 /* Rokebi-Bridge.swift */; };
 		A32580F52715115700C2F28A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A32580F42715115700C2F28A /* GoogleService-Info.plist */; };
 		A32580F62715273900C2F28A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A32580F42715115700C2F28A /* GoogleService-Info.plist */; };
+		A3568E0C2892376500986E9F /* iAd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A33A12C627BF1B03007FBA87 /* iAd.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		A3568E0E2892377900986E9F /* AdServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3568E0D2892377900986E9F /* AdServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		A3568E102892378700986E9F /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3568E0F2892378700986E9F /* AdSupport.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		A3568E12289237A000986E9F /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3568E11289237A000986E9F /* StoreKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		A3568E14289237B500986E9F /* AppTrackingTransparency.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3568E13289237B500986E9F /* AppTrackingTransparency.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		A3BF9FE1273B63DD00561187 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		A3BF9FE3273B63DD00561187 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		A3BF9FE4273B63DD00561187 /* AppDelegate+Iamport.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B508C824B8102B00213190 /* AppDelegate+Iamport.m */; };
@@ -89,6 +94,10 @@
 		A31C8F2E282245F200CE16F6 /* Rokebi-Bridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Rokebi-Bridge.swift"; sourceTree = "<group>"; };
 		A32580F42715115700C2F28A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A33A12C627BF1B03007FBA87 /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = System/Library/Frameworks/iAd.framework; sourceTree = SDKROOT; };
+		A3568E0D2892377900986E9F /* AdServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdServices.framework; path = System/Library/Frameworks/AdServices.framework; sourceTree = SDKROOT; };
+		A3568E0F2892378700986E9F /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
+		A3568E11289237A000986E9F /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		A3568E13289237B500986E9F /* AppTrackingTransparency.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppTrackingTransparency.framework; path = System/Library/Frameworks/AppTrackingTransparency.framework; sourceTree = SDKROOT; };
 		A36F6F3026B8F0F100A69BF2 /* Configurations */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Configurations; sourceTree = "<group>"; };
 		A3BF9FF7273B63DE00561187 /* RokebiUSIM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RokebiUSIM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A80C64EF0866C5F96A0875F8 /* Pods-RokebiUSIM.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiUSIM.staging.xcconfig"; path = "Target Support Files/Pods-RokebiUSIM/Pods-RokebiUSIM.staging.xcconfig"; sourceTree = "<group>"; };
@@ -112,6 +121,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A3568E14289237B500986E9F /* AppTrackingTransparency.framework in Frameworks */,
+				A3568E12289237A000986E9F /* StoreKit.framework in Frameworks */,
+				A3568E102892378700986E9F /* AdSupport.framework in Frameworks */,
+				A3568E0E2892377900986E9F /* AdServices.framework in Frameworks */,
+				A3568E0C2892376500986E9F /* iAd.framework in Frameworks */,
 				F2563C5A06DECDA22B6640BD /* libPods-RokebiESIM.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -168,6 +182,10 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A3568E13289237B500986E9F /* AppTrackingTransparency.framework */,
+				A3568E11289237A000986E9F /* StoreKit.framework */,
+				A3568E0F2892378700986E9F /* AdSupport.framework */,
+				A3568E0D2892377900986E9F /* AdServices.framework */,
 				A33A12C627BF1B03007FBA87 /* iAd.framework */,
 				408CC8F526B8D23C000C8C8A /* libYogaKit.a */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,

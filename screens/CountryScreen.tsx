@@ -28,6 +28,8 @@ import {device, isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
 import AppIcon from '@/components/AppIcon';
 import Env from '@/environment';
 import AppPrice from '@/components/AppPrice';
+import {utils} from '@/utils/utils';
+import {eventToken} from '@/constants/Adjust';
 
 const {esimGlobal} = Env.get();
 
@@ -328,6 +330,10 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const [imageUrl, setImageUrl] = useState<string>();
   const [localOpDetails, setLocalOpDetails] = useState<string>();
   const [partnerId, setPartnerId] = useState<string>();
+
+  useEffect(() => {
+    utils.adjustEventadd(eventToken.Country_Selected);
+  }, []);
 
   useEffect(() => {
     const title = API.Product.getTitle(

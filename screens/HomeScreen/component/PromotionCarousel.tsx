@@ -15,6 +15,8 @@ import {RkbPromotion} from '@/redux/api/promotionApi';
 import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import {actions as infoActions, InfoAction} from '@/redux/modules/info';
+import {utils} from '@/utils/utils';
+import {eventToken} from '@/constants/Adjust';
 
 const DOT_MARGIN = 6;
 const INACTIVE_DOT_WIDTH = 6;
@@ -105,6 +107,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
   const [activeSlide, setActiveSlide] = useState(0);
   const onPress = useCallback(
     (item: RkbPromotion) => {
+      utils.adjustEventadd(eventToken.Home_Banner);
       if (item.product_uuid) {
         const {prodList} = product;
         const prod = prodList.get(item.product_uuid);

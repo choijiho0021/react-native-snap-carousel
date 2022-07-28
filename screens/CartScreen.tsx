@@ -32,6 +32,7 @@ import {
 } from '@/redux/modules/cart';
 import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
+import {eventToken} from '@/constants/Adjust';
 
 const {esimCurrency} = Env.get();
 const sectionTitle = ['sim', 'product'];
@@ -359,6 +360,10 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
 
     init();
   }, [init, navigation]);
+
+  useEffect(() => {
+    utils.adjustEventadd(eventToken.Cart_Page_View);
+  }, []);
 
   useFocusEffect(
     React.useCallback(() => {
