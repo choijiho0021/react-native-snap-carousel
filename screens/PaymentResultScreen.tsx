@@ -171,11 +171,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
     });
 
     if (pymPrice && deduct && isSuccess) {
-      utils.adjustEventadd(
-        eventToken.But_Now,
-        pymPrice.value + deduct.value,
-        'KRW',
-      ); // pymPrice.value 실결제금액, deduct.value 로깨비캐시 차감금액
+      utils.adjustEventadd(eventToken.Sales, pymPrice.value, 'KRW'); // pymPrice.value 실결제금액, deduct.value 로깨비캐시 차감금액
       analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_payment`);
     }
   }, [cart, isSuccess, params?.mode]);

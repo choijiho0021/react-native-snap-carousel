@@ -63,8 +63,6 @@ const KakaoLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
           email: storedEmail,
           profileImageUrl,
         });
-
-        utils.adjustEventadd(eventToken.Kakao_Login);
       }
     } catch (error) {
       console.error('@@@ kakao login failed', error);

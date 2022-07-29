@@ -391,6 +391,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       const {payload: resp} = actions.account.logInAndGetAccount(auth);
 
       if (resp?.result === 0) {
+        utils.adjustEventadd(eventToken.Login);
         actions.cart.cartFetch();
         const profileImage: RkbImage = await utils.convertURLtoRkbImage(
           profileImageUrl!,
@@ -453,13 +454,10 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
         if (resp.result === 0 && !_.isEmpty(resp.objects)) {
           if (status === 'authorized') {
+            utils.adjustEventadd(eventToken.SignUp);
             await firebase.analytics().setAnalyticsCollectionEnabled(true);
             await Settings.setAdvertiserTrackingEnabled(true);
             analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_sign_up`);
-
-            // adjust appEvent 추가
-            // const adjustEvent = new AdjustEvent(adjustSignUp);
-            // Adjust.trackEvent(adjustEvent);
           }
 
           signIn({mobile, pin});
@@ -546,7 +544,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           }
 
           if (resp.result === 0 && mounted.current) {
-            utils.adjustEventadd(eventToken.SMS_Confirm);
             setAuthorized(_.isEmpty(resp.objects) ? true : undefined);
             setNewUser(_.isEmpty(resp.objects));
             setPin(value);
