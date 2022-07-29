@@ -402,7 +402,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
   const signIn = useCallback(
     async (auth: {mobile?: string; pin?: string}): Promise<ApiResult<any>> => {
-      const {payload: resp} = actions.account.logInAndGetAccount(auth);
+      const {payload: resp} = await actions.account.logInAndGetAccount(auth);
 
       if (resp?.result === 0) {
         utils.adjustEventadd(eventToken.Login);
