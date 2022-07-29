@@ -392,7 +392,7 @@ const Esim: React.FC<EsimProps> = ({
             onPress={() => navigation?.navigate('Noti', {mode: 'noti'})}
             iconName="btnAlarm"
           />
-          {noti.notiList.filter((elm) => elm.isRead === 'F').length > 1 && (
+          {noti.notiList.find((elm) => elm.isRead === 'F') && (
             <View style={styles.notiBadge} />
           )}
         </View>
