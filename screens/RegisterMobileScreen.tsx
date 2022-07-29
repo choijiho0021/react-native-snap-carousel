@@ -330,9 +330,32 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       dynamicLinks()
         .getInitialLink()
         .then((l) => {
-          if (l?.url.includes('gift')) {
-            navigation.navigate('EsimStack', {
-              screen: 'Esim',
+          if (l !== null) {
+            if (l?.url.includes('gift')) {
+              navigation.navigate('EsimStack', {
+                screen: 'Esim',
+              });
+            } else {
+              navigation.navigate('Main', {
+                screen: 'MyPageStack',
+                params: {
+                  screen: 'MyPage',
+                },
+              });
+            }
+          } else if (newUser) {
+            navigation.navigate('Main', {
+              screen: 'MyPageStack',
+              params: {
+                screen: 'MyPage',
+              },
+            });
+          } else if (!lastTab.includes('Invite')) {
+            navigation.navigate('Main', {
+              screen: 'HomeStack',
+              params: {
+                screen: 'Home',
+              },
             });
           } else {
             navigation.navigate('Main', {
@@ -345,15 +368,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         });
 
       setAuthorized(true);
-
-      if (!lastTab.includes('Invite')) {
-        navigation.navigate('Main', {
-          screen: 'MyPageStack',
-          params: {
-            screen: 'MyPage',
-          },
-        });
-      }
     }
     // AppAlert.error(i18n.t('reg:failedToLogIn'));
   }, [lastTab, loggedIn, navigation]);
