@@ -4,7 +4,7 @@ import AppModal from '@/components/AppModal';
 import AppButton from '@/components/AppButton';
 import {colors} from '@/constants/Colors';
 import i18n from '@/utils/i18n';
-import {appStyles} from '@/constants/Styles';
+import {appStyles, formatText} from '@/constants/Styles';
 import AppText from '@/components/AppText';
 import Env from '@/environment';
 import AppTextJoin from '@/components/AppTextJoin';
@@ -89,6 +89,19 @@ const AppVerModal: React.FC<AppVerModalProps> = ({
     [onOkClose, option],
   );
 
+  const renderText = useCallback(
+    (id: string) => (
+      <AppTextJoin
+        textStyle={appStyles.bold22Text}
+        data={formatText('b', {
+          text: i18n.t(id),
+          textStyle: {...appStyles.bold22Text, color: colors.clearBlue},
+        })}
+      />
+    ),
+    [],
+  );
+
   return (
     <AppModal
       justifyContent="flex-end"
@@ -108,21 +121,8 @@ const AppVerModal: React.FC<AppVerModalProps> = ({
             marginRight: 12,
           }}>
           <View>
-            <AppText style={appStyles.bold22Text}>
-              {i18n.t('app:updateTitle-1')}
-            </AppText>
-            <AppTextJoin
-              data={[
-                {
-                  text: i18n.t('app:updateTitle-2'),
-                  textStyle: {...appStyles.bold22Text, color: colors.clearBlue},
-                },
-                {
-                  text: i18n.t('app:updateTitle-3'),
-                  textStyle: appStyles.bold22Text,
-                },
-              ]}
-            />
+            {renderText('app:updateTitle-1')}
+            {renderText('app:updateTitle-2')}
           </View>
           <AppIcon name="updateImg" />
         </View>

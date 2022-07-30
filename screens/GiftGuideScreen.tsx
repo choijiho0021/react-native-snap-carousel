@@ -1,5 +1,11 @@
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {memo, PropsWithChildren, useEffect, useState} from 'react';
+import React, {
+  memo,
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import {
   Dimensions,
   ImageBackground,
@@ -14,7 +20,7 @@ import {HomeStackParamList} from '@/navigation/navigation';
 import i18n from '@/utils/i18n';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
-import {appStyles} from '@/constants/Styles';
+import {appStyles, formatText} from '@/constants/Styles';
 import AppButton from '@/components/AppButton';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppTextJoin from '@/components/AppTextJoin';
@@ -108,6 +114,19 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
     });
   }, []);
 
+  const renderText = useCallback(
+    (key: string) => (
+      <AppTextJoin
+        textStyle={styles.text}
+        data={formatText('b', {
+          text: i18n.t(key),
+          viewStyle: appStyles.underline,
+        })}
+      />
+    ),
+    [],
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -149,62 +168,15 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
             </AppText>
           </View>
           <Step key="1" step="1" marginTop={36}>
-            <AppTextJoin
-              textStyle={styles.text}
-              data={[
-                {
-                  text: i18n.t('gift:guide2-1-1'),
-                },
-                {
-                  text: i18n.t('gift:guide2-1-2'),
-                  viewStyle: appStyles.underline,
-                },
-                {
-                  text: i18n.t('gift:guide2-1-3'),
-                },
-              ]}
-            />
+            {renderText('gift:guide2-1')}
           </Step>
           <Step key="2" step="2" marginTop={31}>
-            <AppText style={styles.text}>{i18n.t('gift:guide2-2-1')}</AppText>
-            <AppTextJoin
-              textStyle={styles.text}
-              data={[
-                {
-                  text: i18n.t('gift:guide2-2-2'),
-                  viewStyle: appStyles.underline,
-                },
-                {
-                  text: i18n.t('gift:guide2-2-3'),
-                },
-              ]}
-            />
+            {renderText('gift:guide2-2-1')}
+            {renderText('gift:guide2-2-2')}
           </Step>
           <Step key="3" step="3" marginTop={64}>
-            <AppTextJoin
-              textStyle={styles.text}
-              data={[
-                {
-                  text: i18n.t('gift:guide2-3-1'),
-                  viewStyle: appStyles.underline,
-                },
-                {
-                  text: i18n.t('gift:guide2-3-2'),
-                },
-              ]}
-            />
-            <AppTextJoin
-              textStyle={styles.text}
-              data={[
-                {
-                  text: i18n.t('gift:guide2-3-3'),
-                  viewStyle: appStyles.underline,
-                },
-                {
-                  text: i18n.t('gift:guide2-3-4'),
-                },
-              ]}
-            />
+            {renderText('gift:guide2-3-1')}
+            {renderText('gift:guide2-3-2')}
           </Step>
         </View>
         <View
