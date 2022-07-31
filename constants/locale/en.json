@@ -462,18 +462,17 @@
   "esim:manualInputTitle": "eSIM Info",
   "esim:manualInput:body": "Go to <color:'#2a7ff6'>Setting>Cellular>Add Cellular Plan</color> and Tap <color:'#2a7ff6'>\"Enter Details Manually\"</color>, then plz enter activation info below manually",
   "esim:redirectHK": "Real Name Registration",
-  "esim:redirectHKRegister": "Register Now",
+  "esim:redirectHKRegister": "Go Verify Real-Name",
   "esim:moveToGuide": "eSIM 사용이 처음이라면! 가이드 보기",
   "esim:copyMsg": "수동 입력정보가 복사되었습니다.",
 
   // 홍콩 실명인증
   "redirectHK": "Real Name Registration",
-  "redirectHK:info1": "홍콩 정부의 통신 정책 변경으로 인해, 홍콩 현지 데이터를 사용하고자 하는 모든 사용자(내/외국인 포함)는 홍콩 현지 통신사의 웹페이지에서 ",
-  "redirectHK:info2": "실명 등록 후 현지 데이터 사용이 가능합니다.",
-  "redirectHK:info3": "하단의 실명등록 가이드와 ICCID, Order Number을\n확인하신 후, 실명등록 바로가기 버튼을 눌러주세요.",
+  "redirectHK:info1": "Due to Hong Kong government’s policy, those (both domestic and foreign users) who wish to use Hong Kong’s local data service <b>may use the service after real-name authentication</b> in local cellular service provider’s webpage.",
+  "redirectHK:info3": "Please take a look at the guide, ICCID, Order Number and tap the Go Verify Real-Name button below. ",
   "redirectHK:iccid": "ICCID",
   "redirectHK:orderNo": "Order Number",
-  "redirectHK:guide": "Registration Guide",
+  "redirectHK:guide": "How to Verify Your Name",
   "redirectHK:copySuccess": "Copied",
 
   "usim:usageErrorInfo1": "Error!",

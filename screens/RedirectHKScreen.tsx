@@ -39,6 +39,8 @@ import AppButton from '@/components/AppButton';
 import {sliderWidth} from '@/constants/SliderEntry.style';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import AppTextJoin from '@/components/AppTextJoin';
+import AppStyledText from '@/components/AppStyledText';
 
 const {width} = Dimensions.get('window');
 
@@ -214,21 +216,15 @@ class RedirectHKScreen extends Component<
       <SafeAreaView style={{flex: 1}}>
         <ScrollView style={styles.container}>
           <View style={{margin: 20}}>
-            <AppText
-              style={[
-                appStyles.normal14Text,
-                {lineHeight: 20, letterSpacing: 0},
-              ]}>
-              {i18n.t('redirectHK:info1')}
-              <AppText
-                style={[
-                  appStyles.normal14Text,
-                  {lineHeight: 20, letterSpacing: 0, color: colors.clearBlue},
-                ]}>
-                {i18n.t('redirectHK:info2')}
-              </AppText>
-            </AppText>
-
+            <AppStyledText
+              textStyle={{
+                ...appStyles.normal14Text,
+                lineHeight: 20,
+                letterSpacing: 0,
+              }}
+              text={i18n.t('redirectHK:info1')}
+              format={{b: {color: colors.blue}}}
+            />
             <AppText style={[appStyles.bold14Text, {marginTop: 20}]}>
               {i18n.t('redirectHK:info3')}
             </AppText>
