@@ -130,9 +130,9 @@ const InputEmail: React.FC<InputEmailProps> = ({
   value,
   onChange,
 }) => {
-  const emailRef = useRef<TextInput>(null);
+  const emailRef = useRef<TextInput>();
 
-  const domainRef = useRef<TextInput>(null);
+  const domainRef = useRef<TextInput>();
 
   const pickerRef = useRef<RNPickerSelect>(null);
 
@@ -165,7 +165,7 @@ const InputEmail: React.FC<InputEmailProps> = ({
   );
 
   useEffect(() => {
-    if (inputRef?.current) {
+    if (inputRef) {
       inputRef.current = {
         focus: () => emailRef.current?.focus(),
       };
