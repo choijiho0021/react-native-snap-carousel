@@ -26,6 +26,7 @@ import {
   RouteProp,
 } from '@react-navigation/native';
 import VersionCheck from 'react-native-version-check';
+import SimCardsManagerModule from 'react-native-sim-cards-manager';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -62,7 +63,6 @@ import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
 import {checkFistLaunch, requestPermission} from './component/permission';
 import PromotionCarousel from './component/PromotionCarousel';
-import AndroidEuccidModule from '@/components/NativeModule/AndroidEuccidModule';
 import {useInterval} from '@/utils/useInterval';
 import NotiModal from './component/NotiModal';
 import AppTabHeader from '@/components/AppTabHeader';
@@ -463,7 +463,7 @@ const Esim: React.FC<EsimProps> = ({
       if (resp.result === 0) {
         const isSupport =
           Platform.OS === 'android'
-            ? await AndroidEuccidModule.isEnableEsim()
+            ? await SimCardsManagerModule.isEsimSupported()
             : checkSupportIos();
 
         setIsDevModalVisible(!isSupport);

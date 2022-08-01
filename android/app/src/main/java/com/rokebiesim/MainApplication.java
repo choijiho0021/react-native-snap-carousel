@@ -14,6 +14,7 @@ import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactApplication;
+import com.reactnativesimcardsmanager.SimCardsManagerPackage;
 import com.github.amarcruz.rnshortcutbadge.RNAppBadgePackage;
 import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
@@ -178,6 +179,7 @@ public class MainApplication extends Application implements ReactApplication {
                             new ReactNativeFirebaseAnalyticsPackage(),
                             new ReactNativeFirebaseMessagingPackage(),
                             new CookieManagerPackage()
+                            new SimCardsManagerPackage(),
 //                            new FlipperPackage()
                     );
                 }
