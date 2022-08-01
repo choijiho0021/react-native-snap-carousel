@@ -247,7 +247,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     action.cart.cartAddAndGet({purchaseItems}).then(({payload: resp}) => {
       console.log('@@@ add and get', resp);
       if (resp.result === 0) {
-        utils.adjustEventadd(eventToken.Add_Cart);
         setShowSnackBar({text: i18n.t('country:addCart'), visible: true});
         if (
           resp.objects[0].orderItems.find(

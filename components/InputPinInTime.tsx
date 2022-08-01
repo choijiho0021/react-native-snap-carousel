@@ -93,7 +93,6 @@ const InputPinInTime: React.FC<InputPinInTimeProps> = (props) => {
   }, [inputRef]);
 
   const init = useCallback(() => {
-    setPin('');
     setTimeoutFlag(false);
 
     if (countdown) setDuration(props.duration);

@@ -332,10 +332,6 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const [partnerId, setPartnerId] = useState<string>();
 
   useEffect(() => {
-    utils.adjustEventadd(eventToken.Country_Selected);
-  }, []);
-
-  useEffect(() => {
     const title = API.Product.getTitle(
       localOpList.get(route.params?.partner[0]),
     );

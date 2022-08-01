@@ -361,10 +361,6 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
     init();
   }, [init, navigation]);
 
-  useEffect(() => {
-    utils.adjustEventadd(eventToken.Cart_Page_View);
-  }, []);
-
   useFocusEffect(
     React.useCallback(() => {
       action.cart.cartFetch();
