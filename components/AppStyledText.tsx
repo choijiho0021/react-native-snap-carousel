@@ -52,10 +52,25 @@ const AppStyledText = ({
   );
 
   const fmt = useMemo(() => Object.entries(format), [format]);
+
   if (fmt.length > 0) {
-    const [key, style] = fmt[0];
-    if (text.includes(`<${key}>`))
-      return render(formatText(key, {text, textStyle: style}), fmt.slice(1));
+    const list = fmt.reduce((acc: string | StyledText[], cur) => {
+      const [key, style] = cur;
+      if (typeof acc === 'string') {
+        return text.includes(`<${key}>`)
+          ? formatText(key, {text, textStyle: style})
+          : acc;
+      }
+      return acc
+        .map((a) =>
+          a.text.includes(`<${key}>`)
+            ? formatText(key, {text: a.text, textStyle: style})
+            : a,
+        )
+        .reduce((a, c) => a.concat(c), []);
+    }, text);
+
+    if (typeof list === 'object') return render(list, fmt);
   }
 
   return <AppText style={textStyle}>{text}</AppText>;

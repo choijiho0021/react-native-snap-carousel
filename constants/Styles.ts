@@ -836,10 +836,15 @@ export const formatText = (
         textStyle,
         viewStyle,
       },
-      {
-        text: text.substring(idx2 + key.length + 3),
-      },
-    ].filter((t) => !!t.text);
+    ]
+      .concat(
+        formatText(key, {
+          text: text.substring(idx2 + key.length + 3),
+          textStyle,
+          viewStyle,
+        }),
+      )
+      .filter((t) => !!t.text);
   }
 
   return [{text}];
