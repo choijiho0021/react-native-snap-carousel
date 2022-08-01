@@ -72,8 +72,6 @@ const AppleLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
             email: storedEmail,
             kind: 'apple',
           });
-
-        utils.adjustEventadd(eventToken.Apple_Login);
       }
     } catch (error) {
       if (error?.code === appleAuth.Error.CANCELED) {

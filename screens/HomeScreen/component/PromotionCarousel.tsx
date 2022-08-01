@@ -107,7 +107,6 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
   const [activeSlide, setActiveSlide] = useState(0);
   const onPress = useCallback(
     (item: RkbPromotion) => {
-      utils.adjustEventadd(eventToken.Home_Banner);
       if (item.product_uuid) {
         const {prodList} = product;
         const prod = prodList.get(item.product_uuid);

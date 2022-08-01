@@ -330,9 +330,32 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       dynamicLinks()
         .getInitialLink()
         .then((l) => {
-          if (l?.url.includes('gift')) {
-            navigation.navigate('EsimStack', {
-              screen: 'Esim',
+          if (l !== null) {
+            if (l?.url.includes('gift')) {
+              navigation.navigate('EsimStack', {
+                screen: 'Esim',
+              });
+            } else {
+              navigation.navigate('Main', {
+                screen: 'MyPageStack',
+                params: {
+                  screen: 'MyPage',
+                },
+              });
+            }
+          } else if (newUser) {
+            navigation.navigate('Main', {
+              screen: 'MyPageStack',
+              params: {
+                screen: 'MyPage',
+              },
+            });
+          } else if (!lastTab.includes('Invite')) {
+            navigation.navigate('Main', {
+              screen: 'HomeStack',
+              params: {
+                screen: 'Home',
+              },
             });
           } else {
             navigation.navigate('Main', {
@@ -345,15 +368,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         });
 
       setAuthorized(true);
-
-      if (!lastTab.includes('Invite')) {
-        navigation.navigate('Main', {
-          screen: 'MyPageStack',
-          params: {
-            screen: 'MyPage',
-          },
-        });
-      }
     }
     // AppAlert.error(i18n.t('reg:failedToLogIn'));
   }, [lastTab, loggedIn, navigation]);
@@ -388,9 +402,10 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
   const signIn = useCallback(
     async (auth: {mobile?: string; pin?: string}): Promise<ApiResult<any>> => {
-      const {payload: resp} = actions.account.logInAndGetAccount(auth);
+      const {payload: resp} = await actions.account.logInAndGetAccount(auth);
 
       if (resp?.result === 0) {
+        utils.adjustEventadd(eventToken.Login);
         actions.cart.cartFetch();
         const profileImage: RkbImage = await utils.convertURLtoRkbImage(
           profileImageUrl!,
@@ -453,13 +468,10 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
         if (resp.result === 0 && !_.isEmpty(resp.objects)) {
           if (status === 'authorized') {
+            utils.adjustEventadd(eventToken.SignUp);
             await firebase.analytics().setAnalyticsCollectionEnabled(true);
             await Settings.setAdvertiserTrackingEnabled(true);
             analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_sign_up`);
-
-            // adjust appEvent 추가
-            // const adjustEvent = new AdjustEvent(adjustSignUp);
-            // Adjust.trackEvent(adjustEvent);
           }
 
           signIn({mobile, pin});
@@ -546,7 +558,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           }
 
           if (resp.result === 0 && mounted.current) {
-            utils.adjustEventadd(eventToken.SMS_Confirm);
             setAuthorized(_.isEmpty(resp.objects) ? true : undefined);
             setNewUser(_.isEmpty(resp.objects));
             setPin(value);

@@ -195,10 +195,6 @@ const HeaderTitle0 = ({
   const [word, setWord] = useState('');
 
   useEffect(() => {
-    utils.adjustEventadd(eventToken.Search_Country);
-  }, []);
-
-  useEffect(() => {
     if (headerRef) {
       headerRef.current = {
         changeValue: (v: string) => {

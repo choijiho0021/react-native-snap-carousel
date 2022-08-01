@@ -1,7 +1,5 @@
 import Clipboard from '@react-native-community/clipboard';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import React, {Component} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -11,35 +9,18 @@ import {
   Linking,
   Dimensions,
 } from 'react-native';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
-import _ from 'underscore';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {HomeStackParamList, navigate} from '@/navigation/navigation';
-import {RootState} from '@/redux';
-import {
-  AccountAction,
-  AccountModelState,
-  actions as accountActions,
-} from '@/redux/modules/account';
-import {actions as cartActions, CartAction} from '@/redux/modules/cart';
-import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
-import {actions as orderActions, OrderAction} from '@/redux/modules/order';
-import {
-  actions as toastActions,
-  Toast,
-  ToastAction,
-} from '@/redux/modules/toast';
+import {navigate} from '@/navigation/navigation';
 import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
 import {sliderWidth} from '@/constants/SliderEntry.style';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import AppTextJoin from '@/components/AppTextJoin';
 import AppStyledText from '@/components/AppStyledText';
 
 const {width} = Dimensions.get('window');
@@ -53,10 +34,6 @@ const guideImage = {
 };
 
 const styles = StyleSheet.create({
-  title: {
-    ...appStyles.title,
-    marginLeft: 20,
-  },
   container: {
     flex: 1,
     backgroundColor: colors.white,
@@ -133,47 +110,27 @@ const styles = StyleSheet.create({
   },
 });
 
-type RedirectHKScreenNavigationProp = StackNavigationProp<
-  HomeStackParamList,
-  'Settings'
->;
+type CarouselIndex = 'step1' | 'step2' | 'step3' | 'step4';
 
-type RedirectHKScreenRouteProp = RouteProp<HomeStackParamList, 'SimpleText'>;
-
-type RedirectHKScreenProps = {
-  navigation: RedirectHKScreenNavigationProp;
-  route: RedirectHKScreenRouteProp;
-  account: AccountModelState;
-  action: {
-    account: AccountAction;
-    cart: CartAction;
-    order: OrderAction;
-    noti: NotiAction;
-    toast: ToastAction;
+type ParamList = {
+  RedirectHKScreen: {
+    iccid: string;
+    orderNo: string;
   };
 };
-type CarouselIndex = 'step1' | 'step2' | 'step3' | 'step4';
-type RedirectHKScreenState = {
-  activeSlide: number;
-  showSnackBar: boolean;
-  copyString: string;
-};
 
-class RedirectHKScreen extends Component<
-  RedirectHKScreenProps,
-  RedirectHKScreenState
-> {
-  carousel: React.LegacyRef<Carousel<CarouselIndex>>;
+const RedirectHKScreen: React.FC = () => {
+  const navigation = useNavigation();
+  const route = useRoute<RouteProp<ParamList, 'RedirectHKScreen'>>();
 
-  constructor(props: RedirectHKScreenProps) {
-    super(props);
-    this.carousel = React.createRef();
-    this.state = {activeSlide: 0, showSnackBar: false};
-  }
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [showSnackBar, setShowSnackBar] = useState(false);
+  const [copyString, setCopyString] = useState('');
+  const images = useMemo(() => Object.keys(guideImage), []);
+  const params = useMemo(() => route?.params, [route?.params]);
 
-  componentDidMount = async () => {
-    const {navigation, route} = this.props;
-    this.props.navigation.setOptions({
+  useEffect(() => {
+    navigation.setOptions({
       title: null,
       headerLeft: () => <AppBackButton title={i18n.t('redirectHK')} />,
       headerRight: () => (
@@ -189,150 +146,132 @@ class RedirectHKScreen extends Component<
         />
       ),
     });
-  };
+  }, [navigation, route]);
 
-  copyToClipboard = (value?: string) => () => {
-    if (value) {
-      Clipboard.setString(value);
-      this.setState({showSnackBar: true, copyString: value});
-    }
-  };
+  const copyToClipboard = useCallback(
+    (value?: string) => () => {
+      if (value) {
+        Clipboard.setString(value);
+        setShowSnackBar(true);
+        setCopyString(value);
+      }
+    },
+    [],
+  );
 
-  renderGuideHK = ({item}: {item: CarouselIndex}) => {
-    return (
+  const renderGuideHK = useCallback(
+    ({item}: {item: CarouselIndex}) => (
       <Image
         style={styles.image}
         source={guideImage[item]}
         resizeMode="contain"
       />
-    );
-  };
+    ),
+    [],
+  );
 
-  render() {
-    const {params} = this.props.route;
-    const {copyString} = this.state;
-    const images = Object.keys(guideImage);
-    return (
-      <SafeAreaView style={{flex: 1}}>
-        <ScrollView style={styles.container}>
-          <View style={{margin: 20}}>
-            <AppStyledText
-              textStyle={{
-                ...appStyles.normal14Text,
-                lineHeight: 20,
-                letterSpacing: 0,
-              }}
-              text={i18n.t('redirectHK:info1')}
-              format={{b: {color: colors.blue}}}
-            />
-            <AppText style={[appStyles.bold14Text, {marginTop: 20}]}>
-              {i18n.t('redirectHK:info3')}
-            </AppText>
-          </View>
-
-          <View style={styles.guideContainer}>
-            <AppText style={styles.guide}>{i18n.t('redirectHK:guide')}</AppText>
-            <Carousel
-              ref={this.carousel}
-              data={images}
-              renderItem={this.renderGuideHK}
-              onSnapToItem={(index) => this.setState({activeSlide: index})}
-              autoplay={false}
-              useScrollView
-              lockScrollWhileSnapping
-              resizeMode="contain"
-              overflow="hidden"
-              sliderWidth={sliderWidth}
-              itemWidth={sliderWidth}
-            />
-
-            <Pagination
-              dotsLength={images.length}
-              activeDotIndex={this.state.activeSlide}
-              dotContainerStyle={{width: 2, height: 15}}
-              dotStyle={styles.dotStyle}
-              inactiveDotStyle={styles.inactiveDotStyle}
-              inactiveDotOpacity={0.4}
-              inactiveDotScale={1.0}
-              carouselRef={this.carousel}
-              tappableDots={!_.isEmpty(this.carousel?.current)}
-              containerStyle={{paddingTop: 16, paddingBottom: 0}}
-            />
-          </View>
-          <View
-            style={{paddingHorizontal: 20, marginBottom: 32, marginTop: 24}}>
-            {['iccid', 'orderNo'].map((elm) => (
-              <View style={styles.copyBox}>
-                <View style={{flex: 9}}>
-                  <AppText style={styles.keyTitle}>
-                    {i18n.t(`redirectHK:${elm}`)}
-                  </AppText>
-                  <View style={styles.textUnderLine}>
-                    <AppText style={[appStyles.bold16Text]}>
-                      {params[elm]}
-                    </AppText>
-                  </View>
-                </View>
-                <AppButton
-                  title={i18n.t('copy')}
-                  titleStyle={[
-                    appStyles.normal14Text,
-                    {
-                      color:
-                        copyString === params[elm]
-                          ? colors.clearBlue
-                          : colors.black,
-                    },
-                  ]}
-                  style={[
-                    styles.btnCopy,
-                    {
-                      borderColor:
-                        copyString === params[elm]
-                          ? colors.clearBlue
-                          : colors.lightGrey,
-                    },
-                  ]}
-                  onPress={this.copyToClipboard(params[elm])}
-                />
-              </View>
-            ))}
-          </View>
-          <AppButton
-            style={styles.confirm}
-            titleStyle={styles.confirmTitle}
-            title={i18n.t('esim:redirectHKRegister')}
-            onPress={async () => {
-              // 홍콩 실명인증 웹 페이지
-              await Linking.openURL(
-                'https://global.cmlink.com/store/realname?LT=en',
-              );
+  return (
+    <SafeAreaView style={{flex: 1}}>
+      <ScrollView style={styles.container}>
+        <View style={{margin: 20}}>
+          <AppStyledText
+            textStyle={{
+              ...appStyles.normal14Text,
+              lineHeight: 20,
+              letterSpacing: 0,
             }}
+            text={i18n.t('redirectHK:info1')}
+            format={{b: {color: colors.blue}}}
           />
-        </ScrollView>
-        <AppSnackBar
-          visible={this.state.showSnackBar}
-          onClose={() => this.setState({showSnackBar: false})}
-          textMessage={i18n.t('redirectHK:copySuccess')}
-          bottom={90}
-        />
-      </SafeAreaView>
-    );
-  }
-}
+          <AppText style={[appStyles.bold14Text, {marginTop: 20}]}>
+            {i18n.t('redirectHK:info3')}
+          </AppText>
+        </View>
 
-export default connect(
-  ({account, status}: RootState) => ({
-    account,
-    pending: status.pending[accountActions.logout.typePrefix] || false,
-  }),
-  (dispatch) => ({
-    action: {
-      account: bindActionCreators(accountActions, dispatch),
-      cart: bindActionCreators(cartActions, dispatch),
-      order: bindActionCreators(orderActions, dispatch),
-      noti: bindActionCreators(notiActions, dispatch),
-      toast: bindActionCreators(toastActions, dispatch),
-    },
-  }),
-)(RedirectHKScreen);
+        <View style={styles.guideContainer}>
+          <AppText style={styles.guide}>{i18n.t('redirectHK:guide')}</AppText>
+          <Carousel
+            data={images}
+            renderItem={renderGuideHK}
+            onSnapToItem={(index) => setActiveSlide(index)}
+            autoplay={false}
+            useScrollView
+            lockScrollWhileSnapping
+            resizeMode="contain"
+            overflow="hidden"
+            sliderWidth={sliderWidth}
+            itemWidth={sliderWidth}
+          />
+
+          <Pagination
+            dotsLength={images.length}
+            activeDotIndex={activeSlide}
+            dotContainerStyle={{width: 2, height: 15}}
+            dotStyle={styles.dotStyle}
+            inactiveDotStyle={styles.inactiveDotStyle}
+            inactiveDotOpacity={0.4}
+            inactiveDotScale={1.0}
+            containerStyle={{paddingTop: 16, paddingBottom: 0}}
+          />
+        </View>
+        <View style={{paddingHorizontal: 20, marginBottom: 32, marginTop: 24}}>
+          {['iccid', 'orderNo'].map((elm) => (
+            <View style={styles.copyBox}>
+              <View style={{flex: 9}}>
+                <AppText style={styles.keyTitle}>
+                  {i18n.t(`redirectHK:${elm}`)}
+                </AppText>
+                <View style={styles.textUnderLine}>
+                  <AppText style={[appStyles.bold16Text]}>
+                    {params[elm]}
+                  </AppText>
+                </View>
+              </View>
+              <AppButton
+                title={i18n.t('copy')}
+                titleStyle={[
+                  appStyles.normal14Text,
+                  {
+                    color:
+                      copyString === params[elm]
+                        ? colors.clearBlue
+                        : colors.black,
+                  },
+                ]}
+                style={[
+                  styles.btnCopy,
+                  {
+                    borderColor:
+                      copyString === params[elm]
+                        ? colors.clearBlue
+                        : colors.lightGrey,
+                  },
+                ]}
+                onPress={copyToClipboard(params[elm])}
+              />
+            </View>
+          ))}
+        </View>
+        <AppButton
+          style={styles.confirm}
+          titleStyle={styles.confirmTitle}
+          title={i18n.t('esim:redirectHKRegister')}
+          onPress={async () => {
+            // 홍콩 실명인증 웹 페이지
+            await Linking.openURL(
+              'https://global.cmlink.com/store/realname?LT=en',
+            );
+          }}
+        />
+      </ScrollView>
+      <AppSnackBar
+        visible={showSnackBar}
+        onClose={() => setShowSnackBar(false)}
+        textMessage={i18n.t('redirectHK:copySuccess')}
+        bottom={90}
+      />
+    </SafeAreaView>
+  );
+};
+
+export default RedirectHKScreen;

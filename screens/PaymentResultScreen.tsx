@@ -165,17 +165,13 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   }, [action.cart, cart]);
 
   useEffect(() => {
-    const {pymPrice, deduct} = cart;
+    const {pymPrice} = cart;
     Analytics.trackEvent('Payment', {
       payment: `${params?.mode} Payment${isSuccess ? ' Success' : ' Fail'}`,
     });
 
-    if (pymPrice && deduct && isSuccess) {
-      utils.adjustEventadd(
-        eventToken.But_Now,
-        pymPrice.value + deduct.value,
-        'KRW',
-      ); // pymPrice.value 실결제금액, deduct.value 로깨비캐시 차감금액
+    if (pymPrice && pymPrice.value > 0 && isSuccess) {
+      utils.adjustEventadd(eventToken.Sales, pymPrice.value, 'KRW'); // pymPrice.value 실결제금액, deduct.value 로깨비캐시 차감금액
       analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_payment`);
     }
   }, [cart, isSuccess, params?.mode]);
