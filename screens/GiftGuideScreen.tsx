@@ -25,6 +25,7 @@ import AppButton from '@/components/AppButton';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppTextJoin from '@/components/AppTextJoin';
 import {API} from '@/redux/api';
+import AppStyledText from '@/components/AppStyledText';
 
 const {width} = Dimensions.get('window');
 
@@ -179,12 +180,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
             {renderText('gift:guide2-3-2')}
           </Step>
         </View>
-        <View
-          style={{
-            backgroundColor: colors.whiteTwo,
-
-            paddingHorizontal: 20,
-          }}>
+        <View style={{backgroundColor: colors.whiteTwo, paddingHorizontal: 20}}>
           <View style={styles.tip}>
             <AppText
               style={[
@@ -194,35 +190,27 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
               Tip.
             </AppText>
           </View>
-          <AppText style={[appStyles.normal20Text, {marginTop: 16}]}>
-            {i18n.t('gift:tip-1')}
-            <AppText style={appStyles.extraBold20}>
-              {i18n.t('gift:tip-2')}
-            </AppText>
-          </AppText>
-          <AppText
-            style={[
-              appStyles.normal24,
-              {
-                lineHeight: 40,
-                color: colors.clearBlue,
-                marginTop: 12,
-                textAlignVertical: 'bottom',
-              },
-            ]}>
-            {i18n.t('gift:tip-3')}
-            <AppText
-              style={[appStyles.robotoBold38, {color: colors.clearBlue}]}>
-              {gift}
-            </AppText>
-            <AppText
-              style={[appStyles.semiBold24Text, {color: colors.clearBlue}]}>
-              {i18n.t('gift:cash')}
-            </AppText>
-            <AppText style={{fontWeight: 'normal'}}>
-              {i18n.t('gift:tip-4')}
-            </AppText>
-          </AppText>
+          <AppStyledText
+            textStyle={{...appStyles.normal20Text, marginTop: 16}}
+            text={i18n.t('gift:tip-1')}
+            format={{b: appStyles.extraBold20, n: appStyles.normal20Text}}
+          />
+          <AppStyledText
+            textStyle={{
+              ...appStyles.normal24,
+              lineHeight: 40,
+              color: colors.clearBlue,
+              marginTop: 12,
+              textAlignVertical: 'bottom',
+            }}
+            text={i18n.t('gift:tip-3')}
+            format={{
+              cash: {...appStyles.robotoBold38, color: colors.clearBlue},
+              b: {...appStyles.semiBold24Text, color: colors.clearBlue},
+              n: {fontWeight: 'normal'},
+            }}
+            data={{cash: gift}}
+          />
           <ImageBackground
             source={require('../assets/images/gift/box.png')}
             style={{
