@@ -727,7 +727,7 @@
   "changeEmail:fail": "Email registration is failed.",
 
   "socialLogin:kakao": "Login with Kakao",
-  "socialLogin:apple": "Login with Apple",
+  "socialLogin:apple": "Sign in with Apple",
   "socialLogin:google": "Login with Google",
 
   "userGuide:checkInfo": "잠깐! 먼저 확인해주세요",

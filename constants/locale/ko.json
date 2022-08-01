@@ -726,8 +726,8 @@
   "changeEmail:fail": "이메일 등록에 실패했습니다.",
 
   "socialLogin:kakao": "카카오 로그인",
-  "socialLogin:apple": "Apple ID 로그인",
-  "socialLogin:google": "Google ID 로그인",
+  "socialLogin:apple": "Apple로 로그인",
+  "socialLogin:google": "Google 로그인",
 
   "userGuide:checkInfo": "잠깐! 먼저 확인해주세요",
   "userGuide:checkInfo1_1": "반드시 ",
