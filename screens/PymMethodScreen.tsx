@@ -5,21 +5,17 @@ import React, {SetStateAction, useCallback, useEffect, useState} from 'react';
 import {Platform, SafeAreaView, StyleSheet, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import RNPickerSelect from 'react-native-picker-select';
 import Video from 'react-native-video';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import AddressCard from '@/components/AddressCard';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
-import AppTextInputButton from '@/components/AppTextInputButton';
 import PaymentItemInfo from '@/components/PaymentItemInfo';
 import {isAndroid} from '@/components/SearchBarAnimation/utils';
-import Triangle from '@/components/Triangle';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
@@ -59,30 +55,8 @@ import i18n from '@/utils/i18n';
 import AppModal from '@/components/AppModal';
 
 const {esimApp} = Env.get();
-const {deliveryText} = API.Order;
 const infoKey = 'pym:benefit';
 const loadingImg = require('../assets/images/loading_1.mp4');
-
-const pickerSelectStyles = StyleSheet.create({
-  inputIOS: {
-    height: 37,
-    color: colors.black,
-    fontSize: isDeviceSize('small') ? 12 : 14,
-    paddingVertical: 8,
-  },
-  inputAndroid: {
-    height: 37,
-    fontSize: 12,
-    lineHeight: 20,
-    paddingVertical: 8,
-    color: colors.black,
-  },
-  iconContainer: {
-    top: 8,
-    right: 10,
-    paddingVertical: 8,
-  },
-});
 
 const styles = StyleSheet.create({
   container: {
@@ -377,19 +351,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     }
   }, [account, action.profile]);
 
-  /*
-  shouldComponentUpdate(
-    nextProps: PymMethodScreenProps,
-    nextState: PymMethodScreenState,
-  ) {
-    return (
-      this.props.account.balance !== nextProps.account.balance ||
-      this.props.cart.pymPrice !== nextProps.cart.pymPrice ||
-      JSON.stringify(this.state) !== JSON.stringify(nextState)
-    );
-  }
-  */
-
   useEffect(() => {
     setValues();
   }, [setValues]);
@@ -559,7 +520,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
   const dropDownHeader = useCallback(
     (
-      showModal,
+      showModal: boolean,
       setShowModal: React.Dispatch<SetStateAction<boolean>>,
       title: string,
       alias?: string,

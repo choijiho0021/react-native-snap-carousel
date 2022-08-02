@@ -10,7 +10,6 @@ import {
   Dimensions,
 } from 'react-native';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
-import _ from 'underscore';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
@@ -22,6 +21,7 @@ import AppButton from '@/components/AppButton';
 import {sliderWidth} from '@/constants/SliderEntry.style';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import AppStyledText from '@/components/AppStyledText';
 
 const {width} = Dimensions.get('window');
 
@@ -159,35 +159,30 @@ const RedirectHKScreen: React.FC = () => {
     [],
   );
 
-  const renderGuideHK = useCallback(({item}: {item: CarouselIndex}) => {
-    return (
+  const renderGuideHK = useCallback(
+    ({item}: {item: CarouselIndex}) => (
       <Image
         style={styles.image}
         source={guideImage[item]}
         resizeMode="contain"
       />
-    );
-  }, []);
+    ),
+    [],
+  );
 
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScrollView style={styles.container}>
         <View style={{margin: 20}}>
-          <AppText
-            style={[
-              appStyles.normal14Text,
-              {lineHeight: 20, letterSpacing: 0},
-            ]}>
-            {i18n.t('redirectHK:info1')}
-            <AppText
-              style={[
-                appStyles.normal14Text,
-                {lineHeight: 20, letterSpacing: 0, color: colors.clearBlue},
-              ]}>
-              {i18n.t('redirectHK:info2')}
-            </AppText>
-          </AppText>
-
+          <AppStyledText
+            textStyle={{
+              ...appStyles.normal14Text,
+              lineHeight: 20,
+              letterSpacing: 0,
+            }}
+            text={i18n.t('redirectHK:info1')}
+            format={{b: {color: colors.blue}}}
+          />
           <AppText style={[appStyles.bold14Text, {marginTop: 20}]}>
             {i18n.t('redirectHK:info3')}
           </AppText>

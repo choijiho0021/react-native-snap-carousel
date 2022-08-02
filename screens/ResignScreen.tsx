@@ -1,6 +1,6 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {Component} from 'react';
+import React from 'react';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {
   Pressable,
@@ -15,6 +15,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import ShortcutBadge from 'react-native-app-badge';
+import {useEffect, useState, useCallback, useMemo} from 'react';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppIcon from '@/components/AppIcon';
@@ -36,7 +37,6 @@ import AppButton from '@/components/AppButton';
 import {API} from '@/redux/api';
 import AppTextInput from '@/components/AppTextInput';
 import AppModal from '@/components/AppModal';
-import {useEffect, useState, useCallback, useMemo} from 'react';
 import {OrderModelState} from '../redux/modules/order';
 
 const radioButtons = [
@@ -152,14 +152,6 @@ type ResignScreenProps = {
   };
 };
 
-type ResignScreenState = {
-  reasonIdx: number;
-  otherReason: string;
-  isConfirm: boolean;
-  showFinishModal: boolean;
-  showConfirmModal: boolean;
-};
-
 const ResignScreen: React.FC<ResignScreenProps> = ({
   navigation,
   account,
@@ -172,7 +164,10 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
   const [isConfirm, setIsConfirm] = useState<boolean>(false);
   const [showFinishModal, setShowFinishModal] = useState<boolean>(false);
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
-  const editable = useMemo(() => reasonIdx === radioButtons.length - 1, []);
+  const editable = useMemo(
+    () => reasonIdx === radioButtons.length - 1,
+    [reasonIdx],
+  );
   const purchaseCnt = useMemo(() => {
     const reg = new RegExp(i18n.t('acc:balance'), 'gi');
 
@@ -287,16 +282,16 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
 
         <View style={styles.confirmResign}>
           <AppText style={[appStyles.bold14Text, {marginBottom: 10}]}>
-            {i18n.t('resign:why')}
+            {i18n.t('resign:note')}
           </AppText>
           {['1', '2', '3'].map((elm) => (
-            <View style={{flexDirection: 'row', paddingRight: 20}}>
+            <View key={elm} style={{flexDirection: 'row', paddingRight: 20}}>
               <AppText
                 style={[
                   appStyles.normal14Text,
                   {width: 20, textAlign: 'center'},
                 ]}>
-                *
+                {'\u2022'}
               </AppText>
               <AppText style={appStyles.normal14Text}>
                 {i18n.t(`resign:confirm${elm}`)}

@@ -3,7 +3,6 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {
   Dimensions,
-  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,

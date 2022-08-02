@@ -45,7 +45,6 @@ import {
 import i18n from '@/utils/i18n';
 import CardInfo from './components/CardInfo';
 import EsimSubs from './components/EsimSubs';
-import {ProductModelState} from '@/redux/modules/product';
 import EsimModal, {ModalType} from './components/EsimModal';
 import GiftModal from './components/GiftModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -100,7 +99,6 @@ type EsimScreenProps = {
   pending: boolean;
   account: AccountModelState;
   order: OrderModelState;
-  product: ProductModelState;
 
   action: {
     order: OrderAction;
@@ -114,7 +112,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   action,
   account: {iccid, token, balance, expDate},
   order,
-  product: {prodList},
   pending,
   loginPending,
 }) => {
@@ -203,8 +200,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   );
 
   const checkCmiData = useCallback(async (item: RkbSubscription) => {
-    const usageRsp = {};
-
     if (item?.subsIccid && item?.packageId) {
       const rsp = await API.Subscription.cmiGetSubsUsage({
         iccid: item?.subsIccid,
@@ -421,10 +416,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 };
 
 export default connect(
-  ({account, order, status, product}: RootState) => ({
+  ({account, order, status}: RootState) => ({
     order,
     account,
-    product,
     loginPending:
       status.pending[accountActions.logInAndGetAccount.typePrefix] ||
       status.pending[accountActions.getAccount.typePrefix] ||

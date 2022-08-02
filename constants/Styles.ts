@@ -1,6 +1,7 @@
-import {StyleSheet, Platform} from 'react-native';
+import {StyleSheet, Platform, TextStyle} from 'react-native';
 import {isDeviceSize} from './SliderEntry.style';
 import {colors} from './Colors';
+import {StyledText} from '@/components/AppTextJoin';
 
 export const appStyles = StyleSheet.create({
   container: {
@@ -801,7 +802,7 @@ export const htmlDetailWithCss = (body, script = basicScript) => {
         margin-right: 30px;
         margin-bottom: 66px;
     }
-    .settings.${Platform.OS == 'ios' ? 'android' : 'ios'} {
+    .settings.${Platform.OS === 'ios' ? 'android' : 'ios'} {
         display: none;
     }
     .horizontalLine {
@@ -817,4 +818,34 @@ export const htmlDetailWithCss = (body, script = basicScript) => {
     </body>
     </html>
 `;
+};
+
+export const formatText = (
+  key: string,
+  {text, textStyle, viewStyle}: StyledText,
+): StyledText[] => {
+  const idx = text.indexOf(`<${key}>`);
+  const idx2 = text.indexOf(`</${key}>`);
+  if (idx >= 0 && idx2 > idx) {
+    return [
+      {
+        text: text.substring(0, idx),
+      },
+      {
+        text: text.substring(idx + key.length + 2, idx2),
+        textStyle,
+        viewStyle,
+      },
+    ]
+      .concat(
+        formatText(key, {
+          text: text.substring(idx2 + key.length + 3),
+          textStyle,
+          viewStyle,
+        }),
+      )
+      .filter((t) => !!t.text);
+  }
+
+  return [{text}];
 };

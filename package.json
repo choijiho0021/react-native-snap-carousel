@@ -118,6 +118,7 @@
     "@react-native-community/eslint-config": "^3.0.1",
     "@types/i18n-js": "^3.8.1",
     "@types/iamport-react-native": "^1.5.1",
+    "@types/react": "^18.0.15",
     "@types/react-combine-reducers": "^1.0.0",
     "@types/react-native": "^0.66.18",
     "@types/react-native-fbsdk": "^3.0.2",
@@ -151,6 +152,9 @@
   },
   "jest": {
     "preset": "react-native"
+  },
+  "resolutions": {
+    "@types/react": "^18.0.15"
   },
   "assets": [
     "./assets/fonts/"

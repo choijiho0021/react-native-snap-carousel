@@ -22,6 +22,7 @@ import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import AppIcon from '@/components/AppIcon';
 import AppSnackBar from '@/components/AppSnackBar';
+import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
   container: {
@@ -186,18 +187,13 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
   }, [account.loggedIn, mountWithLogin, navigation]);
 
   const cashText = useCallback(
-    (text1: string, cash: string, text2: string) => (
-      <View key={text1} style={styles.cashText}>
-        <AppText key="text1" style={styles.bold24WhiteText}>
-          {text1}
-        </AppText>
-        <AppText key="label" style={styles.bold36whiteText}>
-          {cash}
-        </AppText>
-        <AppText key="value" style={styles.bold24WhiteText}>
-          {text2}
-        </AppText>
-      </View>
+    (text: string, cash: string) => (
+      <AppStyledText
+        text={text}
+        textStyle={styles.bold24WhiteText}
+        format={{b: styles.bold36whiteText}}
+        data={{cash}}
+      />
     ),
     [],
   );
@@ -210,10 +206,11 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
           key={v}
           style={[isLast ? styles.highLightRow : {marginBottom: 20}]}>
           <View style={{flexDirection: 'column'}}>
-            <AppText style={[appStyles.normal18Text, {flexDirection: 'row'}]}>
-              <AppText style={styles.highlighter}>{v}</AppText>
-              {i18n.t('inv:suffix')}
-            </AppText>
+            <AppStyledText
+              text={v}
+              textStyle={appStyles.normal18Text}
+              format={{b: styles.highlighter}}
+            />
 
             <View style={[styles.rowCenter, !isLast && {marginTop: 8}]}>
               <AppText style={appStyles.normal16Text}>
@@ -283,7 +280,9 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
         {Object.keys(stat)?.map(
           (v, idx) =>
             !v.includes('Gift') && (
-              <View key={v} style={[idx ? styles.rightBox : styles.leftBox]}>
+              <View
+                key={v}
+                style={[idx ? styles.rightBox : styles.leftBox, {flex: 1}]}>
                 <AppText key="1" style={appStyles.normal14Text}>
                   {i18n.t(`inv:${v}`)}
                 </AppText>
@@ -313,12 +312,10 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
           {cashText(
             i18n.t('inv:upper2'),
             utils.numberToCommaString(recommenderGift),
-            i18n.t('inv:upper2-1'),
           )}
           {cashText(
             i18n.t('inv:upper3'),
             utils.numberToCommaString(signupGift),
-            i18n.t('inv:upper3-1'),
           )}
           <AppText style={styles.blueBgDetailText}>
             {i18n.t('inv:upper4')}

@@ -57,7 +57,6 @@ const styles = StyleSheet.create({
     marginVertical: 15,
   },
   titleViewStyle: {
-    marginTop: 30,
     marginBottom: 20,
     alignSelf: 'center',
   },
@@ -194,9 +193,11 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
     buttonBackgroundColor,
     buttonTitleColor,
     closeButtonTitle,
+    contentStyle,
     disableOkButton,
     onCancelClose,
     onOkClose,
+    titleViewStyle,
     type,
   ]);
 

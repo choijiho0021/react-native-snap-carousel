@@ -94,6 +94,7 @@ const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
           borderBottomWidth: 2,
         }}
         style={{paddingBottom: 2, backgroundColor: colors.white}}
+        getLabelText={(scene) => scene.route.title}
       />
     ),
     [fontSize],

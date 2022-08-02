@@ -131,7 +131,6 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
       {
         key: 'setting:accountSettings',
         value: i18n.t('set:accountSettings'),
-        route: 'SimpleText',
       },
       {
         key: 'setting:pushnoti',
