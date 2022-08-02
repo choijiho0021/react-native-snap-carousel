@@ -1,6 +1,8 @@
 import {NativeModules} from 'react-native';
 const {KakaoShareLink, RNKakaoLogins} = NativeModules;
 
+// RNKakaoLogins : @react-native-seoul/kakao-login
+
 /**
  * ContentType
  * @description 카카오 링크 본문 내용 타입

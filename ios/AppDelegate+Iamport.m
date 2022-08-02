@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "AppDelegate+Iamport.h"
-#import <RNKakaoLogins.h>
+#import "RNKakaoLogins.h"
 #import <React/RCTLinkingManager.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 

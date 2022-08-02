@@ -60,7 +60,7 @@ const KakaoLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
         });
       }
     } catch (error) {
-      console.error('@@@ kakao login failed', error);
+      console.log('@@@ kakao login failed', error);
     }
   }, [onAuth]);
 
