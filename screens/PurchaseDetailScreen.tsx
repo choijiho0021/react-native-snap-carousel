@@ -2,7 +2,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import moment from 'moment';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   Pressable,
   SafeAreaView,
@@ -32,7 +32,6 @@ import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
-import {API} from '@/redux/api';
 
 const {esimApp, esimCurrency} = Env.get();
 
@@ -155,6 +154,13 @@ const styles = StyleSheet.create({
   alignCenter: {
     alignSelf: 'center',
     marginRight: 15,
+  },
+  button: {
+    ...appStyles.normal16Text,
+    height: 52,
+    backgroundColor: colors.clearBlue,
+    textAlign: 'center',
+    color: '#ffffff',
   },
 });
 
@@ -399,27 +405,10 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     pending,
   ]);
 
-  const showReciept = useCallback(
-    (id: string) => {
-      async function getReceipt() {
-        const resp = await API.Payment.getImpToken();
-        if (resp.code === 0) {
-          const rsp = await API.Payment.getMerchantId({
-            id,
-            token: resp.response?.access_token,
-          });
-
-          console.log('@@@ order', rsp);
-          if (rsp.code === 0 && rsp.response?.receipt_url) {
-            navigation.navigate('Receipt', rsp.response);
-          }
-        }
-        setLoading(false);
-      }
-      setLoading(true);
-      getReceipt();
-    },
-    [navigation],
+  const pymId = useMemo(
+    () =>
+      order?.paymentList.find((p) => p.paymentGateway === 'iamport')?.remote_id,
+    [order],
   );
 
   const headerInfo = useCallback(() => {
@@ -431,10 +420,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
       label += i18n
         .t('his:etcCnt')
         .replace('%%', (order.orderItems.length - 1).toString());
-
-    const uid = order.paymentList.find(
-      (p) => p.paymentGateway === 'iamport',
-    )?.remote_id;
 
     return (
       <View>
@@ -466,15 +451,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           value={pg}
           valueStyle={styles.labelValue}
         />
-        {/* {uid && (
-          <View style={{alignItems: 'flex-end', marginHorizontal: 20}}>
-            <AppButton
-              title={i18n.t('pym:reciept')}
-              type="primary"
-              onPress={() => showReciept(uid)}
-            />
-          </View>
-        )} */}
         <View style={styles.divider} />
       </View>
     );
@@ -486,13 +462,8 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   // [draft] state = validation && status = inactive , reserved (취소 가능)
 
   return (
-    <ScrollView style={styles.container}>
-      <SafeAreaView>
-        <AppSnackBar
-          visible={cancelPressed}
-          onClose={() => setCancelPressed(false)}
-          textMessage={i18n.t('his:cancelSuccess')}
-        />
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={{flex: 1}}>
         {headerInfo()}
         <Pressable
           style={styles.dropDownBox}
@@ -521,9 +492,21 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         </Pressable>
         {showPayment && paymentInfo()}
         <View style={styles.divider} />
-        <AppActivityIndicator visible={pending} />
-      </SafeAreaView>
-    </ScrollView>
+      </ScrollView>
+      <AppButton
+        style={styles.button}
+        type="primary"
+        title={i18n.t('his:receipt')}
+        disabled={!pymId}
+        onPress={() => navigation.navigate('Receipt', {order})}
+      />
+      <AppActivityIndicator visible={pending} />
+      <AppSnackBar
+        visible={cancelPressed}
+        onClose={() => setCancelPressed(false)}
+        textMessage={i18n.t('his:cancelSuccess')}
+      />
+    </SafeAreaView>
   );
 };
 

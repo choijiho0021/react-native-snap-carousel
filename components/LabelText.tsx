@@ -1,9 +1,3 @@
-import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
-import Env from '@/environment';
-import {Currency} from '@/redux/api/productApi';
-import utils from '@/redux/api/utils';
-import i18n from '@/utils/i18n';
 import React, {memo, useCallback} from 'react';
 import {
   ColorValue,
@@ -13,6 +7,12 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import Env from '@/environment';
+import {Currency} from '@/redux/api/productApi';
+import utils from '@/redux/api/utils';
+import i18n from '@/utils/i18n';
 import AppPrice from './AppPrice';
 import AppText from './AppText';
 

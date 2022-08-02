@@ -351,6 +351,7 @@
   "his:simCancelInfo": "• Once the product has been prepared, you cannot change the delivery address or cancel the payment. \n• Please use the 1: 1 inquiry for return and refund requests after receipt of the product.",
   "his:usedOrExpiredInfo": "• The product has been used or the deadline for canceling payment has expired.",
   "his:dataCancelInfo": "• If all products included in the payment are not in use, you can cancel them within 7 days after payment.",
+  "his:receipt": "Show Reciept",
 
   "contact:title": "I Need Help!",
   "contact:notice": "Announcement",
@@ -527,6 +528,7 @@
   "pym:deductBalance": "Deduction from ROKEBI Cash",
   "pym:unsupportDeviceModal": "ESIM unsupported device payment",
   "pym:unsupportDeviceModalContent": "Your device is an unsupported device. \n  Still, if you want to continue purchasing, please click OK.",
+  "pym:receipt": "Receipt",
 
   "err:login": "Let's get started",
   "err:body": "No body text",
