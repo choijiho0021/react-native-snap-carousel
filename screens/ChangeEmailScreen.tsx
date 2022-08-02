@@ -25,7 +25,7 @@ import validationUtil, {ValidationResult} from '@/utils/validationUtil';
 import AppModal from '@/components/AppModal';
 import {API} from '@/redux/api';
 import AppTextInput from '@/components/AppTextInput';
-import {isDeviceSize} from '../constants/SliderEntry.style';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   title: {
