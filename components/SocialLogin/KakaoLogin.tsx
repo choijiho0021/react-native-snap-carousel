@@ -1,16 +1,11 @@
 import React, {memo, useCallback} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {
-  getProfile as getKakaoProfile,
-  login,
-} from '@react-native-seoul/kakao-login';
 import AsyncStorage from '@react-native-community/async-storage';
+import KakaoSDK from '@/components/NativeModule/KakaoSDK';
 import AppButton from '@/components/AppButton';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import {SocialAuthInfo} from '.';
-import {utils} from '@/utils/utils';
-import {eventToken} from '@/constants/Adjust';
 
 const styles = StyleSheet.create({
   container: {
@@ -33,10 +28,10 @@ const KakaoLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
   const onPress = useCallback(async () => {
     try {
       // performs login request
-      const {accessToken} = await login();
+      const {accessToken} = await KakaoSDK.RNKakaoLogins.login();
 
       if (accessToken) {
-        const profile = await getKakaoProfile();
+        const profile = await KakaoSDK.RNKakaoLogins.getProfile();
         const {phoneNumber, email, id, profileImageUrl} = profile;
         const mobile = phoneNumber
           .replace(/^\+[\d]+/, '0')
@@ -65,7 +60,7 @@ const KakaoLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
         });
       }
     } catch (error) {
-      console.error('@@@ kakao login failed', error);
+      console.log('@@@ kakao login failed', error);
     }
   }, [onAuth]);
 

@@ -1,4 +1,8 @@
 rootProject.name = 'RokebiESIM'
+include ':react-native-adjust'
+project(':react-native-adjust').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-adjust/android')
+include ':react-native-sim-cards-manager'
+project(':react-native-sim-cards-manager').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-sim-cards-manager/android')
 include ':react-native-app-badge'
 project(':react-native-app-badge').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-app-badge/android')
 include ':@react-native-picker_picker'

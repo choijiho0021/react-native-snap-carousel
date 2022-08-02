@@ -14,6 +14,8 @@ import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactApplication;
+import com.adjust.nativemodule.AdjustPackage;
+import com.reactnativesimcardsmanager.SimCardsManagerPackage;
 import com.github.amarcruz.rnshortcutbadge.RNAppBadgePackage;
 import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
@@ -145,6 +147,7 @@ public class MainApplication extends Application implements ReactApplication {
                 protected List<ReactPackage> getPackages() {
                     return Arrays.<ReactPackage>asList(
                             new MainReactPackage(),
+                            new AdjustPackage(),
                             new RNAppBadgePackage(),
                             new ReactNativeConfigPackage(),
                             new EuccidManagerAppPackage(),
@@ -172,6 +175,7 @@ public class MainApplication extends Application implements ReactApplication {
                             new ARNKakaoChannelPackage(),
                             new RNLocalizePackage(),
                             new RNFetchBlobPackage(),
+                            new SimCardsManagerPackage(),
                             new MyAppPackage(),
                             new RNCPickerPackage(),
                             new RNGoogleSigninPackage(),

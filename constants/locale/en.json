@@ -718,7 +718,7 @@
   "changeEmail:fail": "Email registration is failed.",
 
   "socialLogin:kakao": "Login with Kakao",
-  "socialLogin:apple": "Login with Apple",
+  "socialLogin:apple": "Sign in with Apple",
   "socialLogin:google": "Login with Google",
 
   "userGuide:checkInfo": "Lists to check before you go ahead:",

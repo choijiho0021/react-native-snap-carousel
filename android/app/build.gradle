@@ -336,12 +336,13 @@ dependencies {
     implementation group: 'com.kakao.sdk', name: 'kakaotalk', version: '1.27.0'
     implementation group: 'com.kakao.sdk', name: 'kakaolink', version: '1.27.0'
     implementation group: 'com.kakao.sdk', name: 'plusfriend', version: '1.27.0'
-    implementation "com.kakao.sdk:v2-user:2.5.2" // 카카오 로그인
-    implementation "com.kakao.sdk:v2-talk:2.5.2" // 친구, 메시지(카카오톡)
+    implementation "com.kakao.sdk:v2-user:2.9.1" // 카카오 로그인
+    implementation "com.kakao.sdk:v2-talk:2.9.1" // 친구, 메시지(카카오톡)
 //    implementation "com.kakao.sdk:v2-share:2.11.0" // 메시지(카카오톡 공유)
 //    implementation "com.kakao.sdk:v2-link:2.9.0" // 메시지(카카오톡 공유)
-    implementation "com.kakao.sdk:v2-link:2.5.2" // 메시지(카카오톡 공유)
-
+    implementation "com.kakao.sdk:v2-link:2.9.1" // 메시지(카카오톡 공유)
+    implementation 'com.google.android.gms:play-services-analytics:10.0.1'
+    implementation 'com.android.installreferrer:installreferrer:1.0'
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";
