@@ -51,6 +51,12 @@
 		A3BF9FEB273B63DD00561187 /* GlobalLaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 40A621E726E85C740037EE37 /* GlobalLaunchScreen.xib */; };
 		A3BF9FEC273B63DD00561187 /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 405C1E9424D945870016B43C /* AppCenter-Config.plist */; };
 		A3BF9FED273B63DD00561187 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A32580F42715115700C2F28A /* GoogleService-Info.plist */; };
+		A3F0EE3E2898F309000D3781 /* RNKakaoLogins.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F0EE3B2898F309000D3781 /* RNKakaoLogins.swift */; };
+		A3F0EE3F2898F309000D3781 /* RNKakaoLogins.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F0EE3B2898F309000D3781 /* RNKakaoLogins.swift */; };
+		A3F0EE402898F309000D3781 /* RNKakaoLogins.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F0EE3B2898F309000D3781 /* RNKakaoLogins.swift */; };
+		A3F0EE412898F309000D3781 /* RNKakaoLogins.m in Sources */ = {isa = PBXBuildFile; fileRef = A3F0EE3D2898F309000D3781 /* RNKakaoLogins.m */; };
+		A3F0EE422898F309000D3781 /* RNKakaoLogins.m in Sources */ = {isa = PBXBuildFile; fileRef = A3F0EE3D2898F309000D3781 /* RNKakaoLogins.m */; };
+		A3F0EE432898F309000D3781 /* RNKakaoLogins.m in Sources */ = {isa = PBXBuildFile; fileRef = A3F0EE3D2898F309000D3781 /* RNKakaoLogins.m */; };
 		C536689F08844F90365C65B9 /* libPods-RokebiGlobal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 29A7EDBC81D1315CD93EEA18 /* libPods-RokebiGlobal.a */; };
 		F2563C5A06DECDA22B6640BD /* libPods-RokebiESIM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CD12B247076E573C87AFC3 /* libPods-RokebiESIM.a */; };
 /* End PBXBuildFile section */
@@ -100,6 +106,9 @@
 		A3568E13289237B500986E9F /* AppTrackingTransparency.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppTrackingTransparency.framework; path = System/Library/Frameworks/AppTrackingTransparency.framework; sourceTree = SDKROOT; };
 		A36F6F3026B8F0F100A69BF2 /* Configurations */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Configurations; sourceTree = "<group>"; };
 		A3BF9FF7273B63DE00561187 /* RokebiUSIM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RokebiUSIM.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A3F0EE3B2898F309000D3781 /* RNKakaoLogins.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNKakaoLogins.swift; sourceTree = "<group>"; };
+		A3F0EE3C2898F309000D3781 /* RNKakaoLogins.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNKakaoLogins.h; sourceTree = "<group>"; };
+		A3F0EE3D2898F309000D3781 /* RNKakaoLogins.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNKakaoLogins.m; sourceTree = "<group>"; };
 		A80C64EF0866C5F96A0875F8 /* Pods-RokebiUSIM.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiUSIM.staging.xcconfig"; path = "Target Support Files/Pods-RokebiUSIM/Pods-RokebiUSIM.staging.xcconfig"; sourceTree = "<group>"; };
 		ACC63B13A2EE50D80D796AB2 /* Pods-RokebiESIM.global.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.global.debug.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.global.debug.xcconfig"; sourceTree = "<group>"; };
 		D2D7F4A0BCB1BB84FB2272E8 /* Pods-RokebiESIM.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.staging.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.staging.xcconfig"; sourceTree = "<group>"; };
@@ -144,6 +153,9 @@
 		0DB1EF14288BE3E100B18BFF /* ExternalLibs */ = {
 			isa = PBXGroup;
 			children = (
+				A3F0EE3C2898F309000D3781 /* RNKakaoLogins.h */,
+				A3F0EE3D2898F309000D3781 /* RNKakaoLogins.m */,
+				A3F0EE3B2898F309000D3781 /* RNKakaoLogins.swift */,
 				0DB1EF12288BDB1800B18BFF /* KakaoShareLink.m */,
 				0DB1EF15288BE44A00B18BFF /* KakaoShareLink.swift */,
 				0DB1EF1C288C05EC00B18BFF /* RCTNetworkInfo.m */,
@@ -938,7 +950,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				0DCAD2A0288D3737005FADA6 /* KakaoShareLink.swift in Sources */,
+				A3F0EE3F2898F309000D3781 /* RNKakaoLogins.swift in Sources */,
 				A31C8F30282245F200CE16F6 /* Rokebi-Bridge.swift in Sources */,
+				A3F0EE422898F309000D3781 /* RNKakaoLogins.m in Sources */,
 				0DCAD29F288D3732005FADA6 /* KakaoShareLink.m in Sources */,
 				0DCAD29E288D3727005FADA6 /* RCTNetworkInfo.m in Sources */,
 				0D9C212626D37D4D0082F077 /* AppDelegate.m in Sources */,
@@ -952,7 +966,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				0DB1EF13288BDB1800B18BFF /* KakaoShareLink.m in Sources */,
+				A3F0EE3E2898F309000D3781 /* RNKakaoLogins.swift in Sources */,
 				A31C8F2F282245F200CE16F6 /* Rokebi-Bridge.swift in Sources */,
+				A3F0EE412898F309000D3781 /* RNKakaoLogins.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				0DB1EF16288BE44A00B18BFF /* KakaoShareLink.swift in Sources */,
 				4060E90926DDAAF100E1C0AE /* main.m in Sources */,
@@ -968,7 +984,9 @@
 				A31C8F31282245F200CE16F6 /* Rokebi-Bridge.swift in Sources */,
 				A3BF9FE1273B63DD00561187 /* AppDelegate.m in Sources */,
 				A3BF9FE3273B63DD00561187 /* main.m in Sources */,
+				A3F0EE432898F309000D3781 /* RNKakaoLogins.m in Sources */,
 				A3BF9FE4273B63DD00561187 /* AppDelegate+Iamport.m in Sources */,
+				A3F0EE402898F309000D3781 /* RNKakaoLogins.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
