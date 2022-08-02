@@ -171,7 +171,7 @@ android {
 
         defaultConfig {
             missingDimensionStrategy 'react-native-camera', 'general'
-            applicationId 'com.rokebi'
+            applicationId 'com.uangel.rokebi'
             minSdkVersion rootProject.ext.minSdkVersion
             multiDexEnabled true
             targetSdkVersion rootProject.ext.targetSdkVersion
@@ -186,19 +186,19 @@ android {
 
     productFlavors {
         esim {
-            applicationIdSuffix "esim"
+            applicationIdSuffix ".esim"
             resValue "string", "app_name", "로깨비ESIM"
         }
         global {
-            applicationIdSuffix "global"
+            applicationIdSuffix ".global"
             resValue "string", "app_name", "로깨비GLOBAL"
         }
         usim {
-            applicationIdSuffix "usim"
+            applicationIdSuffix ".usim"
             resValue "string", "app_name", "로깨비USIM"
         }
         talk {
-            applicationIdSuffix "talk"
+            applicationIdSuffix ".talk"
             resValue "string", "app_name", "로깨비TALK"
         }
     }
@@ -332,6 +332,8 @@ dependencies {
     implementation project(':@react-native-community-clipboard')
     implementation project(':react-native-vector-icons')
     implementation project(path: ":@react-native-firebase_dynamic-links")
+    implementation platform('com.google.firebase:firebase-bom:30.3.1')
+    implementation 'com.google.firebase:firebase-analytics'
     implementation group: 'com.kakao.sdk', name: 'usermgmt', version: '1.27.0'
     implementation group: 'com.kakao.sdk', name: 'kakaotalk', version: '1.27.0'
     implementation group: 'com.kakao.sdk', name: 'kakaolink', version: '1.27.0'
