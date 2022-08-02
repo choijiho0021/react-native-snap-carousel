@@ -146,7 +146,7 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
 
       <View style={styles.rowBtn}>
         <AppButton
-          title={i18n.t('board:mylist')}
+          title={i18n.t('contact:board')}
           style={styles.btnContactBoard}
           titleStyle={appStyles.normal16Text}
           type="secondary"

@@ -70,6 +70,7 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import AppVerModal from './component/AppVerModal';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
+import AppStyledText from '@/components/AppStyledText';
 
 const {esimGlobal} = Env.get();
 
@@ -337,15 +338,11 @@ const Esim: React.FC<EsimProps> = ({
     () => (
       <View style={styles.modalBody}>
         <View style={{marginBottom: 10}}>
-          <AppText style={appStyles.normal16Text}>
-            {i18n.t('home:unsupportedBody1')}
-            <AppText style={styles.normal16BlueText}>
-              {i18n.t('home:unsupportedBody2')}
-            </AppText>
-            <AppText style={appStyles.normal16Text}>
-              {i18n.t('home:unsupportedBody3')}
-            </AppText>
-          </AppText>
+          <AppStyledText
+            text={i18n.t('home:unsupportedBody1')}
+            textStyle={appStyles.normal16Text}
+            format={{b: styles.normal16BlueText}}
+          />
         </View>
         <AppText style={styles.supportDevTitle}>
           {i18n.t('home:supportedDevice')}
