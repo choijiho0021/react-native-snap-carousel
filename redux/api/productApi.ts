@@ -180,6 +180,10 @@ const toColumnList = (v: RkbPriceInfo[]) => {
       if (idx < 0) return acc.concat(cur);
       acc[idx].weight = Math.max(acc[idx].weight, cur.weight);
       acc[idx].partnerList.push(cur.partner);
+      acc[idx].minPrice.value = Math.min(
+        acc[idx].minPrice.value,
+        cur.minPrice.value,
+      );
       return acc;
     }, [] as RkbPriceInfo[])
     .sort((a, b) => b.weight - a.weight)
