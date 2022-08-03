@@ -58,9 +58,9 @@ export interface OrderModelState {
 const updateOrders = (state, orders, page) => {
   state.orders = orders;
   state.orderList = orders
+    .sort((a, b) => b.orderDate.localeCompare(a.orderDate))
     .keySeq()
-    .toArray()
-    .sort((a, b) => b - a);
+    .toArray();
   state.page = page;
 };
 

@@ -14,8 +14,8 @@ import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
 import {navigate} from '@/navigation/navigation';
 import AppIcon from '@/components/AppIcon';
-import AppTextJoin from '@/components/AppTextJoin';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import AppStyledText from '@/components/AppStyledText';
 
 const {esimGlobal, esimApp, esimCurrency} = Env.get();
 
@@ -186,16 +186,10 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
               style={{...appStyles.medium13, color: 'white', marginBottom: 3}}>
               {i18n.t('invite:btn-1')}
             </AppText>
-            <AppTextJoin
-              data={[
-                {text: i18n.t('invite:btn-2-1')},
-                {
-                  text: i18n.t('invite:btn-2-2'),
-                  textStyle: {fontWeight: 'bold'},
-                },
-                {text: i18n.t('invite:btn-2-3')},
-              ]}
+            <AppStyledText
               textStyle={styles.inviteText}
+              text={i18n.t('invite:btn-2')}
+              format={{b: {fontWeight: 'bold'}}}
             />
           </View>
         </Pressable>
