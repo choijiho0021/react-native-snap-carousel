@@ -370,7 +370,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       setAuthorized(true);
     }
     // AppAlert.error(i18n.t('reg:failedToLogIn'));
-  }, [lastTab, loggedIn, navigation]);
+  }, [lastTab, loggedIn, navigation, newUser]);
 
   useEffect(() => {
     return () => {
