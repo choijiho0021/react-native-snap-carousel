@@ -253,6 +253,10 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
             });
             break;
 
+          case notiActions.NOTI_TYPE_PROVISION:
+            navigation.navigate('EsimStack', {screen: 'Esim'});
+            break;
+
           case notiActions.NOTI_TYPE_USIM:
             navigation.navigate('Usim');
             break;
