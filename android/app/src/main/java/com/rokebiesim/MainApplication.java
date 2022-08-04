@@ -68,6 +68,8 @@ import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
 import com.reactnativecommunity.picker.RNCPickerPackage;
 import com.reactnativegooglesignin.RNGoogleSigninPackage;
 import com.reactnativecommunity.cookies.CookieManagerPackage;
+import com.reactnativecommunity.cameraroll.CameraRollPackage;
+import fr.greweb.reactnativeviewshot.RNViewShotPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -147,6 +149,8 @@ public class MainApplication extends Application implements ReactApplication {
                 protected List<ReactPackage> getPackages() {
                     return Arrays.<ReactPackage>asList(
                             new MainReactPackage(),
+            new CameraRollPackage(),
+            new RNViewShotPackage(),
                             new AdjustPackage(),
                             new RNAppBadgePackage(),
                             new ReactNativeConfigPackage(),

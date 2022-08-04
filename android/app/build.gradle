@@ -345,6 +345,7 @@ dependencies {
     implementation "com.kakao.sdk:v2-link:2.9.1" // 메시지(카카오톡 공유)
     implementation 'com.google.android.gms:play-services-analytics:10.0.1'
     implementation 'com.android.installreferrer:installreferrer:1.0'
+    implementation project(':@react-native-community_cameraroll')
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";
