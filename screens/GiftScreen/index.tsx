@@ -252,7 +252,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         default: // kakao
         {
           try {
-            const response = await KakaoSDK.sendCustom({
+            const response = await KakaoSDK.KakaoShareLink.sendCustom({
               // kakao template 상용: 67017, TB: 70053
               templateId: isProduction ? 67017 : 70053,
               templateArgs: [
