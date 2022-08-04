@@ -745,5 +745,5 @@
   "userGuide:tipPage11_1": "<b>Please delete the item when expired!</b> Leftover items may cause confusion when adding new items.",
 
   "quadcell:usageInfo1": "\u00B7 Actual usage may differ",
-  "quadcell:usageInfo2": " You may check your data usage when initial connection to the local network is made"
+  "quadcell:usageInfo2": " Expiration date is calculated when initial connection to the local network is made and you may then check your data usage."
 }

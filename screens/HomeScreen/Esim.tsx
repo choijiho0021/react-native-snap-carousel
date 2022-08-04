@@ -554,7 +554,8 @@ const Esim: React.FC<EsimProps> = ({
         action.cart.init();
         action.order.init();
       } else {
-        action.noti.initNotiList();
+        // action.noti.initNotiList();
+        action.noti.getNotiList({mobile: account.mobile});
       }
     }
   }, [account, action.cart, action.noti, action.order]);

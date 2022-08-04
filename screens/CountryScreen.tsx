@@ -345,8 +345,9 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   useEffect(() => {
     if (route.params?.partner) {
       const partnerIds = route.params.partner;
-      const list = partnerIds
-        .map((p) => prodByLocalOp.get(p)?.map((p) => prodList.get(p)))
+
+      const list: RkbProduct[][] = partnerIds
+        .map((p) => prodByLocalOp.get(p)?.map((p2) => prodList.get(p2)))
         .reduce(
           (acc, cur) => (cur ? acc.concat(cur.filter((c) => !!c)) : acc),
           [],
@@ -363,8 +364,14 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
       setPartnerId(partnerIds[0]);
 
       setProdData([
-        {title: 'daily', data: list[0] || []},
-        {title: 'total', data: list[1] || []},
+        {
+          title: 'daily',
+          data: list[0].sort((a, b) => b.weight - a.weight) || [],
+        },
+        {
+          title: 'total',
+          data: list[1].sort((a, b) => b.weight - a.weight) || [],
+        },
       ]);
       setImageUrl(localOp?.imageUrl);
       setLocalOpDetails(localOp?.detail);
