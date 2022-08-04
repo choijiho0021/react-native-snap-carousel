@@ -14,6 +14,7 @@ import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactApplication;
+import com.tkporter.sendsms.SendSMSPackage;
 import com.adjust.nativemodule.AdjustPackage;
 import com.reactnativesimcardsmanager.SimCardsManagerPackage;
 import com.github.amarcruz.rnshortcutbadge.RNAppBadgePackage;
@@ -68,6 +69,8 @@ import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
 import com.reactnativecommunity.picker.RNCPickerPackage;
 import com.reactnativegooglesignin.RNGoogleSigninPackage;
 import com.reactnativecommunity.cookies.CookieManagerPackage;
+import com.reactnativecommunity.cameraroll.CameraRollPackage;
+import fr.greweb.reactnativeviewshot.RNViewShotPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -147,6 +150,9 @@ public class MainApplication extends Application implements ReactApplication {
                 protected List<ReactPackage> getPackages() {
                     return Arrays.<ReactPackage>asList(
                             new MainReactPackage(),
+            new SendSMSPackage(),
+            new CameraRollPackage(),
+            new RNViewShotPackage(),
                             new AdjustPackage(),
                             new RNAppBadgePackage(),
                             new ReactNativeConfigPackage(),

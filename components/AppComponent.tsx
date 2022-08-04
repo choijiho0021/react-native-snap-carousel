@@ -12,6 +12,7 @@ import Video from 'react-native-video';
 import {connect, DispatchProp} from 'react-redux';
 import RNExitApp from 'react-native-exit-app';
 import {Adjust, AdjustConfig} from 'react-native-adjust';
+import messaging from '@react-native-firebase/messaging';
 import {API} from '@/redux/api';
 import AppAlert from '@/components/AppAlert';
 import AppToast from '@/components/AppToast';
@@ -126,6 +127,9 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
         : AdjustConfig.EnvironmentSandbox,
     );
     Adjust.create(adjustConfig);
+    messaging()
+      .getToken()
+      .then((deviceToken) => Adjust.setPushToken(deviceToken));
   }, []);
 
   useEffect(() => {

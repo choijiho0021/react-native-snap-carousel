@@ -208,7 +208,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
       const {result, userDataBundles, subscriberQuota} = rsp;
 
-      if (result?.code === 0 && userDataBundles[0]) {
+      if (result?.code === 0 && userDataBundles && userDataBundles[0]) {
         const statusCd =
           !_.isUndefined(userDataBundles[0]?.status) &&
           cmiStatusCd[userDataBundles[0]?.status];
@@ -231,7 +231,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           quota: Number(subscriberQuota?.qtavalue) || 0, // Mb
           used: Number(subscriberQuota?.qtaconsumption) || 0, // Mb
         });
-      } else if (!item.subsOrderNo || userDataBundles.length === 0) {
+      } else if (!item.subsOrderNo || userDataBundles?.length === 0) {
         setCmiStatus({
           statusCd: 'U',
         });
