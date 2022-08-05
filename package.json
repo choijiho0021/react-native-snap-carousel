@@ -21,6 +21,7 @@
     "android_esim_prod_apk": "cd android;./gradlew assembleEsimRelease;open ./app/build/outputs/apk/esim/release",
     "android_esim_staging_apk": "cd android;./gradlew assembleEsimStaging;open ./app/build/outputs/apk/esim/staging",
     "android_esim_prod_bundle": "cd android;./gradlew bundleEsimRelease;open ./app/build/outputs/bundle/esim/release",
+    "android_esim_staging_bundle": "cd android;./gradlew bundleEsimStaging;open ./app/build/outputs/bundle/esim/staging",
     "android_usim_debug_apk": "cd android;./gradlew assembleUsimDebug;open ./app/build/outputs/apk/usim/debug",
     "android_usim_prod_apk": "cd android;./gradlew assembleUsimRelease;open ./app/build/outputs/apk/usim/release",
     "android_usim_staging_apk": "cd android;./gradlew assembleUsimReleaseStaging;open ./app/build/outputs/apk/usim/releaseStaging",
