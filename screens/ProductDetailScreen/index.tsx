@@ -37,8 +37,6 @@ import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import AppCartButton from '@/components/AppCartButton';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
-import {utils} from '@/utils/utils';
-import {eventToken} from '@/constants/Adjust';
 
 const {esimApp, esimGlobal, webViewHost} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -199,8 +197,14 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   );
 
   const renderWebView = useCallback(
-    (uuid?: string) =>
-      uuid ? (
+    (uuid?: string) => {
+      if (!uuid) return null;
+
+      const uri = `${webViewHost}/#/product/${uuid}${
+        esimGlobal ? '?service=global' : ''
+      }`;
+
+      return (
         <WebView
           // automaticallyAdjustContentInsets={true}
           javaScriptEnabled
@@ -211,10 +215,10 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           decelerationRate="normal"
           scrollEnabled
           onMessage={onMessage}
-          source={{uri: `${webViewHost}/#/product/${uuid}`}}
-          // source={{uri: `http://localhost:8000/#/product/${sku}`}}
+          source={{uri}}
         />
-      ) : null,
+      );
+    },
     [onMessage],
   );
 

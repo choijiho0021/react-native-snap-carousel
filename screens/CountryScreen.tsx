@@ -25,13 +25,7 @@ import {actions as cartActions} from '@/redux/modules/cart';
 import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import {device, isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
-import AppIcon from '@/components/AppIcon';
-import Env from '@/environment';
 import AppPrice from '@/components/AppPrice';
-import {utils} from '@/utils/utils';
-import {eventToken} from '@/constants/Adjust';
-
-const {esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -400,49 +394,6 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     [imageUrl, localOpDetails, navigation, partnerId],
   );
 
-  const renderProdDetailButton = useCallback(
-    () => (
-      <View>
-        <Pressable
-          onPress={() =>
-            navigation.navigate('ProductDetail', {
-              title: API.Product.getTitle(
-                localOpList.get(route.params?.partner[0]),
-              ),
-              img: imageUrl,
-              localOpDetails,
-              partnerId,
-            })
-          }>
-          <View style={styles.detail}>
-            <AppText
-              style={
-                windowWidth > device.small.window.width
-                  ? appStyles.normal14Text
-                  : appStyles.normal12Text
-              }>
-              {i18n.t('country:detail')}
-            </AppText>
-            <AppIcon
-              style={{marginRight: 20}}
-              name="iconArrowRight"
-              size={10}
-            />
-          </View>
-        </Pressable>
-        <View style={styles.divider} />
-      </View>
-    ),
-    [
-      imageUrl,
-      localOpDetails,
-      localOpList,
-      navigation,
-      partnerId,
-      route.params?.partner,
-    ],
-  );
-
   return (
     <SafeAreaView style={styles.container}>
       {imageUrl && (
@@ -451,8 +402,6 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           source={{uri: API.default.httpImageUrl(imageUrl)}}
         />
       )}
-
-      {esimGlobal && renderProdDetailButton()}
 
       <View style={{flex: 1}}>
         <SectionList
