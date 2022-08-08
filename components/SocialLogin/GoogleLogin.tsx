@@ -37,7 +37,8 @@ const GoogleLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
         'https://www.googleapis.com/auth/user.phonenumbers.read',
       ],
       webClientId:
-        '709736045062-9v8j5dfc12jj07bo9htaolhqc19l5dm7.apps.googleusercontent.com',
+        // '709736045062-9v8j5dfc12jj07bo9htaolhqc19l5dm7.apps.googleusercontent.com',
+        '851340189695-vdasd78idkdeg77dgpb956r469ktrpqs.apps.googleusercontent.com',
       offlineAccess: true,
     });
   };

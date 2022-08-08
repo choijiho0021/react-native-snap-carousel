@@ -8,43 +8,7 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:851340189695:android:c4bca680f1bc5c87ccd1ca",
-        "android_client_info": {
-          "package_name": "com.rokebi.esim"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "851340189695-vdasd78idkdeg77dgpb956r469ktrpqs.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAcNMA19JAb2jk7sQmUIpBHB6lxk6LSqd4"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "851340189695-vdasd78idkdeg77dgpb956r469ktrpqs.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "851340189695-15jkl430nd0cn0t75cb287906i54r0h5.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.uangel.rokebi-global"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:851340189695:android:95deae0b17227fe8ccd1ca",
+        "mobilesdk_app_id": "1:851340189695:android:3750e90a012c15e3ccd1ca",
         "android_client_info": {
           "package_name": "com.rokebiesim"
         }
@@ -80,12 +44,20 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:851340189695:android:1307f66cb3ea28ffccd1ca",
+        "mobilesdk_app_id": "1:851340189695:android:da1fa176f1dca9d3ccd1ca",
         "android_client_info": {
-          "package_name": "com.uangel.rokebi.esim"
+          "package_name": "com.uangel.rokebi"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "851340189695-npkq1nm3f0ok2bksdhrul4dueespeuni.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.uangel.rokebi",
+            "certificate_hash": "1055a53579455824b9804a562e0ff7145445d2e0"
+          }
+        },
         {
           "client_id": "851340189695-vdasd78idkdeg77dgpb956r469ktrpqs.apps.googleusercontent.com",
           "client_type": 3

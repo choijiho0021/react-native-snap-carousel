@@ -171,13 +171,13 @@ android {
 
         defaultConfig {
             missingDimensionStrategy 'react-native-camera', 'general'
-            applicationId 'com.uangel.rokebi'
+            applicationId 'com.rokebiesim'
             minSdkVersion rootProject.ext.minSdkVersion
             multiDexEnabled true
             targetSdkVersion rootProject.ext.targetSdkVersion
             vectorDrawables.useSupportLibrary = true
-            versionCode 5
-            versionName "1.0.3"
+            versionCode 6
+            versionName "1.1.0"
             multiDexEnabled true
             resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
         }
@@ -186,19 +186,19 @@ android {
 
     productFlavors {
         esim {
-            applicationIdSuffix ".esim"
+//            applicationIdSuffix "esim"
             resValue "string", "app_name", "로깨비ESIM"
         }
         global {
-            applicationIdSuffix ".global"
+            applicationIdSuffix "global"
             resValue "string", "app_name", "로깨비GLOBAL"
         }
         usim {
-            applicationIdSuffix ".usim"
+            applicationIdSuffix "usim"
             resValue "string", "app_name", "로깨비USIM"
         }
         talk {
-            applicationIdSuffix ".talk"
+            applicationIdSuffix "talk"
             resValue "string", "app_name", "로깨비TALK"
         }
     }
@@ -219,11 +219,17 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            storeFile file('rokebi.keystore')
+            storePassword 'uangel!098'
+            keyAlias 'rokebi'
+            keyPassword 'uangel.123'
         }
+//        debug {
+//            storeFile file('debug.keystore')
+//            storePassword 'android'
+//            keyAlias 'androiddebugkey'
+//            keyPassword 'android'
+//        }
         release {
             storeFile file('rokebi.keystore')
             storePassword 'uangel!098'
