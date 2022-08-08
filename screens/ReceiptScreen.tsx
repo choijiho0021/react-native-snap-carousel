@@ -1,11 +1,12 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {bindActionCreators} from 'redux';
-import React, {memo, useEffect, useRef, useState} from 'react';
+import React, {memo, useCallback, useEffect, useRef, useState} from 'react';
 import {
   PermissionsAndroid,
   Platform,
   SafeAreaView,
   ScrollView,
+  Share,
   StyleSheet,
   View,
 } from 'react-native';
@@ -61,11 +62,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   button: {
-    ...appStyles.normal16Text,
+    ...appStyles.medium18,
     height: 52,
     backgroundColor: colors.clearBlue,
     textAlign: 'center',
     color: '#ffffff',
+    flex: 1,
   },
 });
 
@@ -76,6 +78,12 @@ type ReceiptScreenProps = {
   };
 };
 
+type RkbReceipt = {
+  card_number: string;
+  card_name: string;
+  name: string;
+};
+
 const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
   account: {mobile},
   action,
@@ -83,7 +91,7 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
   const navigation = useNavigation();
   const route = useRoute();
   const [order, setOrder] = useState<RkbOrder>();
-  const [paymentMethod, setPaymentMethod] = useState('');
+  const [receipt, setReceipt] = useState<RkbReceipt>();
   const ref = useRef<ViewShot>();
 
   useEffect(() => {
@@ -93,14 +101,10 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
     });
 
     setOrder(route.params?.order);
-    setPaymentMethod(
-      route.params?.order?.paymentList.find(
-        (p) => p.paymentGateway === 'iamport',
-      )?.paymentMethod,
-    );
+    setReceipt(route.params?.receipt);
   }, [navigation, route.params]);
 
-  const hasAndroidPermission = async () => {
+  const hasAndroidPermission = useCallback(async () => {
     const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
 
     const hasPermission = await PermissionsAndroid.check(permission);
@@ -110,19 +114,37 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
 
     const status = await PermissionsAndroid.request(permission);
     return status === 'granted';
-  };
+  }, []);
 
-  const capture = async () => {
+  const capture = useCallback(async () => {
     if (Platform.OS === 'android' && !(await hasAndroidPermission())) {
       action.toast.push('갤러리 접근 권한이 없어요');
       return;
     }
 
     ref.current?.capture().then((uri) => {
-      console.log('do something with ', uri);
-      CameraRoll.save(uri).then((result) => action.toast.push('rcpt:saved'));
+      CameraRoll.save(uri, {type: 'photo', album: i18n.t('rcpt:album')}).then(
+        () => action.toast.push('rcpt:saved'),
+      );
     });
-  };
+  }, [action.toast, hasAndroidPermission]);
+
+  const share = useCallback(async () => {
+    console.log('@@@ share');
+    try {
+      ref.current?.capture().then(async (uri) => {
+        const result = await Share.share({
+          title: i18n.t('rcpt.title'),
+          url: uri,
+        });
+        console.log('@@@ share reulst', result);
+        if (result.action !== Share.dismissedAction) {
+        }
+      });
+    } catch (e) {
+      console.log('😻😻😻 snapshot failed', e);
+    }
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -137,7 +159,7 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
                 appStyles.bold24Text,
                 {color: colors.black, marginTop: 10, marginBottom: 30},
               ]}>
-              {order?.orderItems[0].title}
+              {receipt?.name}
             </AppText>
           </View>
           <View style={styles.info}>
@@ -167,8 +189,8 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
               format="price"
             />
             {Object.entries({
-              pay_method: paymentMethod,
-              pymNo: order?.orderNo,
+              pay_method: receipt?.card_name,
+              pymNo: receipt?.card_number,
               state:
                 order?.state === 'canceled'
                   ? i18n.t('his:cancel')
@@ -191,7 +213,7 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
           <View style={{height: 10}} />
           <View style={styles.box}>
             {Object.entries({
-              name: i18n.t('appTitle'),
+              name: i18n.t('rcpt:companyName'),
               companyRegNo: '293586740',
               ceo: i18n.t('rcpt:ceoName'),
               address: i18n.t('rcpt:companyAddr'),
@@ -217,16 +239,29 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
               }}
               text={i18n.t('rcpt:tail')}
               format={{b: {color: colors.clearBlue}}}
+              data={{date: utils.toDateString(order?.orderDate, 'LL')}}
             />
           </View>
         </ViewShot>
       </ScrollView>
-      <AppButton
-        style={styles.button}
-        type="primary"
-        title={i18n.t('rcpt:png')}
-        onPress={capture}
-      />
+      <View style={{flexDirection: 'row'}}>
+        <AppButton
+          style={{
+            ...styles.button,
+            backgroundColor: 'white',
+            borderWidth: 1,
+            borderColor: colors.lightGrey,
+          }}
+          titleStyle={{...appStyles.medium18, color: colors.black}}
+          title={i18n.t('rcpt:image')}
+          onPress={capture}
+        />
+        <AppButton
+          style={styles.button}
+          title={i18n.t('rcpt:share')}
+          onPress={share}
+        />
+      </View>
     </SafeAreaView>
   );
 };

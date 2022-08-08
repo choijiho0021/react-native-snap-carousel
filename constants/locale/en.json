@@ -760,7 +760,10 @@
   "rcpt:tel": "전화번호",
   "rcpt:telNo": "031-498-3958",
   "rcpt:tail": "상기 금액을 영수하였음을 확인합니다.\n2022년 08월 19일\n\n<b>(주) 유엔젤</b>",
-  "rcpt:png": "사진앱에 저장",
-  "rcpt:saved": "사진앱에 저장되었습니다",
+  "rcpt:image": "Save as Image",
+  "rcpt:album": "ROKEBI",
+  "rcpt:title": "ROKEBI Receipt",
+  "rcpt:share": "Share",
+  "rcpt:saved": "Stored in the album, 'ROKEBI'.",
   "rcpt:companyName": "UANGEL"
 }

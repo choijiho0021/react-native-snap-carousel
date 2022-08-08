@@ -32,6 +32,7 @@ import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
+import {API} from '@/redux/api';
 
 const {esimApp, esimCurrency} = Env.get();
 
@@ -411,6 +412,30 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     [order],
   );
 
+  const showReciept = useCallback(
+    (id?: string) => {
+      async function getReceipt() {
+        const resp = await API.Payment.getImpToken();
+        if (resp.code === 0) {
+          const rsp = await API.Payment.getMerchantId({
+            id,
+            token: resp.response?.access_token,
+          });
+
+          if (rsp.code === 0 && rsp.response?.receipt_url) {
+            navigation.navigate('Receipt', {order, receipt: rsp.response});
+          }
+        }
+        setLoading(false);
+      }
+      if (id) {
+        setLoading(true);
+        getReceipt();
+      }
+    },
+    [navigation, order],
+  );
+
   const headerInfo = useCallback(() => {
     if (!order || !order.orderItems) return <View />;
 
@@ -498,7 +523,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         type="primary"
         title={i18n.t('his:receipt')}
         disabled={!pymId}
-        onPress={() => navigation.navigate('Receipt', {order})}
+        onPress={() => showReciept(pymId)}
       />
       <AppActivityIndicator visible={pending} />
       <AppSnackBar
