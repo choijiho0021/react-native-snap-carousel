@@ -130,7 +130,6 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
   }, [action.toast, hasAndroidPermission]);
 
   const share = useCallback(async () => {
-    console.log('@@@ share');
     try {
       ref.current?.capture().then(async (uri) => {
         const result = await Share.share({
@@ -191,17 +190,19 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
             {Object.entries({
               pay_method: receipt?.card_name,
               pymNo: receipt?.card_number,
-              state:
-                order?.state === 'canceled'
+              // eslint-disable-next-line no-nested-ternary
+              state: order
+                ? order.state === 'canceled'
                   ? i18n.t('his:cancel')
-                  : i18n.t('his.paymentCompleted'),
+                  : i18n.t('his:paymentCompleted')
+                : '',
             }).map(([k, v]) => (
               <LabelText
                 key={k}
                 style={{
                   height: 36,
                   marginHorizontal: 10,
-                  paddingBottom: k === 'state' ? 26 : 0,
+                  marginBottom: k === 'state' ? 26 : 0,
                 }}
                 label={i18n.t(`rcpt:${k}`)}
                 labelStyle={styles.label}
@@ -214,13 +215,14 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
           <View style={styles.box}>
             {Object.entries({
               name: i18n.t('rcpt:companyName'),
-              companyRegNo: '293586740',
+              companyRegNo: '129-81-29383',
               ceo: i18n.t('rcpt:ceoName'),
               address: i18n.t('rcpt:companyAddr'),
               tel: i18n.t('rcpt:telNo'),
             }).map(([k, v]) => (
               <LabelText
                 key={k}
+                style={{alignItems: 'flex-start'}}
                 label={i18n.t(`rcpt:${k}`)}
                 labelStyle={styles.label}
                 value={v}
