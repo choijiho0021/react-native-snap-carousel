@@ -19,7 +19,7 @@ const AppStyledText = ({
     (txt: string) =>
       data
         ? Object.entries(data).reduce(
-            (acc, cur) => acc.replaceAll(`{${cur[0]}}`, cur[1]),
+            (acc, cur) => acc.replace(new RegExp(`{${cur[0]}}`, 'g'), cur[1]),
             txt,
           )
         : txt,
