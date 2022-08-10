@@ -2,7 +2,7 @@
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import {RouteProp} from '@react-navigation/core';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {Component} from 'react';
+import React, {useCallback, useState, useEffect, useRef} from 'react';
 import {
   Dimensions,
   Image,
@@ -29,7 +29,6 @@ import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {
-  PromotionModelState,
   actions as promotionActions,
   PromotionAction,
 } from '@/redux/modules/promotion';
@@ -134,81 +133,71 @@ type TutorialScreenProps = {
   route: TutorialScreenRouteProp;
 
   account: AccountModelState;
-  promotion: PromotionModelState;
   action: {
     promotion: PromotionAction;
   };
 };
 
 type CarouselIndex = 'step1' | 'step2' | 'step3' | 'step4';
-type TutorialScreenState = {
-  activeSlide: number;
-  status?: TrackingStatus;
-};
 
-class TutorialScreen extends Component<
-  TutorialScreenProps,
-  TutorialScreenState
-> {
-  carousel: React.LegacyRef<Carousel<CarouselIndex>>;
+const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
+  const {navigation, route, account, action} = props;
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [status, setStatus] = useState<TrackingStatus>();
+  const images = Object.keys(tutorialImages);
+  const carouselRef = useRef<Carousel<CarouselIndex>>(null);
 
-  constructor(props: TutorialScreenProps) {
-    super(props);
-
-    this.carousel = React.createRef();
-    this.state = {
-      activeSlide: 0,
-    };
-
-    this.renderTutorial = this.renderTutorial.bind(this);
-    this.skip = this.skip.bind(this);
-    this.completed = this.completed.bind(this);
-  }
-
-  async componentDidMount() {
-    this.props.navigation.setOptions({
+  useEffect(() => {
+    navigation.setOptions({
       headerShown: false,
     });
 
-    this.setState({
-      status: await getTrackingStatus(),
-    });
+    getTrackingStatus().then((res) => setStatus(res));
+  }, [navigation]);
 
-    if (this.state.status === 'authorized') {
-      await firebase.analytics().setAnalyticsCollectionEnabled(true);
-      await Settings.setAdvertiserTrackingEnabled(true);
+  useEffect(() => {
+    const trackingFc = async () => {
+      if (status === 'authorized') {
+        await firebase.analytics().setAnalyticsCollectionEnabled(true);
+        await Settings.setAdvertiserTrackingEnabled(true);
 
-      analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_tutorial_begin`);
-    }
-  }
+        analytics().logEvent(
+          `${esimGlobal ? 'global' : 'esim'}_tutorial_begin`,
+        );
+      }
+    };
+    trackingFc();
+  }, [status]);
 
-  componentWillUnmount() {
-    dynamicLinks()
-      .getInitialLink()
-      .then(async (l) => {
-        if (l?.url) {
-          const url = l?.url.split(/[;?&]/);
-          url.shift();
-          const param = url.map((elm) => `"${elm.replace('=', '":"')}"`);
-          const json = JSON.parse(`{${param.join(',')}}`);
+  useEffect(() => {
+    return () => {
+      dynamicLinks()
+        .getInitialLink()
+        .then(async (l) => {
+          if (l?.url) {
+            const url = l?.url.split(/[;?&]/);
+            url.shift();
+            const param = url.map((elm) => `"${elm.replace('=', '":"')}"`);
+            const json = JSON.parse(`{${param.join(',')}}`);
 
-          if (l?.url.includes('recommender')) {
-            if (!this.props.account.loggedIn) {
-              this.props.action.promotion.saveGiftAndRecommender({
-                recommender: json?.recommender,
-                gift: json?.gift,
-              });
+            if (l?.url.includes('recommender')) {
+              if (!account.loggedIn) {
+                action.promotion.saveGiftAndRecommender({
+                  recommender: json?.recommender,
+                  gift: json?.gift,
+                });
 
-              this.props.navigation.navigate('EsimStack', {
-                screen: 'RegisterMobile',
-              });
+                navigation.navigate('EsimStack', {
+                  screen: 'RegisterMobile',
+                });
+              }
             }
           }
-        }
-      });
-  }
+        });
+    };
+  }, [account.loggedIn, action.promotion, navigation]);
 
-  renderTutorial = ({item}: {item: CarouselIndex}) => {
+  const renderTutorial = useCallback(({item}: {item: CarouselIndex}) => {
     return (
       <Image
         style={styles.image}
@@ -216,104 +205,96 @@ class TutorialScreen extends Component<
         resizeMode="cover"
       />
     );
-  };
+  }, []);
 
-  skip = () => {
-    if (this.state.status === 'authorized')
-      AppEventsLogger.logEvent('튜토리얼 SKIP');
-    this.props.route.params.popUp();
-    this.props.navigation.goBack();
-  };
+  const skip = useCallback(() => {
+    if (status === 'authorized') AppEventsLogger.logEvent('튜토리얼 SKIP');
+    route.params.popUp();
+    navigation.goBack();
+  }, [navigation, route.params, status]);
 
-  completed = async () => {
-    if (this.state.status === 'authorized') {
+  const completed = useCallback(() => {
+    if (status === 'authorized') {
       AppEventsLogger.logEvent('fb_mobile_tutorial_completion');
       analytics().logEvent(
         `${esimGlobal ? 'global' : 'esim'}_tutorial_complete`,
       );
     }
-    this.props.route.params.popUp();
-    this.props.navigation.goBack();
-  };
+    route.params.popUp();
+    navigation.goBack();
+  }, [navigation, route.params, status]);
 
-  render() {
-    const {activeSlide} = this.state;
-    const images = Object.keys(tutorialImages);
+  return (
+    <SafeAreaView style={{flex: 1}}>
+      <View style={{flex: 1}}>
+        <Carousel
+          ref={carouselRef}
+          data={images}
+          renderItem={renderTutorial}
+          onSnapToItem={(index) => {
+            console.log('aaaaa index', index);
+            setActiveSlide(index);
+          }}
+          autoplay={false}
+          // loop
+          useScrollView
+          lockScrollWhileSnapping
+          // resizeMode='stretch'
+          // overflow='hidden'
+          sliderWidth={sliderWidth}
+          itemWidth={sliderWidth}
+          // itemHeight={sliderHeight*0.5}
+        />
 
-    return (
-      <SafeAreaView style={{flex: 1}}>
-        <View style={{flex: 1}}>
-          <Carousel
-            ref={this.carousel}
-            data={images}
-            renderItem={this.renderTutorial}
-            onSnapToItem={(index) => this.setState({activeSlide: index})}
-            autoplay={false}
-            // loop
-            useScrollView
-            lockScrollWhileSnapping
-            // resizeMode='stretch'
-            // overflow='hidden'
-            sliderWidth={sliderWidth}
-            itemWidth={sliderWidth}
-            // itemHeight={sliderHeight*0.5}
-          />
-
-          <Pagination
-            dotsLength={images.length}
-            activeDotIndex={activeSlide}
-            dotContainerStyle={{width: 10, height: 15}}
-            dotStyle={styles.dotStyle}
-            inactiveDotStyle={styles.inactiveDotStyle}
-            inactiveDotOpacity={0.4}
-            inactiveDotScale={1.0}
-            carouselRef={this.carousel}
-            tappableDots={!_.isEmpty(this.carousel?.current)}
-            containerStyle={styles.pagination}
-          />
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            height: 52,
-          }}>
-          {this.state.activeSlide === images.length - 1 ? (
-            <View style={styles.bottom}>
-              <Pressable
-                style={[
-                  styles.touchableOpacity,
-                  {flex: 1, alignItems: 'center'},
-                ]}
-                onPress={() => this.completed()}>
-                <AppText style={styles.bottomText}>
-                  {i18n.t('tutorial:close')}
-                </AppText>
-              </Pressable>
-            </View>
-          ) : (
-            <View style={[styles.bottom, {justifyContent: 'space-between'}]}>
-              <Pressable
-                style={styles.touchableOpacity}
-                onPress={() => this.skip()}>
-                <AppText style={styles.bottomText}>
-                  {i18n.t('tutorial:skip')}
-                </AppText>
-              </Pressable>
-              <Pressable
-                style={styles.touchableOpacity}
-                onPress={() => this.carousel?.current?.snapToNext()}>
-                <AppText style={[styles.bottomText, {color: colors.clearBlue}]}>
-                  {i18n.t('tutorial:next')}
-                </AppText>
-              </Pressable>
-            </View>
-          )}
-        </View>
-      </SafeAreaView>
-    );
-  }
-}
+        <Pagination
+          dotsLength={images.length}
+          activeDotIndex={activeSlide}
+          dotContainerStyle={{width: 10, height: 15}}
+          dotStyle={styles.dotStyle}
+          inactiveDotStyle={styles.inactiveDotStyle}
+          inactiveDotOpacity={0.4}
+          inactiveDotScale={1.0}
+          carouselRef={carouselRef}
+          tappableDots={!_.isEmpty(carouselRef?.current)}
+          containerStyle={styles.pagination}
+        />
+      </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          height: 52,
+        }}>
+        {activeSlide === images.length - 1 ? (
+          <View style={styles.bottom}>
+            <Pressable
+              style={[styles.touchableOpacity, {flex: 1, alignItems: 'center'}]}
+              onPress={() => completed()}>
+              <AppText style={styles.bottomText}>
+                {i18n.t('tutorial:close')}
+              </AppText>
+            </Pressable>
+          </View>
+        ) : (
+          <View style={[styles.bottom, {justifyContent: 'space-between'}]}>
+            <Pressable style={styles.touchableOpacity} onPress={() => skip()}>
+              <AppText style={styles.bottomText}>
+                {i18n.t('tutorial:skip')}
+              </AppText>
+            </Pressable>
+            <Pressable
+              style={styles.touchableOpacity}
+              onPress={() => carouselRef?.current?.snapToNext()}>
+              <AppText style={[styles.bottomText, {color: colors.clearBlue}]}>
+                {i18n.t('tutorial:next')}
+              </AppText>
+            </Pressable>
+          </View>
+        )}
+      </View>
+    </SafeAreaView>
+  );
+};
 
 export default connect(
   ({account, promotion}: RootState) => ({account, promotion}),
