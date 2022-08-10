@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
     flex: 1,
     lineHeight: 30,
     textAlign: 'center',
+    textAlignVertical: 'top',
     height: 120,
     paddingTop: 0,
     paddingBottom: 0,
