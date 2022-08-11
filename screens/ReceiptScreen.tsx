@@ -48,6 +48,10 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: colors.black,
   },
+  labelText: {
+    height: 36,
+    marginHorizontal: 10,
+  },
   label: {
     ...appStyles.normal14Text,
     lineHeight: 36,
@@ -190,26 +194,36 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
             {Object.entries({
               pay_method: receipt?.card_name,
               pymNo: receipt?.card_number,
-              // eslint-disable-next-line no-nested-ternary
-              state: order
-                ? order.state === 'canceled'
-                  ? i18n.t('his:cancel')
-                  : i18n.t('his:paymentCompleted')
-                : '',
             }).map(([k, v]) => (
               <LabelText
                 key={k}
-                style={{
-                  height: 36,
-                  marginHorizontal: 10,
-                  marginBottom: k === 'state' ? 26 : 0,
-                }}
+                style={styles.labelText}
                 label={i18n.t(`rcpt:${k}`)}
                 labelStyle={styles.label}
                 value={v}
                 valueStyle={styles.value}
               />
             ))}
+            {order && (
+              <LabelText
+                style={{
+                  ...styles.labelText,
+                  marginBottom: 26,
+                }}
+                label={i18n.t('rcpt:state')}
+                labelStyle={styles.label}
+                value={
+                  order.state === 'canceled'
+                    ? i18n.t('his:cancel')
+                    : i18n.t('his:paymentCompleted')
+                }
+                valueStyle={{
+                  ...styles.value,
+                  color:
+                    order.state === 'canceled' ? colors.tomato : colors.black,
+                }}
+              />
+            )}
           </View>
           <View style={{height: 10}} />
           <View style={styles.box}>
