@@ -36,6 +36,7 @@ import {
 import i18n from '@/utils/i18n';
 import {retrieveData, storeData, utils} from '@/utils/utils';
 import {eventToken} from '@/constants/Adjust';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -55,6 +56,7 @@ const styles = StyleSheet.create({
     height: 50,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
   },
   searchListHeader: {
@@ -286,6 +288,15 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
     );
   }, []);
 
+  const rmSearchHist = useCallback(
+    (word: string) => {
+      const newList = searchList.filter((elm) => elm !== word);
+      setSearchList(newList);
+      storeData('searchHist', newList.join(','));
+    },
+    [searchList],
+  );
+
   const getRecommendation = useCallback(() => {
     API.Page.getPageByCategory('store:search_key')
       .then((resp) => {
@@ -385,6 +396,12 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
               <AppText key="Text" style={styles.searchListText}>
                 {elm}
               </AppText>
+              <AppSvgIcon
+                name="removeSearchHist"
+                onPress={() => {
+                  rmSearchHist(elm);
+                }}
+              />
             </TouchableOpacity>
           ))
         )}
