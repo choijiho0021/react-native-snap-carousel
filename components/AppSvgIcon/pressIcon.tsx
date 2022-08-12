@@ -233,6 +233,33 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  removeSearchHist: [
+    <Svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect
+        x="10.596"
+        y=".697"
+        width="1"
+        height="14"
+        rx=".5"
+        transform="rotate(45 10.596 .697)"
+        fill="#979797"
+      />
+      <Rect
+        x=".697"
+        y="1.404"
+        width="1"
+        height="14"
+        rx=".5"
+        transform="rotate(-45 .697 1.404)"
+        fill="#979797"
+      />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;

@@ -5,7 +5,6 @@ import analytics, {firebase} from '@react-native-firebase/analytics';
 import moment from 'moment';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
-  Animated,
   Dimensions,
   Platform,
   StatusBar,
@@ -27,6 +26,14 @@ import {
 } from '@react-navigation/native';
 import VersionCheck from 'react-native-version-check';
 import SimCardsManagerModule from 'react-native-sim-cards-manager';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import {useHeaderHeight} from '@react-navigation/stack';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -72,12 +79,12 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
 import AppStyledText from '@/components/AppStyledText';
 
+const {height: viewportHeight} = Dimensions.get('window');
 const {esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.white,
-    flex: 1,
   },
   title: {
     ...appStyles.title,
@@ -218,8 +225,15 @@ const Esim: React.FC<EsimProps> = ({
   const [popUp, setPopUp] = useState<RkbPromotion>();
   const [closeType, setCloseType] = useState<'close' | 'exit' | 'redirect'>();
   const [deviceList, setDeviceList] = useState<string[]>([]);
+  const [isTop, setIsTop] = useState<boolean>(true);
   const initialized = useRef(false);
   const initNoti = useRef(false);
+  const tabBarHeight = useBottomTabBarHeight();
+  const headerHeight = useHeaderHeight();
+  const windowHeight = useMemo(
+    () => viewportHeight - tabBarHeight - headerHeight,
+    [headerHeight, tabBarHeight],
+  );
   const setNotiModal = useCallback(() => {
     const popUpPromo = promotion?.find((v) => v?.notice?.image?.noti);
 
@@ -304,17 +318,7 @@ const Esim: React.FC<EsimProps> = ({
     [navigation, popUp?.notice, popUp?.rule],
   );
 
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const clampedScrollY = scrollY.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 1],
-    extrapolateLeft: 'clamp',
-  });
-  const height = Animated.diffClamp(
-    Animated.subtract(HEADER_HEIGHT, clampedScrollY),
-    0,
-    HEADER_HEIGHT,
-  );
+  const scrollY = useSharedValue(0);
 
   const ref = useRef<View>();
   const renderScene = useCallback(
@@ -323,16 +327,30 @@ const Esim: React.FC<EsimProps> = ({
         data={product.priceInfo.get(route.key, [])}
         onPress={onPressItem}
         localOpList={product.localOpList}
-        onScroll={Animated.event(
-          [{nativeEvent: {contentOffset: {y: scrollY}}}],
-          {
-            useNativeDriver: false,
-          },
-        )}
+        onScroll={(e) => {
+          if (isTop && e.nativeEvent.contentOffset.y > HEADER_HEIGHT) {
+            setIsTop(false);
+          } else if (!isTop && e.nativeEvent.contentOffset.y <= 0) {
+            setIsTop(true);
+          }
+        }}
       />
     ),
-    [onPressItem, product.localOpList, product.priceInfo, scrollY],
+    [isTop, onPressItem, product.localOpList, product.priceInfo],
   );
+
+  useEffect(() => {
+    scrollY.value = withTiming(isTop ? 0 : HEADER_HEIGHT, {
+      duration: 500,
+      easing: Easing.out(Easing.exp),
+    });
+  }, [isTop, scrollY]);
+
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      transform: [{translateY: -scrollY.value}],
+    };
+  });
 
   const modalBody = useCallback(
     () => (
@@ -573,11 +591,18 @@ const Esim: React.FC<EsimProps> = ({
   }, []);
 
   return (
-    <View style={styles.container}>
+    <Animated.View
+      style={[
+        styles.container,
+        animatedStyles,
+        {
+          height: windowHeight + HEADER_HEIGHT,
+        },
+      ]}>
       <StatusBar barStyle="dark-content" />
-      <Animated.View style={{height}} ref={ref} collapsable={false}>
+      <View ref={ref} collapsable={false}>
         <PromotionCarousel />
-      </Animated.View>
+      </View>
       <AppButton
         key="search"
         title={i18n.t('home:searchPlaceholder')}
@@ -638,7 +663,7 @@ const Esim: React.FC<EsimProps> = ({
           />
         )
       }
-    </View>
+    </Animated.View>
   );
 };
 

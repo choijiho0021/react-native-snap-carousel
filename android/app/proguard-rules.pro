@@ -10,3 +10,5 @@
 # Add any project specific keep options here:
 
 -keep class me.leolin.shortcutbadger.impl.** { <init>(...); }
+-keep class com.swmansion.reanimated.** { *; }
+-keep class com.facebook.react.turbomodule.** { *; }

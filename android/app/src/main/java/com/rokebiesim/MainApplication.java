@@ -63,7 +63,7 @@ import io.xogus.reactnative.versioncheck.RNVersionCheckPackage;
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
 import io.invertase.firebase.dynamiclinks.ReactNativeFirebaseDynamicLinksPackage;
 
-//import com.facebook.flipper.reactnative.FlipperPackage;
+import com.facebook.flipper.reactnative.FlipperPackage;
 import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
 import com.reactnativecommunity.picker.RNCPickerPackage;
@@ -187,8 +187,8 @@ public class MainApplication extends Application implements ReactApplication {
                             new RNGoogleSigninPackage(),
                             new ReactNativeFirebaseAnalyticsPackage(),
                             new ReactNativeFirebaseMessagingPackage(),
-                            new CookieManagerPackage()
-//                            new FlipperPackage()
+                            new CookieManagerPackage(),
+                            new FlipperPackage()
                     );
                 }
 
