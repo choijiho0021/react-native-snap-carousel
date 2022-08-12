@@ -12,8 +12,9 @@ import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import i18n from '@/utils/i18n';
-import {getImage, guideImages} from './model';
+import {guideImages, imageList} from './model';
 import AppStyledText from '@/components/AppStyledText';
+import {getImage} from '@/utils/utils';
 
 const styles = StyleSheet.create({
   container: {
@@ -188,7 +189,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
         </View>
 
         <View style={{flex: 4, marginTop: 40}}>
-          <Image source={getImage(data.key)} resizeMode="contain" />
+          <Image source={getImage(imageList, data.key)} resizeMode="contain" />
         </View>
 
         <View style={styles.checkInfo}>
@@ -246,7 +247,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
           }}>
           <Image
             style={[styles.image, !isDeviceSize('medium') && {height: '90%'}]}
-            source={getImage(data.key)}
+            source={getImage(imageList, data.key)}
             resizeMode="cover"
           />
         </View>
@@ -267,10 +268,13 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
         <View style={{flex: 1, top: 20}}>{data.tip && data.tip()}</View>
 
         <View style={{flex: 1}}>
-          <Image source={getImage('page11')} resizeMode="contain" />
+          <Image source={getImage(imageList, 'page11')} resizeMode="contain" />
         </View>
         <View style={{flex: 2, justifyContent: 'center'}}>
-          <Image source={getImage('page11_2')} resizeMode="contain" />
+          <Image
+            source={getImage(imageList, 'page11_2')}
+            resizeMode="contain"
+          />
         </View>
       </View>
     ),

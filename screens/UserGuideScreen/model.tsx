@@ -120,7 +120,7 @@ const renderTip = ({
 );
 
 const dir = '../assets/images/esim/userGuide';
-const imageList: Record<string, any[]> = {
+export const imageList: Record<string, any[]> = {
   page1: [require(`${dir}/guide1.png`)],
   page2: [require(`${dir}/guide2.png`), require(`${dir}/en.guide2.png`)],
   page3: [require(`${dir}/guide3.png`), require(`${dir}/en.guide3.png`)],
@@ -136,15 +136,6 @@ const imageList: Record<string, any[]> = {
     require(`${dir}/guide11_2.png`),
     require(`${dir}/en.guide11_2.png`),
   ],
-};
-
-export const getImage = (key: string, locale?: 'ko' | 'en') => {
-  const img = imageList[key];
-  if (img) {
-    const lang = locale || i18n.locale;
-    return lang === 'en' && img[1] ? img[1] : img[0];
-  }
-  return null;
 };
 
 export const guideImages = [

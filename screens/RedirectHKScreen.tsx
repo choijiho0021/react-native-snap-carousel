@@ -22,15 +22,17 @@ import {sliderWidth} from '@/constants/SliderEntry.style';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
+import {getImage} from '@/utils/utils';
 
 const {width} = Dimensions.get('window');
 
-const guideImage = {
-  step1: require('../assets/images/guide_HK/guideHK1.png'),
-  step2: require('../assets/images/guide_HK/guideHK2.png'),
-  step3: require('../assets/images/guide_HK/guideHK3.png'),
-  step4: require('../assets/images/guide_HK/guideHK4.png'),
-  step5: require('../assets/images/guide_HK/guideHK5.png'),
+const dir = '../assets/images/guide_HK';
+const guideImage: Record<string, any[]> = {
+  step1: [require(`${dir}/guideHK1.png`), require(`${dir}/en.guideHK1.png`)],
+  step2: [require(`${dir}/guideHK2.png`), require(`${dir}/en.guideHK2.png`)],
+  step3: [require(`${dir}/guideHK3.png`), require(`${dir}/en.guideHK3.png`)],
+  step4: [require(`${dir}/guideHK4.png`), require(`${dir}/en.guideHK4.png`)],
+  step5: [require(`${dir}/guideHK5.png`), require(`${dir}/en.guideHK5.png`)],
 };
 
 const styles = StyleSheet.create({
@@ -163,7 +165,7 @@ const RedirectHKScreen: React.FC = () => {
     ({item}: {item: CarouselIndex}) => (
       <Image
         style={styles.image}
-        source={guideImage[item]}
+        source={getImage(guideImage, item)}
         resizeMode="contain"
       />
     ),

@@ -39,5 +39,18 @@ const parseJson = (str?: string) => {
   }
 };
 
+export const getImage = (
+  imgList: Record<string, any[]>,
+  key: string,
+  locale?: 'ko' | 'en',
+) => {
+  const img = imgList[key];
+  if (img) {
+    const lang = locale || i18n.locale;
+    return lang === 'en' && img[1] ? img[1] : img[0];
+  }
+  return null;
+};
+
 export {utils};
 export {storeData, retrieveData, removeData, parseJson};
