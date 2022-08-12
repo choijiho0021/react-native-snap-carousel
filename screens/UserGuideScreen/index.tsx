@@ -12,7 +12,7 @@ import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import i18n from '@/utils/i18n';
-import {guideImages} from './model';
+import {getImage, guideImages} from './model';
 import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
@@ -188,10 +188,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
         </View>
 
         <View style={{flex: 4, marginTop: 40}}>
-          <Image
-            source={require('../assets/images/esim/userGuide/userGuide1_1.png')}
-            resizeMode="contain"
-          />
+          <Image source={getImage(data.key)} resizeMode="contain" />
         </View>
 
         <View style={styles.checkInfo}>
@@ -249,7 +246,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
           }}>
           <Image
             style={[styles.image, !isDeviceSize('medium') && {height: '90%'}]}
-            source={data.image}
+            source={getImage(data.key)}
             resizeMode="cover"
           />
         </View>
@@ -257,10 +254,8 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
     );
   }, []);
 
-  const renderTailPage = useCallback((data) => {
-    const image1 = require('../assets/images/esim/userGuide/eSIMUserGuide11_1.png');
-    const image2 = require('../assets/images/esim/userGuide/eSIMUserGuide11_2.png');
-    return (
+  const renderTailPage = useCallback(
+    (data) => (
       <View style={{flex: 1, alignItems: 'center'}}>
         <View style={{flex: 1, alignItems: 'center'}}>
           <View style={[styles.step, {marginTop: 40}]}>
@@ -272,20 +267,20 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
         <View style={{flex: 1, top: 20}}>{data.tip && data.tip()}</View>
 
         <View style={{flex: 1}}>
-          <Image source={image1} resizeMode="contain" />
+          <Image source={getImage('page11')} resizeMode="contain" />
         </View>
         <View style={{flex: 2, justifyContent: 'center'}}>
-          <Image source={image2} resizeMode="contain" />
+          <Image source={getImage('page11_2')} resizeMode="contain" />
         </View>
       </View>
-    );
-  }, []);
+    ),
+    [],
+  );
 
   const renderBody = useCallback(
     (item, index: number) => {
       if (index === 0) return renderHeadPage(item);
-      if (index !== Object.keys(guideImages).length - 1)
-        return renderStepPage(item);
+      if (index < guideImages.length - 1) return renderStepPage(item);
       return renderTailPage(item);
     },
     [renderHeadPage, renderStepPage, renderTailPage],

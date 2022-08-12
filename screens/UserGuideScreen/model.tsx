@@ -119,17 +119,43 @@ const renderTip = ({
   </View>
 );
 
+const dir = '../assets/images/esim/userGuide';
+const imageList: Record<string, any[]> = {
+  page1: [require(`${dir}/guide1.png`)],
+  page2: [require(`${dir}/guide2.png`), require(`${dir}/en.guide2.png`)],
+  page3: [require(`${dir}/guide3.png`), require(`${dir}/en.guide3.png`)],
+  page4: [require(`${dir}/guide4.png`), require(`${dir}/en.guide4.png`)],
+  page5: [require(`${dir}/guide5.png`), require(`${dir}/en.guide5.png`)],
+  page6: [require(`${dir}/guide6.png`), require(`${dir}/en.guide6.png`)],
+  page7: [require(`${dir}/guide7.png`), require(`${dir}/en.guide7.png`)],
+  page8: [require(`${dir}/guide8.png`), require(`${dir}/en.guide8.png`)],
+  page9: [require(`${dir}/guide9.png`), require(`${dir}/en.guide9.png`)],
+  page10: [require(`${dir}/guide10.png`), require(`${dir}/en.guide10.png`)],
+  page11: [require(`${dir}/guide11_1.png`), require(`${dir}/en.guide11_1.png`)],
+  page11_2: [
+    require(`${dir}/guide11_2.png`),
+    require(`${dir}/en.guide11_2.png`),
+  ],
+};
+
+export const getImage = (key: string, locale?: 'ko' | 'en') => {
+  const img = imageList[key];
+  if (img) {
+    const lang = locale || i18n.locale;
+    return lang === 'en' && img[1] ? img[1] : img[0];
+  }
+  return null;
+};
+
 export const guideImages = [
   {
     key: 'page1',
-    image: require('../assets/images/esim/userGuide/eSIMUserGuide1.png'),
     title: renderText('userGuide:stepsTitle0_1'),
     step: 0,
     tip: () => null,
   },
   {
     key: 'page2',
-    image: require('../assets/images/esim/userGuide/eSIMUserGuide2.png'),
     title: renderText('userGuide:stepsTitle1_1'),
     step: 1,
     tip: () =>
@@ -137,7 +163,6 @@ export const guideImages = [
   },
   {
     key: 'page3',
-    image: require('../assets/images/esim/userGuide/eSIMUserGuide3.png'),
     title: renderText('userGuide:stepsTitle2_1'),
     step: 2,
     tip: () => (
@@ -156,7 +181,6 @@ export const guideImages = [
   },
   {
     key: 'page4',
-    image: require('../assets/images/esim/userGuide/eSIMUserGuide4.png'),
     title: renderText('userGuide:stepsTitle2_1'),
     step: 2,
     tip: () => (
@@ -174,7 +198,6 @@ export const guideImages = [
   },
   {
     key: 'page5',
-    image: require('../assets/images/esim/userGuide/eSIMUserGuide5.png'),
     title: renderText('userGuide:stepsTitle3_1'),
     step: 3,
     tip: () => (
@@ -191,7 +214,6 @@ export const guideImages = [
   },
   {
     key: 'page6',
-    image: require('../assets/images/esim/userGuide/eSIMUserGuide6.png'),
     title: renderText('userGuide:stepsTitle4_1'),
     step: 4,
     tip: () => (
@@ -200,7 +222,6 @@ export const guideImages = [
   },
   {
     key: 'page7',
-    image: require('../assets/images/esim/userGuide/eSIMUserGuide7.png'),
     title: renderText('userGuide:stepsTitle4_1'),
     step: 4,
     tip: () => (
@@ -209,7 +230,6 @@ export const guideImages = [
   },
   {
     key: 'page8',
-    image: require('../assets/images/esim/userGuide/eSIMUserGuide8.png'),
     title: renderText('userGuide:stepsTitle4_1'),
     step: 4,
     tip: () => (
@@ -224,7 +244,6 @@ export const guideImages = [
   },
   {
     key: 'page9',
-    image: require('../assets/images/esim/userGuide/eSIMUserGuide9.png'),
     title: renderText('userGuide:stepsTitle5_1'),
     step: 5,
     tip: () => (
@@ -233,7 +252,6 @@ export const guideImages = [
   },
   {
     key: 'page10',
-    image: require('../assets/images/esim/userGuide/eSIMUserGuide10.png'),
     title: renderText('userGuide:stepsTitle5_1'),
     step: 5,
     tip: () => (
@@ -248,7 +266,6 @@ export const guideImages = [
   },
   {
     key: 'page11',
-    image: require('../assets/images/esim/userGuide/eSIMUserGuide11_1.png'),
     title: renderText('userGuide:stepsTitle6_1'),
     step: 6,
     tip: () => (
