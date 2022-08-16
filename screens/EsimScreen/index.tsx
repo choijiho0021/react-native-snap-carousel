@@ -110,7 +110,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   navigation,
   route,
   action,
-  account: {iccid, token, balance, expDate},
+  account: {loggedIn, iccid, token, balance, expDate},
   order,
   pending,
   loginPending,
@@ -359,11 +359,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     async function checkShowModal() {
       const item = await AsyncStorage.getItem('gift.show.modal');
       const tm = moment(item, 'YYYY-MM-DD HH:mm:ss');
-      if (!tm.isValid() || tm.add(7, 'day').isBefore(moment()))
+      if ((!tm.isValid() || tm.add(7, 'day').isBefore(moment())) && isFocused) {
         setShowGiftModal(true);
+      } else {
+        setShowGiftModal(false);
+      }
     }
     checkShowModal();
-  }, []);
+  }, [isFocused]);
 
   return (
     <View style={styles.container}>
