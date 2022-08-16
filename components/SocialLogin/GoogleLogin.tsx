@@ -50,6 +50,7 @@ const GoogleLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
   const signIn = async () => {
     try {
       await GoogleSignin.hasPlayServices();
+      await GoogleSignin.signOut();
       const userInfoPromise = await GoogleSignin.signIn();
       const {user, serverAuthCode} = userInfoPromise;
 
