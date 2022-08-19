@@ -289,7 +289,7 @@ const invite = async (
 
   try {
     const result = await Share.share({
-      url,
+      message: url,
     });
     if (result.action !== Share.dismissedAction) {
       // adjust appEvent 앱 업데이트 추가
