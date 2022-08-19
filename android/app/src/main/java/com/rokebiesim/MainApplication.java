@@ -14,6 +14,7 @@ import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactApplication;
+import cl.json.RNSharePackage;
 import com.tkporter.sendsms.SendSMSPackage;
 import com.adjust.nativemodule.AdjustPackage;
 import com.reactnativesimcardsmanager.SimCardsManagerPackage;
@@ -150,6 +151,7 @@ public class MainApplication extends Application implements ReactApplication {
                 protected List<ReactPackage> getPackages() {
                     return Arrays.<ReactPackage>asList(
                             new MainReactPackage(),
+            new RNSharePackage(),
             new SendSMSPackage(),
             new CameraRollPackage(),
             new RNViewShotPackage(),

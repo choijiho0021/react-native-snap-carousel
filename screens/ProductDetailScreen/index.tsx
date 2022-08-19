@@ -200,7 +200,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     (uuid?: string) => {
       if (!uuid) return null;
 
-      const uri = `${webViewHost}/#/product/${uuid}${
+      const uri = `${webViewHost}/product/${uuid}${
         esimGlobal ? '?service=global' : ''
       }`;
 
