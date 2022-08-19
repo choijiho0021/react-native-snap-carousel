@@ -11,6 +11,7 @@
 #import "RNKakaoLogins.h"
 #import <React/RCTLinkingManager.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
+#import "Adjust.h"
 
 @implementation AppDelegate(Rokebi)
 
@@ -25,8 +26,22 @@
   if ([[FBSDKApplicationDelegate sharedInstance] application:application openURL:url options:options]) {
     return YES;
   }
-
+  
   return [RCTLinkingManager application:application openURL:url options:options];
+}
+
+- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity
+ restorationHandler:(nonnull void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler
+{
+  
+  if ([[userActivity activityType] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+          NSURL *url = [userActivity webpageURL];
+          // url object contains your universal link content
+      }
+  
+ return [RCTLinkingManager application:application
+                  continueUserActivity:userActivity
+                    restorationHandler:restorationHandler];
 }
 
 @end

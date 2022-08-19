@@ -110,7 +110,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   navigation,
   route,
   action,
-  account: {iccid, token, balance, expDate},
+  account: {loggedIn, iccid, token, balance, expDate},
   order,
   pending,
   loginPending,
@@ -122,6 +122,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [subs, setSubs] = useState<RkbSubscription>();
   const [cmiPending, setCmiPending] = useState(false);
   const [showGiftModal, setShowGiftModal] = useState(false);
+  const [isPressClose, setIsPressClose] = useState(false);
   const [cmiUsage, setCmiUsage] = useState({});
   const [cmiStatus, setCmiStatus] = useState({});
   const [isFirstLoad, setIsFirstLoad] = useState(true);
@@ -359,11 +360,18 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     async function checkShowModal() {
       const item = await AsyncStorage.getItem('gift.show.modal');
       const tm = moment(item, 'YYYY-MM-DD HH:mm:ss');
-      if (!tm.isValid() || tm.add(7, 'day').isBefore(moment()))
+      if (
+        (!tm.isValid() || tm.add(7, 'day').isBefore(moment())) &&
+        isFocused &&
+        !isPressClose
+      ) {
         setShowGiftModal(true);
+      } else {
+        setShowGiftModal(false);
+      }
     }
     checkShowModal();
-  }, []);
+  }, [isFocused, isPressClose]);
 
   return (
     <View style={styles.container}>
@@ -404,7 +412,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       />
       <GiftModal
         visible={showGiftModal}
-        onOkClose={() => setShowGiftModal(false)}
+        onOkClose={() => {
+          setShowGiftModal(false);
+          setIsPressClose(true);
+        }}
       />
       <AppSnackBar
         visible={showSnackBar}

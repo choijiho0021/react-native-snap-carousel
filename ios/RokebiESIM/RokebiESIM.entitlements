@@ -12,6 +12,7 @@
 	<array>
 		<string>applinks:rokebi.page.link</string>
 		<string>applinks:www.rokebi.com</string>
+		<string>applinks:wds3.adj.st</string>
 	</array>
 </dict>
 </plist>

@@ -58,6 +58,19 @@
                     android:host="esim.com" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Redirect URI: "kakao{NATIVE_APP_KEY}://oauth“ -->
+                <data android:host="oauth"
+                    android:scheme="kakaof881469e3b4a140967dfaebe648ede8d" />
+            </intent-filter>
+        </activity>
 <!--        <receiver android:name="com.adjust.sdk.AdjustReferrerReceiver"-->
 <!--            android:exported="true" >-->
 <!--            <intent-filter>-->

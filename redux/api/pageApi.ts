@@ -6,6 +6,7 @@ export type RkbInfo = {
   uuid: string;
   title: string;
   body?: string;
+  summary?: string;
   created: string;
 };
 
@@ -17,14 +18,18 @@ const toPage = (data: DrupalNode[] | DrupalNodeJsonApi): ApiResult<RkbInfo> => {
   if (!_.isEmpty(data.jsonapi)) {
     // jsonapi result
     const obj = _.isArray(data.data) ? data.data : [data.data];
+
     return api.success(
-      obj.map((item) => ({
-        key: item.id,
-        uuid: item.id,
-        title: item.attributes.title,
-        body: item.attributes.body.processed,
-        created: item.attributes.created,
-      })),
+      obj.map((item) => {
+        return {
+          key: item.id,
+          uuid: item.id,
+          title: item.attributes.title,
+          body: item.attributes.body.processed,
+          summary: item.attributes.body.summary,
+          created: item.attributes.created,
+        };
+      }),
     );
   }
 
