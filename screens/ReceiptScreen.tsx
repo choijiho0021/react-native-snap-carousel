@@ -6,10 +6,10 @@ import {
   Platform,
   SafeAreaView,
   ScrollView,
-  Share,
   StyleSheet,
   View,
 } from 'react-native';
+import Share from 'react-native-share';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import ViewShot from 'react-native-view-shot';
@@ -136,13 +136,11 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
   const share = useCallback(async () => {
     try {
       ref.current?.capture().then(async (uri) => {
-        const result = await Share.share({
-          title: i18n.t('rcpt.title'),
+        const result = await Share.open({
+          title: i18n.t('rcpt:title'),
           url: uri,
         });
-        console.log('@@@ share reulst', result);
-        if (result.action !== Share.dismissedAction) {
-        }
+        console.log('@@@ share reulst', result, uri);
       });
     } catch (e) {
       console.log('😻😻😻 snapshot failed', e);

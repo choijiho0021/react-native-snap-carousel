@@ -1,7 +1,6 @@
 import dynamicLinks from '@react-native-firebase/dynamic-links';
-import {Share} from 'react-native';
+import Share from 'react-native-share';
 import _ from 'underscore';
-// import {Adjust, AdjustEvent} from 'react-native-adjust';
 import api, {ApiResult, DrupalNode, Langcode} from './api';
 import Env from '@/environment';
 import i18n from '@/utils/i18n';
@@ -288,7 +287,7 @@ const invite = async (
   });
 
   try {
-    const result = await Share.share({
+    const result = await Share.open({
       url,
     });
     if (result.action !== Share.dismissedAction) {
