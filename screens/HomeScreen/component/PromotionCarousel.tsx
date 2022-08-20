@@ -193,11 +193,11 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
     <View style={styles.carousel}>
       <AppCarousel
         data={promotion}
-        renderItem={({item, idx}: {item: RkbPromotion; idx: number}) => (
+        renderItem={({item}: {item: RkbPromotion}) => (
           <PromotionImage item={item} onPress={onPress} />
         )}
         autoplay
-        // loop
+        loop
         onSnapToItem={setActiveSlide}
         sliderWidth={sliderWidth}
       />
