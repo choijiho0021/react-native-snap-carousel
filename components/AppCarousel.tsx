@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {Platform, ScrollView, StyleSheet, View} from 'react-native';
 import {useInterval} from '@/utils/useInterval';
 
 const styles = StyleSheet.create({
@@ -33,6 +33,10 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
   const [list, setList] = useState<T>([]);
   const [idx, setIdx] = useState(loop ? 1 : 0);
   const ref = useRef<ScrollView>();
+  const onMomentum = useRef(false);
+  const [playInterval, setPlayInterval] = useState<number | null>(
+    autoplay && loop ? 2500 : null,
+  );
 
   useEffect(() => {
     if (list.length === 0) {
@@ -68,10 +72,42 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
     [slides, loop, onSnapToItem],
   );
 
-  useInterval(
-    () => ref.current?.scrollToEnd({animated: true}),
-    autoplay && loop ? 2500 : null,
+  const onMomentumScrollStart = useCallback(() => {
+    onMomentum.current = true;
+    setPlayInterval(null);
+  }, []);
+
+  const onMomentumScrollEnd = useCallback(
+    (x: number, slideIdx: number) => {
+      if (onMomentum.current) {
+        const i = Math.round(x / sliderWidth);
+        let newIdx = slideIdx;
+        if (loop) {
+          if (i > 1) newIdx = (newIdx + 1) % slides.length;
+          else if (i < 1) newIdx = (newIdx - 1 + slides.length) % slides.length;
+        } else {
+          // eslint-disable-next-line no-nested-ternary, no-lonely-if
+          if (i === 1) {
+            if (newIdx === 0) newIdx++;
+            else if (newIdx === slides.length - 1) newIdx--;
+          } else if (i > 1 && newIdx < slides.length - 1) newIdx++;
+          else if (i < 1 && newIdx > 0) newIdx--;
+        }
+
+        if (newIdx !== slideIdx) moveSlide(newIdx);
+      }
+      onMomentum.current = false;
+      setPlayInterval(autoplay && loop ? 2500 : null);
+    },
+    [autoplay, loop, moveSlide, sliderWidth, slides.length],
   );
+
+  useInterval(() => {
+    if (!onMomentum.current) {
+      ref.current?.scrollToEnd({animated: true});
+      if (Platform.OS === 'android') moveSlide((idx + 1) % slides.length);
+    }
+  }, playInterval);
 
   return (
     <ScrollView
@@ -79,31 +115,17 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
       pagingEnabled
       horizontal
       showsHorizontalScrollIndicator={false}
+      onMomentumScrollBegin={onMomentumScrollStart}
       onMomentumScrollEnd={({
         nativeEvent: {
           contentOffset: {x},
         },
-      }) => {
-        const i = Math.floor(x / sliderWidth);
-        let newIdx = idx;
-        if (loop) {
-          if (i > 1) newIdx = (idx + 1) % slides.length;
-          else if (i < 1) newIdx = (idx - 1 + slides.length) % slides.length;
-        } else {
-          // eslint-disable-next-line no-nested-ternary, no-lonely-if
-          if (i === 1)
-            newIdx = idx + (idx === 0 ? 1 : idx === slides.length - 1 ? -1 : 0);
-          else if (i > 1 && idx < slides.length - 1) newIdx++;
-          else if (i < 1 && idx > 0) newIdx--;
-        }
-
-        if (newIdx !== idx) moveSlide(newIdx);
-      }}
+      }) => onMomentumScrollEnd(x, idx)}
       snapToAlignment="center">
       <View style={styles.container}>
-        {list.map((item) => (
+        {list.map((item, i) => (
           <View
-            key={keyExtractor ? keyExtractor(item) : item.key}
+            key={keyExtractor ? keyExtractor(item) : item.key || i}
             style={{width: sliderWidth, flex: 1}}>
             {renderItem({item, index: idx})}
           </View>
