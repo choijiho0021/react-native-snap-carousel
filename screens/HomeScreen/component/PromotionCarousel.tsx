@@ -1,7 +1,7 @@
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import React, {memo, useCallback, useState} from 'react';
-import {Animated, Image, Pressable, StyleSheet, View} from 'react-native';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
+import {Animated, Image, Pressable, StyleSheet, Text, View} from 'react-native';
+import {Pagination} from 'react-native-snap-carousel';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
@@ -15,8 +15,7 @@ import {RkbPromotion} from '@/redux/api/promotionApi';
 import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import {actions as infoActions, InfoAction} from '@/redux/modules/info';
-import {utils} from '@/utils/utils';
-import {eventToken} from '@/constants/Adjust';
+import AppCarousel from '@/components/AppCarousel';
 
 const DOT_MARGIN = 6;
 const INACTIVE_DOT_WIDTH = 6;
@@ -44,6 +43,7 @@ const styles = StyleSheet.create({
   },
   imgRatio: {
     // figure out your image aspect ratio
+    width: sliderWidth - 40,
     aspectRatio: 335 / 100,
   },
   pagination: {
@@ -191,18 +191,15 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
 
   return (
     <View style={styles.carousel}>
-      <Carousel
+      <AppCarousel
         data={promotion}
         renderItem={({item}: {item: RkbPromotion}) => (
           <PromotionImage item={item} onPress={onPress} />
         )}
         autoplay
         loop
-        lockScrollWhileSnapping
-        useScrollView={false}
         onSnapToItem={setActiveSlide}
         sliderWidth={sliderWidth}
-        itemWidth={sliderWidth}
       />
       <View style={styles.pagination}>
         <Pagination
