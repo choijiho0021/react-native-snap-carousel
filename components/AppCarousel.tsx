@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {Platform, ScrollView, StyleSheet, View} from 'react-native';
+import {Animated, Platform, ScrollView, StyleSheet, View} from 'react-native';
 import {useInterval} from '@/utils/useInterval';
 
 const styles = StyleSheet.create({
@@ -40,16 +40,12 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
 
   useEffect(() => {
     if (list.length === 0) {
+      console.log('@@ set init list');
       setList(
         slides.length === 2 ? slides.concat(slides[0]) : slides.slice(0, 3),
       );
     }
   }, [list.length, slides]);
-
-  useEffect(() => {
-    if (loop || (idx > 0 && idx < slides.length - 1))
-      ref.current?.scrollTo({x: sliderWidth, y: 0, animated: false});
-  }, [sliderWidth, idx, slides.length, loop]);
 
   const moveSlide = useCallback(
     (newIdx: number) => {
@@ -68,8 +64,10 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
       }
       setIdx(newIdx);
       onSnapToItem(newIdx);
+      if (loop || (newIdx > 0 && newIdx < slides.length - 1))
+        ref.current?.scrollTo({x: sliderWidth, y: 0, animated: false});
     },
-    [slides, loop, onSnapToItem],
+    [slides, onSnapToItem, loop, sliderWidth],
   );
 
   const onMomentumScrollStart = useCallback(() => {
@@ -109,8 +107,10 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
     }
   }, playInterval);
 
+  console.log('@@ render');
+
   return (
-    <ScrollView
+    <Animated.ScrollView
       ref={ref}
       pagingEnabled
       horizontal
@@ -127,11 +127,11 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
           <View
             key={keyExtractor ? keyExtractor(item) : item.key || i}
             style={{width: sliderWidth, flex: 1}}>
-            {renderItem({item, index: idx})}
+            {renderItem({item, index: i})}
           </View>
         ))}
       </View>
-    </ScrollView>
+    </Animated.ScrollView>
   );
 };
 
