@@ -563,6 +563,25 @@ const Esim: React.FC<EsimProps> = ({
   }, [isSupportDev, notification]);
 
   useEffect(() => {
+    const runDeppLink = async () => {
+      // Get the deep link used to open the app
+      const initialUrl = await Linking.getInitialURL();
+      const urlSplit = initialUrl?.split('/');
+
+      if (urlSplit && urlSplit.length >= 4) {
+        const deepLinkPath = urlSplit[3].split('?')[0];
+
+        if (deepLinkPath === 'PROMOTION') {
+          setPopupDisabled(true);
+          exitApp('redirect');
+        }
+      }
+    };
+
+    runDeppLink();
+  }, [exitApp]);
+
+  useEffect(() => {
     if (
       product.localOpList.size > 0 &&
       product.prodByCountry.length > 0 &&
