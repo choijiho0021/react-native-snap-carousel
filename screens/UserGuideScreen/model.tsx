@@ -119,7 +119,7 @@ const renderTip = ({
   </View>
 );
 
-const dir = '../assets/images/esim/userGuide';
+const dir = '../../assets/images/esim/userGuide';
 export const imageList: Record<string, any[]> = {
   page1: [require(`${dir}/guide1.png`)],
   page2: [require(`${dir}/guide2.png`), require(`${dir}/en.guide2.png`)],

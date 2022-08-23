@@ -117,7 +117,7 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
           style={styles.rechargeBox}
           onPress={() => navigation.navigate('Recharge')}>
           <ImageBackground
-            source={require('../assets/images/esim/card.png')}
+            source={require('../../../assets/images/esim/card.png')}
             style={styles.image}>
             <View style={styles.rechargeText}>
               <View style={{flexDirection: 'column', flex: 9}}>

@@ -256,7 +256,7 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
         {esimApp ? (
           <View style={styles.rechargeBox}>
             <ImageBackground
-              source={require('../assets/images/esim/card.png')}
+              source={require('../../assets/images/esim/card.png')}
               style={styles.image}>
               <View style={styles.iconWithText}>
                 <View>
