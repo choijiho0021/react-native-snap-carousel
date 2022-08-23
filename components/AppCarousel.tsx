@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {Animated, Platform, ScrollView, StyleSheet, View} from 'react-native';
+import {Platform, ScrollView, StyleSheet, View} from 'react-native';
 import {useInterval} from '@/utils/useInterval';
 
 const styles = StyleSheet.create({
@@ -31,7 +31,7 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
     [data, loop],
   );
   const [list, setList] = useState<T>([]);
-  const [idx, setIdx] = useState(loop ? 1 : 0);
+  const idx = useRef(loop ? 1 : 0);
   const ref = useRef<ScrollView>();
   const onMomentum = useRef(false);
   const [playInterval, setPlayInterval] = useState<number | null>(
@@ -40,7 +40,6 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
 
   useEffect(() => {
     if (list.length === 0) {
-      console.log('@@ set init list');
       setList(
         slides.length === 2 ? slides.concat(slides[0]) : slides.slice(0, 3),
       );
@@ -62,7 +61,7 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
       } else if (slides.length > 1) {
         setList(slides.slice(newIdx - 1, newIdx + 2));
       }
-      setIdx(newIdx);
+      idx.current = newIdx;
       onSnapToItem(newIdx);
       if (loop || (newIdx > 0 && newIdx < slides.length - 1))
         ref.current?.scrollTo({x: sliderWidth, y: 0, animated: false});
@@ -103,14 +102,13 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
   useInterval(() => {
     if (!onMomentum.current) {
       ref.current?.scrollToEnd({animated: true});
-      if (Platform.OS === 'android') moveSlide((idx + 1) % slides.length);
+      if (Platform.OS === 'android')
+        moveSlide((idx.current + 1) % slides.length);
     }
   }, playInterval);
 
-  console.log('@@ render');
-
   return (
-    <Animated.ScrollView
+    <ScrollView
       ref={ref}
       pagingEnabled
       horizontal
@@ -120,18 +118,16 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
         nativeEvent: {
           contentOffset: {x},
         },
-      }) => onMomentumScrollEnd(x, idx)}
+      }) => onMomentumScrollEnd(x, idx.current)}
       snapToAlignment="center">
-      <View style={styles.container}>
-        {list.map((item, i) => (
-          <View
-            key={keyExtractor ? keyExtractor(item) : item.key || i}
-            style={{width: sliderWidth, flex: 1}}>
-            {renderItem({item, index: i})}
-          </View>
-        ))}
-      </View>
-    </Animated.ScrollView>
+      {list.map((item, i) => (
+        <View
+          key={keyExtractor ? keyExtractor(item) : item.key || i}
+          style={{width: sliderWidth, flex: 1}}>
+          {renderItem({item, index: i})}
+        </View>
+      ))}
+    </ScrollView>
   );
 };
 
