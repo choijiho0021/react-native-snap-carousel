@@ -134,7 +134,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;
-  [FIRMessaging messaging].delegate = self;
+ // [FIRMessaging messaging].delegate = self;
 
   [RNSplashScreen show];
   
