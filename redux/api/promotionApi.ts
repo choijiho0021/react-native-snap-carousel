@@ -256,6 +256,9 @@ const buildLink = async ({
       bundleId,
       appStoreId,
     },
+    android: {
+      packageName: 'com.rokebiesim',
+    },
     social: {
       title: i18n
         .t('invite:title')
