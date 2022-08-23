@@ -48,14 +48,15 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
+                <data android:host="rokebi.page.link" android:scheme="https"/>
+                <data android:host="com.uangel.rokebi-ESIM" android:scheme="https"/>
                 <data
-                    android:scheme="rokebi"
-                    android:host="esim.com" />
+                    android:scheme="https"
+                    android:host="www.rokebi.com" />
             </intent-filter>
         </activity>
         <activity
