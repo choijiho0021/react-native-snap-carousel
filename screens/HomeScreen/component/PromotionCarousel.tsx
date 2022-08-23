@@ -189,13 +189,18 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
     [promotion],
   );
 
+  const renderItem = useCallback(
+    ({item, index}: {item: RkbPromotion; index: number}) => (
+      <PromotionImage item={item} onPress={onPress} />
+    ),
+    [onPress],
+  );
+
   return (
     <View style={styles.carousel}>
       <AppCarousel
         data={promotion}
-        renderItem={({item}: {item: RkbPromotion}) => (
-          <PromotionImage item={item} onPress={onPress} />
-        )}
+        renderItem={renderItem}
         autoplay
         loop
         onSnapToItem={setActiveSlide}
