@@ -14,6 +14,7 @@ import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactApplication;
+import com.swmansion.reanimated.ReanimatedPackage;
 import cl.json.RNSharePackage;
 import com.tkporter.sendsms.SendSMSPackage;
 import com.adjust.nativemodule.AdjustPackage;
@@ -31,7 +32,9 @@ import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.soloader.SoLoader;
+import com.rokebiesim.newarchitecture.MainApplicationReactNativeHost;
 import com.horcrux.svg.SvgPackage;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.analytics.Analytics;
@@ -151,6 +154,7 @@ public class MainApplication extends Application implements ReactApplication {
                 protected List<ReactPackage> getPackages() {
                     return Arrays.<ReactPackage>asList(
                             new MainReactPackage(),
+            new ReanimatedPackage(),
             new RNSharePackage(),
             new SendSMSPackage(),
             new CameraRollPackage(),
@@ -205,15 +209,24 @@ public class MainApplication extends Application implements ReactApplication {
                 }
             };
 
+    private final ReactNativeHost mNewArchitectureNativeHost =
+        new MainApplicationReactNativeHost(this);
+
     @Override
     public ReactNativeHost getReactNativeHost() {
-        return mReactNativeHost;
+        if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+            return mNewArchitectureNativeHost;
+        } else {
+            return mReactNativeHost;
+        }
     }
 
 
     @Override
     public void onCreate() {
         super.onCreate();
+        // If you opted-in for the New Architecture, we enable the TurboModule system
+        ReactFeatureFlags.useTurboModules = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
         SoLoader.init(this, /* native exopackage */ false);
         AppCenter.start(this, "ff7d5d5a-8b74-4ec2-99be-4dfd81b4b0fd", Analytics.class);
         initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
