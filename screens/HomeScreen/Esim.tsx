@@ -12,7 +12,6 @@ import {
   View,
   ScrollView,
   Linking,
-  BackHandler,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {Settings} from 'react-native-fbsdk';
@@ -314,7 +313,6 @@ const Esim: React.FC<EsimProps> = ({
         case 'exit':
           if (isIOS) setIsDevModalVisible(false);
           else {
-            BackHandler.exitApp();
             Linking.openURL('https://www.rokebi.com');
           }
           break;
