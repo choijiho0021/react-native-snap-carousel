@@ -67,6 +67,7 @@
   "copyMsg": "복사되었습니다",
   "hongkong": "홍콩",
   "centerDot": "\u00B7",
+  "exitAndOpenLink": "앱 종료하고 웹페이지로 이동",
 
   "home:exitApp": "앱 종료",
   "home:guide": "로밍도깨비 사용가이드 !",
@@ -75,6 +76,9 @@
   "home:supportedDevice": "서비스 이용 가능 단말",
   "home:supportedDeviceBody": "이외 해외 구매한 eSIM 사용가능 단말",
   "home:unsupportedBody1": "로밍도깨비 eSIM 서비스는 <b>eSIM 모듈이 탑재된 eSIM 지원 단말에서 이용 가능</b> 합니다",
+  "home:unsupportedBody2": "eSIM 이용 가능 단말에서 로밍도깨비 eSIM 앱에 접속해주세요.",
+  "home:unsupportedBody3": "로밍도깨비 <b>서비스 소개와 간단한 상품 정보는 웹페이지에서 확인</b>하실 수 있습니다.",
+  "home:unsupportedBody4": "감사합니다.",
   "home:searchPlaceholder": "어디로 여행을 떠날까요?",
 
   "app:updateTitle-1": "새로운 버전이",

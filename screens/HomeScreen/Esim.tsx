@@ -11,6 +11,8 @@ import {
   StyleSheet,
   View,
   ScrollView,
+  Linking,
+  BackHandler,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {Settings} from 'react-native-fbsdk';
@@ -80,7 +82,7 @@ import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
 import AppStyledText from '@/components/AppStyledText';
 
 const {height: viewportHeight} = Dimensions.get('window');
-const {esimGlobal} = Env.get();
+const {esimGlobal, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -310,7 +312,11 @@ const Esim: React.FC<EsimProps> = ({
           }
           break;
         case 'exit':
-          setIsDevModalVisible(false);
+          if (isIOS) setIsDevModalVisible(false);
+          else {
+            BackHandler.exitApp();
+            Linking.openURL('https://www.rokebi.com');
+          }
           break;
         default:
       }
@@ -355,25 +361,48 @@ const Esim: React.FC<EsimProps> = ({
   const modalBody = useCallback(
     () => (
       <View style={styles.modalBody}>
-        <View style={{marginBottom: 10}}>
-          <AppStyledText
-            text={i18n.t('home:unsupportedBody1')}
-            textStyle={appStyles.normal16Text}
-            format={{b: styles.normal16BlueText}}
-          />
-        </View>
-        <AppText style={styles.supportDevTitle}>
-          {i18n.t('home:supportedDevice')}
-        </AppText>
+        {isIOS ? (
+          <View>
+            <View style={{marginBottom: 10}}>
+              <AppStyledText
+                text={i18n.t('home:unsupportedBody1')}
+                textStyle={appStyles.normal16Text}
+                format={{b: styles.normal16BlueText}}
+              />
+            </View>
+            <AppText style={styles.supportDevTitle}>
+              {i18n.t('home:supportedDevice')}
+            </AppText>
 
-        <ScrollView
-          style={styles.deviceScrollView}
-          showsVerticalScrollIndicator={false}>
-          <AppText style={[appStyles.normal16Text, {lineHeight: 24}]}>
-            {deviceList && deviceList.join(', ')}
-            {i18n.t('home:supportedDeviceBody')}
-          </AppText>
-        </ScrollView>
+            <ScrollView
+              style={styles.deviceScrollView}
+              showsVerticalScrollIndicator={false}>
+              <AppText style={[appStyles.normal16Text, {lineHeight: 24}]}>
+                {deviceList && deviceList.join(', ')}
+                {i18n.t('home:supportedDeviceBody')}
+              </AppText>
+            </ScrollView>
+          </View>
+        ) : (
+          <View style={{marginBottom: 10}}>
+            <AppStyledText
+              text={i18n.t('home:unsupportedBody1')}
+              textStyle={appStyles.normal16Text}
+              format={{b: styles.normal16BlueText}}
+            />
+            <AppText style={[appStyles.normal16Text, {marginVertical: 30}]}>
+              {i18n.t('home:unsupportedBody2')}
+            </AppText>
+            <AppStyledText
+              text={i18n.t('home:unsupportedBody3')}
+              textStyle={appStyles.normal16Text}
+              format={{b: styles.normal16BlueText}}
+            />
+            <AppText style={[appStyles.normal16Text, {marginTop: 30}]}>
+              {i18n.t('home:unsupportedBody4')}
+            </AppText>
+          </View>
+        )}
       </View>
     ),
     [deviceList],
@@ -640,7 +669,7 @@ const Esim: React.FC<EsimProps> = ({
         isDevModalVisible && !isSupportDev ? (
           <AppModal
             title={i18n.t('home:unsupportedTitle')}
-            closeButtonTitle={i18n.t('ok')}
+            closeButtonTitle={isIOS ? i18n.t('ok') : i18n.t('exitAndOpenLink')}
             titleStyle={styles.modalTitle}
             type="close"
             onOkClose={() => exitApp('exit')}
