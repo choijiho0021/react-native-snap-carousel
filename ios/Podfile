@@ -1,7 +1,10 @@
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
-platform :ios, '12.0'
+platform :ios, '12.4'
+install! 'cocoapods', :deterministic_uuids => false
+production = ENV["PRODUCTION"] == "1"
+$RNFirebaseAnalyticsWithoutAdIdSupport=true
 
 ENVFILES = {
     'Debug' => '$(PODS_ROOT)/../../.env',
@@ -14,6 +17,9 @@ ENVFILES = {
   def rokebiPods
     config = use_native_modules!
 
+  # Flags change depending on the env values.
+  flags = get_default_flags()
+
     pod 'KakaoSDKCommon' , '~> 2.9.0' # 필수 요소를 담은 공통 모듈
     pod 'KakaoSDKAuth', '~> 2.9.0' # 사용자 인증
     pod 'KakaoSDKUser', '~> 2.9.0' # 카카오 로그인, 사용자 관리
@@ -22,8 +28,15 @@ ENVFILES = {
     # pod 'KakaoSDKShare'  # 메시지(카카오톡 공유 2.11.0 이상 버전)
     pod 'KakaoSDKTemplate', '~> 2.9.0' # 메시지 템플릿 
 
-    use_react_native!(:path => config[:reactNativePath], 
-    :hermes_enabled => false
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # to enable hermes on iOS, change `false` to `true` and then install pods
+    # :production => production,
+    :hermes_enabled => flags[:hermes_enabled],
+    :fabric_enabled => flags[:fabric_enabled],
+    :flipper_configuration => FlipperConfiguration.enabled,
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
   permissions_path = '../node_modules/react-native-permissions/ios'
@@ -47,10 +60,10 @@ ENVFILES = {
   # Note that if you have use_frameworks! enabled, Flipper will not work and
   # you should disable these next few lines.
   # use_flipper!()
-  use_flipper!({"Flipper" => "0.93.0", "Flipper-DoubleConversion" => "1.1.7"})
+  # use_flipper!({ "Flipper-DoubleConversion" => "1.1.7"})
   # use_flipper!({'Flipper' => '0.75.1', 'Flipper-Folly' => '2.5.3'})`
 
-  end
+end
 
 target 'RokebiGlobal' do
   rokebiPods
