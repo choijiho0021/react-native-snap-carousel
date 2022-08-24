@@ -339,7 +339,8 @@ const Esim: React.FC<EsimProps> = ({
   const renderScene = useCallback(
     ({route}: {route: TabViewRoute}) => (
       <StoreList
-        data={product.priceInfo.get(route.key, [])}
+        data={product.priceInfo.get(route.key, [] as RkbPriceInfo[][])}
+        isFolderOpen={isFolderOpen(dimensions.width)}
         onPress={onPressItem}
         localOpList={product.localOpList}
         onScroll={(e) => {
@@ -351,7 +352,13 @@ const Esim: React.FC<EsimProps> = ({
         }}
       />
     ),
-    [isTop, onPressItem, product.localOpList, product.priceInfo],
+    [
+      dimensions.width,
+      isTop,
+      onPressItem,
+      product.localOpList,
+      product.priceInfo,
+    ],
   );
 
   useEffect(() => {
@@ -628,6 +635,22 @@ const Esim: React.FC<EsimProps> = ({
       .catch((err) => setAppUpdateVisible(false));
   }, []);
 
+  const renderSearch = useCallback(
+    () => (
+      <AppButton
+        key="search"
+        title={i18n.t('home:searchPlaceholder')}
+        style={styles.showSearchBar}
+        titleStyle={[appStyles.normal16Text, {color: colors.clearBlue}]}
+        direction="row"
+        onPress={() => navigation.navigate('StoreSearch')}
+        iconName="btnSearchBlue"
+        iconStyle={{marginHorizontal: 24}}
+      />
+    ),
+    [navigation],
+  );
+
   return (
     <Animated.View
       style={[
@@ -638,32 +661,21 @@ const Esim: React.FC<EsimProps> = ({
         },
       ]}>
       <StatusBar barStyle="dark-content" />
-      <View
-        style={{
-          flexDirection: isFolderOpen(dimensions.width) ? 'row' : 'column',
-        }}>
-        <View style={{flex: 1, borderWidth: 1}} collapsable={false}>
-          <PromotionCarousel
-            width={
-              isFolderOpen(dimensions.width)
-                ? dimensions.width / 2
-                : dimensions.width
-            }
-          />
+      {isFolderOpen(dimensions.width) ? (
+        <View style={{flexDirection: 'row'}}>
+          <View style={{flex: 1}} collapsable={false}>
+            <PromotionCarousel width={dimensions.width / 2} />
+          </View>
+          <View style={{flex: 1}}>{renderSearch()}</View>
         </View>
-        <View style={{flex: 1}}>
-          <AppButton
-            key="search"
-            title={i18n.t('home:searchPlaceholder')}
-            style={styles.showSearchBar}
-            titleStyle={[appStyles.normal16Text, {color: colors.clearBlue}]}
-            direction="row"
-            onPress={() => navigation.navigate('StoreSearch')}
-            iconName="btnSearchBlue"
-            iconStyle={{marginHorizontal: 24}}
-          />
+      ) : (
+        <View>
+          <View collapsable={false}>
+            <PromotionCarousel width={dimensions.width} />
+          </View>
+          {renderSearch()}
         </View>
-      </View>
+      )}
 
       <AppTabHeader
         index={index}
@@ -680,7 +692,7 @@ const Esim: React.FC<EsimProps> = ({
         renderScene={renderScene}
         onIndexChange={onIndexChange}
         initialLayout={{
-          width: Dimensions.get('window').width,
+          width: dimensions.width,
           height: 10,
         }}
         renderTabBar={() => null}

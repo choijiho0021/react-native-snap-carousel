@@ -86,10 +86,12 @@ const CountryItem0 = ({
   item,
   localOpList,
   onPress,
+  columns,
 }: {
   item: RkbPriceInfo[];
   localOpList: ImmutableMap<string, RkbLocalOp>;
   onPress?: (p: RkbPriceInfo) => void;
+  columns: number;
 }) => {
   const renderLowest = useCallback(
     () => (
@@ -125,7 +127,7 @@ const CountryItem0 = ({
   );
 
   return (
-    <View key={item[0].country} style={styles.productList}>
+    <View key={item[0]?.country} style={styles.productList}>
       {item.map((elm, idx) => {
         // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
         const localOp = localOpList && localOpList.get(elm.partner);
@@ -133,7 +135,7 @@ const CountryItem0 = ({
         return (
           <View
             key={elm.country}
-            style={{flex: 1, marginLeft: idx === 1 ? 14 : 0}}>
+            style={{flex: 1, marginLeft: idx >= 1 ? 14 : 0}}>
             <Pressable onPress={() => onPress?.(elm)}>
               <Image
                 key="img"
@@ -152,9 +154,13 @@ const CountryItem0 = ({
           </View>
         );
       })}
-      {item.length === 1 && (
-        <View key="unknown" style={{flex: 1, marginLeft: 14}} />
-      )}
+      {item.length < columns
+        ? Array(columns - item.length)
+            .fill(1)
+            .map((x, i) => (
+              <View key={`blank${i}`} style={{flex: 1, marginLeft: 14}} />
+            ))
+        : null}
     </View>
   );
 };
@@ -169,21 +175,48 @@ type StoreListProps = {
   data: RkbPriceInfo[][];
   onPress: (p: RkbPriceInfo) => void;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  isFolderOpen?: boolean;
 };
 
-const StoreList = ({localOpList, data, onPress, onScroll}: StoreListProps) => {
+const StoreList = ({
+  localOpList,
+  data,
+  onPress,
+  onScroll,
+  isFolderOpen,
+}: StoreListProps) => {
   return (
     <View style={appStyles.container}>
       <Animated.FlatList
-        data={data}
+        data={
+          isFolderOpen
+            ? data.reduce(
+                (acc, cur) => {
+                  const last = acc[acc.length - 1];
+                  if (last.length + cur.length <= 3) {
+                    acc[acc.length - 1] = last.concat(cur);
+                    return acc;
+                  }
+                  acc[acc.length - 1] = last.concat(
+                    cur.slice(0, 3 - last.length),
+                  );
+                  return cur.length > 3 - last.length
+                    ? acc.concat([cur.slice(3 - last.length)])
+                    : acc;
+                },
+                [[]] as RkbPriceInfo[][],
+              )
+            : data
+        }
         onScroll={onScroll}
         bounces={false}
         renderItem={({item}) => (
           <CountryItem
-            key={item[0].country}
+            key={item[0]?.country}
             onPress={onPress}
             item={item}
             localOpList={localOpList}
+            columns={isFolderOpen ? 3 : 2}
           />
         )}
       />
