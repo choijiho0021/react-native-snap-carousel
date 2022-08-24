@@ -32,7 +32,6 @@ import {
 } from '@/redux/modules/cart';
 import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
-import {eventToken} from '@/constants/Adjust';
 
 const {esimCurrency} = Env.get();
 const sectionTitle = ['sim', 'product'];
