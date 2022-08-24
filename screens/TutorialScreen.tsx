@@ -1,8 +1,7 @@
 /* eslint-disable global-require */
 import analytics, {firebase} from '@react-native-firebase/analytics';
-import {RouteProp} from '@react-navigation/core';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useState, useEffect, useRef} from 'react';
+import React, {useCallback, useState, useEffect, useRef, useMemo} from 'react';
 import {
   Dimensions,
   Image,
@@ -12,17 +11,16 @@ import {
   View,
 } from 'react-native';
 import {AppEventsLogger, Settings} from 'react-native-fbsdk';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
+import {Pagination} from 'react-native-snap-carousel';
 import {
   getTrackingStatus,
   TrackingStatus,
 } from 'react-native-tracking-transparency';
-import _ from 'underscore';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import {connect} from 'react-redux';
 import {bindActionCreators, RootState} from 'redux';
+import {RouteProp} from '@react-navigation/native';
 import i18n from '@/utils/i18n';
-import {sliderWidth} from '@/constants/SliderEntry.style';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -34,11 +32,11 @@ import {
 } from '@/redux/modules/promotion';
 import {AccountModelState} from '@/redux/modules/account';
 import {LinkModelState} from '../redux/modules/link';
+import AppCarousel, {AppCarouselRef} from '@/components/AppCarousel';
 
-const {esimApp, esimGlobal} = Env.get();
+const {esimGlobal} = Env.get();
 
-const {width} = Dimensions.get('window');
-const esimImages = esimGlobal
+const tutorialImages = esimGlobal
   ? {
       step1: require(`../assets/images/esim/tutorial/step1/t1.png`),
       step2: require(`../assets/images/esim/tutorial/step2/t2.png`),
@@ -49,14 +47,6 @@ const esimImages = esimGlobal
       step2: require(`../assets/images/esim/tutorial/step2/esimTutorial2.png`),
       step3: require(`../assets/images/esim/tutorial/step3/esimTutorial3.png`),
       step4: require(`../assets/images/esim/tutorial/step4/esimTutorial4.png`),
-    };
-const tutorialImages = esimApp
-  ? esimImages
-  : {
-      step1: require('../assets/images/usim/tutorial/step1/mT1.png'),
-      step2: require('../assets/images/usim/tutorial/step2/mT2.png'),
-      step3: require('../assets/images/usim/tutorial/step3/mT3.png'),
-      step4: require('../assets/images/usim/tutorial/step4/mT4.png'),
     };
 
 const styles = StyleSheet.create({
@@ -89,10 +79,9 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    maxWidth: width,
+    maxWidth: 375,
     // maxHeight: height,
     height: '100%',
-    alignSelf: 'stretch',
   },
   text: {
     ...appStyles.bold18Text,
@@ -147,15 +136,16 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
   const {recommender, gift} = link;
   const [activeSlide, setActiveSlide] = useState(0);
   const [status, setStatus] = useState<TrackingStatus>();
-  const images = Object.keys(tutorialImages);
-  const carouselRef = useRef<Carousel<CarouselIndex>>(null);
+  const images = useMemo(() => Object.keys(tutorialImages), []);
+  const carouselRef = useRef<AppCarouselRef>(null);
+  const [dimensions, setDimensions] = useState(Dimensions.get('window'));
 
   useEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
 
-    getTrackingStatus().then((res) => setStatus(res));
+    getTrackingStatus().then(setStatus);
   }, [navigation]);
 
   useEffect(() => {
@@ -189,15 +179,18 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
     };
   }, [account.loggedIn, action.promotion, gift, navigation, recommender]);
 
-  const renderTutorial = useCallback(({item}: {item: CarouselIndex}) => {
-    return (
-      <Image
-        style={styles.image}
-        source={tutorialImages[item]}
-        resizeMode="cover"
-      />
-    );
-  }, []);
+  const renderTutorial = useCallback(
+    ({item}: {item: CarouselIndex}) => (
+      <View style={{flex: 1, alignItems: 'center'}}>
+        <Image
+          style={styles.image}
+          source={tutorialImages[item]}
+          resizeMode="cover"
+        />
+      </View>
+    ),
+    [],
+  );
 
   const skip = useCallback(() => {
     if (status === 'authorized') AppEventsLogger.logEvent('튜토리얼 SKIP');
@@ -216,25 +209,23 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
     navigation.goBack();
   }, [navigation, route.params, status]);
 
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({window}) => {
+      setDimensions(window);
+    });
+    return () => subscription?.remove();
+  }, []);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={{flex: 1}}>
-        <Carousel
-          ref={carouselRef}
+        <AppCarousel
+          carouselRef={carouselRef}
           data={images}
           renderItem={renderTutorial}
-          onSnapToItem={(index) => {
-            setActiveSlide(index);
-          }}
-          autoplay={false}
-          // loop
-          useScrollView
-          lockScrollWhileSnapping
-          // resizeMode='stretch'
-          // overflow='hidden'
-          sliderWidth={sliderWidth}
-          itemWidth={sliderWidth}
-          // itemHeight={sliderHeight*0.5}
+          onSnapToItem={setActiveSlide}
+          sliderWidth={dimensions.width}
+          optimize={false}
         />
 
         <Pagination
@@ -245,8 +236,8 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
           inactiveDotStyle={styles.inactiveDotStyle}
           inactiveDotOpacity={0.4}
           inactiveDotScale={1.0}
-          carouselRef={carouselRef}
-          tappableDots={!_.isEmpty(carouselRef?.current)}
+          // carouselRef={carouselRef}
+          // tappableDots={!_.isEmpty(carouselRef?.current)}
           containerStyle={styles.pagination}
         />
       </View>
@@ -275,7 +266,7 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
             </Pressable>
             <Pressable
               style={styles.touchableOpacity}
-              onPress={() => carouselRef?.current?.snapToNext()}>
+              onPress={() => carouselRef.current?.snapToNext()}>
               <AppText style={[styles.bottomText, {color: colors.clearBlue}]}>
                 {i18n.t('tutorial:next')}
               </AppText>

@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   popupImg: {
+    maxWidth: 375,
     width: windowWidth - 40,
     height: isDeviceSize('medium') ? 446 : 500,
     marginBottom: 20,

@@ -80,7 +80,6 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
 import AppStyledText from '@/components/AppStyledText';
 
-const {height: viewportHeight} = Dimensions.get('window');
 const {esimGlobal, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
@@ -179,6 +178,8 @@ type EsimProps = {
 const POPUP_DIS_DAYS = 7;
 const HEADER_HEIGHT = 137;
 
+const isFolderOpen = (w: number) => w > 500;
+
 const Esim: React.FC<EsimProps> = ({
   navigation,
   route,
@@ -231,10 +232,19 @@ const Esim: React.FC<EsimProps> = ({
   const initNoti = useRef(false);
   const tabBarHeight = useBottomTabBarHeight();
   const headerHeight = useHeaderHeight();
+  const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const windowHeight = useMemo(
-    () => viewportHeight - tabBarHeight - headerHeight,
-    [headerHeight, tabBarHeight],
+    () => dimensions.height - tabBarHeight - headerHeight,
+    [dimensions.height, headerHeight, tabBarHeight],
   );
+
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({window}) => {
+      setDimensions(window);
+    });
+    return () => subscription?.remove();
+  }, []);
+
   const setNotiModal = useCallback(() => {
     const popUpPromo = promotion?.find((v) => v?.notice?.image?.noti);
 
@@ -324,11 +334,11 @@ const Esim: React.FC<EsimProps> = ({
 
   const scrollY = useSharedValue(0);
 
-  const ref = useRef<View>();
   const renderScene = useCallback(
     ({route}: {route: TabViewRoute}) => (
       <StoreList
-        data={product.priceInfo.get(route.key, [])}
+        data={product.priceInfo.get(route.key, [] as RkbPriceInfo[][])}
+        isFolderOpen={isFolderOpen(dimensions.width)}
         onPress={onPressItem}
         localOpList={product.localOpList}
         onScroll={(e) => {
@@ -340,7 +350,13 @@ const Esim: React.FC<EsimProps> = ({
         }}
       />
     ),
-    [isTop, onPressItem, product.localOpList, product.priceInfo],
+    [
+      dimensions.width,
+      isTop,
+      onPressItem,
+      product.localOpList,
+      product.priceInfo,
+    ],
   );
 
   useEffect(() => {
@@ -636,19 +652,8 @@ const Esim: React.FC<EsimProps> = ({
       .catch((err) => setAppUpdateVisible(false));
   }, []);
 
-  return (
-    <Animated.View
-      style={[
-        styles.container,
-        animatedStyles,
-        {
-          height: windowHeight + HEADER_HEIGHT,
-        },
-      ]}>
-      <StatusBar barStyle="dark-content" />
-      <View ref={ref} collapsable={false}>
-        <PromotionCarousel />
-      </View>
+  const renderSearch = useCallback(
+    () => (
       <AppButton
         key="search"
         title={i18n.t('home:searchPlaceholder')}
@@ -659,6 +664,35 @@ const Esim: React.FC<EsimProps> = ({
         iconName="btnSearchBlue"
         iconStyle={{marginHorizontal: 24}}
       />
+    ),
+    [navigation],
+  );
+
+  return (
+    <Animated.View
+      style={[
+        styles.container,
+        animatedStyles,
+        {
+          height: windowHeight + HEADER_HEIGHT,
+        },
+      ]}>
+      <StatusBar barStyle="dark-content" />
+      {isFolderOpen(dimensions.width) ? (
+        <View style={{flexDirection: 'row'}}>
+          <View style={{flex: 1}} collapsable={false}>
+            <PromotionCarousel width={dimensions.width / 2} />
+          </View>
+          <View style={{flex: 1}}>{renderSearch()}</View>
+        </View>
+      ) : (
+        <View>
+          <View collapsable={false}>
+            <PromotionCarousel width={dimensions.width} />
+          </View>
+          {renderSearch()}
+        </View>
+      )}
 
       <AppTabHeader
         index={index}
@@ -675,7 +709,7 @@ const Esim: React.FC<EsimProps> = ({
         renderScene={renderScene}
         onIndexChange={onIndexChange}
         initialLayout={{
-          width: Dimensions.get('window').width,
+          width: dimensions.width,
           height: 10,
         }}
         renderTabBar={() => null}
@@ -683,7 +717,8 @@ const Esim: React.FC<EsimProps> = ({
 
       {
         // eslint-disable-next-line no-nested-ternary
-        isDevModalVisible && !isSupportDev ? (
+        // isDevModalVisible && !isSupportDev ? (
+        isDevModalVisible && false ? (
           <AppModal
             title={i18n.t('home:unsupportedTitle')}
             closeButtonTitle={isIOS ? i18n.t('ok') : i18n.t('exitAndOpenLink')}

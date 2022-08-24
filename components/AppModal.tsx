@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
   },
   inner: {
-    marginHorizontal: 20,
+    maginHorizontal: 20,
     paddingTop: 25,
     backgroundColor: 'white',
   },
@@ -208,21 +208,23 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
           appStyles.modal,
           justifyContent ? {justifyContent} : undefined,
         ]}>
-        <View style={contentStyle || styles.inner}>
-          {titleIcon && (
-            <AppIcon
-              name={titleIcon}
-              style={[styles.icon, !contentStyle && {paddingHorizontal: 20}]}
-            />
-          )}
-          {title && (
-            <View style={titleViewStyle || styles.titleViewStyle}>
-              <AppText style={titleStyle || styles.title}>{title}</AppText>
-            </View>
-          )}
-          {children}
+        <View style={{alignItems: 'center'}}>
+          <View style={[contentStyle || styles.inner, {maxWidth: 375}]}>
+            {titleIcon && (
+              <AppIcon
+                name={titleIcon}
+                style={[styles.icon, !contentStyle && {paddingHorizontal: 20}]}
+              />
+            )}
+            {title && (
+              <View style={titleViewStyle || styles.titleViewStyle}>
+                <AppText style={titleStyle || styles.title}>{title}</AppText>
+              </View>
+            )}
+            {children}
 
-          {bottom ? bottom() : getButtonType()}
+            {bottom ? bottom() : getButtonType()}
+          </View>
         </View>
       </SafeAreaView>
       {justifyContent === 'flex-end' && (

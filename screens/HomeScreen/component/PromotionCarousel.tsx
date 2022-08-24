@@ -7,7 +7,6 @@ import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
-import {sliderWidth} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
@@ -35,16 +34,11 @@ const dotStyle = (
 
 const styles = StyleSheet.create({
   carousel: {
-    paddingTop: 12,
-    marginBottom: 12,
+    // paddingTop: 12,
+    // marginBottom: 12,
     alignItems: 'center',
     width: '100%',
     backgroundColor: colors.white,
-  },
-  imgRatio: {
-    // figure out your image aspect ratio
-    width: sliderWidth - 40,
-    aspectRatio: 335 / 100,
   },
   pagination: {
     marginRight: 30,
@@ -65,9 +59,11 @@ const styles = StyleSheet.create({
 });
 
 const PromotionImage0 = ({
+  width,
   item,
   onPress,
 }: {
+  width: number;
   item: RkbPromotion;
   onPress: (i: RkbPromotion) => void;
 }) => {
@@ -76,7 +72,7 @@ const PromotionImage0 = ({
       {item.imageUrl ? (
         <Image
           source={{uri: API.default.httpImageUrl(item.imageUrl)}}
-          style={styles.imgRatio}
+          style={{width: width - 40, aspectRatio: 335 / 100}}
           resizeMode="contain"
         />
       ) : (
@@ -93,6 +89,7 @@ const PromotionImage = memo(
 type PromotionCarouselProps = {
   promotion: RkbPromotion[];
   product: ProductModelState;
+  width: number;
   action: {
     info: InfoAction;
   };
@@ -102,6 +99,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
   promotion,
   product,
   action,
+  width,
 }) => {
   const navigation = useNavigation();
   const [activeSlide, setActiveSlide] = useState(0);
@@ -191,9 +189,9 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
 
   const renderItem = useCallback(
     ({item, index}: {item: RkbPromotion; index: number}) => (
-      <PromotionImage item={item} onPress={onPress} />
+      <PromotionImage item={item} onPress={onPress} width={width} />
     ),
-    [onPress],
+    [onPress, width],
   );
 
   return (
@@ -204,7 +202,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
         autoplay
         loop
         onSnapToItem={setActiveSlide}
-        sliderWidth={sliderWidth}
+        sliderWidth={width}
       />
       <View style={styles.pagination}>
         <Pagination
