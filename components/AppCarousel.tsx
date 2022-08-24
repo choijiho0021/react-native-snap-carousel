@@ -1,12 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {Platform, ScrollView, StyleSheet, View} from 'react-native';
+import {Platform, ScrollView, View} from 'react-native';
 import {useInterval} from '@/utils/useInterval';
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-  },
-});
 
 type AppCarouselProps<T> = {
   renderItem: ({item, index}: {item: T; index: number}) => React.ReactNode;

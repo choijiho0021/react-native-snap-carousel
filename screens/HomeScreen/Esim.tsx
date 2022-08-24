@@ -81,7 +81,6 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
 import AppStyledText from '@/components/AppStyledText';
 
-const {height: viewportHeight} = Dimensions.get('window');
 const {esimGlobal, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
@@ -180,6 +179,8 @@ type EsimProps = {
 const POPUP_DIS_DAYS = 7;
 const HEADER_HEIGHT = 137;
 
+const isFolderOpen = (w: number) => w > 500;
+
 const Esim: React.FC<EsimProps> = ({
   navigation,
   route,
@@ -232,10 +233,19 @@ const Esim: React.FC<EsimProps> = ({
   const initNoti = useRef(false);
   const tabBarHeight = useBottomTabBarHeight();
   const headerHeight = useHeaderHeight();
+  const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const windowHeight = useMemo(
-    () => viewportHeight - tabBarHeight - headerHeight,
-    [headerHeight, tabBarHeight],
+    () => dimensions.height - tabBarHeight - headerHeight,
+    [dimensions.height, headerHeight, tabBarHeight],
   );
+
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({window}) => {
+      setDimensions(window);
+    });
+    return () => subscription?.remove();
+  }, []);
+
   const setNotiModal = useCallback(() => {
     const popUpPromo = promotion?.find((v) => v?.notice?.image?.noti);
 
@@ -326,7 +336,6 @@ const Esim: React.FC<EsimProps> = ({
 
   const scrollY = useSharedValue(0);
 
-  const ref = useRef<View>();
   const renderScene = useCallback(
     ({route}: {route: TabViewRoute}) => (
       <StoreList
@@ -629,19 +638,32 @@ const Esim: React.FC<EsimProps> = ({
         },
       ]}>
       <StatusBar barStyle="dark-content" />
-      <View ref={ref} collapsable={false}>
-        <PromotionCarousel />
+      <View
+        style={{
+          flexDirection: isFolderOpen(dimensions.width) ? 'row' : 'column',
+        }}>
+        <View style={{flex: 1, borderWidth: 1}} collapsable={false}>
+          <PromotionCarousel
+            width={
+              isFolderOpen(dimensions.width)
+                ? dimensions.width / 2
+                : dimensions.width
+            }
+          />
+        </View>
+        <View style={{flex: 1}}>
+          <AppButton
+            key="search"
+            title={i18n.t('home:searchPlaceholder')}
+            style={styles.showSearchBar}
+            titleStyle={[appStyles.normal16Text, {color: colors.clearBlue}]}
+            direction="row"
+            onPress={() => navigation.navigate('StoreSearch')}
+            iconName="btnSearchBlue"
+            iconStyle={{marginHorizontal: 24}}
+          />
+        </View>
       </View>
-      <AppButton
-        key="search"
-        title={i18n.t('home:searchPlaceholder')}
-        style={styles.showSearchBar}
-        titleStyle={[appStyles.normal16Text, {color: colors.clearBlue}]}
-        direction="row"
-        onPress={() => navigation.navigate('StoreSearch')}
-        iconName="btnSearchBlue"
-        iconStyle={{marginHorizontal: 24}}
-      />
 
       <AppTabHeader
         index={index}
@@ -666,7 +688,8 @@ const Esim: React.FC<EsimProps> = ({
 
       {
         // eslint-disable-next-line no-nested-ternary
-        isDevModalVisible && !isSupportDev ? (
+        // isDevModalVisible && !isSupportDev ? (
+        isDevModalVisible && false ? (
           <AppModal
             title={i18n.t('home:unsupportedTitle')}
             closeButtonTitle={isIOS ? i18n.t('ok') : i18n.t('exitAndOpenLink')}
