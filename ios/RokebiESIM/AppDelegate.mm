@@ -15,7 +15,6 @@
 
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>
-#import <NaverThirdPartyLogin/NaverThirdPartyLoginConnection.h>
 #import "RNKakaoLogins.h"
 
 
