@@ -53,8 +53,8 @@ import com.reactnativecommunity.clipboard.ClipboardPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 
 import org.reactnative.camera.RNCameraPackage;
-import org.unimodules.adapters.react.ReactModuleRegistryProvider;
-import org.unimodules.core.interfaces.SingletonModule;
+//import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+//import org.unimodules.core.interfaces.SingletonModule;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -65,14 +65,14 @@ import java.util.Map;
 import io.actbase.kakaosdk.channel.ARNKakaoChannelPackage;
 import io.xogus.reactnative.versioncheck.RNVersionCheckPackage;
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
-import io.invertase.firebase.dynamiclinks.ReactNativeFirebaseDynamicLinksPackage;
+//import io.invertase.firebase.dynamiclinks.ReactNativeFirebaseDynamicLinksPackage;
 
 import com.facebook.flipper.reactnative.FlipperPackage;
-import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
+//import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
-import com.reactnativecommunity.picker.RNCPickerPackage;
-import com.reactnativegooglesignin.RNGoogleSigninPackage;
-import com.reactnativecommunity.cookies.CookieManagerPackage;
+//import com.reactnativecommunity.picker.RNCPickerPackage;
+//import com.reactnativegooglesignin.RNGoogleSigninPackage;
+//import com.reactnativecommunity.cookies.CookieManagerPackage;
 import com.reactnativecommunity.cameraroll.CameraRollPackage;
 import fr.greweb.reactnativeviewshot.RNViewShotPackage;
 
@@ -80,9 +80,9 @@ public class MainApplication extends Application implements ReactApplication {
 
     public SharedPreferences prefs;
 
-    private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
-            new BasePackageList().getPackageList(), Arrays.<SingletonModule>asList()
-    );
+//    private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
+//            new BasePackageList().getPackageList(), Arrays.<SingletonModule>asList()
+//    );
 
 
     private final void getReferrer() {
@@ -164,7 +164,7 @@ public class MainApplication extends Application implements ReactApplication {
                             new ReactNativeConfigPackage(),
                             new EuccidManagerAppPackage(),
                             new ReactNativeFirebaseAppPackage(),
-                            new ReactNativeFirebaseDynamicLinksPackage(),
+                            //new ReactNativeFirebaseDynamicLinksPackage(),
                             new RNPermissionsPackage(),
                             new RNScreensPackage(),
                             new RNDeviceInfo(),
@@ -189,11 +189,11 @@ public class MainApplication extends Application implements ReactApplication {
                             new RNFetchBlobPackage(),
                             new SimCardsManagerPackage(),
                             new MyAppPackage(),
-                            new RNCPickerPackage(),
-                            new RNGoogleSigninPackage(),
-                            new ReactNativeFirebaseAnalyticsPackage(),
+//                            new RNCPickerPackage(),
+//                            new RNGoogleSigninPackage(),
+//                            new ReactNativeFirebaseAnalyticsPackage(),
                             new ReactNativeFirebaseMessagingPackage(),
-                            new CookieManagerPackage(),
+//                            new CookieManagerPackage(),
                             new FlipperPackage()
                     );
                 }
