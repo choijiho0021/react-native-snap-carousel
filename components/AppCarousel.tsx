@@ -1,6 +1,17 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {Platform, ScrollView, View} from 'react-native';
 import {useInterval} from '@/utils/useInterval';
+
+export type AppCarouselRef = {
+  snapToNext: () => void;
+};
 
 type AppCarouselProps<T> = {
   renderItem: ({item, index}: {item: T; index: number}) => React.ReactNode;
@@ -10,24 +21,28 @@ type AppCarouselProps<T> = {
   keyExtractor?: (item: T) => string;
   autoplay?: boolean;
   loop?: boolean;
+  carouselRef?: MutableRefObject<AppCarouselRef | null>;
 };
 const AppCarousel: React.FC<AppCarouselProps<T>> = ({
   data,
   renderItem,
-  sliderWidth,
+  sliderWidth: sw,
   onSnapToItem,
   keyExtractor,
   autoplay = false,
   loop = false,
+  carouselRef,
 }) => {
   const slides = useMemo(
     () => (loop && data.length === 1 ? data.concat(data) : data),
     [data, loop],
   );
+  const sliderWidth = useMemo(() => Math.floor(sw), [sw]);
   const [list, setList] = useState<T>([]);
   const idx = useRef(loop ? 1 : 0);
   const ref = useRef<ScrollView>();
   const onMomentum = useRef(false);
+  const onMomentumStart = useRef(0);
   const [playInterval, setPlayInterval] = useState<number | null>(
     autoplay && loop ? 2500 : null,
   );
@@ -63,35 +78,69 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
     [slides, onSnapToItem, loop, sliderWidth],
   );
 
-  const onMomentumScrollStart = useCallback(() => {
-    onMomentum.current = true;
-    setPlayInterval(null);
-  }, []);
+  const onMomentumScrollStart = useCallback(
+    ({
+      nativeEvent: {
+        contentOffset: {x},
+      },
+    }) => {
+      onMomentumStart.current = x;
+      onMomentum.current = true;
+      setPlayInterval(null);
+    },
+    [],
+  );
 
   const onMomentumScrollEnd = useCallback(
-    (x: number, slideIdx: number) => {
+    ({
+      nativeEvent: {
+        contentOffset: {x},
+      },
+    }) => {
       if (onMomentum.current) {
         const i = Math.round(x / sliderWidth);
-        let newIdx = slideIdx;
+        const steps = Math.abs(
+          i - Math.round(onMomentumStart.current / sliderWidth),
+        );
+        let newIdx = idx.current;
+
         if (loop) {
-          if (i > 1) newIdx = (newIdx + 1) % slides.length;
-          else if (i < 1) newIdx = (newIdx - 1 + slides.length) % slides.length;
+          if (i > 1) newIdx = (newIdx + steps) % slides.length;
+          else if (i < 1)
+            newIdx = (newIdx - steps + slides.length) % slides.length;
         } else {
           // eslint-disable-next-line no-nested-ternary, no-lonely-if
           if (i === 1) {
-            if (newIdx === 0) newIdx++;
-            else if (newIdx === slides.length - 1) newIdx--;
-          } else if (i > 1 && newIdx < slides.length - 1) newIdx++;
-          else if (i < 1 && newIdx > 0) newIdx--;
+            if (newIdx === 0) newIdx += steps;
+            else if (newIdx === slides.length - 1) newIdx -= steps;
+          } else if (i > 1 && newIdx < slides.length - 1) newIdx += steps;
+          else if (i < 1 && newIdx > 0) newIdx -= steps;
         }
 
-        if (newIdx !== slideIdx) moveSlide(newIdx);
+        if (newIdx !== idx.current) moveSlide(newIdx);
       }
       onMomentum.current = false;
       setPlayInterval(autoplay && loop ? 2500 : null);
     },
     [autoplay, loop, moveSlide, sliderWidth, slides.length],
   );
+
+  useEffect(() => {
+    if (carouselRef) {
+      carouselRef.current = {
+        snapToNext: () => {
+          ref.current?.scrollTo({
+            x: idx.current <= 1 ? sliderWidth : sliderWidth * 2,
+            // x: sliderWidth,
+            y: 0,
+            animated: true,
+          });
+          if (Platform.OS === 'android')
+            moveSlide((idx.current + 1) % slides.length);
+        },
+      };
+    }
+  }, [carouselRef, moveSlide, sliderWidth, slides.length]);
 
   useInterval(() => {
     if (!onMomentum.current) {
@@ -108,11 +157,7 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
       horizontal
       showsHorizontalScrollIndicator={false}
       onMomentumScrollBegin={onMomentumScrollStart}
-      onMomentumScrollEnd={({
-        nativeEvent: {
-          contentOffset: {x},
-        },
-      }) => onMomentumScrollEnd(x, idx.current)}
+      onMomentumScrollEnd={onMomentumScrollEnd}
       snapToAlignment="center">
       {list.map((item, i) => (
         <View
