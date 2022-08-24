@@ -33,6 +33,7 @@ import {
   PromotionAction,
 } from '@/redux/modules/promotion';
 import {AccountModelState} from '@/redux/modules/account';
+import {LinkModelState} from '../redux/modules/link';
 
 const {esimApp, esimGlobal} = Env.get();
 
@@ -133,6 +134,7 @@ type TutorialScreenProps = {
   route: TutorialScreenRouteProp;
 
   account: AccountModelState;
+  link: LinkModelState;
   action: {
     promotion: PromotionAction;
   };
@@ -141,7 +143,8 @@ type TutorialScreenProps = {
 type CarouselIndex = 'step1' | 'step2' | 'step3' | 'step4';
 
 const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
-  const {navigation, route, account, action} = props;
+  const {navigation, route, account, link, action} = props;
+  const {recommender, gift} = link;
   const [activeSlide, setActiveSlide] = useState(0);
   const [status, setStatus] = useState<TrackingStatus>();
   const images = Object.keys(tutorialImages);
@@ -171,31 +174,20 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
 
   useEffect(() => {
     return () => {
-      dynamicLinks()
-        .getInitialLink()
-        .then(async (l) => {
-          if (l?.url) {
-            const url = l?.url.split(/[;?&]/);
-            url.shift();
-            const param = url.map((elm) => `"${elm.replace('=', '":"')}"`);
-            const json = JSON.parse(`{${param.join(',')}}`);
+      if (recommender && gift) {
+        if (!account.loggedIn) {
+          action.promotion.saveGiftAndRecommender({
+            recommender,
+            gift,
+          });
 
-            if (l?.url.includes('recommender')) {
-              if (!account.loggedIn) {
-                action.promotion.saveGiftAndRecommender({
-                  recommender: json?.recommender,
-                  gift: json?.gift,
-                });
-
-                navigation.navigate('EsimStack', {
-                  screen: 'RegisterMobile',
-                });
-              }
-            }
-          }
-        });
+          navigation.navigate('EsimStack', {
+            screen: 'RegisterMobile',
+          });
+        }
+      }
     };
-  }, [account.loggedIn, action.promotion, navigation]);
+  }, [account.loggedIn, action.promotion, gift, navigation, recommender]);
 
   const renderTutorial = useCallback(({item}: {item: CarouselIndex}) => {
     return (
@@ -232,7 +224,6 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
           data={images}
           renderItem={renderTutorial}
           onSnapToItem={(index) => {
-            console.log('aaaaa index', index);
             setActiveSlide(index);
           }}
           autoplay={false}
@@ -297,7 +288,7 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
 };
 
 export default connect(
-  ({account, promotion}: RootState) => ({account, promotion}),
+  ({account, link, promotion}: RootState) => ({account, link, promotion}),
   (dispatch) => ({
     action: {
       promotion: bindActionCreators(promotionActions, dispatch),

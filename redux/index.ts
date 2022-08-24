@@ -15,6 +15,7 @@ import sync from './modules/sync';
 import toast from './modules/toast';
 import promotion from './modules/promotion';
 import status from './modules/status';
+import link from './modules/link';
 
 const reducers = {
   account,
@@ -30,6 +31,7 @@ const reducers = {
   toast,
   promotion,
   status,
+  link,
 };
 
 type BaseReducerMap<S> = {
