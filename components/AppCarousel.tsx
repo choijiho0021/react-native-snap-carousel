@@ -22,6 +22,7 @@ type AppCarouselProps<T> = {
   autoplay?: boolean;
   loop?: boolean;
   carouselRef?: MutableRefObject<AppCarouselRef | null>;
+  optimize?: boolean;
 };
 const AppCarousel: React.FC<AppCarouselProps<T>> = ({
   data,
@@ -31,6 +32,7 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
   keyExtractor,
   autoplay = false,
   loop = false,
+  optimize = true,
   carouselRef,
 }) => {
   const slides = useMemo(
@@ -38,7 +40,7 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
     [data, loop],
   );
   const sliderWidth = useMemo(() => Math.floor(sw), [sw]);
-  const [list, setList] = useState<T>([]);
+  const [list, setList] = useState<T>(optimize ? [] : data);
   const idx = useRef(loop ? 1 : 0);
   const ref = useRef<ScrollView>();
   const onMomentum = useRef(false);
@@ -57,25 +59,30 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
 
   const moveSlide = useCallback(
     (newIdx: number) => {
-      if (newIdx <= 0) {
-        // left most
-        if (loop && slides.length > 1)
-          setList(
-            slides.slice(slides.length - 1).concat(slides.slice(0, newIdx + 2)),
-          );
-      } else if (newIdx + 2 > slides.length) {
-        // right most
-        if (loop && slides.length > 1)
-          setList(slides.slice(newIdx - 1).concat(slides[0]));
-      } else if (slides.length > 1) {
-        setList(slides.slice(newIdx - 1, newIdx + 2));
+      if (optimize) {
+        if (newIdx <= 0) {
+          // left most
+          if (loop && slides.length > 1)
+            setList(
+              slides
+                .slice(slides.length - 1)
+                .concat(slides.slice(0, newIdx + 2)),
+            );
+        } else if (newIdx + 2 > slides.length) {
+          // right most
+          if (loop && slides.length > 1)
+            setList(slides.slice(newIdx - 1).concat(slides[0]));
+        } else if (slides.length > 1) {
+          setList(slides.slice(newIdx - 1, newIdx + 2));
+        }
+
+        if (loop || (newIdx > 0 && newIdx < slides.length - 1))
+          ref.current?.scrollTo({x: sliderWidth, y: 0, animated: false});
       }
       idx.current = newIdx;
       onSnapToItem(newIdx);
-      if (loop || (newIdx > 0 && newIdx < slides.length - 1))
-        ref.current?.scrollTo({x: sliderWidth, y: 0, animated: false});
     },
-    [slides, onSnapToItem, loop, sliderWidth],
+    [optimize, onSnapToItem, loop, slides, sliderWidth],
   );
 
   const onMomentumScrollStart = useCallback(
@@ -99,22 +106,26 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
     }) => {
       if (onMomentum.current) {
         const i = Math.round(x / sliderWidth);
-        const steps = Math.abs(
-          i - Math.round(onMomentumStart.current / sliderWidth),
-        );
         let newIdx = idx.current;
 
-        if (loop) {
-          if (i > 1) newIdx = (newIdx + steps) % slides.length;
-          else if (i < 1)
-            newIdx = (newIdx - steps + slides.length) % slides.length;
+        if (optimize) {
+          const steps = Math.ceil(
+            Math.abs(x - onMomentumStart.current) / sliderWidth,
+          );
+          if (loop) {
+            if (i > 1) newIdx = (newIdx + steps) % slides.length;
+            else if (i < 1)
+              newIdx = (newIdx - steps + slides.length) % slides.length;
+          } else {
+            // eslint-disable-next-line no-nested-ternary, no-lonely-if
+            if (i === 1) {
+              if (newIdx === 0) newIdx += steps;
+              else if (newIdx === slides.length - 1) newIdx -= steps;
+            } else if (i > 1 && newIdx < slides.length - 1) newIdx += steps;
+            else if (i < 1 && newIdx > 0) newIdx -= steps;
+          }
         } else {
-          // eslint-disable-next-line no-nested-ternary, no-lonely-if
-          if (i === 1) {
-            if (newIdx === 0) newIdx += steps;
-            else if (newIdx === slides.length - 1) newIdx -= steps;
-          } else if (i > 1 && newIdx < slides.length - 1) newIdx += steps;
-          else if (i < 1 && newIdx > 0) newIdx -= steps;
+          newIdx = i;
         }
 
         if (newIdx !== idx.current) moveSlide(newIdx);
@@ -122,7 +133,7 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
       onMomentum.current = false;
       setPlayInterval(autoplay && loop ? 2500 : null);
     },
-    [autoplay, loop, moveSlide, sliderWidth, slides.length],
+    [autoplay, loop, moveSlide, optimize, sliderWidth, slides.length],
   );
 
   useEffect(() => {
@@ -130,17 +141,20 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
       carouselRef.current = {
         snapToNext: () => {
           ref.current?.scrollTo({
-            x: idx.current <= 1 ? sliderWidth : sliderWidth * 2,
-            // x: sliderWidth,
+            // eslint-disable-next-line no-nested-ternary
+            x: optimize
+              ? idx.current <= 1
+                ? sliderWidth
+                : sliderWidth * 2
+              : (idx.current + 1) * sliderWidth,
             y: 0,
             animated: true,
           });
-          if (Platform.OS === 'android')
-            moveSlide((idx.current + 1) % slides.length);
+          moveSlide((idx.current + 1) % slides.length);
         },
       };
     }
-  }, [carouselRef, moveSlide, sliderWidth, slides.length]);
+  }, [carouselRef, moveSlide, optimize, sliderWidth, slides.length]);
 
   useInterval(() => {
     if (!onMomentum.current) {

@@ -142,7 +142,7 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
       headerShown: false,
     });
 
-    getTrackingStatus().then((res) => setStatus(res));
+    getTrackingStatus().then(setStatus);
   }, [navigation]);
 
   useEffect(() => {
@@ -187,8 +187,8 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
     };
   }, [account.loggedIn, action.promotion, navigation]);
 
-  const renderTutorial = useCallback(({item}: {item: CarouselIndex}) => {
-    return (
+  const renderTutorial = useCallback(
+    ({item}: {item: CarouselIndex}) => (
       <View style={{flex: 1, alignItems: 'center'}}>
         <Image
           style={styles.image}
@@ -196,8 +196,9 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
           resizeMode="cover"
         />
       </View>
-    );
-  }, []);
+    ),
+    [],
+  );
 
   const skip = useCallback(() => {
     if (status === 'authorized') AppEventsLogger.logEvent('튜토리얼 SKIP');
@@ -232,6 +233,7 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
           renderItem={renderTutorial}
           onSnapToItem={setActiveSlide}
           sliderWidth={dimensions.width}
+          optimize={false}
         />
 
         <Pagination
