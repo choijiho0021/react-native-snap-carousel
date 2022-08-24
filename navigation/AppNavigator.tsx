@@ -8,6 +8,7 @@ import Env from '@/environment';
 import {actions as cartActions} from '@/redux/modules/cart';
 import {actions as promotionActions} from '@/redux/modules/promotion';
 import {actions as accountActions} from '@/redux/modules/account';
+import {actions as linkActions} from '@/redux/modules/link';
 import AuthStackNavigator from './AuthStackNavigator';
 import EsimMainTabNavigator from './EsimMainTabNavigator';
 
@@ -116,6 +117,21 @@ const CreateAppContainer = ({store}) => {
     dynamicLinks()
       .getInitialLink()
       .then(async (l) => {
+        if (l?.url) {
+          const url = l?.url.split(/[;?&]/);
+          url.shift();
+          const param = url.map((elm) => `"${elm.replace('=', '":"')}"`);
+          const json = JSON.parse(`{${param.join(',')}}`);
+
+          store.dispatch(
+            linkActions.update({
+              utmParameters: l?.utmParameters,
+              url: l?.url,
+              ...json,
+            }),
+          );
+        }
+
         if (l?.utmParameters) {
           analytics().logEvent(
             `${esimGlobal ? 'global' : 'esim'}_dynamic_utm`,
@@ -127,7 +143,7 @@ const CreateAppContainer = ({store}) => {
         }
         handleDynamicLink(l);
       });
-  }, [handleDynamicLink]);
+  }, [handleDynamicLink, store]);
 
   return (
     <NavigationContainer

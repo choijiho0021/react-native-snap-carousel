@@ -12,7 +12,6 @@ import {
   View,
   ScrollView,
   Linking,
-  BackHandler,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {Settings} from 'react-native-fbsdk';
@@ -314,7 +313,6 @@ const Esim: React.FC<EsimProps> = ({
         case 'exit':
           if (isIOS) setIsDevModalVisible(false);
           else {
-            BackHandler.exitApp();
             Linking.openURL('https://www.rokebi.com');
           }
           break;
@@ -561,6 +559,25 @@ const Esim: React.FC<EsimProps> = ({
       requestPermission();
     }
   }, [isSupportDev, notification]);
+
+  useEffect(() => {
+    const runDeppLink = async () => {
+      // Get the deep link used to open the app
+      const initialUrl = await Linking.getInitialURL();
+      const urlSplit = initialUrl?.split('/');
+
+      if (urlSplit && urlSplit.length >= 4) {
+        const deepLinkPath = urlSplit[3].split('?')[0];
+
+        if (deepLinkPath === 'PROMOTION') {
+          setPopupDisabled(true);
+          exitApp('redirect');
+        }
+      }
+    };
+
+    runDeppLink();
+  }, [exitApp]);
 
   useEffect(() => {
     if (
