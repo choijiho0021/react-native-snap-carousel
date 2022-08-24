@@ -1,6 +1,5 @@
 /* eslint-disable eqeqeq */
 import _ from 'underscore';
-import CookieManager from '@react-native-cookies/cookies';
 import {retrieveData} from '@/utils/utils';
 import {AccountAuth} from '@/redux/modules/account';
 import api, {ApiResult} from './api';
@@ -72,7 +71,7 @@ const getToken = () => {
 };
 
 const clearCookies = () => {
-  CookieManager.clearAll(true);
+  // CookieManager.clearAll(true);
 };
 
 const resetPw = ({user, pass}: AccountAuth) => {
