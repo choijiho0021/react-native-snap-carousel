@@ -95,15 +95,12 @@ const renderTipText = (key: string, style = styles.tipText) => (
   />
 );
 
-const renderTip = ({
-  id,
-  marginBottom,
-  style,
-}: {
+type RenderTipParams = {
   id: string;
   marginBottom?: number;
   style?: TextStyle;
-}) => (
+};
+const renderTip = ({id, marginBottom, style}: RenderTipParams) => (
   <View style={styles.tipTextContainer}>
     <AppText style={[styles.tipText, {marginRight: 5}]}>
       {i18n.t('centerDot')}
@@ -116,6 +113,13 @@ const renderTip = ({
       }}>
       {renderTipText(id, style)}
     </View>
+  </View>
+);
+
+const tipView = (params: RenderTipParams) => (
+  <View style={styles.tipContainer}>
+    {renderTips()}
+    {renderTip(params)}
   </View>
 );
 
@@ -205,12 +209,7 @@ export const guideImages =
           key: 'page6',
           title: renderText(`userGuide:stepsTitle4:android`),
           step: 4,
-          tip: () => (
-            <View style={styles.tipContainer}>
-              {renderTips()}
-              {renderTip({id: 'userGuide:tipPage5:android'})}
-            </View>
-          ),
+          tip: () => tipView({id: 'userGuide:tipPage5:android'}),
         },
         {
           key: 'page7',
@@ -221,12 +220,7 @@ export const guideImages =
           key: 'page8',
           title: renderText(`userGuide:stepsTitle6:android`),
           step: 6,
-          tip: () => (
-            <View style={styles.tipContainer}>
-              {renderTips()}
-              {renderTip({id: 'userGuide:tipPage8:android'})}
-            </View>
-          ),
+          tip: () => tipView({id: 'userGuide:tipPage8:android'}),
         },
         {
           key: 'page9',
@@ -250,12 +244,7 @@ export const guideImages =
           key: 'page10',
           title: renderText(`userGuide:stepsTitle8:android`),
           step: 8,
-          tip: () => (
-            <View style={styles.tipContainer}>
-              {renderTips()}
-              {renderTip({id: 'userGuide:tipPage11_1'})}
-            </View>
-          ),
+          tip: () => tipView({id: 'userGuide:tipPage11_1'}),
         },
       ]
     : [
@@ -344,15 +333,11 @@ export const guideImages =
           key: 'page8',
           title: renderText('userGuide:stepsTitle4:ios'),
           step: 4,
-          tip: () => (
-            <View style={styles.tipContainer}>
-              {renderTips()}
-              {renderTip({
-                id: 'userGuide:tipPage8_1',
-                marginBottom: isDeviceSize('medium') ? 36 : 0,
-              })}
-            </View>
-          ),
+          tip: () =>
+            tipView({
+              id: 'userGuide:tipPage8_1',
+              marginBottom: isDeviceSize('medium') ? 36 : 0,
+            }),
         },
         {
           key: 'page9',
@@ -368,28 +353,20 @@ export const guideImages =
           key: 'page10',
           title: renderText('userGuide:stepsTitle5:ios'),
           step: 5,
-          tip: () => (
-            <View style={styles.tipContainer}>
-              {renderTips()}
-              {renderTip({
-                id: 'userGuide:tipPage9_1',
-                marginBottom: isDeviceSize('medium') ? 59 : 0,
-              })}
-            </View>
-          ),
+          tip: () =>
+            tipView({
+              id: 'userGuide:tipPage9_1',
+              marginBottom: isDeviceSize('medium') ? 59 : 0,
+            }),
         },
         {
           key: 'page11',
           title: renderText('userGuide:stepsTitle6:ios'),
           step: 6,
-          tip: () => (
-            <View style={styles.tipContainer}>
-              {renderTips()}
-              {renderTip({
-                id: 'userGuide:tipPage11_1',
-                marginBottom: isDeviceSize('medium') ? 32 : 0,
-              })}
-            </View>
-          ),
+          tip: () =>
+            tipView({
+              id: 'userGuide:tipPage11_1',
+              marginBottom: isDeviceSize('medium') ? 32 : 0,
+            }),
         },
       ];
