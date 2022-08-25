@@ -1,4 +1,3 @@
-import KakaoSDK from '@actbase/react-native-kakaosdk';
 import Analytics from 'appcenter-analytics';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {Linking, Pressable, StyleSheet, View, ScrollView} from 'react-native';
@@ -10,6 +9,7 @@ import {
   ParamListBase,
   RouteProp,
 } from '@react-navigation/native';
+import KakaoSDK from '@/components/NativeModule/KakaoSDK';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -251,7 +251,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
               ),
             );
           } else {
-            KakaoSDK.Channel.chat(channelId).catch((_) => {
+            KakaoSDK.KakaoChannel.chat(channelId).catch((_) => {
               setShowSnackbar(true);
             });
           }

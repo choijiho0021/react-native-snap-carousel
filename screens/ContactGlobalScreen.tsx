@@ -1,4 +1,3 @@
-import KakaoSDK from '@actbase/react-native-kakaosdk';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
@@ -6,6 +5,7 @@ import {FlatList, Linking, Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import KakaoSDK from '@/components/NativeModule/KakaoSDK';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppIcon from '@/components/AppIcon';
@@ -186,7 +186,7 @@ const ContactGlobalScreen: React.FC<ContactScreenProps> = ({
               ),
             );
           } else {
-            KakaoSDK.Channel.chat(channelId).catch((_) => {
+            KakaoSDK.KakaoChannel.chat(channelId).catch((_) => {
               action.toast.push(Toast.NOT_OPENED);
             });
           }
