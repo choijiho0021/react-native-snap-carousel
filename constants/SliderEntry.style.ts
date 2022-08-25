@@ -62,6 +62,8 @@ export const isDeviceSize = (size) => {
   return windowWidth <= device[size].window.width;
 };
 
+export const isFolderOpen = (w: number) => w > 500;
+
 const entryBorderRadius = 8;
 
 export default StyleSheet.create({

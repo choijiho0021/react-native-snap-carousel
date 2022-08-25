@@ -105,24 +105,31 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
       },
     }) => {
       if (onMomentum.current) {
-        const i = Math.round(x / sliderWidth);
+        const i = Math.ceil(x / sliderWidth);
+        const direction = x - onMomentumStart.current > 0 ? 1 : -1;
         let newIdx = idx.current;
 
+        if (Math.abs(x / sliderWidth - i) > 0.1) {
+          ref.current?.scrollTo({
+            x: (direction > 0 ? i : i - 1) * sliderWidth,
+            y: 0,
+            animated: true,
+          });
+        }
+
         if (optimize) {
-          const steps = Math.ceil(
-            Math.abs(x - onMomentumStart.current) / sliderWidth,
-          );
+          const steps =
+            Math.ceil(Math.abs(x - onMomentumStart.current) / sliderWidth) *
+            direction;
           if (loop) {
-            if (i > 1) newIdx = (newIdx + steps) % slides.length;
-            else if (i < 1)
-              newIdx = (newIdx - steps + slides.length) % slides.length;
+            if (i !== 1)
+              newIdx = (newIdx + steps + slides.length) % slides.length;
           } else {
             // eslint-disable-next-line no-nested-ternary, no-lonely-if
             if (i === 1) {
-              if (newIdx === 0) newIdx += steps;
-              else if (newIdx === slides.length - 1) newIdx -= steps;
-            } else if (i > 1 && newIdx < slides.length - 1) newIdx += steps;
-            else if (i < 1 && newIdx > 0) newIdx -= steps;
+              if (newIdx === 0 || newIdx === slides.length - 1) newIdx += steps;
+            } else if (newIdx > 0 && newIdx < slides.length - 1)
+              newIdx += steps;
           }
         } else {
           newIdx = i;
