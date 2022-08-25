@@ -61,8 +61,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import io.actbase.kakaosdk.channel.ARNKakaoChannelPackage;
+//
+//import io.actbase.kakaosdk.channel.ARNKakaoChannelPackage;
 import io.xogus.reactnative.versioncheck.RNVersionCheckPackage;
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
 //import io.invertase.firebase.dynamiclinks.ReactNativeFirebaseDynamicLinksPackage;
@@ -184,7 +184,7 @@ public class MainApplication extends Application implements ReactApplication {
                             new RNGestureHandlerPackage(),
                             new ReanimatedPackage(),
                             new RNCWebViewPackage(),
-                            new ARNKakaoChannelPackage(),
+//                            new ARNKakaoChannelPackage(),
                             new RNLocalizePackage(),
                             new RNFetchBlobPackage(),
                             new SimCardsManagerPackage(),
