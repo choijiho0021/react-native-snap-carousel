@@ -177,7 +177,7 @@ type EsimProps = {
 };
 
 const POPUP_DIS_DAYS = 7;
-const HEADER_HEIGHT = 137;
+const HEADER_HEIGHT = 115;
 
 const isFolderOpen = (w: number) => w > 500;
 
@@ -655,9 +655,10 @@ const Esim: React.FC<EsimProps> = ({
     <Animated.View
       style={[
         styles.container,
-        animatedStyles,
+        !isFolderOpen(dimensions.width) && animatedStyles,
         {
-          height: windowHeight + HEADER_HEIGHT,
+          height:
+            windowHeight + (isFolderOpen(dimensions.width) ? 0 : HEADER_HEIGHT),
         },
       ]}>
       <StatusBar barStyle="dark-content" />
