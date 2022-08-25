@@ -1,5 +1,5 @@
 import {Map as ImmutableMap} from 'immutable';
-import React, {memo, useCallback} from 'react';
+import React, {memo, useCallback, useMemo} from 'react';
 import {
   Animated,
   Image,
@@ -185,40 +185,47 @@ const StoreList = ({
   onScroll,
   isFolderOpen,
 }: StoreListProps) => {
+  const renderItem = useCallback(
+    ({item}) => (
+      <CountryItem
+        key={item[0]?.country}
+        onPress={onPress}
+        item={item}
+        localOpList={localOpList}
+        columns={isFolderOpen ? 3 : 2}
+      />
+    ),
+    [isFolderOpen, localOpList, onPress],
+  );
+
+  const list = useMemo(
+    () =>
+      isFolderOpen
+        ? data.reduce(
+            (acc, cur) => {
+              const last = acc[acc.length - 1];
+              if (last.length + cur.length <= 3) {
+                acc[acc.length - 1] = last.concat(cur);
+                return acc;
+              }
+              acc[acc.length - 1] = last.concat(cur.slice(0, 3 - last.length));
+              return cur.length > 3 - last.length
+                ? acc.concat([cur.slice(3 - last.length)])
+                : acc;
+            },
+            [[]] as RkbPriceInfo[][],
+          )
+        : data,
+    [data, isFolderOpen],
+  );
+
   return (
     <View style={appStyles.container}>
       <Animated.FlatList
-        data={
-          isFolderOpen
-            ? data.reduce(
-                (acc, cur) => {
-                  const last = acc[acc.length - 1];
-                  if (last.length + cur.length <= 3) {
-                    acc[acc.length - 1] = last.concat(cur);
-                    return acc;
-                  }
-                  acc[acc.length - 1] = last.concat(
-                    cur.slice(0, 3 - last.length),
-                  );
-                  return cur.length > 3 - last.length
-                    ? acc.concat([cur.slice(3 - last.length)])
-                    : acc;
-                },
-                [[]] as RkbPriceInfo[][],
-              )
-            : data
-        }
+        data={list}
         onScroll={onScroll}
         bounces={false}
-        renderItem={({item}) => (
-          <CountryItem
-            key={item[0]?.country}
-            onPress={onPress}
-            item={item}
-            localOpList={localOpList}
-            columns={isFolderOpen ? 3 : 2}
-          />
-        )}
+        renderItem={renderItem}
       />
     </View>
   );

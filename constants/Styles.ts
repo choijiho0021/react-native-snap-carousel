@@ -1,4 +1,4 @@
-import {StyleSheet, Platform, TextStyle} from 'react-native';
+import {StyleSheet, Platform} from 'react-native';
 import {isDeviceSize} from './SliderEntry.style';
 import {colors} from './Colors';
 import {StyledText} from '@/components/AppTextJoin';

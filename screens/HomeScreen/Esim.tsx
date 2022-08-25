@@ -77,7 +77,7 @@ import NotiModal from './component/NotiModal';
 import AppTabHeader from '@/components/AppTabHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppVerModal from './component/AppVerModal';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {isDeviceSize, isFolderOpen} from '@/constants/SliderEntry.style';
 import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
 import AppStyledText from '@/components/AppStyledText';
 
@@ -178,8 +178,6 @@ type EsimProps = {
 
 const POPUP_DIS_DAYS = 7;
 const HEADER_HEIGHT = 115;
-
-const isFolderOpen = (w: number) => w > 500;
 
 const Esim: React.FC<EsimProps> = ({
   navigation,
@@ -336,11 +334,16 @@ const Esim: React.FC<EsimProps> = ({
 
   const scrollY = useSharedValue(0);
 
+  const folderOpened = useMemo(
+    () => isFolderOpen(dimensions.width),
+    [dimensions.width],
+  );
+
   const renderScene = useCallback(
     ({route}: {route: TabViewRoute}) => (
       <StoreList
         data={product.priceInfo.get(route.key, [] as RkbPriceInfo[][])}
-        isFolderOpen={isFolderOpen(dimensions.width)}
+        isFolderOpen={folderOpened}
         onPress={onPressItem}
         localOpList={product.localOpList}
         onScroll={(e) => {
@@ -352,13 +355,7 @@ const Esim: React.FC<EsimProps> = ({
         }}
       />
     ),
-    [
-      dimensions.width,
-      isTop,
-      onPressItem,
-      product.localOpList,
-      product.priceInfo,
-    ],
+    [folderOpened, isTop, onPressItem, product.localOpList, product.priceInfo],
   );
 
   useEffect(() => {
@@ -655,14 +652,13 @@ const Esim: React.FC<EsimProps> = ({
     <Animated.View
       style={[
         styles.container,
-        !isFolderOpen(dimensions.width) && animatedStyles,
+        !folderOpened && animatedStyles,
         {
-          height:
-            windowHeight + (isFolderOpen(dimensions.width) ? 0 : HEADER_HEIGHT),
+          height: windowHeight + (folderOpened ? 0 : HEADER_HEIGHT),
         },
       ]}>
       <StatusBar barStyle="dark-content" />
-      {isFolderOpen(dimensions.width) ? (
+      {folderOpened ? (
         <View style={{flexDirection: 'row'}}>
           <View style={{flex: 1}} collapsable={false}>
             <PromotionCarousel width={dimensions.width / 2} />
@@ -701,8 +697,7 @@ const Esim: React.FC<EsimProps> = ({
 
       {
         // eslint-disable-next-line no-nested-ternary
-        // isDevModalVisible && !isSupportDev ? (
-        isDevModalVisible && false ? (
+        isDevModalVisible && !isSupportDev ? (
           <AppModal
             title={i18n.t('home:unsupportedTitle')}
             closeButtonTitle={isIOS ? i18n.t('ok') : i18n.t('exitAndOpenLink')}
