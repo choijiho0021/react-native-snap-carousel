@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 import {colors} from '@/constants/Colors';
-import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {API} from '@/redux/api';
 import {Currency, RkbLocalOp} from '@/redux/api/productApi';
@@ -180,7 +180,7 @@ type StoreListProps = {
   data: RkbPriceInfo[][];
   onPress: (p: RkbPriceInfo) => void;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
-  isFolderOpen?: boolean;
+  width: number;
 };
 
 const StoreList = ({

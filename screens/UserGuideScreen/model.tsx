@@ -123,6 +123,28 @@ const tipView = (params: RenderTipParams) => (
   </View>
 );
 
+const renderTipList = (id: string, list: 'dot' | 'num' = 'num') => (
+  <View style={styles.tipContainer}>
+    {renderTips()}
+    <View style={{alignItems: 'flex-start'}}>
+      {[1, 2].map((k) => (
+        <View key={k} style={styles.tipTextContainer}>
+          {list === 'num' ? (
+            <View style={styles.step}>
+              <AppText style={styles.stepText}>{k}</AppText>
+            </View>
+          ) : (
+            <AppText style={[styles.tipText, {marginRight: 5}]}>
+              {i18n.t('centerDot')}
+            </AppText>
+          )}
+          {renderTipText(`${id}_${k}`)}
+        </View>
+      ))}
+    </View>
+  </View>
+);
+
 const dir = '../../assets/images/esim/userGuide';
 export const imageList: Record<string, any[]> =
   Platform.OS === 'android'
@@ -191,19 +213,7 @@ export const guideImages =
           key: 'page5',
           title: renderText(`userGuide:stepsTitle4:android`),
           step: 4,
-          tip: () => (
-            <View style={styles.tipContainer}>
-              {renderTips()}
-              {[1, 2].map((k) => (
-                <View key={k} style={styles.tipTextContainer}>
-                  <View style={styles.step}>
-                    <AppText style={styles.stepText}>{k}</AppText>
-                  </View>
-                  {renderTipText(`userGuide:tipPage4_${k}:android`)}
-                </View>
-              ))}
-            </View>
-          ),
+          tip: () => renderTipList('userGuide:tipPage4:android'),
         },
         {
           key: 'page6',
@@ -226,19 +236,7 @@ export const guideImages =
           key: 'page9',
           title: renderText(`userGuide:stepsTitle7:android`),
           step: 7,
-          tip: () => (
-            <View style={styles.tipContainer}>
-              {renderTips()}
-              {[1, 2].map((k) => (
-                <View key={k} style={styles.tipTextContainer}>
-                  <View style={styles.step}>
-                    <AppText style={styles.stepText}>{k}</AppText>
-                  </View>
-                  {renderTipText(`userGuide:tipPage9_${k}:android`)}
-                </View>
-              ))}
-            </View>
-          ),
+          tip: () => renderTipList('userGuide:tipPage9:android', 'dot'),
         },
         {
           key: 'page10',
@@ -267,19 +265,7 @@ export const guideImages =
           key: 'page3',
           title: renderText(`userGuide:stepsTitle2:ios`),
           step: 2,
-          tip: () => (
-            <View style={styles.tipContainer}>
-              {renderTips()}
-              {[1, 2].map((k) => (
-                <View key={k} style={styles.tipTextContainer}>
-                  <View style={styles.step}>
-                    <AppText style={styles.stepText}>{k}</AppText>
-                  </View>
-                  {renderTipText(`userGuide:tipPage3_${k}`)}
-                </View>
-              ))}
-            </View>
-          ),
+          tip: () => renderTipList('userGuide:tipPage3'),
         },
         {
           key: 'page4',

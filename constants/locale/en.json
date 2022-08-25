@@ -757,12 +757,12 @@
   "userGuide:tipPage9_1": "You can use your data only if the <b>Data Roaming option is ON.</b>",
   "userGuide:tipPage11_1": "<b>Please delete the item when expired!</b> Leftover items may cause confusion when adding new items.",
 
-  "userGuide:tipPage4_1:android": "QR코드를 쉽게 찍으시려면 <b>다른 기기에서 받으신 이메일을 띄워주세요!</b> (노트북, 패드 등)",
-  "userGuide:tipPage4_2:android": "다른 기기 사용이 어려우신 경우, <b>하단의 도움말 > 직접입력에서 수동입력 코드로</b> 등록하세요.",
+  "userGuide:tipPage4:android_1": "QR코드를 쉽게 찍으시려면 <b>다른 기기에서 받으신 이메일을 띄워주세요!</b> (노트북, 패드 등)",
+  "userGuide:tipPage4:android_2": "다른 기기 사용이 어려우신 경우, <b>하단의 도움말 > 직접입력에서 수동입력 코드로</b> 등록하세요.",
   "userGuide:tipPage5:android": "<b>로밍도깨비 앱 > 구매 eSIM 목록 > 수동 입력 정보</b>\n에서 해당 정보를 복사&붙여넣기 해주세요.\n빠르고 쉽게 입력하실 수 있답니다!",
   "userGuide:tipPage8:android": "<b>오른쪽 상단의 편집 버튼</b>을 누르면, 요금제 이름을\n변경할 수 있어요!",
-  "userGuide:tipPage9_1:android": "<b>로밍도깨비 요금제가 모바일 데이터 기본값으로 설정</b>되어 있고, 로밍이 ON 상태인지 확인해주세요.",
-  "userGuide:tipPage9_2:android": "기존 요금제의 로밍은 OFF 상태여야 합니다.",
+  "userGuide:tipPage9:android_1": "<b>로밍도깨비 요금제가 모바일 데이터 기본값으로 설정</b>되어 있고, <s>로밍이 ON 상태인지 확인</s>해주세요.",
+  "userGuide:tipPage9:android_2": "기존 요금제의 로밍은 OFF 상태여야 합니다.",
 
   "quadcell:usageInfo1": "\u00B7 Actual usage may differ",
   "quadcell:usageInfo2": " You may check your data usage when initial connection to the local network is made",

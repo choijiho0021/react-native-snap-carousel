@@ -76,7 +76,7 @@ import NotiModal from './component/NotiModal';
 import AppTabHeader from '@/components/AppTabHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppVerModal from './component/AppVerModal';
-import {isDeviceSize, isFolderOpen} from '@/constants/SliderEntry.style';
+import {isFolderOpen} from '@/constants/SliderEntry.style';
 import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
 import AppStyledText from '@/components/AppStyledText';
 
@@ -124,8 +124,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   showSearchBar: {
-    marginBottom: 20,
-    marginTop: isDeviceSize('medium') ? 0 : 10,
+    marginVertical: 10,
     marginHorizontal: 20,
     backgroundColor: colors.white,
     height: 56,
@@ -232,16 +231,19 @@ const Esim: React.FC<EsimProps> = ({
   const headerHeight = useHeaderHeight();
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const windowHeight = useMemo(
-    () => dimensions.height - tabBarHeight - headerHeight,
+    () => dimensions.height - tabBarHeight - headerHeight - 20,
     [dimensions.height, headerHeight, tabBarHeight],
   );
+
+  const scrollY = useSharedValue(0);
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({window}) => {
       setDimensions(window);
+      scrollY.value = 0;
     });
     return () => subscription?.remove();
-  }, []);
+  }, [scrollY]);
 
   const setNotiModal = useCallback(() => {
     const popUpPromo = promotion?.find((v) => v?.notice?.image?.noti);
@@ -330,8 +332,6 @@ const Esim: React.FC<EsimProps> = ({
     [navigation, popUp?.notice, popUp?.rule],
   );
 
-  const scrollY = useSharedValue(0);
-
   const folderOpened = useMemo(
     () => isFolderOpen(dimensions.width),
     [dimensions.width],
@@ -344,12 +344,13 @@ const Esim: React.FC<EsimProps> = ({
         onPress={onPressItem}
         localOpList={product.localOpList}
         width={dimensions.width}
-        onScroll={(e) => {
-          if (isTop && e.nativeEvent.contentOffset.y > bannerHeight) {
-            setIsTop(false);
-          } else if (!isTop && e.nativeEvent.contentOffset.y <= 0) {
-            setIsTop(true);
-          }
+        onScroll={({
+          nativeEvent: {
+            contentOffset: {y},
+          },
+        }) => {
+          if (isTop && y > bannerHeight) setIsTop(false);
+          else if (!isTop && y <= 0) setIsTop(true);
         }}
       />
     ),
@@ -672,10 +673,10 @@ const Esim: React.FC<EsimProps> = ({
     [navigation],
   );
 
-  const onLayout = useCallback((event) => {
-    const {height} = event.nativeEvent.layout;
-    setBannerHeight(height);
-  }, []);
+  const onLayout = useCallback(
+    (event) => setBannerHeight(event.nativeEvent.layout.height),
+    [],
+  );
 
   return (
     <Animated.View
@@ -687,22 +688,21 @@ const Esim: React.FC<EsimProps> = ({
         },
       ]}>
       <StatusBar barStyle="dark-content" />
-      <View onLayout={onLayout}>
-        {folderOpened ? (
-          <View style={{flexDirection: 'row'}}>
-            <View style={{flex: 1}} collapsable={false}>
-              <PromotionCarousel width={dimensions.width / 2} />
-            </View>
+      {folderOpened ? (
+        <View style={{flexDirection: 'row'}} onLayout={onLayout}>
+          <View style={{flex: 1}} collapsable={false}>
+            <PromotionCarousel width={dimensions.width / 2} />
           </View>
-        ) : (
-          <View>
-            <View collapsable={false}>
-              <PromotionCarousel width={dimensions.width} />
-            </View>
-            {renderSearch()}
+          <View style={{flex: 1}}>{renderSearch()}</View>
+        </View>
+      ) : (
+        <View onLayout={onLayout}>
+          <View collapsable={false}>
+            <PromotionCarousel width={dimensions.width} />
           </View>
-        )}
-      </View>
+          {renderSearch()}
+        </View>
+      )}
 
       <AppTabHeader
         index={index}
