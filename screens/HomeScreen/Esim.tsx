@@ -12,7 +12,6 @@ import {
   View,
   ScrollView,
   Linking,
-  BackHandler,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {Settings} from 'react-native-fbsdk';
@@ -177,7 +176,6 @@ type EsimProps = {
 };
 
 const POPUP_DIS_DAYS = 7;
-const HEADER_HEIGHT = 115;
 
 const Esim: React.FC<EsimProps> = ({
   navigation,
@@ -191,6 +189,7 @@ const Esim: React.FC<EsimProps> = ({
 }) => {
   const [isSupportDev, setIsSupportDev] = useState<boolean>(true);
   const [isDevModalVisible, setIsDevModalVisible] = useState<boolean>(false);
+  const [bannerHeight, setBannerHeight] = useState<number>(137);
   const [index, setIndex] = useState(0);
   const routes = useMemo(
     () =>
@@ -322,7 +321,6 @@ const Esim: React.FC<EsimProps> = ({
         case 'exit':
           if (isIOS) setIsDevModalVisible(false);
           else {
-            BackHandler.exitApp();
             Linking.openURL('https://www.rokebi.com');
           }
           break;
@@ -347,7 +345,7 @@ const Esim: React.FC<EsimProps> = ({
         onPress={onPressItem}
         localOpList={product.localOpList}
         onScroll={(e) => {
-          if (isTop && e.nativeEvent.contentOffset.y > HEADER_HEIGHT) {
+          if (isTop && e.nativeEvent.contentOffset.y > bannerHeight) {
             setIsTop(false);
           } else if (!isTop && e.nativeEvent.contentOffset.y <= 0) {
             setIsTop(true);
@@ -355,15 +353,22 @@ const Esim: React.FC<EsimProps> = ({
         }}
       />
     ),
-    [folderOpened, isTop, onPressItem, product.localOpList, product.priceInfo],
+    [
+      bannerHeight,
+      folderOpened,
+      isTop,
+      onPressItem,
+      product.localOpList,
+      product.priceInfo,
+    ],
   );
 
   useEffect(() => {
-    scrollY.value = withTiming(isTop ? 0 : HEADER_HEIGHT, {
+    scrollY.value = withTiming(isTop ? 0 : bannerHeight, {
       duration: 500,
       easing: Easing.out(Easing.exp),
     });
-  }, [isTop, scrollY]);
+  }, [isTop, scrollY, bannerHeight]);
 
   const animatedStyles = useAnimatedStyle(() => {
     return {
@@ -576,6 +581,25 @@ const Esim: React.FC<EsimProps> = ({
   }, [isSupportDev, notification]);
 
   useEffect(() => {
+    const runDeppLink = async () => {
+      // Get the deep link used to open the app
+      const initialUrl = await Linking.getInitialURL();
+      const urlSplit = initialUrl?.split('/');
+
+      if (urlSplit && urlSplit.length >= 4) {
+        const deepLinkPath = urlSplit[3].split('?')[0];
+
+        if (deepLinkPath === 'PROMOTION') {
+          setPopupDisabled(true);
+          exitApp('redirect');
+        }
+      }
+    };
+
+    runDeppLink();
+  }, [exitApp]);
+
+  useEffect(() => {
     if (
       product.localOpList.size > 0 &&
       product.prodByCountry.length > 0 &&
@@ -648,31 +672,37 @@ const Esim: React.FC<EsimProps> = ({
     [navigation],
   );
 
+  const onLayout = useCallback((event) => {
+    const {height} = event.nativeEvent.layout;
+    setBannerHeight(height);
+  }, []);
+
   return (
     <Animated.View
       style={[
         styles.container,
         !folderOpened && animatedStyles,
         {
-          height: windowHeight + (folderOpened ? 0 : HEADER_HEIGHT),
+          height: windowHeight + (folderOpened ? 0 : bannerHeight),
         },
       ]}>
       <StatusBar barStyle="dark-content" />
-      {folderOpened ? (
-        <View style={{flexDirection: 'row'}}>
-          <View style={{flex: 1}} collapsable={false}>
-            <PromotionCarousel width={dimensions.width / 2} />
+      <View onLayout={onLayout}>
+        {folderOpened ? (
+          <View style={{flexDirection: 'row'}}>
+            <View style={{flex: 1}} collapsable={false}>
+              <PromotionCarousel width={dimensions.width / 2} />
+            </View>
           </View>
-          <View style={{flex: 1}}>{renderSearch()}</View>
-        </View>
-      ) : (
-        <View>
-          <View collapsable={false}>
-            <PromotionCarousel width={dimensions.width} />
+        ) : (
+          <View>
+            <View collapsable={false}>
+              <PromotionCarousel width={dimensions.width} />
+            </View>
+            {renderSearch()}
           </View>
-          {renderSearch()}
-        </View>
-      )}
+        )}
+      </View>
 
       <AppTabHeader
         index={index}

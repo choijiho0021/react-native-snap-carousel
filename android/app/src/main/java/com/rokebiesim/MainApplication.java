@@ -61,18 +61,18 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import io.actbase.kakaosdk.channel.ARNKakaoChannelPackage;
+//
+//import io.actbase.kakaosdk.channel.ARNKakaoChannelPackage;
 import io.xogus.reactnative.versioncheck.RNVersionCheckPackage;
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
-//import io.invertase.firebase.dynamiclinks.ReactNativeFirebaseDynamicLinksPackage;
+import io.invertase.firebase.dynamiclinks.ReactNativeFirebaseDynamicLinksPackage;
 
 import com.facebook.flipper.reactnative.FlipperPackage;
 //import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
 //import com.reactnativecommunity.picker.RNCPickerPackage;
-//import com.reactnativegooglesignin.RNGoogleSigninPackage;
-//import com.reactnativecommunity.cookies.CookieManagerPackage;
+import com.reactnativegooglesignin.RNGoogleSigninPackage;
+import com.reactnativecommunity.cookies.CookieManagerPackage;
 import com.reactnativecommunity.cameraroll.CameraRollPackage;
 import fr.greweb.reactnativeviewshot.RNViewShotPackage;
 
@@ -164,7 +164,7 @@ public class MainApplication extends Application implements ReactApplication {
                             new ReactNativeConfigPackage(),
                             new EuccidManagerAppPackage(),
                             new ReactNativeFirebaseAppPackage(),
-                            //new ReactNativeFirebaseDynamicLinksPackage(),
+                            new ReactNativeFirebaseDynamicLinksPackage(),
                             new RNPermissionsPackage(),
                             new RNScreensPackage(),
                             new RNDeviceInfo(),
@@ -184,16 +184,16 @@ public class MainApplication extends Application implements ReactApplication {
                             new RNGestureHandlerPackage(),
                             new ReanimatedPackage(),
                             new RNCWebViewPackage(),
-                            new ARNKakaoChannelPackage(),
+//                            new ARNKakaoChannelPackage(),
                             new RNLocalizePackage(),
                             new RNFetchBlobPackage(),
                             new SimCardsManagerPackage(),
                             new MyAppPackage(),
 //                            new RNCPickerPackage(),
-//                            new RNGoogleSigninPackage(),
+                            new RNGoogleSigninPackage(),
 //                            new ReactNativeFirebaseAnalyticsPackage(),
                             new ReactNativeFirebaseMessagingPackage(),
-//                            new CookieManagerPackage(),
+                            new CookieManagerPackage(),
                             new FlipperPackage()
                     );
                 }

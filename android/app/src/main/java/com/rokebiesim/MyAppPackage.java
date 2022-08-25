@@ -21,7 +21,7 @@ public class MyAppPackage implements ReactPackage {
         List<NativeModule> modules = new ArrayList<>();
         modules.add(new KakaoShareLinkModule(reactContext));
         modules.add(new RNKakaoLoginsModule(reactContext));
-
+        modules.add(new KakaoChannel(reactContext));
         return modules;
     }
 

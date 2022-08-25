@@ -76,6 +76,9 @@
   "home:supportedDevice": "List of Supported Devices",
   "home:supportedDeviceBody": "",
   "home:unsupportedBody1": "ROKEBI is <b>available only in devices that supports eSIM.</b>",
+  "home:unsupportedBody2": "eSIM 이용 가능 단말에서 로밍도깨비 eSIM 앱에 접속해주세요.",
+  "home:unsupportedBody3": "로밍도깨비 <b>서비스 소개와 간단한 상품 정보는 웹페이지에서 확인</b>하실 수 있습니다.",
+  "home:unsupportedBody4": "감사합니다.",
   "home:searchPlaceholder": "Search your destination",
 
   "app:updateTitle-1": "A <b>Newer Version</b>",

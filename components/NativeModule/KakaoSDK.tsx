@@ -1,5 +1,5 @@
 import {NativeModules} from 'react-native';
-const {KakaoShareLink, RNKakaoLogins} = NativeModules;
+const {KakaoShareLink, RNKakaoLogins, KakaoChannel} = NativeModules;
 
 // RNKakaoLogins : @react-native-seoul/kakao-login
 
@@ -424,12 +424,22 @@ export declare type RNKakaoLoginsType = {
   getAccessToken: typeof getAccessToken;
 };
 
+export declare const addFriend: () => Promise<string>;
+export declare const chat: () => Promise<string>;
+
+export declare type KakaoChannelType = {
+  addFriend: typeof addFriend;
+  chat: typeof chat;
+};
+
 const KakaoSDK: {
   KakaoShareLink: KakaoShareLinkType;
   RNKakaoLogins: RNKakaoLoginsType;
+  KakaoChannel: KakaoChannelType;
 } = {
   KakaoShareLink,
   RNKakaoLogins,
+  KakaoChannel,
 };
 
 export default KakaoSDK;

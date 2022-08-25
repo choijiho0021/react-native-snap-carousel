@@ -2,7 +2,7 @@
 buildscript {
     ext {
         buildToolsVersion = "31.0.0"
-        minSdkVersion = 21
+        minSdkVersion = 23
         compileSdkVersion = 31
         targetSdkVersion = 31
 
@@ -14,7 +14,7 @@ buildscript {
             ndkVersion = "21.4.7075529"
         }
 
-        kotlin_version = '1.4.21'
+        kotlin_version = '1.5.31'
         googlePlayServicesVersion = "+"
         firebaseVersion = "+"
         supportLibVersion = "30.0.2"
@@ -32,7 +32,7 @@ buildscript {
         classpath('com.google.gms:google-services:4.3.13')
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
-        // NOTE: Do not place your application dependencies here; they belong
+        // NOTE: Do not place your applicatcom.google.gms.google-serviceion dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
