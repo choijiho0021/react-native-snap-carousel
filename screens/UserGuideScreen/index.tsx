@@ -1,13 +1,19 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {StyleSheet, Image, SafeAreaView, View, ScrollView} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {
+  StyleSheet,
+  Image,
+  SafeAreaView,
+  View,
+  ScrollView,
+  Dimensions,
+} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import Carousel from 'react-native-snap-carousel';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
-import {isDeviceSize, sliderWidth} from '@/constants/SliderEntry.style';
+import {isDeviceSize, isFolderOpen} from '@/constants/SliderEntry.style';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -15,6 +21,7 @@ import i18n from '@/utils/i18n';
 import {guideImages, imageList} from './model';
 import AppStyledText from '@/components/AppStyledText';
 import {getImage} from '@/utils/utils';
+import AppCarousel from '@/components/AppCarousel';
 
 const styles = StyleSheet.create({
   container: {
@@ -26,14 +33,16 @@ const styles = StyleSheet.create({
     marginBottom: isDeviceSize('medium') ? 16 : 32,
   },
   image: {
-    // width: '100%',
-    flex: 1,
+    width: '100%',
+    height: '100%',
+    // flex: 1,
   },
   modalHeader: {
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginHorizontal: 20,
+    paddingHorizontal: 20,
     height: 56,
   },
   logo: {
@@ -104,53 +113,14 @@ type UserGuideScreenProps = {
 
 const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
   const [carouselIdx, setCarouselIdx] = useState(0);
-  const checkInfoList = useMemo(
-    () => [
-      [
-        {
-          text: i18n.t('userGuide:checkInfo1_1'),
-          textStyle: styles.checkInfoText,
-        },
-        {
-          text: i18n.t('userGuide:checkInfo1_2'),
-          textStyle: [styles.checkInfoText, {color: colors.clearBlue}],
-        },
-        {
-          text: i18n.t('userGuide:checkInfo1_3'),
-          textStyle: styles.checkInfoText,
-        },
-      ],
-      [
-        {
-          text: i18n.t('userGuide:checkInfo2_1'),
-          textStyle: styles.checkInfoText,
-        },
-        {
-          text: i18n.t('userGuide:checkInfo2_2'),
-          textStyle: [styles.checkInfoText, {color: colors.clearBlue}],
-        },
-        {
-          text: i18n.t('userGuide:checkInfo2_3'),
-          textStyle: styles.checkInfoText,
-        },
-        {
-          text: i18n.t('userGuide:checkInfo2_4'),
-          textStyle: [styles.checkInfoText, {color: colors.clearBlue}],
-        },
-        {
-          text: i18n.t('userGuide:checkInfo2_5'),
-          textStyle: styles.checkInfoText,
-        },
-      ],
-      [
-        {
-          text: i18n.t('userGuide:checkInfo3'),
-          textStyle: styles.checkInfoText,
-        },
-      ],
-    ],
-    [],
-  );
+  const [dimensions, setDimensions] = useState(Dimensions.get('window'));
+
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({window}) => {
+      setDimensions(window);
+    });
+    return () => subscription?.remove();
+  }, []);
 
   useEffect(() => {
     navigation.setOptions({
@@ -165,7 +135,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
       <View style={styles.modalHeader}>
         <AppText style={[appStyles.bold16Text, {color: colors.clearBlue}]}>
           {index + 1}
-          <AppText style={appStyles.bold16Text}>/11</AppText>
+          <AppText style={appStyles.bold16Text}>/{guideImages.length}</AppText>
         </AppText>
         <AppSvgIcon
           key="closeModal"
@@ -248,7 +218,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
           <Image
             style={[styles.image, !isDeviceSize('medium') && {height: '90%'}]}
             source={getImage(imageList, data.key)}
-            resizeMode="cover"
+            resizeMode="contain"
           />
         </View>
       </View>
@@ -292,17 +262,21 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
 
   const renderGuide = useCallback(
     ({item, index}) => (
-      <View style={styles.container}>
+      <View style={[styles.container, {alignItems: 'center'}]}>
         {renderModalHeader(index)}
 
-        {isDeviceSize('medium') ? (
-          <ScrollView>{renderBody(item, index)}</ScrollView>
-        ) : (
-          renderBody(item, index)
-        )}
+        <View style={{flex: 1, maxWidth: 414}}>
+          {isDeviceSize('medium') || isFolderOpen(dimensions.width) ? (
+            <ScrollView contentContainerStyle={{flex: 1}}>
+              {renderBody(item, index)}
+            </ScrollView>
+          ) : (
+            renderBody(item, index)
+          )}
+        </View>
       </View>
     ),
-    [renderBody, renderModalHeader],
+    [dimensions.width, renderBody, renderModalHeader],
   );
 
   return (
@@ -311,16 +285,13 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
         ...styles.container,
         backgroundColor: carouselIdx === 0 ? colors.white : colors.paleGreyTwo,
       }}>
-      <Carousel
+      <AppCarousel
         data={guideImages}
         renderItem={renderGuide}
         keyExtractor={(item) => item.key}
-        onSnapToItem={(index) => setCarouselIdx(index)}
-        autoplay={false}
-        useScrollView
-        lockScrollWhileSnapping
-        sliderWidth={sliderWidth}
-        itemWidth={sliderWidth}
+        onSnapToItem={setCarouselIdx}
+        sliderWidth={dimensions.width}
+        optimize={false}
       />
     </SafeAreaView>
   );
