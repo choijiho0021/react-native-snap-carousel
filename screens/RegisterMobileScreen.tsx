@@ -365,7 +365,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     setIsValidEmail(false);
     setEmailError('');
     setSocialLogin(false);
-    setRecommender('');
   }, []);
 
   const signIn = useCallback(
