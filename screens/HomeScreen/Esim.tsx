@@ -176,7 +176,6 @@ type EsimProps = {
 };
 
 const POPUP_DIS_DAYS = 7;
-const HEADER_HEIGHT = 137;
 
 const isFolderOpen = (w: number) => w > 500;
 
@@ -192,6 +191,7 @@ const Esim: React.FC<EsimProps> = ({
 }) => {
   const [isSupportDev, setIsSupportDev] = useState<boolean>(true);
   const [isDevModalVisible, setIsDevModalVisible] = useState<boolean>(false);
+  const [bannerHeight, setBannerHeight] = useState<number>(137);
   const [index, setIndex] = useState(0);
   const routes = useMemo(
     () =>
@@ -342,7 +342,7 @@ const Esim: React.FC<EsimProps> = ({
         onPress={onPressItem}
         localOpList={product.localOpList}
         onScroll={(e) => {
-          if (isTop && e.nativeEvent.contentOffset.y > HEADER_HEIGHT) {
+          if (isTop && e.nativeEvent.contentOffset.y > bannerHeight) {
             setIsTop(false);
           } else if (!isTop && e.nativeEvent.contentOffset.y <= 0) {
             setIsTop(true);
@@ -356,15 +356,16 @@ const Esim: React.FC<EsimProps> = ({
       onPressItem,
       product.localOpList,
       product.priceInfo,
+      bannerHeight,
     ],
   );
 
   useEffect(() => {
-    scrollY.value = withTiming(isTop ? 0 : HEADER_HEIGHT, {
+    scrollY.value = withTiming(isTop ? 0 : bannerHeight, {
       duration: 500,
       easing: Easing.out(Easing.exp),
     });
-  }, [isTop, scrollY]);
+  }, [isTop, scrollY, bannerHeight]);
 
   const animatedStyles = useAnimatedStyle(() => {
     return {
@@ -668,31 +669,38 @@ const Esim: React.FC<EsimProps> = ({
     [navigation],
   );
 
+  const onLayout = useCallback((event) => {
+    const {height} = event.nativeEvent.layout;
+    setBannerHeight(height);
+  }, []);
+
   return (
     <Animated.View
       style={[
         styles.container,
         animatedStyles,
         {
-          height: windowHeight + HEADER_HEIGHT,
+          height: windowHeight + bannerHeight,
         },
       ]}>
       <StatusBar barStyle="dark-content" />
-      {isFolderOpen(dimensions.width) ? (
-        <View style={{flexDirection: 'row'}}>
-          <View style={{flex: 1}} collapsable={false}>
-            <PromotionCarousel width={dimensions.width / 2} />
+      <View onLayout={onLayout}>
+        {isFolderOpen(dimensions.width) ? (
+          <View style={{flexDirection: 'row'}}>
+            <View style={{flex: 1}} collapsable={false}>
+              <PromotionCarousel width={dimensions.width / 2} />
+            </View>
+            <View style={{flex: 1}}>{renderSearch()}</View>
           </View>
-          <View style={{flex: 1}}>{renderSearch()}</View>
-        </View>
-      ) : (
-        <View>
-          <View collapsable={false}>
-            <PromotionCarousel width={dimensions.width} />
+        ) : (
+          <View>
+            <View collapsable={false}>
+              <PromotionCarousel width={dimensions.width} />
+            </View>
+            {renderSearch()}
           </View>
-          {renderSearch()}
-        </View>
-      )}
+        )}
+      </View>
 
       <AppTabHeader
         index={index}
