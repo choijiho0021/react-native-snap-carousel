@@ -18,6 +18,7 @@ import i18n from '@/utils/i18n';
 import AppPrice from './AppPrice';
 import AppText from './AppText';
 import {RkbPriceInfo} from '@/redux/modules/product';
+import {isFolderOpen} from '../constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   text: {
@@ -34,7 +35,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   productList: {
-    width: windowWidth - 40,
+    // width: windowWidth - 40,
     flexDirection: 'row',
     marginTop: 15,
     marginBottom: 15,
@@ -87,11 +88,13 @@ const CountryItem0 = ({
   localOpList,
   onPress,
   columns,
+  width,
 }: {
   item: RkbPriceInfo[];
   localOpList: ImmutableMap<string, RkbLocalOp>;
   onPress?: (p: RkbPriceInfo) => void;
   columns: number;
+  width: number;
 }) => {
   const renderLowest = useCallback(
     () => (
@@ -127,7 +130,9 @@ const CountryItem0 = ({
   );
 
   return (
-    <View key={item[0]?.country} style={styles.productList}>
+    <View
+      key={item[0]?.country}
+      style={[styles.productList, {width: width - 40}]}>
       {item.map((elm, idx) => {
         // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
         const localOp = localOpList && localOpList.get(elm.partner);
@@ -183,8 +188,9 @@ const StoreList = ({
   data,
   onPress,
   onScroll,
-  isFolderOpen,
+  width,
 }: StoreListProps) => {
+  const isFolder = useMemo(() => isFolderOpen(width), [width]);
   const renderItem = useCallback(
     ({item}) => (
       <CountryItem
@@ -192,15 +198,16 @@ const StoreList = ({
         onPress={onPress}
         item={item}
         localOpList={localOpList}
-        columns={isFolderOpen ? 3 : 2}
+        width={width}
+        columns={isFolder ? 3 : 2}
       />
     ),
-    [isFolderOpen, localOpList, onPress],
+    [isFolder, localOpList, onPress, width],
   );
 
   const list = useMemo(
     () =>
-      isFolderOpen
+      isFolder
         ? data.reduce(
             (acc, cur) => {
               const last = acc[acc.length - 1];
@@ -216,7 +223,7 @@ const StoreList = ({
             [[]] as RkbPriceInfo[][],
           )
         : data,
-    [data, isFolderOpen],
+    [data, isFolder],
   );
 
   return (

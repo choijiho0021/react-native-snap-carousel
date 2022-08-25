@@ -341,9 +341,9 @@ const Esim: React.FC<EsimProps> = ({
     ({route}: {route: TabViewRoute}) => (
       <StoreList
         data={product.priceInfo.get(route.key, [] as RkbPriceInfo[][])}
-        isFolderOpen={folderOpened}
         onPress={onPressItem}
         localOpList={product.localOpList}
+        width={dimensions.width}
         onScroll={(e) => {
           if (isTop && e.nativeEvent.contentOffset.y > bannerHeight) {
             setIsTop(false);
@@ -355,7 +355,7 @@ const Esim: React.FC<EsimProps> = ({
     ),
     [
       bannerHeight,
-      folderOpened,
+      dimensions.width,
       isTop,
       onPressItem,
       product.localOpList,
