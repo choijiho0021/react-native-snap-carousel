@@ -71,7 +71,7 @@ import com.facebook.flipper.reactnative.FlipperPackage;
 //import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
 //import com.reactnativecommunity.picker.RNCPickerPackage;
-//import com.reactnativegooglesignin.RNGoogleSigninPackage;
+import com.reactnativegooglesignin.RNGoogleSigninPackage;
 import com.reactnativecommunity.cookies.CookieManagerPackage;
 import com.reactnativecommunity.cameraroll.CameraRollPackage;
 import fr.greweb.reactnativeviewshot.RNViewShotPackage;
@@ -190,7 +190,7 @@ public class MainApplication extends Application implements ReactApplication {
                             new SimCardsManagerPackage(),
                             new MyAppPackage(),
 //                            new RNCPickerPackage(),
-//                            new RNGoogleSigninPackage(),
+                            new RNGoogleSigninPackage(),
 //                            new ReactNativeFirebaseAnalyticsPackage(),
                             new ReactNativeFirebaseMessagingPackage(),
                             new CookieManagerPackage(),
