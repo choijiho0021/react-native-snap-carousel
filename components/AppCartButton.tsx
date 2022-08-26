@@ -5,6 +5,7 @@ import {RootState} from '@/redux';
 import AppIcon from './AppIcon';
 import Badge from './Badge';
 import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
 
 const styles = StyleSheet.create({
   icon: {
@@ -26,8 +27,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   badgeText: {
-    fontSize: 10,
+    ...appStyles.normal12Text,
     paddingHorizontal: 0,
+    color: colors.white,
+    lineHeight: 14,
   },
 });
 
