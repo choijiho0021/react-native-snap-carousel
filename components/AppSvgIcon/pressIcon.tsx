@@ -260,6 +260,49 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  plus: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M8 12a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 8 12z"
+        fill="#2C2C2C"
+      />
+      <Path
+        d="M12 8a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 12 8z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
+  minus: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect x="8" y="11.5" width="8" height="1" rx=".5" fill="#2C2C2C" />
+    </Svg>,
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect x="8" y="11.5" width="8" height="1" rx=".5" fill="#2C2C2C" />
+    </Svg>,
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect x="8" y="11.5" width="8" height="1" rx=".5" fill="#D8D8D8" />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;
