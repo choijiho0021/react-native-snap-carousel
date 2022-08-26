@@ -1,4 +1,4 @@
-import React, {memo, useCallback} from 'react';
+import React, {memo, useCallback, useEffect, useState} from 'react';
 import {Dimensions, Pressable, StyleSheet, View} from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -12,8 +12,7 @@ import {appStyles} from '@/constants/Styles';
 import AppText from '@/components/AppText';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {navigate} from '@/navigation/navigation';
-
-const {width} = Dimensions.get('window');
+import {MAX_WIDTH} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   bottom: {
@@ -49,6 +48,9 @@ type GiftModalProps = {
 const GiftModal: React.FC<GiftModalProps> = ({visible, onOkClose}) => {
   const navigation = useNavigation();
   const route = useRoute();
+  const [iconWidth, setIconWidth] = useState(
+    Math.min(MAX_WIDTH, Dimensions.get('window').width),
+  );
   const renderBottom = useCallback(
     () => (
       <View style={styles.bottom}>
@@ -85,6 +87,13 @@ const GiftModal: React.FC<GiftModalProps> = ({visible, onOkClose}) => {
     [onOkClose],
   );
 
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({window}) => {
+      setIconWidth(Math.min(MAX_WIDTH, window.width));
+    });
+    return () => subscription?.remove();
+  }, []);
+
   return (
     <AppModal
       justifyContent="flex-end"
@@ -96,7 +105,10 @@ const GiftModal: React.FC<GiftModalProps> = ({visible, onOkClose}) => {
       bottom={renderBottom}
       visible={visible}>
       <View>
-        <AppIcon name="giftModalBg" size={[width, (width * 258) / 375]} />
+        <AppIcon
+          name="giftModalBg"
+          size={[iconWidth, (iconWidth * 258) / 375]}
+        />
         <AppText
           key="1"
           style={{
