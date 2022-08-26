@@ -54,7 +54,7 @@ import {
 import i18n from '@/utils/i18n';
 import AppModal from '@/components/AppModal';
 
-const {esimApp} = Env.get();
+const {esimApp, isIOS} = Env.get();
 const infoKey = 'pym:benefit';
 const loadingImg = require('../assets/images/loading_1.mp4');
 
@@ -438,7 +438,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           app_scheme: scheme,
           profile_uuid: profileId,
           dlvCost: dlvCost.value,
-          language: selected?.language || 'KR',
+          language: selected?.language || isIOS ? 'KR' : 'ko',
           digital: true,
           memo,
           // mode: 'test'
