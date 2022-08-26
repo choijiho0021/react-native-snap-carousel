@@ -116,11 +116,8 @@ type TutorialScreenNavigationProp = StackNavigationProp<
   'Tutorial'
 >;
 
-type TutorialScreenRouteProp = RouteProp<HomeStackParamList, 'Tutorial'>;
-
 type TutorialScreenProps = {
   navigation: TutorialScreenNavigationProp;
-  route: TutorialScreenRouteProp;
 
   account: AccountModelState;
   link: LinkModelState;
@@ -132,7 +129,7 @@ type TutorialScreenProps = {
 type CarouselIndex = 'step1' | 'step2' | 'step3' | 'step4';
 
 const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
-  const {navigation, route, account, link, action} = props;
+  const {navigation, account, link, action} = props;
   const {recommender, gift} = link;
   const [activeSlide, setActiveSlide] = useState(0);
   const [status, setStatus] = useState<TrackingStatus>();
@@ -194,9 +191,8 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
 
   const skip = useCallback(() => {
     if (status === 'authorized') AppEventsLogger.logEvent('튜토리얼 SKIP');
-    route.params.popUp();
-    navigation.goBack();
-  }, [navigation, route.params, status]);
+    navigation.navigate('Home', {showNoti: true});
+  }, [navigation, status]);
 
   const completed = useCallback(() => {
     if (status === 'authorized') {
@@ -205,9 +201,8 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
         `${esimGlobal ? 'global' : 'esim'}_tutorial_complete`,
       );
     }
-    route.params.popUp();
-    navigation.goBack();
-  }, [navigation, route.params, status]);
+    navigation.navigate('Home', {showNoti: true});
+  }, [navigation, status]);
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({window}) => {

@@ -5,7 +5,6 @@ import {
 } from '@react-navigation/native';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {RkbInfo} from '@/redux/api/pageApi';
-import {RkbProduct} from '@/redux/api/productApi';
 import {BoardMsgStatus} from '@/redux/api/boardApi';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
@@ -56,11 +55,9 @@ type SimpleTextParams = {
 };
 type PurchaseDetailParams = {detail?: RkbOrder};
 
-type TutorialParams = {popUp: () => void};
-
 export type HomeStackParamList = {
   Home: undefined;
-  Tutorial: TutorialParams;
+  Tutorial: undefined;
   StoreSearch: undefined;
   Store: undefined;
   Cart: undefined;
@@ -109,7 +106,7 @@ export type HomeStackParamList = {
   Settings: undefined;
   Auth: {screen: string};
   HeaderTitle: undefined;
-  Esim: undefined;
+  Esim: {showNoti?: boolean};
   SubsDetail: {detail?: RkbSubscription};
 
   MyPage: undefined;

@@ -20,11 +20,7 @@ import {getTrackingStatus} from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
-import {
-  NavigationProp,
-  ParamListBase,
-  RouteProp,
-} from '@react-navigation/native';
+import {NavigationProp, RouteProp} from '@react-navigation/native';
 import VersionCheck from 'react-native-version-check';
 import SimCardsManagerModule from 'react-native-sim-cards-manager';
 import Animated, {
@@ -42,7 +38,7 @@ import StoreList from '@/components/StoreList';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {navigate} from '@/navigation/navigation';
+import {HomeStackParamList, navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {TabViewRoute} from '@/redux/api/productApi';
@@ -157,9 +153,11 @@ const styles = StyleSheet.create({
   },
 });
 
+type EsimScreenRouteProp = RouteProp<HomeStackParamList, 'Esim'>;
+
 type EsimProps = {
   navigation: NavigationProp<any>;
-  route: RouteProp<ParamListBase, string>;
+  route: EsimScreenRouteProp;
   promotion: RkbPromotion[];
   product: ProductModelState;
   account: AccountModelState;
@@ -231,7 +229,7 @@ const Esim: React.FC<EsimProps> = ({
   const headerHeight = useHeaderHeight();
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const windowHeight = useMemo(
-    () => dimensions.height - tabBarHeight - headerHeight - 20,
+    () => dimensions.height - tabBarHeight - headerHeight,
     [dimensions.height, headerHeight, tabBarHeight],
   );
 
@@ -254,6 +252,10 @@ const Esim: React.FC<EsimProps> = ({
       setPopUpVisible(true);
     }
   }, [promotion]);
+
+  useEffect(() => {
+    if (route.params?.showNoti) setNotiModal();
+  }, [route.params?.showNoti, setNotiModal]);
 
   const checkSupportIos = useCallback(() => {
     const DeviceId = DeviceInfo.getDeviceId();
@@ -547,11 +549,8 @@ const Esim: React.FC<EsimProps> = ({
         // 앱 첫 실행 여부 확인
         checkFistLaunch().then((first) => {
           setFirstLaunch(first);
-          if (first) {
-            navigation.navigate('Tutorial', {
-              popUp: setNotiModal,
-            });
-          } else if (promotion) setNotiModal();
+          if (first) navigation.navigate('Tutorial');
+          else if (promotion) setNotiModal();
         });
 
         if (!isSupport) {

@@ -452,7 +452,7 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
           data={list}
           onPress={onPressItem}
           localOpList={product.localOpList}
-          isFolderOpen={isFolderOpen(dimensions.width)}
+          width={dimensions.width}
         />
       ) : (
         <View style={styles.emptyViewPage}>
