@@ -8,6 +8,7 @@ import {
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {Settings} from 'react-native-fbsdk';
 import {
+  Keyboard,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -57,6 +58,7 @@ import {utils} from '@/utils/utils';
 import validationUtil from '@/utils/validationUtil';
 import {eventToken} from '@/constants/Adjust';
 import {LinkModelState} from '../redux/modules/link';
+import {isIOS} from 'react-native-elements/dist/helpers';
 
 const {esimGlobal, isProduction} = Env.get();
 // const esimGlobal = false;
@@ -262,6 +264,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const [isValidEmail, setIsValidEmail] = useState(false);
   const [emailError, setEmailError] = useState<string | undefined>('');
   const [socialLogin, setSocialLogin] = useState(false);
+  const [isKeyboardShow, setIsKeyboardShow] = useState(false);
   const [profileImageUrl, setProfileImageUrl] = useState('');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<TrackingStatus>();
@@ -299,6 +302,20 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         })),
     [],
   );
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+      if (!isIOS) setIsKeyboardShow(true);
+    });
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      if (!isIOS) setIsKeyboardShow(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   useEffect(() => {
     async function trackingStatus() {
@@ -723,7 +740,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           </View>
         )}
       </KeyboardAwareScrollView>
-      {!newUser && (
+      {!newUser && !isKeyboardShow && (
         <View style={{justifyContent: 'center', marginBottom: 36}}>
           <SocialLogin onAuth={onAuth} />
         </View>
