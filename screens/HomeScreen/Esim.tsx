@@ -344,6 +344,7 @@ const Esim: React.FC<EsimProps> = ({
         onPress={onPressItem}
         localOpList={product.localOpList}
         width={dimensions.width}
+        onEndReached={() => setIsTop(false)}
         onScroll={({
           nativeEvent: {
             contentOffset: {y},
