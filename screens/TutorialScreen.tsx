@@ -16,7 +16,6 @@ import {
   getTrackingStatus,
   TrackingStatus,
 } from 'react-native-tracking-transparency';
-import dynamicLinks from '@react-native-firebase/dynamic-links';
 import {connect} from 'react-redux';
 import {bindActionCreators, RootState} from 'redux';
 import {RouteProp} from '@react-navigation/native';
@@ -33,6 +32,7 @@ import {
 import {AccountModelState} from '@/redux/modules/account';
 import {LinkModelState} from '../redux/modules/link';
 import AppCarousel, {AppCarouselRef} from '@/components/AppCarousel';
+import {MAX_WIDTH} from '@/constants/SliderEntry.style';
 
 const {esimGlobal} = Env.get();
 
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    maxWidth: 375,
+    maxWidth: MAX_WIDTH,
     // maxHeight: height,
     height: '100%',
   },

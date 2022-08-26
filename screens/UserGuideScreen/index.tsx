@@ -13,7 +13,11 @@ import {
 import {StackNavigationProp} from '@react-navigation/stack';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
-import {isDeviceSize, isFolderOpen} from '@/constants/SliderEntry.style';
+import {
+  isDeviceSize,
+  isFolderOpen,
+  MAX_WIDTH,
+} from '@/constants/SliderEntry.style';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -265,7 +269,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
       <View style={[styles.container, {alignItems: 'center'}]}>
         {renderModalHeader(index)}
 
-        <View style={{flex: 1, maxWidth: 414}}>
+        <View style={{flex: 1, maxWidth: MAX_WIDTH}}>
           {isDeviceSize('medium') || isFolderOpen(dimensions.width) ? (
             <ScrollView contentContainerStyle={{flex: 1}}>
               {renderBody(item, index)}

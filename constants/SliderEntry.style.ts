@@ -19,6 +19,7 @@ export const windowWidth = viewportWidth;
 export const sliderWidth = viewportWidth;
 export const attachmentSize = (sliderWidth - 20 * 2 - 33 * 2) / 3;
 export const itemWidth = slideWidth + itemHorizontalMargin * 2;
+export const MAX_WIDTH = 414;
 
 // windowHeight
 // iphone 8 - 375x667
