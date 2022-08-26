@@ -198,7 +198,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
           <AppStyledText
             textStyle={{
               ...appStyles.normal24,
-              lineHeight: 40,
+              lineHeight: 45,
               color: colors.clearBlue,
               marginTop: 12,
               textAlignVertical: 'bottom',
