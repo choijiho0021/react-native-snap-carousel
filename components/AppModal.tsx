@@ -209,7 +209,11 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
           appStyles.modal,
           justifyContent ? {justifyContent} : undefined,
         ]}>
-        <View style={{alignItems: 'center', marginHorizontal: 20}}>
+        <View
+          style={{
+            alignItems: 'center',
+            marginHorizontal: contentStyle?.marginHorizontal,
+          }}>
           <View style={[contentStyle || styles.inner, {maxWidth: MAX_WIDTH}]}>
             {titleIcon && (
               <AppIcon
