@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, TextStyle, View, ViewStyle} from 'react-native';
+import {Pressable, Text, TextStyle, View, ViewStyle} from 'react-native';
 
 const size = 18;
 
@@ -8,15 +8,19 @@ const Badge = ({
   badgeStyle,
   value,
   textStyle,
+  onPress,
 }: {
   containerStyle: ViewStyle | ViewStyle[];
   badgeStyle: ViewStyle;
   textStyle: TextStyle;
   value: number | string;
+  onPress?: () => void;
 }) => {
+  const Component = onPress ? Pressable : View;
   return (
     <View style={containerStyle}>
-      <View
+      <Component
+        onPress={onPress}
         style={{
           alignSelf: 'center',
           minWidth: size,
@@ -30,7 +34,7 @@ const Badge = ({
         <Text allowFontScaling={false} style={textStyle}>
           {value}
         </Text>
-      </View>
+      </Component>
     </View>
   );
 };

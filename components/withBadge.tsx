@@ -74,8 +74,7 @@ const withBadge =
                 badgeStyle={styles.badge}
                 textStyle={styles.badgeText}
                 value={badgeValue}
-                status="error"
-                // onPress={this.props.onPress}
+                onPress={props.onPress}
                 containerStyle={[
                   styles.badgeContainer,
                   options || styles.location,
