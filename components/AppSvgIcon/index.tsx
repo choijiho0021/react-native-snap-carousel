@@ -82,10 +82,10 @@ const AppSvgIcon: React.FC<AppSvgIconProps> = ({
         onPressIn={() => icon2.length > 1 && setIdx(1)}
         onPressOut={() => setIdx(0)}
         disabled={disabled}>
-        {icon2[idx]}
+        {icon2[idx] || icon2[0]}
       </Pressable>
     ) : (
-      <View style={style}>{icon2[idx]}</View>
+      <View style={style}>{icon2[idx] || icon2[0]}</View>
     );
   }
 
