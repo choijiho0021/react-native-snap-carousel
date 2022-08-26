@@ -66,7 +66,7 @@ import io.invertase.firebase.dynamiclinks.ReactNativeFirebaseDynamicLinksPackage
 import com.facebook.flipper.reactnative.FlipperPackage;
 //import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
-//import com.reactnativecommunity.picker.RNCPickerPackage;
+import com.reactnativecommunity.picker.RNCPickerPackage;
 import com.reactnativegooglesignin.RNGoogleSigninPackage;
 import com.reactnativecommunity.cookies.CookieManagerPackage;
 import com.reactnativecommunity.cameraroll.CameraRollPackage;
@@ -184,7 +184,7 @@ public class MainApplication extends Application implements ReactApplication {
                             new RNFetchBlobPackage(),
                             new SimCardsManagerPackage(),
                             new MyAppPackage(),
-//                            new RNCPickerPackage(),
+                            new RNCPickerPackage(),
                             new RNGoogleSigninPackage(),
 //                            new ReactNativeFirebaseAnalyticsPackage(),
                             new ReactNativeFirebaseMessagingPackage(),

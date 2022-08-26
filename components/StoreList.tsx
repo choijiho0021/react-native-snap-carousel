@@ -180,6 +180,7 @@ type StoreListProps = {
   data: RkbPriceInfo[][];
   onPress: (p: RkbPriceInfo) => void;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  onEndReached?: () => void;
   width: number;
 };
 
@@ -188,6 +189,7 @@ const StoreList = ({
   data,
   onPress,
   onScroll,
+  onEndReached,
   width,
 }: StoreListProps) => {
   const isFolder = useMemo(() => isFolderOpen(width), [width]);
@@ -233,6 +235,7 @@ const StoreList = ({
         onScroll={onScroll}
         bounces={false}
         renderItem={renderItem}
+        onEndReached={onEndReached}
       />
     </View>
   );

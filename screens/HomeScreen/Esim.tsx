@@ -344,6 +344,7 @@ const Esim: React.FC<EsimProps> = ({
         onPress={onPressItem}
         localOpList={product.localOpList}
         width={dimensions.width}
+        onEndReached={() => setIsTop(false)}
         onScroll={({
           nativeEvent: {
             contentOffset: {y},
@@ -689,15 +690,15 @@ const Esim: React.FC<EsimProps> = ({
       ]}>
       <StatusBar barStyle="dark-content" />
       {folderOpened ? (
-        <View style={{flexDirection: 'row'}} onLayout={onLayout}>
-          <View style={{flex: 1}} collapsable={false}>
+        <View style={{flexDirection: 'row'}}>
+          <View style={{flex: 1}} collapsable={false} onLayout={onLayout}>
             <PromotionCarousel width={dimensions.width / 2} />
           </View>
           <View style={{flex: 1}}>{renderSearch()}</View>
         </View>
       ) : (
-        <View onLayout={onLayout}>
-          <View collapsable={false}>
+        <View>
+          <View collapsable={false} onLayout={onLayout}>
             <PromotionCarousel width={dimensions.width} />
           </View>
           {renderSearch()}

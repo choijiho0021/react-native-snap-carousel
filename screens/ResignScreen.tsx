@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import ShortcutBadge from 'react-native-app-badge';
 import {useEffect, useState, useCallback, useMemo} from 'react';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
@@ -211,18 +210,10 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
       action.noti.init({mobile: undefined}),
       action.account.logout(),
     ]).then(async () => {
-      const isSignedin = await GoogleSignin.isSignedIn();
       if (Platform.OS === 'ios')
         PushNotificationIOS.setApplicationIconBadgeNumber(0);
       else {
         ShortcutBadge.setCount(0);
-        if (isSignedin) {
-          try {
-            GoogleSignin.signOut();
-          } catch (e) {
-            console.error(e);
-          }
-        }
       }
     });
   }, [action.account, action.cart, action.noti, action.order]);
