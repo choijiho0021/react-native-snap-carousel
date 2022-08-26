@@ -58,9 +58,8 @@ import {utils} from '@/utils/utils';
 import validationUtil from '@/utils/validationUtil';
 import {eventToken} from '@/constants/Adjust';
 import {LinkModelState} from '../redux/modules/link';
-import {isIOS} from 'react-native-elements/dist/helpers';
 
-const {esimGlobal, isProduction} = Env.get();
+const {esimGlobal, isProduction, isIOS} = Env.get();
 // const esimGlobal = false;
 
 const styles = StyleSheet.create({
