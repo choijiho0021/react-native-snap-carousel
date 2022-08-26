@@ -321,7 +321,7 @@ android {
         staging {
             initWith release
             matchingFallbacks = ['release']
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             resValue "string", "CodePushDeploymentKey", 'xesyWQUnruGqjQliPjlKF8hKEZEZa-pfLWOQ2'
         }
         release {

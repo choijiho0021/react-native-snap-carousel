@@ -14,6 +14,7 @@ import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactApplication;
+import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import com.swmansion.reanimated.ReanimatedPackage;
 import cl.json.RNSharePackage;
 import com.tkporter.sendsms.SendSMSPackage;
@@ -186,8 +187,8 @@ public class MainApplication extends Application implements ReactApplication {
                             new MyAppPackage(),
                             new RNCPickerPackage(),
                             new RNGoogleSigninPackage(),
-//                            new ReactNativeFirebaseAnalyticsPackage(),
                             new ReactNativeFirebaseMessagingPackage(),
+                            new ReactNativeFirebaseAnalyticsPackage(),
                             new CookieManagerPackage(),
                             new FlipperPackage()
                     );

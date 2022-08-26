@@ -64,9 +64,6 @@ const CreateAppContainer = ({store}) => {
               }),
             );
           }
-          navigationRef.current.navigate('EsimStack', {
-            screen: 'Esim',
-          });
         } else {
           store.dispatch(
             promotionActions.saveGiftAndRecommender({
@@ -74,8 +71,15 @@ const CreateAppContainer = ({store}) => {
               gift: json?.gift,
             }),
           );
+        }
+
+        if (url.includes('gift')) {
           navigationRef.current.navigate('EsimStack', {
-            screen: 'RegisterMobile',
+            screen: 'Esim',
+          });
+        } else {
+          navigationRef.current.navigate('MyPageStack', {
+            screen: 'MyPage',
           });
         }
       }
