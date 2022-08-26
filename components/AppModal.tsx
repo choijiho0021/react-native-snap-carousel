@@ -14,6 +14,7 @@ import i18n from '@/utils/i18n';
 import AppButton from './AppButton';
 import AppIcon from './AppIcon';
 import AppText from './AppText';
+import {MAX_WIDTH} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   button: {
@@ -208,8 +209,8 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
           appStyles.modal,
           justifyContent ? {justifyContent} : undefined,
         ]}>
-        <View style={{alignItems: 'center'}}>
-          <View style={[contentStyle || styles.inner, {maxWidth: 375}]}>
+        <View style={{alignItems: 'center', marginHorizontal: 20}}>
+          <View style={[contentStyle || styles.inner, {maxWidth: MAX_WIDTH}]}>
             {titleIcon && (
               <AppIcon
                 name={titleIcon}

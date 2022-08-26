@@ -33,7 +33,7 @@ const AppUserPic: React.FC<AppUserPicProps> = ({
   }, [icon, isAbsolutePath, resizeMode, style, url]);
 
   return onPress ? (
-    <Pressable style={{alignSelf: 'center'}} onPress={onPress}>
+    <Pressable style={{alignSelf: 'center', width: '100%'}} onPress={onPress}>
       {render()}
     </Pressable>
   ) : (
