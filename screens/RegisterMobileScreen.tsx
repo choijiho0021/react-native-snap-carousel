@@ -336,7 +336,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         navigation.navigate('EsimStack', {
           screen: 'Esim',
         });
-      } else if (!newUser && !link?.url.includes('recommender')) {
+      } else if (!newUser && !link?.url?.includes('recommender')) {
         navigation.navigate('Main', {
           screen: 'HomeStack',
           params: {
