@@ -1,11 +1,10 @@
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
-import React, {memo, useEffect, useState} from 'react';
-import Icon from 'react-native-vector-icons/AntDesign';
+import {Pressable, StyleSheet, View} from 'react-native';
+import React, {memo} from 'react';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import AppText from './AppText';
-import {i18nEvent} from '@/utils/i18n';
+import AppSvgIcon from './AppSvgIcon';
 
 const styles = StyleSheet.create({
   container: {
@@ -43,15 +42,7 @@ const styles = StyleSheet.create({
     borderRightColor: colors.lightGrey,
     borderRightWidth: 1,
   },
-  disabled: {
-    color: colors.lightGrey,
-  },
-  abled: {
-    color: colors.black,
-  },
 });
-
-Icon.loadFont();
 
 const InputNumber = ({
   value,
@@ -60,33 +51,28 @@ const InputNumber = ({
   maxValue = 10,
 }: {
   value: number;
+  minValue?: number;
+  maxValue?: number;
   onChange: (v: number) => void;
 }) => {
   const min = value <= minValue;
   const max = value >= maxValue;
-  const [draw, setDraw] = useState(false);
-
-  useEffect(() => {
-    i18nEvent.on('loaded', () => {
-      setDraw(true);
-    });
-  }, []);
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => onChange(value - 1)} disabled={min}>
+      <Pressable onPress={() => onChange(value - 1)} disabled={min}>
         <View style={styles.box}>
-          <Icon name="minus" style={min ? styles.disabled : styles.abled} />
+          <AppSvgIcon name="minus" disabled={min} />
         </View>
-      </TouchableOpacity>
+      </Pressable>
       <View style={styles.boxCenter}>
         <AppText style={styles.text}>{value}</AppText>
       </View>
-      <TouchableOpacity onPress={() => onChange(value + 1)} disabled={max}>
+      <Pressable onPress={() => onChange(value + 1)} disabled={max}>
         <View style={styles.box}>
-          <Icon name="plus" style={max ? styles.disabled : styles.abled} />
+          <AppSvgIcon name="plus" disabled={max} />
         </View>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 };
