@@ -35,10 +35,10 @@ const styles = StyleSheet.create({
 });
 
 type AppCartButtonProps = {
-  cartItems: number;
+  cartItems?: number;
   iconName?: string;
   style?: StyleProp<ViewStyle>;
-  onPress: () => void;
+  onPress?: () => void;
 };
 const AppCartButton: React.FC<AppCartButtonProps> = ({
   cartItems,

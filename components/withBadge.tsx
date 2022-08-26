@@ -65,7 +65,7 @@ const withBadge =
       const badgeValue = props[key];
       const {hidden = !badgeValue} = options || {};
 
-      return (
+      return props.onPress ? (
         <Pressable onPress={props.onPress}>
           <View>
             <WrappedComponent {...props} />
@@ -83,6 +83,22 @@ const withBadge =
             )}
           </View>
         </Pressable>
+      ) : (
+        <View>
+          <WrappedComponent {...props} />
+          {!hidden && (
+            <Badge
+              badgeStyle={styles.badge}
+              textStyle={styles.badgeText}
+              value={badgeValue}
+              onPress={props.onPress}
+              containerStyle={[
+                styles.badgeContainer,
+                options || styles.location,
+              ]}
+            />
+          )}
+        </View>
       );
     };
 
