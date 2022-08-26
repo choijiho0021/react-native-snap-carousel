@@ -45,16 +45,12 @@ import com.microsoft.codepush.react.CodePush;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.reactnativecommunity.webview.RNCWebViewPackage;
-import com.rokebiesim.generated.BasePackageList;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
-import com.swmansion.reanimated.ReanimatedPackage;
 import com.zoontek.rnlocalize.RNLocalizePackage;
 import com.reactnativecommunity.clipboard.ClipboardPackage;
-import com.oblador.vectoricons.VectorIconsPackage;
+
 
 import org.reactnative.camera.RNCameraPackage;
-//import org.unimodules.adapters.react.ReactModuleRegistryProvider;
-//import org.unimodules.core.interfaces.SingletonModule;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -171,7 +167,6 @@ public class MainApplication extends Application implements ReactApplication {
                             new SafeAreaContextPackage(),
                             new AsyncStoragePackage(),
                             new ClipboardPackage(),
-                            new VectorIconsPackage(),
                             new SvgPackage(),
                             new PickerPackage(),
                             new AppCenterReactNativeCrashesPackage(getApplication(), getResources().getString(R.string.appCenterCrashes_whenToSendCrashes)),
