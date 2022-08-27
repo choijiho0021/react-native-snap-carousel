@@ -525,51 +525,54 @@ const Esim: React.FC<EsimProps> = ({
   }, []);
 
   useEffect(() => {
-    API.Device.getDevList().then(async (resp) => {
-      if (resp.result === 0) {
-        const isSupport =
-          Platform.OS === 'android'
-            ? await SimCardsManagerModule.isEsimSupported()
-            : checkSupportIos();
+    async function getDevList() {
+      let isSupport = true;
+      if (Platform.OS === 'android') {
+        isSupport = await SimCardsManagerModule.isEsimSupported();
+      } else {
+        const resp = await API.Device.getDevList();
+        if (resp.result === 0) {
+          setDeviceList(resp.objects);
+        }
+        isSupport = checkSupportIos();
+      }
+      setIsDevModalVisible(!isSupport);
+      setIsSupportDev(isSupport);
 
-        setIsDevModalVisible(!isSupport);
-        setIsSupportDev(isSupport);
-        setDeviceList(resp.objects);
+      const deviceModel = DeviceInfo.getModel();
 
-        const deviceModel = DeviceInfo.getModel();
-
-        DeviceInfo.getDeviceName().then((name) => {
-          const deviceFullName = `${deviceModel},${name}`;
-          action.account.updateAccount({
-            isSupportDev: isSupport,
-            deviceModel: deviceFullName,
-          });
+      DeviceInfo.getDeviceName().then((name) => {
+        const deviceFullName = `${deviceModel},${name}`;
+        action.account.updateAccount({
+          isSupportDev: isSupport,
+          deviceModel: deviceFullName,
         });
+      });
 
-        // 앱 첫 실행 여부 확인
-        checkFistLaunch().then((first) => {
-          setFirstLaunch(first);
-          if (first) navigation.navigate('Tutorial');
-          else if (promotion) setNotiModal();
-        });
+      // 앱 첫 실행 여부 확인
+      checkFistLaunch().then((first) => {
+        setFirstLaunch(first);
+        if (first) navigation.navigate('Tutorial');
+        else if (promotion) setNotiModal();
+      });
 
-        if (!isSupport) {
-          const status = await getTrackingStatus();
-          if (status === 'authorized') {
-            await firebase.analytics().setAnalyticsCollectionEnabled(true);
-            await Settings.setAdvertiserTrackingEnabled(true);
+      if (!isSupport) {
+        const status = await getTrackingStatus();
+        if (status === 'authorized') {
+          await firebase.analytics().setAnalyticsCollectionEnabled(true);
+          await Settings.setAdvertiserTrackingEnabled(true);
 
-            analytics().logEvent(
-              `${esimGlobal ? 'global' : 'esim'}_disabled_device`,
-              {
-                item: deviceModel,
-                count: 1,
-              },
-            );
-          }
+          analytics().logEvent(
+            `${esimGlobal ? 'global' : 'esim'}_disabled_device`,
+            {
+              item: deviceModel,
+              count: 1,
+            },
+          );
         }
       }
-    });
+    }
+    getDevList();
   }, [action.account, checkSupportIos, navigation, promotion, setNotiModal]);
 
   useEffect(() => {
@@ -727,7 +730,7 @@ const Esim: React.FC<EsimProps> = ({
 
       {
         // eslint-disable-next-line no-nested-ternary
-        isDevModalVisible && !isSupportDev ? (
+        isDevModalVisible && false ? (
           <AppModal
             title={i18n.t('home:unsupportedTitle')}
             closeButtonTitle={isIOS ? i18n.t('ok') : i18n.t('exitAndOpenLink')}
