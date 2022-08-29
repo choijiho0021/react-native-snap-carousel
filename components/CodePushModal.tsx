@@ -1,10 +1,8 @@
-import {Component} from 'react';
-import {Alert, AppState, Linking} from 'react-native';
+import React, {useCallback, useEffect} from 'react';
+import {Alert} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import codePush from 'react-native-code-push';
-import VersionCheck from 'react-native-version-check';
-// import {Adjust, AdjustEvent} from 'react-native-adjust';
 import {
   actions as syncActions,
   SyncAction,
@@ -12,8 +10,6 @@ import {
 } from '@/redux/modules/sync';
 import i18n from '@/utils/i18n';
 import {RootState} from '@/redux';
-import AppAlert from './AppAlert';
-import Env from '@/environment';
 
 // const {adjustAppUpdate = ''} = Env.get();
 
@@ -24,13 +20,8 @@ type CodePushModalProps = {
   };
 };
 
-class CodePushModal extends Component<CodePushModalProps> {
-  componentDidMount() {
-    this.props.action.sync.init();
-    this.codePushCheckForUpdate();
-  }
-
-  codePushCheckForUpdate() {
+const CodePushModal: React.FC<CodePushModalProps> = ({sync, action}) => {
+  const codePushCheckForUpdate = useCallback(() => {
     if (
       process.env.NODE_ENV !== 'production' &&
       process.env.NODE_ENV !== 'staging'
@@ -41,7 +32,7 @@ class CodePushModal extends Component<CodePushModalProps> {
       .notifyAppReady()
       .then((_) => codePush.checkForUpdate())
       .then((update) => {
-        if (this.props.sync.isSkipped) return;
+        if (sync.isSkipped) return;
 
         if (update) {
           const {isMandatory} = update;
@@ -53,7 +44,7 @@ class CodePushModal extends Component<CodePushModalProps> {
               [
                 {
                   text: i18n.t('codepush:continue'),
-                  onPress: () => this.props.action.sync.progress(),
+                  onPress: () => action.sync.progress(),
                 },
               ],
             );
@@ -61,12 +52,12 @@ class CodePushModal extends Component<CodePushModalProps> {
             Alert.alert(i18n.t('codepush:title'), i18n.t('codepush:body'), [
               {
                 text: i18n.t('codepush:later'),
-                onPress: () => this.props.action.sync.skip(),
+                onPress: () => action.sync.skip(),
                 style: 'cancel',
               },
               {
                 text: i18n.t('codepush:update'),
-                onPress: () => this.props.action.sync.progress(),
+                onPress: () => action.sync.progress(),
               },
             ]);
           }
@@ -75,12 +66,15 @@ class CodePushModal extends Component<CodePushModalProps> {
       .catch((error) => {
         console.log('@@ codePush failed', error);
       });
-  }
+  }, [action.sync, sync.isSkipped]);
 
-  render() {
-    return null;
-  }
-}
+  useEffect(() => {
+    action.sync.init();
+    codePushCheckForUpdate();
+  }, [action.sync, codePushCheckForUpdate]);
+
+  return null;
+};
 
 export default connect(
   ({sync}: RootState) => ({sync}),
