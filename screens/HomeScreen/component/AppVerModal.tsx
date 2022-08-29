@@ -103,7 +103,7 @@ const AppVerModal: React.FC<AppVerModalProps> = ({
     [],
   );
 
-  return (
+  return visible ? (
     <AppModal
       justifyContent="flex-end"
       contentStyle={{
@@ -134,7 +134,7 @@ const AppVerModal: React.FC<AppVerModalProps> = ({
         </AppText>
       </View>
     </AppModal>
-  );
+  ) : null;
 };
 
 export default memo(AppVerModal);
