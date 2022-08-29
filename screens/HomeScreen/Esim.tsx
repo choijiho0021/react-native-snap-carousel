@@ -636,21 +636,25 @@ const Esim: React.FC<EsimProps> = ({
   useEffect(() => {
     const {mobile, loggedIn, iccid} = account;
     if (iccid) {
-      if (loggedIn && !initNoti.current) {
+      if (!initNoti.current) {
         initNoti.current = true;
-        action.noti.init({mobile});
-        action.cart.init();
-        action.order.init();
-      } else {
-        // action.noti.initNotiList();
-        action.noti.getNotiList({mobile: account.mobile});
+
+        if (loggedIn) {
+          action.noti.init({mobile});
+          action.cart.init();
+          action.order.init();
+        } else {
+          // action.noti.initNotiList();
+          console.log('@@@ get noti list');
+          action.noti.getNotiList({mobile: account.mobile});
+        }
       }
     }
   }, [account, action.cart, action.noti, action.order]);
 
   useEffect(() => {
     const ver = VersionCheck.getCurrentVersion();
-    API.AppVersion.getAppVersion(ver)
+    API.AppVersion.getAppVersion(`${Platform.OS}:${ver}`)
       .then((rsp) => {
         if (rsp.result === 0 && rsp.objects.length > 0) {
           setAppUpdate(rsp.objects[0].updateOption);
@@ -730,7 +734,7 @@ const Esim: React.FC<EsimProps> = ({
 
       {
         // eslint-disable-next-line no-nested-ternary
-        isDevModalVisible && false ? (
+        isDevModalVisible && !isSupportDev ? (
           <AppModal
             title={i18n.t('home:unsupportedTitle')}
             closeButtonTitle={isIOS ? i18n.t('ok') : i18n.t('exitAndOpenLink')}

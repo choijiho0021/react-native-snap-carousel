@@ -106,7 +106,10 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
         return (
           <View
             style={
-              titleViewStyle || {height: 92, padding: !contentStyle && 20}
+              titleViewStyle || {
+                height: 92,
+                padding: contentStyle ? undefined : 20,
+              }
             }>
             <AppButton
               style={{
