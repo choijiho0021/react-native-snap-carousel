@@ -4,6 +4,8 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {memo, useCallback, useEffect} from 'react';
+import SimCardsManagerModule from 'react-native-sim-cards-manager';
+import DeviceInfo from 'react-native-device-info';
 import Env from '@/environment';
 import {actions as cartActions} from '@/redux/modules/cart';
 import {actions as promotionActions} from '@/redux/modules/promotion';
@@ -12,7 +14,7 @@ import {actions as linkActions} from '@/redux/modules/link';
 import AuthStackNavigator from './AuthStackNavigator';
 import EsimMainTabNavigator from './EsimMainTabNavigator';
 
-const {esimApp, esimGlobal} = Env.get();
+const {isIOS, esimGlobal} = Env.get();
 
 const MainStack = createStackNavigator();
 
@@ -87,16 +89,75 @@ const CreateAppContainer = ({store}) => {
     [store],
   );
 
+  const checkSupportIos = useCallback(() => {
+    const DeviceId = DeviceInfo.getDeviceId();
+
+    if (DeviceId.startsWith('AppleTV')) return false;
+
+    if (DeviceId.startsWith('iPhone'))
+      return DeviceId.length >= 10 && DeviceId.localeCompare('iPhone11,1') >= 0;
+
+    if (DeviceId.startsWith('iPad')) {
+      // 가능한 iPad목록
+      const enableIpadList = [
+        'iPad4,2',
+        'iPad4,3',
+        'iPad5,4',
+        'iPad7,12',
+        'iPad8,3',
+        'iPad8,4',
+        'iPad8,7',
+        'iPad8,8',
+        'iPad11,2',
+        'iPad11,4',
+        'iPad13,2',
+      ];
+
+      return (
+        enableIpadList.includes(DeviceId) ||
+        (DeviceId.length >= 8 && DeviceId.localeCompare('iPad13,2') >= 0)
+      );
+    }
+
+    return true;
+  }, []);
+
+  const getIsSupport = useCallback(async () => {
+    let isSupport = true;
+    if (isIOS) {
+      isSupport = checkSupportIos();
+    } else {
+      isSupport = await SimCardsManagerModule.isEsimSupported();
+    }
+
+    const deviceModel = DeviceInfo.getModel();
+
+    DeviceInfo.getDeviceName().then((name) => {
+      const deviceFullName = `${deviceModel},${name}`;
+
+      store.dispatch(
+        accountActions.updateAccount({
+          isSupportDev: true,
+          deviceModel: deviceFullName,
+        }),
+      );
+    });
+
+    return isSupport;
+  }, [checkSupportIos, store]);
+
   const handleDynamicLink = useCallback(
-    (link) => {
+    async (link) => {
       let screen = link?.utmParameters?.utm_source;
       const url = link?.url;
+      const isSupport = await getIsSupport();
 
       if (screen?.includes('Screen')) {
         screen = screen.replace('Screen', '');
 
         // Screen 별 동작 추가 - Home, Cart,Esim, MyPage 이동 가능
         if (
+          isSupport &&
           navigationRef?.current &&
           ['Home', 'Cart', 'Esim', 'MyPage'].includes(screen)
         ) {
@@ -104,11 +165,11 @@ const CreateAppContainer = ({store}) => {
             screen,
           });
         }
-      } else if (url) {
+      } else if (isSupport && url) {
         gift(url);
       }
     },
-    [gift],
+    [getIsSupport, gift],
   );
 
   useEffect(() => {

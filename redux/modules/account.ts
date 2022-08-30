@@ -332,7 +332,7 @@ const updateAccountState = (
   if (payload.isPushNotiEnabled !== undefined)
     newState.isPushNotiEnabled = payload.isPushNotiEnabled;
   if (payload.deviceModel) newState.deviceModel = payload.deviceModel;
-  if (payload.isSupportDev) newState.isSupportDev = payload.isSupportDev;
+  newState.isSupportDev = payload.isSupportDev;
 
   if (_.isNumber(payload.balance)) newState.balance = payload.balance;
   if (_.isNumber(payload.simPartnerId))
@@ -346,6 +346,7 @@ const updateAccountState = (
 
 const initialState: AccountModelState = {
   loggedIn: false,
+  isSupportDev: true,
 };
 
 const slice = createSlice({

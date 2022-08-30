@@ -22,7 +22,6 @@ import {bindActionCreators} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
 import {NavigationProp, RouteProp} from '@react-navigation/native';
 import VersionCheck from 'react-native-version-check';
-import SimCardsManagerModule from 'react-native-sim-cards-manager';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -184,7 +183,6 @@ const Esim: React.FC<EsimProps> = ({
   sync,
   noti,
 }) => {
-  const [isSupportDev, setIsSupportDev] = useState<boolean>(true);
   const [isDevModalVisible, setIsDevModalVisible] = useState<boolean>(false);
   const [bannerHeight, setBannerHeight] = useState<number>(137);
   const [index, setIndex] = useState(0);
@@ -233,6 +231,10 @@ const Esim: React.FC<EsimProps> = ({
     [dimensions.height, headerHeight, tabBarHeight],
   );
 
+  const isSupport = useMemo(
+    () => (account.isSupportDev === undefined ? true : account.isSupportDev),
+    [account.isSupportDev],
+  );
   const scrollY = useSharedValue(0);
 
   useEffect(() => {
@@ -256,39 +258,6 @@ const Esim: React.FC<EsimProps> = ({
   useEffect(() => {
     if (route.params?.showNoti) setNotiModal();
   }, [route.params?.showNoti, setNotiModal]);
-
-  const checkSupportIos = useCallback(() => {
-    const DeviceId = DeviceInfo.getDeviceId();
-
-    if (DeviceId.startsWith('AppleTV')) return false;
-
-    if (DeviceId.startsWith('iPhone'))
-      return DeviceId.length >= 10 && DeviceId.localeCompare('iPhone11,1') >= 0;
-
-    if (DeviceId.startsWith('iPad')) {
-      // 가능한 iPad목록
-      const enableIpadList = [
-        'iPad4,2',
-        'iPad4,3',
-        'iPad5,4',
-        'iPad7,12',
-        'iPad8,3',
-        'iPad8,4',
-        'iPad8,7',
-        'iPad8,8',
-        'iPad11,2',
-        'iPad11,4',
-        'iPad13,2',
-      ];
-
-      return (
-        enableIpadList.includes(DeviceId) ||
-        (DeviceId.length >= 8 && DeviceId.localeCompare('iPad13,2') >= 0)
-      );
-    }
-
-    return true;
-  }, []);
 
   const onPressItem = useCallback(
     (info: RkbPriceInfo) => {
@@ -526,28 +495,15 @@ const Esim: React.FC<EsimProps> = ({
 
   useEffect(() => {
     async function getDevList() {
-      let isSupport = true;
-      if (Platform.OS === 'android') {
-        isSupport = await SimCardsManagerModule.isEsimSupported();
-      } else {
+      if (isIOS) {
         const resp = await API.Device.getDevList();
         if (resp.result === 0) {
           setDeviceList(resp.objects);
         }
-        isSupport = checkSupportIos();
       }
       setIsDevModalVisible(!isSupport);
-      setIsSupportDev(isSupport);
 
       const deviceModel = DeviceInfo.getModel();
-
-      DeviceInfo.getDeviceName().then((name) => {
-        const deviceFullName = `${deviceModel},${name}`;
-        action.account.updateAccount({
-          isSupportDev: isSupport,
-          deviceModel: deviceFullName,
-        });
-      });
 
       // 앱 첫 실행 여부 확인
       checkFistLaunch().then((first) => {
@@ -573,16 +529,16 @@ const Esim: React.FC<EsimProps> = ({
       }
     }
     getDevList();
-  }, [action.account, checkSupportIos, navigation, promotion, setNotiModal]);
+  }, [action.account, isSupport, navigation, promotion, setNotiModal]);
 
   useEffect(() => {
-    if (isSupportDev && !initialized.current) {
+    if (isSupport && !initialized.current) {
       initialized.current = true;
       pushNoti.add(notification);
 
       requestPermission();
     }
-  }, [isSupportDev, notification]);
+  }, [isSupport, notification]);
 
   useEffect(() => {
     const runDeppLink = async () => {
@@ -734,19 +690,19 @@ const Esim: React.FC<EsimProps> = ({
 
       {
         // eslint-disable-next-line no-nested-ternary
-        isDevModalVisible && !isSupportDev ? (
+        isDevModalVisible && !isSupport ? (
           <AppModal
             title={i18n.t('home:unsupportedTitle')}
             closeButtonTitle={isIOS ? i18n.t('ok') : i18n.t('exitAndOpenLink')}
             titleStyle={styles.modalTitle}
             type="close"
             onOkClose={() => exitApp('exit')}
-            visible={isDevModalVisible}>
+            visible={isDevModalVisible && navigation.isFocused()}>
             {modalBody()}
           </AppModal>
         ) : appUpdateVisible === false ? (
           <NotiModal
-            visible={popUpVisible && !popupDisabled}
+            visible={popUpVisible && !popupDisabled && navigation.isFocused()}
             popUp={popUp}
             closeType={closeType}
             onOkClose={() => exitApp(closeType)}
@@ -754,7 +710,7 @@ const Esim: React.FC<EsimProps> = ({
           />
         ) : (
           <AppVerModal
-            visible={appUpdateVisible || false}
+            visible={(appUpdateVisible && navigation.isFocused()) || false}
             option={appUpdate}
             onOkClose={() => setAppUpdateVisible(false)}
           />
