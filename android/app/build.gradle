@@ -314,7 +314,7 @@ android {
                     abiFilters nativeArchitectures.split(',')
                 }
             }
-            resValue "string", "CodePushDeploymentKey", ''
+            resValue "string", "CodePushDeploymentKey", '_YZzzSzzOPPv3VSEbuTR8C58t2o8Br6nTSkp8'
 
         }
         staging {
