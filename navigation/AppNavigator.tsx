@@ -137,7 +137,7 @@ const CreateAppContainer = ({store}) => {
 
       store.dispatch(
         accountActions.updateAccount({
-          isSupportDev: true,
+          isSupportDev: isSupport,
           deviceModel: deviceFullName,
         }),
       );
