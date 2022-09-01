@@ -400,7 +400,8 @@ dependencies {
     implementation project(':rn-fetch-blob')
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation 'me.leolin:ShortcutBadger:1.1.21@aar'
-    implementation 'com.android.installreferrer:installreferrer:1.0'
+//    implementation 'com.android.installreferrer:installreferrer:1.0'
+    implementation 'com.android.installreferrer:installreferrer:2.2' // 최신버전 테스트
     implementation 'com.google.android.gms:play-services-gcm:17.0.0'
     implementation "com.google.android.gms:play-services-auth:${safeExtGet('googlePlayServicesAuthVersion', '19.2.0')}"
     implementation "androidx.annotation:annotation:1.1.0"
@@ -419,7 +420,6 @@ dependencies {
 //    implementation "com.kakao.sdk:v2-link:2.9.0" // 메시지(카카오톡 공유)
     implementation "com.kakao.sdk:v2-link:2.9.0" // 메시지(카카오톡 공유)
     implementation 'com.google.android.gms:play-services-analytics:10.0.1'
-    implementation 'com.android.installreferrer:installreferrer:1.0'
     implementation project(':@react-native-community_cameraroll')
     implementation project(path: ":@react-native-firebase_messaging")
     implementation 'com.google.code.gson:gson:2.8.5'
