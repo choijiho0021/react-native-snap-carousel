@@ -6,6 +6,7 @@ import AppButton from '@/components/AppButton';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import {SocialAuthInfo} from '.';
+import {colors} from '@/constants/Colors';
 
 const styles = StyleSheet.create({
   container: {
@@ -69,7 +70,7 @@ const KakaoLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
       <AppButton
         iconName="kakaoLogin"
         title={i18n.t('socialLogin:kakao')}
-        titleStyle={{...appStyles.medium16, marginLeft: 5}}
+        titleStyle={{...appStyles.medium16, marginLeft: 5, color: colors.black}}
         viewStyle={styles.viewStyle}
         style={styles.btnStyle}
         onPress={onPress}

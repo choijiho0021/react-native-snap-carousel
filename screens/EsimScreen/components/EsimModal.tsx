@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
   titleStyle: {
     fontSize: 20,
     marginBottom: 10,
+    color: colors.black,
   },
   esimInfoKey: {
     ...appStyles.normal16Text,
