@@ -10,7 +10,7 @@
   "sim": "SIM 카드",
   "setDate": "날짜 선택",
   "none": "없음",
-  "error": "에러",
+  "error": "오류 발생",
   "settings": "설정",
   "won": "원",
   "recharge": "충전",
@@ -783,5 +783,6 @@
   "rcpt:title": "로깨비 영수증",
   "rcpt:share": "공유하기",
   "rcpt:saved": "사진앱 '로깨비' 앨범에 저장되었습니다",
+  "rcpt:fail": "영수증 정보를 찾을 수 없습니다.",
   "rcpt:companyName": "(주) 유엔젤"
 }
