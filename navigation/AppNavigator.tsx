@@ -133,7 +133,6 @@ const CreateAppContainer = ({store}) => {
       isSupport = await SimCardsManagerModule.isEsimSupported();
     }
 
-    isSupport = true;
     if (isSupport) {
       requestPermission();
     }

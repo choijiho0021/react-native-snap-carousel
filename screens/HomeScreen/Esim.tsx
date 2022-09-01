@@ -29,7 +29,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
-import {useHeaderHeight} from '@react-navigation/stack';
+import {useHeaderHeight} from '@react-navigation/elements';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -73,7 +73,6 @@ import AppVerModal from './component/AppVerModal';
 import {isFolderOpen} from '@/constants/SliderEntry.style';
 import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
 import AppStyledText from '@/components/AppStyledText';
-
 const {esimGlobal, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
@@ -126,20 +125,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.clearBlue,
 
-    ...Platform.select({
-      ios: {
-        shadowColor: 'rgb(52, 62, 95)',
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-        shadowOffset: {
-          height: 4,
-          width: 1,
-        },
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
+    // ...Platform.select({
+    //   ios: {
+    //     shadowColor: 'rgb(52, 62, 95)',
+    //     shadowOpacity: 0.1,
+    //     shadowRadius: 3,
+    //     shadowOffset: {
+    //       height: 4,
+    //       width: 1,
+    //     },
+    //   },
+    //   android: {
+    //     elevation: 3,
+    //   },
+    // }),
   },
   notiBadge: {
     position: 'absolute',
