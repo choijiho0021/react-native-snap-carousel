@@ -64,7 +64,6 @@ import {
 import {SyncModelState} from '@/redux/modules/sync';
 import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
-import {checkFistLaunch, requestPermission} from './component/permission';
 import PromotionCarousel from './component/PromotionCarousel';
 import {useInterval} from '@/utils/useInterval';
 import NotiModal from './component/NotiModal';
@@ -212,7 +211,6 @@ const Esim: React.FC<EsimProps> = ({
       ] as TabViewRoute[],
     [],
   );
-  const [firstLaunch, setFirstLaunch] = useState<boolean | undefined>();
   const [popUpVisible, setPopUpVisible] = useState(false);
   const [popupDisabled, setPopupDisabled] = useState(true);
   const [appUpdate, setAppUpdate] = useState('');
@@ -235,6 +233,11 @@ const Esim: React.FC<EsimProps> = ({
     () => (account.isSupportDev === undefined ? true : account.isSupportDev),
     [account.isSupportDev],
   );
+  const isFirst = useMemo(
+    () => (account.isFirst === undefined ? false : account.isFirst),
+    [account.isFirst],
+  );
+
   const scrollY = useSharedValue(0);
 
   useEffect(() => {
@@ -494,6 +497,12 @@ const Esim: React.FC<EsimProps> = ({
   }, []);
 
   useEffect(() => {
+    // 앱 첫 실행 여부 확인
+    if (isFirst && isSupport) navigation.navigate('Tutorial');
+    else if (promotion) setNotiModal();
+  }, [isFirst, isSupport, navigation, promotion, setNotiModal]);
+
+  useEffect(() => {
     async function getDevList() {
       if (isIOS) {
         const resp = await API.Device.getDevList();
@@ -504,13 +513,6 @@ const Esim: React.FC<EsimProps> = ({
       setIsDevModalVisible(!isSupport);
 
       const deviceModel = DeviceInfo.getModel();
-
-      // 앱 첫 실행 여부 확인
-      checkFistLaunch().then((first) => {
-        setFirstLaunch(first);
-        if (first) navigation.navigate('Tutorial');
-        else if (promotion) setNotiModal();
-      });
 
       if (!isSupport) {
         const status = await getTrackingStatus();
@@ -535,8 +537,6 @@ const Esim: React.FC<EsimProps> = ({
     if (isSupport && !initialized.current) {
       initialized.current = true;
       pushNoti.add(notification);
-
-      requestPermission();
     }
   }, [isSupport, notification]);
 
@@ -581,13 +581,10 @@ const Esim: React.FC<EsimProps> = ({
 
   useEffect(() => {
     if (sync.progress) {
-      if (firstLaunch) {
-        AsyncStorage.removeItem('alreadyLaunched');
-        setFirstLaunch(false);
-      }
+      AsyncStorage.removeItem('alreadyLaunched');
       navigation.navigate('CodePush');
     }
-  }, [firstLaunch, navigation, sync.progress]);
+  }, [navigation, sync.progress]);
 
   useEffect(() => {
     const {mobile, loggedIn, iccid} = account;

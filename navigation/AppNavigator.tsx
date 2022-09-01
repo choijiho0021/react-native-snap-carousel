@@ -13,7 +13,10 @@ import {actions as accountActions} from '@/redux/modules/account';
 import {actions as linkActions} from '@/redux/modules/link';
 import AuthStackNavigator from './AuthStackNavigator';
 import EsimMainTabNavigator from './EsimMainTabNavigator';
-
+import {
+  requestPermission,
+  checkFistLaunch,
+} from '@/navigation/component/permission';
 const {isIOS, esimGlobal} = Env.get();
 
 const MainStack = createStackNavigator();
@@ -130,7 +133,13 @@ const CreateAppContainer = ({store}) => {
       isSupport = await SimCardsManagerModule.isEsimSupported();
     }
 
+    isSupport = true;
+    if (isSupport) {
+      requestPermission();
+    }
+
     const deviceModel = DeviceInfo.getModel();
+    const isFirst = await checkFistLaunch();
 
     DeviceInfo.getDeviceName().then((name) => {
       const deviceFullName = `${deviceModel},${name}`;
@@ -139,6 +148,7 @@ const CreateAppContainer = ({store}) => {
         accountActions.updateAccount({
           isSupportDev: isSupport,
           deviceModel: deviceFullName,
+          isFirst,
         }),
       );
     });
