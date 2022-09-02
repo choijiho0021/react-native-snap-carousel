@@ -120,6 +120,7 @@ export type AccountModelState = {
   isPushNotiEnabled?: boolean;
   deviceModel?: string;
   isSupportDev?: boolean;
+  isFirst?: boolean;
 };
 
 export type AccountAuth = {
@@ -332,7 +333,11 @@ const updateAccountState = (
   if (payload.isPushNotiEnabled !== undefined)
     newState.isPushNotiEnabled = payload.isPushNotiEnabled;
   if (payload.deviceModel) newState.deviceModel = payload.deviceModel;
-  if (payload.isSupportDev) newState.isSupportDev = payload.isSupportDev;
+  if (payload.isSupportDev !== undefined)
+    newState.isSupportDev = payload.isSupportDev;
+
+  if (payload.isFirst !== undefined)
+    newState.isFirst = payload.isFirst;
 
   if (_.isNumber(payload.balance)) newState.balance = payload.balance;
   if (_.isNumber(payload.simPartnerId))
@@ -346,6 +351,8 @@ const updateAccountState = (
 
 const initialState: AccountModelState = {
   loggedIn: false,
+  isSupportDev: true,
+  isFirst: false
 };
 
 const slice = createSlice({

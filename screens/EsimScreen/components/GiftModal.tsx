@@ -125,7 +125,7 @@ const GiftModal: React.FC<GiftModalProps> = ({visible, onOkClose}) => {
           style={{
             ...appStyles.normal14Text,
             position: 'absolute',
-            top: 108,
+            top: 120,
             left: 20,
             color: 'white',
           }}>

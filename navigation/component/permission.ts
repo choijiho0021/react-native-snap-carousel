@@ -27,8 +27,8 @@ export function adjustCreate() {
   // });
 }
 export async function requestPermission() {
-  await requestTrackingPermission();
   if (Platform.OS === 'ios') {
+    await requestTrackingPermission();
     await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
     if (!esimApp) {
       await request(PERMISSIONS.IOS.CAMERA);
@@ -38,9 +38,6 @@ export async function requestPermission() {
     // adjustCreate();
   } else if (Platform.OS === 'android') {
     await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
-    if (!esimApp) {
-      await request(PERMISSIONS.ANDROID.CAMERA);
-    }
   }
 }
 

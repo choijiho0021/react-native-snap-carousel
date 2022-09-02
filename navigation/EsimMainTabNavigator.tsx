@@ -93,9 +93,10 @@ const tabBarLabel = (focused: boolean, textId: string) => (
   </AppText>
 );
 
-function homeStack() {
+function HomeStackComponent() {
   return (
-    <HomeStack.Navigator screenOptions={screenOptions} mode="modal">
+    <HomeStack.Navigator
+      screenOptions={{...screenOptions, presentation: 'modal'}}>
       <HomeStack.Screen
         name="Home"
         component={HomeScreenEsim}
@@ -107,7 +108,13 @@ function homeStack() {
           },
         })}
       />
-      <HomeStack.Screen name="Tutorial" component={TutorialScreen} />
+      <HomeStack.Screen
+        name="Tutorial"
+        component={TutorialScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
       <HomeStack.Screen name="StoreSearch" component={StoreSearchScreen} />
       <HomeStack.Screen name="Cart" component={CartScreen} />
       <HomeStack.Screen name="ProductDetail" component={ProductDetailScreen} />
@@ -141,7 +148,7 @@ function homeStack() {
   );
 }
 
-function cartStack() {
+function CartStackComponent() {
   return (
     <CartStack.Navigator screenOptions={screenOptions}>
       <CartStack.Screen name="Cart" component={CartScreen} />
@@ -153,7 +160,7 @@ function cartStack() {
   );
 }
 
-function esimStack() {
+function EsimStackComponent() {
   return (
     <EsimStack.Navigator screenOptions={screenOptions}>
       <EsimStack.Screen name="Esim" component={EsimScreen} />
@@ -164,7 +171,7 @@ function esimStack() {
   );
 }
 
-function myPageStack() {
+function MyPageStackComponent() {
   return (
     <MyPageStack.Navigator screenOptions={screenOptions}>
       <MyPageStack.Screen name="MyPage" component={MyPageScreen} />
@@ -208,16 +215,20 @@ const TabNavigator = ({
 }) => {
   return (
     <Tab.Navigator
-      tabBarOptions={{allowFontScaling: false}}
+      screenOptions={{tabBarAllowFontScaling: false}}
       initialRouteName="HomeStack"
       backBehavior="initialRoute">
       <Tab.Screen
         name="HomeStack"
-        component={homeStack}
+        component={HomeStackComponent}
         options={({route}) => ({
-          tabBarVisible:
-            (getFocusedRouteNameFromRoute(route) || 'Home') === 'Home',
-          // tabBarLabel: i18n.t('home'),
+          headerShown: false,
+          tabBarStyle: {
+            display:
+              (getFocusedRouteNameFromRoute(route) || 'Home') === 'Home'
+                ? 'flex'
+                : 'none',
+          },
           tabBarLabel: ({focused}) => tabBarLabel(focused, 'home'),
           animationEnabled: false,
           tabBarIcon: ({focused}) => (
@@ -231,13 +242,18 @@ const TabNavigator = ({
       />
       <Tab.Screen
         name="CartStack"
-        component={iccid && loggedIn ? cartStack : AuthStack}
+        component={iccid && loggedIn ? CartStackComponent : AuthStack}
         options={({route}) => ({
-          tabBarVisible:
-            !!iccid &&
-            !!loggedIn &&
-            cart?.orderItems?.length === 0 &&
-            (getFocusedRouteNameFromRoute(route) || 'Cart') === 'Cart',
+          headerShown: false,
+          tabBarStyle: {
+            display:
+              !!iccid &&
+              !!loggedIn &&
+              cart?.orderItems?.length === 0 &&
+              (getFocusedRouteNameFromRoute(route) || 'Cart') === 'Cart'
+                ? 'flex'
+                : 'none',
+          },
           tabBarBadgeStyle: {allowFontScaling: false},
           // tabBarLabel: i18n.t('cart'),
           tabBarLabel: ({focused}) => tabBarLabel(focused, 'cart'),
@@ -252,13 +268,17 @@ const TabNavigator = ({
       />
       <Tab.Screen
         name="EsimStack"
-        component={iccid && loggedIn ? esimStack : AuthStack}
+        component={iccid && loggedIn ? EsimStackComponent : AuthStack}
         options={({route}) => ({
-          tabBarVisible:
-            !!iccid &&
-            !!loggedIn &&
-            (getFocusedRouteNameFromRoute(route) || 'Esim') === 'Esim',
-          // tabBarLabel: i18n.t('esim'),
+          headerShown: false,
+          tabBarStyle: {
+            display:
+              !!iccid &&
+              !!loggedIn &&
+              (getFocusedRouteNameFromRoute(route) || 'Esim') === 'Esim'
+                ? 'flex'
+                : 'none',
+          },
           tabBarLabel: ({focused}) => tabBarLabel(focused, 'esim'),
           tabBarIcon: ({focused}) => (
             <AppIcon
@@ -271,13 +291,17 @@ const TabNavigator = ({
       />
       <Tab.Screen
         name="MyPageStack"
-        component={iccid && loggedIn ? myPageStack : AuthStack}
+        component={iccid && loggedIn ? MyPageStackComponent : AuthStack}
         options={({route}) => ({
-          tabBarVisible:
-            !!iccid &&
-            !!loggedIn &&
-            (getFocusedRouteNameFromRoute(route) || 'MyPage') === 'MyPage',
-          // tabBarLabel: i18n.t('mypage'),
+          headerShown: false,
+          tabBarStyle: {
+            display:
+              !!iccid &&
+              !!loggedIn &&
+              (getFocusedRouteNameFromRoute(route) || 'MyPage') === 'MyPage'
+                ? 'flex'
+                : 'none',
+          },
           tabBarLabel: ({focused}) => tabBarLabel(focused, 'mypage'),
           tabBarIcon: ({focused}) => (
             <AppIcon

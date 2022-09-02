@@ -17,7 +17,7 @@ buildscript {
         kotlin_version = '1.5.31'
         googlePlayServicesVersion = "+"
         firebaseVersion = "+"
-        supportLibVersion = "30.0.2"
+        supportLibVersion = "30.0.3"
         googlePlayServicesAuthVersion = "19.2.0"
     }
     repositories {

@@ -26,6 +26,8 @@ import AppModal from '@/components/AppModal';
 import {API} from '@/redux/api';
 import AppTextInput from '@/components/AppTextInput';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import Env from '@/environment';
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   title: {
@@ -167,7 +169,7 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
-      behavior="padding"
+      behavior={isIOS ? 'padding' : undefined}
       keyboardVerticalOffset={isDeviceSize('medium') ? 65 : 90}>
       <SafeAreaView style={styles.container}>
         <View
