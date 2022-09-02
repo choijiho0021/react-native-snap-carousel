@@ -737,7 +737,7 @@
   "userGuide:stepsTitle5:ios": "Make sure everything is\n<b>set right</b> as the guide below",
   "userGuide:stepsTitle6:ios": "Confirm that <b>both</b>\n<b>carriers’ signals</b> are stable",
 
-  "userGuide:stepsTitle1:android": "<b>설정 > 네트워크 및 인터넷 ></b>\n<b>SIM 추가(+)</b> 버튼을 눌러주세요.",
+  "userGuide:stepsTitle1:android": "Go to <b>Settings > Network & Internet</b>\nTap the<b>(+) icon</b> next to 'Mobile Network'.",
   "userGuide:stepsTitle2:android": "2개의 SIM을 사용할 수 있도록\n<b>“예”</b> 버튼을 눌러주세요.",
   "userGuide:stepsTitle3:android": "<b>SIM을 다운로드</b> 해주세요.",
   "userGuide:stepsTitle4:android": "<b>QR 코드</b> 또는 <b>도움말 > 직접 입력</b>\n버튼을 눌러 요금제를 추가해주세요.",
