@@ -66,12 +66,15 @@ const CodePushModal: React.FC<CodePushModalProps> = ({sync, action}) => {
       .catch((error) => {
         console.log('@@ codePush failed', error);
       });
-  }, [action.sync, sync.isSkipped]);
+  }, [action.sync, sync]);
 
   useEffect(() => {
     action.sync.init();
+  }, [action.sync]);
+
+  useEffect(() => {
     codePushCheckForUpdate();
-  }, [action.sync, codePushCheckForUpdate]);
+  }, [codePushCheckForUpdate]);
 
   return null;
 };

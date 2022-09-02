@@ -159,23 +159,6 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
     trackingFc();
   }, [status]);
 
-  useEffect(() => {
-    return () => {
-      if (recommender && gift) {
-        if (!account.loggedIn) {
-          action.promotion.saveGiftAndRecommender({
-            recommender,
-            gift,
-          });
-
-          navigation.navigate('EsimStack', {
-            screen: 'RegisterMobile',
-          });
-        }
-      }
-    };
-  }, [account.loggedIn, action.promotion, gift, navigation, recommender]);
-
   const renderTutorial = useCallback(
     ({item}: {item: CarouselIndex}) => (
       <View style={{flex: 1, alignItems: 'center'}}>
