@@ -424,7 +424,11 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
 
           if (rsp.code === 0 && rsp.response?.receipt_url) {
             navigation.navigate('Receipt', {order, receipt: rsp.response});
+          } else {
+            AppAlert.error(i18n.t('rcpt:fail'));
           }
+        } else {
+          AppAlert.error(i18n.t('rcpt:fail'));
         }
         setLoading(false);
       }
