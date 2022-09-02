@@ -423,6 +423,7 @@ dependencies {
     implementation project(':@react-native-community_cameraroll')
     implementation project(path: ":@react-native-firebase_messaging")
     implementation 'com.google.code.gson:gson:2.8.5'
+    implementation project(':react-native-pager-view')
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";

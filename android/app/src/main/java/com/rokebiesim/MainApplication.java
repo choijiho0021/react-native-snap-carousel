@@ -73,6 +73,8 @@ import com.reactnativecommunity.cookies.CookieManagerPackage;
 import com.reactnativecommunity.cameraroll.CameraRollPackage;
 import fr.greweb.reactnativeviewshot.RNViewShotPackage;
 
+import com.reactnativepagerview.PagerViewPackage;
+
 public class MainApplication extends Application implements ReactApplication {
 
     public SharedPreferences prefs;
@@ -186,6 +188,7 @@ public class MainApplication extends Application implements ReactApplication {
                             new MyAppPackage(),
                             new ReactNativeFirebaseMessagingPackage(),
                             new FlipperPackage(),
+                            new PagerViewPackage(),
                             new RNCPickerPackage(),
                             new RNGoogleSigninPackage(),
                             new ReactNativeFirebaseAnalyticsPackage(),
