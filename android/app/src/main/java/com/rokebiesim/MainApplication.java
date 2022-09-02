@@ -180,17 +180,17 @@ public class MainApplication extends Application implements ReactApplication {
                             new RNGestureHandlerPackage(),
                             new ReanimatedPackage(),
                             new RNCWebViewPackage(),
-//                            new ARNKakaoChannelPackage(),
                             new RNLocalizePackage(),
                             new RNFetchBlobPackage(),
                             new SimCardsManagerPackage(),
                             new MyAppPackage(),
+                            new ReactNativeFirebaseMessagingPackage(),
+                            new FlipperPackage(),
                             new RNCPickerPackage(),
                             new RNGoogleSigninPackage(),
-                            new ReactNativeFirebaseMessagingPackage(),
                             new ReactNativeFirebaseAnalyticsPackage(),
-                            new CookieManagerPackage(),
-                            new FlipperPackage()
+                            new CookieManagerPackage()
+
                     );
                 }
 

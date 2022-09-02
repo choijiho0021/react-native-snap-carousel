@@ -278,10 +278,10 @@ android {
         }
     }
 
-        dexOptions {
-            jumboMode true
-            javaMaxHeapSize "4g"
-        }
+//        dexOptions {
+//            jumboMode true
+//            javaMaxHeapSize "4g"
+//        }
 //    }
 
     splits {
