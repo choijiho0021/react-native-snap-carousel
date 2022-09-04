@@ -437,7 +437,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           app_scheme: scheme,
           profile_uuid: profileId,
           dlvCost: dlvCost.value,
-          language: selected?.language || isIOS ? 'KR' : 'ko',
+          language: selected?.language || 'ko',
           digital: true,
           memo,
           // mode: 'test'
