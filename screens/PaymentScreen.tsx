@@ -93,18 +93,24 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
 
   useEffect(() => {
     if (!params.isPaid) {
-      action.cart.checkStockAndMakeOrder(pymInfo).then(({payload: resp}) => {
-        console.log('@@@ make order', resp);
-        if (resp.result < 0) {
-          let text = 'cart:systemError';
-          if (resp?.result === api.E_RESOURCE_NOT_FOUND) text = 'cart:soldOut';
-          else if (resp?.status === api.API_STATUS_PREFAILED)
-            text = 'cart:cashChanged';
+      action.cart
+        .checkStockAndMakeOrder(pymInfo)
+        .then(({payload: resp}) => {
+          if (!resp || resp.result < 0) {
+            let text = 'cart:systemError';
+            if (resp?.result === api.E_RESOURCE_NOT_FOUND)
+              text = 'cart:soldOut';
+            else if (resp?.status === api.API_STATUS_PREFAILED)
+              text = 'cart:cashChanged';
 
-          AppAlert.info(i18n.t(text));
+            AppAlert.info(i18n.t(text));
+            navigation.goBack();
+          }
+        })
+        .catch((err) => {
+          AppAlert.info(i18n.t('cart:systemError'));
           navigation.goBack();
-        }
-      });
+        });
     }
   }, [action.cart, navigation, params, pymInfo]);
 
