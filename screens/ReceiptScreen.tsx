@@ -83,6 +83,7 @@ type ReceiptScreenProps = {
 };
 
 type RkbReceipt = {
+  amount: number;
   card_number: string;
   card_name: string;
   name: string;
@@ -184,7 +185,8 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
               }}
               label={i18n.t('his:pymAmount')}
               labelStyle={styles.label}
-              value={order?.totalPrice}
+              // value={order?.totalPrice}
+              value={receipt?.amount || 0}
               valueStyle={styles.value}
               color={colors.clearBlue}
               format="price"
