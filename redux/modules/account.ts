@@ -336,8 +336,7 @@ const updateAccountState = (
   if (payload.isSupportDev !== undefined)
     newState.isSupportDev = payload.isSupportDev;
 
-  if (payload.isFirst !== undefined)
-    newState.isFirst = payload.isFirst;
+  if (payload.isFirst !== undefined) newState.isFirst = payload.isFirst;
 
   if (_.isNumber(payload.balance)) newState.balance = payload.balance;
   if (_.isNumber(payload.simPartnerId))
@@ -352,7 +351,7 @@ const updateAccountState = (
 const initialState: AccountModelState = {
   loggedIn: false,
   isSupportDev: true,
-  isFirst: false
+  isFirst: false,
 };
 
 const slice = createSlice({

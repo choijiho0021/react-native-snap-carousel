@@ -17,6 +17,7 @@ import {
   requestPermission,
   checkFistLaunch,
 } from '@/navigation/component/permission';
+
 const {isIOS, esimGlobal} = Env.get();
 
 const MainStack = createStackNavigator();
