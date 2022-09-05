@@ -1,7 +1,10 @@
 package com.rokebiesim;
 
 import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.system.Os.link
+import androidx.core.content.ContextCompat.startActivity
 import com.facebook.react.bridge.*
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.util.KakaoCustomTabsClient
@@ -226,22 +229,29 @@ class KakaoShareLinkModule(private val reactContext: ReactApplicationContext) : 
                 }
             }
         } else {
+
+            // 미설치 시에는 카카오톡 설치 링크 open
+            val openURL = Intent(Intent.ACTION_VIEW)
+            openURL.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            openURL.data = Uri.parse("market://details?id=com.kakao.talk")
+            reactContext.startActivity(openURL)
+
             // 카카오톡 미설치: 웹 공유 사용 권장
             // 웹 공유 예시 코드
-            val sharerUrl = WebSharerClient.instance.customTemplateUri(templateId.toLong(), templateArgs = templateArgs)
-
-            // 1. CustomTabs으로 Chrome 브라우저 열기
-            try {
-                KakaoCustomTabsClient.openWithDefault(reactContext, sharerUrl)
-            } catch (e: UnsupportedOperationException) {
-                // 2. CustomTabs으로 디바이스 기본 브라우저 열기
-                try {
-                    KakaoCustomTabsClient.open(reactContext, sharerUrl)
-                } catch (e: ActivityNotFoundException) {
-                    // 인터넷 브라우저가 없을 때 예외처리
-                    promise.reject("E_KAKAO_NO_BROWSER", e.message, e)
-                }
-            }
+//            val sharerUrl = WebSharerClient.instance.customTemplateUri(templateId.toLong(), templateArgs = templateArgs)
+//
+//            // 1. CustomTabs으로 Chrome 브라우저 열기
+//            try {
+//                KakaoCustomTabsClient.openWithDefault(reactContext, sharerUrl)
+//            } catch (e: UnsupportedOperationException) {
+//                // 2. CustomTabs으로 디바이스 기본 브라우저 열기
+//                try {
+//                    KakaoCustomTabsClient.open(reactContext, sharerUrl)
+//                } catch (e: ActivityNotFoundException) {
+//                    // 인터넷 브라우저가 없을 때 예외처리
+//                    promise.reject("E_KAKAO_NO_BROWSER", e.message, e)
+//                }
+//            }
         }
     }
 

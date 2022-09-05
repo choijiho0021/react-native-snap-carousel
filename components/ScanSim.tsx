@@ -1,11 +1,11 @@
-import {colors} from '@/constants/Colors';
-import {windowWidth} from '@/constants/SliderEntry.style';
-import {appStyles} from '@/constants/Styles';
-import i18n from '@/utils/i18n';
 import React, {memo} from 'react';
 import {Image, StyleSheet, View} from 'react-native';
 import BarcodeMask from 'react-native-barcode-mask';
 import {BarCodeReadEvent, RNCamera} from 'react-native-camera';
+import {colors} from '@/constants/Colors';
+import {windowWidth} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
+import i18n from '@/utils/i18n';
 import AppText from './AppText';
 
 const styles = StyleSheet.create({

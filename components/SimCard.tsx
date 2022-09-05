@@ -1,10 +1,10 @@
+import React, {PureComponent} from 'react';
+import {Image, Pressable, StyleSheet, View} from 'react-native';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {API} from '@/redux/api';
 import utils from '@/redux/api/utils';
-import React, {PureComponent} from 'react';
-import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import AppIcon from './AppIcon';
 import AppText from './AppText';
 import InputNumber from './InputNumber';
@@ -85,7 +85,7 @@ export default class SimCard extends PureComponent {
             borderBottomColor: colors.lightGrey,
           },
         ]}>
-        <TouchableOpacity onPress={onChecked} style={styles.touch}>
+        <Pressable onPress={onChecked} style={styles.touch}>
           <View style={styles.checker}>
             <AppIcon name="btnCheck" checked={checked} />
           </View>
@@ -94,7 +94,7 @@ export default class SimCard extends PureComponent {
             resizeMode="contain"
             style={[styles.slide, {marginRight: 0}]}
           />
-        </TouchableOpacity>
+        </Pressable>
 
         <View style={styles.desc}>
           <AppText style={styles.itemTitle}>{name}</AppText>

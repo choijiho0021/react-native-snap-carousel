@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0D63158F28B496790069564C /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0D63158E28B496790069564C /* AppDelegate.mm */; };
+		0D63159028B496790069564C /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0D63158E28B496790069564C /* AppDelegate.mm */; };
+		0D63159128B496790069564C /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0D63158E28B496790069564C /* AppDelegate.mm */; };
 		0D75258E2393BEBB000D9C77 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 0D75258D2393BEBB000D9C77 /* fonts */; };
-		0D9C212626D37D4D0082F077 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		0D9C212926D37D4D0082F077 /* AppDelegate+Iamport.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B508C824B8102B00213190 /* AppDelegate+Iamport.m */; };
 		0D9C212F26D37D4D0082F077 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 0D75258D2393BEBB000D9C77 /* fonts */; };
 		0D9C213026D37D4D0082F077 /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 405C1E9424D945870016B43C /* AppCenter-Config.plist */; };
@@ -18,7 +20,6 @@
 		0DCAD29E288D3727005FADA6 /* RCTNetworkInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DB1EF1C288C05EC00B18BFF /* RCTNetworkInfo.m */; };
 		0DCAD29F288D3732005FADA6 /* KakaoShareLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DB1EF12288BDB1800B18BFF /* KakaoShareLink.m */; };
 		0DCAD2A0288D3737005FADA6 /* KakaoShareLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB1EF15288BE44A00B18BFF /* KakaoShareLink.swift */; };
-		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		33AE367FCC133DCB970A5330 /* libPods-RokebiUSIM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2EDE63E33A8F6D206BDB4CF1 /* libPods-RokebiUSIM.a */; };
 		405C1E9524D945870016B43C /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 405C1E9424D945870016B43C /* AppCenter-Config.plist */; };
@@ -42,7 +43,6 @@
 		A3568E102892378700986E9F /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3568E0F2892378700986E9F /* AdSupport.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		A3568E12289237A000986E9F /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3568E11289237A000986E9F /* StoreKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		A3568E14289237B500986E9F /* AppTrackingTransparency.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3568E13289237B500986E9F /* AppTrackingTransparency.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		A3BF9FE1273B63DD00561187 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		A3BF9FE3273B63DD00561187 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		A3BF9FE4273B63DD00561187 /* AppDelegate+Iamport.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B508C824B8102B00213190 /* AppDelegate+Iamport.m */; };
 		A3BF9FE8273B63DD00561187 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
@@ -66,6 +66,7 @@
 		0609BC91C257FF072E1422C4 /* Pods-RokebiESIM.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.debug.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.debug.xcconfig"; sourceTree = "<group>"; };
 		0C8F919CDD1525B0C38FD9DA /* Pods-RokebiGlobal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiGlobal.debug.xcconfig"; path = "Target Support Files/Pods-RokebiGlobal/Pods-RokebiGlobal.debug.xcconfig"; sourceTree = "<group>"; };
 		0D19ADD4239112C900EAEAAB /* RokebiESIM.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RokebiESIM.entitlements; path = RokebiESIM/RokebiESIM.entitlements; sourceTree = "<group>"; };
+		0D63158E28B496790069564C /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = RokebiESIM/AppDelegate.mm; sourceTree = "<group>"; };
 		0D75258D2393BEBB000D9C77 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../assets/fonts; sourceTree = "<group>"; };
 		0D83ED5D26BE0C6600C53610 /* Global */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Global; path = Configurations/Global; sourceTree = "<group>"; };
 		0D9C213B26D37D4D0082F077 /* RokebiGlobal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RokebiGlobal.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -75,7 +76,6 @@
 		0DB1EF1E288C099700B18BFF /* RCTNetworkInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTNetworkInfo.h; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* RokebiESIM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RokebiESIM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = RokebiESIM/AppDelegate.h; sourceTree = "<group>"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = RokebiESIM/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = RokebiESIM/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = RokebiESIM/main.m; sourceTree = "<group>"; };
@@ -167,6 +167,7 @@
 		13B07FAE1A68108700A75B9A /* RokebiESIM */ = {
 			isa = PBXGroup;
 			children = (
+				0D63158E28B496790069564C /* AppDelegate.mm */,
 				0DB1EF14288BE3E100B18BFF /* ExternalLibs */,
 				40A621E726E85C740037EE37 /* GlobalLaunchScreen.xib */,
 				405C1E9424D945870016B43C /* AppCenter-Config.plist */,
@@ -175,7 +176,6 @@
 				40B508C724B80F9900213190 /* AppDelegate+Iamport.h */,
 				0D19ADD4239112C900EAEAAB /* RokebiESIM.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
-				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
@@ -669,12 +669,12 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM-frameworks.sh",
-				"${PODS_ROOT}/naveridlogin-sdk-ios/NaverThirdPartyLogin.framework",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Flipper-Glog/glog.framework/glog",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL-Universal/OpenSSL.framework/OpenSSL",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NaverThirdPartyLogin.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/glog.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -762,12 +762,12 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RokebiUSIM/Pods-RokebiUSIM-frameworks.sh",
-				"${PODS_ROOT}/naveridlogin-sdk-ios/NaverThirdPartyLogin.framework",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Flipper-Glog/glog.framework/glog",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL-Universal/OpenSSL.framework/OpenSSL",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NaverThirdPartyLogin.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/glog.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -853,12 +853,12 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RokebiGlobal/Pods-RokebiGlobal-frameworks.sh",
-				"${PODS_ROOT}/naveridlogin-sdk-ios/NaverThirdPartyLogin.framework",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Flipper-Glog/glog.framework/glog",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL-Universal/OpenSSL.framework/OpenSSL",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NaverThirdPartyLogin.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/glog.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -953,9 +953,9 @@
 				A3F0EE3F2898F309000D3781 /* RNKakaoLogins.swift in Sources */,
 				A31C8F30282245F200CE16F6 /* Rokebi-Bridge.swift in Sources */,
 				A3F0EE422898F309000D3781 /* RNKakaoLogins.m in Sources */,
+				0D63159028B496790069564C /* AppDelegate.mm in Sources */,
 				0DCAD29F288D3732005FADA6 /* KakaoShareLink.m in Sources */,
 				0DCAD29E288D3727005FADA6 /* RCTNetworkInfo.m in Sources */,
-				0D9C212626D37D4D0082F077 /* AppDelegate.m in Sources */,
 				4060E90826DDAAD100E1C0AE /* main.m in Sources */,
 				0D9C212926D37D4D0082F077 /* AppDelegate+Iamport.m in Sources */,
 			);
@@ -969,7 +969,7 @@
 				A3F0EE3E2898F309000D3781 /* RNKakaoLogins.swift in Sources */,
 				A31C8F2F282245F200CE16F6 /* Rokebi-Bridge.swift in Sources */,
 				A3F0EE412898F309000D3781 /* RNKakaoLogins.m in Sources */,
-				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				0D63158F28B496790069564C /* AppDelegate.mm in Sources */,
 				0DB1EF16288BE44A00B18BFF /* KakaoShareLink.swift in Sources */,
 				4060E90926DDAAF100E1C0AE /* main.m in Sources */,
 				0DB1EF1D288C05EC00B18BFF /* RCTNetworkInfo.m in Sources */,
@@ -982,10 +982,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				A31C8F31282245F200CE16F6 /* Rokebi-Bridge.swift in Sources */,
-				A3BF9FE1273B63DD00561187 /* AppDelegate.m in Sources */,
 				A3BF9FE3273B63DD00561187 /* main.m in Sources */,
 				A3F0EE432898F309000D3781 /* RNKakaoLogins.m in Sources */,
 				A3BF9FE4273B63DD00561187 /* AppDelegate+Iamport.m in Sources */,
+				0D63159128B496790069564C /* AppDelegate.mm in Sources */,
 				A3F0EE402898F309000D3781 /* RNKakaoLogins.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1400,7 +1400,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "$(inherited)";

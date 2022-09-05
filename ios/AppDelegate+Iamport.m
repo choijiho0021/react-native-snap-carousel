@@ -39,9 +39,10 @@
           // url object contains your universal link content
       }
   
- return [RCTLinkingManager application:application
-                  continueUserActivity:userActivity
-                    restorationHandler:restorationHandler];
+  return YES;
+// return [RCTLinkingManager application:application
+//                  continueUserActivity:userActivity
+//                    restorationHandler:restorationHandler];
 }
 
 @end

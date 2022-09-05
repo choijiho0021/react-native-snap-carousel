@@ -1,7 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: "kotlin-android"
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
-import com.android.build.OutputFile
 /**
  * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets
  * and bundleReleaseJsAndAssets).
@@ -147,6 +146,11 @@ def safeExtGet(prop, fallback) {
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
 
+// Keystore Security
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 android {
     ndkVersion rootProject.ext.ndkVersion
 
@@ -169,18 +173,89 @@ android {
 //        versionProps.store(versionPropsFile.newWriter(), null)
 
 
-        defaultConfig {
-            missingDimensionStrategy 'react-native-camera', 'general'
-            applicationId 'com.rokebiesim'
-            minSdkVersion rootProject.ext.minSdkVersion
-            multiDexEnabled true
-            targetSdkVersion rootProject.ext.targetSdkVersion
-            vectorDrawables.useSupportLibrary = true
-            versionCode 6
-            versionName "1.1.0"
-            multiDexEnabled true
-            resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
+    defaultConfig {
+        missingDimensionStrategy 'react-native-camera', 'general'
+        applicationId 'com.rokebiesim'
+        minSdkVersion rootProject.ext.minSdkVersion
+        multiDexEnabled true
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        vectorDrawables.useSupportLibrary = true
+        versionCode 6
+        versionName "1.1.0"
+        multiDexEnabled true
+        resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
+        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+
+        if (isNewArchitectureEnabled()) {
+            // We configure the NDK build only if you decide to opt-in for the New Architecture.
+            externalNativeBuild {
+                ndkBuild {
+                    arguments "APP_PLATFORM=android-21",
+                        "APP_STL=c++_shared",
+                        "NDK_TOOLCHAIN_VERSION=clang",
+                        "GENERATED_SRC_DIR=$buildDir/generated/source",
+                        "PROJECT_BUILD_DIR=$buildDir",
+                        "REACT_ANDROID_DIR=$rootDir/../node_modules/react-native/ReactAndroid",
+                        "REACT_ANDROID_BUILD_DIR=$rootDir/../node_modules/react-native/ReactAndroid/build"
+                    cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
+                    cppFlags "-std=c++17"
+                    // Make sure this target name is the same you specify inside the
+                    // src/main/jni/Android.mk file for the `LOCAL_MODULE` variable.
+                    targets "rn68_appmodules"
+                    // Fix for windows limit on number of character in file paths and in command lines
+                    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                        arguments "NDK_APP_SHORT_COMMANDS=true"
+                    }
+                }
+            }
+            if (!enableSeparateBuildPerCPUArchitecture) {
+                ndk {
+                    abiFilters (*reactNativeArchitectures())
+                }
+            }
         }
+    }
+
+    if (isNewArchitectureEnabled()) {
+        // We configure the NDK build only if you decide to opt-in for the New Architecture.
+        externalNativeBuild {
+            ndkBuild {
+                path "$projectDir/src/main/jni/Android.mk"
+            }
+        }
+        def reactAndroidProjectDir = project(':ReactAndroid').projectDir
+        def packageReactNdkDebugLibs = tasks.register("packageReactNdkDebugLibs", Copy) {
+            dependsOn(":ReactAndroid:packageReactNdkDebugLibsForBuck")
+            from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
+            into("$buildDir/react-ndk/exported")
+        }
+        def packageReactNdkReleaseLibs = tasks.register("packageReactNdkReleaseLibs", Copy) {
+            dependsOn(":ReactAndroid:packageReactNdkReleaseLibsForBuck")
+            from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
+            into("$buildDir/react-ndk/exported")
+        }
+        afterEvaluate {
+            // If you wish to add a custom TurboModule or component locally,
+            // you should uncomment this line.
+            // preBuild.dependsOn("generateCodegenArtifactsFromSchema")
+            preDebugBuild.dependsOn(packageReactNdkDebugLibs)
+            preReleaseBuild.dependsOn(packageReactNdkReleaseLibs)
+
+            // Due to a bug inside AGP, we have to explicitly set a dependency
+            // between configureNdkBuild* tasks and the preBuild tasks.
+            // This can be removed once this is solved: https://issuetracker.google.com/issues/207403732
+            configureNdkBuildRelease.dependsOn(preReleaseBuild)
+            configureNdkBuildDebug.dependsOn(preDebugBuild)
+            reactNativeArchitectures().each { architecture ->
+                tasks.findByName("configureNdkBuildDebug[${architecture}]")?.configure {
+                    dependsOn("preDebugBuild")
+                }
+                tasks.findByName("configureNdkBuildRelease[${architecture}]")?.configure {
+                    dependsOn("preReleaseBuild")
+                }
+            }
+        }
+    }
 
     flavorDimensions "default"
 
@@ -203,10 +278,10 @@ android {
         }
     }
 
-        dexOptions {
-            jumboMode true
-            javaMaxHeapSize "4g"
-        }
+//        dexOptions {
+//            jumboMode true
+//            javaMaxHeapSize "4g"
+//        }
 //    }
 
     splits {
@@ -218,12 +293,6 @@ android {
         }
     }
     signingConfigs {
-//        debug {
-//            storeFile file('rokebi.keystore')
-//            storePassword 'uangel!098'
-//            keyAlias 'rokebi'
-//            keyPassword 'uangel.123'
-//        }
         debug {
             storeFile file('debug.keystore')
             storePassword 'android'
@@ -231,10 +300,10 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file('rokebi.keystore')
-            storePassword 'uangel!098'
-            keyAlias 'rokebi'
-            keyPassword 'uangel.123'
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
         }
     }
     buildTypes {
@@ -245,13 +314,14 @@ android {
                     abiFilters nativeArchitectures.split(',')
                 }
             }
-            resValue "string", "CodePushDeploymentKey", ''
+            resValue "string", "CodePushDeploymentKey", '_YZzzSzzOPPv3VSEbuTR8C58t2o8Br6nTSkp8'
 
         }
         staging {
             initWith release
             matchingFallbacks = ['release']
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             resValue "string", "CodePushDeploymentKey", 'xesyWQUnruGqjQliPjlKF8hKEZEZa-pfLWOQ2'
         }
         release {
@@ -276,8 +346,9 @@ android {
             // For each separate APK per architecture, set a unique version code as described here:
             // https://developer.android.com/studio/build/configure-apk-splits.html
             // Example: versionCode 1 will generate 1001 for armeabi-v7a, 1002 for x86, etc.
+
             def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
-            def abi = output.getFilter(OutputFile.ABI)
+            def abi = output.getFilter(com.android.build.OutputFile.ABI)
             if (abi != null) {  // null for the universal-debug, universal-release variants
                 output.versionCodeOverride =
                         defaultConfig.versionCode * 1000 + versionCodes.get(abi)
@@ -287,7 +358,6 @@ android {
     }
 }
 
-apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
 
 dependencies {
     implementation project(':react-native-svg')
@@ -330,15 +400,15 @@ dependencies {
     implementation project(':rn-fetch-blob')
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation 'me.leolin:ShortcutBadger:1.1.21@aar'
-    implementation 'com.android.installreferrer:installreferrer:1.0'
+//    implementation 'com.android.installreferrer:installreferrer:1.0'
+    implementation 'com.android.installreferrer:installreferrer:2.2' // 최신버전 테스트
     implementation 'com.google.android.gms:play-services-gcm:17.0.0'
     implementation "com.google.android.gms:play-services-auth:${safeExtGet('googlePlayServicesAuthVersion', '19.2.0')}"
     implementation "androidx.annotation:annotation:1.1.0"
     implementation 'com.facebook.android:facebook-android-sdk:latest.release'
     implementation project(':@react-native-community-clipboard')
-    implementation project(':react-native-vector-icons')
     implementation platform('com.google.firebase:firebase-bom:30.3.1')
-    implementation 'com.google.firebase:firebase-dynamic-links'
+    implementation project(path: ":@react-native-firebase_dynamic-links")
     implementation 'com.google.firebase:firebase-analytics'
     implementation group: 'com.kakao.sdk', name: 'usermgmt', version: '1.27.0'
     implementation group: 'com.kakao.sdk', name: 'kakaotalk', version: '1.27.0'
@@ -350,9 +420,10 @@ dependencies {
 //    implementation "com.kakao.sdk:v2-link:2.9.0" // 메시지(카카오톡 공유)
     implementation "com.kakao.sdk:v2-link:2.9.0" // 메시지(카카오톡 공유)
     implementation 'com.google.android.gms:play-services-analytics:10.0.1'
-    implementation 'com.android.installreferrer:installreferrer:1.0'
     implementation project(':@react-native-community_cameraroll')
     implementation project(path: ":@react-native-firebase_messaging")
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation project(':react-native-pager-view')
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";
@@ -362,7 +433,7 @@ dependencies {
         implementation jscFlavor
     }
 
-    addUnimodulesDependencies([exclude: ['expo-file-system','expo-image-loader','expo-permissions','expo-constants']])
+//    addUnimodulesDependencies([exclude: ['expo-file-system','expo-image-loader','expo-permissions','expo-constants']])
 }
 
 // Run this once to be able to run the application with BUCK
@@ -373,7 +444,14 @@ task copyDownloadableDepsToLibs(type: Copy) {
 }
 
 
+def isNewArchitectureEnabled() {
+    // To opt-in for the New Architecture, you can either:
+    // - Set `newArchEnabled` to true inside the `gradle.properties` file
+    // - Invoke gradle with `-newArchEnabled=true`
+    // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
+    return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+}
+
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 apply plugin: 'com.google.gms.google-services'
-

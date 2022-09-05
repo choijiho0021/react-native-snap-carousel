@@ -12,7 +12,6 @@ import {
   View,
   ScrollView,
   Linking,
-  BackHandler,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {Settings} from 'react-native-fbsdk';
@@ -21,13 +20,8 @@ import {getTrackingStatus} from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
-import {
-  NavigationProp,
-  ParamListBase,
-  RouteProp,
-} from '@react-navigation/native';
+import {NavigationProp, RouteProp} from '@react-navigation/native';
 import VersionCheck from 'react-native-version-check';
-import SimCardsManagerModule from 'react-native-sim-cards-manager';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -35,7 +29,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
-import {useHeaderHeight} from '@react-navigation/stack';
+import {useHeaderHeight} from '@react-navigation/elements';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -43,7 +37,7 @@ import StoreList from '@/components/StoreList';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {navigate} from '@/navigation/navigation';
+import {HomeStackParamList, navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {TabViewRoute} from '@/redux/api/productApi';
@@ -70,18 +64,15 @@ import {
 import {SyncModelState} from '@/redux/modules/sync';
 import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
-import {checkFistLaunch, requestPermission} from './component/permission';
 import PromotionCarousel from './component/PromotionCarousel';
 import {useInterval} from '@/utils/useInterval';
 import NotiModal from './component/NotiModal';
 import AppTabHeader from '@/components/AppTabHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppVerModal from './component/AppVerModal';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {isFolderOpen} from '@/constants/SliderEntry.style';
 import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
 import AppStyledText from '@/components/AppStyledText';
-
-const {height: viewportHeight} = Dimensions.get('window');
 const {esimGlobal, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
@@ -126,8 +117,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   showSearchBar: {
-    marginBottom: 20,
-    marginTop: isDeviceSize('medium') ? 0 : 10,
+    marginVertical: 10,
     marginHorizontal: 20,
     backgroundColor: colors.white,
     height: 56,
@@ -160,9 +150,11 @@ const styles = StyleSheet.create({
   },
 });
 
+type EsimScreenRouteProp = RouteProp<HomeStackParamList, 'Esim'>;
+
 type EsimProps = {
   navigation: NavigationProp<any>;
-  route: RouteProp<ParamListBase, string>;
+  route: EsimScreenRouteProp;
   promotion: RkbPromotion[];
   product: ProductModelState;
   account: AccountModelState;
@@ -178,7 +170,6 @@ type EsimProps = {
 };
 
 const POPUP_DIS_DAYS = 7;
-const HEADER_HEIGHT = 137;
 
 const Esim: React.FC<EsimProps> = ({
   navigation,
@@ -190,8 +181,8 @@ const Esim: React.FC<EsimProps> = ({
   sync,
   noti,
 }) => {
-  const [isSupportDev, setIsSupportDev] = useState<boolean>(true);
   const [isDevModalVisible, setIsDevModalVisible] = useState<boolean>(false);
+  const [bannerHeight, setBannerHeight] = useState<number>(137);
   const [index, setIndex] = useState(0);
   const routes = useMemo(
     () =>
@@ -219,7 +210,6 @@ const Esim: React.FC<EsimProps> = ({
       ] as TabViewRoute[],
     [],
   );
-  const [firstLaunch, setFirstLaunch] = useState<boolean | undefined>();
   const [popUpVisible, setPopUpVisible] = useState(false);
   const [popupDisabled, setPopupDisabled] = useState(true);
   const [appUpdate, setAppUpdate] = useState('');
@@ -232,10 +222,31 @@ const Esim: React.FC<EsimProps> = ({
   const initNoti = useRef(false);
   const tabBarHeight = useBottomTabBarHeight();
   const headerHeight = useHeaderHeight();
+  const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const windowHeight = useMemo(
-    () => viewportHeight - tabBarHeight - headerHeight,
-    [headerHeight, tabBarHeight],
+    () => dimensions.height - tabBarHeight - headerHeight,
+    [dimensions.height, headerHeight, tabBarHeight],
   );
+
+  const isSupport = useMemo(
+    () => (account.isSupportDev === undefined ? true : account.isSupportDev),
+    [account.isSupportDev],
+  );
+  const isFirst = useMemo(
+    () => (account.isFirst === undefined ? false : account.isFirst),
+    [account.isFirst],
+  );
+
+  const scrollY = useSharedValue(0);
+
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({window}) => {
+      setDimensions(window);
+      scrollY.value = 0;
+    });
+    return () => subscription?.remove();
+  }, [scrollY]);
+
   const setNotiModal = useCallback(() => {
     const popUpPromo = promotion?.find((v) => v?.notice?.image?.noti);
 
@@ -246,38 +257,9 @@ const Esim: React.FC<EsimProps> = ({
     }
   }, [promotion]);
 
-  const checkSupportIos = useCallback(() => {
-    const DeviceId = DeviceInfo.getDeviceId();
-
-    if (DeviceId.startsWith('AppleTV')) return false;
-
-    if (DeviceId.startsWith('iPhone'))
-      return DeviceId.length >= 10 && DeviceId.localeCompare('iPhone11,1') >= 0;
-
-    if (DeviceId.startsWith('iPad')) {
-      // 가능한 iPad목록
-      const enableIpadList = [
-        'iPad4,2',
-        'iPad4,3',
-        'iPad5,4',
-        'iPad7,12',
-        'iPad8,3',
-        'iPad8,4',
-        'iPad8,7',
-        'iPad8,8',
-        'iPad11,2',
-        'iPad11,4',
-        'iPad13,2',
-      ];
-
-      return (
-        enableIpadList.includes(DeviceId) ||
-        (DeviceId.length >= 8 && DeviceId.localeCompare('iPad13,2') >= 0)
-      );
-    }
-
-    return true;
-  }, []);
+  useEffect(() => {
+    if (route.params?.showNoti) setNotiModal();
+  }, [route.params?.showNoti, setNotiModal]);
 
   const onPressItem = useCallback(
     (info: RkbPriceInfo) => {
@@ -314,7 +296,6 @@ const Esim: React.FC<EsimProps> = ({
         case 'exit':
           if (isIOS) setIsDevModalVisible(false);
           else {
-            BackHandler.exitApp();
             Linking.openURL('https://www.rokebi.com');
           }
           break;
@@ -324,33 +305,45 @@ const Esim: React.FC<EsimProps> = ({
     [navigation, popUp?.notice, popUp?.rule],
   );
 
-  const scrollY = useSharedValue(0);
+  const folderOpened = useMemo(
+    () => isFolderOpen(dimensions.width),
+    [dimensions.width],
+  );
 
-  const ref = useRef<View>();
   const renderScene = useCallback(
     ({route}: {route: TabViewRoute}) => (
       <StoreList
-        data={product.priceInfo.get(route.key, [])}
+        data={product.priceInfo.get(route.key, [] as RkbPriceInfo[][])}
         onPress={onPressItem}
         localOpList={product.localOpList}
-        onScroll={(e) => {
-          if (isTop && e.nativeEvent.contentOffset.y > HEADER_HEIGHT) {
-            setIsTop(false);
-          } else if (!isTop && e.nativeEvent.contentOffset.y <= 0) {
-            setIsTop(true);
-          }
+        width={dimensions.width}
+        onEndReached={() => setIsTop(false)}
+        onScroll={({
+          nativeEvent: {
+            contentOffset: {y},
+          },
+        }) => {
+          if (isTop && y > bannerHeight) setIsTop(false);
+          else if (!isTop && y <= 0) setIsTop(true);
         }}
       />
     ),
-    [isTop, onPressItem, product.localOpList, product.priceInfo],
+    [
+      bannerHeight,
+      dimensions.width,
+      isTop,
+      onPressItem,
+      product.localOpList,
+      product.priceInfo,
+    ],
   );
 
   useEffect(() => {
-    scrollY.value = withTiming(isTop ? 0 : HEADER_HEIGHT, {
+    scrollY.value = withTiming(isTop ? 0 : bannerHeight, {
       duration: 500,
       easing: Easing.out(Easing.exp),
     });
-  }, [isTop, scrollY]);
+  }, [isTop, scrollY, bannerHeight]);
 
   const animatedStyles = useAnimatedStyle(() => {
     return {
@@ -503,64 +496,67 @@ const Esim: React.FC<EsimProps> = ({
   }, []);
 
   useEffect(() => {
-    API.Device.getDevList().then(async (resp) => {
-      if (resp.result === 0) {
-        const isSupport =
-          Platform.OS === 'android'
-            ? await SimCardsManagerModule.isEsimSupported()
-            : checkSupportIos();
-
-        setIsDevModalVisible(!isSupport);
-        setIsSupportDev(isSupport);
-        setDeviceList(resp.objects);
-
-        const deviceModel = DeviceInfo.getModel();
-
-        DeviceInfo.getDeviceName().then((name) => {
-          const deviceFullName = `${deviceModel},${name}`;
-          action.account.updateAccount({
-            isSupportDev: isSupport,
-            deviceModel: deviceFullName,
-          });
-        });
-
-        // 앱 첫 실행 여부 확인
-        checkFistLaunch().then((first) => {
-          setFirstLaunch(first);
-          if (first) {
-            navigation.navigate('Tutorial', {
-              popUp: setNotiModal,
-            });
-          } else if (promotion) setNotiModal();
-        });
-
-        if (!isSupport) {
-          const status = await getTrackingStatus();
-          if (status === 'authorized') {
-            await firebase.analytics().setAnalyticsCollectionEnabled(true);
-            await Settings.setAdvertiserTrackingEnabled(true);
-
-            analytics().logEvent(
-              `${esimGlobal ? 'global' : 'esim'}_disabled_device`,
-              {
-                item: deviceModel,
-                count: 1,
-              },
-            );
-          }
-        }
-      }
-    });
-  }, [action.account, checkSupportIos, navigation, promotion, setNotiModal]);
+    // 앱 첫 실행 여부 확인
+    if (isFirst && isSupport) navigation.navigate('Tutorial');
+    else if (promotion) setNotiModal();
+  }, [isFirst, isSupport, navigation, promotion, setNotiModal]);
 
   useEffect(() => {
-    if (isSupportDev && !initialized.current) {
+    async function getDevList() {
+      if (isIOS) {
+        const resp = await API.Device.getDevList();
+        if (resp.result === 0) {
+          setDeviceList(resp.objects);
+        }
+      }
+      setIsDevModalVisible(!isSupport);
+
+      const deviceModel = DeviceInfo.getModel();
+
+      if (!isSupport) {
+        const status = await getTrackingStatus();
+        if (status === 'authorized') {
+          await firebase.analytics().setAnalyticsCollectionEnabled(true);
+          await Settings.setAdvertiserTrackingEnabled(true);
+
+          analytics().logEvent(
+            `${esimGlobal ? 'global' : 'esim'}_disabled_device`,
+            {
+              item: deviceModel,
+              count: 1,
+            },
+          );
+        }
+      }
+    }
+    getDevList();
+  }, [action.account, isSupport, navigation, promotion, setNotiModal]);
+
+  useEffect(() => {
+    if (isSupport && !initialized.current) {
       initialized.current = true;
       pushNoti.add(notification);
-
-      requestPermission();
     }
-  }, [isSupportDev, notification]);
+  }, [isSupport, notification]);
+
+  useEffect(() => {
+    const runDeppLink = async () => {
+      // Get the deep link used to open the app
+      const initialUrl = await Linking.getInitialURL();
+      const urlSplit = initialUrl?.split('/');
+
+      if (urlSplit && urlSplit.length >= 4) {
+        const deepLinkPath = urlSplit[3].split('?')[0];
+
+        if (deepLinkPath === 'PROMOTION') {
+          setPopupDisabled(true);
+          exitApp('redirect');
+        }
+      }
+    };
+
+    runDeppLink();
+  }, [exitApp]);
 
   useEffect(() => {
     if (
@@ -584,32 +580,33 @@ const Esim: React.FC<EsimProps> = ({
 
   useEffect(() => {
     if (sync.progress) {
-      if (firstLaunch) {
-        AsyncStorage.removeItem('alreadyLaunched');
-        setFirstLaunch(false);
-      }
+      AsyncStorage.removeItem('alreadyLaunched');
       navigation.navigate('CodePush');
     }
-  }, [firstLaunch, navigation, sync.progress]);
+  }, [navigation, sync.progress]);
 
   useEffect(() => {
     const {mobile, loggedIn, iccid} = account;
     if (iccid) {
-      if (loggedIn && !initNoti.current) {
+      if (!initNoti.current) {
         initNoti.current = true;
-        action.noti.init({mobile});
-        action.cart.init();
-        action.order.init();
-      } else {
-        // action.noti.initNotiList();
-        action.noti.getNotiList({mobile: account.mobile});
+
+        if (loggedIn) {
+          action.noti.init({mobile});
+          action.cart.init();
+          action.order.init();
+        } else {
+          // action.noti.initNotiList();
+          console.log('@@@ get noti list');
+          action.noti.getNotiList({mobile: account.mobile});
+        }
       }
     }
   }, [account, action.cart, action.noti, action.order]);
 
   useEffect(() => {
     const ver = VersionCheck.getCurrentVersion();
-    API.AppVersion.getAppVersion(ver)
+    API.AppVersion.getAppVersion(`${Platform.OS}:${ver}`)
       .then((rsp) => {
         if (rsp.result === 0 && rsp.objects.length > 0) {
           setAppUpdate(rsp.objects[0].updateOption);
@@ -619,19 +616,8 @@ const Esim: React.FC<EsimProps> = ({
       .catch((err) => setAppUpdateVisible(false));
   }, []);
 
-  return (
-    <Animated.View
-      style={[
-        styles.container,
-        animatedStyles,
-        {
-          height: windowHeight + HEADER_HEIGHT,
-        },
-      ]}>
-      <StatusBar barStyle="dark-content" />
-      <View ref={ref} collapsable={false}>
-        <PromotionCarousel />
-      </View>
+  const renderSearch = useCallback(
+    () => (
       <AppButton
         key="search"
         title={i18n.t('home:searchPlaceholder')}
@@ -642,6 +628,40 @@ const Esim: React.FC<EsimProps> = ({
         iconName="btnSearchBlue"
         iconStyle={{marginHorizontal: 24}}
       />
+    ),
+    [navigation],
+  );
+
+  const onLayout = useCallback(
+    (event) => setBannerHeight(event.nativeEvent.layout.height),
+    [],
+  );
+
+  return (
+    <Animated.View
+      style={[
+        styles.container,
+        !folderOpened && animatedStyles,
+        {
+          height: windowHeight + (folderOpened ? 0 : bannerHeight),
+        },
+      ]}>
+      <StatusBar barStyle="dark-content" />
+      {folderOpened ? (
+        <View style={{flexDirection: 'row'}}>
+          <View style={{flex: 1}} collapsable={false} onLayout={onLayout}>
+            <PromotionCarousel width={dimensions.width / 2} />
+          </View>
+          <View style={{flex: 1}}>{renderSearch()}</View>
+        </View>
+      ) : (
+        <View>
+          <View collapsable={false} onLayout={onLayout}>
+            <PromotionCarousel width={dimensions.width} />
+          </View>
+          {renderSearch()}
+        </View>
+      )}
 
       <AppTabHeader
         index={index}
@@ -658,7 +678,7 @@ const Esim: React.FC<EsimProps> = ({
         renderScene={renderScene}
         onIndexChange={onIndexChange}
         initialLayout={{
-          width: Dimensions.get('window').width,
+          width: dimensions.width,
           height: 10,
         }}
         renderTabBar={() => null}
@@ -666,19 +686,19 @@ const Esim: React.FC<EsimProps> = ({
 
       {
         // eslint-disable-next-line no-nested-ternary
-        isDevModalVisible && !isSupportDev ? (
+        isDevModalVisible && !isSupport ? (
           <AppModal
             title={i18n.t('home:unsupportedTitle')}
             closeButtonTitle={isIOS ? i18n.t('ok') : i18n.t('exitAndOpenLink')}
             titleStyle={styles.modalTitle}
             type="close"
             onOkClose={() => exitApp('exit')}
-            visible={isDevModalVisible}>
+            visible={isDevModalVisible && navigation.isFocused()}>
             {modalBody()}
           </AppModal>
         ) : appUpdateVisible === false ? (
           <NotiModal
-            visible={popUpVisible && !popupDisabled}
+            visible={popUpVisible && !popupDisabled && navigation.isFocused()}
             popUp={popUp}
             closeType={closeType}
             onOkClose={() => exitApp(closeType)}
@@ -686,7 +706,7 @@ const Esim: React.FC<EsimProps> = ({
           />
         ) : (
           <AppVerModal
-            visible={appUpdateVisible || false}
+            visible={(appUpdateVisible && navigation.isFocused()) || false}
             option={appUpdate}
             onOkClose={() => setAppUpdateVisible(false)}
           />

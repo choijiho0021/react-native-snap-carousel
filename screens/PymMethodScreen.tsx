@@ -15,7 +15,6 @@ import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import PaymentItemInfo from '@/components/PaymentItemInfo';
-import {isAndroid} from '@/components/SearchBarAnimation/utils';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
@@ -54,7 +53,7 @@ import {
 import i18n from '@/utils/i18n';
 import AppModal from '@/components/AppModal';
 
-const {esimApp} = Env.get();
+const {esimApp, isIOS} = Env.get();
 const infoKey = 'pym:benefit';
 const loadingImg = require('../assets/images/loading_1.mp4');
 
@@ -132,9 +131,9 @@ const styles = StyleSheet.create({
   basicAddr: {
     ...appStyles.normal12Text,
     width: 52,
-    height: isAndroid() ? 15 : 12,
-    lineHeight: isAndroid() ? 15 : 12,
-    fontSize: isAndroid() ? 11 : 12,
+    height: Platform.OS === 'android' ? 15 : 12,
+    lineHeight: Platform.OS === 'android' ? 15 : 12,
+    fontSize: Platform.OS === 'android' ? 11 : 12,
     color: colors.clearBlue,
     alignSelf: 'center',
   },
@@ -438,7 +437,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           app_scheme: scheme,
           profile_uuid: profileId,
           dlvCost: dlvCost.value,
-          language: selected?.language || 'KR',
+          language: selected?.language || i18n.locale,
           digital: true,
           memo,
           // mode: 'test'

@@ -9,8 +9,8 @@ import AppUserPic from '@/components/AppUserPic';
 import {appStyles} from '@/constants/Styles';
 import {RkbPromotion} from '@/redux/api/promotionApi';
 import i18n from '@/utils/i18n';
+import {isDeviceSize, MAX_WIDTH} from '@/constants/SliderEntry.style';
 import {colors} from '@/constants/Colors';
-import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   infoModalTitle: {
@@ -18,7 +18,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   popupImg: {
-    width: windowWidth - 40,
+    maxWidth: MAX_WIDTH,
+    width: '100%',
     height: isDeviceSize('medium') ? 446 : 500,
     marginBottom: 20,
   },
@@ -56,6 +57,8 @@ const NotiModal: React.FC<NotiModalProps> = ({
         marginTop: 0,
         marginHorizontal: 20,
         backgroundColor: colors.white,
+        maxWidth: MAX_WIDTH,
+        width: '100%',
       }}
       titleViewStyle={{marginTop: 20}}
       closeButtonTitle={i18n.t(closeType || 'close')}
@@ -69,7 +72,7 @@ const NotiModal: React.FC<NotiModalProps> = ({
         setPopupDisabled();
       }}
       visible={visible}>
-      <View style={{marginHorizontal: 20}}>
+      <View>
         <AppUserPic
           url={popUp?.notice?.image?.noti}
           style={styles.popupImg}
@@ -84,6 +87,7 @@ const NotiModal: React.FC<NotiModalProps> = ({
           style={{
             flexDirection: 'row',
             alignItems: 'center',
+            marginHorizontal: 20,
           }}
           onPress={() => setChecked((prev) => !prev)}>
           <AppButton

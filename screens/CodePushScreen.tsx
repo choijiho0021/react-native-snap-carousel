@@ -1,16 +1,28 @@
+import React, {useCallback, useEffect, useState} from 'react';
+import {
+  ActivityIndicator,
+  AppState,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
+import codePush, {DownloadProgress} from 'react-native-code-push';
+import Config from 'react-native-config';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {StackNavigationProp} from '@react-navigation/stack';
 import AppAlert from '@/components/AppAlert';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
-import {actions as syncActions} from '@/redux/modules/sync';
+import {
+  actions as syncActions,
+  SyncModelState,
+  SyncAction,
+} from '@/redux/modules/sync';
 import i18n from '@/utils/i18n';
-import React, {Component} from 'react';
-import {ActivityIndicator, AppState, StyleSheet, View} from 'react-native';
-import codePush from 'react-native-code-push';
-import Config from 'react-native-config';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const styles = StyleSheet.create({
   container: {
@@ -28,42 +40,23 @@ const styles = StyleSheet.create({
   },
 });
 
-class CodePushScreen extends Component {
-  constructor(props) {
-    super(props);
+type CodePushScreenProps = {
+  sync: SyncModelState;
+  navigation: StackNavigationProp<HomeStackParamList, 'CodePush'>;
+  action: {sync: SyncAction};
+  style: ViewStyle;
+};
 
-    this.state = {
-      syncMessage: '',
-      progress: undefined,
-    };
+const CodePushScreen: React.FC<CodePushScreenProps> = ({
+  navigation,
+  sync,
+  action,
+  style,
+}) => {
+  const [syncMessage, setSyncMessage] = useState();
+  const [progress, setProgress] = useState<DownloadProgress>();
 
-    this.mounted = false;
-  }
-
-  componentDidMount() {
-    this.mounted = true;
-
-    this.props.navigation.setOptions({
-      title: null,
-    });
-
-    this.codePushSync();
-    AppState.addEventListener('change', (state) => {
-      if (state === 'active') this.codePushSync();
-    });
-  }
-
-  componentDidUpdate() {
-    if (this.props.sync.isCompleted) {
-      this.props.navigation.popToTop();
-    }
-  }
-
-  componentWillUnmount() {
-    this.mounted = false;
-  }
-
-  codePushSync() {
+  const codePushSync = useCallback(() => {
     if (Config.NODE_ENV !== 'production' && Config.NODE_ENV !== 'staging')
       return;
 
@@ -74,45 +67,45 @@ class CodePushScreen extends Component {
           installMode: codePush.InstallMode.IMMEDIATE, // 업데이트 후 바로 재기동
         },
         (syncStatus) => {
-          let syncMessage = '';
+          let msg = '';
 
           switch (syncStatus) {
             case codePush.SyncStatus.CHECKING_FOR_UPDATE:
-              syncMessage = i18n.t('codepush:checking');
+              msg = i18n.t('codepush:checking');
               break;
             case codePush.SyncStatus.DOWNLOADING_PACKAGE:
-              syncMessage = i18n.t('codepush:download');
+              msg = i18n.t('codepush:download');
               break;
             /*
-                        case codePush.SyncStatus.AWAITING_USER_ACTION:
-                            syncMessage = i18n.t('codepush:awaiting')
-                            break;
-                        */
+            case codePush.SyncStatus.AWAITING_USER_ACTION:
+              syncMessage = i18n.t('codepush:awaiting');
+              break;
+            */
             case codePush.SyncStatus.INSTALLING_UPDATE:
-              syncMessage = i18n.t('codepush:install');
+              msg = i18n.t('codepush:install');
               break;
             case codePush.SyncStatus.UP_TO_DATE:
-              syncMessage = i18n.t('codepush:uptodate');
+              msg = i18n.t('codepush:uptodate');
               break;
             case codePush.SyncStatus.UPDATE_IGNORED:
-              syncMessage = i18n.t('codepush:ignore');
+              msg = i18n.t('codepush:ignore');
               break;
             /*
-                        case codePush.SyncStatus.UPDATE_INSTALLED:
-                            syncMessage = i18n.t('codepush:nextresume')
-                            break;
-                        */
+            case codePush.SyncStatus.UPDATE_INSTALLED:
+              syncMessage = i18n.t('codepush:nextresume');
+              break;
+            */
             case codePush.SyncStatus.UNKNOWN_ERROR:
-              syncMessage = i18n.t('codepush:error');
+              msg = i18n.t('codepush:error');
               break;
 
             default:
           }
 
-          this.props.action.sync.update({syncStatus});
+          action.sync.update({syncStatus});
 
-          if (this.mounted && !this.props.sync.isCompleted) {
-            this.setState({syncMessage});
+          if (!sync.isCompleted) {
+            setSyncMessage(msg);
           }
 
           if (
@@ -124,50 +117,63 @@ class CodePushScreen extends Component {
             ].includes(syncStatus)
           ) {
             setTimeout(() => {
-              this.props.action.sync.complete();
+              action.sync.complete();
             }, 1000);
 
-            if (this.mounted) {
-              this.setState({progress: undefined});
-            }
+            setProgress(undefined);
           }
         },
         (progress) => {
-          if (this.mounted && !this.props.sync.isCompleted) {
-            this.setState({progress});
+          if (!sync.isCompleted) {
+            setProgress(progress);
           }
         },
       );
     } catch (error) {
       AppAlert.error(i18n.t('codepush:failedToUpdate'), '', () =>
-        this.props.action.sync.complete(),
+        action.sync.complete(),
       );
       codePush.log(error);
     }
-  }
+  }, [action.sync, sync.isCompleted]);
 
-  render() {
-    const {progress, syncMessage} = this.state;
+  useEffect(() => {
+    navigation.setOptions({
+      title: null,
+    });
 
-    return (
-      <View style={[styles.container, this.props.style]}>
-        <ActivityIndicator
-          size="large"
-          color={colors.clearBlue}
-          style={styles.indicator}
-        />
-        {progress && (
-          <AppText style={styles.text}>
-            {' '}
-            {parseInt((progress.receivedBytes / progress.totalBytes) * 100, 10)}
-            %{' '}
-          </AppText>
-        )}
-        <AppText style={styles.text}> {syncMessage} </AppText>
-      </View>
-    );
-  }
-}
+    codePushSync();
+    AppState.addEventListener('change', (state) => {
+      if (state === 'active') codePushSync();
+    });
+  }, [codePushSync, navigation]);
+
+  useEffect(() => {
+    if (sync.isCompleted) {
+      navigation.popToTop();
+    }
+  }, [navigation, sync.isCompleted]);
+
+  return (
+    <View style={[styles.container, style]}>
+      <ActivityIndicator
+        size="large"
+        color={colors.clearBlue}
+        style={styles.indicator}
+      />
+      {progress && (
+        <AppText style={styles.text}>
+          {' '}
+          {parseInt(
+            (progress.receivedBytes / progress.totalBytes) * 100,
+            10,
+          )}%{' '}
+        </AppText>
+      )}
+      <AppText style={styles.text}> {syncMessage} </AppText>
+    </View>
+  );
+};
 
 export default connect(
   ({sync}: RootState) => ({sync}),

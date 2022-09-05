@@ -8,6 +8,7 @@ import {
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {Settings} from 'react-native-fbsdk';
 import {
+  Keyboard,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -26,7 +27,6 @@ import {Map as ImmutableMap} from 'immutable';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import analytics, {firebase} from '@react-native-firebase/analytics';
-import dynamicLinks from '@react-native-firebase/dynamic-links';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -56,8 +56,9 @@ import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import validationUtil from '@/utils/validationUtil';
 import {eventToken} from '@/constants/Adjust';
+import {LinkModelState} from '../redux/modules/link';
 
-const {esimGlobal, isProduction} = Env.get();
+const {esimGlobal, isProduction, isIOS} = Env.get();
 // const esimGlobal = false;
 
 const styles = StyleSheet.create({
@@ -222,6 +223,7 @@ type RegisterMobileScreenRouteProp = RouteProp<
 
 type RegisterMobileScreenProps = {
   account: AccountModelState;
+  link: LinkModelState;
   lastTab: string[];
   pending: boolean;
 
@@ -236,6 +238,7 @@ type RegisterMobileScreenProps = {
 
 const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   account: {loggedIn, deviceModel},
+  link,
   navigation,
   route,
   actions,
@@ -259,7 +262,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const [isValidEmail, setIsValidEmail] = useState(false);
   const [emailError, setEmailError] = useState<string | undefined>('');
   const [socialLogin, setSocialLogin] = useState(false);
-  const [recommender, setRecommender] = useState('');
+  const [isKeyboardShow, setIsKeyboardShow] = useState(false);
   const [profileImageUrl, setProfileImageUrl] = useState('');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<TrackingStatus>();
@@ -268,6 +271,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const emailRef = useRef<InputEmailRef>(null);
   const inputRef = useRef<InputPinRef>(null);
 
+  const recommender = useMemo(() => link.recommender, [link.recommender]);
   const confirmList = useMemo(
     () =>
       [
@@ -298,6 +302,20 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   );
 
   useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+      if (!isIOS) setIsKeyboardShow(true);
+    });
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      if (!isIOS) setIsKeyboardShow(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
+  useEffect(() => {
     async function trackingStatus() {
       const st = await getTrackingStatus();
       setStatus(st);
@@ -306,71 +324,36 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     trackingStatus();
     mounted.current = true;
 
-    dynamicLinks()
-      .getInitialLink()
-      .then(async (l) => {
-        if (l?.url) {
-          const url = l.url.split(/[;?&]/);
-          url.shift();
-          const param = url.map((elm) => `"${elm.replace('=', '":"')}"`);
-          const json = JSON.parse(`{${param.join(',')}}`);
-          if (json) setRecommender(json.recommender);
-
-          if (status === 'authorized') {
-            analytics().logEvent(
-              `${esimGlobal ? 'global' : 'esim'}_recommender`,
-            );
-          }
-        }
-      });
-  }, [status]);
+    if (status === 'authorized' && recommender) {
+      analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_recommender`);
+    }
+  }, [recommender, status]);
 
   useEffect(() => {
     if (loggedIn) {
-      dynamicLinks()
-        .getInitialLink()
-        .then((l) => {
-          if (l !== null) {
-            if (l?.url.includes('gift')) {
-              navigation.navigate('EsimStack', {
-                screen: 'Esim',
-              });
-            } else {
-              navigation.navigate('Main', {
-                screen: 'MyPageStack',
-                params: {
-                  screen: 'MyPage',
-                },
-              });
-            }
-          } else if (newUser) {
-            navigation.navigate('Main', {
-              screen: 'MyPageStack',
-              params: {
-                screen: 'MyPage',
-              },
-            });
-          } else if (!lastTab.includes('Invite')) {
-            navigation.navigate('Main', {
-              screen: 'HomeStack',
-              params: {
-                screen: 'Home',
-              },
-            });
-          } else {
-            navigation.navigate('Main', {
-              screen: 'MyPageStack',
-              params: {
-                screen: 'MyPage',
-              },
-            });
-          }
+      if (link?.url?.includes('gift')) {
+        navigation.navigate('EsimStack', {
+          screen: 'Esim',
         });
-
+      } else if (!newUser && !link?.url?.includes('recommender')) {
+        navigation.navigate('Main', {
+          screen: 'HomeStack',
+          params: {
+            screen: 'Home',
+          },
+        });
+      } else {
+        navigation.navigate('Main', {
+          screen: 'MyPageStack',
+          params: {
+            screen: 'MyPage',
+          },
+        });
+      }
       setAuthorized(true);
     }
     // AppAlert.error(i18n.t('reg:failedToLogIn'));
-  }, [lastTab, loggedIn, navigation, newUser]);
+  }, [link?.url, loggedIn, navigation, newUser]);
 
   useEffect(() => {
     return () => {
@@ -397,7 +380,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     setIsValidEmail(false);
     setEmailError('');
     setSocialLogin(false);
-    setRecommender('');
   }, []);
 
   const signIn = useCallback(
@@ -756,7 +738,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           </View>
         )}
       </KeyboardAwareScrollView>
-      {!newUser && (
+      {!newUser && !isKeyboardShow && (
         <View style={{justifyContent: 'center', marginBottom: 36}}>
           <SocialLogin onAuth={onAuth} />
         </View>
@@ -787,9 +769,10 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 };
 
 export default connect(
-  ({cart, account, status}: RootState) => ({
+  ({cart, account, link, status}: RootState) => ({
     lastTab: cart.lastTab.toArray(),
     account,
+    link,
     pending:
       status.pending[accountActions.logInAndGetAccount.typePrefix] || false,
   }),

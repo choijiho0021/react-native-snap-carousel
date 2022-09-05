@@ -1,5 +1,5 @@
 import {Map as ImmutableMap} from 'immutable';
-import React, {memo, useCallback} from 'react';
+import React, {memo, useCallback, useMemo} from 'react';
 import {
   Animated,
   Image,
@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 import {colors} from '@/constants/Colors';
-import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {API} from '@/redux/api';
 import {Currency, RkbLocalOp} from '@/redux/api/productApi';
@@ -18,6 +18,7 @@ import i18n from '@/utils/i18n';
 import AppPrice from './AppPrice';
 import AppText from './AppText';
 import {RkbPriceInfo} from '@/redux/modules/product';
+import {isFolderOpen} from '../constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   text: {
@@ -34,7 +35,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   productList: {
-    width: windowWidth - 40,
+    // width: windowWidth - 40,
     flexDirection: 'row',
     marginTop: 15,
     marginBottom: 15,
@@ -86,10 +87,14 @@ const CountryItem0 = ({
   item,
   localOpList,
   onPress,
+  columns,
+  width,
 }: {
   item: RkbPriceInfo[];
   localOpList: ImmutableMap<string, RkbLocalOp>;
   onPress?: (p: RkbPriceInfo) => void;
+  columns: number;
+  width: number;
 }) => {
   const renderLowest = useCallback(
     () => (
@@ -125,7 +130,9 @@ const CountryItem0 = ({
   );
 
   return (
-    <View key={item[0].country} style={styles.productList}>
+    <View
+      key={item[0]?.country}
+      style={[styles.productList, {width: width - 40}]}>
       {item.map((elm, idx) => {
         // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
         const localOp = localOpList && localOpList.get(elm.partner);
@@ -133,7 +140,7 @@ const CountryItem0 = ({
         return (
           <View
             key={elm.country}
-            style={{flex: 1, marginLeft: idx === 1 ? 14 : 0}}>
+            style={{flex: 1, marginLeft: idx >= 1 ? 14 : 0}}>
             <Pressable onPress={() => onPress?.(elm)}>
               <Image
                 key="img"
@@ -152,9 +159,13 @@ const CountryItem0 = ({
           </View>
         );
       })}
-      {item.length === 1 && (
-        <View key="unknown" style={{flex: 1, marginLeft: 14}} />
-      )}
+      {item.length < columns
+        ? Array(columns - item.length)
+            .fill(1)
+            .map((x, i) => (
+              <View key={`blank${i}`} style={{flex: 1, marginLeft: 14}} />
+            ))
+        : null}
     </View>
   );
 };
@@ -169,23 +180,62 @@ type StoreListProps = {
   data: RkbPriceInfo[][];
   onPress: (p: RkbPriceInfo) => void;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  onEndReached?: () => void;
+  width: number;
 };
 
-const StoreList = ({localOpList, data, onPress, onScroll}: StoreListProps) => {
+const StoreList = ({
+  localOpList,
+  data,
+  onPress,
+  onScroll,
+  onEndReached,
+  width,
+}: StoreListProps) => {
+  const isFolder = useMemo(() => isFolderOpen(width), [width]);
+  const renderItem = useCallback(
+    ({item}) => (
+      <CountryItem
+        key={item[0]?.country}
+        onPress={onPress}
+        item={item}
+        localOpList={localOpList}
+        width={width}
+        columns={isFolder ? 3 : 2}
+      />
+    ),
+    [isFolder, localOpList, onPress, width],
+  );
+
+  const list = useMemo(
+    () =>
+      isFolder
+        ? data.reduce(
+            (acc, cur) => {
+              const last = acc[acc.length - 1];
+              if (last.length + cur.length <= 3) {
+                acc[acc.length - 1] = last.concat(cur);
+                return acc;
+              }
+              acc[acc.length - 1] = last.concat(cur.slice(0, 3 - last.length));
+              return cur.length > 3 - last.length
+                ? acc.concat([cur.slice(3 - last.length)])
+                : acc;
+            },
+            [[]] as RkbPriceInfo[][],
+          )
+        : data,
+    [data, isFolder],
+  );
+
   return (
     <View style={appStyles.container}>
       <Animated.FlatList
-        data={data}
+        data={list}
         onScroll={onScroll}
         bounces={false}
-        renderItem={({item}) => (
-          <CountryItem
-            key={item[0].country}
-            onPress={onPress}
-            item={item}
-            localOpList={localOpList}
-          />
-        )}
+        renderItem={renderItem}
+        onEndReached={onEndReached}
       />
     </View>
   );

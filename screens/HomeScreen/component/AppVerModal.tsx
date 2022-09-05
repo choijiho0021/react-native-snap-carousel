@@ -9,6 +9,7 @@ import AppText from '@/components/AppText';
 import Env from '@/environment';
 import AppTextJoin from '@/components/AppTextJoin';
 import AppIcon from '@/components/AppIcon';
+import {MAX_WIDTH} from '@/constants/SliderEntry.style';
 
 const {appStoreUrl} = Env.get();
 
@@ -102,7 +103,7 @@ const AppVerModal: React.FC<AppVerModalProps> = ({
     [],
   );
 
-  return (
+  return visible ? (
     <AppModal
       justifyContent="flex-end"
       contentStyle={{
@@ -110,6 +111,8 @@ const AppVerModal: React.FC<AppVerModalProps> = ({
         borderTopLeftRadius: 8,
         borderTopRightRadius: 8,
         backgroundColor: 'white',
+        maxWidth: MAX_WIDTH,
+        width: '100%',
       }}
       bottom={renderBottom}
       visible={visible}>
@@ -131,7 +134,7 @@ const AppVerModal: React.FC<AppVerModalProps> = ({
         </AppText>
       </View>
     </AppModal>
-  );
+  ) : null;
 };
 
 export default memo(AppVerModal);

@@ -1,10 +1,10 @@
+import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
+import React, {memo} from 'react';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {API} from '@/redux/api';
 import utils from '@/redux/api/utils';
-import React, {memo} from 'react';
-import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Currency} from '../redux/api/productApi';
 import AppButton from './AppButton';
 import AppIcon from './AppIcon';

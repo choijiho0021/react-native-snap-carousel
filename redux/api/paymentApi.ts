@@ -28,7 +28,7 @@ const method = esimGlobal
           key: 'paypal',
           method: 'card',
           title: 'pym:paypal',
-          language: 'en_US',
+          language: 'en',
           icon: 'paypal',
         },
       ],

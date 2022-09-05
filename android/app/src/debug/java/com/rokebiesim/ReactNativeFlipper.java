@@ -5,23 +5,27 @@
  * directory of this source tree.
  */
 package com.rokebiesim;
-        import android.content.Context;
-        import com.facebook.flipper.android.AndroidFlipperClient;
-        import com.facebook.flipper.android.utils.FlipperUtils;
-        import com.facebook.flipper.core.FlipperClient;
-        import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin;
-        import com.facebook.flipper.plugins.databases.DatabasesFlipperPlugin;
-        import com.facebook.flipper.plugins.fresco.FrescoFlipperPlugin;
-        import com.facebook.flipper.plugins.inspector.DescriptorMapping;
-        import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
-        import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
-        import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
-        import com.facebook.flipper.plugins.react.ReactFlipperPlugin;
-        import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin;
-        import com.facebook.react.ReactInstanceManager;
-        import com.facebook.react.bridge.ReactContext;
-        import com.facebook.react.modules.network.NetworkingModule;
-        import okhttp3.OkHttpClient;
+
+import android.content.Context;
+
+import com.facebook.flipper.android.AndroidFlipperClient;
+import com.facebook.flipper.android.utils.FlipperUtils;
+import com.facebook.flipper.core.FlipperClient;
+import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin;
+import com.facebook.flipper.plugins.databases.DatabasesFlipperPlugin;
+import com.facebook.flipper.plugins.fresco.FrescoFlipperPlugin;
+import com.facebook.flipper.plugins.inspector.DescriptorMapping;
+import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
+import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
+import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
+import com.facebook.flipper.plugins.react.ReactFlipperPlugin;
+import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin;
+import com.facebook.react.ReactInstanceEventListener;
+import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.modules.network.NetworkingModule;
+
+import okhttp3.OkHttpClient;
 public class ReactNativeFlipper {
     public static void initializeFlipper(Context context, ReactInstanceManager reactInstanceManager) {
         if (FlipperUtils.shouldEnableFlipper(context)) {
@@ -46,7 +50,7 @@ public class ReactNativeFlipper {
             ReactContext reactContext = reactInstanceManager.getCurrentReactContext();
             if (reactContext == null) {
                 reactInstanceManager.addReactInstanceEventListener(
-                        new ReactInstanceManager.ReactInstanceEventListener() {
+                        new ReactInstanceEventListener() {
                             @Override
                             public void onReactContextInitialized(ReactContext reactContext) {
                                 reactInstanceManager.removeReactInstanceEventListener(this);

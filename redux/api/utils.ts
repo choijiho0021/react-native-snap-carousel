@@ -224,6 +224,8 @@ const toDateString = (
 };
 
 const convertURLtoRkbImage = async (url: string) => {
+  if (!url) return Promise.reject(new Error('invalid URL'));
+
   const response = await RNFetchBlob.fetch('GET', url);
   const data = response.base64();
   return new Promise<RkbImage>((resolve, reject) => {

@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
 });
 
 const {esimApp} = Env.get();
-const loadingImg = require('../assets/images/loading_1.mp4');
+const loadingImg = require('../../../assets/images/loading_1.mp4');
 
 function getStatusColor(statusCd) {
   let statusColor = colors.warmGrey;

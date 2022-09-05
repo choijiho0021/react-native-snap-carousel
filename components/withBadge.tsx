@@ -1,17 +1,33 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {StyleSheet, View, TouchableOpacity} from 'react-native';
-import {Badge, colors} from 'react-native-elements';
-import {RootState} from '../redux';
-import {appStyles} from '../constants/Styles';
+import {StyleSheet, View, Pressable} from 'react-native';
+import {RootState} from '@/redux';
+import {appStyles} from '@/constants/Styles';
+import {colors} from '@/constants/Colors';
+import Badge from './Badge';
+
+const miniSize = 8;
 
 const styles = StyleSheet.create({
+  miniBadge: {
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    minWidth: miniSize,
+    height: miniSize,
+    borderRadius: miniSize / 2,
+  },
+  text: {
+    fontSize: 12,
+    color: 'white',
+    paddingHorizontal: 4,
+  },
   badge: {
     borderRadius: 9,
     height: 18,
     minWidth: 0,
     paddingLeft: 5,
     paddingRight: 5,
+    backgroundColor: colors.tomato,
     // width: 18
   },
   badgeContainer: {
@@ -50,17 +66,15 @@ const withBadge =
       const {hidden = !badgeValue} = options || {};
 
       return props.onPress ? (
-        <TouchableOpacity onPress={props.onPress}>
+        <Pressable onPress={props.onPress}>
           <View>
             <WrappedComponent {...props} />
             {!hidden && (
               <Badge
-                textProps={{allowFontScaling: false}}
                 badgeStyle={styles.badge}
                 textStyle={styles.badgeText}
                 value={badgeValue}
-                status="error"
-                // onPress={this.props.onPress}
+                onPress={props.onPress}
                 containerStyle={[
                   styles.badgeContainer,
                   options || styles.location,
@@ -68,17 +82,15 @@ const withBadge =
               />
             )}
           </View>
-        </TouchableOpacity>
+        </Pressable>
       ) : (
         <View>
           <WrappedComponent {...props} />
           {!hidden && (
             <Badge
-              textProps={{allowFontScaling: false}}
               badgeStyle={styles.badge}
               textStyle={styles.badgeText}
               value={badgeValue}
-              status="error"
               onPress={props.onPress}
               containerStyle={[
                 styles.badgeContainer,

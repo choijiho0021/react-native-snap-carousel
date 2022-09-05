@@ -14,6 +14,7 @@ import i18n from '@/utils/i18n';
 import AppButton from './AppButton';
 import AppIcon from './AppIcon';
 import AppText from './AppText';
+import {MAX_WIDTH} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   button: {
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
   },
   inner: {
-    marginHorizontal: 20,
+    maginHorizontal: 20,
     paddingTop: 25,
     backgroundColor: 'white',
   },
@@ -105,7 +106,10 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
         return (
           <View
             style={
-              titleViewStyle || {height: 92, padding: !contentStyle && 20}
+              titleViewStyle || {
+                height: 92,
+                padding: contentStyle ? undefined : 20,
+              }
             }>
             <AppButton
               style={{
@@ -208,21 +212,27 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
           appStyles.modal,
           justifyContent ? {justifyContent} : undefined,
         ]}>
-        <View style={contentStyle || styles.inner}>
-          {titleIcon && (
-            <AppIcon
-              name={titleIcon}
-              style={[styles.icon, !contentStyle && {paddingHorizontal: 20}]}
-            />
-          )}
-          {title && (
-            <View style={titleViewStyle || styles.titleViewStyle}>
-              <AppText style={titleStyle || styles.title}>{title}</AppText>
-            </View>
-          )}
-          {children}
+        <View
+          style={{
+            alignItems: 'center',
+            marginHorizontal: contentStyle?.marginHorizontal,
+          }}>
+          <View style={[contentStyle || styles.inner, {maxWidth: MAX_WIDTH}]}>
+            {titleIcon && (
+              <AppIcon
+                name={titleIcon}
+                style={[styles.icon, !contentStyle && {paddingHorizontal: 20}]}
+              />
+            )}
+            {title && (
+              <View style={titleViewStyle || styles.titleViewStyle}>
+                <AppText style={titleStyle || styles.title}>{title}</AppText>
+              </View>
+            )}
+            {children}
 
-          {bottom ? bottom() : getButtonType()}
+            {bottom ? bottom() : getButtonType()}
+          </View>
         </View>
       </SafeAreaView>
       {justifyContent === 'flex-end' && (

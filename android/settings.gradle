@@ -1,4 +1,6 @@
 rootProject.name = 'RokebiESIM'
+include ':react-native-reanimated'
+project(':react-native-reanimated').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-reanimated/android')
 include ':react-native-share'
 project(':react-native-share').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-share/android')
 include ':react-native-sms'
@@ -69,12 +71,14 @@ include ':react-native-localize'
 project(':react-native-localize').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-localize/android')
 include ':rn-fetch-blob'
 project(':rn-fetch-blob').projectDir = new File(rootProject.projectDir, '../node_modules/rn-fetch-blob/android')
-include ':react-native-vector-icons'
-project(':react-native-vector-icons').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-vector-icons/android')
 include ':@react-native-firebase_dynamic-links'
 project(':@react-native-firebase_dynamic-links').projectDir = new File(rootProject.projectDir, './../node_modules/@react-native-firebase/dynamic-links/android')
-
-apply from: '../node_modules/react-native-unimodules/gradle.groovy'
-includeUnimodulesProjects()
+include ':react-native-pager-view'
+project(':react-native-pager-view').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-pager-view/android')
 
 include ':app'
+includeBuild('../node_modules/react-native-gradle-plugin')
+if (settings.hasProperty("newArchEnabled") && settings.newArchEnabled == "true") {
+    include(":ReactAndroid")
+    project(":ReactAndroid").projectDir = file('../node_modules/react-native/ReactAndroid')
+}

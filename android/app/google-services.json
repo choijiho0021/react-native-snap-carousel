@@ -15,19 +15,19 @@
       },
       "oauth_client": [
         {
-          "client_id": "851340189695-9eqathkn6ral04r1a5prn0qu0uad5aht.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.rokebiesim",
-            "certificate_hash": "3483b65f7337e968728476b847e3b5fd1ac06991"
-          }
-        },
-        {
           "client_id": "851340189695-iem3ncd49qumqsv4bcte70a902m67gp8.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.rokebiesim",
             "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "851340189695-pp35gc4g5l3460hlgcqenqgkvci36po0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rokebiesim",
+            "certificate_hash": "d34f2df54787a31677bef8e79fdece7b426d62ab"
           }
         },
         {

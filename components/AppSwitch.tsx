@@ -5,7 +5,7 @@ import {
   StyleProp,
   StyleSheet,
   TouchableOpacity,
-  ViewProps,
+  ViewStyle,
 } from 'react-native';
 import _ from 'underscore';
 import {colors} from '../constants/Colors';
@@ -30,7 +30,7 @@ type AppSwitchProps = {
   waitFor: number;
   value: boolean;
   onPress: () => void;
-  style?: StyleProp<ViewProps>;
+  style?: StyleProp<ViewStyle>;
 };
 
 type AppSwitchState = {

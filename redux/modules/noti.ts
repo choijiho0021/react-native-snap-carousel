@@ -42,7 +42,6 @@ const init = createAsyncThunk(
 );
 
 const setAppBadge = (notiCount: number) => {
-  console.log('Platform.OS : ', Platform.OS);
   if (Platform.OS === 'ios')
     PushNotificationIOS.setApplicationIconBadgeNumber(notiCount);
   else {

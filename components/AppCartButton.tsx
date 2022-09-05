@@ -1,9 +1,11 @@
 import React, {memo} from 'react';
 import {Pressable, StyleProp, StyleSheet, ViewStyle} from 'react-native';
 import {connect} from 'react-redux';
-import {Badge} from 'react-native-elements';
-import {RootState} from '../redux';
+import {RootState} from '@/redux';
 import AppIcon from './AppIcon';
+import Badge from './Badge';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
 
 const styles = StyleSheet.create({
   icon: {
@@ -19,22 +21,24 @@ const styles = StyleSheet.create({
     minWidth: 0,
     paddingLeft: 5,
     paddingRight: 5,
-    // width: 18
+    backgroundColor: colors.tomato,
   },
   badgeContainer: {
     position: 'absolute',
   },
   badgeText: {
-    fontSize: 10,
+    ...appStyles.normal12Text,
     paddingHorizontal: 0,
+    color: colors.white,
+    lineHeight: 14,
   },
 });
 
 type AppCartButtonProps = {
-  cartItems: number;
+  cartItems?: number;
   iconName?: string;
   style?: StyleProp<ViewStyle>;
-  onPress: () => void;
+  onPress?: () => void;
 };
 const AppCartButton: React.FC<AppCartButtonProps> = ({
   cartItems,
@@ -52,8 +56,6 @@ const AppCartButton: React.FC<AppCartButtonProps> = ({
           badgeStyle={styles.badge}
           textStyle={styles.badgeText}
           value={cartItems}
-          status="error"
-          onPress={onPress}
           containerStyle={[styles.badgeContainer, {top: 4, right: 10}]}
         />
       )}

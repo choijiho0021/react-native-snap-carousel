@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign */
-import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {memo, useCallback, useEffect, useRef, useState} from 'react';
@@ -22,7 +20,7 @@ import AppText from '@/components/AppText';
 import AppTextInput from '@/components/AppTextInput';
 import StoreList from '@/components/StoreList';
 import {colors} from '@/constants/Colors';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {isDeviceSize, isFolderOpen} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
@@ -35,7 +33,6 @@ import {
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import {retrieveData, storeData, utils} from '@/utils/utils';
-import {eventToken} from '@/constants/Adjust';
 import AppSvgIcon from '@/components/AppSvgIcon';
 
 const styles = StyleSheet.create({
@@ -252,11 +249,8 @@ type StoreSearchScreenNavigationProp = StackNavigationProp<
   'StoreSearch'
 >;
 
-type StoreSearchScreenRouteProp = RouteProp<HomeStackParamList, 'StoreSearch'>;
-
 type StoreSearchScreenProps = {
   navigation: StoreSearchScreenNavigationProp;
-  route: StoreSearchScreenRouteProp;
 
   product: ProductModelState;
   action: {
@@ -266,7 +260,6 @@ type StoreSearchScreenProps = {
 
 const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
   navigation,
-  route,
   product,
   action,
 }) => {
@@ -276,6 +269,14 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
   const [searchList, setSearchList] = useState<string[]>([]);
   const [recommendCountry, setRecommendCountry] = useState<string[]>([]);
   const headerRef = useRef<HeaderTitleRef>();
+  const [dimensions, setDimensions] = useState(Dimensions.get('window'));
+
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({window}) => {
+      setDimensions(window);
+    });
+    return () => subscription?.remove();
+  }, []);
 
   const getSearchHist = useCallback(async () => {
     const searchHist = await retrieveData('searchHist');
@@ -428,7 +429,7 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
         ))}
       </View>
     );
-  }, [recommendCountry, search, searchList]);
+  }, [recommendCountry, rmSearchHist, search, searchList]);
 
   // 국가 검색
   const renderStoreList = useCallback(
@@ -451,6 +452,7 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
           data={list}
           onPress={onPressItem}
           localOpList={product.localOpList}
+          width={dimensions.width}
         />
       ) : (
         <View style={styles.emptyViewPage}>
@@ -458,7 +460,7 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
         </View>
       );
     },
-    [onPressItem, product.localOpList, product.prodByCountry],
+    [dimensions.width, onPressItem, product.localOpList, product.prodByCountry],
   );
 
   useEffect(() => {

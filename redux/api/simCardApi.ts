@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
-import utils from '../utils';
+import utils from './utils';
 
 export type RkbSimCard = {
   key: string;

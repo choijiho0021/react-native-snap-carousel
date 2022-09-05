@@ -163,7 +163,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
             <AppText
               style={[
                 appStyles.semiBold24Text,
-                {marginTop: 40, textAlign: 'center'},
+                {marginTop: 40, textAlign: 'center', color: colors.black},
               ]}>
               {i18n.t('gift:guide2-title')}
             </AppText>
@@ -198,7 +198,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
           <AppStyledText
             textStyle={{
               ...appStyles.normal24,
-              lineHeight: 40,
+              lineHeight: 45,
               color: colors.clearBlue,
               marginTop: 12,
               textAlignVertical: 'bottom',

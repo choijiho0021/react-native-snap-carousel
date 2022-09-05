@@ -289,23 +289,28 @@ const checkStockAndMakeOrder = createAsyncThunk(
               user: mobile,
               mail: email,
             }),
-          ).then((rsp) => {
-            if (rsp.payload.status === api.API_STATUS_PREFAILED) {
-              dispatch(accountAction.getAccount({iccid, token})).then(() => {
-                const {
-                  account: {balance},
-                } = getState() as RootState;
-                dispatch(
-                  slice.actions.purchase({
-                    purchaseItems,
-                    dlvCost: false,
-                    balance,
-                  }),
-                );
-              });
-            }
-            return rsp.payload;
-          });
+          )
+            .then((rsp) => {
+              if (rsp.payload.status === api.API_STATUS_PREFAILED) {
+                dispatch(accountAction.getAccount({iccid, token})).then(() => {
+                  const {
+                    account: {balance},
+                  } = getState() as RootState;
+                  dispatch(
+                    slice.actions.purchase({
+                      purchaseItems,
+                      dlvCost: false,
+                      balance,
+                    }),
+                  );
+                });
+              }
+              return rsp.payload;
+            })
+            .catch((err) => {
+              console.log('@@@ failed to make order', err);
+              return Promise.resolve({result: api.E_INVALID_STATUS});
+            });
         }
         return Promise.resolve({result: api.E_RESOURCE_NOT_FOUND});
       },

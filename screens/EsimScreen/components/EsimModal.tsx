@@ -16,7 +16,9 @@ import AppButton from '@/components/AppButton';
 import UsageItem from '@/screens/EsimScreen/components/UsageItem';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import AppSnackBar from '@/components/AppSnackBar';
-import {isDeviceSize} from '../../../constants/SliderEntry.style';
+import {MAX_WIDTH} from '@/constants/SliderEntry.style';
+import Env from '@/environment';
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   center: {
@@ -42,6 +44,7 @@ const styles = StyleSheet.create({
   titleStyle: {
     fontSize: 20,
     marginBottom: 10,
+    color: colors.black,
   },
   esimInfoKey: {
     ...appStyles.normal16Text,
@@ -50,6 +53,7 @@ const styles = StyleSheet.create({
   },
   btnCopy: {
     backgroundColor: colors.white,
+    marginLeft: 10,
     width: 62,
     height: 40,
     borderStyle: 'solid',
@@ -71,7 +75,11 @@ const showQR = (subs: RkbSubscription) => {
         <View>
           <AppColorText
             style={appStyles.normal16Text}
-            text={i18n.t('esim:showQR:body')}
+            text={
+              isIOS
+                ? i18n.t('esim:showQR:body')
+                : i18n.t('esim:showQR:body_aos')
+            }
           />
           <View style={styles.center}>
             <QRCode value={subs.qrCode} />
@@ -87,7 +95,11 @@ const esimManualInputInfo = () => {
     <View style={{marginBottom: 20}}>
       <AppColorText
         style={appStyles.normal16Text}
-        text={i18n.t('esim:manualInput:body')}
+        text={
+          isIOS
+            ? i18n.t('esim:manualInput:body')
+            : i18n.t('esim:manualInput:body_aos')
+        }
       />
     </View>
   );
@@ -116,7 +128,6 @@ const EsimModal: React.FC<EsimModalProps> = ({
   cmiUsage,
   cmiStatus,
   cmiPending,
-  action,
 }) => {
   const [copyString, setCopyString] = useState('');
   const [showSnackBar, setShowSnackbar] = useState(false);
@@ -211,8 +222,12 @@ const EsimModal: React.FC<EsimModalProps> = ({
         return (
           <View style={styles.modalBody}>
             {esimManualInputInfo()}
-            {copyInfo('smdp', subs.smdpAddr)}
-            {copyInfo('actCode', subs.actCode)}
+
+            {isIOS && copyInfo('smdp', subs.smdpAddr)}
+            {isIOS && copyInfo('actCode', subs.actCode)}
+
+            {!isIOS &&
+              copyInfo('actCode', `LPA:1$${subs.smdpAddr}$${subs.actCode}`)}
           </View>
         );
 
@@ -255,6 +270,8 @@ const EsimModal: React.FC<EsimModalProps> = ({
         borderTopLeftRadius: 8,
         borderTopRightRadius: 8,
         padding: 20,
+        maxWidth: MAX_WIDTH,
+        width: '100%',
       }}
       onOkClose={onOkClose}
       visible={visible}>
