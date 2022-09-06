@@ -152,7 +152,7 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={{flex: 1}}>
-        <ViewShot ref={ref}>
+        <ViewShot ref={ref} style={{backgroundColor: colors.whiteTwo}}>
           <View style={styles.title}>
             <AppText style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
               {utils.toDateString(order?.orderDate)}
@@ -246,7 +246,7 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
             ))}
           </View>
           <View style={{height: 10}} />
-          <View style={[styles.box, {paddingBottom: 30, marginBottom: 20}]}>
+          <View style={[styles.box, {paddingBottom: 30, marginBottom: 10}]}>
             <AppStyledText
               textStyle={{
                 ...appStyles.semiBold16Text,
@@ -262,6 +262,7 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
           </View>
         </ViewShot>
       </ScrollView>
+
       <View style={{flexDirection: 'row'}}>
         <AppButton
           style={{
