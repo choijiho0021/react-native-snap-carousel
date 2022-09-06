@@ -26,7 +26,6 @@ import AppStyledText from '@/components/AppStyledText';
 import AppButton from '@/components/AppButton';
 import {AccountModelState} from '@/redux/modules/account';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
-import {reduce} from 'underscore';
 
 const styles = StyleSheet.create({
   container: {
