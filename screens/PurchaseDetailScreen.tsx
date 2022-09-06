@@ -99,14 +99,14 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.lightGrey,
     borderBottomWidth: 1,
     marginHorizontal: 20,
-    marginVertical: 30,
+    marginVertical: 20,
   },
   thickBar: {
     borderBottomColor: colors.black,
     borderBottomWidth: 1,
     marginHorizontal: 20,
     // marginVertical: 20,
-    marginBottom: 30,
+    marginBottom: 20,
   },
   item: {
     marginHorizontal: 20,
@@ -128,9 +128,12 @@ const styles = StyleSheet.create({
     color: colors.black,
     marginLeft: 0,
   },
+  dividerTop: {
+    marginTop: 20,
+    height: 10,
+    backgroundColor: colors.whiteTwo,
+  },
   divider: {
-    // marginTop: 25,
-    // marginBottom: 20,
     height: 10,
     backgroundColor: colors.whiteTwo,
   },
@@ -145,7 +148,7 @@ const styles = StyleSheet.create({
     height: isDeviceSize('small') ? 30 : 36,
     alignItems: 'center',
     borderBottomWidth: 0,
-    marginBottom: 20,
+    // marginBottom: 20,
   },
   fontWeightBold: {
     fontWeight: 'bold',
@@ -163,6 +166,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#ffffff',
   },
+  currencystyle: {},
 });
 
 type PurchaseDetailScreenNavigationProp = StackNavigationProp<
@@ -325,6 +329,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
               format="price"
               valueStyle={appStyles.roboto16Text}
               value={item.price}
+              currencyStyle={[styles.normal16BlueTxt, {color: colors.black}]}
             />
           ))}
         {/* {!esimApp && ( */}
@@ -338,6 +343,8 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
             format="price"
             valueStyle={appStyles.roboto16Text}
             value={order.totalPrice}
+            currencyStyle={[styles.normal16BlueTxt, {color: colors.black}]}
+            balanceStyle={[styles.normal16BlueTxt, {color: colors.black}]}
           />
         </View>
         {/* )} */}
@@ -351,6 +358,8 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
             labelStyle={styles.label2}
             valueStyle={appStyles.roboto16Text}
             value={balanceCharge}
+            balanceStyle={[styles.normal16BlueTxt, {color: colors.black}]}
+            currencyStyle={[styles.normal16BlueTxt, {color: colors.black}]}
           />
         )}
         <View style={styles.bar} />
@@ -453,7 +462,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     return (
       <View>
         <AppText style={styles.date}>
-          {order.orderDate?.split('+')[0].replace('T', ' ')}
+          {utils.toDateString(order?.orderDate)}
         </AppText>
         <View style={styles.productTitle}>
           {isCanceled && (
@@ -480,7 +489,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           value={pg}
           valueStyle={styles.labelValue}
         />
-        <View style={styles.divider} />
+        <View style={styles.dividerTop} />
       </View>
     );
   }, [isCanceled, method?.paymentMethod, order]);

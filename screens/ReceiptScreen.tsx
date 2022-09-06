@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
   },
   label: {
     ...appStyles.normal14Text,
+    color: '#777777',
     lineHeight: 36,
   },
   value: {
@@ -201,7 +202,7 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
                 label={i18n.t(`rcpt:${k}`)}
                 labelStyle={styles.label}
                 value={v}
-                valueStyle={styles.value}
+                valueStyle={[styles.value, {fontWeight: '600'}]}
               />
             ))}
             {order && (
@@ -240,7 +241,7 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
                 label={i18n.t(`rcpt:${k}`)}
                 labelStyle={styles.label}
                 value={v}
-                valueStyle={styles.value}
+                valueStyle={[styles.value, {fontWeight: '400'}]}
               />
             ))}
           </View>
@@ -252,6 +253,7 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
                 color: colors.warmGrey,
                 lineHeight: 24,
                 textAlign: 'right',
+                fontWeight: '600',
               }}
               text={i18n.t('rcpt:tail')}
               format={{b: {color: colors.clearBlue}}}
