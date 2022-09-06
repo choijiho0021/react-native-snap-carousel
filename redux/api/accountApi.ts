@@ -6,19 +6,16 @@ import api, {ApiResult, ApiToken, DrupalNode, DrupalNodeJsonApi} from './api';
 export type RkbAccount = {
   nid: number;
   uuid: string;
-  status: string;
-  expDate: string;
+  status?: string;
+  expDate?: string;
   balance: number;
-  simPartnerId: number;
-  actDate: string;
-  firstActDate: string;
-  mobile: string;
-  deviceToken: string;
-  fcmToken: string;
-  simCardName: string;
-  simCardImage: string;
-  userAccount: string;
-  iccid: string;
+  actDate?: string;
+  firstActDate?: string;
+  mobile?: string;
+  deviceToken?: string;
+  fcmToken?: string;
+  userAccount?: string;
+  iccid?: string;
 };
 
 const toAccount = (
@@ -34,14 +31,11 @@ const toAccount = (
         status: item.field_status,
         expDate: item.field_expiration_date,
         balance: utils.stringToNumber(item.field_balance) || 0,
-        simPartnerId: utils.stringToNumber(item.field_ref_sim_partner),
         actDate: item.field_activation_date,
         firstActDate: item.field_first_activation_date,
         mobile: item.field_mobile,
         old_deviceToken: item.field_device_token,
         old_fcmToken: item.field_fcm_token,
-        simCardName: item.sim_card_name,
-        simCardImage: item.sim_card_image,
         userAccount: item.field_ref_user_account,
         isPushNotiEnabled: item.field_is_notification_enabled == 'true',
       })),
@@ -52,7 +46,7 @@ const toAccount = (
   if (!_.isEmpty(data._links) || !_.isEmpty(data.nid)) {
     return api.success([
       {
-        nid: utils.stringToNumber(data.nid[0].value),
+        nid: utils.stringToNumber(data.nid[0].value) || 0,
         uuid: data.uuid[0].value,
         iccid: data.title && data.title[0].value,
         status: data.field_status && data.field_status[0].value,
@@ -71,7 +65,6 @@ const toAccount = (
         old_deviceToken:
           data.field_device_token && data.field_device_token[0].value,
         old_fcmToken: data.field_fcm_token && data.field_fcm_token[0].value,
-        simPartnerId: undefined,
       },
     ]);
   }
@@ -93,7 +86,6 @@ const toAccount = (
         old_deviceToken: item.attributes.field_device_token,
         old_fcmToken: item.attributes.field_fcm_token,
         isPushNotiEnabled: item.attributes.field_is_notification_enabled,
-        simPartnerId: undefined,
         uid: undefined,
       })),
     );
@@ -130,8 +122,11 @@ const getAccount = ({iccid, token}: {iccid?: string; token?: string}) => {
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
   return api.callHttpGet(
-    `${api.httpUrl(api.path.account)}/${iccid}?_format=json`,
-    toAccount,
+    `${api.httpUrl(api.path.rokApi.rokebi.account)}/${iccid}?_format=json`,
+    (rsp) =>
+      rsp.result === 0
+        ? toAccount(rsp.objects)
+        : api.failure(rsp.result, rsp.error),
     api.withToken(token, 'json'),
   );
 };

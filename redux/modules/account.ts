@@ -99,7 +99,6 @@ export type AccountModelState = {
   email?: string;
   mobile?: string;
   token?: string;
-  simPartnerId?: number;
   actDate?: string;
   firstActDate?: string;
   userId?: string;
@@ -212,6 +211,8 @@ const logInAndGetAccount = createAsyncThunk(
               const {
                 account: {old_deviceToken},
               } = getState() as RootState;
+
+              console.log('@@@ get account', account);
 
               messaging()
                 .getToken()
@@ -339,8 +340,6 @@ const updateAccountState = (
   if (payload.isFirst !== undefined) newState.isFirst = payload.isFirst;
 
   if (_.isNumber(payload.balance)) newState.balance = payload.balance;
-  if (_.isNumber(payload.simPartnerId))
-    newState.simPartnerId = payload.simPartnerId;
   if (_.isNumber(payload.nid)) newState.nid = payload.nid;
   if (_.isNumber(payload.uid)) newState.uid = payload.uid;
 
@@ -372,7 +371,6 @@ const slice = createSlice({
       ...state,
       expDate: undefined,
       balance: undefined,
-      simPartnerId: undefined,
       actDate: undefined,
       firstActDate: undefined,
       userId: undefined,

@@ -103,6 +103,7 @@ const path = {
       ota: 'rokebi/svc/ota',
       reg: 'rokebi/reg',
       user: 'rokebi/user',
+      account: 'rokebi/account',
       prodByCountry: 'rokebi/prod/bycntry',
     },
     pv: {
