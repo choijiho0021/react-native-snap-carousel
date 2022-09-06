@@ -51,15 +51,12 @@ const styles = StyleSheet.create({
   },
   inner: {
     maginHorizontal: 20,
+    width: '90%',
     paddingTop: 25,
     backgroundColor: 'white',
   },
   icon: {
     marginVertical: 15,
-  },
-  titleViewStyle: {
-    marginBottom: 20,
-    alignSelf: 'center',
   },
 });
 
@@ -225,7 +222,10 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
               />
             )}
             {title && (
-              <View style={titleViewStyle || styles.titleViewStyle}>
+              <View
+                style={
+                  titleViewStyle || {marginBottom: bottom ? undefined : 20}
+                }>
                 <AppText style={titleStyle || styles.title}>{title}</AppText>
               </View>
             )}
