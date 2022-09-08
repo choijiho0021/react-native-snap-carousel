@@ -53,9 +53,6 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:host="rokebi.page.link" android:scheme="https"/>
                 <data android:host="com.uangel.rokebi-ESIM" android:scheme="https"/>
-                <data
-                    android:scheme="https"
-                    android:host="www.rokebi.com" />
             </intent-filter>
         </activity>
         <activity
