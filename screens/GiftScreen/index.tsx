@@ -10,7 +10,7 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {bindActionCreators} from 'redux';
-import SendSMS from 'react-native-sms';
+// import SendSMS from 'react-native-sms';
 import {connect} from 'react-redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
@@ -235,21 +235,21 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
       }\n${webUrl}${i18n.t('gift:msgBody2')}  `;
 
       switch (method) {
-        case MESSAGE: {
-          SendSMS.send(
-            {
-              body,
-              successTypes: ['sent', 'queued'],
-            },
-            (success, cancel, err) => {
-              console.log(`SMS success:${success} cancel:${cancel} err:${err}`);
-              if (success) {
-                afterSend(item, true);
-              }
-            },
-          );
-          break;
-        }
+        // case MESSAGE: {
+        //   SendSMS.send(
+        //     {
+        //       body,
+        //       successTypes: ['sent', 'queued'],
+        //     },
+        //     (success, cancel, err) => {
+        //       console.log(`SMS success:${success} cancel:${cancel} err:${err}`);
+        //       if (success) {
+        //         afterSend(item, true);
+        //       }
+        //     },
+        //   );
+        //   break;
+        // }
         default: // kakao
         {
           try {
@@ -295,7 +295,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
     () => (
       <View>
         <View style={styles.method}>
-          {[KAKAO, MESSAGE].map((v) => (
+          {[KAKAO].map((v) => (
             <Pressable
               key={v}
               style={styles.kakao}

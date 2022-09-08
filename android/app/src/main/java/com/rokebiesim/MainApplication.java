@@ -17,7 +17,7 @@ import com.facebook.react.ReactApplication;
 import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import com.swmansion.reanimated.ReanimatedPackage;
 import cl.json.RNSharePackage;
-import com.tkporter.sendsms.SendSMSPackage;
+//import com.tkporter.sendsms.SendSMSPackage;
 import com.adjust.nativemodule.AdjustPackage;
 import com.reactnativesimcardsmanager.SimCardsManagerPackage;
 import com.github.amarcruz.rnshortcutbadge.RNAppBadgePackage;
@@ -155,7 +155,7 @@ public class MainApplication extends Application implements ReactApplication {
                             new MainReactPackage(),
             new ReanimatedPackage(),
             new RNSharePackage(),
-            new SendSMSPackage(),
+//            new SendSMSPackage(),
             new CameraRollPackage(),
             new RNViewShotPackage(),
                             new AdjustPackage(),
