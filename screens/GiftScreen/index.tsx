@@ -2,6 +2,7 @@ import {
   ImageBackground,
   Pressable,
   SafeAreaView,
+  Share,
   StyleSheet,
   View,
 } from 'react-native';
@@ -235,21 +236,20 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
       }\n${webUrl}${i18n.t('gift:msgBody2')}  `;
 
       switch (method) {
-        // case MESSAGE: {
-        //   SendSMS.send(
-        //     {
-        //       body,
-        //       successTypes: ['sent', 'queued'],
-        //     },
-        //     (success, cancel, err) => {
-        //       console.log(`SMS success:${success} cancel:${cancel} err:${err}`);
-        //       if (success) {
-        //         afterSend(item, true);
-        //       }
-        //     },
-        //   );
-        //   break;
-        // }
+        case MESSAGE: {
+          const result = await Share.share({
+            message: body,
+          });
+
+          if (result.action === Share.sharedAction) {
+            if (!result.activityType) {
+              afterSend(item, true);
+            }
+          } else if (result.action === Share.dismissedAction) {
+            console.log('Share SMS dismissed');
+          }
+          break;
+        }
         default: // kakao
         {
           try {
@@ -295,7 +295,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
     () => (
       <View>
         <View style={styles.method}>
-          {[KAKAO].map((v) => (
+          {[KAKAO, MESSAGE].map((v) => (
             <Pressable
               key={v}
               style={styles.kakao}
