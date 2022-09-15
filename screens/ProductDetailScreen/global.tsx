@@ -1,5 +1,4 @@
 /* eslint-disable no-plusplus */
-import KakaoSDK from '@actbase/react-native-kakaosdk';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
@@ -19,6 +18,7 @@ import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import KakaoSDK from '@/components/NativeModule/KakaoSDK';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
