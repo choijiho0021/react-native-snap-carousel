@@ -2,6 +2,7 @@ import {
   ImageBackground,
   Pressable,
   SafeAreaView,
+  Share,
   StyleSheet,
   View,
 } from 'react-native';
@@ -10,7 +11,7 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {bindActionCreators} from 'redux';
-import SendSMS from 'react-native-sms';
+// import SendSMS from 'react-native-sms';
 import {connect} from 'react-redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
@@ -236,18 +237,17 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
 
       switch (method) {
         case MESSAGE: {
-          SendSMS.send(
-            {
-              body,
-              successTypes: ['sent', 'queued'],
-            },
-            (success, cancel, err) => {
-              console.log(`SMS success:${success} cancel:${cancel} err:${err}`);
-              if (success) {
-                afterSend(item, true);
-              }
-            },
-          );
+          const result = await Share.share({
+            message: body,
+          });
+
+          if (result.action === Share.sharedAction) {
+            if (!result.activityType) {
+              afterSend(item, true);
+            }
+          } else if (result.action === Share.dismissedAction) {
+            console.log('Share SMS dismissed');
+          }
           break;
         }
         default: // kakao
