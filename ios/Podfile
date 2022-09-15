@@ -20,13 +20,13 @@ ENVFILES = {
   # Flags change depending on the env values.
   flags = get_default_flags()
 
-    pod 'KakaoSDKCommon' , '~> 2.9.0' # 필수 요소를 담은 공통 모듈
-    pod 'KakaoSDKAuth', '~> 2.9.0' # 사용자 인증
-    pod 'KakaoSDKUser', '~> 2.9.0' # 카카오 로그인, 사용자 관리
-    pod 'KakaoSDKTalk', '~> 2.9.0' # 친구, 메시지(카카오톡)
-    pod 'KakaoSDKLink', '~> 2.9.0' # 메시지(카카오톡 공유 2.11.0 미만 버전)
+    pod 'KakaoSDKCommon' , '~> 2.11.1' # 필수 요소를 담은 공통 모듈
+    pod 'KakaoSDKAuth', '~> 2.11.1' # 사용자 인증
+    pod 'KakaoSDKUser', '~> 2.11.1' # 카카오 로그인, 사용자 관리
+    pod 'KakaoSDKTalk', '~> 2.11.1' # 친구, 메시지(카카오톡)
+    pod 'KakaoSDKShare', '~> 2.11.1' # 메시지(카카오톡 공유 2.11.0 미만 버전)
     # pod 'KakaoSDKShare'  # 메시지(카카오톡 공유 2.11.0 이상 버전)
-    pod 'KakaoSDKTemplate', '~> 2.9.0' # 메시지 템플릿 
+    pod 'KakaoSDKTemplate', '~> 2.11.1' # 메시지 템플릿 
 
 
   use_react_native!(
