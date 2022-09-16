@@ -279,7 +279,14 @@ const Esim: React.FC<EsimProps> = ({
       switch (v) {
         case 'redirect':
           if (popUp?.rule?.navigate) {
-            navigation.navigate(popUp.rule.navigate);
+            if (popUp?.rule?.stack) {
+              navigation.navigate(popUp?.rule?.stack, {
+                screen: popUp.rule.navigate,
+                initial: false,
+              });
+            } else {
+              navigation.navigate(popUp.rule.navigate);
+            }
           } else if (popUp?.notice) {
             navigation.navigate('SimpleText', {
               key: 'noti',
