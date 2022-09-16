@@ -8,8 +8,8 @@ import androidx.core.content.ContextCompat.startActivity
 import com.facebook.react.bridge.*
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.util.KakaoCustomTabsClient
-import com.kakao.sdk.link.LinkClient
-import com.kakao.sdk.link.WebSharerClient
+import com.kakao.sdk.share.ShareClient
+import com.kakao.sdk.share.WebSharerClient
 import com.kakao.sdk.template.model.*
 
 class KakaoShareLinkModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
@@ -106,11 +106,11 @@ class KakaoShareLinkModule(private val reactContext: ReactApplicationContext) : 
         val serverCallbackArgs = HashMap<String, String>()
         serverCallbackArgs["user_id"] = "\${current_user_id}"
         serverCallbackArgs["product_id"] = "\${shared_product_id}"
-        if (LinkClient.instance.isKakaoLinkAvailable(this.reactContext)) {
-            LinkClient.instance.defaultTemplate(reactContext, template, serverCallbackArgs) { linkResult, error ->
+        if (ShareClient.instance.isKakaoTalkSharingAvailable(this.reactContext)) {
+            ShareClient.instance.shareDefault(reactContext, template, serverCallbackArgs) { linkResult, error ->
                 if (error != null) {
                     promise.reject("E_KAKAO_ERROR", error.message, error)
-                    return@defaultTemplate
+                    return@shareDefault
                 } else {
                     val map = Arguments.createMap()
                     map.putBoolean("result", true)
@@ -120,13 +120,13 @@ class KakaoShareLinkModule(private val reactContext: ReactApplicationContext) : 
                     map.putString("argument", linkResult?.argumentMsg.toString())
                     map.putString("callback", serverCallbackArgs.toString())
                     promise.resolve(map)
-                    return@defaultTemplate
+                    return@shareDefault
                 }
             }
         } else {
             // 카카오톡 미설치: 웹 공유 사용 권장
             // 웹 공유 예시 코드
-            val sharerUrl = WebSharerClient.instance.defaultTemplateUri(template, serverCallbackArgs)
+            val sharerUrl = WebSharerClient.instance.makeDefaultUrl(template, serverCallbackArgs)
 
             // 1. CustomTabs으로 Chrome 브라우저 열기
             try {
@@ -210,12 +210,12 @@ class KakaoShareLinkModule(private val reactContext: ReactApplicationContext) : 
         serverCallbackArgs["user_id"] = "\${current_user_id}"
         serverCallbackArgs["product_id"] = "\${shared_product_id}"
 
-        if (LinkClient.instance.isKakaoLinkAvailable(reactContext)) {
-            LinkClient.instance.customTemplate(reactContext, templateId = templateId.toLong(), templateArgs = templateArgs, serverCallbackArgs = serverCallbackArgs) {
+        if (ShareClient.instance.isKakaoTalkSharingAvailable(reactContext)) {
+            ShareClient.instance.shareCustom(reactContext, templateId = templateId.toLong(), templateArgs = templateArgs, serverCallbackArgs = serverCallbackArgs) {
                 linkResult, error ->
                 if (error != null) {
                     promise.reject("E_KAKAO_ERROR", error.message, error)
-                    return@customTemplate
+                    return@shareCustom
                 } else {
                     val map = Arguments.createMap()
                     map.putBoolean("result", true)
@@ -225,7 +225,7 @@ class KakaoShareLinkModule(private val reactContext: ReactApplicationContext) : 
                     map.putString("argument", linkResult?.argumentMsg.toString())
                     map.putString("callback", serverCallbackArgs.toString())
                     promise.resolve(map)
-                    return@customTemplate
+                    return@shareCustom
                 }
             }
         } else {
