@@ -349,7 +349,6 @@ const updateAccountState = (
 
 const initialState: AccountModelState = {
   loggedIn: false,
-  isSupportDev: true,
   isFirst: false,
 };
 

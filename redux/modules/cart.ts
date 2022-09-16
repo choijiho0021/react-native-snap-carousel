@@ -269,9 +269,10 @@ const slice = createSlice({
 const checkStockAndMakeOrder = createAsyncThunk(
   'cart/checkStockAndMakeOrder',
   (info: PaymentInfo, {dispatch, getState}) => {
-    const {account, cart} = getState() as RootState;
+    const {account, cart, sim} = getState() as RootState;
     const {token, iccid, email, mobile} = account;
     const {purchaseItems, orderId} = cart;
+    const {esimIccid} = sim;
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
@@ -286,6 +287,7 @@ const checkStockAndMakeOrder = createAsyncThunk(
               info,
               token,
               iccid,
+              esimIccid,
               user: mobile,
               mail: email,
             }),

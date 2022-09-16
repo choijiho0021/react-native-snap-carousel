@@ -334,6 +334,7 @@ const makeOrder = ({
   mail,
   token,
   iccid,
+  esimIccid,
   orderId,
 }: {
   items: PurchaseItem[];
@@ -342,6 +343,7 @@ const makeOrder = ({
   mail?: string;
   token?: string;
   iccid?: string;
+  esimIccid?: string;
   orderId?: number;
 }) => {
   if (_.isEmpty(items))
@@ -376,6 +378,7 @@ const makeOrder = ({
   const {esimCurrency} = Env.get();
   const body = {
     iccid,
+    esimIccid,
     order: {
       orderId,
       type: orderType,

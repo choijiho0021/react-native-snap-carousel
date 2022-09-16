@@ -1,8 +1,9 @@
 import {
   ImageBackground,
+  Platform,
   Pressable,
   SafeAreaView,
-  Share,
+  Linking,
   StyleSheet,
   View,
 } from 'react-native';
@@ -11,7 +12,6 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {bindActionCreators} from 'redux';
-// import SendSMS from 'react-native-sms';
 import {connect} from 'react-redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
@@ -178,6 +178,8 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   );
   const [showSnackBar, setShowSnackbar] = useState(false);
 
+  const SMSDivider = useMemo(() => (Platform.OS === 'android' ? '?' : '&'), []);
+
   useEffect(() => {
     if (!promotion.stat.signupGift) promotionActions.getPromotionStat();
   }, [promotion.stat.signupGift]);
@@ -237,17 +239,12 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
 
       switch (method) {
         case MESSAGE: {
-          const result = await Share.share({
-            message: body,
-          });
+          const result = await Linking.openURL(`sms:${SMSDivider}body=${body}`);
 
-          if (result.action === Share.sharedAction) {
-            if (!result.activityType) {
-              afterSend(item, true);
-            }
-          } else if (result.action === Share.dismissedAction) {
-            console.log('Share SMS dismissed');
+          if (result) {
+            afterSend(item, true);
           }
+
           break;
         }
         default: // kakao
@@ -275,7 +272,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         }
       }
     },
-    [afterSend, createLink],
+    [SMSDivider, afterSend, createLink],
   );
 
   const info = useCallback(

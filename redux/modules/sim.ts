@@ -15,12 +15,14 @@ export const getSimCardList = createAsyncThunk(
 );
 export interface SimModelState {
   iccid?: string;
+  esimIccid?: string;
   simPartner?: string;
   simList: RkbSimCard[];
 }
 
 const initialState: SimModelState = {
   simList: [],
+  // esimIccid: '89852340003821181279', 테스트용
 };
 
 const slice = createSlice({
@@ -30,6 +32,10 @@ const slice = createSlice({
     addIccid: (state, action) => {
       state.iccid = action.payload.iccid;
     },
+    update: (state, action) => ({
+      ...state,
+      ...action.payload,
+    }),
   },
 
   extraReducers: (builder) => {

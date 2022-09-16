@@ -279,7 +279,14 @@ const Esim: React.FC<EsimProps> = ({
       switch (v) {
         case 'redirect':
           if (popUp?.rule?.navigate) {
-            navigation.navigate(popUp.rule.navigate);
+            if (popUp?.rule?.stack) {
+              navigation.navigate(popUp?.rule?.stack, {
+                screen: popUp.rule.navigate,
+                initial: false,
+              });
+            } else {
+              navigation.navigate(popUp.rule.navigate);
+            }
           } else if (popUp?.notice) {
             navigation.navigate('SimpleText', {
               key: 'noti',
@@ -540,14 +547,13 @@ const Esim: React.FC<EsimProps> = ({
   }, [isSupport, notification]);
 
   useEffect(() => {
-    const runDeppLink = async () => {
-      // Get the deep link used to open the app
+    const runDeepLink = async () => {
       const initialUrl = await Linking.getInitialURL();
-      const urlSplit = initialUrl?.split('/');
+      const urlSplit = initialUrl?.split('?');
 
-      if (urlSplit && urlSplit.length >= 4) {
-        const deepLinkPath = urlSplit[3].split('?')[0];
-
+      if (urlSplit && urlSplit.length >= 2) {
+        const schemeSplit = urlSplit[0].split('/');
+        const deepLinkPath = schemeSplit[schemeSplit.length - 1];
         if (deepLinkPath === 'PROMOTION') {
           setPopupDisabled(true);
           exitApp('redirect');
@@ -555,7 +561,7 @@ const Esim: React.FC<EsimProps> = ({
       }
     };
 
-    runDeppLink();
+    runDeepLink();
   }, [exitApp]);
 
   useEffect(() => {
