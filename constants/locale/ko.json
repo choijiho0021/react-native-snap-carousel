@@ -453,6 +453,7 @@
   "esim:usedInfo": "사용이 완료된 상품입니다.",
   "esim:info": "사용 방법 및 유의 사항",
   "esim:usablePeriod": "유효기간",
+  "esim:reghargeablePeriod": "충전 가능 기간",
   "esim:expired": "기한만료",
   // "esim:notice": "통화 상품은 로깨비톡 앱에서 사용할 수 있습니다.",
   "esim:refresh": " \u00B7  업데이트 하시려면 아래로 당기세요\n \u00B7  도움이 필요하시면 상단 오른쪽의 물음표를 눌러주세요",
