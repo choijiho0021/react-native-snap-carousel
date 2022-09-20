@@ -30,6 +30,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {useHeaderHeight} from '@react-navigation/elements';
+import {Adjust} from 'react-native-adjust';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -549,6 +550,8 @@ const Esim: React.FC<EsimProps> = ({
   useEffect(() => {
     const runDeepLink = async () => {
       const initialUrl = await Linking.getInitialURL();
+      if (initialUrl) Adjust.appWillOpenUrl(initialUrl);
+
       const urlSplit = initialUrl?.split('?');
 
       if (urlSplit && urlSplit.length >= 2) {

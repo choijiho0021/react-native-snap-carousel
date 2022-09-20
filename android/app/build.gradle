@@ -401,8 +401,6 @@ dependencies {
     implementation project(':rn-fetch-blob')
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation 'me.leolin:ShortcutBadger:1.1.21@aar'
-//    implementation 'com.android.installreferrer:installreferrer:1.0'
-    implementation 'com.android.installreferrer:installreferrer:2.2' // 최신버전 테스트
     implementation 'com.google.android.gms:play-services-gcm:17.0.0'
     implementation "com.google.android.gms:play-services-auth:${safeExtGet('googlePlayServicesAuthVersion', '19.2.0')}"
     implementation "androidx.annotation:annotation:1.1.0"
@@ -424,6 +422,10 @@ dependencies {
     implementation project(path: ":@react-native-firebase_messaging")
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation project(':react-native-pager-view')
+    implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
+    implementation 'com.android.installreferrer:installreferrer:2.2'
+    // Add the following if you are using the Adjust SDK inside web views on your app
+    implementation 'com.adjust.sdk:adjust-android-webbridge:4.31.1'
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";
