@@ -19,9 +19,6 @@ import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import AppIcon from '@/components/AppIcon';
-import CameraRoll from '@react-native-community/cameraroll';
-import {getArchtype} from 'immer/dist/internal';
-import {withStyleAnimation} from 'react-native-reanimated/lib/types/lib/reanimated2/animation';
 
 const {width} = Dimensions.get('window');
 
@@ -127,8 +124,13 @@ const styles = StyleSheet.create({
     fontSize: isDeviceSize('small') ? 12 : 14,
   },
   btn: {
-    width: '45%',
+    width: '30%',
     paddingTop: 19,
+  },
+  btnDis: {
+    width: '30%',
+    paddingTop: 19,
+    opacity: 0.6,
   },
   btnTitle: {
     ...appStyles.normal14Text,
@@ -291,7 +293,12 @@ const topInfo = (item: RkbSubscription, chargeablePeriod: string) => {
   );
 };
 
-const QRnCopyInfo = (onPress: (showQR: boolean) => void) => {
+const QRnCopyInfo = (
+  onPress: (showQR: boolean) => void,
+  isChargeable: boolean,
+  onPressCharge: () => void,
+  isCharged: boolean,
+) => {
   return (
     <View style={styles.activeBottomBox}>
       <AppButton
@@ -311,6 +318,25 @@ const QRnCopyInfo = (onPress: (showQR: boolean) => void) => {
         titleStyle={styles.btnTitle}
         iconName="btnPen"
       />
+      <View
+        style={{height: 32, backgroundColor: colors.whiteThree, width: 1}}
+      />
+      {isChargeable ? (
+        <AppButton
+          style={styles.btn}
+          onPress={() => (isCharged ? null : onPressCharge())}
+          title={i18n.t('esim:reghargeable')}
+          titleStyle={styles.btnTitle}
+          iconName="btnPen"
+        />
+      ) : (
+        <AppButton
+          style={styles.btnDis}
+          title={i18n.t('esim:notreghargeable')}
+          titleStyle={styles.btnTitle}
+          iconName="btnPen"
+        />
+      )}
     </View>
   );
 };
@@ -410,18 +436,21 @@ const EsimSubs = ({
     );
   }, [item, navigation]);
 
-  const renderHisBtn = useCallback((t: string) => {
-    return (
-      <View style={[styles.sendable, styles.shadow]}>
-        <AppButton
-          title={t}
-          titleStyle={appStyles.bold14Text}
-          style={styles.giftButton}
-          // onPress={() =>}
-        />
-      </View>
-    );
-  }, []);
+  const renderHisBtn = useCallback(
+    (t: string) => {
+      return (
+        <View style={[styles.sendable, styles.shadow]}>
+          <AppButton
+            title={t}
+            titleStyle={appStyles.bold14Text}
+            style={styles.giftButton}
+            onPress={() => navigation.navigate('Charge')}
+          />
+        </View>
+      );
+    },
+    [navigation],
+  );
 
   return (
     <View
@@ -435,14 +464,14 @@ const EsimSubs = ({
         {!expired &&
           giftStatusCd !== 'S' &&
           item.type !== API.Subscription.CALL_PRODUCT &&
-          QRnCopyInfo(onPressQR)}
+          QRnCopyInfo(onPressQR, isChargeable, onPressCharge, isCharged)}
       </View>
       {isMoreInfo && (
         <View style={isMoreInfo && styles.moreInfoContent}>
           {topInfo(item, chargeablePeriod)}
           {redirectable && renderHkBtn()}
 
-          {isCharged ? (
+          {!isCharged ? (
             // 충전 내역이 있는 경우
             <>{renderHisBtn(`${i18n.t('acc:rechargeHistory2')}`)}</>
           ) : (

@@ -270,43 +270,10 @@ const EsimModal: React.FC<EsimModalProps> = ({
       case 'charge':
         return (
           <View>
-            <AppText>충전하기</AppText>
-            <AppText>
-              기존에 사용하던 eSIM에 필요한 상품을 충전할 수 있는 기능입니다.
-            </AppText>
-            <AppText>
-              기존에 구매한 eSIM과 같은 국가의 상품만 충전 가능하며, 기존 상품
-              사용이 종료되면 충전한 상품이 자동으로 이어서 사용됩니다.
-            </AppText>
-            <AppText>
-              충전가능기간내에서만상품충전이가능합니다.상품구매시충전 가능
-              기간에 유의해주세요!
-            </AppText>
-            {/* <SectionList
-              sections={prodData}
-              stickySectionHeadersEnabled
-              // keyExtractor={(item, index) => item + index}
-              renderItem={renderItem}
-              renderSectionHeader={({section: {title, data}}) =>
-                data.length >= 1 ? (
-                  <View style={styles.sectionHeader}>
-                    <AppText
-                      style={{
-                        ...appStyles.bold20Text,
-                      }}>
-                      {i18n.t(`country:${title}`)}
-                    </AppText>
-                  </View>
-                ) : null
-              }
-              renderSectionFooter={({section: {title, data}}) =>
-                title === 'daily' && prodData[1].data.length >= 1 ? (
-                  <View style={styles.divider} />
-                ) : (
-                  <View style={{width: '100%', height: 20}} />
-                )
-              }
-            /> */}
+            <AppText>{i18n.t('esim:charge')}</AppText>
+            <AppText>{i18n.t('esim:chargeModal:body1')}</AppText>
+            <AppText>{i18n.t('esim:chargeModal:body2')}</AppText>
+            <AppText>{i18n.t('esim:chargeModal:body3')}</AppText>
           </View>
         );
 
