@@ -67,6 +67,7 @@ const path = {
   uploadFile: 'file/upload',
   board: 'json/contactboard',
   subscription: 'json/subs',
+  storeSubs: 'json/subs/store',
   rkbtalk: 'json/rkbtalk',
   profile: 'json/profile',
 

@@ -110,7 +110,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   navigation,
   route,
   action,
-  account: {loggedIn, iccid, token, balance, expDate},
+  account: {iccid, mobile, token, balance, expDate},
   order,
   pending,
   loginPending,
@@ -129,9 +129,20 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const isFocused = useIsFocused();
 
   const init = useCallback(
-    ({iccid, token}: {iccid?: string; token?: string}) => {
+    ({
+      iccid,
+      mobile,
+      token,
+    }: {
+      iccid?: string;
+      mobile?: string;
+      token?: string;
+    }) => {
       if (iccid && token) {
         action.order.getSubsWithToast({iccid, token});
+      }
+      if (mobile && token) {
+        action.order.getStoreSubsWithToast({mobile, token});
       }
     },
     [action.order],
@@ -353,8 +364,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         />
       ),
     });
-    init({iccid, token});
-  }, [iccid, init, navigation, route, token]);
+    init({iccid, mobile, token});
+  }, [iccid, init, mobile, navigation, route, token]);
 
   useEffect(() => {
     async function checkShowModal() {

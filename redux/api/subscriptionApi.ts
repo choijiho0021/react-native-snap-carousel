@@ -73,10 +73,6 @@ const toStatus = (v?: string) => {
   return code[v] ? i18n.t(`his:${code[v]}`) : v;
 };
 
-const compare = (a, b) => {
-  return a.purchaseDate.localeCompare(b.purchaseDate);
-};
-
 export type RkbSubscription = {
   key: string;
   uuid: string;
@@ -225,6 +221,25 @@ const getSubscription = ({
     `${api.httpUrl(api.path.subscription)}/${iccid}${
       prodType ? `/${prodType}` : ''
     }?_format=hal_json`,
+    toSubscription,
+    api.withToken(token, 'hal+json'),
+  );
+};
+
+const getStoreSubscription = ({
+  mobile,
+  token,
+}: {
+  mobile?: string;
+  token?: string;
+}) => {
+  if (!mobile)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: mobile');
+  if (!token)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
+
+  return api.callHttpGet(
+    `${api.httpUrl(api.path.storeSubs)}/${mobile}?_format=hal_json`,
     toSubscription,
     api.withToken(token, 'hal+json'),
   );
@@ -602,6 +617,7 @@ export default {
   GIFT_STATUS_SEND,
 
   getSubscription,
+  getStoreSubscription,
   getRkbTalkSubscription,
   addSubscription,
   otaSubscription,
