@@ -35,7 +35,6 @@ import PymMethodScreen from '@/screens/PymMethodScreen';
 import StoreSearchScreen from '@/screens/StoreSearch';
 import BoardMsgRespScreen from '@/screens/BoardMsgRespScreen';
 import SimpleTextScreen from '@/screens/SimpleTextScreen';
-import CodePushScreen from '@/screens/CodePushScreen';
 import EsimScreen from '@/screens/EsimScreen';
 import GiftScreen from '@/screens/GiftScreen';
 import GiftGuideScreen from '@/screens/GiftGuideScreen';
@@ -139,7 +138,6 @@ function HomeStackComponent() {
       <HomeStack.Screen name="Payment" component={PaymentScreen} />
       <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
       <HomeStack.Screen name="PaymentResult" component={PaymentResultScreen} />
-      {/* <HomeStack.Screen name="CodePush" component={CodePushScreen} /> */}
       <HomeStack.Screen
         name="PurchaseDetail"
         component={PurchaseDetailScreen}
