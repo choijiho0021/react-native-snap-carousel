@@ -14,6 +14,7 @@ import RNExitApp from 'react-native-exit-app';
 import {Adjust, AdjustConfig} from 'react-native-adjust';
 import messaging from '@react-native-firebase/messaging';
 import codePush from 'react-native-code-push';
+import Config from 'react-native-config';
 import {API} from '@/redux/api';
 import AppAlert from '@/components/AppAlert';
 import AppToast from '@/components/AppToast';
@@ -254,7 +255,7 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
       .notifyAppReady()
       .then((_) => codePush.checkForUpdate())
       .then((update) => {
-        if (update) {
+        if (update && Config.NODE_ENV !== 'debug') {
           setIsCodepushRunning(true);
         }
       });

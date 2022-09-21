@@ -28,9 +28,6 @@ const CodePushScreen: React.FC = () => {
   const [progress, setProgress] = useState<DownloadProgress>();
 
   const codePushSync = useCallback(() => {
-    if (Config.NODE_ENV !== 'production' && Config.NODE_ENV !== 'staging')
-      return;
-
     try {
       codePush.sync(
         {
