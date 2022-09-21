@@ -587,12 +587,12 @@ const Esim: React.FC<EsimProps> = ({
     if (navigation.isFocused()) action.product.getProd();
   }, 3600 * 1000);
 
-  useEffect(() => {
-    if (sync.progress) {
-      AsyncStorage.removeItem('alreadyLaunched');
-      navigation.navigate('CodePush');
-    }
-  }, [navigation, sync.progress]);
+  // useEffect(() => {
+  //   if (sync.progress) {
+  //     AsyncStorage.removeItem('alreadyLaunched');
+  //     navigation.navigate('CodePush');
+  //   }
+  // }, [navigation, sync.progress]);
 
   useEffect(() => {
     const {mobile, loggedIn, iccid} = account;

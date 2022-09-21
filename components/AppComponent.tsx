@@ -13,6 +13,7 @@ import {connect, DispatchProp} from 'react-redux';
 import RNExitApp from 'react-native-exit-app';
 import {Adjust, AdjustConfig} from 'react-native-adjust';
 import messaging from '@react-native-firebase/messaging';
+import codePush from 'react-native-code-push';
 import {API} from '@/redux/api';
 import AppAlert from '@/components/AppAlert';
 import AppToast from '@/components/AppToast';
@@ -31,6 +32,7 @@ import {RootState} from '@/redux';
 import AppModal from './AppModal';
 import {appStyles} from '@/constants/Styles';
 import {ProductModelState} from '../redux/modules/product';
+import CodePushScreen from '@/screens/CodePushScreen';
 
 const {width: viewportWidth, height: viewportHeight} = Dimensions.get('window');
 const windowHeight = viewportHeight;
@@ -104,6 +106,7 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
 }) => {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
+  const [isCodepushRunning, setIsCodepushRunning] = useState(false);
   const [networkErr, setNetworkErr] = useState(false);
   const [loadingTextSec, setloadingTextSec] = useState(1);
 
@@ -246,11 +249,22 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    codePush
+      .notifyAppReady()
+      .then((_) => codePush.checkForUpdate())
+      .then((update) => {
+        if (update) {
+          setIsCodepushRunning(true);
+        }
+      });
+  }, []);
+
   return (
     <View style={styles.container}>
       {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-      {renderMain()}
-      {!showSplash && <CodePushModal />}
+      {isCodepushRunning ? <CodePushScreen /> : renderMain()}
+      {/* {!showSplash && !isCodepushRunning && <CodePushModal />} */}
       <AppToast />
     </View>
   );

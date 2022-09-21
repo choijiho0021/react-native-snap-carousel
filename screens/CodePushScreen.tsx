@@ -7,7 +7,6 @@ import {
   ViewStyle,
 } from 'react-native';
 import codePush, {DownloadProgress} from 'react-native-code-push';
-import Config from 'react-native-config';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -138,21 +137,17 @@ const CodePushScreen: React.FC<CodePushScreenProps> = ({
   }, [action.sync, sync.isCompleted]);
 
   useEffect(() => {
-    navigation.setOptions({
-      title: null,
-    });
-
     codePushSync();
     AppState.addEventListener('change', (state) => {
       if (state === 'active') codePushSync();
     });
   }, [codePushSync, navigation]);
 
-  useEffect(() => {
-    if (sync.isCompleted) {
-      navigation.popToTop();
-    }
-  }, [navigation, sync.isCompleted]);
+  // useEffect(() => {
+  //   if (sync.isCompleted) {
+  //     navigation.popToTop();
+  //   }
+  // }, [navigation, sync.isCompleted]);
 
   return (
     <View style={[styles.container, style]}>
@@ -163,11 +158,7 @@ const CodePushScreen: React.FC<CodePushScreenProps> = ({
       />
       {progress && (
         <AppText style={styles.text}>
-          {' '}
-          {parseInt(
-            (progress.receivedBytes / progress.totalBytes) * 100,
-            10,
-          )}%{' '}
+          {parseInt((progress.receivedBytes / progress.totalBytes) * 100, 10)}%
         </AppText>
       )}
       <AppText style={styles.text}> {syncMessage} </AppText>

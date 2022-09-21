@@ -139,7 +139,7 @@ function HomeStackComponent() {
       <HomeStack.Screen name="Payment" component={PaymentScreen} />
       <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
       <HomeStack.Screen name="PaymentResult" component={PaymentResultScreen} />
-      <HomeStack.Screen name="CodePush" component={CodePushScreen} />
+      {/* <HomeStack.Screen name="CodePush" component={CodePushScreen} /> */}
       <HomeStack.Screen
         name="PurchaseDetail"
         component={PurchaseDetailScreen}
