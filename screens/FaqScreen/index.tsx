@@ -2,7 +2,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootState} from '@reduxjs/toolkit';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {Dimensions, StyleSheet, SafeAreaView} from 'react-native';
+import {Dimensions, StyleSheet, SafeAreaView, Platform} from 'react-native';
 import {TabView} from 'react-native-tab-view';
 import {connect, DispatchProp} from 'react-redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
@@ -38,8 +38,19 @@ type FaqScreenProps = {
   info: InfoModelState;
   pending: boolean;
 };
-
-type TabViewRouteKey = 'general' | 'config' | 'payment' | 'etc';
+type TabViewRouteAndroidKey =
+  | 'generalandroid'
+  | 'configandroid'
+  | 'paymentandroid'
+  | 'etcandroid';
+type TabViewRouteIosKey = 'generalios' | 'configios' | 'paymentios' | 'etcios';
+type TabViewRouteKey =
+  | 'general'
+  | 'config'
+  | 'payment'
+  | 'etc'
+  | TabViewRouteAndroidKey
+  | TabViewRouteIosKey;
 type TabViewRoute = {
   key: TabViewRouteKey;
   title: string;
@@ -57,10 +68,10 @@ const FaqScreen: React.FC<FaqScreenProps & DispatchProp> = ({
   const routes = useMemo(
     () =>
       [
-        {key: 'general', title: i18n.t('faq:general')},
-        {key: 'config', title: i18n.t('faq:config')},
-        {key: 'payment', title: i18n.t('faq:payment')},
-        {key: 'etc', title: i18n.t('faq:etc')},
+        {key: `general${Platform.OS}`, title: i18n.t('faq:general')},
+        {key: `config${Platform.OS}`, title: i18n.t('faq:config')},
+        {key: `payment${Platform.OS}`, title: i18n.t('faq:payment')},
+        {key: `etc${Platform.OS}`, title: i18n.t('faq:etc')},
       ] as TabViewRoute[],
     [],
   );
