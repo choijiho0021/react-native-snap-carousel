@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useMemo, useState} from 'react';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {
   Dimensions,
   Pressable,
@@ -69,6 +69,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderColor: colors.whiteThree,
     borderRadius: 10,
+  },
+  giftButtonDis: {
+    flex: 1,
+    flexDirection: 'row',
+    // justifyCssssontent: 'center',
+    height: 50,
+    borderWidth: 1,
+    borderTopWidth: 0,
+    backgroundColor: colors.white,
+    borderColor: colors.whiteThree,
+    borderRadius: 10,
+    opacity: 0.6,
   },
   prodTitle: {
     paddingBottom: 13,
@@ -207,10 +219,13 @@ const title = (
   item: RkbSubscription,
   expired: boolean,
   onPress: () => void,
+  isCharged: boolean,
 ) => {
   const {giftStatusCd} = item;
   const usageCheckable =
     item.packageId?.startsWith('D') || item.partner === 'Quadcell';
+
+  const country = item.prodName?.split(' ')[0];
   return (
     <View style={styles.prodTitle}>
       <AppText
@@ -222,7 +237,7 @@ const title = (
             ? styles.usageTitleNormal
             : styles.usageTitleBold
         }>
-        {item.prodName}
+        {isCharged ? `${i18n.t('acc:rechargeDone')} ${country}` : item.prodName}
       </AppText>
 
       {expired || giftStatusCd === 'S' ? (
@@ -248,17 +263,7 @@ const title = (
   );
 };
 
-const topInfo = (item: RkbSubscription) => {
-  const chargeabledate = new Date(
-    parseInt(item.expireDate.split('-')[0], 10),
-    parseInt(item.expireDate.split('-')[1], 10),
-    parseInt(item.expireDate.split('-')[2], 10),
-  );
-
-  chargeabledate.setDate(chargeabledate.getDate() - 30);
-
-  const result = `${chargeabledate.getFullYear()}.${chargeabledate.getMonth()}.${chargeabledate.getDate()}`;
-
+const topInfo = (item: RkbSubscription, chargeablePeriod: string) => {
   return (
     <View>
       {item.type !== API.Subscription.CALL_PRODUCT && (
@@ -280,7 +285,7 @@ const topInfo = (item: RkbSubscription) => {
         <AppText style={styles.normal14White}>
           {i18n.t('esim:reghargeablePeriod')}
         </AppText>
-        <AppText style={styles.normal14White}>{result}</AppText>
+        <AppText style={styles.normal14White}>{chargeablePeriod}</AppText>
       </View>
     </View>
   );
@@ -331,6 +336,28 @@ const EsimSubs = ({
   );
   const [isMoreInfo, setIsMoreInfo] = useState(false);
   const [isChargeable, setIsChargeable] = useState(true);
+  const [isCharged, setIsCharged] = useState(false);
+  const [chargeablePeriod, setChargeablePeriod] = useState('');
+
+  useEffect(() => {
+    const chargeabledate = new Date(
+      parseInt(item.expireDate.split('-')[0], 10),
+      parseInt(item.expireDate.split('-')[1], 10) - 1,
+      parseInt(item.expireDate.split('-')[2], 10),
+    );
+
+    chargeabledate.setDate(chargeabledate.getDate() - 30);
+
+    const today = new Date();
+
+    setChargeablePeriod(
+      `${chargeabledate.getFullYear()}.${
+        chargeabledate.getMonth() + 1
+      }.${chargeabledate.getDate()}`,
+    );
+
+    if (chargeabledate < today) setIsChargeable(false);
+  }, [item.expireDate, setChargeablePeriod]);
 
   const redirectable = useMemo(
     () =>
@@ -349,16 +376,52 @@ const EsimSubs = ({
           <AppButton
             title={t}
             titleStyle={appStyles.bold14Text}
-            style={styles.giftButton}
+            style={
+              // 충전하기 버튼 충전불가능일때 Disable
+              !isChargeable && !isGift
+                ? styles.giftButtonDis
+                : styles.giftButton
+            }
             onPress={() =>
-              isGift ? navigation.navigate('Gift', {item}) : onPressCharge()
+              isGift
+                ? navigation.navigate('Gift', {item})
+                : isChargeable && onPressCharge()
             }
           />
         </View>
       );
     },
-    [item, navigation, onPressCharge],
+    [isChargeable, item, navigation, onPressCharge],
   );
+
+  const renderHkBtn = useCallback(() => {
+    return (
+      <Pressable
+        style={styles.redirectHK}
+        onPress={() =>
+          navigation.navigate('RedirectHK', {
+            iccid: item.subsIccid,
+            orderNo: item.subsOrderNo,
+          })
+        }>
+        <AppIcon name="iconCheckSmall" />
+        <Text style={styles.redirectText}>{i18n.t('esim:redirectHK')}</Text>
+      </Pressable>
+    );
+  }, [item, navigation]);
+
+  const renderHisBtn = useCallback((t: string) => {
+    return (
+      <View style={[styles.sendable, styles.shadow]}>
+        <AppButton
+          title={t}
+          titleStyle={appStyles.bold14Text}
+          style={styles.giftButton}
+          // onPress={() =>}
+        />
+      </View>
+    );
+  }, []);
 
   return (
     <View
@@ -367,7 +430,7 @@ const EsimSubs = ({
         expired || giftStatusCd === 'S' ? styles.cardExpiredBg : styles.shadow,
       ]}>
       <View style={sendable ? styles.infoRadiusBorder : styles.infoCard}>
-        {title(item, expired, onPressUsage)}
+        {title(item, expired, onPressUsage, isCharged)}
 
         {!expired &&
           giftStatusCd !== 'S' &&
@@ -376,28 +439,24 @@ const EsimSubs = ({
       </View>
       {isMoreInfo && (
         <View style={isMoreInfo && styles.moreInfoContent}>
-          {topInfo(item)}
-          {redirectable && (
-            <Pressable
-              style={styles.redirectHK}
-              onPress={() =>
-                navigation.navigate('RedirectHK', {
-                  iccid: item.subsIccid,
-                  orderNo: item.subsOrderNo,
-                })
-              }>
-              <AppIcon name="iconCheckSmall" />
-              <Text style={styles.redirectText}>
-                {i18n.t('esim:redirectHK')}
-              </Text>
-            </Pressable>
+          {topInfo(item, chargeablePeriod)}
+          {redirectable && renderHkBtn()}
+
+          {isCharged ? (
+            // 충전 내역이 있는 경우
+            <>{renderHisBtn(`${i18n.t('acc:rechargeHistory2')}`)}</>
+          ) : (
+            // 충전 내역이 없는 경우
+            <>
+              {sendable && (
+                <View style={styles.btnFrame}>
+                  {renderBtn(`${i18n.t('acc:goRecharge')}`, false)}
+                  {renderBtn(`${i18n.t('esim:sendGift')}`, true)}
+                </View>
+              )}
+            </>
           )}
-          {sendable && (
-            <View style={styles.btnFrame}>
-              {isChargeable && renderBtn(`${i18n.t('acc:goRecharge')}`, false)}
-              {renderBtn(`${i18n.t('esim:sendGift')}`, true)}
-            </View>
-          )}
+
           <View style={styles.line} />
         </View>
       )}

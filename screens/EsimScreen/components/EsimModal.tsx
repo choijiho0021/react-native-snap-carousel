@@ -1,7 +1,7 @@
 import {bindActionCreators, RootState} from 'redux';
 import Clipboard from '@react-native-community/clipboard';
 import React, {memo, useCallback, useMemo, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {SectionList, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import _ from 'underscore';
 import QRCode from 'react-native-qrcode-svg';
@@ -9,6 +9,7 @@ import AppModal from '@/components/AppModal';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import {RkbProduct} from '@/redux/api/productApi';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
 import AppColorText from '@/components/AppColorText';
@@ -212,6 +213,17 @@ const EsimModal: React.FC<EsimModalProps> = ({
     [product.prodByCountry],
   );
 
+  const renderProduct = useCallback(
+    (sCountry: string) => {
+      product.prodByCountry.forEach((p) => {
+        if (p.country === sCountry[0]) console.log('@@@go', p);
+      });
+      // console.log('@@@product', product.prodByCountry);
+      // console.log('@@@subs', sCountry);
+    },
+    [product],
+  );
+
   const modalBody = useCallback(() => {
     if (!subs) return null;
     // const cmiUsage = {
@@ -270,7 +282,31 @@ const EsimModal: React.FC<EsimModalProps> = ({
               충전가능기간내에서만상품충전이가능합니다.상품구매시충전 가능
               기간에 유의해주세요!
             </AppText>
-            {searchProduct(subs)}
+            {/* <SectionList
+              sections={prodData}
+              stickySectionHeadersEnabled
+              // keyExtractor={(item, index) => item + index}
+              renderItem={renderItem}
+              renderSectionHeader={({section: {title, data}}) =>
+                data.length >= 1 ? (
+                  <View style={styles.sectionHeader}>
+                    <AppText
+                      style={{
+                        ...appStyles.bold20Text,
+                      }}>
+                      {i18n.t(`country:${title}`)}
+                    </AppText>
+                  </View>
+                ) : null
+              }
+              renderSectionFooter={({section: {title, data}}) =>
+                title === 'daily' && prodData[1].data.length >= 1 ? (
+                  <View style={styles.divider} />
+                ) : (
+                  <View style={{width: '100%', height: 20}} />
+                )
+              }
+            /> */}
           </View>
         );
 
@@ -297,7 +333,7 @@ const EsimModal: React.FC<EsimModalProps> = ({
         );
       }
     }
-  }, [cmiPending, cmiStatus, cmiUsage, copyInfo, modal, searchProduct, subs]);
+  }, [cmiPending, cmiStatus, cmiUsage, copyInfo, modal, subs]);
 
   return (
     <AppModal

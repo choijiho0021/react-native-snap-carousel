@@ -340,6 +340,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     if (route.params?.partner) {
       const partnerIds = route.params.partner;
 
+      console.log('@@@partnerIds', partnerIds);
       const list: RkbProduct[][] = partnerIds
         .map((p) => prodByLocalOp.get(p)?.map((p2) => prodList.get(p2)))
         .reduce(
@@ -404,6 +405,8 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
       )}
 
       <View style={{flex: 1}}>
+        {console.log('@@@prodData', prodData)}
+
         <SectionList
           sections={prodData}
           stickySectionHeadersEnabled

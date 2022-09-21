@@ -317,9 +317,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [checkCmiData, checkQuadcellData],
   );
 
-  const onPressCharge = useCallback(() => {
+  const onPressCharge = useCallback((item: RkbSubscription) => {
     setShowModal(true);
     setModal('charge');
+    setSubs(item);
   }, []);
 
   const renderSubs = useCallback(
@@ -335,7 +336,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             setSubs(item);
           }}
           onPressUsage={() => onPressUsage(item)}
-          onPressCharge={() => onPressCharge()}
+          onPressCharge={() => onPressCharge(item)}
         />
       );
     },
