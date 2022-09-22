@@ -217,130 +217,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const title = (
-  item: RkbSubscription,
-  expired: boolean,
-  onPress: () => void,
-  isCharged: boolean,
-) => {
-  const {giftStatusCd} = item;
-  const usageCheckable =
-    item.packageId?.startsWith('D') || item.partner === 'Quadcell';
-
-  const country = item.prodName?.split(' ')[0];
-  return (
-    <View style={styles.prodTitle}>
-      <AppText
-        key={item.key}
-        numberOfLines={1}
-        ellipsizeMode="tail"
-        style={
-          expired || giftStatusCd === 'S'
-            ? styles.usageTitleNormal
-            : styles.usageTitleBold
-        }>
-        {isCharged ? `${i18n.t('acc:rechargeDone')} ${country}` : item.prodName}
-      </AppText>
-
-      {expired || giftStatusCd === 'S' ? (
-        <View style={styles.expiredBg}>
-          <AppText key={item.nid} style={appStyles.normal12Text}>
-            {giftStatusCd === 'S' ? i18n.t('esim:S') : i18n.t('esim:expired')}
-          </AppText>
-        </View>
-      ) : (
-        // expired 제외의 경우에는 사용량 확인 출력?
-        usageCheckable && (
-          <Pressable
-            onPress={onPress}
-            style={{flexDirection: 'row', alignItems: 'center'}}>
-            <AppText key={item.nid} style={styles.checkUsage}>
-              {i18n.t('usim:checkUsage')}
-            </AppText>
-            <AppIcon name="iconArrowRightBlue" style={{marginLeft: 4}} />
-          </Pressable>
-        )
-      )}
-    </View>
-  );
-};
-
-const topInfo = (item: RkbSubscription, chargeablePeriod: string) => {
-  return (
-    <View>
-      {item.type !== API.Subscription.CALL_PRODUCT && (
-        <View style={styles.inactiveContainer}>
-          <AppText style={styles.normal14White}>{i18n.t('esim:iccid')}</AppText>
-          <AppText style={styles.normal14White}>{item.subsIccid}</AppText>
-        </View>
-      )}
-      <View style={styles.inactiveContainer}>
-        <AppText style={styles.normal14White}>
-          {i18n.t('esim:usablePeriod')}
-        </AppText>
-        <AppText style={styles.normal14White}>{`${utils.toDateString(
-          item.purchaseDate,
-          'YYYY.MM.DD',
-        )} - ${utils.toDateString(item.expireDate, 'YYYY.MM.DD')}`}</AppText>
-      </View>
-      <View style={styles.inactiveContainer}>
-        <AppText style={styles.normal14White}>
-          {i18n.t('esim:reghargeablePeriod')}
-        </AppText>
-        <AppText style={styles.normal14White}>{chargeablePeriod}</AppText>
-      </View>
-    </View>
-  );
-};
-
-const QRnCopyInfo = (
-  onPress: (showQR: boolean) => void,
-  isChargeable: boolean,
-  onPressCharge: () => void,
-  isCharged: boolean,
-) => {
-  return (
-    <View style={styles.activeBottomBox}>
-      <AppButton
-        style={styles.btn}
-        onPress={() => onPress(true)}
-        title={i18n.t('esim:showQR')}
-        titleStyle={styles.btnTitle}
-        iconName="btnQr"
-      />
-      <View
-        style={{height: 32, backgroundColor: colors.whiteThree, width: 1}}
-      />
-      <AppButton
-        style={styles.btn}
-        onPress={() => onPress(false)}
-        title={i18n.t('esim:manualInput')}
-        titleStyle={styles.btnTitle}
-        iconName="btnPen"
-      />
-      <View
-        style={{height: 32, backgroundColor: colors.whiteThree, width: 1}}
-      />
-      {isChargeable ? (
-        <AppButton
-          style={styles.btn}
-          onPress={() => (isCharged ? null : onPressCharge())}
-          title={i18n.t('esim:reghargeable')}
-          titleStyle={styles.btnTitle}
-          iconName="btnPen"
-        />
-      ) : (
-        <AppButton
-          style={styles.btnDis}
-          title={i18n.t('esim:notreghargeable')}
-          titleStyle={styles.btnTitle}
-          iconName="btnPen"
-        />
-      )}
-    </View>
-  );
-};
-
 const EsimSubs = ({
   item,
   onPressQR,
@@ -395,6 +271,150 @@ const EsimSubs = ({
     [expired, giftStatusCd, item.country, item.partner, item.prodName],
   );
 
+  const title = useCallback(
+    (onPress: () => void) => {
+      const usageCheckable =
+        item.packageId?.startsWith('D') || item.partner === 'Quadcell';
+
+      const country = item.prodName?.split(' ')[0];
+      return (
+        <View style={styles.prodTitle}>
+          <AppText
+            key={item.key}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={
+              expired || giftStatusCd === 'S'
+                ? styles.usageTitleNormal
+                : styles.usageTitleBold
+            }>
+            {isCharged
+              ? `${i18n.t('acc:rechargeDone')} ${country}`
+              : item.prodName}
+          </AppText>
+
+          {expired || giftStatusCd === 'S' ? (
+            <View style={styles.expiredBg}>
+              <AppText key={item.nid} style={appStyles.normal12Text}>
+                {giftStatusCd === 'S'
+                  ? i18n.t('esim:S')
+                  : i18n.t('esim:expired')}
+              </AppText>
+            </View>
+          ) : (
+            // expired 제외의 경우에는 사용량 확인 출력?
+            usageCheckable && (
+              <Pressable
+                onPress={onPress}
+                style={{flexDirection: 'row', alignItems: 'center'}}>
+                <AppText key={item.nid} style={styles.checkUsage}>
+                  {i18n.t('usim:checkUsage')}
+                </AppText>
+                <AppIcon name="iconArrowRightBlue" style={{marginLeft: 4}} />
+              </Pressable>
+            )
+          )}
+        </View>
+      );
+    },
+    [
+      expired,
+      giftStatusCd,
+      isCharged,
+      item.key,
+      item.nid,
+      item.packageId,
+      item.partner,
+      item.prodName,
+    ],
+  );
+
+  const topInfo = useCallback(() => {
+    return (
+      <View>
+        {item.type !== API.Subscription.CALL_PRODUCT && (
+          <View style={styles.inactiveContainer}>
+            <AppText style={styles.normal14White}>
+              {i18n.t('esim:iccid')}
+            </AppText>
+            <AppText style={styles.normal14White}>{item.subsIccid}</AppText>
+          </View>
+        )}
+        <View style={styles.inactiveContainer}>
+          <AppText style={styles.normal14White}>
+            {i18n.t('esim:usablePeriod')}
+          </AppText>
+          <AppText style={styles.normal14White}>{`${utils.toDateString(
+            item.purchaseDate,
+            'YYYY.MM.DD',
+          )} - ${utils.toDateString(item.expireDate, 'YYYY.MM.DD')}`}</AppText>
+        </View>
+        <View style={styles.inactiveContainer}>
+          <AppText style={styles.normal14White}>
+            {i18n.t('esim:reghargeablePeriod')}
+          </AppText>
+          <AppText style={styles.normal14White}>{chargeablePeriod}</AppText>
+        </View>
+      </View>
+    );
+  }, [
+    chargeablePeriod,
+    item.expireDate,
+    item.purchaseDate,
+    item.subsIccid,
+    item.type,
+  ]);
+
+  const QRnCopyInfo = useCallback(
+    (onPress: (showQR: boolean) => void) => {
+      return (
+        <View style={styles.activeBottomBox}>
+          <AppButton
+            style={styles.btn}
+            onPress={() => onPress(true)}
+            title={i18n.t('esim:showQR')}
+            titleStyle={styles.btnTitle}
+            iconName="btnQr"
+          />
+          <View
+            style={{height: 32, backgroundColor: colors.whiteThree, width: 1}}
+          />
+          <AppButton
+            style={styles.btn}
+            onPress={() => onPress(false)}
+            title={i18n.t('esim:manualInput')}
+            titleStyle={styles.btnTitle}
+            iconName="btnPen"
+          />
+          <View
+            style={{height: 32, backgroundColor: colors.whiteThree, width: 1}}
+          />
+          {isChargeable ? (
+            <AppButton
+              style={styles.btn}
+              onPress={() =>
+                isCharged
+                  ? navigation.navigate('ChargeHistory', {item})
+                  : onPressCharge()
+              }
+              title={i18n.t('esim:reghargeable')}
+              titleStyle={styles.btnTitle}
+              iconName="btnPen"
+            />
+          ) : (
+            <AppButton
+              style={styles.btnDis}
+              title={i18n.t('esim:notreghargeable')}
+              titleStyle={styles.btnTitle}
+              iconName="btnPen"
+            />
+          )}
+        </View>
+      );
+    },
+    [isChargeable, isCharged, item, navigation, onPressCharge],
+  );
+
   const renderBtn = useCallback(
     (t: string, isGift: boolean) => {
       return (
@@ -444,12 +464,12 @@ const EsimSubs = ({
             title={t}
             titleStyle={appStyles.bold14Text}
             style={styles.giftButton}
-            onPress={() => navigation.navigate('Charge')}
+            onPress={() => navigation.navigate('Charge', {item})}
           />
         </View>
       );
     },
-    [navigation],
+    [item, navigation],
   );
 
   return (
@@ -459,19 +479,19 @@ const EsimSubs = ({
         expired || giftStatusCd === 'S' ? styles.cardExpiredBg : styles.shadow,
       ]}>
       <View style={sendable ? styles.infoRadiusBorder : styles.infoCard}>
-        {title(item, expired, onPressUsage, isCharged)}
+        {title(onPressUsage)}
 
         {!expired &&
           giftStatusCd !== 'S' &&
           item.type !== API.Subscription.CALL_PRODUCT &&
-          QRnCopyInfo(onPressQR, isChargeable, onPressCharge, isCharged)}
+          QRnCopyInfo(onPressQR)}
       </View>
       {isMoreInfo && (
         <View style={isMoreInfo && styles.moreInfoContent}>
-          {topInfo(item, chargeablePeriod)}
+          {topInfo()}
           {redirectable && renderHkBtn()}
 
-          {!isCharged ? (
+          {isCharged ? (
             // 충전 내역이 있는 경우
             <>{renderHisBtn(`${i18n.t('acc:rechargeHistory2')}`)}</>
           ) : (

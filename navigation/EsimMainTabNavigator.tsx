@@ -46,6 +46,7 @@ import {HomeStackParamList} from './navigation';
 import BadgedIcon from './component/BadgedIcon';
 import RedirectHKScreen from '@/screens/RedirectHKScreen';
 import ChargeScreen from '@/screens/ChargeScreen';
+import ChargeHistoryScreen from '@/screens/ChargeHistoryScreen';
 import UserGuideScreen from '../screens/UserGuideScreen';
 import {CartModelState} from '@/redux/modules/cart';
 import AppText from '@/components/AppText';
@@ -168,6 +169,7 @@ function EsimStackComponent() {
       <EsimStack.Screen name="Gift" component={GiftScreen} />
       <EsimStack.Screen name="RedirectHK" component={RedirectHKScreen} />
       <EsimStack.Screen name="Charge" component={ChargeScreen} />
+      <EsimStack.Screen name="ChargeHistory" component={ChargeHistoryScreen} />
       <EsimStack.Screen name="UserGuide" component={UserGuideScreen} />
     </EsimStack.Navigator>
   );

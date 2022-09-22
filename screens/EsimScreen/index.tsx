@@ -318,7 +318,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   );
 
   const onPressCharge = useCallback((item: RkbSubscription) => {
-    setShowModal(true);
+    setShowChargeModal(true);
     setModal('charge');
     setSubs(item);
   }, []);
@@ -437,6 +437,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           setShowChargeModal(false);
           setIsPressClose(true);
         }}
+        item={subs}
       />
     </View>
   );

@@ -478,6 +478,7 @@
   "esim:moveToGuide": "eSIM 사용이 처음이라면! 가이드 보기",
   "esim:copyMsg": "수동 입력정보가 복사되었습니다.",
   "esim:charge": "충전하기",
+  "esim:chargeHistory": "충전내역",
   "esim:chargeModal:body1": "기존에 사용하던 eSIM에 필요한 상품을 충전할 수 있는 기능입니다.",
   "esim:chargeModal:body2": "기존에 구매한 eSIM과 같은 국가의 상품만 충전 가능하며, 기존 상품 사용이 종료되면 충전한 상품이 자동으로 이어서 사용됩니다.",
   "esim:chargeModal:body3": "충전 가능 기간 내에서만 상품 충전이 가능합니다. 상품 구매 시 충전 가능 기간에 유의해주세요!",
