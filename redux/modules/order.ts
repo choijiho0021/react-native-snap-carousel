@@ -29,6 +29,10 @@ const getSubs = createAsyncThunk(
   'order/getSubs',
   API.Subscription.getSubscription,
 );
+const getStoreSubs = createAsyncThunk(
+  'order/getStoreSubs',
+  API.Subscription.getStoreSubscription,
+);
 const getSubsUsage = createAsyncThunk(
   'order/getSubsUsage',
   API.Subscription.getSubsUsage,
@@ -47,6 +51,8 @@ const cmiGetSubsUsage = createAsyncThunk(
 );
 
 const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED);
+const getStoreSubsWithToast = reflectWithToast(getStoreSubs, Toast.NOT_LOADED);
+
 export interface OrderModelState {
   orders: ImmutableMap<number, RkbOrder>;
   orderList: number[];
@@ -150,6 +156,10 @@ export const updateStatusAndGetSubs = createAsyncThunk(
   },
 );
 */
+const mergeSubs = (org: RkbSubscription[], subs: RkbSubscription[]) =>
+  org
+    .concat(subs.filter((s) => !org.find((o) => o.uuid === s.uuid)))
+    .sort((a, b) => b.purchaseDate.localeCompare(a.purchaseDate));
 
 const initialState: OrderModelState = {
   orders: ImmutableMap<number, RkbOrder>(),
@@ -242,7 +252,15 @@ const slice = createSlice({
     builder.addCase(getSubs.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
       if (result === 0) {
-        state.subs = objects;
+        state.subs = mergeSubs(state.subs, objects);
+      }
+    });
+
+    builder.addCase(getStoreSubs.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+      console.log('@@@ store', objects);
+      if (result === 0) {
+        state.subs = mergeSubs(state.subs, objects);
       }
     });
 
@@ -262,6 +280,7 @@ const slice = createSlice({
 export const actions = {
   ...slice.actions,
   getSubsWithToast,
+  getStoreSubsWithToast,
   init,
   getSubs,
   getOrders,

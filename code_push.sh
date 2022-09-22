@@ -12,7 +12,7 @@ if [[ ! "$cmd" =~ ^(set|release|patch|promote)$ ]]; then
  	exit 1
 fi
 
-if [[ ! "$environment" =~ ^(Staging|Production)$ ]]; then
+if [[ ! "$environment" =~ ^(Staging|Production|Debug)$ ]]; then
  	echo "\033[31m"[Error]"\033[0m" "Undefined environment"
  	exit 1
 fi
@@ -27,6 +27,7 @@ if [[ "$cmd" = "promote" && "$environment" = "Staging" ]]; then
 	exit 1
 fi
 
+# usim
 account='admin-uangel.kr'
 appnameios='Rokebi-iOS'
 appnameandroid='Rokebi-Android'
@@ -61,7 +62,7 @@ curiOSVersion=`appcenter codepush deployment list -a $account/$appnameios | grep
 curAndroidVersion=`appcenter codepush deployment list -a $account/$appnameandroid | grep $environment | grep 'Label' | awk -F " " '{print $5}'`
 
 if [[ ! "$curiOSVersion" =~ ^v[0-9]+$ ]] || [[ ! "$curAndroidVersion" =~ ^v[0-9]+$ ]]; then
-	echo "\033[31m"[Error]"\033[0m" "Please check appcenter-cli first: $curiOSVersion $curAndroidVersion"
+	echo "\033[31m"[Error]"\033[0m" "Please check appcenter-cli first: ios=$curiOSVersion, android=$curAndroidVersion"
 	exit 1
 fi
 
