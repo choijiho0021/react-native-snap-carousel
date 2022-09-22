@@ -292,6 +292,11 @@ const EsimSubs = ({
               ? `${i18n.t('acc:rechargeDone')} ${country}`
               : item.prodName}
           </AppText>
+          {item.isStore ? (
+            <AppText>스토어상품</AppText>
+          ) : (
+            <AppText>일반상품</AppText>
+          )}
 
           {expired || giftStatusCd === 'S' ? (
             <View style={styles.expiredBg}>
@@ -321,6 +326,7 @@ const EsimSubs = ({
       expired,
       giftStatusCd,
       isCharged,
+      item.isStore,
       item.key,
       item.nid,
       item.packageId,

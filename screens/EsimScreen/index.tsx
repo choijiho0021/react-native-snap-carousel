@@ -84,11 +84,26 @@ const styles = StyleSheet.create({
     height: 56,
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.iceBlue,
+    backgroundColor: '#d2dfff',
   },
   rowCenter: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  rowRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    textAlign: 'right',
+  },
+  ifFirstText: {
+    ...appStyles.normal15Text,
+    lineHeight: 20,
+    color: '#001c65',
+  },
+  moveToGuideText: {
+    ...appStyles.normal14Text,
+    lineHeight: 20,
+    color: '#001c65',
   },
 });
 
@@ -196,18 +211,22 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             expDate={expDate}
             navigation={navigation}
           />
-          <Pressable
-            style={styles.usrGuideBtn}
-            onPress={() => navigation.navigate('UserGuide')}>
+          <View style={styles.usrGuideBtn}>
             <View style={styles.rowCenter}>
-              <AppSvgIcon name="flag" style={{marginRight: 11}} />
-              <AppText style={appStyles.normal16Text}>
-                {i18n.t('esim:moveToGuide')}
+              <AppSvgIcon name="newFlag" style={{marginRight: 8}} />
+              <AppText style={styles.ifFirstText}>
+                {i18n.t('esim:ifFirst')}
               </AppText>
             </View>
-
-            <AppIcon name="iconArrowRightBlack" />
-          </Pressable>
+            <Pressable
+              style={styles.rowRight}
+              onPress={() => navigation.navigate('UserGuide')}>
+              <AppText style={styles.moveToGuideText}>
+                {i18n.t('esim:moveToGuide')}
+              </AppText>
+              <AppIcon name="iconArrowRightBlack" />
+            </Pressable>
+          </View>
         </View>
       ),
     [balance, expDate, iccid, navigation],

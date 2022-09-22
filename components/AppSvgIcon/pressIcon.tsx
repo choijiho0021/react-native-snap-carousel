@@ -206,6 +206,24 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Rect x="11" y="6" width="2" height="7" rx="1" fill="#fff" />
     </Svg>,
   ],
+  newFlag: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M3 3a1 1 0 0 0-1 1v17l4-4h15a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H3z"
+        fill="#0029FF"
+      />
+      <Circle cx="12" cy="13.8" r="1" fill="#fff" />
+      <Rect x="11" y="5" width="2" height="7" rx="1" fill="#fff" />
+    </Svg>,
+  ],
+
   closeSnackBar: [
     <Svg
       width="12"
