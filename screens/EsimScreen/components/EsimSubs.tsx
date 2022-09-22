@@ -19,6 +19,8 @@ import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import AppIcon from '@/components/AppIcon';
+import AppSvgIcon from '@/components/AppSvgIcon';
+import {reduce} from 'underscore';
 
 const {width} = Dimensions.get('window');
 
@@ -27,6 +29,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteTwo,
     borderColor: colors.lightGrey,
     borderWidth: 1,
+  },
+  rowCenter: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   activeBottomBox: {
     flexDirection: 'row',
@@ -37,7 +43,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
     marginHorizontal: 20,
     backgroundColor: colors.white,
-    borderRadius: 10,
+    borderRadius: 3,
     borderWidth: 1,
     borderBottomWidth: 0,
     borderColor: colors.whiteThree,
@@ -60,24 +66,28 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     // justifyCssssontent: 'center',
-    height: 50,
+    height: 52,
     borderWidth: 1,
-    borderTopWidth: 0,
     backgroundColor: colors.white,
     borderColor: colors.whiteThree,
-    borderRadius: 10,
   },
-  giftButtonDis: {
+  chargeButtonDis: {
     flex: 1,
     flexDirection: 'row',
     // justifyCssssontent: 'center',
-    height: 50,
+    height: 52,
     borderWidth: 1,
-    borderTopWidth: 0,
-    backgroundColor: colors.white,
-    borderColor: colors.whiteThree,
-    borderRadius: 10,
+    backgroundColor: '#2a7ff6',
     opacity: 0.6,
+  },
+  chargeButton: {
+    flex: 1,
+    flexDirection: 'row',
+    // justifyCssssontent: 'center',
+    height: 52,
+    borderWidth: 1,
+    backgroundColor: '#2a7ff6',
+    borderColor: colors.whiteThree,
   },
   prodTitle: {
     paddingBottom: 13,
@@ -95,13 +105,13 @@ const styles = StyleSheet.create({
   usageTitleNormal: {
     ...appStyles.normal16Text,
     fontSize: isDeviceSize('small') ? 16 : 18,
-    maxWidth: '70%',
+    // maxWidth: '70%',
     color: colors.warmGrey,
   },
   usageTitleBold: {
     ...appStyles.normal16Text,
     fontSize: isDeviceSize('small') ? 16 : 18,
-    maxWidth: '70%',
+    // maxWidth: '70%',
     fontWeight: 'bold',
   },
   normal12WarmGrey: {
@@ -123,9 +133,17 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: isDeviceSize('small') ? 12 : 14,
   },
+  normal14Gray: {
+    ...appStyles.normal14Text,
+    color: '#Gray',
+    fontSize: isDeviceSize('small') ? 12 : 14,
+  },
   btn: {
     width: '30%',
     paddingTop: 19,
+  },
+  naverIcon: {
+    marginLeft: 4,
   },
   btnDis: {
     width: '30%',
@@ -138,13 +156,24 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   sendable: {
-    paddingLeft: 10,
-    paddingRight: 10,
-    marginTop: 10,
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  btnLeft: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 6,
+  },
+  btnRight: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 6,
   },
   btnFrame: {
     flex: 1,
@@ -196,16 +225,18 @@ const styles = StyleSheet.create({
     height: 40,
     backgroundColor: 'gray',
     // borderRadius: 10,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
+    borderBottomLeftRadius: 3,
+    borderBottomRightRadius: 3,
     alignItems: 'center',
     justifyContent: 'center',
   },
   moreInfoContent: {
-    backgroundColor: 'gray',
+    backgroundColor: 'white',
     padding: 20,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#eeeeee',
+    borderBottomLeftRadius: 3,
+    borderBottomRightRadius: 3,
   },
   line: {
     height: 1,
@@ -214,6 +245,9 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
     width: '100%',
+  },
+  topInfo: {
+    marginBottom: 40,
   },
 });
 
@@ -271,14 +305,11 @@ const EsimSubs = ({
     [expired, giftStatusCd, item.country, item.partner, item.prodName],
   );
 
-  const title = useCallback(
-    (onPress: () => void) => {
-      const usageCheckable =
-        item.packageId?.startsWith('D') || item.partner === 'Quadcell';
-
-      const country = item.prodName?.split(' ')[0];
-      return (
-        <View style={styles.prodTitle}>
+  const title = useCallback(() => {
+    const country = item.prodName?.split(' ')[0];
+    return (
+      <View style={styles.prodTitle}>
+        <View style={styles.rowCenter}>
           <AppText
             key={item.key}
             numberOfLines={1}
@@ -292,74 +323,67 @@ const EsimSubs = ({
               ? `${i18n.t('acc:rechargeDone')} ${country}`
               : item.prodName}
           </AppText>
-          {item.isStore ? (
-            <AppText>스토어상품</AppText>
-          ) : (
-            <AppText>일반상품</AppText>
-          )}
-
-          {expired || giftStatusCd === 'S' ? (
-            <View style={styles.expiredBg}>
-              <AppText key={item.nid} style={appStyles.normal12Text}>
-                {giftStatusCd === 'S'
-                  ? i18n.t('esim:S')
-                  : i18n.t('esim:expired')}
-              </AppText>
-            </View>
-          ) : (
-            // expired 제외의 경우에는 사용량 확인 출력?
-            usageCheckable && (
-              <Pressable
-                onPress={onPress}
-                style={{flexDirection: 'row', alignItems: 'center'}}>
-                <AppText key={item.nid} style={styles.checkUsage}>
-                  {i18n.t('usim:checkUsage')}
-                </AppText>
-                <AppIcon name="iconArrowRightBlue" style={{marginLeft: 4}} />
-              </Pressable>
-            )
+          {item.isStore && (
+            <AppButton style={styles.naverIcon} iconName="naverIcon" />
           )}
         </View>
-      );
-    },
-    [
-      expired,
-      giftStatusCd,
-      isCharged,
-      item.isStore,
-      item.key,
-      item.nid,
-      item.packageId,
-      item.partner,
-      item.prodName,
-    ],
-  );
+
+        {expired || giftStatusCd === 'S' ? (
+          <View style={styles.expiredBg}>
+            <AppText key={item.nid} style={appStyles.normal12Text}>
+              {giftStatusCd === 'S' ? i18n.t('esim:S') : i18n.t('esim:expired')}
+            </AppText>
+          </View>
+        ) : (
+          <Pressable
+            onPress={() => {
+              setIsMoreInfo(!isMoreInfo);
+            }}>
+            {isMoreInfo ? (
+              <AppSvgIcon name="topArrow" style={{marginRight: 8}} />
+            ) : (
+              <AppSvgIcon name="bottomArrow" style={{marginRight: 8}} />
+            )}
+          </Pressable>
+        )}
+      </View>
+    );
+  }, [
+    expired,
+    giftStatusCd,
+    isCharged,
+    isMoreInfo,
+    item.isStore,
+    item.key,
+    item.nid,
+    item.prodName,
+  ]);
 
   const topInfo = useCallback(() => {
     return (
-      <View>
+      <View style={styles.topInfo}>
         {item.type !== API.Subscription.CALL_PRODUCT && (
           <View style={styles.inactiveContainer}>
-            <AppText style={styles.normal14White}>
+            <AppText style={styles.normal14Gray}>
               {i18n.t('esim:iccid')}
             </AppText>
-            <AppText style={styles.normal14White}>{item.subsIccid}</AppText>
+            <AppText style={styles.normal14Gray}>{item.subsIccid}</AppText>
           </View>
         )}
         <View style={styles.inactiveContainer}>
-          <AppText style={styles.normal14White}>
+          <AppText style={styles.normal14Gray}>
             {i18n.t('esim:usablePeriod')}
           </AppText>
-          <AppText style={styles.normal14White}>{`${utils.toDateString(
+          <AppText style={styles.normal14Gray}>{`${utils.toDateString(
             item.purchaseDate,
             'YYYY.MM.DD',
           )} - ${utils.toDateString(item.expireDate, 'YYYY.MM.DD')}`}</AppText>
         </View>
         <View style={styles.inactiveContainer}>
-          <AppText style={styles.normal14White}>
+          <AppText style={styles.normal14Gray}>
             {i18n.t('esim:reghargeablePeriod')}
           </AppText>
-          <AppText style={styles.normal14White}>{chargeablePeriod}</AppText>
+          <AppText style={styles.normal14Gray}>{chargeablePeriod}</AppText>
         </View>
       </View>
     );
@@ -371,68 +395,77 @@ const EsimSubs = ({
     item.type,
   ]);
 
-  const QRnCopyInfo = useCallback(
-    (onPress: (showQR: boolean) => void) => {
-      return (
-        <View style={styles.activeBottomBox}>
+  const QRnCopyInfo = useCallback(() => {
+    // const usageCheckable =
+    //   item.packageId?.startsWith('D') || item.partner === 'Quadcell';
+    return (
+      <View style={styles.activeBottomBox}>
+        <AppButton
+          style={styles.btn}
+          onPress={() => onPressQR(true)}
+          title={i18n.t('esim:showQR')}
+          titleStyle={styles.btnTitle}
+          iconName="btnQr2"
+        />
+
+        {/* {usageCheckable && ( */}
+        <AppButton
+          style={styles.btn}
+          onPress={onPressUsage}
+          title={i18n.t('usim:checkUsage')}
+          titleStyle={styles.btnTitle}
+          iconName="btnUsage"
+        />
+        {/* )} */}
+
+        {isChargeable ? (
           <AppButton
             style={styles.btn}
-            onPress={() => onPress(true)}
-            title={i18n.t('esim:showQR')}
+            onPress={() =>
+              isCharged
+                ? navigation.navigate('ChargeHistory', {item})
+                : onPressCharge()
+            }
+            title={i18n.t('esim:reghargeable')}
             titleStyle={styles.btnTitle}
-            iconName="btnQr"
+            iconName="btnChargeable"
           />
-          <View
-            style={{height: 32, backgroundColor: colors.whiteThree, width: 1}}
-          />
+        ) : (
           <AppButton
-            style={styles.btn}
-            onPress={() => onPress(false)}
-            title={i18n.t('esim:manualInput')}
+            style={styles.btnDis}
+            title={i18n.t('esim:notreghargeable')}
             titleStyle={styles.btnTitle}
-            iconName="btnPen"
+            iconName="btnNonChargeable"
           />
-          <View
-            style={{height: 32, backgroundColor: colors.whiteThree, width: 1}}
-          />
-          {isChargeable ? (
-            <AppButton
-              style={styles.btn}
-              onPress={() =>
-                isCharged
-                  ? navigation.navigate('ChargeHistory', {item})
-                  : onPressCharge()
-              }
-              title={i18n.t('esim:reghargeable')}
-              titleStyle={styles.btnTitle}
-              iconName="btnPen"
-            />
-          ) : (
-            <AppButton
-              style={styles.btnDis}
-              title={i18n.t('esim:notreghargeable')}
-              titleStyle={styles.btnTitle}
-              iconName="btnPen"
-            />
-          )}
-        </View>
-      );
-    },
-    [isChargeable, isCharged, item, navigation, onPressCharge],
-  );
+        )}
+      </View>
+    );
+  }, [
+    isChargeable,
+    isCharged,
+    item,
+    navigation,
+    onPressCharge,
+    onPressQR,
+    onPressUsage,
+  ]);
 
   const renderBtn = useCallback(
     (t: string, isGift: boolean) => {
       return (
-        <View style={[styles.sendable, styles.shadow]}>
+        <View
+          style={[styles.shadow, isGift ? styles.btnLeft : styles.btnRight]}>
           <AppButton
             title={t}
             titleStyle={appStyles.bold14Text}
             style={
               // 충전하기 버튼 충전불가능일때 Disable
-              !isChargeable && !isGift
-                ? styles.giftButtonDis
-                : styles.giftButton
+              // eslint-disable-next-line no-nested-ternary
+              isGift
+                ? styles.giftButton
+                : isChargeable
+                ? styles.chargeButton
+                : styles.chargeButtonDis
             }
             onPress={() =>
               isGift
@@ -490,7 +523,7 @@ const EsimSubs = ({
         {!expired &&
           giftStatusCd !== 'S' &&
           item.type !== API.Subscription.CALL_PRODUCT &&
-          QRnCopyInfo(onPressQR)}
+          QRnCopyInfo()}
       </View>
       {isMoreInfo && (
         <View style={isMoreInfo && styles.moreInfoContent}>
@@ -505,8 +538,8 @@ const EsimSubs = ({
             <>
               {sendable && (
                 <View style={styles.btnFrame}>
-                  {renderBtn(`${i18n.t('acc:goRecharge')}`, false)}
                   {renderBtn(`${i18n.t('esim:sendGift')}`, true)}
+                  {renderBtn(`${i18n.t('esim:charge')}`, false)}
                 </View>
               )}
             </>
@@ -515,13 +548,6 @@ const EsimSubs = ({
           <View style={styles.line} />
         </View>
       )}
-      <Pressable
-        style={isMoreInfo ? styles.moreInfo : styles.lessInfo}
-        onPress={() => {
-          setIsMoreInfo(!isMoreInfo);
-        }}>
-        <Text>{isMoreInfo ? '접기' : '펼치기'}</Text>
-      </Pressable>
     </View>
   );
 };

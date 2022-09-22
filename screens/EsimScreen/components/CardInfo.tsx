@@ -13,19 +13,18 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     flexDirection: 'row',
   },
-  normal14WarmGrey: {
+  normal14Gray: {
     ...appStyles.medium14,
-    color: colors.warmGrey,
+    color: '#777777',
     fontSize: isDeviceSize('small') ? 12 : 14,
+    lineHeight: 19,
   },
 });
 
 const CardInfo = () => {
   return (
     <View style={styles.notice}>
-      <AppText style={styles.normal14WarmGrey}>
-        {i18n.t('esim:refresh')}
-      </AppText>
+      <AppText style={styles.normal14Gray}>{i18n.t('esim:refresh')}</AppText>
     </View>
   );
 };
