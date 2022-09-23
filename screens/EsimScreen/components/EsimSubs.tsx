@@ -276,6 +276,18 @@ const styles = StyleSheet.create({
   badgeText: {
     ...appStyles.bold13Text,
   },
+  cautionBox: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginTop: 28,
+  },
+  cautionText: {
+    color: '#ee4422',
+    ...appStyles.medium16,
+    lineHeight: 20,
+  },
+  cautionIcon: {marginRight: 12},
 });
 
 type PromoFlag = 'hot' | 'sale' | 'sizeup' | 'doubleSizeup';
@@ -310,6 +322,20 @@ const EsimSubs = ({
   const [isCharged, setIsCharged] = useState(false);
   const [chargeablePeriod, setChargeablePeriod] = useState('');
   const [itemPromoFlag, setItemPromoFlag] = useState<PromoFlag[]>();
+  const [hasCaution, setHasCaution] = useState(false);
+  const [hasCautionApp, setHasCautionApp] = useState(false);
+  const [hasAnyCaution, setHasAnyCaution] = useState(false);
+
+  useEffect(() => {
+    if (item.caution) {
+      setHasCaution(true);
+      setHasAnyCaution(true);
+    }
+    if (item.cautionApp) {
+      setHasCautionApp(true);
+      setHasAnyCaution(true);
+    }
+  }, [item.caution, item.cautionApp]);
 
   useEffect(() => {
     setItemPromoFlag(
@@ -605,6 +631,22 @@ const EsimSubs = ({
     [item, navigation],
   );
 
+  const renderCaution = useCallback(() => {
+    return (
+      <View>
+        <Text style={styles.cautionText}>{item.caution}</Text>
+      </View>
+    );
+  }, [item.caution]);
+
+  const renderCautionApp = useCallback(() => {
+    return (
+      <View>
+        <Text style={styles.cautionText}>{item.cautionApp}</Text>
+      </View>
+    );
+  }, [item.cautionApp]);
+
   return (
     <View
       style={[
@@ -623,8 +665,20 @@ const EsimSubs = ({
       {isMoreInfo && (
         <View style={isMoreInfo && styles.moreInfoContent}>
           {topInfo()}
+
           {redirectable && renderHkBtn()}
 
+          {hasAnyCaution && (
+            <View style={styles.cautionBox}>
+              <View style={styles.cautionIcon}>
+                <AppIcon name="cautionIcon" />
+              </View>
+              <View>
+                {hasCaution && renderCaution()}
+                {hasCautionApp && renderCautionApp()}
+              </View>
+            </View>
+          )}
           {isCharged ? (
             // 충전 내역이 있는 경우
             <>{renderHisBtn(`${i18n.t('acc:rechargeHistory2')}`)}</>

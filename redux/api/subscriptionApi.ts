@@ -99,6 +99,8 @@ export type RkbSubscription = {
   subsOrderNo?: string;
   partner?: string;
   promoFlag: string;
+  caution: string;
+  cautionApp: string;
 };
 
 const toSubscription =
@@ -133,6 +135,8 @@ const toSubscription =
             partner: item.field_ref_partner || '',
             isStore,
             promoFlag: item.field_special_categories || '',
+            caution: item.field_caution || '',
+            cautionApp: item.field_caution_app || '',
           }))
           .sort(sortSubs),
       );
