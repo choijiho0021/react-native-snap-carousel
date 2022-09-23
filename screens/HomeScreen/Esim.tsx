@@ -693,7 +693,7 @@ const Esim: React.FC<EsimProps> = ({
         renderTabBar={() => null}
       />
 
-      {
+      {/* {
         // eslint-disable-next-line no-nested-ternary
         isDevModalVisible && !isSupport ? (
           <AppModal
@@ -720,7 +720,7 @@ const Esim: React.FC<EsimProps> = ({
             onOkClose={() => setAppUpdateVisible(false)}
           />
         )
-      }
+      } */}
     </Animated.View>
   );
 };

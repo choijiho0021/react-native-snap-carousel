@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {Line, Svg} from 'react-native-svg';
+import _ from 'underscore';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -20,7 +21,6 @@ import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import AppIcon from '@/components/AppIcon';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {reduce} from 'underscore';
 
 const {width} = Dimensions.get('window');
 
@@ -278,6 +278,14 @@ const styles = StyleSheet.create({
   },
 });
 
+type PromoFlag = 'hot' | 'sale' | 'sizeup' | 'doubleSizeup';
+const promoFlag: Record<string, PromoFlag> = {
+  53: 'hot', // 운용자 추천
+  57: 'sale', // 할인
+  181: 'sizeup', // 사이즈업
+  182: 'doubleSizeup', // 더블 사이즈업
+};
+
 const EsimSubs = ({
   item,
   onPressQR,
@@ -301,6 +309,16 @@ const EsimSubs = ({
   const [isChargeable, setIsChargeable] = useState(true);
   const [isCharged, setIsCharged] = useState(false);
   const [chargeablePeriod, setChargeablePeriod] = useState('');
+  const [itemPromoFlag, setItemPromoFlag] = useState<PromoFlag[]>();
+
+  useEffect(() => {
+    setItemPromoFlag(
+      item.promoFlag
+        .split(',')
+        .map((v) => promoFlag[v.trim()])
+        .filter((v) => !_.isEmpty(v)),
+    );
+  }, [item.promoFlag]);
 
   useEffect(() => {
     const chargeabledate = new Date(
@@ -377,8 +395,7 @@ const EsimSubs = ({
           </AppText>
           {sendable &&
             !expired &&
-            item.promoFlag &&
-            item.promoFlag.map((elm) => {
+            itemPromoFlag?.map((elm) => {
               const badgeColor = getBadgeColor(elm);
               return (
                 <View
@@ -433,7 +450,7 @@ const EsimSubs = ({
     item.key,
     item.nid,
     item.prodName,
-    item.promoFlag,
+    itemPromoFlag,
     sendable,
   ]);
 
