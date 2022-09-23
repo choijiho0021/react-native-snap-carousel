@@ -265,7 +265,7 @@ const Esim: React.FC<EsimProps> = ({
   const onPressItem = useCallback(
     (info: RkbPriceInfo) => {
       action.product.getProdOfPartner(info.partnerList);
-      // navigation.navigate('Country', {partner: info.partnerList});
+      navigation.navigate('Country', {partner: info.partnerList});
     },
     [action.product, navigation],
   );

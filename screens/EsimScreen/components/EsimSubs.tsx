@@ -33,6 +33,8 @@ const styles = StyleSheet.create({
   rowCenter: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    flex: 0.8,
   },
   activeBottomBox: {
     flexDirection: 'row',
@@ -45,7 +47,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: 3,
     borderWidth: 1,
-    borderBottomWidth: 0,
     borderColor: colors.whiteThree,
   },
   infoCard: {
@@ -76,7 +77,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     // justifyCssssontent: 'center',
     height: 52,
-    borderWidth: 1,
+    // borderWidth: 1,
     backgroundColor: '#2a7ff6',
     opacity: 0.6,
   },
@@ -85,7 +86,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     // justifyCssssontent: 'center',
     height: 52,
-    borderWidth: 1,
+    // borderWidth: 1,
     backgroundColor: '#2a7ff6',
     borderColor: colors.whiteThree,
   },
@@ -105,13 +106,11 @@ const styles = StyleSheet.create({
   usageTitleNormal: {
     ...appStyles.normal16Text,
     fontSize: isDeviceSize('small') ? 16 : 18,
-    // maxWidth: '70%',
     color: colors.warmGrey,
   },
   usageTitleBold: {
     ...appStyles.normal16Text,
     fontSize: isDeviceSize('small') ? 16 : 18,
-    // maxWidth: '70%',
     fontWeight: 'bold',
   },
   normal12WarmGrey: {
@@ -121,7 +120,10 @@ const styles = StyleSheet.create({
   expiredBg: {
     backgroundColor: colors.whiteThree,
     borderRadius: 3,
-    padding: 5,
+    paddingBottom: 2,
+    paddingTop: 2,
+    paddingLeft: 6,
+    paddingRight: 6,
     justifyContent: 'center',
   },
   checkUsage: {
@@ -135,15 +137,12 @@ const styles = StyleSheet.create({
   },
   normal14Gray: {
     ...appStyles.normal14Text,
-    color: '#Gray',
+    color: '#777777',
     fontSize: isDeviceSize('small') ? 12 : 14,
   },
   btn: {
     width: '30%',
     paddingTop: 19,
-  },
-  naverIcon: {
-    marginLeft: 4,
   },
   btnDis: {
     width: '30%',
@@ -155,11 +154,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
   },
+  btnTitle2: {
+    ...appStyles.medium18,
+    paddingBottom: 2,
+    lineHeight: 22,
+  },
+  colorblack: {
+    color: '#2c2c2c',
+  },
   sendable: {
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 40,
   },
   btnLeft: {
     flex: 1,
@@ -167,6 +175,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 6,
+    marginTop: 40,
   },
   btnRight: {
     flex: 1,
@@ -174,6 +183,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 6,
+    marginTop: 40,
   },
   btnFrame: {
     flex: 1,
@@ -181,22 +191,21 @@ const styles = StyleSheet.create({
   },
   redirectHK: {
     flexDirection: 'row',
-    height: 41,
-    padding: 10,
-    marginTop: 16,
+    height: 50,
+    marginBottom: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.whiteTwo,
-    borderStyle: 'solid',
-    borderWidth: 1,
+    backgroundColor: '#eff2f4',
     borderColor: colors.lightGrey,
-    borderRadius: 10,
-    marginLeft: 10,
-    marginRight: 10,
+    borderRadius: 3,
   },
   redirectText: {
-    ...appStyles.normal14Text,
-    marginLeft: 4,
+    ...appStyles.medium16,
+    letterSpacing: 0,
+    marginLeft: 8,
+    paddingBottom: 3,
+    // lineHeight: 26,
+    color: '#2c2c2c',
   },
   shadow: {
     ...Platform.select({
@@ -232,7 +241,9 @@ const styles = StyleSheet.create({
   },
   moreInfoContent: {
     backgroundColor: 'white',
-    padding: 20,
+    paddingBottom: 20,
+    paddingLeft: 20,
+    paddingRight: 20,
     borderTopWidth: 1,
     borderTopColor: '#eeeeee',
     borderBottomLeftRadius: 3,
@@ -247,7 +258,23 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   topInfo: {
-    marginBottom: 40,
+    marginTop: 20,
+  },
+  arrow: {
+    width: 26,
+    height: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badge: {
+    paddingHorizontal: 8,
+    borderRadius: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+  },
+  badgeText: {
+    ...appStyles.bold13Text,
   },
 });
 
@@ -295,6 +322,30 @@ const EsimSubs = ({
     if (chargeabledate < today) setIsChargeable(false);
   }, [item.expireDate, setChargeablePeriod]);
 
+  const getBadgeColor = useCallback((key) => {
+    if (key === 'hot')
+      return {
+        backgroundColor: colors.veryLightPink,
+        fontColor: colors.tomato,
+      };
+
+    if (key === 'sizeup')
+      return {
+        backgroundColor: colors.veryLightBlue,
+        fontColor: colors.clearBlue,
+      };
+    if (key === 'doubleSizeup')
+      return {
+        backgroundColor: colors.lightSage,
+        fontColor: colors.shamrock,
+      };
+
+    return {
+      backgroundColor: colors.veryLightPink,
+      fontColor: colors.tomato,
+    };
+  }, []);
+
   const redirectable = useMemo(
     () =>
       !expired &&
@@ -314,31 +365,55 @@ const EsimSubs = ({
             key={item.key}
             numberOfLines={1}
             ellipsizeMode="tail"
-            style={
+            style={[
               expired || giftStatusCd === 'S'
                 ? styles.usageTitleNormal
-                : styles.usageTitleBold
-            }>
+                : styles.usageTitleBold,
+              {marginBottom: 10, marginRight: 8},
+            ]}>
             {isCharged
               ? `${i18n.t('acc:rechargeDone')} ${country}`
               : item.prodName}
           </AppText>
-          {item.isStore && (
-            <AppButton style={styles.naverIcon} iconName="naverIcon" />
-          )}
+          {sendable &&
+            !expired &&
+            item.promoFlag &&
+            item.promoFlag.map((elm) => {
+              const badgeColor = getBadgeColor(elm);
+              return (
+                <View
+                  key={elm}
+                  style={[
+                    styles.badge,
+                    {
+                      backgroundColor: badgeColor.backgroundColor,
+                    },
+                  ]}>
+                  <AppText
+                    key="name"
+                    style={[styles.badgeText, {color: badgeColor.fontColor}]}>
+                    {i18n.t(elm)}
+                  </AppText>
+                </View>
+              );
+            })}
+          {item.isStore && <AppIcon name="naverIcon" />}
         </View>
 
         {expired || giftStatusCd === 'S' ? (
           <View style={styles.expiredBg}>
             <AppText key={item.nid} style={appStyles.normal12Text}>
-              {giftStatusCd === 'S' ? i18n.t('esim:S') : i18n.t('esim:expired')}
+              {giftStatusCd === 'S'
+                ? i18n.t('esim:S2')
+                : i18n.t('esim:expired')}
             </AppText>
           </View>
         ) : (
           <Pressable
             onPress={() => {
               setIsMoreInfo(!isMoreInfo);
-            }}>
+            }}
+            style={styles.arrow}>
             {isMoreInfo ? (
               <AppSvgIcon name="topArrow" style={{marginRight: 8}} />
             ) : (
@@ -350,6 +425,7 @@ const EsimSubs = ({
     );
   }, [
     expired,
+    getBadgeColor,
     giftStatusCd,
     isCharged,
     isMoreInfo,
@@ -357,6 +433,8 @@ const EsimSubs = ({
     item.key,
     item.nid,
     item.prodName,
+    item.promoFlag,
+    sendable,
   ]);
 
   const topInfo = useCallback(() => {
@@ -453,11 +531,10 @@ const EsimSubs = ({
   const renderBtn = useCallback(
     (t: string, isGift: boolean) => {
       return (
-        <View
-          style={[styles.shadow, isGift ? styles.btnLeft : styles.btnRight]}>
+        <View style={isGift ? styles.btnLeft : styles.btnRight}>
           <AppButton
             title={t}
-            titleStyle={appStyles.bold14Text}
+            titleStyle={[styles.btnTitle2, isGift && styles.colorblack]}
             style={
               // 충전하기 버튼 충전불가능일때 Disable
               // eslint-disable-next-line no-nested-ternary
@@ -489,8 +566,8 @@ const EsimSubs = ({
             orderNo: item.subsOrderNo,
           })
         }>
-        <AppIcon name="iconCheckSmall" />
-        <Text style={styles.redirectText}>{i18n.t('esim:redirectHK')}</Text>
+        <AppIcon name="hkIcon" />
+        <Text style={styles.redirectText}>{i18n.t('esim:redirectHK2')}</Text>
       </Pressable>
     );
   }, [item, navigation]);
@@ -498,7 +575,7 @@ const EsimSubs = ({
   const renderHisBtn = useCallback(
     (t: string) => {
       return (
-        <View style={[styles.sendable, styles.shadow]}>
+        <View style={styles.sendable}>
           <AppButton
             title={t}
             titleStyle={appStyles.bold14Text}
@@ -518,12 +595,13 @@ const EsimSubs = ({
         expired || giftStatusCd === 'S' ? styles.cardExpiredBg : styles.shadow,
       ]}>
       <View style={sendable ? styles.infoRadiusBorder : styles.infoCard}>
-        {title(onPressUsage)}
+        {title()}
 
         {!expired &&
-          giftStatusCd !== 'S' &&
-          item.type !== API.Subscription.CALL_PRODUCT &&
-          QRnCopyInfo()}
+        giftStatusCd !== 'S' &&
+        item.type !== API.Subscription.CALL_PRODUCT
+          ? QRnCopyInfo()
+          : topInfo()}
       </View>
       {isMoreInfo && (
         <View style={isMoreInfo && styles.moreInfoContent}>

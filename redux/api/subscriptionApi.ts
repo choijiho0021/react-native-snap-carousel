@@ -98,11 +98,21 @@ export type RkbSubscription = {
   packageId?: string;
   subsOrderNo?: string;
   partner?: string;
+  promoFlag: PromoFlag[];
+};
+
+type PromoFlag = 'hot' | 'sale' | 'sizeup' | 'doubleSizeup';
+const promoFlag: Record<string, PromoFlag> = {
+  53: 'hot', // 운용자 추천
+  57: 'sale', // 할인
+  181: 'sizeup', // 사이즈업
+  182: 'doubleSizeup', // 더블 사이즈업
 };
 
 const toSubscription =
   (isStore = false) =>
   (data: DrupalNode[] | DrupalNodeJsonApi): ApiResult<RkbSubscription> => {
+    console.log('@@@data', data);
     if (_.isArray(data)) {
       return api.success(
         data
@@ -131,6 +141,10 @@ const toSubscription =
             subsOrderNo: item.field_cmi_order_id || '',
             partner: item.field_ref_partner || '',
             isStore,
+            promoFlag: item.field_special_categories
+              .split(',')
+              .map((v) => promoFlag[v.trim()])
+              .filter((v) => !_.isEmpty(v)),
           }))
           .sort(sortSubs),
       );
