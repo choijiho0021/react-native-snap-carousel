@@ -302,14 +302,16 @@ const EsimSubs = ({
   item,
   onPressQR,
   onPressUsage,
-  onPressCharge,
+  // onPressCharge,
   expired,
+  isCharged,
 }: {
   item: RkbSubscription;
   onPressQR: (showQR: boolean) => void;
   onPressUsage: () => void;
-  onPressCharge: () => void;
+  // onPressCharge: () => void;
   expired: boolean;
+  isCharged: boolean;
 }) => {
   const navigation = useNavigation();
   const {giftStatusCd} = item;
@@ -319,34 +321,26 @@ const EsimSubs = ({
   );
   const [isMoreInfo, setIsMoreInfo] = useState(false);
   const [isChargeable, setIsChargeable] = useState(true);
-  const [isCharged, setIsCharged] = useState(false);
+  // const [isCharged, setIsCharged] = useState(false);
   const [chargeablePeriod, setChargeablePeriod] = useState('');
   const [itemPromoFlag, setItemPromoFlag] = useState<PromoFlag[]>();
-  const [hasCaution, setHasCaution] = useState(false);
-  const [hasCautionApp, setHasCautionApp] = useState(false);
-  const [hasAnyCaution, setHasAnyCaution] = useState(false);
 
-  useEffect(() => {
-    if (item.caution) {
-      setHasCaution(true);
-      setHasAnyCaution(true);
-    }
-    if (item.cautionApp) {
-      setHasCautionApp(true);
-      setHasAnyCaution(true);
-    }
-  }, [item.caution, item.cautionApp]);
+  const hasAnyCaution = useMemo(
+    () => !!(item.caution || item.cautionApp),
+    [item.caution, item.cautionApp],
+  );
 
   useEffect(() => {
     setItemPromoFlag(
       item.promoFlag
         .split(',')
         .map((v) => promoFlag[v.trim()])
-        .filter((v) => !_.isEmpty(v)),
+        .filter((v) => !_.isEmpty(v)), // isEmpty 제거 가능여부 확인
     );
   }, [item.promoFlag]);
 
   useEffect(() => {
+    // date -> moment 변경
     const chargeabledate = new Date(
       parseInt(item.expireDate.split('-')[0], 10),
       parseInt(item.expireDate.split('-')[1], 10) - 1,
@@ -367,6 +361,7 @@ const EsimSubs = ({
   }, [item.expireDate, setChargeablePeriod]);
 
   const getBadgeColor = useCallback((key) => {
+    // 컴포넌트로 분리
     if (key === 'hot')
       return {
         backgroundColor: colors.veryLightPink,
@@ -454,14 +449,13 @@ const EsimSubs = ({
         ) : (
           <Pressable
             onPress={() => {
-              setIsMoreInfo(!isMoreInfo);
+              setIsMoreInfo((prev) => !prev);
             }}
             style={styles.arrow}>
-            {isMoreInfo ? (
-              <AppSvgIcon name="topArrow" style={{marginRight: 8}} />
-            ) : (
-              <AppSvgIcon name="bottomArrow" style={{marginRight: 8}} />
-            )}
+            <AppSvgIcon
+              name={isMoreInfo ? 'topArrow' : 'bottomArrow'}
+              style={{marginRight: 8}}
+            />
           </Pressable>
         )}
       </View>
@@ -472,12 +466,9 @@ const EsimSubs = ({
     giftStatusCd,
     isCharged,
     isMoreInfo,
-    item.isStore,
-    item.key,
-    item.nid,
-    item.prodName,
     itemPromoFlag,
     sendable,
+    item,
   ]);
 
   const topInfo = useCallback(() => {
@@ -502,7 +493,7 @@ const EsimSubs = ({
         </View>
         <View style={styles.inactiveContainer}>
           <AppText style={styles.normal14Gray}>
-            {i18n.t('esim:reghargeablePeriod')}
+            {i18n.t('esim:rechargeablePeriod')}
           </AppText>
           <AppText style={styles.normal14Gray}>{chargeablePeriod}</AppText>
         </View>
@@ -545,31 +536,23 @@ const EsimSubs = ({
             onPress={() =>
               isCharged
                 ? navigation.navigate('ChargeHistory', {item})
-                : onPressCharge()
+                : navigation.navigate('Charge', {item})
             }
-            title={i18n.t('esim:reghargeable')}
+            title={i18n.t('esim:rechargeable')}
             titleStyle={styles.btnTitle}
             iconName="btnChargeable"
           />
         ) : (
           <AppButton
             style={styles.btnDis}
-            title={i18n.t('esim:notreghargeable')}
+            title={i18n.t('esim:notrechargeable')}
             titleStyle={styles.btnTitle}
             iconName="btnNonChargeable"
           />
         )}
       </View>
     );
-  }, [
-    isChargeable,
-    isCharged,
-    item,
-    navigation,
-    onPressCharge,
-    onPressQR,
-    onPressUsage,
-  ]);
+  }, [isChargeable, isCharged, item, navigation, onPressQR, onPressUsage]);
 
   const renderBtn = useCallback(
     (t: string, isGift: boolean) => {
@@ -590,13 +573,13 @@ const EsimSubs = ({
             onPress={() =>
               isGift
                 ? navigation.navigate('Gift', {item})
-                : isChargeable && onPressCharge()
+                : isChargeable && navigation.navigate('Charge', {item})
             }
           />
         </View>
       );
     },
-    [isChargeable, item, navigation, onPressCharge],
+    [isChargeable, item, navigation],
   );
 
   const renderHkBtn = useCallback(() => {
@@ -631,22 +614,6 @@ const EsimSubs = ({
     [item, navigation],
   );
 
-  const renderCaution = useCallback(() => {
-    return (
-      <View>
-        <Text style={styles.cautionText}>{item.caution}</Text>
-      </View>
-    );
-  }, [item.caution]);
-
-  const renderCautionApp = useCallback(() => {
-    return (
-      <View>
-        <Text style={styles.cautionText}>{item.cautionApp}</Text>
-      </View>
-    );
-  }, [item.cautionApp]);
-
   return (
     <View
       style={[
@@ -674,8 +641,8 @@ const EsimSubs = ({
                 <AppIcon name="cautionIcon" />
               </View>
               <View>
-                {hasCaution && renderCaution()}
-                {hasCautionApp && renderCautionApp()}
+                <Text style={styles.cautionText}>{item.caution}</Text>
+                <Text style={styles.cautionText}>{item.cautionApp}</Text>
               </View>
             </View>
           )}

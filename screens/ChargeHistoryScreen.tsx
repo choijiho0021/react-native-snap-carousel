@@ -38,40 +38,24 @@ const ChargeHistoryScreen: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<ParamList, 'ChargeHistoryScreen'>>();
   const params = useMemo(() => route?.params, [route?.params]);
-  const [showChargeModal, setShowChargeModal] = useState(false);
-  const [isPressClose, setIsPressClose] = useState(false);
-  const [modal, setModal] = useState<ModalType>('');
-  // const [showModal, setShowModal] = useState(false);
-  const [subs, setSubs] = useState<RkbSubscription>();
-
-  const onPressCharge = useCallback((item: RkbSubscription) => {
-    setShowChargeModal(true);
-    setModal('charge');
-    setSubs(item);
-  }, []);
 
   useEffect(() => {
     navigation.setOptions({
       title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('esim:chargeHistory')} />,
+      headerLeft: () => (
+        <AppBackButton title={params.item.prodName?.split(' ')[0]} />
+      ),
       //   headerRight: () => (),
     });
-  }, [navigation]);
+  }, [navigation, params.item.prodName]);
   return (
     <SafeAreaView style={{flex: 1}}>
       <AppText>test</AppText>
-      <ChargeModal
-        visible={showChargeModal}
-        onOkClose={() => {
-          setShowChargeModal(false);
-          setIsPressClose(true);
-        }}
-        item={params.item}
-      />
+
       <AppButton
         style={styles.chargeBtn}
         type="primary"
-        onPress={() => onPressCharge(params.item)}
+        // onPress={() => }
         title={i18n.t('esim:charge')}
         titleStyle={styles.chargeBtnTitle}
       />

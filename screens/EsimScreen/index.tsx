@@ -144,6 +144,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [cmiStatus, setCmiStatus] = useState({});
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const isFocused = useIsFocused();
+  const [isCharged, setIsCharged] = useState(false);
+
+  const iccidList: String[] = [];
 
   const init = useCallback(
     ({
@@ -347,14 +350,19 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [checkCmiData, checkQuadcellData],
   );
 
-  const onPressCharge = useCallback((item: RkbSubscription) => {
-    setShowChargeModal(true);
-    setModal('charge');
-    setSubs(item);
-  }, []);
+  // const onPressCharge = useCallback((item: RkbSubscription) => {
+  //   setShowChargeModal(true);
+  //   setModal('charge');
+  //   setSubs(item);
+  // }, []);
 
   const renderSubs = useCallback(
     ({item}: {item: RkbSubscription}) => {
+      iccidList.forEach((i) => {
+        if (i === item.subsIccid) {
+          setIsCharged(true);
+        }
+      });
       return (
         <EsimSubs
           key={item.key}
@@ -366,11 +374,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             setSubs(item);
           }}
           onPressUsage={() => onPressUsage(item)}
-          onPressCharge={() => onPressCharge(item)}
+          // onPressCharge={() => onPressCharge(item)}
+          isCharged={isCharged}
         />
       );
     },
-    [onPressCharge, onPressUsage],
+    [iccidList, isCharged, onPressUsage],
   );
 
   useEffect(() => {
