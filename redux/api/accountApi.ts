@@ -122,8 +122,11 @@ const getAccount = ({iccid, token}: {iccid?: string; token?: string}) => {
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
   return api.callHttpGet(
-    `${api.httpUrl(api.path.account)}/${iccid}?_format=json`,
-    toAccount,
+    `${api.httpUrl(api.path.rokApi.rokebi.account)}/${iccid}?_format=json`,
+    (rsp) =>
+      rsp.result === 0
+        ? toAccount(rsp.objects)
+        : api.failure(rsp.result, rsp.error),
     api.withToken(token, 'json'),
   );
 };
