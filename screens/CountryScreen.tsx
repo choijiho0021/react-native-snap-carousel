@@ -20,7 +20,7 @@ import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
-import {RkbProduct} from '@/redux/api/productApi';
+import {getPromoFlagColor, RkbProduct} from '@/redux/api/productApi';
 import {actions as cartActions} from '@/redux/modules/cart';
 import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
@@ -159,30 +159,6 @@ const CountryListItem0 = ({
     [item.days, item.field_daily, item.volume],
   );
 
-  const getBadgeColor = useCallback((key) => {
-    if (key === 'hot')
-      return {
-        backgroundColor: colors.veryLightPink,
-        fontColor: colors.tomato,
-      };
-
-    if (key === 'sizeup')
-      return {
-        backgroundColor: colors.veryLightBlue,
-        fontColor: colors.clearBlue,
-      };
-    if (key === 'doubleSizeup')
-      return {
-        backgroundColor: colors.lightSage,
-        fontColor: colors.shamrock,
-      };
-
-    return {
-      backgroundColor: colors.veryLightPink,
-      fontColor: colors.tomato,
-    };
-  }, []);
-
   const myStyle = useMemo(() => {
     switch (position) {
       case 'head':
@@ -238,7 +214,7 @@ const CountryListItem0 = ({
               </AppText>
               {!_.isEmpty(item.promoFlag) &&
                 item.promoFlag.map((elm) => {
-                  const badgeColor = getBadgeColor(elm);
+                  const badgeColor = getPromoFlagColor(elm);
                   return (
                     <View
                       key={elm}

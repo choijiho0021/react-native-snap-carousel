@@ -259,31 +259,46 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         const isUsedByOther =
           userDataBundles[0]?.dataBundleId !== item.packageId;
 
-        setCmiStatus({
-          statusCd: isExpired || isUsedByOther ? 'U' : statusCd,
+        // setCmiStatus({
+        //   statusCd: isExpired || isUsedByOther ? 'U' : statusCd,
+        //   endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
+        // });
+        // setCmiUsage({
+        //   quota: Number(subscriberQuota?.qtavalue) || 0, // Mb
+        //   used: Number(subscriberQuota?.qtaconsumption) || 0, // Mb
+        // });
+
+        const tempCmiStatus = {
+          statusCd: isExpired || isUsedByOther ? 'U' : statusCd || {},
           endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
-        });
-        setCmiUsage({
+        };
+
+        const tempCmiUsage = {
           quota: Number(subscriberQuota?.qtavalue) || 0, // Mb
           used: Number(subscriberQuota?.qtaconsumption) || 0, // Mb
-        });
-      } else if (!item.subsOrderNo || userDataBundles?.length === 0) {
-        setCmiStatus({
-          statusCd: 'U',
-        });
+        };
+
+        return {status: tempCmiStatus, usage: tempCmiUsage};
+      }
+      if (!item.subsOrderNo || userDataBundles?.length === 0) {
+        // setCmiStatus({
+        //   statusCd: 'U',
+        // });
+        return {status: {statusCd: 'U'}, usage: {}};
       }
       setCmiPending(false);
+      return {status: {}, usage: {}};
     }
   }, []);
 
   const checkQuadcellData = useCallback(async (item: RkbSubscription) => {
     if (item?.imsi) {
-      await API.Subscription.quadcellGetData({
+      const quadcellStatus = await API.Subscription.quadcellGetData({
         imsi: item.imsi,
         key: 'hlrstate',
-      }).then((state) => {
+      }).then(async (state) => {
         if (state.result === 0) {
-          API.Subscription.quadcellGetData({
+          const tempCmiStatus = await API.Subscription.quadcellGetData({
             imsi: item.imsi,
             key: 'info',
           }).then((info) => {
@@ -303,27 +318,39 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               const isReserved = statusCd === 'A' && exp > moment().add(1, 'y');
               const isExpired = statusCd === 'A' && exp < moment();
 
-              setCmiStatus({
+              // setCmiStatus({
+              //   // eslint-disable-next-line no-nested-ternary
+              //   statusCd: isReserved ? 'R' : isExpired ? 'U' : statusCd,
+              //   endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
+              // });
+
+              return {
                 // eslint-disable-next-line no-nested-ternary
                 statusCd: isReserved ? 'R' : isExpired ? 'U' : statusCd,
                 endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
-              });
+              };
             }
           });
+          return tempCmiStatus;
         }
       });
 
-      await API.Subscription.quadcellGetData({
+      const quadcellUsage = await API.Subscription.quadcellGetData({
         imsi: item.imsi,
         key: 'quota',
       }).then(async (rsp) => {
         if (rsp.result === 0) {
-          setCmiUsage({
+          // setCmiUsage({
+          //   quota: Number(rsp?.objects?.packQuotaList[0]?.totalQuota) || 0, // Mb
+          //   used: Number(rsp?.objects?.packQuotaList[0]?.consumedQuota), // Mb
+          // });
+          return {
             quota: Number(rsp?.objects?.packQuotaList[0]?.totalQuota) || 0, // Mb
             used: Number(rsp?.objects?.packQuotaList[0]?.consumedQuota), // Mb
-          });
+          };
         }
       });
+      return {status: quadcellStatus, usage: quadcellUsage};
     }
   }, []);
 
@@ -334,18 +361,22 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       setModal('usage');
       setSubs(item);
 
+      let result = {status: {}, usage: {}};
       switch (item.partner) {
         case 'CMI':
-          await checkCmiData(item);
+          result = await checkCmiData(item);
           break;
         case 'Quadcell':
-          await checkQuadcellData(item);
+          result = await checkQuadcellData(item);
           break;
         default:
-          await checkCmiData(item);
+          result = await checkCmiData(item);
           break;
       }
+      setCmiStatus(result.status);
+      setCmiUsage(result.usage);
       setCmiPending(false);
+      return result;
     },
     [checkCmiData, checkQuadcellData],
   );
@@ -376,10 +407,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           onPressUsage={() => onPressUsage(item)}
           // onPressCharge={() => onPressCharge(item)}
           isCharged={isCharged}
+          chargedSubs={order.subs.filter(
+            (elm) => elm.subsIccid === item.subsIccid,
+          )}
         />
       );
     },
-    [iccidList, isCharged, onPressUsage],
+    [iccidList, isCharged, onPressUsage, order.subs],
   );
 
   useEffect(() => {

@@ -3,6 +3,7 @@ import i18n from '@/utils/i18n';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 
 import Env from '@/environment';
+import {promoFlag} from './productApi';
 
 const {isProduction} = Env.get();
 
@@ -98,7 +99,7 @@ export type RkbSubscription = {
   packageId?: string;
   subsOrderNo?: string;
   partner?: string;
-  promoFlag: string;
+  promoFlag?: string[];
   caution: string;
   cautionApp: string;
 };
@@ -134,7 +135,12 @@ const toSubscription =
             subsOrderNo: item.field_cmi_order_id || '',
             partner: item.field_ref_partner || '',
             isStore,
-            promoFlag: item.field_special_categories || '',
+            promoFlag: item.field_special_categories
+              ? item.field_special_categories
+                  .split(',')
+                  .map((v) => promoFlag[v.trim()])
+                  .filter((v) => !_.isEmpty(v))
+              : [],
             caution: item.field_caution || '',
             cautionApp: item.field_caution_app || '',
           }))

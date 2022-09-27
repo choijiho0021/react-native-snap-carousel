@@ -5,6 +5,7 @@ import utils from '@/redux/api/utils';
 import {createFromProduct} from '@/redux/models/purchaseItem';
 import api, {ApiResult} from './api';
 import {RkbPriceInfo} from '../modules/product';
+import {colors} from '@/constants/Colors';
 
 export type TabViewRouteKey = 'asia' | 'europe' | 'usaAu' | 'multi';
 export type TabViewRoute = {
@@ -30,11 +31,35 @@ const storeId: Record<Store, number> = {
 };
 
 type PromoFlag = 'hot' | 'sale' | 'sizeup' | 'doubleSizeup';
-const promoFlag: Record<string, PromoFlag> = {
+export const promoFlag: Record<string, PromoFlag> = {
   53: 'hot', // 운용자 추천
   57: 'sale', // 할인
   181: 'sizeup', // 사이즈업
   182: 'doubleSizeup', // 더블 사이즈업
+};
+
+export const getPromoFlagColor = (key: string) => {
+  if (key === 'hot')
+    return {
+      backgroundColor: colors.veryLightPink,
+      fontColor: colors.tomato,
+    };
+
+  if (key === 'sizeup')
+    return {
+      backgroundColor: colors.veryLightBlue,
+      fontColor: colors.clearBlue,
+    };
+  if (key === 'doubleSizeup')
+    return {
+      backgroundColor: colors.lightSage,
+      fontColor: colors.shamrock,
+    };
+
+  return {
+    backgroundColor: colors.veryLightPink,
+    fontColor: colors.tomato,
+  };
 };
 
 type DrupalProduct = {

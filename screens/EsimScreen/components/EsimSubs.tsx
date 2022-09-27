@@ -21,6 +21,7 @@ import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import AppIcon from '@/components/AppIcon';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import {getPromoFlagColor} from '@/redux/api/productApi';
 
 const {width} = Dimensions.get('window');
 
@@ -302,14 +303,14 @@ const EsimSubs = ({
   item,
   onPressQR,
   onPressUsage,
-  // onPressCharge,
+  chargedSubs,
   expired,
   isCharged,
 }: {
   item: RkbSubscription;
   onPressQR: (showQR: boolean) => void;
   onPressUsage: () => void;
-  // onPressCharge: () => void;
+  chargedSubs: RkbSubscription[];
   expired: boolean;
   isCharged: boolean;
 }) => {
@@ -330,14 +331,15 @@ const EsimSubs = ({
     [item.caution, item.cautionApp],
   );
 
-  useEffect(() => {
-    setItemPromoFlag(
-      item.promoFlag
-        .split(',')
-        .map((v) => promoFlag[v.trim()])
-        .filter((v) => !_.isEmpty(v)), // isEmpty 제거 가능여부 확인
-    );
-  }, [item.promoFlag]);
+  // 내일 확인 ysjoung
+  // useEffect(() => {
+  //   setItemPromoFlag(
+  //     item.promoFlag
+  //       .split(',')
+  //       .map((v) => promoFlag[v.trim()])
+  //       .filter((v) => !_.isEmpty(v)), // isEmpty 제거 가능여부 확인
+  //   );
+  // }, [item.promoFlag]);
 
   useEffect(() => {
     // date -> moment 변경
@@ -359,31 +361,6 @@ const EsimSubs = ({
 
     if (chargeabledate < today) setIsChargeable(false);
   }, [item.expireDate, setChargeablePeriod]);
-
-  const getBadgeColor = useCallback((key) => {
-    // 컴포넌트로 분리
-    if (key === 'hot')
-      return {
-        backgroundColor: colors.veryLightPink,
-        fontColor: colors.tomato,
-      };
-
-    if (key === 'sizeup')
-      return {
-        backgroundColor: colors.veryLightBlue,
-        fontColor: colors.clearBlue,
-      };
-    if (key === 'doubleSizeup')
-      return {
-        backgroundColor: colors.lightSage,
-        fontColor: colors.shamrock,
-      };
-
-    return {
-      backgroundColor: colors.veryLightPink,
-      fontColor: colors.tomato,
-    };
-  }, []);
 
   const redirectable = useMemo(
     () =>
@@ -416,8 +393,8 @@ const EsimSubs = ({
           </AppText>
           {sendable &&
             !expired &&
-            itemPromoFlag?.map((elm) => {
-              const badgeColor = getBadgeColor(elm);
+            item.promoFlag?.map((elm) => {
+              const badgeColor = getPromoFlagColor(elm);
               return (
                 <View
                   key={elm}
@@ -460,16 +437,7 @@ const EsimSubs = ({
         )}
       </View>
     );
-  }, [
-    expired,
-    getBadgeColor,
-    giftStatusCd,
-    isCharged,
-    isMoreInfo,
-    itemPromoFlag,
-    sendable,
-    item,
-  ]);
+  }, [expired, giftStatusCd, isCharged, isMoreInfo, sendable, item]);
 
   const topInfo = useCallback(() => {
     return (
@@ -534,8 +502,13 @@ const EsimSubs = ({
           <AppButton
             style={styles.btn}
             onPress={() =>
-              isCharged
-                ? navigation.navigate('ChargeHistory', {item})
+              true
+                ? navigation.navigate('ChargeHistory', {
+                    item,
+                    chargeablePeriod,
+                    onPressUsage,
+                    chargedSubs,
+                  })
                 : navigation.navigate('Charge', {item})
             }
             title={i18n.t('esim:rechargeable')}
@@ -552,7 +525,15 @@ const EsimSubs = ({
         )}
       </View>
     );
-  }, [isChargeable, isCharged, item, navigation, onPressQR, onPressUsage]);
+  }, [
+    chargeablePeriod,
+    chargedSubs,
+    isChargeable,
+    item,
+    navigation,
+    onPressQR,
+    onPressUsage,
+  ]);
 
   const renderBtn = useCallback(
     (t: string, isGift: boolean) => {
@@ -648,7 +629,7 @@ const EsimSubs = ({
           )}
           {isCharged ? (
             // 충전 내역이 있는 경우
-            <>{renderHisBtn(`${i18n.t('acc:rechargeHistory2')}`)}</>
+            renderHisBtn(`${i18n.t('acc:rechargeHistory2')}`)
           ) : (
             // 충전 내역이 없는 경우
             <>
