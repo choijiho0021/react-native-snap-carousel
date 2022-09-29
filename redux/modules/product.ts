@@ -204,23 +204,26 @@ const slice = createSlice({
           ImmutableMap(objects.map((o) => [o.key, o])),
         );
 
-        const test = state.prodList.merge(
-          ImmutableMap(objects.map((o) => [o.key, o])),
-        );
-        console.log('@@@@@@@test', test);
-        // console.log(
-        //   '@@@@@@@state.prodByLocalOp.get',
-        //   state.prodByLocalOp.get(objects[0].partnerId),
-        // );
+        const list: RkbProduct[][] = [objects[0].partnerId]
+          .map((p) =>
+            state.prodByLocalOp.get(p)?.map((p2) => state.prodList.get(p2)),
+          )
+          .reduce(
+            (acc, cur) => (cur ? acc.concat(cur.filter((c) => !!c)) : acc),
+            [],
+          )
+          .reduce(
+            (acc, cur) =>
+              cur?.field_daily === 'daily'
+                ? [acc[0].concat(cur), acc[1]]
+                : [acc[0], acc[1].concat(cur)],
+            [[], []],
+          ) || [[], []];
 
-        console.log('@@@@@@@state', state);
-        console.log('@@@@@@@state.prodList', state.prodList);
-
-        const list = state.prodByLocalOp
-          .get(objects[0].partnerId)
-          ?.map((p) => state.prodList.get(p));
-
-        // .reduce(
+        // const list: RkbProduct[][] = state.prodByLocalOp
+        //   .get(objects[0].partnerId)
+        //   ?.map((p) => state.prodList.get(p));
+        // // .reduce(
         //   (acc, cur) => (cur ? acc.concat(cur.filter((c) => !!c)) : acc),
         //   [],
         // )
@@ -242,8 +245,6 @@ const slice = createSlice({
             data: list[1].sort((a, b) => b.weight - a.weight) || [],
           },
         ]);
-        console.log('@@@@@@getobject[0]', typeof objects);
-        console.log('@@@@@@getobject[1]', objects[1]);
       }
     });
 
