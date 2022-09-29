@@ -165,6 +165,7 @@ type DrupalLocalOp = {
   field_network: string;
   field_apn_setting: string;
   field_weight: string;
+  field_ref_partner: string;
 };
 
 export type RkbLocalOp = {
@@ -176,6 +177,7 @@ export type RkbLocalOp = {
   network: string;
   weight: number;
   detail: string;
+  partner: string;
 };
 const toLocalOp = (data: DrupalLocalOp[]): ApiResult<RkbLocalOp> => {
   if (_.isArray(data)) {
@@ -190,6 +192,7 @@ const toLocalOp = (data: DrupalLocalOp[]): ApiResult<RkbLocalOp> => {
         network: item.field_network,
         weight: utils.stringToNumber(item.field_weight) || 0,
         detail: item.body,
+        partner: item.field_ref_partner,
       })),
     );
   }

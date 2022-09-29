@@ -502,14 +502,17 @@ const EsimSubs = ({
           <AppButton
             style={styles.btn}
             onPress={() =>
-              true
+              false
                 ? navigation.navigate('ChargeHistory', {
                     item,
                     chargeablePeriod,
                     onPressUsage,
                     chargedSubs,
                   })
-                : navigation.navigate('Charge', {item})
+                : navigation.navigate('Charge', {
+                    item,
+                    chargeableDate: chargeablePeriod,
+                  })
             }
             title={i18n.t('esim:rechargeable')}
             titleStyle={styles.btnTitle}
@@ -554,7 +557,11 @@ const EsimSubs = ({
             onPress={() =>
               isGift
                 ? navigation.navigate('Gift', {item})
-                : isChargeable && navigation.navigate('Charge', {item})
+                : isChargeable &&
+                  navigation.navigate('Charge', {
+                    item,
+                    chargeableDate: chargeablePeriod,
+                  })
             }
           />
         </View>
@@ -587,7 +594,12 @@ const EsimSubs = ({
             title={t}
             titleStyle={appStyles.bold14Text}
             style={styles.giftButton}
-            onPress={() => navigation.navigate('Charge', {item})}
+            onPress={() =>
+              navigation.navigate('Charge', {
+                item,
+                chargeableDate: chargeablePeriod,
+              })
+            }
           />
         </View>
       );

@@ -69,6 +69,8 @@ export type RkbPriceInfo = Partial<RkbProdByCountry> & {
   weight: number;
 };
 
+export type ProdDataType = {title: string; data: RkbProduct[]};
+
 export interface ProductModelState {
   prodList: ImmutableMap<string, RkbProduct>; // uuid -> RkbProduct
   localOpList: ImmutableMap<string, RkbLocalOp>;
@@ -79,6 +81,7 @@ export interface ProductModelState {
   prodByCountry: RkbProdByCountry[];
   priceInfo: ImmutableMap<string, RkbPriceInfo[][]>;
   prodByLocalOp: ImmutableMap<string, string[]>;
+  // prodByPartner: ImmutableMap<string, ProdDataType[]>;
 }
 
 const initialState: ProductModelState = {

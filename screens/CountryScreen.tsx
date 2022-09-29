@@ -315,8 +315,6 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   useEffect(() => {
     if (route.params?.partner) {
       const partnerIds = route.params.partner;
-
-      console.log('@@@partnerIds', partnerIds);
       const list: RkbProduct[][] = partnerIds
         .map((p) => prodByLocalOp.get(p)?.map((p2) => prodList.get(p2)))
         .reduce(
@@ -350,24 +348,27 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   }, [localOpList, prodByLocalOp, prodList, route.params.partner]);
 
   const renderItem = useCallback(
-    ({item, index, section}) => (
-      <CountryListItem
-        key={item.sku}
-        item={item}
-        onPress={() =>
-          navigation.navigate('ProductDetail', {
-            title: item.name,
-            item: API.Product.toPurchaseItem(item),
-            img: imageUrl,
-            uuid: item.uuid,
-            desc: item.desc,
-            localOpDetails,
-            partnerId,
-          })
-        }
-        position={position(index, section.data)}
-      />
-    ),
+    ({item, index, section}) => {
+      console.log('@@@item', item);
+      return (
+        <CountryListItem
+          key={item.sku}
+          item={item}
+          onPress={() =>
+            navigation.navigate('ProductDetail', {
+              title: item.name,
+              item: API.Product.toPurchaseItem(item),
+              img: imageUrl,
+              uuid: item.uuid,
+              desc: item.desc,
+              localOpDetails,
+              partnerId,
+            })
+          }
+          position={position(index, section.data)}
+        />
+      );
+    },
     [imageUrl, localOpDetails, navigation, partnerId],
   );
 
