@@ -81,7 +81,7 @@ export interface ProductModelState {
   prodByCountry: RkbProdByCountry[];
   priceInfo: ImmutableMap<string, RkbPriceInfo[][]>;
   prodByLocalOp: ImmutableMap<string, string[]>;
-  // prodByPartner: ImmutableMap<string, ProdDataType[]>;
+  prodByPartner: ImmutableMap<string, ProdDataType[]>;
 }
 
 const initialState: ProductModelState = {
@@ -94,6 +94,7 @@ const initialState: ProductModelState = {
   prodByCountry: [],
   priceInfo: ImmutableMap(),
   prodByLocalOp: ImmutableMap(),
+  prodByPartner: ImmutableMap(),
 };
 
 const slice = createSlice({
@@ -193,6 +194,7 @@ const slice = createSlice({
 
     builder.addCase(getProductByLocalOp.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
+
       if (result === 0 && objects.length > 0) {
         state.prodByLocalOp = state.prodByLocalOp.set(
           objects[0].partnerId,
@@ -201,6 +203,47 @@ const slice = createSlice({
         state.prodList = state.prodList.merge(
           ImmutableMap(objects.map((o) => [o.key, o])),
         );
+
+        const test = state.prodList.merge(
+          ImmutableMap(objects.map((o) => [o.key, o])),
+        );
+        console.log('@@@@@@@test', test);
+        // console.log(
+        //   '@@@@@@@state.prodByLocalOp.get',
+        //   state.prodByLocalOp.get(objects[0].partnerId),
+        // );
+
+        console.log('@@@@@@@state', state);
+        console.log('@@@@@@@state.prodList', state.prodList);
+
+        const list = state.prodByLocalOp
+          .get(objects[0].partnerId)
+          ?.map((p) => state.prodList.get(p));
+
+        // .reduce(
+        //   (acc, cur) => (cur ? acc.concat(cur.filter((c) => !!c)) : acc),
+        //   [],
+        // )
+        // .reduce(
+        //   (acc, cur) =>
+        //     cur?.field_daily === 'daily'
+        //       ? [acc[0].concat(cur), acc[1]]
+        //       : [acc[0], acc[1].concat(cur)],
+        //   [[], []],
+        // ) || [[], []];
+
+        state.prodByPartner = state.prodByPartner.set(objects[0].partnerId, [
+          {
+            title: 'daily',
+            data: list[0].sort((a, b) => b.weight - a.weight) || [],
+          },
+          {
+            title: 'total',
+            data: list[1].sort((a, b) => b.weight - a.weight) || [],
+          },
+        ]);
+        console.log('@@@@@@getobject[0]', typeof objects);
+        console.log('@@@@@@getobject[1]', objects[1]);
       }
     });
 
