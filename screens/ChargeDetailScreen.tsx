@@ -123,6 +123,29 @@ const ChargeDetailScreen: React.FC = () => {
     });
   }, [navigation]);
 
+  const titleText = useCallback(
+    (text: string, prodname: string, name: string) => (
+      <AppStyledText
+        text={text}
+        textStyle={styles.mainBody}
+        format={{b: styles.chargeItem}}
+        data={{prodname, name}}
+      />
+    ),
+    [],
+  );
+  const tailText = useCallback(
+    (text: string, chargeableDate: string) => (
+      <AppStyledText
+        text={text}
+        textStyle={styles.bodyTail}
+        format={{b: styles.chargePeriod}}
+        data={{chargeableDate}}
+      />
+    ),
+    [],
+  );
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
       <ImageBackground
@@ -135,30 +158,18 @@ const ChargeDetailScreen: React.FC = () => {
         }
         style={styles.bg}>
         <View style={styles.mainBodyFrame}>
-          <AppText style={styles.mainBody}>
-            {i18n.t('esim:chargeDetail:body1')}
-            {'\n'}
-            {params.prodname}
-            {i18n.t('esim:chargeDetail:body2')}
-            {'\n'}
-            <AppText style={styles.chargeItem}>{params.data.name}</AppText>
-            {i18n.t('esim:chargeDetail:body3')}
-            {'\n'}
-            {i18n.t('esim:chargeDetail:body4')}
-          </AppText>
+          {titleText(
+            i18n.t('esim:chargeDetail:body'),
+            params.prodname,
+            params.data.name,
+          )}
         </View>
 
         <View>
-          <AppText style={styles.bodyTail}>
-            {i18n.t('esim:chargeDetail:body5')}
-            {'\n'}
-            <AppText style={styles.chargePeriod}>
-              {params.chargeableDate}
-            </AppText>
-            {i18n.t('esim:chargeDetail:body6')}
-          </AppText>
+          {tailText(i18n.t('esim:chargeDetail:body2'), params.chargeableDate)}
         </View>
       </ImageBackground>
+
       <View style={styles.caustionFrame}>
         <View style={styles.caustionTitle}>
           <AppIcon name="cautionIcon" />
