@@ -29,27 +29,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'stretch',
   },
-  box: {
-    height: 150,
-    marginBottom: 8,
-    // resizeMode: 'cover'
-  },
   card: {
-    // borderRadius: 3,
     backgroundColor: colors.white,
-    borderStyle: 'solid',
-    // borderWidth: 1,
-    // borderColor: 'transparent',
-    // marginVertical: 7,
-    marginHorizontal: 20,
+    marginHorizontal: 8,
     paddingHorizontal: 15,
     paddingVertical: 20,
     flexDirection: 'row',
-  },
-  divider: {
-    height: 10,
-    backgroundColor: colors.whiteTwo,
-    marginTop: 32,
   },
   priceStyle: {
     height: 24,
@@ -62,14 +47,20 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     color: colors.black,
   },
+  title: {
+    ...appStyles.bold18Text,
+    fontSize: isDeviceSize('medium') ? 18 : 20,
+    color: colors.clearBlue,
+  },
+  balanceStyle: {
+    ...appStyles.bold22Text,
+    fontSize: isDeviceSize('medium') ? 22 : 24,
+    lineHeight: 24,
+  },
   wonStyle: {
-    // height: 24,
-    // fontFamily: "Roboto",
-    fontSize: isDeviceSize('medium') ? 24 : 26,
-    fontWeight: 'bold',
-    fontStyle: 'normal',
-    // lineHeight: 22,
-    // letterSpacing: 0.19,
+    ...appStyles.normal14Text,
+    fontSize: isDeviceSize('medium') ? 14 : 12,
+    lineHeight: 24,
     color: colors.black,
   },
   textView: {
@@ -77,14 +68,19 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   badge: {
-    paddingHorizontal: 8,
+    paddingLeft: 6,
+    paddingRight: 6,
+    paddingTop: 2,
+    paddingBottom: 2,
     borderRadius: 2,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 8,
   },
   badgeText: {
-    ...appStyles.bold13Text,
+    ...appStyles.extraBold20,
+    fontSize: 12,
+    lineHeight: 16,
   },
   itemDivider: {
     marginHorizontal: 20,
@@ -111,6 +107,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  titleFrame: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   detail: {
     height: windowWidth > device.small.window.width ? 48 : 36,
     borderRadius: 3,
@@ -124,6 +124,14 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     justifyContent: 'space-between',
     flexDirection: 'row',
+  },
+  tab: {
+    backgroundColor: colors.white,
+    height: 60,
+  },
+  tabTitle: {
+    fontSize: 16,
+    lineHeight: 20,
   },
 });
 
@@ -180,15 +188,8 @@ const CountryListItem0 = ({
       <View key="product" style={[styles.card]}>
         <View key="text" style={styles.textView}>
           <View style={styles.titleAndPrice}>
-            <View style={{flexDirection: 'row'}}>
-              <AppText
-                key="name"
-                style={[
-                  isDeviceSize('medium')
-                    ? appStyles.bold18Text
-                    : appStyles.bold20Text,
-                  color,
-                ]}>
+            <View style={styles.titleFrame}>
+              <AppText key="name" style={styles.title}>
                 {title}
               </AppText>
               {!_.isEmpty(item.promoFlag) &&
@@ -217,10 +218,8 @@ const CountryListItem0 = ({
             </View>
             <AppPrice
               price={item.price}
-              balanceStyle={{
-                ...appStyles.bold24Text,
-                fontSize: isDeviceSize('medium') ? 22 : 24,
-              }}
+              balanceStyle={styles.balanceStyle}
+              currencyStyle={styles.wonStyle}
             />
           </View>
 
@@ -373,8 +372,10 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
           index={index}
           routes={routes}
           onIndexChange={onIndexChange}
-          style={{backgroundColor: colors.white, height: 60}}
+          style={styles.tab}
           tintColor={colors.black}
+          titleStyle={styles.tabTitle}
+          st
         />
 
         <TabView
