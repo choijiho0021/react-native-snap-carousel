@@ -37,6 +37,7 @@ import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import AppCartButton from '@/components/AppCartButton';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {actions as simActions, SimAction} from '@/redux/modules/sim';
 
 const {esimApp, esimGlobal, webViewHost} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -108,6 +109,7 @@ type ProductDetailScreenProps = {
     product: ProductAction;
     cart: CartAction;
     info: InfoAction;
+    sim: SimAction;
   };
 };
 
@@ -287,7 +289,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       return navigation.navigate('Auth');
     }
 
-    // if (selected) {
+    // 충전구매 sim data제거
+    action.sim.init();
+
     // 구매 품목을 갱신한다.
     return action.cart
       .checkStockAndPurchase({
@@ -306,8 +310,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       .catch((err) => {
         console.log('failed to check stock', err);
       });
-    // }
-  }, [account, action.cart, navigation, purchaseItems, soldOut]);
+  }, [account, action.cart, action.sim, navigation, purchaseItems, soldOut]);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -371,6 +374,7 @@ export default connect(
       product: bindActionCreators(productActions, dispatch),
       info: bindActionCreators(infoActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
+      sim: bindActionCreators(simActions, dispatch),
     },
   }),
 )(ProductDetailScreen);
