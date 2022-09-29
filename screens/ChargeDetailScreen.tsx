@@ -25,6 +25,8 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     flexDirection: 'row',
+    borderTopWidth: 1,
+    borderColor: '#d8d8d8',
   },
   paymentBtn: {
     height: 52,
