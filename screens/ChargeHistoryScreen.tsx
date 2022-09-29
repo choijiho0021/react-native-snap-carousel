@@ -16,6 +16,7 @@ import {getPromoFlagColor} from '@/redux/api/productApi';
 type ParamList = {
   ChargeHistoryScreen: {
     item: RkbSubscription;
+    chargedSubs: RkbSubscription[];
     onPressUsage: () => Promise<{usage: {}; status: {}}>;
     chargeablePeriod: string;
   };
