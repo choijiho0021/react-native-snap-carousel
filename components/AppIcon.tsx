@@ -121,7 +121,6 @@ const images: Record<string, any[]> = {
   btnPen: [require(`${esimPath}btnPen.png`)],
   btnUsage: [require(`${esimPath}btnUsage.png`)],
   naverIcon: [require(`${esimPath}naverIcon.png`)],
-  chargeDetailBg: [require(`${esimPath}img_bg_1.png`)],
   hkIcon: [require(`${esimPath}hkIcon.png`)],
   cautionIcon: [require(`${esimPath}cautionIcon.png`)],
   btnChargeable: [require(`${esimPath}btnChargeable.png`)],

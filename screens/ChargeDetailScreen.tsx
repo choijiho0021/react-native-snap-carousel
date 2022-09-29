@@ -123,16 +123,16 @@ const ChargeDetailScreen: React.FC = () => {
     });
   }, [navigation]);
 
-  useEffect(() => {
-    console.log('@@@@@data', params.data);
-    console.log('@@@@@prodname', params.prodname);
-    console.log('@@@@@prodname', params.chargeableDate);
-  }, []);
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
       <ImageBackground
-        // eslint-disable-next-line global-require
-        source={require('../assets/images/esim/img_bg_1.png')}
+        source={
+          params.data.field_daily === 'daily'
+            ? // eslint-disable-next-line global-require
+              require('../assets/images/esim/img_bg_1.png')
+            : // eslint-disable-next-line global-require
+              require('../assets/images/esim/img_bg_2.png')
+        }
         style={styles.bg}>
         <View style={styles.mainBodyFrame}>
           <AppText style={styles.mainBody}>
