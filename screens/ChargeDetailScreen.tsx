@@ -1,12 +1,8 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {
-  StyleSheet,
-  SafeAreaView,
-  View,
-  FlatList,
-  ImageBackground,
-} from 'react-native';
+import {StyleSheet, SafeAreaView, View, ImageBackground} from 'react-native';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import {colors} from '@/constants/Colors';
 import AppText from '@/components/AppText';
 import AppBackButton from '@/components/AppBackButton';
@@ -16,6 +12,11 @@ import {appStyles} from '@/constants/Styles';
 import AppIcon from '@/components/AppIcon';
 import AppStyledText from '@/components/AppStyledText';
 import AppButton from '@/components/AppButton';
+import {actions as cartActions, CartAction} from '@/redux/modules/cart';
+import {RootState} from '@/redux';
+import {AccountModelState} from '@/redux/modules/account';
+import {API} from '@/redux/api';
+import {actions as simActions, SimAction} from '@/redux/modules/sim';
 
 const styles = StyleSheet.create({
   paymentBtnFrame: {
@@ -106,23 +107,63 @@ const styles = StyleSheet.create({
 
 type ParamList = {
   ChargeDetailScreen: {
-    data: RkbProduct[];
+    data: RkbProduct;
     prodname: string;
     chargeableDate: string;
+    subsIccid: string;
   };
 };
 
-const ChargeDetailScreen: React.FC = () => {
+type ProductDetailScreenProps = {
+  account: AccountModelState;
+  action: {
+    cart: CartAction;
+    sim: SimAction;
+  };
+};
+
+const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
+  account,
+  action,
+}) => {
   const route = useRoute<RouteProp<ParamList, 'ChargeDetailScreen'>>();
   const params = useMemo(() => route?.params, [route?.params]);
+  const purchaseItems = useMemo(
+    () => [API.Product.toPurchaseItem(params.data)],
+    [params.data],
+  );
 
   const navigation = useNavigation();
+
   useEffect(() => {
     navigation.setOptions({
       title: null,
       headerLeft: () => <AppBackButton />,
     });
   }, [navigation]);
+
+  const onPressBtnPurchase = useCallback(() => {
+    const {balance} = account;
+
+    action.sim.update({esimIccid: params.subsIccid});
+
+    // 구매 품목을 갱신한다.
+    action.cart.purchase({
+      purchaseItems,
+      balance,
+    });
+
+    navigation.navigate('PymMethod', {
+      mode: 'roaming_product',
+    });
+  }, [
+    account,
+    action.cart,
+    action.sim,
+    navigation,
+    params.subsIccid,
+    purchaseItems,
+  ]);
 
   const titleText = useCallback(
     (text: string, prodname: string, name: string) => (
@@ -204,7 +245,7 @@ const ChargeDetailScreen: React.FC = () => {
         <AppButton
           style={styles.paymentBtn}
           type="primary"
-          onPress={() => {}}
+          onPress={onPressBtnPurchase}
           title={i18n.t('esim:charge:payment')}
           titleStyle={styles.paymentBtnTitle}
         />
@@ -213,4 +254,14 @@ const ChargeDetailScreen: React.FC = () => {
   );
 };
 
-export default ChargeDetailScreen;
+export default connect(
+  ({account}: RootState) => ({
+    account,
+  }),
+  (dispatch) => ({
+    action: {
+      cart: bindActionCreators(cartActions, dispatch),
+      sim: bindActionCreators(simActions, dispatch),
+    },
+  }),
+)(ChargeDetailScreen);

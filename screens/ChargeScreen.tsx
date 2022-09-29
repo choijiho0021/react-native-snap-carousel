@@ -334,6 +334,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
               data,
               prodname: params.item.prodName,
               chargeableDate: params.chargeableDate,
+              subsIccid: params.item.subsIccid,
             });
           }}
         />
@@ -351,6 +352,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
               data,
               prodname: params.item.prodName,
               chargeableDate: params.chargeableDate,
+              subsIccid: params.item.subsIccid,
             });
           }}
         />
