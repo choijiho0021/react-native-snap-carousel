@@ -6,7 +6,7 @@ import {
   TrackingStatus,
 } from 'react-native-tracking-transparency';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {Settings} from 'react-native-fbsdk';
+import {Settings} from 'react-native-fbsdk-next';
 import {
   Keyboard,
   SafeAreaView,

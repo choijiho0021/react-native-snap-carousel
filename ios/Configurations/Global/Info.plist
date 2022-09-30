@@ -33,7 +33,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fb735220017741218</string>
+				<string>fb531615184696321</string>
 			</array>
 		</dict>
 		<dict>
@@ -68,11 +68,11 @@
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
-	<string>735220017741218</string>
+	<string>531615184696321</string>
 	<key>FacebookAutoLogAppEventsEnabled</key>
 	<true/>
 	<key>FacebookClientToken</key>
-	<string>f540ca73d1d43fd5257dbaa113c2d5a7</string>
+	<string>894c3f612ec0ebd095aa7ed24f47ad3c</string>
 	<key>FacebookDisplayName</key>
 	<string>Rokebi Global</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>

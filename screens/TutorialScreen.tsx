@@ -10,7 +10,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {AppEventsLogger, Settings} from 'react-native-fbsdk';
+import {AppEventsLogger, Settings} from 'react-native-fbsdk-next';
 import {Pagination} from 'react-native-snap-carousel';
 import {
   getTrackingStatus,

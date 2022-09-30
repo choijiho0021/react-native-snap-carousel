@@ -14,7 +14,7 @@ import {
   Linking,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
-import {Settings} from 'react-native-fbsdk';
+import {Settings} from 'react-native-fbsdk-next';
 import {TabView} from 'react-native-tab-view';
 import {getTrackingStatus} from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';

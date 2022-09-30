@@ -6,7 +6,7 @@ import {
   GraphRequest,
   GraphRequestManager,
   LoginManager,
-} from 'react-native-fbsdk';
+} from 'react-native-fbsdk-next';
 import AppButton from '../AppButton';
 import {SocialAuthInfo} from '.';
 
@@ -34,6 +34,7 @@ const FacebookLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
 
             if (onAuth)
               onAuth({
+                kind: 'facebook',
                 user: result.id,
                 pass,
                 authorized: true,

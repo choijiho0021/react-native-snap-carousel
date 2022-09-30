@@ -9,7 +9,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import Analytics from 'appcenter-analytics';
-import {Settings} from 'react-native-fbsdk';
+import {Settings} from 'react-native-fbsdk-next';
 import {
   getTrackingStatus,
   TrackingStatus,
