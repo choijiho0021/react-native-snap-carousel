@@ -1,7 +1,8 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import DeviceInfo from 'react-native-device-info';
 import {
   StyleSheet,
   Image,
@@ -9,6 +10,7 @@ import {
   View,
   ScrollView,
   Dimensions,
+  Platform,
 } from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {colors} from '@/constants/Colors';
@@ -22,7 +24,7 @@ import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import i18n from '@/utils/i18n';
-import {guideImages, imageList} from './model';
+import {GuideImage, guideImages, imageList} from './model';
 import AppStyledText from '@/components/AppStyledText';
 import {getImage} from '@/utils/utils';
 import AppCarousel from '@/components/AppCarousel';
@@ -118,6 +120,7 @@ type UserGuideScreenProps = {
 const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
   const [carouselIdx, setCarouselIdx] = useState(0);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
+  const deviceModel = useMemo(() => DeviceInfo.getModel(), []);
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({window}) => {
@@ -153,58 +156,75 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
     [navigation],
   );
 
-  const renderHeadPage = useCallback((data) => {
-    return (
-      <View style={[styles.container, {alignItems: 'center'}]}>
-        <AppSvgIcon key="esimLogo" style={styles.logo} name="esimLogo" />
+  const renderHeadPage = useCallback(
+    (data: GuideImage) => {
+      return (
+        <View style={[styles.container, {alignItems: 'center'}]}>
+          <View style={{flex: 1}}>
+            <AppSvgIcon key="esimLogo" style={styles.logo} name="esimLogo" />
+          </View>
 
-        <View style={{flex: 2, alignItems: 'center', marginTop: 46}}>
-          {data?.title}
-        </View>
+          <View style={{flex: 2, alignItems: 'center', marginTop: 46}}>
+            {data?.title}
+            {Platform.OS === 'android' && (
+              <AppText style={[appStyles.medium14, {marginTop: 10}]}>
+                {i18n.t(
+                  `userGuide:stepsTitle0:${
+                    deviceModel.startsWith('SM') ? 'galaxy' : 'pixel'
+                  }`,
+                )}
+              </AppText>
+            )}
+          </View>
 
-        <View style={{flex: 4, marginTop: 40}}>
-          <Image source={getImage(imageList, data.key)} resizeMode="contain" />
-        </View>
+          <View style={{flex: 4, marginTop: 40}}>
+            <Image
+              source={getImage(imageList, data.key)}
+              resizeMode="contain"
+            />
+          </View>
 
-        <View style={styles.checkInfo}>
-          <AppText style={appStyles.bold18Text}>
-            {i18n.t('userGuide:checkInfo')}
-          </AppText>
-          <View
-            style={{
-              marginTop: 8,
-              paddingRight: 20,
-            }}>
-            {[1, 2, 3].map((k) => (
-              <View key={k} style={{flexDirection: 'row'}}>
-                <AppText
-                  style={[appStyles.normal16Text, {marginHorizontal: 5}]}>
-                  •
-                </AppText>
-                <AppStyledText
-                  textStyle={styles.checkInfoText}
-                  text={i18n.t(`userGuide:checkInfo${k}`)}
-                  format={{b: {color: colors.clearBlue}}}
-                />
-              </View>
-            ))}
+          <View style={styles.checkInfo}>
+            <AppText style={appStyles.bold18Text}>
+              {i18n.t('userGuide:checkInfo')}
+            </AppText>
+            <View
+              style={{
+                marginTop: 8,
+                paddingRight: 20,
+              }}>
+              {[1, 2, 3].map((k) => (
+                <View key={k} style={{flexDirection: 'row'}}>
+                  <AppText
+                    style={[appStyles.normal16Text, {marginHorizontal: 5}]}>
+                    •
+                  </AppText>
+                  <AppStyledText
+                    textStyle={styles.checkInfoText}
+                    text={i18n.t(`userGuide:checkInfo${k}`)}
+                    format={{b: {color: colors.clearBlue}}}
+                  />
+                </View>
+              ))}
+            </View>
+          </View>
+          <View style={styles.slideGuide}>
+            <View style={styles.slideGuideBox}>
+              <AppSvgIcon key="leftArrow" name="leftArrow" />
+              <AppText>{i18n.t('userGuide:slideLeft')}</AppText>
+            </View>
           </View>
         </View>
-        <View style={styles.slideGuide}>
-          <View style={styles.slideGuideBox}>
-            <AppSvgIcon key="leftArrow" name="leftArrow" />
-            <AppText>{i18n.t('userGuide:slideLeft')}</AppText>
-          </View>
-        </View>
-      </View>
-    );
-  }, []);
+      );
+    },
+    [deviceModel],
+  );
 
-  const renderStepPage = useCallback((data) => {
+  const renderStepPage = useCallback((data: GuideImage) => {
     return (
       <View style={styles.stepPage}>
         <View style={{alignItems: 'center'}}>
-          <View style={[styles.step, {marginTop: 40}]}>
+          <View style={[styles.step, {marginTop: 20}]}>
             <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
           </View>
           {data.title}
@@ -230,16 +250,16 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
   }, []);
 
   const renderTailPage = useCallback(
-    (data) => (
+    (data: GuideImage) => (
       <View style={{flex: 1, alignItems: 'center'}}>
         <View style={{flex: 1, alignItems: 'center'}}>
-          <View style={[styles.step, {marginTop: 40}]}>
+          <View style={[styles.step, {marginTop: 20}]}>
             <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
           </View>
           {data?.title}
         </View>
 
-        <View style={{flex: 1, top: 20}}>{data.tip && data.tip()}</View>
+        <View style={{flex: 1.5, top: 20}}>{data.tip && data.tip()}</View>
 
         <View style={{flex: 1}}>
           <Image source={getImage(imageList, 'page11')} resizeMode="contain" />
