@@ -18,6 +18,29 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     flexDirection: 'row',
   },
+  cardCharge: {
+    backgroundColor: colors.white,
+    marginHorizontal: 8,
+    paddingHorizontal: 15,
+    paddingVertical: 20,
+    flexDirection: 'row',
+  },
+
+  balanceStyle: {
+    ...appStyles.bold24Text,
+    fontSize: isDeviceSize('medium') ? 22 : 24,
+  },
+  balanceStyleCharge: {
+    ...appStyles.bold22Text,
+    fontSize: isDeviceSize('medium') ? 22 : 24,
+    lineHeight: 24,
+  },
+  wonStyleCharge: {
+    ...appStyles.normal14Text,
+    fontSize: isDeviceSize('medium') ? 14 : 12,
+    lineHeight: 24,
+    color: colors.black,
+  },
   textView: {
     flex: 1,
     alignItems: 'flex-start',
@@ -29,8 +52,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginLeft: 8,
   },
+  badgeCharge: {
+    paddingLeft: 6,
+    paddingRight: 6,
+    paddingTop: 2,
+    paddingBottom: 2,
+    borderRadius: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 8,
+  },
   badgeText: {
     ...appStyles.bold13Text,
+  },
+  badgeTextCharge: {
+    ...appStyles.extraBold20,
+    fontSize: 12,
+    lineHeight: 16,
   },
   itemDivider: {
     marginHorizontal: 20,
@@ -62,12 +100,14 @@ type CountryListItemProps = {
   item: RkbProduct;
   position?: string;
   onPress: () => void;
+  isCharge: boolean;
 };
 
 const CountryListItem: React.FC<CountryListItemProps> = ({
   item,
   position,
   onPress,
+  isCharge = false,
 }) => {
   const color = useMemo(
     () => ({
@@ -123,7 +163,9 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
 
   return (
     <Pressable onPress={onPress}>
-      <View key="product" style={[styles.card, myStyle]}>
+      <View
+        key="product"
+        style={isCharge ? styles.cardCharge : [styles.card, myStyle]}>
         <View key="text" style={styles.textView}>
           <View style={styles.titleAndPrice}>
             <View style={{flexDirection: 'row'}}>
@@ -144,7 +186,7 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
                     <View
                       key={elm}
                       style={[
-                        styles.badge,
+                        isCharge ? styles.badgeCharge : styles.badge,
                         {
                           backgroundColor: badgeColor.backgroundColor,
                         },
@@ -152,7 +194,8 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
                       <AppText
                         key="name"
                         style={[
-                          styles.badgeText,
+                          isCharge ? styles.badgeTextCharge : styles.badgeText,
+
                           {color: badgeColor.fontColor},
                         ]}>
                         {i18n.t(elm)}
@@ -163,10 +206,10 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
             </View>
             <AppPrice
               price={item.price}
-              balanceStyle={{
-                ...appStyles.bold24Text,
-                fontSize: isDeviceSize('medium') ? 22 : 24,
-              }}
+              balanceStyle={
+                isCharge ? styles.balanceStyleCharge : styles.balanceStyle
+              }
+              currencyStyle={isCharge && styles.wonStyleCharge}
             />
           </View>
 
@@ -180,7 +223,7 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
           </AppText>
         </View>
       </View>
-      {position !== 'tail' && position !== 'onlyOne' && (
+      {position !== 'tail' && position !== 'onlyOne' && !isCharge && (
         <View style={styles.itemOutDivider}>
           <View style={styles.itemDivider} />
         </View>

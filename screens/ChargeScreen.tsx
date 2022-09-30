@@ -141,6 +141,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
                 subsIccid: params.item.subsIccid,
               });
             }}
+            isCharge
           />
         ))}
       </ScrollView>

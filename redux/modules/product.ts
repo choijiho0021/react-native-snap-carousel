@@ -210,18 +210,9 @@ const slice = createSlice({
           .get(objects[0].partnerId)
           ?.map((p2) => state.prodList.get(p2));
 
-        const cmiProdListbyPartner = state.prodByLocalOp
-          .get(objects[0].partnerId)
-          ?.map((p2) => state.prodList.get(p2));
-
         state.prodByPartner = state.prodByPartner.set(
           objects[0].partnerId,
           prodListbyPartner,
-        );
-
-        state.cmiProdByPartner = state.prodByPartner.set(
-          objects[0].partnerId,
-          cmiProdListbyPartner,
         );
 
         // const list: RkbProduct[][] = [objects[0].partnerId]
