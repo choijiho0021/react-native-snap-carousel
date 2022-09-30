@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     marginBottom: isDeviceSize('medium') ? 16 : 32,
+    width: '100%',
   },
   image: {
     width: '100%',
@@ -138,7 +139,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
   }, [navigation]);
 
   const renderModalHeader = useCallback(
-    (index) => (
+    (index: number) => (
       <View style={styles.modalHeader}>
         <AppText style={[appStyles.bold16Text, {color: colors.clearBlue}]}>
           {index + 1}
@@ -166,15 +167,15 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
 
           <View style={{flex: 2, alignItems: 'center', marginTop: 46}}>
             {data?.title}
-            {Platform.OS === 'android' && (
-              <AppText style={[appStyles.medium14, {marginTop: 10}]}>
-                {i18n.t(
-                  `userGuide:stepsTitle0:${
-                    deviceModel.startsWith('SM') ? 'galaxy' : 'pixel'
-                  }`,
-                )}
-              </AppText>
-            )}
+            <AppText style={[appStyles.medium14, {marginTop: 20}]}>
+              {Platform.OS === 'android'
+                ? i18n.t(
+                    `userGuide:stepsTitle0:${
+                      deviceModel.startsWith('SM') ? 'galaxy' : 'pixel'
+                    }`,
+                  )
+                : 'iOS 16 ver.'}
+            </AppText>
           </View>
 
           <View style={{flex: 4, marginTop: 40}}>
@@ -262,11 +263,14 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
         <View style={{flex: 1.5, top: 20}}>{data.tip && data.tip()}</View>
 
         <View style={{flex: 1}}>
-          <Image source={getImage(imageList, 'page11')} resizeMode="contain" />
+          <Image
+            source={getImage(imageList, 'pageLast')}
+            resizeMode="contain"
+          />
         </View>
         <View style={{flex: 2, justifyContent: 'center'}}>
           <Image
-            source={getImage(imageList, 'page11_2')}
+            source={getImage(imageList, 'pageLast2')}
             resizeMode="contain"
           />
         </View>
@@ -276,7 +280,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
   );
 
   const renderBody = useCallback(
-    (item, index: number) => {
+    (item: GuideImage, index: number) => {
       if (index === 0) return renderHeadPage(item);
       if (index < guideImages.length - 1) return renderStepPage(item);
       return renderTailPage(item);
@@ -285,7 +289,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
   );
 
   const renderGuide = useCallback(
-    ({item, index}) => (
+    ({item, index}: {item: GuideImage; index: number}) => (
       <View style={[styles.container, {alignItems: 'center'}]}>
         {renderModalHeader(index)}
 
