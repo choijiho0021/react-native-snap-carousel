@@ -1,5 +1,12 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {StyleSheet, SafeAreaView, View} from 'react-native';
+import {
+  StyleSheet,
+  SafeAreaView,
+  View,
+  Modal,
+  Pressable,
+  ImageBackground,
+} from 'react-native';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {SceneMap, TabView} from 'react-native-tab-view';
@@ -21,6 +28,11 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppTabHeader from '@/components/AppTabHeader';
 import {makeProdData} from './CountryScreen';
 import CountryListItem from './HomeScreen/component/CountryListItem';
+import AppIcon from '@/components/AppIcon';
+import AppButton from '@/components/AppButton';
+import AppText from '@/components/AppText';
+import {Button} from 'react-native-share';
+import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
   container: {
@@ -39,6 +51,51 @@ const styles = StyleSheet.create({
   },
   tabTitle: {
     fontSize: 16,
+    lineHeight: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  cautionBtn: {
+    marginLeft: 9,
+    width: 24,
+    height: 24,
+    marginTop: 2,
+  },
+  cautionModal: {
+    marginRight: 20,
+    // backgroundColor: 'red',
+    position: 'absolute',
+    top: 40,
+    paddingTop: 40,
+    paddingLeft: 30,
+    paddingRight: 30,
+    paddingBottom: 20,
+  },
+  modalTitleFrame: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    // height: 36,
+    marginBottom: 20,
+    paddingRight: 4,
+  },
+  modalTitleText: {
+    ...appStyles.bold14Text,
+    lineHeight: 20,
+  },
+  btnCancel: {
+    width: 12,
+    height: 12,
+  },
+  modalBody: {
+    paddingRight: 30,
+    paddingBottom: 20,
+  },
+
+  modalBodyText: {
+    ...appStyles.normal14Text,
     lineHeight: 20,
   },
 });
@@ -69,8 +126,9 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<ParamList, 'ChargeScreen'>>();
   const params = useMemo(() => route?.params, [route?.params]);
-
+  const [index, setIndex] = useState(0);
   const [partnerIds, setPartnerIds] = useState<string[]>([]);
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   useEffect(() => {
     const partnerTemp: string[] = [];
@@ -103,11 +161,22 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
   useEffect(() => {
     navigation.setOptions({
       title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('esim:charge')} />,
+      headerLeft: () => (
+        <View style={styles.header}>
+          <AppBackButton title={i18n.t('esim:charge')} />
+
+          <AppButton
+            style={styles.cautionBtn}
+            onPress={() => {
+              setShowModal(true);
+            }}
+            iconName="btnChargeCaution"
+          />
+        </View>
+      ),
     });
   }, [navigation]);
 
-  const [index, setIndex] = useState(0);
   const onIndexChange = useCallback((idx: number) => setIndex(idx), []);
   const routes = useMemo(
     () =>
@@ -176,6 +245,48 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
           renderTabBar={() => null}
         />
       </View>
+      <Modal visible={showModal} transparent>
+        <Pressable
+          style={{
+            flex: 1,
+            backgroundColor: 'transparent',
+          }}
+          onPress={() => setShowModal(false)}
+        />
+        <ImageBackground
+          source={require('../assets/images/esim/chargeCautionBg.png')}
+          style={styles.cautionModal}
+          resizeMode="stretch">
+          <View style={styles.modalTitleFrame}>
+            <AppText style={styles.modalTitleText}>
+              {i18n.t('esim:chargeCaution')}
+            </AppText>
+            <AppButton
+              style={styles.btnCancel}
+              onPress={() => {
+                setShowModal(false);
+              }}
+              iconName="btnCancel"
+            />
+          </View>
+          <View style={styles.modalBody}>
+            {[1, 2, 3].map((k) => (
+              <View key={k} style={{flexDirection: 'row'}}>
+                <AppText
+                  style={[
+                    appStyles.normal14Text,
+                    {marginHorizontal: 5, marginTop: 3},
+                  ]}>
+                  •
+                </AppText>
+                <AppText style={styles.modalBodyText}>
+                  {i18n.t(`esim:chargeCaution:modal${k}`)}
+                </AppText>
+              </View>
+            ))}
+          </View>
+        </ImageBackground>
+      </Modal>
     </SafeAreaView>
   );
 };

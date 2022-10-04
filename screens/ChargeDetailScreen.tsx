@@ -222,7 +222,11 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
         <View style={styles.caustionBody}>
           {[1, 2, 3, 4, 5, 6].map((k) => (
             <View key={k} style={{flexDirection: 'row'}}>
-              <AppText style={[appStyles.normal14Text, {marginHorizontal: 5}]}>
+              <AppText
+                style={[
+                  appStyles.normal14Text,
+                  {marginHorizontal: 5, marginTop: 3},
+                ]}>
                 •
               </AppText>
               <AppStyledText
