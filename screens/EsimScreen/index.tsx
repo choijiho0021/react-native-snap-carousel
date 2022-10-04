@@ -48,7 +48,6 @@ import EsimSubs from './components/EsimSubs';
 import EsimModal, {ModalType} from './components/EsimModal';
 import GiftModal from './components/GiftModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import ChargeModal from './components/ChargeModal';
 
 const {esimGlobal} = Env.get();
 
@@ -123,7 +122,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [subs, setSubs] = useState<RkbSubscription>();
   const [cmiPending, setCmiPending] = useState(false);
   const [showGiftModal, setShowGiftModal] = useState(false);
-  const [showChargeModal, setShowChargeModal] = useState(false);
   const [isPressClose, setIsPressClose] = useState(false);
   const [cmiUsage, setCmiUsage] = useState({});
   const [cmiStatus, setCmiStatus] = useState({});
@@ -440,13 +438,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         visible={showSnackBar}
         onClose={() => setShowSnackBar(false)}
         textMessage={i18n.t('usim:failSnackBar')}
-      />
-      <ChargeModal
-        visible={showChargeModal}
-        onOkClose={() => {
-          setShowChargeModal(false);
-          setIsPressClose(true);
-        }}
       />
     </View>
   );

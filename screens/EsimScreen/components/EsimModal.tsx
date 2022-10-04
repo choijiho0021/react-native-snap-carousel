@@ -18,7 +18,6 @@ import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import AppSnackBar from '@/components/AppSnackBar';
 import {itemWidth, MAX_WIDTH} from '@/constants/SliderEntry.style';
 import Env from '@/environment';
-import ChargeModal from './ChargeModal';
 import {API} from '@/redux/api';
 import {
   actions as productActions,
