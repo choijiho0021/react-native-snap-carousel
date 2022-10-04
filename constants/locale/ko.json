@@ -725,6 +725,7 @@
   "socialLogin:kakao": "카카오 로그인",
   "socialLogin:apple": "Apple로 로그인",
   "socialLogin:google": "Google 로그인",
+  "socialLogin:facebook": "Facebook 로그인",
 
   "userGuide:checkInfo": "잠깐! 먼저 확인해주세요",
   "userGuide:checkInfo1": "반드시 <b>네트워크가 연결된 곳</b>에서 eSIM을 등록해주세요.",

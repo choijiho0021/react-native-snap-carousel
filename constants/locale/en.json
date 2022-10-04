@@ -724,6 +724,7 @@
   "socialLogin:kakao": "Login with Kakao",
   "socialLogin:apple": "Sign in with Apple",
   "socialLogin:google": "Login with Google",
+  "socialLogin:facebook": "Sign in with Facebook",
 
   "userGuide:checkInfo": "Lists to check before you go ahead:",
   "userGuide:checkInfo1": "Register you eSIM only when <b>network connection is available</b>",
