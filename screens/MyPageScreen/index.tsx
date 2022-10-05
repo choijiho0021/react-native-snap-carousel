@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
   title: {
     ...appStyles.title,
     marginLeft: 20,
+    marginRight: 20,
   },
   container: {
     flex: 1,
@@ -182,7 +183,15 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
     navigation.setOptions({
       title: null,
       headerLeft: () => (
-        <AppText style={styles.title}>{i18n.t('acc:title')}</AppText>
+        <View style={{flexDirection: 'row'}}>
+          <AppText style={styles.title}>{i18n.t('acc:title')}</AppText>
+          <AppButton
+            // style={{marginLeft: }}
+            titleStyle={{color: 'white'}}
+            title="Pedometer"
+            onPress={() => navigation.navigate('Pedometer')}
+          />
+        </View>
       ),
       headerRight: () => (
         <AppSvgIcon

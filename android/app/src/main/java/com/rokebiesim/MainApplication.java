@@ -14,6 +14,8 @@ import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactApplication;
+import com.horcrux.svg.SvgPackage;
+import com.reactnative.googlefit.GoogleFitPackage;
 import com.adjust.nativemodule.AdjustPackage;
 import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import com.swmansion.reanimated.ReanimatedPackage;
@@ -154,6 +156,7 @@ public class MainApplication extends Application implements ReactApplication {
                 protected List<ReactPackage> getPackages() {
                     return Arrays.<ReactPackage>asList(
                             new MainReactPackage(),
+            new GoogleFitPackage(BuildConfig.APPLICATION_ID),
             new AdjustPackage(),
             new ReanimatedPackage(),
             new RNSharePackage(),

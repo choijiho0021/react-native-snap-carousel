@@ -87,6 +87,10 @@ target 'RokebiESIM' do
   rokebiPods
   pod 'react-native-sim-cards-manager', :path => '../node_modules/react-native-sim-cards-manager'
 
+  pod 'RNAppleHealthKit', :path => '../node_modules/react-native-health'
+
+  pod 'RNSVG', :path => '../node_modules/react-native-svg'
+
 end
 
 target 'RokebiUSIM' do
