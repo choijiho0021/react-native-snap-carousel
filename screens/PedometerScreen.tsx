@@ -1,17 +1,56 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
-import GoogleFit, {BucketUnit, Scopes} from 'react-native-google-fit';
+import GoogleFit, {Scopes} from 'react-native-google-fit';
 import AppleHealthKit, {
-  HealthValue,
   HealthKitPermissions,
-  HealthInputOptions,
+  HealthValue,
 } from 'react-native-health';
 import AppText from '@/components/AppText';
 import Env from '@/environment';
+import {AnimatedCircularProgress} from 'react-native-circular-progress';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import AppBackButton from '@/components/AppBackButton';
+import i18n from '@/utils/i18n';
+import {useNavigation} from '@react-navigation/native';
+import AppButton from '@/components/AppButton';
+import moment from 'moment';
 
 const {isIOS} = Env.get();
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  circleFrame: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    // paddingTop: 100,
+    height: '100%',
+  },
+  normal12WarmGrey: {
+    ...appStyles.normal12Text,
+    color: colors.warmGrey,
+    textAlign: 'left',
+  },
+  bold18ClearBlue: {
+    ...appStyles.bold18Text,
+    color: colors.clearBlue,
+  },
+  btnReload: {
+    width: 10,
+    height: 10,
+    marginTop: 5,
+  },
+});
+
+type sampleType = {
+  device: string;
+  end: string;
+  quantity: number;
+  sourceId: string;
+  sourceName: string;
+  start: string;
+  tracked: boolean;
+};
 
 const option = {
   Scopes: [
@@ -30,27 +69,43 @@ const permissions = {
 } as HealthKitPermissions;
 
 const options = {
-  startDate: new Date(2022, 5, 1).toISOString(), // required
-  endDate: new Date().toISOString(), // optional; default now
+  startDate: moment(moment().format('L')).toISOString(),
+  type: 'Walking',
 };
 
 const PedometerScreen = () => {
   const [stepCount, setStepCount] = useState(0);
+  const navigation = useNavigation();
+
   useEffect(() => {
+    navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <AppBackButton title={i18n.t('esim:pedometer:title')} />
+      ),
+    });
+  }, [navigation]);
+
+  const getStepCount = useCallback(() => {
     if (isIOS) {
       AppleHealthKit.initHealthKit(permissions, (error: string) => {
-        /* Called after we receive a response from the system */
         if (error) {
           console.log('[ERROR] Cannot grant permissions!');
         } else {
-          AppleHealthKit.getDailyStepCountSamples(
+          AppleHealthKit.getSamples(
             options,
-            (err: Object, results: Array<Object>) => {
+            (err: Object, results: Array<sampleType>) => {
               if (err) {
                 return;
               }
-              console.log(results);
-              setStepCount(results[0].value);
+              // console.log(results);
+              let stepAcc = 0;
+              results.forEach((r) => {
+                if (r.tracked) {
+                  stepAcc += r.quantity;
+                }
+              });
+              setStepCount(stepAcc);
             },
           );
         }
@@ -60,28 +115,54 @@ const PedometerScreen = () => {
       GoogleFit.authorize(option)
         .then((authResult) => {
           if (authResult.success) {
-            console.log('@@@@@AUTH_SUCCESS');
+            // console.log('@@@@@AUTH_SUCCESS');
             //   GoogleFitness APP이 깔려있고 해당 계정이 등록되어있어야만 동작
             GoogleFit.getDailySteps(today)
               .then((res) => {
-                console.log('@@@@@', res[res.length - 1].steps[0].value);
                 if (res[res.length - 1].steps[0].value > stepCount)
                   setStepCount(res[res.length - 1].steps[0].value);
               })
               .catch();
           } else {
-            console.log('@@@@@AUTH_DENIED', authResult);
+            // console.log('@@@@@AUTH_DENIED', authResult);
           }
         })
         .catch(() => {
-          console.log('@@@@@AUTH_ERR');
+          // console.log('@@@@@AUTH_ERR');
         });
     }
   }, [stepCount]);
+
+  useEffect(() => {
+    getStepCount();
+  }, [getStepCount]);
   return (
-    <View>
-      <AppText>Pedometer Test</AppText>
-      <AppText>stepCount : {stepCount}</AppText>
+    <View style={styles.circleFrame}>
+      <AnimatedCircularProgress
+        size={300}
+        width={35}
+        fill={stepCount / 100}
+        rotation={0}
+        backgroundWidth={25}
+        tintColor={colors.clearBlue}
+        // onAnimationComplete={() => console.log('onAnimationComplete')}
+        backgroundColor={colors.whiteTwo}>
+        {(fill) => (
+          <View style={{alignItems: 'center'}}>
+            <AppText>{i18n.t('esim:pedometer:sub')}</AppText>
+            <AppText style={styles.bold18ClearBlue}>
+              {stepCount} / 10000
+            </AppText>
+            <AppButton
+              style={styles.btnReload}
+              onPress={() => getStepCount()}
+              iconName="btnReload"
+              size={30}
+              iconStyle={{marginTop: 15}}
+            />
+          </View>
+        )}
+      </AnimatedCircularProgress>
     </View>
   );
 };

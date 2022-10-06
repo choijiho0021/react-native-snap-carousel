@@ -188,7 +188,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
           <AppButton
             // style={{marginLeft: }}
             titleStyle={{color: 'white'}}
-            title="Pedometer"
+            title={i18n.t('esim:pedometer:title')}
             onPress={() => navigation.navigate('Pedometer')}
           />
         </View>

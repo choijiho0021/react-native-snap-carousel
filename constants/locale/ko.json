@@ -502,6 +502,8 @@
   "esim:chargeCaution:body6": "구매 eSIM 목록 > 충전 버튼 클릭 시 충전 내역을 확인하실 수 있습니다.",
   "esim:charge:payment": "결제하기",
   "esim:charge:amount": "금액: ",
+  "esim:pedometer:title": "만보기",
+  "esim:pedometer:sub": "목표 걸음 수",
 
   "redirectHK": "홍콩 실명등록",
   "redirectHK:info1": "홍콩 정부의 통신 정책 변경으로 인해, 홍콩 현지 데이터를 사용하고자 하는 모든 사용자(내/외국인 포함)는 홍콩 현지 통신사의 웹페이지에서 <b>실명 등록 후 현지 데이터 사용이 가능합니다.</b>",
