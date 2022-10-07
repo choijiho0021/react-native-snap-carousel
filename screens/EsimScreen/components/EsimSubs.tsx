@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useMemo, useState} from 'react';
+import React, {memo, useMemo} from 'react';
 import {
   Dimensions,
   Pressable,
@@ -19,9 +19,6 @@ import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import AppIcon from '@/components/AppIcon';
-import CameraRoll from '@react-native-community/cameraroll';
-import {getArchtype} from 'immer/dist/internal';
-import {withStyleAnimation} from 'react-native-reanimated/lib/types/lib/reanimated2/animation';
 
 const {width} = Dimensions.get('window');
 
@@ -39,25 +36,21 @@ const styles = StyleSheet.create({
   usageListContainer: {
     marginTop: 24,
     marginHorizontal: 20,
+  },
+  infoCard: {
     backgroundColor: colors.white,
-    borderRadius: 10,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: colors.whiteThree,
+  },
+  infoRadiusBorder: {
+    backgroundColor: colors.white,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    padding: 20,
     borderWidth: 1,
     borderBottomWidth: 0,
     borderColor: colors.whiteThree,
-  },
-  infoCard: {
-    // backgroundColor: colors.white,
-    padding: 20,
-    // borderWidth: 1,
-    // borderColor: colors.whiteThree,
-  },
-  infoRadiusBorder: {
-    // backgroundColor: colors.white,
-    // borderRadius: 10,
-    padding: 20,
-    // borderWidth: 1,
-    // borderBottomWidth: 0,
-    // borderColor: colors.whiteThree,
   },
   giftButton: {
     flex: 1,
@@ -68,7 +61,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 0,
     backgroundColor: colors.white,
     borderColor: colors.whiteThree,
-    borderRadius: 10,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
   prodTitle: {
     paddingBottom: 13,
@@ -109,9 +103,9 @@ const styles = StyleSheet.create({
     ...appStyles.bold14Text,
     color: colors.clearBlue,
   },
-  normal14White: {
+  normal14WarmGrey: {
     ...appStyles.normal14Text,
-    color: 'white',
+    color: colors.warmGrey,
     fontSize: isDeviceSize('small') ? 12 : 14,
   },
   btn: {
@@ -124,17 +118,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   sendable: {
-    paddingLeft: 10,
-    paddingRight: 10,
-    marginTop: 10,
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  btnFrame: {
-    flex: 1,
-    flexDirection: 'row',
   },
   redirectHK: {
     flexDirection: 'row',
@@ -147,9 +134,6 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor: colors.lightGrey,
-    borderRadius: 10,
-    marginLeft: 10,
-    marginRight: 10,
   },
   redirectText: {
     ...appStyles.normal14Text,
@@ -170,36 +154,6 @@ const styles = StyleSheet.create({
         elevation: 3,
       },
     }),
-  },
-  lessInfo: {
-    height: 40,
-    backgroundColor: 'gray',
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  moreInfo: {
-    height: 40,
-    backgroundColor: 'gray',
-    // borderRadius: 10,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  moreInfoContent: {
-    backgroundColor: 'gray',
-    padding: 20,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-  },
-  line: {
-    height: 1,
-    backgroundColor: 'white',
-    marginTop: 10,
-    paddingLeft: 10,
-    paddingRight: 10,
-    width: '100%',
   },
 });
 
@@ -249,38 +203,24 @@ const title = (
 };
 
 const topInfo = (item: RkbSubscription) => {
-  const chargeabledate = new Date(
-    parseInt(item.expireDate.split('-')[0], 10),
-    parseInt(item.expireDate.split('-')[1], 10),
-    parseInt(item.expireDate.split('-')[2], 10),
-  );
-
-  chargeabledate.setDate(chargeabledate.getDate() - 30);
-
-  const result = `${chargeabledate.getFullYear()}.${chargeabledate.getMonth()}.${chargeabledate.getDate()}`;
-
   return (
     <View>
       {item.type !== API.Subscription.CALL_PRODUCT && (
         <View style={styles.inactiveContainer}>
-          <AppText style={styles.normal14White}>{i18n.t('esim:iccid')}</AppText>
-          <AppText style={styles.normal14White}>{item.subsIccid}</AppText>
+          <AppText style={styles.normal14WarmGrey}>
+            {i18n.t('esim:iccid')}
+          </AppText>
+          <AppText style={styles.normal14WarmGrey}>{item.subsIccid}</AppText>
         </View>
       )}
       <View style={styles.inactiveContainer}>
-        <AppText style={styles.normal14White}>
+        <AppText style={styles.normal14WarmGrey}>
           {i18n.t('esim:usablePeriod')}
         </AppText>
-        <AppText style={styles.normal14White}>{`${utils.toDateString(
+        <AppText style={styles.normal14WarmGrey}>{`${utils.toDateString(
           item.purchaseDate,
           'YYYY.MM.DD',
         )} - ${utils.toDateString(item.expireDate, 'YYYY.MM.DD')}`}</AppText>
-      </View>
-      <View style={styles.inactiveContainer}>
-        <AppText style={styles.normal14White}>
-          {i18n.t('esim:reghargeablePeriod')}
-        </AppText>
-        <AppText style={styles.normal14White}>{result}</AppText>
       </View>
     </View>
   );
@@ -314,13 +254,11 @@ const EsimSubs = ({
   item,
   onPressQR,
   onPressUsage,
-  onPressCharge,
   expired,
 }: {
   item: RkbSubscription;
   onPressQR: (showQR: boolean) => void;
   onPressUsage: () => void;
-  onPressCharge: () => void;
   expired: boolean;
 }) => {
   const navigation = useNavigation();
@@ -329,8 +267,6 @@ const EsimSubs = ({
     () => !expired && !giftStatusCd,
     [expired, giftStatusCd],
   );
-  const [isMoreInfo, setIsMoreInfo] = useState(false);
-  const [isChargeable, setIsChargeable] = useState(true);
 
   const redirectable = useMemo(
     () =>
@@ -342,72 +278,58 @@ const EsimSubs = ({
     [expired, giftStatusCd, item.country, item.partner, item.prodName],
   );
 
-  const renderBtn = useCallback(
-    (t: string, isGift: boolean) => {
-      return (
-        <View style={[styles.sendable, styles.shadow]}>
-          <AppButton
-            title={t}
-            titleStyle={appStyles.bold14Text}
-            style={styles.giftButton}
-            onPress={() =>
-              isGift ? navigation.navigate('Gift', {item}) : onPressCharge()
-            }
-          />
-        </View>
-      );
-    },
-    [item, navigation, onPressCharge],
-  );
-
   return (
-    <View
-      style={[
-        styles.usageListContainer,
-        expired || giftStatusCd === 'S' ? styles.cardExpiredBg : styles.shadow,
-      ]}>
-      <View style={sendable ? styles.infoRadiusBorder : styles.infoCard}>
+    <View style={styles.usageListContainer}>
+      <View
+        style={[
+          sendable ? styles.infoRadiusBorder : styles.infoCard,
+          expired || giftStatusCd === 'S'
+            ? styles.cardExpiredBg
+            : styles.shadow,
+        ]}>
         {title(item, expired, onPressUsage)}
-
+        {topInfo(item)}
         {!expired &&
           giftStatusCd !== 'S' &&
           item.type !== API.Subscription.CALL_PRODUCT &&
           QRnCopyInfo(onPressQR)}
+        {redirectable && (
+          <Pressable
+            style={styles.redirectHK}
+            onPress={() =>
+              navigation.navigate('RedirectHK', {
+                iccid: item.subsIccid,
+                orderNo: item.subsOrderNo,
+              })
+            }>
+            <AppIcon name="iconCheckSmall" />
+            <Text style={styles.redirectText}>{i18n.t('esim:redirectHK')}</Text>
+          </Pressable>
+        )}
       </View>
-      {isMoreInfo && (
-        <View style={isMoreInfo && styles.moreInfoContent}>
-          {topInfo(item)}
-          {redirectable && (
-            <Pressable
-              style={styles.redirectHK}
-              onPress={() =>
-                navigation.navigate('RedirectHK', {
-                  iccid: item.subsIccid,
-                  orderNo: item.subsOrderNo,
-                })
-              }>
-              <AppIcon name="iconCheckSmall" />
-              <Text style={styles.redirectText}>
-                {i18n.t('esim:redirectHK')}
-              </Text>
-            </Pressable>
-          )}
-          {sendable && (
-            <View style={styles.btnFrame}>
-              {isChargeable && renderBtn(`${i18n.t('acc:goRecharge')}`, false)}
-              {renderBtn(`${i18n.t('esim:sendGift')}`, true)}
-            </View>
-          )}
-          <View style={styles.line} />
+      {sendable && (
+        <View style={[styles.sendable, styles.shadow]}>
+          <View style={{flex: 1, width: width - 60}}>
+            <Svg height={2} width="100%">
+              <Line
+                stroke={colors.pinkishGrey}
+                strokeWidth="2"
+                strokeDasharray="5, 5"
+                x1="0%"
+                y1="0"
+                x2="100%"
+                y2="0"
+              />
+            </Svg>
+          </View>
+          <AppButton
+            title={i18n.t('esim:sendGift')}
+            titleStyle={appStyles.bold14Text}
+            style={styles.giftButton}
+            onPress={() => navigation.navigate('Gift', {item})}
+          />
         </View>
       )}
-      <Pressable
-        style={isMoreInfo ? styles.moreInfo : styles.lessInfo}
-        onPress={() => {
-          setIsMoreInfo(!isMoreInfo);
-        }}>
-        <Text>{isMoreInfo ? '접기' : '펼치기'}</Text>
-      </Pressable>
     </View>
   );
 };

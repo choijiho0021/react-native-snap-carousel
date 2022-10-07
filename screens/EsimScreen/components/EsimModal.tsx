@@ -1,4 +1,4 @@
-import {bindActionCreators, RootState} from 'redux';
+import {bindActionCreators} from 'redux';
 import Clipboard from '@react-native-community/clipboard';
 import React, {memo, useCallback, useMemo, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
@@ -16,14 +16,8 @@ import AppButton from '@/components/AppButton';
 import UsageItem from '@/screens/EsimScreen/components/UsageItem';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import AppSnackBar from '@/components/AppSnackBar';
-import {itemWidth, MAX_WIDTH} from '@/constants/SliderEntry.style';
+import {MAX_WIDTH} from '@/constants/SliderEntry.style';
 import Env from '@/environment';
-import {API} from '@/redux/api';
-import {
-  actions as productActions,
-  ProductAction,
-  ProductModelState,
-} from '@/redux/modules/product';
 const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
@@ -68,11 +62,6 @@ const styles = StyleSheet.create({
   modalBody: {
     marginVertical: 20,
   },
-  charge: {
-    height: 200,
-    width: '100%',
-    backgroundColor: 'red',
-  },
 });
 
 const showQR = (subs: RkbSubscription) => {
@@ -116,7 +105,7 @@ const esimManualInputInfo = () => {
   );
 };
 
-export type ModalType = 'showQR' | 'manual' | 'usage' | 'charge';
+export type ModalType = 'showQR' | 'manual' | 'usage';
 const modalTitleIcon = {showQR: 'btnQr', manual: 'btnPen', usage: undefined};
 
 type EsimModalProps = {
@@ -127,10 +116,8 @@ type EsimModalProps = {
   cmiUsage: any;
   cmiStatus: any;
   cmiPending: boolean;
-  product: ProductModelState;
   action: {
     toast: ToastAction;
-    product: ProductAction;
   };
 };
 const EsimModal: React.FC<EsimModalProps> = ({
@@ -141,7 +128,6 @@ const EsimModal: React.FC<EsimModalProps> = ({
   cmiUsage,
   cmiStatus,
   cmiPending,
-  product,
 }) => {
   const [copyString, setCopyString] = useState('');
   const [showSnackBar, setShowSnackbar] = useState(false);
@@ -202,15 +188,6 @@ const EsimModal: React.FC<EsimModalProps> = ({
     [copyString, copyToClipboard],
   );
 
-  const searchProduct = useCallback(
-    (subs) => {
-      product.prodByCountry.forEach((v) => {
-        return <AppText>{v.country}</AppText>;
-      });
-    },
-    [product.prodByCountry],
-  );
-
   const modalBody = useCallback(() => {
     if (!subs) return null;
     // const cmiUsage = {
@@ -254,25 +231,6 @@ const EsimModal: React.FC<EsimModalProps> = ({
           </View>
         );
 
-      case 'charge':
-        return (
-          <View>
-            <AppText>충전하기</AppText>
-            <AppText>
-              기존에 사용하던 eSIM에 필요한 상품을 충전할 수 있는 기능입니다.
-            </AppText>
-            <AppText>
-              기존에 구매한 eSIM과 같은 국가의 상품만 충전 가능하며, 기존 상품
-              사용이 종료되면 충전한 상품이 자동으로 이어서 사용됩니다.
-            </AppText>
-            <AppText>
-              충전가능기간내에서만상품충전이가능합니다.상품구매시충전 가능
-              기간에 유의해주세요!
-            </AppText>
-            {searchProduct(subs)}
-          </View>
-        );
-
       default: {
         const quota = cmiUsage?.quota;
         const used = cmiUsage?.used;
@@ -296,7 +254,7 @@ const EsimModal: React.FC<EsimModalProps> = ({
         );
       }
     }
-  }, [cmiPending, cmiStatus, cmiUsage, copyInfo, modal, searchProduct, subs]);
+  }, [cmiPending, cmiStatus, cmiUsage, copyInfo, modal, subs]);
 
   return (
     <AppModal
@@ -329,11 +287,10 @@ const EsimModal: React.FC<EsimModalProps> = ({
 };
 
 export default connect(
-  ({product}: RootState) => ({product}),
+  () => ({}),
   (dispatch) => ({
     action: {
       toast: bindActionCreators(toastActions, dispatch),
-      product: bindActionCreators(productActions, dispatch),
     },
   }),
 )(memo(EsimModal));
