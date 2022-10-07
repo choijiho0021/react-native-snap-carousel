@@ -46,13 +46,18 @@ const styles = StyleSheet.create({
   },
 });
 
+export type InputMobileRef = {
+  focus: () => void;
+  reset: () => void;
+};
+
 type InputMobileProps = {
   onPress?: (v: string) => void;
   authNoti: boolean;
   authorized?: boolean;
   disabled: boolean;
   style?: StyleProp<ViewStyle>;
-  forwardRef?: React.MutableRefObject<TextInput | null>;
+  inputRef?: React.MutableRefObject<InputMobileRef | null>;
 };
 
 const InputMobile: React.FC<InputMobileProps> = ({
@@ -61,11 +66,23 @@ const InputMobile: React.FC<InputMobileProps> = ({
   authorized,
   disabled,
   style,
-  forwardRef,
+  inputRef,
 }) => {
   const [mobile, setMobile] = useState('');
   const [errors, setErrors] = useState<ValidationResult>();
   const [timer, setTimer] = useState<NodeJS.Timeout>();
+
+  useEffect(() => {
+    if (inputRef) {
+      inputRef.current = {
+        reset: () => {
+          setMobile('');
+          setErrors(undefined);
+          setTimer(undefined);
+        },
+      };
+    }
+  }, [inputRef]);
 
   const onChangeText = useCallback((value) => {
     setMobile(value);
@@ -122,7 +139,6 @@ const InputMobile: React.FC<InputMobileProps> = ({
           ]}
           editable={!disabled}
           selectTextOnFocus={!disabled}
-          ref={forwardRef}
         />
         <AppButton
           disabled={!clickable}

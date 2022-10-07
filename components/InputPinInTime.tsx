@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
 
 export type InputPinRef = {
   focus: () => void;
+  reset: () => void;
 };
 
 type InputPinInTimeProps = {
@@ -88,6 +89,11 @@ const InputPinInTime: React.FC<InputPinInTimeProps> = (props) => {
     if (inputRef) {
       inputRef.current = {
         focus: () => ref.current?.focus(),
+        reset: () => {
+          setPin('');
+          setDuration(0);
+          setTimeoutFlag(false);
+        },
       };
     }
   }, [inputRef]);

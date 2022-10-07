@@ -34,7 +34,7 @@ import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import InputEmail, {InputEmailRef} from '@/components/InputEmail';
-import InputMobile from '@/components/InputMobile';
+import InputMobile, {InputMobileRef} from '@/components/InputMobile';
 import InputPinInTime, {InputPinRef} from '@/components/InputPinInTime';
 import Profile from '@/components/Profile';
 import SocialLogin, {SocialAuthInfo} from '@/components/SocialLogin';
@@ -269,6 +269,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const controller = useRef(new AbortController());
   const mounted = useRef(false);
   const emailRef = useRef<InputEmailRef>(null);
+  const mobileRef = useRef<InputMobileRef>(null);
   const inputRef = useRef<InputPinRef>(null);
 
   const recommender = useMemo(() => link.recommender, [link.recommender]);
@@ -380,6 +381,9 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     setIsValidEmail(false);
     setEmailError('');
     setSocialLogin(false);
+
+    inputRef.current?.reset();
+    mobileRef.current?.reset();
   }, []);
 
   const signIn = useCallback(
@@ -652,6 +656,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           authNoti={authNoti}
           disabled={(authNoti && authorized) || loading}
           authorized={authorized}
+          inputRef={mobileRef}
         />
 
         <InputPinInTime
@@ -726,7 +731,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
               }}
               inputRef={emailRef}
               value={email}
-              onChange={setEmail}
+              onChange={(v) => setEmail(v.replace(/ /g, ''))}
             />
 
             <AppText style={[styles.helpText, {color: colors.errorBackground}]}>
