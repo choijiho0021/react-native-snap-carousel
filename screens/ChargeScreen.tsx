@@ -6,6 +6,7 @@ import {
   Modal,
   Pressable,
   ImageBackground,
+  TouchableHighlightBase,
 } from 'react-native';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
@@ -33,6 +34,7 @@ import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {Button} from 'react-native-share';
 import AppStyledText from '@/components/AppStyledText';
+import {RNSVGSymbol} from 'react-native-svg';
 
 const styles = StyleSheet.create({
   container: {
@@ -65,21 +67,23 @@ const styles = StyleSheet.create({
   },
   cautionModal: {
     marginRight: 20,
-    // backgroundColor: 'red',
-    position: 'absolute',
-    top: 40,
-    paddingTop: 40,
-    paddingLeft: 30,
-    paddingRight: 30,
+    marginLeft: 20,
+    backgroundColor: 'rgb(247, 248, 250)',
+    borderWidth: 1,
+    borderColor: colors.whiteThree,
+    // position: 'absolute',
+    top: 50,
+    // top: 40,
+    padding: 16,
     paddingBottom: 20,
   },
   modalTitleFrame: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    // height: 36,
-    marginBottom: 20,
-    paddingRight: 4,
+    height: 36,
+    marginBottom: 12,
+    // paddingRight: 4,
   },
   modalTitleText: {
     ...appStyles.bold14Text,
@@ -88,10 +92,10 @@ const styles = StyleSheet.create({
   btnCancel: {
     width: 12,
     height: 12,
+    padding: 8,
   },
   modalBody: {
     paddingRight: 30,
-    paddingBottom: 20,
   },
 
   modalBodyText: {
@@ -246,46 +250,50 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
         />
       </View>
       <Modal visible={showModal} transparent>
-        <Pressable
-          style={{
-            flex: 1,
-            backgroundColor: 'transparent',
-          }}
-          onPress={() => setShowModal(false)}
-        />
-        <ImageBackground
-          source={require('../assets/images/esim/chargeCautionBg.png')}
-          style={styles.cautionModal}
-          resizeMode="stretch">
-          <View style={styles.modalTitleFrame}>
-            <AppText style={styles.modalTitleText}>
-              {i18n.t('esim:chargeCaution')}
-            </AppText>
-            <AppButton
-              style={styles.btnCancel}
-              onPress={() => {
-                setShowModal(false);
-              }}
-              iconName="btnCancel"
-            />
-          </View>
-          <View style={styles.modalBody}>
-            {[1, 2, 3].map((k) => (
-              <View key={k} style={{flexDirection: 'row'}}>
-                <AppText
-                  style={[
-                    appStyles.normal14Text,
-                    {marginHorizontal: 5, marginTop: 3},
-                  ]}>
-                  •
+        <SafeAreaView style={{flex: 1}}>
+          <Pressable
+            style={{
+              flex: 1,
+              backgroundColor: 'transparent',
+            }}
+            onPress={() => setShowModal(false)}>
+            <Pressable style={styles.cautionModal} onPress={() => {}}>
+              {/* <ImageBackground
+                source={require('../assets/images/esim/chargeCautionBg.png')}
+                }
+                resizeMode="stretch"> */}
+              <View style={styles.modalTitleFrame}>
+                <AppText style={styles.modalTitleText}>
+                  {i18n.t('esim:chargeCaution')}
                 </AppText>
-                <AppText style={styles.modalBodyText}>
-                  {i18n.t(`esim:chargeCaution:modal${k}`)}
-                </AppText>
+                <AppButton
+                  style={styles.btnCancel}
+                  onPress={() => {
+                    setShowModal(false);
+                  }}
+                  iconName="btnCancel"
+                />
               </View>
-            ))}
-          </View>
-        </ImageBackground>
+              <View style={styles.modalBody}>
+                {[1, 2, 3].map((k) => (
+                  <View key={k} style={{flexDirection: 'row'}}>
+                    <AppText
+                      style={[
+                        appStyles.normal14Text,
+                        {marginHorizontal: 5, marginTop: 3},
+                      ]}>
+                      •
+                    </AppText>
+                    <AppText style={styles.modalBodyText}>
+                      {i18n.t(`esim:chargeCaution:modal${k}`)}
+                    </AppText>
+                  </View>
+                ))}
+              </View>
+              {/* </ImageBackground> */}
+            </Pressable>
+          </Pressable>
+        </SafeAreaView>
       </Modal>
     </SafeAreaView>
   );
