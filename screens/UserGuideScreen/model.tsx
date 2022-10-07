@@ -11,6 +11,9 @@ import AppText from '@/components/AppText';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppTextJoin from '@/components/AppTextJoin';
 import AppStyledText from '@/components/AppStyledText';
+import Env from '@/environment';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   titleText: {
@@ -52,6 +55,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 40,
     marginBottom: 5,
   },
+  blueText: {
+    color: colors.clearBlue,
+  },
 });
 
 const renderTips = () => (
@@ -73,7 +79,8 @@ const renderOneText = (text: string, idx: number) => {
       textStyle={styles.titleText}
       data={formatText('b', {
         text,
-        viewStyle: appStyles.underline,
+        viewStyle: isIOS ? appStyles.underline : undefined,
+        textStyle: isIOS ? undefined : styles.blueText,
       })}
     />
   );
@@ -154,8 +161,8 @@ const deviceModel = DeviceInfo.getModel();
 
 export const imageList: Record<string, any[]> =
   // eslint-disable-next-line no-nested-ternary
-  Platform.OS === 'android'
-    ? deviceModel.startsWith('SM')
+  !isIOS
+    ? true
       ? {
           page1: [require(`${dir}/guide1.png`)],
           page2: [require(`${dir}/galaxy/img_1.png`)],
@@ -214,8 +221,8 @@ export type GuideImage = {
 
 export const guideImages: GuideImage[] =
   // eslint-disable-next-line no-nested-ternary
-  Platform.OS === 'android'
-    ? deviceModel.startsWith('SM')
+  !isIOS
+    ? true
       ? [
           {
             key: 'page1',
