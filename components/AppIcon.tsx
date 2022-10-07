@@ -100,6 +100,7 @@ const images: Record<string, any[]> = {
   appleLogin: [require(`${mainPath}img_apple.png`)],
   naverLogin: [require(`${mainPath}LoginImgNaver.png`)],
   facebookLogin: [require(`${mainPath}LoginImgFacebook.png`)],
+  googleLogin: [require(`${mainPath}LoginImgGoogle.png`)],
   imgRokebiChar: [require(`${mainPath}imgRokebiChar.png`)],
   imgQuestion: [require(`${mainPath}imgQuestion.png`)],
   radioBtn: [

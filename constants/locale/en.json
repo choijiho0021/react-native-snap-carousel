@@ -723,7 +723,7 @@
 
   "socialLogin:kakao": "Login with Kakao",
   "socialLogin:apple": "Sign in with Apple",
-  "socialLogin:google": "Login with Google",
+  "socialLogin:google": "Sign in with Google",
   "socialLogin:facebook": "Sign in with Facebook",
 
   "userGuide:checkInfo": "Lists to check before you go ahead:",
