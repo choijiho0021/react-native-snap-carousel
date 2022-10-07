@@ -58,6 +58,7 @@ const option = {
     Scopes.FITNESS_ACTIVITY_WRITE,
     Scopes.FITNESS_BODY_READ,
     Scopes.FITNESS_BODY_WRITE,
+    Scopes.FITNESS_LOCATION_READ,
   ],
 };
 
@@ -115,20 +116,21 @@ const PedometerScreen = () => {
       GoogleFit.authorize(option)
         .then((authResult) => {
           if (authResult.success) {
-            // console.log('@@@@@AUTH_SUCCESS');
+            console.log('@@@@@AUTH_SUCCESS');
             //   GoogleFitness APP이 깔려있고 해당 계정이 등록되어있어야만 동작
             GoogleFit.getDailySteps(today)
               .then((res) => {
+                console.log('@@@@@result', res);
                 if (res[res.length - 1].steps[0].value > stepCount)
                   setStepCount(res[res.length - 1].steps[0].value);
               })
-              .catch();
+              .catch((err) => console.log('@@@@@NO_DATA?', err));
           } else {
-            // console.log('@@@@@AUTH_DENIED', authResult);
+            console.log('@@@@@AUTH_DENIED', authResult);
           }
         })
         .catch(() => {
-          // console.log('@@@@@AUTH_ERR');
+          console.log('@@@@@AUTH_ERR');
         });
     }
   }, [stepCount]);
@@ -136,6 +138,7 @@ const PedometerScreen = () => {
   useEffect(() => {
     getStepCount();
   }, [getStepCount]);
+
   return (
     <View style={styles.circleFrame}>
       <AnimatedCircularProgress

@@ -1,5 +1,11 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {StyleSheet, SafeAreaView, View, ImageBackground} from 'react-native';
+import {
+  StyleSheet,
+  SafeAreaView,
+  View,
+  ImageBackground,
+  ScrollView,
+} from 'react-native';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -87,7 +93,8 @@ const styles = StyleSheet.create({
   caustionFrame: {
     paddingTop: 32,
     paddingLeft: 20,
-    paddingRight: 20,
+    paddingRight: 40,
+    paddingBottom: 60,
   },
   caustionTitle: {
     flexDirection: 'row',
@@ -190,54 +197,58 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
-      <ImageBackground
-        source={
-          params.data.field_daily === 'daily'
-            ? // eslint-disable-next-line global-require
-              require('../assets/images/esim/img_bg_1.png')
-            : // eslint-disable-next-line global-require
-              require('../assets/images/esim/img_bg_2.png')
-        }
-        style={styles.bg}>
-        <View style={styles.mainBodyFrame}>
-          {titleText(
-            i18n.t('esim:chargeDetail:body'),
-            params.prodname,
-            params.data.name,
-          )}
-        </View>
+      <ScrollView style={{flex: 1}}>
+        <ImageBackground
+          source={
+            params.data.field_daily === 'daily'
+              ? // eslint-disable-next-line global-require
+                require('../assets/images/esim/img_bg_1.png')
+              : // eslint-disable-next-line global-require
+                require('../assets/images/esim/img_bg_2.png')
+          }
+          style={styles.bg}>
+          <View style={styles.mainBodyFrame}>
+            {titleText(
+              i18n.t('esim:chargeDetail:body'),
+              params.prodname,
+              params.data.name,
+            )}
+          </View>
 
-        <View>
-          {tailText(i18n.t('esim:chargeDetail:body2'), params.chargeableDate)}
-        </View>
-      </ImageBackground>
+          <View>
+            {tailText(i18n.t('esim:chargeDetail:body2'), params.chargeableDate)}
+          </View>
+        </ImageBackground>
 
-      <View style={styles.caustionFrame}>
-        <View style={styles.caustionTitle}>
-          <AppIcon name="cautionIcon" />
-          <AppText style={styles.caustionTitleText}>
-            {i18n.t('esim:chargeCaution:title')}
-          </AppText>
+        <View style={styles.caustionFrame}>
+          <View style={styles.caustionTitle}>
+            <AppIcon name="cautionIcon" />
+            <AppText style={styles.caustionTitleText}>
+              {i18n.t('esim:chargeCaution:title')}
+            </AppText>
+          </View>
+          <View style={styles.caustionBody}>
+            {[1, 2, 3, 4, 5, 6].map((k) => (
+              <View key={k} style={{flexDirection: 'row'}}>
+                <AppText
+                  style={[
+                    appStyles.normal14Text,
+                    {marginHorizontal: 5, marginTop: 3},
+                  ]}>
+                  •
+                </AppText>
+                <AppStyledText
+                  textStyle={styles.caustionBodyText}
+                  text={i18n.t(`esim:chargeCaution:body${k}`)}
+                  format={{
+                    b: {...appStyles.bold14Text, color: colors.clearBlue},
+                  }}
+                />
+              </View>
+            ))}
+          </View>
         </View>
-        <View style={styles.caustionBody}>
-          {[1, 2, 3, 4, 5, 6].map((k) => (
-            <View key={k} style={{flexDirection: 'row'}}>
-              <AppText
-                style={[
-                  appStyles.normal14Text,
-                  {marginHorizontal: 5, marginTop: 3},
-                ]}>
-                •
-              </AppText>
-              <AppStyledText
-                textStyle={styles.caustionBodyText}
-                text={i18n.t(`esim:chargeCaution:body${k}`)}
-                format={{b: {...appStyles.bold14Text, color: colors.clearBlue}}}
-              />
-            </View>
-          ))}
-        </View>
-      </View>
+      </ScrollView>
       <View style={styles.paymentBtnFrame}>
         <View style={styles.amountFrame}>
           <AppText style={styles.amountText}>
