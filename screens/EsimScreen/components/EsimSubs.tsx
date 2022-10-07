@@ -482,7 +482,8 @@ const EsimSubs = ({
       <View style={styles.activeBottomBox}>
         <AppButton
           style={styles.btn}
-          onPress={() => onPressQR(true)}
+          // onPress={() => onPressQR(true)}
+          onPress={() => navigation.navigate('QrInfo', {item})}
           title={i18n.t('esim:showQR')}
           titleStyle={styles.btnTitle}
           iconName="btnQr2"

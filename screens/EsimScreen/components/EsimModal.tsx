@@ -77,46 +77,40 @@ const styles = StyleSheet.create({
   },
 });
 
-const showQR = (subs: RkbSubscription) => {
-  return (
-    <View style={styles.modalBody}>
-      {_.isEmpty(subs.qrCode) ? (
+export const showQR = (subs: RkbSubscription) => (
+  <View style={styles.modalBody}>
+    {_.isEmpty(subs.qrCode) ? (
+      <View style={styles.center}>
+        <AppText>{i18n.t('esim:showQR:nothing')}</AppText>
+      </View>
+    ) : (
+      <View>
+        <AppColorText
+          style={appStyles.normal16Text}
+          text={
+            isIOS ? i18n.t('esim:showQR:body') : i18n.t('esim:showQR:body_aos')
+          }
+        />
         <View style={styles.center}>
-          <AppText>{i18n.t('esim:showQR:nothing')}</AppText>
+          <QRCode value={subs.qrCode} />
         </View>
-      ) : (
-        <View>
-          <AppColorText
-            style={appStyles.normal16Text}
-            text={
-              isIOS
-                ? i18n.t('esim:showQR:body')
-                : i18n.t('esim:showQR:body_aos')
-            }
-          />
-          <View style={styles.center}>
-            <QRCode value={subs.qrCode} />
-          </View>
-        </View>
-      )}
-    </View>
-  );
-};
+      </View>
+    )}
+  </View>
+);
 
-const esimManualInputInfo = () => {
-  return (
-    <View style={{marginBottom: 20}}>
-      <AppColorText
-        style={appStyles.normal16Text}
-        text={
-          isIOS
-            ? i18n.t('esim:manualInput:body')
-            : i18n.t('esim:manualInput:body_aos')
-        }
-      />
-    </View>
-  );
-};
+export const esimManualInputInfo = () => (
+  <View style={{marginBottom: 20}}>
+    <AppColorText
+      style={appStyles.normal16Text}
+      text={
+        isIOS
+          ? i18n.t('esim:manualInput:body')
+          : i18n.t('esim:manualInput:body_aos')
+      }
+    />
+  </View>
+);
 
 export type ModalType = 'showQR' | 'manual' | 'usage' | 'charge';
 const modalTitleIcon = {showQR: 'btnQr', manual: 'btnPen', usage: undefined};

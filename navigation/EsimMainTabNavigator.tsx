@@ -48,6 +48,7 @@ import ChargeScreen from '@/screens/ChargeScreen';
 import ChargeHistoryScreen from '@/screens/ChargeHistoryScreen';
 import PedometerScreen from '@/screens/PedometerScreen';
 import ChargeDetailScreen from '@/screens/ChargeDetailScreen';
+import QrInfoScreen from '@/screens/QrInfoScreen';
 import UserGuideScreen from '../screens/UserGuideScreen';
 import {CartModelState} from '@/redux/modules/cart';
 import AppText from '@/components/AppText';
@@ -171,6 +172,7 @@ function EsimStackComponent() {
       <EsimStack.Screen name="Charge" component={ChargeScreen} />
       <EsimStack.Screen name="ChargeHistory" component={ChargeHistoryScreen} />
       <EsimStack.Screen name="ChargeDetail" component={ChargeDetailScreen} />
+      <EsimStack.Screen name="QrInfo" component={QrInfoScreen} />
       <EsimStack.Screen name="UserGuide" component={UserGuideScreen} />
       <EsimStack.Screen name="PymMethod" component={PymMethodScreen} />
       <EsimStack.Screen name="PaymentResult" component={PaymentResultScreen} />

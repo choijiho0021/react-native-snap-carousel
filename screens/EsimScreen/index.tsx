@@ -122,6 +122,23 @@ type EsimScreenProps = {
   };
 };
 
+export const renderInfo = (navigation) => (
+  <View style={styles.usrGuideBtn}>
+    <View style={styles.rowCenter}>
+      <AppSvgIcon name="newFlag" style={{marginRight: 8}} />
+      <AppText style={styles.ifFirstText}>{i18n.t('esim:ifFirst')}</AppText>
+    </View>
+    <Pressable
+      style={styles.rowRight}
+      onPress={() => navigation.navigate('UserGuide')}>
+      <AppText style={styles.moveToGuideText}>
+        {i18n.t('esim:moveToGuide')}
+      </AppText>
+      <AppIcon name="iconArrowRightBlack" />
+    </Pressable>
+  </View>
+);
+
 const EsimScreen: React.FC<EsimScreenProps> = ({
   navigation,
   route,
@@ -214,22 +231,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             expDate={expDate}
             navigation={navigation}
           />
-          <View style={styles.usrGuideBtn}>
-            <View style={styles.rowCenter}>
-              <AppSvgIcon name="newFlag" style={{marginRight: 8}} />
-              <AppText style={styles.ifFirstText}>
-                {i18n.t('esim:ifFirst')}
-              </AppText>
-            </View>
-            <Pressable
-              style={styles.rowRight}
-              onPress={() => navigation.navigate('UserGuide')}>
-              <AppText style={styles.moveToGuideText}>
-                {i18n.t('esim:moveToGuide')}
-              </AppText>
-              <AppIcon name="iconArrowRightBlack" />
-            </Pressable>
-          </View>
+          {renderInfo(navigation)}
         </View>
       ),
     [balance, expDate, iccid, navigation],
