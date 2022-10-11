@@ -2,7 +2,7 @@
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
 import React from 'react';
-import {Platform, StyleSheet, TextStyle, View} from 'react-native';
+import {StyleSheet, TextStyle, View} from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {colors} from '@/constants/Colors';
 import {appStyles, formatText} from '@/constants/Styles';
@@ -162,7 +162,7 @@ const deviceModel = DeviceInfo.getModel();
 export const imageList: Record<string, any[]> =
   // eslint-disable-next-line no-nested-ternary
   !isIOS
-    ? true
+    ? deviceModel.startsWith('SM')
       ? {
           page1: [require(`${dir}/guide1.png`)],
           page2: [require(`${dir}/galaxy/img_1.png`)],
@@ -216,13 +216,13 @@ export type GuideImage = {
   key: string;
   title: JSX.Element;
   step: number;
-  tip?: () => JSX.Element;
+  tip?: () => JSX.Element | null;
 };
 
 export const guideImages: GuideImage[] =
   // eslint-disable-next-line no-nested-ternary
   !isIOS
-    ? true
+    ? deviceModel.startsWith('SM')
       ? [
           {
             key: 'page1',
@@ -337,9 +337,9 @@ export const guideImages: GuideImage[] =
           title: renderText(`userGuide:stepsTitle1:ios`),
           step: 1,
           tip: () =>
-            isDeviceSize('medium') && (
+            isDeviceSize('medium') ? (
               <View style={{height: 39, width: '100%'}} />
-            ),
+            ) : null,
         },
         {
           key: 'page3',
