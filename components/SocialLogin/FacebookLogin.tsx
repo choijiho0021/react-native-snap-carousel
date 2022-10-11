@@ -6,13 +6,28 @@ import {
   GraphRequest,
   GraphRequestManager,
   LoginManager,
-} from 'react-native-fbsdk';
+} from 'react-native-fbsdk-next';
 import AppButton from '../AppButton';
 import {SocialAuthInfo} from '.';
+import i18n from '@/utils/i18n';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
 
 const styles = StyleSheet.create({
-  button: {
+  container: {
+    flex: 1,
     alignItems: 'center',
+  },
+  viewStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#3B5998',
+    borderRadius: 2,
+    height: 52,
+    marginTop: 12,
+  },
+  btnStyle: {
+    width: '100%',
   },
 });
 
@@ -34,6 +49,7 @@ const FacebookLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
 
             if (onAuth)
               onAuth({
+                kind: 'facebook',
                 user: result.id,
                 pass,
                 authorized: true,
@@ -67,13 +83,13 @@ const FacebookLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
   }, [getPublicProfile]);
 
   return (
-    <View style={styles.button}>
+    <View style={styles.container}>
       <AppButton
         iconName="facebookLogin"
-        style={{
-          width: 44,
-          height: 44,
-        }}
+        title={i18n.t('socialLogin:facebook')}
+        titleStyle={{...appStyles.medium16, marginLeft: 5, color: colors.white}}
+        viewStyle={styles.viewStyle}
+        style={styles.btnStyle}
         onPress={onPress}
       />
     </View>

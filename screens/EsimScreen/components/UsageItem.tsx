@@ -455,6 +455,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
               resizeMode="cover"
               repeat
               style={styles.backgroundVideo}
+              mixWithOthers="mix"
             />
           </View>
         ) : (

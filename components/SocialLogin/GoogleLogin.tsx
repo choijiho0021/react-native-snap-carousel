@@ -8,6 +8,9 @@ import React, {memo, useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {SocialAuthInfo} from '.';
 import i18n from '@/utils/i18n';
+import {appStyles} from '@/constants/Styles';
+import {colors} from '@/constants/Colors';
+import AppButton from '../AppButton';
 
 const styles = StyleSheet.create({
   button: {
@@ -19,8 +22,10 @@ const styles = StyleSheet.create({
   viewStyle: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'black',
+    backgroundColor: colors.white,
     borderRadius: 2,
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
     height: 52,
   },
   btnStyle: {
@@ -81,12 +86,13 @@ const GoogleLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
 
   return (
     <View>
-      <GoogleSigninButton
-        style={{width: '100%', height: 52, padding: 0}}
-        size={GoogleSigninButton.Size.Wide}
-        color={GoogleSigninButton.Color.Dark}
+      <AppButton
+        iconName="googleLogin"
+        title={i18n.t('socialLogin:google')}
+        titleStyle={{...appStyles.medium16, marginLeft: 5, color: colors.black}}
+        viewStyle={styles.viewStyle}
+        style={styles.btnStyle}
         onPress={signIn}
-        // disabled={this.state.isSigninInProgress}
       />
     </View>
   );

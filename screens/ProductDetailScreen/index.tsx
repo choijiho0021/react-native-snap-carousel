@@ -9,7 +9,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import Analytics from 'appcenter-analytics';
-import {Settings} from 'react-native-fbsdk';
+import {Settings} from 'react-native-fbsdk-next';
 import {
   getTrackingStatus,
   TrackingStatus,
@@ -202,9 +202,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     (uuid?: string) => {
       if (!uuid) return null;
 
-      const uri = `${webViewHost}/product/${uuid}${
-        esimGlobal ? '?service=global' : ''
-      }`;
+      const uri = `${webViewHost}/product/${uuid}`;
 
       return (
         <WebView

@@ -726,6 +726,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
             resizeMode="stretch"
             repeat
             style={styles.backgroundVideo}
+            mixWithOthers="mix"
           />
         )
       }

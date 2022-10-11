@@ -21,7 +21,7 @@ export type SocialAuthInfo = {
   email?: string;
   mobile?: string;
   profileImageUrl?: string;
-  kind: 'kakao' | 'ios' | 'google' | 'apple';
+  kind: 'kakao' | 'ios' | 'google' | 'apple' | 'facebook';
 };
 
 const styles = StyleSheet.create({
@@ -63,6 +63,7 @@ const SocialLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
         {!esimGlobal && <KakaoLogin onAuth={onAuth} />}
         {Platform.OS === 'android' && <GoogleLogin onAuth={onAuth} />}
         {appleAuth.isSupported && <AppleLogin onAuth={onAuth} />}
+        {esimGlobal && <FacebookLogin onAuth={onAuth} />}
       </View>
     </View>
   );
