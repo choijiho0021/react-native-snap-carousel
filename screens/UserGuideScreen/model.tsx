@@ -162,7 +162,7 @@ const deviceModel = DeviceInfo.getModel();
 export const imageList: Record<string, any[]> =
   // eslint-disable-next-line no-nested-ternary
   !isIOS
-    ? true
+    ? deviceModel.startsWith('SM')
       ? {
           page1: [require(`${dir}/guide1.png`)],
           page2: [require(`${dir}/galaxy/img_1.png`)],
@@ -222,7 +222,7 @@ export type GuideImage = {
 export const guideImages: GuideImage[] =
   // eslint-disable-next-line no-nested-ternary
   !isIOS
-    ? true
+    ? deviceModel.startsWith('SM')
       ? [
           {
             key: 'page1',
