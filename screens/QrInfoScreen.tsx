@@ -59,6 +59,10 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderWidth: 1,
   },
+  content: {
+    flex: 1,
+    color: colors.black,
+  },
 });
 
 type ParamList = {
@@ -98,7 +102,7 @@ const QrInfoScreen = () => {
         <View style={styles.copyBox}>
           <AppText style={styles.copyBoxTitle}>{title}</AppText>
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-            <AppText style={{flex: 1}}>{content}</AppText>
+            <AppText style={styles.content}>{content}</AppText>
             <AppButton
               title={i18n.t('copy')}
               titleStyle={[
