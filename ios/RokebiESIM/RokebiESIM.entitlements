@@ -13,5 +13,9 @@
 		<string>applinks:rokebi.page.link</string>
 		<string>applinks:wds3.adj.st</string>
 	</array>
+
+	<array>
+		<string>$(AppIdentifierPrefix)com.uangel.rokebi-global</string>
+	</array>
 </dict>
 </plist>
