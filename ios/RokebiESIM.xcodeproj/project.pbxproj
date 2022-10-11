@@ -62,7 +62,7 @@
 		A3F0EE432898F309000D3781 /* RNKakaoLogins.m in Sources */ = {isa = PBXBuildFile; fileRef = A3F0EE3D2898F309000D3781 /* RNKakaoLogins.m */; };
 		C536689F08844F90365C65B9 /* libPods-RokebiGlobal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 29A7EDBC81D1315CD93EEA18 /* libPods-RokebiGlobal.a */; };
 		F2563C5A06DECDA22B6640BD /* libPods-RokebiESIM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CD12B247076E573C87AFC3 /* libPods-RokebiESIM.a */; };
-
+/* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		00CD12B247076E573C87AFC3 /* libPods-RokebiESIM.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RokebiESIM.a"; sourceTree = BUILT_PRODUCTS_DIR; };
