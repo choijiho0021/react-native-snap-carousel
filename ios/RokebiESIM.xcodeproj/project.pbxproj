@@ -62,8 +62,7 @@
 		A3F0EE432898F309000D3781 /* RNKakaoLogins.m in Sources */ = {isa = PBXBuildFile; fileRef = A3F0EE3D2898F309000D3781 /* RNKakaoLogins.m */; };
 		C536689F08844F90365C65B9 /* libPods-RokebiGlobal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 29A7EDBC81D1315CD93EEA18 /* libPods-RokebiGlobal.a */; };
 		F2563C5A06DECDA22B6640BD /* libPods-RokebiESIM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CD12B247076E573C87AFC3 /* libPods-RokebiESIM.a */; };
-		F51F71C628ED23CC004019CE /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F51F71C528ED23CC004019CE /* HealthKit.framework */; };
-/* End PBXBuildFile section */
+
 
 /* Begin PBXFileReference section */
 		00CD12B247076E573C87AFC3 /* libPods-RokebiESIM.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RokebiESIM.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -122,8 +121,7 @@
 		DE09F2A8BAAE7943D6BBA5FA /* Pods-RokebiGlobal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiGlobal.release.xcconfig"; path = "Target Support Files/Pods-RokebiGlobal/Pods-RokebiGlobal.release.xcconfig"; sourceTree = "<group>"; };
 		E1686E1EE1103F3B6BAE4EC6 /* Pods-RokebiUSIM.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiUSIM.release.xcconfig"; path = "Target Support Files/Pods-RokebiUSIM/Pods-RokebiUSIM.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F51F71C528ED23CC004019CE /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
-/* End PBXFileReference section */
+
 
 /* Begin PBXFrameworksBuildPhase section */
 		0D9C212A26D37D4D0082F077 /* Frameworks */ = {
@@ -143,7 +141,6 @@
 				A3568E14289237B500986E9F /* AppTrackingTransparency.framework in Frameworks */,
 				A3568E102892378700986E9F /* AdSupport.framework in Frameworks */,
 				A3568E0E2892377900986E9F /* AdServices.framework in Frameworks */,
-				F51F71C628ED23CC004019CE /* HealthKit.framework in Frameworks */,
 				A3568E0C2892376500986E9F /* iAd.framework in Frameworks */,
 				F2563C5A06DECDA22B6640BD /* libPods-RokebiESIM.a in Frameworks */,
 			);
@@ -206,7 +203,6 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				F51F71C528ED23CC004019CE /* HealthKit.framework */,
 				A36B9CA928C83A7200C346D1 /* KakaoPlusFriend.framework */,
 				A3568E13289237B500986E9F /* AppTrackingTransparency.framework */,
 				A3568E11289237A000986E9F /* StoreKit.framework */,
