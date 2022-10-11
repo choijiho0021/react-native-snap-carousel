@@ -44,6 +44,11 @@ import AuthStack from './AuthStackNavigator';
 import {HomeStackParamList} from './navigation';
 import BadgedIcon from './component/BadgedIcon';
 import RedirectHKScreen from '@/screens/RedirectHKScreen';
+import ChargeScreen from '@/screens/ChargeScreen';
+import ChargeHistoryScreen from '@/screens/ChargeHistoryScreen';
+import PedometerScreen from '@/screens/PedometerScreen';
+import ChargeDetailScreen from '@/screens/ChargeDetailScreen';
+import QrInfoScreen from '@/screens/QrInfoScreen';
 import UserGuideScreen from '../screens/UserGuideScreen';
 import {CartModelState} from '@/redux/modules/cart';
 import AppText from '@/components/AppText';
@@ -164,7 +169,13 @@ function EsimStackComponent() {
       <EsimStack.Screen name="Esim" component={EsimScreen} />
       <EsimStack.Screen name="Gift" component={GiftScreen} />
       <EsimStack.Screen name="RedirectHK" component={RedirectHKScreen} />
+      <EsimStack.Screen name="Charge" component={ChargeScreen} />
+      <EsimStack.Screen name="ChargeHistory" component={ChargeHistoryScreen} />
+      <EsimStack.Screen name="ChargeDetail" component={ChargeDetailScreen} />
+      <EsimStack.Screen name="QrInfo" component={QrInfoScreen} />
       <EsimStack.Screen name="UserGuide" component={UserGuideScreen} />
+      <EsimStack.Screen name="PymMethod" component={PymMethodScreen} />
+      <EsimStack.Screen name="PaymentResult" component={PaymentResultScreen} />
     </EsimStack.Navigator>
   );
 }
@@ -179,6 +190,7 @@ function MyPageStackComponent() {
       />
       <MyPageStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <MyPageStack.Screen name="Recharge" component={RechargeScreen} />
+      <MyPageStack.Screen name="Pedometer" component={PedometerScreen} />
       <MyPageStack.Screen name="Invite" component={InviteScreen} />
       <MyPageStack.Screen name="Payment" component={PaymentScreen} />
       <MyPageStack.Screen name="PymMethod" component={PymMethodScreen} />

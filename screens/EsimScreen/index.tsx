@@ -48,6 +48,7 @@ import EsimSubs from './components/EsimSubs';
 import EsimModal, {ModalType} from './components/EsimModal';
 import GiftModal from './components/GiftModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import ChargeModal from './components/ChargeModal';
 
 const {esimGlobal} = Env.get();
 
@@ -83,11 +84,26 @@ const styles = StyleSheet.create({
     height: 56,
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.iceBlue,
+    backgroundColor: '#d2dfff',
   },
   rowCenter: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  rowRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    textAlign: 'right',
+  },
+  ifFirstText: {
+    ...appStyles.normal15Text,
+    lineHeight: 20,
+    color: '#001c65',
+  },
+  moveToGuideText: {
+    ...appStyles.normal14Text,
+    lineHeight: 20,
+    color: '#001c65',
   },
 });
 
@@ -106,6 +122,23 @@ type EsimScreenProps = {
   };
 };
 
+export const renderInfo = (navigation) => (
+  <View style={styles.usrGuideBtn}>
+    <View style={styles.rowCenter}>
+      <AppSvgIcon name="newFlag" style={{marginRight: 8}} />
+      <AppText style={styles.ifFirstText}>{i18n.t('esim:ifFirst')}</AppText>
+    </View>
+    <Pressable
+      style={styles.rowRight}
+      onPress={() => navigation.navigate('UserGuide')}>
+      <AppText style={styles.moveToGuideText}>
+        {i18n.t('esim:moveToGuide')}
+      </AppText>
+      <AppIcon name="iconArrowRightBlack" />
+    </Pressable>
+  </View>
+);
+
 const EsimScreen: React.FC<EsimScreenProps> = ({
   navigation,
   route,
@@ -122,11 +155,15 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [subs, setSubs] = useState<RkbSubscription>();
   const [cmiPending, setCmiPending] = useState(false);
   const [showGiftModal, setShowGiftModal] = useState(false);
+  const [showChargeModal, setShowChargeModal] = useState(false);
   const [isPressClose, setIsPressClose] = useState(false);
   const [cmiUsage, setCmiUsage] = useState({});
   const [cmiStatus, setCmiStatus] = useState({});
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const isFocused = useIsFocused();
+  const [isCharged, setIsCharged] = useState(false);
+
+  const iccidList: String[] = [];
 
   const init = useCallback(
     ({
@@ -194,18 +231,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             expDate={expDate}
             navigation={navigation}
           />
-          <Pressable
-            style={styles.usrGuideBtn}
-            onPress={() => navigation.navigate('UserGuide')}>
-            <View style={styles.rowCenter}>
-              <AppSvgIcon name="flag" style={{marginRight: 11}} />
-              <AppText style={appStyles.normal16Text}>
-                {i18n.t('esim:moveToGuide')}
-              </AppText>
-            </View>
-
-            <AppIcon name="iconArrowRightBlack" />
-          </Pressable>
+          {renderInfo(navigation)}
         </View>
       ),
     [balance, expDate, iccid, navigation],
@@ -235,31 +261,46 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         const isUsedByOther =
           userDataBundles[0]?.dataBundleId !== item.packageId;
 
-        setCmiStatus({
-          statusCd: isExpired || isUsedByOther ? 'U' : statusCd,
+        // setCmiStatus({
+        //   statusCd: isExpired || isUsedByOther ? 'U' : statusCd,
+        //   endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
+        // });
+        // setCmiUsage({
+        //   quota: Number(subscriberQuota?.qtavalue) || 0, // Mb
+        //   used: Number(subscriberQuota?.qtaconsumption) || 0, // Mb
+        // });
+
+        const tempCmiStatus = {
+          statusCd: isExpired || isUsedByOther ? 'U' : statusCd || {},
           endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
-        });
-        setCmiUsage({
+        };
+
+        const tempCmiUsage = {
           quota: Number(subscriberQuota?.qtavalue) || 0, // Mb
           used: Number(subscriberQuota?.qtaconsumption) || 0, // Mb
-        });
-      } else if (!item.subsOrderNo || userDataBundles?.length === 0) {
-        setCmiStatus({
-          statusCd: 'U',
-        });
+        };
+
+        return {status: tempCmiStatus, usage: tempCmiUsage};
+      }
+      if (!item.subsOrderNo || userDataBundles?.length === 0) {
+        // setCmiStatus({
+        //   statusCd: 'U',
+        // });
+        return {status: {statusCd: 'U'}, usage: {}};
       }
       setCmiPending(false);
+      return {status: {}, usage: {}};
     }
   }, []);
 
   const checkQuadcellData = useCallback(async (item: RkbSubscription) => {
     if (item?.imsi) {
-      await API.Subscription.quadcellGetData({
+      const quadcellStatus = await API.Subscription.quadcellGetData({
         imsi: item.imsi,
         key: 'hlrstate',
-      }).then((state) => {
+      }).then(async (state) => {
         if (state.result === 0) {
-          API.Subscription.quadcellGetData({
+          const tempCmiStatus = await API.Subscription.quadcellGetData({
             imsi: item.imsi,
             key: 'info',
           }).then((info) => {
@@ -279,27 +320,39 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               const isReserved = statusCd === 'A' && exp > moment().add(1, 'y');
               const isExpired = statusCd === 'A' && exp < moment();
 
-              setCmiStatus({
+              // setCmiStatus({
+              //   // eslint-disable-next-line no-nested-ternary
+              //   statusCd: isReserved ? 'R' : isExpired ? 'U' : statusCd,
+              //   endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
+              // });
+
+              return {
                 // eslint-disable-next-line no-nested-ternary
                 statusCd: isReserved ? 'R' : isExpired ? 'U' : statusCd,
                 endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
-              });
+              };
             }
           });
+          return tempCmiStatus;
         }
       });
 
-      await API.Subscription.quadcellGetData({
+      const quadcellUsage = await API.Subscription.quadcellGetData({
         imsi: item.imsi,
         key: 'quota',
       }).then(async (rsp) => {
         if (rsp.result === 0) {
-          setCmiUsage({
+          // setCmiUsage({
+          //   quota: Number(rsp?.objects?.packQuotaList[0]?.totalQuota) || 0, // Mb
+          //   used: Number(rsp?.objects?.packQuotaList[0]?.consumedQuota), // Mb
+          // });
+          return {
             quota: Number(rsp?.objects?.packQuotaList[0]?.totalQuota) || 0, // Mb
             used: Number(rsp?.objects?.packQuotaList[0]?.consumedQuota), // Mb
-          });
+          };
         }
       });
+      return {status: quadcellStatus, usage: quadcellUsage};
     }
   }, []);
 
@@ -310,24 +363,39 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       setModal('usage');
       setSubs(item);
 
+      let result = {status: {}, usage: {}};
       switch (item.partner) {
         case 'CMI':
-          await checkCmiData(item);
+          result = await checkCmiData(item);
           break;
         case 'Quadcell':
-          await checkQuadcellData(item);
+          result = await checkQuadcellData(item);
           break;
         default:
-          await checkCmiData(item);
+          result = await checkCmiData(item);
           break;
       }
+      setCmiStatus(result.status);
+      setCmiUsage(result.usage);
       setCmiPending(false);
+      return result;
     },
     [checkCmiData, checkQuadcellData],
   );
 
+  // const onPressCharge = useCallback((item: RkbSubscription) => {
+  //   setShowChargeModal(true);
+  //   setModal('charge');
+  //   setSubs(item);
+  // }, []);
+
   const renderSubs = useCallback(
     ({item}: {item: RkbSubscription}) => {
+      iccidList.forEach((i) => {
+        if (i === item.subsIccid) {
+          setIsCharged(true);
+        }
+      });
       return (
         <EsimSubs
           key={item.key}
@@ -339,10 +407,15 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             setSubs(item);
           }}
           onPressUsage={() => onPressUsage(item)}
+          // onPressCharge={() => onPressCharge(item)}
+          isCharged={isCharged}
+          chargedSubs={order.subs.filter(
+            (elm) => elm.subsIccid === item.subsIccid,
+          )}
         />
       );
     },
-    [onPressUsage],
+    [iccidList, isCharged, onPressUsage, order.subs],
   );
 
   useEffect(() => {
@@ -432,6 +505,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         visible={showSnackBar}
         onClose={() => setShowSnackBar(false)}
         textMessage={i18n.t('usim:failSnackBar')}
+      />
+      <ChargeModal
+        visible={showChargeModal}
+        onOkClose={() => {
+          setShowChargeModal(false);
+          setIsPressClose(true);
+        }}
+        item={subs}
       />
     </View>
   );

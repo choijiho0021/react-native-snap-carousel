@@ -403,6 +403,7 @@ dependencies {
     implementation 'me.leolin:ShortcutBadger:1.1.21@aar'
     implementation 'com.google.android.gms:play-services-gcm:17.0.0'
     implementation "com.google.android.gms:play-services-auth:${safeExtGet('googlePlayServicesAuthVersion', '19.2.0')}"
+    implementation "com.google.android.gms:play-services-fitness:21.1.0"
     implementation "androidx.annotation:annotation:1.1.0"
     implementation 'com.facebook.android:facebook-android-sdk:latest.release'
     implementation project(':@react-native-community-clipboard')

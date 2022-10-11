@@ -32,6 +32,7 @@ import {
 } from '@/redux/modules/cart';
 import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
+import {actions as simActions, SimAction} from '@/redux/modules/sim';
 
 const {esimCurrency} = Env.get();
 const sectionTitle = ['sim', 'product'];
@@ -92,6 +93,7 @@ type CartScreenProps = {
 
   action: {
     cart: CartAction;
+    sim: SimAction;
   };
 };
 
@@ -158,6 +160,9 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
             } as PurchaseItem),
         );
 
+      // 충전구매 sim data제거
+      action.sim.init();
+
       action.cart
         .checkStockAndPurchase({
           purchaseItems,
@@ -178,6 +183,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
   }, [
     account,
     action.cart,
+    action.sim,
     checked,
     getDlvCost,
     navigation,
@@ -500,6 +506,7 @@ export default connect(
   (dispatch) => ({
     action: {
       cart: bindActionCreators(cartActions, dispatch),
+      sim: bindActionCreators(simActions, dispatch),
     },
   }),
 )(CartScreen);

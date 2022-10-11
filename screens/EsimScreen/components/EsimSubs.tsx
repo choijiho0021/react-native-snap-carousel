@@ -1,4 +1,4 @@
-import React, {memo, useMemo} from 'react';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {
   Dimensions,
   Pressable,
@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {Line, Svg} from 'react-native-svg';
+import _ from 'underscore';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -19,6 +20,8 @@ import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import AppIcon from '@/components/AppIcon';
+import AppSvgIcon from '@/components/AppSvgIcon';
+import {getPromoFlagColor} from '@/redux/api/productApi';
 
 const {width} = Dimensions.get('window');
 
@@ -28,6 +31,12 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey,
     borderWidth: 1,
   },
+  rowCenter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    flex: 0.8,
+  },
   activeBottomBox: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -36,33 +45,51 @@ const styles = StyleSheet.create({
   usageListContainer: {
     marginTop: 24,
     marginHorizontal: 20,
+    backgroundColor: colors.white,
+    borderRadius: 3,
+    borderWidth: 1,
+    borderColor: colors.whiteThree,
   },
   infoCard: {
-    backgroundColor: colors.white,
+    // backgroundColor: colors.white,
     padding: 20,
-    borderWidth: 1,
-    borderColor: colors.whiteThree,
+    // borderWidth: 1,
+    // borderColor: colors.whiteThree,
   },
   infoRadiusBorder: {
-    backgroundColor: colors.white,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
+    // backgroundColor: colors.white,
+    // borderRadius: 10,
     padding: 20,
-    borderWidth: 1,
-    borderBottomWidth: 0,
-    borderColor: colors.whiteThree,
+    // borderWidth: 1,
+    // borderBottomWidth: 0,
+    // borderColor: colors.whiteThree,
   },
   giftButton: {
     flex: 1,
     flexDirection: 'row',
     // justifyCssssontent: 'center',
-    height: 50,
+    height: 52,
     borderWidth: 1,
-    borderTopWidth: 0,
     backgroundColor: colors.white,
     borderColor: colors.whiteThree,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
+  },
+  chargeButtonDis: {
+    flex: 1,
+    flexDirection: 'row',
+    // justifyCssssontent: 'center',
+    height: 52,
+    // borderWidth: 1,
+    backgroundColor: '#2a7ff6',
+    opacity: 0.6,
+  },
+  chargeButton: {
+    flex: 1,
+    flexDirection: 'row',
+    // justifyCssssontent: 'center',
+    height: 52,
+    // borderWidth: 1,
+    backgroundColor: '#2a7ff6',
+    borderColor: colors.whiteThree,
   },
   prodTitle: {
     paddingBottom: 13,
@@ -80,13 +107,11 @@ const styles = StyleSheet.create({
   usageTitleNormal: {
     ...appStyles.normal16Text,
     fontSize: isDeviceSize('small') ? 16 : 18,
-    maxWidth: '70%',
     color: colors.warmGrey,
   },
   usageTitleBold: {
     ...appStyles.normal16Text,
     fontSize: isDeviceSize('small') ? 16 : 18,
-    maxWidth: '70%',
     fontWeight: 'bold',
   },
   normal12WarmGrey: {
@@ -96,48 +121,92 @@ const styles = StyleSheet.create({
   expiredBg: {
     backgroundColor: colors.whiteThree,
     borderRadius: 3,
-    padding: 5,
+    paddingBottom: 2,
+    paddingTop: 2,
+    paddingLeft: 6,
+    paddingRight: 6,
     justifyContent: 'center',
   },
   checkUsage: {
     ...appStyles.bold14Text,
     color: colors.clearBlue,
   },
-  normal14WarmGrey: {
+  normal14White: {
     ...appStyles.normal14Text,
-    color: colors.warmGrey,
+    color: 'white',
+    fontSize: isDeviceSize('small') ? 12 : 14,
+  },
+  normal14Gray: {
+    ...appStyles.normal14Text,
+    color: '#777777',
     fontSize: isDeviceSize('small') ? 12 : 14,
   },
   btn: {
-    width: '45%',
+    width: '30%',
     paddingTop: 19,
+  },
+  btnDis: {
+    width: '30%',
+    paddingTop: 19,
+    opacity: 0.6,
   },
   btnTitle: {
     ...appStyles.normal14Text,
     textAlign: 'center',
     marginTop: 10,
   },
+  btnTitle2: {
+    ...appStyles.medium18,
+    paddingBottom: 2,
+    lineHeight: 22,
+  },
+  colorblack: {
+    color: '#2c2c2c',
+  },
   sendable: {
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 40,
+  },
+  btnLeft: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 6,
+    marginTop: 40,
+  },
+  btnRight: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 6,
+    marginTop: 40,
+  },
+  btnFrame: {
+    flex: 1,
+    flexDirection: 'row',
   },
   redirectHK: {
     flexDirection: 'row',
-    height: 41,
-    padding: 10,
-    marginTop: 16,
+    height: 50,
+    marginBottom: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.whiteTwo,
-    borderStyle: 'solid',
-    borderWidth: 1,
+    backgroundColor: '#eff2f4',
     borderColor: colors.lightGrey,
+    borderRadius: 3,
   },
   redirectText: {
-    ...appStyles.normal14Text,
-    marginLeft: 4,
+    ...appStyles.medium16,
+    letterSpacing: 0,
+    marginLeft: 8,
+    paddingBottom: 3,
+    // lineHeight: 26,
+    color: '#2c2c2c',
   },
   shadow: {
     ...Platform.select({
@@ -155,111 +224,95 @@ const styles = StyleSheet.create({
       },
     }),
   },
+  lessInfo: {
+    height: 40,
+    backgroundColor: 'gray',
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  moreInfo: {
+    height: 40,
+    backgroundColor: 'gray',
+    // borderRadius: 10,
+    borderBottomLeftRadius: 3,
+    borderBottomRightRadius: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  moreInfoContent: {
+    backgroundColor: 'white',
+    paddingBottom: 20,
+    paddingLeft: 20,
+    paddingRight: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#eeeeee',
+    borderBottomLeftRadius: 3,
+    borderBottomRightRadius: 3,
+  },
+  line: {
+    height: 1,
+    backgroundColor: 'white',
+    marginTop: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
+    width: '100%',
+  },
+  topInfo: {
+    marginTop: 20,
+  },
+  arrow: {
+    width: 26,
+    height: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badge: {
+    paddingHorizontal: 8,
+    borderRadius: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+  },
+  badgeText: {
+    ...appStyles.bold13Text,
+  },
+  cautionBox: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginTop: 28,
+  },
+  cautionText: {
+    color: '#ee4422',
+    ...appStyles.medium16,
+    lineHeight: 20,
+  },
+  cautionIcon: {marginRight: 12},
 });
 
-const title = (
-  item: RkbSubscription,
-  expired: boolean,
-  onPress: () => void,
-) => {
-  const {giftStatusCd} = item;
-  const usageCheckable =
-    item.packageId?.startsWith('D') || item.partner === 'Quadcell';
-  return (
-    <View style={styles.prodTitle}>
-      <AppText
-        key={item.key}
-        numberOfLines={1}
-        ellipsizeMode="tail"
-        style={
-          expired || giftStatusCd === 'S'
-            ? styles.usageTitleNormal
-            : styles.usageTitleBold
-        }>
-        {item.prodName}
-      </AppText>
-
-      {expired || giftStatusCd === 'S' ? (
-        <View style={styles.expiredBg}>
-          <AppText key={item.nid} style={appStyles.normal12Text}>
-            {giftStatusCd === 'S' ? i18n.t('esim:S') : i18n.t('esim:expired')}
-          </AppText>
-        </View>
-      ) : (
-        // expired 제외의 경우에는 사용량 확인 출력?
-        usageCheckable && (
-          <Pressable
-            onPress={onPress}
-            style={{flexDirection: 'row', alignItems: 'center'}}>
-            <AppText key={item.nid} style={styles.checkUsage}>
-              {i18n.t('usim:checkUsage')}
-            </AppText>
-            <AppIcon name="iconArrowRightBlue" style={{marginLeft: 4}} />
-          </Pressable>
-        )
-      )}
-    </View>
-  );
-};
-
-const topInfo = (item: RkbSubscription) => {
-  return (
-    <View>
-      {item.type !== API.Subscription.CALL_PRODUCT && (
-        <View style={styles.inactiveContainer}>
-          <AppText style={styles.normal14WarmGrey}>
-            {i18n.t('esim:iccid')}
-          </AppText>
-          <AppText style={styles.normal14WarmGrey}>{item.subsIccid}</AppText>
-        </View>
-      )}
-      <View style={styles.inactiveContainer}>
-        <AppText style={styles.normal14WarmGrey}>
-          {i18n.t('esim:usablePeriod')}
-        </AppText>
-        <AppText style={styles.normal14WarmGrey}>{`${utils.toDateString(
-          item.purchaseDate,
-          'YYYY.MM.DD',
-        )} - ${utils.toDateString(item.expireDate, 'YYYY.MM.DD')}`}</AppText>
-      </View>
-    </View>
-  );
-};
-
-const QRnCopyInfo = (onPress: (showQR: boolean) => void) => {
-  return (
-    <View style={styles.activeBottomBox}>
-      <AppButton
-        style={styles.btn}
-        onPress={() => onPress(true)}
-        title={i18n.t('esim:showQR')}
-        titleStyle={styles.btnTitle}
-        iconName="btnQr"
-      />
-      <View
-        style={{height: 32, backgroundColor: colors.whiteThree, width: 1}}
-      />
-      <AppButton
-        style={styles.btn}
-        onPress={() => onPress(false)}
-        title={i18n.t('esim:manualInput')}
-        titleStyle={styles.btnTitle}
-        iconName="btnPen"
-      />
-    </View>
-  );
+type PromoFlag = 'hot' | 'sale' | 'sizeup' | 'doubleSizeup';
+const promoFlag: Record<string, PromoFlag> = {
+  53: 'hot', // 운용자 추천
+  57: 'sale', // 할인
+  181: 'sizeup', // 사이즈업
+  182: 'doubleSizeup', // 더블 사이즈업
 };
 
 const EsimSubs = ({
   item,
   onPressQR,
   onPressUsage,
+  chargedSubs,
   expired,
+  isCharged,
 }: {
   item: RkbSubscription;
   onPressQR: (showQR: boolean) => void;
   onPressUsage: () => void;
+  chargedSubs: RkbSubscription[];
   expired: boolean;
+  isCharged: boolean;
 }) => {
   const navigation = useNavigation();
   const {giftStatusCd} = item;
@@ -267,6 +320,47 @@ const EsimSubs = ({
     () => !expired && !giftStatusCd,
     [expired, giftStatusCd],
   );
+  const [isMoreInfo, setIsMoreInfo] = useState(false);
+  const [isChargeable, setIsChargeable] = useState(true);
+  // const [isCharged, setIsCharged] = useState(false);
+  const [chargeablePeriod, setChargeablePeriod] = useState('');
+  const [itemPromoFlag, setItemPromoFlag] = useState<PromoFlag[]>();
+
+  const hasAnyCaution = useMemo(
+    () => !!(item.caution || item.cautionApp),
+    [item.caution, item.cautionApp],
+  );
+
+  // 내일 확인 ysjoung
+  // useEffect(() => {
+  //   setItemPromoFlag(
+  //     item.promoFlag
+  //       .split(',')
+  //       .map((v) => promoFlag[v.trim()])
+  //       .filter((v) => !_.isEmpty(v)), // isEmpty 제거 가능여부 확인
+  //   );
+  // }, [item.promoFlag]);
+
+  useEffect(() => {
+    // date -> moment 변경
+    const chargeabledate = new Date(
+      parseInt(item.expireDate.split('-')[0], 10),
+      parseInt(item.expireDate.split('-')[1], 10) - 1,
+      parseInt(item.expireDate.split('-')[2], 10),
+    );
+
+    chargeabledate.setDate(chargeabledate.getDate() - 30);
+
+    const today = new Date();
+
+    setChargeablePeriod(
+      `${chargeabledate.getFullYear()}.${
+        chargeabledate.getMonth() + 1
+      }.${chargeabledate.getDate()}`,
+    );
+
+    if (chargeabledate < today) setIsChargeable(false);
+  }, [item.expireDate, setChargeablePeriod]);
 
   const redirectable = useMemo(
     () =>
@@ -278,56 +372,290 @@ const EsimSubs = ({
     [expired, giftStatusCd, item.country, item.partner, item.prodName],
   );
 
-  return (
-    <View style={styles.usageListContainer}>
-      <View
-        style={[
-          sendable ? styles.infoRadiusBorder : styles.infoCard,
-          expired || giftStatusCd === 'S'
-            ? styles.cardExpiredBg
-            : styles.shadow,
-        ]}>
-        {title(item, expired, onPressUsage)}
-        {topInfo(item)}
-        {!expired &&
-          giftStatusCd !== 'S' &&
-          item.type !== API.Subscription.CALL_PRODUCT &&
-          QRnCopyInfo(onPressQR)}
-        {redirectable && (
+  const title = useCallback(() => {
+    const country = item.prodName?.split(' ')[0];
+    return (
+      <View style={styles.prodTitle}>
+        <View style={styles.rowCenter}>
+          <AppText
+            key={item.key}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[
+              expired || giftStatusCd === 'S'
+                ? styles.usageTitleNormal
+                : styles.usageTitleBold,
+              {marginBottom: 10, marginRight: 8},
+            ]}>
+            {isCharged
+              ? `${i18n.t('acc:rechargeDone')} ${country}`
+              : item.prodName}
+          </AppText>
+          {sendable &&
+            !expired &&
+            item.promoFlag?.map((elm) => {
+              const badgeColor = getPromoFlagColor(elm);
+              return (
+                <View
+                  key={elm}
+                  style={[
+                    styles.badge,
+                    {
+                      backgroundColor: badgeColor.backgroundColor,
+                    },
+                  ]}>
+                  <AppText
+                    key="name"
+                    style={[styles.badgeText, {color: badgeColor.fontColor}]}>
+                    {i18n.t(elm)}
+                  </AppText>
+                </View>
+              );
+            })}
+          {item.isStore && <AppIcon name="naverIcon" />}
+        </View>
+
+        {expired || giftStatusCd === 'S' ? (
+          <View style={styles.expiredBg}>
+            <AppText key={item.nid} style={appStyles.normal12Text}>
+              {giftStatusCd === 'S'
+                ? i18n.t('esim:S2')
+                : i18n.t('esim:expired')}
+            </AppText>
+          </View>
+        ) : (
           <Pressable
-            style={styles.redirectHK}
-            onPress={() =>
-              navigation.navigate('RedirectHK', {
-                iccid: item.subsIccid,
-                orderNo: item.subsOrderNo,
-              })
-            }>
-            <AppIcon name="iconCheckSmall" />
-            <Text style={styles.redirectText}>{i18n.t('esim:redirectHK')}</Text>
+            onPress={() => {
+              setIsMoreInfo((prev) => !prev);
+            }}
+            style={styles.arrow}>
+            <AppSvgIcon
+              name={isMoreInfo ? 'topArrow' : 'bottomArrow'}
+              style={{marginRight: 8}}
+            />
           </Pressable>
         )}
       </View>
-      {sendable && (
-        <View style={[styles.sendable, styles.shadow]}>
-          <View style={{flex: 1, width: width - 60}}>
-            <Svg height={2} width="100%">
-              <Line
-                stroke={colors.pinkishGrey}
-                strokeWidth="2"
-                strokeDasharray="5, 5"
-                x1="0%"
-                y1="0"
-                x2="100%"
-                y2="0"
-              />
-            </Svg>
+    );
+  }, [expired, giftStatusCd, isCharged, isMoreInfo, sendable, item]);
+
+  const topInfo = useCallback(() => {
+    return (
+      <View style={styles.topInfo}>
+        {item.type !== API.Subscription.CALL_PRODUCT && (
+          <View style={styles.inactiveContainer}>
+            <AppText style={styles.normal14Gray}>
+              {i18n.t('esim:iccid')}
+            </AppText>
+            <AppText style={styles.normal14Gray}>{item.subsIccid}</AppText>
           </View>
+        )}
+        <View style={styles.inactiveContainer}>
+          <AppText style={styles.normal14Gray}>
+            {i18n.t('esim:usablePeriod')}
+          </AppText>
+          <AppText style={styles.normal14Gray}>{`${utils.toDateString(
+            item.purchaseDate,
+            'YYYY.MM.DD',
+          )} - ${utils.toDateString(item.expireDate, 'YYYY.MM.DD')}`}</AppText>
+        </View>
+        <View style={styles.inactiveContainer}>
+          <AppText style={styles.normal14Gray}>
+            {i18n.t('esim:rechargeablePeriod')}
+          </AppText>
+          <AppText style={styles.normal14Gray}>{chargeablePeriod}</AppText>
+        </View>
+      </View>
+    );
+  }, [
+    chargeablePeriod,
+    item.expireDate,
+    item.purchaseDate,
+    item.subsIccid,
+    item.type,
+  ]);
+
+  const QRnCopyInfo = useCallback(() => {
+    // const usageCheckable =
+    //   item.packageId?.startsWith('D') || item.partner === 'Quadcell';
+    return (
+      <View style={styles.activeBottomBox}>
+        <AppButton
+          style={styles.btn}
+          // onPress={() => onPressQR(true)}
+          onPress={() => navigation.navigate('QrInfo', {item})}
+          title={i18n.t('esim:showQR')}
+          titleStyle={styles.btnTitle}
+          iconName="btnQr2"
+        />
+
+        {/* {usageCheckable && ( */}
+        <AppButton
+          style={styles.btn}
+          onPress={onPressUsage}
+          title={i18n.t('usim:checkUsage')}
+          titleStyle={styles.btnTitle}
+          iconName="btnUsage"
+        />
+        {/* )} */}
+
+        {isChargeable ? (
           <AppButton
-            title={i18n.t('esim:sendGift')}
+            style={styles.btn}
+            onPress={() =>
+              false
+                ? navigation.navigate('ChargeHistory', {
+                    item,
+                    chargeablePeriod,
+                    onPressUsage,
+                    chargedSubs,
+                  })
+                : navigation.navigate('Charge', {
+                    item,
+                    chargeableDate: chargeablePeriod,
+                  })
+            }
+            title={i18n.t('esim:rechargeable')}
+            titleStyle={styles.btnTitle}
+            iconName="btnChargeable"
+          />
+        ) : (
+          <AppButton
+            style={styles.btnDis}
+            title={i18n.t('esim:notrechargeable')}
+            titleStyle={styles.btnTitle}
+            iconName="btnNonChargeable"
+          />
+        )}
+      </View>
+    );
+  }, [
+    chargeablePeriod,
+    chargedSubs,
+    isChargeable,
+    item,
+    navigation,
+    onPressQR,
+    onPressUsage,
+  ]);
+
+  const renderBtn = useCallback(
+    (t: string, isGift: boolean) => {
+      return (
+        <View style={isGift ? styles.btnLeft : styles.btnRight}>
+          <AppButton
+            title={t}
+            titleStyle={[styles.btnTitle2, isGift && styles.colorblack]}
+            style={
+              // 충전하기 버튼 충전불가능일때 Disable
+              // eslint-disable-next-line no-nested-ternary
+              isGift
+                ? styles.giftButton
+                : isChargeable
+                ? styles.chargeButton
+                : styles.chargeButtonDis
+            }
+            onPress={() =>
+              isGift
+                ? navigation.navigate('Gift', {item})
+                : isChargeable &&
+                  navigation.navigate('Charge', {
+                    item,
+                    chargeableDate: chargeablePeriod,
+                  })
+            }
+          />
+        </View>
+      );
+    },
+    [isChargeable, item, navigation],
+  );
+
+  const renderHkBtn = useCallback(() => {
+    return (
+      <Pressable
+        style={styles.redirectHK}
+        onPress={() =>
+          navigation.navigate('RedirectHK', {
+            iccid: item.subsIccid,
+            orderNo: item.subsOrderNo,
+          })
+        }>
+        <AppIcon name="hkIcon" />
+        <Text style={styles.redirectText}>{i18n.t('esim:redirectHK2')}</Text>
+      </Pressable>
+    );
+  }, [item, navigation]);
+
+  const renderHisBtn = useCallback(
+    (t: string) => {
+      return (
+        <View style={styles.sendable}>
+          <AppButton
+            title={t}
             titleStyle={appStyles.bold14Text}
             style={styles.giftButton}
-            onPress={() => navigation.navigate('Gift', {item})}
+            onPress={() =>
+              navigation.navigate('Charge', {
+                item,
+                chargeableDate: chargeablePeriod,
+              })
+            }
           />
+        </View>
+      );
+    },
+    [item, navigation],
+  );
+
+  return (
+    <View
+      style={[
+        styles.usageListContainer,
+        expired || giftStatusCd === 'S' ? styles.cardExpiredBg : styles.shadow,
+      ]}>
+      <View style={sendable ? styles.infoRadiusBorder : styles.infoCard}>
+        {title()}
+
+        {!expired &&
+        giftStatusCd !== 'S' &&
+        item.type !== API.Subscription.CALL_PRODUCT
+          ? QRnCopyInfo()
+          : topInfo()}
+      </View>
+      {isMoreInfo && (
+        <View style={isMoreInfo && styles.moreInfoContent}>
+          {topInfo()}
+
+          {redirectable && renderHkBtn()}
+
+          {hasAnyCaution && (
+            <View style={styles.cautionBox}>
+              <View style={styles.cautionIcon}>
+                <AppIcon name="cautionIcon" />
+              </View>
+              <View>
+                <Text style={styles.cautionText}>{item.caution}</Text>
+                <Text style={styles.cautionText}>{item.cautionApp}</Text>
+              </View>
+            </View>
+          )}
+          {isCharged ? (
+            // 충전 내역이 있는 경우
+            renderHisBtn(`${i18n.t('acc:rechargeHistory2')}`)
+          ) : (
+            // 충전 내역이 없는 경우
+            <>
+              {sendable && (
+                <View style={styles.btnFrame}>
+                  {renderBtn(`${i18n.t('esim:sendGift')}`, true)}
+                  {renderBtn(`${i18n.t('esim:charge')}`, false)}
+                </View>
+              )}
+            </>
+          )}
+
+          <View style={styles.line} />
         </View>
       )}
     </View>

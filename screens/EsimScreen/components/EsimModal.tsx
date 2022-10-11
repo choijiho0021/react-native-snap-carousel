@@ -1,7 +1,7 @@
-import {bindActionCreators} from 'redux';
+import {bindActionCreators, RootState} from 'redux';
 import Clipboard from '@react-native-community/clipboard';
 import React, {memo, useCallback, useMemo, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {SectionList, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import _ from 'underscore';
 import QRCode from 'react-native-qrcode-svg';
@@ -9,6 +9,7 @@ import AppModal from '@/components/AppModal';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import {RkbProduct} from '@/redux/api/productApi';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
 import AppColorText from '@/components/AppColorText';
@@ -16,8 +17,15 @@ import AppButton from '@/components/AppButton';
 import UsageItem from '@/screens/EsimScreen/components/UsageItem';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import AppSnackBar from '@/components/AppSnackBar';
-import {MAX_WIDTH} from '@/constants/SliderEntry.style';
+import {itemWidth, MAX_WIDTH} from '@/constants/SliderEntry.style';
 import Env from '@/environment';
+import ChargeModal from './ChargeModal';
+import {API} from '@/redux/api';
+import {
+  actions as productActions,
+  ProductAction,
+  ProductModelState,
+} from '@/redux/modules/product';
 const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
@@ -62,50 +70,49 @@ const styles = StyleSheet.create({
   modalBody: {
     marginVertical: 20,
   },
+  charge: {
+    height: 200,
+    width: '100%',
+    backgroundColor: 'red',
+  },
 });
 
-const showQR = (subs: RkbSubscription) => {
-  return (
-    <View style={styles.modalBody}>
-      {_.isEmpty(subs.qrCode) ? (
+export const showQR = (subs: RkbSubscription) => (
+  <View style={styles.modalBody}>
+    {_.isEmpty(subs.qrCode) ? (
+      <View style={styles.center}>
+        <AppText>{i18n.t('esim:showQR:nothing')}</AppText>
+      </View>
+    ) : (
+      <View>
+        <AppColorText
+          style={appStyles.normal16Text}
+          text={
+            isIOS ? i18n.t('esim:showQR:body') : i18n.t('esim:showQR:body_aos')
+          }
+        />
         <View style={styles.center}>
-          <AppText>{i18n.t('esim:showQR:nothing')}</AppText>
+          <QRCode value={subs.qrCode} />
         </View>
-      ) : (
-        <View>
-          <AppColorText
-            style={appStyles.normal16Text}
-            text={
-              isIOS
-                ? i18n.t('esim:showQR:body')
-                : i18n.t('esim:showQR:body_aos')
-            }
-          />
-          <View style={styles.center}>
-            <QRCode value={subs.qrCode} />
-          </View>
-        </View>
-      )}
-    </View>
-  );
-};
+      </View>
+    )}
+  </View>
+);
 
-const esimManualInputInfo = () => {
-  return (
-    <View style={{marginBottom: 20}}>
-      <AppColorText
-        style={appStyles.normal16Text}
-        text={
-          isIOS
-            ? i18n.t('esim:manualInput:body')
-            : i18n.t('esim:manualInput:body_aos')
-        }
-      />
-    </View>
-  );
-};
+export const esimManualInputInfo = () => (
+  <View style={{marginBottom: 20}}>
+    <AppColorText
+      style={appStyles.normal16Text}
+      text={
+        isIOS
+          ? i18n.t('esim:manualInput:body')
+          : i18n.t('esim:manualInput:body_aos')
+      }
+    />
+  </View>
+);
 
-export type ModalType = 'showQR' | 'manual' | 'usage';
+export type ModalType = 'showQR' | 'manual' | 'usage' | 'charge';
 const modalTitleIcon = {showQR: 'btnQr', manual: 'btnPen', usage: undefined};
 
 type EsimModalProps = {
@@ -116,8 +123,10 @@ type EsimModalProps = {
   cmiUsage: any;
   cmiStatus: any;
   cmiPending: boolean;
+  product: ProductModelState;
   action: {
     toast: ToastAction;
+    product: ProductAction;
   };
 };
 const EsimModal: React.FC<EsimModalProps> = ({
@@ -128,6 +137,7 @@ const EsimModal: React.FC<EsimModalProps> = ({
   cmiUsage,
   cmiStatus,
   cmiPending,
+  product,
 }) => {
   const [copyString, setCopyString] = useState('');
   const [showSnackBar, setShowSnackbar] = useState(false);
@@ -188,6 +198,26 @@ const EsimModal: React.FC<EsimModalProps> = ({
     [copyString, copyToClipboard],
   );
 
+  const searchProduct = useCallback(
+    (subs) => {
+      product.prodByCountry.forEach((v) => {
+        return <AppText>{v.country}</AppText>;
+      });
+    },
+    [product.prodByCountry],
+  );
+
+  const renderProduct = useCallback(
+    (sCountry: string) => {
+      product.prodByCountry.forEach((p) => {
+        if (p.country === sCountry[0]) console.log('@@@go', p);
+      });
+      // console.log('@@@product', product.prodByCountry);
+      // console.log('@@@subs', sCountry);
+    },
+    [product],
+  );
+
   const modalBody = useCallback(() => {
     if (!subs) return null;
     // const cmiUsage = {
@@ -228,6 +258,16 @@ const EsimModal: React.FC<EsimModalProps> = ({
 
             {!isIOS &&
               copyInfo('actCode', `LPA:1$${subs.smdpAddr}$${subs.actCode}`)}
+          </View>
+        );
+
+      case 'charge':
+        return (
+          <View>
+            <AppText>{i18n.t('esim:charge')}</AppText>
+            <AppText>{i18n.t('esim:chargeModal:body1')}</AppText>
+            <AppText>{i18n.t('esim:chargeModal:body2')}</AppText>
+            <AppText>{i18n.t('esim:chargeModal:body3')}</AppText>
           </View>
         );
 
@@ -287,10 +327,11 @@ const EsimModal: React.FC<EsimModalProps> = ({
 };
 
 export default connect(
-  () => ({}),
+  ({product}: RootState) => ({product}),
   (dispatch) => ({
     action: {
       toast: bindActionCreators(toastActions, dispatch),
+      product: bindActionCreators(productActions, dispatch),
     },
   }),
 )(memo(EsimModal));

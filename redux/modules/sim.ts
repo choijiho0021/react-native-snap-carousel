@@ -29,6 +29,9 @@ const slice = createSlice({
   name: 'sim',
   initialState,
   reducers: {
+    init: () => {
+      return initialState;
+    },
     addIccid: (state, action) => {
       state.iccid = action.payload.iccid;
     },
