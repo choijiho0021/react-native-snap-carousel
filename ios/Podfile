@@ -87,8 +87,6 @@ target 'RokebiESIM' do
   rokebiPods
   pod 'react-native-sim-cards-manager', :path => '../node_modules/react-native-sim-cards-manager'
 
-
-
 end
 
 target 'RokebiUSIM' do
