@@ -54,6 +54,7 @@
 		A3BF9FEB273B63DD00561187 /* GlobalLaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 40A621E726E85C740037EE37 /* GlobalLaunchScreen.xib */; };
 		A3BF9FEC273B63DD00561187 /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 405C1E9424D945870016B43C /* AppCenter-Config.plist */; };
 		A3BF9FED273B63DD00561187 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A32580F42715115700C2F28A /* GoogleService-Info.plist */; };
+		A3CF033C28F545BC009AD6B6 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3568E11289237A000986E9F /* StoreKit.framework */; };
 		A3F0EE3E2898F309000D3781 /* RNKakaoLogins.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F0EE3B2898F309000D3781 /* RNKakaoLogins.swift */; };
 		A3F0EE3F2898F309000D3781 /* RNKakaoLogins.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F0EE3B2898F309000D3781 /* RNKakaoLogins.swift */; };
 		A3F0EE402898F309000D3781 /* RNKakaoLogins.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F0EE3B2898F309000D3781 /* RNKakaoLogins.swift */; };
@@ -131,6 +132,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C536689F08844F90365C65B9 /* libPods-RokebiGlobal.a in Frameworks */,
+				A3CF033C28F545BC009AD6B6 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
