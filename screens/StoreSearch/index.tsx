@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {AppEventsLogger} from 'react-native-fbsdk';
+import {AppEventsLogger} from 'react-native-fbsdk-next';
 import {getTrackingStatus} from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';

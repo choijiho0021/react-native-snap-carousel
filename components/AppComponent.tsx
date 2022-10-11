@@ -181,6 +181,7 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
             }
             style={styles.backgroundVideo}
             resizeMode="contain"
+            mixWithOthers="mix"
           />
           {!showSplash && (
             <Video
@@ -192,6 +193,7 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
               }
               style={styles.loadingVideo}
               resizeMode="contain"
+              mixWithOthers="mix"
             />
           )}
           {!showSplash && (

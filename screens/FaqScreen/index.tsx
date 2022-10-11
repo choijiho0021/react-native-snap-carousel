@@ -39,11 +39,15 @@ type FaqScreenProps = {
   pending: boolean;
 };
 type TabViewRouteAndroidKey =
-  | 'generalandroid'
-  | 'configandroid'
-  | 'paymentandroid'
-  | 'etcandroid';
-type TabViewRouteIosKey = 'generalios' | 'configios' | 'paymentios' | 'etcios';
+  | 'general.android'
+  | 'config.android'
+  | 'payment.android'
+  | 'etc.android';
+type TabViewRouteIosKey =
+  | 'general.ios'
+  | 'config.ios'
+  | 'payment.ios'
+  | 'etc.ios';
 type TabViewRouteKey =
   | 'general'
   | 'config'
@@ -68,10 +72,10 @@ const FaqScreen: React.FC<FaqScreenProps & DispatchProp> = ({
   const routes = useMemo(
     () =>
       [
-        {key: `general${Platform.OS}`, title: i18n.t('faq:general')},
-        {key: `config${Platform.OS}`, title: i18n.t('faq:config')},
-        {key: `payment${Platform.OS}`, title: i18n.t('faq:payment')},
-        {key: `etc${Platform.OS}`, title: i18n.t('faq:etc')},
+        {key: `general.${Platform.OS}`, title: i18n.t('faq:general')},
+        {key: `config.${Platform.OS}`, title: i18n.t('faq:config')},
+        {key: `payment.${Platform.OS}`, title: i18n.t('faq:payment')},
+        {key: `etc.${Platform.OS}`, title: i18n.t('faq:etc')},
       ] as TabViewRoute[],
     [],
   );

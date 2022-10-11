@@ -34,8 +34,8 @@ const lc = RNLocalize.getLocales()[0];
 const isEng = lc.languageCode !== 'ko';
 
 const codePushLabel = {
-  stagingIOS: "v2",
-  stagingAndroid: "v2",
+  stagingIOS: 'v2',
+  stagingAndroid: 'v2',
   productionIOS: 'v47',
   productionAndroid: 'v40',
 };
@@ -108,13 +108,17 @@ function get() {
         env.scheme = 'https';
         env.rokApiUrl = 'svcapp.rokebi.com';
         env.apiUrl = esimGlobal ? 'global.rokebi.com' : 'esim.rokebi.com';
-        env.webViewHost = 'https://www.rokebi.com';
+        env.webViewHost = esimGlobal
+          ? 'https://www.rokebi.com/us'
+          : 'https://www.rokebi.com';
         break;
       default:
         env.scheme = 'http';
         env.rokApiUrl = 'tb-svcapp.rokebi.com';
         env.apiUrl = esimGlobal ? 'tb-global.rokebi.com' : 'tb-esim.rokebi.com';
-        env.webViewHost = 'http://tb.rokebi.com';
+        env.webViewHost = esimGlobal
+          ? 'http://tb.rokebi.com/us'
+          : 'http://tb.rokebi.com';
         break;
     }
     return env;

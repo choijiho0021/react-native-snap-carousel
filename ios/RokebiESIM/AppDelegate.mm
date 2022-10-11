@@ -43,10 +43,10 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 @implementation AppDelegate
 
-@synthesize window = _window;
-- (void)applicationDidBecomeActive:(UIApplication *)application {
-  [FBSDKAppEvents activateApp];
-}
+//@synthesize window = _window;
+//- (void)applicationDidBecomeActive:(UIApplication *)application {
+//  [FBSDKAppEvents activateApp];
+//}
 
 
 

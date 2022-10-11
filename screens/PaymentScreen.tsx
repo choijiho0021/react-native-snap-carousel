@@ -189,6 +189,7 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
           repeat
           style={styles.backgroundVideo}
           resizeMode="cover"
+          mixWithOthers="mix"
         />
         <AppText style={styles.infoText}>{i18n.t('pym:loadingInfo')}</AppText>
       </View>
