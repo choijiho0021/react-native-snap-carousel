@@ -3,6 +3,7 @@ import i18n from '@/utils/i18n';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 
 import Env from '@/environment';
+import {promoFlag} from './productApi';
 
 const {isProduction} = Env.get();
 
@@ -83,6 +84,7 @@ export type RkbSubscription = {
   status: string;
   giftStatusCd: string;
   type: string;
+  isStore: boolean;
 
   endDate?: string;
   country?: string;
@@ -97,71 +99,83 @@ export type RkbSubscription = {
   packageId?: string;
   subsOrderNo?: string;
   partner?: string;
+  promoFlag?: string[];
+  caution: string;
+  cautionApp: string;
 };
 
-const toSubscription = (
-  data: DrupalNode[] | DrupalNodeJsonApi,
-): ApiResult<RkbSubscription> => {
-  if (_.isArray(data)) {
-    return api.success(
-      data
-        .map((item) => ({
-          key: item.uuid || '',
-          uuid: item.uuid || '',
-          purchaseDate: item.field_purchase_date || '',
-          expireDate: item.field_expiration_date || '',
-          activationDate: item.field_subs_activation_date || '',
-          endDate: item.field_subs_expiration_date || '',
-          statusCd: item.field_status || '',
-          status: toStatus(item.field_status) || '',
-          giftStatusCd:
-            giftCode[item.field_gift_status] || item.field_gift_status || '',
-          country: item.field_country || '',
-          prodName: item.title || '',
-          prodId: item.product_uuid || '',
-          nid: item.nid || '',
-          actCode: item.field_activation_code || '',
-          smdpAddr: item.sm_dp_address || '',
-          qrCode: item.qr_code || '',
-          imsi: item.field_imsi || '',
-          type: item.type || '',
-          subsIccid: item.field_iccid || '',
-          packageId: item.field_cmi_package_id || '',
-          subsOrderNo: item.field_cmi_order_id || '',
-          partner: item.field_ref_partner || '',
-        }))
-        .sort(sortSubs),
-    );
-  }
-
-  if (data.jsonapi) {
-    const obj = _.isArray(data.data) ? data.data : [data.data];
-
-    return api.success(
-      obj
-        .map((item) => {
-          return {
-            key: item.id,
-            uuid: item.id,
-            purchaseDate: item.field_purchase_date,
-            activationDate: item.field_subs_activation_date,
-            expireDate: item.field_subs_expiration_date,
-            statusCd: item.field_status,
+const toSubscription =
+  (isStore = false) =>
+  (data: DrupalNode[] | DrupalNodeJsonApi): ApiResult<RkbSubscription> => {
+    if (_.isArray(data)) {
+      return api.success(
+        data
+          .map((item) => ({
+            key: item.uuid || '',
+            uuid: item.uuid || '',
+            purchaseDate: item.field_purchase_date || '',
+            expireDate: item.field_expiration_date || '',
+            activationDate: item.field_subs_activation_date || '',
+            endDate: item.field_subs_expiration_date || '',
+            statusCd: item.field_status || '',
+            status: toStatus(item.field_status) || '',
             giftStatusCd:
-              giftCode[item.attributes?.field_gift_status] ||
-              item.attributes?.field_gift_status ||
-              '',
-            status: item.field_status,
-            type: item.type,
-          };
-        })
-        .sort(sortSubs),
-      data.links,
-    );
-  }
+              giftCode[item.field_gift_status] || item.field_gift_status || '',
+            country: item.field_country || '',
+            prodName: item.title || '',
+            prodId: item.product_uuid || '',
+            nid: item.nid || '',
+            actCode: item.field_activation_code || '',
+            smdpAddr: item.sm_dp_address || '',
+            qrCode: item.qr_code || '',
+            imsi: item.field_imsi || '',
+            type: item.type || '',
+            subsIccid: item.field_iccid || '',
+            packageId: item.field_cmi_package_id || '',
+            subsOrderNo: item.field_cmi_order_id || '',
+            partner: item.field_ref_partner || '',
+            isStore,
+            promoFlag: item.field_special_categories
+              ? item.field_special_categories
+                  .split(',')
+                  .map((v) => promoFlag[v.trim()])
+                  .filter((v) => !_.isEmpty(v))
+              : [],
+            caution: item.field_caution || '',
+            cautionApp: item.field_caution_app || '',
+          }))
+          .sort(sortSubs),
+      );
+    }
 
-  return api.failure(data.result || api.E_NOT_FOUND, data.desc || '');
-};
+    if (data.jsonapi) {
+      const obj = _.isArray(data.data) ? data.data : [data.data];
+
+      return api.success(
+        obj
+          .map((item) => {
+            return {
+              key: item.id,
+              uuid: item.id,
+              purchaseDate: item.field_purchase_date,
+              activationDate: item.field_subs_activation_date,
+              expireDate: item.field_subs_expiration_date,
+              statusCd: item.field_status,
+              giftStatusCd:
+                giftCode[item.attributes?.field_gift_status] ||
+                item.attributes?.field_gift_status ||
+                '',
+              status: item.field_status,
+              type: item.type,
+            };
+          })
+          .sort(sortSubs),
+        data.links,
+      );
+    }
+
+    return api.failure(data.result || api.E_NOT_FOUND, data.desc || '');
+  };
 
 const toSubsUpdate = (data) => {
   if (data.result === 0 && isArray(data.objects)) {
@@ -221,7 +235,7 @@ const getSubscription = ({
     `${api.httpUrl(api.path.subscription)}/${iccid}${
       prodType ? `/${prodType}` : ''
     }?_format=hal_json`,
-    toSubscription,
+    toSubscription(),
     api.withToken(token, 'hal+json'),
   );
 };
@@ -238,9 +252,10 @@ const getStoreSubscription = ({
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
+  console.log('@@@store toSubscription 호출');
   return api.callHttpGet(
     `${api.httpUrl(api.path.storeSubs)}/${mobile}?_format=hal_json`,
-    toSubscription,
+    toSubscription(true),
     api.withToken(token, 'hal+json'),
   );
 };
@@ -300,7 +315,7 @@ const addSubscription = ({
       headers,
       body: JSON.stringify(body),
     },
-    toSubscription,
+    toSubscription(),
   );
 };
 
@@ -335,7 +350,7 @@ const otaSubscription = ({
       method,
       headers: api.basicAuth(user, pass, 'json'),
     },
-    toSubscription,
+    toSubscription(),
   );
 };
 
@@ -415,7 +430,7 @@ const updateSubscriptionGiftStatus = ({
       }),
       body: JSON.stringify(body),
     },
-    toSubscription,
+    toSubscription(),
   );
 };
 

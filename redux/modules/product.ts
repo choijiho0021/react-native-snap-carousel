@@ -69,6 +69,8 @@ export type RkbPriceInfo = Partial<RkbProdByCountry> & {
   weight: number;
 };
 
+export type ProdDataType = {title: string; data: RkbProduct[]};
+
 export interface ProductModelState {
   prodList: ImmutableMap<string, RkbProduct>; // uuid -> RkbProduct
   localOpList: ImmutableMap<string, RkbLocalOp>;
@@ -79,6 +81,8 @@ export interface ProductModelState {
   prodByCountry: RkbProdByCountry[];
   priceInfo: ImmutableMap<string, RkbPriceInfo[][]>;
   prodByLocalOp: ImmutableMap<string, string[]>;
+  prodByPartner: ImmutableMap<string, RkbProduct[]>;
+  cmiProdByPartner: ImmutableMap<string, RkbProduct[]>;
 }
 
 const initialState: ProductModelState = {
@@ -91,6 +95,8 @@ const initialState: ProductModelState = {
   prodByCountry: [],
   priceInfo: ImmutableMap(),
   prodByLocalOp: ImmutableMap(),
+  prodByPartner: ImmutableMap(),
+  cmiProdByPartner: ImmutableMap(),
 };
 
 const slice = createSlice({
@@ -190,6 +196,7 @@ const slice = createSlice({
 
     builder.addCase(getProductByLocalOp.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
+
       if (result === 0 && objects.length > 0) {
         state.prodByLocalOp = state.prodByLocalOp.set(
           objects[0].partnerId,
@@ -198,6 +205,42 @@ const slice = createSlice({
         state.prodList = state.prodList.merge(
           ImmutableMap(objects.map((o) => [o.key, o])),
         );
+
+        const prodListbyPartner = state.prodByLocalOp
+          .get(objects[0].partnerId)
+          ?.map((p2) => state.prodList.get(p2));
+
+        state.prodByPartner = state.prodByPartner.set(
+          objects[0].partnerId,
+          prodListbyPartner,
+        );
+
+        // const list: RkbProduct[][] = [objects[0].partnerId]
+        //   .map((p) =>
+        //     state.prodByLocalOp.get(p)?.map((p2) => state.prodList.get(p2)),
+        //   )
+        //   .reduce(
+        //     (acc, cur) => (cur ? acc.concat(cur.filter((c) => !!c)) : acc),
+        //     [],
+        //   )
+        //   .reduce(
+        //     (acc, cur) =>
+        //       cur?.field_daily === 'daily'
+        //         ? [acc[0].concat(cur), acc[1]]
+        //         : [acc[0], acc[1].concat(cur)],
+        //     [[], []],
+        //   ) || [[], []];
+
+        // state.prodByPartner = state.prodByPartner.set(objects[0].partnerId, [
+        //   {
+        //     title: 'daily',
+        //     data: list[0].sort((a, b) => b.weight - a.weight) || [],
+        //   },
+        //   {
+        //     title: 'total',
+        //     data: list[1].sort((a, b) => b.weight - a.weight) || [],
+        //   },
+        // ]);
       }
     });
 

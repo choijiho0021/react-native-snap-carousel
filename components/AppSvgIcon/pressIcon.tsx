@@ -206,6 +206,24 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Rect x="11" y="6" width="2" height="7" rx="1" fill="#fff" />
     </Svg>,
   ],
+  newFlag: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M3 3a1 1 0 0 0-1 1v17l4-4h15a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H3z"
+        fill="#0029FF"
+      />
+      <Circle cx="12" cy="13.8" r="1" fill="#fff" />
+      <Rect x="11" y="5" width="2" height="7" rx="1" fill="#fff" />
+    </Svg>,
+  ],
+
   closeSnackBar: [
     <Svg
       width="12"
@@ -310,6 +328,36 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <Rect x="8" y="11.5" width="8" height="1" rx=".5" fill="#D8D8D8" />
+    </Svg>,
+  ],
+  bottomArrow: [
+    <Svg
+      width="10"
+      height="10"
+      viewBox="0 0 10 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M9.5 3 5 7.5.5 3"
+        stroke="#2C2C2C"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </Svg>,
+  ],
+  topArrow: [
+    <Svg
+      width="10"
+      height="10"
+      viewBox="0 0 10 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M.5 5 5 .5 9.5 5"
+        stroke="#2C2C2C"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
     </Svg>,
   ],
 };

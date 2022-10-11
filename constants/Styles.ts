@@ -395,9 +395,26 @@ export const appStyles = StyleSheet.create({
     padding: 0,
     margin: 0,
   },
+  semiBold20Text: {
+    // fontFamily: "AppleSDGothicNeo",
+    fontSize: 20,
+    fontWeight: '600',
+    fontStyle: 'normal',
+    lineHeight: 24,
+    letterSpacing: 0,
+  },
   extraBold20: {
     // fontFamily: 'AppleSDGothicNeo',
     fontSize: 20,
+    fontWeight: '800',
+    fontStyle: 'normal',
+    lineHeight: 24,
+    letterSpacing: 0,
+    textAlign: 'left',
+  },
+  extraBold24: {
+    // fontFamily: 'AppleSDGothicNeo',
+    fontSize: 24,
     fontWeight: '800',
     fontStyle: 'normal',
     lineHeight: 24,
@@ -413,6 +430,7 @@ export const appStyles = StyleSheet.create({
     textAlign: 'left',
     color: colors.black,
   },
+
   semiBold24Text: {
     // fontFamily: "AppleSDGothicNeo",
     fontSize: 24,
@@ -439,6 +457,15 @@ export const appStyles = StyleSheet.create({
     fontStyle: 'normal',
     letterSpacing: 0.29,
     lineHeight: 40,
+  },
+  robotoBold16Text: {
+    fontFamily: 'Roboto',
+    fontSize: 16,
+    fontWeight: 'bold',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'left',
+    color: colors.clearBlue,
   },
   robotoBold32Text: {
     fontFamily: 'Roboto',
@@ -481,6 +508,15 @@ export const appStyles = StyleSheet.create({
     letterSpacing: 0.25,
     color: colors.white,
     textAlign: 'center',
+  },
+  robotoMedium16Text: {
+    fontFamily: 'Roboto',
+    fontSize: 16,
+    fontWeight: '500',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'left',
+    color: colors.black,
   },
   underline: {
     borderStyle: 'solid',

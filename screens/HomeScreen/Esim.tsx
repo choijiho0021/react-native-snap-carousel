@@ -319,23 +319,25 @@ const Esim: React.FC<EsimProps> = ({
   );
 
   const renderScene = useCallback(
-    ({route}: {route: TabViewRoute}) => (
-      <StoreList
-        data={product.priceInfo.get(route.key, [] as RkbPriceInfo[][])}
-        onPress={onPressItem}
-        localOpList={product.localOpList}
-        width={dimensions.width}
-        onEndReached={() => setIsTop(false)}
-        onScroll={({
-          nativeEvent: {
-            contentOffset: {y},
-          },
-        }) => {
-          if (isTop && y > bannerHeight) setIsTop(false);
-          else if (!isTop && y <= 0) setIsTop(true);
-        }}
-      />
-    ),
+    ({route}: {route: TabViewRoute}) => {
+      return (
+        <StoreList
+          data={product.priceInfo.get(route.key, [] as RkbPriceInfo[][])}
+          onPress={onPressItem}
+          localOpList={product.localOpList}
+          width={dimensions.width}
+          onEndReached={() => setIsTop(false)}
+          onScroll={({
+            nativeEvent: {
+              contentOffset: {y},
+            },
+          }) => {
+            if (isTop && y > bannerHeight) setIsTop(false);
+            else if (!isTop && y <= 0) setIsTop(true);
+          }}
+        />
+      );
+    },
     [
       bannerHeight,
       dimensions.width,
@@ -693,7 +695,7 @@ const Esim: React.FC<EsimProps> = ({
         renderTabBar={() => null}
       />
 
-      {
+      {/* {
         // eslint-disable-next-line no-nested-ternary
         isDevModalVisible && !isSupport ? (
           <AppModal
@@ -720,7 +722,7 @@ const Esim: React.FC<EsimProps> = ({
             onOkClose={() => setAppUpdateVisible(false)}
           />
         )
-      }
+      } */}
     </Animated.View>
   );
 };
