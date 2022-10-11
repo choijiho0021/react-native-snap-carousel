@@ -22,6 +22,7 @@ import {utils} from '@/utils/utils';
 import AppIcon from '@/components/AppIcon';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {getPromoFlagColor} from '@/redux/api/productApi';
+import moment from 'moment';
 
 const {width} = Dimensions.get('window');
 
@@ -342,22 +343,11 @@ const EsimSubs = ({
   // }, [item.promoFlag]);
 
   useEffect(() => {
-    // date -> moment 변경
-    const chargeabledate = new Date(
-      parseInt(item.expireDate.split('-')[0], 10),
-      parseInt(item.expireDate.split('-')[1], 10) - 1,
-      parseInt(item.expireDate.split('-')[2], 10),
-    );
+    const chargeabledate = moment(item.expireDate).subtract(30, 'd');
 
-    chargeabledate.setDate(chargeabledate.getDate() - 30);
+    const today = moment();
 
-    const today = new Date();
-
-    setChargeablePeriod(
-      `${chargeabledate.getFullYear()}.${
-        chargeabledate.getMonth() + 1
-      }.${chargeabledate.getDate()}`,
-    );
+    setChargeablePeriod(chargeabledate.format('YYYY.MM.DD'));
 
     if (chargeabledate < today) setIsChargeable(false);
   }, [item.expireDate, setChargeablePeriod]);
