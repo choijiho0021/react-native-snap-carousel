@@ -54,7 +54,6 @@
 		A3BF9FEB273B63DD00561187 /* GlobalLaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 40A621E726E85C740037EE37 /* GlobalLaunchScreen.xib */; };
 		A3BF9FEC273B63DD00561187 /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 405C1E9424D945870016B43C /* AppCenter-Config.plist */; };
 		A3BF9FED273B63DD00561187 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A32580F42715115700C2F28A /* GoogleService-Info.plist */; };
-		A3CF033C28F545BC009AD6B6 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3568E11289237A000986E9F /* StoreKit.framework */; };
 		A3F0EE3E2898F309000D3781 /* RNKakaoLogins.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F0EE3B2898F309000D3781 /* RNKakaoLogins.swift */; };
 		A3F0EE3F2898F309000D3781 /* RNKakaoLogins.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F0EE3B2898F309000D3781 /* RNKakaoLogins.swift */; };
 		A3F0EE402898F309000D3781 /* RNKakaoLogins.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F0EE3B2898F309000D3781 /* RNKakaoLogins.swift */; };
@@ -122,7 +121,6 @@
 		DE09F2A8BAAE7943D6BBA5FA /* Pods-RokebiGlobal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiGlobal.release.xcconfig"; path = "Target Support Files/Pods-RokebiGlobal/Pods-RokebiGlobal.release.xcconfig"; sourceTree = "<group>"; };
 		E1686E1EE1103F3B6BAE4EC6 /* Pods-RokebiUSIM.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiUSIM.release.xcconfig"; path = "Target Support Files/Pods-RokebiUSIM/Pods-RokebiUSIM.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F51F71C528ED23CC004019CE /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,7 +129,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C536689F08844F90365C65B9 /* libPods-RokebiGlobal.a in Frameworks */,
-				A3CF033C28F545BC009AD6B6 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -206,7 +203,6 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				F51F71C528ED23CC004019CE /* HealthKit.framework */,
 				A36B9CA928C83A7200C346D1 /* KakaoPlusFriend.framework */,
 				A3568E13289237B500986E9F /* AppTrackingTransparency.framework */,
 				A3568E11289237A000986E9F /* StoreKit.framework */,
@@ -1401,7 +1397,6 @@
 				BUNDLE_ID_SUFFIX = "-ESIM";
 				CLANG_ENABLE_MODULES = YES;
 				CODEPUSH_KEY = "IT-QQLbnOXmpIyCJdB8vZbDzyNni_GUsuMdbR";
-				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = RokebiESIM/RokebiESIM.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -1538,10 +1533,9 @@
 				BUNDLE_ID_SUFFIX = "-ESIM";
 				CLANG_ENABLE_MODULES = YES;
 				CODEPUSH_KEY = 8rALrmcU6FwIZqHido0wy0xTulKhTuSiobwoxQ;
-				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = RokebiESIM/RokebiESIM.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
@@ -1638,7 +1632,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.uangel.rokebi-ESIM";
 				PRODUCT_NAME = RokebiESIM;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = Esim_distribution_adhoc;
 				SWIFT_OBJC_BRIDGING_HEADER = "Rokebi-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1704,10 +1698,9 @@
 				BUNDLE_ID_SUFFIX = "-ESIM";
 				CLANG_ENABLE_MODULES = YES;
 				CODEPUSH_KEY = pIbLXtxfL7vV7b6HJbgpBzp6gtN593MHEG54f;
-				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = RokebiESIM/RokebiESIM.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
@@ -1805,7 +1798,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.uangel.rokebi-ESIM";
 				PRODUCT_NAME = RokebiESIM;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = RokebiESIM_distribution_appstore;
 				SWIFT_OBJC_BRIDGING_HEADER = "Rokebi-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
