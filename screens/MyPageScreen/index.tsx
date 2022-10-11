@@ -185,12 +185,12 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
       headerLeft: () => (
         <View style={{flexDirection: 'row'}}>
           <AppText style={styles.title}>{i18n.t('acc:title')}</AppText>
-          <AppButton
+          {/* <AppButton
             // style={{marginLeft: }}
             titleStyle={{color: 'white'}}
             title={i18n.t('esim:pedometer:title')}
             onPress={() => navigation.navigate('Pedometer')}
-          />
+          /> */}
         </View>
       ),
       headerRight: () => (

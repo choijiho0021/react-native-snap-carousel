@@ -13,12 +13,12 @@
 		<string>applinks:rokebi.page.link</string>
 		<string>applinks:wds3.adj.st</string>
 	</array>
-	<key>com.apple.developer.healthkit</key>
+	<!-- <key>com.apple.developer.healthkit</key>
 	<true/>
 	<key>com.apple.developer.healthkit.access</key>
 	<array>
 		<string>health-records</string>
-	<key>keychain-access-groups</key>
+	<key>keychain-access-groups</key> -->
 	<array>
 		<string>$(AppIdentifierPrefix)com.uangel.rokebi-global</string>
 	</array>

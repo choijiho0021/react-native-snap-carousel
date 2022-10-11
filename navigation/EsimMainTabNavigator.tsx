@@ -46,7 +46,7 @@ import BadgedIcon from './component/BadgedIcon';
 import RedirectHKScreen from '@/screens/RedirectHKScreen';
 import ChargeScreen from '@/screens/ChargeScreen';
 import ChargeHistoryScreen from '@/screens/ChargeHistoryScreen';
-import PedometerScreen from '@/screens/PedometerScreen';
+// import PedometerScreen from '@/screens/PedometerScreen';
 import ChargeDetailScreen from '@/screens/ChargeDetailScreen';
 import QrInfoScreen from '@/screens/QrInfoScreen';
 import UserGuideScreen from '../screens/UserGuideScreen';
@@ -190,7 +190,7 @@ function MyPageStackComponent() {
       />
       <MyPageStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <MyPageStack.Screen name="Recharge" component={RechargeScreen} />
-      <MyPageStack.Screen name="Pedometer" component={PedometerScreen} />
+      {/* <MyPageStack.Screen name="Pedometer" component={PedometerScreen} /> */}
       <MyPageStack.Screen name="Invite" component={InviteScreen} />
       <MyPageStack.Screen name="Payment" component={PaymentScreen} />
       <MyPageStack.Screen name="PymMethod" component={PymMethodScreen} />
