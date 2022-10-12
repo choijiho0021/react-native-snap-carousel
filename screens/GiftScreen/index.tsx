@@ -155,7 +155,7 @@ type GiftScreenProps = {
 
 const KAKAO = 'kakao';
 const MESSAGE = 'message';
-const {isProduction} = Env.get();
+const {isProduction, esimGlobal, webViewHost} = Env.get();
 
 const GiftScreen: React.FC<GiftScreenProps> = ({
   navigation,
@@ -166,7 +166,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   action,
 }) => {
   const [msg, setMsg] = useState(i18n.t('gift:default'));
-  const [checked, setChecked] = useState(KAKAO);
+  const [checked, setChecked] = useState(esimGlobal ? MESSAGE : KAKAO);
   const [num, setNum] = useState(0);
   const [prevMsg, setPrevMsg] = useState('');
   const [contHeight, setContHeight] = useState(30);
@@ -179,6 +179,10 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   const [showSnackBar, setShowSnackbar] = useState(false);
 
   const SMSDivider = useMemo(() => (Platform.OS === 'android' ? '?' : '&'), []);
+  const methodList = useMemo(
+    () => (esimGlobal ? [MESSAGE] : [KAKAO, MESSAGE]),
+    [],
+  );
 
   useEffect(() => {
     if (!promotion.stat.signupGift) promotionActions.getPromotionStat();
@@ -231,7 +235,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
     async (method: string, item: RkbSubscription) => {
       // 사용자에게 보낼 링크
       const giftId = await createLink(item);
-      const webUrl = `${api.httpUrl(api.path.gift.web)}/${giftId}`;
+      const webUrl = `${webViewHost}/gift/${giftId}`;
 
       const body = `${i18n.t('gift:msgBody1')}${
         item.prodName
@@ -247,8 +251,8 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
 
           break;
         }
-        default: // kakao
-        {
+        default: {
+          // kakao
           try {
             const response = await KakaoSDK.KakaoShareLink.sendCustom({
               // kakao template 상용: 67017, TB: 70053
@@ -292,7 +296,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
     () => (
       <View>
         <View style={styles.method}>
-          {[KAKAO, MESSAGE].map((v) => (
+          {methodList.map((v) => (
             <Pressable
               key={v}
               style={styles.kakao}
@@ -318,7 +322,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         </View>
       </View>
     ),
-    [checked],
+    [checked, methodList],
   );
 
   const cardDesign = useCallback(
