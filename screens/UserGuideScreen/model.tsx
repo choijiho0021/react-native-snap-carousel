@@ -2,7 +2,7 @@
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
 import React from 'react';
-import {Platform, StyleSheet, TextStyle, View} from 'react-native';
+import {StyleSheet, TextStyle, View} from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {colors} from '@/constants/Colors';
 import {appStyles, formatText} from '@/constants/Styles';
@@ -162,7 +162,7 @@ const deviceModel = DeviceInfo.getModel();
 export const imageList: Record<string, any[]> =
   // eslint-disable-next-line no-nested-ternary
   !isIOS
-    ? true
+    ? deviceModel.startsWith('SM')
       ? {
           page1: [require(`${dir}/guide1.png`)],
           page2: [require(`${dir}/galaxy/img_1.png`)],
@@ -216,13 +216,13 @@ export type GuideImage = {
   key: string;
   title: JSX.Element;
   step: number;
-  tip?: () => JSX.Element;
+  tip?: () => JSX.Element | null;
 };
 
 export const guideImages: GuideImage[] =
   // eslint-disable-next-line no-nested-ternary
   !isIOS
-    ? true
+    ? deviceModel.startsWith('SM')
       ? [
           {
             key: 'page1',
@@ -298,30 +298,30 @@ export const guideImages: GuideImage[] =
           },
           {
             key: 'page6',
-            title: renderText(`userGuide:stepsTitle4:android`),
+            title: renderText(`userGuide:stepsTitle5:android`),
             step: 4,
             tip: () => tipView({id: 'userGuide:tipPage5:android'}),
           },
           {
             key: 'page7',
-            title: renderText(`userGuide:stepsTitle5:android`),
+            title: renderText(`userGuide:stepsTitle6:android`),
             step: 5,
           },
           {
             key: 'page8',
-            title: renderText(`userGuide:stepsTitle6:android`),
+            title: renderText(`userGuide:stepsTitle7:android`),
             step: 6,
             tip: () => tipView({id: 'userGuide:tipPage8:android'}),
           },
           {
             key: 'page9',
-            title: renderText(`userGuide:stepsTitle7:android`),
+            title: renderText(`userGuide:stepsTitle8:android`),
             step: 7,
             tip: () => renderTipList('userGuide:tipPage9:android', 'dot'),
           },
           {
             key: 'page10',
-            title: renderText(`userGuide:stepsTitle8:android`),
+            title: renderText(`userGuide:stepsTitle9:android`),
             step: 8,
             tip: () => tipView({id: 'userGuide:tipPage11_1'}),
           },
@@ -337,9 +337,9 @@ export const guideImages: GuideImage[] =
           title: renderText(`userGuide:stepsTitle1:ios`),
           step: 1,
           tip: () =>
-            isDeviceSize('medium') && (
+            isDeviceSize('medium') ? (
               <View style={{height: 39, width: '100%'}} />
-            ),
+            ) : null,
         },
         {
           key: 'page3',
