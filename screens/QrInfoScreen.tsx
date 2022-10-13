@@ -35,14 +35,14 @@ const styles = StyleSheet.create({
   },
   box: {
     margin: 20,
-    // borderWidth: 1,
-    // borderColor: colors.whiteFive,
+    borderWidth: 1,
+    borderColor: colors.whiteFive,
     padding: 20,
     paddingTop: 28,
     paddingBottom: 38,
     ...Platform.select({
       ios: {
-        shadowColor: colors.whiteFive,
+        shadowColor: 'rgb(52, 62, 95)',
         shadowOpacity: 0.2,
         shadowRadius: 3,
         shadowOffset: {
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
         },
       },
       android: {
-        elevation: 2,
+        elevation: 3,
       },
     }),
   },
