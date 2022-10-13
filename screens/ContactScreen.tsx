@@ -161,13 +161,10 @@ type ContactScreenProps = {
   route: RouteProp<ParamListBase, string>;
 
   noti: NotiModelState;
-  action: {
-    toast: ToastAction;
-  };
 };
 
 const ContactScreen: React.FC<ContactScreenProps> = (props) => {
-  const {navigation, route, noti, action} = props;
+  const {navigation, route, noti} = props;
 
   const data = useMemo(
     () => [
@@ -178,13 +175,21 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
         icon: 'imgBoard',
         page: 'Contact Board',
       },
-      {
-        key: 'Ktalk',
-        title: i18n.t('contact:ktalkTitle'),
-        desc: i18n.t('contact:ktalkDesc'),
-        icon: 'kakaoChannel',
-        page: 'Open Kakao Talk',
-      },
+      esimGlobal
+        ? {
+            key: 'FB',
+            title: i18n.t('contact:fbMsg'),
+            desc: i18n.t('contact:fbMsgDesc'),
+            icon: 'fbMsg',
+            page: 'Open FB Messenger',
+          }
+        : {
+            key: 'Ktalk',
+            title: i18n.t('contact:ktalkTitle'),
+            desc: i18n.t('contact:ktalkDesc'),
+            icon: 'kakaoChannel',
+            page: 'Open Kakao Talk',
+          },
       {
         key: 'Call',
         title: i18n.t('contact:callTitle'),
@@ -239,21 +244,20 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
         case 'Guide':
           navigation.navigate('UserGuide');
           break;
-        case 'Ktalk':
-          if (esimGlobal) {
-            Linking.openURL(
-              `fb-messenger-public://user-thread/${fbUser}`,
-            ).catch(() =>
+
+        case 'FB':
+          Linking.openURL(`fb-messenger-public://user-thread/${fbUser}`).catch(
+            () =>
               AppAlert.info(i18n.t('acc:moveToFbDown'), '', () =>
                 Linking.openURL('http://appstore.com/Messenger'),
               ),
-            );
-          } else {
-            KakaoSDK.KakaoChannel.chat(channelId).catch((_) => {
-              setShowSnackbar(true);
-            });
-          }
+          );
+          break;
 
+        case 'Ktalk':
+          KakaoSDK.KakaoChannel.chat(channelId).catch((_) => {
+            setShowSnackbar(true);
+          });
           break;
         case 'Call':
           Linking.openURL(`tel:0317103969`);

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   View,
   Pressable,
+  SafeAreaView,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -178,7 +179,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       if (iccid && token) {
         action.order.getSubsWithToast({iccid, token});
       }
-      if (mobile && token) {
+      if (mobile && token && !esimGlobal) {
         action.order.getStoreSubsWithToast({mobile, token});
       }
     },
@@ -420,22 +421,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   useEffect(() => {
     navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppText style={styles.title}>{i18n.t('esimList')}</AppText>
-      ),
-      headerRight: () => (
-        <AppSvgIcon
-          name="btnCnter"
-          style={styles.btnCnter}
-          onPress={() =>
-            navigate(navigation, route, 'EsimStack', {
-              tab: 'HomeStack',
-              screen: 'Contact',
-            })
-          }
-        />
-      ),
+      headerShown: false,
     });
     init({iccid, mobile, token});
   }, [iccid, init, mobile, navigation, route, token]);
@@ -458,7 +444,20 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   }, [isFocused, isPressClose]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <View style={appStyles.header}>
+        <AppText style={styles.title}>{i18n.t('esimList')}</AppText>
+        <AppSvgIcon
+          name="btnCnter"
+          style={styles.btnCnter}
+          onPress={() =>
+            navigate(navigation, route, 'EsimStack', {
+              tab: 'HomeStack',
+              screen: 'Contact',
+            })
+          }
+        />
+      </View>
       <FlatList
         data={order.subs}
         keyExtractor={(item) => item.key.toString()}
@@ -514,7 +513,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         }}
         item={subs}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 

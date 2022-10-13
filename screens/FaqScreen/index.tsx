@@ -2,7 +2,13 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootState} from '@reduxjs/toolkit';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {Dimensions, StyleSheet, SafeAreaView, Platform} from 'react-native';
+import {
+  Dimensions,
+  StyleSheet,
+  SafeAreaView,
+  Platform,
+  View,
+} from 'react-native';
 import {TabView} from 'react-native-tab-view';
 import {connect, DispatchProp} from 'react-redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
@@ -13,6 +19,7 @@ import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
 import i18n from '@/utils/i18n';
 import FaqList from './components/FaqList';
 import AppTabHeader from '@/components/AppTabHeader';
+import {appStyles} from '@/constants/Styles';
 
 const styles = StyleSheet.create({
   container: {
@@ -116,8 +123,7 @@ const FaqScreen: React.FC<FaqScreenProps & DispatchProp> = ({
     const {key, num} = route.params || {};
 
     navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('contact:faq')} />,
+      headerShown: false,
     });
 
     const idx = routes.findIndex((item) => item.key === key);
@@ -131,6 +137,9 @@ const FaqScreen: React.FC<FaqScreenProps & DispatchProp> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={appStyles.header}>
+        <AppBackButton title={i18n.t('contact:faq')} />
+      </View>
       <AppActivityIndicator visible={pending} />
       <AppTabHeader
         index={index}

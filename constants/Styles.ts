@@ -86,6 +86,13 @@ export const appStyles = StyleSheet.create({
     color: colors.black,
   },
 
+  header: {
+    flexDirection: 'row',
+    height: 44,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
   headerTitle: {
     //        fontFamily: "AppleSDGothicNeo",
     fontSize: 20,
