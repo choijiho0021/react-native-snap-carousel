@@ -297,7 +297,7 @@ const callHttp = async <T>(
       response
         .json()
         .then((json) => {
-          console.log('response:', JSON.stringify(json));
+          console.log('response:', url, JSON.stringify(json));
         })
         .catch((err) => {
           return failure(
