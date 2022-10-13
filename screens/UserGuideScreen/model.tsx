@@ -95,7 +95,7 @@ const renderText = (key: string) => {
   return renderOneText(text[0], 0);
 };
 
-const renderTipText = (key: string, style = styles.tipText) => (
+const renderTipText = (key: string, style: TextStyle = styles.tipText) => (
   <AppStyledText
     text={i18n.t(key)}
     textStyle={style}
@@ -162,7 +162,7 @@ const deviceModel = DeviceInfo.getModel();
 export const imageList: Record<string, any[]> =
   // eslint-disable-next-line no-nested-ternary
   !isIOS
-    ? deviceModel.startsWith('SM')
+    ? true
       ? {
           page1: [require(`${dir}/guide1.png`)],
           page2: [require(`${dir}/galaxy/img_1.png`)],
@@ -222,7 +222,7 @@ export type GuideImage = {
 export const guideImages: GuideImage[] =
   // eslint-disable-next-line no-nested-ternary
   !isIOS
-    ? deviceModel.startsWith('SM')
+    ? true
       ? [
           {
             key: 'page1',
@@ -323,7 +323,7 @@ export const guideImages: GuideImage[] =
             key: 'page10',
             title: renderText(`userGuide:stepsTitle8:android`),
             step: 8,
-            tip: () => tipView({id: 'userGuide:tipPage11_1'}),
+            tip: () => renderTipList('userGuide:tipPage10:android', 'dot'),
           },
         ]
     : [
