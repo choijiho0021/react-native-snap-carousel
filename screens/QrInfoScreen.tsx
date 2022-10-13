@@ -1,18 +1,26 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {StyleSheet, SafeAreaView, View, Clipboard} from 'react-native';
+import {
+  StyleSheet,
+  SafeAreaView,
+  View,
+  Clipboard,
+  Platform,
+} from 'react-native';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 
 import {ScrollView} from 'react-native-gesture-handler';
+import QRCode from 'react-native-qrcode-svg';
+import _ from 'underscore';
 import {colors} from '@/constants/Colors';
 import AppBackButton from '@/components/AppBackButton';
 import i18n from '@/utils/i18n';
 import {renderInfo} from './EsimScreen';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
-import {esimManualInputInfo, showQR} from './EsimScreen/components/EsimModal';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import AppButton from '@/components/AppButton';
+import AppStyledText from '@/components/AppStyledText';
 
 const {isIOS} = Env.get();
 
@@ -27,16 +35,34 @@ const styles = StyleSheet.create({
   },
   box: {
     margin: 20,
-    borderWidth: 1,
-    borderColor: colors.whiteFive,
+    // borderWidth: 1,
+    // borderColor: colors.whiteFive,
     padding: 20,
+    paddingTop: 28,
+    paddingBottom: 38,
+    ...Platform.select({
+      ios: {
+        shadowColor: colors.whiteFive,
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        shadowOffset: {
+          height: 1,
+          width: 1,
+        },
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
   },
   title: {
     ...appStyles.semiBold20Text,
+    lineHeight: 24,
     color: colors.black,
   },
   esimManualInputInfo: {
-    marginVertical: 20,
+    marginTop: 8,
+    marginBottom: 29,
   },
   copyBox: {
     paddingHorizontal: 20,
@@ -63,6 +89,23 @@ const styles = StyleSheet.create({
     flex: 1,
     color: colors.black,
   },
+  modalBody: {
+    marginTop: 8,
+  },
+  center: {
+    marginTop: 35,
+    alignSelf: 'center',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: colors.clearBlue,
+    paddingVertical: 13,
+    paddingHorizontal: 13,
+  },
+  qrText: {
+    ...appStyles.normal14Text,
+    lineHeight: 20,
+    color: colors.black,
+  },
 });
 
 type ParamList = {
@@ -70,6 +113,37 @@ type ParamList = {
     item: RkbSubscription;
   };
 };
+
+const showQR = (subs: RkbSubscription) => (
+  <View style={styles.modalBody}>
+    {_.isEmpty(subs.qrCode) ? (
+      <View style={styles.center}>
+        <AppText>{i18n.t('esim:showQR:nothing')}</AppText>
+      </View>
+    ) : (
+      <View>
+        <AppStyledText
+          textStyle={styles.qrText}
+          text={i18n.t('esim:showQR:body_new')}
+          format={{b: {fontWeight: 'bold'}}}
+        />
+        <View style={styles.center}>
+          <QRCode value={subs.qrCode} />
+        </View>
+      </View>
+    )}
+  </View>
+);
+
+const esimManualInputInfo = () => (
+  <View>
+    <AppStyledText
+      textStyle={styles.qrText}
+      text={i18n.t('esim:manualInput:body_new')}
+      format={{b: {fontWeight: 'bold', color: colors.black}}}
+    />
+  </View>
+);
 
 const QrInfoScreen = () => {
   const route = useRoute<RouteProp<ParamList, 'QrInfoScreen'>>();
@@ -126,7 +200,7 @@ const QrInfoScreen = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={{flex: 1}}>
       <ScrollView style={styles.container}>
         <View style={styles.guideBanner}>{renderInfo(navigation)}</View>
         <View style={styles.box}>

@@ -46,7 +46,7 @@ import {
 import i18n from '@/utils/i18n';
 import CardInfo from './components/CardInfo';
 import EsimSubs from './components/EsimSubs';
-import EsimModal, {ModalType} from './components/EsimModal';
+import EsimModal from './components/EsimModal';
 import GiftModal from './components/GiftModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import ChargeModal from './components/ChargeModal';
@@ -152,7 +152,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [refreshing, setRefreshing] = useState(false);
   const [showSnackBar, setShowSnackBar] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [modal, setModal] = useState<ModalType>('');
   const [subs, setSubs] = useState<RkbSubscription>();
   const [cmiPending, setCmiPending] = useState(false);
   const [showGiftModal, setShowGiftModal] = useState(false);
@@ -361,7 +360,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     async (item: RkbSubscription) => {
       setShowModal(true);
       setCmiPending(true);
-      setModal('usage');
       setSubs(item);
 
       let result = {status: {}, usage: {}};
@@ -384,12 +382,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [checkCmiData, checkQuadcellData],
   );
 
-  // const onPressCharge = useCallback((item: RkbSubscription) => {
-  //   setShowChargeModal(true);
-  //   setModal('charge');
-  //   setSubs(item);
-  // }, []);
-
   const renderSubs = useCallback(
     ({item}: {item: RkbSubscription}) => {
       iccidList.forEach((i) => {
@@ -402,13 +394,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           key={item.key}
           item={item}
           expired={new Date(item.expireDate) <= new Date()}
-          onPressQR={(qr: boolean) => {
-            setShowModal(true);
-            setModal(qr ? 'showQR' : 'manual');
-            setSubs(item);
-          }}
           onPressUsage={() => onPressUsage(item)}
-          // onPressCharge={() => onPressCharge(item)}
           isCharged={isCharged}
           chargedSubs={order.subs.filter(
             (elm) => elm.subsIccid === item.subsIccid,
@@ -482,7 +468,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       />
       <EsimModal
         visible={showModal}
-        modal={modal}
         subs={subs}
         cmiPending={cmiPending}
         cmiUsage={cmiUsage}
