@@ -5,6 +5,8 @@ import utils from '@/redux/api/utils';
 import {createFromProduct} from '@/redux/models/purchaseItem';
 import api, {ApiResult} from './api';
 import {RkbPriceInfo} from '../modules/product';
+import {Platform} from 'react-native';
+import DeviceInfo from 'react-native-device-info';
 
 export type TabViewRouteKey = 'asia' | 'europe' | 'usaAu' | 'multi';
 export type TabViewRoute = {
@@ -242,7 +244,11 @@ export type RkbProdByCountry = {
 };
 const productByCountry = () => {
   return api.callHttpGet<RkbProdByCountry>(
-    api.httpUrl(`${api.path.rokApi.rokebi.prodByCountry}?_format=json`),
+    api.httpUrl(
+      `${api.path.rokApi.rokebi.prodByCountry}?_format=json&platform=${
+        Platform.OS
+      }&deviceid=${DeviceInfo.getDeviceId()}`,
+    ),
   );
 };
 
