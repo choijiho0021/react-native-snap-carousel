@@ -1,15 +1,7 @@
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {
-  Dimensions,
-  Pressable,
-  StyleSheet,
-  View,
-  Text,
-  Platform,
-} from 'react-native';
+import {Pressable, StyleSheet, View, Text, Platform} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {Line, Svg} from 'react-native-svg';
-import _ from 'underscore';
+import moment from 'moment';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -22,9 +14,6 @@ import {utils} from '@/utils/utils';
 import AppIcon from '@/components/AppIcon';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {getPromoFlagColor} from '@/redux/api/productApi';
-import moment from 'moment';
-
-const {width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -292,24 +281,14 @@ const styles = StyleSheet.create({
   cautionIcon: {marginRight: 12},
 });
 
-type PromoFlag = 'hot' | 'sale' | 'sizeup' | 'doubleSizeup';
-const promoFlag: Record<string, PromoFlag> = {
-  53: 'hot', // 운용자 추천
-  57: 'sale', // 할인
-  181: 'sizeup', // 사이즈업
-  182: 'doubleSizeup', // 더블 사이즈업
-};
-
 const EsimSubs = ({
   item,
-  onPressQR,
   onPressUsage,
   chargedSubs,
   expired,
   isCharged,
 }: {
   item: RkbSubscription;
-  onPressQR: (showQR: boolean) => void;
   onPressUsage: () => void;
   chargedSubs: RkbSubscription[];
   expired: boolean;
@@ -323,24 +302,12 @@ const EsimSubs = ({
   );
   const [isMoreInfo, setIsMoreInfo] = useState(false);
   const [isChargeable, setIsChargeable] = useState(true);
-  // const [isCharged, setIsCharged] = useState(false);
   const [chargeablePeriod, setChargeablePeriod] = useState('');
-  const [itemPromoFlag, setItemPromoFlag] = useState<PromoFlag[]>();
 
   const hasAnyCaution = useMemo(
     () => !!(item.caution || item.cautionApp),
     [item.caution, item.cautionApp],
   );
-
-  // 내일 확인 ysjoung
-  // useEffect(() => {
-  //   setItemPromoFlag(
-  //     item.promoFlag
-  //       .split(',')
-  //       .map((v) => promoFlag[v.trim()])
-  //       .filter((v) => !_.isEmpty(v)), // isEmpty 제거 가능여부 확인
-  //   );
-  // }, [item.promoFlag]);
 
   useEffect(() => {
     const chargeabledate = moment(item.expireDate).subtract(30, 'd');
@@ -472,14 +439,12 @@ const EsimSubs = ({
       <View style={styles.activeBottomBox}>
         <AppButton
           style={styles.btn}
-          // onPress={() => onPressQR(true)}
           onPress={() => navigation.navigate('QrInfo', {item})}
           title={i18n.t('esim:showQR')}
           titleStyle={styles.btnTitle}
           iconName="btnQr2"
         />
 
-        {/* {usageCheckable && ( */}
         <AppButton
           style={styles.btn}
           onPress={onPressUsage}
@@ -525,7 +490,6 @@ const EsimSubs = ({
     isChargeable,
     item,
     navigation,
-    onPressQR,
     onPressUsage,
   ]);
 
@@ -558,7 +522,7 @@ const EsimSubs = ({
         </View>
       );
     },
-    [isChargeable, item, navigation],
+    [chargeablePeriod, isChargeable, item, navigation],
   );
 
   const renderHkBtn = useCallback(() => {
@@ -595,7 +559,7 @@ const EsimSubs = ({
         </View>
       );
     },
-    [item, navigation],
+    [chargeablePeriod, item, navigation],
   );
 
   return (
