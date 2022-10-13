@@ -180,7 +180,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
             key: 'FB',
             title: i18n.t('contact:fbMsg'),
             desc: i18n.t('contact:fbMsgDesc'),
-            icon: 'kakaoChannel',
+            icon: 'fbMsg',
             page: 'Open FB Messenger',
           }
         : {
