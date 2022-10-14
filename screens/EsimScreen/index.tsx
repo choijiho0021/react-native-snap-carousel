@@ -1,5 +1,4 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Map as ImmutableMap} from 'immutable';
 import {
   FlatList,
   RefreshControl,
@@ -470,7 +469,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         // onRefresh={this.onRefresh}
         // refreshing={refreshing}
         extraData={subsList}
-        contentContainerStyle={_.isEmpty(order.subs) && {flex: 1}}
+        contentContainerStyle={_.isEmpty(subsList) && {flex: 1}}
         ListEmptyComponent={empty}
         refreshControl={
           <RefreshControl

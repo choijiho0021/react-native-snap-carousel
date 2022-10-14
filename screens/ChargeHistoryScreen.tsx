@@ -119,9 +119,7 @@ const ChargeHistoryScreen: React.FC = () => {
   useEffect(() => {
     navigation.setOptions({
       title: null,
-      headerLeft: () => (
-        <AppBackButton title={params.item.prodName?.split(' ')[0]} />
-      ),
+      headerLeft: () => <AppBackButton title={i18n.t('esim:chargeHistory')} />,
     });
   }, [navigation, params.item.prodName]);
 

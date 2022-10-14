@@ -14,7 +14,6 @@ import {utils} from '@/utils/utils';
 import AppIcon from '@/components/AppIcon';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {getPromoFlagColor} from '@/redux/api/productApi';
-import product from '@/redux/modules/product';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -331,7 +330,10 @@ const EsimSubs = ({
   );
 
   const title = useCallback(() => {
-    const country = item.prodName?.split(' ')[0];
+    let country = item.prodName?.split(' ')[0];
+    if (country?.split(']').length > 1) {
+      country = country?.split(']')[1];
+    }
 
     return (
       <View style={styles.prodTitle}>
@@ -346,7 +348,7 @@ const EsimSubs = ({
                 : styles.usageTitleBold,
               {marginBottom: 10, marginRight: 8},
             ]}>
-            {isCharged
+            {isCharged && giftStatusCd !== 'S'
               ? `${i18n.t('acc:rechargeDone')} ${country}`
               : item.prodName}
           </AppText>
