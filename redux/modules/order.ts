@@ -174,9 +174,6 @@ const mergeSubs = (
     ImmutableMap<string, RkbSubscription[]>(),
   );
 
-  console.log('@@@@org', org);
-  console.log('@@@@subs', subs);
-
   // return org.mergeWith((oldVal, newVal) => oldVal.concat(newVal), subsToMap);
   return org.merge(subsToMap);
 };

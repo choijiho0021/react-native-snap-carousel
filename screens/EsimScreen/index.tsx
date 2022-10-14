@@ -1,4 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
+import {Map as ImmutableMap} from 'immutable';
 import {
   FlatList,
   RefreshControl,
@@ -123,6 +124,11 @@ type EsimScreenProps = {
   };
 };
 
+export type SubsListType = {
+  subsIccid: string;
+  subscription: RkbSubscription[];
+};
+
 export const renderInfo = (navigation) => (
   <View style={styles.usrGuideBtn}>
     <View style={styles.rowCenter}>
@@ -161,7 +167,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [cmiStatus, setCmiStatus] = useState({});
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const isFocused = useIsFocused();
-  const [isCharged, setIsCharged] = useState(false);
+  const [subsList, setSubsList] = useState<SubsListType[]>();
 
   const init = useCallback(
     ({
@@ -235,11 +241,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [balance, expDate, iccid, navigation],
   );
 
-  const checkCmiData = useCallback(async (item: RkbSubscription) => {
-    if (item?.subsIccid && item?.packageId) {
+  const checkCmiData = useCallback(async (item: SubsListType) => {
+    const lastIdx = item.subscription.length - 1;
+    if (item?.subsIccid && item?.subscription[lastIdx].packageId) {
       const rsp = await API.Subscription.cmiGetSubsUsage({
         iccid: item?.subsIccid,
-        packageId: item?.packageId,
+        packageId: item?.subscription[lastIdx].packageId,
       });
 
       const {result, userDataBundles, subscriberQuota} = rsp;
@@ -257,7 +264,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         const isExpired = statusCd === 'A' && exp < now;
         // cancel 된 후, 다른 사용자에게 iccid가 넘어갔을 경우 packageId로 확인
         const isUsedByOther =
-          userDataBundles[0]?.dataBundleId !== item.packageId;
+          userDataBundles[0]?.dataBundleId !==
+          item.subscription[lastIdx].packageId;
 
         // setCmiStatus({
         //   statusCd: isExpired || isUsedByOther ? 'U' : statusCd,
@@ -291,10 +299,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     }
   }, []);
 
-  const checkQuadcellData = useCallback(async (item: RkbSubscription) => {
-    if (item?.imsi) {
+  const checkQuadcellData = useCallback(async (item: SubsListType) => {
+    const lastIdx = item.subscription.length - 1;
+    if (item?.subscription[lastIdx].imsi) {
       const quadcellStatus = await API.Subscription.quadcellGetData({
-        imsi: item.imsi,
+        imsi: item.subscription[lastIdx].imsi,
         key: 'hlrstate',
       }).then(async (state) => {
         if (state.result === 0) {
@@ -336,7 +345,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       });
 
       const quadcellUsage = await API.Subscription.quadcellGetData({
-        imsi: item.imsi,
+        imsi: item.subscription[lastIdx].imsi,
         key: 'quota',
       }).then(async (rsp) => {
         if (rsp.result === 0) {
@@ -355,13 +364,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   }, []);
 
   const onPressUsage = useCallback(
-    async (item: RkbSubscription) => {
+    async (item: SubsListType) => {
+      const lastIdx = item.subscription.length - 1;
       setShowModal(true);
       setCmiPending(true);
-      setSubs(item);
+      setSubs(item.subscription[lastIdx]);
 
       let result = {status: {}, usage: {}};
-      switch (item.partner) {
+      switch (item.subscription[lastIdx].partner) {
         case 'CMI':
           result = await checkCmiData(item);
           break;
@@ -381,21 +391,22 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   );
 
   const renderSubs = useCallback(
-    ({item}: {item: RkbSubscription}) => {
+    ({item}: {item: SubsListType}) => {
+      const lastIdx = item.subscription.length - 1;
       return (
         <EsimSubs
-          key={item.key}
-          item={item}
-          expired={new Date(item.expireDate) <= new Date()}
+          key={item.subscription[lastIdx].key}
+          item={item.subscription[lastIdx]}
+          expired={
+            new Date(item.subscription[lastIdx].expireDate) <= new Date()
+          }
           onPressUsage={() => onPressUsage(item)}
-          isCharged={isCharged}
-          chargedSubs={order.subs.filter(
-            (elm) => elm.subsIccid === item.subsIccid,
-          )}
+          isCharged={item.subscription.length > 1}
+          chargedSubs={item.subscription.length > 1 ? item.subscription : []}
         />
       );
     },
-    [isCharged, onPressUsage, order.subs],
+    [onPressUsage],
   );
 
   useEffect(() => {
@@ -422,6 +433,18 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     checkShowModal();
   }, [isFocused, isPressClose]);
 
+  useEffect(() => {
+    setSubsList(
+      Array.from(
+        order.subs.sortBy((s) => s[s.length - 1].purchaseDate).reverse(),
+        ([subsIccid, subscription]) => ({
+          subsIccid,
+          subscription,
+        }),
+      ),
+    );
+  }, [order.subs]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={appStyles.header}>
@@ -438,13 +461,15 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         />
       </View>
       <FlatList
-        data={order.subs}
-        keyExtractor={(item) => item.key.toString()}
+        data={subsList}
+        keyExtractor={(item) =>
+          item.subscription[item.subscription.length - 1].key.toString()
+        }
         ListHeaderComponent={info}
         renderItem={renderSubs}
         // onRefresh={this.onRefresh}
         // refreshing={refreshing}
-        extraData={order.subs}
+        extraData={subsList}
         contentContainerStyle={_.isEmpty(order.subs) && {flex: 1}}
         ListEmptyComponent={empty}
         refreshControl={

@@ -14,6 +14,7 @@ import {utils} from '@/utils/utils';
 import AppIcon from '@/components/AppIcon';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {getPromoFlagColor} from '@/redux/api/productApi';
+import product from '@/redux/modules/product';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -331,6 +332,7 @@ const EsimSubs = ({
 
   const title = useCallback(() => {
     const country = item.prodName?.split(' ')[0];
+
     return (
       <View style={styles.prodTitle}>
         <View style={styles.rowCenter}>
@@ -458,7 +460,7 @@ const EsimSubs = ({
           <AppButton
             style={styles.btn}
             onPress={() =>
-              false
+              isCharged
                 ? navigation.navigate('ChargeHistory', {
                     item,
                     chargeablePeriod,
@@ -550,16 +552,18 @@ const EsimSubs = ({
             titleStyle={appStyles.bold14Text}
             style={styles.giftButton}
             onPress={() =>
-              navigation.navigate('Charge', {
+              navigation.navigate('ChargeHistory', {
                 item,
-                chargeableDate: chargeablePeriod,
+                chargeablePeriod,
+                onPressUsage,
+                chargedSubs,
               })
             }
           />
         </View>
       );
     },
-    [chargeablePeriod, item, navigation],
+    [chargeablePeriod, chargedSubs, item, navigation, onPressUsage],
   );
 
   return (
