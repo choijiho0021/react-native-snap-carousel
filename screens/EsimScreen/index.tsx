@@ -163,8 +163,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const isFocused = useIsFocused();
   const [isCharged, setIsCharged] = useState(false);
 
-  const iccidList: String[] = [];
-
   const init = useCallback(
     ({
       iccid,
@@ -384,11 +382,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const renderSubs = useCallback(
     ({item}: {item: RkbSubscription}) => {
-      iccidList.forEach((i) => {
-        if (i === item.subsIccid) {
-          setIsCharged(true);
-        }
-      });
       return (
         <EsimSubs
           key={item.key}
@@ -402,7 +395,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         />
       );
     },
-    [iccidList, isCharged, onPressUsage, order.subs],
+    [isCharged, onPressUsage, order.subs],
   );
 
   useEffect(() => {
