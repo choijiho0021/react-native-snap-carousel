@@ -24,6 +24,7 @@ import {makeProdData} from './CountryScreen';
 import CountryListItem from './HomeScreen/component/CountryListItem';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
+import {after} from 'underscore';
 
 const styles = StyleSheet.create({
   container: {
@@ -56,27 +57,39 @@ const styles = StyleSheet.create({
     height: 24,
     marginTop: 2,
   },
+  toolTipStyle: {
+    borderRadius: 5,
+    ...Platform.select({
+      ios: {
+        shadowColor: 'rgb(52, 62, 95)',
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        shadowOffset: {
+          height: 1,
+          width: 1,
+        },
+      },
+    }),
+  },
+  arrowStyle: {
+    borderWidth: 1,
+    // borderBottomColor: colors.whiteThree,
+    borderTopColor: 'rgb(247, 248, 250)',
+    zIndex: 10,
+    // borderLeftColor: colors.whiteThree,
+    // borderLeftWidth: ,
+  },
+
   toolTipBox: {
     backgroundColor: 'rgb(247, 248, 250)',
     padding: 16,
     paddingBottom: 20,
-    // ...Platform.select({
-    //   ios: {
-    //     shadowColor: 'rgb(52, 62, 95)',
-    //     shadowOpacity: 0.2,
-    //     shadowRadius: 3,
-    //     shadowOffset: {
-    //       height: 1,
-    //       width: 1,
-    //     },
-    //     // backgroundColor: 'red',
-    //     borderColor: 'red',
-    //     borderWidth: 1,
-    //   },
-    //   android: {
-    // elevation: 3,
-    //   },
-    // }),
+
+    ...Platform.select({
+      android: {
+        elevation: 3,
+      },
+    }),
   },
   toolTipTitleFrame: {
     flexDirection: 'row',
@@ -175,6 +188,8 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
             isVisible={showTip}
             backgroundColor="rgba(0,0,0,0)"
             contentStyle={styles.toolTipBox}
+            tooltipStyle={styles.toolTipStyle}
+            arrowStyle={styles.arrowStyle}
             disableShadow
             content={
               <View>

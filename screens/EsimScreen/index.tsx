@@ -419,15 +419,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     async function checkShowModal() {
       const item = await AsyncStorage.getItem('gift.show.modal');
       const tm = moment(item, 'YYYY-MM-DD HH:mm:ss');
-      if (
+      setShowGiftModal(
         (!tm.isValid() || tm.add(7, 'day').isBefore(moment())) &&
-        isFocused &&
-        !isPressClose
-      ) {
-        setShowGiftModal(true);
-      } else {
-        setShowGiftModal(false);
-      }
+          isFocused &&
+          !isPressClose,
+      );
     }
     checkShowModal();
   }, [isFocused, isPressClose]);

@@ -276,8 +276,8 @@ const checkStockAndMakeOrder = createAsyncThunk(
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
-    return dispatch(checkStock({purchaseItems, token})).then(
-      ({payload: res}) => {
+    return dispatch(checkStock({purchaseItems, token}))
+      .then(({payload: res}) => {
         if (res.result === 0) {
           // 충전, 구매 모두 order 생성
           return dispatch(
@@ -315,8 +315,11 @@ const checkStockAndMakeOrder = createAsyncThunk(
             });
         }
         return Promise.resolve({result: api.E_RESOURCE_NOT_FOUND});
-      },
-    );
+      })
+      .catch((err) => {
+        console.log('@@@ failed to check stock');
+        return Promise.resolve({result: api.E_INVALID_STATUS});
+      });
   },
 );
 
