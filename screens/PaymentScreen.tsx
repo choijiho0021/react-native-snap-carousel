@@ -1,7 +1,7 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import IMP from 'iamport-react-native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import Video from 'react-native-video';
 import {connect} from 'react-redux';
@@ -79,17 +79,73 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
   navigation,
   action,
 }) => {
-  const [token, setToken] = useState<string>();
-  const pymInfo = useRef<PaymentInfo>({
-    payment_type: params.pay_method,
-    merchant_uid: params.merchant_uid,
-    amount: params.amount,
-    rokebi_cash: params.rokebi_cash,
-    dlvCost: params.dlvCost,
-    profile_uuid: params.profile_uuid,
-    memo: params.memo,
-    captured: false,
-  }).current;
+  const pymInfo = useMemo(
+    () =>
+      ({
+        payment_type: params.pay_method,
+        merchant_uid: params.merchant_uid,
+        amount: params.amount,
+        rokebi_cash: params.rokebi_cash,
+        dlvCost: params.dlvCost,
+        profile_uuid: params.profile_uuid,
+        memo: params.memo,
+        captured: false,
+      } as PaymentInfo),
+    [params],
+  );
+  const [stockChecked, setStockChecked] = useState(false);
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <AppBackButton
+          title={i18n.t(params?.isPaid ? 'his:paymentCompleted' : 'payment')}
+          isPaid={params.isPaid}
+        />
+      ),
+    });
+  }, [navigation, params.isPaid]);
+
+  const callback = useCallback(
+    (response) => {
+      API.Payment.getImpToken().then((resp) => {
+        if (resp.code === 0) {
+          const token = resp.response.access_token;
+
+          API.Payment.getUid({
+            uid: response.imp_uid,
+            token,
+          }).then(async (rsp) => {
+            console.log('payment getuid rsp: \n', rsp, response);
+            if (rsp[0]?.success) {
+              // 결제완료시 '다음' 버튼 연속클릭 방지 - 연속클릭시 추가 결제 없이 order 계속 생성
+              if (!params.isPaid) {
+                // adjust 결제 이벤트 추척
+                // const adjustPaymentEvent = new AdjustEvent(adjustPayment);
+                // adjustPaymentEvent.setRevenue(pymInfo.amount, 'KRW');
+                // Adjust.trackEvent(adjustPaymentEvent);
+
+                // const adjustRokebiCashEvent = new AdjustEvent(adjustRokebiCash);
+                // adjustRokebiCashEvent.setRevenue(pymInfo.rokebi_cash, 'KRW');
+                // Adjust.trackEvent(adjustRokebiCashEvent);
+
+                await navigation.setParams({isPaid: true});
+
+                action.cart.updateOrder(pymInfo);
+              }
+            }
+            navigation.replace('PaymentResult', {
+              pymResult: rsp[0]?.success,
+            });
+          });
+        }
+      });
+    },
+    [action.cart, navigation, params.isPaid, pymInfo],
+  );
+
+  //  }, [callback, navigation, params]);
 
   useEffect(() => {
     if (!params.isPaid) {
@@ -105,81 +161,14 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
 
             AppAlert.info(i18n.t(text));
             navigation.goBack();
-          }
+          } else setStockChecked(true);
         })
         .catch((err) => {
           AppAlert.info(i18n.t('cart:systemError'));
           navigation.goBack();
         });
     }
-  }, [action.cart, navigation, params, pymInfo]);
-
-  const callback = useCallback(
-    async (response) => {
-      const rsp = await API.Payment.getUid({
-        uid: response.imp_uid,
-        token,
-      });
-
-      console.log('payment getuid rsp: \n', rsp, response);
-      if (rsp[0]?.success) {
-        // 결제완료시 '다음' 버튼 연속클릭 방지 - 연속클릭시 추가 결제 없이 order 계속 생성
-        if (!params.isPaid) {
-          // adjust 결제 이벤트 추척
-          // const adjustPaymentEvent = new AdjustEvent(adjustPayment);
-          // adjustPaymentEvent.setRevenue(pymInfo.amount, 'KRW');
-          // Adjust.trackEvent(adjustPaymentEvent);
-
-          // const adjustRokebiCashEvent = new AdjustEvent(adjustRokebiCash);
-          // adjustRokebiCashEvent.setRevenue(pymInfo.rokebi_cash, 'KRW');
-          // Adjust.trackEvent(adjustRokebiCashEvent);
-
-          await navigation.setParams({isPaid: true});
-
-          action.cart.updateOrder(pymInfo);
-        }
-      }
-
-      navigation.replace('PaymentResult', {
-        pymResult: rsp[0]?.success,
-      });
-    },
-    [action.cart, navigation, params.isPaid, pymInfo, token],
-  );
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          title={
-            params?.isPaid ? i18n.t('his:paymentCompleted') : i18n.t('payment')
-          }
-          isPaid={params.isPaid}
-        />
-      ),
-    });
-
-    API.Payment.getImpToken().then((resp) => {
-      if (resp.code === 0) {
-        setToken(resp.response.access_token);
-      }
-    });
-
-    if (params.mode === 'test' || params.amount === 0) {
-      const response = {
-        success: true,
-        imp_uid: impId,
-        merchant_uid: params.merchant_uid,
-        amount: params.amount,
-        profile_uuid: params.profile_uuid,
-        rokebi_cash: params.rokebi_cash,
-        memo: params.memo,
-      };
-
-      callback(response);
-    }
-  }, [callback, navigation, params]);
+  }, [action.cart, navigation, params.isPaid, pymInfo]);
 
   const renderLoading = useCallback(() => {
     return (
@@ -196,7 +185,7 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
     );
   }, []);
 
-  return (
+  return stockChecked ? (
     <SafeAreaView style={styles.container}>
       <IMP.Payment
         userCode={impId}
@@ -207,7 +196,7 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
         style={styles.webview}
       />
     </SafeAreaView>
-  );
+  ) : null;
 };
 
 export default connect(undefined, (dispatch) => ({
