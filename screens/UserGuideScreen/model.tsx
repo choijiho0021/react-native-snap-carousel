@@ -95,7 +95,7 @@ const renderText = (key: string) => {
   return renderOneText(text[0], 0);
 };
 
-const renderTipText = (key: string, style = styles.tipText) => (
+const renderTipText = (key: string, style: TextStyle = styles.tipText) => (
   <AppStyledText
     text={i18n.t(key)}
     textStyle={style}
@@ -323,7 +323,7 @@ export const guideImages: GuideImage[] =
             key: 'page10',
             title: renderText(`userGuide:stepsTitle9:android`),
             step: 8,
-            tip: () => tipView({id: 'userGuide:tipPage11_1'}),
+            tip: () => renderTipList('userGuide:tipPage10:android', 'dot'),
           },
         ]
     : [

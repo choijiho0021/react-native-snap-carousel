@@ -293,7 +293,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
       <View style={[styles.container, {alignItems: 'center'}]}>
         {renderModalHeader(index)}
 
-        <View style={{flex: 1, maxWidth: MAX_WIDTH}}>
+        <View style={{flex: 1, maxWidth: MAX_WIDTH, width: '100%'}}>
           {isDeviceSize('medium') || isFolderOpen(dimensions.width) ? (
             <ScrollView contentContainerStyle={{flex: 1}}>
               {renderBody(item, index)}
