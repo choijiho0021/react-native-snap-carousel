@@ -2,8 +2,13 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {SetStateAction, useCallback, useEffect, useState} from 'react';
-import {Platform, SafeAreaView, StyleSheet, View} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {
+  Platform,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Video from 'react-native-video';
 import {connect} from 'react-redux';
@@ -287,26 +292,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [loading, setLoading] = useState(false);
   const [showModalMethod, setShowModalMethod] = useState(true);
   const [showModalAlert, setShowModalAlert] = useState(false);
-  const [deliveryMemo, setDeliveryMemo] = useState<{
-    directInput: boolean;
-    header?: string;
-    selected?: string;
-    content?: string;
-  }>(
-    Platform.OS === 'android'
-      ? {
-          directInput: false,
-          header: i18n.t('pym:notSelected'),
-          selected: undefined,
-          content: i18n.t('pym:notSelected'),
-        }
-      : {
-          directInput: false,
-          header: undefined,
-          selected: undefined,
-          content: undefined,
-        },
-  );
   const [consent, setConsent] = useState<boolean>();
   const [isRecharge, setIsRecharge] = useState<boolean>();
   const [isPassingAlert, setIsPassingAlert] = useState(false);
@@ -318,8 +303,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     setIsRecharge(
       cart.purchaseItems.findIndex((item) => item.type === 'rch') >= 0,
     );
-    setDeliveryMemo((prev) => ({...prev, content: profile.content}));
-  }, [cart, profile, route.params?.mode]);
+  }, [cart, route.params.mode]);
 
   useEffect(() => {
     if (!info.infoMap.has(infoKey)) {
@@ -358,11 +342,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     (passingAlert: boolean) => {
       if (!clickable) return;
 
-      const memo =
-        deliveryMemo.selected === i18n.t('pym:input')
-          ? deliveryMemo.content
-          : deliveryMemo.selected;
-
       if (!passingAlert && !account.isSupportDev) {
         setShowModalAlert((prev) => !prev);
         return;
@@ -393,7 +372,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           impId,
           mobile,
           profileId,
-          memo,
           deduct,
           dlvCost,
           digital: true,
@@ -439,11 +417,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           dlvCost: dlvCost.value,
           language: selected?.language || i18n.locale,
           digital: true,
-          memo,
           // mode: 'test'
         } as PaymentParams;
-
-        console.log('@@ para', params);
 
         setClickable(true);
         navigation.navigate('Payment', params);
@@ -455,7 +430,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       cart.pymReq,
       clickable,
       deduct,
-      deliveryMemo,
       mode,
       navigation,
       profile,
@@ -525,7 +499,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       alias?: string,
     ) => {
       return (
-        <TouchableOpacity
+        <Pressable
           style={styles.spaceBetweenBox}
           onPress={() => setShowModal((prev) => !prev)}>
           <AppText style={styles.boldTitle}>{title}</AppText>
@@ -541,7 +515,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               iconStyle={styles.dropDownIcon}
             />
           </View>
-        </TouchableOpacity>
+        </Pressable>
       );
     },
     [],
@@ -624,7 +598,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const consentBox = useCallback(() => {
     return (
       <View style={{backgroundColor: colors.whiteTwo, paddingBottom: 45}}>
-        <TouchableOpacity
+        <Pressable
           style={styles.rowCenter}
           onPress={() => setConsent((prev) => !prev)}>
           <AppIcon name="btnCheck2" checked={consent} size={22} />
@@ -635,10 +609,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
             ]}>
             {i18n.t('pym:consentEssential')}
           </AppText>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.spaceBetweenBox]}
-          onPress={() => move('1')}>
+        </Pressable>
+        <Pressable style={[styles.spaceBetweenBox]} onPress={() => move('1')}>
           <AppText
             style={[
               appStyles.normal14Text,
@@ -649,10 +621,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           <AppText style={styles.underlinedClearBlue}>
             {i18n.t('pym:detail')}
           </AppText>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.spaceBetweenBox}
-          onPress={() => move('2')}>
+        </Pressable>
+        <Pressable style={styles.spaceBetweenBox} onPress={() => move('2')}>
           <AppText
             style={[
               appStyles.normal14Text,
@@ -663,7 +633,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           <AppText style={styles.underlinedClearBlue}>
             {i18n.t('pym:detail')}
           </AppText>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     );
   }, [consent, move]);
