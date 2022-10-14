@@ -180,9 +180,7 @@ const ContactGlobalScreen: React.FC<ContactScreenProps> = ({
               `fb-messenger-public://user-thread/${fbUser}`,
             ).catch(() =>
               AppAlert.info(i18n.t('acc:moveToFbDown'), '', () =>
-                Linking.openURL(
-                  'https://apps.apple.com/kr/app/messenger/id454638411',
-                ),
+                Linking.openURL('http://appstore.com/Messenger'),
               ),
             );
           } else {
