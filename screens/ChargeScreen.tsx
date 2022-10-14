@@ -24,7 +24,6 @@ import {makeProdData} from './CountryScreen';
 import CountryListItem from './HomeScreen/component/CountryListItem';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
-import {after} from 'underscore';
 
 const styles = StyleSheet.create({
   container: {
@@ -73,11 +72,8 @@ const styles = StyleSheet.create({
   },
   arrowStyle: {
     borderWidth: 1,
-    // borderBottomColor: colors.whiteThree,
     borderTopColor: 'rgb(247, 248, 250)',
     zIndex: 10,
-    // borderLeftColor: colors.whiteThree,
-    // borderLeftWidth: ,
   },
 
   toolTipBox: {
