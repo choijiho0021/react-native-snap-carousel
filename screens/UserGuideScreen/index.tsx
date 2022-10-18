@@ -168,13 +168,18 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
           <View style={{flex: 2, alignItems: 'center', marginTop: 46}}>
             {data?.title}
             <AppText style={[appStyles.medium14, {marginTop: 20}]}>
-              {Platform.OS === 'android'
-                ? i18n.t(
-                    `userGuide:stepsTitle0:${
-                      deviceModel.startsWith('SM') ? 'galaxy' : 'pixel'
-                    }`,
-                  )
-                : 'iOS 16 ver.'}
+              {
+                // eslint-disable-next-line no-nested-ternary
+                Platform.OS === 'android'
+                  ? i18n.t(
+                      `userGuide:stepsTitle0:${
+                        deviceModel.startsWith('SM') ? 'galaxy' : 'pixel'
+                      }`,
+                    )
+                  : Platform.Version >= '16.0' && i18n.locale === 'ko'
+                  ? 'iOS 16 ver.'
+                  : ''
+              }
             </AppText>
           </View>
 
