@@ -7,6 +7,7 @@ import utils from '@/redux/api/utils';
 import {createFromProduct} from '@/redux/models/purchaseItem';
 import api, {ApiResult} from './api';
 import {RkbPriceInfo} from '../modules/product';
+import {colors} from '@/constants/Colors';
 
 export type TabViewRouteKey = 'asia' | 'europe' | 'usaAu' | 'multi';
 export type TabViewRoute = {
@@ -26,11 +27,6 @@ const category = {
   multi: '67',
 };
 
-const storeId: Record<Store, number> = {
-  kr: 2,
-  global: 3,
-};
-
 type PromoFlag = 'hot' | 'sale' | 'sizeup' | 'doubleSizeup';
 export const promoFlag: Record<string, PromoFlag> = {
   53: 'hot', // 운용자 추천
@@ -39,28 +35,28 @@ export const promoFlag: Record<string, PromoFlag> = {
   182: 'doubleSizeup', // 더블 사이즈업
 };
 
-export const getPromoFlagColor = (key: string) => {
-  if (key === 'hot')
-    return {
-      backgroundColor: colors.veryLightPink,
-      fontColor: colors.tomato,
-    };
-
-  if (key === 'sizeup')
-    return {
-      backgroundColor: colors.veryLightBlue,
-      fontColor: colors.clearBlue,
-    };
-  if (key === 'doubleSizeup')
-    return {
-      backgroundColor: colors.lightSage,
-      fontColor: colors.shamrock,
-    };
-
-  return {
+const flagColor = {
+  hot: {
     backgroundColor: colors.veryLightPink,
     fontColor: colors.tomato,
-  };
+  },
+  sizeup: {
+    backgroundColor: colors.veryLightBlue,
+    fontColor: colors.clearBlue,
+  },
+  doubleSizeup: {
+    backgroundColor: colors.lightSage,
+    fontColor: colors.shamrock,
+  },
+};
+
+export const getPromoFlagColor = (key: string) => {
+  return (
+    flagColor[key] || {
+      backgroundColor: colors.veryLightPink,
+      fontColor: colors.tomato,
+    }
+  );
 };
 
 type DrupalProduct = {
