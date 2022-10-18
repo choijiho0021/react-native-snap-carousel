@@ -7,6 +7,7 @@ import utils from '@/redux/api/utils';
 import {createFromProduct} from '@/redux/models/purchaseItem';
 import api, {ApiResult} from './api';
 import {RkbPriceInfo} from '../modules/product';
+import {colors} from '@/constants/Colors';
 
 export type TabViewRouteKey = 'asia' | 'europe' | 'usaAu' | 'multi';
 export type TabViewRoute = {
