@@ -2,7 +2,7 @@
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
 import React from 'react';
-import {StyleSheet, TextStyle, View} from 'react-native';
+import {Platform, StyleSheet, TextStyle, View} from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {colors} from '@/constants/Colors';
 import {appStyles, formatText} from '@/constants/Styles';
@@ -187,7 +187,8 @@ export const imageList: Record<string, any[]> =
           pageLast: [require(`${dir}/aos/img_9.png`)],
           pageLast2: [require(`${dir}/img_12.png`)],
         }
-    : {
+    : Platform.Version >= '16.0'
+    ? {
         page1: [require(`${dir}/guide1.png`)],
         page2: [require(`${dir}/img_1.png`), require(`${dir}/en.guide2.png`)],
         page3: [require(`${dir}/img_2.png`), require(`${dir}/en.guide3.png`)],
@@ -208,6 +209,53 @@ export const imageList: Record<string, any[]> =
         ],
         pageLast2: [
           require(`${dir}/img_12.png`),
+          require(`${dir}/en.guide11_2.png`),
+        ],
+      }
+    : {
+        page1: [require(`${dir}/guide1.png`)],
+        page2: [
+          require(`${dir}/ios15/guide2.png`),
+          require(`${dir}/en.guide2.png`),
+        ],
+        page3: [
+          require(`${dir}/ios15/guide3.png`),
+          require(`${dir}/en.guide3.png`),
+        ],
+        page4: [
+          require(`${dir}/ios15/guide4.png`),
+          require(`${dir}/en.guide4.png`),
+        ],
+        page5: [
+          require(`${dir}/ios15/guide5.png`),
+          require(`${dir}/en.guide5.png`),
+        ],
+        page6: [
+          require(`${dir}/ios15/guide6.png`),
+          require(`${dir}/en.guide6.png`),
+        ],
+        page7: [
+          require(`${dir}/ios15/guide7.png`),
+          require(`${dir}/en.guide7.png`),
+        ],
+        page8: [
+          require(`${dir}/ios15/guide8.png`),
+          require(`${dir}/en.guide8.png`),
+        ],
+        page9: [
+          require(`${dir}/ios15/guide9.png`),
+          require(`${dir}/en.guide9.png`),
+        ],
+        page10: [
+          require(`${dir}/ios15/guide10.png`),
+          require(`${dir}/en.guide10.png`),
+        ],
+        pageLast: [
+          require(`${dir}/ios15/guide11_1.png`),
+          require(`${dir}/en.guide11_1.png`),
+        ],
+        pageLast2: [
+          require(`${dir}/ios15/guide11_2.png`),
           require(`${dir}/en.guide11_2.png`),
         ],
       };
@@ -326,7 +374,8 @@ export const guideImages: GuideImage[] =
             tip: () => renderTipList('userGuide:tipPage10:android', 'dot'),
           },
         ]
-    : [
+    : Platform.Version >= '16.0'
+    ? [
         {
           key: 'page1',
           title: renderText('userGuide:stepsTitle0'),
@@ -401,5 +450,116 @@ export const guideImages: GuideImage[] =
           title: renderText('userGuide:stepsTitle12:ios'),
           step: 7,
           tip: () => renderTipList('userGuide:tipPageLast', 'dot'),
+        },
+      ]
+    : [
+        {
+          key: 'page1',
+          title: renderText('userGuide:stepsTitle0'),
+          step: 0,
+          tip: () => null,
+        },
+        {
+          key: 'page2',
+          title: renderText(`userGuide:stepsTitle1:ios15`),
+          step: 1,
+          tip: () =>
+            isDeviceSize('medium') && (
+              <View style={{height: 39, width: '100%'}} />
+            ),
+        },
+        {
+          key: 'page3',
+          title: renderText(`userGuide:stepsTitle2:ios`),
+          step: 2,
+          tip: () => renderTipList('userGuide:tipPage3'),
+        },
+        {
+          key: 'page4',
+          title: renderText('userGuide:stepsTitle3:ios'),
+          step: 2,
+          tip: () => (
+            <View style={styles.tipContainer}>
+              {renderTips()}
+              {renderTip({id: 'userGuide:tipPage4_1'})}
+              {renderTipText('userGuide:tipPage4_3')}
+            </View>
+          ),
+        },
+        {
+          key: 'page5',
+          title: renderText('userGuide:stepsTitle5:ios'),
+          step: 3,
+          tip: () => (
+            <View style={styles.tipContainer}>
+              {renderTips()}
+              {renderTip({id: 'userGuide:tipPage5_1'})}
+              {renderTip({
+                id: 'userGuide:tipPage5_2:ios15',
+                marginBottom: isDeviceSize('medium') ? 46 : 0,
+                style: styles.tipBoldText,
+              })}
+            </View>
+          ),
+        },
+        {
+          key: 'page6',
+          title: renderText('userGuide:stepsTitle6:ios'),
+          step: 4,
+          tip: () => (
+            <View
+              style={{height: isDeviceSize('medium') ? 75 : 0, width: '100%'}}
+            />
+          ),
+        },
+        {
+          key: 'page7',
+          title: renderText('userGuide:stepsTitle6:ios'),
+          step: 4,
+          tip: () => (
+            <View
+              style={{height: isDeviceSize('medium') ? 75 : 0, width: '100%'}}
+            />
+          ),
+        },
+        {
+          key: 'page8',
+          title: renderText('userGuide:stepsTitle6:ios'),
+          step: 4,
+          tip: () =>
+            tipView({
+              id: 'userGuide:tipPage9_1',
+              marginBottom: isDeviceSize('medium') ? 36 : 0,
+            }),
+        },
+        {
+          key: 'page9',
+          title: renderText('userGuide:stepsTitle10:ios'),
+          step: 5,
+          tip: () => (
+            <View
+              style={{height: isDeviceSize('medium') ? 75 : 0, width: '100%'}}
+            />
+          ),
+        },
+        {
+          key: 'page10',
+          title: renderText('userGuide:stepsTitle10:ios'),
+          step: 5,
+          tip: () =>
+            tipView({
+              id: 'userGuide:tipPage11_1:ios15',
+              marginBottom: isDeviceSize('medium') ? 59 : 0,
+            }),
+        },
+        {
+          key: 'page11',
+          title: renderText('userGuide:stepsTitle12:ios'),
+          step: 6,
+          tip: () =>
+            tipView({
+              id: 'userGuide:tipPage12_1',
+              marginBottom: isDeviceSize('medium') ? 32 : 0,
+            }),
         },
       ];
