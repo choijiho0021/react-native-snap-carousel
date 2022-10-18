@@ -187,7 +187,7 @@ export const imageList: Record<string, any[]> =
           pageLast: [require(`${dir}/aos/img_9.png`)],
           pageLast2: [require(`${dir}/img_12.png`)],
         }
-    : Platform.Version >= '16.0'
+    : Platform.Version >= '16.0' && i18n.locale === 'ko'
     ? {
         page1: [require(`${dir}/guide1.png`)],
         page2: [require(`${dir}/img_1.png`), require(`${dir}/en.guide2.png`)],
@@ -374,7 +374,7 @@ export const guideImages: GuideImage[] =
             tip: () => renderTipList('userGuide:tipPage10:android', 'dot'),
           },
         ]
-    : Platform.Version >= '16.0'
+    : Platform.Version >= '16.0' && i18n.locale === 'ko'
     ? [
         {
           key: 'page1',

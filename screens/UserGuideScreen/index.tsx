@@ -176,7 +176,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
                         deviceModel.startsWith('SM') ? 'galaxy' : 'pixel'
                       }`,
                     )
-                  : Platform.Version >= '16.0'
+                  : Platform.Version >= '16.0' && i18n.locale === 'ko'
                   ? 'iOS 16 ver.'
                   : ''
               }
