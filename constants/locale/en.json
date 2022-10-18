@@ -121,6 +121,7 @@
   "reg:phone": "Phone",
   "reg:noEmail": "^Please input your email address",
   "reg:invalidEmail": "^Invalid e-mail format",
+  "reg:usingEmail": "사용 중인 이메일입니다.",
   "reg:noICCID": "^Please purchase data plan after registering ICCID.\nPress ok button to register SIM card",
   "reg:noActCode": "^Please input your Activation Code",
   "reg:noPin": "^Please input your password",

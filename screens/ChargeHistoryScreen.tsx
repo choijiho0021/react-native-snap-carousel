@@ -39,10 +39,6 @@ const styles = StyleSheet.create({
   chargeBtn: {
     height: 52,
     backgroundColor: colors.clearBlue,
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
   },
   chargeBtnTitle: {
     ...appStyles.medium18,
