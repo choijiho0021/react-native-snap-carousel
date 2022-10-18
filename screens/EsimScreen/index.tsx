@@ -243,7 +243,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     if (item?.subsIccid && item?.subscription[lastIdx].packageId) {
       const rsp = await API.Subscription.cmiGetSubsUsage({
         iccid: item?.subsIccid,
-        packageId: item?.subscription[lastIdx].packageId,
+        orderId: item?.subscription[lastIdx].subsOrderNo || 'noOrderId',
       });
 
       const {result, userDataBundles, subscriberQuota} = rsp;
@@ -363,7 +363,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const onPressUsage = useCallback(
     async (item: SubsListType) => {
       const lastIdx = item.subscription.length - 1;
-      setShowModal(true);
       setCmiPending(true);
       setSubs(item.subscription[lastIdx]);
 
@@ -398,8 +397,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             new Date(item.subscription[lastIdx].expireDate) <= new Date()
           }
           onPressUsage={() => onPressUsage(item)}
+          setShowModal={(visible: boolean) => setShowModal(visible)}
           isCharged={item.subscription.length > 1}
-          chargedSubs={item.subscription.length > 1 ? item.subscription : []}
+          chargedSubs={item.subscription}
         />
       );
     },
@@ -487,6 +487,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           setShowModal(false);
           setCmiStatus({});
           setCmiUsage({});
+          setCmiPending(false);
         }}
       />
       <GiftModal
