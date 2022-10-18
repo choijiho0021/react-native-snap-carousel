@@ -777,6 +777,9 @@
   "userGuide:stepsTitle10:ios": "Make sure everything is\n<b>set right</b> as the guide below",
   "userGuide:stepsTitle12:ios": "Confirm that <b>both</b>\n<b>carriers’ signals</b> are stable",
 
+  "userGuide:stepsTitle1:ios15": "Go to <b>Settings > Cellular ></b>\n<b>Add Cellular Plan</b>",
+  "userGuide:stepsTitle3:ios15": "Select the <b>label</b>\nfor your <b>cellular plan</b>",
+
   "userGuide:stepsTitle1:android": "Go to <b>Settings > </b>\n<b>Network & Internet</b>.\nTap the <b>(+) icon</b> next to 'SIMs'.",
   "userGuide:stepsTitle2:android": "Press <b>'Yes'</b>\n to use multiple SIMs",
   "userGuide:stepsTitle3:android": "Tab <b>Download SIM</b> button.",
@@ -810,9 +813,11 @@
   "userGuide:tipPage4_3": "[ Enter Details Manually ]",
   "userGuide:tipPage5_1": "Setting cellular plan label makes it easier to separate different plans",
   "userGuide:tipPage5_2": "In this guide, the newly added ROKEBI eSIM is labeled as 'Secondary'",
+  "userGuide:tipPage5_2:ios15": "In this guide, the newly added ROKEBI eSIM is labeled as 'Secondary'",
   "userGuide:tipPage9_1": "<b>Additional roaming fee may be applied by automatic switching</b> if you allow cellular data switching. <s>Please set the Cellular Data Switching as OFF.</s>",
   "userGuide:tipPage10_1": "If you add eSIM in Korea, set Mobile Data as <b>Main (the default line)</b> and change to <b>Seconday after arriving at the destination</b>.",
   "userGuide:tipPage11_1": "You can use your data only if the <b>Data Roaming option is ON.</b>",
+  "userGuide:tipPage11_1:ios15": "You can use your data only if the <b>Data Roaming option is ON.</b>",
   "userGuide:tipPage12_1": "<b>Please delete the eSIM when expired!</b> Leftover items may cause confusion when adding new items.",
 
   "userGuide:tipPage4:android_1": "Access the QR code sent to <b>email inbox from other devices</b> (laptop or tablet) for easier capture.",
