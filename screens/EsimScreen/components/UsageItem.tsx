@@ -292,7 +292,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           style={styles.checkUsageBtn}
           disabled={disableBtn}
           onPress={() => getUsage()}
-          title={i18n.t('usim:checkUsage')}
+          title={i18n.t('esim:checkUsage')}
           titleStyle={styles.checkUsageBtnTitle}
         />
       </View>
@@ -437,8 +437,8 @@ const UsageItem: React.FC<UsageItemProps> = ({
     <TouchableOpacity onPress={onPress}>
       <View style={styles.usageListContainer}>
         <View style={styles.titleLine}>
-          <AppText key={i18n.t('usim:checkUsage')} style={appStyles.bold18Text}>
-            {i18n.t('usim:checkUsage')}
+          <AppText key={i18n.t('esim:checkUsage')} style={appStyles.bold18Text}>
+            {i18n.t('esim:checkUsage')}
           </AppText>
           {!cmiPending && item.partner !== 'Quadcell' && (
             <AppText

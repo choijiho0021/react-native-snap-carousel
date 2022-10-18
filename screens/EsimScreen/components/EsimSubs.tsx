@@ -270,12 +270,14 @@ const styles = StyleSheet.create({
 const EsimSubs = ({
   item,
   onPressUsage,
+  setShowModal,
   chargedSubs,
   expired,
   isCharged,
 }: {
   item: RkbSubscription;
   onPressUsage: () => void;
+  setShowModal: (visible: boolean) => void;
   chargedSubs: RkbSubscription[];
   expired: boolean;
   isCharged: boolean;
@@ -437,12 +439,14 @@ const EsimSubs = ({
 
         <AppButton
           style={styles.btn}
-          onPress={onPressUsage}
-          title={i18n.t('usim:checkUsage')}
+          onPress={() => {
+            setShowModal(true);
+            onPressUsage();
+          }}
+          title={i18n.t('esim:checkUsage')}
           titleStyle={styles.btnTitle}
           iconName="btnUsage"
         />
-        {/* )} */}
 
         {isChargeable ? (
           <AppButton
@@ -450,10 +454,11 @@ const EsimSubs = ({
             onPress={() =>
               isCharged
                 ? navigation.navigate('ChargeHistory', {
-                    item,
+                    mainSubs: item,
                     chargeablePeriod,
                     onPressUsage,
                     chargedSubs,
+                    isChargeable,
                   })
                 : navigation.navigate('Charge', {
                     item,
@@ -482,6 +487,7 @@ const EsimSubs = ({
     item,
     navigation,
     onPressUsage,
+    setShowModal,
   ]);
 
   const renderBtn = useCallback(
@@ -542,17 +548,25 @@ const EsimSubs = ({
             style={styles.giftButton}
             onPress={() =>
               navigation.navigate('ChargeHistory', {
-                item,
+                mainSubs: item,
                 chargeablePeriod,
                 onPressUsage,
                 chargedSubs,
+                isChargeable,
               })
             }
           />
         </View>
       );
     },
-    [chargeablePeriod, chargedSubs, item, navigation, onPressUsage],
+    [
+      chargeablePeriod,
+      chargedSubs,
+      isChargeable,
+      item,
+      navigation,
+      onPressUsage,
+    ],
   );
 
   return (
