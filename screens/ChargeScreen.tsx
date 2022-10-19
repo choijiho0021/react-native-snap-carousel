@@ -1,13 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {
-  StyleSheet,
-  SafeAreaView,
-  View,
-  Modal,
-  Pressable,
-  ImageBackground,
-  TouchableHighlightBase,
-} from 'react-native';
+import {StyleSheet, SafeAreaView, View, Platform} from 'react-native';
+import Tooltip from 'react-native-walkthrough-tooltip';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {SceneMap, TabView} from 'react-native-tab-view';
@@ -29,12 +22,8 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppTabHeader from '@/components/AppTabHeader';
 import {makeProdData} from './CountryScreen';
 import CountryListItem from './HomeScreen/component/CountryListItem';
-import AppIcon from '@/components/AppIcon';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
-import {Button} from 'react-native-share';
-import AppStyledText from '@/components/AppStyledText';
-import {RNSVGSymbol} from 'react-native-svg';
 
 const styles = StyleSheet.create({
   container: {
@@ -59,33 +48,53 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  headerTitle: {
+    marginRight: 8,
+  },
   cautionBtn: {
-    marginLeft: 9,
     width: 24,
     height: 24,
     marginTop: 2,
   },
-  cautionModal: {
-    marginRight: 20,
-    marginLeft: 20,
-    backgroundColor: 'rgb(247, 248, 250)',
+  toolTipStyle: {
+    borderRadius: 5,
+    ...Platform.select({
+      ios: {
+        shadowColor: 'rgb(52, 62, 95)',
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        shadowOffset: {
+          height: 1,
+          width: 1,
+        },
+      },
+    }),
+  },
+  arrowStyle: {
     borderWidth: 1,
-    borderColor: colors.whiteThree,
-    // position: 'absolute',
-    top: 50,
-    // top: 40,
+    borderTopColor: 'rgb(247, 248, 250)',
+    zIndex: 10,
+  },
+
+  toolTipBox: {
+    backgroundColor: 'rgb(247, 248, 250)',
     padding: 16,
     paddingBottom: 20,
+
+    ...Platform.select({
+      android: {
+        elevation: 3,
+      },
+    }),
   },
-  modalTitleFrame: {
+  toolTipTitleFrame: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     height: 36,
     marginBottom: 12,
-    // paddingRight: 4,
   },
-  modalTitleText: {
+  toolTipTitleText: {
     ...appStyles.bold14Text,
     lineHeight: 20,
   },
@@ -93,12 +102,13 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     padding: 8,
+    marginRight: 8,
   },
-  modalBody: {
+  toolTipBody: {
     paddingRight: 30,
   },
 
-  modalBodyText: {
+  toolTipBodyText: {
     ...appStyles.normal14Text,
     lineHeight: 20,
   },
@@ -132,7 +142,8 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
   const params = useMemo(() => route?.params, [route?.params]);
   const [index, setIndex] = useState(0);
   const [partnerIds, setPartnerIds] = useState<string[]>([]);
-  const [showModal, setShowModal] = useState<boolean>(false);
+  const [showTip, setTip] = useState(true);
+  const [prodData, setProdData] = useState<ProdDataType[]>([]);
 
   useEffect(() => {
     const partnerTemp: string[] = [];
@@ -140,13 +151,12 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
       // eslint-disable-next-line eqeqeq
       if (p.country == params.item.country) {
         partnerTemp.push(p.partner);
+        console.log('@@@@@ p.partner', p.partner);
       }
     });
 
     setPartnerIds(partnerTemp);
   }, [params.item.country, product.prodByCountry]);
-
-  const [prodData, setProdData] = useState<ProdDataType[]>([]);
 
   useEffect(() => {
     action.product.getProdOfPartner(partnerIds);
@@ -157,7 +167,9 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
       const cmiPartnerIds = partnerIds.filter((partnerId) => {
         return localOpList.get(partnerId)?.partner === 'CMI';
       });
-
+      console.log('@@@@@ prodByPartner', prodByPartner);
+      console.log('@@@@@ partnerIds', partnerIds);
+      console.log('@@@@@ cmiPartnerIds', cmiPartnerIds);
       setProdData(makeProdData(prodByPartner, cmiPartnerIds));
     }
   }, [localOpList, partnerIds, prodByLocalOp, prodByPartner, prodList]);
@@ -167,19 +179,57 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
       title: null,
       headerLeft: () => (
         <View style={styles.header}>
-          <AppBackButton title={i18n.t('esim:charge')} />
-
-          <AppButton
-            style={styles.cautionBtn}
-            onPress={() => {
-              setShowModal(true);
-            }}
-            iconName="btnChargeCaution"
-          />
+          <View style={styles.headerTitle}>
+            <AppBackButton title={i18n.t('esim:charge')} />
+          </View>
+          <Tooltip
+            isVisible={showTip}
+            backgroundColor="rgba(0,0,0,0)"
+            contentStyle={styles.toolTipBox}
+            tooltipStyle={styles.toolTipStyle}
+            arrowStyle={styles.arrowStyle}
+            disableShadow
+            content={
+              <View>
+                <View style={styles.toolTipTitleFrame}>
+                  <AppText style={styles.toolTipTitleText}>
+                    {i18n.t('esim:chargeCaution')}
+                  </AppText>
+                  <AppButton style={styles.btnCancel} iconName="btnCancel" />
+                </View>
+                <View style={styles.toolTipBody}>
+                  {[1, 2, 3].map((k) => (
+                    <View key={k} style={{flexDirection: 'row'}}>
+                      <AppText
+                        style={[
+                          appStyles.normal14Text,
+                          {marginHorizontal: 5, marginTop: 3},
+                        ]}>
+                        •
+                      </AppText>
+                      <AppText style={styles.toolTipBodyText}>
+                        {i18n.t(`esim:chargeCaution:modal${k}`)}
+                      </AppText>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            }
+            onClose={() => setTip(false)}
+            placement="bottom">
+            <AppButton
+              style={styles.cautionBtn}
+              onPress={() => {
+                // setShowModal(true);
+                setTip(true);
+              }}
+              iconName="btnChargeCaution"
+            />
+          </Tooltip>
         </View>
       ),
     });
-  }, [navigation]);
+  }, [navigation, showTip]);
 
   const onIndexChange = useCallback((idx: number) => setIndex(idx), []);
   const routes = useMemo(
@@ -249,52 +299,6 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
           renderTabBar={() => null}
         />
       </View>
-      <Modal visible={showModal} transparent>
-        <SafeAreaView style={{flex: 1}}>
-          <Pressable
-            style={{
-              flex: 1,
-              backgroundColor: 'transparent',
-            }}
-            onPress={() => setShowModal(false)}>
-            <Pressable style={styles.cautionModal} onPress={() => {}}>
-              {/* <ImageBackground
-                source={require('../assets/images/esim/chargeCautionBg.png')}
-                }
-                resizeMode="stretch"> */}
-              <View style={styles.modalTitleFrame}>
-                <AppText style={styles.modalTitleText}>
-                  {i18n.t('esim:chargeCaution')}
-                </AppText>
-                <AppButton
-                  style={styles.btnCancel}
-                  onPress={() => {
-                    setShowModal(false);
-                  }}
-                  iconName="btnCancel"
-                />
-              </View>
-              <View style={styles.modalBody}>
-                {[1, 2, 3].map((k) => (
-                  <View key={k} style={{flexDirection: 'row'}}>
-                    <AppText
-                      style={[
-                        appStyles.normal14Text,
-                        {marginHorizontal: 5, marginTop: 3},
-                      ]}>
-                      •
-                    </AppText>
-                    <AppText style={styles.modalBodyText}>
-                      {i18n.t(`esim:chargeCaution:modal${k}`)}
-                    </AppText>
-                  </View>
-                ))}
-              </View>
-              {/* </ImageBackground> */}
-            </Pressable>
-          </Pressable>
-        </SafeAreaView>
-      </Modal>
     </SafeAreaView>
   );
 };

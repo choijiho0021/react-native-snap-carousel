@@ -1,15 +1,7 @@
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {
-  Dimensions,
-  Pressable,
-  StyleSheet,
-  View,
-  Text,
-  Platform,
-} from 'react-native';
+import {Pressable, StyleSheet, View, Text, Platform} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {Line, Svg} from 'react-native-svg';
-import _ from 'underscore';
+import moment from 'moment';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -21,10 +13,8 @@ import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import AppIcon from '@/components/AppIcon';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {getPromoFlagColor} from '@/redux/api/productApi';
-import moment from 'moment';
-
-const {width} = Dimensions.get('window');
+import SplitText from '@/components/SplitText';
+import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -52,23 +42,14 @@ const styles = StyleSheet.create({
     borderColor: colors.whiteThree,
   },
   infoCard: {
-    // backgroundColor: colors.white,
     padding: 20,
-    // borderWidth: 1,
-    // borderColor: colors.whiteThree,
   },
   infoRadiusBorder: {
-    // backgroundColor: colors.white,
-    // borderRadius: 10,
     padding: 20,
-    // borderWidth: 1,
-    // borderBottomWidth: 0,
-    // borderColor: colors.whiteThree,
   },
   giftButton: {
     flex: 1,
     flexDirection: 'row',
-    // justifyCssssontent: 'center',
     height: 52,
     borderWidth: 1,
     backgroundColor: colors.white,
@@ -77,23 +58,18 @@ const styles = StyleSheet.create({
   chargeButtonDis: {
     flex: 1,
     flexDirection: 'row',
-    // justifyCssssontent: 'center',
     height: 52,
-    // borderWidth: 1,
     backgroundColor: '#2a7ff6',
     opacity: 0.6,
   },
   chargeButton: {
     flex: 1,
     flexDirection: 'row',
-    // justifyCssssontent: 'center',
     height: 52,
-    // borderWidth: 1,
     backgroundColor: '#2a7ff6',
     borderColor: colors.whiteThree,
   },
   prodTitle: {
-    paddingBottom: 13,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -235,7 +211,6 @@ const styles = StyleSheet.create({
   moreInfo: {
     height: 40,
     backgroundColor: 'gray',
-    // borderRadius: 10,
     borderBottomLeftRadius: 3,
     borderBottomRightRadius: 3,
     alignItems: 'center',
@@ -292,25 +267,17 @@ const styles = StyleSheet.create({
   cautionIcon: {marginRight: 12},
 });
 
-type PromoFlag = 'hot' | 'sale' | 'sizeup' | 'doubleSizeup';
-const promoFlag: Record<string, PromoFlag> = {
-  53: 'hot', // 운용자 추천
-  57: 'sale', // 할인
-  181: 'sizeup', // 사이즈업
-  182: 'doubleSizeup', // 더블 사이즈업
-};
-
 const EsimSubs = ({
   item,
-  onPressQR,
   onPressUsage,
+  setShowModal,
   chargedSubs,
   expired,
   isCharged,
 }: {
   item: RkbSubscription;
-  onPressQR: (showQR: boolean) => void;
   onPressUsage: () => void;
+  setShowModal: (visible: boolean) => void;
   chargedSubs: RkbSubscription[];
   expired: boolean;
   isCharged: boolean;
@@ -323,24 +290,12 @@ const EsimSubs = ({
   );
   const [isMoreInfo, setIsMoreInfo] = useState(false);
   const [isChargeable, setIsChargeable] = useState(true);
-  // const [isCharged, setIsCharged] = useState(false);
   const [chargeablePeriod, setChargeablePeriod] = useState('');
-  const [itemPromoFlag, setItemPromoFlag] = useState<PromoFlag[]>();
 
   const hasAnyCaution = useMemo(
     () => !!(item.caution || item.cautionApp),
     [item.caution, item.cautionApp],
   );
-
-  // 내일 확인 ysjoung
-  // useEffect(() => {
-  //   setItemPromoFlag(
-  //     item.promoFlag
-  //       .split(',')
-  //       .map((v) => promoFlag[v.trim()])
-  //       .filter((v) => !_.isEmpty(v)), // isEmpty 제거 가능여부 확인
-  //   );
-  // }, [item.promoFlag]);
 
   useEffect(() => {
     const chargeabledate = moment(item.expireDate).subtract(30, 'd');
@@ -364,46 +319,34 @@ const EsimSubs = ({
 
   const title = useCallback(() => {
     const country = item.prodName?.split(' ')[0];
+    // if (country?.split(']').length > 1) {
+    //   country = country?.split(']')[1];
+    // }
+
     return (
       <View style={styles.prodTitle}>
-        <View style={styles.rowCenter}>
-          <AppText
-            key={item.key}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            style={[
-              expired || giftStatusCd === 'S'
-                ? styles.usageTitleNormal
-                : styles.usageTitleBold,
-              {marginBottom: 10, marginRight: 8},
-            ]}>
-            {isCharged
-              ? `${i18n.t('acc:rechargeDone')} ${country}`
-              : item.prodName}
-          </AppText>
-          {sendable &&
+        <SplitText
+          key={item.key}
+          renderExpend={() =>
+            sendable &&
             !expired &&
-            item.promoFlag?.map((elm) => {
-              const badgeColor = getPromoFlagColor(elm);
-              return (
-                <View
-                  key={elm}
-                  style={[
-                    styles.badge,
-                    {
-                      backgroundColor: badgeColor.backgroundColor,
-                    },
-                  ]}>
-                  <AppText
-                    key="name"
-                    style={[styles.badgeText, {color: badgeColor.fontColor}]}>
-                    {i18n.t(elm)}
-                  </AppText>
-                </View>
-              );
-            })}
-          {item.isStore && <AppIcon name="naverIcon" />}
-        </View>
+            !isCharged &&
+            renderPromoFlag(item.promoFlag || [], item.isStore)
+          }
+          style={[
+            expired || giftStatusCd === 'S'
+              ? styles.usageTitleNormal
+              : styles.usageTitleBold,
+            {marginBottom: 10, alignSelf: 'center'},
+          ]}
+          numberOfLines={2}
+          ellipsizeMode="tail">
+          {isCharged && giftStatusCd !== 'S'
+            ? `${i18n.t('acc:rechargeDone')} ${utils.removeBracketOfName(
+                country,
+              )}`
+            : item.prodName}
+        </SplitText>
 
         {expired || giftStatusCd === 'S' ? (
           <View style={styles.expiredBg}>
@@ -472,33 +415,34 @@ const EsimSubs = ({
       <View style={styles.activeBottomBox}>
         <AppButton
           style={styles.btn}
-          // onPress={() => onPressQR(true)}
           onPress={() => navigation.navigate('QrInfo', {item})}
           title={i18n.t('esim:showQR')}
           titleStyle={styles.btnTitle}
           iconName="btnQr2"
         />
 
-        {/* {usageCheckable && ( */}
         <AppButton
           style={styles.btn}
-          onPress={onPressUsage}
-          title={i18n.t('usim:checkUsage')}
+          onPress={() => {
+            setShowModal(true);
+            onPressUsage();
+          }}
+          title={i18n.t('esim:checkUsage')}
           titleStyle={styles.btnTitle}
           iconName="btnUsage"
         />
-        {/* )} */}
 
         {isChargeable ? (
           <AppButton
             style={styles.btn}
             onPress={() =>
-              false
+              isCharged
                 ? navigation.navigate('ChargeHistory', {
-                    item,
+                    mainSubs: item,
                     chargeablePeriod,
                     onPressUsage,
                     chargedSubs,
+                    isChargeable,
                   })
                 : navigation.navigate('Charge', {
                     item,
@@ -523,10 +467,11 @@ const EsimSubs = ({
     chargeablePeriod,
     chargedSubs,
     isChargeable,
+    isCharged,
     item,
     navigation,
-    onPressQR,
     onPressUsage,
+    setShowModal,
   ]);
 
   const renderBtn = useCallback(
@@ -558,7 +503,7 @@ const EsimSubs = ({
         </View>
       );
     },
-    [isChargeable, item, navigation],
+    [chargeablePeriod, isChargeable, item, navigation],
   );
 
   const renderHkBtn = useCallback(() => {
@@ -586,16 +531,26 @@ const EsimSubs = ({
             titleStyle={appStyles.bold14Text}
             style={styles.giftButton}
             onPress={() =>
-              navigation.navigate('Charge', {
-                item,
-                chargeableDate: chargeablePeriod,
+              navigation.navigate('ChargeHistory', {
+                mainSubs: item,
+                chargeablePeriod,
+                onPressUsage,
+                chargedSubs,
+                isChargeable,
               })
             }
           />
         </View>
       );
     },
-    [item, navigation],
+    [
+      chargeablePeriod,
+      chargedSubs,
+      isChargeable,
+      item,
+      navigation,
+      onPressUsage,
+    ],
   );
 
   return (

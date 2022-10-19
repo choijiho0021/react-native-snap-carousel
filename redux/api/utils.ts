@@ -254,6 +254,11 @@ const adjustEventadd = (key: string, pymAmount?: number, currency?: string) => {
   Adjust.trackEvent(adjustEvent);
 };
 
+const removeBracketOfName = (str?: string) => {
+  if (!str) return undefined;
+  return str.slice(str.indexOf(']') + 1, str.length);
+};
+
 export default {
   fontScaling,
   numberToCommaString,
@@ -275,4 +280,5 @@ export default {
   currencyString,
   convertURLtoRkbImage,
   adjustEventadd,
+  removeBracketOfName,
 };

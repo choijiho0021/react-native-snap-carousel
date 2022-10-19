@@ -432,14 +432,13 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           ) {
             // dulicated email 이외의 에러인 경우, throw error
             console.log('confirm email failed', resp);
-            throw new Error('failed to confirm email');
+            // 정상이거나, duplicated email 인 경우는 화면 상태 갱신 필요
+            setIsValidEmail(isValid);
+            setEmailError(isValid ? undefined : i18n.t('acc:duplicatedEmail'));
+            throw new Error('Duplicated email');
           }
         }
         console.log('@@@ confirm email', resp);
-
-        // 정상이거나, duplicated email 인 경우는 화면 상태 갱신 필요
-        setIsValidEmail(isValid);
-        setEmailError(isValid ? undefined : i18n.t('acc:duplicatedEmail'));
       }
 
       if (isValid && mounted.current) {
@@ -468,7 +467,11 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       }
     } catch (err) {
       console.log('sign up failed', err);
-      AppAlert.error(i18n.t('reg:fail'));
+      if (err instanceof Error && err.message.includes('Duplicated')) {
+        AppAlert.info(i18n.t('reg:usingEmail'));
+      } else {
+        AppAlert.error(i18n.t('reg:fail'));
+      }
     }
 
     if (mounted.current) {
@@ -731,7 +734,11 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
               }}
               inputRef={emailRef}
               value={email}
-              onChange={(v) => setEmail(v.replace(/ /g, ''))}
+              onChange={(v) => {
+                setEmail(v.replace(/ /g, ''));
+                setIsValidEmail(() => true);
+                setEmailError(() => undefined);
+              }}
             />
 
             <AppText style={[styles.helpText, {color: colors.errorBackground}]}>

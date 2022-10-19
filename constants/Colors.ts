@@ -47,4 +47,5 @@ export const colors = {
   lightSage: '#D6F3E3', // rgb 214 243 227
   veryLightBlue: '#DAEEFF', // rgb 218 238 255
   greyishBrown: '#575757',
+  redError: '#ee4423',
 };

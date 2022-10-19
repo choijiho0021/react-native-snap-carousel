@@ -102,6 +102,7 @@ export type RkbSubscription = {
   promoFlag?: string[];
   caution: string;
   cautionApp: string;
+  daily?: string;
 };
 
 const toSubscription =
@@ -143,6 +144,7 @@ const toSubscription =
               : [],
             caution: item.field_caution || '',
             cautionApp: item.field_caution_app || '',
+            daily: item.field_daily,
           }))
           .sort(sortSubs),
       );
@@ -452,21 +454,21 @@ const getSubsUsage = ({id, token}: {id?: string; token?: string}) => {
 // CMI API를 사용하는 경우
 const cmiGetSubsUsage = ({
   iccid,
-  packageId,
+  orderId,
 }: {
   iccid: string;
-  packageId: string;
+  orderId: string;
 }) => {
   if (!iccid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
-  if (!packageId)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: packageId');
+  if (!orderId)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: orderId');
 
   return api.callHttpGet(
     `${api.rokHttpUrl(
       api.path.rokApi.pv.cmiUsage,
       isProduction ? undefined : 5000,
-    )}&iccid=${iccid}&packageId=${packageId}&quota`,
+    )}&iccid=${iccid}&orderId=${orderId}`,
     (data) => data,
     new Headers({'Content-Type': 'application/json'}),
   );

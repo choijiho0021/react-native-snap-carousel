@@ -46,10 +46,9 @@ import {
 import i18n from '@/utils/i18n';
 import CardInfo from './components/CardInfo';
 import EsimSubs from './components/EsimSubs';
-import EsimModal, {ModalType} from './components/EsimModal';
+import EsimModal from './components/EsimModal';
 import GiftModal from './components/GiftModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import ChargeModal from './components/ChargeModal';
 
 const {esimGlobal} = Env.get();
 
@@ -123,6 +122,11 @@ type EsimScreenProps = {
   };
 };
 
+export type SubsListType = {
+  subsIccid: string;
+  subscription: RkbSubscription[];
+};
+
 export const renderInfo = (navigation) => (
   <View style={styles.usrGuideBtn}>
     <View style={styles.rowCenter}>
@@ -152,19 +156,15 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [refreshing, setRefreshing] = useState(false);
   const [showSnackBar, setShowSnackBar] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [modal, setModal] = useState<ModalType>('');
   const [subs, setSubs] = useState<RkbSubscription>();
   const [cmiPending, setCmiPending] = useState(false);
   const [showGiftModal, setShowGiftModal] = useState(false);
-  const [showChargeModal, setShowChargeModal] = useState(false);
   const [isPressClose, setIsPressClose] = useState(false);
   const [cmiUsage, setCmiUsage] = useState({});
   const [cmiStatus, setCmiStatus] = useState({});
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const isFocused = useIsFocused();
-  const [isCharged, setIsCharged] = useState(false);
-
-  const iccidList: String[] = [];
+  const [subsList, setSubsList] = useState<SubsListType[]>();
 
   const init = useCallback(
     ({
@@ -238,11 +238,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [balance, expDate, iccid, navigation],
   );
 
-  const checkCmiData = useCallback(async (item: RkbSubscription) => {
-    if (item?.subsIccid && item?.packageId) {
+  const checkCmiData = useCallback(async (item: SubsListType) => {
+    const lastIdx = item.subscription.length - 1;
+    if (item?.subsIccid && item?.subscription[lastIdx].packageId) {
       const rsp = await API.Subscription.cmiGetSubsUsage({
         iccid: item?.subsIccid,
-        packageId: item?.packageId,
+        orderId: item?.subscription[lastIdx].subsOrderNo || 'noOrderId',
       });
 
       const {result, userDataBundles, subscriberQuota} = rsp;
@@ -260,7 +261,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         const isExpired = statusCd === 'A' && exp < now;
         // cancel 된 후, 다른 사용자에게 iccid가 넘어갔을 경우 packageId로 확인
         const isUsedByOther =
-          userDataBundles[0]?.dataBundleId !== item.packageId;
+          userDataBundles[0]?.dataBundleId !==
+          item.subscription[lastIdx].packageId;
 
         // setCmiStatus({
         //   statusCd: isExpired || isUsedByOther ? 'U' : statusCd,
@@ -294,10 +296,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     }
   }, []);
 
-  const checkQuadcellData = useCallback(async (item: RkbSubscription) => {
-    if (item?.imsi) {
+  const checkQuadcellData = useCallback(async (item: SubsListType) => {
+    const lastIdx = item.subscription.length - 1;
+    if (item?.subscription[lastIdx].imsi) {
       const quadcellStatus = await API.Subscription.quadcellGetData({
-        imsi: item.imsi,
+        imsi: item.subscription[lastIdx].imsi,
         key: 'hlrstate',
       }).then(async (state) => {
         if (state.result === 0) {
@@ -339,7 +342,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       });
 
       const quadcellUsage = await API.Subscription.quadcellGetData({
-        imsi: item.imsi,
+        imsi: item.subscription[lastIdx].imsi,
         key: 'quota',
       }).then(async (rsp) => {
         if (rsp.result === 0) {
@@ -358,14 +361,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   }, []);
 
   const onPressUsage = useCallback(
-    async (item: RkbSubscription) => {
-      setShowModal(true);
+    async (item: SubsListType) => {
+      const lastIdx = item.subscription.length - 1;
       setCmiPending(true);
-      setModal('usage');
-      setSubs(item);
+      setSubs(item.subscription[lastIdx]);
 
       let result = {status: {}, usage: {}};
-      switch (item.partner) {
+      switch (item.subscription[lastIdx].partner) {
         case 'CMI':
           result = await checkCmiData(item);
           break;
@@ -384,39 +386,24 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [checkCmiData, checkQuadcellData],
   );
 
-  // const onPressCharge = useCallback((item: RkbSubscription) => {
-  //   setShowChargeModal(true);
-  //   setModal('charge');
-  //   setSubs(item);
-  // }, []);
-
   const renderSubs = useCallback(
-    ({item}: {item: RkbSubscription}) => {
-      iccidList.forEach((i) => {
-        if (i === item.subsIccid) {
-          setIsCharged(true);
-        }
-      });
+    ({item}: {item: SubsListType}) => {
+      const lastIdx = item.subscription.length - 1;
       return (
         <EsimSubs
-          key={item.key}
-          item={item}
-          expired={new Date(item.expireDate) <= new Date()}
-          onPressQR={(qr: boolean) => {
-            setShowModal(true);
-            setModal(qr ? 'showQR' : 'manual');
-            setSubs(item);
-          }}
+          key={item.subscription[lastIdx].key}
+          item={item.subscription[lastIdx]}
+          expired={
+            new Date(item.subscription[lastIdx].expireDate) <= new Date()
+          }
           onPressUsage={() => onPressUsage(item)}
-          // onPressCharge={() => onPressCharge(item)}
-          isCharged={isCharged}
-          chargedSubs={order.subs.filter(
-            (elm) => elm.subsIccid === item.subsIccid,
-          )}
+          setShowModal={(visible: boolean) => setShowModal(visible)}
+          isCharged={item.subscription.length > 1}
+          chargedSubs={item.subscription}
         />
       );
     },
-    [iccidList, isCharged, onPressUsage, order.subs],
+    [onPressUsage],
   );
 
   useEffect(() => {
@@ -439,6 +426,18 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     checkShowModal();
   }, [isFocused, isPressClose]);
 
+  useEffect(() => {
+    setSubsList(
+      Array.from(
+        order.subs.sortBy((s) => s[s.length - 1].purchaseDate).reverse(),
+        ([subsIccid, subscription]) => ({
+          subsIccid,
+          subscription,
+        }),
+      ),
+    );
+  }, [order.subs]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={appStyles.header}>
@@ -455,14 +454,16 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         />
       </View>
       <FlatList
-        data={order.subs}
-        keyExtractor={(item) => item.key.toString()}
+        data={subsList}
+        keyExtractor={(item) =>
+          item.subscription[item.subscription.length - 1].key.toString()
+        }
         ListHeaderComponent={info}
         renderItem={renderSubs}
         // onRefresh={this.onRefresh}
         // refreshing={refreshing}
-        extraData={order.subs}
-        contentContainerStyle={_.isEmpty(order.subs) && {flex: 1}}
+        extraData={subsList}
+        contentContainerStyle={_.isEmpty(subsList) && {flex: 1}}
         ListEmptyComponent={empty}
         refreshControl={
           <RefreshControl
@@ -478,7 +479,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       />
       <EsimModal
         visible={showModal}
-        modal={modal}
         subs={subs}
         cmiPending={cmiPending}
         cmiUsage={cmiUsage}
@@ -487,6 +487,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           setShowModal(false);
           setCmiStatus({});
           setCmiUsage({});
+          setCmiPending(false);
         }}
       />
       <GiftModal
@@ -500,14 +501,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         visible={showSnackBar}
         onClose={() => setShowSnackBar(false)}
         textMessage={i18n.t('usim:failSnackBar')}
-      />
-      <ChargeModal
-        visible={showChargeModal}
-        onOkClose={() => {
-          setShowChargeModal(false);
-          setIsPressClose(true);
-        }}
-        item={subs}
       />
     </SafeAreaView>
   );
