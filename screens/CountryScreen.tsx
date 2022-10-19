@@ -132,6 +132,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   // prodByPartner
 
   useEffect(() => {
+    console.log('@@@@', route.params?.partner[0]);
     const title = API.Product.getTitle(
       localOpList.get(route.params?.partner[0]),
     );

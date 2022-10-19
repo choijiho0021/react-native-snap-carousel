@@ -2,7 +2,7 @@
 import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
-import _ from 'underscore';
+import _, {result} from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
 import {RkbOrder} from '@/redux/api/orderApi';
@@ -10,6 +10,7 @@ import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {storeData, retrieveData} from '@/utils/utils';
 import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
+import {concat} from 'react-native-reanimated';
 
 const init = createAsyncThunk('order/init', async () => {
   const oldData = await retrieveData(API.Order.KEY_INIT_ORDER);
@@ -56,7 +57,7 @@ const getStoreSubsWithToast = reflectWithToast(getStoreSubs, Toast.NOT_LOADED);
 export interface OrderModelState {
   orders: ImmutableMap<number, RkbOrder>;
   orderList: number[];
-  subs: RkbSubscription[];
+  subs: ImmutableMap<string, RkbSubscription[]>;
   usageProgress: object;
   page: number;
 }
@@ -156,15 +157,31 @@ export const updateStatusAndGetSubs = createAsyncThunk(
   },
 );
 */
-const mergeSubs = (org: RkbSubscription[], subs: RkbSubscription[]) =>
-  org
-    .concat(subs.filter((s) => !org.find((o) => o.uuid === s.uuid)))
-    .sort((a, b) => b.purchaseDate.localeCompare(a.purchaseDate));
+const mergeSubs = (
+  org: ImmutableMap<string, RkbSubscription[]>,
+  subs: RkbSubscription[],
+) => {
+  // org
+  //   .concat(subs.filter((s) => !org.find((o) => o.uuid === s.uuid)))
+  //   .sort((a, b) => b.purchaseDate.localeCompare(a.purchaseDate));
+
+  const subsToMap: ImmutableMap<string, RkbSubscription[]> = subs.reduce(
+    (acc, s) => {
+      return s.subsIccid
+        ? acc.update(s.subsIccid, (pre) => (pre ? pre.concat(s) : [s]))
+        : acc;
+    },
+    ImmutableMap<string, RkbSubscription[]>(),
+  );
+
+  // return org.mergeWith((oldVal, newVal) => oldVal.concat(newVal), subsToMap);
+  return org.merge(subsToMap);
+};
 
 const initialState: OrderModelState = {
   orders: ImmutableMap<number, RkbOrder>(),
   orderList: [],
-  subs: [],
+  subs: ImmutableMap(),
   usageProgress: {},
   page: 0,
 };
