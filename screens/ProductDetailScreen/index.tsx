@@ -85,6 +85,12 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: colors.lightGrey,
   },
+  header: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    backgroundColor: colors.white,
+  },
 });
 
 type ProductDetailScreenNavigationProp = StackNavigationProp<
@@ -134,11 +140,18 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     const {params = {}} = route;
 
     navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={route.params?.title} />,
-      headerRight: () => (
-        <AppCartButton onPress={() => navigation.navigate('Cart')} />
+      header: () => (
+        <SafeAreaView style={styles.header}>
+          <AppBackButton
+            title={route.params?.title}
+            style={{width: '70%'}}
+            textProps={{numberOfLines: 1, ellipsizeMode: 'tail'}}
+          />
+          <AppCartButton onPress={() => navigation.navigate('Cart')} />
+        </SafeAreaView>
       ),
+      headerLeft: () => null,
+      headerRight: () => null,
     });
 
     if (partnerId !== route.params?.partnerId) {

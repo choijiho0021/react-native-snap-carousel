@@ -1,5 +1,7 @@
 import analytics from '@react-native-firebase/analytics';
-import dynamicLinks from '@react-native-firebase/dynamic-links';
+import dynamicLinks, {
+  FirebaseDynamicLinksTypes,
+} from '@react-native-firebase/dynamic-links';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
@@ -157,11 +159,40 @@ const CreateAppContainer = ({store}) => {
     return isSupport;
   }, [checkSupportIos, store]);
 
+  const DynamicLinkSave = useCallback(
+    async (l: FirebaseDynamicLinksTypes.DynamicLink) => {
+      if (l?.url) {
+        const url = l?.url.split(/[;?&]/);
+        url.shift();
+        const param = url.map((elm) => `"${elm.replace('=', '":"')}"`);
+        const json = JSON.parse(`{${param.join(',')}}`);
+
+        store.dispatch(
+          linkActions.update({
+            utmParameters: l?.utmParameters,
+            url: l?.url,
+            ...json,
+          }),
+        );
+      }
+
+      if (l?.utmParameters) {
+        analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_dynamic_utm`, {
+          item: l?.utmParameters.utm_source,
+          count: 1,
+        });
+      }
+    },
+    [store],
+  );
+
   const handleDynamicLink = useCallback(
     async (link) => {
       let screen = link?.utmParameters?.utm_source;
       const url = link?.url;
       const isSupport = await getIsSupport();
+
+      DynamicLinkSave(link);
 
       if (screen?.includes('Screen')) {
         screen = screen.replace('Screen', '');
@@ -180,7 +211,7 @@ const CreateAppContainer = ({store}) => {
         gift(url);
       }
     },
-    [getIsSupport, gift],
+    [DynamicLinkSave, getIsSupport, gift],
   );
 
   useEffect(() => {
@@ -192,34 +223,8 @@ const CreateAppContainer = ({store}) => {
   useEffect(() => {
     dynamicLinks()
       .getInitialLink()
-      .then(async (l) => {
-        if (l?.url) {
-          const url = l?.url.split(/[;?&]/);
-          url.shift();
-          const param = url.map((elm) => `"${elm.replace('=', '":"')}"`);
-          const json = JSON.parse(`{${param.join(',')}}`);
-
-          store.dispatch(
-            linkActions.update({
-              utmParameters: l?.utmParameters,
-              url: l?.url,
-              ...json,
-            }),
-          );
-        }
-
-        if (l?.utmParameters) {
-          analytics().logEvent(
-            `${esimGlobal ? 'global' : 'esim'}_dynamic_utm`,
-            {
-              item: l?.utmParameters.utm_source,
-              count: 1,
-            },
-          );
-        }
-        handleDynamicLink(l);
-      });
-  }, [handleDynamicLink, store]);
+      .then((l) => handleDynamicLink(l));
+  }, [handleDynamicLink]);
 
   return (
     <NavigationContainer
