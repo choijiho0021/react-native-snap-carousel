@@ -3,6 +3,7 @@ import {Buffer} from 'buffer';
 import i18n from '@/utils/i18n';
 import api, {ApiResult} from './api';
 import {RkbFile, RkbImage} from './accountApi';
+import utils from '@/redux/api/utils';
 
 export type BoardMsgStatus = 'Open' | 'Closed' | 'Processing';
 
@@ -103,10 +104,7 @@ const toComment = (data) => {
           uuid: item.id,
           title: item.attributes.subject || '',
           body:
-            item.attributes.comment_body.processed.replace(
-              /(<([^>]+)>)/gi,
-              '',
-            ) || '',
+            utils.htmlToString(item.attributes.comment_body.processed) || '',
           created: item.attributes.created,
           userName: userName && userName.attributes?.name,
         };

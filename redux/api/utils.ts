@@ -189,6 +189,7 @@ const htmlToString = (html?: string) => {
       .replace(/<\/p>/gi, '\n')
       .replace(/<[^>]*>/gi, '')
       .replace(/\&nbsp;/gi, ' ')
+      .replace(/&quot;/gi, '"')
   );
 };
 
