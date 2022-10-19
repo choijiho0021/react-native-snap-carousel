@@ -95,6 +95,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 8,
+    height: 20,
+    alignSelf: 'center',
   },
   badgeText: {
     ...appStyles.bold13Text,
@@ -155,7 +157,42 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
   },
+  promoFlag: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
 });
+
+export const renderPromoFlag = (flags: string[], isStore: boolean) => (
+  <>
+    {flags.map((elm) => {
+      const badgeColor = getPromoFlagColor(elm);
+      return (
+        <View
+          key={elm}
+          style={[
+            styles.badge,
+            {
+              backgroundColor: badgeColor.backgroundColor,
+            },
+          ]}>
+          <AppText
+            key="name"
+            style={[styles.badgeText, {color: badgeColor.fontColor}]}>
+            {i18n.t(elm)}
+          </AppText>
+          {isStore && <AppIcon name="naverIcon" />}
+        </View>
+      );
+    })}
+    {isStore && (
+      <AppIcon
+        name="naverIcon"
+        style={{marginLeft: 8, justifyContent: 'center'}}
+      />
+    )}
+  </>
+);
 
 type OrderType = 'latest' | 'purchase';
 
@@ -179,40 +216,6 @@ const ChargeHistoryScreen: React.FC = () => {
       headerLeft: () => <AppBackButton title={i18n.t('esim:chargeHistory')} />,
     });
   }, [navigation, params.mainSubs.prodName]);
-
-  const renderPromoFlag = useCallback(
-    (flags: string[], isStore: boolean) => (
-      <>
-        {flags.map((elm) => {
-          const badgeColor = getPromoFlagColor(elm);
-          return (
-            <View
-              key={elm}
-              style={[
-                styles.badge,
-                {
-                  backgroundColor: badgeColor.backgroundColor,
-                },
-              ]}>
-              <AppText
-                key="name"
-                style={[styles.badgeText, {color: badgeColor.fontColor}]}>
-                {i18n.t(elm)}
-              </AppText>
-              {isStore && <AppIcon name="naverIcon" />}
-            </View>
-          );
-        })}
-        {isStore && (
-          <AppIcon
-            name="naverIcon"
-            style={{marginLeft: 8, justifyContent: 'center'}}
-          />
-        )}
-      </>
-    ),
-    [],
-  );
 
   const topInfo = useCallback(() => {
     return (
@@ -271,6 +274,7 @@ const ChargeHistoryScreen: React.FC = () => {
         </ImageBackground>
         <View style={styles.cardTitle}>
           <SplitText
+            key={mainSubs.key}
             renderExpend={() =>
               renderPromoFlag(mainSubs.promoFlag || [], mainSubs.isStore)
             }
@@ -282,14 +286,7 @@ const ChargeHistoryScreen: React.FC = () => {
         </View>
       </View>
     );
-  }, [
-    chargedSubs,
-    mainSubs.daily,
-    mainSubs.isStore,
-    mainSubs.prodName,
-    mainSubs.promoFlag,
-    renderPromoFlag,
-  ]);
+  }, [chargedSubs, mainSubs]);
 
   const renderHeader = useCallback(() => {
     return (
@@ -354,7 +351,7 @@ const ChargeHistoryScreen: React.FC = () => {
         </View>
       );
     },
-    [onPressUsage, renderPromoFlag],
+    [onPressUsage],
   );
 
   return (

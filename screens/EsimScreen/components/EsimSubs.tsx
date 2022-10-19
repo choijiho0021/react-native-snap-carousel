@@ -13,7 +13,8 @@ import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import AppIcon from '@/components/AppIcon';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {getPromoFlagColor} from '@/redux/api/productApi';
+import SplitText from '@/components/SplitText';
+import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -69,7 +70,6 @@ const styles = StyleSheet.create({
     borderColor: colors.whiteThree,
   },
   prodTitle: {
-    paddingBottom: 13,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -318,51 +318,35 @@ const EsimSubs = ({
   );
 
   const title = useCallback(() => {
-    let country = item.prodName?.split(' ')[0];
-    if (country?.split(']').length > 1) {
-      country = country?.split(']')[1];
-    }
+    const country = item.prodName?.split(' ')[0];
+    // if (country?.split(']').length > 1) {
+    //   country = country?.split(']')[1];
+    // }
 
     return (
       <View style={styles.prodTitle}>
-        <View style={styles.rowCenter}>
-          <AppText
-            key={item.key}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            style={[
-              expired || giftStatusCd === 'S'
-                ? styles.usageTitleNormal
-                : styles.usageTitleBold,
-              {marginBottom: 10, marginRight: 8},
-            ]}>
-            {isCharged && giftStatusCd !== 'S'
-              ? `${i18n.t('acc:rechargeDone')} ${country}`
-              : item.prodName}
-          </AppText>
-          {sendable &&
+        <SplitText
+          key={item.key}
+          renderExpend={() =>
+            sendable &&
             !expired &&
-            item.promoFlag?.map((elm) => {
-              const badgeColor = getPromoFlagColor(elm);
-              return (
-                <View
-                  key={elm}
-                  style={[
-                    styles.badge,
-                    {
-                      backgroundColor: badgeColor.backgroundColor,
-                    },
-                  ]}>
-                  <AppText
-                    key="name"
-                    style={[styles.badgeText, {color: badgeColor.fontColor}]}>
-                    {i18n.t(elm)}
-                  </AppText>
-                </View>
-              );
-            })}
-          {item.isStore && <AppIcon name="naverIcon" />}
-        </View>
+            !isCharged &&
+            renderPromoFlag(item.promoFlag || [], item.isStore)
+          }
+          style={[
+            expired || giftStatusCd === 'S'
+              ? styles.usageTitleNormal
+              : styles.usageTitleBold,
+            {marginBottom: 10, alignSelf: 'center'},
+          ]}
+          numberOfLines={2}
+          ellipsizeMode="tail">
+          {isCharged && giftStatusCd !== 'S'
+            ? `${i18n.t('acc:rechargeDone')} ${utils.removeBracketOfName(
+                country,
+              )}`
+            : item.prodName}
+        </SplitText>
 
         {expired || giftStatusCd === 'S' ? (
           <View style={styles.expiredBg}>
