@@ -179,6 +179,8 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
       showsHorizontalScrollIndicator={false}
       onMomentumScrollBegin={onMomentumScrollStart}
       onMomentumScrollEnd={onMomentumScrollEnd}
+      scrollEventThrottle={16}
+      disableIntervalMomentum
       snapToAlignment="center">
       {list.map((item, i) => (
         <View
