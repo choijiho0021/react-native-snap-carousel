@@ -163,27 +163,32 @@ const styles = StyleSheet.create({
   },
 });
 
-export const renderPromoFlag = (flags: string[], isStore: boolean) => (
+export const renderPromoFlag = (
+  flags: string[],
+  isStore: boolean,
+  isEsim: boolean,
+) => (
   <>
     {flags.map((elm) => {
       const badgeColor = getPromoFlagColor(elm);
-      return (
-        <View
-          key={elm}
-          style={[
-            styles.badge,
-            {
-              backgroundColor: badgeColor.backgroundColor,
-            },
-          ]}>
-          <AppText
-            key="name"
-            style={[styles.badgeText, {color: badgeColor.fontColor}]}>
-            {i18n.t(elm)}
-          </AppText>
-          {isStore && <AppIcon name="naverIcon" />}
-        </View>
-      );
+      if (!isEsim || elm !== 'hot')
+        return (
+          <View
+            key={elm}
+            style={[
+              styles.badge,
+              {
+                backgroundColor: badgeColor.backgroundColor,
+              },
+            ]}>
+            <AppText
+              key="name"
+              style={[styles.badgeText, {color: badgeColor.fontColor}]}>
+              {i18n.t(elm)}
+            </AppText>
+            {isStore && <AppIcon name="naverIcon" />}
+          </View>
+        );
     })}
     {isStore && (
       <AppIcon
@@ -276,7 +281,7 @@ const ChargeHistoryScreen: React.FC = () => {
           <SplitText
             key={mainSubs.key}
             renderExpend={() =>
-              renderPromoFlag(mainSubs.promoFlag || [], mainSubs.isStore)
+              renderPromoFlag(mainSubs.promoFlag || [], mainSubs.isStore, false)
             }
             style={appStyles.bold20Text}
             numberOfLines={2}
@@ -319,7 +324,7 @@ const ChargeHistoryScreen: React.FC = () => {
             <View style={{flex: 1}}>
               <SplitText
                 renderExpend={() =>
-                  renderPromoFlag(item.promoFlag || [], item.isStore)
+                  renderPromoFlag(item.promoFlag || [], item.isStore, false)
                 }
                 style={appStyles.bold16Text}
                 numberOfLines={2}
