@@ -16,8 +16,8 @@ import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import AppButton from '@/components/AppButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {utils} from '@/utils/utils';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {removeData, retrieveData, storeData, utils} from '@/utils/utils';
+import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
 import EsimModal from './EsimScreen/components/EsimModal';
 import {getPromoFlagColor} from '@/redux/api/productApi';
 import AppIcon from '@/components/AppIcon';
@@ -161,6 +161,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
   },
+  tooltipContainer: {
+    zIndex: 100,
+    width: windowWidth - 40,
+    position: 'absolute',
+    left: 20,
+    top: 0,
+  },
+  tooltipContent: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(44,44,44,44.86)',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+  },
+  closeTooltip: {
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export const renderPromoFlag = (flags: string[], isStore: boolean) => (
@@ -209,6 +228,13 @@ const ChargeHistoryScreen: React.FC = () => {
   const [orderModalVisible, setOrderModalVisible] = useState<boolean>(false);
   const [orderType, setOrderType] = useState<OrderType>('purchase');
   const orderTypeList: OrderType[] = useMemo(() => ['latest', 'purchase'], []);
+  const [showTip, setShowTip] = useState(false);
+
+  useEffect(() => {
+    retrieveData('chargeHistoryTooltip').then((elm) =>
+      setShowTip(elm !== 'closed'),
+    );
+  }, []);
 
   useEffect(() => {
     navigation.setOptions({
@@ -216,6 +242,36 @@ const ChargeHistoryScreen: React.FC = () => {
       headerLeft: () => <AppBackButton title={i18n.t('esim:chargeHistory')} />,
     });
   }, [navigation, params.mainSubs.prodName]);
+
+  const renderTooltip = useCallback(() => {
+    return (
+      <View style={styles.tooltipContainer}>
+        <View style={styles.tooltipContent}>
+          <AppText
+            style={[
+              appStyles.medium14,
+              {flex: 1, color: colors.white, marginRight: 10},
+            ]}>
+            <AppText style={[appStyles.bold14Text, {color: colors.white}]}>
+              {i18n.t('esim:chargeHistory:tooltip1')}
+            </AppText>
+            {i18n.t('esim:chargeHistory:tooltip2')}
+          </AppText>
+          <Pressable
+            style={styles.closeTooltip}
+            onPress={() => {
+              storeData('chargeHistoryTooltip', 'closed');
+              setShowTip(false);
+            }}>
+            <AppSvgIcon name="closeSnackBar" style={{marginHorizontal: 8}} />
+          </Pressable>
+        </View>
+        <View style={{bottom: 1, alignItems: 'flex-end', marginRight: 50}}>
+          <Triangle width={20} height={10} color="rgba(44,44,44,44.86)" />
+        </View>
+      </View>
+    );
+  }, []);
 
   const topInfo = useCallback(() => {
     return (
@@ -376,6 +432,7 @@ const ChargeHistoryScreen: React.FC = () => {
           ListHeaderComponent={renderHeader}
           extraData={orderType}
         />
+        {showTip && renderTooltip()}
       </View>
 
       <EsimModal
