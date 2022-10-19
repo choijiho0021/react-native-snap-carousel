@@ -832,6 +832,8 @@
   "userGuide:tipPage8:android": "Tap on the <b>pencil icon</b> above to change the label of eSIM.",
   "userGuide:tipPage9:android_1": "Check if the eSIM is configured as <b>Default for mobile data</b>",
   "userGuide:tipPage9:android_2": "Tap on the eSIM and toggle 'Mobile Data' and <s>'Roaming' to ON</s>.",
+  "userGuide:tipPage10:android_1": "<b>Please delete the eSIM when expired!</b>\nLeftover items may cause confusion when adding new items.",
+  "userGuide:tipPage10:android_2": "If the purchased item does <b>not include the Home country</b> in the service area, it shall be activated in the <b>roaming network</b>.",
 
   "quadcell:usageInfo1": "\u00B7 Actual usage may differ",
   "quadcell:usageInfo2": " You may check your data usage when initial connection to the local network is made",
