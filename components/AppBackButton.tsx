@@ -1,6 +1,6 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {memo} from 'react';
-import {Image, Pressable, View} from 'react-native';
+import {Image, Pressable, View, ViewStyle, TextProps} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@/redux';
 import {appStyles} from '@/constants/Styles';
@@ -11,23 +11,27 @@ const AppBackButton = ({
   title,
   isPaid = false,
   onPress,
+  style,
+  textProps,
 }: {
   title?: string;
   isPaid?: boolean;
   onPress?: () => void;
+  style?: ViewStyle;
+  textProps?: TextProps;
 }) => {
   const navigation = useNavigation();
   const route = useRoute();
 
   return (
     <Pressable
-      style={{justifyContent: 'center'}}
+      style={{justifyContent: 'center', ...style}}
       onPress={() => {
         if (onPress) onPress();
         else if (!isPaid) goBack(navigation, route);
       }}
       disabled={isPaid}>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
         {!isPaid ? (
           <Image
             style={{marginLeft: 20}}
@@ -36,7 +40,9 @@ const AppBackButton = ({
         ) : (
           <View style={{marginLeft: 15}} />
         )}
-        <AppText style={[appStyles.subTitle, {marginLeft: 16, fontSize: 20}]}>
+        <AppText
+          style={[appStyles.subTitle, {marginLeft: 16, fontSize: 20}]}
+          {...textProps}>
           {title}
         </AppText>
       </View>
