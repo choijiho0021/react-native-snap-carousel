@@ -163,15 +163,11 @@ const styles = StyleSheet.create({
   },
 });
 
-export const renderPromoFlag = (
-  flags: string[],
-  isStore: boolean,
-  isEsim: boolean,
-) => (
+export const renderPromoFlag = (flags: string[], isStore: boolean) => (
   <>
     {flags.map((elm) => {
       const badgeColor = getPromoFlagColor(elm);
-      if (!isEsim || elm !== 'hot')
+      if (elm !== 'hot')
         return (
           <View
             key={elm}
@@ -186,7 +182,6 @@ export const renderPromoFlag = (
               style={[styles.badgeText, {color: badgeColor.fontColor}]}>
               {i18n.t(elm)}
             </AppText>
-            {isStore && <AppIcon name="naverIcon" />}
           </View>
         );
     })}
@@ -281,7 +276,7 @@ const ChargeHistoryScreen: React.FC = () => {
           <SplitText
             key={mainSubs.key}
             renderExpend={() =>
-              renderPromoFlag(mainSubs.promoFlag || [], mainSubs.isStore, false)
+              renderPromoFlag(mainSubs.promoFlag || [], mainSubs.isStore)
             }
             style={appStyles.bold20Text}
             numberOfLines={2}
@@ -324,7 +319,7 @@ const ChargeHistoryScreen: React.FC = () => {
             <View style={{flex: 1}}>
               <SplitText
                 renderExpend={() =>
-                  renderPromoFlag(item.promoFlag || [], item.isStore, false)
+                  renderPromoFlag(item.promoFlag || [], item.isStore)
                 }
                 style={appStyles.bold16Text}
                 numberOfLines={2}

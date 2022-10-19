@@ -331,7 +331,7 @@ const EsimSubs = ({
             sendable &&
             !expired &&
             !isCharged &&
-            renderPromoFlag(item.promoFlag || [], item.isStore, true)
+            renderPromoFlag(item.promoFlag || [], item.isStore)
           }
           style={[
             expired || giftStatusCd === 'S'
