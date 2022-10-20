@@ -179,9 +179,10 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
       title: null,
       headerLeft: () => (
         <View style={styles.header}>
-          <View style={styles.headerTitle}>
-            <AppBackButton title={i18n.t('esim:charge')} />
-          </View>
+          <AppBackButton
+            title={i18n.t('esim:charge')}
+            style={styles.headerTitle}
+          />
           <Tooltip
             isVisible={showTip}
             backgroundColor="rgba(0,0,0,0)"
