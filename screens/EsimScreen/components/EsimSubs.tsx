@@ -317,7 +317,7 @@ const EsimSubs = ({
       item.country?.includes('HK') &&
       /홍콩/gi.test(item.prodName!) &&
       item.partner === 'CMI',
-    [expired, giftStatusCd, item.country, item.partner, item.prodName],
+    [expired, giftStatusCd, item],
   );
 
   const title = useCallback(() => {

@@ -136,7 +136,7 @@ type ChargeScreenProps = {
 };
 
 const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
-  const {localOpList, prodByLocalOp, prodList, prodByPartner} = product;
+  const {localOpList, prodByPartner} = product;
   const navigation = useNavigation();
   const route = useRoute<RouteProp<ParamList, 'ChargeScreen'>>();
   const params = useMemo(() => route?.params, [route?.params]);
@@ -146,8 +146,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
   const partnerIds = useMemo(() => {
     const partnerTemp: string[] = [];
     product.prodByCountry.forEach((p) => {
-      // eslint-disable-next-line eqeqeq
-      if (p.country == params.item.country) {
+      if (p.country === params.item.country) {
         partnerTemp.push(p.partner);
         console.log('@@@@@ p.partner', p.partner);
       }
