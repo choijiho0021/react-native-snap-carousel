@@ -136,43 +136,37 @@ type ChargeScreenProps = {
 };
 
 const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
-  const {localOpList, prodByLocalOp, prodList, prodByPartner} = product;
+  const {localOpList, prodByPartner} = product;
   const navigation = useNavigation();
   const route = useRoute<RouteProp<ParamList, 'ChargeScreen'>>();
   const params = useMemo(() => route?.params, [route?.params]);
   const [index, setIndex] = useState(0);
-  const [partnerIds, setPartnerIds] = useState<string[]>([]);
   const [showTip, setTip] = useState(true);
-  const [prodData, setProdData] = useState<ProdDataType[]>([]);
 
-  useEffect(() => {
+  const partnerIds = useMemo(() => {
     const partnerTemp: string[] = [];
     product.prodByCountry.forEach((p) => {
-      // eslint-disable-next-line eqeqeq
-      if (p.country == params.item.country) {
+      if (p.country === params.item.country) {
         partnerTemp.push(p.partner);
-        console.log('@@@@@ p.partner', p.partner);
       }
     });
 
-    setPartnerIds(partnerTemp);
+    return partnerTemp;
   }, [params.item.country, product.prodByCountry]);
 
-  useEffect(() => {
-    action.product.getProdOfPartner(partnerIds);
-  }, [action.product, partnerIds]);
-
-  useEffect(() => {
+  const prodData = useMemo(() => {
     if (partnerIds) {
       const cmiPartnerIds = partnerIds.filter((partnerId) => {
         return localOpList.get(partnerId)?.partner === 'CMI';
       });
-      console.log('@@@@@ prodByPartner', prodByPartner);
-      console.log('@@@@@ partnerIds', partnerIds);
-      console.log('@@@@@ cmiPartnerIds', cmiPartnerIds);
-      setProdData(makeProdData(prodByPartner, cmiPartnerIds));
+      return makeProdData(prodByPartner, cmiPartnerIds);
     }
-  }, [localOpList, partnerIds, prodByLocalOp, prodByPartner, prodList]);
+    return [];
+  }, [localOpList, partnerIds, prodByPartner]);
+
+  useEffect(() => {
+    action.product.getProdOfPartner(partnerIds);
+  }, [action.product, partnerIds]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -221,7 +215,6 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
             <AppButton
               style={styles.cautionBtn}
               onPress={() => {
-                // setShowModal(true);
                 setTip(true);
               }}
               iconName="btnChargeCaution"

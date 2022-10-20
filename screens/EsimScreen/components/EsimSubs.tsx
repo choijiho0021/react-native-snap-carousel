@@ -289,27 +289,26 @@ const EsimSubs = ({
     [expired, giftStatusCd],
   );
   const [isMoreInfo, setIsMoreInfo] = useState(false);
-  const [isChargeable, setIsChargeable] = useState(true);
-  const [chargeablePeriod, setChargeablePeriod] = useState('');
 
   const hasAnyCaution = useMemo(
     () => !!(item.caution || item.cautionApp),
     [item.caution, item.cautionApp],
   );
 
-  useEffect(() => {
-    const chargeabledate = moment(item.expireDate).subtract(30, 'd');
+  const chargeabledate = useMemo(() => {
+    return moment(item.expireDate).subtract(30, 'd');
+  }, [item.expireDate]);
 
+  const chargeablePeriod = useMemo(() => {
+    return chargeabledate.format('YYYY.MM.DD');
+  }, [chargeabledate]);
+
+  const isChargeable = useMemo(() => {
     const today = moment();
-
-    setChargeablePeriod(chargeabledate.format('YYYY.MM.DD'));
-
-    if (chargeabledate < today) setIsChargeable(false);
-  }, [item.expireDate, setChargeablePeriod]);
-
-  useEffect(() => {
-    if (item.partner !== 'CMI') setIsChargeable(false);
-  }, [item.partner]);
+    if (chargeabledate < today) return false;
+    if (item.partner !== 'CMI') return false;
+    return true;
+  }, [chargeabledate, item.partner]);
 
   const redirectable = useMemo(
     () =>
@@ -318,14 +317,11 @@ const EsimSubs = ({
       item.country?.includes('HK') &&
       /홍콩/gi.test(item.prodName!) &&
       item.partner === 'CMI',
-    [expired, giftStatusCd, item.country, item.partner, item.prodName],
+    [expired, giftStatusCd, item],
   );
 
   const title = useCallback(() => {
-    const country = item.prodName?.split(' ')[0];
-    // if (country?.split(']').length > 1) {
-    //   country = country?.split(']')[1];
-    // }
+    const country = item.prodName?.split(' ')?.[0];
 
     return (
       <View style={styles.prodTitle}>
@@ -594,14 +590,14 @@ const EsimSubs = ({
             renderHisBtn(`${i18n.t('acc:rechargeHistory2')}`)
           ) : (
             // 충전 내역이 없는 경우
-            <>
+            <View>
               {sendable && (
                 <View style={styles.btnFrame}>
                   {renderBtn(`${i18n.t('esim:sendGift')}`, true)}
                   {renderBtn(`${i18n.t('esim:charge')}`, false)}
                 </View>
               )}
-            </>
+            </View>
           )}
 
           <View style={styles.line} />
