@@ -501,7 +501,10 @@ const quadcellGetData = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
 
   return api.callHttpGet(
-    api.rokHttpUrl(`${api.path.rokApi.pv.quadcell}/imsi/${imsi}/${key}`),
+    api.rokHttpUrl(
+      `${api.path.rokApi.pv.quadcell}/imsi/${imsi}/${key}`,
+      isProduction ? undefined : 5000,
+    ),
     (data) => {
       if (data?.result?.code === 0) {
         return api.success(data?.objects);
