@@ -32,6 +32,7 @@ import {
   cmiStatusCd,
   quadcellStatusCd,
   RkbSubscription,
+  sortSubs,
 } from '@/redux/api/subscriptionApi';
 import {
   AccountAction,
@@ -407,10 +408,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   useEffect(() => {
     setSubsList(
-      Array.from(
-        order.subs.sortBy((s) => s[s.length - 1].purchaseDate).reverse(),
-        ([, subscription]) => subscription,
-      ),
+      Array.from(order.subs.sort(sortSubs), ([, subscription]) => subscription),
     );
   }, [order.subs]);
 

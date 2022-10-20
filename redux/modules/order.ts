@@ -168,7 +168,10 @@ const mergeSubs = (
   const subsToMap: ImmutableMap<string, RkbSubscription[]> = subs.reduce(
     (acc, s) => {
       return s.subsIccid
-        ? acc.update(s.subsIccid, (pre) => (pre ? pre.concat(s) : [s]))
+        ? acc.update(s.subsIccid, (pre) => {
+            if (s.isStore) return pre ? [s].concat(pre) : [s];
+            return pre ? pre.concat(s) : [s];
+          })
         : acc;
     },
     ImmutableMap<string, RkbSubscription[]>(),

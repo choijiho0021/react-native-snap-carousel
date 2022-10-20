@@ -60,10 +60,18 @@ const isDisabled = (item: RkbSubscription) => {
 };
 
 // 선물안한 상품(구매,선물받음) - 구매일자별 정렬, 선물한 상품 구매일자별 정렬
-const sortSubs = (a, b) => {
-  if (!isDisabled(a) && isDisabled(b)) return -1;
+export const sortSubs = (a: RkbSubscription[], b: RkbSubscription[]) => {
+  if (a.length < 1 || b.length < 1) {
+    console.log('@@@@ sortsubs params have empty array');
+    return -1;
+  }
 
-  if (isDisabled(a) === isDisabled(b) && a.purchaseDate > b.purchaseDate) {
+  if (!isDisabled(a[0]) && isDisabled(b[0])) return -1;
+
+  if (
+    isDisabled(a[0]) === isDisabled(b[0]) &&
+    a[0].purchaseDate > b[0].purchaseDate
+  ) {
     return -1;
   }
 
