@@ -21,6 +21,7 @@ import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import AppButton from '@/components/AppButton';
 import AppStyledText from '@/components/AppStyledText';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const {isIOS} = Env.get();
 
@@ -150,6 +151,7 @@ const QrInfoScreen = () => {
   const route = useRoute<RouteProp<ParamList, 'QrInfoScreen'>>();
   const params = useMemo(() => route?.params, [route?.params]);
   const [copyString, setCopyString] = useState('');
+  const [showSnackBar, setShowSnackBar] = useState(false);
 
   const navigation = useNavigation();
 
@@ -191,7 +193,10 @@ const QrInfoScreen = () => {
                   borderRadius: 3,
                 },
               ]}
-              onPress={copyToClipboard(content)}
+              onPress={() => {
+                copyToClipboard(content);
+                setShowSnackBar(true);
+              }}
             />
           </View>
         </View>
@@ -223,6 +228,12 @@ const QrInfoScreen = () => {
           )}
         </View>
       </ScrollView>
+      <AppSnackBar
+        visible={showSnackBar}
+        onClose={() => setShowSnackBar(false)}
+        textMessage={i18n.t('esim:copyMsg')}
+        bottom={88}
+      />
     </SafeAreaView>
   );
 };

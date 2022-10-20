@@ -145,7 +145,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
 
   const partnerIds = useMemo(() => {
     return product.prodByCountry
-      .filter((p) => p.country == params.item.country && p.partner)
+      .filter((p) => p.country == params.item.country)
       .map((pp) => pp.partner);
   }, [params.item.country, product.prodByCountry]);
 
