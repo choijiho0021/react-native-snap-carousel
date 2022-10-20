@@ -184,9 +184,10 @@ const styles = StyleSheet.create({
 
 export const renderPromoFlag = (flags: string[], isStore: boolean) => (
   <>
-    {flags.map((elm) => {
-      const badgeColor = getPromoFlagColor(elm);
-      if (elm !== 'hot')
+    {flags
+      .filter((elm) => elm !== 'hot')
+      .map((elm) => {
+        const badgeColor = getPromoFlagColor(elm);
         return (
           <View
             key={elm}
@@ -203,7 +204,7 @@ export const renderPromoFlag = (flags: string[], isStore: boolean) => (
             </AppText>
           </View>
         );
-    })}
+      })}
     {isStore && (
       <AppIcon
         name="naverIcon"
