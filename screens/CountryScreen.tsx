@@ -67,13 +67,12 @@ export const makeProdData = (
   prodByPartner: ImmutableMap<string, RkbProduct[]>,
   partnerIds: string[],
 ) => {
-  const prodByPartners: RkbProduct[] = [];
-  partnerIds.forEach((partnerId) => {
-    prodByPartners.push(prodByPartner.get(partnerId));
-  });
+  const prodByPartners = partnerIds.map((partnerId) =>
+    prodByPartner.get(partnerId),
+  );
 
   const list: RkbProduct[][] = prodByPartners
-    .reduce((acc, cur) => (cur ? acc.concat(cur.filter((c) => !!c)) : acc), [])
+    ?.reduce((acc, cur) => (cur ? acc.concat(cur.filter((c) => !!c)) : acc), [])
     .reduce(
       (acc, cur) =>
         cur?.field_daily === 'daily'
