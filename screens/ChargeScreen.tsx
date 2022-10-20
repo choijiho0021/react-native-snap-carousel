@@ -148,7 +148,6 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
     product.prodByCountry.forEach((p) => {
       if (p.country === params.item.country) {
         partnerTemp.push(p.partner);
-        console.log('@@@@@ p.partner', p.partner);
       }
     });
 
@@ -216,7 +215,6 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
             <AppButton
               style={styles.cautionBtn}
               onPress={() => {
-                // setShowModal(true);
                 setTip(true);
               }}
               iconName="btnChargeCaution"

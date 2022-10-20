@@ -590,14 +590,14 @@ const EsimSubs = ({
             renderHisBtn(`${i18n.t('acc:rechargeHistory2')}`)
           ) : (
             // 충전 내역이 없는 경우
-            <>
+            <View>
               {sendable && (
                 <View style={styles.btnFrame}>
                   {renderBtn(`${i18n.t('esim:sendGift')}`, true)}
                   {renderBtn(`${i18n.t('esim:charge')}`, false)}
                 </View>
               )}
-            </>
+            </View>
           )}
 
           <View style={styles.line} />
