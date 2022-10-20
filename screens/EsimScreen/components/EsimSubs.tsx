@@ -307,6 +307,10 @@ const EsimSubs = ({
     if (chargeabledate < today) setIsChargeable(false);
   }, [item.expireDate, setChargeablePeriod]);
 
+  useEffect(() => {
+    if (item.partner !== 'CMI') setIsChargeable(false);
+  }, [item.partner]);
+
   const redirectable = useMemo(
     () =>
       !expired &&
