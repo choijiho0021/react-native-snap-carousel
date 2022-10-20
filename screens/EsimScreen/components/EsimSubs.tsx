@@ -276,7 +276,7 @@ const EsimSubs = ({
   isCharged,
 }: {
   item: RkbSubscription;
-  onPressUsage: () => void;
+  onPressUsage: (subs: RkbSubscription) => void;
   setShowModal: (visible: boolean) => void;
   chargedSubs: RkbSubscription[];
   expired: boolean;
@@ -425,7 +425,7 @@ const EsimSubs = ({
           style={styles.btn}
           onPress={() => {
             setShowModal(true);
-            onPressUsage();
+            onPressUsage(item);
           }}
           title={i18n.t('esim:checkUsage')}
           titleStyle={styles.btnTitle}

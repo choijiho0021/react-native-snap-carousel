@@ -29,7 +29,7 @@ type ParamList = {
   ChargeHistoryScreen: {
     mainSubs: RkbSubscription;
     chargedSubs: RkbSubscription[];
-    onPressUsage: () => Promise<{usage: {}; status: {}}>;
+    onPressUsage: (subs: RkbSubscription) => Promise<{usage: {}; status: {}}>;
     chargeablePeriod: string;
     isChargeable: boolean;
   };
@@ -388,7 +388,7 @@ const ChargeHistoryScreen: React.FC = () => {
               style={{flexDirection: 'row', alignItems: 'center'}}
               onPress={() => {
                 setPending(true);
-                onPressUsage().then((u) => {
+                onPressUsage(mainSubs).then((u) => {
                   setUsage(u.usage);
                   setStatus(u.status);
                   setPending(false);
@@ -408,7 +408,7 @@ const ChargeHistoryScreen: React.FC = () => {
         </View>
       );
     },
-    [onPressUsage],
+    [mainSubs, onPressUsage],
   );
 
   return (

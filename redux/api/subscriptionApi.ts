@@ -110,43 +110,42 @@ const toSubscription =
   (data: DrupalNode[] | DrupalNodeJsonApi): ApiResult<RkbSubscription> => {
     if (_.isArray(data)) {
       return api.success(
-        data
-          .map((item) => ({
-            key: item.uuid || '',
-            uuid: item.uuid || '',
-            purchaseDate: item.field_purchase_date || '',
-            expireDate: item.field_expiration_date || '',
-            activationDate: item.field_subs_activation_date || '',
-            endDate: item.field_subs_expiration_date || '',
-            statusCd: item.field_status || '',
-            status: toStatus(item.field_status) || '',
-            giftStatusCd:
-              giftCode[item.field_gift_status] || item.field_gift_status || '',
-            country: item.field_country || '',
-            prodName: item.title || '',
-            prodId: item.product_uuid || '',
-            nid: item.nid || '',
-            actCode: item.field_activation_code || '',
-            smdpAddr: item.sm_dp_address || '',
-            qrCode: item.qr_code || '',
-            imsi: item.field_imsi || '',
-            type: item.type || '',
-            subsIccid: item.field_iccid || '',
-            packageId: item.field_cmi_package_id || '',
-            subsOrderNo: item.field_cmi_order_id || '',
-            partner: item.field_ref_partner || '',
-            isStore,
-            promoFlag: item.field_special_categories
-              ? item.field_special_categories
-                  .split(',')
-                  .map((v) => promoFlag[v.trim()])
-                  .filter((v) => !_.isEmpty(v))
-              : [],
-            caution: item.field_caution || '',
-            cautionApp: item.field_caution_app || '',
-            daily: item.field_daily,
-          }))
-          .sort(sortSubs),
+        data.map((item) => ({
+          key: item.uuid || '',
+          uuid: item.uuid || '',
+          purchaseDate: item.field_purchase_date || '',
+          expireDate: item.field_expiration_date || '',
+          activationDate: item.field_subs_activation_date || '',
+          endDate: item.field_subs_expiration_date || '',
+          statusCd: item.field_status || '',
+          status: toStatus(item.field_status) || '',
+          giftStatusCd:
+            giftCode[item.field_gift_status] || item.field_gift_status || '',
+          country: item.field_country || '',
+          prodName: item.title || '',
+          prodId: item.product_uuid || '',
+          nid: item.nid || '',
+          actCode: item.field_activation_code || '',
+          smdpAddr: item.sm_dp_address || '',
+          qrCode: item.qr_code || '',
+          imsi: item.field_imsi || '',
+          type: item.type || '',
+          subsIccid: item.field_iccid || '',
+          packageId: item.field_cmi_package_id || '',
+          subsOrderNo: item.field_cmi_order_id || '',
+          partner: item.field_ref_partner || '',
+          isStore,
+          promoFlag: item.field_special_categories
+            ? item.field_special_categories
+                .split(',')
+                .map((v) => promoFlag[v.trim()])
+                .filter((v) => !_.isEmpty(v))
+            : [],
+          caution: item.field_caution || '',
+          cautionApp: item.field_caution_app || '',
+          daily: item.field_daily,
+        })),
+        // .sort(sortSubs),
       );
     }
 
@@ -154,24 +153,23 @@ const toSubscription =
       const obj = _.isArray(data.data) ? data.data : [data.data];
 
       return api.success(
-        obj
-          .map((item) => {
-            return {
-              key: item.id,
-              uuid: item.id,
-              purchaseDate: item.field_purchase_date,
-              activationDate: item.field_subs_activation_date,
-              expireDate: item.field_subs_expiration_date,
-              statusCd: item.field_status,
-              giftStatusCd:
-                giftCode[item.attributes?.field_gift_status] ||
-                item.attributes?.field_gift_status ||
-                '',
-              status: item.field_status,
-              type: item.type,
-            };
-          })
-          .sort(sortSubs),
+        obj.map((item) => {
+          return {
+            key: item.id,
+            uuid: item.id,
+            purchaseDate: item.field_purchase_date,
+            activationDate: item.field_subs_activation_date,
+            expireDate: item.field_subs_expiration_date,
+            statusCd: item.field_status,
+            giftStatusCd:
+              giftCode[item.attributes?.field_gift_status] ||
+              item.attributes?.field_gift_status ||
+              '',
+            status: item.field_status,
+            type: item.type,
+          };
+        }),
+        // .sort(sortSubs)
         data.links,
       );
     }
