@@ -140,7 +140,6 @@ const CreateAppContainer = ({store}) => {
       requestPermission();
     }
 
-    isSupport = true;
     const deviceModel = DeviceInfo.getModel();
     const isFirst = await checkFistLaunch();
 
