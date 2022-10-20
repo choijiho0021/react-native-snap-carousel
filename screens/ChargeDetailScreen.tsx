@@ -27,10 +27,6 @@ import {actions as simActions, SimAction} from '@/redux/modules/sim';
 const styles = StyleSheet.create({
   paymentBtnFrame: {
     height: 52,
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
     flexDirection: 'row',
     borderTopWidth: 1,
     borderColor: '#d8d8d8',

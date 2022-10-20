@@ -144,21 +144,17 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
   const [showTip, setTip] = useState(true);
 
   const partnerIds = useMemo(() => {
-    const partnerTemp: string[] = [];
-    product.prodByCountry.forEach((p) => {
-      if (p.country === params.item.country) {
-        partnerTemp.push(p.partner);
-      }
-    });
-
-    return partnerTemp;
+    return product.prodByCountry.reduce((acc: string[], cur) => {
+      if (cur.country == params.item.country) acc.push(cur.partner);
+      return acc;
+    }, []);
   }, [params.item.country, product.prodByCountry]);
 
   const prodData = useMemo(() => {
     if (partnerIds) {
-      const cmiPartnerIds = partnerIds.filter((partnerId) => {
-        return localOpList.get(partnerId)?.partner === 'CMI';
-      });
+      const cmiPartnerIds = partnerIds.filter(
+        (partnerId) => localOpList.get(partnerId)?.partner === 'CMI',
+      );
       return makeProdData(prodByPartner, cmiPartnerIds);
     }
     return [];
@@ -167,6 +163,55 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
   useEffect(() => {
     action.product.getProdOfPartner(partnerIds);
   }, [action.product, partnerIds]);
+
+  const renderToolTip = useCallback(
+    () => (
+      <Tooltip
+        isVisible={showTip}
+        backgroundColor="rgba(0,0,0,0)"
+        contentStyle={styles.toolTipBox}
+        tooltipStyle={styles.toolTipStyle}
+        arrowStyle={styles.arrowStyle}
+        disableShadow
+        content={
+          <View>
+            <View style={styles.toolTipTitleFrame}>
+              <AppText style={styles.toolTipTitleText}>
+                {i18n.t('esim:chargeCaution')}
+              </AppText>
+              <AppButton style={styles.btnCancel} iconName="btnCancel" />
+            </View>
+            <View style={styles.toolTipBody}>
+              {[1, 2, 3].map((k) => (
+                <View key={k} style={{flexDirection: 'row'}}>
+                  <AppText
+                    style={[
+                      appStyles.normal14Text,
+                      {marginHorizontal: 5, marginTop: 3},
+                    ]}>
+                    •
+                  </AppText>
+                  <AppText style={styles.toolTipBodyText}>
+                    {i18n.t(`esim:chargeCaution:modal${k}`)}
+                  </AppText>
+                </View>
+              ))}
+            </View>
+          </View>
+        }
+        onClose={() => setTip(false)}
+        placement="bottom">
+        <AppButton
+          style={styles.cautionBtn}
+          onPress={() => {
+            setTip(true);
+          }}
+          iconName="btnChargeCaution"
+        />
+      </Tooltip>
+    ),
+    [showTip],
+  );
 
   useEffect(() => {
     navigation.setOptions({
@@ -177,53 +222,11 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
             title={i18n.t('esim:charge')}
             style={styles.headerTitle}
           />
-          <Tooltip
-            isVisible={showTip}
-            backgroundColor="rgba(0,0,0,0)"
-            contentStyle={styles.toolTipBox}
-            tooltipStyle={styles.toolTipStyle}
-            arrowStyle={styles.arrowStyle}
-            disableShadow
-            content={
-              <View>
-                <View style={styles.toolTipTitleFrame}>
-                  <AppText style={styles.toolTipTitleText}>
-                    {i18n.t('esim:chargeCaution')}
-                  </AppText>
-                  <AppButton style={styles.btnCancel} iconName="btnCancel" />
-                </View>
-                <View style={styles.toolTipBody}>
-                  {[1, 2, 3].map((k) => (
-                    <View key={k} style={{flexDirection: 'row'}}>
-                      <AppText
-                        style={[
-                          appStyles.normal14Text,
-                          {marginHorizontal: 5, marginTop: 3},
-                        ]}>
-                        •
-                      </AppText>
-                      <AppText style={styles.toolTipBodyText}>
-                        {i18n.t(`esim:chargeCaution:modal${k}`)}
-                      </AppText>
-                    </View>
-                  ))}
-                </View>
-              </View>
-            }
-            onClose={() => setTip(false)}
-            placement="bottom">
-            <AppButton
-              style={styles.cautionBtn}
-              onPress={() => {
-                setTip(true);
-              }}
-              iconName="btnChargeCaution"
-            />
-          </Tooltip>
+          {renderToolTip()}
         </View>
       ),
     });
-  }, [navigation, showTip]);
+  }, [navigation, renderToolTip, showTip]);
 
   const onIndexChange = useCallback((idx: number) => setIndex(idx), []);
   const routes = useMemo(
@@ -243,36 +246,37 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
     [],
   );
 
-  const renderCountryList = useCallback(
-    (type: number) => (
-      <ScrollView>
-        {prodData[type]?.data.map((data) => (
-          <CountryListItem
-            key={data.sku}
-            item={data}
-            onPress={() => {
-              navigation.navigate('ChargeDetail', {
-                data,
-                prodname: params.item.prodName,
-                chargeableDate: params.chargeableDate,
-                subsIccid: params.item.subsIccid,
-              });
-            }}
-            isCharge
-          />
-        ))}
-      </ScrollView>
-    ),
-    [navigation, params, prodData],
+  const renderScene = useCallback(
+    ({route}: {route: ChargeTabRoute}) => {
+      console.log('@@@@@route', route.category);
+      return (
+        <ScrollView>
+          {prodData[route.category === 'daily' ? 0 : 1]?.data.map((data) => (
+            <CountryListItem
+              key={data.sku}
+              item={data}
+              onPress={() => {
+                navigation.navigate('ChargeDetail', {
+                  data,
+                  prodname: params.item.prodName,
+                  chargeableDate: params.chargeableDate,
+                  subsIccid: params.item.subsIccid,
+                });
+              }}
+              isCharge
+            />
+          ))}
+        </ScrollView>
+      );
+    },
+    [
+      navigation,
+      params.chargeableDate,
+      params.item.prodName,
+      params.item.subsIccid,
+      prodData,
+    ],
   );
-
-  const dailyRoute = () => renderCountryList(0);
-  const totalRoute = () => renderCountryList(1);
-
-  const renderScene = SceneMap({
-    daily: dailyRoute,
-    total: totalRoute,
-  });
 
   return (
     <SafeAreaView style={styles.container}>
