@@ -141,11 +141,9 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
   const route = useRoute<RouteProp<ParamList, 'ChargeScreen'>>();
   const params = useMemo(() => route?.params, [route?.params]);
   const [index, setIndex] = useState(0);
-  const [partnerIds, setPartnerIds] = useState<string[]>([]);
   const [showTip, setTip] = useState(true);
-  const [prodData, setProdData] = useState<ProdDataType[]>([]);
 
-  useEffect(() => {
+  const partnerIds = useMemo(() => {
     const partnerTemp: string[] = [];
     product.prodByCountry.forEach((p) => {
       // eslint-disable-next-line eqeqeq
@@ -155,24 +153,22 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
       }
     });
 
-    setPartnerIds(partnerTemp);
+    return partnerTemp;
   }, [params.item.country, product.prodByCountry]);
 
-  useEffect(() => {
-    action.product.getProdOfPartner(partnerIds);
-  }, [action.product, partnerIds]);
-
-  useEffect(() => {
+  const prodData = useMemo(() => {
     if (partnerIds) {
       const cmiPartnerIds = partnerIds.filter((partnerId) => {
         return localOpList.get(partnerId)?.partner === 'CMI';
       });
-      console.log('@@@@@ prodByPartner', prodByPartner);
-      console.log('@@@@@ partnerIds', partnerIds);
-      console.log('@@@@@ cmiPartnerIds', cmiPartnerIds);
-      setProdData(makeProdData(prodByPartner, cmiPartnerIds));
+      return makeProdData(prodByPartner, cmiPartnerIds);
     }
-  }, [localOpList, partnerIds, prodByLocalOp, prodByPartner, prodList]);
+    return [];
+  }, [localOpList, partnerIds, prodByPartner]);
+
+  useEffect(() => {
+    action.product.getProdOfPartner(partnerIds);
+  }, [action.product, partnerIds]);
 
   useEffect(() => {
     navigation.setOptions({
