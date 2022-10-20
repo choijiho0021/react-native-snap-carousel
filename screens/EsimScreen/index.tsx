@@ -128,20 +128,20 @@ export type SubsListType = {
 };
 
 export const renderInfo = (navigation) => (
-  <View style={styles.usrGuideBtn}>
+  <Pressable
+    style={styles.usrGuideBtn}
+    onPress={() => navigation.navigate('UserGuide')}>
     <View style={styles.rowCenter}>
       <AppSvgIcon name="newFlag" style={{marginRight: 8}} />
       <AppText style={styles.ifFirstText}>{i18n.t('esim:ifFirst')}</AppText>
     </View>
-    <Pressable
-      style={styles.rowRight}
-      onPress={() => navigation.navigate('UserGuide')}>
+    <View style={styles.rowRight}>
       <AppText style={styles.moveToGuideText}>
         {i18n.t('esim:moveToGuide')}
       </AppText>
       <AppIcon name="iconArrowRightBlack" />
-    </Pressable>
-  </View>
+    </View>
+  </Pressable>
 );
 
 const EsimScreen: React.FC<EsimScreenProps> = ({
