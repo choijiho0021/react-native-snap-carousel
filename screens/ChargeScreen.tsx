@@ -245,36 +245,37 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
     [],
   );
 
-  const renderCountryList = useCallback(
-    (type: number) => (
-      <ScrollView>
-        {prodData[type]?.data.map((data) => (
-          <CountryListItem
-            key={data.sku}
-            item={data}
-            onPress={() => {
-              navigation.navigate('ChargeDetail', {
-                data,
-                prodname: params.item.prodName,
-                chargeableDate: params.chargeableDate,
-                subsIccid: params.item.subsIccid,
-              });
-            }}
-            isCharge
-          />
-        ))}
-      </ScrollView>
-    ),
-    [navigation, params, prodData],
+  const renderScene = useCallback(
+    ({route}: {route: ChargeTabRoute}) => {
+      console.log('@@@@@route', route.category);
+      return (
+        <ScrollView>
+          {prodData[route.category === 'daily' ? 0 : 1]?.data.map((data) => (
+            <CountryListItem
+              key={data.sku}
+              item={data}
+              onPress={() => {
+                navigation.navigate('ChargeDetail', {
+                  data,
+                  prodname: params.item.prodName,
+                  chargeableDate: params.chargeableDate,
+                  subsIccid: params.item.subsIccid,
+                });
+              }}
+              isCharge
+            />
+          ))}
+        </ScrollView>
+      );
+    },
+    [
+      navigation,
+      params.chargeableDate,
+      params.item.prodName,
+      params.item.subsIccid,
+      prodData,
+    ],
   );
-
-  const dailyRoute = () => renderCountryList(0);
-  const totalRoute = () => renderCountryList(1);
-
-  const renderScene = SceneMap({
-    daily: dailyRoute,
-    total: totalRoute,
-  });
 
   return (
     <SafeAreaView style={styles.container}>
