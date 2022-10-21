@@ -71,6 +71,7 @@ export interface AppModalProps {
   closeButtonTitle?: string;
   infoText?: string;
   contentStyle?: ViewStyle;
+  buttonStyle?: ViewStyle;
   buttonBackgroundColor?: ColorValue;
   buttonTitleColor?: ColorValue;
   disableOkButton?: boolean;
@@ -87,6 +88,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
   children,
   type = 'normal',
   closeButtonTitle = i18n.t('close'),
+  buttonStyle,
   contentStyle,
   buttonBackgroundColor,
   buttonTitleColor,
@@ -166,7 +168,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
       default:
         return (
           // type == normal or info
-          <View style={styles.row}>
+          <View style={[styles.row, buttonStyle]}>
             {type === 'normal' && (
               <AppButton
                 style={styles.button}

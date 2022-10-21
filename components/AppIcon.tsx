@@ -127,6 +127,7 @@ const images: Record<string, any[]> = {
   hkIcon: [require(`${esimPath}hkIcon.png`)],
   cautionIcon: [require(`${esimPath}cautionIcon.png`)],
   btnChargeable: [require(`${esimPath}btnChargeable.png`)],
+  btnChargeExpired: [require(`${esimPath}btnChargeExpired.png`)],
   btnNonChargeable: [require(`${esimPath}btnNonChargeable.png`)],
   imgDokebi2: [require(`${esimPath}imgDokebi2.png`)],
   imgNotiDokebi: [require(`${esimPath}imgNotiDokebi.png`)],
