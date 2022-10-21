@@ -16,7 +16,7 @@ import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import AppButton from '@/components/AppButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {removeData, retrieveData, storeData, utils} from '@/utils/utils';
+import {retrieveData, storeData, utils} from '@/utils/utils';
 import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
 import EsimModal from './EsimScreen/components/EsimModal';
 import {getPromoFlagColor} from '@/redux/api/productApi';
@@ -29,7 +29,7 @@ type ParamList = {
   ChargeHistoryScreen: {
     mainSubs: RkbSubscription;
     chargedSubs: RkbSubscription[];
-    onPressUsage: (subs: RkbSubscription) => Promise<{usage: {}; status: {}}>;
+    onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
     chargeablePeriod: string;
     isChargeable: boolean;
   };
@@ -221,7 +221,7 @@ const ChargeHistoryScreen: React.FC = () => {
   const route = useRoute<RouteProp<ParamList, 'ChargeHistoryScreen'>>();
   const params = useMemo(() => route?.params, [route?.params]);
   const {mainSubs, chargeablePeriod, chargedSubs, onPressUsage, isChargeable} =
-    params;
+    params || {};
   const [showModal, setShowModal] = useState(false);
   const [pending, setPending] = useState(false);
   const [usage, setUsage] = useState({});

@@ -276,7 +276,7 @@ const EsimSubs = ({
   isCharged,
 }: {
   item: RkbSubscription;
-  onPressUsage: (subs: RkbSubscription) => void;
+  onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
   setShowModal: (visible: boolean) => void;
   chargedSubs: RkbSubscription[];
   expired: boolean;
