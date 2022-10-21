@@ -707,7 +707,7 @@ const Esim: React.FC<EsimProps> = ({
             visible={isDevModalVisible && navigation.isFocused()}>
             {modalBody()}
           </AppModal>
-        ) : appUpdateVisible === false ? (
+        ) : isSupport && appUpdateVisible === false ? (
           <NotiModal
             visible={popUpVisible && !popupDisabled && navigation.isFocused()}
             popUp={popUp}
