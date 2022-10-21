@@ -25,6 +25,7 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import SplitText from '@/components/SplitText';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
 import AppStyledText from '@/components/AppStyledText';
+import AppModal from '@/components/AppModal';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -297,7 +298,7 @@ const styles = StyleSheet.create({
     paddingBottom: 9,
   },
   expiredModalTextFrame: {
-    marginRight: 45,
+    marginLeft: 30,
     marginBottom: 24,
   },
   expiredModalText: {
@@ -649,16 +650,16 @@ const EsimSubs = ({
 
           {redirectable && renderHkBtn()}
 
-          {(item.cautionApp || item.caution) && (
+          {(!!item.cautionApp || !!item.caution) && (
             <View style={styles.cautionBox}>
               <View style={styles.cautionIcon}>
                 <AppIcon name="cautionIcon" />
               </View>
               <View>
-                {item.caution && (
+                {!!item.caution && (
                   <Text style={styles.cautionText}>{item.caution}</Text>
                 )}
-                {item.cautionApp && (
+                {!!item.cautionApp && (
                   <Text style={styles.cautionText}>{item.cautionApp}</Text>
                 )}
               </View>
@@ -682,32 +683,18 @@ const EsimSubs = ({
           <View style={styles.line} />
         </View>
       )}
-
-      <Modal visible={expiredModalVisible} transparent>
-        <SafeAreaView style={{flex: 1, justifyContent: 'center'}}>
-          <Pressable
-            style={styles.forModalClose}
-            onPress={() => {
-              setExpiredModalVisible(false);
-            }}
+      <AppModal
+        type="closeRight"
+        onOkClose={() => setExpiredModalVisible(false)}
+        visible={expiredModalVisible}>
+        <View style={styles.expiredModalTextFrame}>
+          <AppStyledText
+            textStyle={styles.expiredModalText}
+            text={i18n.t('esim:charge:cautionExpired')}
+            format={{r: styles.highlightText}}
           />
-          <View style={styles.expiredModal}>
-            <View style={styles.expiredModalTextFrame}>
-              <AppStyledText
-                textStyle={styles.expiredModalText}
-                text={i18n.t('esim:charge:cautionExpired')}
-                format={{r: styles.highlightText}}
-              />
-            </View>
-            <AppButton
-              style={styles.closeBtn}
-              onPress={() => setExpiredModalVisible(false)}
-              title={i18n.t('close')}
-              titleStyle={styles.closeBtnText}
-            />
-          </View>
-        </SafeAreaView>
-      </Modal>
+        </View>
+      </AppModal>
     </View>
   );
 };
