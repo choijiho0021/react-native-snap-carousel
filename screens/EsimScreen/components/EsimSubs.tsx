@@ -653,7 +653,7 @@ const EsimSubs = ({
 
           {redirectable && renderHkBtn()}
 
-          {(!!item.cautionApp || !!item.caution) && (
+          {!!item.caution && (
             <View style={styles.cautionBox}>
               <View style={styles.cautionIcon}>
                 <AppIcon name="cautionIcon" />
@@ -661,9 +661,6 @@ const EsimSubs = ({
               <View>
                 {!!item.caution && (
                   <Text style={styles.cautionText}>{item.caution}</Text>
-                )}
-                {!!item.cautionApp && (
-                  <Text style={styles.cautionText}>{item.cautionApp}</Text>
                 )}
               </View>
             </View>
