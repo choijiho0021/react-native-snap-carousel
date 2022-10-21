@@ -823,11 +823,9 @@
   "userGuide:tipPage4_3": "[ Enter Details Manually ]",
   "userGuide:tipPage5_1": "Setting cellular plan label makes it easier to separate different plans",
   "userGuide:tipPage5_2": "In this guide, the newly added ROKEBI eSIM is labeled as 'Secondary'",
-  "userGuide:tipPage5_2:ios15": "In this guide, the newly added ROKEBI eSIM is labeled as 'Secondary'",
   "userGuide:tipPage9_1": "<b>Additional roaming fee may be applied by automatic switching</b> if you allow cellular data switching. <s>Please set the Cellular Data Switching as OFF.</s>",
   "userGuide:tipPage10_1": "If you add eSIM in Korea, set Mobile Data as <b>Main (the default line)</b> and change to <b>Seconday after arriving at the destination</b>.",
   "userGuide:tipPage11_1": "You can use your data only if the <b>Data Roaming option is ON.</b>",
-  "userGuide:tipPage11_1:ios15": "You can use your data only if the <b>Data Roaming option is ON.</b>",
   "userGuide:tipPage12_1": "<b>Please delete the eSIM when expired!</b> Leftover items may cause confusion when adding new items.",
 
   "userGuide:tipPage4:android_1": "Access the QR code sent to <b>email inbox from other devices</b> (laptop or tablet) for easier capture.",

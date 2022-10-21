@@ -222,40 +222,22 @@ export const imageList: Record<string, any[]> =
           require(`${dir}/ios15/guide3.png`),
           require(`${dir}/en.guide3.png`),
         ],
-        page4: [
-          require(`${dir}/ios15/guide4.png`),
-          require(`${dir}/en.guide4.png`),
-        ],
-        page5: [
-          require(`${dir}/ios15/guide5.png`),
-          require(`${dir}/en.guide5.png`),
-        ],
-        page6: [
-          require(`${dir}/ios15/guide6.png`),
-          require(`${dir}/en.guide6.png`),
-        ],
-        page7: [
-          require(`${dir}/ios15/guide7.png`),
-          require(`${dir}/en.guide7.png`),
-        ],
-        page8: [
-          require(`${dir}/ios15/guide8.png`),
-          require(`${dir}/en.guide8.png`),
-        ],
-        page9: [
-          require(`${dir}/ios15/guide9.png`),
-          require(`${dir}/en.guide9.png`),
-        ],
+        page4: [require(`${dir}/img_3.png`), require(`${dir}/en.guide4.png`)],
+        page5: [require(`${dir}/img_5.png`), require(`${dir}/en.guide5.png`)],
+        page6: [require(`${dir}/img_6.png`), require(`${dir}/en.guide6.png`)],
+        page7: [require(`${dir}/img_7.png`), require(`${dir}/en.guide7.png`)],
+        page8: [require(`${dir}/img_8.png`), require(`${dir}/en.guide8.png`)],
+        page9: [require(`${dir}/img_9.png`), require(`${dir}/en.guide9.png`)],
         page10: [
-          require(`${dir}/ios15/guide10.png`),
+          require(`${dir}/img_10.png`),
           require(`${dir}/en.guide10.png`),
         ],
         pageLast: [
-          require(`${dir}/ios15/guide11_1.png`),
+          require(`${dir}/img_11.png`),
           require(`${dir}/en.guide11_1.png`),
         ],
         pageLast2: [
-          require(`${dir}/ios15/guide11_2.png`),
+          require(`${dir}/img_12.png`),
           require(`${dir}/en.guide11_2.png`),
         ],
       };
@@ -495,7 +477,7 @@ export const guideImages: GuideImage[] =
               {renderTips()}
               {renderTip({id: 'userGuide:tipPage5_1'})}
               {renderTip({
-                id: 'userGuide:tipPage5_2:ios15',
+                id: 'userGuide:tipPage5_2',
                 marginBottom: isDeviceSize('medium') ? 46 : 0,
                 style: styles.tipBoldText,
               })}
@@ -548,7 +530,7 @@ export const guideImages: GuideImage[] =
           step: 5,
           tip: () =>
             tipView({
-              id: 'userGuide:tipPage11_1:ios15',
+              id: 'userGuide:tipPage11_1',
               marginBottom: isDeviceSize('medium') ? 59 : 0,
             }),
         },
@@ -556,10 +538,6 @@ export const guideImages: GuideImage[] =
           key: 'page11',
           title: renderText('userGuide:stepsTitle12:ios'),
           step: 6,
-          tip: () =>
-            tipView({
-              id: 'userGuide:tipPage12_1',
-              marginBottom: isDeviceSize('medium') ? 32 : 0,
-            }),
+          tip: () => renderTipList('userGuide:tipPageLast', 'dot'),
         },
       ];
