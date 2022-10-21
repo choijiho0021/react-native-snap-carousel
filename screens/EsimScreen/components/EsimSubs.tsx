@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
+import React, {memo, useCallback, useMemo, useState} from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -25,7 +25,6 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import SplitText from '@/components/SplitText';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
 import AppStyledText from '@/components/AppStyledText';
-import {Button} from 'react-native-share';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
