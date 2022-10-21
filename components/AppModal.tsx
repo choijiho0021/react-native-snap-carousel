@@ -58,24 +58,11 @@ const styles = StyleSheet.create({
   icon: {
     marginVertical: 15,
   },
-  closeRightBtn: {
-    backgroundColor: colors.white,
-    width: 88,
-    height: 58,
-    alignSelf: 'flex-end',
-    marginBottom: 6,
-  },
-  closeRightBtnText: {
-    ...appStyles.normal16Text,
-    color: 'rgb(119, 119, 119)',
-    lineHeight: 19,
-    letterSpacing: -0.03,
-  },
 });
 
 export interface AppModalProps {
   visible: boolean;
-  type?: 'normal' | 'close' | 'info' | 'redirect' | 'closeRight';
+  type?: 'normal' | 'close' | 'info' | 'redirect';
   justifyContent?: 'center' | 'flex-end';
   title?: string;
   titleStyle?: TextStyle;
@@ -84,6 +71,7 @@ export interface AppModalProps {
   closeButtonTitle?: string;
   infoText?: string;
   contentStyle?: ViewStyle;
+  buttonStyle?: ViewStyle;
   buttonBackgroundColor?: ColorValue;
   buttonTitleColor?: ColorValue;
   disableOkButton?: boolean;
@@ -100,6 +88,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
   children,
   type = 'normal',
   closeButtonTitle = i18n.t('close'),
+  buttonStyle,
   contentStyle,
   buttonBackgroundColor,
   buttonTitleColor,
@@ -112,15 +101,6 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
 }) => {
   const getButtonType = useCallback(() => {
     switch (type) {
-      case 'closeRight':
-        return (
-          <AppButton
-            style={styles.closeRightBtn}
-            onPress={onCancelClose}
-            title={i18n.t('close')}
-            titleStyle={styles.closeRightBtnText}
-          />
-        );
       case 'close':
         return (
           <View
@@ -188,7 +168,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
       default:
         return (
           // type == normal or info
-          <View style={styles.row}>
+          <View style={[styles.row, buttonStyle]}>
             {type === 'normal' && (
               <AppButton
                 style={styles.button}

@@ -329,6 +329,9 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     letterSpacing: -0.03,
   },
+  btnStyle: {
+    marginTop: 0,
+  },
 });
 
 const EsimSubs = ({
@@ -684,7 +687,8 @@ const EsimSubs = ({
         </View>
       )}
       <AppModal
-        type="closeRight"
+        type="info"
+        buttonStyle={styles.btnStyle}
         onOkClose={() => setExpiredModalVisible(false)}
         visible={expiredModalVisible}>
         <View style={styles.expiredModalTextFrame}>
