@@ -1,5 +1,14 @@
+/* eslint-disable no-nested-ternary */
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {Pressable, StyleSheet, View, Text, Platform} from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  View,
+  Text,
+  Platform,
+  Modal,
+  SafeAreaView,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import moment from 'moment';
 import AppButton from '@/components/AppButton';
@@ -15,6 +24,8 @@ import AppIcon from '@/components/AppIcon';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import SplitText from '@/components/SplitText';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
+import AppStyledText from '@/components/AppStyledText';
+import {Button} from 'react-native-share';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -126,6 +137,10 @@ const styles = StyleSheet.create({
     width: '30%',
     paddingTop: 19,
     opacity: 0.6,
+  },
+  btnExpired: {
+    width: '30%',
+    paddingTop: 19,
   },
   btnTitle: {
     ...appStyles.normal14Text,
@@ -263,8 +278,57 @@ const styles = StyleSheet.create({
     color: '#ee4422',
     ...appStyles.medium16,
     lineHeight: 20,
+    marginRight: 36,
   },
-  cautionIcon: {marginRight: 12},
+  cautionIcon: {marginRight: 12, alignSelf: 'flex-start'},
+  expiredDot: {
+    position: 'absolute',
+    width: 7,
+    height: 7,
+    borderRadius: 7,
+    backgroundColor: 'red',
+    right: '9%',
+    top: 16,
+  },
+  expiredModal: {
+    backgroundColor: colors.white,
+    alignSelf: 'center',
+    paddingTop: 25,
+    paddingLeft: 30,
+    paddingBottom: 9,
+  },
+  expiredModalTextFrame: {
+    marginRight: 45,
+    marginBottom: 24,
+  },
+  expiredModalText: {
+    ...appStyles.normal16Text,
+    lineHeight: 26,
+    color: 'rgb(44, 44, 44)',
+  },
+  highlightText: {
+    ...appStyles.normal16Text,
+    lineHeight: 26,
+    color: 'rgb(238, 68, 35)',
+  },
+  forModalClose: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  },
+  closeBtn: {
+    backgroundColor: colors.white,
+    width: 88,
+    height: 58,
+    alignSelf: 'flex-end',
+  },
+  closeBtnText: {
+    ...appStyles.normal16Text,
+    color: 'rgb(119, 119, 119)',
+    lineHeight: 19,
+    letterSpacing: -0.03,
+  },
 });
 
 const EsimSubs = ({
@@ -289,11 +353,10 @@ const EsimSubs = ({
     [expired, giftStatusCd],
   );
   const [isMoreInfo, setIsMoreInfo] = useState(false);
+  const [expiredModalVisible, setExpiredModalVisible] = useState(false);
 
-  const hasAnyCaution = useMemo(
-    () => !!(item.caution || item.cautionApp),
-    [item.caution, item.cautionApp],
-  );
+  const hasAppCaution = useMemo(() => !!item.cautionApp, [item.cautionApp]);
+  const hasCaution = useMemo(() => !!item.caution, [item.caution]);
 
   const chargeabledate = useMemo(() => {
     return moment(item.expireDate).subtract(30, 'd');
@@ -304,11 +367,15 @@ const EsimSubs = ({
   }, [chargeabledate]);
 
   const isChargeable = useMemo(() => {
-    const today = moment();
-    if (chargeabledate < today) return false;
     if (item.partner !== 'CMI') return false;
     return true;
-  }, [chargeabledate, item.partner]);
+  }, [item.partner]);
+
+  const isChargeExpired = useMemo(() => {
+    const today = moment();
+    if (chargeabledate < today) return true;
+    return false;
+  }, [chargeabledate]);
 
   const redirectable = useMemo(
     () =>
@@ -433,26 +500,36 @@ const EsimSubs = ({
         />
 
         {isChargeable ? (
-          <AppButton
-            style={styles.btn}
-            onPress={() =>
-              isCharged
-                ? navigation.navigate('ChargeHistory', {
-                    mainSubs: item,
-                    chargeablePeriod,
-                    onPressUsage,
-                    chargedSubs,
-                    isChargeable,
-                  })
-                : navigation.navigate('Charge', {
-                    item,
-                    chargeableDate: chargeablePeriod,
-                  })
-            }
-            title={i18n.t('esim:rechargeable')}
-            titleStyle={styles.btnTitle}
-            iconName="btnChargeable"
-          />
+          !isChargeExpired ? (
+            <AppButton
+              style={styles.btn}
+              onPress={() =>
+                isCharged
+                  ? navigation.navigate('ChargeHistory', {
+                      mainSubs: item,
+                      chargeablePeriod,
+                      onPressUsage,
+                      chargedSubs,
+                      isChargeable,
+                    })
+                  : navigation.navigate('Charge', {
+                      item,
+                      chargeableDate: chargeablePeriod,
+                    })
+              }
+              title={i18n.t('esim:rechargeable')}
+              titleStyle={styles.btnTitle}
+              iconName="btnChargeable"
+            />
+          ) : (
+            <AppButton
+              style={styles.btnExpired}
+              title={i18n.t('esim:rechargeExpired')}
+              titleStyle={styles.btnTitle}
+              onPress={() => setExpiredModalVisible(true)}
+              iconName="btnChargeExpired"
+            />
+          )
         ) : (
           <AppButton
             style={styles.btnDis}
@@ -461,11 +538,13 @@ const EsimSubs = ({
             iconName="btnNonChargeable"
           />
         )}
+        {isChargeable && isChargeExpired && <View style={styles.expiredDot} />}
       </View>
     );
   }, [
     chargeablePeriod,
     chargedSubs,
+    isChargeExpired,
     isChargeable,
     isCharged,
     item,
@@ -574,14 +653,18 @@ const EsimSubs = ({
 
           {redirectable && renderHkBtn()}
 
-          {hasAnyCaution && (
+          {(hasCaution || hasAppCaution) && (
             <View style={styles.cautionBox}>
               <View style={styles.cautionIcon}>
                 <AppIcon name="cautionIcon" />
               </View>
               <View>
-                <Text style={styles.cautionText}>{item.caution}</Text>
-                <Text style={styles.cautionText}>{item.cautionApp}</Text>
+                {hasCaution && (
+                  <Text style={styles.cautionText}>{item.caution}</Text>
+                )}
+                {hasAppCaution && (
+                  <Text style={styles.cautionText}>{item.cautionApp}</Text>
+                )}
               </View>
             </View>
           )}
@@ -594,7 +677,7 @@ const EsimSubs = ({
               {sendable && (
                 <View style={styles.btnFrame}>
                   {renderBtn(`${i18n.t('esim:sendGift')}`, true)}
-                  {renderBtn(`${i18n.t('esim:charge')}`, false)}
+                  {isChargeable && renderBtn(`${i18n.t('esim:charge')}`, false)}
                 </View>
               )}
             </View>
@@ -603,6 +686,32 @@ const EsimSubs = ({
           <View style={styles.line} />
         </View>
       )}
+
+      <Modal visible={expiredModalVisible} transparent>
+        <SafeAreaView style={{flex: 1, justifyContent: 'center'}}>
+          <Pressable
+            style={styles.forModalClose}
+            onPress={() => {
+              setExpiredModalVisible(false);
+            }}
+          />
+          <View style={styles.expiredModal}>
+            <View style={styles.expiredModalTextFrame}>
+              <AppStyledText
+                textStyle={styles.expiredModalText}
+                text={i18n.t('esim:charge:cautionExpired')}
+                format={{r: styles.highlightText}}
+              />
+            </View>
+            <AppButton
+              style={styles.closeBtn}
+              onPress={() => setExpiredModalVisible(false)}
+              title={i18n.t('close')}
+              titleStyle={styles.closeBtnText}
+            />
+          </View>
+        </SafeAreaView>
+      </Modal>
     </View>
   );
 };
