@@ -354,9 +354,6 @@ const EsimSubs = ({
   const [isMoreInfo, setIsMoreInfo] = useState(false);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
 
-  const hasAppCaution = useMemo(() => !!item.cautionApp, [item.cautionApp]);
-  const hasCaution = useMemo(() => !!item.caution, [item.caution]);
-
   const chargeabledate = useMemo(() => {
     return moment(item.expireDate).subtract(30, 'd');
   }, [item.expireDate]);
@@ -652,16 +649,16 @@ const EsimSubs = ({
 
           {redirectable && renderHkBtn()}
 
-          {(hasCaution || hasAppCaution) && (
+          {(item.cautionApp || item.caution) && (
             <View style={styles.cautionBox}>
               <View style={styles.cautionIcon}>
                 <AppIcon name="cautionIcon" />
               </View>
               <View>
-                {hasCaution && (
+                {item.caution && (
                   <Text style={styles.cautionText}>{item.caution}</Text>
                 )}
-                {hasAppCaution && (
+                {item.cautionApp && (
                   <Text style={styles.cautionText}>{item.cautionApp}</Text>
                 )}
               </View>
