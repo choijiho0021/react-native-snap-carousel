@@ -1,8 +1,11 @@
+#import "AppDelegate.h"
+
+#if RCT_DEV
+#import <React/RCTDevLoadingView.h>
+#endif
 
 #import <Firebase.h>
-//#import <AVFoundation.h>
-
-#import "AppDelegate.h"
+#import <AVFoundation/AVFoundation.h>
 
 #import <AppCenterReactNative.h>
 #import <AppCenterReactNativeAnalytics.h>
@@ -22,6 +25,8 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import <React/RCTAppSetupUtils.h>
+
+
 
 #if RCT_NEW_ARCH_ENABLED
 #import <React/CoreModulesPlugins.h>
@@ -95,7 +100,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
       [FIRApp configure];
     }
 
-//  [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
+  [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
 
   RCTAppSetupPrepareApp(application);
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
