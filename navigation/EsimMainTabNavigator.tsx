@@ -121,7 +121,13 @@ function HomeStackComponent() {
       />
       <HomeStack.Screen name="StoreSearch" component={StoreSearchScreen} />
       <HomeStack.Screen name="Cart" component={CartScreen} />
-      <HomeStack.Screen name="ProductDetail" component={ProductDetailScreen} />
+      <HomeStack.Screen
+        name="ProductDetail"
+        component={ProductDetailScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
       <HomeStack.Screen
         name="ProductDetailOp"
         component={ProductDetailOpScreen}
@@ -139,7 +145,13 @@ function HomeStackComponent() {
       <HomeStack.Screen name="Invite" component={InviteScreen} />
       <HomeStack.Screen name="BoardMsgResp" component={BoardMsgRespScreen} />
       <HomeStack.Screen name="Faq" component={FaqScreen} />
-      <HomeStack.Screen name="Country" component={CountryScreen} />
+      <HomeStack.Screen
+        name="Country"
+        component={CountryScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
       <HomeStack.Screen name="Payment" component={PaymentScreen} />
       <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
       <HomeStack.Screen name="PaymentResult" component={PaymentResultScreen} />

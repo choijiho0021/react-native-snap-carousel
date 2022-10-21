@@ -42,6 +42,8 @@ const AppBackButton = ({
         )}
         <AppText
           style={[appStyles.subTitle, {marginLeft: 16, fontSize: 20}]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
           {...textProps}>
           {title}
         </AppText>
