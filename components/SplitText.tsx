@@ -16,7 +16,7 @@ const SplitText = ({...props}) => {
     <View style={appStyles.container}>
       {isLoad && splitedText ? (
         splitedText.map((elm, idx) => (
-          <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+          <View key={elm} style={{flexDirection: 'row', flexWrap: 'wrap'}}>
             <AppText key={elm} {...props} numberOfLines={1}>
               {elm}
             </AppText>
