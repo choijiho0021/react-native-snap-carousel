@@ -186,6 +186,7 @@ function EsimStackComponent() {
       <EsimStack.Screen name="ChargeDetail" component={ChargeDetailScreen} />
       <EsimStack.Screen name="QrInfo" component={QrInfoScreen} />
       <EsimStack.Screen name="UserGuide" component={UserGuideScreen} />
+      <EsimStack.Screen name="Payment" component={PaymentScreen} />
       <EsimStack.Screen name="PymMethod" component={PymMethodScreen} />
       <EsimStack.Screen name="PaymentResult" component={PaymentResultScreen} />
     </EsimStack.Navigator>
