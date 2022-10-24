@@ -159,7 +159,6 @@ type EsimProps = {
   promotion: RkbPromotion[];
   product: ProductModelState;
   account: AccountModelState;
-  sync: SyncModelState;
   noti: NotiModelState;
   action: {
     product: ProductAction;
@@ -179,10 +178,9 @@ const Esim: React.FC<EsimProps> = ({
   promotion,
   product,
   account,
-  sync,
   noti,
 }) => {
-  const [isDevModalVisible, setIsDevModalVisible] = useState<boolean>(false);
+  const [isDevModalVisible, setIsDevModalVisible] = useState<boolean>(true);
   const [bannerHeight, setBannerHeight] = useState<number>(137);
   const [index, setIndex] = useState(0);
   const routes = useMemo(
@@ -224,6 +222,7 @@ const Esim: React.FC<EsimProps> = ({
   const tabBarHeight = useBottomTabBarHeight();
   const headerHeight = useHeaderHeight();
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
+
   const windowHeight = useMemo(
     () => dimensions.height - tabBarHeight - headerHeight,
     [dimensions.height, headerHeight, tabBarHeight],
@@ -233,6 +232,23 @@ const Esim: React.FC<EsimProps> = ({
     () => (account.isSupportDev === undefined ? true : account.isSupportDev),
     [account.isSupportDev],
   );
+
+  const modalType = useMemo(() => {
+    if (navigation.isFocused()) {
+      if (isDevModalVisible && !isSupport) return 'unSupported';
+      if (popUpVisible && !popupDisabled) return 'promotion';
+      if (appUpdateVisible) return 'update';
+    }
+    return 'noModal';
+  }, [
+    appUpdateVisible,
+    isDevModalVisible,
+    isSupport,
+    navigation,
+    popUpVisible,
+    popupDisabled,
+  ]);
+
   const isFirst = useMemo(
     () => (account.isFirst === undefined ? false : account.isFirst),
     [account.isFirst],
@@ -519,7 +535,6 @@ const Esim: React.FC<EsimProps> = ({
           setDeviceList(resp.objects);
         }
       }
-      setIsDevModalVisible(!isSupport);
 
       const deviceModel = DeviceInfo.getModel();
 
@@ -695,44 +710,36 @@ const Esim: React.FC<EsimProps> = ({
         renderTabBar={() => null}
       />
 
-      {
-        // eslint-disable-next-line no-nested-ternary
-        isDevModalVisible && !isSupport ? (
-          <AppModal
-            title={i18n.t('home:unsupportedTitle')}
-            closeButtonTitle={isIOS ? i18n.t('ok') : i18n.t('exitAndOpenLink')}
-            titleStyle={styles.modalTitle}
-            type="close"
-            onOkClose={() => exitApp('exit')}
-            visible={isDevModalVisible && navigation.isFocused()}>
-            {modalBody()}
-          </AppModal>
-        ) : appUpdateVisible === false ? (
-          <NotiModal
-            visible={popUpVisible && !popupDisabled && navigation.isFocused()}
-            popUp={popUp}
-            closeType={closeType}
-            onOkClose={() => exitApp(closeType)}
-            onCancelClose={() => setPopUpVisible(false)}
-          />
-        ) : (
-          <AppVerModal
-            visible={(appUpdateVisible && navigation.isFocused()) || false}
-            option={appUpdate}
-            onOkClose={() => setAppUpdateVisible(false)}
-          />
-        )
-      }
+      <AppModal
+        title={i18n.t('home:unsupportedTitle')}
+        closeButtonTitle={isIOS ? i18n.t('ok') : i18n.t('exitAndOpenLink')}
+        titleStyle={styles.modalTitle}
+        type="close"
+        onOkClose={() => exitApp('exit')}
+        visible={modalType === 'unSupported'}>
+        {modalBody()}
+      </AppModal>
+      <NotiModal
+        visible={modalType === 'promotion'}
+        popUp={popUp}
+        closeType={closeType}
+        onOkClose={() => exitApp(closeType)}
+        onCancelClose={() => setPopUpVisible(false)}
+      />
+      <AppVerModal
+        visible={modalType === 'update'}
+        option={appUpdate}
+        onOkClose={() => setAppUpdateVisible(false)}
+      />
     </Animated.View>
   );
 };
 
 export default connect(
-  ({account, product, promotion, sync, noti}: RootState) => ({
+  ({account, product, promotion, noti}: RootState) => ({
     account,
     product,
     promotion: promotion.promotion,
-    sync,
     noti,
   }),
   (dispatch) => ({

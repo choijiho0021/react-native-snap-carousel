@@ -1,7 +1,7 @@
 /* eslint-disable consistent-return */
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState, useMemo} from 'react';
 import {Image, SafeAreaView, SectionList, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import _ from 'underscore';
@@ -60,6 +60,12 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     justifyContent: 'space-between',
     flexDirection: 'row',
+  },
+  header: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    backgroundColor: colors.white,
   },
 });
 
@@ -127,20 +133,11 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const [imageUrl, setImageUrl] = useState<string>();
   const [localOpDetails, setLocalOpDetails] = useState<string>();
   const [partnerId, setPartnerId] = useState<string>();
-
+  const headerTitle = useMemo(
+    () => API.Product.getTitle(localOpList.get(route.params?.partner[0])),
+    [localOpList, route.params?.partner],
+  );
   // prodByPartner
-
-  useEffect(() => {
-    console.log('@@@@', route.params?.partner[0]);
-    const title = API.Product.getTitle(
-      localOpList.get(route.params?.partner[0]),
-    );
-
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={title} />,
-    });
-  }, [localOpList, navigation, route.params?.partner]);
 
   useEffect(() => {
     if (route.params?.partner) {
@@ -186,6 +183,10 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <AppBackButton title={headerTitle} style={{width: '70%', height: 56}} />
+      </View>
+
       {imageUrl && (
         <Image
           style={styles.box}

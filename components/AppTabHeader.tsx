@@ -26,13 +26,16 @@ const styles = StyleSheet.create({
   },
 });
 
+const {whiteTwo, clearBlue} = colors || {};
+
 const TabHeader = ({
   index,
   routes,
   onIndexChange,
   style,
   titleStyle = styles.normal16WarmGrey,
-  tintColor = colors.clearBlue,
+  tintColor = clearBlue,
+  disabledTintColor = whiteTwo,
 }: {
   index: number;
   routes: {key: string; title: string}[];
@@ -40,6 +43,7 @@ const TabHeader = ({
   style?: ViewStyle;
   titleStyle?: TextStyle;
   tintColor?: string;
+  disabledTintColor?: string;
 }) => {
   return (
     <View style={[style || styles.whiteTwoBackground, {paddingHorizontal: 20}]}>
@@ -52,14 +56,12 @@ const TabHeader = ({
               title={elm.title}
               onPress={() => onIndexChange(idx)}
             />
-            {idx === index ? (
-              <View
-                style={{
-                  height: 2,
-                  backgroundColor: tintColor,
-                }}
-              />
-            ) : null}
+            <View
+              style={{
+                height: 2,
+                backgroundColor: idx === index ? tintColor : disabledTintColor,
+              }}
+            />
           </View>
         ))}
       </View>

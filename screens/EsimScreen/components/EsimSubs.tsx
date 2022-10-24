@@ -343,7 +343,7 @@ const EsimSubs = ({
   isCharged,
 }: {
   item: RkbSubscription;
-  onPressUsage: () => void;
+  onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
   setShowModal: (visible: boolean) => void;
   chargedSubs: RkbSubscription[];
   expired: boolean;
@@ -492,7 +492,7 @@ const EsimSubs = ({
           style={styles.btn}
           onPress={() => {
             setShowModal(true);
-            onPressUsage();
+            onPressUsage(item);
           }}
           title={i18n.t('esim:checkUsage')}
           titleStyle={styles.btnTitle}
@@ -653,7 +653,7 @@ const EsimSubs = ({
 
           {redirectable && renderHkBtn()}
 
-          {(!!item.cautionApp || !!item.caution) && (
+          {!!item.caution && (
             <View style={styles.cautionBox}>
               <View style={styles.cautionIcon}>
                 <AppIcon name="cautionIcon" />
@@ -661,9 +661,6 @@ const EsimSubs = ({
               <View>
                 {!!item.caution && (
                   <Text style={styles.cautionText}>{item.caution}</Text>
-                )}
-                {!!item.cautionApp && (
-                  <Text style={styles.cautionText}>{item.cautionApp}</Text>
                 )}
               </View>
             </View>

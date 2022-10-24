@@ -104,7 +104,13 @@ const toComment = (data) => {
           uuid: item.id,
           title: item.attributes.subject || '',
           body:
-            utils.htmlToString(item.attributes.comment_body.processed) || '',
+            utils.htmlToString(
+              (item.attributes.comment_body.processed || '').replace(
+                /\n/gi,
+                '',
+              ),
+            ) || '',
+
           created: item.attributes.created,
           userName: userName && userName.attributes?.name,
         };

@@ -60,10 +60,18 @@ const isDisabled = (item: RkbSubscription) => {
 };
 
 // 선물안한 상품(구매,선물받음) - 구매일자별 정렬, 선물한 상품 구매일자별 정렬
-const sortSubs = (a, b) => {
-  if (!isDisabled(a) && isDisabled(b)) return -1;
+export const sortSubs = (a: RkbSubscription[], b: RkbSubscription[]) => {
+  if (a.length < 1 || b.length < 1) {
+    console.log('@@@@ sortsubs params have empty array');
+    return -1;
+  }
 
-  if (isDisabled(a) === isDisabled(b) && a.purchaseDate > b.purchaseDate) {
+  if (!isDisabled(a[0]) && isDisabled(b[0])) return -1;
+
+  if (
+    isDisabled(a[0]) === isDisabled(b[0]) &&
+    a[0].purchaseDate > b[0].purchaseDate
+  ) {
     return -1;
   }
 
@@ -101,7 +109,6 @@ export type RkbSubscription = {
   partner?: string;
   promoFlag?: string[];
   caution: string;
-  cautionApp: string;
   daily?: string;
 };
 
@@ -110,43 +117,41 @@ const toSubscription =
   (data: DrupalNode[] | DrupalNodeJsonApi): ApiResult<RkbSubscription> => {
     if (_.isArray(data)) {
       return api.success(
-        data
-          .map((item) => ({
-            key: item.uuid || '',
-            uuid: item.uuid || '',
-            purchaseDate: item.field_purchase_date || '',
-            expireDate: item.field_expiration_date || '',
-            activationDate: item.field_subs_activation_date || '',
-            endDate: item.field_subs_expiration_date || '',
-            statusCd: item.field_status || '',
-            status: toStatus(item.field_status) || '',
-            giftStatusCd:
-              giftCode[item.field_gift_status] || item.field_gift_status || '',
-            country: item.field_country || '',
-            prodName: item.title || '',
-            prodId: item.product_uuid || '',
-            nid: item.nid || '',
-            actCode: item.field_activation_code || '',
-            smdpAddr: item.sm_dp_address || '',
-            qrCode: item.qr_code || '',
-            imsi: item.field_imsi || '',
-            type: item.type || '',
-            subsIccid: item.field_iccid || '',
-            packageId: item.field_cmi_package_id || '',
-            subsOrderNo: item.field_cmi_order_id || '',
-            partner: item.field_ref_partner || '',
-            isStore,
-            promoFlag: item.field_special_categories
-              ? item.field_special_categories
-                  .split(',')
-                  .map((v) => promoFlag[v.trim()])
-                  .filter((v) => !_.isEmpty(v))
-              : [],
-            caution: item.field_caution || '',
-            cautionApp: item.field_caution_app || '',
-            daily: item.field_daily,
-          }))
-          .sort(sortSubs),
+        data.map((item) => ({
+          key: item.uuid || '',
+          uuid: item.uuid || '',
+          purchaseDate: item.field_purchase_date || '',
+          expireDate: item.field_expiration_date || '',
+          activationDate: item.field_subs_activation_date || '',
+          endDate: item.field_subs_expiration_date || '',
+          statusCd: item.field_status || '',
+          status: toStatus(item.field_status) || '',
+          giftStatusCd:
+            giftCode[item.field_gift_status] || item.field_gift_status || '',
+          country: item.field_country || '',
+          prodName: item.title || '',
+          prodId: item.product_uuid || '',
+          nid: item.nid || '',
+          actCode: item.field_activation_code || '',
+          smdpAddr: item.sm_dp_address || '',
+          qrCode: item.qr_code || '',
+          imsi: item.field_imsi || '',
+          type: item.type || '',
+          subsIccid: item.field_iccid || '',
+          packageId: item.field_cmi_package_id || '',
+          subsOrderNo: item.field_cmi_order_id || '',
+          partner: item.field_ref_partner || '',
+          isStore,
+          promoFlag: item.field_special_categories
+            ? item.field_special_categories
+                .split(',')
+                .map((v) => promoFlag[v.trim()])
+                .filter((v) => !_.isEmpty(v))
+            : [],
+          caution: item.field_caution || '',
+          daily: item.field_daily,
+        })),
+        // .sort(sortSubs),
       );
     }
 
@@ -154,24 +159,23 @@ const toSubscription =
       const obj = _.isArray(data.data) ? data.data : [data.data];
 
       return api.success(
-        obj
-          .map((item) => {
-            return {
-              key: item.id,
-              uuid: item.id,
-              purchaseDate: item.field_purchase_date,
-              activationDate: item.field_subs_activation_date,
-              expireDate: item.field_subs_expiration_date,
-              statusCd: item.field_status,
-              giftStatusCd:
-                giftCode[item.attributes?.field_gift_status] ||
-                item.attributes?.field_gift_status ||
-                '',
-              status: item.field_status,
-              type: item.type,
-            };
-          })
-          .sort(sortSubs),
+        obj.map((item) => {
+          return {
+            key: item.id,
+            uuid: item.id,
+            purchaseDate: item.field_purchase_date,
+            activationDate: item.field_subs_activation_date,
+            expireDate: item.field_subs_expiration_date,
+            statusCd: item.field_status,
+            giftStatusCd:
+              giftCode[item.attributes?.field_gift_status] ||
+              item.attributes?.field_gift_status ||
+              '',
+            status: item.field_status,
+            type: item.type,
+          };
+        }),
+        // .sort(sortSubs)
         data.links,
       );
     }
@@ -501,7 +505,10 @@ const quadcellGetData = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
 
   return api.callHttpGet(
-    api.rokHttpUrl(`${api.path.rokApi.pv.quadcell}/imsi/${imsi}/${key}`),
+    api.rokHttpUrl(
+      `${api.path.rokApi.pv.quadcell}/imsi/${imsi}/${key}`,
+      isProduction ? undefined : 5000,
+    ),
     (data) => {
       if (data?.result?.code === 0) {
         return api.success(data?.objects);

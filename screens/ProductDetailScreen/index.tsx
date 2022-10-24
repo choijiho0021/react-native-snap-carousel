@@ -139,21 +139,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     const {partnerId} = product;
     const {params = {}} = route;
 
-    navigation.setOptions({
-      header: () => (
-        <SafeAreaView style={styles.header}>
-          <AppBackButton
-            title={route.params?.title}
-            style={{width: '70%'}}
-            textProps={{numberOfLines: 1, ellipsizeMode: 'tail'}}
-          />
-          <AppCartButton onPress={() => navigation.navigate('Cart')} />
-        </SafeAreaView>
-      ),
-      headerLeft: () => null,
-      headerRight: () => null,
-    });
-
     if (partnerId !== route.params?.partnerId) {
       action.product.getProdDetailInfo(params?.partnerId || '');
     }
@@ -325,6 +310,14 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.screen}>
+      <View style={styles.header}>
+        <AppBackButton
+          title={route.params?.title}
+          style={{width: '70%', height: 56}}
+        />
+        <AppCartButton onPress={() => navigation.navigate('Cart')} />
+      </View>
+
       {renderWebView(route.params?.uuid)}
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
       <AppSnackBar

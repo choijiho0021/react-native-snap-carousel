@@ -690,25 +690,33 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     [authorized, confirm, newUser],
   );
 
+  useEffect(() => {
+    navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <AppBackButton
+          title={i18n.t('mobile:header')}
+          onPress={() => {
+            initState();
+
+            const screen = route?.params?.screen;
+
+            if (!socialLogin) navigation.goBack();
+
+            if (screen === 'Invite') {
+              if (loggedIn) navigation.replace(screen);
+              else navigation.popToTop();
+            }
+          }}
+        />
+      ),
+    });
+  }, [initState, loggedIn, navigation, route?.params?.screen, socialLogin]);
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
 
-      <AppBackButton
-        title={i18n.t('mobile:header')}
-        onPress={() => {
-          initState();
-
-          const screen = route?.params?.screen;
-
-          if (!socialLogin) navigation.goBack();
-
-          if (screen === 'Invite') {
-            if (loggedIn) navigation.replace(screen);
-            else navigation.popToTop();
-          }
-        }}
-      />
       <KeyboardAwareScrollView
         enableOnAndroid
         enableResetScrollToCoords={false}

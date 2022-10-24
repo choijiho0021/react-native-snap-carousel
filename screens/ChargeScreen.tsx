@@ -24,6 +24,7 @@ import {makeProdData} from './CountryScreen';
 import CountryListItem from './HomeScreen/component/CountryListItem';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
+import {retrieveData, storeData} from '@/utils/utils';
 
 const styles = StyleSheet.create({
   container: {
@@ -141,7 +142,11 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
   const route = useRoute<RouteProp<ParamList, 'ChargeScreen'>>();
   const params = useMemo(() => route?.params, [route?.params]);
   const [index, setIndex] = useState(0);
-  const [showTip, setTip] = useState(true);
+  const [showTip, setTip] = useState(false);
+
+  useEffect(() => {
+    retrieveData('chargeTooltip').then((elm) => setTip(elm !== 'closed'));
+  }, []);
 
   const partnerIds = useMemo(() => {
     return product.prodByCountry.reduce((acc: string[], cur) => {
@@ -199,11 +204,15 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
             </View>
           </View>
         }
-        onClose={() => setTip(false)}
+        onClose={() => {
+          setTip(false);
+          storeData('chargeTooltip', 'closed');
+        }}
         placement="bottom">
         <AppButton
           style={styles.cautionBtn}
           onPress={() => {
+            storeData('chargeTooltip', 'closed');
             setTip(true);
           }}
           iconName="btnChargeCaution"

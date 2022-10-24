@@ -179,17 +179,17 @@ const htmlToString = (html?: string) => {
   return (
     html &&
     html
-      .replace(/<br>/gi, '\n')
-      .replace(/<br\/>/gi, '\n')
-      .replace(/&lt;br\/&gt;/gi, '\n')
       .replace(/&amp;lt;br\/&amp;gt;/gi, '\n')
+      .replace(/&lt;br\/&gt;/gi, '\n')
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
-      .replace(/&#039;/g, "'")
-      .replace(/<\/p>/gi, '\n')
-      .replace(/<[^>]*>/gi, '')
+      .replace(/&amp;/g, '&')
       .replace(/\&nbsp;/gi, ' ')
       .replace(/&quot;/gi, '"')
+      .replace(/&#039;/g, "'")
+      .replace(/<br.?\/?>/gi, '\n')
+      .replace(/<p>/gi, '')
+      .replace(/<\/p>/gi, '\n')
   );
 };
 
