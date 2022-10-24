@@ -194,8 +194,6 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
       )}
 
       <View style={{flex: 1}}>
-        {console.log('@@@prodData', prodData)}
-
         <SectionList
           sections={prodData}
           stickySectionHeadersEnabled
