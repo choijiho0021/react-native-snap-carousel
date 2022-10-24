@@ -180,10 +180,10 @@ const htmlToString = (html?: string) => {
     html &&
     html
       .replace(/&amp;lt;br\/&amp;gt;/gi, '\n')
+      .replace(/&amp;/g, '&')
       .replace(/&lt;br\/&gt;/gi, '\n')
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
-      .replace(/&amp;/g, '&')
       .replace(/\&nbsp;/gi, ' ')
       .replace(/&quot;/gi, '"')
       .replace(/&#039;/g, "'")
