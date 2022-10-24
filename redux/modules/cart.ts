@@ -5,13 +5,12 @@ import {AnyAction} from 'redux';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
 import i18n from '@/utils/i18n';
-import {utils} from '@/utils/utils';
 import Env from '@/environment';
 import {PaymentInfo, RkbOrderItem} from '@/redux/api/cartApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import api from '@/redux/api/api';
 import {Currency} from '@/redux/api/productApi';
-import {storeData, retrieveData} from '@/utils/utils';
+import {storeData, retrieveData, utils} from '@/utils/utils';
 import {actions as orderAction} from './order';
 import {actions as accountAction} from './account';
 
@@ -80,6 +79,8 @@ const init = createAsyncThunk('cart/init', async (_, {dispatch}) => {
   await dispatch(initCart());
   await dispatch(cartFetch());
 });
+
+const cartLock = createAsyncThunk('cart/lock', API.Cart.lock);
 
 export type PaymentReq = {key: string; title: string; amount: Currency};
 
@@ -409,6 +410,14 @@ export default handleActions(
 
 */
 
+const makeEmpty = createAsyncThunk(
+  'cart/empty',
+  (params: {orderId: number; token: string}, {dispatch}) => {
+    dispatch(cartLock(params));
+    dispatch(slice.actions.empty());
+  },
+);
+
 export const actions = {
   ...slice.actions,
   cartFetch,
@@ -421,6 +430,7 @@ export const actions = {
   initCart,
   checkStockAndMakeOrder,
   updateOrder,
+  makeEmpty,
 };
 export type CartAction = typeof actions;
 

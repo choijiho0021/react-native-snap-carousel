@@ -146,23 +146,23 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
     React.useCallback(() => {
       // init cart 5 sec later
       setTimeout(() => {
-        console.log('@@@ refresh cart');
         action.cart.cartFetch();
       }, 5000);
     }, [action.cart]),
   );
 
   useEffect(() => {
-    const {pymReq, purchaseItems, pymPrice, deduct} = cart;
+    const {pymReq, purchaseItems, pymPrice, deduct, orderId} = cart;
+    const {token} = account;
     if (purchaseItems.length > 0) {
       setOldCart({pymReq, purchaseItems, pymPrice, deduct});
       setIsRecharge(
         purchaseItems.findIndex((item) => item.type === 'rch') >= 0,
       );
       // 카트를 비운다.
-      action.cart.empty();
+      action.cart.makeEmpty({orderId, token});
     }
-  }, [action.cart, cart]);
+  }, [account, action.cart, cart]);
 
   useEffect(() => {
     Analytics.trackEvent('Payment', {

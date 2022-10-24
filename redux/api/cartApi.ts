@@ -205,6 +205,29 @@ const remove = ({
   );
 };
 
+const lock = ({orderId, token}: {orderId: number; token: string}) => {
+  if (!orderId)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: orderId');
+  if (!token)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
+
+  const url = `${api.httpUrl(
+    api.path.commerce.order,
+    '',
+  )}/${orderId}?_format=json`;
+  const headers = api.withToken(token, 'json');
+
+  return api.callHttp(
+    url,
+    {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify({lock: true}),
+    },
+    toCart,
+  );
+};
+
 const updateQty = ({
   orderId,
   orderItemId,
@@ -437,5 +460,6 @@ export default {
   remove,
   updateQty,
   makeOrder,
+  lock,
   KEY_INIT_CART,
 };
