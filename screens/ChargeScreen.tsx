@@ -257,7 +257,6 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
 
   const renderScene = useCallback(
     ({route}: {route: ChargeTabRoute}) => {
-      console.log('@@@@@route', route.category);
       return (
         <ScrollView>
           {prodData[route.category === 'daily' ? 0 : 1]?.data.map((data) => (

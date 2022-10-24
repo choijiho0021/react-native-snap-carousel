@@ -145,8 +145,6 @@ class PymHistoryScreen extends Component<
       .then((resp) => {
         const {data} = this.state;
         if (resp.result === 0) {
-          console.log('payment history', resp);
-
           const next = _.isEmpty(resp.links.next)
             ? undefined
             : resp.links.next.href;

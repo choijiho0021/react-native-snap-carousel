@@ -212,8 +212,6 @@ const logInAndGetAccount = createAsyncThunk(
                 account: {old_deviceToken},
               } = getState() as RootState;
 
-              console.log('@@@ get account', account);
-
               messaging()
                 .getToken()
                 .then((deviceToken) => {

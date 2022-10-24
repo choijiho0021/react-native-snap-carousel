@@ -243,16 +243,12 @@ const ProductDetailGlobalScreen: React.FC<ProductDetailScreenProps> = ({
   }, [action.toast]);
 
   const scrollTo = useCallback((y: number) => {
-    // console.log('@@@ scroll to', y)
-
     if (scrollView.current)
       scrollView.current.scrollTo({x: 0, y, animated: true});
   }, []);
 
   const clickTab = useCallback(
     (idx: number) => () => {
-      // console.log('@@@ click tab', this._webView1)
-
       Analytics.trackEvent('Page_View_Count', {page: tabList[idx]});
 
       const h =
@@ -267,8 +263,6 @@ const ProductDetailGlobalScreen: React.FC<ProductDetailScreenProps> = ({
     (event: NativeScrollEvent) => {
       const {contentOffset} = event;
       let offset = contentOffset.y;
-
-      // console.log('@@@ offset', offset, event)
 
       offset -= HEADER_IMG_HEIGHT;
       if (tabIdx !== TAB_IDX_ASK_BY_KAKAO) {

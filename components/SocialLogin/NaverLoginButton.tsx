@@ -37,8 +37,6 @@ const NaverLoginButton = ({onAuth}: {onAuth: AuthCallback}) => {
           mobile: res.response.mobile.replace(/-/gi, ''),
         });
       }
-
-      console.log('profileResult', res);
     },
     [onAuth],
   );

@@ -258,7 +258,6 @@ const getStoreSubscription = ({
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
-  console.log('@@@store toSubscription 호출');
   return api.callHttpGet(
     `${api.httpUrl(api.path.storeSubs)}/${mobile}?_format=hal_json`,
     toSubscription(true),

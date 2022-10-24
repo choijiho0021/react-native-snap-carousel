@@ -142,7 +142,6 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
           title: i18n.t('rcpt:title'),
           url: uri,
         });
-        console.log('@@@ share reulst', result, uri);
       });
     } catch (e) {
       console.log('😻😻😻 snapshot failed', e);

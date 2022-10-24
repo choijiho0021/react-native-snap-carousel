@@ -142,7 +142,6 @@ i18nEvent.on('loaded', () => {
       },
     },
   };
-  console.log('@@@ set validation rule', validation);
 });
 
 export type ValidationKey =

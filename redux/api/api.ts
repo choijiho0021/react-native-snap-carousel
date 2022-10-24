@@ -261,8 +261,6 @@ const callHttp = async <T>(
     option.isJson = true;
   }
 
-  console.log('call API', url, config);
-
   try {
     const response: Response = await fetch(url, config);
     if (option.abortController && option.abortController.signal.aborted) {

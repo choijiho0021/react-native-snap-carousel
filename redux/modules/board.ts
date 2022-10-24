@@ -33,7 +33,6 @@ const postAndGetList = createAsyncThunk(
     return dispatch(
       postAttach({images: issue.images, user: mobile, token}),
     ).then(({payload}) => {
-      console.log('upload picture', payload);
       const images = payload ? payload.map((item) => item.objects[0]) : [];
       return dispatch(postIssue({...issue, images, token})).then(
         ({payload: resp}) => {

@@ -117,7 +117,6 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
             uid: response.imp_uid,
             token,
           }).then(async (rsp) => {
-            console.log('payment getuid rsp: \n', rsp, response);
             if (rsp[0]?.success) {
               // 결제완료시 '다음' 버튼 연속클릭 방지 - 연속클릭시 추가 결제 없이 order 계속 생성
               if (!params.isPaid) {
