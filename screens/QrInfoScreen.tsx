@@ -1,13 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {
-  StyleSheet,
-  SafeAreaView,
-  View,
-  Clipboard,
-  Platform,
-} from 'react-native';
+import {StyleSheet, SafeAreaView, View, Platform} from 'react-native';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-
+import Clipboard from '@react-native-community/clipboard';
 import {ScrollView} from 'react-native-gesture-handler';
 import QRCode from 'react-native-qrcode-svg';
 import _ from 'underscore';
@@ -162,15 +156,12 @@ const QrInfoScreen = () => {
     });
   }, [navigation]);
 
-  const copyToClipboard = useCallback(
-    (value?: string) => () => {
-      if (value) {
-        Clipboard.setString(value);
-        setCopyString(value);
-      }
-    },
-    [],
-  );
+  const copyToClipboard = useCallback((value?: string) => {
+    if (value) {
+      Clipboard.setString(value);
+      setCopyString(value);
+    }
+  }, []);
 
   const renderCode = useCallback(
     (title: string, content: string) => {
@@ -220,11 +211,11 @@ const QrInfoScreen = () => {
           </View>
           {isIOS ? (
             <View>
-              {renderCode(i18n.t('esim:smdp'), params.item.smdpAddr)}
-              {renderCode(i18n.t('esim:actCode'), params.item.actCode)}
+              {renderCode(i18n.t('esim:smdp'), params.item?.smdpAddr || '')}
+              {renderCode(i18n.t('esim:actCode'), params.item?.actCode || '')}
             </View>
           ) : (
-            renderCode(i18n.t('esim:actCode'), params.item.qrCode)
+            renderCode(i18n.t('esim:actCode'), params.item?.qrCode || '')
           )}
         </View>
       </ScrollView>
