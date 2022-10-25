@@ -23,6 +23,7 @@ import {RootState} from '@/redux';
 import {AccountModelState} from '@/redux/modules/account';
 import {API} from '@/redux/api';
 import {actions as simActions, SimAction} from '@/redux/modules/sim';
+import utils from '@/redux/api/utils';
 
 const styles = StyleSheet.create({
   paymentBtnFrame: {
@@ -249,7 +250,9 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
         <View style={styles.amountFrame}>
           <AppText style={styles.amountText}>
             {i18n.t('esim:charge:amount')}
-            <AppText style={styles.amount}>{params.data.price.value}</AppText>
+            <AppText style={styles.amount}>
+              {utils.currencyString(params.data.price.value)}
+            </AppText>
             {i18n.t(params.data.price.currency)}
           </AppText>
         </View>
