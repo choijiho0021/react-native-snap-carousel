@@ -160,7 +160,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 40,
   },
   btnLeft: {
     flex: 1,
@@ -168,7 +167,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 6,
-    marginTop: 40,
   },
   btnRight: {
     flex: 1,
@@ -176,7 +174,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 6,
-    marginTop: 40,
   },
   btnFrame: {
     flex: 1,
@@ -270,17 +267,16 @@ const styles = StyleSheet.create({
   },
   cautionBox: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
     alignItems: 'center',
     marginTop: 28,
+    marginBottom: 24,
   },
   cautionText: {
-    color: '#ee4422',
     ...appStyles.medium16,
+    color: colors.tomato,
     lineHeight: 20,
     marginRight: 36,
   },
-  cautionIcon: {marginRight: 12, alignSelf: 'flex-start'},
   expiredDot: {
     position: 'absolute',
     width: 7,
@@ -607,7 +603,7 @@ const EsimSubs = ({
         <View style={styles.sendable}>
           <AppButton
             title={t}
-            titleStyle={appStyles.bold14Text}
+            titleStyle={appStyles.bold18Text}
             style={styles.giftButton}
             onPress={() =>
               navigation.navigate('ChargeHistory', {
@@ -651,20 +647,19 @@ const EsimSubs = ({
         <View style={isMoreInfo && styles.moreInfoContent}>
           {topInfo()}
 
-          {redirectable && renderHkBtn()}
-
-          {!!item.caution && (
+          {item.caution ? (
             <View style={styles.cautionBox}>
-              <View style={styles.cautionIcon}>
-                <AppIcon name="cautionIcon" />
-              </View>
+              <AppIcon name="cautionIcon" style={{marginRight: 12}} />
               <View>
-                {!!item.caution && (
-                  <Text style={styles.cautionText}>{item.caution}</Text>
-                )}
+                <AppText style={styles.cautionText}>{item.caution}</AppText>
               </View>
             </View>
+          ) : (
+            <View style={{height: 40}} />
           )}
+
+          {redirectable && renderHkBtn()}
+
           {isCharged ? (
             // 충전 내역이 있는 경우
             renderHisBtn(`${i18n.t('acc:rechargeHistory2')}`)
