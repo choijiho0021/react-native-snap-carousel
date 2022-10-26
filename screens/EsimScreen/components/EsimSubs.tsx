@@ -1,14 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React, {memo, useCallback, useMemo, useState} from 'react';
-import {
-  Pressable,
-  StyleSheet,
-  View,
-  Text,
-  Platform,
-  Modal,
-  SafeAreaView,
-} from 'react-native';
+import {Pressable, StyleSheet, View, Text, Platform} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import moment from 'moment';
 import AppButton from '@/components/AppButton';
@@ -161,19 +153,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  btnLeft: {
+  btnMove: {
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 6,
-  },
-  btnRight: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: 6,
   },
   btnFrame: {
     flex: 1,
@@ -348,8 +332,8 @@ const EsimSubs = ({
   const navigation = useNavigation();
   const {giftStatusCd} = item;
   const sendable = useMemo(
-    () => !expired && !giftStatusCd,
-    [expired, giftStatusCd],
+    () => !expired && !giftStatusCd && !isCharged,
+    [expired, giftStatusCd, isCharged],
   );
   const [isMoreInfo, setIsMoreInfo] = useState(false);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
@@ -362,16 +346,16 @@ const EsimSubs = ({
     return chargeabledate.format('YYYY.MM.DD');
   }, [chargeabledate]);
 
-  const isChargeable = useMemo(() => {
-    if (item.partner !== 'CMI') return false;
-    return true;
-  }, [item.partner]);
-
   const isChargeExpired = useMemo(() => {
     const today = moment();
     if (chargeabledate < today) return true;
     return false;
   }, [chargeabledate]);
+
+  const isChargeable = useMemo(() => {
+    if (item.partner !== 'CMI' || isChargeExpired) return false;
+    return true;
+  }, [isChargeExpired, item.partner]);
 
   const redirectable = useMemo(
     () =>
@@ -381,6 +365,33 @@ const EsimSubs = ({
       /홍콩/gi.test(item.prodName!) &&
       item.partner === 'CMI',
     [expired, giftStatusCd, item],
+  );
+
+  const onPressRecharge = useCallback(
+    (mainSubs: RkbSubscription) => {
+      if (isCharged) {
+        navigation.navigate('ChargeHistory', {
+          mainSubs,
+          chargeablePeriod,
+          onPressUsage,
+          chargedSubs,
+          isChargeable,
+        });
+      } else if (isChargeable) {
+        navigation.navigate('Charge', {
+          item: mainSubs,
+          chargeablePeriod,
+        });
+      }
+    },
+    [
+      chargeablePeriod,
+      chargedSubs,
+      isChargeable,
+      isCharged,
+      navigation,
+      onPressUsage,
+    ],
   );
 
   const title = useCallback(() => {
@@ -496,90 +507,36 @@ const EsimSubs = ({
         />
 
         {isChargeable ? (
-          !isChargeExpired ? (
-            <AppButton
-              style={styles.btn}
-              onPress={() =>
-                isCharged
-                  ? navigation.navigate('ChargeHistory', {
-                      mainSubs: item,
-                      chargeablePeriod,
-                      onPressUsage,
-                      chargedSubs,
-                      isChargeable,
-                    })
-                  : navigation.navigate('Charge', {
-                      item,
-                      chargeableDate: chargeablePeriod,
-                    })
-              }
-              title={i18n.t('esim:rechargeable')}
-              titleStyle={styles.btnTitle}
-              iconName="btnChargeable"
-            />
-          ) : (
-            <AppButton
-              style={styles.btnExpired}
-              title={i18n.t('esim:rechargeExpired')}
-              titleStyle={styles.btnTitle}
-              onPress={() => setExpiredModalVisible(true)}
-              iconName="btnChargeExpired"
-            />
-          )
+          <AppButton
+            style={styles.btn}
+            onPress={() => onPressRecharge(item)}
+            title={i18n.t('esim:rechargeable')}
+            titleStyle={styles.btnTitle}
+            iconName="btnChargeable"
+          />
         ) : (
           <AppButton
-            style={styles.btnDis}
-            title={i18n.t('esim:notrechargeable')}
+            style={isChargeExpired ? styles.btnExpired : styles.btnDis}
+            title={i18n.t(
+              isChargeExpired ? 'esim:rechargeExpired' : 'esim:notrechargeable',
+            )}
             titleStyle={styles.btnTitle}
-            iconName="btnNonChargeable"
+            onPress={() => isChargeExpired && setExpiredModalVisible(true)}
+            iconName={isChargeExpired ? 'btnChargeExpired' : 'btnNonChargeable'}
           />
         )}
-        {isChargeable && isChargeExpired && <View style={styles.expiredDot} />}
+        {isChargeExpired && <View style={styles.expiredDot} />}
       </View>
     );
   }, [
-    chargeablePeriod,
-    chargedSubs,
     isChargeExpired,
     isChargeable,
-    isCharged,
     item,
     navigation,
+    onPressRecharge,
     onPressUsage,
     setShowModal,
   ]);
-
-  const renderBtn = useCallback(
-    (t: string, isGift: boolean) => {
-      return (
-        <View style={isGift ? styles.btnLeft : styles.btnRight}>
-          <AppButton
-            title={t}
-            titleStyle={[styles.btnTitle2, isGift && styles.colorblack]}
-            style={
-              // 충전하기 버튼 충전불가능일때 Disable
-              // eslint-disable-next-line no-nested-ternary
-              isGift
-                ? styles.giftButton
-                : isChargeable
-                ? styles.chargeButton
-                : styles.chargeButtonDis
-            }
-            onPress={() =>
-              isGift
-                ? navigation.navigate('Gift', {item})
-                : isChargeable &&
-                  navigation.navigate('Charge', {
-                    item,
-                    chargeableDate: chargeablePeriod,
-                  })
-            }
-          />
-        </View>
-      );
-    },
-    [chargeablePeriod, isChargeable, item, navigation],
-  );
 
   const renderHkBtn = useCallback(() => {
     return (
@@ -597,36 +554,39 @@ const EsimSubs = ({
     );
   }, [item, navigation]);
 
-  const renderHisBtn = useCallback(
-    (t: string) => {
-      return (
-        <View style={styles.sendable}>
-          <AppButton
-            title={t}
-            titleStyle={appStyles.bold18Text}
-            style={styles.giftButton}
-            onPress={() =>
-              navigation.navigate('ChargeHistory', {
-                mainSubs: item,
-                chargeablePeriod,
-                onPressUsage,
-                chargedSubs,
-                isChargeable,
-              })
-            }
-          />
-        </View>
-      );
-    },
-    [
-      chargeablePeriod,
-      chargedSubs,
-      isChargeable,
-      item,
-      navigation,
-      onPressUsage,
-    ],
-  );
+  const renderMoveBtn = useCallback(() => {
+    const moveBtnList = [sendable, isCharged || isChargeable].filter(
+      (elm) => elm,
+    );
+    if (moveBtnList.length === 0) return null;
+
+    return (
+      <View style={styles.btnFrame}>
+        {moveBtnList.map((key, idx) => {
+          const isLast = idx === moveBtnList.length - 1;
+          const isSendBtn = sendable && idx === 0;
+          const title = isSendBtn
+            ? i18n.t('esim:sendGift')
+            : i18n.t(isCharged ? 'esim:chargeHistory' : 'esim:charge');
+
+          return (
+            <View style={[styles.btnMove, {marginRight: !isLast ? 12 : 0}]}>
+              <AppButton
+                title={title}
+                titleStyle={[styles.btnTitle2, !isLast && styles.colorblack]}
+                style={!isLast ? styles.giftButton : styles.chargeButton}
+                onPress={() =>
+                  isSendBtn
+                    ? navigation.navigate('Gift', {item})
+                    : onPressRecharge(item)
+                }
+              />
+            </View>
+          );
+        })}
+      </View>
+    );
+  }, [isChargeable, isCharged, item, navigation, onPressRecharge, sendable]);
 
   return (
     <View
@@ -660,20 +620,7 @@ const EsimSubs = ({
 
           {redirectable && renderHkBtn()}
 
-          {isCharged ? (
-            // 충전 내역이 있는 경우
-            renderHisBtn(`${i18n.t('acc:rechargeHistory2')}`)
-          ) : (
-            // 충전 내역이 없는 경우
-            <View>
-              {sendable && (
-                <View style={styles.btnFrame}>
-                  {renderBtn(`${i18n.t('esim:sendGift')}`, true)}
-                  {isChargeable && renderBtn(`${i18n.t('esim:charge')}`, false)}
-                </View>
-              )}
-            </View>
-          )}
+          {renderMoveBtn()}
 
           <View style={styles.line} />
         </View>

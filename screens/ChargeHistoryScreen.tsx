@@ -492,7 +492,7 @@ const ChargeHistoryScreen: React.FC = () => {
           onPress={() =>
             navigation.navigate('Charge', {
               item: mainSubs,
-              chargeableDate: chargeablePeriod,
+              chargeablePeriod,
             })
           }
           title={i18n.t('esim:charge')}

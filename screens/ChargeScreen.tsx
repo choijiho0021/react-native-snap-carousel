@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
 type ParamList = {
   ChargeScreen: {
     item: RkbSubscription;
-    chargeableDate: string;
+    chargeablePeriod: string;
   };
 };
 
@@ -267,7 +267,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
                 navigation.navigate('ChargeDetail', {
                   data,
                   prodname: params.item.prodName,
-                  chargeableDate: params.chargeableDate,
+                  chargeablePeriod: params.chargeablePeriod,
                   subsIccid: params.item.subsIccid,
                 });
               }}
@@ -279,7 +279,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
     },
     [
       navigation,
-      params.chargeableDate,
+      params.chargeablePeriod,
       params.item.prodName,
       params.item.subsIccid,
       prodData,

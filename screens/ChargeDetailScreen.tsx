@@ -113,7 +113,7 @@ type ParamList = {
   ChargeDetailScreen: {
     data: RkbProduct;
     prodname: string;
-    chargeableDate: string;
+    chargeablePeriod: string;
     subsIccid: string;
   };
 };
@@ -181,12 +181,12 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
     [],
   );
   const tailText = useCallback(
-    (text: string, chargeableDate: string) => (
+    (text: string, chargeablePeriod: string) => (
       <AppStyledText
         text={text}
         textStyle={styles.bodyTail}
         format={{b: styles.chargePeriod}}
-        data={{chargeableDate}}
+        data={{chargeablePeriod}}
       />
     ),
     [],
@@ -213,7 +213,10 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
           </View>
 
           <View>
-            {tailText(i18n.t('esim:chargeDetail:body2'), params.chargeableDate)}
+            {tailText(
+              i18n.t('esim:chargeDetail:body2'),
+              params.chargeablePeriod,
+            )}
           </View>
         </ImageBackground>
 
