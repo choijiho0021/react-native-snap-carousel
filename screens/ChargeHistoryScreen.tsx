@@ -77,10 +77,6 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     marginHorizontal: 20,
     paddingHorizontal: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#eeeeee',
-    borderBottomLeftRadius: 3,
-    borderBottomRightRadius: 3,
   },
   inactiveContainer: {
     marginBottom: 6,
@@ -91,7 +87,6 @@ const styles = StyleSheet.create({
   },
   badge: {
     paddingHorizontal: 8,
-    borderRadius: 2,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 8,
@@ -228,7 +223,7 @@ const ChargeHistoryScreen: React.FC = () => {
   const [status, setStatus] = useState({});
   const [orderModalVisible, setOrderModalVisible] = useState<boolean>(false);
   const [orderType, setOrderType] = useState<OrderType>('purchase');
-  const orderTypeList: OrderType[] = useMemo(() => ['latest', 'purchase'], []);
+  const orderTypeList: OrderType[] = useMemo(() => ['purchase', 'latest'], []);
   const [showTip, setShowTip] = useState(false);
 
   useEffect(() => {
@@ -388,7 +383,7 @@ const ChargeHistoryScreen: React.FC = () => {
               style={{flexDirection: 'row', alignItems: 'center'}}
               onPress={() => {
                 setPending(true);
-                onPressUsage(mainSubs).then((u) => {
+                onPressUsage(item).then((u) => {
                   setUsage(u.usage);
                   setStatus(u.status);
                   setPending(false);
@@ -408,7 +403,7 @@ const ChargeHistoryScreen: React.FC = () => {
         </View>
       );
     },
-    [mainSubs, onPressUsage],
+    [onPressUsage],
   );
 
   return (
@@ -491,8 +486,8 @@ const ChargeHistoryScreen: React.FC = () => {
           type="primary"
           onPress={() =>
             navigation.navigate('Charge', {
-              item: mainSubs,
-              chargeableDate: chargeablePeriod,
+              mainSubs,
+              chargeablePeriod,
             })
           }
           title={i18n.t('esim:charge')}

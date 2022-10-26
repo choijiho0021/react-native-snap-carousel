@@ -177,6 +177,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
     [promotion.gift.bg],
   );
   const [showSnackBar, setShowSnackbar] = useState(false);
+  const {mainSubs} = route.params || {};
 
   const SMSDivider = useMemo(() => (Platform.OS === 'android' ? '?' : '&'), []);
   const methodList = useMemo(
@@ -382,8 +383,6 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
     [bgImages, contHeight, msg, num, prevMsg],
   );
 
-  const {item} = route.params;
-
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView
@@ -395,7 +394,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
             {i18n.t('gift:giftInfo')}
           </AppText>
           <AppText style={[appStyles.normal16Text, {marginTop: 20}]}>
-            {item.prodName}
+            {mainSubs.prodName}
           </AppText>
         </View>
         <View style={styles.thickDivider} />
@@ -415,7 +414,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
       <AppButton
         style={[appStyles.confirm]}
         title={i18n.t('esim:sendGift')}
-        onPress={() => sendLink(checked, item)}
+        onPress={() => sendLink(checked, mainSubs)}
       />
       <AppSnackBar
         visible={showSnackBar}

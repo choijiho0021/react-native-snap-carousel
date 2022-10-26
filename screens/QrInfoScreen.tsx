@@ -1,13 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {
-  StyleSheet,
-  SafeAreaView,
-  View,
-  Clipboard,
-  Platform,
-} from 'react-native';
+import {StyleSheet, SafeAreaView, View, Platform} from 'react-native';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-
+import Clipboard from '@react-native-community/clipboard';
 import {ScrollView} from 'react-native-gesture-handler';
 import QRCode from 'react-native-qrcode-svg';
 import _ from 'underscore';
@@ -88,6 +82,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   content: {
+    ...appStyles.robotoBold16Text,
     flex: 1,
     color: colors.black,
   },
@@ -108,11 +103,16 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: colors.black,
   },
+  codeContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
 });
 
 type ParamList = {
   QrInfoScreen: {
-    item: RkbSubscription;
+    mainSubs: RkbSubscription;
   };
 };
 
@@ -162,15 +162,12 @@ const QrInfoScreen = () => {
     });
   }, [navigation]);
 
-  const copyToClipboard = useCallback(
-    (value?: string) => () => {
-      if (value) {
-        Clipboard.setString(value);
-        setCopyString(value);
-      }
-    },
-    [],
-  );
+  const copyToClipboard = useCallback((value?: string) => {
+    if (value) {
+      Clipboard.setString(value);
+      setCopyString(value);
+    }
+  }, []);
 
   const renderCode = useCallback(
     (title: string, content: string) => {
@@ -178,7 +175,7 @@ const QrInfoScreen = () => {
       return (
         <View style={styles.copyBox}>
           <AppText style={styles.copyBoxTitle}>{title}</AppText>
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <View style={styles.codeContent}>
             <AppText style={styles.content}>{content}</AppText>
             <AppButton
               title={i18n.t('copy')}
@@ -211,7 +208,7 @@ const QrInfoScreen = () => {
         <View style={styles.guideBanner}>{renderInfo(navigation)}</View>
         <View style={styles.box}>
           <AppText style={styles.title}>{i18n.t('esim:qr')}</AppText>
-          {showQR(params.item)}
+          {showQR(params.mainSubs)}
         </View>
         <View style={styles.box}>
           <AppText style={styles.title}>{i18n.t('esim:manualInput')}</AppText>
@@ -220,11 +217,14 @@ const QrInfoScreen = () => {
           </View>
           {isIOS ? (
             <View>
-              {renderCode(i18n.t('esim:smdp'), params.item.smdpAddr)}
-              {renderCode(i18n.t('esim:actCode'), params.item.actCode)}
+              {renderCode(i18n.t('esim:smdp'), params.mainSubs?.smdpAddr || '')}
+              {renderCode(
+                i18n.t('esim:actCode'),
+                params.mainSubs?.actCode || '',
+              )}
             </View>
           ) : (
-            renderCode(i18n.t('esim:actCode'), params.item.qrCode)
+            renderCode(i18n.t('esim:actCode'), params.mainSubs?.qrCode || '')
           )}
         </View>
       </ScrollView>

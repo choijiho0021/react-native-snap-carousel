@@ -121,7 +121,7 @@ const CreateAppContainer = ({store}) => {
 
       return (
         enableIpadList.includes(DeviceId) ||
-        (DeviceId.length >= 8 && DeviceId.localeCompare('iPad13,2') >= 0)
+        (DeviceId.length >= 8 && DeviceId.localeCompare('iPad13,1') >= 0)
       );
     }
 

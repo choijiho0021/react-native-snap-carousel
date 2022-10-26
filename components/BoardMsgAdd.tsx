@@ -261,7 +261,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     } as RkbIssue;
 
     const rsp = await action.board.postAndGetList(issue);
-    console.log('@@@ rsp', rsp);
 
     setMsg(undefined);
     setTitle(undefined);

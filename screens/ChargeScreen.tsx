@@ -117,8 +117,8 @@ const styles = StyleSheet.create({
 
 type ParamList = {
   ChargeScreen: {
-    item: RkbSubscription;
-    chargeableDate: string;
+    mainSubs: RkbSubscription;
+    chargeablePeriod: string;
   };
 };
 
@@ -150,10 +150,19 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
 
   const partnerIds = useMemo(() => {
     return product.prodByCountry.reduce((acc: string[], cur) => {
-      if (cur.country == params.item.country) acc.push(cur.partner);
+      const curArr = cur.country.split(',');
+      const mainCntryArr = params.mainSubs?.country || [];
+
+      if (
+        curArr.length === mainCntryArr.length &&
+        curArr.filter((elm) => mainCntryArr.includes(elm)).length ===
+          curArr.length
+      )
+        acc.push(cur.partner);
+
       return acc;
     }, []);
-  }, [params.item.country, product.prodByCountry]);
+  }, [params.mainSubs.country, product.prodByCountry]);
 
   const prodData = useMemo(() => {
     if (partnerIds) {
@@ -257,7 +266,6 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
 
   const renderScene = useCallback(
     ({route}: {route: ChargeTabRoute}) => {
-      console.log('@@@@@route', route.category);
       return (
         <ScrollView>
           {prodData[route.category === 'daily' ? 0 : 1]?.data.map((data) => (
@@ -267,9 +275,9 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
               onPress={() => {
                 navigation.navigate('ChargeDetail', {
                   data,
-                  prodname: params.item.prodName,
-                  chargeableDate: params.chargeableDate,
-                  subsIccid: params.item.subsIccid,
+                  prodname: params.mainSubs.prodName,
+                  chargeablePeriod: params.chargeablePeriod,
+                  subsIccid: params.mainSubs.subsIccid,
                 });
               }}
               isCharge
@@ -280,9 +288,9 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
     },
     [
       navigation,
-      params.chargeableDate,
-      params.item.prodName,
-      params.item.subsIccid,
+      params.chargeablePeriod,
+      params.mainSubs.prodName,
+      params.mainSubs.subsIccid,
       prodData,
     ],
   );

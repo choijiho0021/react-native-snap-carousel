@@ -224,7 +224,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
       API.Subscription.getSubsUsage({id: item.nid, token}).then((resp) => {
         setDisableBtn(true);
         if (resp.result === 0) {
-          console.log('getSubsUsage progress', resp.objects, item.nid);
           const {quota, used} = resp.objects[0];
           const progress =
             used >= 0 ? 100 - Math.floor((used / quota) * 100) : 0;
@@ -238,7 +237,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
           Analytics.trackEvent('Page_View_Count', {page: 'Get Detail Data'});
         } else {
           showSnackbar();
-          console.log('Get Usage failed', resp);
         }
       });
     }

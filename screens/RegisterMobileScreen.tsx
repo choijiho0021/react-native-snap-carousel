@@ -430,15 +430,12 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
             resp.result !== API.default.E_RESOURCE_NOT_FOUND ||
             !resp.message?.includes('Duplicate')
           ) {
-            // dulicated email 이외의 에러인 경우, throw error
-            console.log('confirm email failed', resp);
             // 정상이거나, duplicated email 인 경우는 화면 상태 갱신 필요
             setIsValidEmail(isValid);
             setEmailError(isValid ? undefined : i18n.t('acc:duplicatedEmail'));
             throw new Error('Duplicated email');
           }
         }
-        console.log('@@@ confirm email', resp);
       }
 
       if (isValid && mounted.current) {

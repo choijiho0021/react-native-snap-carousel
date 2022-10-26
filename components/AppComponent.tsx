@@ -131,10 +131,6 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
         : AdjustConfig.EnvironmentSandbox,
     );
     adjustConfig.setShouldLaunchDeeplink(true);
-    adjustConfig.setDeferredDeeplinkCallbackListener((deeplink) => {
-      console.log('Deferred deep link URL content: ' + deeplink);
-    });
-
     adjustConfig.setAllowiAdInfoReading(true);
 
     Adjust.create(adjustConfig);

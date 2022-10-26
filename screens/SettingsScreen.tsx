@@ -219,8 +219,6 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
               openSettings,
             );
           }
-
-          console.log('@@@ push noti', isPushNotiEnabled);
           action.account.changePushNoti({
             isPushNotiEnabled: !isPushNotiEnabled,
           });

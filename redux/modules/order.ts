@@ -278,7 +278,6 @@ const slice = createSlice({
 
     builder.addCase(getStoreSubs.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
-      console.log('@@@ store', objects);
       if (result === 0) {
         state.subs = mergeSubs(state.subs, objects);
       }

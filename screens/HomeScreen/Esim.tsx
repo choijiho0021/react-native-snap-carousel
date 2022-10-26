@@ -209,7 +209,7 @@ const Esim: React.FC<EsimProps> = ({
       ] as TabViewRoute[],
     [],
   );
-  const [popUpVisible, setPopUpVisible] = useState(false);
+  const [popUpVisible, setPopUpVisible] = useState();
   const [popupDisabled, setPopupDisabled] = useState(true);
   const [appUpdate, setAppUpdate] = useState('');
   const [appUpdateVisible, setAppUpdateVisible] = useState<boolean>();
@@ -228,13 +228,15 @@ const Esim: React.FC<EsimProps> = ({
     [dimensions.height, headerHeight, tabBarHeight],
   );
 
-  const isSupport = useMemo(
-    () => (account.isSupportDev === undefined ? true : account.isSupportDev),
-    [account.isSupportDev],
-  );
+  const isSupport = useMemo(() => account.isSupportDev, [account.isSupportDev]);
 
   const modalType = useMemo(() => {
-    if (navigation.isFocused()) {
+    if (
+      navigation.isFocused() &&
+      isSupport !== undefined &&
+      popUpVisible !== undefined &&
+      appUpdateVisible !== undefined
+    ) {
       if (isDevModalVisible && !isSupport) return 'unSupported';
       if (popUpVisible && !popupDisabled) return 'promotion';
       if (appUpdateVisible) return 'update';
@@ -622,8 +624,6 @@ const Esim: React.FC<EsimProps> = ({
           action.cart.init();
           action.order.init();
         } else {
-          // action.noti.initNotiList();
-          console.log('@@@ get noti list');
           action.noti.getNotiList({mobile: account.mobile});
         }
       }
@@ -661,6 +661,35 @@ const Esim: React.FC<EsimProps> = ({
   const onLayout = useCallback(
     (event) => setBannerHeight(event.nativeEvent.layout.height),
     [],
+  );
+
+  const renderModal = useCallback(
+    () => (
+      <>
+        <NotiModal
+          visible={modalType === 'promotion'}
+          popUp={popUp}
+          closeType={closeType}
+          onOkClose={() => exitApp(closeType)}
+          onCancelClose={() => setPopUpVisible(false)}
+        />
+        <AppModal
+          title={i18n.t('home:unsupportedTitle')}
+          closeButtonTitle={isIOS ? i18n.t('ok') : i18n.t('exitAndOpenLink')}
+          titleStyle={styles.modalTitle}
+          type="close"
+          onOkClose={() => exitApp('exit')}
+          visible={modalType === 'unSupported'}>
+          {modalBody()}
+        </AppModal>
+        <AppVerModal
+          visible={modalType === 'update'}
+          option={appUpdate}
+          onOkClose={() => setAppUpdateVisible(false)}
+        />
+      </>
+    ),
+    [appUpdate, closeType, exitApp, modalBody, modalType, popUp],
   );
 
   return (
@@ -710,27 +739,7 @@ const Esim: React.FC<EsimProps> = ({
         renderTabBar={() => null}
       />
 
-      <AppModal
-        title={i18n.t('home:unsupportedTitle')}
-        closeButtonTitle={isIOS ? i18n.t('ok') : i18n.t('exitAndOpenLink')}
-        titleStyle={styles.modalTitle}
-        type="close"
-        onOkClose={() => exitApp('exit')}
-        visible={modalType === 'unSupported'}>
-        {modalBody()}
-      </AppModal>
-      <NotiModal
-        visible={modalType === 'promotion'}
-        popUp={popUp}
-        closeType={closeType}
-        onOkClose={() => exitApp(closeType)}
-        onCancelClose={() => setPopUpVisible(false)}
-      />
-      <AppVerModal
-        visible={modalType === 'update'}
-        option={appUpdate}
-        onOkClose={() => setAppUpdateVisible(false)}
-      />
+      {renderModal()}
     </Animated.View>
   );
 };

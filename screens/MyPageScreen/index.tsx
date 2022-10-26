@@ -385,7 +385,6 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
           cropperCancelText: i18n.t('cancel'),
         })
           .then((image) => {
-            console.log('image', image);
             return image && action.account.uploadAndChangePicture(image);
           })
           .catch((err) => {
