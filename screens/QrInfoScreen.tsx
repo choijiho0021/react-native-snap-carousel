@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
 
 type ParamList = {
   QrInfoScreen: {
-    item: RkbSubscription;
+    mainSubs: RkbSubscription;
   };
 };
 
@@ -208,7 +208,7 @@ const QrInfoScreen = () => {
         <View style={styles.guideBanner}>{renderInfo(navigation)}</View>
         <View style={styles.box}>
           <AppText style={styles.title}>{i18n.t('esim:qr')}</AppText>
-          {showQR(params.item)}
+          {showQR(params.mainSubs)}
         </View>
         <View style={styles.box}>
           <AppText style={styles.title}>{i18n.t('esim:manualInput')}</AppText>
@@ -217,11 +217,14 @@ const QrInfoScreen = () => {
           </View>
           {isIOS ? (
             <View>
-              {renderCode(i18n.t('esim:smdp'), params.item?.smdpAddr || '')}
-              {renderCode(i18n.t('esim:actCode'), params.item?.actCode || '')}
+              {renderCode(i18n.t('esim:smdp'), params.mainSubs?.smdpAddr || '')}
+              {renderCode(
+                i18n.t('esim:actCode'),
+                params.mainSubs?.actCode || '',
+              )}
             </View>
           ) : (
-            renderCode(i18n.t('esim:actCode'), params.item?.qrCode || '')
+            renderCode(i18n.t('esim:actCode'), params.mainSubs?.qrCode || '')
           )}
         </View>
       </ScrollView>

@@ -403,7 +403,7 @@ const ChargeHistoryScreen: React.FC = () => {
         </View>
       );
     },
-    [mainSubs, onPressUsage],
+    [onPressUsage],
   );
 
   return (
@@ -486,7 +486,7 @@ const ChargeHistoryScreen: React.FC = () => {
           type="primary"
           onPress={() =>
             navigation.navigate('Charge', {
-              item: mainSubs,
+              mainSubs,
               chargeablePeriod,
             })
           }

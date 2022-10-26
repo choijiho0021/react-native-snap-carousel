@@ -114,7 +114,7 @@ export type HomeStackParamList = {
   Invite: undefined;
   GiftGuide: undefined;
 
-  Gift: {item: RkbSubscription};
+  Gift: {mainSubs: RkbSubscription};
 };
 
 export const navigate = (

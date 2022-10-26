@@ -315,14 +315,14 @@ const styles = StyleSheet.create({
 });
 
 const EsimSubs = ({
-  item,
+  mainSubs,
   onPressUsage,
   setShowModal,
   chargedSubs,
   expired,
   isCharged,
 }: {
-  item: RkbSubscription;
+  mainSubs: RkbSubscription;
   onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
   setShowModal: (visible: boolean) => void;
   chargedSubs: RkbSubscription[];
@@ -330,7 +330,7 @@ const EsimSubs = ({
   isCharged: boolean;
 }) => {
   const navigation = useNavigation();
-  const {giftStatusCd} = item;
+  const {giftStatusCd} = mainSubs;
   const sendable = useMemo(
     () => !expired && !giftStatusCd && !isCharged,
     [expired, giftStatusCd, isCharged],
@@ -339,8 +339,8 @@ const EsimSubs = ({
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
 
   const chargeabledate = useMemo(() => {
-    return moment(item.expireDate).subtract(30, 'd');
-  }, [item.expireDate]);
+    return moment(mainSubs.expireDate).subtract(30, 'd');
+  }, [mainSubs.expireDate]);
 
   const chargeablePeriod = useMemo(() => {
     return chargeabledate.format('YYYY.MM.DD');
@@ -353,25 +353,25 @@ const EsimSubs = ({
   }, [chargeabledate]);
 
   const isChargeable = useMemo(() => {
-    if (item.partner !== 'CMI' || isChargeExpired) return false;
+    if (mainSubs.partner !== 'CMI' || isChargeExpired) return false;
     return true;
-  }, [isChargeExpired, item.partner]);
+  }, [isChargeExpired, mainSubs.partner]);
 
   const redirectable = useMemo(
     () =>
       !expired &&
       giftStatusCd !== 'S' &&
-      item.country?.includes('HK') &&
-      /홍콩/gi.test(item.prodName!) &&
-      item.partner === 'CMI',
-    [expired, giftStatusCd, item],
+      mainSubs.country?.includes('HK') &&
+      /홍콩/gi.test(mainSubs.prodName!) &&
+      mainSubs.partner === 'CMI',
+    [expired, giftStatusCd, mainSubs],
   );
 
   const onPressRecharge = useCallback(
-    (mainSubs: RkbSubscription) => {
+    (item: RkbSubscription) => {
       if (isCharged) {
         navigation.navigate('ChargeHistory', {
-          mainSubs,
+          mainSubs: item,
           chargeablePeriod,
           onPressUsage,
           chargedSubs,
@@ -379,7 +379,7 @@ const EsimSubs = ({
         });
       } else if (isChargeable) {
         navigation.navigate('Charge', {
-          item: mainSubs,
+          mainSubs: item,
           chargeablePeriod,
         });
       }
@@ -395,17 +395,17 @@ const EsimSubs = ({
   );
 
   const title = useCallback(() => {
-    const country = item.prodName?.split(' ')?.[0];
+    const country = mainSubs.prodName?.split(' ')?.[0];
 
     return (
       <View style={styles.prodTitle}>
         <SplitText
-          key={item.key}
+          key={mainSubs.key}
           renderExpend={() =>
             sendable &&
             !expired &&
             !isCharged &&
-            renderPromoFlag(item.promoFlag || [], item.isStore)
+            renderPromoFlag(mainSubs.promoFlag || [], mainSubs.isStore)
           }
           style={[
             expired || giftStatusCd === 'S'
@@ -419,12 +419,12 @@ const EsimSubs = ({
             ? `${i18n.t('acc:rechargeDone')} ${utils.removeBracketOfName(
                 country,
               )}`
-            : item.prodName}
+            : mainSubs.prodName}
         </SplitText>
 
         {expired || giftStatusCd === 'S' ? (
           <View style={styles.expiredBg}>
-            <AppText key={item.nid} style={appStyles.normal12Text}>
+            <AppText key={mainSubs.nid} style={appStyles.normal12Text}>
               {giftStatusCd === 'S'
                 ? i18n.t('esim:S2')
                 : i18n.t('esim:expired')}
@@ -444,17 +444,17 @@ const EsimSubs = ({
         )}
       </View>
     );
-  }, [expired, giftStatusCd, isCharged, isMoreInfo, sendable, item]);
+  }, [expired, giftStatusCd, isCharged, isMoreInfo, sendable, mainSubs]);
 
   const topInfo = useCallback(() => {
     return (
       <View style={styles.topInfo}>
-        {item.type !== API.Subscription.CALL_PRODUCT && (
+        {mainSubs.type !== API.Subscription.CALL_PRODUCT && (
           <View style={styles.inactiveContainer}>
             <AppText style={styles.normal14Gray}>
               {i18n.t('esim:iccid')}
             </AppText>
-            <AppText style={styles.normal14Gray}>{item.subsIccid}</AppText>
+            <AppText style={styles.normal14Gray}>{mainSubs.subsIccid}</AppText>
           </View>
         )}
         <View style={styles.inactiveContainer}>
@@ -462,9 +462,12 @@ const EsimSubs = ({
             {i18n.t('esim:usablePeriod')}
           </AppText>
           <AppText style={styles.normal14Gray}>{`${utils.toDateString(
-            item.purchaseDate,
+            mainSubs.purchaseDate,
             'YYYY.MM.DD',
-          )} - ${utils.toDateString(item.expireDate, 'YYYY.MM.DD')}`}</AppText>
+          )} - ${utils.toDateString(
+            mainSubs.expireDate,
+            'YYYY.MM.DD',
+          )}`}</AppText>
         </View>
         <View style={styles.inactiveContainer}>
           <AppText style={styles.normal14Gray}>
@@ -476,10 +479,10 @@ const EsimSubs = ({
     );
   }, [
     chargeablePeriod,
-    item.expireDate,
-    item.purchaseDate,
-    item.subsIccid,
-    item.type,
+    mainSubs.expireDate,
+    mainSubs.purchaseDate,
+    mainSubs.subsIccid,
+    mainSubs.type,
   ]);
 
   const QRnCopyInfo = useCallback(() => {
@@ -489,7 +492,7 @@ const EsimSubs = ({
       <View style={styles.activeBottomBox}>
         <AppButton
           style={styles.btn}
-          onPress={() => navigation.navigate('QrInfo', {item})}
+          onPress={() => navigation.navigate('QrInfo', {mainSubs})}
           title={i18n.t('esim:showQR')}
           titleStyle={styles.btnTitle}
           iconName="btnQr2"
@@ -499,10 +502,10 @@ const EsimSubs = ({
           style={styles.btn}
           onPress={() => {
             if (isCharged) {
-              onPressRecharge(item);
+              onPressRecharge(mainSubs);
             } else {
               setShowModal(true);
-              onPressUsage(item);
+              onPressUsage(mainSubs);
             }
           }}
           title={i18n.t('esim:checkUsage')}
@@ -513,7 +516,7 @@ const EsimSubs = ({
         {isChargeable ? (
           <AppButton
             style={styles.btn}
-            onPress={() => onPressRecharge(item)}
+            onPress={() => onPressRecharge(mainSubs)}
             title={i18n.t('esim:rechargeable')}
             titleStyle={styles.btnTitle}
             iconName="btnChargeable"
@@ -535,7 +538,7 @@ const EsimSubs = ({
   }, [
     isChargeExpired,
     isChargeable,
-    item,
+    mainSubs,
     navigation,
     onPressRecharge,
     onPressUsage,
@@ -548,15 +551,15 @@ const EsimSubs = ({
         style={styles.redirectHK}
         onPress={() =>
           navigation.navigate('RedirectHK', {
-            iccid: item.subsIccid,
-            orderNo: item.subsOrderNo,
+            iccid: mainSubs.subsIccid,
+            orderNo: mainSubs.subsOrderNo,
           })
         }>
         <AppIcon name="hkIcon" />
         <Text style={styles.redirectText}>{i18n.t('esim:redirectHK2')}</Text>
       </Pressable>
     );
-  }, [item, navigation]);
+  }, [mainSubs, navigation]);
 
   const renderMoveBtn = useCallback(() => {
     const moveBtnList = [sendable, isCharged || isChargeable].filter(
@@ -581,8 +584,8 @@ const EsimSubs = ({
                 style={!isLast ? styles.giftButton : styles.chargeButton}
                 onPress={() =>
                   isSendBtn
-                    ? navigation.navigate('Gift', {item})
-                    : onPressRecharge(item)
+                    ? navigation.navigate('Gift', {mainSubs})
+                    : onPressRecharge(mainSubs)
                 }
               />
             </View>
@@ -590,7 +593,14 @@ const EsimSubs = ({
         })}
       </View>
     );
-  }, [isChargeable, isCharged, item, navigation, onPressRecharge, sendable]);
+  }, [
+    isChargeable,
+    isCharged,
+    mainSubs,
+    navigation,
+    onPressRecharge,
+    sendable,
+  ]);
 
   return (
     <View
@@ -603,7 +613,7 @@ const EsimSubs = ({
 
         {!expired &&
         giftStatusCd !== 'S' &&
-        item.type !== API.Subscription.CALL_PRODUCT
+        mainSubs.type !== API.Subscription.CALL_PRODUCT
           ? QRnCopyInfo()
           : topInfo()}
       </View>
@@ -611,11 +621,11 @@ const EsimSubs = ({
         <View style={isMoreInfo && styles.moreInfoContent}>
           {topInfo()}
 
-          {item.caution ? (
+          {mainSubs.caution ? (
             <View style={styles.cautionBox}>
               <AppIcon name="cautionIcon" style={{marginRight: 12}} />
               <View>
-                <AppText style={styles.cautionText}>{item.caution}</AppText>
+                <AppText style={styles.cautionText}>{mainSubs.caution}</AppText>
               </View>
             </View>
           ) : (
