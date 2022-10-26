@@ -388,7 +388,7 @@ const ChargeHistoryScreen: React.FC = () => {
               style={{flexDirection: 'row', alignItems: 'center'}}
               onPress={() => {
                 setPending(true);
-                onPressUsage(mainSubs).then((u) => {
+                onPressUsage(item).then((u) => {
                   setUsage(u.usage);
                   setStatus(u.status);
                   setPending(false);
