@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
 
 type ParamList = {
   ChargeScreen: {
-    item: RkbSubscription;
+    mainSubs: RkbSubscription;
     chargeablePeriod: string;
   };
 };
@@ -150,10 +150,19 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
 
   const partnerIds = useMemo(() => {
     return product.prodByCountry.reduce((acc: string[], cur) => {
-      if (cur.country == params.item.country) acc.push(cur.partner);
+      const curArr = cur.country.split(',');
+      const mainCntryArr = params.mainSubs?.country || [];
+
+      if (
+        curArr.length === mainCntryArr.length &&
+        curArr.filter((elm) => mainCntryArr.includes(elm)).length ===
+          curArr.length
+      )
+        acc.push(cur.partner);
+
       return acc;
     }, []);
-  }, [params.item.country, product.prodByCountry]);
+  }, [params.mainSubs.country, product.prodByCountry]);
 
   const prodData = useMemo(() => {
     if (partnerIds) {
@@ -266,9 +275,9 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
               onPress={() => {
                 navigation.navigate('ChargeDetail', {
                   data,
-                  prodname: params.item.prodName,
+                  prodname: params.mainSubs.prodName,
                   chargeablePeriod: params.chargeablePeriod,
-                  subsIccid: params.item.subsIccid,
+                  subsIccid: params.mainSubs.subsIccid,
                 });
               }}
               isCharge
@@ -280,8 +289,8 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
     [
       navigation,
       params.chargeablePeriod,
-      params.item.prodName,
-      params.item.subsIccid,
+      params.mainSubs.prodName,
+      params.mainSubs.subsIccid,
       prodData,
     ],
   );
