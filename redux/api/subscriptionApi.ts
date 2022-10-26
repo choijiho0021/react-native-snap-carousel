@@ -95,7 +95,7 @@ export type RkbSubscription = {
   isStore: boolean;
 
   endDate?: string;
-  country?: string;
+  country?: string[];
   prodName?: string;
   prodId?: string;
   nid?: string;
