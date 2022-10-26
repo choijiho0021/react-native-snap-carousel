@@ -413,7 +413,7 @@ export default handleActions(
 const makeEmpty = createAsyncThunk(
   'cart/empty',
   (params: {orderId: number; token: string}, {dispatch}) => {
-    dispatch(cartLock(params));
+    // dispatch(cartLock(params));
     dispatch(slice.actions.empty());
   },
 );
