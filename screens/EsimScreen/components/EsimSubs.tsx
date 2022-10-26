@@ -498,8 +498,12 @@ const EsimSubs = ({
         <AppButton
           style={styles.btn}
           onPress={() => {
-            setShowModal(true);
-            onPressUsage(item);
+            if (isCharged) {
+              onPressRecharge(item);
+            } else {
+              setShowModal(true);
+              onPressUsage(item);
+            }
           }}
           title={i18n.t('esim:checkUsage')}
           titleStyle={styles.btnTitle}
