@@ -368,12 +368,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const renderSubs = useCallback(
     ({item}: {item: RkbSubscription[]}) => {
-      const lastIdx = item.length - 1;
       return (
         <EsimSubs
-          key={item[lastIdx].key}
-          item={item[lastIdx]}
-          expired={new Date(item[lastIdx].expireDate) <= new Date()}
+          key={item[0].key}
+          mainSubs={item[0]}
+          expired={new Date(item[0].expireDate) <= new Date()}
           onPressUsage={(subscription: RkbSubscription) =>
             onPressUsage(subscription)
           }
