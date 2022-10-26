@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   content: {
+    ...appStyles.robotoBold16Text,
     flex: 1,
     color: colors.black,
   },
@@ -101,6 +102,11 @@ const styles = StyleSheet.create({
     ...appStyles.normal14Text,
     lineHeight: 20,
     color: colors.black,
+  },
+  codeContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 });
 
@@ -169,7 +175,7 @@ const QrInfoScreen = () => {
       return (
         <View style={styles.copyBox}>
           <AppText style={styles.copyBoxTitle}>{title}</AppText>
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <View style={styles.codeContent}>
             <AppText style={styles.content}>{content}</AppText>
             <AppButton
               title={i18n.t('copy')}
