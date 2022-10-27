@@ -538,6 +538,7 @@ const EsimSubs = ({
   }, [
     isChargeExpired,
     isChargeable,
+    isCharged,
     mainSubs,
     navigation,
     onPressRecharge,
