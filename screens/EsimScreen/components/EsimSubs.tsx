@@ -357,16 +357,6 @@ const EsimSubs = ({
     return true;
   }, [isChargeExpired, mainSubs.partner]);
 
-  const redirectable = useMemo(
-    () =>
-      !expired &&
-      giftStatusCd !== 'S' &&
-      mainSubs.country?.includes('HK') &&
-      /홍콩/gi.test(mainSubs.prodName!) &&
-      mainSubs.partner === 'CMI',
-    [expired, giftStatusCd, mainSubs],
-  );
-
   const onPressRecharge = useCallback(
     (item: RkbSubscription) => {
       if (isCharged) {
@@ -547,20 +537,22 @@ const EsimSubs = ({
   ]);
 
   const renderHkBtn = useCallback(() => {
-    return (
-      <Pressable
-        style={styles.redirectHK}
-        onPress={() =>
-          navigation.navigate('RedirectHK', {
-            iccid: mainSubs.subsIccid,
-            orderNo: mainSubs.subsOrderNo,
-          })
-        }>
-        <AppIcon name="hkIcon" />
-        <Text style={styles.redirectText}>{i18n.t('esim:redirectHK2')}</Text>
-      </Pressable>
-    );
-  }, [mainSubs, navigation]);
+    if (!expired && giftStatusCd !== 'S' && mainSubs.noticeOption.includes('H'))
+      return (
+        <Pressable
+          style={styles.redirectHK}
+          onPress={() =>
+            navigation.navigate('RedirectHK', {
+              iccid: mainSubs.subsIccid,
+              orderNo: mainSubs.subsOrderNo,
+            })
+          }>
+          <AppIcon name="hkIcon" />
+          <Text style={styles.redirectText}>{i18n.t('esim:redirectHK2')}</Text>
+        </Pressable>
+      );
+    return null;
+  }, [expired, giftStatusCd, mainSubs, navigation]);
 
   const renderMoveBtn = useCallback(() => {
     const moveBtnList = [sendable, isCharged || isChargeable].filter(
@@ -578,7 +570,9 @@ const EsimSubs = ({
             : i18n.t(isCharged ? 'esim:chargeHistory' : 'esim:charge');
 
           return (
-            <View style={[styles.btnMove, {marginRight: !isLast ? 12 : 0}]}>
+            <View
+              key={idx}
+              style={[styles.btnMove, {marginRight: !isLast ? 12 : 0}]}>
               <AppButton
                 title={title}
                 titleStyle={[styles.btnTitle2, !isLast && styles.colorblack]}
@@ -633,7 +627,7 @@ const EsimSubs = ({
             <View style={{height: 40}} />
           )}
 
-          {redirectable && renderHkBtn()}
+          {renderHkBtn()}
 
           {renderMoveBtn()}
 

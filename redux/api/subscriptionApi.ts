@@ -109,6 +109,7 @@ export type RkbSubscription = {
   partner?: string;
   promoFlag?: string[];
   caution: string;
+  noticeOption: string[];
   daily?: string;
 };
 
@@ -149,6 +150,7 @@ const toSubscription =
                 .filter((v) => !_.isEmpty(v))
             : [],
           caution: item.field_caution || '',
+          noticeOption: item.field_notice_option || [],
           daily: item.field_daily,
         })),
         // .sort(sortSubs),
