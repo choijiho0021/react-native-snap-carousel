@@ -304,9 +304,10 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
         onOkClose={() => {
           setPromoResult('');
           if (promoResult === 'promo:join:joined') {
-            if (route.params?.rule?.sku?.startsWith('rch-')) {
+            const sku = route.params?.rule?.sku;
+            if (sku?.startsWith('rch-') || sku?.startsWith('pnt-')) {
               action.account.getAccount({iccid, token});
-              // go to MyPage for recharge promotion
+              // go to MyPage after recharge & point promotion
               navigation.navigate('MyPageStack', {
                 screen: 'MyPage',
               });
