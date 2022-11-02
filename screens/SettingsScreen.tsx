@@ -10,6 +10,7 @@ import VersionCheck from 'react-native-version-check';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
+import DeviceInfo from 'react-native-device-info';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -152,7 +153,9 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
         desc: `${i18n.t(
           'now',
         )} ${VersionCheck.getCurrentVersion()}/${label.replace(/v/g, '')} ${
-          !isProduction ? `(${Config.NODE_ENV})` : ''
+          !isProduction
+            ? `(${Config.NODE_ENV}-v${DeviceInfo.getBuildNumber()})`
+            : ''
         }`,
       },
       {
