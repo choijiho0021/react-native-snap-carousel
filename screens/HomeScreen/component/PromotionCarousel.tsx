@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
   },
   pagination: {
     marginRight: 30,
+    marginTop: 2,
     alignSelf: 'flex-end',
   },
   paginationContainer: {

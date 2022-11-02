@@ -12,6 +12,8 @@ import {
   View,
   ScrollView,
   Linking,
+  Animated,
+  SafeAreaView,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {Settings} from 'react-native-fbsdk-next';
@@ -22,14 +24,6 @@ import {bindActionCreators} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
 import {NavigationProp, RouteProp} from '@react-navigation/native';
 import VersionCheck from 'react-native-version-check';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  Easing,
-} from 'react-native-reanimated';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
-import {useHeaderHeight} from '@react-navigation/elements';
 import {Adjust} from 'react-native-adjust';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
@@ -78,6 +72,7 @@ const {esimGlobal, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     backgroundColor: colors.white,
   },
   title: {
@@ -118,7 +113,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   showSearchBar: {
-    marginVertical: 10,
+    marginBottom: 10,
     marginHorizontal: 20,
     backgroundColor: colors.white,
     height: 56,
@@ -170,7 +165,7 @@ type EsimProps = {
 };
 
 const POPUP_DIS_DAYS = 7;
-
+const bannerHeight = 120;
 const Esim: React.FC<EsimProps> = ({
   navigation,
   route,
@@ -181,7 +176,6 @@ const Esim: React.FC<EsimProps> = ({
   noti,
 }) => {
   const [isDevModalVisible, setIsDevModalVisible] = useState<boolean>(true);
-  const [bannerHeight, setBannerHeight] = useState<number>(137);
   const [index, setIndex] = useState(0);
   const routes = useMemo(
     () =>
@@ -219,14 +213,7 @@ const Esim: React.FC<EsimProps> = ({
   const [isTop, setIsTop] = useState<boolean>(true);
   const initialized = useRef(false);
   const initNoti = useRef(false);
-  const tabBarHeight = useBottomTabBarHeight();
-  const headerHeight = useHeaderHeight();
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
-
-  const windowHeight = useMemo(
-    () => dimensions.height - tabBarHeight - headerHeight,
-    [dimensions.height, headerHeight, tabBarHeight],
-  );
 
   const isSupport = useMemo(() => account.isSupportDev, [account.isSupportDev]);
 
@@ -256,15 +243,22 @@ const Esim: React.FC<EsimProps> = ({
     [account.isFirst],
   );
 
-  const scrollY = useSharedValue(0);
+  const animatedValue = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({window}) => {
       setDimensions(window);
-      scrollY.value = 0;
     });
     return () => subscription?.remove();
-  }, [scrollY]);
+  }, []);
+
+  useEffect(() => {
+    Animated.timing(animatedValue, {
+      toValue: isTop ? bannerHeight : 0,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  }, [animatedValue, isTop]);
 
   const setNotiModal = useCallback(() => {
     const popUpPromo = promotion?.find((v) => v?.notice?.image?.noti);
@@ -357,7 +351,6 @@ const Esim: React.FC<EsimProps> = ({
       );
     },
     [
-      bannerHeight,
       dimensions.width,
       isTop,
       onPressItem,
@@ -365,19 +358,6 @@ const Esim: React.FC<EsimProps> = ({
       product.priceInfo,
     ],
   );
-
-  useEffect(() => {
-    scrollY.value = withTiming(isTop ? 0 : bannerHeight, {
-      duration: 500,
-      easing: Easing.out(Easing.exp),
-    });
-  }, [isTop, scrollY, bannerHeight]);
-
-  const animatedStyles = useAnimatedStyle(() => {
-    return {
-      transform: [{translateY: -scrollY.value}],
-    };
-  });
 
   const modalBody = useCallback(
     () => (
@@ -606,13 +586,6 @@ const Esim: React.FC<EsimProps> = ({
     if (navigation.isFocused()) action.product.getProd();
   }, 3600 * 1000);
 
-  // useEffect(() => {
-  //   if (sync.progress) {
-  //     AsyncStorage.removeItem('alreadyLaunched');
-  //     navigation.navigate('CodePush');
-  //   }
-  // }, [navigation, sync.progress]);
-
   useEffect(() => {
     const {mobile, loggedIn, iccid} = account;
     if (iccid) {
@@ -658,11 +631,6 @@ const Esim: React.FC<EsimProps> = ({
     [navigation],
   );
 
-  const onLayout = useCallback(
-    (event) => setBannerHeight(event.nativeEvent.layout.height),
-    [],
-  );
-
   const renderModal = useCallback(
     () => (
       <>
@@ -693,27 +661,20 @@ const Esim: React.FC<EsimProps> = ({
   );
 
   return (
-    <Animated.View
-      style={[
-        styles.container,
-        !folderOpened && animatedStyles,
-        {
-          height: windowHeight + (folderOpened ? 0 : bannerHeight),
-        },
-      ]}>
+    <SafeAreaView style={[styles.container]}>
       <StatusBar barStyle="dark-content" />
       {folderOpened ? (
-        <View style={{flexDirection: 'row'}}>
-          <View style={{flex: 1}} collapsable={false} onLayout={onLayout}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{flex: 1}} collapsable={false}>
             <PromotionCarousel width={dimensions.width / 2} />
           </View>
           <View style={{flex: 1}}>{renderSearch()}</View>
         </View>
       ) : (
         <View>
-          <View collapsable={false} onLayout={onLayout}>
+          <Animated.View collapsable={false} style={{height: animatedValue}}>
             <PromotionCarousel width={dimensions.width} />
-          </View>
+          </Animated.View>
           {renderSearch()}
         </View>
       )}
@@ -740,7 +701,7 @@ const Esim: React.FC<EsimProps> = ({
       />
 
       {renderModal()}
-    </Animated.View>
+    </SafeAreaView>
   );
 };
 

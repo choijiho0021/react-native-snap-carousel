@@ -10,7 +10,6 @@ import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {storeData, retrieveData} from '@/utils/utils';
 import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
-import {concat} from 'react-native-reanimated';
 
 const init = createAsyncThunk('order/init', async () => {
   const oldData = await retrieveData(API.Order.KEY_INIT_ORDER);
@@ -161,10 +160,6 @@ const mergeSubs = (
   org: ImmutableMap<string, RkbSubscription[]>,
   subs: RkbSubscription[],
 ) => {
-  // org
-  //   .concat(subs.filter((s) => !org.find((o) => o.uuid === s.uuid)))
-  //   .sort((a, b) => b.purchaseDate.localeCompare(a.purchaseDate));
-
   const subsToMap: ImmutableMap<string, RkbSubscription[]> = subs.reduce(
     (acc, s) => {
       return s.subsIccid
@@ -177,7 +172,6 @@ const mergeSubs = (
     ImmutableMap<string, RkbSubscription[]>(),
   );
 
-  // return org.mergeWith((oldVal, newVal) => oldVal.concat(newVal), subsToMap);
   return org.merge(subsToMap);
 };
 
