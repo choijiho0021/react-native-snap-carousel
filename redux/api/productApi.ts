@@ -270,7 +270,7 @@ const productByCountry = () => {
     api.httpUrl(
       `${api.path.rokApi.rokebi.prodByCountry}?_format=json&platform=${
         Platform.OS
-      }&deviceid=${DeviceInfo.getDeviceId()}`,
+      }&deviceid=${DeviceInfo.getModel()}`,
     ),
   );
 };
