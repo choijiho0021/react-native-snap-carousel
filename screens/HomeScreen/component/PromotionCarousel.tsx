@@ -91,6 +91,7 @@ type PromotionCarouselProps = {
   promotion: RkbPromotion[];
   product: ProductModelState;
   width: number;
+  onLayout?: (event: any) => void;
   action: {
     info: InfoAction;
   };
@@ -101,6 +102,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
   product,
   action,
   width,
+  onLayout,
 }) => {
   const navigation = useNavigation();
   const [activeSlide, setActiveSlide] = useState(0);
@@ -196,7 +198,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
   );
 
   return (
-    <View style={styles.carousel}>
+    <View style={styles.carousel} onLayout={onLayout}>
       <AppCarousel
         data={promotion}
         renderItem={renderItem}

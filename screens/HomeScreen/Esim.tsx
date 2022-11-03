@@ -165,7 +165,6 @@ type EsimProps = {
 };
 
 const POPUP_DIS_DAYS = 7;
-const bannerHeight = 120;
 const Esim: React.FC<EsimProps> = ({
   navigation,
   route,
@@ -214,6 +213,8 @@ const Esim: React.FC<EsimProps> = ({
   const initialized = useRef(false);
   const initNoti = useRef(false);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
+  const [bannerHeight, setBannerHeight] = useState<number>(150);
+  const [isBannerHeightSet, setIsBannerHeightSet] = useState<boolean>(false);
 
   const isSupport = useMemo(() => account.isSupportDev, [account.isSupportDev]);
 
@@ -258,7 +259,7 @@ const Esim: React.FC<EsimProps> = ({
       duration: 500,
       useNativeDriver: false,
     }).start();
-  }, [animatedValue, isTop]);
+  }, [animatedValue, bannerHeight, isTop]);
 
   const setNotiModal = useCallback(() => {
     const popUpPromo = promotion?.find((v) => v?.notice?.image?.noti);
@@ -280,6 +281,16 @@ const Esim: React.FC<EsimProps> = ({
       navigation.navigate('Country', {partner: info.partnerList});
     },
     [action.product, navigation],
+  );
+
+  const onLayout = useCallback(
+    (event) => {
+      if (!isBannerHeightSet && event.nativeEvent.layout.height > 0) {
+        setIsBannerHeightSet(true);
+        setBannerHeight(event.nativeEvent.layout.height + 24);
+      }
+    },
+    [isBannerHeightSet],
   );
 
   const onIndexChange = useCallback((idx: number) => setIndex(idx), []);
@@ -351,6 +362,7 @@ const Esim: React.FC<EsimProps> = ({
       );
     },
     [
+      bannerHeight,
       dimensions.width,
       isTop,
       onPressItem,
@@ -666,14 +678,17 @@ const Esim: React.FC<EsimProps> = ({
       {folderOpened ? (
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <View style={{flex: 1}} collapsable={false}>
-            <PromotionCarousel width={dimensions.width / 2} />
+            <PromotionCarousel
+              width={dimensions.width / 2}
+              onLayout={onLayout}
+            />
           </View>
           <View style={{flex: 1}}>{renderSearch()}</View>
         </View>
       ) : (
         <View>
           <Animated.View collapsable={false} style={{height: animatedValue}}>
-            <PromotionCarousel width={dimensions.width} />
+            <PromotionCarousel width={dimensions.width} onLayout={onLayout} />
           </Animated.View>
           {renderSearch()}
         </View>
