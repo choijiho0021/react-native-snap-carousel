@@ -14,6 +14,7 @@ import {
   Linking,
   Animated,
   SafeAreaView,
+  Image,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {Settings} from 'react-native-fbsdk-next';
@@ -56,7 +57,6 @@ import {
   ProductModelState,
   RkbPriceInfo,
 } from '@/redux/modules/product';
-import {SyncModelState} from '@/redux/modules/sync';
 import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
 import PromotionCarousel from './component/PromotionCarousel';
@@ -214,7 +214,6 @@ const Esim: React.FC<EsimProps> = ({
   const initNoti = useRef(false);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const [bannerHeight, setBannerHeight] = useState<number>(150);
-  const [isBannerHeightSet, setIsBannerHeightSet] = useState<boolean>(false);
 
   const isSupport = useMemo(() => account.isSupportDev, [account.isSupportDev]);
 
@@ -254,6 +253,20 @@ const Esim: React.FC<EsimProps> = ({
   }, []);
 
   useEffect(() => {
+    if (promotion.length > 0) {
+      Image.getSize(
+        API.default.httpImageUrl(promotion[0].imageUrl),
+        (width, height) => {
+          // 배너 높이 = 이미지 높이 * 비율 + 24(여백)
+          setBannerHeight(height * (dimensions.width / width) + 24);
+        },
+      );
+    } else {
+      setBannerHeight(0);
+    }
+  }, [dimensions.width, promotion]);
+
+  useEffect(() => {
     Animated.timing(animatedValue, {
       toValue: isTop ? bannerHeight : 0,
       duration: 500,
@@ -281,16 +294,6 @@ const Esim: React.FC<EsimProps> = ({
       navigation.navigate('Country', {partner: info.partnerList});
     },
     [action.product, navigation],
-  );
-
-  const onLayout = useCallback(
-    (event) => {
-      if (!isBannerHeightSet && event.nativeEvent.layout.height > 0) {
-        setIsBannerHeightSet(true);
-        setBannerHeight(event.nativeEvent.layout.height + 24);
-      }
-    },
-    [isBannerHeightSet],
   );
 
   const onIndexChange = useCallback((idx: number) => setIndex(idx), []);
@@ -678,17 +681,14 @@ const Esim: React.FC<EsimProps> = ({
       {folderOpened ? (
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <View style={{flex: 1}} collapsable={false}>
-            <PromotionCarousel
-              width={dimensions.width / 2}
-              onLayout={onLayout}
-            />
+            <PromotionCarousel width={dimensions.width / 2} />
           </View>
           <View style={{flex: 1}}>{renderSearch()}</View>
         </View>
       ) : (
         <View>
           <Animated.View collapsable={false} style={{height: animatedValue}}>
-            <PromotionCarousel width={dimensions.width} onLayout={onLayout} />
+            <PromotionCarousel width={dimensions.width} />
           </Animated.View>
           {renderSearch()}
         </View>

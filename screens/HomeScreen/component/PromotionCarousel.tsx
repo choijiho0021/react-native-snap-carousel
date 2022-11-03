@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {memo, useCallback, useState} from 'react';
+import React, {memo, useCallback, useState, useEffect} from 'react';
 import {Animated, Image, Pressable, StyleSheet, View} from 'react-native';
 import {Pagination} from 'react-native-snap-carousel';
 import {connect} from 'react-redux';
@@ -15,7 +15,6 @@ import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import {actions as infoActions, InfoAction} from '@/redux/modules/info';
 import AppCarousel from '@/components/AppCarousel';
-
 const DOT_MARGIN = 6;
 const INACTIVE_DOT_WIDTH = 6;
 const ACTIVE_DOT_WIDTH = 20;
@@ -91,7 +90,6 @@ type PromotionCarouselProps = {
   promotion: RkbPromotion[];
   product: ProductModelState;
   width: number;
-  onLayout?: (event: any) => void;
   action: {
     info: InfoAction;
   };
@@ -102,7 +100,6 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
   product,
   action,
   width,
-  onLayout,
 }) => {
   const navigation = useNavigation();
   const [activeSlide, setActiveSlide] = useState(0);
@@ -198,7 +195,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
   );
 
   return (
-    <View style={styles.carousel} onLayout={onLayout}>
+    <View style={styles.carousel}>
       <AppCarousel
         data={promotion}
         renderItem={renderItem}
