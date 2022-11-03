@@ -409,7 +409,7 @@ const EsimSubs = ({
             ? `${i18n.t('acc:rechargeDone')} ${utils.removeBracketOfName(
                 country,
               )}`
-            : mainSubs.prodName}
+            : utils.removeBracketOfName(mainSubs.prodName)}
         </SplitText>
 
         {expired || giftStatusCd === 'S' ? (
