@@ -33,7 +33,7 @@ import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 
-const {label = '', isProduction} = Env.get();
+const {isProduction} = Env.get();
 const PUSH_ENABLED = 0;
 const styles = StyleSheet.create({
   title: {
@@ -152,10 +152,8 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
         value: i18n.t('set:version'),
         desc: `${i18n.t(
           'now',
-        )} ${VersionCheck.getCurrentVersion()}/${label.replace(/v/g, '')} ${
-          !isProduction
-            ? `(${Config.NODE_ENV}-v${DeviceInfo.getBuildNumber()})`
-            : ''
+        )} ${VersionCheck.getCurrentVersion()}/${DeviceInfo.getBuildNumber()} ${
+          !isProduction ? `(${Config.NODE_ENV})` : ''
         }`,
       },
       {
