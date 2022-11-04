@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   },
   tooltipContent: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(44,44,44,44.86)',
+    backgroundColor: 'rgba(44,44,44,0.86)',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,

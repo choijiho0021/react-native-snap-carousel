@@ -455,7 +455,7 @@ const EsimSubs = ({
             mainSubs.purchaseDate,
             'YYYY.MM.DD',
           )} - ${utils.toDateString(
-            mainSubs.expireDate,
+            chargedSubs[chargedSubs.length - 1].expireDate,
             'YYYY.MM.DD',
           )}`}</AppText>
         </View>
@@ -469,7 +469,7 @@ const EsimSubs = ({
     );
   }, [
     chargeablePeriod,
-    mainSubs.expireDate,
+    chargedSubs,
     mainSubs.purchaseDate,
     mainSubs.subsIccid,
     mainSubs.type,

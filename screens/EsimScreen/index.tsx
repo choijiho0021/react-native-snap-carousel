@@ -372,7 +372,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         <EsimSubs
           key={item[0].key}
           mainSubs={item[0]}
-          expired={new Date(item[0].expireDate) <= new Date()}
+          expired={new Date(item[item.length - 1].expireDate) <= new Date()}
           onPressUsage={(subscription: RkbSubscription) =>
             onPressUsage(subscription)
           }
