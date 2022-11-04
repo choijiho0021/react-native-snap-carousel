@@ -1,6 +1,19 @@
 /* eslint-disable no-nested-ternary */
-import React, {memo, useCallback, useMemo, useState} from 'react';
-import {Pressable, StyleSheet, View, Text, Platform} from 'react-native';
+import React, {
+  memo,
+  MutableRefObject,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
+import {
+  Pressable,
+  StyleSheet,
+  View,
+  Text,
+  Platform,
+  FlatList,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import moment from 'moment';
 import AppButton from '@/components/AppButton';
@@ -315,19 +328,23 @@ const styles = StyleSheet.create({
 });
 
 const EsimSubs = ({
+  index,
   mainSubs,
   onPressUsage,
   setShowModal,
   chargedSubs,
   expired,
   isCharged,
+  flatListRef,
 }: {
+  index: number;
   mainSubs: RkbSubscription;
   onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
   setShowModal: (visible: boolean) => void;
   chargedSubs: RkbSubscription[];
   expired: boolean;
   isCharged: boolean;
+  flatListRef?: MutableRefObject<FlatList<any> | undefined>;
 }) => {
   const navigation = useNavigation();
   const {giftStatusCd} = mainSubs;
@@ -423,6 +440,7 @@ const EsimSubs = ({
         ) : (
           <Pressable
             onPress={() => {
+              flatListRef?.current?.scrollToIndex({index, animated: true});
               setIsMoreInfo((prev) => !prev);
             }}
             style={styles.arrow}>
@@ -434,7 +452,20 @@ const EsimSubs = ({
         )}
       </View>
     );
-  }, [expired, giftStatusCd, isCharged, isMoreInfo, sendable, mainSubs]);
+  }, [
+    mainSubs.prodName,
+    mainSubs.key,
+    mainSubs.nid,
+    mainSubs.promoFlag,
+    mainSubs.isStore,
+    expired,
+    giftStatusCd,
+    isCharged,
+    isMoreInfo,
+    sendable,
+    flatListRef,
+    index,
+  ]);
 
   const topInfo = useCallback(() => {
     return (
