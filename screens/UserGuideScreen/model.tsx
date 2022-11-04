@@ -187,7 +187,7 @@ export const imageList: Record<string, any[]> =
           pageLast: [require(`${dir}/aos/img_9.png`)],
           pageLast2: [require(`${dir}/img_12.png`)],
         }
-    : Platform.Version >= '16.0' && i18n.locale === 'ko'
+    : Platform.Version >= '16.0'
     ? {
         page1: [require(`${dir}/guide1.png`)],
         page2: [require(`${dir}/img_1.png`), require(`${dir}/en.guide2.png`)],
@@ -247,6 +247,7 @@ export type GuideImage = {
   title: JSX.Element;
   step: number;
   tip?: () => JSX.Element | null;
+  caption?: string;
 };
 
 export const guideImages: GuideImage[] =
@@ -356,7 +357,7 @@ export const guideImages: GuideImage[] =
             tip: () => renderTipList('userGuide:tipPage10:android', 'dot'),
           },
         ]
-    : Platform.Version >= '16.0' && i18n.locale === 'ko'
+    : Platform.Version >= '16.0'
     ? [
         {
           key: 'page1',
@@ -383,6 +384,7 @@ export const guideImages: GuideImage[] =
           title: renderText('userGuide:stepsTitle3:ios'),
           step: 2,
           tip: () => tipView({id: 'userGuide:tipPage4_1'}),
+          caption: i18n.t('userGuide:step3:caption'),
         },
         {
           key: 'page5',
