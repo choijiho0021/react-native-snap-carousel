@@ -180,8 +180,8 @@ android {
         multiDexEnabled true
         targetSdkVersion rootProject.ext.targetSdkVersion
         vectorDrawables.useSupportLibrary = true
-        versionCode 27
-        versionName "1.1.1"
+        versionCode 34
+        versionName "1.2.0"
         multiDexEnabled true
         resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
@@ -268,14 +268,14 @@ android {
             applicationIdSuffix "global"
             resValue "string", "app_name", "로깨비GLOBAL"
         }
-        usim {
-            applicationIdSuffix "usim"
-            resValue "string", "app_name", "로깨비USIM"
-        }
-        talk {
-            applicationIdSuffix "talk"
-            resValue "string", "app_name", "로깨비TALK"
-        }
+//        usim {
+//            applicationIdSuffix "usim"
+//            resValue "string", "app_name", "로깨비USIM"
+//        }
+//        talk {
+//            applicationIdSuffix "talk"
+//            resValue "string", "app_name", "로깨비TALK"
+//        }
     }
 
 //        dexOptions {
@@ -394,18 +394,17 @@ dependencies {
     implementation project(':react-native-camera')
     implementation project(':react-native-video')
     implementation project(':react-native-gesture-handler')
-    implementation project(':react-native-reanimated')
     implementation project(':react-native-webview')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation project(':react-native-localize')
     implementation project(':rn-fetch-blob')
-    implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation "com.facebook.react:react-native:0.68.3"  // From node_modules
     implementation 'me.leolin:ShortcutBadger:1.1.21@aar'
     implementation 'com.google.android.gms:play-services-gcm:17.0.0'
     implementation "com.google.android.gms:play-services-auth:${safeExtGet('googlePlayServicesAuthVersion', '19.2.0')}"
     implementation "com.google.android.gms:play-services-fitness:21.1.0"
     implementation "androidx.annotation:annotation:1.1.0"
-    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
+    implementation 'com.facebook.android:facebook-android-sdk:14.1.1'
     implementation project(':@react-native-community-clipboard')
     implementation platform('com.google.firebase:firebase-bom:30.3.1')
     implementation project(path: ":@react-native-firebase_dynamic-links")
@@ -428,13 +427,13 @@ dependencies {
     // Add the following if you are using the Adjust SDK inside web views on your app
     implementation 'com.adjust.sdk:adjust-android-webbridge:4.31.1'
 
-    if (enableHermes) {
-        def hermesPath = "../../node_modules/hermes-engine/android/";
-        debugImplementation files(hermesPath + "hermes-debug.aar")
-        releaseImplementation files(hermesPath + "hermes-release.aar")
-    } else {
-        implementation jscFlavor
-    }
+     if (enableHermes) {
+         def hermesPath = "../../node_modules/hermes-engine/android/";
+         debugImplementation files(hermesPath + "hermes-debug.aar")
+         releaseImplementation files(hermesPath + "hermes-release.aar")
+     } else {
+         implementation jscFlavor
+     }
 
 //    addUnimodulesDependencies([exclude: ['expo-file-system','expo-image-loader','expo-permissions','expo-constants']])
 }

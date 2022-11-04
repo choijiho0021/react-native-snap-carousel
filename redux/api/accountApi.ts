@@ -37,7 +37,7 @@ const toAccount = (
         old_deviceToken: item.field_device_token,
         old_fcmToken: item.field_fcm_token,
         userAccount: item.field_ref_user_account,
-        isPushNotiEnabled: item.field_is_notification_enabled == 'true',
+        isPushNotiEnabled: item.field_is_notification_enabled === '1',
       })),
     );
   }

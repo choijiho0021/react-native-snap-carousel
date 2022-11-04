@@ -406,6 +406,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   );
 
   const submitHandler = useCallback(async () => {
+    Keyboard.dismiss();
     const error = validationUtil.validate('email', email);
     let isValid = true;
 
@@ -530,7 +531,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const onPressPin = useCallback(
     (value: string) => {
       // PIN이 맞는지 먼저 확인한다.
-
+      Keyboard.dismiss();
       setLoading(true);
 
       API.User.confirmSmsCode({

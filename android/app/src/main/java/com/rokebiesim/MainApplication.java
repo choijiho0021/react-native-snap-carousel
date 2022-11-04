@@ -17,7 +17,6 @@ import com.facebook.react.ReactApplication;
 // import com.horcrux.svg.SvgPackage;
 import com.adjust.nativemodule.AdjustPackage;
 import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
-import com.swmansion.reanimated.ReanimatedPackage;
 import cl.json.RNSharePackage;
 //import com.tkporter.sendsms.SendSMSPackage;
 import com.adjust.nativemodule.AdjustPackage;
@@ -157,7 +156,6 @@ public class MainApplication extends Application implements ReactApplication {
                             new MainReactPackage(),
             // new GoogleFitPackage(BuildConfig.APPLICATION_ID),
             new AdjustPackage(),
-            new ReanimatedPackage(),
             new RNSharePackage(),
             new CameraRollPackage(),
             new RNViewShotPackage(),
@@ -182,7 +180,6 @@ public class MainApplication extends Application implements ReactApplication {
                             new RNCameraPackage(),
                             new ReactVideoPackage(),
                             new RNGestureHandlerPackage(),
-                            new ReanimatedPackage(),
                             new RNCWebViewPackage(),
                             new RNLocalizePackage(),
                             new RNFetchBlobPackage(),

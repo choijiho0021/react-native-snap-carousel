@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {memo, useCallback, useState} from 'react';
+import React, {memo, useCallback, useState, useEffect} from 'react';
 import {Animated, Image, Pressable, StyleSheet, View} from 'react-native';
 import {Pagination} from 'react-native-snap-carousel';
 import {connect} from 'react-redux';
@@ -15,7 +15,6 @@ import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import {actions as infoActions, InfoAction} from '@/redux/modules/info';
 import AppCarousel from '@/components/AppCarousel';
-
 const DOT_MARGIN = 6;
 const INACTIVE_DOT_WIDTH = 6;
 const ACTIVE_DOT_WIDTH = 20;
@@ -42,6 +41,7 @@ const styles = StyleSheet.create({
   },
   pagination: {
     marginRight: 30,
+    marginTop: 2,
     alignSelf: 'flex-end',
   },
   paginationContainer: {

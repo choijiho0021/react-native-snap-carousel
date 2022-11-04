@@ -13,6 +13,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
+import DeviceInfo from 'react-native-device-info';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -33,7 +34,6 @@ import {
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
-import api from '@/redux/api/api';
 import Env from '@/environment';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppSnackBar from '@/components/AppSnackBar';
@@ -165,25 +165,29 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   pending,
   action,
 }) => {
+  const deviceModel = useMemo(() => DeviceInfo.getModel(), []);
+  const SMSDivider = useMemo(() => (Platform.OS === 'android' ? '?' : '&'), []);
+  const methodList = useMemo(() => {
+    // pixcel인 경우 sms로 선물하기 제거
+    if (esimGlobal && !deviceModel.startsWith('SM')) return [];
+    if (esimGlobal) return [MESSAGE];
+    if (!deviceModel.startsWith('SM')) return [KAKAO];
+    return [KAKAO, MESSAGE];
+  }, [deviceModel]);
+  const bgImages = useMemo(
+    () => (promotion.gift.bg || []).filter((v) => v?.image),
+    [promotion.gift.bg],
+  );
+
+  const {mainSubs} = route.params || {};
   const [msg, setMsg] = useState(i18n.t('gift:default'));
-  const [checked, setChecked] = useState(esimGlobal ? MESSAGE : KAKAO);
   const [num, setNum] = useState(0);
   const [prevMsg, setPrevMsg] = useState('');
   const [contHeight, setContHeight] = useState(30);
   const msgRef = useRef();
   const [toastPending, setToastPending] = useState(false);
-  const bgImages = useMemo(
-    () => (promotion.gift.bg || []).filter((v) => v?.image),
-    [promotion.gift.bg],
-  );
   const [showSnackBar, setShowSnackbar] = useState(false);
-  const {mainSubs} = route.params || {};
-
-  const SMSDivider = useMemo(() => (Platform.OS === 'android' ? '?' : '&'), []);
-  const methodList = useMemo(
-    () => (esimGlobal ? [MESSAGE] : [KAKAO, MESSAGE]),
-    [],
-  );
+  const [checked, setChecked] = useState(methodList[0]);
 
   useEffect(() => {
     if (!promotion.stat.signupGift) promotionActions.getPromotionStat();
@@ -293,9 +297,12 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
     [],
   );
 
-  const method = useCallback(
-    () => (
+  const method = useCallback(() => {
+    if (methodList.length === 0) return null;
+
+    return (
       <View>
+        <AppText style={appStyles.bold18Text}>{i18n.t('gift:method')}</AppText>
         <View style={styles.method}>
           {methodList.map((v) => (
             <Pressable
@@ -322,9 +329,8 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
           </AppText>
         </View>
       </View>
-    ),
-    [checked, methodList],
-  );
+    );
+  }, [checked, methodList]);
 
   const cardDesign = useCallback(
     () => (
@@ -398,12 +404,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
           </AppText>
         </View>
         <View style={styles.thickDivider} />
-        <View style={{margin: 20, marginBottom: 30}}>
-          <AppText style={appStyles.bold18Text}>
-            {i18n.t('gift:method')}
-          </AppText>
-          {method()}
-        </View>
+        <View style={{margin: 20, marginBottom: 30}}>{method()}</View>
         <View style={styles.infoBox}>
           <AppText style={appStyles.bold18Text}>{i18n.t('esim:info')}</AppText>
           <View style={styles.divider} />
@@ -414,6 +415,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
       <AppButton
         style={[appStyles.confirm]}
         title={i18n.t('esim:sendGift')}
+        disabled={methodList.length === 0}
         onPress={() => sendLink(checked, mainSubs)}
       />
       <AppSnackBar

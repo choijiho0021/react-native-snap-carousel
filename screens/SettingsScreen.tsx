@@ -10,6 +10,7 @@ import VersionCheck from 'react-native-version-check';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
+import DeviceInfo from 'react-native-device-info';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -32,7 +33,7 @@ import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 
-const {label = '', isProduction} = Env.get();
+const {isProduction} = Env.get();
 const PUSH_ENABLED = 0;
 const styles = StyleSheet.create({
   title: {
@@ -151,7 +152,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
         value: i18n.t('set:version'),
         desc: `${i18n.t(
           'now',
-        )} ${VersionCheck.getCurrentVersion()}/${label.replace(/v/g, '')} ${
+        )} ${VersionCheck.getCurrentVersion()}/${DeviceInfo.getBuildNumber()} ${
           !isProduction ? `(${Config.NODE_ENV})` : ''
         }`,
       },
