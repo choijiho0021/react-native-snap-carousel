@@ -19,7 +19,6 @@ const styles = StyleSheet.create({
   titleText: {
     ...appStyles.bold22Text,
     top: 10,
-    alignItems: 'center',
   },
   step: {
     width: 25,
@@ -77,11 +76,15 @@ const renderOneText = (text: string, idx: number) => {
     <AppTextJoin
       key={idx}
       textStyle={styles.titleText}
-      data={formatText('b', {
-        text,
-        viewStyle: isIOS ? appStyles.underline : undefined,
-        textStyle: isIOS ? undefined : styles.blueText,
-      })}
+      data={formatText(
+        'b',
+        {
+          text,
+          viewStyle: isIOS ? appStyles.underline : undefined,
+          textStyle: isIOS ? undefined : styles.blueText,
+        },
+        {paddingBottom: 10},
+      )}
     />
   );
 };

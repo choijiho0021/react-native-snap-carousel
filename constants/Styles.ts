@@ -1,4 +1,4 @@
-import {StyleSheet, Platform} from 'react-native';
+import {StyleSheet, Platform, ViewStyle} from 'react-native';
 import {isDeviceSize} from './SliderEntry.style';
 import {colors} from './Colors';
 import {StyledText} from '@/components/AppTextJoin';
@@ -877,6 +877,7 @@ export const htmlDetailWithCss = (body, script = basicScript) => {
 export const formatText = (
   key: string,
   {text, textStyle, viewStyle}: StyledText,
+  style?: ViewStyle,
 ): StyledText[] => {
   const idx = text.indexOf(`<${key}>`);
   const idx2 = text.indexOf(`</${key}>`);
@@ -884,6 +885,7 @@ export const formatText = (
     return [
       {
         text: text.substring(0, idx),
+        viewStyle: style,
       },
       {
         text: text.substring(idx + key.length + 2, idx2),
@@ -892,14 +894,18 @@ export const formatText = (
       },
     ]
       .concat(
-        formatText(key, {
-          text: text.substring(idx2 + key.length + 3),
-          textStyle,
-          viewStyle,
-        }),
+        formatText(
+          key,
+          {
+            text: text.substring(idx2 + key.length + 3),
+            textStyle,
+            viewStyle,
+          },
+          style,
+        ),
       )
       .filter((t) => !!t.text);
   }
 
-  return [{text}];
+  return [{text, viewStyle: style}];
 };

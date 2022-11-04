@@ -263,9 +263,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
 
   const renderTailPage = useCallback(
     (data: GuideImage) => (
-      <ScrollView
-        style={{flex: 1}}
-        contentContainerStyle={{alignItems: 'center'}}>
+      <ScrollView contentContainerStyle={{alignItems: 'center', flex: 1}}>
         <View style={{alignItems: 'center'}}>
           <View style={[styles.step, {marginTop: 20}]}>
             <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
@@ -281,6 +279,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
           style={{
             flex: 1,
             width: '100%',
+            justifyContent: 'flex-end',
             alignItems: 'center',
             marginBottom: 16,
           }}>
