@@ -15,6 +15,7 @@ import {
   Animated,
   SafeAreaView,
   Image,
+  Pressable,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {Settings} from 'react-native-fbsdk-next';
@@ -143,6 +144,33 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     backgroundColor: 'red',
     right: 15,
+  },
+  tabHeaderContinaer: {
+    backgroundColor: colors.white,
+    height: 60,
+    paddingHorizontal: 20,
+  },
+  normal16WarmGrey: {
+    ...appStyles.normal16Text,
+    color: colors.warmGrey,
+  },
+  tabView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    // marginHorizontal: 20,
+    flex: 1,
+  },
+  remainUnderLine: {
+    flex: 1,
+    height: '100%',
+    borderBottomWidth: 2,
+  },
+  titleContainer: {
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomWidth: 2,
   },
 });
 
@@ -373,6 +401,52 @@ const Esim: React.FC<EsimProps> = ({
       product.priceInfo,
     ],
   );
+
+  const renderTabHeader = useCallback(() => {
+    return (
+      <View style={styles.tabHeaderContinaer}>
+        <View style={styles.tabView}>
+          {routes.map((elm, idx) => {
+            const selected = idx === index;
+            return (
+              <>
+                <Pressable
+                  key={elm.key}
+                  style={{
+                    ...styles.titleContainer,
+                    borderBottomColor: selected
+                      ? colors.black
+                      : colors.whiteTwo,
+                  }}
+                  onPress={() => onIndexChange(idx)}>
+                  <AppText
+                    style={[
+                      {...styles.normal16WarmGrey, marginHorizontal: 10},
+                      selected
+                        ? {
+                            color: colors.black,
+                          }
+                        : {},
+                    ]}>
+                    {elm.title}
+                  </AppText>
+                </Pressable>
+                {idx !== routes.length - 1 && (
+                  <Pressable
+                    style={{
+                      ...styles.remainUnderLine,
+                      borderBottomColor: colors.whiteTwo,
+                    }}
+                    onPress={() => onIndexChange(idx)}
+                  />
+                )}
+              </>
+            );
+          })}
+        </View>
+      </View>
+    );
+  }, [index, onIndexChange, routes]);
 
   const modalBody = useCallback(
     () => (
@@ -694,13 +768,7 @@ const Esim: React.FC<EsimProps> = ({
         </View>
       )}
 
-      <AppTabHeader
-        index={index}
-        routes={routes}
-        onIndexChange={onIndexChange}
-        style={{backgroundColor: colors.white, height: 60}}
-        tintColor={colors.black}
-      />
+      {renderTabHeader()}
 
       <TabView
         style={styles.container}
