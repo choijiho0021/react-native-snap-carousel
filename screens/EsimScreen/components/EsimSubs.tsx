@@ -122,16 +122,16 @@ const styles = StyleSheet.create({
     fontSize: isDeviceSize('small') ? 12 : 14,
   },
   btn: {
-    width: '30%',
+    width: 85,
     paddingTop: 19,
   },
   btnDis: {
-    width: '30%',
+    width: 85,
     paddingTop: 19,
     opacity: 0.6,
   },
   btnExpired: {
-    width: '30%',
+    width: 85,
     paddingTop: 19,
   },
   btnTitle: {
@@ -480,15 +480,15 @@ const EsimSubs = ({
     //   item.packageId?.startsWith('D') || item.partner === 'Quadcell';
     return (
       <View style={styles.activeBottomBox}>
-        <AppButton
+        <AppSvgIcon
+          name="qrInfo"
           style={styles.btn}
-          onPress={() => navigation.navigate('QrInfo', {mainSubs})}
           title={i18n.t('esim:showQR')}
           titleStyle={styles.btnTitle}
-          iconName="btnQr2"
+          onPress={() => navigation.navigate('QrInfo', {mainSubs})}
         />
 
-        <AppButton
+        <AppSvgIcon
           style={styles.btn}
           onPress={() => {
             if (isCharged) {
@@ -500,26 +500,26 @@ const EsimSubs = ({
           }}
           title={i18n.t('esim:checkUsage')}
           titleStyle={styles.btnTitle}
-          iconName="btnUsage"
+          name="btnUsage"
         />
 
         {isChargeable ? (
-          <AppButton
+          <AppSvgIcon
             style={styles.btn}
             onPress={() => onPressRecharge(mainSubs)}
             title={i18n.t('esim:rechargeable')}
             titleStyle={styles.btnTitle}
-            iconName="btnChargeable"
+            name="btnChargeable"
           />
         ) : (
-          <AppButton
+          <AppSvgIcon
             style={isChargeExpired ? styles.btnExpired : styles.btnDis}
             title={i18n.t(
               isChargeExpired ? 'esim:rechargeExpired' : 'esim:notrechargeable',
             )}
             titleStyle={styles.btnTitle}
             onPress={() => isChargeExpired && setExpiredModalVisible(true)}
-            iconName={isChargeExpired ? 'btnChargeExpired' : 'btnNonChargeable'}
+            name={isChargeExpired ? 'btnChargeExpired' : 'btnNonChargeable'}
           />
         )}
         {isChargeExpired && <View style={styles.expiredDot} />}
@@ -547,7 +547,7 @@ const EsimSubs = ({
               orderNo: mainSubs.subsOrderNo,
             })
           }>
-          <AppIcon name="hkIcon" />
+          <AppSvgIcon name="hkIcon" />
           <Text style={styles.redirectText}>{i18n.t('esim:redirectHK2')}</Text>
         </Pressable>
       );
@@ -618,7 +618,7 @@ const EsimSubs = ({
 
           {mainSubs.caution ? (
             <View style={styles.cautionBox}>
-              <AppIcon name="cautionIcon" style={{marginRight: 12}} />
+              <AppSvgIcon name="cautionIcon" style={{marginRight: 12}} />
               <View>
                 <AppText style={styles.cautionText}>{mainSubs.caution}</AppText>
               </View>

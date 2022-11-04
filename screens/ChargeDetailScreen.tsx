@@ -24,6 +24,7 @@ import {AccountModelState} from '@/redux/modules/account';
 import {API} from '@/redux/api';
 import {actions as simActions, SimAction} from '@/redux/modules/sim';
 import utils from '@/redux/api/utils';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const styles = StyleSheet.create({
   paymentBtnFrame: {
@@ -222,7 +223,7 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
         <View style={styles.caustionFrame}>
           <View style={styles.caustionTitle}>
-            <AppIcon name="cautionIcon" />
+            <AppSvgIcon name="cautionIcon" />
             <AppText style={styles.caustionTitleText}>
               {i18n.t('esim:chargeCaution:title')}
             </AppText>
