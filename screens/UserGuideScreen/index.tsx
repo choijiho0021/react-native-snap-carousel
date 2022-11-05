@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   },
   stepPage: {
     alignItems: 'center',
-    paddingBottom: isDeviceSize('medium') ? 16 : 32,
+    paddingBottom: 16,
     width: '100%',
   },
   image: {
@@ -224,7 +224,12 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
 
   const renderStepPage = useCallback((data: GuideImage) => {
     return (
-      <ScrollView style={{flex: 1}} contentContainerStyle={styles.stepPage}>
+      <ScrollView
+        style={{flex: 1}}
+        contentContainerStyle={[
+          styles.stepPage,
+          isDeviceSize('large') ? undefined : {flex: 1},
+        ]}>
         <View style={{alignItems: 'center'}}>
           <View style={[styles.step, {marginTop: 20}]}>
             <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
