@@ -34,9 +34,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   stepPage: {
-    flex: 1,
     alignItems: 'center',
-    marginBottom: isDeviceSize('medium') ? 16 : 32,
+    paddingBottom: isDeviceSize('medium') ? 16 : 32,
     width: '100%',
   },
   image: {
@@ -225,7 +224,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
 
   const renderStepPage = useCallback((data: GuideImage) => {
     return (
-      <View style={styles.stepPage}>
+      <ScrollView style={{flex: 1}} contentContainerStyle={styles.stepPage}>
         <View style={{alignItems: 'center'}}>
           <View style={[styles.step, {marginTop: 20}]}>
             <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
@@ -252,18 +251,20 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
             </AppText>
           ) : null}
           <Image
-            style={{flex: 1, width: '100%'}}
+            // style={{flex: 1, width: '100%'}}
             source={getImage(imageList, data.key)}
             resizeMode="contain"
           />
         </View>
-      </View>
+      </ScrollView>
     );
   }, []);
 
   const renderTailPage = useCallback(
     (data: GuideImage) => (
-      <ScrollView contentContainerStyle={{alignItems: 'center', flex: 1}}>
+      <ScrollView
+        style={{flex: 1}}
+        contentContainerStyle={{alignItems: 'center'}}>
         <View style={{alignItems: 'center'}}>
           <View style={[styles.step, {marginTop: 20}]}>
             <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
@@ -277,7 +278,6 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
 
         <View
           style={{
-            flex: 1,
             width: '100%',
             justifyContent: 'flex-end',
             alignItems: 'center',

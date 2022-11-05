@@ -18,7 +18,7 @@ const {isIOS} = Env.get();
 const styles = StyleSheet.create({
   titleText: {
     ...appStyles.bold22Text,
-    top: 10,
+    top: isIOS ? 10 : 0,
   },
   step: {
     width: 25,
@@ -83,7 +83,7 @@ const renderOneText = (text: string, idx: number) => {
           viewStyle: isIOS ? appStyles.underline : undefined,
           textStyle: isIOS ? undefined : styles.blueText,
         },
-        {paddingBottom: 10},
+        isIOS ? {paddingBottom: 10} : undefined,
       )}
     />
   );
@@ -116,7 +116,7 @@ type RenderTipParams = {
 };
 const renderTip = ({id, marginBottom, style}: RenderTipParams) => (
   <View style={styles.tipTextContainer}>
-    <AppText style={[styles.tipText, {marginRight: 5}]}>
+    <AppText style={[appStyles.normal16Text, {marginRight: 5}]}>
       {i18n.t('centerDot')}
     </AppText>
     <View
@@ -180,13 +180,12 @@ export const imageList: Record<string, any[]> =
       : {
           page1: [require(`${dir}/guide1.png`)],
           page2: [require(`${dir}/aos/img_1.png`)],
-          page3: [require(`${dir}/aos/img_2.png`)],
-          page4: [require(`${dir}/aos/img_3.png`)],
-          page5: [require(`${dir}/aos/img_4.png`)],
-          page6: [require(`${dir}/aos/img_5.png`)],
-          page7: [require(`${dir}/aos/img_6.png`)],
-          page8: [require(`${dir}/aos/img_7.png`)],
-          page9: [require(`${dir}/aos/img_8.png`)],
+          page3: [require(`${dir}/aos/img_3.png`)],
+          page4: [require(`${dir}/aos/img_4.png`)],
+          page5: [require(`${dir}/aos/img_5.png`)],
+          page6: [require(`${dir}/aos/img_6.png`)],
+          page7: [require(`${dir}/aos/img_7.png`)],
+          page8: [require(`${dir}/aos/img_8.png`)],
           pageLast: [require(`${dir}/aos/img_9.png`)],
           pageLast2: [require(`${dir}/img_12.png`)],
         }
@@ -316,48 +315,43 @@ export const guideImages: GuideImage[] =
           },
           {
             key: 'page3',
-            title: renderText(`userGuide:stepsTitle2:android`),
+            title: renderText(`userGuide:stepsTitle3:android`),
             step: 2,
           },
           {
             key: 'page4',
-            title: renderText(`userGuide:stepsTitle3:android`),
-            step: 3,
-          },
-          {
-            key: 'page5',
             title: renderText(`userGuide:stepsTitle4:android`),
-            step: 4,
+            step: 3,
             tip: () => renderTipList('userGuide:tipPage4:android'),
           },
           {
-            key: 'page6',
+            key: 'page5',
             title: renderText(`userGuide:stepsTitle5:android`),
-            step: 4,
+            step: 3,
             tip: () => tipView({id: 'userGuide:tipPage5:android'}),
           },
           {
-            key: 'page7',
+            key: 'page6',
             title: renderText(`userGuide:stepsTitle6:android`),
-            step: 5,
+            step: 4,
           },
           {
-            key: 'page8',
+            key: 'page7',
             title: renderText(`userGuide:stepsTitle7:android`),
-            step: 6,
+            step: 5,
             tip: () => tipView({id: 'userGuide:tipPage8:android'}),
           },
           {
-            key: 'page9',
+            key: 'page8',
             title: renderText(`userGuide:stepsTitle8:android`),
-            step: 7,
+            step: 6,
             tip: () => renderTipList('userGuide:tipPage9:android', 'dot'),
           },
           {
-            key: 'page10',
+            key: 'page9',
             title: renderText(`userGuide:stepsTitle9:android`),
-            step: 8,
-            tip: () => renderTipList('userGuide:tipPage10:android', 'dot'),
+            step: 7,
+            tip: () => renderTipList('userGuide:tipPageLast', 'dot'),
           },
         ]
     : Platform.Version >= '16.0'
