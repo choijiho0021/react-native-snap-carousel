@@ -34,9 +34,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   stepPage: {
-    flex: 1,
     alignItems: 'center',
-    marginBottom: isDeviceSize('medium') ? 16 : 32,
+    paddingBottom: 16,
     width: '100%',
   },
   image: {
@@ -53,17 +52,16 @@ const styles = StyleSheet.create({
     height: 56,
   },
   logo: {
-    flex: 2,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 40,
   },
   checkInfo: {
-    flex: 3,
     backgroundColor: colors.white,
     alignSelf: 'flex-start',
-    marginHorizontal: 20,
+    paddingHorizontal: 20,
     marginTop: 77,
+    width: '100%',
   },
   slideGuide: {
     flex: 2,
@@ -147,9 +145,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
         </AppText>
         <AppSvgIcon
           key="closeModal"
-          onPress={() => {
-            navigation.goBack();
-          }}
+          onPress={() => navigation.goBack()}
           name="closeModal"
         />
       </View>
@@ -160,12 +156,12 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
   const renderHeadPage = useCallback(
     (data: GuideImage) => {
       return (
-        <View style={[styles.container, {alignItems: 'center'}]}>
-          <View style={{flex: 1}}>
-            <AppSvgIcon key="esimLogo" style={styles.logo} name="esimLogo" />
-          </View>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={{alignItems: 'center'}}>
+          <AppSvgIcon key="esimLogo" style={styles.logo} name="esimLogo" />
 
-          <View style={{flex: 2, alignItems: 'center', marginTop: 46}}>
+          <View style={{alignItems: 'center', marginTop: 46}}>
             {data?.title}
             <AppText style={[appStyles.medium14, {marginTop: 20}]}>
               {
@@ -183,7 +179,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
             </AppText>
           </View>
 
-          <View style={{flex: 4, marginTop: 40}}>
+          <View style={{marginTop: 40}}>
             <Image
               source={getImage(imageList, data.key)}
               resizeMode="contain"
@@ -194,22 +190,20 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
             <AppText style={appStyles.bold18Text}>
               {i18n.t('userGuide:checkInfo')}
             </AppText>
-            <View
-              style={{
-                marginTop: 8,
-                paddingRight: 20,
-              }}>
+            <View style={{marginTop: 8}}>
               {[1, 2, 3].map((k) => (
                 <View key={k} style={{flexDirection: 'row'}}>
                   <AppText
                     style={[appStyles.normal16Text, {marginHorizontal: 5}]}>
                     •
                   </AppText>
-                  <AppStyledText
-                    textStyle={styles.checkInfoText}
-                    text={i18n.t(`userGuide:checkInfo${k}`)}
-                    format={{b: {color: colors.clearBlue}}}
-                  />
+                  <View style={{flex: 1}}>
+                    <AppStyledText
+                      textStyle={styles.checkInfoText}
+                      text={i18n.t(`userGuide:checkInfo${k}`)}
+                      format={{b: {color: colors.clearBlue}}}
+                    />
+                  </View>
                 </View>
               ))}
             </View>
@@ -217,10 +211,12 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
           <View style={styles.slideGuide}>
             <View style={styles.slideGuideBox}>
               <AppSvgIcon key="leftArrow" name="leftArrow" />
-              <AppText>{i18n.t('userGuide:slideLeft')}</AppText>
+              <AppText style={{marginLeft: 8}}>
+                {i18n.t('userGuide:slideLeft')}
+              </AppText>
             </View>
           </View>
-        </View>
+        </ScrollView>
       );
     },
     [deviceModel],
@@ -228,7 +224,12 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
 
   const renderStepPage = useCallback((data: GuideImage) => {
     return (
-      <View style={styles.stepPage}>
+      <ScrollView
+        style={{flex: 1}}
+        contentContainerStyle={[
+          styles.stepPage,
+          isDeviceSize('large') ? undefined : {flex: 1},
+        ]}>
         <View style={{alignItems: 'center'}}>
           <View style={[styles.step, {marginTop: 20}]}>
             <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
@@ -236,50 +237,67 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
           {data.title}
         </View>
 
-        <View style={{marginTop: 22}}>{data.tip && data.tip()}</View>
+        <View style={{marginVertical: 22}}>{data.tip && data.tip()}</View>
 
         <View
           style={{
             width: '100%',
             flex: 1,
-            flexDirection: 'row',
-            alignItems: 'flex-end',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
           }}>
+          {data.caption ? (
+            <AppText
+              style={[
+                appStyles.semiBold13Text,
+                {color: colors.warmGrey, marginBottom: 12},
+              ]}>
+              {data.caption}
+            </AppText>
+          ) : null}
           <Image
-            style={[styles.image, !isDeviceSize('medium') && {height: '90%'}]}
+            // style={{flex: 1, width: '100%'}}
             source={getImage(imageList, data.key)}
             resizeMode="contain"
           />
         </View>
-      </View>
+      </ScrollView>
     );
   }, []);
 
   const renderTailPage = useCallback(
     (data: GuideImage) => (
-      <View style={{flex: 1, alignItems: 'center'}}>
-        <View style={{flex: 1, alignItems: 'center'}}>
+      <ScrollView
+        style={{flex: 1}}
+        contentContainerStyle={{alignItems: 'center'}}>
+        <View style={{alignItems: 'center'}}>
           <View style={[styles.step, {marginTop: 20}]}>
             <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
           </View>
           {data?.title}
         </View>
 
-        <View style={{flex: 1.5, top: 20}}>{data.tip && data.tip()}</View>
+        <View style={{marginTop: 22, marginBottom: 10}}>
+          {data.tip && data.tip()}
+        </View>
 
-        <View style={{flex: 1}}>
+        <View
+          style={{
+            width: '100%',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            marginBottom: 16,
+          }}>
           <Image
             source={getImage(imageList, 'pageLast')}
             resizeMode="contain"
           />
-        </View>
-        <View style={{flex: 2, justifyContent: 'center'}}>
           <Image
             source={getImage(imageList, 'pageLast2')}
             resizeMode="contain"
           />
         </View>
-      </View>
+      </ScrollView>
     ),
     [],
   );
