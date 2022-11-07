@@ -559,14 +559,22 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
-      <G clipPath="url(#w2faska71a)">
-        <Path
-          d="M18.987 18.254a.013.013 0 0 0-.013.013.746.746 0 0 1-.745.733H1.746A.746.746 0 0 1 1 18.254V1.746C1 1.334 1.334 1 1.746 1h16.508c.412 0 .746.334.746.746V18.24a.013.013 0 0 1-.013.013z"
-          fill="url(#nu4jvnatub)"
+      <G clipPath="url(#a5avg8trsa)">
+        <Rect
+          x="1"
+          y="1"
+          width="18"
+          height="18"
+          rx="3"
+          fill="url(#zzscewo07b)"
         />
-        <Path
-          d="M18.987 18.254a.013.013 0 0 0-.013.013.746.746 0 0 1-.745.733H1.746A.746.746 0 0 1 1 18.254V1.746C1 1.334 1.334 1 1.746 1h16.508c.412 0 .746.334.746.746V18.24a.013.013 0 0 1-.013.013z"
-          fill="url(#y3mxmdzw0c)"
+        <Rect
+          x="1"
+          y="1"
+          width="18"
+          height="18"
+          rx="3"
+          fill="url(#gzi4ew4roc)"
         />
         <Path
           d="M11.427 10.282 8.446 6H6v8h2.573V9.718L11.53 14H14V6h-2.573v4.282z"
@@ -575,27 +583,27 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </G>
       <Defs>
         <LinearGradient
-          id="nu4jvnatub"
-          x1="1"
-          y1="15"
-          x2="19"
-          y2="15"
+          id="zzscewo07b"
+          x1="5"
+          y1="13"
+          x2="17"
+          y2="13"
           gradientUnits="userSpaceOnUse">
-          <Stop offset=".217" stopColor="#05C2E7" />
-          <Stop offset=".882" stopColor="#4764E6" />
+          <Stop stopColor="#05C2E7" />
+          <Stop offset="1" stopColor="#4764E6" />
         </LinearGradient>
         <LinearGradient
-          id="y3mxmdzw0c"
+          id="gzi4ew4roc"
           x1="10"
           y1="4"
-          x2="9.987"
-          y2="14.5"
+          x2="10"
+          y2="15"
           gradientUnits="userSpaceOnUse">
           <Stop stopColor="#17DC34" />
-          <Stop offset="1" stopColor="#00C73C" stopOpacity="0" />
+          <Stop offset="1" stopColor="#17DC34" stopOpacity="0" />
         </LinearGradient>
-        <ClipPath id="w2faska71a">
-          <Rect x="1" y="1" width="18" height="18" rx="3" fill="#fff" />
+        <ClipPath id="a5avg8trsa">
+          <Path fill="#fff" transform="translate(1 1)" d="M0 0h18v18H0z" />
         </ClipPath>
       </Defs>
     </Svg>,
