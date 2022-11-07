@@ -229,7 +229,7 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
             </AppText>
           </View>
           <View style={styles.caustionBody}>
-            {[1, 2, 3, 4, 5, 6].map((k) => (
+            {[1, 2, 3, 4, 5, 6, 7].map((k) => (
               <View key={k} style={{flexDirection: 'row'}}>
                 <AppText
                   style={[
