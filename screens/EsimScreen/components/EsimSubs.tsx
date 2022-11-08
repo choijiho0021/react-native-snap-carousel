@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useMemo,
   useState,
+  useEffect,
 } from 'react';
 import {
   Pressable,
@@ -136,7 +137,7 @@ const styles = StyleSheet.create({
   },
   btn: {
     width: 85,
-    paddingTop: 19,
+    marginTop: 19,
   },
   btnDis: {
     width: 85,
@@ -374,6 +375,11 @@ const EsimSubs = ({
     return true;
   }, [isChargeExpired, mainSubs.partner]);
 
+  useEffect(() => {
+    if (isMoreInfo)
+      flatListRef?.current?.scrollToIndex({index, animated: true});
+  }, [flatListRef, index, isMoreInfo]);
+
   const onPressRecharge = useCallback(
     (item: RkbSubscription) => {
       if (isCharged) {
@@ -405,7 +411,11 @@ const EsimSubs = ({
     const country = mainSubs.prodName?.split(' ')?.[0];
 
     return (
-      <View style={styles.prodTitle}>
+      <Pressable
+        style={styles.prodTitle}
+        onPress={() => {
+          setIsMoreInfo((prev) => !prev);
+        }}>
         <SplitText
           key={mainSubs.key}
           renderExpend={() =>
@@ -438,19 +448,11 @@ const EsimSubs = ({
             </AppText>
           </View>
         ) : (
-          <Pressable
-            onPress={() => {
-              flatListRef?.current?.scrollToIndex({index, animated: true});
-              setIsMoreInfo((prev) => !prev);
-            }}
-            style={styles.arrow}>
-            <AppSvgIcon
-              name={isMoreInfo ? 'topArrow' : 'bottomArrow'}
-              style={{marginRight: 8}}
-            />
-          </Pressable>
+          <View style={styles.arrow}>
+            <AppSvgIcon name={isMoreInfo ? 'topArrow' : 'bottomArrow'} />
+          </View>
         )}
-      </View>
+      </Pressable>
     );
   }, [
     mainSubs.prodName,
@@ -463,8 +465,6 @@ const EsimSubs = ({
     isCharged,
     isMoreInfo,
     sendable,
-    flatListRef,
-    index,
   ]);
 
   const topInfo = useCallback(() => {
