@@ -237,7 +237,6 @@ const QrInfoScreen = () => {
         visible={showSnackBar}
         onClose={() => setShowSnackBar(false)}
         textMessage={i18n.t('esim:copyMsg')}
-        bottom={88}
       />
     </SafeAreaView>
   );

@@ -7,6 +7,7 @@ import {timer} from '@/constants/Timer';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
 import AppSvgIcon from './AppSvgIcon';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const styles = StyleSheet.create({
   containerStyle: {
@@ -44,36 +45,38 @@ class AppSnackBar extends PureComponent<AppSnackBarProps> {
 
   render() {
     return (
-      <SnackBar
-        ref={this.snackRef}
-        visible={this.props.visible}
-        backgroundColor={this.props.backgroundColor || colors.greyishBrown}
-        messageColor={this.props.messageColor || colors.white}
-        position="bottom"
-        bottom={this.props.bottom || 50}
-        containerStyle={styles.containerStyle}
-        actionStyle={{paddingHorizontal: 20}}
-        accentColor={colors.white}
-        autoHidingTime={timer.snackBarHidingTime}
-        onClose={this.props.onClose}
-        actionHandler={() => {
-          this.snackRef.current?.hideSnackbar();
-        }}
-        textMessage={() => (
-          <View
-            style={{
-              marginHorizontal: 17,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              flex: 1,
-            }}>
-            <AppText style={[appStyles.normal14Text, {color: colors.white}]}>
-              {this.props.textMessage}
-            </AppText>
-            <AppSvgIcon name="closeSnackBar" />
-          </View>
-        )}
-      />
+      <SafeAreaView>
+        <SnackBar
+          ref={this.snackRef}
+          visible={this.props.visible}
+          backgroundColor={this.props.backgroundColor || colors.greyishBrown}
+          messageColor={this.props.messageColor || colors.white}
+          position="bottom"
+          bottom={this.props.bottom || 50}
+          containerStyle={styles.containerStyle}
+          actionStyle={{paddingHorizontal: 20}}
+          accentColor={colors.white}
+          autoHidingTime={timer.snackBarHidingTime}
+          onClose={this.props.onClose}
+          actionHandler={() => {
+            this.snackRef.current?.hideSnackbar();
+          }}
+          textMessage={() => (
+            <View
+              style={{
+                marginHorizontal: 17,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                flex: 1,
+              }}>
+              <AppText style={[appStyles.normal14Text, {color: colors.white}]}>
+                {this.props.textMessage}
+              </AppText>
+              <AppSvgIcon name="closeSnackBar" />
+            </View>
+          )}
+        />
+      </SafeAreaView>
     );
   }
 }

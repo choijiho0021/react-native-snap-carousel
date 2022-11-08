@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   FlatList,
   RefreshControl,
@@ -163,6 +163,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [cmiStatus, setCmiStatus] = useState({});
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const isFocused = useIsFocused();
+  const flatListRef = useRef<FlatList>();
   const [subsList, setSubsList] = useState<RkbSubscription[][]>();
 
   const init = useCallback(
@@ -370,18 +371,20 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   );
 
   const renderSubs = useCallback(
-    ({item}: {item: RkbSubscription[]}) => {
+    ({item, index}: {item: RkbSubscription[]; index: number}) => {
       return (
         <EsimSubs
           key={item[0].key}
+          index={index}
           mainSubs={item[0]}
-          expired={new Date(item[0].expireDate) <= new Date()}
+          expired={new Date(item[item.length - 1].expireDate) <= new Date()}
           onPressUsage={(subscription: RkbSubscription) =>
             onPressUsage(subscription)
           }
           setShowModal={(visible: boolean) => setShowModal(visible)}
           isCharged={item.length > 1}
           chargedSubs={item}
+          flatListRef={flatListRef}
         />
       );
     },
@@ -430,6 +433,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         />
       </View>
       <FlatList
+        ref={flatListRef}
         data={subsList}
         keyExtractor={(item) => item[item.length - 1].key.toString()}
         ListHeaderComponent={info}

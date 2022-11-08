@@ -1,6 +1,20 @@
 /* eslint-disable no-nested-ternary */
-import React, {memo, useCallback, useMemo, useState} from 'react';
-import {Pressable, StyleSheet, View, Text, Platform} from 'react-native';
+import React, {
+  memo,
+  MutableRefObject,
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+} from 'react';
+import {
+  Pressable,
+  StyleSheet,
+  View,
+  Text,
+  Platform,
+  FlatList,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import moment from 'moment';
 import AppButton from '@/components/AppButton';
@@ -316,19 +330,23 @@ const styles = StyleSheet.create({
 });
 
 const EsimSubs = ({
+  index,
   mainSubs,
   onPressUsage,
   setShowModal,
   chargedSubs,
   expired,
   isCharged,
+  flatListRef,
 }: {
+  index: number;
   mainSubs: RkbSubscription;
   onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
   setShowModal: (visible: boolean) => void;
   chargedSubs: RkbSubscription[];
   expired: boolean;
   isCharged: boolean;
+  flatListRef?: MutableRefObject<FlatList<any> | undefined>;
 }) => {
   const navigation = useNavigation();
   const {giftStatusCd} = mainSubs;
@@ -367,6 +385,11 @@ const EsimSubs = ({
     if (mainSubs.partner !== 'CMI' || isChargeExpired) return false;
     return true;
   }, [isChargeExpired, mainSubs.partner]);
+
+  useEffect(() => {
+    if (isMoreInfo)
+      flatListRef?.current?.scrollToIndex({index, animated: true});
+  }, [flatListRef, index, isMoreInfo]);
 
   const onPressRecharge = useCallback(
     (item: RkbSubscription) => {
@@ -432,18 +455,11 @@ const EsimSubs = ({
             </AppText>
           </View>
         ) : (
-          <Pressable
-            onPress={() => {
-              setIsMoreInfo((prev) => !prev);
-            }}
-            style={styles.arrow}>
-            <AppSvgIcon
-              name={isMoreInfo ? 'topArrow' : 'bottomArrow'}
-              style={{marginRight: 8}}
-            />
-          </Pressable>
+          <View style={styles.arrow}>
+            <AppSvgIcon name={isMoreInfo ? 'topArrow' : 'bottomArrow'} />
+          </View>
         )}
-      </View>
+      </Pressable>
     );
   }, [
     mainSubs,
@@ -474,7 +490,7 @@ const EsimSubs = ({
             mainSubs.purchaseDate,
             'YYYY.MM.DD',
           )} - ${utils.toDateString(
-            mainSubs.expireDate,
+            chargedSubs[chargedSubs.length - 1].expireDate,
             'YYYY.MM.DD',
           )}`}</AppText>
         </View>

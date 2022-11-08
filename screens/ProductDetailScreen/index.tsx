@@ -90,6 +90,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'space-between',
     backgroundColor: colors.white,
+    alignItems: 'center',
   },
 });
 
@@ -325,7 +326,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           setShowSnackBar((pre) => ({text: pre.text, visible: false}))
         }
         textMessage={showSnackBar.text}
-        bottom={isDeviceSize('medium') ? 60 : 100}
+        bottom={10}
       />
       {account.iccid || (esimApp && account.loggedIn) ? (
         <View style={styles.buttonBox}>

@@ -608,6 +608,35 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  sortTriangle: [
+    <Svg
+      width="6"
+      height="4"
+      viewBox="0 0 6 4"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M3.4 3.467a.5.5 0 0 1-.8 0L.6.8A.5.5 0 0 1 1 0h4a.5.5 0 0 1 .4.8l-2 2.667z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
+  selected: [
+    <Svg
+      width="22"
+      height="22"
+      viewBox="0 0 22 22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="11" cy="11" r="11" fill="#fff" />
+      <Path
+        d="M5 10.5 9.696 15 17 8"
+        stroke="#2A7FF6"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </Svg>,
+  ],
   threeDots: [
     <Svg
       width="62"
