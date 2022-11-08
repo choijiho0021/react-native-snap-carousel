@@ -40,7 +40,7 @@ const AppPrice = ({
       {esimGlobal || i18n.locale !== 'ko'
         ? [
             <AppText key="won" style={[styles.price, currencyStyle]}>
-              {`${i18n.t(price.currency)} `}
+              {`${i18n.t(price.currency)}`}
             </AppText>,
             <AppText key="balance" style={[styles.price, balanceStyle]}>
               {utils.currencyString(price.value)}
@@ -51,7 +51,7 @@ const AppPrice = ({
               {utils.currencyString(price.value)}
             </AppText>,
             <AppText key="won" style={[styles.price, currencyStyle]}>
-              {` ${i18n.t(price.currency)}`}
+              {i18n.t(price.currency)}
             </AppText>,
           ]}
     </View>

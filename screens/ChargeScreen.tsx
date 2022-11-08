@@ -26,6 +26,7 @@ import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {retrieveData, storeData} from '@/utils/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
   container: {
@@ -60,26 +61,30 @@ const styles = StyleSheet.create({
   },
   toolTipStyle: {
     borderRadius: 5,
-    ...Platform.select({
-      ios: {
-        shadowColor: 'rgb(52, 62, 95)',
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
-        shadowOffset: {
-          height: 1,
-          width: 1,
-        },
-      },
-    }),
+    // ...Platform.select({
+    //   ios: {
+    //     shadowColor: 'rgb(52, 62, 95)',
+    //     shadowOpacity: 0.2,
+    //     shadowRadius: 3,
+    //     shadowOffset: {
+    //       height: 1,
+    //       width: 1,
+    //     },
+    //   },
+    // }),
+    // borderWidth: 1,
+    // borderColor: colors.lightGrey,
   },
   arrowStyle: {
-    borderWidth: 1,
-    borderTopColor: 'rgb(247, 248, 250)',
+    // borderWidth: 1,
+    // borderTopColor: colors.lightGrey,
     zIndex: 10,
   },
 
   toolTipBox: {
-    backgroundColor: 'rgb(247, 248, 250)',
+    backgroundColor: colors.backGrey,
+    // borderWidth: 1,
+    // borderColor: colors.lightGrey,
     padding: 16,
     paddingBottom: 20,
 
@@ -113,6 +118,25 @@ const styles = StyleSheet.create({
   toolTipBodyText: {
     ...appStyles.normal14Text,
     lineHeight: 20,
+  },
+  emptyImage: {
+    marginBottom: 21,
+  },
+  emptyData: {
+    alignItems: 'center',
+    marginTop: '45%',
+  },
+  emptyText1: {
+    ...appStyles.medium14,
+    color: colors.clearBlue,
+    lineHeight: 20,
+  },
+  emptyText2: {
+    ...appStyles.normal14Text,
+    lineHeight: 20,
+  },
+  devider: {
+    height: 14,
   },
 });
 
@@ -247,7 +271,9 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
     });
   }, [navigation, renderToolTip, showTip]);
 
-  const onIndexChange = useCallback((idx: number) => setIndex(idx), []);
+  const onIndexChange = useCallback((idx: number) => {
+    setIndex(idx);
+  }, []);
   const routes = useMemo(
     () =>
       [
@@ -264,26 +290,39 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
       ] as ChargeTabRoute[],
     [],
   );
-
   const renderScene = useCallback(
     ({route}: {route: ChargeTabRoute}) => {
+      const prodDataC = prodData[route.category === 'daily' ? 0 : 1].data;
       return (
         <ScrollView>
-          {prodData[route.category === 'daily' ? 0 : 1]?.data.map((data) => (
-            <CountryListItem
-              key={data.sku}
-              item={data}
-              onPress={() => {
-                navigation.navigate('ChargeDetail', {
-                  data,
-                  prodname: params.mainSubs.prodName,
-                  chargeablePeriod: params.chargeablePeriod,
-                  subsIccid: params.mainSubs.subsIccid,
-                });
-              }}
-              isCharge
-            />
-          ))}
+          {prodDataC.length > 0 ? (
+            prodDataC.map((data) => (
+              <CountryListItem
+                key={data.sku}
+                item={data}
+                onPress={() => {
+                  navigation.navigate('ChargeDetail', {
+                    data,
+                    prodname: params.mainSubs.prodName,
+                    chargeablePeriod: params.chargeablePeriod,
+                    subsIccid: params.mainSubs.subsIccid,
+                  });
+                }}
+                isCharge
+              />
+            ))
+          ) : (
+            <View style={styles.emptyData}>
+              <AppSvgIcon name="threeDots" style={styles.emptyImage} />
+
+              <AppText style={styles.emptyText1}>
+                {i18n.t('esim:charge:noProd1')}
+              </AppText>
+              <AppText style={styles.emptyText2}>
+                {i18n.t('esim:charge:noProd2')}
+              </AppText>
+            </View>
+          )}
         </ScrollView>
       );
     },
@@ -307,6 +346,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
           tintColor={colors.black}
           titleStyle={styles.tabTitle}
         />
+        <View style={styles.devider} />
         <TabView
           sceneContainerStyle={{flex: 1}}
           navigationState={{index, routes}}

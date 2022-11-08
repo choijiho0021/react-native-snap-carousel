@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
   notice: {
     backgroundColor: colors.white,
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    marginVertical: 24,
     flexDirection: 'row',
   },
   normal14Gray: {

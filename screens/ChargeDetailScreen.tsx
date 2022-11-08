@@ -70,12 +70,15 @@ const styles = StyleSheet.create({
   mainBody: {
     ...appStyles.normal20Text,
     lineHeight: 30,
+    fontWeight: '400',
     color: colors.white,
   },
   chargeItem: {
     ...appStyles.extraBold24,
-    lineHeight: 30,
+    color: colors.white,
+    lineHeight: 34,
   },
+
   bodyTail: {
     ...appStyles.normal14Text,
     lineHeight: 20,
@@ -218,7 +221,7 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
             </AppText>
           </View>
           <View style={styles.caustionBody}>
-            {[1, 2, 3, 4, 5, 6].map((k) => (
+            {[1, 2, 3, 4, 5, 6, 7].map((k) => (
               <View key={k} style={{flexDirection: 'row'}}>
                 <AppText
                   style={[

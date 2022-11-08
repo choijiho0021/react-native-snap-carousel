@@ -531,6 +531,12 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         {showPayment && paymentInfo()}
         <View style={styles.divider} />
       </ScrollView>
+      <AppSnackBar
+        visible={cancelPressed}
+        onClose={() => setCancelPressed(false)}
+        textMessage={i18n.t('his:cancelSuccess')}
+        bottom={10}
+      />
       <AppButton
         style={styles.button}
         type="primary"
@@ -539,11 +545,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         onPress={() => showReciept(pymId)}
       />
       <AppActivityIndicator visible={pending} />
-      <AppSnackBar
-        visible={cancelPressed}
-        onClose={() => setCancelPressed(false)}
-        textMessage={i18n.t('his:cancelSuccess')}
-      />
     </SafeAreaView>
   );
 };

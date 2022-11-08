@@ -1,7 +1,6 @@
 import {Platform} from 'react-native';
 import Config from 'react-native-config';
 import {getBundleId} from 'react-native-device-info';
-import * as RNLocalize from 'react-native-localize';
 import {CurrencyCode} from './redux/api/productApi';
 
 // getBuildNumber() > 현재 info.plist bundleVersion 확인 가능
@@ -26,13 +25,6 @@ const dynamicLink = 'https://rokebi.page.link';
 // test 계정
 impId = Config.NODE_ENV !== 'production' ? 'imp54175831' : impId;
 
-// countryCode: "KR"
-// languageTag: "en-KR"
-// languageCode: "en"
-const lc = RNLocalize.getLocales()[0];
-// 한국어가 아닌 경우 isEng = true
-const isEng = lc.languageCode !== 'ko';
-
 const codePushLabel = {
   stagingIOS: 'v2',
   stagingAndroid: 'v2',
@@ -50,7 +42,6 @@ type Env = {
   channelId: string;
   esimApp: boolean;
   esimGlobal: boolean;
-  isEng: boolean;
   esimCurrency: CurrencyCode;
   label?: string;
   scheme?: string;
@@ -76,7 +67,6 @@ const env: Env = {
   channelId,
   esimApp: appId === 'esim',
   esimGlobal,
-  isEng,
   esimCurrency: esimGlobal ? 'USD' : 'KRW',
   sipServer: '193.122.106.2:35060',
   isProduction: Config.NODE_ENV === 'production',

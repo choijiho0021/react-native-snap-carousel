@@ -15,6 +15,7 @@ import {
   Animated,
   SafeAreaView,
   Image,
+  Pressable,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {Settings} from 'react-native-fbsdk-next';
@@ -113,7 +114,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   showSearchBar: {
-    marginBottom: 10,
+    marginBottom: 12,
     marginHorizontal: 20,
     backgroundColor: colors.white,
     height: 56,
@@ -143,6 +144,30 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     backgroundColor: 'red',
     right: 15,
+  },
+  tabHeaderContinaer: {
+    backgroundColor: colors.white,
+    paddingHorizontal: 20,
+  },
+  tabHeaderTitle: {
+    ...appStyles.normal16Text,
+    marginHorizontal: 10,
+    marginVertical: 15,
+  },
+  tabView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  remainUnderLine: {
+    flex: 1,
+    height: '100%',
+    borderBottomWidth: 2,
+  },
+  titleContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomWidth: 2,
   },
 });
 
@@ -374,6 +399,48 @@ const Esim: React.FC<EsimProps> = ({
     ],
   );
 
+  const renderTabHeader = useCallback(() => {
+    return (
+      <View style={styles.tabHeaderContinaer}>
+        <View style={styles.tabView}>
+          {routes.map((elm, idx) => {
+            const selected = idx === index;
+            return (
+              <>
+                <Pressable
+                  key={elm.key}
+                  style={{
+                    ...styles.titleContainer,
+                    borderBottomColor: selected
+                      ? colors.black
+                      : colors.whiteTwo,
+                  }}
+                  onPress={() => onIndexChange(idx)}>
+                  <AppText
+                    style={{
+                      ...styles.tabHeaderTitle,
+                      color: selected ? colors.black : colors.warmGrey,
+                    }}>
+                    {elm.title}
+                  </AppText>
+                </Pressable>
+                {idx !== routes.length - 1 && (
+                  <Pressable
+                    style={{
+                      ...styles.remainUnderLine,
+                      borderBottomColor: colors.whiteTwo,
+                    }}
+                    onPress={() => onIndexChange(idx)}
+                  />
+                )}
+              </>
+            );
+          })}
+        </View>
+      </View>
+    );
+  }, [index, onIndexChange, routes]);
+
   const modalBody = useCallback(
     () => (
       <View style={styles.modalBody}>
@@ -434,7 +501,11 @@ const Esim: React.FC<EsimProps> = ({
         </AppText>
       ),
       headerRight: () => (
-        <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+          }}>
           <AppSvgIcon
             key="cnter"
             style={styles.btnCnter}
@@ -679,7 +750,8 @@ const Esim: React.FC<EsimProps> = ({
     <SafeAreaView style={[styles.container]}>
       <StatusBar barStyle="dark-content" />
       {folderOpened ? (
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View
+          style={{flexDirection: 'row', alignItems: 'center', marginTop: 8}}>
           <View style={{flex: 1}} collapsable={false}>
             <PromotionCarousel width={dimensions.width / 2} />
           </View>
@@ -687,20 +759,16 @@ const Esim: React.FC<EsimProps> = ({
         </View>
       ) : (
         <View>
-          <Animated.View collapsable={false} style={{height: animatedValue}}>
+          <Animated.View
+            collapsable={false}
+            style={{height: animatedValue, marginTop: 8}}>
             <PromotionCarousel width={dimensions.width} />
           </Animated.View>
           {renderSearch()}
         </View>
       )}
 
-      <AppTabHeader
-        index={index}
-        routes={routes}
-        onIndexChange={onIndexChange}
-        style={{backgroundColor: colors.white, height: 60}}
-        tintColor={colors.black}
-      />
+      {renderTabHeader()}
 
       <TabView
         style={styles.container}
