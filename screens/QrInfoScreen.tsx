@@ -29,7 +29,8 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   box: {
-    margin: 20,
+    marginHorizontal: 20,
+    marginTop: 24,
     borderWidth: 1,
     borderColor: colors.whiteFive,
     backgroundColor: colors.white,
@@ -107,6 +108,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  divider: {
+    height: 30,
   },
 });
 
@@ -203,7 +207,7 @@ const QrInfoScreen = () => {
   );
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
       <ScrollView style={styles.container}>
         <View style={styles.guideBanner}>{renderInfo(navigation)}</View>
         <View style={styles.box}>
@@ -227,6 +231,7 @@ const QrInfoScreen = () => {
             renderCode(i18n.t('esim:actCode'), params.mainSubs?.qrCode || '')
           )}
         </View>
+        <View style={styles.divider} />
       </ScrollView>
       <AppSnackBar
         visible={showSnackBar}
