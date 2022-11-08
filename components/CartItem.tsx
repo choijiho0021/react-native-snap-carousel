@@ -1,4 +1,4 @@
-import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {Image, Pressable, StyleSheet, View} from 'react-native';
 import React, {memo} from 'react';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
@@ -89,19 +89,20 @@ const CartItem = ({
 }) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={onChecked} style={styles.touch}>
+      <Pressable onPress={onChecked} style={styles.touch}>
         <View style={styles.checker}>
           <AppIcon name="btnCheck" checked={checked} />
         </View>
 
         <View style={styles.slide}>
-          <Image
-            source={{uri: API.default.httpImageUrl(image)}}
-            style={styles.slide}
-            resizeMode="stretch"
-          />
+          {image && (
+            <Image
+              source={{uri: API.default.httpImageUrl(image)}}
+              style={styles.slide}
+            />
+          )}
         </View>
-      </TouchableOpacity>
+      </Pressable>
 
       <View style={styles.desc}>
         <AppText style={styles.itemTitle}>{name}</AppText>
