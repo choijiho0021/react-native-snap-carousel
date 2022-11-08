@@ -37,8 +37,8 @@ const styles = StyleSheet.create({
   productList: {
     // width: windowWidth - 40,
     flexDirection: 'row',
-    marginTop: 15,
-    marginBottom: 15,
+    marginTop: 20,
+    marginBottom: 12,
     marginHorizontal: 20,
   },
   lowPrice: {

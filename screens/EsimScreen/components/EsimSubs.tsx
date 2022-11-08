@@ -1,6 +1,20 @@
 /* eslint-disable no-nested-ternary */
-import React, {memo, useCallback, useMemo, useState} from 'react';
-import {Pressable, StyleSheet, View, Text, Platform} from 'react-native';
+import React, {
+  memo,
+  MutableRefObject,
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+} from 'react';
+import {
+  Pressable,
+  StyleSheet,
+  View,
+  Text,
+  Platform,
+  FlatList,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import moment from 'moment';
 import AppButton from '@/components/AppButton';
@@ -123,7 +137,7 @@ const styles = StyleSheet.create({
   },
   btn: {
     width: 85,
-    paddingTop: 19,
+    marginTop: 19,
   },
   btnDis: {
     width: 85,
@@ -315,19 +329,23 @@ const styles = StyleSheet.create({
 });
 
 const EsimSubs = ({
+  index,
   mainSubs,
   onPressUsage,
   setShowModal,
   chargedSubs,
   expired,
   isCharged,
+  flatListRef,
 }: {
+  index: number;
   mainSubs: RkbSubscription;
   onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
   setShowModal: (visible: boolean) => void;
   chargedSubs: RkbSubscription[];
   expired: boolean;
   isCharged: boolean;
+  flatListRef?: MutableRefObject<FlatList<any> | undefined>;
 }) => {
   const navigation = useNavigation();
   const {giftStatusCd} = mainSubs;
@@ -356,6 +374,11 @@ const EsimSubs = ({
     if (mainSubs.partner !== 'CMI' || isChargeExpired) return false;
     return true;
   }, [isChargeExpired, mainSubs.partner]);
+
+  useEffect(() => {
+    if (isMoreInfo)
+      flatListRef?.current?.scrollToIndex({index, animated: true});
+  }, [flatListRef, index, isMoreInfo]);
 
   const onPressRecharge = useCallback(
     (item: RkbSubscription) => {
@@ -388,7 +411,11 @@ const EsimSubs = ({
     const country = mainSubs.prodName?.split(' ')?.[0];
 
     return (
-      <View style={styles.prodTitle}>
+      <Pressable
+        style={styles.prodTitle}
+        onPress={() => {
+          setIsMoreInfo((prev) => !prev);
+        }}>
         <SplitText
           key={mainSubs.key}
           renderExpend={() =>
@@ -421,20 +448,24 @@ const EsimSubs = ({
             </AppText>
           </View>
         ) : (
-          <Pressable
-            onPress={() => {
-              setIsMoreInfo((prev) => !prev);
-            }}
-            style={styles.arrow}>
-            <AppSvgIcon
-              name={isMoreInfo ? 'topArrow' : 'bottomArrow'}
-              style={{marginRight: 8}}
-            />
-          </Pressable>
+          <View style={styles.arrow}>
+            <AppSvgIcon name={isMoreInfo ? 'topArrow' : 'bottomArrow'} />
+          </View>
         )}
-      </View>
+      </Pressable>
     );
-  }, [expired, giftStatusCd, isCharged, isMoreInfo, sendable, mainSubs]);
+  }, [
+    mainSubs.prodName,
+    mainSubs.key,
+    mainSubs.nid,
+    mainSubs.promoFlag,
+    mainSubs.isStore,
+    expired,
+    giftStatusCd,
+    isCharged,
+    isMoreInfo,
+    sendable,
+  ]);
 
   const topInfo = useCallback(() => {
     return (
@@ -455,7 +486,7 @@ const EsimSubs = ({
             mainSubs.purchaseDate,
             'YYYY.MM.DD',
           )} - ${utils.toDateString(
-            mainSubs.expireDate,
+            chargedSubs[chargedSubs.length - 1].expireDate,
             'YYYY.MM.DD',
           )}`}</AppText>
         </View>
@@ -469,7 +500,7 @@ const EsimSubs = ({
     );
   }, [
     chargeablePeriod,
-    mainSubs.expireDate,
+    chargedSubs,
     mainSubs.purchaseDate,
     mainSubs.subsIccid,
     mainSubs.type,

@@ -119,7 +119,13 @@ function HomeStackComponent() {
           headerShown: false,
         })}
       />
-      <HomeStack.Screen name="StoreSearch" component={StoreSearchScreen} />
+      <HomeStack.Screen
+        name="StoreSearch"
+        component={StoreSearchScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
       <HomeStack.Screen name="Cart" component={CartScreen} />
       <HomeStack.Screen
         name="ProductDetail"

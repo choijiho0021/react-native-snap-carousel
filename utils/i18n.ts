@@ -8,6 +8,11 @@ export const i18nEvent = new EventEmitter();
 
 export const setI18nConfig = () => {
   const languageTag = esimGlobal ? 'en' : 'ko';
+  // const locales = RNLocalize.getLocales();
+  // let languageTag = locales[0].languageCode;
+  // if (!['en', 'ko'].includes(languageTag)) {
+  //   languageTag = esimGlobal ? 'en' : 'ko';
+  // }
 
   // translate.cache.clear();
   switch (languageTag) {

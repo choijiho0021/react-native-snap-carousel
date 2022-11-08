@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
+  SafeAreaView,
 } from 'react-native';
 import {AppEventsLogger} from 'react-native-fbsdk-next';
 import {getTrackingStatus} from 'react-native-tracking-transparency';
@@ -139,14 +140,13 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
-  container: {
-    flex: 1,
-  },
   headerTitle: {
-    width: Math.round(Dimensions.get('window').width),
+    height: 56,
+    marginHorizontal: 20,
     flexDirection: 'row',
     alignContent: 'center',
-    flex: 1,
+    borderBottomColor: colors.black,
+    borderBottomWidth: 1,
   },
   searchText: {
     // React Native 6.3버전 미만에서 한글로 글을 쓰는 경우 글씨 크기가 오락가락하는 이슈가 발생
@@ -157,9 +157,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   showSearchBar: {
-    paddingRight: 30,
+    paddingRight: 10,
     justifyContent: 'flex-end',
-    backgroundColor: colors.white,
   },
   titleBottom: {
     height: 1,
@@ -180,64 +179,56 @@ const styles = StyleSheet.create({
 
 const MAX_HISTORY_LENGTH = 7;
 
-type HeaderTitleRef = {
-  changeValue: (v: string) => void;
-};
-
 const HeaderTitle0 = ({
   search,
-  headerRef,
+  searchWord,
 }: {
   search: (v: string, b: boolean) => void;
-  headerRef: React.MutableRefObject<HeaderTitleRef | null>;
+  searchWord?: string;
 }) => {
-  const [word, setWord] = useState('');
+  const [word, setWord] = useState(searchWord || '');
 
   useEffect(() => {
-    if (headerRef) {
-      headerRef.current = {
-        changeValue: (v: string) => {
-          setWord(v);
-        },
-      };
+    if (searchWord) {
+      setWord(searchWord);
     }
-  }, [headerRef]);
+  }, [searchWord]);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerTitle}>
-        <AppBackButton />
-        <AppTextInput
-          style={styles.searchText}
-          placeholder={i18n.t('store:search')}
-          placeholderTextColor={colors.greyish}
-          returnKeyType="search"
-          enablesReturnKeyAutomatically
-          onSubmitEditing={() => search(word, true)}
-          onChangeText={(value: string) => {
-            search(value, false);
-            setWord(value);
-          }}
-          value={word}
-        />
+    <View style={styles.headerTitle}>
+      <AppBackButton imageStyle={{marginLeft: 0}} />
+      <AppTextInput
+        style={styles.searchText}
+        placeholder={i18n.t('store:search')}
+        placeholderTextColor={colors.greyish}
+        returnKeyType="search"
+        enablesReturnKeyAutomatically
+        onSubmitEditing={() => search(word, true)}
+        onChangeText={(value: string) => {
+          search(value, false);
+          setWord(value);
+        }}
+        value={word}
+      />
 
-        {word.length > 0 && (
-          <View style={{flexDirection: 'row'}}>
-            <AppButton
-              style={[styles.showSearchBar, {paddingRight: 20}]}
-              onPress={() => search('', false)}
-              iconName="btnSearchCancel"
-            />
-            <View style={styles.divider} />
-          </View>
-        )}
-        <AppButton
-          style={styles.showSearchBar}
-          onPress={() => search(word, true)}
-          iconName="btnSearchOff"
-        />
-      </View>
-      <View style={styles.titleBottom} />
+      {word.length > 0 && (
+        <View style={{flexDirection: 'row'}}>
+          <AppButton
+            style={[styles.showSearchBar, {paddingRight: 20}]}
+            onPress={() => {
+              search('', false);
+              setWord('');
+            }}
+            iconName="btnSearchCancel"
+          />
+          <View style={styles.divider} />
+        </View>
+      )}
+      <AppButton
+        style={styles.showSearchBar}
+        onPress={() => search(word, true)}
+        iconName="btnSearchOff"
+      />
     </View>
   );
 };
@@ -264,11 +255,9 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
   action,
 }) => {
   const [querying, setQuerying] = useState<boolean>(false);
-  const [searching, setSearching] = useState<boolean>(false);
   const [searchWord, setSearchWord] = useState<string>('');
   const [searchList, setSearchList] = useState<string[]>([]);
   const [recommendCountry, setRecommendCountry] = useState<string[]>([]);
-  const headerRef = useRef<HeaderTitleRef>();
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
 
   useEffect(() => {
@@ -346,8 +335,6 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
 
   const search = useCallback(async (word: string, isSearching = false) => {
     setSearchWord(word);
-    setSearching(isSearching);
-    headerRef?.current?.changeValue(word);
 
     if (isSearching) {
       // 최근 검색 기록
@@ -469,23 +456,18 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
     Analytics.trackEvent('Page_View_Count', {page: 'Country Search'});
 
     getSearchHist();
-
-    navigation.setOptions({
-      title: null,
-      headerLeft: null,
-      headerTitle: () => <HeaderTitle search={search} headerRef={headerRef} />,
-    });
   }, [getRecommendation, getSearchHist, navigation, search]);
 
   return (
-    <View style={styles.mainContainer}>
+    <SafeAreaView style={styles.mainContainer}>
+      <HeaderTitle search={search} searchWord={searchWord} />
       <AppActivityIndicator visible={querying} />
       {searchWord ? (
         renderStoreList(searchWord)
       ) : (
         <ScrollView style={{width: '100%'}}>{renderSearchWord()}</ScrollView>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 

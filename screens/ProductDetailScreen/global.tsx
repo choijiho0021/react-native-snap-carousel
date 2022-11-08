@@ -45,7 +45,7 @@ import {
 } from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 
-const {baseUrl, channelId, isEng, esimGlobal, fbUser} = Env.get();
+const {baseUrl, channelId, esimGlobal, fbUser} = Env.get();
 
 const HEADER_IMG_HEIGHT = 200;
 const TAB_IDX_ASK_BY_KAKAO = 3; // KakaoTalk으로 물어보기 Tab의 index
@@ -300,8 +300,8 @@ const ProductDetailGlobalScreen: React.FC<ProductDetailScreenProps> = ({
         <AppButton
           iconName={
             esimGlobal
-              ? `openFacebook${isEng ? 'Eng' : ''}`
-              : `openKakao${isEng ? 'Eng' : ''}`
+              ? `openFacebook${esimGlobal ? 'Eng' : ''}`
+              : `openKakao${esimGlobal ? 'Eng' : ''}`
           }
           onPress={openKTalk}
           style={{flex: 1}}
