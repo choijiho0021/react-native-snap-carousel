@@ -51,7 +51,7 @@ const AppPrice = ({
               {utils.currencyString(price.value)}
             </AppText>,
             <AppText key="won" style={[styles.price, currencyStyle]}>
-              {` ${i18n.t(price.currency)}`}
+              {i18n.t(price.currency)}
             </AppText>,
           ]}
     </View>
