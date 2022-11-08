@@ -72,12 +72,15 @@ const styles = StyleSheet.create({
   mainBody: {
     ...appStyles.normal20Text,
     lineHeight: 30,
+    fontWeight: '400',
     color: colors.white,
   },
   chargeItem: {
     ...appStyles.extraBold24,
-    lineHeight: 30,
+    color: colors.white,
+    lineHeight: 34,
   },
+
   bodyTail: {
     ...appStyles.normal14Text,
     lineHeight: 20,
