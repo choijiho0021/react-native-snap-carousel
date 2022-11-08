@@ -76,7 +76,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     marginBottom: 32,
     marginHorizontal: 20,
-    paddingHorizontal: 16,
   },
   inactiveContainer: {
     marginBottom: 6,
@@ -92,6 +91,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     height: 20,
     alignSelf: 'center',
+    borderRadius: 3,
   },
   badgeText: {
     ...appStyles.bold13Text,
@@ -113,6 +113,7 @@ const styles = StyleSheet.create({
   },
   cautionContainer: {
     marginHorizontal: 20,
+    marginVertical: 8,
     padding: 10,
     alignItems: 'center',
     flexDirection: 'row',
@@ -129,7 +130,6 @@ const styles = StyleSheet.create({
   cardTitle: {
     flexDirection: 'row',
     marginHorizontal: 20,
-    paddingHorizontal: 16,
     paddingVertical: 18,
     borderBottomWidth: 1,
     borderBottomColor: '#eeeeee',
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   },
   sortModalContainer: {
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(0,0,0,0.3)',
     justifyContent: 'flex-end',
     marginHorizontal: 0,
   },
@@ -168,6 +168,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(44,44,44,0.86)',
     alignItems: 'center',
     justifyContent: 'space-between',
+    borderRadius: 3,
     padding: 16,
   },
   closeTooltip: {
@@ -354,7 +355,7 @@ const ChargeHistoryScreen: React.FC = () => {
             style={[appStyles.medium14, {color: colors.black, marginRight: 8}]}>
             {i18n.t(`esim:chargeHistory:orderType:${orderType}`)}
           </AppText>
-          <Triangle width={8} height={6} color={colors.black} />
+          <AppSvgIcon name="sortTriangle" style={{marginRight: 8}} />
         </Pressable>
       </View>
     );
@@ -471,7 +472,7 @@ const ChargeHistoryScreen: React.FC = () => {
                     ]}>
                     {i18n.t(`esim:chargeHistory:orderType:${elm}`)}
                   </AppText>
-                  {orderType === elm && <AppSvgIcon name="checkedBlue" />}
+                  {orderType === elm && <AppSvgIcon name="selected" />}
                 </Pressable>
               ))}
             </View>
