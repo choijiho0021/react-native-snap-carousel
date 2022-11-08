@@ -421,6 +421,15 @@ export const appStyles = StyleSheet.create({
     lineHeight: 24,
     letterSpacing: 0,
   },
+  extraBold12: {
+    // fontFamily: 'AppleSDGothicNeo',
+    fontSize: 12,
+    fontWeight: '800',
+    fontStyle: 'normal',
+    lineHeight: 16,
+    letterSpacing: 0,
+    textAlign: 'left',
+  },
   extraBold20: {
     // fontFamily: 'AppleSDGothicNeo',
     fontSize: 20,

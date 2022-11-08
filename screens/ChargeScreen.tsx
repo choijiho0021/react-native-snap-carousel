@@ -61,26 +61,30 @@ const styles = StyleSheet.create({
   },
   toolTipStyle: {
     borderRadius: 5,
-    ...Platform.select({
-      ios: {
-        shadowColor: 'rgb(52, 62, 95)',
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
-        shadowOffset: {
-          height: 1,
-          width: 1,
-        },
-      },
-    }),
+    // ...Platform.select({
+    //   ios: {
+    //     shadowColor: 'rgb(52, 62, 95)',
+    //     shadowOpacity: 0.2,
+    //     shadowRadius: 3,
+    //     shadowOffset: {
+    //       height: 1,
+    //       width: 1,
+    //     },
+    //   },
+    // }),
+    // borderWidth: 1,
+    // borderColor: colors.lightGrey,
   },
   arrowStyle: {
-    borderWidth: 1,
-    borderTopColor: 'rgb(247, 248, 250)',
+    // borderWidth: 1,
+    // borderTopColor: colors.lightGrey,
     zIndex: 10,
   },
 
   toolTipBox: {
-    backgroundColor: 'rgb(247, 248, 250)',
+    backgroundColor: colors.backGrey,
+    // borderWidth: 1,
+    // borderColor: colors.lightGrey,
     padding: 16,
     paddingBottom: 20,
 
@@ -130,6 +134,9 @@ const styles = StyleSheet.create({
   emptyText2: {
     ...appStyles.normal14Text,
     lineHeight: 20,
+  },
+  devider: {
+    height: 14,
   },
 });
 
@@ -266,7 +273,6 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
 
   const onIndexChange = useCallback((idx: number) => {
     setIndex(idx);
-    console.log('@@@idx', idx);
   }, []);
   const routes = useMemo(
     () =>
@@ -340,6 +346,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
           tintColor={colors.black}
           titleStyle={styles.tabTitle}
         />
+        <View style={styles.devider} />
         <TabView
           sceneContainerStyle={{flex: 1}}
           navigationState={{index, routes}}

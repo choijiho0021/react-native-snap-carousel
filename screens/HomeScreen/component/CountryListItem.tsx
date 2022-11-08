@@ -27,18 +27,15 @@ const styles = StyleSheet.create({
   },
 
   balanceStyle: {
-    ...appStyles.bold24Text,
     fontSize: isDeviceSize('medium') ? 22 : 24,
-  },
-  balanceStyleCharge: {
-    ...appStyles.bold22Text,
-    fontSize: isDeviceSize('medium') ? 22 : 24,
-    lineHeight: 24,
+    fontWeight: 'bold',
+    textAlign: 'right',
+    lineHeight: isDeviceSize('medium') ? 22 : 24,
   },
   wonStyleCharge: {
-    ...appStyles.normal14Text,
-    fontSize: isDeviceSize('medium') ? 14 : 12,
-    lineHeight: 24,
+    fontSize: 14,
+    fontWeight: '600',
+    lineHeight: isDeviceSize('medium') ? 22 : 24,
     color: colors.black,
   },
   textView: {
@@ -46,29 +43,18 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   badge: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
     borderRadius: 2,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 8,
+    height: 20,
+    alignSelf: 'center',
   },
-  badgeCharge: {
-    paddingLeft: 6,
-    paddingRight: 6,
-    paddingTop: 2,
-    paddingBottom: 2,
-    borderRadius: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: 8,
-  },
+
   badgeText: {
-    ...appStyles.bold13Text,
-  },
-  badgeTextCharge: {
-    ...appStyles.extraBold20,
-    fontSize: 12,
-    lineHeight: 16,
+    ...appStyles.extraBold12,
   },
   itemDivider: {
     marginHorizontal: 20,
@@ -186,7 +172,7 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
                     <View
                       key={elm}
                       style={[
-                        isCharge ? styles.badgeCharge : styles.badge,
+                        styles.badge,
                         {
                           backgroundColor: badgeColor.backgroundColor,
                         },
@@ -194,7 +180,7 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
                       <AppText
                         key="name"
                         style={[
-                          isCharge ? styles.badgeTextCharge : styles.badgeText,
+                          styles.badgeText,
 
                           {color: badgeColor.fontColor},
                         ]}>
@@ -206,10 +192,8 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
             </View>
             <AppPrice
               price={item.price}
-              balanceStyle={
-                isCharge ? styles.balanceStyleCharge : styles.balanceStyle
-              }
-              currencyStyle={isCharge && styles.wonStyleCharge}
+              balanceStyle={styles.balanceStyle}
+              currencyStyle={styles.wonStyleCharge}
             />
           </View>
 
