@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   showSearchBar: {
-    marginBottom: 10,
+    marginBottom: 12,
     marginHorizontal: 20,
     backgroundColor: colors.white,
     height: 56,
@@ -147,19 +147,17 @@ const styles = StyleSheet.create({
   },
   tabHeaderContinaer: {
     backgroundColor: colors.white,
-    height: 60,
     paddingHorizontal: 20,
   },
-  normal16WarmGrey: {
+  tabHeaderTitle: {
     ...appStyles.normal16Text,
-    color: colors.warmGrey,
+    marginHorizontal: 10,
+    marginVertical: 15,
   },
   tabView: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    // marginHorizontal: 20,
-    flex: 1,
   },
   remainUnderLine: {
     flex: 1,
@@ -167,7 +165,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
   },
   titleContainer: {
-    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     borderBottomWidth: 2,
@@ -420,14 +417,10 @@ const Esim: React.FC<EsimProps> = ({
                   }}
                   onPress={() => onIndexChange(idx)}>
                   <AppText
-                    style={[
-                      {...styles.normal16WarmGrey, marginHorizontal: 10},
-                      selected
-                        ? {
-                            color: colors.black,
-                          }
-                        : {},
-                    ]}>
+                    style={{
+                      ...styles.tabHeaderTitle,
+                      color: selected ? colors.black : colors.warmGrey,
+                    }}>
                     {elm.title}
                   </AppText>
                 </Pressable>
@@ -508,7 +501,11 @@ const Esim: React.FC<EsimProps> = ({
         </AppText>
       ),
       headerRight: () => (
-        <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+          }}>
           <AppSvgIcon
             key="cnter"
             style={styles.btnCnter}
@@ -753,7 +750,8 @@ const Esim: React.FC<EsimProps> = ({
     <SafeAreaView style={[styles.container]}>
       <StatusBar barStyle="dark-content" />
       {folderOpened ? (
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View
+          style={{flexDirection: 'row', alignItems: 'center', marginTop: 8}}>
           <View style={{flex: 1}} collapsable={false}>
             <PromotionCarousel width={dimensions.width / 2} />
           </View>
@@ -761,7 +759,9 @@ const Esim: React.FC<EsimProps> = ({
         </View>
       ) : (
         <View>
-          <Animated.View collapsable={false} style={{height: animatedValue}}>
+          <Animated.View
+            collapsable={false}
+            style={{height: animatedValue, marginTop: 8}}>
             <PromotionCarousel width={dimensions.width} />
           </Animated.View>
           {renderSearch()}
