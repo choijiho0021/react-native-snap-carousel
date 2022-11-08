@@ -33,6 +33,10 @@ const getProductByCountry = createAsyncThunk(
 );
 
 const getProd = createAsyncThunk('product/getProd', API.Product.getProduct);
+const getProdBySku = createAsyncThunk(
+  'product/getProdBySku',
+  API.Product.getProductBySku,
+);
 
 const getProductByLocalOp = createAsyncThunk(
   'product/getProductByLocalOp',
@@ -169,6 +173,16 @@ const slice = createSlice({
       }
     });
 
+    builder.addCase(getProdBySku.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      if (result === 0 && objects.length > 0) {
+        state.prodList = state.prodList.merge(
+          ImmutableMap(objects.map((item) => [item.key, item])),
+        );
+      }
+    });
+
     builder.addCase(getLocalOp.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
 
@@ -259,6 +273,7 @@ export const actions = {
   getProdDetailInfo,
   getLocalOp,
   getProd,
+  getProdBySku,
   getProductByCountry,
   init,
   getProdOfPartner,

@@ -1,7 +1,7 @@
 import {useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Map as ImmutableMap} from 'immutable';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -30,7 +30,11 @@ import {
   CartAction,
   CartModelState,
 } from '@/redux/modules/cart';
-import {ProductModelState} from '@/redux/modules/product';
+import {
+  actions as productActions,
+  ProductAction,
+  ProductModelState,
+} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 
 const {esimCurrency} = Env.get();
@@ -88,6 +92,7 @@ type CartScreenProps = {
 
   action: {
     cart: CartAction;
+    product: ProductAction;
   };
 };
 
@@ -101,6 +106,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
     price: utils.toCurrency(0, esimCurrency),
   });
   const [showSnackBar, setShowSnackbar] = useState(false);
+  const loading = useRef(false);
 
   const onChecked = useCallback((key: string) => {
     setChecked((prev) => prev.update(key, (v) => !v));
@@ -226,7 +232,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
     ],
   );
 
-  const init = useCallback(() => {
+  useEffect(() => {
     const {orderItems} = cart;
 
     setList(orderItems);
@@ -239,28 +245,30 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         prev,
       ),
     );
-  }, [cart]);
+
+    if (!loading.current) {
+      orderItems.forEach((i) => {
+        if (!product.prodList.has(i.key)) {
+          action.product.getProdBySku(i.prod.sku);
+          loading.current = true;
+        }
+      });
+    }
+  }, [action.product, cart, product.prodList]);
 
   useEffect(() => {
     navigation.setOptions({
       title: null,
       headerLeft: () => <AppBackButton title={i18n.t('cart')} />,
     });
-
-    init();
-  }, [init, navigation]);
+  }, [navigation]);
 
   useFocusEffect(
     React.useCallback(() => {
       action.cart.cartFetch();
+      loading.current = false;
     }, [action.cart]),
   );
-
-  useEffect(() => {
-    if (cart?.orderItems && !pending) {
-      init();
-    }
-  }, [cart?.orderItems, init, pending]);
 
   useEffect(() => {
     // 초기 기동시에는 checked = new Map() 으로 선언되어 있어서
@@ -364,6 +372,7 @@ export default connect(
   (dispatch) => ({
     action: {
       cart: bindActionCreators(cartActions, dispatch),
+      product: bindActionCreators(productActions, dispatch),
     },
   }),
 )(CartScreen);
