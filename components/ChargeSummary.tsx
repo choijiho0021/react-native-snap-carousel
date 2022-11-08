@@ -34,17 +34,13 @@ const ChargeSummary = ({
   totalCnt = 0,
   balance = 0,
   totalPrice,
-  dlvCost,
-  simList,
 }: {
   totalCnt: number;
   totalPrice: Currency;
   balance?: number;
-  dlvCost: Currency;
-  simList?: any[];
 }) => {
   // 상품가격 + 배송비
-  const amount = totalPrice.value + dlvCost.value;
+  const amount = totalPrice.value;
   // 잔액 차감
   const deduct = totalCnt > 0 ? (amount > balance ? balance : amount) : 0;
   // 계산해야하는 총액
@@ -52,14 +48,6 @@ const ChargeSummary = ({
 
   return (
     <View style={styles.price}>
-      {!_.isEmpty(simList) && (
-        <LabelText
-          label={i18n.t('cart:dlvCostNotice')}
-          labelStyle={{color: colors.warmGrey}}
-          value=""
-        />
-      )}
-
       <LabelText
         label={i18n.t('cart:totalCnt')}
         style={[styles.summary, styles.summaryTop]}
@@ -72,14 +60,6 @@ const ChargeSummary = ({
         format="price"
         value={totalPrice}
       />
-      {!_.isEmpty(simList) && (
-        <LabelText
-          label={i18n.t('cart:dlvCost')}
-          style={styles.summary}
-          format="price"
-          value={dlvCost}
-        />
-      )}
 
       <LabelText
         label={i18n.t('cart:deductBalance')}

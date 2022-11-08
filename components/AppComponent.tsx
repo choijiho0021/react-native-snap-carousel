@@ -18,13 +18,14 @@ import Config from 'react-native-config';
 import {API} from '@/redux/api';
 import AppAlert from '@/components/AppAlert';
 import AppToast from '@/components/AppToast';
-import CodePushModal from '@/components/CodePushModal';
 import Env from '@/environment';
 import AppNavigator from '@/navigation/AppNavigator';
 import {actions as accountActions} from '@/redux/modules/account';
 import {actions as infoActions} from '@/redux/modules/info';
-import {actions as productActions} from '@/redux/modules/product';
-import {actions as simActions} from '@/redux/modules/sim';
+import {
+  actions as productActions,
+  ProductModelState,
+} from '@/redux/modules/product';
 import {actions as syncActions} from '@/redux/modules/sync';
 import i18n from '@/utils/i18n';
 import {retrieveData} from '@/utils/utils';
@@ -32,7 +33,6 @@ import store from '@/store';
 import {RootState} from '@/redux';
 import AppModal from './AppModal';
 import {appStyles} from '@/constants/Styles';
-import {ProductModelState} from '../redux/modules/product';
 import CodePushScreen from '@/screens/CodePushScreen';
 
 const {width: viewportWidth, height: viewportHeight} = Dimensions.get('window');
@@ -212,7 +212,6 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
     dispatch(productActions.init());
 
     if (!esimApp) {
-      dispatch(simActions.getSimCardList());
       // 공지 사항 가져오기
       dispatch(infoActions.getInfoList('info:home'));
     }

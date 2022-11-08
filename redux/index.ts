@@ -4,7 +4,6 @@ import {ThunkAction} from 'redux-thunk';
 
 import account from './modules/account';
 import product from './modules/product';
-import sim from './modules/sim';
 import noti from './modules/noti';
 import order from './modules/order';
 import profile from './modules/profile';
@@ -20,7 +19,6 @@ import link from './modules/link';
 const reducers = {
   account,
   product,
-  sim,
   order,
   profile,
   cart,

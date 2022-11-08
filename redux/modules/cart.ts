@@ -95,6 +95,7 @@ export interface CartModelState {
   lastTab: ImmutableList<string>;
   pymPrice?: Currency;
   deduct?: Currency;
+  esimIccid?: string;
 }
 
 const onSuccess = (state, action) => {
@@ -104,7 +105,9 @@ const onSuccess = (state, action) => {
   state.result = result;
   if (result === 0 && objects.length > 0) {
     state.orderId = objects[0].orderId;
-    state.orderItems = objects[0].orderItems;
+    state.orderItems = objects[0].orderItems.filter(
+      (i) => i.type === 'esim_product',
+    );
     state.uuid = objects[0].uuid;
   } else {
     state.orderId = undefined;
@@ -146,7 +149,12 @@ const slice = createSlice({
 
     // 구매할 품목을 저장한다.
     purchase: (state, action) => {
-      const {purchaseItems, dlvCost = false, balance = 0} = action.payload;
+      const {
+        esimIccid,
+        purchaseItems,
+        dlvCost = false,
+        balance = 0,
+      } = action.payload;
       const total = ((purchaseItems as PurchaseItem[]) || []).reduce(
         (acc, cur) =>
           utils.toCurrency(
@@ -178,6 +186,7 @@ const slice = createSlice({
       // 계산해야하는 총액
       // 잔액 차감
 
+      state.esimIccid = esimIccid;
       // purchaseItems에는 key, qty, price, title 정보 필요
       state.purchaseItems = purchaseItems;
       state.pymReq = pymReq;
@@ -207,7 +216,9 @@ const slice = createSlice({
     builder.addCase(initCart.fulfilled, (state, {payload}) => {
       const obj = JSON.parse(payload);
       state.orderId = obj[0].orderId;
-      state.orderItems = obj[0].orderItems;
+      state.orderItems = obj[0].orderItems.filter(
+        (i) => i.type === 'esim_product',
+      );
       state.uuid = obj[0].uuid;
     });
 
@@ -247,7 +258,9 @@ const slice = createSlice({
         objects.length > 0 &&
         objects[0].orderId === orderId
       ) {
-        state.orderItems = objects[0].orderItems;
+        state.orderItems = objects[0].orderItems.filter(
+          (i) => i.type === 'esim_product',
+        );
       }
     });
 
@@ -270,10 +283,9 @@ const slice = createSlice({
 const checkStockAndMakeOrder = createAsyncThunk(
   'cart/checkStockAndMakeOrder',
   (info: PaymentInfo, {dispatch, getState}) => {
-    const {account, cart, sim} = getState() as RootState;
+    const {account, cart} = getState() as RootState;
     const {token, iccid, email, mobile} = account;
-    const {purchaseItems, orderId} = cart;
-    const {esimIccid} = sim;
+    const {purchaseItems, orderId, esimIccid} = cart;
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음

@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo} from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -15,14 +15,12 @@ import AppBackButton from '@/components/AppBackButton';
 import {RkbProduct} from '@/redux/api/productApi';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
-import AppIcon from '@/components/AppIcon';
 import AppStyledText from '@/components/AppStyledText';
 import AppButton from '@/components/AppButton';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import {RootState} from '@/redux';
 import {AccountModelState} from '@/redux/modules/account';
 import {API} from '@/redux/api';
-import {actions as simActions, SimAction} from '@/redux/modules/sim';
 import utils from '@/redux/api/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
 
@@ -123,7 +121,6 @@ type ProductDetailScreenProps = {
   account: AccountModelState;
   action: {
     cart: CartAction;
-    sim: SimAction;
   };
 };
 
@@ -150,25 +147,17 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const onPressBtnPurchase = useCallback(() => {
     const {balance} = account;
 
-    action.sim.update({esimIccid: params.subsIccid});
-
     // 구매 품목을 갱신한다.
     action.cart.purchase({
       purchaseItems,
       balance,
+      esimIccid: params.subsIccid,
     });
 
     navigation.navigate('PymMethod', {
       mode: 'roaming_product',
     });
-  }, [
-    account,
-    action.cart,
-    action.sim,
-    navigation,
-    params.subsIccid,
-    purchaseItems,
-  ]);
+  }, [account, action.cart, navigation, params.subsIccid, purchaseItems]);
 
   const titleText = useCallback(
     (text: string, prodname: string, name: string) => (
@@ -279,7 +268,6 @@ export default connect(
   (dispatch) => ({
     action: {
       cart: bindActionCreators(cartActions, dispatch),
-      sim: bindActionCreators(simActions, dispatch),
     },
   }),
 )(ChargeDetailScreen);
