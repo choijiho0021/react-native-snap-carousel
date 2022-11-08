@@ -1,8 +1,8 @@
-import {RouteProp, useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Map as ImmutableMap} from 'immutable';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {Alert, SafeAreaView, SectionList, StyleSheet, View} from 'react-native';
+import {FlatList, SafeAreaView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
@@ -32,10 +32,8 @@ import {
 } from '@/redux/modules/cart';
 import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
-import {actions as simActions, SimAction} from '@/redux/modules/sim';
 
 const {esimCurrency} = Env.get();
-const sectionTitle = ['sim', 'product'];
 
 const styles = StyleSheet.create({
   sumBox: {
@@ -80,11 +78,8 @@ const styles = StyleSheet.create({
 
 type CartScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Cart'>;
 
-type CartScreenRouteProp = RouteProp<HomeStackParamList, 'Cart'>;
-
 type CartScreenProps = {
   navigation: CartScreenNavigationProp;
-  route: CartScreenRouteProp;
 
   cart: CartModelState;
   account: AccountModelState;
@@ -93,16 +88,12 @@ type CartScreenProps = {
 
   action: {
     cart: CartAction;
-    sim: SimAction;
   };
 };
 
-type ItemTotal = {cnt: number; price: Currency};
-type ItemSection = {data: RkbOrderItem[]; title: string};
-
 const CartScreen: React.FC<CartScreenProps> = (props) => {
-  const {navigation, route, cart, account, product, pending, action} = props;
-  const [section, setSection] = useState<ItemSection[]>([]);
+  const {navigation, cart, account, product, pending, action} = props;
+  const [list, setList] = useState<RkbOrderItem[]>([]);
   const [checked, setChecked] = useState(ImmutableMap<string, boolean>());
   const [qty, setQty] = useState(ImmutableMap<string, number>());
   const [total, setTotal] = useState({
@@ -115,42 +106,15 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
     setChecked((prev) => prev.update(key, (v) => !v));
   }, []);
 
-  const getDlvCost = useCallback(
-    (
-      chk: ImmutableMap<string, boolean>,
-      qt: ImmutableMap<string, number>,
-      tot: ItemTotal,
-      sec: ItemSection[],
-    ) => {
-      const simList = sec?.find((item) => item.title === 'sim');
-      return simList &&
-        simList.data.findIndex(
-          (item) => chk.get(item.key) && (qt.get(item.key) || 0) > 0,
-        ) >= 0
-        ? utils.dlvCost(tot.price)
-        : utils.toCurrency(0, tot?.price.currency);
-    },
-    [],
-  );
-
   const onPurchase = useCallback(() => {
-    const dlvCost = getDlvCost(checked, qty, total, section);
     const {loggedIn, balance} = account;
 
     if (!loggedIn) {
       navigation.navigate('Auth');
     } else {
-      const purchaseItems = section
-        ?.reduce(
-          (acc, cur) =>
-            acc.concat(
-              cur.data?.filter(
-                (item) => checked.get(item.key) && qty.get(item.key, 0) > 0,
-              ),
-            ),
-          [] as RkbOrderItem[],
-        )
-        ?.map(
+      const purchaseItems = list
+        .filter((item) => checked.get(item.key) && qty.get(item.key, 0) > 0)
+        .map(
           (item) =>
             ({
               ...item,
@@ -160,14 +124,11 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
             } as PurchaseItem),
         );
 
-      // 충전구매 sim data제거
-      action.sim.init();
-
       action.cart
         .checkStockAndPurchase({
           purchaseItems,
           balance,
-          dlvCost: dlvCost.value > 0,
+          dlvCost: false,
         })
         .then(({payload: resp}) => {
           if (resp.result === 0) {
@@ -180,17 +141,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
           console.log('failed to check stock', err);
         });
     }
-  }, [
-    account,
-    action.cart,
-    action.sim,
-    checked,
-    getDlvCost,
-    navigation,
-    qty,
-    section,
-    total,
-  ]);
+  }, [account, action.cart, checked, list, navigation, qty]);
 
   const onChangeQty = useCallback(
     (key: string, orderItemId: number, cnt: number) => {
@@ -227,30 +178,9 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
     [],
   );
 
-  const sim = useCallback(() => {
-    return cart.orderItems
-      ?.filter(
-        (item) =>
-          item.prod.type === 'sim_card' &&
-          checked.get(item.key) &&
-          qty.get(item.key),
-      )
-      ?.map((item) => item.totalPrice)
-      ?.reduce(
-        (acc, cur) => utils.toCurrency(acc.value + cur.value, cur.currency),
-        utils.toCurrency(0, 'KRW'),
-      );
-  }, [cart.orderItems, checked, qty]);
-
   const removeItem = useCallback(
     (key: string, orderItemId: number) => {
-      setSection((prev) =>
-        prev?.map((item) => ({
-          title: item.title,
-          data: item.data?.filter((i) => i.orderItemId !== orderItemId),
-        })),
-      );
-
+      setList((prev) => prev?.filter((i) => i.orderItemId !== orderItemId));
       setChecked((prev) => prev.remove(key));
       setQty((prev) => prev.remove(key));
 
@@ -263,21 +193,6 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
       }
     },
     [action.cart, cart],
-  );
-
-  const checkDeletedItem = useCallback(
-    (items: RkbOrderItem[]) => {
-      const {prodList} = product;
-      const toRemove = (items || []).filter(
-        (item) => typeof prodList.get(item.key) === 'undefined',
-      );
-
-      if (!_.isEmpty(toRemove)) {
-        toRemove.forEach((item) => removeItem(item.key, item.orderItemId));
-        setShowSnackbar(true);
-      }
-    },
-    [product, removeItem],
   );
 
   const renderItem = useCallback(
@@ -311,41 +226,10 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
     ],
   );
 
-  const registerSimAlert = useCallback(() => {
-    Alert.alert(i18n.t('reg:ICCID'), i18n.t('reg:noICCID'), [
-      {
-        text: i18n.t('cancel'),
-        // style: 'cancel',
-      },
-      {
-        text: i18n.t('ok'),
-        onPress: () => navigation.navigate('RegisterSim'),
-      },
-    ]);
-  }, [navigation]);
-
   const init = useCallback(() => {
     const {orderItems} = cart;
 
-    checkDeletedItem(orderItems);
-
-    const list = orderItems?.reduce(
-      (acc, cur) => {
-        return cur.type === 'sim_card'
-          ? [acc[0].concat(cur), acc[1]]
-          : [acc[0], acc[1].concat(cur)];
-      },
-      [[] as RkbOrderItem[], [] as RkbOrderItem[]],
-    );
-
-    setSection(
-      list
-        ?.map((item, idx) => ({
-          title: sectionTitle[idx],
-          data: item,
-        }))
-        ?.filter((item) => item.data.length > 0),
-    );
+    setList(orderItems);
     setQty((prev) =>
       orderItems.reduce((acc, cur) => acc.set(cur.key, cur.qty), prev),
     );
@@ -355,7 +239,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         prev,
       ),
     );
-  }, [cart, checkDeletedItem]);
+  }, [cart]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -383,15 +267,9 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
     // checked.get() == undefined를 반환할 수 있다.
     // 따라서, checked.get() 값이 false인 경우(사용자가 명확히 uncheck 한 경우)에만 계산에서 제외한다.
 
-    const tot = section
-      ?.reduce(
-        (acc, cur) =>
-          acc.concat(
-            cur.data?.filter((item) => checked.get(item.key) !== false),
-          ),
-        [] as RkbOrderItem[],
-      )
-      ?.map((item) => ({
+    const tot = list
+      .filter((item) => checked.get(item.key) !== false)
+      .map((item) => ({
         qty: qty.get(item.key, 0),
         price: item.price,
       }))
@@ -409,50 +287,32 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
       );
 
     setTotal(tot);
-  }, [checked, qty, section]);
+  }, [checked, list, qty]);
 
-  const dlvCost = useMemo(
-    () => getDlvCost(checked, qty, total, section),
-    [checked, getDlvCost, qty, section, total],
-  );
   const balance = useMemo(() => account.balance || 0, [account.balance]);
   const pymPrice = useMemo(() => {
     const amount = total
-      ? utils.toCurrency(
-          total.price.value + dlvCost.value,
-          total.price.currency,
-        )
+      ? utils.toCurrency(total.price.value, total.price.currency)
       : ({value: 0, currency: 'KRW'} as Currency);
     return utils.toCurrency(
       amount.value > balance ? amount.value - balance : 0,
       amount.currency,
     );
-  }, [balance, dlvCost.value, total]);
+  }, [balance, total]);
 
-  const data = useMemo(
-    () =>
-      cart.orderItems?.find(
-        (item) =>
-          (item.prod || {}).type === 'roaming_product' && checked.get(item.key),
-      ),
-    [cart.orderItems, checked],
-  );
-
-  return _.isEmpty(section) ? (
+  return _.isEmpty(list) ? (
     empty()
   ) : (
     <SafeAreaView style={styles.container}>
-      <SectionList
-        sections={section}
+      <FlatList
+        data={list}
         renderItem={renderItem}
         extraData={[qty, checked]}
-        stickySectionHeadersEnabled={false}
         ListFooterComponent={
           <ChargeSummary
             totalCnt={total.cnt}
             totalPrice={total.price}
             balance={balance}
-            dlvCost={dlvCost}
           />
         }
       />
@@ -482,9 +342,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
           type="primary"
           checkedColor={colors.white}
           disabled={total.price.value === 0}
-          onPress={
-            !_.isEmpty(!account.iccid && data) ? registerSimAlert : onPurchase
-          }
+          onPress={onPurchase}
         />
       </View>
     </SafeAreaView>
@@ -506,7 +364,6 @@ export default connect(
   (dispatch) => ({
     action: {
       cart: bindActionCreators(cartActions, dispatch),
-      sim: bindActionCreators(simActions, dispatch),
     },
   }),
 )(CartScreen);
