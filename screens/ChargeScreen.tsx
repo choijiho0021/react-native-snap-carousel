@@ -26,6 +26,7 @@ import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {retrieveData, storeData} from '@/utils/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
   container: {
@@ -111,6 +112,22 @@ const styles = StyleSheet.create({
   },
 
   toolTipBodyText: {
+    ...appStyles.normal14Text,
+    lineHeight: 20,
+  },
+  emptyImage: {
+    marginBottom: 21,
+  },
+  emptyData: {
+    alignItems: 'center',
+    marginTop: '45%',
+  },
+  emptyText1: {
+    ...appStyles.medium14,
+    color: colors.clearBlue,
+    lineHeight: 20,
+  },
+  emptyText2: {
     ...appStyles.normal14Text,
     lineHeight: 20,
   },
@@ -247,7 +264,10 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
     });
   }, [navigation, renderToolTip, showTip]);
 
-  const onIndexChange = useCallback((idx: number) => setIndex(idx), []);
+  const onIndexChange = useCallback((idx: number) => {
+    setIndex(idx);
+    console.log('@@@idx', idx);
+  }, []);
   const routes = useMemo(
     () =>
       [
@@ -264,26 +284,39 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
       ] as ChargeTabRoute[],
     [],
   );
-
   const renderScene = useCallback(
     ({route}: {route: ChargeTabRoute}) => {
+      const prodDataC = prodData[route.category === 'daily' ? 0 : 1].data;
       return (
         <ScrollView>
-          {prodData[route.category === 'daily' ? 0 : 1]?.data.map((data) => (
-            <CountryListItem
-              key={data.sku}
-              item={data}
-              onPress={() => {
-                navigation.navigate('ChargeDetail', {
-                  data,
-                  prodname: params.mainSubs.prodName,
-                  chargeablePeriod: params.chargeablePeriod,
-                  subsIccid: params.mainSubs.subsIccid,
-                });
-              }}
-              isCharge
-            />
-          ))}
+          {prodDataC.length > 0 ? (
+            prodDataC.map((data) => (
+              <CountryListItem
+                key={data.sku}
+                item={data}
+                onPress={() => {
+                  navigation.navigate('ChargeDetail', {
+                    data,
+                    prodname: params.mainSubs.prodName,
+                    chargeablePeriod: params.chargeablePeriod,
+                    subsIccid: params.mainSubs.subsIccid,
+                  });
+                }}
+                isCharge
+              />
+            ))
+          ) : (
+            <View style={styles.emptyData}>
+              <AppSvgIcon name="threeDots" style={styles.emptyImage} />
+
+              <AppText style={styles.emptyText1}>
+                {i18n.t('esim:charge:noProd1')}
+              </AppText>
+              <AppText style={styles.emptyText2}>
+                {i18n.t('esim:charge:noProd2')}
+              </AppText>
+            </View>
+          )}
         </ScrollView>
       );
     },

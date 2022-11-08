@@ -608,6 +608,31 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  threeDots: [
+    <Svg
+      width="62"
+      height="62"
+      viewBox="0 0 62 62"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="31" cy="31" r="30" fill="url(#y2wbnymkxa)" />
+      <Circle cx="17" cy="31" r="3" fill="#4F99FF" />
+      <Circle cx="31" cy="31" r="3" fill="#4F99FF" />
+      <Circle cx="45" cy="31" r="3" fill="#4F99FF" />
+      <Defs>
+        <LinearGradient
+          id="y2wbnymkxa"
+          x1="13.222"
+          y1="6.556"
+          x2="61"
+          y2="71"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#E1EDFF" />
+          <Stop offset="1" stopColor="#F8FAFE" />
+        </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
 };
 
 export default pressIcons;
