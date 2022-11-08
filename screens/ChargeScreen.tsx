@@ -3,7 +3,7 @@ import {StyleSheet, SafeAreaView, View, Platform} from 'react-native';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
-import {SceneMap, TabView} from 'react-native-tab-view';
+import {TabView} from 'react-native-tab-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppBackButton from '@/components/AppBackButton';
@@ -12,7 +12,6 @@ import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {RootState} from '@/redux';
 import {
   actions as productActions,
-  ProdDataType,
   ProductAction,
   ProductModelState,
 } from '@/redux/modules/product';
@@ -26,7 +25,6 @@ import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {retrieveData, storeData} from '@/utils/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
   container: {
@@ -61,38 +59,30 @@ const styles = StyleSheet.create({
   },
   toolTipStyle: {
     borderRadius: 5,
-    // ...Platform.select({
-    //   ios: {
-    //     shadowColor: 'rgb(52, 62, 95)',
-    //     shadowOpacity: 0.2,
-    //     shadowRadius: 3,
-    //     shadowOffset: {
-    //       height: 1,
-    //       width: 1,
-    //     },
-    //   },
-    // }),
-    // borderWidth: 1,
-    // borderColor: colors.lightGrey,
   },
   arrowStyle: {
-    // borderWidth: 1,
-    // borderTopColor: colors.lightGrey,
+    borderTopColor: colors.lightGrey,
     zIndex: 10,
   },
-
+  triangle: {
+    position: 'absolute',
+    top: 32,
+    backgroundColor: 'transparent',
+    borderBottomWidth: 8,
+    borderBottomColor: colors.backGrey,
+    borderRightWidth: 8,
+    borderRightColor: 'transparent',
+    borderLeftWidth: 8,
+    borderLeftColor: 'transparent',
+    width: 0,
+    height: 0,
+  },
   toolTipBox: {
     backgroundColor: colors.backGrey,
-    // borderWidth: 1,
-    // borderColor: colors.lightGrey,
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
     padding: 16,
     paddingBottom: 20,
-
-    ...Platform.select({
-      android: {
-        elevation: 3,
-      },
-    }),
   },
   toolTipTitleFrame: {
     flexDirection: 'row',
@@ -212,6 +202,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
         tooltipStyle={styles.toolTipStyle}
         arrowStyle={styles.arrowStyle}
         disableShadow
+        arrowSize={{width: 16, height: 8}}
         content={
           <View>
             <View style={styles.toolTipTitleFrame}>
@@ -251,6 +242,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
           }}
           name="btnChargeCaution"
         />
+        {showTip && <View style={styles.triangle} />}
       </Tooltip>
     ),
     [showTip],
