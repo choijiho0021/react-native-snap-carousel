@@ -1,6 +1,13 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {memo} from 'react';
-import {Image, Pressable, View, ViewStyle, TextProps} from 'react-native';
+import {
+  Image,
+  Pressable,
+  View,
+  ViewStyle,
+  TextProps,
+  ImageStyle,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@/redux';
 import {appStyles} from '@/constants/Styles';
@@ -12,12 +19,14 @@ const AppBackButton = ({
   isPaid = false,
   onPress,
   style,
+  imageStyle,
   textProps,
 }: {
   title?: string;
   isPaid?: boolean;
   onPress?: () => void;
   style?: ViewStyle;
+  imageStyle?: ImageStyle;
   textProps?: TextProps;
 }) => {
   const navigation = useNavigation();
@@ -34,7 +43,7 @@ const AppBackButton = ({
       <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
         {!isPaid ? (
           <Image
-            style={{marginLeft: 20}}
+            style={{marginLeft: 20, ...imageStyle}}
             source={require('../assets/images/header/btnBack.png')}
           />
         ) : (
