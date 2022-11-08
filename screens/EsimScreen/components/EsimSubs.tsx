@@ -422,7 +422,11 @@ const EsimSubs = ({
     const country = mainSubs.prodName?.split(' ')?.[0];
 
     return (
-      <View style={[styles.prodTitle, notCardInfo && {marginVertical: 10}]}>
+      <Pressable
+        style={styles.prodTitle}
+        onPress={() => {
+          setIsMoreInfo((prev) => !prev);
+        }}>
         <SplitText
           key={mainSubs.key}
           renderExpend={() =>
@@ -461,15 +465,7 @@ const EsimSubs = ({
         )}
       </Pressable>
     );
-  }, [
-    mainSubs,
-    notCardInfo,
-    expired,
-    giftStatusCd,
-    isCharged,
-    isMoreInfo,
-    sendable,
-  ]);
+  }, [mainSubs, expired, giftStatusCd, isCharged, isMoreInfo, sendable]);
 
   const topInfo = useCallback(() => {
     return (
@@ -502,7 +498,14 @@ const EsimSubs = ({
         </View>
       </View>
     );
-  }, [chargeablePeriod, mainSubs, notCardInfo]);
+  }, [
+    chargeablePeriod,
+    chargedSubs,
+    mainSubs.purchaseDate,
+    mainSubs.subsIccid,
+    mainSubs.type,
+    notCardInfo,
+  ]);
 
   const QRnCopyInfo = useCallback(() => {
     // const usageCheckable =
