@@ -412,16 +412,17 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         </View>
         <AppActivityIndicator visible={toastPending || pending} />
       </KeyboardAwareScrollView>
+      <AppSnackBar
+        visible={showSnackBar}
+        onClose={() => setShowSnackbar(false)}
+        textMessage={i18n.t('toast:sendSuccess')}
+        bottom={10}
+      />
       <AppButton
         style={[appStyles.confirm]}
         title={i18n.t('esim:sendGift')}
         disabled={methodList.length === 0}
         onPress={() => sendLink(checked, mainSubs)}
-      />
-      <AppSnackBar
-        visible={showSnackBar}
-        onClose={() => setShowSnackbar(false)}
-        textMessage={i18n.t('toast:sendSuccess')}
       />
     </SafeAreaView>
   );
