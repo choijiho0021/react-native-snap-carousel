@@ -56,11 +56,11 @@ export const device = {
       height: 896,
     },
   },
-};
+} as const;
 
-export const isDeviceSize = (size) => {
+export const isDeviceSize = (size: keyof typeof device) => {
   if (_.isEmpty(device[size])) return false;
-  return windowWidth <= device[size].window.width;
+  return windowHeight <= device[size].window.height;
 };
 
 export const isFolderOpen = (w: number) => w > 500;

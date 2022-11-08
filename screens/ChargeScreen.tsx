@@ -25,6 +25,7 @@ import CountryListItem from './HomeScreen/component/CountryListItem';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {retrieveData, storeData} from '@/utils/utils';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const styles = StyleSheet.create({
   container: {
@@ -218,13 +219,13 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
           storeData('chargeTooltip', 'closed');
         }}
         placement="bottom">
-        <AppButton
+        <AppSvgIcon
           style={styles.cautionBtn}
           onPress={() => {
             storeData('chargeTooltip', 'closed');
             setTip(true);
           }}
-          iconName="btnChargeCaution"
+          name="btnChargeCaution"
         />
       </Tooltip>
     ),

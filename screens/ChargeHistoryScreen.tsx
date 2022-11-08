@@ -201,7 +201,7 @@ export const renderPromoFlag = (flags: string[], isStore: boolean) => (
         );
       })}
     {isStore && (
-      <AppIcon
+      <AppSvgIcon
         name="naverIcon"
         style={{marginLeft: 8, justifyContent: 'center'}}
       />
@@ -410,7 +410,7 @@ const ChargeHistoryScreen: React.FC = () => {
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
       {!isChargeable && (
         <View style={styles.cautionContainer}>
-          <AppIcon name="cautionIcon" />
+          <AppSvgIcon name="cautionIcon" />
           <AppText style={styles.cautionText}>
             {i18n.t('esim:chargeHistory:caution')}
           </AppText>
