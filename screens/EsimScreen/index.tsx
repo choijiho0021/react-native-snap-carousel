@@ -80,12 +80,12 @@ const styles = StyleSheet.create({
   usrGuideBtn: {
     flexDirection: 'row',
     marginHorizontal: 20,
-    marginTop: 6,
     paddingHorizontal: 20,
-    height: 56,
+    height: 64,
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#d2dfff',
+    borderRadius: 3,
   },
   rowCenter: {
     flexDirection: 'row',
@@ -105,6 +105,9 @@ const styles = StyleSheet.create({
     ...appStyles.normal14Text,
     lineHeight: 20,
     color: '#001c65',
+  },
+  esimHeader: {
+    height: 56,
   },
 });
 
@@ -413,7 +416,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={appStyles.header}>
+      <View style={[appStyles.header, styles.esimHeader]}>
         <AppText style={styles.title}>{i18n.t('esimList')}</AppText>
         <AppSvgIcon
           name="btnCnter"
@@ -434,7 +437,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         // onRefresh={this.onRefresh}
         // refreshing={refreshing}
         extraData={subsList}
-        contentContainerStyle={_.isEmpty(subsList) && {flex: 1}}
+        contentContainerStyle={[
+          {paddingBottom: 34},
+          _.isEmpty(subsList) && {flex: 1},
+        ]}
         ListEmptyComponent={empty}
         refreshControl={
           <RefreshControl

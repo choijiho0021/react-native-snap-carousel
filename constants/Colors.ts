@@ -24,6 +24,7 @@ export const colors = {
   paleGrey: '#f7f8f9',
   paleGrey2: '#f2f4f6',
   paleGrey3: '#f7f8f9',
+  backGrey: '#f7f8fa',
   white: '#ffffff',
   whiteTwo: '#f5f5f5',
   whiteThree: '#e3e3e3',

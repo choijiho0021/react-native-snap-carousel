@@ -21,9 +21,9 @@ import AppModal from '@/components/AppModal';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
-    backgroundColor: colors.whiteTwo,
-    borderColor: colors.lightGrey,
+    backgroundColor: colors.backGrey,
     borderWidth: 1,
+    borderColor: colors.whiteTwo,
   },
   rowCenter: {
     flexDirection: 'row',
@@ -35,20 +35,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingTop: 8,
+    paddingBottom: 16,
   },
   usageListContainer: {
     marginTop: 24,
     marginHorizontal: 20,
     backgroundColor: colors.white,
-    borderRadius: 3,
-    borderWidth: 1,
-    borderColor: colors.whiteThree,
   },
   infoCard: {
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
   },
   infoRadiusBorder: {
-    padding: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
   },
   giftButton: {
     flex: 1,
@@ -123,16 +124,13 @@ const styles = StyleSheet.create({
   },
   btn: {
     width: 85,
-    paddingTop: 19,
   },
   btnDis: {
     width: 85,
-    paddingTop: 19,
     opacity: 0.6,
   },
   btnExpired: {
     width: 85,
-    paddingTop: 19,
   },
   btnTitle: {
     ...appStyles.normal14Text,
@@ -182,6 +180,9 @@ const styles = StyleSheet.create({
     color: '#2c2c2c',
   },
   shadow: {
+    borderRadius: 3,
+    borderWidth: 1,
+    borderColor: colors.whiteFive,
     ...Platform.select({
       ios: {
         shadowColor: 'rgb(52, 62, 95)',
@@ -231,7 +232,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   topInfo: {
-    marginTop: 20,
+    marginTop: 24,
   },
   arrow: {
     width: 26,
@@ -338,6 +339,16 @@ const EsimSubs = ({
   const [isMoreInfo, setIsMoreInfo] = useState(false);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
 
+  const notCardInfo = useMemo(() => {
+    if (
+      !expired &&
+      giftStatusCd !== 'S' &&
+      mainSubs.type !== API.Subscription.CALL_PRODUCT
+    )
+      return true;
+    return false;
+  }, [expired, giftStatusCd, mainSubs.type]);
+
   const chargeabledate = useMemo(() => {
     return moment(mainSubs.expireDate).subtract(30, 'd');
   }, [mainSubs.expireDate]);
@@ -388,7 +399,7 @@ const EsimSubs = ({
     const country = mainSubs.prodName?.split(' ')?.[0];
 
     return (
-      <View style={styles.prodTitle}>
+      <View style={[styles.prodTitle, notCardInfo && {marginVertical: 10}]}>
         <SplitText
           key={mainSubs.key}
           renderExpend={() =>
@@ -401,7 +412,7 @@ const EsimSubs = ({
             expired || giftStatusCd === 'S'
               ? styles.usageTitleNormal
               : styles.usageTitleBold,
-            {marginBottom: 10, alignSelf: 'center'},
+            {alignSelf: 'center'},
           ]}
           numberOfLines={2}
           ellipsizeMode="tail">
@@ -434,11 +445,19 @@ const EsimSubs = ({
         )}
       </View>
     );
-  }, [expired, giftStatusCd, isCharged, isMoreInfo, sendable, mainSubs]);
+  }, [
+    mainSubs,
+    notCardInfo,
+    expired,
+    giftStatusCd,
+    isCharged,
+    isMoreInfo,
+    sendable,
+  ]);
 
   const topInfo = useCallback(() => {
     return (
-      <View style={styles.topInfo}>
+      <View style={[styles.topInfo, !notCardInfo && {marginTop: 28}]}>
         {mainSubs.type !== API.Subscription.CALL_PRODUCT && (
           <View style={styles.inactiveContainer}>
             <AppText style={styles.normal14Gray}>
@@ -467,13 +486,7 @@ const EsimSubs = ({
         </View>
       </View>
     );
-  }, [
-    chargeablePeriod,
-    mainSubs.expireDate,
-    mainSubs.purchaseDate,
-    mainSubs.subsIccid,
-    mainSubs.type,
-  ]);
+  }, [chargeablePeriod, mainSubs, notCardInfo]);
 
   const QRnCopyInfo = useCallback(() => {
     // const usageCheckable =
@@ -603,14 +616,10 @@ const EsimSubs = ({
         styles.usageListContainer,
         expired || giftStatusCd === 'S' ? styles.cardExpiredBg : styles.shadow,
       ]}>
-      <View style={sendable ? styles.infoRadiusBorder : styles.infoCard}>
+      <View style={notCardInfo ? styles.infoRadiusBorder : styles.infoCard}>
         {title()}
 
-        {!expired &&
-        giftStatusCd !== 'S' &&
-        mainSubs.type !== API.Subscription.CALL_PRODUCT
-          ? QRnCopyInfo()
-          : topInfo()}
+        {notCardInfo ? QRnCopyInfo() : topInfo()}
       </View>
       {isMoreInfo && (
         <View style={isMoreInfo && styles.moreInfoContent}>
