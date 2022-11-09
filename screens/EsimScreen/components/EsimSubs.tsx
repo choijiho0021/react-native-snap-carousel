@@ -634,11 +634,19 @@ const EsimSubs = ({
     const cSplit = caution.split(':');
     if (cSplit[0] === Platform.OS) {
       if (cSplit.length > 1) {
-        return <AppText style={styles.cautionText}>{cSplit[1]}</AppText>;
+        return (
+          <AppText key={caution} style={styles.cautionText}>
+            {cSplit[1]}
+          </AppText>
+        );
       }
     }
     if (cSplit[0] !== 'ios' && cSplit[0] !== 'android')
-      return <AppText style={styles.cautionText}>{caution}</AppText>;
+      return (
+        <AppText key={caution} style={styles.cautionText}>
+          {caution}
+        </AppText>
+      );
     return null;
   }, []);
 
