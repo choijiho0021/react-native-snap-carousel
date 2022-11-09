@@ -630,6 +630,18 @@ const EsimSubs = ({
     sendable,
   ]);
 
+  const renderCautionList = useCallback((caution: string) => {
+    const cSplit = caution.split(':');
+    if (cSplit[0] === Platform.OS) {
+      if (cSplit.length > 1) {
+        return <AppText style={styles.cautionText}>{cSplit[1]}</AppText>;
+      }
+    }
+    if (cSplit[0] !== 'ios' && cSplit[0] !== 'android')
+      return <AppText style={styles.cautionText}>{caution}</AppText>;
+    return null;
+  }, []);
+
   return (
     <View
       style={[
@@ -645,11 +657,16 @@ const EsimSubs = ({
         <View style={isMoreInfo && styles.moreInfoContent}>
           {topInfo()}
 
-          {mainSubs.caution ? (
+          {!!mainSubs.caution || (mainSubs.cautionList?.length || 0) > 0 ? (
             <View style={styles.cautionBox}>
               <AppSvgIcon name="cautionIcon" style={{marginRight: 12}} />
               <View>
-                <AppText style={styles.cautionText}>{mainSubs.caution}</AppText>
+                {!!mainSubs.caution && (
+                  <AppText style={styles.cautionText}>
+                    {mainSubs.caution}
+                  </AppText>
+                )}
+                {mainSubs.cautionList?.map(renderCautionList)}
               </View>
             </View>
           ) : (
