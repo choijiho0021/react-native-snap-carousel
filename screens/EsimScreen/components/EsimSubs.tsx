@@ -630,25 +630,27 @@ const EsimSubs = ({
     sendable,
   ]);
 
-  const renderCautionList = useCallback((caution: string) => {
-    const cSplit = caution.split(':');
-    if (cSplit[0] === Platform.OS) {
-      if (cSplit.length > 1) {
-        return (
-          <AppText key={caution} style={styles.cautionText}>
-            {cSplit[1]}
-          </AppText>
-        );
-      }
-    }
-    if (cSplit[0] !== 'ios' && cSplit[0] !== 'android')
-      return (
-        <AppText key={caution} style={styles.cautionText}>
-          {caution}
-        </AppText>
-      );
-    return null;
-  }, []);
+  const renderCautionText = useCallback(
+    (caution: string, subNum: number) => (
+      <AppText key={caution} style={styles.cautionText}>
+        {caution.substring(subNum)}
+      </AppText>
+    ),
+    [],
+  );
+
+  const renderCautionList = useCallback(
+    (caution: string) => {
+      if (caution.startsWith('ios:') && Platform.OS === 'ios')
+        return renderCautionText(caution, 4);
+      if (caution.startsWith('android:') && Platform.OS === 'android')
+        return renderCautionText(caution, 8);
+      if (!caution.startsWith('ios:') && !caution.startsWith('android:'))
+        return renderCautionText(caution, 0);
+      return null;
+    },
+    [renderCautionText],
+  );
 
   return (
     <View
