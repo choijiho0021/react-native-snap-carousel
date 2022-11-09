@@ -296,15 +296,15 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
       if (ImagePicker) {
         try {
           const image = await ImagePicker.openPicker({
-            width: 750,
-            height: 1334, // iphone 8 size
-            cropping: true,
+            // width: 750,
+            // height: 1334, // iphone 8 size
+            // cropping: true,
             includeBase64: true,
             writeTempFile: false,
             mediaType: 'photo',
             forceJpb: true,
-            cropperChooseText: i18n.t('select'),
-            cropperCancelText: i18n.t('cancel'),
+            // cropperChooseText: i18n.t('select'),
+            // cropperCancelText: i18n.t('cancel'),
           });
 
           setAttachment((a) => a.push(image));
