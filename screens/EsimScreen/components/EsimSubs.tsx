@@ -657,19 +657,16 @@ const EsimSubs = ({
         <View style={isMoreInfo && styles.moreInfoContent}>
           {topInfo()}
 
-          {mainSubs.caution !== '' ||
-          (mainSubs.cautionList && mainSubs.cautionList.length > 0) ? (
+          {!!mainSubs.caution || (mainSubs.cautionList?.length || 0) > 0 ? (
             <View style={styles.cautionBox}>
               <AppSvgIcon name="cautionIcon" style={{marginRight: 12}} />
               <View>
-                {mainSubs.caution !== '' && (
+                {!!mainSubs.caution && (
                   <AppText style={styles.cautionText}>
                     {mainSubs.caution}
                   </AppText>
                 )}
-                {mainSubs.cautionList &&
-                  mainSubs.cautionList.length > 0 &&
-                  mainSubs.cautionList.map(renderCautionList)}
+                {mainSubs.cautionList?.map(renderCautionList)}
               </View>
             </View>
           ) : (
