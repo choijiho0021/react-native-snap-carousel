@@ -358,6 +358,16 @@ const EsimSubs = ({
   const [isMoreInfo, setIsMoreInfo] = useState(false);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
 
+  const hasCaution = useMemo(() => {
+    if (mainSubs.caution) return true;
+    return false;
+  }, [mainSubs.caution]);
+
+  const hasCautionList = useMemo(() => {
+    if (mainSubs.cautionList) return true;
+    return false;
+  }, [mainSubs.cautionList]);
+
   const notCardInfo = useMemo(() => {
     if (
       !expired &&
@@ -630,6 +640,22 @@ const EsimSubs = ({
     sendable,
   ]);
 
+  const renderCautionList = useCallback((caution: string) => {
+    const cSplit = caution.split(':');
+    if (
+      (cSplit[0] === 'ios' && Platform.OS === 'ios') ||
+      (cSplit[0] === 'android' && Platform.OS === 'android')
+    ) {
+      if (cSplit.length > 1) {
+        return <AppText style={styles.cautionText}>{cSplit[1]}</AppText>;
+      }
+      return <AppText style={styles.cautionText}>{caution}</AppText>;
+    }
+    if (cSplit[0] !== 'ios' && cSplit[0] !== 'android')
+      return <AppText style={styles.cautionText}>{caution}</AppText>;
+    return null;
+  }, []);
+
   return (
     <View
       style={[
@@ -645,11 +671,19 @@ const EsimSubs = ({
         <View style={isMoreInfo && styles.moreInfoContent}>
           {topInfo()}
 
-          {mainSubs.caution ? (
+          {hasCaution || hasCautionList ? (
             <View style={styles.cautionBox}>
               <AppSvgIcon name="cautionIcon" style={{marginRight: 12}} />
               <View>
-                <AppText style={styles.cautionText}>{mainSubs.caution}</AppText>
+                {hasCaution && (
+                  <AppText style={styles.cautionText}>
+                    {mainSubs.caution}
+                  </AppText>
+                )}
+                {hasCautionList &&
+                  mainSubs.cautionList
+                    ?.split('|')
+                    .map((caution) => renderCautionList(caution))}
               </View>
             </View>
           ) : (
