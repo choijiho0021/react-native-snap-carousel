@@ -189,7 +189,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const onRefresh = useCallback(() => {
     if (iccid) {
       setRefreshing(true);
-
       action.order
         .getSubsWithToast({iccid, token})
         .then(() => {
@@ -375,16 +374,17 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       return (
         <EsimSubs
           key={item[0].key}
+          flatListRef={flatListRef}
           index={index}
           mainSubs={item[0]}
-          expired={new Date(item[item.length - 1].expireDate) <= new Date()}
+          chargedSubs={item}
+          expired={moment(item[item.length - 1].expireDate).isBefore(moment())}
+          isChargeExpired={moment(item[0].expireDate).isBefore(moment())}
+          isCharged={item.length > 1}
           onPressUsage={(subscription: RkbSubscription) =>
             onPressUsage(subscription)
           }
           setShowModal={(visible: boolean) => setShowModal(visible)}
-          isCharged={item.length > 1}
-          chargedSubs={item}
-          flatListRef={flatListRef}
         />
       );
     },

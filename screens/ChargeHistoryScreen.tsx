@@ -216,6 +216,7 @@ const ChargeHistoryScreen: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<ParamList, 'ChargeHistoryScreen'>>();
   const params = useMemo(() => route?.params, [route?.params]);
+
   const {mainSubs, chargeablePeriod, chargedSubs, onPressUsage, isChargeable} =
     params || {};
   const [showModal, setShowModal] = useState(false);
@@ -226,6 +227,10 @@ const ChargeHistoryScreen: React.FC = () => {
   const [orderType, setOrderType] = useState<OrderType>('purchase');
   const orderTypeList: OrderType[] = useMemo(() => ['purchase', 'latest'], []);
   const [showTip, setShowTip] = useState(false);
+  const data = useMemo(
+    () => (orderType === 'purchase' ? chargedSubs : chargedSubs.reverse()),
+    [chargedSubs, orderType],
+  );
 
   useEffect(() => {
     retrieveData('chargeHistoryTooltip').then((elm) =>
@@ -285,7 +290,7 @@ const ChargeHistoryScreen: React.FC = () => {
             mainSubs.purchaseDate,
             'YYYY.MM.DD',
           )} - ${utils.toDateString(
-            mainSubs.expireDate,
+            chargedSubs[chargedSubs.length - 1].expireDate,
             'YYYY.MM.DD',
           )}`}</AppText>
         </View>
@@ -299,7 +304,7 @@ const ChargeHistoryScreen: React.FC = () => {
     );
   }, [
     chargeablePeriod,
-    mainSubs.expireDate,
+    chargedSubs,
     mainSubs.purchaseDate,
     mainSubs.subsIccid,
   ]);
@@ -308,34 +313,33 @@ const ChargeHistoryScreen: React.FC = () => {
     const isDaily = chargedSubs[0].daily === 'daily';
     const dailyCardImg = require('../assets/images/esim/dailyCard.png');
     const totalCardImg = require('../assets/images/esim/totalCard.png');
-
+    const title = utils.removeBracketOfName(mainSubs.prodName?.split(' ')?.[0]);
     return (
-      <View style={{alignItems: 'center'}}>
-        <ImageBackground
-          source={isDaily ? dailyCardImg : totalCardImg}
-          resizeMode="cover"
-          style={styles.card}>
-          <AppText style={[appStyles.bold14Text, {color: colors.white}]}>
-            {i18n.t(`esim:prodType:${mainSubs.daily}`)}
-          </AppText>
-          <AppText
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            style={[appStyles.bold20Text, {color: colors.white}]}>
-            {mainSubs.prodName}
-          </AppText>
-        </ImageBackground>
+      <View key="card">
+        <View key="card" style={{alignItems: 'center'}}>
+          <ImageBackground
+            source={isDaily ? dailyCardImg : totalCardImg}
+            resizeMode="cover"
+            style={styles.card}>
+            <AppText style={[appStyles.bold14Text, {color: colors.white}]}>
+              {i18n.t(`esim:prodType:${mainSubs.daily}`)}
+            </AppText>
+            <AppText
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={[appStyles.bold20Text, {color: colors.white}]}>
+              {title}
+            </AppText>
+          </ImageBackground>
+        </View>
         <View style={styles.cardTitle}>
-          <SplitText
+          <AppText
             key={mainSubs.key}
-            renderExpend={() =>
-              renderPromoFlag(mainSubs.promoFlag || [], mainSubs.isStore)
-            }
             style={appStyles.bold20Text}
             numberOfLines={2}
             ellipsizeMode="tail">
-            {utils.removeBracketOfName(mainSubs.prodName)}
-          </SplitText>
+            {title}
+          </AppText>
         </View>
       </View>
     );
@@ -343,7 +347,7 @@ const ChargeHistoryScreen: React.FC = () => {
 
   const renderHeader = useCallback(() => {
     return (
-      <View style={{flexDirection: 'row', marginBottom: 4}}>
+      <View key="header" style={{flexDirection: 'row', marginBottom: 4}}>
         <AppText
           style={[appStyles.bold14Text, {color: colors.warmGrey, flex: 1}]}>
           {i18n.t('esim:chargeHistory:usage')}
@@ -424,10 +428,10 @@ const ChargeHistoryScreen: React.FC = () => {
 
       <View style={styles.listContainer}>
         <FlatList
-          data={orderType === 'purchase' ? chargedSubs : chargedSubs.reverse()}
+          data={data}
           renderItem={renderItem}
           ListHeaderComponent={renderHeader}
-          extraData={orderType}
+          keyExtractor={(item, idx) => item.key + idx}
         />
         {showTip && renderTooltip()}
       </View>

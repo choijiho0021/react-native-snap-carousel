@@ -16,7 +16,6 @@ import {
   FlatList,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import moment from 'moment';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -26,7 +25,6 @@ import {API} from '@/redux/api';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
-import AppIcon from '@/components/AppIcon';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import SplitText from '@/components/SplitText';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
@@ -331,29 +329,30 @@ const styles = StyleSheet.create({
 });
 
 const EsimSubs = ({
+  flatListRef,
   index,
   mainSubs,
-  onPressUsage,
-  setShowModal,
   chargedSubs,
   expired,
+  isChargeExpired,
   isCharged,
-  flatListRef,
+  onPressUsage,
+  setShowModal,
 }: {
+  flatListRef?: MutableRefObject<FlatList<any> | undefined>;
   index: number;
   mainSubs: RkbSubscription;
-  onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
-  setShowModal: (visible: boolean) => void;
   chargedSubs: RkbSubscription[];
   expired: boolean;
+  isChargeExpired: boolean;
   isCharged: boolean;
-  flatListRef?: MutableRefObject<FlatList<any> | undefined>;
+  onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
+  setShowModal: (visible: boolean) => void;
 }) => {
   const navigation = useNavigation();
-  const {giftStatusCd} = mainSubs;
   const sendable = useMemo(
-    () => !expired && !giftStatusCd && !isCharged,
-    [expired, giftStatusCd, isCharged],
+    () => !expired && !mainSubs.giftStatusCd && !isCharged,
+    [expired, mainSubs.giftStatusCd, isCharged],
   );
   const [isMoreInfo, setIsMoreInfo] = useState(false);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
@@ -361,26 +360,16 @@ const EsimSubs = ({
   const notCardInfo = useMemo(() => {
     if (
       !expired &&
-      giftStatusCd !== 'S' &&
+      mainSubs.giftStatusCd !== 'S' &&
       mainSubs.type !== API.Subscription.CALL_PRODUCT
     )
       return true;
     return false;
-  }, [expired, giftStatusCd, mainSubs.type]);
-
-  const chargeabledate = useMemo(() => {
-    return moment(mainSubs.expireDate).subtract(30, 'd');
-  }, [mainSubs.expireDate]);
+  }, [expired, mainSubs.giftStatusCd, mainSubs.type]);
 
   const chargeablePeriod = useMemo(() => {
-    return chargeabledate.format('YYYY.MM.DD');
-  }, [chargeabledate]);
-
-  const isChargeExpired = useMemo(() => {
-    const today = moment();
-    if (chargeabledate < today) return true;
-    return false;
-  }, [chargeabledate]);
+    return utils.toDateString(mainSubs.expireDate, 'YYYY.MM.DD');
+  }, [mainSubs.expireDate]);
 
   const isChargeable = useMemo(() => {
     if (mainSubs.partner !== 'CMI' || isChargeExpired) return false;
@@ -437,24 +426,24 @@ const EsimSubs = ({
             renderPromoFlag(mainSubs.promoFlag || [], mainSubs.isStore)
           }
           style={[
-            expired || giftStatusCd === 'S'
+            expired || mainSubs.giftStatusCd === 'S'
               ? styles.usageTitleNormal
               : styles.usageTitleBold,
             {alignSelf: 'center'},
           ]}
           numberOfLines={2}
           ellipsizeMode="tail">
-          {isCharged && giftStatusCd !== 'S'
+          {isCharged && mainSubs.giftStatusCd !== 'S'
             ? `${i18n.t('acc:rechargeDone')} ${utils.removeBracketOfName(
                 country,
               )}`
             : utils.removeBracketOfName(mainSubs.prodName)}
         </SplitText>
 
-        {expired || giftStatusCd === 'S' ? (
+        {expired || mainSubs.giftStatusCd === 'S' ? (
           <View style={styles.expiredBg}>
             <AppText key={mainSubs.nid} style={appStyles.normal12Text}>
-              {giftStatusCd === 'S'
+              {mainSubs.giftStatusCd === 'S'
                 ? i18n.t('esim:S2')
                 : i18n.t('esim:expired')}
             </AppText>
@@ -466,7 +455,7 @@ const EsimSubs = ({
         )}
       </Pressable>
     );
-  }, [mainSubs, expired, giftStatusCd, isCharged, isMoreInfo, sendable]);
+  }, [mainSubs, expired, isCharged, isMoreInfo, sendable]);
 
   const topInfo = useCallback(() => {
     return (
@@ -570,7 +559,11 @@ const EsimSubs = ({
   ]);
 
   const renderHkBtn = useCallback(() => {
-    if (!expired && giftStatusCd !== 'S' && mainSubs.noticeOption.includes('H'))
+    if (
+      !expired &&
+      mainSubs.giftStatusCd !== 'S' &&
+      mainSubs.noticeOption.includes('H')
+    )
       return (
         <Pressable
           style={styles.redirectHK}
@@ -585,7 +578,7 @@ const EsimSubs = ({
         </Pressable>
       );
     return null;
-  }, [expired, giftStatusCd, mainSubs, navigation]);
+  }, [expired, mainSubs, navigation]);
 
   const renderMoveBtn = useCallback(() => {
     const moveBtnList = [sendable, isCharged || isChargeable].filter(
@@ -656,7 +649,9 @@ const EsimSubs = ({
     <View
       style={[
         styles.usageListContainer,
-        expired || giftStatusCd === 'S' ? styles.cardExpiredBg : styles.shadow,
+        expired || mainSubs.giftStatusCd === 'S'
+          ? styles.cardExpiredBg
+          : styles.shadow,
       ]}>
       <View style={notCardInfo ? styles.infoRadiusBorder : styles.infoCard}>
         {title()}

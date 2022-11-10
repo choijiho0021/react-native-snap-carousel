@@ -148,7 +148,7 @@ const renderTipList = (id: string, list: 'dot' | 'num' = 'num') => (
               <AppText style={styles.stepText}>{k}</AppText>
             </View>
           ) : (
-            <AppText style={[styles.tipText, {marginRight: 5}]}>
+            <AppText style={[styles.tipBoldText, {marginRight: 5}]}>
               {i18n.t('centerDot')}
             </AppText>
           )}
@@ -336,7 +336,7 @@ export const guideImages: GuideImage[] =
             key: 'page6',
             title: renderText(`userGuide:stepsTitle5:galaxy`),
             step: 4,
-            tip: () => renderTipList('userGuide:tipPage5:galaxy'),
+            tip: () => renderTipList('userGuide:tipPage5:galaxy', 'dot'),
           },
           {
             key: 'page7',
