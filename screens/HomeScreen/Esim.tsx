@@ -284,8 +284,8 @@ const Esim: React.FC<EsimProps> = ({
       Image.getSize(
         API.default.httpImageUrl(promotion[0].imageUrl),
         (width, height) => {
-          // 배너 높이 = 이미지 높이 * 비율 + 24(여백)
-          setBannerHeight(Math.ceil(height * (dimensions.width / width) + 24));
+          // 배너 높이 = 이미지 높이 * 비율 + 30(여백)
+          setBannerHeight(Math.ceil(height * (dimensions.width / width) + 30));
         },
       );
     } else {
@@ -750,7 +750,7 @@ const Esim: React.FC<EsimProps> = ({
       <StatusBar barStyle="dark-content" />
       {folderOpened ? (
         <View
-          style={{flexDirection: 'row', alignItems: 'center', marginTop: 8}}>
+          style={{flexDirection: 'row', alignItems: 'center', marginTop: 15}}>
           <View style={{flex: 1}} collapsable={false}>
             <PromotionCarousel width={dimensions.width / 2} />
           </View>
@@ -760,7 +760,7 @@ const Esim: React.FC<EsimProps> = ({
         <View>
           <Animated.View
             collapsable={false}
-            style={{height: animatedValue, marginTop: 8}}>
+            style={{height: animatedValue, marginTop: 15}}>
             <PromotionCarousel width={dimensions.width} />
           </Animated.View>
           {renderSearch()}
