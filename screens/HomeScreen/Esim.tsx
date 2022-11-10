@@ -146,6 +146,8 @@ const styles = StyleSheet.create({
     right: 15,
   },
   tabHeaderContinaer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     backgroundColor: colors.white,
     paddingHorizontal: 20,
   },
@@ -402,41 +404,38 @@ const Esim: React.FC<EsimProps> = ({
   const renderTabHeader = useCallback(() => {
     return (
       <View style={styles.tabHeaderContinaer}>
-        <View style={styles.tabView}>
-          {routes.map((elm, idx) => {
-            const selected = idx === index;
-            return (
-              <>
-                <Pressable
-                  key={elm.key}
+        {routes.map((elm, idx) => {
+          const selected = idx === index;
+          return (
+            <>
+              <Pressable
+                key={elm.title}
+                style={{
+                  ...styles.titleContainer,
+                  borderBottomColor: selected ? colors.black : colors.whiteTwo,
+                }}
+                onPress={() => onIndexChange(idx)}>
+                <AppText
                   style={{
-                    ...styles.titleContainer,
-                    borderBottomColor: selected
-                      ? colors.black
-                      : colors.whiteTwo,
+                    ...styles.tabHeaderTitle,
+                    color: selected ? colors.black : colors.warmGrey,
+                  }}>
+                  {elm.title}
+                </AppText>
+              </Pressable>
+              {idx !== routes.length - 1 && (
+                <Pressable
+                  key={`${elm.title}blank`}
+                  style={{
+                    ...styles.remainUnderLine,
+                    borderBottomColor: colors.whiteTwo,
                   }}
-                  onPress={() => onIndexChange(idx)}>
-                  <AppText
-                    style={{
-                      ...styles.tabHeaderTitle,
-                      color: selected ? colors.black : colors.warmGrey,
-                    }}>
-                    {elm.title}
-                  </AppText>
-                </Pressable>
-                {idx !== routes.length - 1 && (
-                  <Pressable
-                    style={{
-                      ...styles.remainUnderLine,
-                      borderBottomColor: colors.whiteTwo,
-                    }}
-                    onPress={() => onIndexChange(idx)}
-                  />
-                )}
-              </>
-            );
-          })}
-        </View>
+                  onPress={() => onIndexChange(idx)}
+                />
+              )}
+            </>
+          );
+        })}
       </View>
     );
   }, [index, onIndexChange, routes]);
