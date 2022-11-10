@@ -283,7 +283,7 @@ const Esim: React.FC<EsimProps> = ({
         API.default.httpImageUrl(promotion[0].imageUrl),
         (width, height) => {
           // 배너 높이 = 이미지 높이 * 비율 + 24(여백)
-          setBannerHeight(height * (dimensions.width / width) + 24);
+          setBannerHeight(Math.ceil(height * (dimensions.width / width) + 24));
         },
       );
     } else {
@@ -373,11 +373,11 @@ const Esim: React.FC<EsimProps> = ({
     ({route}: {route: TabViewRoute}) => {
       return (
         <StoreList
+          key={route.key}
           data={product.priceInfo.get(route.key, [] as RkbPriceInfo[][])}
           onPress={onPressItem}
           localOpList={product.localOpList}
           width={dimensions.width}
-          onEndReached={() => setIsTop(false)}
           onScroll={({
             nativeEvent: {
               contentOffset: {y},
