@@ -157,6 +157,7 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
   const resp = useMemo(() => board?.comment?.[0] || {}, [board?.comment]);
   const {width} = Dimensions.get('window');
   const [height, setHeight] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const {uuid, status} = params || {};
@@ -192,6 +193,7 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
                 key={`${url}${i}`}
                 onPress={() => {
                   setShowImgModal(true);
+                  setLoading(true);
                   setImgUrl(url);
                   Image.getSize(
                     API.default.httpImageUrl(url).toString(),
@@ -255,6 +257,7 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
 
       <Modal visible={showImgModal} transparent>
         <SafeAreaView style={styles.imgModalFrame}>
+          <AppActivityIndicator visible={loading} />
           <Pressable
             style={styles.forModalClose}
             onPress={() => {
@@ -266,6 +269,9 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
             source={{
               uri: API.default.httpImageUrl(imgUrl).toString(),
               height,
+            }}
+            onLoadEnd={() => {
+              setLoading(false);
             }}
           />
         </SafeAreaView>
