@@ -83,8 +83,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   checkInfoText: {
-    ...appStyles.normal16Text,
-    fontSize: isDeviceSize('medium') ? 14 : 16,
+    ...appStyles.normal14Text,
     lineHeight: 22,
   },
   step: {
@@ -161,7 +160,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
           contentContainerStyle={{alignItems: 'center'}}>
           <AppSvgIcon key="esimLogo" style={styles.logo} name="esimLogo" />
 
-          <View style={{alignItems: 'center', marginTop: 46}}>
+          <View style={{alignItems: 'center', marginTop: 23}}>
             {data?.title}
             <AppText style={[appStyles.medium14, {marginTop: 20}]}>
               {
@@ -179,7 +178,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
             </AppText>
           </View>
 
-          <View style={{marginTop: 40}}>
+          <View style={{marginTop: 20}}>
             <Image
               source={getImage(imageList, data.key)}
               resizeMode="contain"

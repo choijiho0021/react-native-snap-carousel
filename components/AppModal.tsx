@@ -194,6 +194,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
     }
   }, [
     buttonBackgroundColor,
+    buttonStyle,
     buttonTitleColor,
     closeButtonTitle,
     contentStyle,
