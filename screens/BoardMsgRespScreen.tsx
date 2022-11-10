@@ -1,7 +1,16 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {Image, SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
+import {
+  Dimensions,
+  Image,
+  Modal,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
@@ -88,6 +97,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#ffffff',
   },
+  imgModalFrame: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  forModalClose: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+  },
+  modalImg: {
+    width: '80%',
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
 });
 
 type BoardMsgRespScreenNavigationProp = StackNavigationProp<
@@ -123,11 +148,16 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
   action,
 }) => {
   const [idx, setIdx] = useState<number>();
+  const [showImgModal, setShowImgModal] = useState(false);
+  const [imgUrl, setImgUrl] = useState('');
   const issue = useMemo(
     () => (idx !== undefined && idx >= 0 ? board?.list[idx] : undefined),
     [board?.list, idx],
   );
   const resp = useMemo(() => board?.comment?.[0] || {}, [board?.comment]);
+  const {width} = Dimensions.get('window');
+  const [height, setHeight] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const {uuid, status} = params || {};
@@ -159,15 +189,28 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
           images
             .filter((item) => !_.isEmpty(item))
             .map((url, i) => (
-              <Image
+              <Pressable
                 key={`${url}${i}`}
-                source={{uri: API.default.httpImageUrl(url).toString()}}
-                style={styles.attach}
-              />
+                onPress={() => {
+                  setShowImgModal(true);
+                  setLoading(true);
+                  setImgUrl(url);
+                  Image.getSize(
+                    API.default.httpImageUrl(url).toString(),
+                    (w, h) => {
+                      setHeight(h * ((width * 0.8) / w));
+                    },
+                  );
+                }}>
+                <Image
+                  source={{uri: API.default.httpImageUrl(url).toString()}}
+                  style={styles.attach}
+                />
+              </Pressable>
             ))}
       </View>
     ),
-    [],
+    [width],
   );
 
   return (
@@ -211,6 +254,28 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
         type="primary"
         onPress={() => navigation.goBack()}
       />
+
+      <Modal visible={showImgModal} transparent>
+        <SafeAreaView style={styles.imgModalFrame}>
+          <AppActivityIndicator visible={loading} />
+          <Pressable
+            style={styles.forModalClose}
+            onPress={() => {
+              setShowImgModal(false);
+            }}
+          />
+          <Image
+            style={styles.modalImg}
+            source={{
+              uri: API.default.httpImageUrl(imgUrl).toString(),
+              height,
+            }}
+            onLoadEnd={() => {
+              setLoading(false);
+            }}
+          />
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 };
