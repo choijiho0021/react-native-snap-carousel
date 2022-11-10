@@ -45,7 +45,7 @@ class AppSnackBar extends PureComponent<AppSnackBarProps> {
 
   render() {
     return (
-      <SafeAreaView>
+      <View>
         <SnackBar
           ref={this.snackRef}
           visible={this.props.visible}
@@ -76,7 +76,7 @@ class AppSnackBar extends PureComponent<AppSnackBarProps> {
             </View>
           )}
         />
-      </SafeAreaView>
+      </View>
     );
   }
 }
