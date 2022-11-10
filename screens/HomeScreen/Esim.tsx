@@ -146,6 +146,8 @@ const styles = StyleSheet.create({
     right: 15,
   },
   tabHeaderContinaer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     backgroundColor: colors.white,
     paddingHorizontal: 20,
   },
@@ -282,8 +284,8 @@ const Esim: React.FC<EsimProps> = ({
       Image.getSize(
         API.default.httpImageUrl(promotion[0].imageUrl),
         (width, height) => {
-          // 배너 높이 = 이미지 높이 * 비율 + 24(여백)
-          setBannerHeight(Math.ceil(height * (dimensions.width / width) + 24));
+          // 배너 높이 = 이미지 높이 * 비율 + 30(여백)
+          setBannerHeight(Math.ceil(height * (dimensions.width / width) + 30));
         },
       );
     } else {
@@ -402,41 +404,38 @@ const Esim: React.FC<EsimProps> = ({
   const renderTabHeader = useCallback(() => {
     return (
       <View style={styles.tabHeaderContinaer}>
-        <View style={styles.tabView}>
-          {routes.map((elm, idx) => {
-            const selected = idx === index;
-            return (
-              <>
-                <Pressable
-                  key={elm.key}
+        {routes.map((elm, idx) => {
+          const selected = idx === index;
+          return (
+            <>
+              <Pressable
+                key={elm.title}
+                style={{
+                  ...styles.titleContainer,
+                  borderBottomColor: selected ? colors.black : colors.whiteTwo,
+                }}
+                onPress={() => onIndexChange(idx)}>
+                <AppText
                   style={{
-                    ...styles.titleContainer,
-                    borderBottomColor: selected
-                      ? colors.black
-                      : colors.whiteTwo,
+                    ...styles.tabHeaderTitle,
+                    color: selected ? colors.black : colors.warmGrey,
+                  }}>
+                  {elm.title}
+                </AppText>
+              </Pressable>
+              {idx !== routes.length - 1 && (
+                <Pressable
+                  key={`${elm.title}blank`}
+                  style={{
+                    ...styles.remainUnderLine,
+                    borderBottomColor: colors.whiteTwo,
                   }}
-                  onPress={() => onIndexChange(idx)}>
-                  <AppText
-                    style={{
-                      ...styles.tabHeaderTitle,
-                      color: selected ? colors.black : colors.warmGrey,
-                    }}>
-                    {elm.title}
-                  </AppText>
-                </Pressable>
-                {idx !== routes.length - 1 && (
-                  <Pressable
-                    style={{
-                      ...styles.remainUnderLine,
-                      borderBottomColor: colors.whiteTwo,
-                    }}
-                    onPress={() => onIndexChange(idx)}
-                  />
-                )}
-              </>
-            );
-          })}
-        </View>
+                  onPress={() => onIndexChange(idx)}
+                />
+              )}
+            </>
+          );
+        })}
       </View>
     );
   }, [index, onIndexChange, routes]);
@@ -751,7 +750,7 @@ const Esim: React.FC<EsimProps> = ({
       <StatusBar barStyle="dark-content" />
       {folderOpened ? (
         <View
-          style={{flexDirection: 'row', alignItems: 'center', marginTop: 8}}>
+          style={{flexDirection: 'row', alignItems: 'center', marginTop: 15}}>
           <View style={{flex: 1}} collapsable={false}>
             <PromotionCarousel width={dimensions.width / 2} />
           </View>
@@ -761,7 +760,7 @@ const Esim: React.FC<EsimProps> = ({
         <View>
           <Animated.View
             collapsable={false}
-            style={{height: animatedValue, marginTop: 8}}>
+            style={{height: animatedValue, marginTop: 15}}>
             <PromotionCarousel width={dimensions.width} />
           </Animated.View>
           {renderSearch()}

@@ -49,6 +49,7 @@ const images: Record<string, any[]> = {
     require(`${mainPath}btnCheck2.png`),
     require(`${mainPath}btnCheck2Sel.png`),
   ],
+  btnHeaderCart: [require(`${mainPath}btnHeaderCart.png`)],
   btnArrowRight2Blue: [require(`${mainPath}btnArrowRight2Blue.png`)],
   iconArrowRight: [require(`${mainPath}iconArrowRight.png`)],
   iconArrowUp: [require(`${mainPath}iconArrowUp.png`)],

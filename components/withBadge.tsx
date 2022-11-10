@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     ...appStyles.bold12Text,
+    fontSize: 11,
     paddingHorizontal: 0,
     color: colors.white,
   },
