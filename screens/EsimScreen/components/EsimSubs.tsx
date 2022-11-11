@@ -281,8 +281,8 @@ const styles = StyleSheet.create({
     height: 7,
     borderRadius: 7,
     backgroundColor: 'red',
-    right: '9%',
-    top: 16,
+    right: '8%',
+    top: 5,
   },
   expiredModal: {
     backgroundColor: colors.white,
