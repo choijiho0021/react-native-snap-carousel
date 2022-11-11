@@ -281,8 +281,8 @@ const styles = StyleSheet.create({
     height: 7,
     borderRadius: 7,
     backgroundColor: 'red',
-    right: '9%',
-    top: 16,
+    right: 24,
+    top: 5,
   },
   expiredModal: {
     backgroundColor: colors.white,
@@ -429,7 +429,7 @@ const EsimSubs = ({
             expired || mainSubs.giftStatusCd === 'S'
               ? styles.usageTitleNormal
               : styles.usageTitleBold,
-            {alignSelf: 'center'},
+            {alignSelf: 'center', lineHeight: 28},
           ]}
           numberOfLines={2}
           ellipsizeMode="tail">

@@ -252,6 +252,16 @@ const getProductBySku = (sku: string) => {
   );
 };
 
+const getProductByUuid = (uuid: string) => {
+  if (_.isEmpty(uuid))
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: uuid');
+
+  return api.callHttpGet<RkbProduct>(
+    api.httpUrl(`${api.path.prodUuid}/${uuid}?_format=hal_json`),
+    toProduct,
+  );
+};
+
 const getLocalOp = (op?: string) => {
   return api.callHttpGet<RkbLocalOp>(
     api.httpUrl(`${api.path.localOp + (op ? `/${op}` : '')}?_format=hal_json`),
@@ -285,4 +295,5 @@ export default {
   getProductBySku,
   getLocalOp,
   productByCountry,
+  getProductByUuid,
 };

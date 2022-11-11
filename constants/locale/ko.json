@@ -456,7 +456,6 @@
   "esim:usedInfo": "사용이 완료된 상품입니다.",
   "esim:info": "사용 방법 및 유의 사항",
   "esim:usablePeriod": "유효기간",
-  "esim:rechargeablePeriod": "충전 가능 기간",
   "esim:rechargeable": "충전 가능",
   "esim:notrechargeable": "충전 불가",
   "esim:rechargeExpired": "충전 만료",
