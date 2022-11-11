@@ -40,6 +40,7 @@ const path = {
   prodByCntry: 'json/product/ccode',
   prodList: 'json/product/list',
   prodSku: 'json/product/sku',
+  prodUuid: 'json/product/uuid',
   prodByLocalOp: 'json/product/localop',
   localOp: 'json/localop/list',
   token: 'rest/session/token',

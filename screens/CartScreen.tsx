@@ -203,9 +203,15 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
 
   const renderItem = useCallback(
     ({item}: {item: RkbOrderItem}) => {
+      console.log('@@@ item', item);
+      // console.log('@@@ product', product);
       const partnerId = product.prodList.get(item.key)?.partnerId;
+      // console.log('@@@ partnerId', partnerId);
+
       const imageUrl =
         partnerId && product.localOpList.get(partnerId)?.imageUrl;
+
+      // console.log('@@@ imageUrl', imageUrl);
 
       // return  item.key && <CartItem checked={checked.get(item.key) || false}
       return (
@@ -221,15 +227,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         />
       );
     },
-    [
-      checked,
-      onChangeQty,
-      onChecked,
-      product.localOpList,
-      product.prodList,
-      qty,
-      removeItem,
-    ],
+    [checked, onChangeQty, onChecked, product, qty, removeItem],
   );
 
   useEffect(() => {
@@ -249,7 +247,9 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
     if (!loading.current) {
       orderItems.forEach((i) => {
         if (!product.prodList.has(i.key)) {
-          action.product.getProdBySku(i.prod.sku);
+          // action.product.getProdBySku(i.prod.sku);
+          console.log('@@@ i.prod.uuid', i.prod.uuid);
+          action.product.getProdByUuid(i.prod.uuid);
           loading.current = true;
         }
       });
