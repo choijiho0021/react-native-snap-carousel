@@ -205,6 +205,7 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
                 <Image
                   source={{uri: API.default.httpImageUrl(url).toString()}}
                   style={styles.attach}
+                  defaultSource={require('@/assets/images/mypage/loading.png')}
                 />
               </Pressable>
             ))}
