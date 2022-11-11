@@ -81,7 +81,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backGrey,
     borderWidth: 1,
     borderColor: colors.lightGrey,
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 16,
     paddingBottom: 20,
   },
   toolTipTitleFrame: {
