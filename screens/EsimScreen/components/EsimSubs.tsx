@@ -429,7 +429,7 @@ const EsimSubs = ({
             expired || mainSubs.giftStatusCd === 'S'
               ? styles.usageTitleNormal
               : styles.usageTitleBold,
-            {alignSelf: 'center'},
+            {alignSelf: 'center', lineHeight: 28},
           ]}
           numberOfLines={2}
           ellipsizeMode="tail">
