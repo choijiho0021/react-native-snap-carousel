@@ -40,6 +40,7 @@ const styles = StyleSheet.create({
   tab: {
     backgroundColor: colors.white,
     height: 60,
+    paddingHorizontal: 25,
   },
   tabTitle: {
     fontSize: 16,
@@ -339,6 +340,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
           tintColor={colors.black}
           titleStyle={styles.tabTitle}
         />
+
         <View style={styles.devider} />
         <TabView
           sceneContainerStyle={{flex: 1}}

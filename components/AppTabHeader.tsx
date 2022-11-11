@@ -46,7 +46,7 @@ const TabHeader = ({
   disabledTintColor?: string;
 }) => {
   return (
-    <View style={[style || styles.whiteTwoBackground, {paddingHorizontal: 20}]}>
+    <View style={[{paddingHorizontal: 20}, style || styles.whiteTwoBackground]}>
       <View style={styles.tabView}>
         {routes.map((elm, idx) => (
           <View key={elm.key} style={{flex: 1}}>
