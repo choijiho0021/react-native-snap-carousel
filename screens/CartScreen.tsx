@@ -203,17 +203,11 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
 
   const renderItem = useCallback(
     ({item}: {item: RkbOrderItem}) => {
-      console.log('@@@ item', item);
-      // console.log('@@@ product', product);
       const partnerId = product.prodList.get(item.key)?.partnerId;
-      // console.log('@@@ partnerId', partnerId);
 
       const imageUrl =
         partnerId && product.localOpList.get(partnerId)?.imageUrl;
 
-      // console.log('@@@ imageUrl', imageUrl);
-
-      // return  item.key && <CartItem checked={checked.get(item.key) || false}
       return (
         <CartItem
           checked={checked.get(item.key, false)}
