@@ -87,6 +87,7 @@ const CartItem = ({
   checked: boolean;
   onDelete: () => void;
 }) => {
+  const uri = API.default.httpImageUrl(image);
   return (
     <View style={styles.container}>
       <Pressable onPress={onChecked} style={styles.touch}>
@@ -95,12 +96,7 @@ const CartItem = ({
         </View>
 
         <View style={styles.slide}>
-          {image && (
-            <Image
-              source={{uri: API.default.httpImageUrl(image)}}
-              style={styles.slide}
-            />
-          )}
+          {uri ? <Image source={{uri}} style={styles.slide} /> : null}
         </View>
       </Pressable>
 
