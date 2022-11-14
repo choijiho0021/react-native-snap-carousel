@@ -459,7 +459,7 @@
   "esim:rechargeable": "충전 가능",
   "esim:rechargeExpired": "충전 만료",
   "esim:notrechargeable": "충전 불가",
-  "esim:reghargeablePeriod": "충전 가능 기간",
+  "esim:rechargeablePeriod": "충전 가능 기간",
   "esim:expired": "Expired",
 
   // "esim:notice": "Voice Plan can be used in the ROKEBI Talk App.",
@@ -580,6 +580,7 @@
   "pym:deductBalance": "Applied ROKEBI Cash",
   "pym:unsupportDeviceModal": "ESIM unsupported device payment",
   "pym:unsupportDeviceModalContent": "Your device is an unsupported device. \n  Still, if you want to continue purchasing, please click OK.",
+  "pym:charge": "<b>충전 상품</b>의 경우 <b>교환·환불이 불가</b>합니다. ",
   "pym:receipt": "Receipt",
 
   "err:login": "Let's get started",

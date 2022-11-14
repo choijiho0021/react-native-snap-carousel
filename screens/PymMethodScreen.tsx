@@ -1,7 +1,13 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {SetStateAction, useCallback, useEffect, useState} from 'react';
+import React, {
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   Platform,
   Pressable,
@@ -57,6 +63,7 @@ import {
 } from '@/redux/modules/profile';
 import i18n from '@/utils/i18n';
 import AppModal from '@/components/AppModal';
+import AppStyledText from '@/components/AppStyledText';
 
 const {esimApp, isIOS} = Env.get();
 const infoKey = 'pym:benefit';
@@ -242,7 +249,11 @@ const styles = StyleSheet.create({
   },
   modalBodyStyle: {
     paddingTop: 15,
-    paddingHorizontal: 15,
+    paddingHorizontal: 30,
+  },
+  textHeighlight: {
+    ...appStyles.normal16Text,
+    color: colors.clearBlue,
   },
 });
 
@@ -291,10 +302,11 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [clickable, setClickable] = useState(true);
   const [loading, setLoading] = useState(false);
   const [showModalMethod, setShowModalMethod] = useState(true);
-  const [showModalAlert, setShowModalAlert] = useState(false);
   const [consent, setConsent] = useState<boolean>();
   const [isRecharge, setIsRecharge] = useState<boolean>();
   const [isPassingAlert, setIsPassingAlert] = useState(false);
+  const [showUnsupAlert, setShowUnsupAlert] = useState(false);
+  const [showChargeAlert, setShowChargeAlert] = useState(false);
 
   const setValues = useCallback(() => {
     setPymPrice(cart.pymPrice);
@@ -303,6 +315,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     setIsRecharge(
       cart.purchaseItems.findIndex((item) => item.type === 'rch') >= 0,
     );
+    if (cart.esimIccid) setShowChargeAlert(true);
   }, [cart, route.params.mode]);
 
   useEffect(() => {
@@ -343,7 +356,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       if (!clickable) return;
 
       if (!passingAlert && !account.isSupportDev) {
-        setShowModalAlert((prev) => !prev);
+        setShowUnsupAlert((prev) => !prev);
         return;
       }
 
@@ -585,12 +598,18 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     [navigation],
   );
 
-  const modalBody = useCallback(() => {
+  const modalBody = useCallback((isSupported: boolean) => {
     return (
       <View style={styles.modalBodyStyle}>
-        <AppText style={[appStyles.normal16Text]}>
-          {i18n.t('pym:unsupportDeviceModalContent')}
-        </AppText>
+        <AppStyledText
+          text={
+            isSupported
+              ? i18n.t('pym:unsupportDeviceModalContent')
+              : i18n.t('pym:charge')
+          }
+          textStyle={appStyles.normal16Text}
+          format={{b: styles.textHeighlight}}
+        />
       </View>
     );
   }, []);
@@ -676,18 +695,29 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           type="primary"
         />
       </KeyboardAwareScrollView>
+
       <AppModal
-        title={i18n.t('pym:unsupportDeviceModal')}
+        title={showUnsupAlert ? i18n.t('pym:unsupportDeviceModal') : undefined}
         type="normal"
         onOkClose={async () => {
-          setShowModalAlert((prev) => !prev);
-          setIsPassingAlert(true);
-          onSubmit(true);
+          if (showUnsupAlert) {
+            setShowUnsupAlert((prev) => !prev);
+            setIsPassingAlert(true);
+            onSubmit(true);
+          } else {
+            setShowChargeAlert((prev) => !prev);
+          }
         }}
-        onCancelClose={() => setShowModalAlert((prev) => !prev)}
-        visible={showModalAlert === true}>
-        {modalBody()}
+        onCancelClose={() => {
+          if (showUnsupAlert) {
+            setShowUnsupAlert((prev) => !prev);
+          } else setShowChargeAlert((prev) => !prev);
+        }}
+        closeButtonTitle={showUnsupAlert ? i18n.t('cancel') : i18n.t('close')}
+        visible={showUnsupAlert || showChargeAlert}>
+        {modalBody(showUnsupAlert)}
       </AppModal>
+
       {
         // 로깨비캐시 결제시 필요한 로딩처리
         loading && (

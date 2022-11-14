@@ -459,7 +459,7 @@
   "esim:rechargeable": "충전 가능",
   "esim:notrechargeable": "충전 불가",
   "esim:rechargeExpired": "충전 만료",
-  "esim:reghargeablePeriod": "충전 가능 기간",
+  "esim:rechargeablePeriod": "충전 가능 기간",
   "esim:expired": "기한만료",
   // "esim:notice": "통화 상품은 로깨비톡 앱에서 사용할 수 있습니다.",
   "esim:refresh": " \u00B7  업데이트 하시려면 아래로 당기세요\n \u00B7  도움이 필요하시면 상단 오른쪽의 물음표를 눌러주세요",
@@ -584,6 +584,7 @@
   "pym:deductBalance": "로깨비캐시 차감",
   "pym:unsupportDeviceModal": "eSIM 미지원 단말 결제",
   "pym:unsupportDeviceModalContent": "사용하고 계신 기기는 eSIM을 지원하지 않습니다. 계속 구매를 원하신다면, 확인을 눌러주세요.",
+  "pym:charge": "<b>충전 상품</b>의 경우 <b>교환·환불이 불가</b>합니다. ",
   "pym:receipt": "영수증",
 
   "err:login": "로그인 후 상품 구매하기",
