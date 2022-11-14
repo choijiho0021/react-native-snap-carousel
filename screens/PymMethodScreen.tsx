@@ -305,7 +305,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [consent, setConsent] = useState<boolean>();
   const [isRecharge, setIsRecharge] = useState<boolean>();
   const [isPassingAlert, setIsPassingAlert] = useState(false);
-  const [showUnsupAlert, setShowUnsupAlert] = useState(true);
+  const [showUnsupAlert, setShowUnsupAlert] = useState(false);
   const [showChargeAlert, setShowChargeAlert] = useState(false);
 
   const setValues = useCallback(() => {
@@ -355,7 +355,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     (passingAlert: boolean) => {
       if (!clickable) return;
 
-      if (!passingAlert && !account.isSupportDev === false) {
+      if (!passingAlert && !account.isSupportDev) {
         setShowUnsupAlert((prev) => !prev);
         return;
       }
