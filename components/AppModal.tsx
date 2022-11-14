@@ -173,7 +173,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
               <AppButton
                 style={styles.button}
                 onPress={onCancelClose}
-                title={i18n.t('cancel')}
+                title={closeButtonTitle || i18n.t('cancel')}
                 titleStyle={styles.buttonTitle}
               />
             )}

@@ -584,6 +584,7 @@
   "pym:deductBalance": "로깨비캐시 차감",
   "pym:unsupportDeviceModal": "eSIM 미지원 단말 결제",
   "pym:unsupportDeviceModalContent": "사용하고 계신 기기는 eSIM을 지원하지 않습니다. 계속 구매를 원하신다면, 확인을 눌러주세요.",
+  "pym:charge": "<b>충전 상품</b>의 경우 <b>교환·환불이 불가</b>합니다. ",
   "pym:receipt": "영수증",
 
   "err:login": "로그인 후 상품 구매하기",

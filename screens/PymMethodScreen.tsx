@@ -1,7 +1,13 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {SetStateAction, useCallback, useEffect, useState} from 'react';
+import React, {
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   Platform,
   Pressable,
@@ -57,6 +63,7 @@ import {
 } from '@/redux/modules/profile';
 import i18n from '@/utils/i18n';
 import AppModal from '@/components/AppModal';
+import AppStyledText from '@/components/AppStyledText';
 
 const {esimApp, isIOS} = Env.get();
 const infoKey = 'pym:benefit';
@@ -242,7 +249,11 @@ const styles = StyleSheet.create({
   },
   modalBodyStyle: {
     paddingTop: 15,
-    paddingHorizontal: 15,
+    paddingHorizontal: 30,
+  },
+  textHeighlight: {
+    ...appStyles.normal16Text,
+    color: colors.clearBlue,
   },
 });
 
@@ -295,6 +306,15 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [consent, setConsent] = useState<boolean>();
   const [isRecharge, setIsRecharge] = useState<boolean>();
   const [isPassingAlert, setIsPassingAlert] = useState(false);
+  const [showChargeAlert, setShowChargeAlert] = useState(false);
+
+  const isCharge = useMemo(() => {
+    if (cart.esimIccid) {
+      setShowChargeAlert(true);
+      return true;
+    }
+    return false;
+  }, [cart.esimIccid]);
 
   const setValues = useCallback(() => {
     setPymPrice(cart.pymPrice);
@@ -585,12 +605,18 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     [navigation],
   );
 
-  const modalBody = useCallback(() => {
+  const modalBody = useCallback((isCharge: boolean) => {
     return (
       <View style={styles.modalBodyStyle}>
-        <AppText style={[appStyles.normal16Text]}>
-          {i18n.t('pym:unsupportDeviceModalContent')}
-        </AppText>
+        <AppStyledText
+          text={
+            isCharge
+              ? i18n.t('pym:charge')
+              : i18n.t('pym:unsupportDeviceModalContent')
+          }
+          textStyle={appStyles.normal16Text}
+          format={{b: styles.textHeighlight}}
+        />
       </View>
     );
   }, []);
@@ -676,18 +702,33 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           type="primary"
         />
       </KeyboardAwareScrollView>
+
       <AppModal
-        title={i18n.t('pym:unsupportDeviceModal')}
+        title={isCharge ? undefined : i18n.t('pym:unsupportDeviceModal')}
         type="normal"
         onOkClose={async () => {
-          setShowModalAlert((prev) => !prev);
-          setIsPassingAlert(true);
-          onSubmit(true);
+          if (!isPassingAlert && !account.isSupportDev) {
+            setShowModalAlert((prev) => !prev);
+            setIsPassingAlert(true);
+            onSubmit(true);
+          } else {
+            setShowChargeAlert((prev) => !prev);
+          }
         }}
-        onCancelClose={() => setShowModalAlert((prev) => !prev)}
-        visible={showModalAlert === true}>
-        {modalBody()}
+        onCancelClose={() => {
+          if (!isPassingAlert && !account.isSupportDev) {
+            setShowModalAlert((prev) => !prev);
+          } else setShowChargeAlert((prev) => !prev);
+        }}
+        closeButtonTitle={i18n.t('close')}
+        visible={
+          !isPassingAlert && !account.isSupportDev
+            ? showModalAlert === true
+            : isCharge && showChargeAlert === true
+        }>
+        {modalBody(isCharge)}
       </AppModal>
+
       {
         // 로깨비캐시 결제시 필요한 로딩처리
         loading && (
