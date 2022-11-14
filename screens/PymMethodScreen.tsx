@@ -598,12 +598,12 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     [navigation],
   );
 
-  const modalBody = useCallback(() => {
+  const modalBody = useCallback((isSupported: boolean) => {
     return (
       <View style={styles.modalBodyStyle}>
         <AppStyledText
           text={
-            showUnsupAlert
+            isSupported
               ? i18n.t('pym:unsupportDeviceModalContent')
               : i18n.t('pym:charge')
           }
@@ -612,7 +612,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         />
       </View>
     );
-  }, [showUnsupAlert]);
+  }, []);
 
   const consentBox = useCallback(() => {
     return (
@@ -715,7 +715,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         }}
         closeButtonTitle={showUnsupAlert ? i18n.t('cancel') : i18n.t('close')}
         visible={showUnsupAlert || showChargeAlert}>
-        {modalBody()}
+        {modalBody(showUnsupAlert)}
       </AppModal>
 
       {
