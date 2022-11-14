@@ -255,6 +255,11 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     color: colors.clearBlue,
   },
+  modalText: {
+    ...appStyles.normal16Text,
+    lineHeight: 26,
+    letterSpacing: -0.5,
+  },
 });
 
 type PymMethodScreenNavigationProp = StackNavigationProp<
@@ -607,7 +612,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               ? i18n.t('pym:unsupportDeviceModalContent')
               : i18n.t('pym:charge')
           }
-          textStyle={appStyles.normal16Text}
+          textStyle={styles.modalText}
           format={{b: styles.textHeighlight}}
         />
       </View>
@@ -698,7 +703,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
       <AppModal
         title={showUnsupAlert ? i18n.t('pym:unsupportDeviceModal') : undefined}
-        type="normal"
+        type={showUnsupAlert ? 'normal' : 'info'}
         onOkClose={async () => {
           if (showUnsupAlert) {
             setShowUnsupAlert((prev) => !prev);
@@ -713,7 +718,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
             setShowUnsupAlert((prev) => !prev);
           } else setShowChargeAlert((prev) => !prev);
         }}
-        closeButtonTitle={showUnsupAlert ? i18n.t('cancel') : i18n.t('close')}
         visible={showUnsupAlert || showChargeAlert}>
         {modalBody(showUnsupAlert)}
       </AppModal>
