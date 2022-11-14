@@ -459,7 +459,7 @@
   "esim:rechargeable": "충전 가능",
   "esim:rechargeExpired": "충전 만료",
   "esim:notrechargeable": "충전 불가",
-  "esim:reghargeablePeriod": "충전 가능 기간",
+  "esim:rechargeablePeriod": "충전 가능 기간",
   "esim:expired": "Expired",
 
   // "esim:notice": "Voice Plan can be used in the ROKEBI Talk App.",
