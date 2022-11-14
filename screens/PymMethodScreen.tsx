@@ -302,19 +302,11 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [clickable, setClickable] = useState(true);
   const [loading, setLoading] = useState(false);
   const [showModalMethod, setShowModalMethod] = useState(true);
-  const [showModalAlert, setShowModalAlert] = useState(false);
   const [consent, setConsent] = useState<boolean>();
   const [isRecharge, setIsRecharge] = useState<boolean>();
   const [isPassingAlert, setIsPassingAlert] = useState(false);
+  const [showUnsupAlert, setShowUnsupAlert] = useState(true);
   const [showChargeAlert, setShowChargeAlert] = useState(false);
-
-  const isCharge = useMemo(() => {
-    if (cart.esimIccid) {
-      setShowChargeAlert(true);
-      return true;
-    }
-    return false;
-  }, [cart.esimIccid]);
 
   const setValues = useCallback(() => {
     setPymPrice(cart.pymPrice);
@@ -323,6 +315,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     setIsRecharge(
       cart.purchaseItems.findIndex((item) => item.type === 'rch') >= 0,
     );
+    if (cart.esimIccid) setShowChargeAlert(true);
   }, [cart, route.params.mode]);
 
   useEffect(() => {
@@ -362,8 +355,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     (passingAlert: boolean) => {
       if (!clickable) return;
 
-      if (!passingAlert && !account.isSupportDev) {
-        setShowModalAlert((prev) => !prev);
+      if (!passingAlert && !account.isSupportDev === false) {
+        setShowUnsupAlert((prev) => !prev);
         return;
       }
 
@@ -605,21 +598,21 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     [navigation],
   );
 
-  const modalBody = useCallback((isCharge: boolean) => {
+  const modalBody = useCallback(() => {
     return (
       <View style={styles.modalBodyStyle}>
         <AppStyledText
           text={
-            isCharge
-              ? i18n.t('pym:charge')
-              : i18n.t('pym:unsupportDeviceModalContent')
+            showUnsupAlert
+              ? i18n.t('pym:unsupportDeviceModalContent')
+              : i18n.t('pym:charge')
           }
           textStyle={appStyles.normal16Text}
           format={{b: styles.textHeighlight}}
         />
       </View>
     );
-  }, []);
+  }, [showUnsupAlert]);
 
   const consentBox = useCallback(() => {
     return (
@@ -704,11 +697,11 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       </KeyboardAwareScrollView>
 
       <AppModal
-        title={isCharge ? undefined : i18n.t('pym:unsupportDeviceModal')}
+        title={showUnsupAlert ? i18n.t('pym:unsupportDeviceModal') : undefined}
         type="normal"
         onOkClose={async () => {
-          if (!isPassingAlert && !account.isSupportDev) {
-            setShowModalAlert((prev) => !prev);
+          if (showUnsupAlert) {
+            setShowUnsupAlert((prev) => !prev);
             setIsPassingAlert(true);
             onSubmit(true);
           } else {
@@ -716,17 +709,13 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           }
         }}
         onCancelClose={() => {
-          if (!isPassingAlert && !account.isSupportDev) {
-            setShowModalAlert((prev) => !prev);
+          if (showUnsupAlert) {
+            setShowUnsupAlert((prev) => !prev);
           } else setShowChargeAlert((prev) => !prev);
         }}
-        closeButtonTitle={i18n.t('close')}
-        visible={
-          !isPassingAlert && !account.isSupportDev
-            ? showModalAlert === true
-            : isCharge && showChargeAlert === true
-        }>
-        {modalBody(isCharge)}
+        closeButtonTitle={showUnsupAlert ? i18n.t('cancel') : i18n.t('close')}
+        visible={showUnsupAlert || showChargeAlert}>
+        {modalBody()}
       </AppModal>
 
       {
