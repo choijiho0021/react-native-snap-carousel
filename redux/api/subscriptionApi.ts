@@ -108,8 +108,8 @@ export type RkbSubscription = {
   subsOrderNo?: string;
   partner?: string;
   promoFlag?: string[];
-  caution: string;
-  cautionList?: strin[];
+  caution?: string;
+  cautionList?: string[];
   noticeOption: string[];
   daily?: string;
 };

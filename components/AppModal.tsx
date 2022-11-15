@@ -39,6 +39,11 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     width: '100%',
   },
+  normalBtnTitle: {
+    ...appStyles.normal16Text,
+    textAlign: 'right',
+    width: '100%',
+  },
   row: {
     marginTop: 40,
     marginHorizontal: 30,
@@ -173,8 +178,8 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
               <AppButton
                 style={styles.button}
                 onPress={onCancelClose}
-                title={closeButtonTitle || i18n.t('cancel')}
-                titleStyle={styles.buttonTitle}
+                title={i18n.t('cancel')}
+                titleStyle={styles.normalBtnTitle}
               />
             )}
             <AppButton
@@ -185,7 +190,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
               disableBackgroundColor={colors.white}
               disableColor={colors.warmGrey}
               titleStyle={{
-                ...styles.buttonTitle,
+                ...styles.normalBtnTitle,
                 color: disableOkButton ? colors.warmGrey : colors.clearBlue,
               }}
             />

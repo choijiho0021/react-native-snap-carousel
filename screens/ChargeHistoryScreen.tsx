@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
     height: 20,
     alignSelf: 'center',
     borderRadius: 3,
+    marginTop: 3,
   },
   badgeText: {
     ...appStyles.bold13Text,
