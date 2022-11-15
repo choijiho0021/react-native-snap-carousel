@@ -8,6 +8,7 @@ import {
   Currency,
   RkbLocalOp,
   RkbProdByCountry,
+  RkbProdCountry,
   RkbProduct,
 } from '@/redux/api/productApi';
 import {actions as PromotionActions} from './promotion';
@@ -16,6 +17,11 @@ import utils from '@/redux/api/utils';
 const getLocalOp = createAsyncThunk(
   'product/getLocalOp',
   API.Product.getLocalOp,
+);
+
+const getPordCountry = createAsyncThunk(
+  'product/getProdCountry',
+  API.Product.getProdCountry,
 );
 const getProdDetailCommon = createAsyncThunk(
   'product/getProdDetailCommon',
@@ -92,6 +98,7 @@ export interface ProductModelState {
   prodByLocalOp: ImmutableMap<string, string[]>;
   prodByPartner: ImmutableMap<string, RkbProduct[]>;
   cmiProdByPartner: ImmutableMap<string, RkbProduct[]>;
+  prodCountry: string[];
 }
 
 const initialState: ProductModelState = {
@@ -106,6 +113,7 @@ const initialState: ProductModelState = {
   prodByLocalOp: ImmutableMap(),
   prodByPartner: ImmutableMap(),
   cmiProdByPartner: ImmutableMap(),
+  prodCountry: [],
 };
 
 const slice = createSlice({
@@ -198,6 +206,18 @@ const slice = createSlice({
       }
     });
 
+    builder.addCase(getPordCountry.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      if (result === 0 && objects.length > 0) {
+        objects.forEach((item) => {
+          if (!state.prodCountry.includes(item.keyword)) {
+            state.prodCountry.push(item.keyword);
+          }
+        });
+      }
+    });
+
     builder.addCase(getLocalOp.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
 
@@ -287,6 +307,7 @@ export const actions = {
   getProdDetailCommon,
   getProdDetailInfo,
   getLocalOp,
+  getPordCountry,
   getProd,
   getProdBySku,
   getProductByCountry,

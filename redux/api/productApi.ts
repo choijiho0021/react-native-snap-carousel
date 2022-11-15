@@ -165,6 +165,11 @@ type DrupalLocalOp = {
   field_ref_partner: string;
 };
 
+type DrupalProdCountry = {
+  name: string;
+  description__value: string;
+};
+
 export type RkbLocalOp = {
   key: string;
   name: string;
@@ -176,6 +181,12 @@ export type RkbLocalOp = {
   detail: string;
   partner: string;
 };
+
+export type RkbProdCountry = {
+  name: string;
+  keyword: string;
+};
+
 const toLocalOp = (data: DrupalLocalOp[]): ApiResult<RkbLocalOp> => {
   if (_.isArray(data)) {
     return api.success(
@@ -190,6 +201,21 @@ const toLocalOp = (data: DrupalLocalOp[]): ApiResult<RkbLocalOp> => {
         weight: utils.stringToNumber(item.field_weight) || 0,
         detail: item.body,
         partner: item.field_ref_partner,
+      })),
+    );
+  }
+
+  return api.failure(api.E_NOT_FOUND);
+};
+
+const toProdCountry = (
+  data: DrupalProdCountry[],
+): ApiResult<RkbProdCountry> => {
+  if (_.isArray(data)) {
+    return api.success(
+      data.map((item) => ({
+        name: item.name.replace(/<[^>]*>?/g, ''),
+        keyword: item.description__value.replace(/<[^>]*>?/g, ''),
       })),
     );
   }
@@ -269,6 +295,13 @@ const getLocalOp = (op?: string) => {
   );
 };
 
+const getProdCountry = () => {
+  return api.callHttpGet<RkbProdCountry>(
+    api.httpUrl(`${api.path.prodCountry}?_format=hal_json`),
+    toProdCountry,
+  );
+};
+
 export type RkbProdByCountry = {
   category: string;
   country: string;
@@ -294,6 +327,7 @@ export default {
   getProductByLocalOp,
   getProductBySku,
   getLocalOp,
+  getProdCountry,
   productByCountry,
   getProductByUuid,
 };

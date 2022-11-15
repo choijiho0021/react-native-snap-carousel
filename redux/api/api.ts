@@ -42,6 +42,7 @@ const path = {
   prodSku: 'json/product/sku',
   prodUuid: 'json/product/uuid',
   prodByLocalOp: 'json/product/localop',
+  prodCountry: 'json/country',
   localOp: 'json/localop/list',
   token: 'rest/session/token',
   userRegister: 'user/register',
@@ -176,6 +177,8 @@ export type DrupalNodeJsonApi = {
 };
 
 export type ApiResult<T> = {
+  length: number;
+  forEach(arg0: (item: any) => void): unknown;
   result: number;
   objects: T[];
   status?: number;
