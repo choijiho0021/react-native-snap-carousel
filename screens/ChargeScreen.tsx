@@ -85,6 +85,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 20,
+    height: '100%',
   },
   toolTipTitleFrame: {
     flexDirection: 'row',
