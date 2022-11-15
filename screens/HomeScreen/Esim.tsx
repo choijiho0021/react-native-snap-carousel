@@ -3,7 +3,14 @@ import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import AsyncStorage from '@react-native-community/async-storage';
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import moment from 'moment';
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   Dimensions,
   Platform,
@@ -410,15 +417,16 @@ const Esim: React.FC<EsimProps> = ({
         {routes.map((elm, idx) => {
           const selected = idx === index;
           return (
-            <>
+            <Fragment key={elm.key}>
               <Pressable
-                key={elm.title}
+                key={elm.key}
                 style={{
                   ...styles.titleContainer,
                   borderBottomColor: selected ? colors.black : colors.whiteTwo,
                 }}
                 onPress={() => onIndexChange(idx)}>
                 <AppText
+                  key={elm.title}
                   style={{
                     ...styles.tabHeaderTitle,
                     color: selected ? colors.black : colors.warmGrey,
@@ -428,7 +436,7 @@ const Esim: React.FC<EsimProps> = ({
               </Pressable>
               {idx !== routes.length - 1 && (
                 <Pressable
-                  key={`${elm.title}blank`}
+                  key={`${elm.key}blank`}
                   style={{
                     ...styles.remainUnderLine,
                     borderBottomColor: colors.whiteTwo,
@@ -436,7 +444,7 @@ const Esim: React.FC<EsimProps> = ({
                   onPress={() => onIndexChange(idx)}
                 />
               )}
-            </>
+            </Fragment>
           );
         })}
       </View>
