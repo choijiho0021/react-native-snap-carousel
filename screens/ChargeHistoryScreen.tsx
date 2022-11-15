@@ -270,7 +270,7 @@ const ChargeHistoryScreen: React.FC = () => {
           </Pressable>
         </View>
         <View style={{bottom: 1, alignItems: 'flex-end', marginRight: 50}}>
-          <Triangle width={20} height={10} color="rgba(44,44,44,44.86)" />
+          <Triangle width={20} height={10} color="rgba(44,44,44,0.86)" />
         </View>
       </View>
     );
