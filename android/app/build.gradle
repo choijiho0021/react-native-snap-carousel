@@ -75,21 +75,21 @@ apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
  */
 
 project.ext.envConfigFiles = [
-        debug: ".env",
-        staging: ".env.staging",
-        release: ".env.production",
-        esimdebug: ".env",
-        esimstaging: ".env.staging",
-        esimrelease: ".env.production",
-        usimdebug: ".env",
-        usimstaging: ".env.staging",
-        usimrelease: ".env.production",
-        globaldebug: ".env",
-        globalstaging: ".env.staging",
-        globalrelease: ".env.production",
-        talkdebug: ".env",
-        talkstaging: ".env.staging",
-        talkrelease: ".env.production",
+//        debug: ".env",
+//        staging: ".env.staging",
+//        release: ".env.production",
+        esimdebug: ".env.esim.debug",
+        esimstaging: ".env.esim.staging",
+        esimrelease: ".env.esim.production",
+        globaldebug: ".env.global.debug",
+        globalstaging: ".env.global.staging",
+        globalrelease: ".env.global.production",
+//        usimdebug: ".env",
+//        usimstaging: ".env.staging",
+//        usimrelease: ".env.production",
+//        talkdebug: ".env",
+//        talkstaging: ".env.staging",
+//        talkrelease: ".env.production",
 ]
 
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"

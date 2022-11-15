@@ -7,13 +7,9 @@ import {CurrencyCode} from './redux/api/productApi';
 const bundleId = getBundleId();
 
 // rokebi esim App
-const appId =
-  bundleId === 'com.uangel.rokebi-USIM' || bundleId === 'com.rokebi.usim'
-    ? 'usim'
-    : 'esim';
-const esimGlobal =
-  (appId === 'esim' && bundleId === 'com.uangel.rokebi-global') ||
-  bundleId === 'com.rokebi.global';
+const appId = Config.APP_ID;
+
+const esimGlobal = Config.APP_ID === 'global';
 
 // global / esim 계정
 let impId = esimGlobal ? 'imp60215393' : 'imp53913318';
@@ -92,7 +88,7 @@ function get() {
       : codePushLabel.stagingAndroid;
   }
 
-  if (appId === 'esim') {
+  if (appId === 'esim' || appId === 'global') {
     switch (Config.NODE_ENV) {
       case 'production':
         env.scheme = 'https';
@@ -114,7 +110,7 @@ function get() {
     return env;
   }
 
-  // appId = rokebi
+  // appId = usim
   switch (Config.NODE_ENV) {
     case 'production':
       env.scheme = 'https';
