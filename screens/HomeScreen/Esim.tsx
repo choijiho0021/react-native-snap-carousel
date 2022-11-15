@@ -3,7 +3,14 @@ import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import AsyncStorage from '@react-native-community/async-storage';
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import moment from 'moment';
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   Dimensions,
   Platform,
@@ -24,9 +31,10 @@ import {getTrackingStatus} from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
-import {NavigationProp, RouteProp} from '@react-navigation/native';
+import {RouteProp} from '@react-navigation/native';
 import VersionCheck from 'react-native-version-check';
 import {Adjust} from 'react-native-adjust';
+import {StackNavigationProp} from '@react-navigation/stack';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -63,12 +71,12 @@ import pushNoti from '@/utils/pushNoti';
 import PromotionCarousel from './component/PromotionCarousel';
 import {useInterval} from '@/utils/useInterval';
 import NotiModal from './component/NotiModal';
-import AppTabHeader from '@/components/AppTabHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppVerModal from './component/AppVerModal';
 import {isFolderOpen} from '@/constants/SliderEntry.style';
 import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
 import AppStyledText from '@/components/AppStyledText';
+
 const {esimGlobal, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
@@ -173,10 +181,12 @@ const styles = StyleSheet.create({
   },
 });
 
+type EsimScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Esim'>;
+
 type EsimScreenRouteProp = RouteProp<HomeStackParamList, 'Esim'>;
 
 type EsimProps = {
-  navigation: NavigationProp<any>;
+  navigation: EsimScreenNavigationProp;
   route: EsimScreenRouteProp;
   promotion: RkbPromotion[];
   product: ProductModelState;
@@ -407,15 +417,16 @@ const Esim: React.FC<EsimProps> = ({
         {routes.map((elm, idx) => {
           const selected = idx === index;
           return (
-            <>
+            <Fragment key={elm.key}>
               <Pressable
-                key={elm.title}
+                key={elm.key}
                 style={{
                   ...styles.titleContainer,
                   borderBottomColor: selected ? colors.black : colors.whiteTwo,
                 }}
                 onPress={() => onIndexChange(idx)}>
                 <AppText
+                  key={elm.title}
                   style={{
                     ...styles.tabHeaderTitle,
                     color: selected ? colors.black : colors.warmGrey,
@@ -425,7 +436,7 @@ const Esim: React.FC<EsimProps> = ({
               </Pressable>
               {idx !== routes.length - 1 && (
                 <Pressable
-                  key={`${elm.title}blank`}
+                  key={`${elm.key}blank`}
                   style={{
                     ...styles.remainUnderLine,
                     borderBottomColor: colors.whiteTwo,
@@ -433,7 +444,7 @@ const Esim: React.FC<EsimProps> = ({
                   onPress={() => onIndexChange(idx)}
                 />
               )}
-            </>
+            </Fragment>
           );
         })}
       </View>
@@ -632,24 +643,51 @@ const Esim: React.FC<EsimProps> = ({
   }, [isSupport, notification]);
 
   useEffect(() => {
-    const runDeepLink = async () => {
-      const initialUrl = await Linking.getInitialURL();
-      if (initialUrl) Adjust.appWillOpenUrl(initialUrl);
-
-      const urlSplit = initialUrl?.split('?');
+    const deepLinkHandler = (url: string) => {
+      const urlSplit = url.split('?');
 
       if (urlSplit && urlSplit.length >= 2) {
         const schemeSplit = urlSplit[0].split('/');
         const deepLinkPath = schemeSplit[schemeSplit.length - 1];
-        if (deepLinkPath === 'PROMOTION') {
-          setPopupDisabled(true);
-          exitApp('redirect');
+
+        switch (deepLinkPath) {
+          case 'PROMOTION':
+            setPopupDisabled(true);
+            exitApp('redirect');
+            break;
+          case 'HOME':
+            if (navigation.canGoBack()) {
+              navigation.popToTop();
+            }
+            navigate(navigation, route, 'HomeStack', {
+              tab: 'HomeStack',
+              screen: 'Home',
+            });
+            break;
+          default:
+            break;
         }
       }
     };
+    const runDeepLink = async () => {
+      const initialUrl = await Linking.getInitialURL();
+
+      if (initialUrl) {
+        Adjust.appWillOpenUrl(initialUrl);
+        deepLinkHandler(initialUrl);
+      }
+    };
+
+    const addListenerLink = ({url}) => {
+      if (url) deepLinkHandler(url);
+    };
 
     runDeepLink();
-  }, [exitApp]);
+
+    Linking.addEventListener('url', addListenerLink);
+
+    return () => Linking.removeAllListeners('url');
+  }, [exitApp, navigation, route]);
 
   useEffect(() => {
     if (

@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
   },
   badge: {
     borderRadius: 9,
-    height: 18,
+    height: 16,
     minWidth: 0,
     paddingLeft: 5,
     paddingRight: 5,
