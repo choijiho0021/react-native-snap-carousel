@@ -19,14 +19,15 @@
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
+  
   if([RNKakaoLogins isKakaoTalkLoginUrl:url]) {
     return [RNKakaoLogins handleOpenUrl: url];
   }
-  
+
   if ([[FBSDKApplicationDelegate sharedInstance] application:application openURL:url options:options]) {
     return YES;
   }
-  
+
   return [RCTLinkingManager application:application openURL:url options:options];
 }
 
@@ -39,10 +40,10 @@
           // url object contains your universal link content
       }
   
-  return YES;
-// return [RCTLinkingManager application:application
-//                  continueUserActivity:userActivity
-//                    restorationHandler:restorationHandler];
+//  return YES;
+ return [RCTLinkingManager application:application
+                  continueUserActivity:userActivity
+                    restorationHandler:restorationHandler];
 }
 
 @end
