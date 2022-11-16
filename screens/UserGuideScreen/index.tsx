@@ -222,6 +222,9 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
   );
 
   const renderStepPage = useCallback((data: GuideImage) => {
+    const image = getImage(imageList, data.key);
+    const imageSource = Image.resolveAssetSource(image);
+
     return (
       <ScrollView
         style={{flex: 1}}
@@ -255,8 +258,13 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
             </AppText>
           ) : null}
           <Image
-            // style={{flex: 1, width: '100%'}}
-            source={getImage(imageList, data.key)}
+            style={{
+              width: dimensions.width,
+              height: Math.ceil(
+                imageSource.height * (dimensions.width / imageSource.height),
+              ),
+            }}
+            source={image}
             resizeMode="contain"
           />
         </View>
