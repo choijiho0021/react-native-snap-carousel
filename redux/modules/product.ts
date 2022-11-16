@@ -19,7 +19,7 @@ const getLocalOp = createAsyncThunk(
   API.Product.getLocalOp,
 );
 
-const getPordCountry = createAsyncThunk(
+const getProdCountry = createAsyncThunk(
   'product/getProdCountry',
   API.Product.getProdCountry,
 );
@@ -56,6 +56,7 @@ const getProductByLocalOp = createAsyncThunk(
 
 const init = createAsyncThunk('product/init', async (_, {dispatch}) => {
   await dispatch(getLocalOp());
+  await dispatch(getProdCountry());
   await dispatch(getProductByCountry());
 
   await dispatch(PromotionActions.getPromotion());
@@ -137,8 +138,12 @@ const slice = createSlice({
           const elm = {
             ...cur,
             weight: state.localOpList.get(cur.partner)?.weight || 0,
-            search: `${cur.country},${Country.getName(country)
-              .concat(Country.getName(country, 'en'))
+            search: `${cur.country},${Country.getName(
+              country,
+              'ko',
+              state.prodCountry,
+            )
+              .concat(Country.getName(country, 'en', state.prodCountry))
               .join(',')}`,
             partnerList: [cur.partner],
             minPrice: utils.stringToCurrency(cur.price),
@@ -206,7 +211,7 @@ const slice = createSlice({
       }
     });
 
-    builder.addCase(getPordCountry.fulfilled, (state, action) => {
+    builder.addCase(getProdCountry.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
 
       if (result === 0 && objects.length > 0) {
@@ -230,13 +235,18 @@ const slice = createSlice({
 
     builder.addCase(getProductByCountry.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
+
       if (result === 0) {
         state.prodByCountry = objects.map((o) => {
           const country = o.country.split(',');
           return {
             ...o,
-            search: `${o.country},${Country.getName(country)
-              .concat(Country.getName(country, 'en'))
+            search: `${o.country},${Country.getName(
+              country,
+              'ko',
+              state.prodCountry,
+            )
+              .concat(Country.getName(country, 'en', state.prodCountry))
               .join(',')}`,
           };
         });
@@ -307,7 +317,7 @@ export const actions = {
   getProdDetailCommon,
   getProdDetailInfo,
   getLocalOp,
-  getPordCountry,
+  getProdCountry,
   getProd,
   getProdBySku,
   getProductByCountry,
