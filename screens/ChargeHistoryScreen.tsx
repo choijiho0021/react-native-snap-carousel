@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 8,
+    marginRight: 8,
     height: 20,
     alignSelf: 'center',
     borderRadius: 3,
@@ -205,10 +205,7 @@ export const renderPromoFlag = (flags: string[], isStore: boolean) => (
         );
       })}
     {isStore && (
-      <AppSvgIcon
-        name="naverIcon"
-        style={{marginLeft: 8, justifyContent: 'center'}}
-      />
+      <AppSvgIcon name="naverIcon" style={{justifyContent: 'center'}} />
     )}
   </>
 );
