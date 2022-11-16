@@ -155,7 +155,7 @@ type GiftScreenProps = {
 
 const KAKAO = 'kakao';
 const MESSAGE = 'message';
-const {isProduction, esimGlobal, webViewHost} = Env.get();
+const {isProduction, esimGlobal, webViewHost, isIOS} = Env.get();
 
 const GiftScreen: React.FC<GiftScreenProps> = ({
   navigation,
@@ -169,9 +169,9 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   const SMSDivider = useMemo(() => (Platform.OS === 'android' ? '?' : '&'), []);
   const methodList = useMemo(() => {
     // pixcel인 경우 sms로 선물하기 제거
-    if (esimGlobal && !deviceModel.startsWith('SM')) return [];
+    if (esimGlobal && !isIOS && !deviceModel.startsWith('SM')) return [];
     if (esimGlobal) return [MESSAGE];
-    if (!deviceModel.startsWith('SM')) return [KAKAO];
+    if (!isIOS && !deviceModel.startsWith('SM')) return [KAKAO];
     return [KAKAO, MESSAGE];
   }, [deviceModel]);
   const bgImages = useMemo(
