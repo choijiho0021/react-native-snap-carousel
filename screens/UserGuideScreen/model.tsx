@@ -76,6 +76,7 @@ const renderOneText = (text: string, idx: number) => {
     <AppTextJoin
       key={idx}
       textStyle={styles.titleText}
+      style={{bottom: idx > 0 ? 6 : 0}}
       data={formatText(
         'b',
         {
