@@ -171,6 +171,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderRadius: 3,
+    borderWidth: 0,
     padding: 16,
   },
   closeTooltip: {
@@ -270,7 +271,7 @@ const ChargeHistoryScreen: React.FC = () => {
             <AppSvgIcon name="closeSnackBar" style={{marginHorizontal: 8}} />
           </Pressable>
         </View>
-        <View style={{bottom: 1, alignItems: 'flex-end', marginRight: 50}}>
+        <View style={{alignItems: 'flex-end', marginRight: 50}}>
           <Triangle width={20} height={10} color="rgba(44,44,44,0.86)" />
         </View>
       </View>
