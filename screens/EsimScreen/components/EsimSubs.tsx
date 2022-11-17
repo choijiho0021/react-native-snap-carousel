@@ -173,6 +173,7 @@ const styles = StyleSheet.create({
   btnFrame: {
     flex: 1,
     flexDirection: 'row',
+    marginBottom: 12,
   },
   redirectHK: {
     flexDirection: 'row',
@@ -266,7 +267,8 @@ const styles = StyleSheet.create({
   cautionBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 28,
+    paddingVertical: 12,
+    marginTop: 16,
     marginBottom: 24,
   },
   cautionText: {
@@ -372,9 +374,10 @@ const EsimSubs = ({
   }, [mainSubs.expireDate]);
 
   const isChargeable = useMemo(() => {
-    if (mainSubs.partner !== 'CMI' || isChargeExpired) return false;
+    if (mainSubs.partner !== 'CMI' || isChargeExpired || mainSubs.isStore)
+      return false;
     return true;
-  }, [isChargeExpired, mainSubs.partner]);
+  }, [isChargeExpired, mainSubs.isStore, mainSubs.partner]);
 
   useEffect(() => {
     if (isMoreInfo)
@@ -680,9 +683,7 @@ const EsimSubs = ({
 
           {renderHkBtn()}
 
-          {renderMoveBtn()}
-
-          <View style={styles.line} />
+          {!mainSubs.isStore && renderMoveBtn()}
         </View>
       )}
       <AppModal
