@@ -156,22 +156,26 @@ export const updateStatusAndGetSubs = createAsyncThunk(
   },
 );
 */
+
 const mergeSubs = (
   org: ImmutableMap<string, RkbSubscription[]>,
   subs: RkbSubscription[],
 ) => {
   const subsToMap: ImmutableMap<string, RkbSubscription[]> = subs.reduce(
-    (acc, s) => {
-      return s.subsIccid
+    (acc, s) =>
+      s.subsIccid
         ? acc.update(s.subsIccid, (pre) => {
-            if (s.isStore) return pre ? [s].concat(pre) : [s];
-            return pre ? pre.concat(s) : [s];
-          })
-        : acc;
-    },
-    ImmutableMap<string, RkbSubscription[]>(),
-  );
+            const rmDupList = pre?.filter((elm) => elm.uuid !== s.uuid) || [];
 
+            return rmDupList
+              .concat(s)
+              .sort((subs1, subs2) =>
+                subs1.purchaseDate > subs2.purchaseDate ? 1 : -1,
+              );
+          })
+        : acc,
+    org,
+  );
   return org.merge(subsToMap);
 };
 
