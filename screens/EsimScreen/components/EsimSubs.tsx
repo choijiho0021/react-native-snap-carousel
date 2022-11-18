@@ -173,7 +173,6 @@ const styles = StyleSheet.create({
   btnFrame: {
     flex: 1,
     flexDirection: 'row',
-    marginBottom: 12,
   },
   redirectHK: {
     flexDirection: 'row',
@@ -267,8 +266,7 @@ const styles = StyleSheet.create({
   cautionBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    marginTop: 16,
+    marginTop: 28,
     marginBottom: 24,
   },
   cautionText: {
@@ -359,25 +357,23 @@ const EsimSubs = ({
   const [isMoreInfo, setIsMoreInfo] = useState(false);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
 
-  const notCardInfo = useMemo(() => {
-    if (
+  const notCardInfo = useMemo(
+    () =>
       !expired &&
       mainSubs.giftStatusCd !== 'S' &&
-      mainSubs.type !== API.Subscription.CALL_PRODUCT
-    )
-      return true;
-    return false;
-  }, [expired, mainSubs.giftStatusCd, mainSubs.type]);
+      mainSubs.type !== API.Subscription.CALL_PRODUCT,
+
+    [expired, mainSubs.giftStatusCd, mainSubs.type],
+  );
 
   const chargeablePeriod = useMemo(() => {
     return utils.toDateString(mainSubs.expireDate, 'YYYY.MM.DD');
   }, [mainSubs.expireDate]);
 
-  const isChargeable = useMemo(() => {
-    if (mainSubs.partner !== 'CMI' || isChargeExpired || mainSubs.isStore)
-      return false;
-    return true;
-  }, [isChargeExpired, mainSubs.isStore, mainSubs.partner]);
+  const isChargeable = useMemo(
+    () => !(mainSubs.partner !== 'CMI' || isChargeExpired),
+    [isChargeExpired, mainSubs.partner],
+  );
 
   useEffect(() => {
     if (isMoreInfo)
@@ -683,7 +679,7 @@ const EsimSubs = ({
 
           {renderHkBtn()}
 
-          {!mainSubs.isStore && renderMoveBtn()}
+          {renderMoveBtn()}
         </View>
       )}
       <AppModal
