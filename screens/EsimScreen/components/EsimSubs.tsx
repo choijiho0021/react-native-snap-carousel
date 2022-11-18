@@ -357,24 +357,23 @@ const EsimSubs = ({
   const [isMoreInfo, setIsMoreInfo] = useState(false);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
 
-  const notCardInfo = useMemo(() => {
-    if (
+  const notCardInfo = useMemo(
+    () =>
       !expired &&
       mainSubs.giftStatusCd !== 'S' &&
-      mainSubs.type !== API.Subscription.CALL_PRODUCT
-    )
-      return true;
-    return false;
-  }, [expired, mainSubs.giftStatusCd, mainSubs.type]);
+      mainSubs.type !== API.Subscription.CALL_PRODUCT,
+
+    [expired, mainSubs.giftStatusCd, mainSubs.type],
+  );
 
   const chargeablePeriod = useMemo(() => {
     return utils.toDateString(mainSubs.expireDate, 'YYYY.MM.DD');
   }, [mainSubs.expireDate]);
 
-  const isChargeable = useMemo(() => {
-    if (mainSubs.partner !== 'CMI' || isChargeExpired) return false;
-    return true;
-  }, [isChargeExpired, mainSubs.partner]);
+  const isChargeable = useMemo(
+    () => !(mainSubs.partner !== 'CMI' || isChargeExpired),
+    [isChargeExpired, mainSubs.partner],
+  );
 
   useEffect(() => {
     if (isMoreInfo)
@@ -681,8 +680,6 @@ const EsimSubs = ({
           {renderHkBtn()}
 
           {renderMoveBtn()}
-
-          <View style={styles.line} />
         </View>
       )}
       <AppModal

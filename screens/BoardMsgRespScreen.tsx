@@ -40,7 +40,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     width: windowWidth - 20,
     marginTop: 10,
-    marginHorizontal: 20,
   },
   attach: {
     // flex: 1,
@@ -64,7 +63,6 @@ const styles = StyleSheet.create({
   },
   inputBox: {
     ...appStyles.normal14Text,
-    marginHorizontal: 20,
     borderRadius: 3,
     backgroundColor: colors.whiteTwo,
     borderStyle: 'solid',
@@ -81,8 +79,8 @@ const styles = StyleSheet.create({
   respBox: {
     marginTop: 18,
     marginBottom: 36,
-    marginHorizontal: 20,
     padding: 15,
+    paddingBottom: 20,
     borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: 'solid',
@@ -217,7 +215,7 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.container}>
-        <View style={{flex: 1}}>
+        <View style={{flex: 1, paddingHorizontal: 20}}>
           <AppText style={[styles.inputBox, {marginTop: 30}]}>
             {issue?.title}
           </AppText>
