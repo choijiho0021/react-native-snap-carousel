@@ -56,7 +56,7 @@ const AppCartButton: React.FC<AppCartButtonProps> = ({
           badgeStyle={styles.badge}
           textStyle={styles.badgeText}
           value={cartItems}
-          containerStyle={[styles.badgeContainer, {top: 4, right: 10}]}
+          containerStyle={[styles.badgeContainer, {top: 2, right: 10}]}
         />
       )}
     </Pressable>

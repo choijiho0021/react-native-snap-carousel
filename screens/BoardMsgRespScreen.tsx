@@ -20,7 +20,7 @@ import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
-import {attachmentSize, windowWidth} from '@/constants/SliderEntry.style';
+import {windowWidth} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
@@ -33,6 +33,7 @@ import {
 } from '@/redux/modules/board';
 import i18n from '@/utils/i18n';
 import {AccountModelState} from '@/redux/modules/account';
+import ImgWithIndicator from './MyPageScreen/components/ImgWithIndicator';
 
 const styles = StyleSheet.create({
   attachBox: {
@@ -40,13 +41,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     width: windowWidth - 20,
     marginTop: 10,
-    marginHorizontal: 20,
-  },
-  attach: {
-    // flex: 1,
-    marginRight: 20,
-    width: attachmentSize,
-    height: attachmentSize,
   },
   reply: {
     ...appStyles.normal14Text,
@@ -64,7 +58,6 @@ const styles = StyleSheet.create({
   },
   inputBox: {
     ...appStyles.normal14Text,
-    marginHorizontal: 20,
     borderRadius: 3,
     backgroundColor: colors.whiteTwo,
     borderStyle: 'solid',
@@ -81,8 +74,8 @@ const styles = StyleSheet.create({
   respBox: {
     marginTop: 18,
     marginBottom: 36,
-    marginHorizontal: 20,
     padding: 15,
+    paddingBottom: 20,
     borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: 'solid',
@@ -202,10 +195,8 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
                     },
                   );
                 }}>
-                <Image
-                  source={{uri: API.default.httpImageUrl(url).toString()}}
-                  style={styles.attach}
-                  defaultSource={require('@/assets/images/mypage/loading.png')}
+                <ImgWithIndicator
+                  uri={API.default.httpImageUrl(url).toString()}
                 />
               </Pressable>
             ))}
@@ -217,7 +208,7 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.container}>
-        <View style={{flex: 1}}>
+        <View style={{flex: 1, paddingHorizontal: 20}}>
           <AppText style={[styles.inputBox, {marginTop: 30}]}>
             {issue?.title}
           </AppText>
