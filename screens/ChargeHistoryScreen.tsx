@@ -185,7 +185,7 @@ export const renderPromoFlag = (flags: string[], isStore: boolean) => (
   <>
     {flags
       .filter((elm) => elm !== 'hot')
-      .map((elm) => {
+      .map((elm, idx) => {
         const badgeColor = getPromoFlagColor(elm);
         return (
           <View
@@ -194,6 +194,7 @@ export const renderPromoFlag = (flags: string[], isStore: boolean) => (
               styles.badge,
               {
                 backgroundColor: badgeColor.backgroundColor,
+                marginLeft: idx === 0 ? 8 : 0,
               },
             ]}>
             <AppText
@@ -205,7 +206,13 @@ export const renderPromoFlag = (flags: string[], isStore: boolean) => (
         );
       })}
     {isStore && (
-      <AppSvgIcon name="naverIcon" style={{justifyContent: 'center'}} />
+      <AppSvgIcon
+        name="naverIcon"
+        style={{
+          justifyContent: 'center',
+          marginLeft: flags.length === 0 ? 8 : 0,
+        }}
+      />
     )}
   </>
 );
