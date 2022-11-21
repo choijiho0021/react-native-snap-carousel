@@ -580,7 +580,8 @@
   "pym:deductBalance": "Applied ROKEBI Cash",
   "pym:unsupportDeviceModal": "ESIM unsupported device payment",
   "pym:unsupportDeviceModalContent": "Your device is an unsupported device. \n  Still, if you want to continue purchasing, please click OK.",
-  "pym:charge": "충전 상품은 <b>기존 상품 사용 종료 후 이어서</b> 사용되며, <b>교환 환불이 불가</b>합니다.",
+  "pym:chargeInfo": "충전 상품은 <b>기존 상품 사용 종료 후 이어서</b> 사용되며, <b>교환 환불이 불가</b>합니다.",
+  "pym:purchaseInfo": "eSIM 상품은 <b>결제와 동시에 상품 정보가 발송</b>되는 관계로 <b>교환·환불이 불가</b>합니다.",
   "pym:receipt": "Receipt",
 
   "err:login": "Let's get started",

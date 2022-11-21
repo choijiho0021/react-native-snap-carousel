@@ -38,6 +38,8 @@ import Env from '@/environment';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppSnackBar from '@/components/AppSnackBar';
 import KakaoSDK from '@/components/NativeModule/KakaoSDK';
+import AppModal from '@/components/AppModal';
+import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
   container: {
@@ -131,6 +133,19 @@ const styles = StyleSheet.create({
     height: 10,
     backgroundColor: colors.whiteTwo,
   },
+  modalBodyStyle: {
+    paddingTop: 15,
+    paddingHorizontal: 30,
+  },
+  textHeighlight: {
+    ...appStyles.normal16Text,
+    color: colors.clearBlue,
+  },
+  modalText: {
+    ...appStyles.normal16Text,
+    lineHeight: 26,
+    letterSpacing: -0.5,
+  },
 });
 
 type GiftScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Gift'>;
@@ -188,6 +203,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   const [toastPending, setToastPending] = useState(false);
   const [showSnackBar, setShowSnackbar] = useState(false);
   const [checked, setChecked] = useState(methodList[0]);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (!promotion.stat.signupGift) promotionActions.getPromotionStat();
@@ -240,6 +256,11 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
     async (method: string, item: RkbSubscription) => {
       // 사용자에게 보낼 링크
       const giftId = await createLink(item);
+      if (giftId === undefined) {
+        setShowModal(true);
+        return;
+      }
+
       const webUrl = `${webViewHost}/gift/${giftId}`;
 
       const body = `${i18n.t('gift:msgBody1')}${
@@ -424,6 +445,20 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         disabled={methodList.length === 0}
         onPress={() => sendLink(checked, mainSubs)}
       />
+      <AppModal
+        type="info"
+        onOkClose={() => {
+          setShowModal(false);
+        }}
+        visible={showModal}>
+        <View style={styles.modalBodyStyle}>
+          <AppStyledText
+            text={i18n.t('gift:alert')}
+            textStyle={styles.modalText}
+            format={{b: styles.textHeighlight}}
+          />
+        </View>
+      </AppModal>
     </SafeAreaView>
   );
 };
