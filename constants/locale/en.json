@@ -531,7 +531,7 @@
   "usim:usageErrorInfo1": "Error!",
   "usim:usageErrorInfo2": "Rokebi is working on this",
 
-  "pym:esimInfo": "* Please note that eSIM product you purchased can't be cancelled or refunded after recieving activation info via your email and App.",
+  "pym:esimInfo": "Please note that eSIM product you purchased can't be cancelled or refunded after recieving activation info via your email and App.",
   "pym:title": "Subtotal",
   "pym:delivery": "Delivery Info",
   "pym:deliveryMemo": "Delivery Memo",

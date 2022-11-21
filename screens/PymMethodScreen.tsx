@@ -309,7 +309,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [showModalMethod, setShowModalMethod] = useState(true);
   const [consent, setConsent] = useState<boolean>();
   const [isRecharge, setIsRecharge] = useState<boolean>();
-  const [isPassingAlert, setIsPassingAlert] = useState(false);
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
   const [showChargeAlert, setShowChargeAlert] = useState(false);
 
@@ -610,7 +609,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           text={
             isSupported
               ? i18n.t('pym:unsupportDeviceModalContent')
-              : i18n.t('pym:charge')
+              : i18n.t('pym:chargeInfo')
           }
           textStyle={styles.modalText}
           format={{b: styles.textHeighlight}}
@@ -695,7 +694,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           titleStyle={appStyles.medium18}
           disabled={(pymPrice?.value !== 0 && _.isEmpty(selected)) || !consent}
           key={i18n.t('payment')}
-          onPress={() => onSubmit(isPassingAlert)}
+          onPress={() => onSubmit(false)}
           style={appStyles.confirm}
           type="primary"
         />
@@ -707,7 +706,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         onOkClose={async () => {
           if (showUnsupAlert) {
             setShowUnsupAlert((prev) => !prev);
-            setIsPassingAlert(true);
             onSubmit(true);
           } else {
             setShowChargeAlert((prev) => !prev);
