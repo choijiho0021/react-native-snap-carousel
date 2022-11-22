@@ -104,6 +104,7 @@ const path = {
       usage: 'rokebi/usage/subs',
       call: 'rokebi/call',
       ota: 'rokebi/svc/ota',
+      tag: 'rokebi/tag',
       reg: 'rokebi/reg',
       user: 'rokebi/user',
       account: 'rokebi/account',

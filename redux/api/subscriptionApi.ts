@@ -94,6 +94,7 @@ export type RkbSubscription = {
   type: string;
   isStore: boolean;
 
+  tag?: string[];
   endDate?: string;
   country?: string[];
   prodName?: string;
@@ -128,6 +129,7 @@ const toSubscription =
           endDate: item.field_subs_expiration_date || '',
           statusCd: item.field_status || '',
           status: toStatus(item.field_status) || '',
+          tag: item.field_tag || [],
           giftStatusCd:
             giftCode[item.field_gift_status] || item.field_gift_status || '',
           country: item.field_country || '',
@@ -195,6 +197,7 @@ const toSubsUpdate = (data) => {
         uuid: item.uuid[0].value,
         statusCd: item.field_status[0].value,
         status: toStatus(item.field_status[0].value),
+        tag: item.field_tag.value,
         giftStatusCd:
           giftCode[item.field_gift_status] || item.field_gift_status || '',
         prodName: item.title[0].value,
@@ -399,6 +402,33 @@ const updateSubscriptionStatus = ({
       method: 'PATCH',
       headers: api.withToken(token, 'json'),
       body: JSON.stringify({status}),
+    },
+    toSubsUpdate,
+  );
+};
+
+const updateSubscriptionAndOrderTag = ({
+  uuid, // subs or store order uuid
+  tag, // target tag
+  token,
+}: {
+  uuid: string;
+  tag: string;
+  token: string;
+}) => {
+  if (!uuid)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: uuid');
+  if (!tag)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: status');
+  if (!token)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
+
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.tag, '')}/${uuid}?_format=json`,
+    {
+      method: 'PATCH',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({tag}),
     },
     toSubsUpdate,
   );
@@ -650,6 +680,7 @@ export default {
   otaSubscription,
   getOtaSubscription,
   updateSubscriptionStatus,
+  updateSubscriptionAndOrderTag,
   updateSubscriptionGiftStatus,
   getSubsUsage,
   cmiGetSubsUsage,
