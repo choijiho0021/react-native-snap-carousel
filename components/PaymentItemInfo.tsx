@@ -1,3 +1,12 @@
+import {
+  Dimensions,
+  StyleProp,
+  StyleSheet,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
+import React, {memo} from 'react';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
@@ -7,9 +16,11 @@ import utils from '@/redux/api/utils';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {PaymentReq} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
-import React, {memo} from 'react';
-import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from 'react-native';
+import AppSvgIcon from '@/components/AppSvgIcon';
+import AppStyledText from '@/components/AppStyledText';
 import AppText from './AppText';
+
+const {width} = Dimensions.get('window');
 
 const {esimApp} = Env.get();
 const styles = StyleSheet.create({
@@ -101,10 +112,15 @@ const styles = StyleSheet.create({
   },
   esimInfo: {
     ...appStyles.normal14Text,
-    color: colors.clearBlue,
-    marginHorizontal: 20,
-    marginTop: 20,
+    color: colors.redError,
     lineHeight: 20,
+    width: width - 72,
+  },
+  esimInfoBold: {
+    ...appStyles.bold14Text,
+    color: colors.redError,
+    lineHeight: 20,
+    width: width - 72,
   },
 });
 
@@ -242,7 +258,25 @@ const PaymentItemInfo = ({
         value={utils.price(pymPrice)}
       />
       {mode !== 'result' && esimApp && (
-        <AppText style={styles.esimInfo}>{i18n.t('pym:esimInfo')}</AppText>
+        <View
+          style={{
+            flexDirection: 'row',
+            marginHorizontal: 20,
+            marginTop: 20,
+          }}>
+          <AppSvgIcon
+            name="cautionIcon"
+            style={{
+              marginRight: 8,
+              justifyContent: 'center',
+            }}
+          />
+          <AppStyledText
+            text={i18n.t('pym:esimInfo')}
+            textStyle={styles.esimInfo}
+            format={{b: styles.esimInfoBold}}
+          />
+        </View>
       )}
       <View
         style={[styles.divider, screen === 'PaymentResult' && {marginTop: 0}]}

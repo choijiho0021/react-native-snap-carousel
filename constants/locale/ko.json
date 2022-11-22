@@ -523,6 +523,7 @@
   "esim:pedometer:sub": "목표 걸음 수",
   "esim:prodType:total": "데이터 종량제",
   "esim:prodType:daily": "데이터 무제한",
+  "esim:caution": "주의사항",
 
   "redirectHK": "홍콩 실명등록",
   "redirectHK:info1": "홍콩 정부의 통신 정책 변경으로 인해, 홍콩 현지 데이터를 사용하고자 하는 모든 사용자(내/외국인 포함)는 홍콩 현지 통신사의 웹페이지에서 <b>실명 등록 후 현지 데이터 사용이 가능합니다.</b>",
@@ -535,7 +536,7 @@
   "usim:usageErrorInfo1": "오류 발생!",
   "usim:usageErrorInfo2": "로깨비가 해결하고 있어요.",
 
-  "pym:esimInfo": "* eSIM 상품은 결제와 동시에 상품이 이메일과 앱으로 고객님께 전송되는 관계로 결제 취소가 불가하오니, 유의하시기 바랍니다.",
+  "pym:esimInfo": "eSIM 상품은 결제와 동시에 상품 정보가 발송되는 관계로 <b>교환·환불이 불가</b>합니다.",
   "pym:title": "결제 정보",
   "pym:delivery": "배송 정보",
   "pym:deliveryMemo": "배송 메모",
@@ -584,7 +585,8 @@
   "pym:deductBalance": "로깨비캐시 차감",
   "pym:unsupportDeviceModal": "eSIM 미지원 단말 결제",
   "pym:unsupportDeviceModalContent": "사용하고 계신 기기는 eSIM을 지원하지 않습니다. 계속 구매를 원하신다면, 확인을 눌러주세요.",
-  "pym:charge": "충전 상품은 <b>기존 상품 사용 종료 후 이어서</b> 사용되며, <b>교환 환불이 불가</b>합니다.",
+  "pym:chargeInfo": "충전 상품은 <b>기존 상품 사용 종료 후 이어서</b> 사용되며, <b>교환 환불이 불가</b>합니다.",
+  "pym:purchaseInfo": "eSIM 상품은 <b>결제와 동시에 상품 정보가 발송</b>되는 관계로 <b>교환·환불이 불가</b>합니다.",
   "pym:receipt": "영수증",
 
   "err:login": "로그인 후 상품 구매하기",
@@ -738,6 +740,7 @@
   "gift:tip-5": "로밍도깨비 앱 가입 후 상품 등록 사용을 추천해주세요:)",
   "gift:tip-6": "* 선물 받는 분께서 로밍도깨비 서비스에 최초 가입하는 경우에만 적용됩니다.",
   "gift:btn": "선물 구매하러 가기",
+  "gift:alert": "<b>이미 선물한 상품</b>입니다.\n선물한 분께 링크 확인 및 <b>선물 등록을 요청</b>해보세요! 선물하기 링크를 통해 앱에 신규 가입하면 <b>고객님과 선물 받은 분 모두에게 500캐시</b>를 드려요.",
 
   "noti:updateTitle": "새로운 버전이 업데이트 되었어요!",
   "noti:updateOpt": "고객님들의 의견을 반영하여 사용성을 개선했어요.\n최신 버전으로 업데이트하고 안정적인 서비스를 즐기세요.",

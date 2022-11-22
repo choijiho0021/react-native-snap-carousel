@@ -518,6 +518,7 @@
   "esim:pedometer:sub": "목표 걸음 수",
   "esim:prodType:total": "데이터 종량제",
   "esim:prodType:daily": "데이터 무제한",
+  "esim:caution": "주의사항",
 
   // 홍콩 실명인증
   "redirectHK": "Real Name Registration",
@@ -531,7 +532,7 @@
   "usim:usageErrorInfo1": "Error!",
   "usim:usageErrorInfo2": "Rokebi is working on this",
 
-  "pym:esimInfo": "* Please note that eSIM product you purchased can't be cancelled or refunded after recieving activation info via your email and App.",
+  "pym:esimInfo": "Please note that eSIM product you purchased can't be cancelled or refunded after recieving activation info via your email and App.",
   "pym:title": "Subtotal",
   "pym:delivery": "Delivery Info",
   "pym:deliveryMemo": "Delivery Memo",
@@ -580,7 +581,8 @@
   "pym:deductBalance": "Applied ROKEBI Cash",
   "pym:unsupportDeviceModal": "ESIM unsupported device payment",
   "pym:unsupportDeviceModalContent": "Your device is an unsupported device. \n  Still, if you want to continue purchasing, please click OK.",
-  "pym:charge": "충전 상품은 <b>기존 상품 사용 종료 후 이어서</b> 사용되며, <b>교환 환불이 불가</b>합니다.",
+  "pym:chargeInfo": "충전 상품은 <b>기존 상품 사용 종료 후 이어서</b> 사용되며, <b>교환 환불이 불가</b>합니다.",
+  "pym:purchaseInfo": "eSIM 상품은 <b>결제와 동시에 상품 정보가 발송</b>되는 관계로 <b>교환·환불이 불가</b>합니다.",
   "pym:receipt": "Receipt",
 
   "err:login": "Let's get started",

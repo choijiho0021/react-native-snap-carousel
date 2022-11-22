@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 8,
+    marginRight: 8,
     height: 20,
     alignSelf: 'center',
     borderRadius: 3,
@@ -171,6 +171,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderRadius: 3,
+    borderWidth: 0,
     padding: 16,
   },
   closeTooltip: {
@@ -184,7 +185,7 @@ export const renderPromoFlag = (flags: string[], isStore: boolean) => (
   <>
     {flags
       .filter((elm) => elm !== 'hot')
-      .map((elm) => {
+      .map((elm, idx) => {
         const badgeColor = getPromoFlagColor(elm);
         return (
           <View
@@ -193,6 +194,7 @@ export const renderPromoFlag = (flags: string[], isStore: boolean) => (
               styles.badge,
               {
                 backgroundColor: badgeColor.backgroundColor,
+                marginLeft: idx === 0 ? 8 : 0,
               },
             ]}>
             <AppText
@@ -206,7 +208,10 @@ export const renderPromoFlag = (flags: string[], isStore: boolean) => (
     {isStore && (
       <AppSvgIcon
         name="naverIcon"
-        style={{marginLeft: 8, justifyContent: 'center'}}
+        style={{
+          justifyContent: 'center',
+          marginLeft: flags.length === 0 ? 8 : 0,
+        }}
       />
     )}
   </>
@@ -270,8 +275,8 @@ const ChargeHistoryScreen: React.FC = () => {
             <AppSvgIcon name="closeSnackBar" style={{marginHorizontal: 8}} />
           </Pressable>
         </View>
-        <View style={{bottom: 1, alignItems: 'flex-end', marginRight: 50}}>
-          <Triangle width={20} height={10} color="rgba(44,44,44,44.86)" />
+        <View style={{alignItems: 'flex-end', marginRight: 50}}>
+          <Triangle width={20} height={10} color="rgba(44,44,44,0.86)" />
         </View>
       </View>
     );

@@ -221,48 +221,59 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
     [deviceModel],
   );
 
-  const renderStepPage = useCallback((data: GuideImage) => {
-    return (
-      <ScrollView
-        style={{flex: 1}}
-        contentContainerStyle={[
-          styles.stepPage,
-          isDeviceSize('large') ? undefined : {flex: 1},
-        ]}>
-        <View style={{alignItems: 'center'}}>
-          <View style={[styles.step, {marginTop: 20}]}>
-            <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
+  const renderStepPage = useCallback(
+    (data: GuideImage) => {
+      const image = getImage(imageList, data.key);
+      const imageSource = Image.resolveAssetSource(image);
+
+      return (
+        <ScrollView
+          style={{flex: 1}}
+          contentContainerStyle={[
+            styles.stepPage,
+            isDeviceSize('large') ? undefined : {flex: 1},
+          ]}>
+          <View style={{alignItems: 'center'}}>
+            <View style={[styles.step, {marginTop: 20}]}>
+              <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
+            </View>
+            {data.title}
           </View>
-          {data.title}
-        </View>
 
-        <View style={{marginVertical: 22}}>{data.tip && data.tip()}</View>
+          <View style={{marginVertical: 22}}>{data.tip && data.tip()}</View>
 
-        <View
-          style={{
-            width: '100%',
-            flex: 1,
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-          }}>
-          {data.caption ? (
-            <AppText
-              style={[
-                appStyles.semiBold13Text,
-                {color: colors.warmGrey, marginBottom: 12},
-              ]}>
-              {data.caption}
-            </AppText>
-          ) : null}
-          <Image
-            // style={{flex: 1, width: '100%'}}
-            source={getImage(imageList, data.key)}
-            resizeMode="contain"
-          />
-        </View>
-      </ScrollView>
-    );
-  }, []);
+          <View
+            style={{
+              width: '100%',
+              flex: 1,
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+            }}>
+            {data.caption ? (
+              <AppText
+                style={[
+                  appStyles.semiBold13Text,
+                  {color: colors.warmGrey, marginBottom: 12},
+                ]}>
+                {data.caption}
+              </AppText>
+            ) : null}
+            <Image
+              style={{
+                width: dimensions.width,
+                height: Math.ceil(
+                  imageSource.height * (dimensions.width / imageSource.width),
+                ),
+              }}
+              source={image}
+              resizeMode="cover"
+            />
+          </View>
+        </ScrollView>
+      );
+    },
+    [dimensions.width],
+  );
 
   const renderTailPage = useCallback(
     (data: GuideImage) => (

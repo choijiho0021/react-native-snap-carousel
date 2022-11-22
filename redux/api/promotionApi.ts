@@ -122,7 +122,8 @@ const toGift = (data: {
   if (data.result.code === 0) {
     return api.success(data.objects, [], data.result);
   }
-  return api.failure(api.FAILED, data.result?.error);
+
+  return api.failure(api.FAILED, data?.desc);
 };
 
 const toGiftBgImages = (data: []): ApiResult<RkbGiftImages> => {

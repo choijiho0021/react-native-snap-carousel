@@ -473,7 +473,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Filename\nFIREBASE_INFO_PLIST=GoogleService-Info.plist\n\n# File path for ESIM\nFIREBASE_INFO_ESIM=${PROJECT_DIR}/Configurations/Esim/${FIREBASE_INFO_PLIST}\n\n# File path for Usim\nFIREBASE_INFO_USIM=${PROJECT_DIR}/Configurations/Usim/${FIREBASE_INFO_PLIST}\n\n# File path for Global\nFIREBASE_INFO_GLOBAL=${PROJECT_DIR}/Configurations/Global/${FIREBASE_INFO_PLIST}\n\n# PLIST_DESTINATION\nPLIST_DESTINATION=${PROJECT_DIR}/${FIREBASE_INFO_PLIST}\n\n# Copy selected GoogleService-Info.plist for builds depend on bundle identifier\nif [ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.uangel.rokebi-ESIM\" ]\nthen\necho \"Using ${FIREBASE_INFO_ESIM}\"\ncp \"${FIREBASE_INFO_ESIM}\" \"${PLIST_DESTINATION}\"\nelif [ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.uangel.rokebi-USIM\" ]\nthen\necho \"Using ${FIREBASE_INFO_USIM}\"\ncp \"${FIREBASE_INFO_USIM}\" \"${PLIST_DESTINATION}\"\nelse\necho \"Using ${FIREBASE_INFO_GLOBAL}\"\ncp \"${FIREBASE_INFO_GLOBAL}\" \"${PLIST_DESTINATION}\"\nfi\n";
+			shellScript = "# Filename\nFIREBASE_INFO_PLIST=GoogleService-Info.plist\nAPPCENTER_CONFIG_PLIST=AppCenter-Config.plist\n\n# File path for ESIM\nESIM_CONFIG_PATH=${PROJECT_DIR}/Configurations/Esim\n\n# File path for Usim\n#USIM_CONFIG_PATH=${PROJECT_DIR}/Configurations/Usim\n\n# File path for Global\nGLOBAL_CONFIG_PATH=${PROJECT_DIR}/Configurations/Global\n\n# PLIST_DESTINATION\nPLIST_DESTINATION=${PROJECT_DIR}/${FIREBASE_INFO_PLIST}\nAPPCENTER_PLIST_DESTINATION=${PROJECT_DIR}/${APPCENTER_CONFIG_PLIST}\n\n# SET .env CONFIGFILE\necho \".env.global.${CONFIGURATION}\" | tr '[:upper:]' '[:lower:]' > /tmp/envfile\n\n# Copy plist for builds depend on bundle identifier\nif [ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.uangel.rokebi-ESIM\" ]\nthen\necho \"Using ${FIREBASE_INFO_ESIM}\"\ncp \"${ESIM_CONFIG_PATH}/${FIREBASE_INFO_PLIST}\" \"${PLIST_DESTINATION}\"\ncp \"${ESIM_CONFIG_PATH}/${APPCENTER_CONFIG_PLIST}\" \"${APPCENTER_PLIST_DESTINATION}\"\n#elif [ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.uangel.rokebi-USIM\" ]\n#then\n#echo \"Using ${FIREBASE_INFO_USIM}\"\n#cp \"${USIM_CONFIG_PATH}/${FIREBASE_INFO_PLIST}\" \"${PLIST_DESTINATION}\"\n#cp \"${USIM_CONFIG_PATH}/${APPCENTER_CONFIG_PLIST}\" \"${APPCENTER_PLIST_DESTINATION}\"\nelse\necho \"Using ${FIREBASE_INFO_GLOBAL}\"\ncp \"${GLOBAL_CONFIG_PATH}/${FIREBASE_INFO_PLIST}\" \"${PLIST_DESTINATION}\"\ncp \"${GLOBAL_CONFIG_PATH}/${APPCENTER_CONFIG_PLIST}\" \"${APPCENTER_PLIST_DESTINATION}\"\nfi\n";
 		};
 		0D9C212426D37D4D0082F077 /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -652,7 +652,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Filename\nFIREBASE_INFO_PLIST=GoogleService-Info.plist\n\n# File path for ESIM\nFIREBASE_INFO_ESIM=${PROJECT_DIR}/Configurations/Esim/${FIREBASE_INFO_PLIST}\n\n# File path for Usim\nFIREBASE_INFO_USIM=${PROJECT_DIR}/Configurations/Usim/${FIREBASE_INFO_PLIST}\n\n# File path for Global\nFIREBASE_INFO_GLOBAL=${PROJECT_DIR}/Configurations/Global/${FIREBASE_INFO_PLIST}\n\n# PLIST_DESTINATION\nPLIST_DESTINATION=${PROJECT_DIR}/${FIREBASE_INFO_PLIST}\n\n# Copy selected GoogleService-Info.plist for builds depend on bundle identifier\nif [ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.uangel.rokebi-ESIM\" ]\nthen\necho \"Using ${FIREBASE_INFO_ESIM}\"\ncp \"${FIREBASE_INFO_ESIM}\" \"${PLIST_DESTINATION}\"\nelif [ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.uangel.rokebi-USIM\" ]\nthen\necho \"Using ${FIREBASE_INFO_USIM}\"\ncp \"${FIREBASE_INFO_USIM}\" \"${PLIST_DESTINATION}\"\nelse\necho \"Using ${FIREBASE_INFO_GLOBAL}\"\ncp \"${FIREBASE_INFO_GLOBAL}\" \"${PLIST_DESTINATION}\"\nfi\n";
+			shellScript = "# Filename\nFIREBASE_INFO_PLIST=GoogleService-Info.plist\nAPPCENTER_CONFIG_PLIST=AppCenter-Config.plist\n\n# File path for ESIM\nESIM_CONFIG_PATH=${PROJECT_DIR}/Configurations/Esim\n\n# File path for Usim\n#USIM_CONFIG_PATH=${PROJECT_DIR}/Configurations/Usim\n\n# File path for Global\nGLOBAL_CONFIG_PATH=${PROJECT_DIR}/Configurations/Global\n\n# PLIST_DESTINATION\nPLIST_DESTINATION=${PROJECT_DIR}/${FIREBASE_INFO_PLIST}\nAPPCENTER_PLIST_DESTINATION=${PROJECT_DIR}/${APPCENTER_CONFIG_PLIST}\n\n# SET .env CONFIGFILE\necho \".env.esim.${CONFIGURATION}\" | tr '[:upper:]' '[:lower:]' > /tmp/envfile\n\n# Copy plist for builds depend on bundle identifier\nif [ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.uangel.rokebi-ESIM\" ]\nthen\necho \"Using ${FIREBASE_INFO_ESIM}\"\ncp \"${ESIM_CONFIG_PATH}/${FIREBASE_INFO_PLIST}\" \"${PLIST_DESTINATION}\"\ncp \"${ESIM_CONFIG_PATH}/${APPCENTER_CONFIG_PLIST}\" \"${APPCENTER_PLIST_DESTINATION}\"\n#elif [ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.uangel.rokebi-USIM\" ]\n#then\n#echo \"Using ${FIREBASE_INFO_USIM}\"\n#cp \"${USIM_CONFIG_PATH}/${FIREBASE_INFO_PLIST}\" \"${PLIST_DESTINATION}\"\n#cp \"${USIM_CONFIG_PATH}/${APPCENTER_CONFIG_PLIST}\" \"${APPCENTER_PLIST_DESTINATION}\"\nelse\necho \"Using ${FIREBASE_INFO_GLOBAL}\"\ncp \"${GLOBAL_CONFIG_PATH}/${FIREBASE_INFO_PLIST}\" \"${PLIST_DESTINATION}\"\ncp \"${GLOBAL_CONFIG_PATH}/${APPCENTER_CONFIG_PLIST}\" \"${APPCENTER_PLIST_DESTINATION}\"\nfi\n";
 		};
 		A3BF9FDE273B63DD00561187 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -997,7 +997,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "";
 				BUNDLE_ID_SUFFIX = "-global";
 				CLANG_ENABLE_MODULES = YES;
-				CODEPUSH_KEY = "";
+				CODEPUSH_KEY = 5xvyG8Dm321r0J4jNZfqQn8AIwScKdnsQl6uo;
 				CODE_SIGN_ENTITLEMENTS = RokebiESIM/RokebiESIM.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -1107,7 +1107,7 @@
 				INFOPLIST_FILE = Configurations/Global/Development.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				KAKAO_APP_KEY = "";
+				KAKAO_APP_KEY = f881469e3b4a140967dfaebe648ede8d;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.4.0;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1135,7 +1135,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "";
 				BUNDLE_ID_SUFFIX = "-global";
 				CLANG_ENABLE_MODULES = YES;
-				CODEPUSH_KEY = "";
+				CODEPUSH_KEY = "KgnZ98UOkOrXa6cgiGHS2jqnja9OdpE6R-rRR";
 				CODE_SIGN_ENTITLEMENTS = RokebiESIM/RokebiESIM.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -1239,7 +1239,7 @@
 				INFOPLIST_FILE = Configurations/Global/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				KAKAO_APP_KEY = "";
+				KAKAO_APP_KEY = f881469e3b4a140967dfaebe648ede8d;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.4.0;
 				ONLY_ACTIVE_ARCH = NO;
@@ -1265,7 +1265,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "";
 				BUNDLE_ID_SUFFIX = "-global";
 				CLANG_ENABLE_MODULES = YES;
-				CODEPUSH_KEY = "";
+				CODEPUSH_KEY = qS_a2w4GslVa0apJgZt7EyZ6e5loLjKSEYctO;
 				CODE_SIGN_ENTITLEMENTS = RokebiESIM/RokebiESIM.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -1370,7 +1370,7 @@
 				INFOPLIST_FILE = Configurations/Global/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				KAKAO_APP_KEY = "";
+				KAKAO_APP_KEY = f881469e3b4a140967dfaebe648ede8d;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.4.0;
 				ONLY_ACTIVE_ARCH = NO;
