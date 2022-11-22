@@ -638,6 +638,7 @@ const EsimSubs = ({
   const renderCautionText = useCallback(
     (caution: string, subNum: number, hasPreDot: boolean) => (
       <View
+        key={caution + subNum}
         style={[
           styles.cautionTextContainer,
           {
@@ -646,7 +647,7 @@ const EsimSubs = ({
         ]}>
         {hasPreDot && (
           <AppText
-            key={caution}
+            key="centerDot"
             style={[styles.cautionText, {marginHorizontal: 8}]}>
             {i18n.t('centerDot')}
           </AppText>
