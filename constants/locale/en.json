@@ -518,6 +518,7 @@
   "esim:pedometer:sub": "목표 걸음 수",
   "esim:prodType:total": "데이터 종량제",
   "esim:prodType:daily": "데이터 무제한",
+  "esim:caution": "주의사항",
 
   // 홍콩 실명인증
   "redirectHK": "Real Name Registration",

@@ -264,13 +264,18 @@ const styles = StyleSheet.create({
     ...appStyles.bold13Text,
   },
   cautionBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 28,
     marginBottom: 24,
   },
+  cautionTitle: {
+    ...appStyles.bold16Text,
+    color: colors.tomato,
+    lineHeight: 20,
+    marginRight: 36,
+  },
   cautionText: {
-    ...appStyles.medium16,
+    ...appStyles.medium14,
     color: colors.tomato,
     lineHeight: 20,
     marginRight: 36,
@@ -325,6 +330,11 @@ const styles = StyleSheet.create({
   },
   btnStyle: {
     marginTop: 0,
+  },
+  cautionRow: {
+    flexDirection: 'row',
+    marginBottom: 14,
+    alignItems: 'center',
   },
 });
 
@@ -663,7 +673,13 @@ const EsimSubs = ({
 
           {!!mainSubs.caution || (mainSubs.cautionList?.length || 0) > 0 ? (
             <View style={styles.cautionBox}>
-              <AppSvgIcon name="cautionIcon" style={{marginRight: 12}} />
+              <View style={styles.cautionRow}>
+                <AppSvgIcon name="cautionIcon" style={{marginRight: 12}} />
+                <AppText style={styles.cautionTitle}>
+                  {i18n.t('esim:caution')}
+                </AppText>
+              </View>
+
               <View>
                 {!!mainSubs.caution && (
                   <AppText style={styles.cautionText}>
