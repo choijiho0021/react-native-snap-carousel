@@ -164,19 +164,18 @@ const mergeSubs = (
   const subsToMap: ImmutableMap<string, RkbSubscription[]> = subs.reduce(
     (acc, s) =>
       s.subsIccid
-        ? acc.update(s.subsIccid, (pre) => {
-            const rmDupList = pre?.filter((elm) => elm.uuid !== s.uuid) || [];
-
-            return rmDupList
+        ? acc.update(s.subsIccid, (pre) =>
+            (pre?.filter((elm) => elm.uuid !== s.uuid) || [])
               .concat(s)
               .sort((subs1, subs2) =>
                 subs1.purchaseDate > subs2.purchaseDate ? 1 : -1,
-              );
-          })
+              ),
+          )
         : acc,
     org,
   );
-  return org.merge(subsToMap);
+
+  return subsToMap;
 };
 
 const initialState: OrderModelState = {
