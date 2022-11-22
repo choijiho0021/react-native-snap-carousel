@@ -255,6 +255,10 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     color: colors.clearBlue,
   },
+  textCaution: {
+    ...appStyles.normal16Text,
+    color: colors.redError,
+  },
   modalText: {
     ...appStyles.normal16Text,
     lineHeight: 26,
@@ -619,7 +623,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               : i18n.t('pym:chargeInfo')
           }
           textStyle={styles.modalText}
-          format={{b: styles.textHeighlight}}
+          format={{b: styles.textHeighlight, c: styles.textCaution}}
         />
       </View>
     );
