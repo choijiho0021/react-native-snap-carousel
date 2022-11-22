@@ -319,8 +319,15 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     setIsRecharge(
       cart.purchaseItems.findIndex((item) => item.type === 'rch') >= 0,
     );
-    if (cart.esimIccid) setShowChargeAlert(true);
-  }, [cart, route.params.mode]);
+    if (cart.esimIccid) setShowChargeAlert(!route.params?.isPaid);
+  }, [
+    cart.deduct,
+    cart.esimIccid,
+    cart.purchaseItems,
+    cart.pymPrice,
+    route.params?.isPaid,
+    route.params.mode,
+  ]);
 
   useEffect(() => {
     if (!info.infoMap.has(infoKey)) {
