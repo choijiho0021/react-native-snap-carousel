@@ -277,8 +277,7 @@ const styles = StyleSheet.create({
   cautionText: {
     ...appStyles.medium14,
     color: colors.tomato,
-    lineHeight: 20,
-    marginRight: 36,
+    lineHeight: 18,
   },
   expiredDot: {
     position: 'absolute',
@@ -335,6 +334,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 14,
     alignItems: 'center',
+  },
+  cautionTextContainer: {
+    flexDirection: 'row',
+    marginRight: 36,
   },
 });
 
@@ -633,22 +636,39 @@ const EsimSubs = ({
   ]);
 
   const renderCautionText = useCallback(
-    (caution: string, subNum: number) => (
-      <AppText key={caution} style={styles.cautionText}>
-        {caution.substring(subNum)}
-      </AppText>
+    (caution: string, subNum: number, hasPreDot: boolean) => (
+      <View
+        style={[
+          styles.cautionTextContainer,
+          {
+            marginBottom: hasPreDot ? 10 : 0,
+          },
+        ]}>
+        {hasPreDot && (
+          <AppText
+            key={caution}
+            style={[styles.cautionText, {marginHorizontal: 8}]}>
+            {i18n.t('centerDot')}
+          </AppText>
+        )}
+
+        <AppText key={caution} style={styles.cautionText}>
+          {caution.substring(subNum)}
+        </AppText>
+      </View>
     ),
     [],
   );
 
   const renderCautionList = useCallback(
-    (caution: string) => {
+    (caution: string, idx: number, arr: string[]) => {
+      const hasPreDot = arr.length > 1;
       if (caution.startsWith('ios:') && Platform.OS === 'ios')
-        return renderCautionText(caution, 4);
+        return renderCautionText(caution, 4, hasPreDot);
       if (caution.startsWith('android:') && Platform.OS === 'android')
-        return renderCautionText(caution, 8);
+        return renderCautionText(caution, 8, hasPreDot);
       if (!caution.startsWith('ios:') && !caution.startsWith('android:'))
-        return renderCautionText(caution, 0);
+        return renderCautionText(caution, 0, hasPreDot);
       return null;
     },
     [renderCautionText],
@@ -681,12 +701,9 @@ const EsimSubs = ({
               </View>
 
               <View>
-                {!!mainSubs.caution && (
-                  <AppText style={styles.cautionText}>
-                    {mainSubs.caution}
-                  </AppText>
-                )}
-                {mainSubs.cautionList?.map(renderCautionList)}
+                {(mainSubs.cautionList || [])
+                  .concat(mainSubs.caution || [])
+                  ?.map(renderCautionList)}
               </View>
             </View>
           ) : (
