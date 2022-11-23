@@ -112,6 +112,8 @@ const CartItem = ({
               Math.round(price.value * qty * 100) / 100,
               price.currency,
             )}
+            balanceStyle={appStyles.bold20Text}
+            currencyStyle={appStyles.medium14}
           />
           <View style={{flex: 1}} />
           <AppButton

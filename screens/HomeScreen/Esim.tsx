@@ -130,20 +130,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.clearBlue,
 
-    ...Platform.select({
-      ios: {
-        shadowColor: 'rgb(52, 62, 95)',
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-        shadowOffset: {
-          height: 4,
-          width: 1,
-        },
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
+    shadowColor: 'rgb(52, 62, 95)',
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 5,
+    shadowOffset: {
+      height: 4,
+      width: 1,
+    },
   },
   notiBadge: {
     position: 'absolute',

@@ -239,6 +239,7 @@ const StoreList = ({
         renderItem={renderItem}
         onEndReached={onEndReached}
         scrollEnabled={scrollEnabled}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );
