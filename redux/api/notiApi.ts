@@ -189,7 +189,7 @@ const sendDisconnect = ({mobile, iccid}: {mobile: string; iccid: string}) => {
       : `http://tb-svcapp-noti.rokebi.com/${
           api.path.rokApi.noti.user
         }/${mobile}/account/disconnect?service=${
-          esimGlobal ? 'global' : appId
+          esimGlobal ? 'global' : 'esim'
         }`;
   const headers = new Headers(jsonContentType);
   const body = {
