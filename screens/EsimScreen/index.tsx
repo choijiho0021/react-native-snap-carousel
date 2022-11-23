@@ -192,6 +192,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       action.order
         .getSubsWithToast({iccid, token})
         .then(() => {
+          if (!esimGlobal) {
+            action.order.getStoreSubsWithToast({mobile, token});
+          }
           action.account.getAccount({iccid, token});
         })
         .finally(() => {

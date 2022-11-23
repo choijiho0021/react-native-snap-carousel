@@ -255,6 +255,10 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     color: colors.clearBlue,
   },
+  textCaution: {
+    ...appStyles.normal16Text,
+    color: colors.redError,
+  },
   modalText: {
     ...appStyles.normal16Text,
     lineHeight: 26,
@@ -319,8 +323,15 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     setIsRecharge(
       cart.purchaseItems.findIndex((item) => item.type === 'rch') >= 0,
     );
-    if (cart.esimIccid) setShowChargeAlert(true);
-  }, [cart, route.params.mode]);
+    if (cart.esimIccid) setShowChargeAlert(!route.params?.isPaid);
+  }, [
+    cart.deduct,
+    cart.esimIccid,
+    cart.purchaseItems,
+    cart.pymPrice,
+    route.params?.isPaid,
+    route.params.mode,
+  ]);
 
   useEffect(() => {
     if (!info.infoMap.has(infoKey)) {
@@ -612,7 +623,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               : i18n.t('pym:chargeInfo')
           }
           textStyle={styles.modalText}
-          format={{b: styles.textHeighlight}}
+          format={{b: styles.textHeighlight, c: styles.textCaution}}
         />
       </View>
     );
