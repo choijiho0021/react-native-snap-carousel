@@ -120,13 +120,13 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   textInput: (editable) => ({
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    height: 88,
+    padding: 16,
+    height: 120,
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor: editable ? colors.black : colors.lightGrey,
     backgroundColor: editable ? colors.white : colors.whiteTwo,
+    textAlignVertical: 'top',
   }),
 });
 

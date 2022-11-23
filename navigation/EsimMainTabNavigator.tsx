@@ -187,7 +187,13 @@ function EsimStackComponent() {
       <EsimStack.Screen name="Esim" component={EsimScreen} />
       <EsimStack.Screen name="Gift" component={GiftScreen} />
       <EsimStack.Screen name="RedirectHK" component={RedirectHKScreen} />
-      <EsimStack.Screen name="Charge" component={ChargeScreen} />
+      <EsimStack.Screen
+        name="Charge"
+        component={ChargeScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
       <EsimStack.Screen name="ChargeHistory" component={ChargeHistoryScreen} />
       <EsimStack.Screen name="ChargeDetail" component={ChargeDetailScreen} />
       <EsimStack.Screen name="QrInfo" component={QrInfoScreen} />
