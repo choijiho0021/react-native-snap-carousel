@@ -46,6 +46,7 @@ const styles = StyleSheet.create({
     fontSize: isDeviceSize('medium') ? 16 : 18,
     color: colors.black,
     lineHeight: 22,
+    letterSpacing: -1,
   },
   itemDesc: {
     ...appStyles.normal12Text,
@@ -53,6 +54,7 @@ const styles = StyleSheet.create({
     color: colors.warmGrey,
     textAlign: 'left',
     lineHeight: 20,
+    letterSpacing: -1,
   },
   showSearchBar: {
     marginRight: 20,

@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   },
   mainBody: {
     ...appStyles.normal20Text,
-    lineHeight: 30,
+    lineHeight: 32,
     fontWeight: '400',
     color: colors.white,
   },
