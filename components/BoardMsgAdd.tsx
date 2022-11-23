@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   attachCancel: {
     position: 'absolute',
-    right: 0,
+    right: -2,
     top: 0,
   },
   attachBox: {
@@ -89,6 +89,7 @@ const styles = StyleSheet.create({
   imgSize: {
     width: attachmentSize,
     height: attachmentSize,
+    borderRadius: 3,
   },
   attach: {
     width: attachmentSize,
@@ -469,7 +470,12 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
           <AppTextInput
             style={[
               styles.inputBox,
-              {height: 208, paddingTop: 5, textAlignVertical: 'top'},
+              {
+                height: 208,
+                paddingTop: 15,
+                paddingHorizontal: 15,
+                textAlignVertical: 'top',
+              },
               msg ? {borderColor: colors.black} : undefined,
             ]}
             ref={keybd}
