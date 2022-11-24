@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {bindActionCreators, RootState} from 'redux';
+import {connect} from 'react-redux';
 import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -23,6 +25,8 @@ import AppSnackBar from '@/components/AppSnackBar';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
 import {getImage} from '@/utils/utils';
+import {actions as orderActions, OrderAction} from '@/redux/modules/order';
+import {AccountModelState} from '@/redux/modules/account';
 
 const {width} = Dimensions.get('window');
 
@@ -118,10 +122,21 @@ type ParamList = {
   RedirectHKScreen: {
     iccid: string;
     orderNo: string;
+    uuid: string;
   };
 };
 
-const RedirectHKScreen: React.FC = () => {
+type RedirectHKScreenProps = {
+  account: AccountModelState;
+  action: {
+    order: OrderAction;
+  };
+};
+
+const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
+  account,
+  action,
+}) => {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<ParamList, 'RedirectHKScreen'>>();
 
@@ -170,6 +185,19 @@ const RedirectHKScreen: React.FC = () => {
       />
     ),
     [],
+  );
+
+  const updateTag = useCallback(
+    (tag: string) => {
+      const {token} = account;
+
+      action.order.updateSubsAndOrderTag({
+        uuid: params.uuid,
+        tag,
+        token: token || '',
+      });
+    },
+    [account, action.order, params.uuid],
   );
 
   return (
@@ -260,6 +288,7 @@ const RedirectHKScreen: React.FC = () => {
           title={i18n.t('esim:redirectHKRegister')}
           onPress={async () => {
             // 홍콩 실명인증 웹 페이지
+            updateTag('HQ');
             await Linking.openURL(
               'https://global.cmlink.com/store/realname?LT=en',
             );
@@ -276,4 +305,14 @@ const RedirectHKScreen: React.FC = () => {
   );
 };
 
-export default RedirectHKScreen;
+export default connect(
+  ({account, order}: RootState) => ({
+    account,
+    order,
+  }),
+  (dispatch) => ({
+    action: {
+      order: bindActionCreators(orderActions, dispatch),
+    },
+  }),
+)(RedirectHKScreen);
