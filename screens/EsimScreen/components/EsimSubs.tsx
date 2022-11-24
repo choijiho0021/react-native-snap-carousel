@@ -570,6 +570,7 @@ const EsimSubs = ({
             navigation.navigate('RedirectHK', {
               iccid: mainSubs.subsIccid,
               orderNo: mainSubs.subsOrderNo,
+              uuid: mainSubs.uuid,
             })
           }>
           <AppSvgIcon name="hkIcon" />
