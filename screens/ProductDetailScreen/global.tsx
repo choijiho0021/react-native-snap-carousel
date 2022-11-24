@@ -49,7 +49,7 @@ const {baseUrl, channelId, esimGlobal, fbUser} = Env.get();
 
 const HEADER_IMG_HEIGHT = 200;
 const TAB_IDX_ASK_BY_KAKAO = 3; // KakaoTalk으로 물어보기 Tab의 index
-const tabList = ['ProdInfo', 'Tip', 'Caution', 'Ask with KakaoTalk'];
+const tabList = ['ProdInfo', 'Tip', 'Caution', 'askWithKakaoTalk'];
 
 const styles = StyleSheet.create({
   screen: {
@@ -249,7 +249,12 @@ const ProductDetailGlobalScreen: React.FC<ProductDetailScreenProps> = ({
 
   const clickTab = useCallback(
     (idx: number) => () => {
-      Analytics.trackEvent('Page_View_Count', {page: tabList[idx]});
+      Analytics.trackEvent('Page_View_Count', {
+        page:
+          tabList[idx] === 'askWithKakaoTalk'
+            ? 'Ask with KakaoTalk'
+            : tabList[idx],
+      });
 
       const h =
         idx < TAB_IDX_ASK_BY_KAKAO ? (height[idx] || 0) + HEADER_IMG_HEIGHT : 0;

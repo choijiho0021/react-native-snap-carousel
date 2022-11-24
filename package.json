@@ -29,7 +29,8 @@
     "code_push_release": "sh ./code_push.sh release $1 $2",
     "code_push_patch": "sh ./code_push.sh patch $1 $2",
     "code_push_promote": "sh ./code_push.sh promote production $1",
-    "postinstall": "node ./android//fixAndroid/android-release-fix.js"
+    "postinstall": "node ./android//fixAndroid/android-release-fix.js",
+    "checkLang": "./constants/locale/compare.sh ./constants/locale/ko.json ./constants/locale/en.json"
   },
   "dependencies": {
     "@actbase/react-native-kakaosdk": "^1.3.6",
