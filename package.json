@@ -66,6 +66,8 @@
     "i18n-js": "^3.8.0",
     "iamport-react-native": "^2.0.2",
     "immutable": "^4.0.0-rc.15",
+    "lottie-ios": "3.4.1",
+    "lottie-react-native": "^5.1.4",
     "moment": "^2.29.1",
     "moment-with-locales-es6": "^1.0.1",
     "npm": "^8.18.0",
