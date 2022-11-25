@@ -197,13 +197,27 @@ const toSubsUpdate = (data) => {
         uuid: item.uuid[0].value,
         statusCd: item.field_status[0].value,
         status: toStatus(item.field_status[0].value),
-        tag: item.field_tag.value,
         giftStatusCd:
           giftCode[item.field_gift_status] || item.field_gift_status || '',
         prodName: item.title[0].value,
       })),
     );
   }
+  return data;
+};
+
+const toTagUpdate = (data) => {
+  if (data.result === 0 && isArray(data.objects)) {
+    return api.success(
+      data.objects.map((item) => ({
+        key: item.uuid,
+        uuid: item.uuid,
+        iccid: item.field_iccid,
+        tag: item.field_tag,
+      })),
+    );
+  }
+
   return data;
 };
 
@@ -418,8 +432,8 @@ const updateSubscriptionAndOrderTag = ({
 }) => {
   if (!uuid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: uuid');
-  if (!tag)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: status');
+  if (!tag) return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: tag');
+
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
@@ -430,7 +444,7 @@ const updateSubscriptionAndOrderTag = ({
       headers: api.withToken(token, 'json'),
       body: JSON.stringify({tag}),
     },
-    toSubsUpdate,
+    toTagUpdate,
   );
 };
 
