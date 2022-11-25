@@ -1,6 +1,6 @@
 import React, {memo} from 'react';
 import {StyleSheet, View} from 'react-native';
-import Flag from 'react-native-flags';
+// import Flag from 'react-native-flags';
 import {appStyles} from '../constants/Styles';
 import i18n from '../utils/i18n';
 import AppText from './AppText';
@@ -50,7 +50,7 @@ function RoamingProduct({item, startDate, qty, onChange}) {
         )}: ${utils.price(item.price)}`}</AppText>
       </View>
       <View style={styles.itemRow}>
-        <Flag style={styles.flag} code={item.ccode} size={48} />
+        {/* <Flag style={styles.flag} code={item.ccode} size={48} /> */}
         <AppText style={styles.desc}>{`${i18n.t(
           'store:startDate',
         )} : ${startDate}`}</AppText>

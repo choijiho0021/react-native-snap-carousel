@@ -68,7 +68,7 @@ class FindEngAddress {
       province: 'Incheon',
       710: 'Ganghwa-gun',
       245: 'Gyeyang-gu',
-      //"남구": "Nam-gu",
+      // "남구": "Nam-gu",
       200: 'Namdong-gu',
       140: 'Dong-gu',
       177: 'Michuhol-gu',
@@ -137,7 +137,7 @@ class FindEngAddress {
       // 경기도 : 41 , 42개(주석 포함 48개)
       province: 'Gyeonggi-do',
       820: 'Gapyeong-gun',
-      //"": "Goyang-si",
+      // "": "Goyang-si",
       281: 'Goyang-si', // 고양시 덕양구, "Deogyang-gu"
       285: 'Goyang-si', // 고양시 일산동구, "Ilsandong-gu"
       287: 'Goyang-si', // 고양시 일산서구, "Ilsanseo-gu"
@@ -150,11 +150,11 @@ class FindEngAddress {
       360: 'Namyangju-si',
       250: 'Dongducheon-si',
       190: 'Bucheon-si',
-      //"": "Seongnam-si",
+      // "": "Seongnam-si",
       135: 'Seongnam-si', // 성남시 분당구, "Bundang-gu"
       131: 'Seongnam-si', // 성남시 수정구, "Sujeong-gu"
       133: 'Seongnam-si', // 성남시 중원구, "Jungwon-gu"
-      //"": "Suwon-si",
+      // "": "Suwon-si",
       113: 'Suwon-si', // 수원시 권선구, "Gwonseon-gu"
       117: 'Suwon-si', // 수원시 영통구, "Yeongtong-gu"
       111: 'Suwon-si', // 수원시 장안구, "Jangan-gu"
@@ -240,7 +240,7 @@ class FindEngAddress {
       770: 'Seocheon-gun',
       290: 'Asan-si',
       810: 'Yesan-gun',
-      //"천안시": "Cheonan-si",
+      // "천안시": "Cheonan-si",
       131: 'Cheonan-si', // 천안시 동남구, "Dongnam-gu"
       133: 'Cheonan-si', // 천안시 서북구, "Seobuk-gu"
       790: 'Cheongyang-gun',
@@ -261,7 +261,7 @@ class FindEngAddress {
       140: 'Iksan-si',
       750: 'Imsil-gun',
       740: 'Jangsu-gun',
-      //"전주시": "Jeonju-si",
+      // "전주시": "Jeonju-si",
       113: 'Jeonju-si', // 전주시 덕진구, "Deokjin-gu"
       111: 'Jeonju-si', // 전주시 완산구, "Wansan-gu"
       180: 'Jeongeup-si',

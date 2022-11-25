@@ -20,7 +20,6 @@ import {retrieveData, storeData, utils} from '@/utils/utils';
 import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
 import EsimModal from './EsimScreen/components/EsimModal';
 import {getPromoFlagColor} from '@/redux/api/productApi';
-import AppIcon from '@/components/AppIcon';
 import SplitText from '@/components/SplitText';
 import Triangle from '@/components/Triangle';
 import AppSvgIcon from '@/components/AppSvgIcon';

@@ -39,7 +39,7 @@ const toCustomerProfile = (
       } = item.address[0] || [];
 
       return {
-        //langcode: 'ko',
+        // langcode: 'ko',
         countryCode: country_code,
         province: administrative_area,
         city: locality,
@@ -84,7 +84,7 @@ const toCustomerProfile = (
       } = item.attributes.address;
 
       return {
-        //langcode: 'ko',
+        // langcode: 'ko',
         countryCode: country_code,
         province: administrative_area,
         city: locality,
@@ -243,7 +243,7 @@ const delCustomerProfile = ({uuid, token}: {uuid: string; token?: string}) => {
       headers,
     },
     (resp) => ({
-      result: resp.status == '204' ? 0 : api.FAILED,
+      result: resp.status === '204' ? 0 : api.FAILED,
       objects: [],
     }),
     {isJson: false},

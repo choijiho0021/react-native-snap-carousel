@@ -1,6 +1,6 @@
 import {Platform} from 'react-native';
 import _ from 'underscore';
-import {API} from '@/redux/api';
+// import {API} from '@/redux/api';
 
 class HandlePushNoti {
   constructor(

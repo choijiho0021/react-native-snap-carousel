@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
 import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
-import {API} from '@/redux/api';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
+import {API} from '@/redux/api';
 import {RkbProfile} from '@/redux/api/profileApi';
 
 // add address list

@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-//동의어 추가 ':'
+// 동의어 추가 ':'
 const countryList = `GH,가나,Ghana,233
 GA,가봉,Gabon,241
 GY,가이아나,Guyana,592

@@ -1,6 +1,5 @@
 import React, {memo} from 'react';
 import {StyleSheet, View} from 'react-native';
-import _ from 'underscore';
 import {colors} from '@/constants/Colors';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';

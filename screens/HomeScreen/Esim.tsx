@@ -729,7 +729,7 @@ const Esim: React.FC<EsimProps> = ({
           setAppUpdateVisible(true);
         } else setAppUpdateVisible(false);
       })
-      .catch((err) => setAppUpdateVisible(false));
+      .catch(() => setAppUpdateVisible(false));
   }, []);
 
   const renderSearch = useCallback(

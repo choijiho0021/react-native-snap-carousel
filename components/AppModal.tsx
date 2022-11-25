@@ -74,7 +74,6 @@ export interface AppModalProps {
   titleViewStyle?: ViewStyle;
   titleIcon?: string;
   closeButtonTitle?: string;
-  infoText?: string;
   contentStyle?: ViewStyle;
   buttonStyle?: ViewStyle;
   buttonBackgroundColor?: ColorValue;

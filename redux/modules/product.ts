@@ -121,7 +121,7 @@ const slice = createSlice({
         );
       }
     },
-    updatePriceInfo: (state, action) => {
+    updatePriceInfo: (state) => {
       state.priceInfo = state.prodByCountry
         .reduce((acc, cur) => {
           // 먼저 category 별로 분리
@@ -273,10 +273,10 @@ const slice = createSlice({
       }
     });
 
-    builder.addCase(init.rejected, (state, action) => {
+    builder.addCase(init.rejected, (state) => {
       state.ready = false;
     });
-    builder.addCase(init.fulfilled, (state, action) => {
+    builder.addCase(init.fulfilled, (state) => {
       state.ready = true;
     });
   },

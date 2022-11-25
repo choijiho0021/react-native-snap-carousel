@@ -6,13 +6,7 @@ import Env from '@/environment';
 import i18n from '@/utils/i18n';
 import {parseJson, utils} from '@/utils/utils';
 
-const {
-  bundleId,
-  appStoreId,
-  dynamicLink,
-  adjustInvite = '',
-  webViewHost,
-} = Env.get();
+const {bundleId, appStoreId, dynamicLink, webViewHost} = Env.get();
 
 export type RkbPromotion = {
   uuid: string;

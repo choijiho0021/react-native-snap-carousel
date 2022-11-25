@@ -30,6 +30,7 @@ import SplitText from '@/components/SplitText';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
 import AppStyledText from '@/components/AppStyledText';
 import AppModal from '@/components/AppModal';
+import AppIcon from '@/components/AppIcon';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -196,20 +197,15 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     borderWidth: 1,
     borderColor: colors.whiteFive,
-    ...Platform.select({
-      ios: {
-        shadowColor: 'rgb(52, 62, 95)',
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
-        shadowOffset: {
-          height: 1,
-          width: 1,
-        },
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
+
+    shadowColor: 'rgb(52, 62, 95)',
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 5,
+    shadowOffset: {
+      height: 4,
+      width: 1,
+    },
   },
   lessInfo: {
     height: 40,
@@ -585,7 +581,7 @@ const EsimSubs = ({
               orderNo: mainSubs.subsOrderNo,
             })
           }>
-          <AppSvgIcon name="hkIcon" />
+          <AppIcon name="hkIcon" />
           <Text style={styles.redirectText}>{i18n.t('esim:redirectHK2')}</Text>
         </Pressable>
       );
@@ -603,7 +599,7 @@ const EsimSubs = ({
         {moveBtnList.map((key, idx) => {
           const isLast = idx === moveBtnList.length - 1;
           const isSendBtn = sendable && idx === 0;
-          const title = isSendBtn
+          const btnTitle = isSendBtn
             ? i18n.t('esim:sendGift')
             : i18n.t(isCharged ? 'esim:chargeHistory' : 'esim:charge');
 
@@ -612,7 +608,7 @@ const EsimSubs = ({
               key={idx}
               style={[styles.btnMove, {marginRight: !isLast ? 12 : 0}]}>
               <AppButton
-                title={title}
+                title={btnTitle}
                 titleStyle={[styles.btnTitle2, !isLast && styles.colorblack]}
                 style={!isLast ? styles.giftButton : styles.chargeButton}
                 onPress={() =>
