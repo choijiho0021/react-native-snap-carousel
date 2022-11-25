@@ -104,7 +104,7 @@ function HomeStackComponent() {
       <HomeStack.Screen
         name="Home"
         component={HomeScreenEsim}
-        options={({route}) => ({
+        options={() => ({
           headerShadowVisible: false,
           headerBackTitleVisible: false,
           headerStyle: {

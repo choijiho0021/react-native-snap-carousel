@@ -41,6 +41,7 @@ module.exports = {
     'no-nested-ternary': 0,
     'global-require': 0,
     'no-plusplus': ['error', {allowForLoopAfterthoughts: true}],
+    'no-underscore-dangle': ['error', {allow: ['_links']}],
     'react/no-unused-prop-types': 0,
     'react/jsx-wrap-multilines': 0,
     'react/prop-types': 0,

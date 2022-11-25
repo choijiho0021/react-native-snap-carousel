@@ -4,7 +4,7 @@ import Env from '@/environment';
 import api, {ApiResult, DrupalNodeJsonApi} from './api';
 import {utils} from '@/utils/utils';
 
-const {esimApp, esimGlobal} = Env.get();
+const {esimGlobal} = Env.get();
 
 const PAGE_SIZE = 10;
 

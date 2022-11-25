@@ -4,7 +4,7 @@ import Env from '@/environment';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import {RkbInfo} from './pageApi';
 
-const {appId, esimGlobal} = Env.get();
+const {esimGlobal} = Env.get();
 
 const KEY_INIT_LIST = 'noti.initList';
 

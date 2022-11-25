@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {StyleSheet, SafeAreaView, View, Platform} from 'react-native';
+import {StyleSheet, SafeAreaView, View} from 'react-native';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
@@ -273,8 +273,8 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
     [],
   );
   const renderScene = useCallback(
-    ({route}: {route: ChargeTabRoute}) => {
-      const prodDataC = prodData[route.category === 'daily' ? 0 : 1].data;
+    ({route: sceneRoute}: {route: ChargeTabRoute}) => {
+      const prodDataC = prodData[sceneRoute.category === 'daily' ? 0 : 1].data;
       return (
         <ScrollView>
           {prodDataC.length > 0 ? (

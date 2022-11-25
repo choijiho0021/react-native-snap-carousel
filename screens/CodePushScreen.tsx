@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
 
 const CodePushScreen: React.FC = () => {
   const [syncMessage, setSyncMessage] = useState();
-  const [progress, setProgress] = useState<DownloadProgress>();
+  const [downloadProgress, setDownloadProgress] = useState<DownloadProgress>();
 
   const codePushSync = useCallback(() => {
     try {
@@ -80,11 +80,11 @@ const CodePushScreen: React.FC = () => {
               codePush.SyncStatus.UNKNOWN_ERROR,
             ].includes(syncStatus)
           ) {
-            setProgress(undefined);
+            setDownloadProgress(undefined);
           }
         },
         (progress) => {
-          setProgress(progress);
+          setDownloadProgress(progress);
         },
       );
     } catch (error) {
@@ -109,9 +109,14 @@ const CodePushScreen: React.FC = () => {
         color={colors.clearBlue}
         style={styles.indicator}
       />
-      {progress && (
+      {downloadProgress && (
         <AppText style={styles.text}>
-          {parseInt((progress.receivedBytes / progress.totalBytes) * 100, 10)}%
+          {parseInt(
+            (downloadProgress.receivedBytes / downloadProgress.totalBytes) *
+              100,
+            10,
+          )}
+          %
         </AppText>
       )}
       <AppText style={styles.text}> {syncMessage} </AppText>

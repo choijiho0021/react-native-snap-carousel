@@ -98,7 +98,7 @@ type CartScreenProps = {
 };
 
 const CartScreen: React.FC<CartScreenProps> = (props) => {
-  const {navigation, cart, account, product, pending, action} = props;
+  const {navigation, cart, account, product, action} = props;
   const [list, setList] = useState<RkbOrderItem[]>([]);
   const [checked, setChecked] = useState(ImmutableMap<string, boolean>());
   const [qty, setQty] = useState(ImmutableMap<string, number>());

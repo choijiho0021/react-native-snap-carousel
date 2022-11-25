@@ -599,7 +599,7 @@ const EsimSubs = ({
         {moveBtnList.map((key, idx) => {
           const isLast = idx === moveBtnList.length - 1;
           const isSendBtn = sendable && idx === 0;
-          const title = isSendBtn
+          const btnTitle = isSendBtn
             ? i18n.t('esim:sendGift')
             : i18n.t(isCharged ? 'esim:chargeHistory' : 'esim:charge');
 
@@ -608,7 +608,7 @@ const EsimSubs = ({
               key={idx}
               style={[styles.btnMove, {marginRight: !isLast ? 12 : 0}]}>
               <AppButton
-                title={title}
+                title={btnTitle}
                 titleStyle={[styles.btnTitle2, !isLast && styles.colorblack]}
                 style={!isLast ? styles.giftButton : styles.chargeButton}
                 onPress={() =>

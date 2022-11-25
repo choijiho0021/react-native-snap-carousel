@@ -16,7 +16,6 @@ import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
-import {actions as infoActions, InfoModelState} from '@/redux/modules/info';
 import {actions as notiActions, NotiModelState} from '@/redux/modules/noti';
 import {
   actions as toastActions,
@@ -88,7 +87,6 @@ type ContactScreenNavigationProp = StackNavigationProp<
 type ContactScreenProps = {
   navigation: ContactScreenNavigationProp;
 
-  info: InfoModelState;
   noti: NotiModelState;
   action: {
     toast: ToastAction;
@@ -97,7 +95,6 @@ type ContactScreenProps = {
 
 const ContactGlobalScreen: React.FC<ContactScreenProps> = ({
   navigation,
-  info,
   noti,
   action,
 }) => {
@@ -255,14 +252,12 @@ const ContactGlobalScreen: React.FC<ContactScreenProps> = ({
 };
 
 export default connect(
-  ({info, noti, status}: RootState) => ({
-    info,
+  ({noti, status}: RootState) => ({
     noti,
     pending: status.pending[notiActions.sendAlimTalk.typePrefix] || false,
   }),
   (dispatch) => ({
     action: {
-      info: bindActionCreators(infoActions, dispatch),
       noti: bindActionCreators(notiActions, dispatch),
       toast: bindActionCreators(toastActions, dispatch),
     },

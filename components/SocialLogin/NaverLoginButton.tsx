@@ -1,15 +1,15 @@
 // naver login for commit
-import AppButton from '@/components/AppButton';
-import {AuthCallback} from '@/components/SocialLogin';
-import Env from '@/environment';
+import React, {memo, useCallback} from 'react';
+import {Alert, StyleSheet, View} from 'react-native';
 import {
   ConfigParam,
   getProfile,
   NaverLogin,
   TokenResponse,
 } from '@react-native-seoul/naver-login';
-import React, {memo, useCallback} from 'react';
-import {Alert, StyleSheet, View} from 'react-native';
+import AppButton from '@/components/AppButton';
+import {AuthCallback} from '@/components/SocialLogin';
+import Env from '@/environment';
 
 const {esimGlobal} = Env.get();
 

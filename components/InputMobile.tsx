@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {StyleProp, StyleSheet, TextInput, View, ViewStyle} from 'react-native';
+import {StyleSheet, TextInput, View} from 'react-native';
 import _ from 'underscore';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';

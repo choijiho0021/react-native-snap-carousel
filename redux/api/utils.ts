@@ -184,7 +184,7 @@ const htmlToString = (html?: string) => {
       .replace(/&lt;br\/&gt;/gi, '\n')
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
-      .replace(/\&nbsp;/gi, ' ')
+      .replace(/&nbsp;/gi, ' ')
       .replace(/&quot;/gi, '"')
       .replace(/&#039;/g, "'")
       .replace(/<br.?\/?>/gi, '\n')
