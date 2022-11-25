@@ -160,7 +160,6 @@ type BoardMsgAddProps = {
   success: boolean;
   pending: boolean;
 
-  onSubmit?: () => void;
   jumpTo: (v: string) => void;
 
   action: {
@@ -186,7 +185,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   account,
   success,
   jumpTo,
-  onSubmit,
   action,
   pending,
 }) => {
@@ -261,17 +259,13 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         .toArray(),
     } as RkbIssue;
 
-    const rsp = await action.board.postAndGetList(issue);
+    await action.board.postAndGetList(issue);
 
     setMsg(undefined);
     setTitle(undefined);
     setPin(undefined);
     setAttachment((a) => a.clear());
   }, [action.board, attachment, mobile, msg, pin, title]);
-
-  const onCancel = useCallback(() => {
-    onSubmit?.();
-  }, [onSubmit]);
 
   const error = useCallback(
     (key: string) => {
@@ -437,7 +431,9 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         // resetScrollToCoords={{x: 0, y: 0}}
         contentContainerStyle={styles.modalInner}
         extraScrollHeight={extraHeight}
-        innerRef={(ref) => (scrollRef.current = ref)}>
+        innerRef={(ref) => {
+          scrollRef.current = ref;
+        }}>
         {!account.loggedIn && renderContact()}
         <View style={{flex: 1}}>
           <View style={styles.notiView}>

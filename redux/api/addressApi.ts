@@ -7,8 +7,9 @@ const SAMPLE = `{"results":{"common":{"errorMessage":"정상","countPerPage":"10
 
 const re = /[%=><]/gi;
 
-//sql 예약어
-const keywords = /(^|\s*)(OR|SELECT|INSERT|DELETE|UPDATE|CREATE|DROP|EXEC|UNION|FETCH|DECLARE|TRUNCATE)($|\s*)/gi;
+// sql 예약어
+const keywords =
+  /(^|\s*)(OR|SELECT|INSERT|DELETE|UPDATE|CREATE|DROP|EXEC|UNION|FETCH|DECLARE|TRUNCATE)($|\s*)/gi;
 
 const toAddress = (resp) => {
   if (!_.isEmpty(resp.results)) {

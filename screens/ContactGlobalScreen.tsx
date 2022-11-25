@@ -184,7 +184,7 @@ const ContactGlobalScreen: React.FC<ContactScreenProps> = ({
               ),
             );
           } else {
-            KakaoSDK.KakaoChannel.chat(channelId).catch((_) => {
+            KakaoSDK.KakaoChannel.chat(channelId).catch(() => {
               action.toast.push(Toast.NOT_OPENED);
             });
           }

@@ -7,7 +7,6 @@ import utils from '@/redux/api/utils';
 import i18n from '@/utils/i18n';
 import validationUtil, {ValidationResult} from '@/utils/validationUtil';
 import AppText from './AppText';
-import AppTextInputButton from './AppTextInputButton';
 import AppButton from './AppButton';
 
 const styles = StyleSheet.create({
@@ -56,7 +55,6 @@ type InputMobileProps = {
   authNoti: boolean;
   authorized?: boolean;
   disabled: boolean;
-  style?: StyleProp<ViewStyle>;
   inputRef?: React.MutableRefObject<InputMobileRef | null>;
 };
 
@@ -65,7 +63,6 @@ const InputMobile: React.FC<InputMobileProps> = ({
   authNoti,
   authorized,
   disabled,
-  style,
   inputRef,
 }) => {
   const [mobile, setMobile] = useState('');

@@ -257,7 +257,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
           break;
 
         case 'Ktalk':
-          KakaoSDK.KakaoChannel.chat(channelId).catch((_) => {
+          KakaoSDK.KakaoChannel.chat(channelId).catch(() => {
             setShowSnackbar(true);
           });
           break;

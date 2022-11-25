@@ -250,7 +250,7 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
   useEffect(() => {
     codePush
       .notifyAppReady()
-      .then((_) => codePush.checkForUpdate())
+      .then(() => codePush.checkForUpdate())
       .then((update) => {
         if (update && Config.NODE_ENV !== 'debug') {
           setIsCodepushRunning(true);

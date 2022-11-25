@@ -174,7 +174,7 @@ const toICCID = (str: string, delimiter = '-') => {
   return toSegmentedString(str, [0, 5, 10, 15, 20], delimiter);
 };
 
-//html5: <br> == <br/>, &lt;br/&gt; == <br/>
+// html5: <br> == <br/>, &lt;br/&gt; == <br/>
 const htmlToString = (html?: string) => {
   return (
     html &&

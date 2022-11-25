@@ -236,7 +236,7 @@ const ProductDetailGlobalScreen: React.FC<ProductDetailScreenProps> = ({
         ),
       );
     } else {
-      KakaoSDK.KakaoChannel.chat(channelId).catch((_) => {
+      KakaoSDK.KakaoChannel.chat(channelId).catch(() => {
         action.toast.push(Toast.NOT_OPENED);
       });
     }

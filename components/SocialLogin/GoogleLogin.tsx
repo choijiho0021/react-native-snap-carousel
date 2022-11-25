@@ -1,9 +1,7 @@
 import {
   GoogleSignin,
-  GoogleSigninButton,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
-
 import React, {memo, useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {SocialAuthInfo} from '.';

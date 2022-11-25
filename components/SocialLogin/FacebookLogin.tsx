@@ -77,7 +77,7 @@ const FacebookLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
         }
       },
       (error) => {
-        console.log('Login fail with error: ' + error);
+        console.log(`Login fail with error: ${error}`);
       },
     );
   }, [getPublicProfile]);
