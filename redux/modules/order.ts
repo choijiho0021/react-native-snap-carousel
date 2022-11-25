@@ -241,12 +241,14 @@ const slice = createSlice({
 
       const {subs} = state;
 
-      if (result === 0 && objects[0]) {
-        const idx = subs.findIndex((item) => item.key === objects[0]?.key);
+      const {key, tag, iccid} = objects[0];
 
-        if (!_.isEmpty(idx)) {
-          subs[idx].tag = objects[0]?.tag;
-        }
+      if (result === 0 && objects[0]) {
+        const subsIccid = subs.get(iccid)?.map((s) => {
+          if (s.key === key) s.tag = tag;
+          return s;
+        });
+        if (subsIccid) subs.set(iccid, subsIccid);
         state.subs = subs;
       }
     });
