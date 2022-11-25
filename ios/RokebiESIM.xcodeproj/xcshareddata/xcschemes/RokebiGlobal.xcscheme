@@ -1,10 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
    LastUpgradeVersion = "1250"
-   version = "1.3">
+   version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
+      <PreActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Run Script"
+               scriptText = "# SET .env CONFIGFILE&#10;echo &quot;.env.global.${CONFIGURATION}&quot; | tr &apos;[:upper:]&apos; &apos;[:lower:]&apos; &gt; /tmp/envfile&#10;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "0D9C212126D37D4D0082F077"
+                     BuildableName = "RokebiGlobal.app"
+                     BlueprintName = "RokebiGlobal"
+                     ReferencedContainer = "container:RokebiESIM.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PreActions>
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -14,7 +32,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0D83ED4026BDFAEF00C53610"
+               BlueprintIdentifier = "0D9C212126D37D4D0082F077"
                BuildableName = "RokebiGlobal.app"
                BlueprintName = "RokebiGlobal"
                ReferencedContainer = "container:RokebiESIM.xcodeproj">
@@ -44,7 +62,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0D83ED4026BDFAEF00C53610"
+            BlueprintIdentifier = "0D9C212126D37D4D0082F077"
             BuildableName = "RokebiGlobal.app"
             BlueprintName = "RokebiGlobal"
             ReferencedContainer = "container:RokebiESIM.xcodeproj">
@@ -61,7 +79,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0D83ED4026BDFAEF00C53610"
+            BlueprintIdentifier = "0D9C212126D37D4D0082F077"
             BuildableName = "RokebiGlobal.app"
             BlueprintName = "RokebiGlobal"
             ReferencedContainer = "container:RokebiESIM.xcodeproj">
