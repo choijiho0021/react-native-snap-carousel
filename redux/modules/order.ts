@@ -53,10 +53,6 @@ const cmiGetSubsUsage = createAsyncThunk(
   'order/cmiGetSubsUsage',
   API.Subscription.cmiGetSubsUsage,
 );
-const getHkRegStatus = createAsyncThunk(
-  'order/getHkRegStatus',
-  API.Subscription.getHkRegisterStatus,
-);
 
 const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED);
 const getStoreSubsWithToast = reflectWithToast(getStoreSubs, Toast.NOT_LOADED);
@@ -245,9 +241,8 @@ const slice = createSlice({
 
       const {subs} = state;
 
-      const {key, tag, iccid} = objects[0];
-
       if (result === 0 && objects[0]) {
+        const {key, tag, iccid} = objects[0];
         const subsIccid = subs.get(iccid)?.map((s) => {
           if (s.key === key) s.tag = tag;
           return s;
@@ -255,36 +250,6 @@ const slice = createSlice({
         if (subsIccid) subs.set(iccid, subsIccid);
         state.subs = subs;
       }
-    });
-
-    builder.addCase(getHkRegStatus.fulfilled, (state, action) => {
-      const {result, objects} = action.payload;
-
-      const {subs} = state;
-      console.log('@@@ fulfilled');
-      console.log('@@@ objects', objects);
-      if (result === 0 && objects[0]) {
-        switch (objects[0].hkRegStatus) {
-          case '2':
-            console.log('@@@ 승인 중');
-            break;
-          case '3':
-            console.log('@@@ 승인 완료');
-            break;
-          default:
-            console.log('@@@ 미등록/승인실패');
-            break;
-        }
-      }
-
-      // if (result === 0 && objects[0]) {
-      //   const subsIccid = subs.get(iccid)?.map((s) => {
-      //     if (s.key === key) s.tag = tag;
-      //     return s;
-      //   });
-      //   if (subsIccid) subs.set(iccid, subsIccid);
-      //   state.subs = subs;
-      // }
     });
 
     builder.addCase(updateSubsStatus.fulfilled, (state, action) => {
@@ -354,7 +319,6 @@ export const actions = {
   getOrders,
   updateSubsStatus,
   updateSubsAndOrderTag,
-  getHkRegStatus,
   updateSubsGiftStatus,
   cancelAndGetOrder,
   checkAndGetOrderById,

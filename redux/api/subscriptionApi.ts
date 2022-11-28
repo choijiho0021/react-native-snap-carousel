@@ -566,21 +566,11 @@ const quadcellGetData = ({
   );
 };
 
-const getHkRegisterStatus = ({
-  iccid,
-  imsi,
-  uuid,
-}: {
-  iccid: string;
-  imsi: string;
-  uuid: string;
-}) => {
+const getHkRegStatus = ({iccid, imsi}: {iccid: string; imsi: string}) => {
   if (!iccid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
   if (!imsi)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
-  if (!uuid)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: uuid');
 
   return api.callHttpGet(
     `${api.rokHttpUrl(
@@ -589,17 +579,9 @@ const getHkRegisterStatus = ({
     )}&iccid=${iccid}&imsi=${imsi}`,
     (data) => {
       if (data?.result?.code === 0) {
-        console.log('@@@ data.objects.himsis', data.objects.himsis);
-        console.log(
-          '@@@ data.objects.himsis[0].realRuleList',
-          data.objects.himsis[0].realRuleList,
-        );
-
         return api.success(
           data.objects.himsis.map((item) => ({
-            iccid: item.iccid,
             hkRegStatus: item.realRuleList[0].authStatus,
-            uuid,
           })),
         );
       }
@@ -743,5 +725,5 @@ export default {
   cmiGetSubsUsage,
   cmiGetSubsStatus,
   quadcellGetData,
-  getHkRegisterStatus,
+  getHkRegStatus,
 };
