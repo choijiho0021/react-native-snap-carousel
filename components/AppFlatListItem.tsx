@@ -1,9 +1,9 @@
+import React, {memo, useState} from 'react';
+import {Pressable, StyleSheet, View} from 'react-native';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RkbInfo} from '@/redux/api/pageApi';
 import utils from '@/redux/api/utils';
-import React, {memo, useState} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
 import AppIcon from './AppIcon';
 import AppText from './AppText';
 

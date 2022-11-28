@@ -67,10 +67,10 @@ const image = {
   height: 76,
 };
 
-let token = '',
-  userId = '',
-  balance = '',
-  orders = [];
+let token = '';
+  let userId = '';
+  let balance = '';
+  let orders = [];
 
 describe('로그인 후 테스트', () => {
   it(`Login User: ${auth.user}`, async () => {
@@ -80,7 +80,7 @@ describe('로그인 후 테스트', () => {
     expect(resp.objects[0]).toHaveProperty('csrf_token');
     expect(resp.objects[0]).toHaveProperty('current_user');
     expect(resp.objects[0]).toHaveProperty('cookie');
-    const cookie = resp.objects[0].cookie;
+    const {cookie} = resp.objects[0];
 
     auth.cookie = cookie.substr(0, cookie.indexOf(';'));
     auth.token = resp.objects[0].csrf_token;

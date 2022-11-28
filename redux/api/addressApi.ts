@@ -1,5 +1,5 @@
-import api from './api';
 import _ from 'underscore';
+import api from './api';
 
 const API_KEY = 'U01TX0FVVEgyMDIwMDIyMDExMzYwNzEwOTQ4MjI=';
 

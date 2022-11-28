@@ -1,9 +1,9 @@
+import React, {Component} from 'react';
+import {Pressable, StyleSheet, View} from 'react-native';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RkbBoard} from '@/redux/api/boardApi';
 import utils from '@/redux/api/utils';
-import React, {Component} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
 import AppText from './AppText';
 
 const styles = StyleSheet.create({

@@ -1,12 +1,12 @@
+import React, {memo, useCallback, useState} from 'react';
+import {KeyboardTypeOptions, StyleSheet, View} from 'react-native';
+import _ from 'underscore';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import validationUtil, {
   ValidationKey,
   ValidationResult,
 } from '@/utils/validationUtil';
-import React, {memo, useCallback, useState} from 'react';
-import {KeyboardTypeOptions, StyleSheet, View} from 'react-native';
-import _ from 'underscore';
 import AppButton from './AppButton';
 import AppModal, {AppModalProps} from './AppModal';
 import AppText from './AppText';

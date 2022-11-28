@@ -54,7 +54,7 @@ describe('로그인 후 테스트', () => {
     expect(resp.objects[0]).toHaveProperty('current_user');
     expect(resp.objects[0]).toHaveProperty('cookie');
 
-    const cookie = resp.objects[0].cookie;
+    const {cookie} = resp.objects[0];
     auth.cookie = cookie.substr(0, cookie.indexOf(';'));
     auth.token = resp.objects[0].csrf_token;
   });
@@ -68,14 +68,14 @@ describe('로그인 후 테스트', () => {
     auth.mail = resp.objects[0].mail;
   });
 
-  it('ICCID 확인 : ' + auth.iccid, async () => {
+  it(`ICCID 확인 : ${  auth.iccid}`, async () => {
     const resp = await API.Account.getByUser(auth.user, auth);
     expect(resp.result).toEqual(0);
     expect(resp.objects.length).toBeGreaterThan(0);
     expect(resp.objects[0]).toHaveProperty('iccid', auth.iccid);
   });
 
-  it('ICCID Account 확인 : ' + auth.iccid, async () => {
+  it(`ICCID Account 확인 : ${  auth.iccid}`, async () => {
     const resp = await API.Account.getAccount(auth.iccid, auth);
     expect(resp.result).toEqual(0);
     expect(resp.objects.length).toBeGreaterThan(0);
@@ -92,8 +92,8 @@ describe('로그인 후 테스트', () => {
     //    {partner: 'Quadcell', sku: 'rm-kr-3-1g'},
     {partner: 'Telna', sku: 'KR-D-1-500-256'},
   ].forEach(ts => {
-    describe(ts.partner + ' 상품 시험', () => {
-      it('SKU로 상품을 조회한다:' + ts.sku, async () => {
+    describe(`${ts.partner  } 상품 시험`, () => {
+      it(`SKU로 상품을 조회한다:${  ts.sku}`, async () => {
         const resp = await API.Product.getProductBySku(ts.sku);
         console.log('sku', resp);
         expect(resp.result).toEqual(0);
@@ -102,7 +102,7 @@ describe('로그인 후 테스트', () => {
         prod = resp.objects[0];
       });
 
-      it.skip('상품을 구매한다:' + ts.sku, async () => {
+      it.skip(`상품을 구매한다:${  ts.sku}`, async () => {
         const purchaseItem = API.Product.toPurchaseItem(prod);
         const paymentResult = PaymentResult.createForRokebiCash({
           impId: 'test',

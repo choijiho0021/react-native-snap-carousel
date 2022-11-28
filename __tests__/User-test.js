@@ -13,7 +13,7 @@ describe('User API', () => {
     user,
     pass,
   };
-  let uuid = '';
+  const uuid = '';
   let uid = '1';
 
   describe('Login process', () => {

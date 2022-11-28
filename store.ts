@@ -1,6 +1,7 @@
 import {configureStore} from '@reduxjs/toolkit';
-import reducer from '@/redux/index';
 import ReduxThunk from 'redux-thunk';
+import reducer from '@/redux/index';
+
 const createDebugger = require('redux-flipper').default; // <-- ADD THIS
 
 const store = configureStore({

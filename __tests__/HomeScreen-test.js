@@ -2,17 +2,17 @@ import {API} from '../submodules/rokebi-utils';
 import PurchaseItem from '../submodules/rokebi-utils/models/purchaseItem';
 import 'isomorphic-fetch';
 
-//테스트 전에 수동으로 해야 할 일
+// 테스트 전에 수동으로 해야 할 일
 /* 
 1. 읽지 않은 noti가 1개이상 존재하는 가입자로 테스트
 2. 1:1 문의 답글(코멘트) 확인의 경우 uid를 미리 고정값으로 입력할 것 (boardUid)
 3. 상품 구매 시 재고 있도록 설정 후 테스트 필요
 */
 
-let token = '';
+const token = '';
 let testProduct = {};
 
-const accountUid = '118'; //01030327602 유저의 uid
+const accountUid = '118'; // 01030327602 유저의 uid
 const boardUid = 'c1985e2c-c4cb-42a5-a133-2413c61592d3';
 const auth = {
   token,
@@ -48,7 +48,7 @@ describe('HomeScreen Test', () => {
       expect(resp.objects[0]).toHaveProperty('csrf_token');
       expect(resp.objects[0]).toHaveProperty('current_user');
       expect(resp.objects[0]).toHaveProperty('cookie');
-      const cookie = resp.objects[0].cookie;
+      const {cookie} = resp.objects[0];
       auth.cookie = cookie.substr(0, cookie.indexOf(';'));
       auth.token = resp.objects[0].csrf_token;
     });
@@ -112,7 +112,7 @@ describe('HomeScreen Test', () => {
       expect(resp.objects.length).toBeGreaterThan(0);
     });
 
-    //답글이 달려야만 코멘트를 조회할 수 있으므로 직접 조작필요
+    // 답글이 달려야만 코멘트를 조회할 수 있으므로 직접 조작필요
     it(`Get 1:1 Request Comment`, async () => {
       const resp = await API.Board.getComments(boardUid, auth);
       expect(resp.result).toEqual(0);
@@ -146,7 +146,7 @@ describe('HomeScreen Test', () => {
         expect(resp.result).toEqual(0);
         expect(resp.objects.length).toBeGreaterThan(0);
       });
-      //상품 구매의 경우 Product-test참조
+      // 상품 구매의 경우 Product-test참조
     });
   });
 });

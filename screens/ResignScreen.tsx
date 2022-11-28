@@ -1,6 +1,6 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React from 'react';
+import React, {useEffect, useState, useCallback, useMemo} from 'react';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {
   Pressable,
@@ -14,7 +14,6 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
-import {useEffect, useState, useCallback, useMemo} from 'react';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppIcon from '@/components/AppIcon';

@@ -53,7 +53,7 @@ describe('로그인 후 테스트', () => {
     expect(resp.objects[0]).toHaveProperty('current_user');
     expect(resp.objects[0]).toHaveProperty('cookie');
 
-    const cookie = resp.objects[0].cookie;
+    const {cookie} = resp.objects[0];
     auth.cookie = cookie.substr(0, cookie.indexOf(';'));
     auth.token = resp.objects[0].csrf_token;
   });
@@ -76,7 +76,7 @@ describe('로그인 후 테스트', () => {
     auth.iccid = resp.objects[0].iccid;
   });
 
-  it('ICCID Account 확인 : ' + auth.iccid, async () => {
+  it(`ICCID Account 확인 : ${  auth.iccid}`, async () => {
     const resp = await API.Account.getAccount(auth.iccid, auth);
     console.log('account', resp);
     expect(resp.result).toEqual(0);
@@ -92,14 +92,14 @@ describe('로그인 후 테스트', () => {
     expect(prod).not.toBeNull();
   });
 
-  it('상품 재고를 확인한다.' + sku, async () => {
+  it(`상품 재고를 확인한다.${  sku}`, async () => {
     const purchaseItem = API.Product.toPurchaseItem(prod);
     const resp = await API.Cart.checkStock([purchaseItem], auth);
     console.log('stock', resp);
     expect(resp.result).toEqual(0);
   });
 
-  it('상품을 구매한다:' + sku, async () => {
+  it(`상품을 구매한다:${  sku}`, async () => {
     const purchaseItem = API.Product.toPurchaseItem(prod);
     const paymentResult = PaymentResult.createForRokebiCash({
       impId: 'test',
