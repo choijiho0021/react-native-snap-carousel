@@ -30,7 +30,6 @@ import SplitText from '@/components/SplitText';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
 import AppStyledText from '@/components/AppStyledText';
 import AppModal from '@/components/AppModal';
-import AppIcon from '@/components/AppIcon';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -581,7 +580,7 @@ const EsimSubs = ({
               orderNo: mainSubs.subsOrderNo,
             })
           }>
-          <AppIcon name="hkIcon" />
+          <AppSvgIcon name="hkIcon" />
           <Text style={styles.redirectText}>{i18n.t('esim:redirectHK2')}</Text>
         </Pressable>
       );
