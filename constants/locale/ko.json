@@ -531,6 +531,11 @@
   "redirectHK:orderNo": "Order Number",
   "redirectHK:guide": "실명등록 가이드",
   "redirectHK:copySuccess": "복사되었습니다.",
+  "redirectHK:hkRegStatus:normal": "Click!",
+  "redirectHK:hkRegStatus:loading": "로딩 중",
+  "redirectHK:hkRegStatus:unregistered": "미등록 /\n승인 실패",
+  "redirectHK:hkRegStatus:registering": "승인 중",
+  "redirectHK:hkRegStatus:registered": "승인 완료",
 
   "usim:usageErrorInfo1": "오류 발생!",
   "usim:usageErrorInfo2": "로깨비가 해결하고 있어요.",

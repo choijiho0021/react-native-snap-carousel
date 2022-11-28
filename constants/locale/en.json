@@ -527,6 +527,11 @@
   "redirectHK:orderNo": "Order Number",
   "redirectHK:guide": "How to Verify Your Name",
   "redirectHK:copySuccess": "Copied",
+  "redirectHK:hkRegStatus:normal": "Click!",
+  "redirectHK:hkRegStatus:loading": "로딩 중",
+  "redirectHK:hkRegStatus:unregistered": "미등록 /\n승인 실패",
+  "redirectHK:hkRegStatus:registering": "승인 중",
+  "redirectHK:hkRegStatus:registered": "승인 완료",
 
   "usim:usageErrorInfo1": "Error!",
   "usim:usageErrorInfo2": "Rokebi is working on this",

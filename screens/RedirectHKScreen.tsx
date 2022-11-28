@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   Linking,
   Dimensions,
+  Pressable,
 } from 'react-native';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
@@ -27,6 +28,7 @@ import AppStyledText from '@/components/AppStyledText';
 import {getImage} from '@/utils/utils';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import {AccountModelState} from '@/redux/modules/account';
+import {API} from '@/redux/api';
 
 const {width} = Dimensions.get('window');
 
@@ -114,6 +116,19 @@ const styles = StyleSheet.create({
     height: 40,
     marginHorizontal: 18,
   },
+  btnCircle: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginLeft: 40,
+    marginBottom: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  circleText: {
+    ...appStyles.normal16Text,
+    color: colors.white,
+  },
 });
 
 type CarouselIndex = 'step1' | 'step2' | 'step3' | 'step4';
@@ -123,6 +138,7 @@ type ParamList = {
     iccid: string;
     orderNo: string;
     uuid: string;
+    imis: string;
   };
 };
 
@@ -132,6 +148,14 @@ type RedirectHKScreenProps = {
     order: OrderAction;
   };
 };
+
+type hkRegStatusType =
+  | 'normal'
+  | 'loading'
+  | 'unregistered'
+  | 'registering'
+  | 'registered';
+type circleColorList = 'grey' | 'red' | 'yellow' | 'green';
 
 const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
   account,
@@ -143,6 +167,8 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
   const [activeSlide, setActiveSlide] = useState(0);
   const [showSnackBar, setShowSnackBar] = useState(false);
   const [copyString, setCopyString] = useState('');
+  const [circleColor, setCircleColor] = useState<circleColorList>('grey');
+  const [hkRegStatus, sethkRegStatus] = useState<hkRegStatusType>('normal');
   const images = useMemo(() => Object.keys(guideImage), []);
   const params = useMemo(() => route?.params, [route?.params]);
 
@@ -199,6 +225,54 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
     },
     [account, action.order, params.uuid],
   );
+
+  const updateStatus = useCallback(
+    (regstatus: hkRegStatusType, color: circleColorList) => {
+      sethkRegStatus(regstatus);
+      setCircleColor(color);
+    },
+    [],
+  );
+
+  const checkAndUpdateTag = useCallback(async () => {
+    // sethkRegStatus('loading');
+    // const rsp = await API.Subscription.getHkRegStatus({
+    //   iccid: params.iccid,
+    //   imsi: params.imis,
+    // });
+
+    // 테스트용 -> 실패
+    // const rsp = await API.Subscription.getHkRegStatus({
+    //   iccid: '89852340003831754297',
+    //   imsi: '454120383175429',
+    // });
+
+    // 테스트용 -> 성공
+    const rsp = await API.Subscription.getHkRegStatus({
+      iccid: '89852340003831753265',
+      imsi: '454120383175326',
+    });
+
+    if (rsp.result === 0 && rsp.objects) {
+      const {hkRegStatus} = rsp.objects[0];
+      switch (hkRegStatus) {
+        case '2':
+          updateStatus('registering', 'yellow');
+          updateTag('HQ');
+          break;
+        case '3':
+          updateStatus('registered', 'green');
+          updateTag('HA');
+          break;
+        default:
+          updateStatus('unregistered', 'red');
+          break;
+      }
+    }
+    setTimeout(() => {
+      updateStatus('normal', 'grey');
+    }, 3000);
+  }, [updateStatus, updateTag]);
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -282,6 +356,13 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
             </View>
           ))}
         </View>
+        <Pressable
+          style={[styles.btnCircle, {backgroundColor: circleColor}]}
+          onPress={checkAndUpdateTag}>
+          <AppText style={styles.circleText}>
+            {i18n.t(`redirectHK:hkRegStatus:${hkRegStatus}`)}
+          </AppText>
+        </Pressable>
         <AppButton
           style={styles.confirm}
           titleStyle={styles.confirmTitle}
