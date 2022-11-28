@@ -102,7 +102,7 @@ const logOut = async (token: string) => {
   });
 };
 
-const getByName = ({name, token}: {name?: string; token?: string}) => {
+const getByName = ({name}: {name?: string}) => {
   if (!name)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: name');
 
@@ -112,7 +112,7 @@ const getByName = ({name, token}: {name?: string; token?: string}) => {
   );
 };
 
-const getByMail = ({mail, token}: {mail: string; token?: string}) => {
+const getByMail = ({mail}: {mail: string}) => {
   if (!mail)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: mail');
 

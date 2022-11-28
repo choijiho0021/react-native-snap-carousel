@@ -133,6 +133,7 @@ const images: Record<string, any[]> = {
   kakaoChannel: [require(`${esimPath}kakaoChannel.png`)],
   fbMsg: [require(`${esimPath}fbMsg.png`)],
   imgBoard: [require(`${esimPath}imgBoard.png`)],
+  hkIcon: [require(`${esimPath}hkIcon.png`)],
 
   inviteRokebi1: [require(`${invitePath}inviteRokebi1.png`)],
   inviteRokebi2: [require(`${invitePath}inviteRokebi2.png`)],

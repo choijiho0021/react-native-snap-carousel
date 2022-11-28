@@ -74,6 +74,7 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
           valueStyle={appStyles.price}
           balanceStyle={{
             ...appStyles.normal16Text,
+            fontWeight: 'bold',
             fontSize: isDeviceSize('medium') ? 22 : 24,
           }}
           currencyStyle={{

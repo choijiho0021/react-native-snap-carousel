@@ -138,7 +138,7 @@ const price = (num?: Currency): string => {
   if (num.currency === 'USD' || i18n.locale !== 'ko')
     return `${i18n.t(num.currency)} ${currencyString(num.value)}`;
 
-  return `${currencyString(num.value)} ${i18n.t(num.currency)}`;
+  return `${currencyString(num.value)}${i18n.t(num.currency)}`;
 };
 
 const pricePerDay = (num: Currency, days: number) => {
@@ -174,7 +174,7 @@ const toICCID = (str: string, delimiter = '-') => {
   return toSegmentedString(str, [0, 5, 10, 15, 20], delimiter);
 };
 
-//html5: <br> == <br/>, &lt;br/&gt; == <br/>
+// html5: <br> == <br/>, &lt;br/&gt; == <br/>
 const htmlToString = (html?: string) => {
   return (
     html &&
@@ -184,7 +184,7 @@ const htmlToString = (html?: string) => {
       .replace(/&lt;br\/&gt;/gi, '\n')
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
-      .replace(/\&nbsp;/gi, ' ')
+      .replace(/&nbsp;/gi, ' ')
       .replace(/&quot;/gi, '"')
       .replace(/&#039;/g, "'")
       .replace(/<br.?\/?>/gi, '\n')

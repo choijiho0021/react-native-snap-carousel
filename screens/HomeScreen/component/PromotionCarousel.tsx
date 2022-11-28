@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {memo, useCallback, useState, useEffect} from 'react';
+import React, {memo, useCallback, useState} from 'react';
 import {Animated, Image, Pressable, StyleSheet, View} from 'react-native';
 import {Pagination} from 'react-native-snap-carousel';
 import {connect} from 'react-redux';
@@ -15,6 +15,7 @@ import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import {actions as infoActions, InfoAction} from '@/redux/modules/info';
 import AppCarousel from '@/components/AppCarousel';
+
 const DOT_MARGIN = 6;
 const INACTIVE_DOT_WIDTH = 6;
 const ACTIVE_DOT_WIDTH = 20;
@@ -140,24 +141,24 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
   const renderDots = useCallback(
     (activeIndex: number) => {
       const duration = 200;
-      const width = new Animated.Value(INACTIVE_DOT_WIDTH);
-      const margin = width.interpolate({
+      const aniMationWidth = new Animated.Value(INACTIVE_DOT_WIDTH);
+      const margin = aniMationWidth.interpolate({
         inputRange: [INACTIVE_DOT_WIDTH, ACTIVE_DOT_WIDTH],
         outputRange: [ACTIVE_DOT_WIDTH, INACTIVE_DOT_WIDTH],
       });
 
-      Animated.timing(width, {
+      Animated.timing(aniMationWidth, {
         toValue: ACTIVE_DOT_WIDTH,
         duration,
         useNativeDriver: false,
       }).start();
 
       if (activeIndex === 0) {
-        return promotion.map((_, idx) =>
+        return promotion.map((elm, idx) =>
           idx === 0 ? (
             <Animated.View
-              key={idx.toString()}
-              style={dotStyle(width, margin)}
+              key={elm.uuid + idx.toString()}
+              style={dotStyle(aniMationWidth, margin)}
             />
           ) : (
             <View key={idx.toString()} style={styles.inactiveDot} />
@@ -170,7 +171,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
           return (
             <Animated.View
               key={idx.toString()}
-              style={dotStyle(width, DOT_MARGIN, colors.clearBlue)}
+              style={dotStyle(aniMationWidth, DOT_MARGIN, colors.clearBlue)}
             />
           );
 

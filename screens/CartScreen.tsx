@@ -42,9 +42,12 @@ const {esimCurrency} = Env.get();
 const styles = StyleSheet.create({
   sumBox: {
     flex: 1,
+    height: '100%',
     flexDirection: 'row',
     justifyContent: 'center',
-    // marginHorizontal: 30,
+    alignItems: 'center',
+    borderTopColor: colors.lightGrey,
+    borderTopWidth: 1,
   },
   container: {
     flex: 1,
@@ -65,8 +68,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     height: 52,
-    borderTopColor: colors.lightGrey,
-    borderTopWidth: 1,
   },
   emptyView: {
     flex: 1,
@@ -97,7 +98,7 @@ type CartScreenProps = {
 };
 
 const CartScreen: React.FC<CartScreenProps> = (props) => {
-  const {navigation, cart, account, product, pending, action} = props;
+  const {navigation, cart, account, product, action} = props;
   const [list, setList] = useState<RkbOrderItem[]>([]);
   const [checked, setChecked] = useState(ImmutableMap<string, boolean>());
   const [qty, setQty] = useState(ImmutableMap<string, number>());

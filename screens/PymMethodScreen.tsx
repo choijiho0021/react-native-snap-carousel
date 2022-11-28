@@ -255,6 +255,10 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     color: colors.clearBlue,
   },
+  textCaution: {
+    ...appStyles.normal16Text,
+    color: colors.redError,
+  },
   modalText: {
     ...appStyles.normal16Text,
     lineHeight: 26,
@@ -309,7 +313,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [showModalMethod, setShowModalMethod] = useState(true);
   const [consent, setConsent] = useState<boolean>();
   const [isRecharge, setIsRecharge] = useState<boolean>();
-  const [isPassingAlert, setIsPassingAlert] = useState(false);
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
   const [showChargeAlert, setShowChargeAlert] = useState(false);
 
@@ -320,8 +323,15 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     setIsRecharge(
       cart.purchaseItems.findIndex((item) => item.type === 'rch') >= 0,
     );
-    if (cart.esimIccid) setShowChargeAlert(true);
-  }, [cart, route.params.mode]);
+    if (cart.esimIccid) setShowChargeAlert(!route.params?.isPaid);
+  }, [
+    cart.deduct,
+    cart.esimIccid,
+    cart.purchaseItems,
+    cart.pymPrice,
+    route.params?.isPaid,
+    route.params.mode,
+  ]);
 
   useEffect(() => {
     if (!info.infoMap.has(infoKey)) {
@@ -610,10 +620,10 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           text={
             isSupported
               ? i18n.t('pym:unsupportDeviceModalContent')
-              : i18n.t('pym:charge')
+              : i18n.t('pym:chargeInfo')
           }
           textStyle={styles.modalText}
-          format={{b: styles.textHeighlight}}
+          format={{b: styles.textHeighlight, c: styles.textCaution}}
         />
       </View>
     );
@@ -695,7 +705,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           titleStyle={appStyles.medium18}
           disabled={(pymPrice?.value !== 0 && _.isEmpty(selected)) || !consent}
           key={i18n.t('payment')}
-          onPress={() => onSubmit(isPassingAlert)}
+          onPress={() => onSubmit(false)}
           style={appStyles.confirm}
           type="primary"
         />
@@ -707,7 +717,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         onOkClose={async () => {
           if (showUnsupAlert) {
             setShowUnsupAlert((prev) => !prev);
-            setIsPassingAlert(true);
             onSubmit(true);
           } else {
             setShowChargeAlert((prev) => !prev);

@@ -27,6 +27,7 @@ import {API} from '@/redux/api';
 import AppTextInput from '@/components/AppTextInput';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import Env from '@/environment';
+
 const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({

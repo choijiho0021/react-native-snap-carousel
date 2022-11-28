@@ -6,13 +6,7 @@ import Env from '@/environment';
 import i18n from '@/utils/i18n';
 import {parseJson, utils} from '@/utils/utils';
 
-const {
-  bundleId,
-  appStoreId,
-  dynamicLink,
-  adjustInvite = '',
-  webViewHost,
-} = Env.get();
+const {bundleId, appStoreId, dynamicLink, webViewHost} = Env.get();
 
 export type RkbPromotion = {
   uuid: string;
@@ -122,7 +116,8 @@ const toGift = (data: {
   if (data.result.code === 0) {
     return api.success(data.objects, [], data.result);
   }
-  return api.failure(api.FAILED, data.result?.error);
+
+  return api.failure(api.FAILED, data?.desc);
 };
 
 const toGiftBgImages = (data: []): ApiResult<RkbGiftImages> => {

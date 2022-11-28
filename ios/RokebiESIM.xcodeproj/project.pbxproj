@@ -84,7 +84,6 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = RokebiESIM/main.m; sourceTree = "<group>"; };
 		29A7EDBC81D1315CD93EEA18 /* libPods-RokebiGlobal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RokebiGlobal.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2EDE63E33A8F6D206BDB4CF1 /* libPods-RokebiUSIM.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RokebiUSIM.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		31014468118C96283A9816D4 /* Pods-RokebiESIM.global.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.global.release.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.global.release.xcconfig"; sourceTree = "<group>"; };
 		3AF86707E322492FEFB46FB0 /* Pods-RokebiESIM.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.release.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.release.xcconfig"; sourceTree = "<group>"; };
 		405C1E9424D945870016B43C /* AppCenter-Config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "AppCenter-Config.plist"; path = "RokebiESIM/AppCenter-Config.plist"; sourceTree = "<group>"; };
 		40887A1327B2310100BFF44D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = RokebiESIM/en.lproj/GlobalLaunchScreen.strings; sourceTree = "<group>"; };
@@ -95,11 +94,8 @@
 		40A621E826E85C740037EE37 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = RokebiESIM/Base.lproj/GlobalLaunchScreen.xib; sourceTree = "<group>"; };
 		40B508C724B80F9900213190 /* AppDelegate+Iamport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AppDelegate+Iamport.h"; sourceTree = "<group>"; };
 		40B508C824B8102B00213190 /* AppDelegate+Iamport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "AppDelegate+Iamport.m"; sourceTree = "<group>"; };
-		545E33A6D23975A6105DED9D /* Pods-RokebiESIM.usim.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.usim.debug.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.usim.debug.xcconfig"; sourceTree = "<group>"; };
-		5A14F246B0ACACDA32424430 /* Pods-RokebiESIM.usim.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.usim.release.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.usim.release.xcconfig"; sourceTree = "<group>"; };
 		635A68C042C9712C824C7901 /* Pods-RokebiUSIM.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiUSIM.debug.xcconfig"; path = "Target Support Files/Pods-RokebiUSIM/Pods-RokebiUSIM.debug.xcconfig"; sourceTree = "<group>"; };
 		7BB1E67027B94FDA65F7B84B /* Pods-RokebiGlobal.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiGlobal.staging.xcconfig"; path = "Target Support Files/Pods-RokebiGlobal/Pods-RokebiGlobal.staging.xcconfig"; sourceTree = "<group>"; };
-		98488BCD22A80A09DE3B948C /* Pods-RokebiESIM.global.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.global.staging.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.global.staging.xcconfig"; sourceTree = "<group>"; };
 		A31C8F2E282245F200CE16F6 /* Rokebi-Bridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Rokebi-Bridge.swift"; sourceTree = "<group>"; };
 		A32580F42715115700C2F28A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A33A12C627BF1B03007FBA87 /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = System/Library/Frameworks/iAd.framework; sourceTree = SDKROOT; };
@@ -116,7 +112,6 @@
 		A3F0EE3C2898F309000D3781 /* RNKakaoLogins.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNKakaoLogins.h; sourceTree = "<group>"; };
 		A3F0EE3D2898F309000D3781 /* RNKakaoLogins.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNKakaoLogins.m; sourceTree = "<group>"; };
 		A80C64EF0866C5F96A0875F8 /* Pods-RokebiUSIM.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiUSIM.staging.xcconfig"; path = "Target Support Files/Pods-RokebiUSIM/Pods-RokebiUSIM.staging.xcconfig"; sourceTree = "<group>"; };
-		ACC63B13A2EE50D80D796AB2 /* Pods-RokebiESIM.global.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.global.debug.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.global.debug.xcconfig"; sourceTree = "<group>"; };
 		D2D7F4A0BCB1BB84FB2272E8 /* Pods-RokebiESIM.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.staging.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.staging.xcconfig"; sourceTree = "<group>"; };
 		DE09F2A8BAAE7943D6BBA5FA /* Pods-RokebiGlobal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiGlobal.release.xcconfig"; path = "Target Support Files/Pods-RokebiGlobal/Pods-RokebiGlobal.release.xcconfig"; sourceTree = "<group>"; };
 		E1686E1EE1103F3B6BAE4EC6 /* Pods-RokebiUSIM.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiUSIM.release.xcconfig"; path = "Target Support Files/Pods-RokebiUSIM/Pods-RokebiUSIM.release.xcconfig"; sourceTree = "<group>"; };
@@ -258,11 +253,6 @@
 		AD4FA9CC069D292D65BE8DBA /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				ACC63B13A2EE50D80D796AB2 /* Pods-RokebiESIM.global.debug.xcconfig */,
-				31014468118C96283A9816D4 /* Pods-RokebiESIM.global.release.xcconfig */,
-				545E33A6D23975A6105DED9D /* Pods-RokebiESIM.usim.debug.xcconfig */,
-				5A14F246B0ACACDA32424430 /* Pods-RokebiESIM.usim.release.xcconfig */,
-				98488BCD22A80A09DE3B948C /* Pods-RokebiESIM.global.staging.xcconfig */,
 				0C8F919CDD1525B0C38FD9DA /* Pods-RokebiGlobal.debug.xcconfig */,
 				DE09F2A8BAAE7943D6BBA5FA /* Pods-RokebiGlobal.release.xcconfig */,
 				7BB1E67027B94FDA65F7B84B /* Pods-RokebiGlobal.staging.xcconfig */,
@@ -473,7 +463,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Filename\nFIREBASE_INFO_PLIST=GoogleService-Info.plist\n\n# File path for ESIM\nFIREBASE_INFO_ESIM=${PROJECT_DIR}/Configurations/Esim/${FIREBASE_INFO_PLIST}\n\n# File path for Usim\nFIREBASE_INFO_USIM=${PROJECT_DIR}/Configurations/Usim/${FIREBASE_INFO_PLIST}\n\n# File path for Global\nFIREBASE_INFO_GLOBAL=${PROJECT_DIR}/Configurations/Global/${FIREBASE_INFO_PLIST}\n\n# PLIST_DESTINATION\nPLIST_DESTINATION=${PROJECT_DIR}/${FIREBASE_INFO_PLIST}\n\n# Copy selected GoogleService-Info.plist for builds depend on bundle identifier\nif [ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.uangel.rokebi-ESIM\" ]\nthen\necho \"Using ${FIREBASE_INFO_ESIM}\"\ncp \"${FIREBASE_INFO_ESIM}\" \"${PLIST_DESTINATION}\"\nelif [ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.uangel.rokebi-USIM\" ]\nthen\necho \"Using ${FIREBASE_INFO_USIM}\"\ncp \"${FIREBASE_INFO_USIM}\" \"${PLIST_DESTINATION}\"\nelse\necho \"Using ${FIREBASE_INFO_GLOBAL}\"\ncp \"${FIREBASE_INFO_GLOBAL}\" \"${PLIST_DESTINATION}\"\nfi\n";
+			shellScript = "# Filename\nFIREBASE_INFO_PLIST=GoogleService-Info.plist\nAPPCENTER_CONFIG_PLIST=AppCenter-Config.plist\n\n# File path for ESIM\nESIM_CONFIG_PATH=${PROJECT_DIR}/Configurations/Esim\n\n# File path for Usim\n#USIM_CONFIG_PATH=${PROJECT_DIR}/Configurations/Usim\n\n# File path for Global\nGLOBAL_CONFIG_PATH=${PROJECT_DIR}/Configurations/Global\n\n# PLIST_DESTINATION\nPLIST_DESTINATION=${PROJECT_DIR}/${FIREBASE_INFO_PLIST}\nAPPCENTER_PLIST_DESTINATION=${PROJECT_DIR}/${APPCENTER_CONFIG_PLIST}\n\n# Copy plist for builds depend on bundle identifier\nif [ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.uangel.rokebi-ESIM\" ]\nthen\necho \"Using ${FIREBASE_INFO_ESIM}\"\ncp \"${ESIM_CONFIG_PATH}/${FIREBASE_INFO_PLIST}\" \"${PLIST_DESTINATION}\"\ncp \"${ESIM_CONFIG_PATH}/${APPCENTER_CONFIG_PLIST}\" \"${APPCENTER_PLIST_DESTINATION}\"\n#elif [ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.uangel.rokebi-USIM\" ]\n#then\n#echo \"Using ${FIREBASE_INFO_USIM}\"\n#cp \"${USIM_CONFIG_PATH}/${FIREBASE_INFO_PLIST}\" \"${PLIST_DESTINATION}\"\n#cp \"${USIM_CONFIG_PATH}/${APPCENTER_CONFIG_PLIST}\" \"${APPCENTER_PLIST_DESTINATION}\"\nelse\necho \"Using ${FIREBASE_INFO_GLOBAL}\"\ncp \"${GLOBAL_CONFIG_PATH}/${FIREBASE_INFO_PLIST}\" \"${PLIST_DESTINATION}\"\ncp \"${GLOBAL_CONFIG_PATH}/${APPCENTER_CONFIG_PLIST}\" \"${APPCENTER_PLIST_DESTINATION}\"\nfi\n";
 		};
 		0D9C212426D37D4D0082F077 /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -652,7 +642,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Filename\nFIREBASE_INFO_PLIST=GoogleService-Info.plist\n\n# File path for ESIM\nFIREBASE_INFO_ESIM=${PROJECT_DIR}/Configurations/Esim/${FIREBASE_INFO_PLIST}\n\n# File path for Usim\nFIREBASE_INFO_USIM=${PROJECT_DIR}/Configurations/Usim/${FIREBASE_INFO_PLIST}\n\n# File path for Global\nFIREBASE_INFO_GLOBAL=${PROJECT_DIR}/Configurations/Global/${FIREBASE_INFO_PLIST}\n\n# PLIST_DESTINATION\nPLIST_DESTINATION=${PROJECT_DIR}/${FIREBASE_INFO_PLIST}\n\n# Copy selected GoogleService-Info.plist for builds depend on bundle identifier\nif [ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.uangel.rokebi-ESIM\" ]\nthen\necho \"Using ${FIREBASE_INFO_ESIM}\"\ncp \"${FIREBASE_INFO_ESIM}\" \"${PLIST_DESTINATION}\"\nelif [ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.uangel.rokebi-USIM\" ]\nthen\necho \"Using ${FIREBASE_INFO_USIM}\"\ncp \"${FIREBASE_INFO_USIM}\" \"${PLIST_DESTINATION}\"\nelse\necho \"Using ${FIREBASE_INFO_GLOBAL}\"\ncp \"${FIREBASE_INFO_GLOBAL}\" \"${PLIST_DESTINATION}\"\nfi\n";
+			shellScript = "# Filename\nFIREBASE_INFO_PLIST=GoogleService-Info.plist\nAPPCENTER_CONFIG_PLIST=AppCenter-Config.plist\n\n# File path for ESIM\nESIM_CONFIG_PATH=${PROJECT_DIR}/Configurations/Esim\n\n# File path for Usim\n#USIM_CONFIG_PATH=${PROJECT_DIR}/Configurations/Usim\n\n# File path for Global\nGLOBAL_CONFIG_PATH=${PROJECT_DIR}/Configurations/Global\n\n# PLIST_DESTINATION\nPLIST_DESTINATION=${PROJECT_DIR}/${FIREBASE_INFO_PLIST}\nAPPCENTER_PLIST_DESTINATION=${PROJECT_DIR}/${APPCENTER_CONFIG_PLIST}\n\n# Copy plist for builds depend on bundle identifier\nif [ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.uangel.rokebi-ESIM\" ]\nthen\necho \"Using ${FIREBASE_INFO_ESIM}\"\ncp \"${ESIM_CONFIG_PATH}/${FIREBASE_INFO_PLIST}\" \"${PLIST_DESTINATION}\"\ncp \"${ESIM_CONFIG_PATH}/${APPCENTER_CONFIG_PLIST}\" \"${APPCENTER_PLIST_DESTINATION}\"\n#elif [ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.uangel.rokebi-USIM\" ]\n#then\n#echo \"Using ${FIREBASE_INFO_USIM}\"\n#cp \"${USIM_CONFIG_PATH}/${FIREBASE_INFO_PLIST}\" \"${PLIST_DESTINATION}\"\n#cp \"${USIM_CONFIG_PATH}/${APPCENTER_CONFIG_PLIST}\" \"${APPCENTER_PLIST_DESTINATION}\"\nelse\necho \"Using ${FIREBASE_INFO_GLOBAL}\"\ncp \"${GLOBAL_CONFIG_PATH}/${FIREBASE_INFO_PLIST}\" \"${PLIST_DESTINATION}\"\ncp \"${GLOBAL_CONFIG_PATH}/${APPCENTER_CONFIG_PLIST}\" \"${APPCENTER_PLIST_DESTINATION}\"\nfi\n";
 		};
 		A3BF9FDE273B63DD00561187 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -997,10 +987,11 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "";
 				BUNDLE_ID_SUFFIX = "-global";
 				CLANG_ENABLE_MODULES = YES;
-				CODEPUSH_KEY = "";
+				CODEPUSH_KEY = 5xvyG8Dm321r0J4jNZfqQn8AIwScKdnsQl6uo;
 				CODE_SIGN_ENTITLEMENTS = RokebiESIM/RokebiESIM.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CONFIGURATION = Debug;
 				CURRENT_PROJECT_VERSION = 6;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
@@ -1107,7 +1098,7 @@
 				INFOPLIST_FILE = Configurations/Global/Development.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				KAKAO_APP_KEY = "";
+				KAKAO_APP_KEY = f881469e3b4a140967dfaebe648ede8d;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.4.0;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1135,10 +1126,11 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "";
 				BUNDLE_ID_SUFFIX = "-global";
 				CLANG_ENABLE_MODULES = YES;
-				CODEPUSH_KEY = "";
+				CODEPUSH_KEY = "KgnZ98UOkOrXa6cgiGHS2jqnja9OdpE6R-rRR";
 				CODE_SIGN_ENTITLEMENTS = RokebiESIM/RokebiESIM.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CONFIGURATION = Release;
 				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
@@ -1239,7 +1231,7 @@
 				INFOPLIST_FILE = Configurations/Global/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				KAKAO_APP_KEY = "";
+				KAKAO_APP_KEY = f881469e3b4a140967dfaebe648ede8d;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.4.0;
 				ONLY_ACTIVE_ARCH = NO;
@@ -1265,10 +1257,11 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "";
 				BUNDLE_ID_SUFFIX = "-global";
 				CLANG_ENABLE_MODULES = YES;
-				CODEPUSH_KEY = "";
+				CODEPUSH_KEY = qS_a2w4GslVa0apJgZt7EyZ6e5loLjKSEYctO;
 				CODE_SIGN_ENTITLEMENTS = RokebiESIM/RokebiESIM.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CONFIGURATION = Staging;
 				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
@@ -1370,7 +1363,7 @@
 				INFOPLIST_FILE = Configurations/Global/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				KAKAO_APP_KEY = "";
+				KAKAO_APP_KEY = f881469e3b4a140967dfaebe648ede8d;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.4.0;
 				ONLY_ACTIVE_ARCH = NO;
@@ -1400,6 +1393,7 @@
 				CODE_SIGN_ENTITLEMENTS = RokebiESIM/RokebiESIM.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CONFIGURATION = Debug;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
@@ -1536,6 +1530,7 @@
 				CODE_SIGN_ENTITLEMENTS = RokebiESIM/RokebiESIM.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
+				CONFIGURATION = Release;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;
@@ -1701,6 +1696,7 @@
 				CODE_SIGN_ENTITLEMENTS = RokebiESIM/RokebiESIM.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
+				CONFIGURATION = Staging;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
 				ENABLE_BITCODE = NO;

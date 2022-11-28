@@ -15,10 +15,14 @@ import Env from '@/environment';
 
 const {isIOS} = Env.get();
 
+const dir = '../../assets/images/esim/userGuide';
+const deviceModel = DeviceInfo.getModel();
+
 const styles = StyleSheet.create({
   titleText: {
     ...appStyles.bold22Text,
     top: isIOS ? 10 : 0,
+    letterSpacing: deviceModel.startsWith('SM') ? -1 : 0,
   },
   step: {
     width: 25,
@@ -56,6 +60,7 @@ const styles = StyleSheet.create({
   },
   blueText: {
     color: colors.clearBlue,
+    letterSpacing: deviceModel.startsWith('SM') ? -1 : 0,
   },
 });
 
@@ -76,6 +81,7 @@ const renderOneText = (text: string, idx: number) => {
     <AppTextJoin
       key={idx}
       textStyle={styles.titleText}
+      style={{bottom: idx > 0 ? 6 : 0}}
       data={formatText(
         'b',
         {
@@ -158,9 +164,6 @@ const renderTipList = (id: string, list: 'dot' | 'num' = 'num') => (
     </View>
   </View>
 );
-
-const dir = '../../assets/images/esim/userGuide';
-const deviceModel = DeviceInfo.getModel();
 
 export const imageList: Record<string, any[]> =
   // eslint-disable-next-line no-nested-ternary

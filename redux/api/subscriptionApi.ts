@@ -34,13 +34,13 @@ export const giftCode = {
   Receive: 'R',
 };
 
-const priority = {
-  A: 6,
-  R: 5,
-  I: 4,
-  U: 3,
-  E: 2,
-};
+// const priority = {
+//   A: 6,
+//   R: 5,
+//   I: 4,
+//   U: 3,
+//   E: 2,
+// };
 
 export const cmiStatusCd = {
   1: 'R',
@@ -487,7 +487,7 @@ const updateSubscriptionGiftStatus = ({
   );
 };
 
-//그래프를 그리기 위해서 가져올 데이터
+// 그래프를 그리기 위해서 가져올 데이터
 // rokebi drupal 서버에서 수집한 CDR을 기반으로 처리하는 경우
 const getSubsUsage = ({id, token}: {id?: string; token?: string}) => {
   if (!id) return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: id');
@@ -711,6 +711,9 @@ export default {
   STATUS_USED,
 
   GIFT_STATUS_SEND,
+  GIFT_STATUS_RECEIVE,
+
+  PAGE_SIZE,
 
   getSubscription,
   getStoreSubscription,

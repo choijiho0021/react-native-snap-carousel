@@ -1,6 +1,5 @@
 import React, {memo} from 'react';
 import {StyleSheet, View} from 'react-native';
-import _ from 'underscore';
 import {colors} from '@/constants/Colors';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
@@ -59,6 +58,8 @@ const ChargeSummary = ({
         style={styles.summary}
         format="price"
         value={totalPrice}
+        balanceStyle={appStyles.bold22Text}
+        currencyStyle={appStyles.medium14}
       />
 
       <LabelText
@@ -67,6 +68,8 @@ const ChargeSummary = ({
         format="price"
         value={utils.toCurrency(balance, totalPrice.currency)}
         deduct={deduct}
+        balanceStyle={appStyles.bold22Text}
+        currencyStyle={appStyles.medium14}
       />
 
       <LabelText
@@ -75,6 +78,8 @@ const ChargeSummary = ({
         format="price"
         color={colors.clearBlue}
         value={utils.toCurrency(pymPrice, totalPrice.currency)}
+        balanceStyle={appStyles.bold22Text}
+        currencyStyle={appStyles.medium14}
       />
     </View>
   );

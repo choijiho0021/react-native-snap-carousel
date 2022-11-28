@@ -1,6 +1,5 @@
 import React from 'react';
 import {BackHandler} from 'react-native';
-import _ from 'underscore';
 import {useFocusEffect} from '@react-navigation/native';
 
 export default function BackbuttonHandler({navigation, back}) {

@@ -167,20 +167,17 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [subsList, setSubsList] = useState<RkbSubscription[][]>();
 
   const init = useCallback(
-    ({
-      iccid,
-      mobile,
-      token,
-    }: {
-      iccid?: string;
-      mobile?: string;
-      token?: string;
-    }) => {
-      if (iccid && token) {
-        action.order.getSubsWithToast({iccid, token});
+    (initInfo: {iccid?: string; mobile?: string; token?: string}) => {
+      const {iccid: initIccid, mobile: initMobile, token: initToken} = initInfo;
+
+      if (initIccid && initToken) {
+        action.order.getSubsWithToast({iccid: initIccid, token: initToken});
       }
-      if (mobile && token && !esimGlobal) {
-        action.order.getStoreSubsWithToast({mobile, token});
+      if (initMobile && initToken && !esimGlobal) {
+        action.order.getStoreSubsWithToast({
+          mobile: initMobile,
+          token: initToken,
+        });
       }
     },
     [action.order],
@@ -192,6 +189,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       action.order
         .getSubsWithToast({iccid, token})
         .then(() => {
+          if (!esimGlobal) {
+            action.order.getStoreSubsWithToast({mobile, token});
+          }
           action.account.getAccount({iccid, token});
         })
         .finally(() => {
@@ -199,7 +199,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           setIsFirstLoad(false);
         });
     }
-  }, [action.account, action.order, iccid, token]);
+  }, [action.account, action.order, iccid, mobile, token]);
 
   useEffect(() => {
     if (isFocused) {

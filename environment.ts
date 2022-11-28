@@ -7,13 +7,9 @@ import {CurrencyCode} from './redux/api/productApi';
 const bundleId = getBundleId();
 
 // rokebi esim App
-const appId =
-  bundleId === 'com.uangel.rokebi-USIM' || bundleId === 'com.rokebi.usim'
-    ? 'usim'
-    : 'esim';
-const esimGlobal =
-  (appId === 'esim' && bundleId === 'com.uangel.rokebi-global') ||
-  bundleId === 'com.rokebi.global';
+const appId = Config.APP_ID;
+
+const esimGlobal = Config.APP_ID === 'global';
 
 // global / esim 계정
 let impId = esimGlobal ? 'imp60215393' : 'imp53913318';
@@ -92,44 +88,44 @@ function get() {
       : codePushLabel.stagingAndroid;
   }
 
-  if (appId === 'esim') {
-    switch (Config.NODE_ENV) {
-      case 'production':
-        env.scheme = 'https';
-        env.rokApiUrl = 'svcapp.rokebi.com';
-        env.apiUrl = esimGlobal ? 'global.rokebi.com' : 'esim.rokebi.com';
-        env.webViewHost = esimGlobal
-          ? 'https://www.rokebi.com/us'
-          : 'https://www.rokebi.com';
-        break;
-      default:
-        env.scheme = 'http';
-        env.rokApiUrl = 'tb-svcapp.rokebi.com';
-        env.apiUrl = esimGlobal ? 'tb-global.rokebi.com' : 'tb-esim.rokebi.com';
-        env.webViewHost = esimGlobal
-          ? 'http://tb.rokebi.com/us'
-          : 'http://tb.rokebi.com';
-        break;
-    }
-    return env;
-  }
-
-  // appId = rokebi
+  // if (appId === 'esim' || appId === 'global') {
   switch (Config.NODE_ENV) {
     case 'production':
       env.scheme = 'https';
       env.rokApiUrl = 'svcapp.rokebi.com';
-      env.apiUrl = 'usim.rokebi.com';
-      env.webViewHost = 'http://rokebi.com';
+      env.apiUrl = esimGlobal ? 'global.rokebi.com' : 'esim.rokebi.com';
+      env.webViewHost = esimGlobal
+        ? 'https://www.rokebi.com/us'
+        : 'https://www.rokebi.com';
       break;
     default:
       env.scheme = 'http';
-      env.rokApiUrl = 'svcapp.rokebi.com';
-      env.apiUrl = 'tb-usim.rokebi.com';
-      env.webViewHost = 'http://tb.rokebi.com';
+      env.rokApiUrl = 'tb-svcapp.rokebi.com';
+      env.apiUrl = esimGlobal ? 'tb-global.rokebi.com' : 'tb-esim.rokebi.com';
+      env.webViewHost = esimGlobal
+        ? 'http://tb.rokebi.com/us'
+        : 'http://tb.rokebi.com';
       break;
   }
   return env;
+  // }
+
+  // appId = usim
+  // switch (Config.NODE_ENV) {
+  //   case 'production':
+  //     env.scheme = 'https';
+  //     env.rokApiUrl = 'svcapp.rokebi.com';
+  //     env.apiUrl = 'usim.rokebi.com';
+  //     env.webViewHost = 'http://rokebi.com';
+  //     break;
+  //   default:
+  //     env.scheme = 'http';
+  //     env.rokApiUrl = 'svcapp.rokebi.com';
+  //     env.apiUrl = 'tb-usim.rokebi.com';
+  //     env.webViewHost = 'http://tb.rokebi.com';
+  //     break;
+  // }
+  // return env;
 }
 
 export default {get};

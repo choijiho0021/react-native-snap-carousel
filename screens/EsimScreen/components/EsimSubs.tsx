@@ -30,6 +30,7 @@ import SplitText from '@/components/SplitText';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
 import AppStyledText from '@/components/AppStyledText';
 import AppModal from '@/components/AppModal';
+import AppIcon from '@/components/AppIcon';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -196,20 +197,15 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     borderWidth: 1,
     borderColor: colors.whiteFive,
-    ...Platform.select({
-      ios: {
-        shadowColor: 'rgb(52, 62, 95)',
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
-        shadowOffset: {
-          height: 1,
-          width: 1,
-        },
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
+
+    shadowColor: 'rgb(52, 62, 95)',
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 5,
+    shadowOffset: {
+      height: 4,
+      width: 1,
+    },
   },
   lessInfo: {
     height: 40,
@@ -264,16 +260,20 @@ const styles = StyleSheet.create({
     ...appStyles.bold13Text,
   },
   cautionBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 28,
     marginBottom: 24,
   },
-  cautionText: {
-    ...appStyles.medium16,
+  cautionTitle: {
+    ...appStyles.bold16Text,
     color: colors.tomato,
     lineHeight: 20,
     marginRight: 36,
+  },
+  cautionText: {
+    ...appStyles.medium14,
+    color: colors.tomato,
+    lineHeight: 18,
   },
   expiredDot: {
     position: 'absolute',
@@ -325,6 +325,15 @@ const styles = StyleSheet.create({
   },
   btnStyle: {
     marginTop: 0,
+  },
+  cautionRow: {
+    flexDirection: 'row',
+    marginBottom: 14,
+    alignItems: 'center',
+  },
+  cautionTextContainer: {
+    flexDirection: 'row',
+    marginRight: 36,
   },
 });
 
@@ -573,7 +582,7 @@ const EsimSubs = ({
               uuid: mainSubs.uuid,
             })
           }>
-          <AppSvgIcon name="hkIcon" />
+          <AppIcon name="hkIcon" />
           <Text style={styles.redirectText}>{i18n.t('esim:redirectHK2')}</Text>
         </Pressable>
       );
@@ -591,7 +600,7 @@ const EsimSubs = ({
         {moveBtnList.map((key, idx) => {
           const isLast = idx === moveBtnList.length - 1;
           const isSendBtn = sendable && idx === 0;
-          const title = isSendBtn
+          const btnTitle = isSendBtn
             ? i18n.t('esim:sendGift')
             : i18n.t(isCharged ? 'esim:chargeHistory' : 'esim:charge');
 
@@ -600,7 +609,7 @@ const EsimSubs = ({
               key={idx}
               style={[styles.btnMove, {marginRight: !isLast ? 12 : 0}]}>
               <AppButton
-                title={title}
+                title={btnTitle}
                 titleStyle={[styles.btnTitle2, !isLast && styles.colorblack]}
                 style={!isLast ? styles.giftButton : styles.chargeButton}
                 onPress={() =>
@@ -624,22 +633,40 @@ const EsimSubs = ({
   ]);
 
   const renderCautionText = useCallback(
-    (caution: string, subNum: number) => (
-      <AppText key={caution} style={styles.cautionText}>
-        {caution.substring(subNum)}
-      </AppText>
+    (caution: string, subNum: number, hasPreDot: boolean) => (
+      <View
+        key={caution + subNum}
+        style={[
+          styles.cautionTextContainer,
+          {
+            marginBottom: hasPreDot ? 10 : 0,
+          },
+        ]}>
+        {hasPreDot && (
+          <AppText
+            key="centerDot"
+            style={[styles.cautionText, {marginHorizontal: 8}]}>
+            {i18n.t('centerDot')}
+          </AppText>
+        )}
+
+        <AppText key={caution} style={styles.cautionText}>
+          {caution.substring(subNum)}
+        </AppText>
+      </View>
     ),
     [],
   );
 
   const renderCautionList = useCallback(
-    (caution: string) => {
+    (caution: string, idx: number, arr: string[]) => {
+      const hasPreDot = arr.length > 1;
       if (caution.startsWith('ios:') && Platform.OS === 'ios')
-        return renderCautionText(caution, 4);
+        return renderCautionText(caution, 4, hasPreDot);
       if (caution.startsWith('android:') && Platform.OS === 'android')
-        return renderCautionText(caution, 8);
+        return renderCautionText(caution, 8, hasPreDot);
       if (!caution.startsWith('ios:') && !caution.startsWith('android:'))
-        return renderCautionText(caution, 0);
+        return renderCautionText(caution, 0, hasPreDot);
       return null;
     },
     [renderCautionText],
@@ -664,14 +691,17 @@ const EsimSubs = ({
 
           {!!mainSubs.caution || (mainSubs.cautionList?.length || 0) > 0 ? (
             <View style={styles.cautionBox}>
-              <AppSvgIcon name="cautionIcon" style={{marginRight: 12}} />
+              <View style={styles.cautionRow}>
+                <AppSvgIcon name="cautionIcon" style={{marginRight: 12}} />
+                <AppText style={styles.cautionTitle}>
+                  {i18n.t('esim:caution')}
+                </AppText>
+              </View>
+
               <View>
-                {!!mainSubs.caution && (
-                  <AppText style={styles.cautionText}>
-                    {mainSubs.caution}
-                  </AppText>
-                )}
-                {mainSubs.cautionList?.map(renderCautionList)}
+                {(mainSubs.cautionList || [])
+                  .concat(mainSubs.caution || [])
+                  ?.map(renderCautionList)}
               </View>
             </View>
           ) : (

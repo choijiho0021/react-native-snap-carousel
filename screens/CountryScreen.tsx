@@ -4,7 +4,6 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useState, useMemo} from 'react';
 import {Image, SafeAreaView, SectionList, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
-import _ from 'underscore';
 import {Map as ImmutableMap} from 'immutable';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
@@ -212,7 +211,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
               </View>
             ) : null
           }
-          renderSectionFooter={({section: {title, data}}) =>
+          renderSectionFooter={({section: {title}}) =>
             title === 'daily' && prodData[1].data.length > 0 ? (
               prodData[0].data.length > 0 && <View style={styles.divider} />
             ) : (

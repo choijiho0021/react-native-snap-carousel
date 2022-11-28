@@ -4,6 +4,7 @@ import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import {connect} from 'react-redux';
 import Video from 'react-native-video';
+import _ from 'underscore';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -17,7 +18,6 @@ import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import Env from '@/environment';
 import AppIcon from '@/components/AppIcon';
-import _ from 'underscore';
 
 const styles = StyleSheet.create({
   usageListContainer: {
