@@ -566,6 +566,49 @@ const quadcellGetData = ({
   );
 };
 
+const getHkRegisterStatus = ({
+  iccid,
+  imsi,
+  uuid,
+}: {
+  iccid: string;
+  imsi: string;
+  uuid: string;
+}) => {
+  if (!iccid)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
+  if (!imsi)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
+  if (!uuid)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: uuid');
+
+  return api.callHttpGet(
+    `${api.rokHttpUrl(
+      api.path.rokApi.pv.hkRegStatus,
+      isProduction ? undefined : 5000,
+    )}&iccid=${iccid}&imsi=${imsi}`,
+    (data) => {
+      if (data?.result?.code === 0) {
+        console.log('@@@ data.objects.himsis', data.objects.himsis);
+        console.log(
+          '@@@ data.objects.himsis[0].realRuleList',
+          data.objects.himsis[0].realRuleList,
+        );
+
+        return api.success(
+          data.objects.himsis.map((item) => ({
+            iccid: item.iccid,
+            hkRegStatus: item.realRuleList[0].authStatus,
+            uuid,
+          })),
+        );
+      }
+      return data;
+    },
+    new Headers({'Content-Type': 'application/json'}),
+  );
+};
+
 // rokebi call products
 /* not used
 const toRokebiProd = (data) => {
@@ -700,4 +743,5 @@ export default {
   cmiGetSubsUsage,
   cmiGetSubsStatus,
   quadcellGetData,
+  getHkRegisterStatus,
 };
