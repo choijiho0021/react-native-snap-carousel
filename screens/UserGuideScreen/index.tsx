@@ -118,7 +118,8 @@ type UserGuideScreenProps = {
 const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
   const [carouselIdx, setCarouselIdx] = useState(0);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
-  const deviceModel = useMemo(() => DeviceInfo.getModel(), []);
+  // const deviceModel = useMemo(() => DeviceInfo.getModel(), []);
+  const isGalaxy = useMemo(() => DeviceInfo.getModel().startsWith('SM'), []);
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({window}) => {
@@ -137,7 +138,14 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
 
   const renderModalHeader = useCallback(
     (index: number) => (
-      <View style={styles.modalHeader}>
+      <View
+        style={[
+          styles.modalHeader,
+          {
+            backgroundColor:
+              isGalaxy && index !== 1 ? colors.whiteSeven : colors.white,
+          },
+        ]}>
         <AppText style={[appStyles.bold16Text, {color: colors.clearBlue}]}>
           {index + 1}
           <AppText style={appStyles.bold16Text}>/{guideImages.length}</AppText>
@@ -167,9 +175,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
                 // eslint-disable-next-line no-nested-ternary
                 Platform.OS === 'android'
                   ? i18n.t(
-                      `userGuide:stepsTitle0:${
-                        deviceModel.startsWith('SM') ? 'galaxy' : 'pixel'
-                      }`,
+                      `userGuide:stepsTitle0:${isGalaxy ? 'galaxy' : 'pixel'}`,
                     )
                   : Platform.Version >= '16.0' && i18n.locale === 'ko'
                   ? 'iOS 16 ver.'
@@ -218,7 +224,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
         </ScrollView>
       );
     },
-    [deviceModel],
+    [isGalaxy],
   );
 
   const renderStepPage = useCallback(
@@ -228,7 +234,10 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
 
       return (
         <ScrollView
-          style={{flex: 1}}
+          style={{
+            flex: 1,
+            backgroundColor: isGalaxy ? colors.whiteSeven : colors.white,
+          }}
           contentContainerStyle={[
             styles.stepPage,
             isDeviceSize('large') ? undefined : {flex: 1},
@@ -272,13 +281,16 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
         </ScrollView>
       );
     },
-    [dimensions.width],
+    [dimensions.width, isGalaxy],
   );
 
   const renderTailPage = useCallback(
     (data: GuideImage) => (
       <ScrollView
-        style={{flex: 1}}
+        style={{
+          flex: 1,
+          backgroundColor: isGalaxy ? colors.whiteSeven : colors.white,
+        }}
         contentContainerStyle={{alignItems: 'center'}}>
         <View style={{alignItems: 'center'}}>
           <View style={[styles.step, {marginTop: 20}]}>
@@ -309,7 +321,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
         </View>
       </ScrollView>
     ),
-    [],
+    [isGalaxy],
   );
 
   const renderBody = useCallback(

@@ -198,9 +198,9 @@ const styles = StyleSheet.create({
     borderColor: colors.whiteFive,
 
     shadowColor: 'rgb(52, 62, 95)',
-    shadowOpacity: 0.1,
+    elevation: 10,
     shadowRadius: 3,
-    elevation: 5,
+    shadowOpacity: 0.1,
     shadowOffset: {
       height: 4,
       width: 1,
