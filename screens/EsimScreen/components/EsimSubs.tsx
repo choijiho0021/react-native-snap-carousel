@@ -580,6 +580,7 @@ const EsimSubs = ({
               iccid: mainSubs.subsIccid,
               orderNo: mainSubs.subsOrderNo,
               uuid: mainSubs.uuid,
+              imsi: mainSubs.imsi,
             })
           }>
           <AppIcon name="hkIcon" />

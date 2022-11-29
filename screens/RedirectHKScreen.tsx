@@ -138,7 +138,7 @@ type ParamList = {
     iccid: string;
     orderNo: string;
     uuid: string;
-    imis: string;
+    imsi: string;
   };
 };
 
@@ -235,11 +235,11 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
   );
 
   const checkAndUpdateTag = useCallback(async () => {
-    // sethkRegStatus('loading');
-    // const rsp = await API.Subscription.getHkRegStatus({
-    //   iccid: params.iccid,
-    //   imsi: params.imis,
-    // });
+    sethkRegStatus('loading');
+    const rsp = await API.Subscription.getHkRegStatus({
+      iccid: params.iccid,
+      imsi: params.imsi,
+    });
 
     // 테스트용 -> 실패
     // const rsp = await API.Subscription.getHkRegStatus({
@@ -248,10 +248,10 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
     // });
 
     // 테스트용 -> 성공
-    const rsp = await API.Subscription.getHkRegStatus({
-      iccid: '89852340003831753265',
-      imsi: '454120383175326',
-    });
+    // const rsp = await API.Subscription.getHkRegStatus({
+    //   iccid: '89852340003831753265',
+    //   imsi: '454120383175326',
+    // });
 
     if (rsp.result === 0 && rsp.objects) {
       const {hkRegStatus} = rsp.objects[0];
@@ -266,13 +266,14 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
           break;
         default:
           updateStatus('unregistered', 'red');
+          updateTag('HF');
           break;
       }
     }
     setTimeout(() => {
       updateStatus('normal', 'grey');
     }, 3000);
-  }, [updateStatus, updateTag]);
+  }, [params.iccid, params.imsi, updateStatus, updateTag]);
 
   return (
     <SafeAreaView style={{flex: 1}}>
