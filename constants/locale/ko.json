@@ -479,6 +479,7 @@
   "esim:manualInput:body_new": "<b>QR 코드 사용이 어려우신 경우,</b> 사용 가이드를 따라\n수동 입력 정보를 복사·붙여넣기 해주세요.",
   "esim:redirectHK": "실명등록 바로가기",
   "esim:redirectHK2": "홍콩 실명 등록하기",
+  "esim:redirectHK2:done": "홍콩 실명 등록 <b>승인 완료</b>",
   "esim:redirectHKRegister": "실명등록 바로가기",
   "esim:ifFirst": "eSIM 사용이 처음이라면!",
   "esim:moveToGuide": "가이드 보기",

@@ -574,7 +574,10 @@ const EsimSubs = ({
     )
       return (
         <Pressable
-          style={styles.redirectHK}
+          style={[
+            styles.redirectHK,
+            mainSubs.tag?.includes('HA') && {backgroundColor: colors.lightSage},
+          ]}
           onPress={() =>
             navigation.navigate('RedirectHK', {
               iccid: mainSubs.subsIccid,
@@ -584,11 +587,19 @@ const EsimSubs = ({
             })
           }>
           <AppIcon name="hkIcon" />
-          <Text style={styles.redirectText}>{i18n.t('esim:redirectHK2')}</Text>
+
+          <AppStyledText
+            text={i18n.t(
+              `esim:redirectHK2${mainSubs.tag?.includes('HA') ? ':done' : ''}`,
+            )}
+            textStyle={styles.redirectText}
+            format={{b: {color: 'green'}}}
+            data={{chargeablePeriod}}
+          />
         </Pressable>
       );
     return null;
-  }, [expired, mainSubs, navigation]);
+  }, [chargeablePeriod, expired, mainSubs, navigation]);
 
   const renderMoveBtn = useCallback(() => {
     const moveBtnList = [sendable, isCharged || isChargeable].filter(
