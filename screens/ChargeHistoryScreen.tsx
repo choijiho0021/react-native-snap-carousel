@@ -204,7 +204,10 @@ export const renderPromoFlag = (flags: string[], isStore: boolean) => (
             ]}>
             <AppText
               key="name"
-              style={[styles.badgeText, {color: badgeColor.fontColor}]}>
+              style={[
+                styles.badgeText,
+                {color: badgeColor.fontColor, top: -1},
+              ]}>
               {i18n.t(elm)}
             </AppText>
           </View>
