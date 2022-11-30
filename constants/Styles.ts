@@ -292,6 +292,7 @@ export const appStyles = StyleSheet.create({
     color: colors.black,
     padding: 0,
     margin: 0,
+    marginRight: 8,
   },
   semiBold16Text: {
     //        fontFamily: "AppleSDGothicNeo",

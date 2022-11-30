@@ -1,4 +1,10 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -181,7 +187,7 @@ const styles = StyleSheet.create({
 });
 
 export const renderPromoFlag = (flags: string[], isStore: boolean) => (
-  <>
+  <Fragment>
     {flags
       .filter((elm) => elm !== 'hot')
       .map((elm, idx) => {
@@ -193,7 +199,7 @@ export const renderPromoFlag = (flags: string[], isStore: boolean) => (
               styles.badge,
               {
                 backgroundColor: badgeColor.backgroundColor,
-                marginLeft: idx === 0 ? 8 : 0,
+                marginRight: 8,
               },
             ]}>
             <AppText
@@ -205,15 +211,9 @@ export const renderPromoFlag = (flags: string[], isStore: boolean) => (
         );
       })}
     {isStore && (
-      <AppSvgIcon
-        name="naverIcon"
-        style={{
-          justifyContent: 'center',
-          marginLeft: flags.length === 0 ? 8 : 0,
-        }}
-      />
+      <AppSvgIcon name="naverIcon" style={{justifyContent: 'center'}} />
     )}
-  </>
+  </Fragment>
 );
 
 type OrderType = 'latest' | 'purchase';
@@ -384,7 +384,7 @@ const ChargeHistoryScreen: React.FC = () => {
                 renderExpend={() =>
                   renderPromoFlag(item.promoFlag || [], item.isStore)
                 }
-                style={appStyles.bold16Text}
+                style={{...appStyles.bold16Text, marginRight: 8}}
                 numberOfLines={2}
                 ellipsizeMode="tail">
                 {utils.removeBracketOfName(item.prodName)}
