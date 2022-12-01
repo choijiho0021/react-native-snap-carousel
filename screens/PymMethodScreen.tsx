@@ -1,13 +1,7 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, {SetStateAction, useCallback, useEffect, useState} from 'react';
 import {
   Platform,
   Pressable,
@@ -65,7 +59,7 @@ import i18n from '@/utils/i18n';
 import AppModal from '@/components/AppModal';
 import AppStyledText from '@/components/AppStyledText';
 
-const {esimApp, isIOS} = Env.get();
+const {esimApp} = Env.get();
 const infoKey = 'pym:benefit';
 const loadingImg = require('../assets/images/loading_1.mp4');
 
@@ -82,15 +76,12 @@ const styles = StyleSheet.create({
     margin: 20,
   },
   divider: {
-    // marginTop: 20,
     height: 10,
     backgroundColor: colors.whiteTwo,
   },
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    // marginTop: 15,
-    // marginHorizontal: 20,
   },
   buttonStyle: {
     flex: 1,
@@ -185,7 +176,6 @@ const styles = StyleSheet.create({
     ...appStyles.bold18Text,
     color: colors.black,
     lineHeight: 22,
-    // marginTop: 20,
     alignSelf: 'center',
   },
   dropDownIcon: {
@@ -195,7 +185,6 @@ const styles = StyleSheet.create({
   thickBar: {
     borderBottomColor: colors.black,
     borderBottomWidth: 1,
-    // marginVertical: 20,
     marginBottom: 30,
   },
   pickerWrapper: {
@@ -316,6 +305,14 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
   const [showChargeAlert, setShowChargeAlert] = useState(false);
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (cart.esimIccid) setShowChargeAlert(true);
+    });
+
+    return unsubscribe;
+  }, [cart.esimIccid, navigation, showChargeAlert]);
+
   const setValues = useCallback(() => {
     setPymPrice(cart.pymPrice);
     setDeduct(cart.deduct);
@@ -323,15 +320,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     setIsRecharge(
       cart.purchaseItems.findIndex((item) => item.type === 'rch') >= 0,
     );
-    if (cart.esimIccid) setShowChargeAlert(!route.params?.isPaid);
-  }, [
-    cart.deduct,
-    cart.esimIccid,
-    cart.purchaseItems,
-    cart.pymPrice,
-    route.params?.isPaid,
-    route.params.mode,
-  ]);
+  }, [cart.deduct, cart.purchaseItems, cart.pymPrice, route.params.mode]);
 
   useEffect(() => {
     if (!info.infoMap.has(infoKey)) {
@@ -715,17 +704,17 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         title={showUnsupAlert ? i18n.t('pym:unsupportDeviceModal') : undefined}
         type={showUnsupAlert ? 'normal' : 'info'}
         onOkClose={async () => {
-          if (showUnsupAlert) {
+          if (showChargeAlert) {
+            setShowChargeAlert((prev) => !prev);
+          } else {
             setShowUnsupAlert((prev) => !prev);
             onSubmit(true);
-          } else {
-            setShowChargeAlert((prev) => !prev);
           }
         }}
         onCancelClose={() => {
-          if (showUnsupAlert) {
-            setShowUnsupAlert((prev) => !prev);
-          } else setShowChargeAlert((prev) => !prev);
+          if (showChargeAlert) {
+            setShowChargeAlert((prev) => !prev);
+          } else setShowUnsupAlert((prev) => !prev);
         }}
         visible={showUnsupAlert || showChargeAlert}>
         {modalBody(showUnsupAlert)}

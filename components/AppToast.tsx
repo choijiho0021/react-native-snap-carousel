@@ -1,8 +1,3 @@
-import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
-import {RootState} from '@/redux';
-import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
-import i18n from '@/utils/i18n';
 import React, {PureComponent} from 'react';
 import {
   Animated,
@@ -14,6 +9,11 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import {RootState} from '@/redux';
+import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
+import i18n from '@/utils/i18n';
 import AppText from './AppText';
 
 const styles = StyleSheet.create({

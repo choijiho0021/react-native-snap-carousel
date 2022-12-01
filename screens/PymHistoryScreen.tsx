@@ -1,3 +1,8 @@
+import React, {Component, memo} from 'react';
+import {FlatList, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppText from '@/components/AppText';
@@ -10,11 +15,6 @@ import {
 } from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
-import React, {Component, memo} from 'react';
-import {FlatList, StyleSheet, TouchableOpacity, View} from 'react-native';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 
 const styles = StyleSheet.create({
   container: {

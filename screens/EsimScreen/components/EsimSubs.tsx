@@ -30,7 +30,6 @@ import SplitText from '@/components/SplitText';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
 import AppStyledText from '@/components/AppStyledText';
 import AppModal from '@/components/AppModal';
-import AppIcon from '@/components/AppIcon';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -199,9 +198,9 @@ const styles = StyleSheet.create({
     borderColor: colors.whiteFive,
 
     shadowColor: 'rgb(52, 62, 95)',
-    shadowOpacity: 0.1,
+    elevation: 10,
     shadowRadius: 3,
-    elevation: 5,
+    shadowOpacity: 0.1,
     shadowOffset: {
       height: 4,
       width: 1,
@@ -437,7 +436,11 @@ const EsimSubs = ({
             expired || mainSubs.giftStatusCd === 'S'
               ? styles.usageTitleNormal
               : styles.usageTitleBold,
-            {alignSelf: 'center', lineHeight: 28},
+            {
+              alignSelf: 'center',
+              lineHeight: 28,
+              marginRight: 8,
+            },
           ]}
           numberOfLines={2}
           ellipsizeMode="tail">
@@ -581,7 +584,7 @@ const EsimSubs = ({
               orderNo: mainSubs.subsOrderNo,
             })
           }>
-          <AppIcon name="hkIcon" />
+          <AppSvgIcon name="hkIcon" />
           <Text style={styles.redirectText}>{i18n.t('esim:redirectHK2')}</Text>
         </Pressable>
       );

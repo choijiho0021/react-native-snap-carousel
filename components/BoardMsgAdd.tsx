@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   attachCancel: {
     position: 'absolute',
-    right: -2,
+    right: 0,
     top: 0,
   },
   attachBox: {
@@ -92,8 +92,8 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   attach: {
-    width: attachmentSize,
-    height: attachmentSize,
+    width: attachmentSize + 2,
+    height: attachmentSize + 2,
     borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: 'solid',
