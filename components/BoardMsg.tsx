@@ -8,9 +8,8 @@ import AppText from './AppText';
 
 const styles = StyleSheet.create({
   list: {
-    height: 74,
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingVertical: 16,
     borderBottomColor: colors.whiteTwo,
     borderBottomWidth: 1,
     flexDirection: 'row',
@@ -19,7 +18,7 @@ const styles = StyleSheet.create({
   title: {
     ...appStyles.normal16Text,
     color: colors.black,
-    marginBottom: 12,
+    marginBottom: 8,
   },
   date: {
     ...appStyles.normal12Text,
