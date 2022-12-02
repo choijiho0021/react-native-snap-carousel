@@ -259,6 +259,10 @@ const removeBracketOfName = (str?: string) => {
   return str.slice(str.indexOf(']') + 1, str.length);
 };
 
+const generateKey = (pre: any) => {
+  return `${pre || ''}_${new Date().getTime()}`;
+};
+
 export default {
   fontScaling,
   numberToCommaString,
@@ -281,4 +285,5 @@ export default {
   convertURLtoRkbImage,
   adjustEventadd,
   removeBracketOfName,
+  generateKey,
 };

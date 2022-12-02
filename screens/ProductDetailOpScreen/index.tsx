@@ -9,7 +9,6 @@ import {
   View,
   SafeAreaView,
 } from 'react-native';
-import _ from 'underscore';
 import Clipboard from '@react-native-community/clipboard';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';

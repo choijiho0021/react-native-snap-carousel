@@ -237,9 +237,9 @@ const logInAndGetAccount = createAsyncThunk(
                 if (sender && gift && resp?.objects[0]?.iccid) {
                   dispatch(
                     getUserId({name: resp?.objects[0]?.mobile, token}),
-                  ).then(({payload}) => {
-                    if (payload?.result === 0) {
-                      if (payload?.objects[0]?.id !== sender)
+                  ).then(({payload: resp2}) => {
+                    if (resp2?.result === 0) {
+                      if (resp2?.objects[0]?.id !== sender)
                         dispatch(receiveAndGetGift({sender, gift}));
                     }
                   });
@@ -250,10 +250,10 @@ const logInAndGetAccount = createAsyncThunk(
           } else {
             // 가장 최근 사용한 SIM 카드 번호를 조회한다.
             await dispatch(getAccountByUser({mobile, token})).then(
-              ({payload}: {payload: ApiResult<RkbAccount>}) => {
-                const {result: rst, objects: obj} = payload;
+              ({payload: resp}: {payload: ApiResult<RkbAccount>}) => {
+                const {result: rst, objects: o} = resp;
                 if (rst === 0 && obj && obj[0]?.status === 'A') {
-                  getAccountWithDisconnect({iccid: obj[0].iccid, token});
+                  getAccountWithDisconnect({iccid: o[0].iccid, token});
                 }
               },
             );
@@ -297,6 +297,7 @@ const uploadAndChangePicture = createAsyncThunk(
             );
           }
           console.log('Failed to upload picture', payload);
+          return Promise.reject();
         },
         (err) => {
           console.log('Failed to upload picture', err);
@@ -500,7 +501,7 @@ const changeEmail = createAsyncThunk(
   'account/changeEmail',
   (mail: string, {dispatch, getState}) => {
     const {
-      account: {uid, token, pin},
+      account: {uid, token},
     } = getState() as RootState;
 
     return dispatch(

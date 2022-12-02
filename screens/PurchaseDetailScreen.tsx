@@ -208,7 +208,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   const [method, setMethod] = useState<RkbPayment>();
   const [balanceCharge, setBalanceCharge] = useState<Currency>();
   const [order, setOrder] = useState<RkbOrder>();
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({
@@ -322,7 +321,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         {order.orderItems &&
           order.orderItems.map((item, idx) => (
             <LabelText
-              key={idx.toString()}
+              key={utils.generateKey(idx.toString())}
               style={styles.item}
               label={`${item.title}  ×  ${item.qty}`}
               labelStyle={styles.label}
@@ -439,10 +438,8 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         } else {
           AppAlert.error(i18n.t('rcpt:fail'));
         }
-        setLoading(false);
       }
       if (id) {
-        setLoading(true);
         getReceipt();
       }
     },

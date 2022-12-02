@@ -414,13 +414,16 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
             {elm.data.map((elm2, idx) =>
               elm2 ? (
                 <TouchableOpacity
-                  key={elm2}
+                  key={utils.generateKey(elm2 + idx)}
                   style={styles.recommebdItem}
                   onPress={() => search(elm2, true)}>
                   <AppText style={styles.recommendText}>{elm2}</AppText>
                 </TouchableOpacity>
               ) : (
-                <View key={`${idx}`} style={styles.recommebdEmpty} />
+                <View
+                  key={utils.generateKey(elm2 + idx)}
+                  style={styles.recommebdEmpty}
+                />
               ),
             )}
           </View>

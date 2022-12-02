@@ -3,6 +3,7 @@ import React, {memo, useCallback, useMemo} from 'react';
 import {
   Animated,
   Image,
+  Keyboard,
   NativeScrollEvent,
   NativeSyntheticEvent,
   Pressable,
@@ -19,6 +20,7 @@ import AppPrice from './AppPrice';
 import AppText from './AppText';
 import {RkbPriceInfo} from '@/redux/modules/product';
 import {isFolderOpen} from '../constants/SliderEntry.style';
+import utils from '@/redux/api/utils';
 
 const styles = StyleSheet.create({
   text: {
@@ -162,8 +164,11 @@ const CountryItem0 = ({
       {item.length < columns
         ? Array(columns - item.length)
             .fill(1)
-            .map((x, i) => (
-              <View key={`blank${i}`} style={{flex: 1, marginLeft: 14}} />
+            .map(() => (
+              <View
+                key={utils.generateKey()}
+                style={{flex: 1, marginLeft: 14}}
+              />
             ))
         : null}
     </View>
@@ -240,6 +245,7 @@ const StoreList = ({
         onEndReached={onEndReached}
         scrollEnabled={scrollEnabled}
         showsVerticalScrollIndicator={false}
+        onScrollBeginDrag={() => Keyboard.dismiss()}
       />
     </View>
   );

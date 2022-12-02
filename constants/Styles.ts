@@ -557,9 +557,6 @@ export const appStyles = StyleSheet.create({
 // document.documentElement.clientHeight : 문서의 총 높이
 // getBoundingClientRect().y : 각 div의 시작 위치 y position
 
-export const injectedScript =
-  'window.ReactNativeWebView.postMessage(`dimension,${document.body.scrollHeight}`)';
-
 const basicScript = `<script>
 window.onload = function () {
   window.location.hash = 1;

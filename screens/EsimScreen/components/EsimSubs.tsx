@@ -466,7 +466,19 @@ const EsimSubs = ({
         )}
       </Pressable>
     );
-  }, [mainSubs, expired, isCharged, isMoreInfo, sendable]);
+  }, [
+    mainSubs.prodName,
+    mainSubs.key,
+    mainSubs.giftStatusCd,
+    mainSubs.nid,
+    mainSubs.promoFlag,
+    mainSubs.isStore,
+    expired,
+    isCharged,
+    isMoreInfo,
+    notCardInfo,
+    sendable,
+  ]);
 
   const topInfo = useCallback(() => {
     return (
@@ -608,7 +620,7 @@ const EsimSubs = ({
 
           return (
             <View
-              key={idx}
+              key={utils.generateKey(idx)}
               style={[styles.btnMove, {marginRight: !isLast ? 12 : 0}]}>
               <AppButton
                 title={btnTitle}

@@ -190,7 +190,7 @@ export const renderPromoFlag = (flags: string[], isStore: boolean) => (
   <Fragment>
     {flags
       .filter((elm) => elm !== 'hot')
-      .map((elm, idx) => {
+      .map((elm) => {
         const badgeColor = getPromoFlagColor(elm);
         return (
           <View
