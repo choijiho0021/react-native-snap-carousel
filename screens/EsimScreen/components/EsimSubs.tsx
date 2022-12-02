@@ -422,7 +422,7 @@ const EsimSubs = ({
       <Pressable
         style={styles.prodTitle}
         onPress={() => {
-          setIsMoreInfo((prev) => !prev);
+          if (notCardInfo) setIsMoreInfo((prev) => !prev);
         }}>
         <SplitText
           key={mainSubs.key}
