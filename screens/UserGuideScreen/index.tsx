@@ -157,7 +157,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
         />
       </View>
     ),
-    [navigation],
+    [isGalaxy, navigation],
   );
 
   const renderHeadPage = useCallback(

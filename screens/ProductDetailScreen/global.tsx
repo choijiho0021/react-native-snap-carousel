@@ -4,8 +4,6 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
-  Animated,
-  Clipboard,
   Image,
   Linking,
   NativeScrollEvent,
@@ -18,6 +16,7 @@ import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import Clipboard from '@react-native-community/clipboard';
 import KakaoSDK from '@/components/NativeModule/KakaoSDK';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
@@ -44,6 +43,7 @@ import {
   ToastAction,
 } from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
+import utils from '@/redux/api/utils';
 
 const {baseUrl, channelId, esimGlobal, fbUser} = Env.get();
 
@@ -120,15 +120,6 @@ type ProductDetailScreenProps = {
     toast: ToastAction;
     product: ProductAction;
   };
-};
-
-type ProductDetailScreenState = {
-  scrollY: Animated.Value;
-  tabIdx: number;
-  querying: boolean;
-  height1?: number;
-  height2?: number;
-  height3?: number;
 };
 
 const ProductDetailGlobalScreen: React.FC<ProductDetailScreenProps> = ({
@@ -370,7 +361,7 @@ const ProductDetailGlobalScreen: React.FC<ProductDetailScreenProps> = ({
           <View style={styles.tabView}>
             {tabList.map((elm, idx) => (
               <AppButton
-                key={elm + idx}
+                key={utils.generateKey(elm + idx)}
                 style={styles.whiteBackground}
                 titleStyle={[
                   styles.normal16WarmGrey,

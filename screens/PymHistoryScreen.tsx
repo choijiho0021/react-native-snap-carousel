@@ -150,7 +150,7 @@ class PymHistoryScreen extends Component<
             : resp.links.next.href;
           const list = resp.objects
             .filter(
-              (item) => data.findIndex((org) => org.uuid == item.uuid) < 0,
+              (item) => data.findIndex((org) => org.uuid === item.uuid) < 0,
             )
             .map((item) => ({
               ...item,

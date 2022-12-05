@@ -383,7 +383,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       if (pymPrice?.value === 0) {
         // if the payment amount is zero, call the old API payNorder
         setLoading(true);
-        const {impId, adjustRokebiCash = ''} = Env.get();
+        const {impId} = Env.get();
 
         const pymInfo = createPaymentInfoForRokebiCash({
           impId,
@@ -460,7 +460,9 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       API.Payment.method
         .filter((m) => m.length > 0)
         .map((value, rowIdx, arr) => (
-          <View key={rowIdx.toString()} style={styles.buttonRow}>
+          <View
+            key={utils.generateKey(rowIdx.toString())}
+            style={styles.buttonRow}>
             {
               // key: row, idx: column
               value.map((v, idx) => (

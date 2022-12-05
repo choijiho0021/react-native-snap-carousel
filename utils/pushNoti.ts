@@ -5,7 +5,29 @@ import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {Platform} from 'react-native';
 import ShortcutBadge from 'react-native-app-badge';
 
+const onNoti = (key: string, onNotification: any) => (notification) => {
+  if (notification && _.isFunction(onNotification)) {
+    if (key === 'onNotification') onNotification(notification);
+    else {
+      const notiType = notification.data.notiType.split('/');
+      // push noti를 클릭하여 앱으로 진입한 경우에만 카운트
+      Analytics.trackEvent('Touch_Noti', {type: notiType[0]});
+      onNotification(notification, false);
+    }
+  }
+};
+
 class PushNoti {
+  notificationOpenedListener: any;
+
+  notificationListener: any;
+
+  callback: any;
+
+  notificationInitListener: any;
+
+  onMessage: any;
+
   constructor() {
     this.callback = undefined;
     this.notificationListener = undefined;
@@ -14,10 +36,9 @@ class PushNoti {
     this.onMessage = undefined;
     this.onRegister = this.onRegister.bind(this);
     this.onNotification = this.onNotification.bind(this);
-    this.onNoti = this.onNoti.bind(this);
   }
 
-  onRegister(token) {
+  onRegister(token: {token: any}) {
     console.log('PushNotification TOKEN:', token.token);
 
     if (_.isFunction(this.callback)) {
@@ -25,7 +46,7 @@ class PushNoti {
     }
   }
 
-  onNotification(notification, isForeground = true) {
+  onNotification(notification: any, isForeground = true) {
     console.log('NOTIFICATION:', notification);
 
     if (_.isFunction(this.callback))
@@ -44,10 +65,7 @@ class PushNoti {
       */
   }
 
-  async configure({
-    onRegister = ({token}) => {},
-    onNotification = (notification) => {},
-  }) {
+  async configure({onRegister = () => {}, onNotification = () => {}}) {
     messaging()
       .getToken()
       .then((token) => {
@@ -63,16 +81,17 @@ class PushNoti {
 
     // App이 background상태, push noti를 클릭하는 경우
     this.notificationOpenedListener = messaging().onNotificationOpenedApp(
-      this.onNoti('onNotificationOpened', onNotification),
+      onNoti('onNotificationOpened', onNotification),
     );
 
     // // App이 Killed상태, push noti를 클릭하고 앱을 실행하는 경우
     this.notificationInitListener = messaging()
       .getInitialNotification()
-      .then(this.onNoti('getInitialNotification', onNotification));
+      .then(onNoti('getInitialNotification', onNotification));
 
     // // foreground 상태에서 data만 받아서 처리 (foreground badge 수 변경 전용)
     this.onMessage = messaging().onMessage((message) => {
+      console.log('aaaaa message', message);
       const {badge = 0, notiType, iccid} = message.data;
       // messaging().setBadge(Number(badge));
       if (Platform.OS === 'ios')
@@ -84,18 +103,6 @@ class PushNoti {
       }
     });
   }
-
-  onNoti = (key, onNotification) => (notification) => {
-    if (notification && _.isFunction(onNotification)) {
-      if (key === 'onNotification') onNotification(notification);
-      else {
-        const notiType = notification.data.notiType.split('/');
-        // push noti를 클릭하여 앱으로 진입한 경우에만 카운트
-        Analytics.trackEvent('Touch_Noti', {type: notiType[0]});
-        onNotification(notification, false);
-      }
-    }
-  };
 
   async add(callback) {
     this.callback = callback;

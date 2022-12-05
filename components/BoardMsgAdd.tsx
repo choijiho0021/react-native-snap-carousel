@@ -196,7 +196,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   const [pin, setPin] = useState<string>();
   const [attachment, setAttachment] = useState(List<CropImage>());
   const [extraHeight, setExtraHeight] = useState(0);
-  const [disable, setDisable] = useState(false);
   const scrollRef = useRef();
   const keybd = useRef();
 
@@ -357,7 +356,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         <View style={styles.attachBox}>
           {attachment.map((image, idx) => (
             <Pressable
-              // eslint-disable-next-line react/no-array-index-key
               key={image.filename}
               style={[styles.attach, idx < 2 && {marginRight: 33}]}
               onPress={() => setAttachment((a) => a.delete(idx))}>
@@ -394,7 +392,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
           returnKeyType="next"
           enablesReturnKeyAutomatically
           maxLength={13}
-          editable={!disable}
           onChangeText={(v) => {
             const value = utils.toPhoneNumber(v);
             setMobile(value);
@@ -406,7 +403,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         />
       </View>
     ),
-    [disable, error, mobile, validate],
+    [error, mobile, validate],
   );
 
   // errors object의 모든 value 값들이 undefined인지 확인한다.
@@ -450,7 +447,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
             returnKeyType="next"
             enablesReturnKeyAutomatically
             clearTextOnFocus={false}
-            editable={!disable}
             maxLength={25}
             onChangeText={(v) => {
               setTitle(v);
@@ -482,7 +478,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
             inputAccessoryViewID={inputAccessoryViewID}
             enablesReturnKeyAutomatically
             clearTextOnFocus={false}
-            editable={!disable}
             maxLength={2000}
             onChangeText={(v) => {
               setMsg(v);

@@ -219,17 +219,16 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [cmiStatusCd, quota, showSnackbar, usage, used]);
 
   const getUsage = useCallback(() => {
-    // 그래프 테스트 nid = 1616
     if (!esimApp && item.statusCd === 'A') {
       API.Subscription.getSubsUsage({id: item.nid, token}).then((resp) => {
         setDisableBtn(true);
         if (resp.result === 0) {
-          const {quota, used} = resp.objects[0];
+          const {quota: subsQuota, used: subsUsed} = resp.objects[0];
           const progress =
-            used >= 0 ? 100 - Math.floor((used / quota) * 100) : 0;
+            subsUsed >= 0 ? 100 - Math.floor((subsUsed / subsQuota) * 100) : 0;
 
-          setQuota(quota);
-          setUsed(used);
+          setQuota(subsQuota);
+          setUsed(subsUsed);
           setIsShowUsage(true);
 
           circularProgress.current?.animate(progress, 3000, null);
@@ -256,20 +255,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
       </View>
     );
   }, [endTime, item.endDate]);
-
-  const expireBeforeUse = useCallback(() => {
-    return (
-      <View style={styles.inactiveContainer}>
-        <AppText style={appStyles.normal12Text}>
-          {i18n.t('usim:usablePeriod')}
-        </AppText>
-        <AppText style={styles.usagePeriod}>{`${utils.toDateString(
-          item.purchaseDate,
-          'YYYY-MM-DD',
-        )} ~ ${item.expireDate}`}</AppText>
-      </View>
-    );
-  }, [item.expireDate, item.purchaseDate]);
 
   // data는 esim:Mb usim:kb 단위
   const toMb = useCallback((data: number) => {
@@ -428,8 +413,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
     ? [i18n.t(`esim:${cmiStatusCd || 'R'}`), cmiStatusCd || 'R']
     : [item.status, item.statusCd];
 
-  const {statusColor = colors.warmGrey, isActive = false} =
-    getStatusColor(statusCd);
+  const {statusColor = colors.warmGrey} = getStatusColor(statusCd);
 
   return (
     <TouchableOpacity onPress={onPress}>

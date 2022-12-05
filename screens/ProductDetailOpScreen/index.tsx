@@ -9,7 +9,6 @@ import {
   View,
   SafeAreaView,
 } from 'react-native';
-import _ from 'underscore';
 import Clipboard from '@react-native-community/clipboard';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -161,7 +160,8 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
           country: elm2[0],
           operator: elm2[1].replace('&amp;', '&'),
           apn: elm2[2] ? elm2[2].split('&amp;') : [],
-        }));
+        }))
+        .sort((a, b) => a.country.localeCompare(b.country));
 
       setData(
         searchWord

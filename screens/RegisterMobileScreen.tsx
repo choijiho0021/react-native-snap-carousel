@@ -59,7 +59,6 @@ import {eventToken} from '@/constants/Adjust';
 import {LinkModelState} from '../redux/modules/link';
 
 const {esimGlobal, isProduction, isIOS} = Env.get();
-// const esimGlobal = false;
 
 const styles = StyleSheet.create({
   helpText: {
@@ -194,7 +193,7 @@ const RegisterMobileListItem0 = ({
         <View style={styles.rowStyle}>
           {item.list.map((elm, idx) => (
             <AppText
-              key={`${idx}`}
+              key={utils.generateKey(idx)}
               style={[styles.confirmItem, {color: elm.color}]}>
               {elm.text}
             </AppText>
@@ -224,7 +223,6 @@ type RegisterMobileScreenRouteProp = RouteProp<
 type RegisterMobileScreenProps = {
   account: AccountModelState;
   link: LinkModelState;
-  lastTab: string[];
   pending: boolean;
 
   navigation: RegisterMobileScreenNavigationProp;
@@ -243,7 +241,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   route,
   actions,
   pending,
-  lastTab,
 }) => {
   const [loading, setLoading] = useState(false);
   const [pin, setPin] = useState('');
@@ -787,8 +784,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 };
 
 export default connect(
-  ({cart, account, link, status}: RootState) => ({
-    lastTab: cart.lastTab.toArray(),
+  ({account, link, status}: RootState) => ({
     account,
     link,
     pending:

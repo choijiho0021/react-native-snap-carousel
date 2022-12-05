@@ -15,6 +15,7 @@ import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import {actions as infoActions, InfoAction} from '@/redux/modules/info';
 import AppCarousel from '@/components/AppCarousel';
+import utils from '@/redux/api/utils';
 
 const DOT_MARGIN = 6;
 const INACTIVE_DOT_WIDTH = 6;
@@ -161,27 +162,33 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
               style={dotStyle(aniMationWidth, margin)}
             />
           ) : (
-            <View key={idx.toString()} style={styles.inactiveDot} />
+            <View
+              key={utils.generateKey(idx.toString())}
+              style={styles.inactiveDot}
+            />
           ),
         );
       }
 
-      return promotion.map((_, idx) => {
+      return promotion.map((_elm, idx) => {
         if (activeIndex === idx)
           return (
             <Animated.View
-              key={idx.toString()}
+              key={utils.generateKey(idx.toString())}
               style={dotStyle(aniMationWidth, DOT_MARGIN, colors.clearBlue)}
             />
           );
 
         return activeIndex === (idx + 1) % promotion.length ? (
           <Animated.View
-            key={idx.toString()}
+            key={utils.generateKey(idx.toString())}
             style={dotStyle(margin, DOT_MARGIN, colors.lightGrey)}
           />
         ) : (
-          <View key={idx.toString()} style={styles.inactiveDot} />
+          <View
+            key={utils.generateKey(idx.toString())}
+            style={styles.inactiveDot}
+          />
         );
       });
     },
@@ -189,7 +196,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
   );
 
   const renderItem = useCallback(
-    ({item, index}: {item: RkbPromotion; index: number}) => (
+    ({item}: {item: RkbPromotion}) => (
       <PromotionImage item={item} onPress={onPress} width={width} />
     ),
     [onPress, width],
