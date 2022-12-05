@@ -162,17 +162,16 @@ const ProductDetailGlobalScreen: React.FC<ProductDetailScreenProps> = ({
     const sz = sizeString.split(',');
     const scale = windowWidth / Number(sz[0]);
 
-    let i = 3;
-    for (; i < sz.length; i++) {
+    for (let i = 3; i < sz.length; i++) {
       // 각 tab별로 시작 위치를 설정한다.
       setHeight((prev) => {
-        prev[i - 2] = Math.ceil(Number(sz[i]) * scale);
+        prev[sz.length - 2] = Math.ceil(Number(sz[i]) * scale);
         return prev;
       });
     }
     // 전체 화면의 높이를 저장한다.
     setHeight((prev) => {
-      prev[i - 2] = Math.ceil(Number(sz[1]) * scale);
+      prev[sz.length - 2] = Math.ceil(Number(sz[1]) * scale);
       return prev;
     });
   }, []);

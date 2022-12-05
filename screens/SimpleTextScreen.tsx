@@ -190,13 +190,13 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
   }, [account, eventStatus, isProdEvent, navigation, route.params]);
 
   const getContent = useCallback(
-    ({key, bodyTitle}: {key: string; bodyTitle?: string}) => {
+    ({key, bodyTitle: title}: {key: string; bodyTitle?: string}) => {
       const {infoMap} = info;
-      const infoKey = key === 'noti' && bodyTitle ? bodyTitle : key;
+      const infoKey = key === 'noti' && title ? title : key;
       setInfoMapKey(infoKey);
       if (infoMap.has(infoKey)) {
         setBody(infoMap.get(infoMapKey, [])[0]?.body || '');
-      } else if (key === 'noti' && bodyTitle) {
+      } else if (key === 'noti' && title) {
         action.info.getInfoByTitle(infoMapKey);
       } else {
         action.info.getInfoList(infoMapKey);
@@ -225,7 +225,9 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
             source={{uri: body}}
             style={styles.container}
             onMessage={onMessage}
-            onLoadEnd={({nativeEvent: {loading}}) => setLoading(loading)}
+            onLoadEnd={({nativeEvent: {loading: webViewLoading}}) =>
+              setLoading(webViewLoading)
+            }
           />
         );
 
@@ -238,7 +240,9 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
             html: htmlDetailWithCss(body),
             baseUrl: `${scheme}://${apiUrl}`,
           }}
-          onLoadEnd={({nativeEvent: {loading}}) => setLoading(loading)}
+          onLoadEnd={({nativeEvent: {loading: webViewLoading}}) =>
+            setLoading(webViewLoading)
+          }
         />
       );
     },
@@ -258,16 +262,17 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
   }, [navigation, route]);
 
   useEffect(() => {
-    const {key, text: body, bodyTitle = ''} = route.params || {};
-    if (body) {
-      setBody(body);
-      setBodyTitle(bodyTitle);
-    } else if (key) {
-      getContent({key, bodyTitle});
+    const {params} = route || {};
+
+    if (params && params.text) {
+      setBody(params.text);
+      setBodyTitle(params.bodyTitle || '');
+    } else if (params.key) {
+      getContent({key: params.key, bodyTitle: params.bodyTitle});
     } else {
       setBody(i18n.t('err:body'));
     }
-  }, [getContent, route.params]);
+  }, [getContent, route, route.params]);
 
   const {loggedIn, iccid, token} = account;
   const {image} = route.params;

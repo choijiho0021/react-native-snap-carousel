@@ -568,9 +568,9 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   );
 
   const onMove = useCallback(
-    (key: string, route: string, param: object) => () => {
-      if (!_.isEmpty(route)) {
-        navigation.navigate(route, param);
+    (key: string, routeName: string, param: object) => () => {
+      if (!_.isEmpty(routeName)) {
+        navigation.navigate(routeName, param);
       }
     },
     [navigation],
@@ -578,11 +578,11 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
   const onAuth = useCallback(
     async ({
-      authorized,
+      authorized: isAuthorized,
       user,
       pass,
-      email,
-      mobile,
+      email: authEmail,
+      mobile: authMobile,
       token,
       profileImageUrl: profile,
       kind,
@@ -594,23 +594,23 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         pass,
         kind,
         token,
-        mobile,
+        mobile: authMobile,
       });
 
       setLoading(false);
 
       if (resp.result === 0) {
-        const {mobile: drupalId, newUser} = resp.objects[0];
+        const {mobile: drupalId, newUser: isNewUser} = resp.objects[0];
 
-        setNewUser(newUser);
+        setNewUser(isNewUser);
         setMobile(drupalId);
         setPin(pass);
-        setAuthorized(authorized);
-        setEmail(email);
+        setAuthorized(isAuthorized);
+        setEmail(authEmail || '');
         setSocialLogin(true);
-        setProfileImageUrl(profile);
+        setProfileImageUrl(profile || '');
 
-        if (newUser) {
+        if (isNewUser) {
           // new login
           // create account
           emailRef.current?.focus();
