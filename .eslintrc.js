@@ -50,6 +50,7 @@ module.exports = {
     'react/jsx-one-expression-per-line': 0,
     'generator-star-spacing': 0,
     'function-paren-newline': 0,
+    'prefer-destructuring': ['error', {object: true, array: false}],
     'no-param-reassign': 0, // 사용할지 더 확인해 보고 추가 수정 필요
     'import/no-unresolved': [
       2,

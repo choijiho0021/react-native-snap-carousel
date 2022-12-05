@@ -354,9 +354,11 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   }, [link?.url, loggedIn, navigation, newUser]);
 
   useEffect(() => {
+    const {current} = controller;
+
     return () => {
       mounted.current = false;
-      controller.current?.abort();
+      current?.abort();
     };
   }, []);
 
