@@ -702,6 +702,7 @@
   "inv:upper2": "You can get <b>{cash}</b> cash, and",
   "inv:upper3": "your friend also gets <b>{cash}</b> cash!",
   "inv:upper4": "Automatically added to your balance when the invited friend creates a new account.",
+  "inv:upper5": "※ 캐시 유효기간 : 지급일로부터 1년",
 
   "inv:lower1": "Unlimited invitations!",
   "inv:lower2": "<b>One friend</b> will get you:",

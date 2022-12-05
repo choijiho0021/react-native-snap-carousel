@@ -2,7 +2,7 @@
 import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
-import _, {result} from 'underscore';
+import _ from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
 import {RkbOrder} from '@/redux/api/orderApi';
@@ -229,13 +229,13 @@ const slice = createSlice({
       }
     });
 
-    builder.addCase(getOrderById.fulfilled, (state, action) => {
+    builder.addCase(getOrderById.fulfilled, (state) => {
       // return updateOrders(state, action);
       // TODO: 다시 구현 필요
       return state;
     });
 
-    builder.addCase(cancelOrder.fulfilled, (state, action) => {
+    builder.addCase(cancelOrder.fulfilled, (state) => {
       return state;
     });
 
@@ -307,7 +307,7 @@ const slice = createSlice({
       }
     });
 
-    builder.addCase(cmiGetSubsUsage.fulfilled, (state, action) => {
+    builder.addCase(cmiGetSubsUsage.fulfilled, (state) => {
       return state;
     });
   },

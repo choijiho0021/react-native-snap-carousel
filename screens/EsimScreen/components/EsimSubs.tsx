@@ -30,7 +30,6 @@ import SplitText from '@/components/SplitText';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
 import AppStyledText from '@/components/AppStyledText';
 import AppModal from '@/components/AppModal';
-import AppIcon from '@/components/AppIcon';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -199,9 +198,9 @@ const styles = StyleSheet.create({
     borderColor: colors.whiteFive,
 
     shadowColor: 'rgb(52, 62, 95)',
-    shadowOpacity: 0.1,
+    elevation: 10,
     shadowRadius: 3,
-    elevation: 5,
+    shadowOpacity: 0.1,
     shadowOffset: {
       height: 4,
       width: 1,
@@ -423,7 +422,7 @@ const EsimSubs = ({
       <Pressable
         style={styles.prodTitle}
         onPress={() => {
-          setIsMoreInfo((prev) => !prev);
+          if (notCardInfo) setIsMoreInfo((prev) => !prev);
         }}>
         <SplitText
           key={mainSubs.key}
@@ -437,7 +436,11 @@ const EsimSubs = ({
             expired || mainSubs.giftStatusCd === 'S'
               ? styles.usageTitleNormal
               : styles.usageTitleBold,
-            {alignSelf: 'center', lineHeight: 28},
+            {
+              alignSelf: 'center',
+              lineHeight: 28,
+              marginRight: 8,
+            },
           ]}
           numberOfLines={2}
           ellipsizeMode="tail">
@@ -463,7 +466,19 @@ const EsimSubs = ({
         )}
       </Pressable>
     );
-  }, [mainSubs, expired, isCharged, isMoreInfo, sendable]);
+  }, [
+    mainSubs.prodName,
+    mainSubs.key,
+    mainSubs.giftStatusCd,
+    mainSubs.nid,
+    mainSubs.promoFlag,
+    mainSubs.isStore,
+    expired,
+    isCharged,
+    isMoreInfo,
+    notCardInfo,
+    sendable,
+  ]);
 
   const topInfo = useCallback(() => {
     return (
@@ -586,20 +601,12 @@ const EsimSubs = ({
               imsi: mainSubs.imsi,
             })
           }>
-          <AppIcon name="hkIcon" />
-
-          <AppStyledText
-            text={i18n.t(
-              `esim:redirectHK2${mainSubs.tag?.includes('HA') ? ':done' : ''}`,
-            )}
-            textStyle={styles.redirectText}
-            format={{b: {color: 'green'}}}
-            data={{chargeablePeriod}}
-          />
+          <AppSvgIcon name="hkIcon" />
+          <Text style={styles.redirectText}>{i18n.t('esim:redirectHK2')}</Text>
         </Pressable>
       );
     return null;
-  }, [chargeablePeriod, expired, mainSubs, navigation]);
+  }, [expired, mainSubs, navigation]);
 
   const renderMoveBtn = useCallback(() => {
     const moveBtnList = [sendable, isCharged || isChargeable].filter(
@@ -618,7 +625,7 @@ const EsimSubs = ({
 
           return (
             <View
-              key={idx}
+              key={utils.generateKey(idx)}
               style={[styles.btnMove, {marginRight: !isLast ? 12 : 0}]}>
               <AppButton
                 title={btnTitle}

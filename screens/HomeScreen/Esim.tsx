@@ -376,11 +376,11 @@ const Esim: React.FC<EsimProps> = ({
   );
 
   const renderScene = useCallback(
-    ({route}: {route: TabViewRoute}) => {
+    ({route: sceneRoute}: {route: TabViewRoute}) => {
       return (
         <StoreList
-          key={route.key}
-          data={product.priceInfo.get(route.key, [] as RkbPriceInfo[][])}
+          key={sceneRoute.key}
+          data={product.priceInfo.get(sceneRoute.key, [] as RkbPriceInfo[][])}
           onPress={onPressItem}
           localOpList={product.localOpList}
           width={dimensions.width}

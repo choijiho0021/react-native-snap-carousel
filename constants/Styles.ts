@@ -292,6 +292,7 @@ export const appStyles = StyleSheet.create({
     color: colors.black,
     padding: 0,
     margin: 0,
+    marginRight: 8,
   },
   semiBold16Text: {
     //        fontFamily: "AppleSDGothicNeo",
@@ -555,9 +556,6 @@ export const appStyles = StyleSheet.create({
 // document.body.clientWidth : 화면의 너비
 // document.documentElement.clientHeight : 문서의 총 높이
 // getBoundingClientRect().y : 각 div의 시작 위치 y position
-
-export const injectedScript =
-  'window.ReactNativeWebView.postMessage(`dimension,${document.body.scrollHeight}`)';
 
 const basicScript = `<script>
 window.onload = function () {

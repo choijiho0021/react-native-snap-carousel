@@ -295,10 +295,12 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
               <AppText style={styles.iccidTitle}>{i18n.t('rch:iccid')}</AppText>
               <View style={styles.iccidRow}>
                 {seg.map((s, i) => [
-                  <AppText key={i} style={styles.iccid}>
+                  <AppText key={utils.generateKey(i)} style={styles.iccid}>
                     {s}
                   </AppText>,
-                  i < 3 ? <AppText key={`${i}-`}>-</AppText> : null,
+                  i < 3 ? (
+                    <AppText key={utils.generateKey(`${i}-`)}>-</AppText>
+                  ) : null,
                 ])}
               </View>
               <LabelText

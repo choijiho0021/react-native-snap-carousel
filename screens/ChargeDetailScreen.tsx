@@ -28,8 +28,6 @@ const styles = StyleSheet.create({
   paymentBtnFrame: {
     height: 52,
     flexDirection: 'row',
-    borderTopWidth: 1,
-    borderColor: '#d8d8d8',
   },
   paymentBtn: {
     height: 52,
@@ -41,6 +39,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.white,
+    borderTopWidth: 1,
+    borderColor: '#d8d8d8',
   },
   amountText: {
     ...appStyles.normal16Text,

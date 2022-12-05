@@ -1,4 +1,3 @@
-/* eslint-disable global-require */
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useState, useEffect, useRef, useMemo} from 'react';
@@ -18,7 +17,6 @@ import {
 } from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';
 import {bindActionCreators, RootState} from 'redux';
-import {RouteProp} from '@react-navigation/native';
 import i18n from '@/utils/i18n';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -70,17 +68,14 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    // alignItems: 'stretch',
     justifyContent: 'flex-start',
     flexDirection: 'column',
     width: '100%',
     height: 'auto',
-    // height: '100%'
   },
   image: {
     width: '100%',
     maxWidth: MAX_WIDTH,
-    // maxHeight: height,
     height: '100%',
   },
   text: {
@@ -95,12 +90,10 @@ const styles = StyleSheet.create({
   bottomText: {
     ...appStyles.normal16Text,
     letterSpacing: 0.22,
-    // lineHeight: 15,
     marginHorizontal: 30,
     textAlignVertical: 'center',
   },
   bottom: {
-    // backgroundColor:colors.black,
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -129,8 +122,7 @@ type TutorialScreenProps = {
 type CarouselIndex = 'step1' | 'step2' | 'step3' | 'step4';
 
 const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
-  const {navigation, account, link, action} = props;
-  const {recommender, gift} = link;
+  const {navigation} = props;
   const [activeSlide, setActiveSlide] = useState(0);
   const [status, setStatus] = useState<TrackingStatus>();
   const images = useMemo(() => Object.keys(tutorialImages), []);

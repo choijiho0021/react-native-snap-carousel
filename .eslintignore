@@ -1,6 +1,9 @@
 babel.config.js
 metro.config.js
 .eslintrc.js
+index.js
+
+store.ts
 
 android/
 ios/

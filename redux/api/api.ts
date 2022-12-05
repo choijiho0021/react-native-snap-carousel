@@ -321,10 +321,15 @@ const callHttp = async <T>(
 const callHttpGet = <T>(
   url: string,
   callback?: CallHttpCallback<T>,
-  headers?: Record<string, string> | Headers,
+  httpHeaders?: Record<string, string> | Headers,
   option: CallHttpOption = {isJson: true},
 ) => {
-  return callHttp<T>(url, {method: 'GET', headers}, callback, option);
+  return callHttp<T>(
+    url,
+    {method: 'GET', headers: httpHeaders},
+    callback,
+    option,
+  );
 };
 
 const missingParameters = (obj: object) => {

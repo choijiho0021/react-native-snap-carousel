@@ -40,11 +40,16 @@ const styles = StyleSheet.create({
     marginVertical: 40,
     marginHorizontal: 20,
   },
-  blueBgDetailText: {
+  blueBgDetailText1: {
     ...appStyles.normal16Text,
     color: colors.white,
     marginTop: 20,
-    marginBottom: 30,
+    lineHeight: 22,
+  },
+  blueBgDetailText2: {
+    ...appStyles.normal14Text,
+    color: colors.white,
+    marginBottom: 7,
     lineHeight: 22,
   },
   bold24WhiteText: {
@@ -317,8 +322,11 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
             i18n.t('inv:upper3'),
             utils.numberToCommaString(signupGift),
           )}
-          <AppText style={styles.blueBgDetailText}>
+          <AppText style={styles.blueBgDetailText1}>
             {i18n.t('inv:upper4')}
+          </AppText>
+          <AppText style={styles.blueBgDetailText2}>
+            {i18n.t('inv:upper5')}
           </AppText>
           <AppIcon name="inviteRokebi1" />
         </View>
