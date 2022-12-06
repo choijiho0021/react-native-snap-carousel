@@ -70,7 +70,7 @@ export const sortSubs = (a: RkbSubscription[], b: RkbSubscription[]) => {
 
   if (
     isDisabled(a[0]) === isDisabled(b[0]) &&
-    a[0].purchaseDate > b[0].purchaseDate
+    a[a.length - 1].purchaseDate > b[b.length - 1].purchaseDate
   ) {
     return -1;
   }
