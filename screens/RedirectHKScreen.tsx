@@ -29,6 +29,9 @@ import {getImage} from '@/utils/utils';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import {AccountModelState} from '@/redux/modules/account';
 import {API} from '@/redux/api';
+import {MAX_WIDTH} from '@/constants/SliderEntry.style';
+import HkStatusLottie from './EsimScreen/components/HkStatusLottie';
+import AppModal from '@/components/AppModal';
 
 const {width} = Dimensions.get('window');
 
@@ -45,6 +48,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   btnCopy: {
     backgroundColor: colors.white,
@@ -116,18 +124,98 @@ const styles = StyleSheet.create({
     height: 40,
     marginHorizontal: 18,
   },
-  btnCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginLeft: 40,
-    marginBottom: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
+  hkCheckBox: {
+    marginTop: 2,
+    marginHorizontal: 20,
+    paddingTop: 30,
+    paddingBottom: 24,
+    paddingHorizontal: 20,
+    borderColor: colors.whiteFive,
+    borderWidth: 1,
+    borderRadius: 3,
+    height: 184,
+
+    shadowColor: 'rgb(52, 62, 95)',
+    elevation: 10,
+    shadowRadius: 3,
+    shadowOpacity: 0.1,
+    shadowOffset: {
+      height: 4,
+      width: 1,
+    },
+    backgroundColor: colors.white,
   },
-  circleText: {
-    ...appStyles.normal16Text,
+  hkCheckTextSmall: {
+    ...appStyles.medium14,
+    lineHeight: 24,
+    color: colors.black,
+  },
+  hkCheckTextSmallBold: {
+    ...appStyles.bold14Text,
+    lineHeight: 24,
+    color: colors.black,
+  },
+  hkCheckTextEmphasis: {
+    ...appStyles.medium16,
+    lineHeight: 22,
+    color: colors.clearBlue,
+  },
+  hkCheckTextEmphasisBold: {
+    ...appStyles.bold16Text,
+    lineHeight: 22,
+    color: colors.clearBlue,
+  },
+  hkCheckText: {
+    ...appStyles.medium16,
+    lineHeight: 22,
+    color: colors.black,
+  },
+  hkCheckTextRed: {
+    ...appStyles.medium16,
+    lineHeight: 22,
+    color: colors.redError,
+  },
+  hkCheckTextSemiBold: {
+    ...appStyles.semiBold16Text,
+    lineHeight: 22,
+    color: colors.black,
+  },
+  hkCheckBoxBtn: {
+    marginTop: 24,
+    backgroundColor: colors.clearBlue,
+    width: 120,
+    height: 40,
+    borderRadius: 3,
+  },
+  hkCheckBoxBtnText: {
+    ...appStyles.medium16,
+    lineHeight: 40,
     color: colors.white,
+  },
+  hkCheckTextSmallSmall: {
+    ...appStyles.medium14,
+    lineHeight: 28,
+    color: colors.black,
+  },
+  hkCheckDisBtn: {
+    backgroundColor: colors.clearBlue,
+    opacity: 0.6,
+  },
+  hkCheckIcon: {
+    alignSelf: 'flex-end',
+  },
+  registingInfo: {
+    marginHorizontal: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    marginBottom: 32,
+    marginTop: 8,
+  },
+  registingInfoText: {
+    marginLeft: 8,
+    ...appStyles.medium16,
+    lineHeight: 20,
+    color: colors.redError,
   },
 });
 
@@ -150,12 +238,10 @@ type RedirectHKScreenProps = {
 };
 
 type hkRegStatusType =
-  | 'normal'
-  | 'loading'
-  | 'unregistered'
-  | 'registering'
-  | 'registered';
-type circleColorList = 'grey' | 'red' | 'yellow' | 'green';
+  | 'hkCheck'
+  | 'hkUnregistered'
+  | 'hkRegistering'
+  | 'hkRegistered';
 
 const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
   account,
@@ -167,8 +253,10 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
   const [activeSlide, setActiveSlide] = useState(0);
   const [showSnackBar, setShowSnackBar] = useState(false);
   const [copyString, setCopyString] = useState('');
-  const [circleColor, setCircleColor] = useState<circleColorList>('grey');
-  const [hkRegStatus, sethkRegStatus] = useState<hkRegStatusType>('normal');
+  const [hkRegStatus, sethkRegStatus] = useState<hkRegStatusType>('hkCheck');
+  const [reCheckCount, setReCheckCount] = useState(0);
+  const [reCheckable, setReCheckable] = useState<boolean>(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
   const images = useMemo(() => Object.keys(guideImage), []);
   const params = useMemo(() => route?.params, [route?.params]);
 
@@ -226,16 +314,8 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
     [account, action.order, params.uuid],
   );
 
-  const updateStatus = useCallback(
-    (regstatus: hkRegStatusType, color: circleColorList) => {
-      sethkRegStatus(regstatus);
-      setCircleColor(color);
-    },
-    [],
-  );
-
   const checkAndUpdateTag = useCallback(async () => {
-    sethkRegStatus('loading');
+    let isRegsiting = false;
     const rsp = await API.Subscription.getHkRegStatus({
       iccid: params.iccid,
       imsi: params.imsi,
@@ -254,26 +334,42 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
     // });
 
     if (rsp.result === 0 && rsp.objects) {
-      const {hkRegStatus} = rsp.objects[0];
-      switch (hkRegStatus) {
+      const hkRegStatusCode = rsp.objects[0].hkRegStatus;
+      switch (hkRegStatusCode) {
         case '2':
-          updateStatus('registering', 'yellow');
-          updateTag('HQ');
+          isRegsiting = true;
+          sethkRegStatus('hkRegistering');
+          setReCheckable(false);
           break;
         case '3':
-          updateStatus('registered', 'green');
+          sethkRegStatus('hkRegistered');
           updateTag('HA');
           break;
         default:
-          updateStatus('unregistered', 'red');
+          sethkRegStatus('hkUnregistered');
           updateTag('HF');
           break;
       }
     }
+
     setTimeout(() => {
-      updateStatus('normal', 'grey');
-    }, 3000);
-  }, [params.iccid, params.imsi, updateStatus, updateTag]);
+      if (isRegsiting) {
+        const temp = reCheckCount + 1;
+        setReCheckCount(temp);
+        if (temp < 3) {
+          setReCheckable(true);
+        } else {
+          sethkRegStatus('hkCheck');
+        }
+      } else {
+        sethkRegStatus('hkCheck');
+      }
+    }, 20000);
+  }, [
+    reCheckCount,
+    reCheckable,
+    // params.iccid, params.imsi, updateTag
+  ]);
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -357,13 +453,67 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
             </View>
           ))}
         </View>
-        <Pressable
-          style={[styles.btnCircle, {backgroundColor: circleColor}]}
-          onPress={checkAndUpdateTag}>
-          <AppText style={styles.circleText}>
-            {i18n.t(`redirectHK:hkRegStatus:${hkRegStatus}`)}
-          </AppText>
-        </Pressable>
+
+        <View style={[styles.hkCheckBox, styles.row]}>
+          <View>
+            <AppStyledText
+              text={i18n.t(`redirectHK:hkRegStatus:${hkRegStatus}`)}
+              textStyle={styles.hkCheckText}
+              format={{
+                e: styles.hkCheckTextEmphasis,
+                smb: styles.hkCheckTextSemiBold,
+                eb: styles.hkCheckTextEmphasisBold,
+                s: styles.hkCheckTextSmall,
+                sb: styles.hkCheckTextSmallBold,
+                r: styles.hkCheckTextRed,
+                ss: styles.hkCheckTextSmallSmall,
+              }}
+            />
+            {(hkRegStatus === 'hkCheck' || hkRegStatus === 'hkRegistering') && (
+              <AppButton
+                style={styles.hkCheckBoxBtn}
+                onPress={checkAndUpdateTag}
+                title={i18n.t(
+                  `redirectHK:hkRegStatus:btn:${
+                    hkRegStatus === 'hkRegistering' && reCheckable
+                      ? 'reCheck'
+                      : hkRegStatus
+                  }`,
+                )}
+                titleStyle={styles.hkCheckBoxBtnText}
+                disabled={hkRegStatus === 'hkRegistering' && !reCheckable}
+                disableStyle={styles.hkCheckDisBtn}
+              />
+            )}
+          </View>
+          <View style={styles.hkCheckIcon}>
+            {hkRegStatus === 'hkCheck' ? (
+              <AppSvgIcon name={`${hkRegStatus}`} />
+            ) : (
+              <HkStatusLottie hkRegStatus={hkRegStatus} />
+            )}
+          </View>
+        </View>
+
+        {hkRegStatus === 'hkRegistering' ? (
+          <Pressable
+            style={[styles.row, styles.registingInfo]}
+            onPress={() => {
+              setShowModal(true);
+            }}>
+            <View style={[styles.row, {justifyContent: 'flex-start'}]}>
+              <AppSvgIcon name="cautionIcon" />
+              <AppText style={styles.registingInfoText}>
+                {i18n.t('redirectHK:hkRegStatus:registingInfo')}
+              </AppText>
+            </View>
+
+            <AppSvgIcon name="rightArrow" style={{right: 0}} />
+          </Pressable>
+        ) : (
+          <View style={{height: 50}} />
+        )}
+
         <AppButton
           style={styles.confirm}
           titleStyle={styles.confirmTitle}
@@ -377,6 +527,50 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
           }}
         />
       </ScrollView>
+
+      <AppModal
+        type="close"
+        justifyContent="flex-end"
+        titleViewStyle={{justifyContent: 'flex-start'}}
+        contentStyle={{
+          marginHorizontal: 0,
+          backgroundColor: colors.white,
+          borderTopLeftRadius: 8,
+          borderTopRightRadius: 8,
+          padding: 20,
+          paddingTop: 24,
+          maxWidth: MAX_WIDTH,
+          width: '100%',
+        }}
+        onOkClose={() => setShowModal(false)}
+        visible={showModal}>
+        <View
+          style={[
+            styles.row,
+            {justifyContent: 'flex-start', marginBottom: 16},
+          ]}>
+          <AppSvgIcon name="cautionIcon" />
+          <AppText
+            style={{
+              ...appStyles.bold18Text,
+              lineHeight: 24,
+              color: colors.redError,
+              marginLeft: 8,
+            }}>
+            {i18n.t('redirectHK:hkRegStatus:registingInfo')}
+          </AppText>
+        </View>
+        <AppText
+          style={{
+            ...appStyles.medium16,
+            lineHeight: 24,
+            color: colors.black,
+            marginBottom: 36,
+          }}>
+          {i18n.t('redirectHK:hkRegStatus:registingInfo:ment')}
+        </AppText>
+      </AppModal>
+
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackBar(false)}
