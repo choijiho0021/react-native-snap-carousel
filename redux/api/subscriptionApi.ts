@@ -55,7 +55,7 @@ export const quadcellStatusCd = {
   '03': 'C', // Deleted
 };
 
-const isDisabled = (item: RkbSubscription) => {
+export const isDisabled = (item: RkbSubscription) => {
   return item.giftStatusCd === 'S' || new Date(item.expireDate) <= new Date();
 };
 
