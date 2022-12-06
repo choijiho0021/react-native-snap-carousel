@@ -145,6 +145,54 @@ const styles = StyleSheet.create({
     },
     backgroundColor: colors.white,
   },
+  hkCheckBoxBtn: {
+    marginTop: 24,
+    backgroundColor: colors.clearBlue,
+    width: 120,
+    height: 40,
+    borderRadius: 3,
+  },
+  hkCheckDisBtn: {
+    backgroundColor: colors.clearBlue,
+    opacity: 0.6,
+  },
+  hkCheckIcon: {
+    alignSelf: 'flex-end',
+  },
+  registingInfo: {
+    marginHorizontal: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    marginBottom: 32,
+    marginTop: 8,
+  },
+  modalContent: {
+    marginHorizontal: 0,
+    backgroundColor: colors.white,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+    padding: 20,
+    paddingTop: 24,
+    maxWidth: MAX_WIDTH,
+    width: '100%',
+  },
+  modalTitleText: {
+    ...appStyles.bold18Text,
+    lineHeight: 24,
+    color: colors.redError,
+    marginLeft: 8,
+  },
+  modalBodyText: {
+    ...appStyles.medium16,
+    lineHeight: 24,
+    color: colors.black,
+    marginBottom: 36,
+  },
+  hkInfoText: {
+    ...appStyles.normal14Text,
+    lineHeight: 20,
+    letterSpacing: 0,
+  },
   hkCheckTextSmall: {
     ...appStyles.medium14,
     lineHeight: 24,
@@ -180,13 +228,6 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: colors.black,
   },
-  hkCheckBoxBtn: {
-    marginTop: 24,
-    backgroundColor: colors.clearBlue,
-    width: 120,
-    height: 40,
-    borderRadius: 3,
-  },
   hkCheckBoxBtnText: {
     ...appStyles.medium16,
     lineHeight: 40,
@@ -196,20 +237,6 @@ const styles = StyleSheet.create({
     ...appStyles.medium14,
     lineHeight: 28,
     color: colors.black,
-  },
-  hkCheckDisBtn: {
-    backgroundColor: colors.clearBlue,
-    opacity: 0.6,
-  },
-  hkCheckIcon: {
-    alignSelf: 'flex-end',
-  },
-  registingInfo: {
-    marginHorizontal: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    marginBottom: 32,
-    marginTop: 8,
   },
   registingInfoText: {
     marginLeft: 8,
@@ -360,11 +387,12 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
           setReCheckable(true);
         } else {
           sethkRegStatus('hkCheck');
+          setReCheckCount(0);
         }
       } else {
         sethkRegStatus('hkCheck');
       }
-    }, 20000);
+    }, 2000);
   }, [
     reCheckCount,
     reCheckable,
@@ -376,11 +404,7 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
       <ScrollView style={styles.container}>
         <View style={{margin: 20}}>
           <AppStyledText
-            textStyle={{
-              ...appStyles.normal14Text,
-              lineHeight: 20,
-              letterSpacing: 0,
-            }}
+            textStyle={styles.hkInfoText}
             text={i18n.t('redirectHK:info1')}
             format={{b: {color: colors.blue}}}
           />
@@ -532,16 +556,7 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
         type="close"
         justifyContent="flex-end"
         titleViewStyle={{justifyContent: 'flex-start'}}
-        contentStyle={{
-          marginHorizontal: 0,
-          backgroundColor: colors.white,
-          borderTopLeftRadius: 8,
-          borderTopRightRadius: 8,
-          padding: 20,
-          paddingTop: 24,
-          maxWidth: MAX_WIDTH,
-          width: '100%',
-        }}
+        contentStyle={styles.modalContent}
         onOkClose={() => setShowModal(false)}
         visible={showModal}>
         <View
@@ -550,23 +565,11 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
             {justifyContent: 'flex-start', marginBottom: 16},
           ]}>
           <AppSvgIcon name="cautionIcon" />
-          <AppText
-            style={{
-              ...appStyles.bold18Text,
-              lineHeight: 24,
-              color: colors.redError,
-              marginLeft: 8,
-            }}>
+          <AppText style={styles.modalTitleText}>
             {i18n.t('redirectHK:hkRegStatus:registingInfo')}
           </AppText>
         </View>
-        <AppText
-          style={{
-            ...appStyles.medium16,
-            lineHeight: 24,
-            color: colors.black,
-            marginBottom: 36,
-          }}>
+        <AppText style={styles.modalBodyText}>
           {i18n.t('redirectHK:hkRegStatus:registingInfo:ment')}
         </AppText>
       </AppModal>
