@@ -465,19 +465,7 @@ const EsimSubs = ({
         )}
       </Pressable>
     );
-  }, [
-    mainSubs.prodName,
-    mainSubs.key,
-    mainSubs.giftStatusCd,
-    mainSubs.nid,
-    mainSubs.promoFlag,
-    mainSubs.isStore,
-    expired,
-    isCharged,
-    isMoreInfo,
-    notCardInfo,
-    sendable,
-  ]);
+  }, [mainSubs, expired, isCharged, isMoreInfo, notCardInfo]);
 
   const topInfo = useCallback(() => {
     return (
