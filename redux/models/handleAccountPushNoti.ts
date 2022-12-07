@@ -4,7 +4,7 @@ import HandlePushNoti from './handlePushNoti';
 
 class HandleAccountPushNoti extends HandlePushNoti {
   handleNoti() {
-    const target = (this.payload.data || {}).iccid;
+    // const target = (this.payload.data || {}).iccid;
     // if (typeof this.iccid !== 'undefined' && this.iccid === target) {
     if (!this.isNoticed) {
       this.isNoticed = true;

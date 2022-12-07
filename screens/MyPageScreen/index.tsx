@@ -4,7 +4,6 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   FlatList,
-  Linking,
   Platform,
   Pressable,
   RefreshControl,
@@ -154,7 +153,6 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
   const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
   const [showIdModal, setShowIdModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [isRokebiInstalled, setIsRokebiInstalled] = useState(false);
   const [copyString, setCopyString] = useState('');
   const [showSnackBar, setShowSnackbar] = useState(false);
 
@@ -262,36 +260,6 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
       setShowSnackbar(true);
     }
   }, []);
-
-  // RokebiSIm에서 RokebiTalk 호출
-  const openRokebiTalk = useCallback(async () => {
-    const {iccid, pin} = account;
-
-    // let isRokebiInstalled;
-
-    // 네이버URL -> Store URL 변경필요
-    if (Platform.OS === 'ios') {
-      setTimeout(() => {
-        if (!isRokebiInstalled) {
-          Linking.openURL(`http://naver.com`);
-        }
-      }, 1000);
-
-      const installed = await Linking.openURL(
-        `rokebitalk://?actCode=${pin}&iccidStr=${iccid}`,
-      );
-      setIsRokebiInstalled(true);
-    } else {
-      const installed = await Linking.canOpenURL(
-        `rokebitalk://rokebitalk.com?actCode=${pin}&iccidStr=${iccid}`,
-      );
-      if (installed)
-        Linking.openURL(
-          `rokebitalk://rokebitalk.com?actCode=${pin}&iccidStr=${iccid}`,
-        );
-      else Linking.openURL(`http://naver.com`);
-    }
-  }, [account, isRokebiInstalled]);
 
   const modalBody = useCallback(() => {
     const {iccid, pin} = account;

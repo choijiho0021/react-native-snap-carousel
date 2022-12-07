@@ -70,7 +70,7 @@ const slice = createSlice({
     },
 
     nextIssueList: (state) => {
-      state.page = state.page + 1;
+      state.page += 1;
     },
 
     resetIssueList: (state) => {
@@ -89,7 +89,7 @@ const slice = createSlice({
       const {list} = state;
 
       if (result === 0 && objects.length > 0) {
-        //Status가 변경된 item을 찾아서 변경해 준다.
+        // Status가 변경된 item을 찾아서 변경해 준다.
         const changedList = list.map((item) => {
           const findObjects = objects.find((org) => org.uuid === item.uuid);
           return findObjects !== undefined &&

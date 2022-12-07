@@ -138,7 +138,7 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
   const share = useCallback(async () => {
     try {
       ref.current?.capture().then(async (uri) => {
-        const result = await Share.open({
+        await Share.open({
           title: i18n.t('rcpt:title'),
           url: uri,
         });

@@ -1,16 +1,15 @@
+import React, {Component} from 'react';
+import {Pressable, StyleSheet, View} from 'react-native';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RkbBoard} from '@/redux/api/boardApi';
 import utils from '@/redux/api/utils';
-import React, {Component} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
 import AppText from './AppText';
 
 const styles = StyleSheet.create({
   list: {
-    height: 74,
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingVertical: 16,
     borderBottomColor: colors.whiteTwo,
     borderBottomWidth: 1,
     flexDirection: 'row',
@@ -19,7 +18,7 @@ const styles = StyleSheet.create({
   title: {
     ...appStyles.normal16Text,
     color: colors.black,
-    marginBottom: 12,
+    marginBottom: 8,
   },
   date: {
     ...appStyles.normal12Text,

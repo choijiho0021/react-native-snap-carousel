@@ -174,7 +174,7 @@ const toICCID = (str: string, delimiter = '-') => {
   return toSegmentedString(str, [0, 5, 10, 15, 20], delimiter);
 };
 
-//html5: <br> == <br/>, &lt;br/&gt; == <br/>
+// html5: <br> == <br/>, &lt;br/&gt; == <br/>
 const htmlToString = (html?: string) => {
   return (
     html &&
@@ -184,7 +184,7 @@ const htmlToString = (html?: string) => {
       .replace(/&lt;br\/&gt;/gi, '\n')
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
-      .replace(/\&nbsp;/gi, ' ')
+      .replace(/&nbsp;/gi, ' ')
       .replace(/&quot;/gi, '"')
       .replace(/&#039;/g, "'")
       .replace(/<br.?\/?>/gi, '\n')
@@ -259,6 +259,10 @@ const removeBracketOfName = (str?: string) => {
   return str.slice(str.indexOf(']') + 1, str.length);
 };
 
+const generateKey = (pre: any) => {
+  return `${pre || ''}_${new Date().getTime()}`;
+};
+
 export default {
   fontScaling,
   numberToCommaString,
@@ -281,4 +285,5 @@ export default {
   convertURLtoRkbImage,
   adjustEventadd,
   removeBracketOfName,
+  generateKey,
 };

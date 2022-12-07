@@ -5,7 +5,6 @@ import {connect} from 'react-redux';
 import _ from 'underscore';
 import AppModal from '@/components/AppModal';
 import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {} from '@/redux/api/productApi';
 import i18n from '@/utils/i18n';

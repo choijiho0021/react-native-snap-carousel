@@ -31,6 +31,7 @@ export const colors = {
   whitefour: '#f3f3f3',
   whiteFive: '#eeeeee',
   whiteSix: '#edeff4',
+  whiteSeven: '#fcfcfc',
   tomato: '#ed4847',
   greyish: '#aaaaaa',
   greyishTwo: '#a8a8a8',

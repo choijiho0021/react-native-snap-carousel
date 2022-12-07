@@ -21,7 +21,7 @@ import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {RootState} from '@/redux';
 import {actions as notiActions, NotiModelState} from '@/redux/modules/noti';
-import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
+import {actions as toastActions} from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import {navigate} from '@/navigation/navigation';
 import AppSnackBar from '@/components/AppSnackBar';
@@ -46,6 +46,7 @@ const styles = StyleSheet.create({
     fontSize: isDeviceSize('medium') ? 16 : 18,
     color: colors.black,
     lineHeight: 22,
+    letterSpacing: -1,
   },
   itemDesc: {
     ...appStyles.normal12Text,
@@ -53,6 +54,7 @@ const styles = StyleSheet.create({
     color: colors.warmGrey,
     textAlign: 'left',
     lineHeight: 20,
+    letterSpacing: -1,
   },
   showSearchBar: {
     marginRight: 20,
@@ -255,7 +257,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
           break;
 
         case 'Ktalk':
-          KakaoSDK.KakaoChannel.chat(channelId).catch((_) => {
+          KakaoSDK.KakaoChannel.chat(channelId).catch(() => {
             setShowSnackbar(true);
           });
           break;

@@ -1,6 +1,6 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {memo, useCallback, useEffect, useRef, useState} from 'react';
+import React, {memo, useCallback, useEffect, useState} from 'react';
 import {
   Dimensions,
   ScrollView,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
   SafeAreaView,
+  Keyboard,
 } from 'react-native';
 import {AppEventsLogger} from 'react-native-fbsdk-next';
 import {getTrackingStatus} from 'react-native-tracking-transparency';
@@ -21,7 +22,7 @@ import AppText from '@/components/AppText';
 import AppTextInput from '@/components/AppTextInput';
 import StoreList from '@/components/StoreList';
 import {colors} from '@/constants/Colors';
-import {isDeviceSize, isFolderOpen} from '@/constants/SliderEntry.style';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
@@ -226,7 +227,10 @@ const HeaderTitle0 = ({
       )}
       <AppButton
         style={styles.showSearchBar}
-        onPress={() => search(word, true)}
+        onPress={() => {
+          Keyboard.dismiss();
+          search(word, true);
+        }}
         iconName="btnSearchOff"
       />
     </View>
@@ -336,19 +340,26 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
   const search = useCallback(async (word: string, isSearching = false) => {
     setSearchWord(word);
 
-    if (isSearching) {
+    // 중복 제거 후 최대 7개까지 저장한다. 저장 형식 : ex) 대만,중국,일본
+    if (isSearching && word && !word.match(',')) {
       // 최근 검색 기록
-      const oldsearchHist = await retrieveData('searchHist');
+      const oldsearchHist: string | null = await retrieveData('searchHist');
 
-      if (word && !word.match(',')) {
-        // 중복 제거 후 최대 7개까지 저장한다. 저장 형식 : ex) 대만,중국,일본
-        if (!_.isNull(oldsearchHist)) {
-          const oldHist = oldsearchHist.split(',');
-          word = oldHist.includes(word)
-            ? oldsearchHist
-            : `${word},${oldHist.slice(0, MAX_HISTORY_LENGTH - 1).join(',')}`;
+      if (!_.isNull(oldsearchHist)) {
+        const oldHist = oldsearchHist.split(',');
+        const wordIdx = oldHist.findIndex((elm) => elm === word);
+
+        if (wordIdx < 0) {
+          storeData(
+            'searchHist',
+            `${word},${oldHist.slice(0, MAX_HISTORY_LENGTH - 1).join(',')}`,
+          );
+        } else if (wordIdx > 1) {
+          storeData(
+            'searchHist',
+            `${word},${oldsearchHist.replace(`,${word}`, '')}`,
+          );
         }
-        storeData('searchHist', word);
       }
     }
   }, []);
@@ -403,13 +414,16 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
             {elm.data.map((elm2, idx) =>
               elm2 ? (
                 <TouchableOpacity
-                  key={elm2}
+                  key={utils.generateKey(elm2 + idx)}
                   style={styles.recommebdItem}
                   onPress={() => search(elm2, true)}>
                   <AppText style={styles.recommendText}>{elm2}</AppText>
                 </TouchableOpacity>
               ) : (
-                <View key={`${idx}`} style={styles.recommebdEmpty} />
+                <View
+                  key={utils.generateKey(elm2 + idx)}
+                  style={styles.recommebdEmpty}
+                />
               ),
             )}
           </View>
@@ -465,7 +479,14 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
       {searchWord ? (
         renderStoreList(searchWord)
       ) : (
-        <ScrollView style={{width: '100%'}}>{renderSearchWord()}</ScrollView>
+        <ScrollView
+          style={{width: '100%'}}
+          onScrollBeginDrag={() => {
+            console.log('aaaaa onScrollBeginDrag');
+            Keyboard.dismiss();
+          }}>
+          {renderSearchWord()}
+        </ScrollView>
       )}
     </SafeAreaView>
   );

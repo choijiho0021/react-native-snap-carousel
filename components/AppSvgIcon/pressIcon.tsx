@@ -534,8 +534,8 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         maskUnits="userSpaceOnUse"
         x="1"
         y="1"
-        width="18"
-        height="18">
+        width="20"
+        height="20">
         <Circle cx="10" cy="10" r="9" fill="white" />
       </Mask>
       <G mask="url(#mask0_3149_14491)">
@@ -660,6 +660,28 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           <Stop offset="1" stopColor="#F8FAFE" />
         </LinearGradient>
       </Defs>
+    </Svg>,
+  ],
+  clear: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="8" cy="8" r="8" fill="#D8D8D8" />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M4 4.727 4.727 4 12 11.273l-.727.727L4 4.727z"
+        fill="#fff"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="m11.273 4 .727.727L4.727 12 4 11.273 11.273 4z"
+        fill="#fff"
+      />
     </Svg>,
   ],
 };

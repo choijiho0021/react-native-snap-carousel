@@ -6,7 +6,7 @@ import i18n from '@/utils/i18n';
 import Env from '@/environment';
 
 export type Langcode = 'ko' | 'en';
-const {scheme, apiUrl, appId, esimGlobal, rokApiUrl, isProduction} = Env.get();
+const {scheme, apiUrl, esimGlobal, rokApiUrl} = Env.get();
 
 const FAILED = -1000;
 const E_NOT_FOUND = -1001;
@@ -316,10 +316,15 @@ const callHttp = async <T>(
 const callHttpGet = <T>(
   url: string,
   callback?: CallHttpCallback<T>,
-  headers?: Record<string, string> | Headers,
+  httpHeaders?: Record<string, string> | Headers,
   option: CallHttpOption = {isJson: true},
 ) => {
-  return callHttp<T>(url, {method: 'GET', headers}, callback, option);
+  return callHttp<T>(
+    url,
+    {method: 'GET', headers: httpHeaders},
+    callback,
+    option,
+  );
 };
 
 const missingParameters = (obj: object) => {

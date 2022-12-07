@@ -211,7 +211,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
               </View>
             ) : null
           }
-          renderSectionFooter={({section: {title, data}}) =>
+          renderSectionFooter={({section: {title}}) =>
             title === 'daily' && prodData[1].data.length > 0 ? (
               prodData[0].data.length > 0 && <View style={styles.divider} />
             ) : (

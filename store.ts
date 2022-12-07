@@ -1,11 +1,17 @@
 import {configureStore} from '@reduxjs/toolkit';
-import reducer from '@/redux/index';
 import ReduxThunk from 'redux-thunk';
-const createDebugger = require('redux-flipper').default; // <-- ADD THIS
+import reducer from '@/redux/index';
+
+const middlewares = [ReduxThunk];
+
+if (__DEV__) {
+  const createDebugger = require('redux-flipper').default;
+  middlewares.push(createDebugger());
+}
 
 const store = configureStore({
   reducer,
-  middleware: [ReduxThunk].concat(createDebugger()),
+  middleware: middlewares,
 });
 export type AppDispatch = typeof store.dispatch;
 export default store;

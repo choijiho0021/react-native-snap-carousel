@@ -1,4 +1,10 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -20,7 +26,6 @@ import {retrieveData, storeData, utils} from '@/utils/utils';
 import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
 import EsimModal from './EsimScreen/components/EsimModal';
 import {getPromoFlagColor} from '@/redux/api/productApi';
-import AppIcon from '@/components/AppIcon';
 import SplitText from '@/components/SplitText';
 import Triangle from '@/components/Triangle';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -182,10 +187,10 @@ const styles = StyleSheet.create({
 });
 
 export const renderPromoFlag = (flags: string[], isStore: boolean) => (
-  <>
+  <Fragment>
     {flags
       .filter((elm) => elm !== 'hot')
-      .map((elm, idx) => {
+      .map((elm) => {
         const badgeColor = getPromoFlagColor(elm);
         return (
           <View
@@ -194,27 +199,24 @@ export const renderPromoFlag = (flags: string[], isStore: boolean) => (
               styles.badge,
               {
                 backgroundColor: badgeColor.backgroundColor,
-                marginLeft: idx === 0 ? 8 : 0,
+                marginRight: 8,
               },
             ]}>
             <AppText
               key="name"
-              style={[styles.badgeText, {color: badgeColor.fontColor}]}>
+              style={[
+                styles.badgeText,
+                {color: badgeColor.fontColor, top: -1},
+              ]}>
               {i18n.t(elm)}
             </AppText>
           </View>
         );
       })}
     {isStore && (
-      <AppSvgIcon
-        name="naverIcon"
-        style={{
-          justifyContent: 'center',
-          marginLeft: flags.length === 0 ? 8 : 0,
-        }}
-      />
+      <AppSvgIcon name="naverIcon" style={{justifyContent: 'center'}} />
     )}
-  </>
+  </Fragment>
 );
 
 type OrderType = 'latest' | 'purchase';
@@ -385,7 +387,7 @@ const ChargeHistoryScreen: React.FC = () => {
                 renderExpend={() =>
                   renderPromoFlag(item.promoFlag || [], item.isStore)
                 }
-                style={appStyles.bold16Text}
+                style={{...appStyles.bold16Text, marginRight: 8}}
                 numberOfLines={2}
                 ellipsizeMode="tail">
                 {utils.removeBracketOfName(item.prodName)}

@@ -121,12 +121,7 @@ export const navigate = (
   navigation: NavigationProp<any>,
   route: RouteProp<ParamListBase, string>,
   returnTab: string,
-  {
-    tab,
-    screen,
-    params,
-    closeKey,
-  }: {tab?: string; screen: string; params?: object; closeKey?: string},
+  {tab, screen, params}: {tab?: string; screen: string; params?: object},
 ) => {
   navigation.navigate(tab || returnTab, {
     screen,

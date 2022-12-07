@@ -1,6 +1,6 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React from 'react';
+import React, {useEffect, useState, useCallback, useMemo} from 'react';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {
   Pressable,
@@ -14,7 +14,6 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
-import {useEffect, useState, useCallback, useMemo} from 'react';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppIcon from '@/components/AppIcon';
@@ -120,13 +119,13 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   textInput: (editable) => ({
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    height: 88,
+    padding: 16,
+    height: 120,
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor: editable ? colors.black : colors.lightGrey,
     backgroundColor: editable ? colors.white : colors.whiteTwo,
+    textAlignVertical: 'top',
   }),
 });
 

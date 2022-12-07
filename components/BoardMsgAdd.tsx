@@ -89,10 +89,11 @@ const styles = StyleSheet.create({
   imgSize: {
     width: attachmentSize,
     height: attachmentSize,
+    borderRadius: 3,
   },
   attach: {
-    width: attachmentSize,
-    height: attachmentSize,
+    width: attachmentSize + 2,
+    height: attachmentSize + 2,
     borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: 'solid',
@@ -159,7 +160,6 @@ type BoardMsgAddProps = {
   success: boolean;
   pending: boolean;
 
-  onSubmit?: () => void;
   jumpTo: (v: string) => void;
 
   action: {
@@ -185,7 +185,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   account,
   success,
   jumpTo,
-  onSubmit,
   action,
   pending,
 }) => {
@@ -197,7 +196,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   const [pin, setPin] = useState<string>();
   const [attachment, setAttachment] = useState(List<CropImage>());
   const [extraHeight, setExtraHeight] = useState(0);
-  const [disable, setDisable] = useState(false);
   const scrollRef = useRef();
   const keybd = useRef();
 
@@ -260,17 +258,13 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         .toArray(),
     } as RkbIssue;
 
-    const rsp = await action.board.postAndGetList(issue);
+    await action.board.postAndGetList(issue);
 
     setMsg(undefined);
     setTitle(undefined);
     setPin(undefined);
     setAttachment((a) => a.clear());
   }, [action.board, attachment, mobile, msg, pin, title]);
-
-  const onCancel = useCallback(() => {
-    onSubmit?.();
-  }, [onSubmit]);
 
   const error = useCallback(
     (key: string) => {
@@ -362,7 +356,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         <View style={styles.attachBox}>
           {attachment.map((image, idx) => (
             <Pressable
-              // eslint-disable-next-line react/no-array-index-key
               key={image.filename}
               style={[styles.attach, idx < 2 && {marginRight: 33}]}
               onPress={() => setAttachment((a) => a.delete(idx))}>
@@ -399,7 +392,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
           returnKeyType="next"
           enablesReturnKeyAutomatically
           maxLength={13}
-          editable={!disable}
           onChangeText={(v) => {
             const value = utils.toPhoneNumber(v);
             setMobile(value);
@@ -411,7 +403,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         />
       </View>
     ),
-    [disable, error, mobile, validate],
+    [error, mobile, validate],
   );
 
   // errors object의 모든 value 값들이 undefined인지 확인한다.
@@ -436,7 +428,9 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         // resetScrollToCoords={{x: 0, y: 0}}
         contentContainerStyle={styles.modalInner}
         extraScrollHeight={extraHeight}
-        innerRef={(ref) => (scrollRef.current = ref)}>
+        innerRef={(ref) => {
+          scrollRef.current = ref;
+        }}>
         {!account.loggedIn && renderContact()}
         <View style={{flex: 1}}>
           <View style={styles.notiView}>
@@ -453,7 +447,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
             returnKeyType="next"
             enablesReturnKeyAutomatically
             clearTextOnFocus={false}
-            editable={!disable}
             maxLength={25}
             onChangeText={(v) => {
               setTitle(v);
@@ -469,7 +462,12 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
           <AppTextInput
             style={[
               styles.inputBox,
-              {height: 208, paddingTop: 5, textAlignVertical: 'top'},
+              {
+                height: 208,
+                paddingTop: 15,
+                paddingHorizontal: 15,
+                textAlignVertical: 'top',
+              },
               msg ? {borderColor: colors.black} : undefined,
             ]}
             ref={keybd}
@@ -480,7 +478,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
             inputAccessoryViewID={inputAccessoryViewID}
             enablesReturnKeyAutomatically
             clearTextOnFocus={false}
-            editable={!disable}
             maxLength={2000}
             onChangeText={(v) => {
               setMsg(v);

@@ -30,7 +30,7 @@ const CodePushModal: React.FC<CodePushModalProps> = ({sync, action}) => {
 
     codePush
       .notifyAppReady()
-      .then((_) => codePush.checkForUpdate())
+      .then(() => codePush.checkForUpdate())
       .then((update) => {
         if (sync.isSkipped) return;
 

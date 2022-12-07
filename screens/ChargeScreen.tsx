@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {StyleSheet, SafeAreaView, View, Platform} from 'react-native';
+import {StyleSheet, SafeAreaView, View} from 'react-native';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
@@ -49,8 +49,10 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: colors.white,
   },
   headerTitle: {
+    height: 56,
     marginRight: 8,
   },
   cautionBtn: {
@@ -251,21 +253,6 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
     [showTip],
   );
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <View style={styles.header}>
-          <AppBackButton
-            title={i18n.t('esim:charge')}
-            style={styles.headerTitle}
-          />
-          {renderToolTip()}
-        </View>
-      ),
-    });
-  }, [navigation, renderToolTip, showTip]);
-
   const onIndexChange = useCallback((idx: number) => {
     setIndex(idx);
   }, []);
@@ -286,8 +273,8 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
     [],
   );
   const renderScene = useCallback(
-    ({route}: {route: ChargeTabRoute}) => {
-      const prodDataC = prodData[route.category === 'daily' ? 0 : 1].data;
+    ({route: sceneRoute}: {route: ChargeTabRoute}) => {
+      const prodDataC = prodData[sceneRoute.category === 'daily' ? 0 : 1].data;
       return (
         <ScrollView>
           {prodDataC.length > 0 ? (
@@ -332,6 +319,14 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <AppBackButton
+          title={i18n.t('esim:charge')}
+          style={styles.headerTitle}
+        />
+        {renderToolTip()}
+      </View>
+
       <View style={{flex: 1}}>
         <AppTabHeader
           index={index}

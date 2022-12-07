@@ -196,20 +196,15 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     borderWidth: 1,
     borderColor: colors.whiteFive,
-    ...Platform.select({
-      ios: {
-        shadowColor: 'rgb(52, 62, 95)',
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
-        shadowOffset: {
-          height: 1,
-          width: 1,
-        },
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
+
+    shadowColor: 'rgb(52, 62, 95)',
+    elevation: 10,
+    shadowRadius: 3,
+    shadowOpacity: 0.1,
+    shadowOffset: {
+      height: 4,
+      width: 1,
+    },
   },
   lessInfo: {
     height: 40,
@@ -427,7 +422,7 @@ const EsimSubs = ({
       <Pressable
         style={styles.prodTitle}
         onPress={() => {
-          setIsMoreInfo((prev) => !prev);
+          if (notCardInfo) setIsMoreInfo((prev) => !prev);
         }}>
         <SplitText
           key={mainSubs.key}
@@ -441,7 +436,11 @@ const EsimSubs = ({
             expired || mainSubs.giftStatusCd === 'S'
               ? styles.usageTitleNormal
               : styles.usageTitleBold,
-            {alignSelf: 'center', lineHeight: 28},
+            {
+              alignSelf: 'center',
+              lineHeight: 28,
+              marginRight: 8,
+            },
           ]}
           numberOfLines={2}
           ellipsizeMode="tail">
@@ -467,7 +466,19 @@ const EsimSubs = ({
         )}
       </Pressable>
     );
-  }, [mainSubs, expired, isCharged, isMoreInfo, sendable]);
+  }, [
+    mainSubs.prodName,
+    mainSubs.key,
+    mainSubs.giftStatusCd,
+    mainSubs.nid,
+    mainSubs.promoFlag,
+    mainSubs.isStore,
+    expired,
+    isCharged,
+    isMoreInfo,
+    notCardInfo,
+    sendable,
+  ]);
 
   const topInfo = useCallback(() => {
     return (
@@ -603,16 +614,16 @@ const EsimSubs = ({
         {moveBtnList.map((key, idx) => {
           const isLast = idx === moveBtnList.length - 1;
           const isSendBtn = sendable && idx === 0;
-          const title = isSendBtn
+          const btnTitle = isSendBtn
             ? i18n.t('esim:sendGift')
             : i18n.t(isCharged ? 'esim:chargeHistory' : 'esim:charge');
 
           return (
             <View
-              key={idx}
+              key={utils.generateKey(idx)}
               style={[styles.btnMove, {marginRight: !isLast ? 12 : 0}]}>
               <AppButton
-                title={title}
+                title={btnTitle}
                 titleStyle={[styles.btnTitle2, !isLast && styles.colorblack]}
                 style={!isLast ? styles.giftButton : styles.chargeButton}
                 onPress={() =>

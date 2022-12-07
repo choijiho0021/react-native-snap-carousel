@@ -1,10 +1,9 @@
 import _ from 'underscore';
-import Config from 'react-native-config';
 import Env from '@/environment';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import {RkbInfo} from './pageApi';
 
-const {appId, esimGlobal} = Env.get();
+const {isProduction} = Env.get();
 
 const KEY_INIT_LIST = 'noti.initList';
 
@@ -181,16 +180,11 @@ const sendDisconnect = ({mobile, iccid}: {mobile: string; iccid: string}) => {
   if (!mobile)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: mobile');
 
-  const url =
-    Config.NODE_ENV === 'production'
-      ? `${api.rokHttpUrl(
-          `${api.path.rokApi.noti.user}/${mobile}/account/disconnect`,
-        )}`
-      : `http://tb-svcapp-noti.rokebi.com/${
-          api.path.rokApi.noti.user
-        }/${mobile}/account/disconnect?service=${
-          esimGlobal ? 'global' : 'esim'
-        }`;
+  const url = `${api.rokHttpUrl(
+    `${api.path.rokApi.noti.user}/${mobile}/account/disconnect`,
+    isProduction ? undefined : 5200,
+  )}`;
+
   const headers = new Headers(jsonContentType);
   const body = {
     iccid,

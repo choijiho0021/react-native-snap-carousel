@@ -28,8 +28,6 @@ const styles = StyleSheet.create({
   paymentBtnFrame: {
     height: 52,
     flexDirection: 'row',
-    borderTopWidth: 1,
-    borderColor: '#d8d8d8',
   },
   paymentBtn: {
     height: 52,
@@ -41,6 +39,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.white,
+    borderTopWidth: 1,
+    borderColor: '#d8d8d8',
   },
   amountText: {
     ...appStyles.normal16Text,
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   },
   mainBody: {
     ...appStyles.normal20Text,
-    lineHeight: 30,
+    lineHeight: 32,
     fontWeight: '400',
     color: colors.white,
   },
@@ -234,7 +234,11 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
                   textStyle={styles.caustionBodyText}
                   text={i18n.t(`esim:chargeCaution:body${k}`)}
                   format={{
-                    b: {...appStyles.bold14Text, color: colors.clearBlue},
+                    b: {
+                      ...appStyles.bold14Text,
+                      lineHeight: 22,
+                      color: colors.clearBlue,
+                    },
                   }}
                 />
               </View>

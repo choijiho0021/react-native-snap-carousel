@@ -1,6 +1,5 @@
 import React, {memo} from 'react';
 import {StyleProp, Pressable, View, ViewStyle} from 'react-native';
-import _ from 'underscore';
 import AppIcon from './AppIcon';
 import LabelText, {LabelTextProps} from './LabelText';
 

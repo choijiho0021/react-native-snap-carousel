@@ -71,7 +71,7 @@ const cartAddAndGet = createAsyncThunk(
         throw new Error('Failed to add products');
       })
       .then(({payload}) => payload)
-      .catch((err) => Promise.resolve({result: api.E_RESOURCE_NOT_FOUND}));
+      .catch(() => Promise.resolve({result: api.E_RESOURCE_NOT_FOUND}));
   },
 );
 
@@ -80,7 +80,7 @@ const init = createAsyncThunk('cart/init', async (_, {dispatch}) => {
   await dispatch(cartFetch());
 });
 
-const cartLock = createAsyncThunk('cart/lock', API.Cart.lock);
+// const cartLock = createAsyncThunk('cart/lock', API.Cart.lock);
 
 export type PaymentReq = {key: string; title: string; amount: Currency};
 
@@ -329,7 +329,7 @@ const checkStockAndMakeOrder = createAsyncThunk(
         }
         return Promise.resolve({result: api.E_RESOURCE_NOT_FOUND});
       })
-      .catch((err) => {
+      .catch(() => {
         console.log('@@@ failed to check stock');
         return Promise.resolve({result: api.E_INVALID_STATUS});
       });

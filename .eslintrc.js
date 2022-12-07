@@ -2,12 +2,14 @@ const path = require('path');
 const fs = require('fs');
 
 let parserOptions = {
-  project: './tsconfig.json',
+  project: './tsconfig.eslint.json',
 };
-if (!fs.existsSync(path.join(process.env.PWD || '.', './tsconfig.json'))) {
+if (
+  !fs.existsSync(path.join(process.env.PWD || '.', './tsconfig.eslint.json'))
+) {
   parserOptions = {
     tsconfigRootDir: __dirname,
-    project: './tsconfig.json',
+    project: './tsconfig.eslint.json',
     /**
      * parserOptions.createDefaultProgram
      * Default .false
@@ -24,11 +26,7 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'react-hooks', 'prettier'],
   // plugins: ['eslint-comments', 'jest', 'unicorn', 'react-hooks'],
-  extends: [
-    'airbnb',
-    'airbnb-typescript',
-    'prettier',
-  ],
+  extends: ['airbnb', 'airbnb-typescript', 'prettier'],
   env: {
     browser: true,
     node: true,
@@ -38,7 +36,13 @@ module.exports = {
     jasmine: true,
   },
   rules: {
-    'no-use-before-define': 'off',
+    'no-use-before-define': 0,
+    'no-console': 0,
+    'no-nested-ternary': 0,
+    'global-require': 0,
+    'no-plusplus': ['error', {allowForLoopAfterthoughts: true}],
+    'no-underscore-dangle': ['error', {allow: ['_links']}],
+    'react/no-unused-prop-types': 0,
     'react/jsx-wrap-multilines': 0,
     'react/prop-types': 0,
     'react/forbid-prop-types': 0,
@@ -82,6 +86,7 @@ module.exports = {
     'no-prototype-builtins': 'off',
     'import/prefer-default-export': 'off',
     'import/no-default-export': [0, 'camel-case'],
+    'import/no-dynamic-require': 'off',
     // Too restrictive: https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/destructuring-assignment.md
     'react/destructuring-assignment': 'off',
     'react/jsx-filename-extension': 'off',

@@ -110,9 +110,9 @@ const FaqScreen: React.FC<FaqScreenProps & DispatchProp> = ({
   );
 
   const renderScene = useCallback(
-    ({route}: {route: TabViewRoute}) => (
+    ({route: tabViewRoute}: {route: TabViewRoute}) => (
       <FaqList
-        data={info.infoMap.get(`faq:${route.key}`, [])}
+        data={info.infoMap.get(`faq:${tabViewRoute.key}`, [])}
         titleNo={selectedTitleNo}
       />
     ),

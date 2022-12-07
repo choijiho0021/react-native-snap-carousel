@@ -183,7 +183,7 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
             .filter((item) => !_.isEmpty(item))
             .map((url, i) => (
               <Pressable
-                key={`${url}${i}`}
+                key={utils.generateKey(`${url}${i}`)}
                 onPress={() => {
                   setShowImgModal(true);
                   setLoading(true);

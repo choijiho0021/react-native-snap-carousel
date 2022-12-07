@@ -1,5 +1,5 @@
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
+import React, {memo, useCallback, useEffect, useMemo} from 'react';
 import {FlatList, Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import AppBackButton from '@/components/AppBackButton';

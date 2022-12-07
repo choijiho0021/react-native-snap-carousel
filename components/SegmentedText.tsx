@@ -77,10 +77,10 @@ const SegmentedText: React.FC<SegmentedTextProps> = ({
     const list = splitText(text, highlight.split(' '));
     return (
       <View style={[styles.row, style]}>
-        {list.map((v, idx) => (
+        {list.map((v) => (
           <AppText
             numberOfLines={numberOfLines || 0}
-            key={`${idx}:${v.text}`}
+            key={v.text}
             style={[textStyle, v.highlight && {color: highlightColor}]}>
             {v.text}
           </AppText>

@@ -1,13 +1,11 @@
 import React, {memo, PureComponent} from 'react';
 import {StyleSheet, View} from 'react-native';
-import _ from 'underscore';
 import SnackBar from 'react-native-snackbar-component';
 import {colors} from '@/constants/Colors';
 import {timer} from '@/constants/Timer';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
 import AppSvgIcon from './AppSvgIcon';
-import {SafeAreaView} from 'react-native-safe-area-context';
 
 const styles = StyleSheet.create({
   containerStyle: {

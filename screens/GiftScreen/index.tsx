@@ -89,6 +89,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     paddingBottom: 0,
     padding: 0,
+    letterSpacing: -1,
   },
   msgLength: {
     ...appStyles.normal12Text,
@@ -325,10 +326,10 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
       <View>
         <AppText style={appStyles.bold18Text}>{i18n.t('gift:method')}</AppText>
         <View style={styles.method}>
-          {methodList.map((v) => (
+          {methodList.map((v, idx) => (
             <Pressable
               key={v}
-              style={styles.kakao}
+              style={[styles.kakao, {marginRight: idx === 0 ? 25 : 0}]}
               onPress={() => setChecked(v)}>
               <AppSvgIcon name="radioBtn" focused={checked === v} />
               <AppText
@@ -369,7 +370,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
               ref={msgRef}
               value={msg}
               onChangeText={(txt) => {
-                if (contHeight <= 120) setMsg(txt);
+                setMsg(txt);
               }}
               scrollEnabled={false}
               maxLength={80}

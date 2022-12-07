@@ -73,7 +73,7 @@ type PaymentScreenProps = {
   };
 };
 
-const {impId, adjustPayment = '', adjustRokebiCash = ''} = Env.get();
+const {impId} = Env.get();
 const PaymentScreen: React.FC<PaymentScreenProps> = ({
   route: {params},
   navigation,
@@ -162,7 +162,7 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
             navigation.goBack();
           } else setStockChecked(true);
         })
-        .catch((err) => {
+        .catch(() => {
           AppAlert.info(i18n.t('cart:systemError'));
           navigation.goBack();
         });

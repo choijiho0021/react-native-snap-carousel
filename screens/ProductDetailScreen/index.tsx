@@ -36,7 +36,6 @@ import api, {ApiResult} from '@/redux/api/api';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import AppCartButton from '@/components/AppCartButton';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
 
 const {esimApp, esimGlobal, webViewHost} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -206,7 +205,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           // automaticallyAdjustContentInsets={true}
           javaScriptEnabled
           domStorageEnabled
-          // injectedJavaScript={injectedScript}
           // scalesPageToFit
           startInLoadingState
           decelerationRate="normal"
@@ -245,20 +243,22 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       return navigation.navigate('Auth');
     }
 
-    action.cart.cartAddAndGet({purchaseItems}).then(({payload: resp}) => {
-      if (resp.result === 0) {
-        setShowSnackBar({text: i18n.t('country:addCart'), visible: true});
-        if (
-          resp.objects[0].orderItems.find(
-            (v) => v.key === route.params.item?.key,
-          ).qty >= PURCHASE_LIMIT
-        ) {
-          setDisabled(true);
+    return action.cart
+      .cartAddAndGet({purchaseItems})
+      .then(({payload: resp}) => {
+        if (resp.result === 0) {
+          setShowSnackBar({text: i18n.t('country:addCart'), visible: true});
+          if (
+            resp.objects[0].orderItems.find(
+              (v) => v.key === route.params.item?.key,
+            ).qty >= PURCHASE_LIMIT
+          ) {
+            setDisabled(true);
+          }
+        } else {
+          soldOut(resp, 'cart:notToCart');
         }
-      } else {
-        soldOut(resp, 'cart:notToCart');
-      }
-    });
+      });
   }, [
     account,
     action.cart,

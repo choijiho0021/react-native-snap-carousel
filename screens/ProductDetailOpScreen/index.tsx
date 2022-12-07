@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {Fragment, useCallback, useEffect, useState} from 'react';
 import {
   FlatList,
   Pressable,
@@ -9,7 +9,6 @@ import {
   View,
   SafeAreaView,
 } from 'react-native';
-import _ from 'underscore';
 import Clipboard from '@react-native-community/clipboard';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -22,6 +21,7 @@ import i18n from '@/utils/i18n';
 import AppIcon from '@/components/AppIcon';
 
 import AppSnackBar from '@/components/AppSnackBar';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const styles = StyleSheet.create({
   container: {
@@ -80,7 +80,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingTop: 24,
-    paddingBottom: 32,
     paddingHorizontal: 32,
     backgroundColor: colors.whiteTwo,
     justifyContent: 'space-between',
@@ -161,7 +160,8 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
           country: elm2[0],
           operator: elm2[1].replace('&amp;', '&'),
           apn: elm2[2] ? elm2[2].split('&amp;') : [],
-        }));
+        }))
+        .sort((a, b) => a.country.localeCompare(b.country));
 
       setData(
         searchWord
@@ -231,11 +231,16 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
           </View>
 
           {isToggled &&
-            item.apn?.map((elm, idx) => {
+            item.apn?.map((elm, idx, arr) => {
               const seleced = copyBtnKey === elm + item.country + item.operator;
 
               return (
-                <View style={styles.apn} key={elm}>
+                <View
+                  style={[
+                    styles.apn,
+                    {paddingBottom: arr.length - 1 === idx ? 32 : 0},
+                  ]}
+                  key={elm}>
                   <View>
                     <AppText style={styles.apnTitle}>{i18n.t('apn')}</AppText>
                     <View style={styles.apnValue}>
@@ -295,7 +300,12 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
           }}
           value={searchWord}
         />
-        {searchWord !== '' && <View style={styles.searchDivider} />}
+        {searchWord !== '' && (
+          <Fragment>
+            <AppSvgIcon name="clear" onPress={() => setSearchWord('')} />
+            <View style={styles.searchDivider} />
+          </Fragment>
+        )}
         <AppIcon
           name="btnSearchOn"
           style={{
