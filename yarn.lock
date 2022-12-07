@@ -9447,6 +9447,11 @@ react-native-camera@^4.2.1:
   dependencies:
     prop-types "^15.6.2"
 
+react-native-channel-plugin@^0.7.6:
+  version "0.7.6"
+  resolved "https://registry.yarnpkg.com/react-native-channel-plugin/-/react-native-channel-plugin-0.7.6.tgz#4404ce3364964970440667a9e648f40d94583f60"
+  integrity sha512-oqzLsjTaMyulfL6jbHlJlu/gzKc+RHq3uDYON+E3Oag2OME+HAkiBSJ75AinkvljFpvdeFFBReI1vYWQB0SYrA==
+
 react-native-circular-progress@^1.3.7:
   version "1.3.7"
   resolved "https://registry.yarnpkg.com/react-native-circular-progress/-/react-native-circular-progress-1.3.7.tgz#cc430fbc612bd01134a8fc9667be107591ae6959"

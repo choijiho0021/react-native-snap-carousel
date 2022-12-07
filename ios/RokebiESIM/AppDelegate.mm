@@ -25,7 +25,7 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import <React/RCTAppSetupUtils.h>
-
+#import <ChannelIOFront/ChannelIOFront-swift.h>
 
 
 #if RCT_NEW_ARCH_ENABLED
@@ -95,7 +95,8 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-
+  [ChannelIO initialize:application];
+  
   if ([FIRApp defaultApp] == nil) {
       [FIRApp configure];
     }
