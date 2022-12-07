@@ -332,7 +332,6 @@ const styles = StyleSheet.create({
   },
   cautionTextContainer: {
     flexDirection: 'row',
-    marginRight: 36,
   },
 });
 
@@ -659,6 +658,7 @@ const EsimSubs = ({
           styles.cautionTextContainer,
           {
             marginBottom: hasPreDot ? 10 : 0,
+            marginRight: hasPreDot ? 36 : 0,
           },
         ]}>
         {hasPreDot && (
