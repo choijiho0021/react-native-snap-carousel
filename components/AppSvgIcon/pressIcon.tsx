@@ -28,7 +28,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
       <Mask
         id="xah08mnrja"
-        style="mask-type:alpha"
+        // style="mask-type:alpha"
         maskUnits="userSpaceOnUse"
         x="0"
         y="0"
@@ -530,7 +530,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       xmlns="http://www.w3.org/2000/svg">
       <Mask
         id="mask0_3149_14491"
-        style="mask-type:alpha"
+        // style="mask-type:alpha"
         maskUnits="userSpaceOnUse"
         x="1"
         y="1"

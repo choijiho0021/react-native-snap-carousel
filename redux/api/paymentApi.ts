@@ -4,7 +4,7 @@ import Env from '@/environment';
 import api, {ApiResult, DrupalNodeJsonApi} from './api';
 import {utils} from '@/utils/utils';
 
-const {esimGlobal} = Env.get();
+const {esimGlobal, isProduction, impKey, impSecret} = Env.get();
 
 const PAGE_SIZE = 10;
 
@@ -214,9 +214,10 @@ const getImpToken = () => {
     'Content-Type': `application/json`,
   };
 
-  const imp_key = '9603012818567165';
-  const imp_secret =
-    '21d8ef6b4daa18f5b0b305f7087066cd24f429a4f5b77c907bb4d260a03d257bb05219242bddf802';
+  const imp_key = isProduction ? impKey : '9603012818567165';
+  const imp_secret = isProduction
+    ? impSecret
+    : '21d8ef6b4daa18f5b0b305f7087066cd24f429a4f5b77c907bb4d260a03d257bb05219242bddf802';
 
   return api.callHttp(
     `https://api.iamport.kr/users/getToken`,

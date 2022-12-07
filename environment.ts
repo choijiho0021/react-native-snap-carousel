@@ -3,6 +3,9 @@ import Config from 'react-native-config';
 import {getBundleId} from 'react-native-device-info';
 import {CurrencyCode} from './redux/api/productApi';
 
+// 보안정보 json 파일 읽음 - 없는 경우 에러 * 깃에 푸시하지 말 것
+const secureData = require('./secure.json');
+
 // getBuildNumber() > 현재 info.plist bundleVersion 확인 가능
 const bundleId = getBundleId();
 
@@ -27,32 +30,37 @@ const codePushLabel = {
   productionIOS: 'v47',
   productionAndroid: 'v40',
 };
-const channelId = '_nzQhxb';
 
 type Env = {
+  label?: string;
+  scheme?: string;
+  apiUrl?: string;
+  rokApiUrl?: string;
+  webViewHost?: string;
+
   bundleId: string;
   appId: string;
   impId: string;
   appStoreId: string;
   dynamicLink: string;
-  channelId: string;
-  esimApp: boolean;
   esimGlobal: boolean;
-  esimCurrency: CurrencyCode;
-  label?: string;
-  scheme?: string;
-  apiUrl?: string;
-  rokApiUrl?: string;
-  sipServer: string;
-  isProduction: boolean;
   isIOS?: boolean;
-  fbUser?: string;
-  webViewHost?: string;
-  adjustToken: string;
+  esimApp: boolean;
+  esimCurrency: CurrencyCode;
+  isProduction: boolean;
   appStoreUrl: {
     ios: string;
     android: string;
   };
+
+  // secure.json 참조
+  fbUser?: string;
+  channelId: string;
+  sipServer: string;
+  adjustToken: string;
+  impKey: string;
+  impSecret: string;
+  talkPluginKey: string;
 };
 const env: Env = {
   bundleId,
@@ -60,19 +68,22 @@ const env: Env = {
   impId,
   appStoreId,
   dynamicLink,
-  channelId,
-  esimApp: appId === 'esim',
   esimGlobal,
-  esimCurrency: esimGlobal ? 'USD' : 'KRW',
-  sipServer: '193.122.106.2:35060',
-  isProduction: Config.NODE_ENV === 'production',
   isIOS: Platform.OS === 'ios',
-  fbUser: '100751328128324',
-  adjustToken: 'hu4tkjd8im0w',
+  esimApp: appId === 'esim',
+  esimCurrency: esimGlobal ? 'USD' : 'KRW',
+  isProduction: Config.NODE_ENV === 'production',
   appStoreUrl: {
     ios: 'https://apps.apple.com/kr/app/%EB%A1%9C%EB%B0%8D%EB%8F%84%EA%B9%A8%EB%B9%84-esim-%EB%8D%B0%EC%9D%B4%ED%84%B0%EA%B0%80-%ED%95%84%EC%9A%94%ED%95%9C-%EC%88%9C%EA%B0%84/id1525664178',
     android: '',
   },
+  fbUser: secureData.fbUser,
+  channelId: secureData.kakaoChannelId,
+  sipServer: secureData.sipServer,
+  adjustToken: secureData.adjustToken,
+  impKey: esimGlobal ? secureData.globalImpKey : secureData.esimImpKey,
+  impSecret: esimGlobal ? secureData.globalImpSecret : secureData.esimImpSecret,
+  talkPluginKey: secureData.talkPluginKey,
 };
 
 function get() {

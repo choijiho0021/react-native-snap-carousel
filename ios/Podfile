@@ -73,6 +73,9 @@ target 'RokebiESIM' do
   rokebiPods
   pod 'react-native-sim-cards-manager', :path => '../node_modules/react-native-sim-cards-manager'
 
+  pod 'ChannelIOSDK', podspec: 'https://mobile-static.channel.io/ios/latest/xcframework.podspec'
+  pod 'RNChannelIO', :path => '../node_modules/react-native-channel-plugin'
+
 end
 
 target 'RokebiUSIM' do
