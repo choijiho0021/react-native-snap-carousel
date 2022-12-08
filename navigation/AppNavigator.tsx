@@ -20,6 +20,15 @@ import {
   checkFistLaunch,
 } from '@/navigation/component/permission';
 
+interface urlParamObj {
+  screen?: string;
+  stack?: string;
+  recommender?: string;
+  gift?: string;
+
+  [key: string]: string | undefined;
+}
+
 const {isIOS, esimGlobal} = Env.get();
 
 const MainStack = createStackNavigator();
@@ -48,17 +57,19 @@ function mainStack() {
 const CreateAppContainer = ({store}) => {
   const navigationRef = React.useRef();
 
-  const getParam = (link: string) => {
-    const url = link.split(/[;?&]/);
-    url.shift();
-    const param = url.map((elm) => `"${elm.replace('=', '":"')}"`);
-    const json = JSON.parse(`{${param.join(',')}}`);
-    return json;
+  const getParam = (link: string | undefined): urlParamObj => {
+    if (link) {
+      const url = link.split(/[;?&]/);
+      url.shift();
+      const param = url.map((elm) => `"${elm.replace('=', '":"')}"`);
+      const json = JSON.parse(`{${param.join(',')}}`);
+      return json;
+    }
+    return {};
   };
 
   const gift = useCallback(
-    (url: string) => {
-      const json = getParam(url);
+    (url: string, json: urlParamObj) => {
       // gift 금액은 서버에서 처리
       if (url.includes('recommender') && navigationRef?.current) {
         const {loggedIn, userId} = store.getState().account;
@@ -159,18 +170,16 @@ const CreateAppContainer = ({store}) => {
   }, [checkSupportIos, store]);
 
   const DynamicLinkSave = useCallback(
-    async (l: FirebaseDynamicLinksTypes.DynamicLink) => {
+    async (
+      l: FirebaseDynamicLinksTypes.DynamicLink | null,
+      params: urlParamObj,
+    ) => {
       if (l?.url) {
-        const url = l?.url.split(/[;?&]/);
-        url.shift();
-        const param = url.map((elm) => `"${elm.replace('=', '":"')}"`);
-        const json = JSON.parse(`{${param.join(',')}}`);
-
         store.dispatch(
           linkActions.update({
             utmParameters: l?.utmParameters,
             url: l?.url,
-            ...json,
+            params,
           }),
         );
       }
@@ -186,28 +195,26 @@ const CreateAppContainer = ({store}) => {
   );
 
   const handleDynamicLink = useCallback(
-    async (link) => {
-      let screen = link?.utmParameters?.utm_source;
+    async (link: FirebaseDynamicLinksTypes.DynamicLink | null) => {
       const url = link?.url;
+      const urlParams: urlParamObj = getParam(url);
       const isSupport = await getIsSupport();
 
-      DynamicLinkSave(link);
+      DynamicLinkSave(link, urlParams);
 
-      if (screen?.includes('Screen')) {
-        screen = screen.replace('Screen', '');
-
+      if (
+        isSupport &&
+        navigationRef?.current &&
+        urlParams.hasOwnProperty('stack') &&
+        urlParams.hasOwnProperty('screen')
+      ) {
         // Screen 별 동작 추가 - Home, Cart,Esim, MyPage 이동 가능
-        if (
-          isSupport &&
-          navigationRef?.current &&
-          ['Home', 'Cart', 'Esim', 'MyPage'].includes(screen)
-        ) {
-          navigationRef.current.navigate(`${screen}Stack`, {
-            screen,
-          });
-        }
+        navigationRef.current.navigate(`${urlParams?.stack}Stack`, {
+          screen: urlParams?.screen,
+          initial: false,
+        });
       } else if (isSupport && url) {
-        gift(url);
+        gift(url, urlParams);
       }
     },
     [DynamicLinkSave, getIsSupport, gift],

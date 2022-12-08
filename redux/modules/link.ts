@@ -8,6 +8,7 @@ export interface LinkModelState {
   recommender?: string;
   gift?: string;
   utmParameters?: any;
+  params: object;
 }
 
 const initialState: LinkModelState = {
@@ -15,6 +16,7 @@ const initialState: LinkModelState = {
   recommender: undefined,
   gift: undefined,
   utmParameters: undefined,
+  params: {},
 };
 
 const slice = createSlice({
@@ -25,11 +27,13 @@ const slice = createSlice({
       return initialState;
     },
     update: (state, action) => {
-      const {url, recommender, gift, utmParameters} = action.payload || {};
+      const {url, recommender, gift, utmParameters, params} =
+        action.payload || {};
       state.url = url;
       state.recommender = recommender;
       state.gift = gift;
       state.utmParameters = utmParameters;
+      state.params = params;
     },
   },
 });
