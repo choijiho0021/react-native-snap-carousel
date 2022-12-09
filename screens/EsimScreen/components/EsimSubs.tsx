@@ -22,7 +22,7 @@ import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {API} from '@/redux/api';
-import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import {isDisabled, RkbSubscription} from '@/redux/api/subscriptionApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -426,8 +426,7 @@ const EsimSubs = ({
         <SplitText
           key={mainSubs.key}
           renderExpend={() =>
-            sendable &&
-            !expired &&
+            !isDisabled(mainSubs) &&
             !isCharged &&
             renderPromoFlag(mainSubs.promoFlag || [], mainSubs.isStore)
           }
@@ -465,19 +464,7 @@ const EsimSubs = ({
         )}
       </Pressable>
     );
-  }, [
-    mainSubs.prodName,
-    mainSubs.key,
-    mainSubs.giftStatusCd,
-    mainSubs.nid,
-    mainSubs.promoFlag,
-    mainSubs.isStore,
-    expired,
-    isCharged,
-    isMoreInfo,
-    notCardInfo,
-    sendable,
-  ]);
+  }, [mainSubs, expired, isCharged, isMoreInfo, notCardInfo]);
 
   const topInfo = useCallback(() => {
     return (

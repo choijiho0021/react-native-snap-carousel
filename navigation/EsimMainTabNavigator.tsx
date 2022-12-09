@@ -137,6 +137,9 @@ function HomeStackComponent() {
       <HomeStack.Screen
         name="ProductDetailOp"
         component={ProductDetailOpScreen}
+        options={() => ({
+          headerShown: false,
+        })}
       />
       <HomeStack.Screen name="Noti" component={NotiScreen} />
       <HomeStack.Screen name="SimpleText" component={SimpleTextScreen} />

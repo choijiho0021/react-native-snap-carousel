@@ -126,6 +126,16 @@ type EsimScreenProps = {
   };
 };
 
+type StatusObj = {
+  statusCd?: string;
+  endTime?: string;
+};
+
+type UsageObj = {
+  quota?: number;
+  used?: number;
+};
+
 export const renderInfo = (navigation) => (
   <Pressable
     style={styles.usrGuideBtn}
@@ -237,112 +247,132 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [balance, expDate, iccid, navigation],
   );
 
-  const checkCmiData = useCallback(async (item: RkbSubscription) => {
-    if (item?.subsIccid && item?.packageId) {
-      const rsp = await API.Subscription.cmiGetSubsUsage({
-        iccid: item?.subsIccid,
-        orderId: item?.subsOrderNo || 'noOrderId',
-      });
+  const checkCmiData = useCallback(
+    async (
+      item: RkbSubscription,
+    ): Promise<{status: StatusObj; usage: UsageObj}> => {
+      if (item?.subsIccid && item?.packageId) {
+        const rsp = await API.Subscription.cmiGetSubsUsage({
+          iccid: item?.subsIccid,
+          orderId: item?.subsOrderNo || 'noOrderId',
+        });
 
-      const {result, userDataBundles, subscriberQuota} = rsp || {};
+        const {result, userDataBundles, subscriberQuota} = rsp || {};
 
-      if (result?.code === 0 && userDataBundles && userDataBundles[0]) {
-        const statusCd =
-          !_.isUndefined(userDataBundles[0]?.status) &&
-          cmiStatusCd[userDataBundles[0]?.status];
-        const end = moment(userDataBundles[0]?.endTime)
-          .add(9, 'h')
-          .format('YYYY.MM.DD HH:mm:ss');
-        const exp = moment(userDataBundles[0]?.expireTime).add(9, 'h');
-        const now = moment();
+        if (result?.code === 0 && userDataBundles && userDataBundles[0]) {
+          const statusCd: string =
+            !_.isUndefined(userDataBundles[0]?.status) &&
+            cmiStatusCd[userDataBundles[0]?.status];
+          const end = moment(userDataBundles[0]?.endTime)
+            .add(9, 'h')
+            .format('YYYY.MM.DD HH:mm:ss');
+          const exp = moment(userDataBundles[0]?.expireTime).add(9, 'h');
+          const now = moment();
 
-        const isExpired = statusCd === 'A' && exp < now;
-        // cancel 된 후, 다른 사용자에게 iccid가 넘어갔을 경우 packageId로 확인
-        const isUsedByOther =
-          userDataBundles[0]?.dataBundleId !== item.packageId;
+          const isExpired = statusCd === 'A' && exp < now;
+          // cancel 된 후, 다른 사용자에게 iccid가 넘어갔을 경우 packageId로 확인
+          const isUsedByOther =
+            userDataBundles[0]?.dataBundleId !== item.packageId;
 
-        const tempCmiStatus = {
-          statusCd: isExpired || isUsedByOther ? 'U' : statusCd || {},
-          endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
-        };
+          const tempCmiStatus: StatusObj = {
+            statusCd: isExpired || isUsedByOther ? 'U' : statusCd,
+            endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
+          };
 
-        const tempCmiUsage = {
-          quota: Number(subscriberQuota?.qtavalue) || 0, // Mb
-          used: Number(subscriberQuota?.qtaconsumption) || 0, // Mb
-        };
+          const tempCmiUsage = {
+            quota: Number(subscriberQuota?.qtavalue) || 0, // Mb
+            used: Number(subscriberQuota?.qtaconsumption) || 0, // Mb
+          };
 
-        return {status: tempCmiStatus, usage: tempCmiUsage};
-      }
-      if (!item.subsOrderNo || userDataBundles?.length === 0) {
-        return {status: {statusCd: 'U'}, usage: {}};
-      }
-      setCmiPending(false);
-      return {status: {}, usage: {}};
-    }
-  }, []);
-
-  const checkQuadcellData = useCallback(async (item: RkbSubscription) => {
-    if (item?.imsi) {
-      const quadcellStatus = await API.Subscription.quadcellGetData({
-        imsi: item.imsi,
-        key: 'hlrstate',
-      }).then(async (state) => {
-        if (state.result === 0) {
-          const tempCmiStatus = await API.Subscription.quadcellGetData({
-            imsi: item.imsi,
-            key: 'info',
-          }).then((info) => {
-            if (info.result === 0) {
-              const statusCd =
-                !_.isUndefined(state?.objects?.hlrState) &&
-                quadcellStatusCd[state?.objects?.hlrState];
-
-              const end = moment(info?.objects?.effTime, 'YYYYMMDDHHmmss')
-                .add(1, 'h')
-                .format('YYYY-MM-DD HH:mm:ss');
-              const exp = moment(info?.objects?.expTime, 'YYYYMMDDHHmmss').add(
-                1,
-                'h',
-              );
-
-              const isReserved = statusCd === 'A' && exp > moment().add(1, 'y');
-              const isExpired = statusCd === 'A' && exp < moment();
-
-              // setCmiStatus({
-              //   // eslint-disable-next-line no-nested-ternary
-              //   statusCd: isReserved ? 'R' : isExpired ? 'U' : statusCd,
-              //   endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
-              // });
-
-              return {
-                // eslint-disable-next-line no-nested-ternary
-                statusCd: isReserved ? 'R' : isExpired ? 'U' : statusCd,
-                endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
-              };
-            }
-          });
-          return tempCmiStatus;
+          return {status: tempCmiStatus, usage: tempCmiUsage};
         }
-      });
-
-      const quadcellUsage = await API.Subscription.quadcellGetData({
-        imsi: item.imsi,
-        key: 'quota',
-      }).then(async (rsp) => {
-        if (rsp.result === 0) {
-          // setCmiUsage({
-          //   quota: Number(rsp?.objects?.packQuotaList[0]?.totalQuota) || 0, // Mb
-          //   used: Number(rsp?.objects?.packQuotaList[0]?.consumedQuota), // Mb
-          // });
+        if (!item.subsOrderNo || userDataBundles?.length === 0) {
           return {
-            quota: Number(rsp?.objects?.packQuotaList[0]?.totalQuota) || 0, // Mb
-            used: Number(rsp?.objects?.packQuotaList[0]?.consumedQuota), // Mb
+            status: {statusCd: 'U', endTime: undefined},
+            usage: {quota: undefined, used: undefined},
           };
         }
-      });
-      return {status: quadcellStatus, usage: quadcellUsage};
-    }
-  }, []);
+        setCmiPending(false);
+        return {
+          status: {statusCd: undefined, endTime: undefined},
+          usage: {quota: undefined, used: undefined},
+        };
+      }
+      return {
+        status: {statusCd: undefined, endTime: undefined},
+        usage: {quota: undefined, used: undefined},
+      };
+    },
+    [],
+  );
+
+  const checkQuadcellData = useCallback(
+    async (
+      item: RkbSubscription,
+    ): Promise<{status: StatusObj; usage: UsageObj}> => {
+      if (item?.imsi) {
+        const quadcellStatus: StatusObj =
+          await API.Subscription.quadcellGetData({
+            imsi: item.imsi,
+            key: 'hlrstate',
+          }).then(async (state) => {
+            if (state.result === 0) {
+              const tempCmiStatus: StatusObj =
+                await API.Subscription.quadcellGetData({
+                  imsi: item.imsi,
+                  key: 'info',
+                }).then((rsp) => {
+                  if (rsp.result === 0) {
+                    const statusCd =
+                      !_.isUndefined(state?.objects?.hlrState) &&
+                      quadcellStatusCd[state?.objects?.hlrState];
+
+                    const end = moment(rsp?.objects?.effTime, 'YYYYMMDDHHmmss')
+                      .add(1, 'h')
+                      .format('YYYY-MM-DD HH:mm:ss');
+                    const exp = moment(
+                      rsp?.objects?.expTime,
+                      'YYYYMMDDHHmmss',
+                    ).add(1, 'h');
+
+                    const isReserved =
+                      statusCd === 'A' && exp > moment().add(1, 'y');
+                    const isExpired = statusCd === 'A' && exp < moment();
+
+                    return {
+                      statusCd: isReserved ? 'R' : isExpired ? 'U' : statusCd,
+                      endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
+                    };
+                  }
+                  return {statusCd: undefined, endTime: undefined};
+                });
+              return tempCmiStatus;
+            }
+            return {statusCd: undefined, endTime: undefined};
+          });
+
+        const quadcellUsage: UsageObj = await API.Subscription.quadcellGetData({
+          imsi: item.imsi,
+          key: 'quota',
+        }).then(async (rsp) => {
+          if (rsp.result === 0) {
+            return {
+              quota: Number(rsp?.objects?.packQuotaList[0]?.totalQuota) || 0, // Mb
+              used: Number(rsp?.objects?.packQuotaList[0]?.consumedQuota), // Mb
+            };
+          }
+          return {quota: undefined, used: undefined};
+        });
+
+        return {status: quadcellStatus, usage: quadcellUsage};
+      }
+      return {
+        status: {statusCd: undefined, endTime: undefined},
+        usage: {quota: undefined, used: undefined},
+      };
+    },
+    [],
+  );
 
   const onPressUsage = useCallback(
     async (item: RkbSubscription) => {

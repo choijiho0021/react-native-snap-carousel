@@ -117,6 +117,13 @@ const styles = StyleSheet.create({
     height: '40%',
     marginHorizontal: 20,
   },
+  header: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    backgroundColor: colors.white,
+    alignItems: 'center',
+  },
 });
 
 type ProductDetailOpScreenNavigationProp = StackNavigationProp<
@@ -147,11 +154,6 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
   const [toggledList, setToggledList] = useState<Set<number>>(new Set([]));
 
   useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={route.params?.title} />,
-    });
-
     if (route?.params?.apn) {
       const dataFormat = route?.params?.apn
         .split(',')
@@ -285,6 +287,13 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <AppBackButton
+          title={route.params?.title}
+          style={{width: '70%', height: 56}}
+        />
+      </View>
+
       <AppText style={styles.title}>{i18n.t('prodDetailOp:title')}</AppText>
       <AppText style={styles.subTitle}>
         {i18n.t('prodDetailOp:subTitle')}
