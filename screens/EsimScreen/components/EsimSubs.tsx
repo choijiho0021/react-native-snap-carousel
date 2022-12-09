@@ -332,7 +332,6 @@ const styles = StyleSheet.create({
   },
   cautionTextContainer: {
     flexDirection: 'row',
-    marginRight: 36,
   },
 });
 
@@ -576,11 +575,16 @@ const EsimSubs = ({
     )
       return (
         <Pressable
-          style={styles.redirectHK}
+          style={[
+            styles.redirectHK,
+            mainSubs.tag?.includes('HA') && {backgroundColor: colors.lightSage},
+          ]}
           onPress={() =>
             navigation.navigate('RedirectHK', {
               iccid: mainSubs.subsIccid,
               orderNo: mainSubs.subsOrderNo,
+              uuid: mainSubs.uuid,
+              imsi: mainSubs.imsi,
             })
           }>
           <AppSvgIcon name="hkIcon" />
@@ -641,6 +645,7 @@ const EsimSubs = ({
           styles.cautionTextContainer,
           {
             marginBottom: hasPreDot ? 10 : 0,
+            marginRight: hasPreDot ? 36 : 0,
           },
         ]}>
         {hasPreDot && (

@@ -41,6 +41,10 @@ const updateSubsStatus = createAsyncThunk(
   'order/updateSubsStatus',
   API.Subscription.updateSubscriptionStatus,
 );
+const updateSubsAndOrderTag = createAsyncThunk(
+  'order/updateSubsAndOrderTag',
+  API.Subscription.updateSubscriptionAndOrderTag,
+);
 const updateSubsGiftStatus = createAsyncThunk(
   'order/updateSubsGiftStatus',
   API.Subscription.updateSubscriptionGiftStatus,
@@ -235,6 +239,22 @@ const slice = createSlice({
       return state;
     });
 
+    builder.addCase(updateSubsAndOrderTag.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      const {subs} = state;
+
+      if (result === 0 && objects[0]) {
+        const {key, tag, iccid} = objects[0];
+        const subsIccid = subs.get(iccid)?.map((s) => {
+          if (s.key === key) s.tag = tag;
+          return s;
+        });
+        if (subsIccid) subs.set(iccid, subsIccid);
+        state.subs = subs;
+      }
+    });
+
     builder.addCase(updateSubsStatus.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
 
@@ -301,6 +321,7 @@ export const actions = {
   getSubs,
   getOrders,
   updateSubsStatus,
+  updateSubsAndOrderTag,
   updateSubsGiftStatus,
   cancelAndGetOrder,
   checkAndGetOrderById,

@@ -42,6 +42,7 @@ const path = {
   prodSku: 'json/product/sku',
   prodUuid: 'json/product/uuid',
   prodByLocalOp: 'json/product/localop',
+  prodCountry: 'json/country',
   localOp: 'json/localop/list',
   token: 'rest/session/token',
   userRegister: 'user/register',
@@ -103,6 +104,7 @@ const path = {
       usage: 'rokebi/usage/subs',
       call: 'rokebi/call',
       ota: 'rokebi/svc/ota',
+      tag: 'rokebi/tag',
       reg: 'rokebi/reg',
       user: 'rokebi/user',
       account: 'rokebi/account',
@@ -112,6 +114,7 @@ const path = {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/quota',
       cmiStatus: 'api/v1/pvd/pv/cmi/v2/bundle/status',
       quadcell: 'api/v1/pvd/pv/quadcell',
+      hkRegStatus: 'api/v1/pvd/pv/cmi/v2/status',
     },
   },
 };
@@ -176,6 +179,8 @@ export type DrupalNodeJsonApi = {
 };
 
 export type ApiResult<T> = {
+  length: number;
+  forEach(arg0: (item: any) => void): unknown;
   result: number;
   objects: T[];
   status?: number;

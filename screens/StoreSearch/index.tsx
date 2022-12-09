@@ -264,6 +264,10 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
   const [recommendCountry, setRecommendCountry] = useState<string[]>([]);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
 
+  // useEffect(() => {
+  //   action.product.getProdCountry();
+  // }, [action.product]);
+
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({window}) => {
       setDimensions(window);

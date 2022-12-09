@@ -8,6 +8,7 @@ import {
   Currency,
   RkbLocalOp,
   RkbProdByCountry,
+  RkbProdCountry,
   RkbProduct,
 } from '@/redux/api/productApi';
 import {actions as PromotionActions} from './promotion';
@@ -16,6 +17,11 @@ import utils from '@/redux/api/utils';
 const getLocalOp = createAsyncThunk(
   'product/getLocalOp',
   API.Product.getLocalOp,
+);
+
+const getProdCountry = createAsyncThunk(
+  'product/getProdCountry',
+  API.Product.getProdCountry,
 );
 const getProdDetailCommon = createAsyncThunk(
   'product/getProdDetailCommon',
@@ -50,6 +56,7 @@ const getProductByLocalOp = createAsyncThunk(
 
 const init = createAsyncThunk('product/init', async (_, {dispatch}) => {
   await dispatch(getLocalOp());
+  await dispatch(getProdCountry());
   await dispatch(getProductByCountry());
 
   await dispatch(PromotionActions.getPromotion());
@@ -92,6 +99,7 @@ export interface ProductModelState {
   prodByLocalOp: ImmutableMap<string, string[]>;
   prodByPartner: ImmutableMap<string, RkbProduct[]>;
   cmiProdByPartner: ImmutableMap<string, RkbProduct[]>;
+  prodCountry: string[];
 }
 
 const initialState: ProductModelState = {
@@ -106,6 +114,7 @@ const initialState: ProductModelState = {
   prodByLocalOp: ImmutableMap(),
   prodByPartner: ImmutableMap(),
   cmiProdByPartner: ImmutableMap(),
+  prodCountry: [],
 };
 
 const slice = createSlice({
@@ -129,8 +138,12 @@ const slice = createSlice({
           const elm = {
             ...cur,
             weight: state.localOpList.get(cur.partner)?.weight || 0,
-            search: `${cur.country},${Country.getName(country)
-              .concat(Country.getName(country, 'en'))
+            search: `${cur.country},${Country.getName(
+              country,
+              'ko',
+              state.prodCountry,
+            )
+              .concat(Country.getName(country, 'en', state.prodCountry))
               .join(',')}`,
             partnerList: [cur.partner],
             minPrice: utils.stringToCurrency(cur.price),
@@ -198,6 +211,18 @@ const slice = createSlice({
       }
     });
 
+    builder.addCase(getProdCountry.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      if (result === 0 && objects.length > 0) {
+        objects.forEach((item) => {
+          if (!state.prodCountry.includes(item.keyword)) {
+            state.prodCountry.push(item.keyword);
+          }
+        });
+      }
+    });
+
     builder.addCase(getLocalOp.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
 
@@ -210,13 +235,18 @@ const slice = createSlice({
 
     builder.addCase(getProductByCountry.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
+
       if (result === 0) {
         state.prodByCountry = objects.map((o) => {
           const country = o.country.split(',');
           return {
             ...o,
-            search: `${o.country},${Country.getName(country)
-              .concat(Country.getName(country, 'en'))
+            search: `${o.country},${Country.getName(
+              country,
+              'ko',
+              state.prodCountry,
+            )
+              .concat(Country.getName(country, 'en', state.prodCountry))
               .join(',')}`,
           };
         });
@@ -287,6 +317,7 @@ export const actions = {
   getProdDetailCommon,
   getProdDetailInfo,
   getLocalOp,
+  getProdCountry,
   getProd,
   getProdBySku,
   getProductByCountry,

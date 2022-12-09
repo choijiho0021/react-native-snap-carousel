@@ -5,7 +5,6 @@ import AppActivityIndicator from '@/components/AppActivityIndicator';
 
 const styles = StyleSheet.create({
   attach: {
-    marginRight: 20,
     width: attachmentSize,
     height: attachmentSize,
   },

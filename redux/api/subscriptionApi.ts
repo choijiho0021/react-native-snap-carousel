@@ -94,6 +94,7 @@ export type RkbSubscription = {
   type: string;
   isStore: boolean;
 
+  tag?: string[];
   endDate?: string;
   country?: string[];
   prodName?: string;
@@ -128,6 +129,7 @@ const toSubscription =
           endDate: item.field_subs_expiration_date || '',
           statusCd: item.field_status || '',
           status: toStatus(item.field_status) || '',
+          tag: item.field_tag || [],
           giftStatusCd:
             giftCode[item.field_gift_status] || item.field_gift_status || '',
           country: item.field_country || '',
@@ -201,6 +203,21 @@ const toSubsUpdate = (data) => {
       })),
     );
   }
+  return data;
+};
+
+const toTagUpdate = (data) => {
+  if (data.result === 0 && isArray(data.objects)) {
+    return api.success(
+      data.objects.map((item) => ({
+        key: item.uuid,
+        uuid: item.uuid,
+        iccid: item.field_iccid,
+        tag: item.field_tag,
+      })),
+    );
+  }
+
   return data;
 };
 
@@ -404,6 +421,33 @@ const updateSubscriptionStatus = ({
   );
 };
 
+const updateSubscriptionAndOrderTag = ({
+  uuid, // subs or store order uuid
+  tag, // target tag
+  token,
+}: {
+  uuid: string;
+  tag: string;
+  token: string;
+}) => {
+  if (!uuid)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: uuid');
+  if (!tag) return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: tag');
+
+  if (!token)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
+
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.tag, '')}/${uuid}?_format=json`,
+    {
+      method: 'PATCH',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({tag}),
+    },
+    toTagUpdate,
+  );
+};
+
 const updateSubscriptionGiftStatus = ({
   uuid,
   giftStatus,
@@ -515,6 +559,31 @@ const quadcellGetData = ({
     (data) => {
       if (data?.result?.code === 0) {
         return api.success(data?.objects);
+      }
+      return data;
+    },
+    new Headers({'Content-Type': 'application/json'}),
+  );
+};
+
+const getHkRegStatus = ({iccid, imsi}: {iccid: string; imsi: string}) => {
+  if (!iccid)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
+  if (!imsi)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
+
+  return api.callHttpGet(
+    `${api.rokHttpUrl(
+      api.path.rokApi.pv.hkRegStatus,
+      isProduction ? undefined : 5000,
+    )}&iccid=${iccid}&imsi=${imsi}`,
+    (data) => {
+      if (data?.result?.code === 0) {
+        return api.success(
+          data.objects.himsis.map((item) => ({
+            hkRegStatus: item.realRuleList[0].authStatus,
+          })),
+        );
       }
       return data;
     },
@@ -653,9 +722,11 @@ export default {
   otaSubscription,
   getOtaSubscription,
   updateSubscriptionStatus,
+  updateSubscriptionAndOrderTag,
   updateSubscriptionGiftStatus,
   getSubsUsage,
   cmiGetSubsUsage,
   cmiGetSubsStatus,
   quadcellGetData,
+  getHkRegStatus,
 };
