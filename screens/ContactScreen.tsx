@@ -1,6 +1,6 @@
 import Analytics from 'appcenter-analytics';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {Linking, Pressable, StyleSheet, View, ScrollView} from 'react-native';
+import {Pressable, StyleSheet, View, ScrollView} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
@@ -9,8 +9,8 @@ import {
   ParamListBase,
   RouteProp,
 } from '@react-navigation/native';
+import {ChannelIO} from 'react-native-channel-plugin';
 import KakaoSDK from '@/components/NativeModule/KakaoSDK';
-import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
@@ -26,8 +26,9 @@ import i18n from '@/utils/i18n';
 import {navigate} from '@/navigation/navigation';
 import AppSnackBar from '@/components/AppSnackBar';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {AccountModelState} from '../redux/modules/account';
 
-const {channelId, esimGlobal, fbUser} = Env.get();
+const {channelId, esimGlobal, fbUser, talkPluginKey} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -168,10 +169,11 @@ type ContactScreenProps = {
   route: RouteProp<ParamListBase, string>;
 
   noti: NotiModelState;
+  account: AccountModelState;
 };
 
 const ContactScreen: React.FC<ContactScreenProps> = (props) => {
-  const {navigation, route, noti} = props;
+  const {navigation, route, noti, account} = props;
 
   const data = useMemo(
     () => [
@@ -197,8 +199,28 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
     ],
     [],
   );
+  const talkSettings = useMemo(
+    () => ({
+      pluginKey: talkPluginKey,
+      channelButtonOption: {
+        xMargin: 16,
+        yMargin: 100,
+        position: 'right',
+      },
+      profile: {
+        mobileNumber: account.mobile,
+        name: `global ${account.mobile}`,
+        email: account.email,
+      },
+    }),
+    [account.email, account.mobile],
+  );
   const [showModal, setShowModal] = useState(false);
   const [showSnackBar, setShowSnackbar] = useState(false);
+
+  useEffect(() => {
+    if (esimGlobal) ChannelIO.boot(talkSettings);
+  }, [talkSettings]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -228,6 +250,15 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
 
   const onPress = useCallback(
     (key: string) => {
+      const user = {
+        id: 'a9e043c1-4ea9-4e7c-945e-fa89a61fce85',
+        profile: {
+          // "name": NAME,
+          // "email": EMAIL,
+          page: 'https://www.rokebi.com/product/2bf333e8-c96b-429b-a7a1-fdee4358e4cc',
+        },
+      };
+
       switch (key) {
         case 'Faq':
           navigation.navigate('Faq');
@@ -243,12 +274,14 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
           break;
 
         case 'FB':
-          Linking.openURL(`fb-messenger-public://user-thread/${fbUser}`).catch(
-            () =>
-              AppAlert.info(i18n.t('acc:moveToFbDown'), '', () =>
-                Linking.openURL('http://appstore.com/Messenger'),
-              ),
-          );
+          if (esimGlobal) ChannelIO.showMessenger();
+
+          // Linking.openURL(`fb-messenger-public://user-thread/${fbUser}`).catch(
+          //   () =>
+          //     AppAlert.info(i18n.t('acc:moveToFbDown'), '', () =>
+          //       Linking.openURL('http://appstore.com/Messenger'),
+          //     ),
+          // );
           break;
 
         case 'Ktalk':
