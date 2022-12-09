@@ -358,12 +358,14 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
             'searchHist',
             `${word},${oldHist.slice(0, MAX_HISTORY_LENGTH - 1).join(',')}`,
           );
-        } else if (wordIdx > 1) {
+        } else if (wordIdx >= 0) {
           storeData(
             'searchHist',
             `${word},${oldsearchHist.replace(`,${word}`, '')}`,
           );
         }
+      } else {
+        storeData('searchHist', word);
       }
     }
   }, []);
