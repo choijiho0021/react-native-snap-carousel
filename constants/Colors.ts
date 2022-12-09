@@ -50,4 +50,5 @@ export const colors = {
   veryLightBlue: '#DAEEFF', // rgb 218 238 255
   greyishBrown: '#575757',
   redError: '#ee4423',
+  shadow1: '#a6a8ac',
 };

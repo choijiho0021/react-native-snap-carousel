@@ -107,12 +107,12 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     borderRadius: 3,
     borderWidth: 1,
-    borderColor: colors.warmGrey,
+    borderColor: colors.whiteTwo,
 
-    shadowColor: colors.black,
-    shadowOpacity: 0.1,
+    shadowColor: colors.shadow1,
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
     shadowOffset: {width: 0, height: 0},
-    shadowRadius: 5,
   },
   contactListItemRow: {
     flexDirection: 'row',
