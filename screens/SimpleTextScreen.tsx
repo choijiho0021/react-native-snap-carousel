@@ -3,6 +3,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {
   Dimensions,
+  Linking,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -154,6 +155,11 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
               key: moveTo[0],
               num: moveTo[1],
             });
+          }
+          break;
+        case 'openLink':
+          if (cmd.value) {
+            Linking.openURL(cmd.value);
           }
           break;
         default:
