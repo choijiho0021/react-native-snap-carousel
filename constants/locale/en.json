@@ -228,7 +228,7 @@
   "resign:confirm3": "Information mandated to be stored by the law will be discarded after the period set by the law",
   "resign:isConfirm": "I have read and agree to the terms above.",
   "resign:cntInfo": "You have traveled with us for {{count}} time(s).",
-  "resign:noCnt": ".",
+  "resign:noCnt": "로밍도깨비 eSIM이 얼마나 쉽고 편리한지 경험해보세요.\n즐거운 여행이 고객님을 기다리고 있어요!",
   "resign:confirmModal": "{{info}}\n\nDo you really wish to delete the account?",
   "resign:finished": "Your account has been successfully deleted.\nThank you for using our service.",
   "resign:placeholder": "Would you like to tell us more?",

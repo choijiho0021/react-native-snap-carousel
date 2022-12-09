@@ -227,7 +227,7 @@
   "resign:confirm3": "계정 탈퇴 후 전자상거래법에 따라 보존해야 하는 정보는 해당 법률에 따른 기간 보관 후 폐기됩니다.",
   "resign:isConfirm": "안내사항을 확인하였으며 동의합니다.",
   "resign:cntInfo": "고객님은 로밍도깨비와 {{count}}번의 여행을 함께했어요.",
-  "resign:noCnt": ".",
+  "resign:noCnt": "로밍도깨비 eSIM이 얼마나 쉽고 편리한지 경험해보세요.\n즐거운 여행이 고객님을 기다리고 있어요!",
   "resign:confirmModal": "{{info}}\n\n정말 탈퇴하시겠습니까?",
   "resign:finished": "계정 탈퇴가 정상적으로 처리되었습니다.\n이용해주셔서 감사합니다.",
   "resign:placeholder": "기타인 경우 이유를 입력해주세요.\n서비스 개선에 적극적으로 반영하겠습니다.",
