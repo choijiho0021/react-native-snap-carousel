@@ -269,7 +269,10 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const mobileRef = useRef<InputMobileRef>(null);
   const inputRef = useRef<InputPinRef>(null);
 
-  const recommender = useMemo(() => link.recommender, [link.recommender]);
+  const recommender = useMemo(
+    () => link?.params?.recommender,
+    [link?.params?.recommender],
+  );
   const confirmList = useMemo(
     () =>
       [
@@ -329,29 +332,38 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
   useEffect(() => {
     if (loggedIn) {
-      if (link?.url?.includes('gift')) {
-        navigation.navigate('EsimStack', {
-          screen: 'Esim',
-        });
-      } else if (!newUser && !link?.url?.includes('recommender')) {
-        navigation.navigate('Main', {
-          screen: 'HomeStack',
-          params: {
-            screen: 'Home',
-          },
-        });
-      } else {
-        navigation.navigate('Main', {
-          screen: 'MyPageStack',
-          params: {
-            screen: 'MyPage',
-          },
-        });
+      if (!link.url) {
+        if (newUser) {
+          navigation.navigate('Main', {
+            screen: 'MyPageStack',
+            params: {
+              screen: 'MyPage',
+            },
+          });
+        }
+        // if (link?.url?.includes('gift')) {
+        // navigation.navigate('EsimStack', {
+        //   screen: 'Esim',
+        // });
+        // } else if (!newUser && !link?.url?.includes('recommender')) {
+        // navigation.navigate('Main', {
+        //   screen: 'HomeStack',
+        //   params: {
+        //     screen: 'Home',
+        //   },
+        // });
+        // } else {
+        // navigation.navigate('Main', {
+        //   screen: 'MyPageStack',
+        //   params: {
+        //     screen: 'MyPage',
+        //   },
+        // });
+        // }
       }
       setAuthorized(true);
     }
-    // AppAlert.error(i18n.t('reg:failedToLogIn'));
-  }, [link?.url, loggedIn, navigation, newUser]);
+  }, [link.url, loggedIn, navigation, newUser]);
 
   useEffect(() => {
     const {current} = controller;
