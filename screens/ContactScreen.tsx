@@ -124,7 +124,6 @@ const styles = StyleSheet.create({
 type MenuItem = {
   key: string;
   title: string;
-  desc: string;
   page: string;
   icon: string;
   onPress?: () => void;
@@ -179,7 +178,6 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
       {
         key: 'Board',
         title: i18n.t('contact:boardTitle'),
-        desc: i18n.t('contact:boardDesc'),
         icon: 'imgBoard',
         page: 'Contact Board',
       },
@@ -187,14 +185,12 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
         ? {
             key: 'FB',
             title: i18n.t('contact:fbMsg'),
-            desc: i18n.t('contact:fbMsgDesc'),
             icon: 'fbMsg',
             page: 'Open FB Messenger',
           }
         : {
             key: 'Ktalk',
             title: i18n.t('contact:ktalkTitle'),
-            desc: i18n.t('contact:ktalkDesc'),
             icon: 'kakaoChannel',
             page: 'Open Kakao Talk',
           },
@@ -291,7 +287,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
       <View style={styles.bottomContainer}>
         <AppText style={styles.contactInfo2}>{i18n.t('contact:info2')}</AppText>
         <AppText style={styles.contactInfoTime}>
-          {i18n.t('contact:ktalkDesc')}
+          {i18n.t('contact:workTimeDesc')}
         </AppText>
         {data.map((item) => (
           <ContactListItem key={item.key} item={item} onPress={onPress} />
