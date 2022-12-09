@@ -53,6 +53,7 @@ interface AppButtonProps {
   iconStyle?: ViewStyle;
   viewStyle?: ViewStyle;
   pressedStyle?: ViewStyle;
+  disableStyle?: ViewStyle;
 }
 
 const AppButton: React.FC<AppButtonProps> = ({
@@ -74,6 +75,7 @@ const AppButton: React.FC<AppButtonProps> = ({
   iconStyle,
   viewStyle,
   pressedStyle,
+  disableStyle,
 }) => {
   const [pressed, setPressed] = useState(false);
   return (
@@ -93,6 +95,7 @@ const AppButton: React.FC<AppButtonProps> = ({
               : type === 'secondary'
               ? {backgroundColor: colors.whiteTwo}
               : undefined)),
+        disabled && disableStyle,
       ]}
       disabled={disabled}
       onPressIn={() => setPressed(true)}

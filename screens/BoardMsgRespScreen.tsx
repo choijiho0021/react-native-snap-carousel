@@ -38,9 +38,9 @@ import ImgWithIndicator from './MyPageScreen/components/ImgWithIndicator';
 const styles = StyleSheet.create({
   attachBox: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
-    width: windowWidth - 20,
-    marginTop: 10,
+    justifyContent: 'space-between',
+    // width: windowWidth - 20,
+    marginTop: 15,
   },
   reply: {
     ...appStyles.normal14Text,
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   respBox: {
-    marginTop: 18,
+    marginTop: 28,
     marginBottom: 36,
     padding: 15,
     paddingBottom: 20,
@@ -105,6 +105,11 @@ const styles = StyleSheet.create({
     width: '80%',
     alignSelf: 'center',
     justifyContent: 'center',
+  },
+  imgFrame: {
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+    borderRadius: 3,
   },
 });
 
@@ -183,6 +188,7 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
             .filter((item) => !_.isEmpty(item))
             .map((url, i) => (
               <Pressable
+                style={styles.imgFrame}
                 key={utils.generateKey(`${url}${i}`)}
                 onPress={() => {
                   setShowImgModal(true);
@@ -216,6 +222,7 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
             style={[styles.inputBox, {marginTop: 15, paddingBottom: 72}]}>
             {utils.htmlToString(issue?.msg)}
           </AppText>
+
           {renderImages(issue?.images)}
 
           {!_.isEmpty(resp) && (
