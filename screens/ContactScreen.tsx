@@ -35,10 +35,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bottomContainer: {
-    backgroundColor: colors.whiteTwo,
+    backgroundColor: colors.white,
     flex: 1,
     paddingVertical: isDeviceSize('medium') ? 32 : 40,
     paddingHorizontal: 20,
+    marginTop: 8,
   },
   itemTitle: {
     ...appStyles.bold16Text,
@@ -46,14 +47,6 @@ const styles = StyleSheet.create({
     fontSize: isDeviceSize('medium') ? 16 : 18,
     color: colors.black,
     lineHeight: 22,
-    letterSpacing: -1,
-  },
-  itemDesc: {
-    ...appStyles.normal12Text,
-    fontSize: isDeviceSize('medium') ? 12 : 14,
-    color: colors.warmGrey,
-    textAlign: 'left',
-    lineHeight: 20,
     letterSpacing: -1,
   },
   showSearchBar: {
@@ -67,7 +60,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     paddingHorizontal: 20,
     paddingTop: 30,
-    paddingBottom: isDeviceSize('medium') ? 156 : 182,
+    paddingBottom: 162,
   },
   absoluteView: {
     flex: 1,
@@ -99,7 +92,33 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: isDeviceSize('medium') ? 18 : 20,
     color: colors.black,
-    marginBottom: 24,
+    marginBottom: 8,
+  },
+  contactInfoTime: {
+    ...appStyles.normal12Text,
+    fontSize: isDeviceSize('medium') ? 12 : 14,
+    color: colors.warmGrey,
+    textAlign: 'left',
+    lineHeight: 18,
+    marginBottom: 28,
+  },
+  contactListItem: {
+    backgroundColor: colors.white,
+    marginVertical: 8,
+    borderRadius: 3,
+    borderWidth: 1,
+    borderColor: colors.warmGrey,
+
+    shadowColor: colors.black,
+    shadowOpacity: 0.1,
+    shadowOffset: {width: 0, height: 0},
+    shadowRadius: 5,
+  },
+  contactListItemRow: {
+    flexDirection: 'row',
+    height: isDeviceSize('medium') ? 74 : 88,
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 });
 type MenuItem = {
@@ -120,30 +139,17 @@ const ContactListItem0 = ({
 }) => {
   return (
     <Pressable
-      style={{
-        backgroundColor: colors.white,
-        marginVertical: 8,
-        borderRadius: 3,
-      }}
+      style={styles.contactListItem}
       onPress={() => {
         if (onPress) onPress(item.key);
       }}>
-      <View
-        style={{
-          flexDirection: 'row',
-          height: isDeviceSize('medium') ? 78 : 92,
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
+      <View style={styles.contactListItemRow}>
         <View style={{flexDirection: 'row'}}>
           <AppIcon
             style={{alignSelf: 'center', marginHorizontal: 20}}
             name={item.icon}
           />
-          <View>
-            <AppText style={styles.itemTitle}>{item.title}</AppText>
-            <AppText style={styles.itemDesc}>{item.desc}</AppText>
-          </View>
+          <AppText style={styles.itemTitle}>{item.title}</AppText>
         </View>
         {onPress && (
           <AppIcon
@@ -192,13 +198,6 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
             icon: 'kakaoChannel',
             page: 'Open Kakao Talk',
           },
-      {
-        key: 'Call',
-        title: i18n.t('contact:callTitle'),
-        desc: i18n.t('contact:callDesc'),
-        icon: 'callCenter',
-        page: 'Call Center',
-      },
     ],
     [],
   );
@@ -261,9 +260,6 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
             setShowSnackbar(true);
           });
           break;
-        case 'Call':
-          Linking.openURL(`tel:0317103969`);
-          break;
         default:
           break;
       }
@@ -294,6 +290,9 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
 
       <View style={styles.bottomContainer}>
         <AppText style={styles.contactInfo2}>{i18n.t('contact:info2')}</AppText>
+        <AppText style={styles.contactInfoTime}>
+          {i18n.t('contact:ktalkDesc')}
+        </AppText>
         {data.map((item) => (
           <ContactListItem key={item.key} item={item} onPress={onPress} />
         ))}
