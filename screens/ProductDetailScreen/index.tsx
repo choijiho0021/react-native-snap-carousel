@@ -310,10 +310,12 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           title={route.params?.title}
           style={{width: '70%', height: 56}}
         />
-        <AppCartButton
-          onPress={() => navigation.navigate('Cart')}
-          iconName="btnHeaderCart"
-        />
+        {account.loggedIn && (
+          <AppCartButton
+            onPress={() => navigation.navigate('Cart')}
+            iconName="btnHeaderCart"
+          />
+        )}
       </View>
 
       {renderWebView(route.params?.uuid)}
