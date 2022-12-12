@@ -37,6 +37,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.whiteTwo,
   },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   rowCenter: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -178,7 +182,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 50,
     marginBottom: 12,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
     alignItems: 'center',
     backgroundColor: '#eff2f4',
     borderColor: colors.lightGrey,
@@ -332,6 +337,12 @@ const styles = StyleSheet.create({
   },
   cautionTextContainer: {
     flexDirection: 'row',
+  },
+  blueText: {
+    ...appStyles.medium16,
+    color: colors.blue,
+    lineHeight: 26,
+    marginLeft: 6,
   },
 });
 
@@ -575,10 +586,7 @@ const EsimSubs = ({
     )
       return (
         <Pressable
-          style={[
-            styles.redirectHK,
-            mainSubs.tag?.includes('HA') && {backgroundColor: colors.lightSage},
-          ]}
+          style={styles.redirectHK}
           onPress={() =>
             navigation.navigate('RedirectHK', {
               iccid: mainSubs.subsIccid,
@@ -587,8 +595,22 @@ const EsimSubs = ({
               imsi: mainSubs.imsi,
             })
           }>
-          <AppSvgIcon name="hkIcon" />
-          <Text style={styles.redirectText}>{i18n.t('esim:redirectHK2')}</Text>
+          <View style={styles.row}>
+            <AppSvgIcon name="hkIcon" />
+            <AppText style={styles.redirectText}>
+              {i18n.t('esim:redirectHK2')}
+            </AppText>
+          </View>
+          {mainSubs.tag?.includes('HA') ? (
+            <View style={[styles.row, {justifyContent: 'flex-end'}]}>
+              <AppSvgIcon name="checkedBlueSmall" />
+              <AppText style={styles.blueText}>
+                {i18n.t('esim:redirectHK:done')}
+              </AppText>
+            </View>
+          ) : (
+            <AppSvgIcon name="rightArrow" />
+          )}
         </Pressable>
       );
     return null;
