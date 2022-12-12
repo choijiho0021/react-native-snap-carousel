@@ -545,8 +545,7 @@
 
   "usim:usageErrorInfo1": "오류 발생!",
   "usim:usageErrorInfo2": "로깨비가 해결하고 있어요.",
-
-  "pym:esimInfo": "eSIM 상품은 결제와 동시에 상품 정보가 발송되는 관계로 <b>교환·환불이 불가</b>합니다.",
+  "pym:esimInfo": "eSIM 상품은 결제와 동시에 상품 정보가 고객님께 발송되며, 상품 자원 정보가 통신사와 시스템에 등록되는 관계로 <b>교환·환불이 불가</b>합니다.",
   "pym:title": "결제 정보",
   "pym:delivery": "배송 정보",
   "pym:deliveryMemo": "배송 메모",
