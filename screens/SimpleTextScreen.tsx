@@ -307,7 +307,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
         contentStyle={{
           marginHorizontal: (width - 333) / 2,
         }}
-        closeButtonTitle={i18n.t(
+        okButtonTitle={i18n.t(
           promoResult === 'promo:join:joined' ? 'redirect' : 'close',
         )}
         buttonBackgroundColor={colors.white}

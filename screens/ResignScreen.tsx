@@ -348,6 +348,10 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
           type="normal"
           onOkClose={resign}
           onCancelClose={() => setShowConfirmModal(false)}
+          okButtonTitle={i18n.t('yes')}
+          okButtonStyle={{color: colors.black}}
+          cancelButtonTitle={i18n.t('no')}
+          cancelButtonStyle={{color: colors.clearBlue}}
           visible={showConfirmModal}
         />
       </ScrollView>

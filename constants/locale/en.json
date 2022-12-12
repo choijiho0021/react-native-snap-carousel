@@ -68,6 +68,8 @@
   "hongkong": "hongkong",
   "centerDot": "\u00B7",
   "exitAndOpenLink": "앱 종료하고 웹페이지로 이동",
+  "yes": "yes",
+  "no": "no",
 
   "home:exitApp": "Close App",
   "home:guide": "User Guide",

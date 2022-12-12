@@ -760,7 +760,7 @@ const Esim: React.FC<EsimProps> = ({
         />
         <AppModal
           title={i18n.t('home:unsupportedTitle')}
-          closeButtonTitle={isIOS ? i18n.t('ok') : i18n.t('exitAndOpenLink')}
+          okButtonTitle={isIOS ? i18n.t('ok') : i18n.t('exitAndOpenLink')}
           titleStyle={styles.modalTitle}
           type="close"
           onOkClose={() => exitApp('exit')}
