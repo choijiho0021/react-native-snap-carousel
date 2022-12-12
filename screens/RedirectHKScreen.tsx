@@ -392,7 +392,7 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
       } else {
         sethkRegStatus('hkCheck');
       }
-    }, 2000);
+    }, 20000);
   }, [
     reCheckCount,
     reCheckable,
