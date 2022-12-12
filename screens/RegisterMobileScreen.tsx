@@ -332,34 +332,15 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
   useEffect(() => {
     if (loggedIn) {
-      if (!link.url) {
-        if (newUser) {
-          navigation.navigate('Main', {
-            screen: 'MyPageStack',
-            params: {
-              screen: 'MyPage',
-            },
-          });
-        }
-        // if (link?.url?.includes('gift')) {
-        // navigation.navigate('EsimStack', {
-        //   screen: 'Esim',
-        // });
-        // } else if (!newUser && !link?.url?.includes('recommender')) {
-        // navigation.navigate('Main', {
-        //   screen: 'HomeStack',
-        //   params: {
-        //     screen: 'Home',
-        //   },
-        // });
-        // } else {
-        // navigation.navigate('Main', {
-        //   screen: 'MyPageStack',
-        //   params: {
-        //     screen: 'MyPage',
-        //   },
-        // });
-        // }
+      if (!link.url && newUser) {
+        navigation.navigate('Main', {
+          screen: 'MyPageStack',
+          params: {
+            screen: 'MyPage',
+          },
+        });
+      } else {
+        navigation.navigate('Main');
       }
       setAuthorized(true);
     }
