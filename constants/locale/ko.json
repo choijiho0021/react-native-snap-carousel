@@ -480,6 +480,7 @@
   "esim:redirectHK": "실명등록 바로가기",
   "esim:redirectHK2": "홍콩 실명 등록하기",
   "esim:redirectHK2:done": "홍콩 실명 등록 <b>승인 완료</b>",
+  "esim:redirectHK:done": "승인완료",
   "esim:redirectHKRegister": "실명등록 바로가기",
   "esim:ifFirst": "eSIM 사용이 처음이라면!",
   "esim:moveToGuide": "가이드 보기",
