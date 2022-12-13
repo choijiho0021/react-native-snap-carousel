@@ -207,6 +207,7 @@ const Esim: React.FC<EsimProps> = ({
 }) => {
   const [isDevModalVisible, setIsDevModalVisible] = useState<boolean>(true);
   const [index, setIndex] = useState(0);
+  const [savedIndex, setSavedIndex] = useState(0);
   const routes = useMemo(
     () =>
       [
@@ -328,6 +329,28 @@ const Esim: React.FC<EsimProps> = ({
   );
 
   const onIndexChange = useCallback((idx: number) => setIndex(idx), []);
+
+  // android tabView에서는 같은 stack 화면 이동 시 onIndexChange(0)이 실행되므로 기존 탭을 저장한 후 보여줄 수 있도록 추가함
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (!isIOS) {
+        setIndex(savedIndex);
+        setSavedIndex(0);
+      }
+    });
+
+    return unsubscribe;
+  }, [index, navigation, savedIndex]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('blur', () => {
+      if (!isIOS) {
+        setSavedIndex(index);
+      }
+    });
+
+    return unsubscribe;
+  }, [index, navigation, savedIndex]);
 
   const exitApp = useCallback(
     (v?: string) => {
@@ -760,7 +783,7 @@ const Esim: React.FC<EsimProps> = ({
         />
         <AppModal
           title={i18n.t('home:unsupportedTitle')}
-          closeButtonTitle={isIOS ? i18n.t('ok') : i18n.t('exitAndOpenLink')}
+          okButtonTitle={isIOS ? i18n.t('ok') : i18n.t('exitAndOpenLink')}
           titleStyle={styles.modalTitle}
           type="close"
           onOkClose={() => exitApp('exit')}
@@ -801,18 +824,21 @@ const Esim: React.FC<EsimProps> = ({
 
       {renderTabHeader()}
 
-      <TabView
-        style={styles.container}
-        sceneContainerStyle={{flex: 1}}
-        navigationState={{index, routes}}
-        renderScene={renderScene}
-        onIndexChange={onIndexChange}
-        initialLayout={{
-          width: dimensions.width,
-          height: 10,
-        }}
-        renderTabBar={() => null}
-      />
+      {savedIndex === 0 && (
+        <TabView
+          lazy
+          style={styles.container}
+          sceneContainerStyle={{flex: 1}}
+          navigationState={{index, routes}}
+          renderScene={renderScene}
+          onIndexChange={onIndexChange}
+          initialLayout={{
+            width: dimensions.width,
+            height: 10,
+          }}
+          renderTabBar={() => null}
+        />
+      )}
 
       {renderModal()}
     </SafeAreaView>

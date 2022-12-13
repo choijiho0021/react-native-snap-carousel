@@ -202,13 +202,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.whiteFive,
 
+    elevation: 12,
     shadowColor: 'rgb(52, 62, 95)',
-    elevation: 10,
-    shadowRadius: 3,
-    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    shadowOpacity: 0.15,
     shadowOffset: {
       height: 4,
-      width: 1,
+      width: 0,
     },
   },
   lessInfo: {

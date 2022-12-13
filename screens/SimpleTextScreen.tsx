@@ -3,6 +3,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {
   Dimensions,
+  Linking,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -156,6 +157,11 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
             });
           }
           break;
+        case 'openLink':
+          if (cmd.value) {
+            Linking.openURL(cmd.value);
+          }
+          break;
         default:
       }
     },
@@ -301,7 +307,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
         contentStyle={{
           marginHorizontal: (width - 333) / 2,
         }}
-        closeButtonTitle={i18n.t(
+        okButtonTitle={i18n.t(
           promoResult === 'promo:join:joined' ? 'redirect' : 'close',
         )}
         buttonBackgroundColor={colors.white}

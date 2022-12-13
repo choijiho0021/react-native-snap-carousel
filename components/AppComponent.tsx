@@ -153,7 +153,7 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
         <View style={{flex: 1}}>
           <AppModal
             title={i18n.t('loading:errNetworkTitle')}
-            closeButtonTitle={i18n.t('home:exitApp')}
+            okButtonTitle={i18n.t('home:exitApp')}
             titleStyle={styles.modalTitle}
             type="close"
             onOkClose={() => RNExitApp.exitApp()}
