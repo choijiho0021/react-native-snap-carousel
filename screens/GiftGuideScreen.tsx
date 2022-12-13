@@ -219,7 +219,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
               flexDirection: 'row',
               alignItems: 'flex-end',
               paddingBottom: 10,
-              marginTop: -10,
+              marginTop: 0,
             }}>
             <AppSvgIcon name="pin" style={{marginLeft: 8, marginRight: 6}} />
             <AppText style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
