@@ -120,6 +120,8 @@ export type AccountModelState = {
   deviceModel?: string;
   isSupportDev?: boolean;
   isFirst?: boolean;
+
+  isNewUser?: boolean;
 };
 
 export type AccountAuth = {
@@ -343,6 +345,8 @@ const updateAccountState = (
   if (_.isNumber(payload.uid)) newState.uid = payload.uid;
 
   newState.isUsedByOther = undefined;
+  newState.isNewUser = payload.isNewUser;
+
   return newState;
 };
 
@@ -379,6 +383,7 @@ const slice = createSlice({
       simCardName: undefined,
       simCardImage: undefined,
       isUsedByOther: undefined,
+      isNewUser: undefined,
     }),
   },
   extraReducers: (builder) => {

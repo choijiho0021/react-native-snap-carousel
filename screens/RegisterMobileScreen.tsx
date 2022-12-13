@@ -235,7 +235,7 @@ type RegisterMobileScreenProps = {
 };
 
 const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
-  account: {loggedIn, deviceModel},
+  account: {loggedIn, deviceModel, isNewUser},
   link,
   navigation,
   route,
@@ -332,7 +332,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
   useEffect(() => {
     if (loggedIn) {
-      if (!link.url && newUser) {
+      if (!link.url && isNewUser) {
         navigation.navigate('Main', {
           screen: 'MyPageStack',
           params: {
@@ -344,7 +344,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       }
       setAuthorized(true);
     }
-  }, [link.url, loggedIn, navigation, newUser]);
+  }, [isNewUser, link.url, loggedIn, navigation, newUser]);
 
   useEffect(() => {
     const {current} = controller;
@@ -539,6 +539,8 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           if (resp.result === 0 && mounted.current) {
             setAuthorized(_.isEmpty(resp.objects) ? true : undefined);
             setNewUser(_.isEmpty(resp.objects));
+
+            actions.account.updateAccount({isNewUser: true});
             setPin(value);
 
             if (!_.isEmpty(resp.objects)) {
@@ -559,7 +561,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           setAuthorized(false);
         });
     },
-    [mobile, signIn],
+    [actions.account, mobile, signIn],
   );
 
   const onMove = useCallback(
@@ -595,9 +597,9 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       setLoading(false);
 
       if (resp.result === 0) {
-        const {mobile: drupalId, newUser: isNewUser} = resp.objects[0];
+        const {mobile: drupalId, newUser: isNew} = resp.objects[0];
 
-        setNewUser(isNewUser);
+        setNewUser(isNew);
         setMobile(drupalId);
         setPin(pass);
         setAuthorized(isAuthorized);
@@ -605,7 +607,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         setSocialLogin(true);
         setProfileImageUrl(profile || '');
 
-        if (isNewUser) {
+        if (isNew) {
           // new login
           // create account
           emailRef.current?.focus();
