@@ -28,7 +28,7 @@ import AppSnackBar from '@/components/AppSnackBar';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {AccountModelState} from '../redux/modules/account';
 
-const {channelId, esimGlobal, fbUser, talkPluginKey} = Env.get();
+const {channelId, esimGlobal, talkPluginKey} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -250,15 +250,6 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
 
   const onPress = useCallback(
     (key: string) => {
-      const user = {
-        id: 'a9e043c1-4ea9-4e7c-945e-fa89a61fce85',
-        profile: {
-          // "name": NAME,
-          // "email": EMAIL,
-          page: 'https://www.rokebi.com/product/2bf333e8-c96b-429b-a7a1-fdee4358e4cc',
-        },
-      };
-
       switch (key) {
         case 'Faq':
           navigation.navigate('Faq');

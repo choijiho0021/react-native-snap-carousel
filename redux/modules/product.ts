@@ -8,7 +8,6 @@ import {
   Currency,
   RkbLocalOp,
   RkbProdByCountry,
-  RkbProdCountry,
   RkbProduct,
 } from '@/redux/api/productApi';
 import {actions as PromotionActions} from './promotion';
