@@ -7,14 +7,7 @@ import React, {
   useState,
   useEffect,
 } from 'react';
-import {
-  Pressable,
-  StyleSheet,
-  View,
-  Text,
-  Platform,
-  FlatList,
-} from 'react-native';
+import {Pressable, StyleSheet, View, Platform, FlatList} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
