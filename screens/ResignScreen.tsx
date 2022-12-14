@@ -34,9 +34,10 @@ import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
 import {API} from '@/redux/api';
 import AppTextInput from '@/components/AppTextInput';
-import AppModal from '@/components/AppModal';
 import {OrderModelState} from '../redux/modules/order';
 import Env from '@/environment';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
+import AppModalContent from '@/components/ModalContent/AppModalContent';
 
 const {esimGlobal} = Env.get();
 const radioButtons = [
@@ -80,7 +81,6 @@ const styles = StyleSheet.create({
   },
   resignTitle: {
     ...appStyles.bold24Text,
-    // color: colors.white,
     marginTop: 72,
     marginLeft: 20,
   },
@@ -112,7 +112,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.clearBlue,
     color: colors.white,
     textAlign: 'center',
-    color: '#ffffff',
   },
   buttonTitle: {
     ...appStyles.normal18Text,
@@ -120,15 +119,13 @@ const styles = StyleSheet.create({
     margin: 5,
     color: colors.white,
   },
-  textInput: (editable) => ({
+  textInput: {
     padding: 16,
     height: 120,
     borderStyle: 'solid',
     borderWidth: 1,
-    borderColor: editable ? colors.black : colors.lightGrey,
-    backgroundColor: editable ? colors.white : colors.whiteTwo,
     textAlignVertical: 'top',
-  }),
+  },
 });
 
 type ResignScreenNavigationProp = StackNavigationProp<
@@ -149,6 +146,7 @@ type ResignScreenProps = {
     cart: CartAction;
     order: OrderAction;
     noti: NotiAction;
+    modal: ModalAction;
   };
 };
 
@@ -162,8 +160,7 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
   const [reasonIdx, setReasonIdx] = useState<number>(0);
   const [otherReason, setOtherReason] = useState<string>('');
   const [isConfirm, setIsConfirm] = useState<boolean>(false);
-  const [showFinishModal, setShowFinishModal] = useState<boolean>(false);
-  const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
+
   const editable = useMemo(
     () => reasonIdx === radioButtons.length - 1,
     [reasonIdx],
@@ -201,9 +198,37 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
     });
   }, [navigation]);
 
+  const logout = useCallback(() => {
+    action.modal.closeModal();
+    Promise.all([
+      action.cart.reset(),
+      action.order.reset(),
+      action.noti.init({mobile: undefined}),
+      action.account.logout(),
+    ]).then(async () => {
+      if (Platform.OS === 'ios')
+        PushNotificationIOS.setApplicationIconBadgeNumber(0);
+      else {
+        ShortcutBadge.setCount(0);
+      }
+    });
+  }, [action.account, action.cart, action.modal, action.noti, action.order]);
+
+  const showFinishModal = useCallback(() => {
+    action.modal.showModal({
+      content: (
+        <AppModalContent
+          title={i18n.t('resign:finished')}
+          type="info"
+          onOkClose={logout}
+        />
+      ),
+    });
+  }, [action.modal, logout]);
+
   const resign = useCallback(async () => {
     const {uid, token} = account;
-    setShowConfirmModal(false);
+    action.modal.closeModal();
 
     if (isConfirm) {
       const rsp = await API.User.resign(
@@ -217,25 +242,35 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
       if (rsp.result && rsp.result < 0) {
         console.log('@@@fail to resign');
       }
-      setShowFinishModal(true);
+      showFinishModal();
     }
-  }, [account, isConfirm, otherReason, reasonIdx]);
+  }, [
+    account,
+    action.modal,
+    isConfirm,
+    otherReason,
+    reasonIdx,
+    showFinishModal,
+  ]);
 
-  const logout = useCallback(() => {
-    setShowFinishModal(false);
-    Promise.all([
-      action.cart.reset(),
-      action.order.reset(),
-      action.noti.init({mobile: undefined}),
-      action.account.logout(),
-    ]).then(async () => {
-      if (Platform.OS === 'ios')
-        PushNotificationIOS.setApplicationIconBadgeNumber(0);
-      else {
-        ShortcutBadge.setCount(0);
-      }
+  const showConfirmModal = useCallback(() => {
+    action.modal.showModal({
+      content: (
+        <AppModalContent
+          title={i18n.t('resign:confirmModal', {
+            info: resignInfo,
+          })}
+          type="normal"
+          onCancelClose={resign}
+          onOkClose={() => action.modal.closeModal()}
+          cancelButtonTitle={i18n.t('yes')}
+          cancelButtonStyle={{color: colors.black}}
+          okButtonTitle={i18n.t('no')}
+          okButtonStyle={{color: colors.clearBlue}}
+        />
+      ),
     });
-  }, [action.account, action.cart, action.noti, action.order]);
+  }, [action.modal, resign, resignInfo]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -279,7 +314,13 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
               </Pressable>
             ))}
             <AppTextInput
-              style={styles.textInput(editable)}
+              style={[
+                styles.textInput,
+                {
+                  borderColor: editable ? colors.black : colors.lightGrey,
+                  backgroundColor: editable ? colors.white : colors.whiteTwo,
+                },
+              ]}
               multiline
               onChangeText={(v) => setOtherReason(v)}
               placeholder={i18n.t('resign:placeholder')}
@@ -333,26 +374,7 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
           disableBackgroundColor={colors.lightGrey}
           disabled={!isConfirm}
           title={i18n.t('resign')}
-          onPress={() => setShowConfirmModal(true)}
-        />
-        <AppModal
-          title={i18n.t('resign:finished')}
-          type="info"
-          onOkClose={logout}
-          visible={showFinishModal}
-        />
-        <AppModal
-          title={i18n.t('resign:confirmModal', {
-            info: resignInfo,
-          })}
-          type="normal"
-          onOkClose={resign}
-          onCancelClose={() => setShowConfirmModal(false)}
-          okButtonTitle={i18n.t('yes')}
-          okButtonStyle={{color: colors.black}}
-          cancelButtonTitle={i18n.t('no')}
-          cancelButtonStyle={{color: colors.clearBlue}}
-          visible={showConfirmModal}
+          onPress={() => showConfirmModal()}
         />
       </ScrollView>
     </SafeAreaView>
@@ -371,6 +393,7 @@ export default connect(
       cart: bindActionCreators(cartActions, dispatch),
       order: bindActionCreators(orderActions, dispatch),
       noti: bindActionCreators(notiActions, dispatch),
+      modal: bindActionCreators(modalActions, dispatch),
     },
   }),
 )(ResignScreen);
