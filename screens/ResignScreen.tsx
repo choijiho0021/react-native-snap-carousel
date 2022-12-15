@@ -36,7 +36,9 @@ import {API} from '@/redux/api';
 import AppTextInput from '@/components/AppTextInput';
 import AppModal from '@/components/AppModal';
 import {OrderModelState} from '../redux/modules/order';
+import Env from '@/environment';
 
+const {esimGlobal} = Env.get();
 const radioButtons = [
   {id: 'resign:reason1'},
   {id: 'resign:reason2'},
@@ -167,12 +169,30 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
     [reasonIdx],
   );
   const purchaseCnt = useMemo(() => {
-    const reg = new RegExp(i18n.t('acc:balance'), 'gi');
+    return order.subs.size;
+  }, [order.subs.size]);
 
-    return Array.from(order.orders.values()).filter(
-      (elm) => !(elm.state === 'canceled' || reg.test(elm.orderItems[0].title)),
-    ).length;
-  }, [order.orders]);
+  const resignInfo = useMemo(() => {
+    return purchaseCnt > 0
+      ? i18n.t('resign:cntInfo', {count: purchaseCnt})
+      : i18n.t('resign:noCnt');
+  }, [purchaseCnt]);
+
+  useEffect(() => {
+    if (purchaseCnt <= 0) {
+      const {iccid: initIccid, mobile: initMobile, token} = account;
+
+      if (initIccid && token) {
+        action.order.getSubsWithToast({iccid: initIccid, token});
+      }
+      if (initMobile && token && !esimGlobal) {
+        action.order.getStoreSubsWithToast({
+          mobile: initMobile,
+          token,
+        });
+      }
+    }
+  }, [account, action.order, purchaseCnt]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -322,10 +342,16 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
           visible={showFinishModal}
         />
         <AppModal
-          title={i18n.t('resign:confirmModal', {count: purchaseCnt})}
+          title={i18n.t('resign:confirmModal', {
+            info: resignInfo,
+          })}
           type="normal"
           onOkClose={resign}
           onCancelClose={() => setShowConfirmModal(false)}
+          okButtonTitle={i18n.t('yes')}
+          okButtonStyle={{color: colors.black}}
+          cancelButtonTitle={i18n.t('no')}
+          cancelButtonStyle={{color: colors.clearBlue}}
           visible={showConfirmModal}
         />
       </ScrollView>

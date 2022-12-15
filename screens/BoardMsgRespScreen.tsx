@@ -20,7 +20,6 @@ import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
-import {windowWidth} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';

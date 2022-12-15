@@ -12,22 +12,13 @@ import Env from '@/environment';
 import {actions as cartActions} from '@/redux/modules/cart';
 import {actions as promotionActions} from '@/redux/modules/promotion';
 import {actions as accountActions} from '@/redux/modules/account';
-import {actions as linkActions} from '@/redux/modules/link';
+import {actions as linkActions, urlParamObj} from '@/redux/modules/link';
 import AuthStackNavigator from './AuthStackNavigator';
 import EsimMainTabNavigator from './EsimMainTabNavigator';
 import {
   requestPermission,
   checkFistLaunch,
 } from '@/navigation/component/permission';
-
-interface urlParamObj {
-  screen?: string;
-  stack?: string;
-  recommender?: string;
-  gift?: string;
-
-  [key: string]: string | undefined;
-}
 
 const {isIOS, esimGlobal} = Env.get();
 

@@ -14,7 +14,6 @@ import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactApplication;
-import com.zoyi.channel.rn.RNChannelIOPackage;
 // import com.horcrux.svg.SvgPackage;
 import com.adjust.nativemodule.AdjustPackage;
 import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
@@ -52,6 +51,8 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.zoontek.rnlocalize.RNLocalizePackage;
 import com.reactnativecommunity.clipboard.ClipboardPackage;
 
+import com.zoyi.channel.plugin.android.ChannelIO;
+import com.zoyi.channel.rn.RNChannelIOPackage;
 
 import org.reactnative.camera.RNCameraPackage;
 
@@ -234,6 +235,7 @@ public class MainApplication extends Application implements ReactApplication {
         OkHttpClientProvider.setOkHttpClientFactory(new FetchApiClientFactory());
         prefs = getSharedPreferences("Pref", MODE_PRIVATE);
 
+        ChannelIO.initialize(this);
 
         boolean isFirstRun = prefs.getBoolean("isFirstRun", true);
         if (isFirstRun) {

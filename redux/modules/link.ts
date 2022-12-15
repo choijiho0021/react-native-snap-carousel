@@ -3,12 +3,21 @@ import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
 import {createSlice} from '@reduxjs/toolkit';
 
+export interface urlParamObj {
+  screen?: string;
+  stack?: string;
+  recommender?: string;
+  gift?: string;
+
+  [key: string]: string | undefined;
+}
+
 export interface LinkModelState {
   url?: string;
   recommender?: string;
   gift?: string;
   utmParameters?: any;
-  params: object;
+  params: urlParamObj;
 }
 
 const initialState: LinkModelState = {

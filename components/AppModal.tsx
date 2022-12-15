@@ -73,7 +73,10 @@ export interface AppModalProps {
   titleStyle?: TextStyle;
   titleViewStyle?: ViewStyle;
   titleIcon?: string;
-  closeButtonTitle?: string;
+  okButtonTitle?: string;
+  okButtonStyle?: TextStyle;
+  cancelButtonTitle?: string;
+  cancelButtonStyle?: TextStyle;
   contentStyle?: ViewStyle;
   buttonStyle?: ViewStyle;
   buttonBackgroundColor?: ColorValue;
@@ -91,7 +94,10 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
   titleIcon,
   children,
   type = 'normal',
-  closeButtonTitle = i18n.t('close'),
+  okButtonTitle = i18n.t('ok'),
+  okButtonStyle = {},
+  cancelButtonTitle = i18n.t('close'),
+  cancelButtonStyle = {},
   buttonStyle,
   contentStyle,
   buttonBackgroundColor,
@@ -121,10 +127,11 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
               }}
               type="primary"
               onPress={onOkClose}
-              title={closeButtonTitle || i18n.t('close')}
+              title={okButtonTitle}
               titleStyle={[
                 styles.closeButtonTitle,
                 {color: buttonTitleColor || colors.white},
+                okButtonStyle,
               ]}
             />
           </View>
@@ -145,8 +152,12 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
               ]}
               type="secondary"
               onPress={onCancelClose}
-              title={i18n.t('close')}
-              titleStyle={[styles.closeButtonTitle, {color: colors.black}]}
+              title={cancelButtonTitle}
+              titleStyle={[
+                styles.closeButtonTitle,
+                {color: colors.black},
+                cancelButtonStyle,
+              ]}
             />
 
             <AppButton
@@ -160,10 +171,11 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
               ]}
               type="primary"
               onPress={onOkClose}
-              title={closeButtonTitle}
+              title={okButtonTitle}
               titleStyle={[
                 styles.closeButtonTitle,
                 buttonTitleColor ? {color: buttonTitleColor} : undefined,
+                okButtonStyle,
               ]}
             />
           </View>
@@ -177,21 +189,24 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
               <AppButton
                 style={styles.button}
                 onPress={onCancelClose}
-                title={i18n.t('cancel')}
-                titleStyle={styles.normalBtnTitle}
+                title={cancelButtonTitle}
+                titleStyle={[styles.normalBtnTitle, cancelButtonStyle]}
               />
             )}
             <AppButton
               style={styles.button}
               disabled={disableOkButton}
               onPress={onOkClose}
-              title={i18n.t('ok')}
+              title={okButtonTitle}
               disableBackgroundColor={colors.white}
               disableColor={colors.warmGrey}
-              titleStyle={{
-                ...styles.normalBtnTitle,
-                color: disableOkButton ? colors.warmGrey : colors.clearBlue,
-              }}
+              titleStyle={[
+                {
+                  ...styles.normalBtnTitle,
+                  color: disableOkButton ? colors.warmGrey : colors.clearBlue,
+                },
+                okButtonStyle,
+              ]}
             />
           </View>
         );
@@ -200,9 +215,12 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
     buttonBackgroundColor,
     buttonStyle,
     buttonTitleColor,
-    closeButtonTitle,
+    cancelButtonStyle,
+    cancelButtonTitle,
     contentStyle,
     disableOkButton,
+    okButtonStyle,
+    okButtonTitle,
     onCancelClose,
     onOkClose,
     titleViewStyle,
