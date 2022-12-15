@@ -32,16 +32,12 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {appStyles} from '@/constants/Styles';
-import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {
   AccountAction,
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
-import i18n from '@/utils/i18n';
-import AppSvgIcon from '@/components/AppSvgIcon';
 
 type ParamList = {
   CashHistoryScreen: {};
@@ -68,18 +64,18 @@ type CashHistoryScreenProps = {
 
 const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   action,
-  account = {iccid, token},
+  account,
 }) => {
-  const navigation = useNavigation();
-  const route = useRoute<RouteProp<ParamList, 'CashHistoryScreen'>>();
+  // const navigation = useNavigation();
+  // const route = useRoute<RouteProp<ParamList, 'CashHistoryScreen'>>();
 
-  const [showModal, setShowModal] = useState(false);
+  // const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
-    action.account.getCashHistory({iccid, token}).then((r) => {
-      console.log('aaaaa ');
-    });
-  }, [action.account]);
+  // useEffect(() => {
+  //   action.account.getCashHistory({iccid, token}).then((r) => {
+  //     console.log('aaaaa ');
+  //   });
+  // }, [action.account]);
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
