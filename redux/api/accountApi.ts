@@ -131,6 +131,17 @@ const getAccount = ({iccid, token}: {iccid?: string; token?: string}) => {
   );
 };
 
+const getCashHistory = ({iccid, token}: {iccid?: string; token?: string}) => {
+  return api.callHttpGet(
+    `${api.httpUrl(api.path.rokApi.rokebi.cash)}/${iccid}?_format=json`,
+    (rsp) =>
+      rsp.result === 0
+        ? toAccount(rsp.objects)
+        : api.failure(rsp.result, rsp.error),
+    api.withToken(token, 'json'),
+  );
+};
+
 const validateActCode = (iccid: string, actCode: string, {token}: ApiToken) => {
   if (!iccid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
@@ -258,6 +269,7 @@ export default {
   toAccount,
   toFile,
   getAccount,
+  getCashHistory,
   validateActCode,
   getByUser,
   registerMobile,

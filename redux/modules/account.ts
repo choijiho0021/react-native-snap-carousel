@@ -35,6 +35,12 @@ const getAccount = createAsyncThunk(
   'account/getAccount',
   API.Account.getAccount,
 );
+
+const getCashHistory = createAsyncThunk(
+  'account/getCashHistory',
+  API.Account.getCashHistory,
+);
+
 const getAccountByUser = createAsyncThunk(
   'account/getAccountByUser',
   API.Account.getByUser,
@@ -469,6 +475,14 @@ const slice = createSlice({
       }
     });
 
+    builder.addCase(getCashHistory.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+      console.log('aaaaa object', objects);
+      // if (result === 0 && objects && objects.length > 0) {
+      // }
+      // return state;
+    });
+
     builder.addCase(
       getToken.fulfilled,
       (state, action: PayloadAction<string>) => {
@@ -560,6 +574,7 @@ export const actions = {
   changeEmail,
   changeNotiToken,
   getAccount,
+  getCashHistory,
   getUserId,
   changePushNoti,
   uploadPicture,
