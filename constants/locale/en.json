@@ -544,7 +544,7 @@
   "redirectHK:hkRegStatus:btn:reCheck": "재확인",
   "redirectHK:hkRegStatus:btn:hkRegistering": "승인중...",
   "redirectHK:hkRegStatus:registingInfo": "계속 승인 중 상태인가요?",
-  "redirectHK:hkRegStatus:registingInfo:ment": "올바른 정보를 입력하지 않은 경우, 승인까지 최대 48시간 소요 될 수 있습니다. 재등록을 권장드려요!",
+  "redirectHK:hkRegStatus:registingInfo:ment": "올바른 정보를 입력하지 않은 경우, 승인까지 최대 48시간 소요될 수 있습니다. 재등록을 권장드려요!",
 
   "usim:usageErrorInfo1": "Error!",
   "usim:usageErrorInfo2": "Rokebi is working on this",
