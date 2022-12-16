@@ -41,6 +41,11 @@ const getCashHistory = createAsyncThunk(
   API.Account.getCashHistory,
 );
 
+const getCashExpire = createAsyncThunk(
+  'account/getCashExpire',
+  API.Account.getCashExpire,
+);
+
 const getAccountByUser = createAsyncThunk(
   'account/getAccountByUser',
   API.Account.getByUser,
@@ -99,6 +104,40 @@ const changePictureWithToast = reflectWithToast(
   Toast.NOT_UPDATED,
 );
 
+// * CashHistory type
+// * - cash_add : 프로모션으로 캐시 추가
+// * - cash_recharge : 충전 구매
+// * - cash_refund : 고객 센터에서 캐시 추가
+// * - point_refund : 고객 센터에서 포인트 추가
+// * - cash_deduct : 캐시 사용
+// * - point_deduct : 포인트 사용
+// * - point_add : 포인트 지급
+// * - point_exp : 포인트 소멸
+
+export type CashHistory = {
+  account_id: string;
+  after: string;
+  before: string;
+  create_dt: string;
+  created: string;
+  diff: string;
+  expire_dt: string;
+  field: string;
+  id: string;
+  inc: string;
+  log_id: string;
+  order_id: string;
+  point_id: string;
+  product: string;
+  type: string;
+};
+
+export type CashExpire = {
+  create_dt: string;
+  expire_dt: string;
+  point: string;
+};
+
 export type AccountModelState = {
   expDate?: string;
   balance?: number;
@@ -126,7 +165,8 @@ export type AccountModelState = {
   deviceModel?: string;
   isSupportDev?: boolean;
   isFirst?: boolean;
-
+  cashHistory?: CashHistory[];
+  cashExpire?: CashExpire[];
   isNewUser?: boolean;
 };
 
@@ -477,10 +517,22 @@ const slice = createSlice({
 
     builder.addCase(getCashHistory.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
-      console.log('aaaaa object', objects);
-      // if (result === 0 && objects && objects.length > 0) {
-      // }
-      // return state;
+      if (result === 0) {
+        state.cashHistory = objects;
+      }
+
+      return state;
+    });
+
+    builder.addCase(getCashExpire.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+      // const sumOfExpPt =
+
+      if (result === 0) {
+        state.cashExpire = objects;
+      }
+
+      return state;
     });
 
     builder.addCase(
@@ -575,6 +627,7 @@ export const actions = {
   changeNotiToken,
   getAccount,
   getCashHistory,
+  getCashExpire,
   getUserId,
   changePushNoti,
   uploadPicture,

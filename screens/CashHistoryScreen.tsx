@@ -13,6 +13,7 @@ import {
   ImageBackground,
   Pressable,
   Modal,
+  RefreshControl,
 } from 'react-native';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import AppBackButton from '@/components/AppBackButton';
@@ -37,6 +38,7 @@ import {
   AccountAction,
   AccountModelState,
   actions as accountActions,
+  CashHistory,
 } from '@/redux/modules/account';
 
 type ParamList = {
@@ -56,6 +58,7 @@ const styles = StyleSheet.create({
 type CashHistoryScreenProps = {
   navigation: MyPageScreenNavigationProp;
   account: AccountModelState;
+  pending: boolean;
 
   action: {
     account: AccountAction;
@@ -65,35 +68,86 @@ type CashHistoryScreenProps = {
 const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   action,
   account,
+  pending,
 }) => {
-  // const navigation = useNavigation();
+  const {iccid, token, balance, cashHistory, cashExpire} = account;
+  const navigation = useNavigation();
   // const route = useRoute<RouteProp<ParamList, 'CashHistoryScreen'>>();
 
   // const [showModal, setShowModal] = useState(false);
 
-  // useEffect(() => {
-  //   action.account.getCashHistory({iccid, token}).then((r) => {
-  //     console.log('aaaaa ');
-  //   });
-  // }, [action.account]);
+  const getHistory = useCallback(() => {
+    action.account.getCashHistory({iccid, token});
+    action.account.getCashExpire({iccid, token});
+  }, [action.account, iccid, token]);
+
+  useEffect(() => {
+    getHistory();
+  }, [getHistory]);
+
+  const renderItem = useCallback(({item}: {item: CashHistory}) => {
+    return (
+      <View>
+        <AppText>{item.id}</AppText>
+      </View>
+    );
+  }, []);
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
       <View style={styles.header}>
-        <AppBackButton title={'캐시내역'} style={{width: '70%', height: 56}} />
+        <AppBackButton
+          title={i18n.t('acc:balance')}
+          style={{width: '70%', height: 56}}
+        />
       </View>
-      <AppText>asdfasdf</AppText>
+
+      <View>
+        <AppText>{i18n.t('acc:myRemain')}</AppText>
+        <View style={{flexDirection: 'row'}}>
+          <AppText>{utils.numberToCommaString(balance || 0)}</AppText>
+
+          <Pressable onPress={() => navigation.navigate('Recharge')}>
+            <AppText>+{i18n.t('acc:goRecharge')}</AppText>
+          </Pressable>
+        </View>
+      </View>
+
+      {/* 30일 이내 소멸예정 캐시 모달  */}
+      <Pressable onPress={() => navigation.navigate('Recharge')}>
+        <AppText>{utils.numberToCommaString(balance || 0)}</AppText>
+      </Pressable>
+
+      <FlatList
+        data={cashHistory}
+        // ListHeaderComponent={header}
+        // ListEmptyComponent={empty}
+        renderItem={renderItem}
+        refreshControl={
+          <RefreshControl
+            refreshing={pending}
+            onRefresh={getHistory}
+            colors={[colors.clearBlue]} // android 전용
+            tintColor={colors.clearBlue} // ios 전용
+          />
+        }
+      />
     </SafeAreaView>
   );
 };
 
 export default connect(
-  ({account}: RootState) => ({
+  ({account, status}: RootState) => ({
     account,
+    pending:
+      status.pending[accountActions.getCashHistory.typePrefix] ||
+      status.pending[accountActions.getCashExpire.typePrefix] ||
+      false,
   }),
   (dispatch) => ({
     action: {
       account: bindActionCreators(accountActions, dispatch),
+      modal: bindActionCreators(accountActions, dispatch),
     },
   }),
 )(CashHistoryScreen);
