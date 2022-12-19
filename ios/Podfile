@@ -76,6 +76,8 @@ target 'RokebiESIM' do
   pod 'ChannelIOSDK', podspec: 'https://mobile-static.channel.io/ios/latest/xcframework.podspec'
   pod 'RNChannelIO', :path => '../node_modules/react-native-channel-plugin'
 
+  pod 'lottie-react-native', :path => '../node_modules/lottie-react-native'
+
 end
 
 post_install do |installer|
