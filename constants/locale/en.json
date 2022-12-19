@@ -70,6 +70,7 @@
   "exitAndOpenLink": "앱 종료하고 웹페이지로 이동",
   "yes": "yes",
   "no": "no",
+  "year": "{{year}}년",
 
   "home:exitApp": "Close App",
   "home:guide": "User Guide",

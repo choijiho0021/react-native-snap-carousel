@@ -14,6 +14,7 @@ import {
   Pressable,
   Modal,
   RefreshControl,
+  SectionList,
 } from 'react-native';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import AppBackButton from '@/components/AppBackButton';
@@ -39,8 +40,10 @@ import {
   AccountModelState,
   actions as accountActions,
   CashHistory,
+  SectionData,
 } from '@/redux/modules/account';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
+import moment from 'moment';
 
 type ParamList = {
   CashHistoryScreen: {};
@@ -134,7 +137,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   account,
   pending,
 }) => {
-  const {iccid, token, balance, cashHistory, cashExpire} = account;
+  const {iccid, token, balance, cashHistory = [], cashExpire} = account;
   const navigation = useNavigation();
   // const route = useRoute<RouteProp<ParamList, 'CashHistoryScreen'>>();
 
@@ -153,13 +156,51 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
     getHistory();
   }, [getHistory]);
 
-  const renderItem = useCallback(({item}: {item: CashHistory}) => {
-    return (
-      <View>
-        <AppText>{item.id}</AppText>
-      </View>
-    );
-  }, []);
+  const renderItem = useCallback(
+    ({
+      item,
+      index,
+      section,
+    }: {
+      item: CashHistory;
+      index: number;
+      section: SectionData;
+    }) => {
+      const predate =
+        index > 0
+          ? moment(section.data[index - 1].create_dt).format('MM.DD')
+          : '';
+      const date = moment(item.create_dt).format('MM.DD');
+      return (
+        <View
+          style={{
+            flexDirection: 'row',
+            marginHorizontal: 20,
+            paddingVertical: 12,
+          }}>
+          <AppText style={[appStyles.medium14, {marginRight: 23, width: 35}]}>
+            {index > 0 && predate === date ? '' : date}
+          </AppText>
+          <View style={{flex: 1}}>
+            <AppText style={appStyles.bold16Text}>{item.type}</AppText>
+            <AppText style={[appStyles.medium14, {color: colors.warmGrey}]}>
+              {date}
+            </AppText>
+          </View>
+          <AppText
+            style={[
+              appStyles.bold18Text,
+              {color: item.inc === 'Y' ? colors.redError : colors.clearBlue},
+            ]}>
+            {item.inc === 'Y' ? '+' : ''}
+            {utils.numberToCommaString(Number(item.diff) || 0)}
+            {i18n.t('won')}
+          </AppText>
+        </View>
+      );
+    },
+    [],
+  );
 
   const orderModalBody = useCallback(
     () => (
@@ -201,7 +242,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
     [action.modal, orderType, orderTypeList],
   );
 
-  const renderHisHeader = useCallback(
+  const renderFilter = useCallback(
     () => (
       <View>
         <View key="header" style={styles.hisHeader}>
@@ -246,7 +287,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         </View>
       </View>
     ),
-    [action.modal, filterList, orderModalBody, orderType],
+    [action.modal, dataFilter, filterList, orderModalBody, orderType],
   );
 
   return (
@@ -314,19 +355,29 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
 
       <View style={styles.divider} />
 
-      <FlatList
-        data={cashHistory}
-        ListHeaderComponent={renderHisHeader}
-        // ListEmptyComponent={empty}
+      {renderFilter()}
+
+      <SectionList
+        sections={cashHistory.map((elm) => ({
+          title: elm.title,
+          data: elm.data.filter(
+            (elm2) => elm2.inc === dataFilter || dataFilter === 'A',
+          ),
+        }))}
         renderItem={renderItem}
-        refreshControl={
-          <RefreshControl
-            refreshing={pending}
-            onRefresh={getHistory}
-            colors={[colors.clearBlue]} // android 전용
-            tintColor={colors.clearBlue} // ios 전용
-          />
-        }
+        renderSectionHeader={({section: {title}}) => (
+          <AppText
+            style={[
+              appStyles.bold18Text,
+              {
+                paddingHorizontal: 20,
+                paddingVertical: 12,
+                backgroundColor: colors.white,
+              },
+            ]}>
+            {i18n.t(`year`, {year: title})}
+          </AppText>
+        )}
       />
     </SafeAreaView>
   );

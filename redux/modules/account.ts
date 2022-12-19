@@ -114,6 +114,7 @@ const changePictureWithToast = reflectWithToast(
 // * - point_add : 포인트 지급
 // * - point_exp : 포인트 소멸
 
+export type SectionData = {title: string; data: CashHistory[]};
 export type CashHistory = {
   account_id: string;
   after: string;
@@ -165,7 +166,7 @@ export type AccountModelState = {
   deviceModel?: string;
   isSupportDev?: boolean;
   isFirst?: boolean;
-  cashHistory?: CashHistory[];
+  cashHistory?: SectionData[];
   cashExpire?: CashExpire[];
   isNewUser?: boolean;
 };
@@ -517,8 +518,21 @@ const slice = createSlice({
 
     builder.addCase(getCashHistory.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
+
+      const group = objects.reduce((acc, cur) => {
+        const year = cur.create_dt.slice(0, 4);
+        const idx = acc.findIndex((elm) => elm.title === year);
+
+        if (idx <= -1) {
+          acc.push({title: year, data: [cur] as CashHistory[]});
+        } else {
+          acc[idx].data?.push(cur);
+        }
+        return acc;
+      }, [] as SectionData[]);
+
       if (result === 0) {
-        state.cashHistory = objects;
+        state.cashHistory = group;
       }
 
       return state;
