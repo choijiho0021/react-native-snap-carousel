@@ -179,7 +179,6 @@
   "acc:actDate": "Activation Date",
   "acc:balance": "Balance",
   "acc:remain": "ROKEBI Cash Balance",
-  "acc:myRemain": "내 캐시 잔액",
   "acc:mysim": "My SIM Info",
   "acc:recharge": "Recharge",
   "acc:rechargeDone": "[충전 완료]",
@@ -885,5 +884,14 @@
   "rcpt:share": "Share",
   "rcpt:saved": "Stored in the album, 'ROKEBI'.",
   "rcpt:fail": "영수증 정보를 찾을 수 없습니다.",
-  "rcpt:companyName": "UANGEL"
+  "rcpt:companyName": "UANGEL",
+
+  "cashHistory:myBalance": "내 캐시 잔액",
+  "cashHistory:in1Month": "(30일 이내)",
+  "cashHistory:useHistory": "캐시 사용 내역",
+  "cashHistory:filter:A": "전체",
+  "cashHistory:filter:Y": "충전 \u00B7 적립",
+  "cashHistory:filter:N": "사용",
+  "cashHistory:orderType:latest": "최신순",
+  "cashHistory:orderType:old": "오래된순"
 }
