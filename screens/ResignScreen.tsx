@@ -262,7 +262,11 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
           })}
           type="normal"
           onCancelClose={resign}
-          onOkClose={() => action.modal.closeModal()}
+          onOkClose={() => {
+            navigation.popToTop();
+            navigation.navigate('HomeStack', {screen: 'Home'});
+            action.modal.closeModal();
+          }}
           cancelButtonTitle={i18n.t('yes')}
           cancelButtonStyle={{color: colors.black}}
           okButtonTitle={i18n.t('no')}
