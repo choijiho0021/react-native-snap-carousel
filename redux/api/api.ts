@@ -109,6 +109,7 @@ const path = {
       user: 'rokebi/user',
       account: 'rokebi/account',
       prodByCountry: 'rokebi/prod/bycntry',
+      cash: 'rokebi/cash',
     },
     pv: {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/quota',

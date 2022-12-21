@@ -15,6 +15,7 @@ import toast from './modules/toast';
 import promotion from './modules/promotion';
 import status from './modules/status';
 import link from './modules/link';
+import modal from './modules/modal';
 
 const reducers = {
   account,
@@ -30,6 +31,7 @@ const reducers = {
   promotion,
   status,
   link,
+  modal,
 };
 
 type BaseReducerMap<S> = {

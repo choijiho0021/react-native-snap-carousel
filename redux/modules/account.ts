@@ -35,6 +35,17 @@ const getAccount = createAsyncThunk(
   'account/getAccount',
   API.Account.getAccount,
 );
+
+const getCashHistory = createAsyncThunk(
+  'account/getCashHistory',
+  API.Account.getCashHistory,
+);
+
+const getCashExpire = createAsyncThunk(
+  'account/getCashExpire',
+  API.Account.getCashExpire,
+);
+
 const getAccountByUser = createAsyncThunk(
   'account/getAccountByUser',
   API.Account.getByUser,
@@ -93,6 +104,41 @@ const changePictureWithToast = reflectWithToast(
   Toast.NOT_UPDATED,
 );
 
+// * CashHistory type
+// * - cash_add : 프로모션으로 캐시 추가
+// * - cash_recharge : 충전 구매
+// * - cash_refund : 고객 센터에서 캐시 추가
+// * - point_refund : 고객 센터에서 포인트 추가
+// * - cash_deduct : 캐시 사용
+// * - point_deduct : 포인트 사용
+// * - point_add : 포인트 지급
+// * - point_exp : 포인트 소멸
+
+export type SectionData = {title: string; data: CashHistory[]};
+export type CashHistory = {
+  account_id: string;
+  after: string;
+  before: string;
+  create_dt: string;
+  created: string;
+  diff: string;
+  expire_dt: string;
+  field: string;
+  id: string;
+  inc: string;
+  log_id: string;
+  order_id: string;
+  point_id: string;
+  product: string;
+  type: string;
+};
+
+export type CashExpire = {
+  create_dt: string;
+  expire_dt: string;
+  point: string;
+};
+
 export type AccountModelState = {
   expDate?: string;
   balance?: number;
@@ -120,8 +166,10 @@ export type AccountModelState = {
   deviceModel?: string;
   isSupportDev?: boolean;
   isFirst?: boolean;
-
+  cashHistory?: SectionData[];
+  cashExpire?: CashExpire[];
   isNewUser?: boolean;
+  expirePt?: number;
 };
 
 export type AccountAuth = {
@@ -469,6 +517,42 @@ const slice = createSlice({
       }
     });
 
+    builder.addCase(getCashHistory.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      const group = objects.reduce((acc, cur) => {
+        const year = cur.create_dt.slice(0, 4);
+        const idx = acc.findIndex((elm) => elm.title === year);
+
+        if (idx <= -1) {
+          acc.push({title: year, data: [cur] as CashHistory[]});
+        } else {
+          acc[idx].data?.push(cur);
+        }
+        return acc;
+      }, [] as SectionData[]);
+
+      if (result === 0) {
+        state.cashHistory = group;
+      }
+
+      return state;
+    });
+
+    builder.addCase(getCashExpire.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      if (result === 0) {
+        state.cashExpire = objects;
+        state.expirePt = objects.reduce(
+          (acc, cur) => acc + Number(cur.point),
+          0,
+        );
+      }
+
+      return state;
+    });
+
     builder.addCase(
       getToken.fulfilled,
       (state, action: PayloadAction<string>) => {
@@ -560,6 +644,8 @@ export const actions = {
   changeEmail,
   changeNotiToken,
   getAccount,
+  getCashHistory,
+  getCashExpire,
   getUserId,
   changePushNoti,
   uploadPicture,

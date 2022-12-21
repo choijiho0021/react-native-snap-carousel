@@ -2,6 +2,7 @@ import _ from 'underscore';
 import {Buffer} from 'buffer';
 import utils from '@/redux/api/utils';
 import api, {ApiResult, ApiToken, DrupalNode, DrupalNodeJsonApi} from './api';
+import {CashExpire, CashHistory} from '../modules/account';
 
 export type RkbAccount = {
   nid: number;
@@ -127,6 +128,40 @@ const getAccount = ({iccid, token}: {iccid?: string; token?: string}) => {
       rsp.result === 0
         ? toAccount(rsp.objects)
         : api.failure(rsp.result, rsp.error),
+    api.withToken(token, 'json'),
+  );
+};
+
+const getCashHistory = ({iccid, token}: {iccid?: string; token?: string}) => {
+  return api.callHttpGet<CashHistory>(
+    `${api.httpUrl(api.path.rokApi.rokebi.cash)}/${iccid}?_format=json`,
+    (rsp) => {
+      return rsp.result === 0
+        ? api.success(rsp.objects)
+        : api.failure(rsp.result, rsp.error);
+    },
+    api.withToken(token, 'json'),
+  );
+};
+
+const getCashExpire = ({
+  iccid,
+  token,
+  exp = 30,
+}: {
+  iccid?: string;
+  token?: string;
+  exp?: number;
+}) => {
+  return api.callHttpGet<CashExpire>(
+    `${api.httpUrl(
+      api.path.rokApi.rokebi.cash,
+    )}/${iccid}?_format=json&exp=${exp}`,
+    (rsp) => {
+      return rsp.result === 0
+        ? api.success(rsp.objects)
+        : api.failure(rsp.result, rsp.error);
+    },
     api.withToken(token, 'json'),
   );
 };
@@ -258,6 +293,8 @@ export default {
   toAccount,
   toFile,
   getAccount,
+  getCashHistory,
+  getCashExpire,
   validateActCode,
   getByUser,
   registerMobile,

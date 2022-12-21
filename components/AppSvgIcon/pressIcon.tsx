@@ -907,6 +907,21 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  cashHistoryPlus: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M9 5a1 1 0 0 0-2 0v2H5a1 1 0 1 0 0 2h2v2a1 1 0 1 0 2 0V9h2a1 1 0 1 0 0-2H9V5z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;
