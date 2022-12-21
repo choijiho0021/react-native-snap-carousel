@@ -1,39 +1,24 @@
-import React, {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   StyleSheet,
   SafeAreaView,
   View,
-  FlatList,
-  ImageBackground,
   Pressable,
-  Modal,
   RefreshControl,
   SectionList,
+  FlatList,
 } from 'react-native';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import moment from 'moment';
 import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
-import {RkbSubscription} from '@/redux/api/subscriptionApi';
-import AppButton from '@/components/AppButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {retrieveData, storeData, utils} from '@/utils/utils';
-import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
-import EsimModal from './EsimScreen/components/EsimModal';
-import {getPromoFlagColor} from '@/redux/api/productApi';
-import SplitText from '@/components/SplitText';
-import Triangle from '@/components/Triangle';
+import {utils} from '@/utils/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
-
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
 import {RootState} from '@/redux';
 import {
   AccountAction,
@@ -43,7 +28,13 @@ import {
   SectionData,
 } from '@/redux/modules/account';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
-import moment from 'moment';
+import AppSnackBar from '@/components/AppSnackBar';
+import {CashExpire} from '../redux/modules/account';
+import AppPrice from '@/components/AppPrice';
+import Env from '@/environment';
+import AppButton from '@/components/AppButton';
+
+const {esimCurrency} = Env.get();
 
 type ParamList = {
   CashHistoryScreen: {};
@@ -117,10 +108,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  okButton: {
+    ...appStyles.normal16Text,
+    height: 52,
+    backgroundColor: colors.clearBlue,
+    margin: 20,
+    textAlign: 'center',
+    color: '#ffffff',
+  },
 });
 
 type CashHistoryScreenProps = {
-  navigation: MyPageScreenNavigationProp;
+  navigation: CashHistoryScreenProps;
   account: AccountModelState;
   pending: boolean;
 
@@ -137,15 +136,46 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   account,
   pending,
 }) => {
-  const {iccid, token, balance, cashHistory = [], cashExpire} = account;
+  const {
+    iccid,
+    token,
+    balance,
+    cashHistory = [],
+    cashExpire,
+    expirePt = 0,
+  } = account;
   const navigation = useNavigation();
   // const route = useRoute<RouteProp<ParamList, 'CashHistoryScreen'>>();
 
   const [orderType, setOrderType] = useState<OrderType>('latest');
   const [dataFilter, setDataFilter] = useState<string>('A');
+  const [showSnackBar, setShowSnackbar] = useState(false);
 
   const orderTypeList: OrderType[] = useMemo(() => ['latest', 'old'], []);
   const filterList: string[] = useMemo(() => ['A', 'Y', 'N'], []);
+
+  const applyFilter = useCallback(
+    (arr: any[]) =>
+      arr.filter((elm2) => elm2.inc === dataFilter || dataFilter === 'A'),
+    [dataFilter],
+  );
+
+  const bReverse = useCallback((arr: any[], b: boolean) => {
+    if (b) return arr.reverse();
+    return arr;
+  }, []);
+
+  const sectionData = useMemo(() => {
+    const isAsc = orderType === 'old';
+
+    return bReverse(
+      cashHistory.map((elm) => ({
+        title: elm.title,
+        data: bReverse(applyFilter(elm.data), isAsc),
+      })),
+      isAsc,
+    );
+  }, [applyFilter, bReverse, cashHistory, orderType]);
 
   const getHistory = useCallback(() => {
     action.account.getCashHistory({iccid, token});
@@ -156,7 +186,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
     getHistory();
   }, [getHistory]);
 
-  const renderItem = useCallback(
+  const renderSectionItem = useCallback(
     ({
       item,
       index,
@@ -178,7 +208,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             marginHorizontal: 20,
             paddingVertical: 12,
           }}>
-          <AppText style={[appStyles.medium14, {marginRight: 23, width: 35}]}>
+          <AppText style={[appStyles.medium14, {marginRight: 23, width: 50}]}>
             {index > 0 && predate === date ? '' : date}
           </AppText>
           <View style={{flex: 1}}>
@@ -187,59 +217,157 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
               {date}
             </AppText>
           </View>
-          <AppText
-            style={[
+
+          <AppPrice
+            price={utils.toCurrency(
+              utils.stringToNumber(item.diff) || 0,
+              esimCurrency,
+            )}
+            balanceStyle={[
               appStyles.bold18Text,
               {color: item.inc === 'Y' ? colors.redError : colors.clearBlue},
-            ]}>
-            {item.inc === 'Y' ? '+' : ''}
-            {utils.numberToCommaString(Number(item.diff) || 0)}
-            {i18n.t('won')}
-          </AppText>
+            ]}
+            currencyStyle={[
+              appStyles.bold16Text,
+              {color: item.inc === 'Y' ? colors.redError : colors.clearBlue},
+            ]}
+            showPlus
+          />
         </View>
       );
     },
     [],
   );
 
+  const renderExpireItem = useCallback(({item}: {item: CashExpire}) => {
+    const expireDate = moment(item.expire_dt);
+
+    const dDay = expireDate.diff(moment(), 'days');
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingVertical: 12,
+          marginHorizontal: 20,
+          marginVertical: 4,
+        }}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <AppText
+            style={[
+              appStyles.medium16,
+              {color: colors.warmGrey, marginRight: 6},
+            ]}>
+            {expireDate.format('YYYY.MM.DD')}까지
+          </AppText>
+          <AppText style={[appStyles.bold14Text, {color: colors.redError}]}>
+            D-{dDay}
+          </AppText>
+        </View>
+
+        <AppPrice
+          price={utils.toCurrency(
+            utils.stringToNumber(item.point) || 0,
+            esimCurrency,
+          )}
+          balanceStyle={[appStyles.bold18Text, {color: colors.clearBlue}]}
+          currencyStyle={[appStyles.bold16Text, {color: colors.clearBlue}]}
+        />
+      </View>
+    );
+  }, []);
+
   const orderModalBody = useCallback(
     () => (
-      <>
-        <Pressable
-          style={styles.sortModalContainer}
-          onPress={() => action.modal.closeModal()}>
-          <Pressable style={styles.sortModalContent}>
-            <AppText style={appStyles.bold18Text}>
-              {i18n.t(`cashHistory:orderType:${orderType}`)}
-            </AppText>
-            <View style={{marginTop: 30}}>
-              {orderTypeList.map((elm) => (
-                <Pressable
-                  key={elm}
-                  onPress={() => {
-                    setOrderType(elm);
-                    action.modal.closeModal();
-                  }}
-                  style={styles.orderTypeItem}>
-                  <AppText
-                    style={[
-                      appStyles.normal18Text,
-                      {
-                        color:
-                          orderType === elm ? colors.black : colors.warmGrey,
-                      },
-                    ]}>
-                    {i18n.t(`cashHistory:orderType:${elm}`)}
-                  </AppText>
-                  {orderType === elm && <AppSvgIcon name="selected" />}
-                </Pressable>
-              ))}
-            </View>
-          </Pressable>
+      <Pressable
+        style={styles.sortModalContainer}
+        onPress={() => action.modal.closeModal()}>
+        <Pressable style={styles.sortModalContent}>
+          <AppText style={appStyles.bold18Text}>
+            {i18n.t(`cashHistory:orderType`)}
+          </AppText>
+          <View style={{marginTop: 30}}>
+            {orderTypeList.map((elm) => (
+              <Pressable
+                key={elm}
+                onPress={() => {
+                  setOrderType(elm);
+                  action.modal.closeModal();
+                }}
+                style={styles.orderTypeItem}>
+                <AppText
+                  style={[
+                    appStyles.normal18Text,
+                    {
+                      color: orderType === elm ? colors.black : colors.warmGrey,
+                    },
+                  ]}>
+                  {i18n.t(`cashHistory:orderType:${elm}`)}
+                </AppText>
+                {orderType === elm && <AppSvgIcon name="selected" />}
+              </Pressable>
+            ))}
+          </View>
         </Pressable>
-      </>
+      </Pressable>
     ),
     [action.modal, orderType, orderTypeList],
+  );
+
+  const expirePtModalBody = useCallback(
+    () => (
+      <SafeAreaView style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}>
+        <View style={{flex: 1, backgroundColor: colors.white, marginTop: 50}}>
+          <AppText
+            style={[
+              appStyles.bold20Text,
+              {marginHorizontal: 20, marginTop: 28, marginBottom: 24},
+            ]}>
+            {i18n.t('cashHistory:expireModalTitle')}
+          </AppText>
+
+          <View
+            style={{
+              marginHorizontal: 20,
+              marginBottom: 8,
+              padding: 16,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              backgroundColor: colors.backGrey,
+            }}>
+            <AppText style={appStyles.bold14Text}>
+              {i18n.t('cashHistory:expirePt')}
+            </AppText>
+            <AppPrice
+              price={utils.toCurrency(expirePt || 0, esimCurrency)}
+              balanceStyle={[appStyles.bold18Text, {color: colors.redError}]}
+              currencyStyle={[appStyles.bold16Text, {color: colors.redError}]}
+            />
+          </View>
+
+          <FlatList
+            data={cashExpire}
+            renderItem={renderExpireItem}
+            // refreshControl={
+            //   <RefreshControl
+            //     refreshing={pending}
+            //     onRefresh={onRefresh}
+            //     colors={[colors.clearBlue]} // android 전용
+            //     tintColor={colors.clearBlue} // ios 전용
+            //   />
+            // }
+          />
+
+          <AppButton
+            style={styles.okButton}
+            title={i18n.t('ok')}
+            type="primary"
+            onPress={() => action.modal.closeModal()}
+          />
+        </View>
+      </SafeAreaView>
+    ),
+    [action.modal, cashExpire, expirePt, renderExpireItem],
   );
 
   const renderFilter = useCallback(
@@ -290,6 +418,13 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
     [action.modal, dataFilter, filterList, orderModalBody, orderType],
   );
 
+  const showExpirePt = useCallback(() => {
+    if (expirePt <= 0) setShowSnackbar(true);
+    else {
+      action.modal.showModal({content: expirePtModalBody()});
+    }
+  }, [action.modal, expirePt, expirePtModalBody]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -304,10 +439,11 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           {i18n.t('cashHistory:myBalance')}
         </AppText>
         <View style={styles.balanceBox}>
-          <AppText style={[appStyles.bold28Text]}>
-            {utils.numberToCommaString(balance || 0)}
-            {i18n.t('won')}
-          </AppText>
+          <AppPrice
+            price={utils.toCurrency(balance || 0, esimCurrency)}
+            balanceStyle={[appStyles.bold28Text, {color: colors.black}]}
+            currencyStyle={[appStyles.bold26Text, {color: colors.black}]}
+          />
 
           <Pressable
             style={styles.rechargeBox}
@@ -330,7 +466,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}
-        onPress={() => navigation.navigate('Recharge')}>
+        onPress={() => showExpirePt()}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <AppText style={appStyles.bold14Text}>
             {i18n.t('cashHistory:myBalance')}
@@ -341,14 +477,11 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         </View>
 
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <AppText
-            style={[
-              appStyles.bold18Text,
-              {color: colors.redError, marginRight: 8},
-            ]}>
-            {utils.numberToCommaString(balance || 0)}
-            {i18n.t('won')}
-          </AppText>
+          <AppPrice
+            price={utils.toCurrency(expirePt || 0, esimCurrency)}
+            balanceStyle={[appStyles.bold18Text, {color: colors.redError}]}
+            currencyStyle={[appStyles.bold16Text, {color: colors.redError}]}
+          />
           <AppSvgIcon name="rightArrow" />
         </View>
       </Pressable>
@@ -358,13 +491,8 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
       {renderFilter()}
 
       <SectionList
-        sections={cashHistory.map((elm) => ({
-          title: elm.title,
-          data: elm.data.filter(
-            (elm2) => elm2.inc === dataFilter || dataFilter === 'A',
-          ),
-        }))}
-        renderItem={renderItem}
+        sections={sectionData}
+        renderItem={renderSectionItem}
         renderSectionHeader={({section: {title}}) => (
           <AppText
             style={[
@@ -378,6 +506,12 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             {i18n.t(`year`, {year: title})}
           </AppText>
         )}
+      />
+
+      <AppSnackBar
+        visible={showSnackBar}
+        onClose={() => setShowSnackbar(false)}
+        textMessage={i18n.t('cashHistory:snackbar')}
       />
     </SafeAreaView>
   );

@@ -169,6 +169,7 @@ export type AccountModelState = {
   cashHistory?: SectionData[];
   cashExpire?: CashExpire[];
   isNewUser?: boolean;
+  expirePt?: number;
 };
 
 export type AccountAuth = {
@@ -540,10 +541,13 @@ const slice = createSlice({
 
     builder.addCase(getCashExpire.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
-      // const sumOfExpPt =
 
       if (result === 0) {
         state.cashExpire = objects;
+        state.expirePt = objects.reduce(
+          (acc, cur) => acc + Number(cur.point),
+          0,
+        );
       }
 
       return state;

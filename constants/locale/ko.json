@@ -887,6 +887,10 @@
   "cashHistory:filter:A": "전체",
   "cashHistory:filter:Y": "충전 \u00B7 적립",
   "cashHistory:filter:N": "사용",
+  "cashHistory:orderType": "정렬 방식",
   "cashHistory:orderType:latest": "최신순",
-  "cashHistory:orderType:old": "오래된순"
+  "cashHistory:orderType:old": "오래된순",
+  "cashHistory:snackbar": "30일 이내 소멸 예정 캐시가 없습니다.",
+  "cashHistory:expireModalTitle": "30일 이내\n소멸 예정인 캐시가 있어요",
+  "cashHistory:expirePt": "소멸 예정 캐시"
 }

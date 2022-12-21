@@ -1,4 +1,4 @@
-import React, {memo} from 'react';
+import React, {Fragment, memo} from 'react';
 import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from 'react-native';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
@@ -28,32 +28,40 @@ const AppPrice = ({
   style,
   balanceStyle,
   currencyStyle,
+  showPlus = false,
   price,
 }: {
   style?: StyleProp<ViewStyle>;
   balanceStyle?: StyleProp<TextStyle>;
   currencyStyle?: StyleProp<TextStyle>;
+  showPlus?: boolean;
   price: Currency;
 }) => {
   return (
     <View style={style || styles.container}>
-      {esimGlobal || i18n.locale !== 'ko'
-        ? [
-            <AppText key="won" style={[styles.price, currencyStyle]}>
-              {`${i18n.t(price.currency)}`}
-            </AppText>,
-            <AppText key="balance" style={[styles.price, balanceStyle]}>
-              {utils.currencyString(price.value)}
-            </AppText>,
-          ]
-        : [
-            <AppText key="balance" style={[styles.price, balanceStyle]}>
-              {utils.currencyString(price.value)}
-            </AppText>,
-            <AppText key="won" style={[styles.price, currencyStyle]}>
-              {i18n.t(price.currency)}
-            </AppText>,
-          ]}
+      {esimGlobal || i18n.locale !== 'ko' ? (
+        <Fragment>
+          <AppText key="won" style={currencyStyle || styles.price}>
+            {showPlus && price.value > 0 ? '+' : ''}
+            {`${i18n.t(price.currency)}`}
+          </AppText>
+
+          <AppText key="balance" style={balanceStyle || styles.price}>
+            {utils.currencyString(price.value)}
+          </AppText>
+        </Fragment>
+      ) : (
+        <Fragment>
+          <AppText key="balance" style={balanceStyle || styles.price}>
+            {showPlus && price.value > 0 ? '+' : ''}
+            {utils.currencyString(price.value)}
+          </AppText>
+
+          <AppText key="won" style={currencyStyle || styles.price}>
+            {i18n.t(price.currency)}
+          </AppText>
+        </Fragment>
+      )}
     </View>
   );
 };
