@@ -26,11 +26,12 @@ import {
   AccountModelState,
   actions as accountActions,
   CashHistory,
+  CashExpire,
   SectionData,
 } from '@/redux/modules/account';
+import {OrderModelState} from '@/redux/modules/order';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import AppSnackBar from '@/components/AppSnackBar';
-import {CashExpire} from '../redux/modules/account';
 import AppPrice from '@/components/AppPrice';
 import Env from '@/environment';
 import AppButton from '@/components/AppButton';
@@ -63,6 +64,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   rechargeBox: {
+    flexDirection: 'row',
     borderColor: colors.lightGrey,
     borderWidth: 1,
     alignItems: 'center',
@@ -152,11 +154,17 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     backgroundColor: colors.white,
   },
+  contentContainerStyle: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 type CashHistoryScreenProps = {
   navigation: CashHistoryScreenProps;
   account: AccountModelState;
+  order: OrderModelState;
   pending: boolean;
 
   action: {
@@ -170,6 +178,7 @@ type OrderType = 'latest' | 'old';
 const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   action,
   account,
+  order,
   pending,
 }) => {
   const {
@@ -221,7 +230,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         data: bReverse(applyFilter(elm.data), isAsc),
       })),
       isAsc,
-    );
+    ).filter((elm: SectionData) => elm.data.length > 0);
   }, [applyFilter, bReverse, cashHistory, orderType]);
 
   const getHistory = useCallback(() => {
@@ -249,7 +258,18 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           : '';
       const date = moment(item.create_dt).format('MM.DD');
       return (
-        <View style={styles.sectionItemContainer}>
+        <Pressable
+          style={styles.sectionItemContainer}
+          onPress={() => {
+            if (item.order_id) {
+              const ord = order.orders.get(Number(item.order_id));
+              if (ord) {
+                navigation.navigate('PurchaseDetail', {
+                  detail: ord,
+                });
+              }
+            }
+          }}>
           <AppText style={[appStyles.medium14, {marginRight: 23, width: 50}]}>
             {index > 0 && predate === date ? '' : date}
           </AppText>
@@ -275,11 +295,22 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             ]}
             showPlus
           />
-        </View>
+        </Pressable>
       );
     },
     [],
   );
+
+  const renderEmpty = useCallback(() => {
+    return (
+      <View style={{alignItems: 'center'}}>
+        <AppSvgIcon name="threeDots" style={{marginBottom: 20}} />
+        <AppText style={{...appStyles.medium14, color: colors.warmGrey}}>
+          {i18n.t(`cashHistory:empty`)}
+        </AppText>
+      </View>
+    );
+  }, []);
 
   const renderExpireItem = useCallback(({item}: {item: CashExpire}) => {
     const expireDate = moment(item.expire_dt);
@@ -344,6 +375,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             ))}
           </View>
         </Pressable>
+        <SafeAreaView style={{backgroundColor: colors.white}} />
       </Pressable>
     ),
     [action.modal, orderType, orderTypeList],
@@ -351,7 +383,8 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
 
   const expirePtModalBody = useCallback(
     () => (
-      <SafeAreaView style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}>
+      <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}>
+        <SafeAreaView style={{backgroundColor: 'transparent'}} />
         <Animated.View
           style={{
             flex: 1,
@@ -378,8 +411,9 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           </View>
 
           <FlatList
+            // data={cashExpire}
             data={cashExpire?.concat(cashExpire.concat(cashExpire))}
-            keyExtractor={(item) => item.create_dt + item.expire_dt}
+            keyExtractor={(item) => utils.generateKey(item.create_dt)}
             onScrollBeginDrag={() => {
               setIsBeginDrag(true);
             }}
@@ -404,7 +438,9 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             }}
           />
         </Animated.View>
-      </SafeAreaView>
+
+        <SafeAreaView style={{backgroundColor: colors.white}} />
+      </View>
     ),
     [action.modal, animatedValue, cashExpire, expirePt, renderExpireItem],
   );
@@ -488,8 +524,9 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           <Pressable
             style={styles.rechargeBox}
             onPress={() => navigation.navigate('Recharge')}>
+            <AppSvgIcon name="cashHistoryPlus" style={{marginRight: 4}} />
             <AppText style={appStyles.normal14Text}>
-              +{i18n.t('acc:goRecharge')}
+              {i18n.t('acc:goRecharge')}
             </AppText>
           </Pressable>
         </View>
@@ -529,14 +566,17 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
 
       <SectionList
         sections={sectionData}
+        contentContainerStyle={
+          sectionData.length > 1 ? {} : styles.contentContainerStyle
+        }
         renderItem={renderSectionItem}
         renderSectionHeader={({section: {title}}) => (
           <AppText style={styles.sectionHeader}>
             {i18n.t(`year`, {year: title})}
           </AppText>
         )}
+        ListEmptyComponent={() => renderEmpty()}
       />
-
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackbar(false)}
@@ -547,8 +587,9 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
 };
 
 export default connect(
-  ({account, status}: RootState) => ({
+  ({account, order, status}: RootState) => ({
     account,
+    order,
     pending:
       status.pending[accountActions.getCashHistory.typePrefix] ||
       status.pending[accountActions.getCashExpire.typePrefix] ||
