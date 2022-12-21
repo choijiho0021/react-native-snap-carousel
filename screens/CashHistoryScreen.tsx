@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -7,6 +7,7 @@ import {
   RefreshControl,
   SectionList,
   FlatList,
+  Animated,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
@@ -180,14 +181,25 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
     expirePt = 0,
   } = account;
   const navigation = useNavigation();
-  // const route = useRoute<RouteProp<ParamList, 'CashHistoryScreen'>>();
 
   const [orderType, setOrderType] = useState<OrderType>('latest');
   const [dataFilter, setDataFilter] = useState<string>('A');
   const [showSnackBar, setShowSnackbar] = useState(false);
+  const [isBeginDrag, setIsBeginDrag] = useState(false);
+  const [expirePtmodalPosY, setExpirePtmodalPosY] = useState(56);
+
+  const animatedValue = useRef(new Animated.Value(0)).current;
 
   const orderTypeList: OrderType[] = useMemo(() => ['latest', 'old'], []);
   const filterList: string[] = useMemo(() => ['A', 'Y', 'N'], []);
+
+  useEffect(() => {
+    Animated.timing(animatedValue, {
+      toValue: isBeginDrag ? 56 : expirePtmodalPosY,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  }, [animatedValue, expirePtmodalPosY, isBeginDrag]);
 
   const applyFilter = useCallback(
     (arr: any[]) =>
@@ -340,7 +352,12 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   const expirePtModalBody = useCallback(
     () => (
       <SafeAreaView style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}>
-        <View style={{flex: 1, backgroundColor: colors.white, marginTop: 50}}>
+        <Animated.View
+          style={{
+            flex: 1,
+            backgroundColor: colors.white,
+            marginTop: animatedValue,
+          }}>
           <AppText
             style={[
               appStyles.bold20Text,
@@ -361,8 +378,11 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           </View>
 
           <FlatList
-            data={cashExpire}
+            data={cashExpire?.concat(cashExpire.concat(cashExpire))}
             keyExtractor={(item) => item.create_dt + item.expire_dt}
+            onScrollBeginDrag={() => {
+              setIsBeginDrag(true);
+            }}
             renderItem={renderExpireItem}
             // refreshControl={
             //   <RefreshControl
@@ -378,12 +398,15 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             style={styles.okButton}
             title={i18n.t('ok')}
             type="primary"
-            onPress={() => action.modal.closeModal()}
+            onPress={() => {
+              action.modal.closeModal();
+              setIsBeginDrag(false);
+            }}
           />
-        </View>
+        </Animated.View>
       </SafeAreaView>
     ),
-    [action.modal, cashExpire, expirePt, renderExpireItem],
+    [action.modal, animatedValue, cashExpire, expirePt, renderExpireItem],
   );
 
   const renderFilter = useCallback(
@@ -473,7 +496,14 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
       </View>
 
       {/* 30일 이내 소멸예정 캐시 모달  */}
-      <Pressable style={styles.showExpPtBox} onPress={() => showExpirePt()}>
+      <Pressable
+        style={styles.showExpPtBox}
+        onPress={() => showExpirePt()}
+        onLayout={(event) =>
+          setExpirePtmodalPosY(
+            event.nativeEvent.layout.y - event.nativeEvent.layout.height || 165,
+          )
+        }>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <AppText style={appStyles.bold14Text}>
             {i18n.t('cashHistory:expirePt')}
