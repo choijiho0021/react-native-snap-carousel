@@ -549,6 +549,7 @@
 
   "usim:usageErrorInfo1": "오류 발생!",
   "usim:usageErrorInfo2": "로깨비가 해결하고 있어요.",
+
   "pym:esimInfo": "eSIM 상품은 결제와 동시에 상품 정보가 고객님께 발송되며, 상품 자원 정보가 통신사와 시스템에 등록되는 관계로 <b>교환·환불이 불가</b>합니다.",
   "pym:title": "결제 정보",
   "pym:delivery": "배송 정보",
@@ -676,15 +677,6 @@
   "mypage:preparing": "서비스 준비중",
   "mypage:mailInfo": "* 구매하신 eSIM 상품은 본 이메일로 발송됩니다.",
 
-  "promo:join:open": "이벤트 참여",
-  "promo:join:joined": "이벤트 참여 완료",
-  "promo:join:closed": "이벤트 종료",
-  "promo:join:invalid": "이벤트 대상이 아닙니다.",
-
-  "promo:join:fail": "이벤트 참여 실패",
-  "promo:join:ing": "시도중 ...",
-  "promo:login": "로그인 후 이벤트 참여하기",
-
   "invite:title": "로깨비캐시 *p를 보냈어요.",
   "invite:desc": "어쩌면 당신의 해외여행 데이터는 공짜!?",
   "invite:btn-1": "어쩌면 데이터가 공짜?",
@@ -699,21 +691,17 @@
   "inv:inviteCountUnit": "명",
   "inv:rokebiCashUnit": "C",
   "inv:withdrawalInfo": "\u2022 탈퇴 후 재가입한 친구는 해당되지 않습니다.\n\u2022 캐시 유효기간은 캐시 지급일로부터 1년입니다.",
-
   "inv:copyMsg": "초대 링크가 복사되었습니다.",
-
   "inv:upper1": "친구를 초대해보세요 :)",
   "inv:upper2": "고객님께 <b>{cash}</b> 캐시",
   "inv:upper3": "친구에게 <b>{cash}</b> 캐시를 드려요!",
   "inv:upper4": "친구가 고객님의 초대로 로밍도깨비 eSIM을\n최초 가입하면, 바로 적립됩니다.",
   "inv:upper5": "※ 캐시 유효기간 : 지급일로부터 1년",
-
   "inv:lower1": "초대 인원에 제한이 없어요!",
   "inv:lower2": "<b>한명</b>이 가입하면,",
   "inv:lower3": "<b>열명</b>이 가입하면,",
   "inv:lower4": "로깨비",
   "inv:lower5": "cash",
-
   "inv:statDesc": "어쩌면 내 여행 데이터는 공짜!?",
 
   "gift:method": "전송수단",
@@ -730,10 +718,8 @@
   "gift:info3": "• 수신자가 선물보기(상품 URL)를 클릭 시, 선물 메시지와 함께 상품 정보를 확인 후 사용할 수 있으며, 수신자는 로밍도깨비 앱에 상품을 별도로 등록하여 사용할 수도 있습니다.",
   "gift:info4": "• 수신자가 상품 등록을 위해 서비스 최초 가입시, 발신자와 수신자 모두에게 소정의 로깨비 캐시를 드리오니, 상품 등록 사용을 추천해 주세요.",
   "gift:info5": "• 본 상품은 선물과 함께 요금제 활성화 정보가 공유되며, 당사는 해당 상품의 사적 유통 및 거래에 대해 책임지지 않습니다.",
-
   "gift:msgBody1": "로밍도깨비에서 데이터 선물이 도착했습니다.\n\n-받은 선물 : ",
   "gift:msgBody2": "\n\n자세한 이용방법 및 선물 등록은 위의 URL을 접속하여 확인해주세요.",
-
   "gift:maxLength": "/ 최대 80 자",
   "gift:linkTitle": "데이터 선물이 도착했습니다!",
   "gift:linkDesc": "언제 어디서나 데이터 필요한 순간, 로밍도깨비.",
@@ -809,11 +795,10 @@
   "userGuide:stepsTitle6:ios": "아래 그림처럼\n<b>사용 회선을 설정</b>해주세요.",
   "userGuide:stepsTitle10:ios": "아래 그림처럼\n<b>잘 설정되었는지 확인</b>해주세요.",
   "userGuide:stepsTitle12:ios": "<b>2개의 통신사 수신호</b>가 \n잘 잡히는지 확인해주세요",
-
   "userGuide:stepsTitle1:ios15": "<b>설정 > 셀룰러 > 셀룰러 요금제 추가</b>\n버튼을 눌러주세요.",
   "userGuide:stepsTitle3:ios15": "<b>셀룰러 요금제 레이블</b>을 \n지정해주세요.",
-
   "userGuide:stepsTitle1:android": "<b>설정 > 네트워크 및 인터넷 ></b>\n<b>SIM 추가(+)</b> 버튼을 눌러주세요.",
+  "userGuide:stepsTitle2:android": "",
   "userGuide:stepsTitle3:android": "<b>SIM을 다운로드</b> 해주세요.",
   "userGuide:stepsTitle4:android": "<b>QR 코드</b> 또는 <b>도움말 > 직접 입력</b>\n버튼을 눌러 요금제를 추가해주세요.",
   "userGuide:stepsTitle5:android": "<b>직접 입력</b> 버튼을 선택한 경우,\n코드를 앱에서 <b>복사·붙여넣기</b> 해주세요.",
@@ -821,7 +806,6 @@
   "userGuide:stepsTitle7:android": "<b>요금제를 ON</b> 하고, <b>데이터에</b>\n<b>사용할 SIM으로 선택</b>해주세요.",
   "userGuide:stepsTitle8:android": "아래 그림처럼 <b>잘 설정되었는지</b>\n<b>확인</b>해주세요.",
   "userGuide:stepsTitle9:android": "<b>2개의 통신사 수신호</b>가 \n잘 잡히는지 확인해주세요.",
-
   "userGuide:stepsTitle1:galaxy": "<b>설정 > 연결 > SIM 카드 관리자 ></b>\n<b>모바일 요금제 추가</b>를 눌러주세요.",
   "userGuide:stepsTitle2:galaxy": "<b>QR 코드 스캔</b> 또는 <b>활성화 코드 입력</b>을\n눌러 요금제를 추가해주세요.",
   "userGuide:stepsTitle3:galaxy": "<b>활성화 코드 입력</b>을 선택한 경우,\n코드를 앱에서 <b>복사·붙여넣기</b> 해주세요.",
@@ -829,7 +813,6 @@
   "userGuide:stepsTitle5:galaxy": "<b>모바일 데이터</b>를 사용할 SIM을\n<b>새로 추가한 eSIM</b>로 선택해주세요.",
   "userGuide:stepsTitle6:galaxy": "설정 > 연결 > 해외 로밍에서\n<b>데이터 로밍을 ON</b> 해주세요.",
   "userGuide:stepsTitle7:galaxy": "<b>2개의 통신사 수신호</b>가 \n잘 잡히는지 확인해주세요.",
-
   "userGuide:tipPage2:galaxy_1": "QR코드를 쉽게 스캔하시려면 <b>다른 기기에서 받은 이메일을 띄워주세요!</b> (노트북, 패드 등)",
   "userGuide:tipPage2:galaxy_2": "다른 기기 사용이 어려우신 경우, <b>하단의 활성화 코드 입력</b>을 눌러 <b>수동입력 코드</b>로 등록하세요.",
   "userGuide:tipPage3:galaxy": "<b>로밍도깨비 앱 > 구매 eSIM 목록 > QR 등록 정보</b>에서 해당 정보를 복사·붙여넣기 해주세요.\n빠르고 쉽게 입력할 수 있답니다!",
@@ -837,7 +820,6 @@
   "userGuide:tipPage5:galaxy_2": "<s>기존 유심에서 로밍비가 발생하지 않도록</s> 현지 도착 시 <b>꼭 추가한 eSIM 요금제로 설정해 주세요!</b>",
   "userGuide:tipPageLast_1": "<b>사용 완료된 상품은 꼭 삭제해주세요!</b>\n새로운 상품을 등록할 때 기존에 삭제하지 않은 상품 때문에 헷갈릴 수 있어요.",
   "userGuide:tipPageLast_2": "<b>한국 미포함 상품</b>의 경우, <b>현지 네트워크를 연결하는 시점부터 사용 시작</b>됩니다. 한국에서 네트워크를 잡더라도 상품이 사용되는 것은 아니니 안심하세요!",
-
   "userGuide:tip": "로깨비's TIP!",
   "userGuide:tipPage3_1": "QR코드를 쉽게 스캔하시려면 <b>다른 기기에서 받은 이메일을 띄워주세요!</b> (노트북, 패드 등)",
   "userGuide:tipPage3_2": "다른 기기 사용이 어려우신 경우, <b>하단의 세부사항 직접 입력을 클릭</b> 해주세요.",
@@ -849,7 +831,6 @@
   "userGuide:tipPage10_1": "한국에서 상품을 등록할 경우, 셀룰러 데이터를 <b>기존 유심 회선(메인)</b>으로 설정했다가 <b>현지 도착 시 로밍도깨비 회선(여행용)으로 변경</b>해주시면 됩니다.",
   "userGuide:tipPage11_1": "‘여행용’의 <b>데이터 로밍을 ON</b>으로 설정해주셔야 데이터 사용이 가능합니다.",
   "userGuide:tipPage12_1": "<b>사용 완료된 상품은 꼭 삭제해주세요!</b>\n새로운 상품을 등록할 때 기존에 삭제하지 않은 상품 때문에 헷갈릴 수 있어요.",
-
   "userGuide:tipPage4:android_1": "QR코드를 쉽게 스캔하시려면 <b>다른 기기에서 받은 이메일을 띄워주세요!</b> (노트북, 패드 등)",
   "userGuide:tipPage4:android_2": "다른 기기 사용이 어려우신 경우, <b>하단의 도움말 > 직접입력에서 수동입력 코드로</b> 등록하세요.",
   "userGuide:tipPage5:android": "<b>로밍도깨비 앱 > 구매 eSIM 목록 > QR 등록 정보</b>에서 해당 정보를 복사&붙여넣기 해주세요.\n빠르고 쉽게 입력할 수 있답니다!",
@@ -892,5 +873,14 @@
   "cashHistory:orderType:old": "오래된순",
   "cashHistory:snackbar": "30일 이내 소멸 예정 캐시가 없습니다.",
   "cashHistory:expireModalTitle": "30일 이내\n소멸 예정인 캐시가 있어요",
-  "cashHistory:expirePt": "소멸 예정 캐시"
+  "cashHistory:expirePt": "소멸 예정 캐시",
+  "cashHistory:empty": "캐시 (or 충전,적립 or 사용) 내역이 없어요!",
+
+  "promo:join:open": "이벤트 참여",
+  "promo:join:joined": "이벤트 참여 완료",
+  "promo:join:closed": "이벤트 종료",
+  "promo:join:invalid": "이벤트 대상이 아닙니다.",
+  "promo:join:fail": "이벤트 참여 실패",
+  "promo:join:ing": "시도중 ...",
+  "promo:login": "로그인 후 이벤트 참여하기"
 }
