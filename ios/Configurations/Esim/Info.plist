@@ -70,7 +70,11 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>31</string>
+<<<<<<< HEAD
+	<string>33</string>
+=======
+	<string>34</string>
+>>>>>>> hotfix
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>

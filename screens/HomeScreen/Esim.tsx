@@ -659,11 +659,11 @@ const Esim: React.FC<EsimProps> = ({
     }
   }, [isSupport, notification]);
 
-  useEffect(() => {
-    const deepLinkHandler = (url: string) => {
+  const deepLinkHandler = useCallback(
+    (url: string) => {
       const urlSplit = url.split('?');
 
-      if (urlSplit && urlSplit.length >= 2) {
+      if (isSupport && urlSplit && urlSplit.length >= 2) {
         const schemeSplit = urlSplit[0].split('/');
         const deepLinkPath = schemeSplit[schemeSplit.length - 1];
 
@@ -673,19 +673,20 @@ const Esim: React.FC<EsimProps> = ({
             exitApp('redirect');
             break;
           case 'HOME':
-            if (navigation.canGoBack()) {
-              navigation.popToTop();
-            }
-            navigate(navigation, route, 'HomeStack', {
-              tab: 'HomeStack',
+            navigation.navigate('HomeStack', {
               screen: 'Home',
+              initial: false,
             });
             break;
           default:
             break;
         }
       }
-    };
+    },
+    [exitApp, isSupport, navigation],
+  );
+
+  useEffect(() => {
     const runDeepLink = async () => {
       const initialUrl = await Linking.getInitialURL();
 
@@ -695,16 +696,18 @@ const Esim: React.FC<EsimProps> = ({
       }
     };
 
+    runDeepLink();
+  }, [deepLinkHandler]);
+
+  useEffect(() => {
     const addListenerLink = ({url}) => {
       if (url) deepLinkHandler(url);
     };
 
-    runDeepLink();
-
     Linking.addEventListener('url', addListenerLink);
 
     return () => Linking.removeAllListeners('url');
-  }, [exitApp, navigation, route]);
+  }, [deepLinkHandler]);
 
   useEffect(() => {
     if (

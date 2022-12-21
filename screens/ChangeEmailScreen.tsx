@@ -22,11 +22,12 @@ import {
 import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
 import validationUtil, {ValidationResult} from '@/utils/validationUtil';
-import AppModal from '@/components/AppModal';
 import {API} from '@/redux/api';
 import AppTextInput from '@/components/AppTextInput';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import Env from '@/environment';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
+import AppModalContent from '@/components/ModalContent/AppModalContent';
 
 const {isIOS} = Env.get();
 
@@ -124,6 +125,7 @@ type ChangeEmailScreenProps = {
 
   actions: {
     account: AccountAction;
+    modal: ModalAction;
   };
 };
 
@@ -133,8 +135,22 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
   email,
 }) => {
   const [newEmail, setNewEmail] = useState<string>('');
-  const [showModal, setShowModal] = useState<boolean>(false);
   const [inValid, setInValid] = useState<ValidationResult>({});
+
+  const showModal = useCallback(() => {
+    actions.modal.showModal({
+      content: (
+        <AppModalContent
+          title={i18n.t('changeEmail:saveInfo')}
+          type="info"
+          onOkClose={() => {
+            actions.modal.closeModal();
+            navigation.goBack();
+          }}
+        />
+      ),
+    });
+  }, [actions.modal, navigation]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -154,7 +170,7 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
     if (checkEmail.result === 0) {
       await actions.account.changeEmail(newEmail).then((rsp) => {
         if (rsp.payload.result === 0) {
-          setShowModal(true);
+          showModal();
         }
       });
     } else if (checkEmail.message?.includes('Duplicate')) {
@@ -165,7 +181,7 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
       setInValid({email: [i18n.t('changeEmail:fail')]});
       throw new Error('failed to confirm email');
     }
-  }, [actions.account, newEmail]);
+  }, [actions.account, newEmail, showModal]);
 
   return (
     <KeyboardAvoidingView
@@ -204,7 +220,6 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
             <AppText style={styles.infoText}>
               {i18n.t('mypage:mailInfo')}
             </AppText>
-            {/* <View key="divider" style={styles.divider} /> */}
           </View>
         </View>
 
@@ -222,13 +237,6 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
           onPress={changeEmail}
           type="primary"
         />
-
-        <AppModal
-          title={i18n.t('changeEmail:saveInfo')}
-          type="info"
-          onOkClose={() => navigation.goBack()}
-          visible={showModal}
-        />
       </SafeAreaView>
     </KeyboardAvoidingView>
   );
@@ -242,6 +250,7 @@ export default connect(
   (dispatch) => ({
     actions: {
       account: bindActionCreators(accountActions, dispatch),
+      modal: bindActionCreators(modalActions, dispatch),
     },
   }),
 )(ChangeEmailScreen);

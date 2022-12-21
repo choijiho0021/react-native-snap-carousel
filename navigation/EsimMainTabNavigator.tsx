@@ -20,6 +20,7 @@ import AccountSettingsScreen from '@/screens/AccountSettingsScreen';
 import ResignScreen from '@/screens/ResignScreen';
 import ChangeEmailScreen from '@/screens/ChangeEmailScreen';
 import ReceiptScreen from '@/screens/ReceiptScreen';
+import CashHistoryScreen from '@/screens/CashHistoryScreen';
 import i18n from '@/utils/i18n';
 import RechargeScreen from '@/screens/RechargeScreen';
 import CartScreen from '@/screens/CartScreen';
@@ -234,6 +235,13 @@ function MyPageStackComponent() {
       <MyPageStack.Screen name="Resign" component={ResignScreen} />
       <MyPageStack.Screen name="ChangeEmail" component={ChangeEmailScreen} />
       <MyPageStack.Screen name="Receipt" component={ReceiptScreen} />
+      <MyPageStack.Screen
+        name="CashHistory"
+        component={CashHistoryScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
     </MyPageStack.Navigator>
   );
 }

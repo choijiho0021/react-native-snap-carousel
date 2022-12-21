@@ -70,6 +70,7 @@
   "exitAndOpenLink": "Exit App and Go to the Web",
   "yes": "yes",
   "no": "no",
+  "year": "{{year}}년",
 
   "home:exitApp": "Close App",
   "home:guide": "User Guide",
@@ -87,7 +88,6 @@
   "app:updateTitle-2": "is available!",
   "app:updateMandatory": "ROKEBI has improved its usability to provide better products and service.\nUpdate now to enjoy upgraded ROKEBI!",
   "app:updateOptional": "An update is available. Please download the latest version.",
-
   "app:updateNow": "Update Now",
   "app:updateLater": "Later",
 
@@ -234,6 +234,7 @@
   "resign:confirmModal": "{{info}}\n\nDo you really wish to delete the account?",
   "resign:finished": "Your account has been successfully deleted.\nThank you for using our service.",
   "resign:placeholder": "Would you like to tell us more?",
+
   "set:globalMarket": "Global Market",
 
   "rch:recharge": "Recharge",
@@ -441,7 +442,6 @@
   "usim:used": "Used",
   "usim:usablePeriod": "Vailidity",
   "usim:warning": "※ Actual usage may differ",
-  "usim:checkUsage": "Data Usage",
   "usim:failSnackBar": "You can't check usage temporarily. Please try again in a few minutes.",
   "usim:usingTime": "Service expires on (KST)",
 
@@ -460,9 +460,8 @@
   "esim:rechargeable": "Rechargable",
   "esim:rechargeExpired": "Recharge period Expired",
   "esim:notrechargeable": "Unrechargable",
-  "esim:rechargeablePeriod": "Rechargable period",
+  "esim:rechargeablePeriod": "Recharge period",
   "esim:expired": "Expired",
-
   "esim:refresh": " \u00B7  Pull down to refresh!\n \u00B7  If you need help, press the question mark.",
   "esim:qr": "QR Code",
   "esim:showQR": "QR Code",
@@ -483,6 +482,7 @@
   "esim:redirectHK": "Real Name Registration",
   "esim:redirectHK2": "Real Name Registration in Hong Kong",
   "esim:redirectHK2:done": "Registration <b>Confirmed</b>",
+  "esim:redirectHK:done": "Registered",
   "esim:redirectHKRegister": "Go Verify Real-Name",
   "esim:ifFirst": "First time using eSIM?",
   "esim:moveToGuide": "Go to Guide",
@@ -666,7 +666,6 @@
 
   "toast:failedToUpdate": "Failed to change settings.\nPlease check your network connectivity.",
   "toast:failedToLoad": "Failed to load the data.\nPlease check your network connectivity.",
-  "toast:failedToOpen": "Failed to open the KakaoTalk Channel.",
   "toast:copySuccess": "Copied Successfully.",
   "toast:sendSuccess": "Sent Gift Successfully.",
 
@@ -677,15 +676,6 @@
   "mypage:openRokebiTalk": "Open ROKEBI Talk ＞",
   "mypage:preparing": "On preparing",
   "mypage:mailInfo": "* Activation info for your eSIM product will be sent to this email.",
-
-  "promo:join:open": "Paticipate the Event",
-  "promo:join:joined": "Successfully Participated.",
-  "promo:join:closed": "End of participation",
-  "promo:join:invalid": "Not eligible for this promotion",
-
-  "promo:join:fail": "Sorry, try again.",
-  "promo:join:ing": "Participating ...",
-  "promo:login": "Login to participate",
 
   "invite:title": "*p of Rokebi Cash Received",
   "invite:desc": "Maybe your overseas travel data is free!?",
@@ -702,19 +692,16 @@
   "inv:rokebiCashUnit": "",
   "inv:withdrawalInfo": "\u2022 Does not apply to friends who deleted and re-created account",
   "inv:copyMsg": "Copied Invitation Link",
-
   "inv:upper1": "Sharing is Caring!",
   "inv:upper2": "You can get <b>{cash}</b> cash, and",
   "inv:upper3": "your friend also gets <b>{cash}</b> cash!",
   "inv:upper4": "Automatically added to your balance when the invited friend creates a new account.",
   "inv:upper5": "※ 캐시 유효기간 : 지급일로부터 1년",
-
   "inv:lower1": "Unlimited invitations!",
   "inv:lower2": "<b>One friend</b> will get you:",
   "inv:lower3": "<b>Ten friend</b> will get you:",
   "inv:lower4": "ROKEBI",
   "inv:lower5": "cash",
-
   "inv:statDesc": "What if your data is free?",
 
   "gift:method": "How to Send",
@@ -731,10 +718,8 @@
   "gift:info3": "• Item details are shown when the sender clicks the URL to the gift. The sender may register the item separately to the ROKEBI application.",
   "gift:info4": "• When the receiver creates a new account to activate the gift, both parties will be given ROKEBI cash. Please recommend the receiver to create a new account.",
   "gift:info5": "• Details to activate the plan will be shared as soon as this item is gifted. ROKEBI is not responsible for private distribution of the items.",
-
   "gift:msgBody1": "We’ve got you a gift!\n\n- Received : ",
   "gift:msgBody2": "\n\nVisit the URL above for guides on how to use or registered the gift.",
-
   "gift:maxLength": "/ Max 80 characters",
   "gift:linkTitle": "You got a gift!",
   "gift:linkDesc": "ROKEBI whenever, wherever you need data",
@@ -749,7 +734,6 @@
   "gift:guide2-2-2": "in the purchased tap.",
   "gift:guide2-3-1": "<b>Write a message</b> and deliver it",
   "gift:guide2-3-2": "with KakaoTalk or text message.",
-
   "gift:tip-1": "Both the sender\nand receiver",
   "gift:tip-3": "will get <cash>{cash}</cash> cash!",
   "gift:cash": "cash",
@@ -805,15 +789,14 @@
   "userGuide:stepsTitle1:ios": "Go to <b>Settings > Cellular ></b>\n<b>Add eSIM > Use QR Code</b>.",
   "userGuide:stepsTitle2:ios": "Use the provided <b>QR code</b> or\n<b>enter details manually</b>\nto add the plan",
   "userGuide:stepsTitle3:ios": "<b>Copy and Paste</b> the information\nfrom ROKEBI App to <b>enter</b>\n<b>details manually.</b>",
+  "userGuide:step3:caption": "[ Enter Details Manually ]",
   "userGuide:stepsTitle4:ios": "Complete the Cellular settings.",
   "userGuide:stepsTitle5:ios": "Select the <b>label</b>\nfor your <b>cellular plan</b>",
   "userGuide:stepsTitle6:ios": "<b>Set the line to use</b>\nas the guide below.",
   "userGuide:stepsTitle10:ios": "Make sure everything is\n<b>set right</b> as the guide below",
   "userGuide:stepsTitle12:ios": "Confirm that <b>both</b>\n<b>carriers’ signals</b> are stable",
-
   "userGuide:stepsTitle1:ios15": "Go to <b>Settings > Cellular ></b>\n<b>Add Cellular Plan</b>",
   "userGuide:stepsTitle3:ios15": "Select the <b>label</b>\nfor your <b>cellular plan</b>",
-
   "userGuide:stepsTitle1:android": "Go to <b>Settings > </b>\n<b>Network & Internet</b>.\nTap the <b>(+) icon</b> next to 'SIMs'.",
   "userGuide:stepsTitle2:android": "Press <b>'Yes'</b>\n to use multiple SIMs",
   "userGuide:stepsTitle3:android": "Tab <b>Download SIM</b> button.",
@@ -823,7 +806,6 @@
   "userGuide:stepsTitle7:android": "Turn on <b>Use SIM</b> slider.\nSelect the eSIM to use for data.",
   "userGuide:stepsTitle8:android": "Make sure everything is\n<b>set right</b> as the guide below",
   "userGuide:stepsTitle9:android": "Confirm that <b>both</b>\n<b>carriers’ signals</b> are stable",
-
   "userGuide:stepsTitle1:galaxy": "Go to <b>Settings > Connections ></b>\n<b>SIM card manager</b>.\nTap <b>Add mobile plan</b>.",
   "userGuide:stepsTitle2:galaxy": "Tap <b>Add using QR code</b>.\nScan the <b>QR code</b> provided.",
   "userGuide:stepsTitle3:galaxy": "Tap <b>Add using activation code</b>\nto input manually.",
@@ -831,7 +813,6 @@
   "userGuide:stepsTitle5:galaxy": "Select <b>ROKEBI</b> for <b>Mobile Data</b>",
   "userGuide:stepsTitle6:galaxy": "Goto <b>Settings > Connections ></b>\n<b>Roaming</b> and toggle\n<b>Data Roaming</b> status to <b>ON</b>.",
   "userGuide:stepsTitle7:galaxy": "Confirm that <b>both</b>\n<b>carriers’ signals</b> are stable",
-
   "userGuide:tipPage2:galaxy_1": "Access the QR code sent to <b>email inbox from other devices</b> (laptop or tablet) for easier capture.",
   "userGuide:tipPage2:galaxy_2": "If other devices are unavailable, tap <b>Add using activation code</b>.",
   "userGuide:tipPage3:galaxy": "Go to <b>ROKEBI App > eSIM tab > QR Info</b> and copy and paste the code.",
@@ -839,28 +820,23 @@
   "userGuide:tipPage5:galaxy_2": "Change to ROKEBI in the roaming area <s>to prevent charging from Main line</s>!",
   "userGuide:tipPageLast_1": "<b>Please delete the eSIM when expired!</b>\nLeftover items may cause confusion when adding new items.",
   "userGuide:tipPageLast_2": "If the purchased item does <b>not include the Home country</b> in the service area, it shall be activated in the <b>roaming network</b>.",
-
   "userGuide:tip": "ROKEBI's Tip",
   "userGuide:tipPage3_1": "Access the QR code sent to <b>email inbox from other devices</b> (laptop or tablet) for easier capture.",
   "userGuide:tipPage3_2": "If other devices are unavailable, tap <b>Enter Details Manually</b>",
   "userGuide:tipPage4_1": "Go to <b>ROKEBI App > eSIM tab > QR Info</b> and copy and paste the following information",
   "userGuide:tipPage4_3": "[ 세부사항 직접 입력 ]",
-  "userGuide:step3:caption": "[ Enter Details Manually ]",
   "userGuide:tipPage5_1": "Setting cellular plan label makes it easier to separate different plans",
   "userGuide:tipPage5_2": "In this guide, the newly added ROKEBI eSIM is labeled as 'Secondary'",
   "userGuide:tipPage9_1": "<b>Additional roaming fee may be applied by automatic switching</b> if you allow cellular data switching. <s>Please set the Cellular Data Switching as OFF.</s>",
   "userGuide:tipPage10_1": "If you add eSIM in Korea, set Mobile Data as <b>Main (the default line)</b> and change to <b>Seconday after arriving at the destination</b>.",
   "userGuide:tipPage11_1": "You can use your data only if the <b>Data Roaming option is ON.</b>",
   "userGuide:tipPage12_1": "<b>Please delete the eSIM when expired!</b> Leftover items may cause confusion when adding new items.",
-
   "userGuide:tipPage4:android_1": "Access the QR code sent to <b>email inbox from other devices</b> (laptop or tablet) for easier capture.",
   "userGuide:tipPage4:android_2": "If other devices are unavailable, tap <b>Need help?</b>.",
   "userGuide:tipPage5:android": "Tap the link, <b>Enter it manually</b>.\nGo to <b>ROKEBI App > eSIM tab > QR Info</b> and copy and paste the code.",
   "userGuide:tipPage8:android": "Tap on the <b>pencil icon</b> above to change the label of eSIM.",
   "userGuide:tipPage9:android_1": "Check if the eSIM is configured as <b>Default for mobile data</b>",
   "userGuide:tipPage9:android_2": "Tap on the eSIM and toggle 'Mobile Data' and <s>'Roaming' to ON</s>.",
-  "userGuide:tipPage10:android_1": "<b>Please delete the eSIM when expired!</b>\nLeftover items may cause confusion when adding new items.",
-  "userGuide:tipPage10:android_2": "If the purchased item does <b>not include the Home country</b> in the service area, it shall be activated in the <b>roaming network</b>.",
 
   "quadcell:usageInfo1": "\u00B7 Actual usage may differ",
   "quadcell:usageInfo2": " You may check your data usage when initial connection to the local network is made",
@@ -884,5 +860,27 @@
   "rcpt:share": "Share",
   "rcpt:saved": "Stored in the album, 'ROKEBI'.",
   "rcpt:fail": "영수증 정보를 찾을 수 없습니다.",
-  "rcpt:companyName": "UANGEL"
+  "rcpt:companyName": "UANGEL",
+
+  "cashHistory:myBalance": "내 캐시 잔액",
+  "cashHistory:in1Month": "(30일 이내)",
+  "cashHistory:useHistory": "캐시 사용 내역",
+  "cashHistory:filter:A": "전체",
+  "cashHistory:filter:Y": "충전 \u00B7 적립",
+  "cashHistory:filter:N": "사용",
+  "cashHistory:orderType": "정렬 방식",
+  "cashHistory:orderType:latest": "최신순",
+  "cashHistory:orderType:old": "오래된순",
+  "cashHistory:snackbar": "30일 이내 소멸 예정 캐시가 없습니다.",
+  "cashHistory:expireModalTitle": "30일 이내\n소멸 예정인 캐시가 있어요",
+  "cashHistory:expirePt": "소멸 예정 캐시",
+  "cashHistory:empty": "캐시 (or 충전,적립 or 사용) 내역이 없어요!",
+
+  "promo:join:open": "Paticipate the Event",
+  "promo:join:joined": "Successfully Participated.",
+  "promo:join:closed": "End of participation",
+  "promo:join:invalid": "Not eligible for this promotion",
+  "promo:join:fail": "Sorry, try again.",
+  "promo:join:ing": "Participating ...",
+  "promo:login": "Login to participate"
 }

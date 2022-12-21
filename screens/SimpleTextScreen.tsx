@@ -187,6 +187,8 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
             : 'promo:join:fail',
         );
       }
+    } else if (rule?.openLink) {
+      Linking.openURL(rule.openLink);
     } else if (eventStatus === 'unknown' && !loggedIn) {
       // 로그인 화면으로 이동
       navigation.navigate('Auth');
@@ -296,7 +298,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
       <AppButton
         style={styles.button}
         type="primary"
-        title={i18n.t(title)}
+        title={route.params?.rule?.btnTitle || i18n.t(title)}
         disabled={eventStatus === 'joined' || promoResult === 'promo:join:ing'}
         onPress={onPress}
       />

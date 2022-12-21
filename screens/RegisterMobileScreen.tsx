@@ -539,13 +539,12 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           if (resp.result === 0 && mounted.current) {
             setAuthorized(_.isEmpty(resp.objects) ? true : undefined);
             setNewUser(_.isEmpty(resp.objects));
-
-            actions.account.updateAccount({isNewUser: true});
             setPin(value);
 
             if (!_.isEmpty(resp.objects)) {
               signIn({mobile, pin: value});
             } else {
+              actions.account.updateAccount({isNewUser: true});
               emailRef.current?.focus();
             }
           } else {
