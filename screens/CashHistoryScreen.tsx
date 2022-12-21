@@ -287,11 +287,11 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             )}
             balanceStyle={[
               appStyles.bold18Text,
-              {color: item.inc === 'Y' ? colors.redError : colors.clearBlue},
+              {color: item.inc === 'Y' ? colors.clearBlue : colors.redError},
             ]}
             currencyStyle={[
               appStyles.bold16Text,
-              {color: item.inc === 'Y' ? colors.redError : colors.clearBlue},
+              {color: item.inc === 'Y' ? colors.clearBlue : colors.clearBlue},
             ]}
             showPlus
           />
