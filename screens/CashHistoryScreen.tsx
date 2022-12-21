@@ -116,6 +116,41 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#ffffff',
   },
+  expPtContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    marginHorizontal: 20,
+    marginVertical: 4,
+  },
+  sectionItemContainer: {
+    flexDirection: 'row',
+    marginHorizontal: 20,
+    paddingVertical: 12,
+  },
+  expPtBox: {
+    marginHorizontal: 20,
+    marginBottom: 8,
+    padding: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: colors.backGrey,
+  },
+  showExpPtBox: {
+    marginHorizontal: 20,
+    marginTop: 24,
+    marginBottom: 32,
+    padding: 16,
+    backgroundColor: colors.backGrey,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  sectionHeader: {
+    ...appStyles.bold18Text,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    backgroundColor: colors.white,
+  },
 });
 
 type CashHistoryScreenProps = {
@@ -202,12 +237,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           : '';
       const date = moment(item.create_dt).format('MM.DD');
       return (
-        <View
-          style={{
-            flexDirection: 'row',
-            marginHorizontal: 20,
-            paddingVertical: 12,
-          }}>
+        <View style={styles.sectionItemContainer}>
           <AppText style={[appStyles.medium14, {marginRight: 23, width: 50}]}>
             {index > 0 && predate === date ? '' : date}
           </AppText>
@@ -244,14 +274,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
 
     const dDay = expireDate.diff(moment(), 'days');
     return (
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          paddingVertical: 12,
-          marginHorizontal: 20,
-          marginVertical: 4,
-        }}>
+      <View key={item.create_dt + item.point} style={styles.expPtContainer}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <AppText
             style={[
@@ -326,15 +349,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             {i18n.t('cashHistory:expireModalTitle')}
           </AppText>
 
-          <View
-            style={{
-              marginHorizontal: 20,
-              marginBottom: 8,
-              padding: 16,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              backgroundColor: colors.backGrey,
-            }}>
+          <View style={styles.expPtBox}>
             <AppText style={appStyles.bold14Text}>
               {i18n.t('cashHistory:expirePt')}
             </AppText>
@@ -347,6 +362,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
 
           <FlatList
             data={cashExpire}
+            keyExtractor={(item) => item.create_dt + item.expire_dt}
             renderItem={renderExpireItem}
             // refreshControl={
             //   <RefreshControl
@@ -396,6 +412,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           {filterList.map((elm) => (
             <Pressable
               onPress={() => setDataFilter(elm)}
+              key={elm}
               style={[
                 styles.filter,
                 {
@@ -456,20 +473,10 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
       </View>
 
       {/* 30일 이내 소멸예정 캐시 모달  */}
-      <Pressable
-        style={{
-          marginHorizontal: 20,
-          marginTop: 24,
-          marginBottom: 32,
-          padding: 16,
-          backgroundColor: colors.backGrey,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}
-        onPress={() => showExpirePt()}>
+      <Pressable style={styles.showExpPtBox} onPress={() => showExpirePt()}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <AppText style={appStyles.bold14Text}>
-            {i18n.t('cashHistory:myBalance')}
+            {i18n.t('cashHistory:expirePt')}
           </AppText>
           <AppText style={appStyles.normal14Text}>
             {i18n.t('cashHistory:in1Month')}
@@ -494,15 +501,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         sections={sectionData}
         renderItem={renderSectionItem}
         renderSectionHeader={({section: {title}}) => (
-          <AppText
-            style={[
-              appStyles.bold18Text,
-              {
-                paddingHorizontal: 20,
-                paddingVertical: 12,
-                backgroundColor: colors.white,
-              },
-            ]}>
+          <AppText style={styles.sectionHeader}>
             {i18n.t(`year`, {year: title})}
           </AppText>
         )}
