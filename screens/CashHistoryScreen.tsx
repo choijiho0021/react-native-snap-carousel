@@ -251,6 +251,39 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
     getHistory();
   }, [getHistory]);
 
+  const showDetail = useCallback(
+    (item: CashHistory) => {
+      if (item.order_id) {
+        const orderItems =
+          order.orders.get(Number(item.order_id))?.orderItems || [];
+
+        if (orderItems.length === 0) return null;
+
+        return (
+          <AppText>
+            {i18n.t(`cashHistory:detail:etcCnt`, {
+              prodName: orderItems[0]?.title || '',
+              cnt: orderItems.length,
+            })}
+          </AppText>
+        );
+      }
+
+      if (item.expire_dt) {
+        return (
+          <AppText>
+            {i18n.t(`cashHistory:detail:expDate`, {
+              date: moment(item.expire_dt).format('YYYY.MM.DD'),
+            })}
+          </AppText>
+        );
+      }
+
+      return null;
+    },
+    [order.orders],
+  );
+
   const renderSectionItem = useCallback(
     ({
       item,
@@ -283,11 +316,16 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             {index > 0 && predate === date ? '' : date}
           </AppText>
           <View style={{flex: 1}}>
-            <AppText style={appStyles.bold16Text}>
-              {i18n.t(`cashHistory:type:${item.type}`)}
-            </AppText>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <AppText style={appStyles.bold16Text}>
+                {i18n.t(`cashHistory:type:${item.type}`)}
+              </AppText>
+              {order.orders.get(Number(item.order_id)) && (
+                <AppSvgIcon name="rightAngleBracket" style={{marginLeft: 4}} />
+              )}
+            </View>
             <AppText style={[appStyles.medium14, {color: colors.warmGrey}]}>
-              {date}
+              {showDetail(item)}
             </AppText>
           </View>
 
@@ -302,7 +340,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             ]}
             currencyStyle={[
               appStyles.bold16Text,
-              {color: item.inc === 'Y' ? colors.clearBlue : colors.clearBlue},
+              {color: item.inc === 'Y' ? colors.clearBlue : colors.redError},
             ]}
             showPlus
           />
