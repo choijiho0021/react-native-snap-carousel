@@ -4,15 +4,14 @@ import {
   SafeAreaView,
   View,
   Pressable,
-  RefreshControl,
   SectionList,
-  FlatList,
   Animated,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import moment from 'moment';
+import LinearGradient from 'react-native-linear-gradient';
 import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
@@ -37,10 +36,6 @@ import Env from '@/environment';
 import AppButton from '@/components/AppButton';
 
 const {esimCurrency} = Env.get();
-
-type ParamList = {
-  CashHistoryScreen: {};
-};
 
 const styles = StyleSheet.create({
   container: {
@@ -115,7 +110,6 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     height: 52,
     backgroundColor: colors.clearBlue,
-    margin: 20,
     textAlign: 'center',
     color: '#ffffff',
   },
@@ -158,6 +152,21 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  topGradient: {
+    width: '100%',
+    height: 30,
+  },
+  bottomGradient: {
+    width: '100%',
+    height: 30,
+    position: 'absolute',
+    bottom: 72,
+  },
+  okBtnContainer: {
+    backgroundColor: colors.white,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
 });
 
@@ -274,7 +283,9 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             {index > 0 && predate === date ? '' : date}
           </AppText>
           <View style={{flex: 1}}>
-            <AppText style={appStyles.bold16Text}>{item.type}</AppText>
+            <AppText style={appStyles.bold16Text}>
+              {i18n.t(`cashHistory:type:${item.type}`)}
+            </AppText>
             <AppText style={[appStyles.medium14, {color: colors.warmGrey}]}>
               {date}
             </AppText>
@@ -312,12 +323,14 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
     );
   }, []);
 
-  const renderExpireItem = useCallback(({item}: {item: CashExpire}) => {
+  const renderExpireItem = useCallback((item: CashExpire) => {
     const expireDate = moment(item.expire_dt);
 
     const dDay = expireDate.diff(moment(), 'days');
     return (
-      <View key={item.create_dt + item.point} style={styles.expPtContainer}>
+      <View
+        key={utils.generateKey(item.create_dt)}
+        style={styles.expPtContainer}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <AppText
             style={[
@@ -385,60 +398,62 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
     () => (
       <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}>
         <SafeAreaView style={{backgroundColor: 'transparent'}} />
-        <Animated.View
-          style={{
-            flex: 1,
-            backgroundColor: colors.white,
-            marginTop: animatedValue,
-          }}>
-          <AppText
-            style={[
-              appStyles.bold20Text,
-              {marginHorizontal: 20, marginTop: 28, marginBottom: 24},
-            ]}>
-            {i18n.t('cashHistory:expireModalTitle')}
-          </AppText>
 
-          <View style={styles.expPtBox}>
-            <AppText style={appStyles.bold14Text}>
-              {i18n.t('cashHistory:expirePt')}
-            </AppText>
-            <AppPrice
-              price={utils.toCurrency(expirePt || 0, esimCurrency)}
-              balanceStyle={[appStyles.bold18Text, {color: colors.redError}]}
-              currencyStyle={[appStyles.bold16Text, {color: colors.redError}]}
-            />
-          </View>
-
-          <FlatList
-            // data={cashExpire}
-            data={cashExpire?.concat(cashExpire.concat(cashExpire))}
-            keyExtractor={(item) => utils.generateKey(item.create_dt)}
+        <View style={{flex: 1}}>
+          <Animated.ScrollView
             onScrollBeginDrag={() => {
               setIsBeginDrag(true);
             }}
-            renderItem={renderExpireItem}
-            // refreshControl={
-            //   <RefreshControl
-            //     refreshing={pending}
-            //     onRefresh={onRefresh}
-            //     colors={[colors.clearBlue]} // android 전용
-            //     tintColor={colors.clearBlue} // ios 전용
-            //   />
-            // }
-          />
+            stickyHeaderIndices={[0]}
+            style={{
+              flex: 1,
+              backgroundColor: colors.white,
+              marginTop: animatedValue,
+            }}>
+            <LinearGradient
+              colors={[colors.white, 'rgba(255, 255, 255, 0.1)']}
+              style={styles.topGradient}
+            />
+            <AppText
+              style={[
+                appStyles.bold20Text,
+                {marginHorizontal: 20, marginTop: 28, marginBottom: 24},
+              ]}>
+              {i18n.t('cashHistory:expireModalTitle')}
+            </AppText>
 
-          <AppButton
-            style={styles.okButton}
-            title={i18n.t('ok')}
-            type="primary"
-            onPress={() => {
-              action.modal.closeModal();
-              setIsBeginDrag(false);
-            }}
-          />
-        </Animated.View>
+            <View style={styles.expPtBox}>
+              <AppText style={appStyles.bold14Text}>
+                {i18n.t('cashHistory:expirePt')}
+              </AppText>
+              <AppPrice
+                price={utils.toCurrency(expirePt || 0, esimCurrency)}
+                balanceStyle={[appStyles.bold18Text, {color: colors.redError}]}
+                currencyStyle={[appStyles.bold16Text, {color: colors.redError}]}
+              />
+            </View>
 
+            <View style={{marginBottom: 30}}>
+              {cashExpire?.map((elm) => renderExpireItem(elm))}
+            </View>
+          </Animated.ScrollView>
+
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 0)', colors.white]}
+            style={styles.bottomGradient}
+          />
+          <View style={styles.okBtnContainer}>
+            <AppButton
+              style={styles.okButton}
+              title={i18n.t('ok')}
+              type="primary"
+              onPress={() => {
+                action.modal.closeModal();
+                setIsBeginDrag(false);
+              }}
+            />
+          </View>
+        </View>
         <SafeAreaView style={{backgroundColor: colors.white}} />
       </View>
     ),
