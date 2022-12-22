@@ -875,6 +875,8 @@
   "cashHistory:expireModalTitle": "30일 이내\n소멸 예정인 캐시가 있어요",
   "cashHistory:expirePt": "소멸 예정 캐시",
   "cashHistory:empty": "캐시 (or 충전,적립 or 사용) 내역이 없어요!",
+  "cashHistory:detail:expDate": "유효기간 : {{date}}",
+  "cashHistory:detail:etcCnt": "{{prodName}} 외 {{cnt}}건",
   "cashHistory:type:cash_add": "cash_add",
   "cashHistory:type:cash_recharge": "cash_recharge",
   "cashHistory:type:cash_refund": "cash_refund",
