@@ -159,7 +159,7 @@ const getCashExpire = ({
     )}/${iccid}?_format=json&exp=${exp}`,
     (rsp) => {
       return rsp.result === 0
-        ? api.success(rsp.objects)
+        ? api.success(rsp.objects || [])
         : api.failure(rsp.result, rsp.error);
     },
     api.withToken(token, 'json'),

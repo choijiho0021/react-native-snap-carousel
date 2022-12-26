@@ -237,7 +237,8 @@ const ChargeHistoryScreen: React.FC = () => {
   const orderTypeList: OrderType[] = useMemo(() => ['purchase', 'latest'], []);
   const [showTip, setShowTip] = useState(false);
   const data = useMemo(
-    () => (orderType === 'purchase' ? chargedSubs : chargedSubs.reverse()),
+    () =>
+      orderType === 'purchase' ? chargedSubs : chargedSubs.slice().reverse(),
     [chargedSubs, orderType],
   );
 
