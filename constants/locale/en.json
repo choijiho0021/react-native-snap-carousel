@@ -876,6 +876,17 @@
   "cashHistory:expirePt": "Cash to be expired",
   "cashHistory:empty": "No Cash log of (topup, reward or payment)!",
 
+  "cashHistory:detail:expDate": "Expire date : {{date}}",
+  "cashHistory:detail:etcCnt": "{{cnt}} more cases including {{prodName}}",
+  "cashHistory:type:cash_add": "cash_add",
+  "cashHistory:type:cash_recharge": "cash_recharge",
+  "cashHistory:type:cash_refund": "cash_refund",
+  "cashHistory:type:point_refund": "point_refund",
+  "cashHistory:type:cash_deduct": "cash_deduct",
+  "cashHistory:type:point_deduct": "point_deduct",
+  "cashHistory:type:point_add": "point_add",
+  "cashHistory:type:point_exp": "point_exp",
+
   "promo:join:open": "Paticipate the Event",
   "promo:join:joined": "Successfully Participated.",
   "promo:join:closed": "End of participation",

@@ -12,7 +12,7 @@ import _ from 'underscore';
 import {batch} from 'react-redux';
 import messaging from '@react-native-firebase/messaging';
 import {API} from '@/redux/api';
-import {removeData, retrieveData, storeData} from '@/utils/utils';
+import {removeData, retrieveData, storeData, utils} from '@/utils/utils';
 import Env from '@/environment';
 import {RkbAccount, RkbFile, RkbImage} from '@/redux/api/accountApi';
 import api, {ApiResult} from '@/redux/api/api';
@@ -527,7 +527,17 @@ const slice = createSlice({
         if (idx <= -1) {
           acc.push({title: year, data: [cur] as CashHistory[]});
         } else {
-          acc[idx].data?.push(cur);
+          const orderidx = acc[idx].data.findIndex(
+            (elm) => elm.order_id === cur.order_id,
+          );
+          if (orderidx > -1) {
+            acc[idx].data[orderidx].diff = `${
+              utils.stringToNumber(acc[idx].data[orderidx].diff) +
+              utils.stringToNumber(cur.diff)
+            }`;
+          } else {
+            acc[idx].data?.push(cur);
+          }
         }
         return acc;
       }, [] as SectionData[]);
