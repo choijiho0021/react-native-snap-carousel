@@ -442,7 +442,11 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
   const renderStoreList = useCallback(
     (key: string) => {
       const filtered = product.prodByCountry
-        .filter((v) => v.search?.match(key.replace(/[{}()*]/g, '')))
+        .filter((v) =>
+          v.search
+            ?.toLowerCase()
+            ?.match(key?.toLowerCase().replace(/[{}()*]/g, '')),
+        )
         .map(
           (v) =>
             ({
