@@ -205,6 +205,15 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   const [showSnackBar, setShowSnackbar] = useState(false);
   const [checked, setChecked] = useState(methodList[0]);
   const [showModal, setShowModal] = useState(false);
+  const [gift, setGift] = useState('');
+
+  useEffect(() => {
+    API.Promotion.getStat().then((rsp) => {
+      if (rsp.result === 0 && rsp.objects?.length > 0) {
+        setGift(rsp.objects[0].recommenderGift);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (!promotion.stat.signupGift) promotionActions.getPromotionStat();
@@ -454,7 +463,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         visible={showModal}>
         <View style={styles.modalBodyStyle}>
           <AppStyledText
-            text={i18n.t('gift:alert')}
+            text={i18n.t('gift:alert', {cash: gift})}
             textStyle={styles.modalText}
             format={{b: styles.textHeighlight}}
           />
