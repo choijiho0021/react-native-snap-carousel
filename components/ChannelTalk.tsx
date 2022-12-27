@@ -1,20 +1,13 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, {useEffect} from 'react';
 import {Image, Pressable, Text, TextStyle, View, ViewStyle} from 'react-native';
 import {ChannelIO} from 'react-native-channel-plugin';
-import Env from '@/environment';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import Env from '@/environment';
 import {RootState} from '@/redux';
 import {AccountModelState} from '@/redux/modules/account';
 
-const {esimGlobal, isProduction, isIOS, talkPluginKey} = Env.get();
+const {talkPluginKey, appId} = Env.get();
 
 type ChannelTalkProps = {
   account: AccountModelState;
@@ -24,7 +17,6 @@ const ChannelTalk: React.FC<ChannelTalkProps> = ({account}) => {
   useEffect(() => {
     const settings = {
       pluginKey: talkPluginKey,
-      // memberId: 'a9e043c1-4ea9-4e7c-945e-fa89a61fce85',
       channelButtonOption: {
         xMargin: 16,
         yMargin: 100,
@@ -33,10 +25,11 @@ const ChannelTalk: React.FC<ChannelTalkProps> = ({account}) => {
       profile: account.loggedIn
         ? {
             id: account.userId,
-            name: `Rokebi - ${account.mobile}`,
+            name: `${appId} - ${account.mobile}`,
             mobileNumber: account.mobile,
             email: 'test@naver.com',
-            memberId: account.mobile,
+            mobileStr: account.mobile,
+            orderUrl: `https://esim.rokebi.com/ko/admin/op/order/search?title=${account.mobile}&mail=&items_per_page=10`,
           }
         : undefined,
     };
