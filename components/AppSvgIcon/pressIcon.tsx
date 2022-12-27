@@ -947,11 +947,11 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Path
         d="M2 10a8 8 0 0 1 8-8h6a8 8 0 0 1 8 8v6a8 8 0 0 1-8 8H3a1 1 0 0 1-1-1V10z"
         stroke="#2C2C2C"
-        stroke-width="2"
+        strokeWidth="2"
       />
       <Path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M8 10a1 1 0 0 1 1-1h8a1 1 0 1 1 0 2H9a1 1 0 0 1-1-1zM8 16a1 1 0 0 1 1-1h5a1 1 0 1 1 0 2H9a1 1 0 0 1-1-1z"
         fill="#2C2C2C"
       />
