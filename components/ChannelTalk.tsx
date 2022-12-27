@@ -30,29 +30,19 @@ const ChannelTalk: React.FC<ChannelTalkProps> = ({account}) => {
         yMargin: 100,
         position: 'right',
       },
-      profile: {
-        id: account.userId,
-        name: `Rokebi - ${account.mobile}`,
-        mobileNumber: account.mobile,
-        email: 'test@naver.com',
-        memberId: account.mobile,
-      },
-      // profile: {
-      //   mobileNumber: '01010002000',
-      //   name: 'test',
-      //   email: 'test@naver.com',
-      // },
+      profile: account.loggedIn
+        ? {
+            id: account.userId,
+            name: `Rokebi - ${account.mobile}`,
+            mobileNumber: account.mobile,
+            email: 'test@naver.com',
+            memberId: account.mobile,
+          }
+        : undefined,
     };
 
-    ChannelIO.boot(settings).then(() => {
-      // ChannelIO.showChannelButton();
-      // ChannelIO.updateUser(user).then((result) => {
-      //   console.log('aaaaa result', result);
-      //   // result.error
-      //   // result.user
-      // });
-    });
-  }, [account.mobile, account.userId]);
+    ChannelIO.boot(settings);
+  }, [account.loggedIn, account.mobile, account.userId]);
 
   return (
     <Pressable
@@ -66,8 +56,6 @@ const ChannelTalk: React.FC<ChannelTalkProps> = ({account}) => {
     </Pressable>
   );
 };
-
-// export default ChannelTalk;
 
 export default connect(
   ({account}: RootState) => ({
