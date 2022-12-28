@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   myRemain: {
-    marginTop: 24,
+    marginVertical: 24,
     marginHorizontal: 20,
   },
   balanceBox: {
@@ -135,7 +135,6 @@ const styles = StyleSheet.create({
   },
   showExpPtBox: {
     marginHorizontal: 20,
-    marginTop: 24,
     marginBottom: 32,
     padding: 16,
     backgroundColor: colors.backGrey,
