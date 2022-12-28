@@ -875,7 +875,9 @@
   "cashHistory:snackbar": "No Cash shall be expired in 30 days.",
   "cashHistory:expireModalTitle": "In 30 days\nSome Cash shall be expired.",
   "cashHistory:expirePt": "Cash to be expired",
-  "cashHistory:empty": "No Cash log of (topup, reward or payment)!",
+  "cashHistory:empty:A": "No Cash log!",
+  "cashHistory:empty:Y": "No Cash log of topup or reward!",
+  "cashHistory:empty:N": "No Cash log of payment!",
 
   "cashHistory:detail:expDate": "Expire date : {{date}}",
   "cashHistory:detail:etcCnt": "{{cnt}} more cases including {{prodName}}",

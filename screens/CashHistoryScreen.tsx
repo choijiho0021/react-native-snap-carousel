@@ -347,7 +347,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         </Pressable>
       );
     },
-    [],
+    [navigation, order.orders, showDetail],
   );
 
   const renderEmpty = useCallback(() => {
@@ -355,11 +355,11 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
       <View style={{alignItems: 'center'}}>
         <AppSvgIcon name="threeDots" style={{marginBottom: 20}} />
         <AppText style={{...appStyles.medium14, color: colors.warmGrey}}>
-          {i18n.t(`cashHistory:empty`)}
+          {i18n.t(`cashHistory:empty:${dataFilter}`)}
         </AppText>
       </View>
     );
-  }, []);
+  }, [dataFilter]);
 
   const renderExpireItem = useCallback((item: CashExpire) => {
     const expireDate = moment(item.expire_dt);
@@ -620,7 +620,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
       <SectionList
         sections={sectionData}
         contentContainerStyle={
-          sectionData.length > 1 ? {} : styles.contentContainerStyle
+          sectionData.length > 0 ? undefined : styles.contentContainerStyle
         }
         renderItem={renderSectionItem}
         renderSectionHeader={({section: {title}}) => (
