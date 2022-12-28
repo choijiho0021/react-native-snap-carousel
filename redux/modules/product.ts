@@ -244,9 +244,7 @@ const slice = createSlice({
               country,
               'ko',
               state.prodCountry,
-            )
-              .concat(Country.getName(country, 'en', state.prodCountry))
-              .join(',')}`,
+            )},${Country.getName(country, 'en', state.prodCountry)}`,
           };
         });
       }
