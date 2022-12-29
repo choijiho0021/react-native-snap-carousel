@@ -679,6 +679,12 @@ const Esim: React.FC<EsimProps> = ({
               initial: false,
             });
             break;
+          case 'INVITE':
+            navigation.navigate('MyPageStack', {
+              screen: 'Invite',
+              initial: false,
+            });
+            break;
           default:
             break;
         }
