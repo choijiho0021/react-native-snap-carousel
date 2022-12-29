@@ -446,7 +446,7 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
         .filter((v) =>
           v.search
             ?.toLowerCase()
-            ?.match(key?.toLowerCase().replace(/[{}()*]/g, '')),
+            ?.match(key?.toLowerCase().replace(/[{}()* ]/g, '')),
         )
         .map(
           (v) =>
