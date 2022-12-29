@@ -609,12 +609,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           overflow: 'hidden',
           height: animatedValue,
         }}>
-        <Pressable
-          style={styles.showExpPtBox}
-          onPress={() => showExpirePt()}
-          onLayout={(event) =>
-            console.log('aaaaa height', event.nativeEvent.layout.height)
-          }>
+        <Pressable style={styles.showExpPtBox} onPress={() => showExpirePt()}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <AppText style={appStyles.bold14Text}>
               {i18n.t('cashHistory:expirePt')}

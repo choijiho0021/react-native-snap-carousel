@@ -493,7 +493,6 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
         <ScrollView
           style={{width: '100%'}}
           onScrollBeginDrag={() => {
-            console.log('aaaaa onScrollBeginDrag');
             Keyboard.dismiss();
           }}>
           {renderSearchWord()}

@@ -91,7 +91,6 @@ class PushNoti {
 
     // // foreground 상태에서 data만 받아서 처리 (foreground badge 수 변경 전용)
     this.onMessage = messaging().onMessage((message) => {
-      console.log('aaaaa message', message);
       const {badge = 0, notiType, iccid} = message.data;
       // messaging().setBadge(Number(badge));
       if (Platform.OS === 'ios')
