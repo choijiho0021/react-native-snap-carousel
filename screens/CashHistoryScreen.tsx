@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: colors.white,
     alignItems: 'center',
+    height: 56,
   },
   myRemain: {
     marginVertical: 24,
@@ -66,11 +67,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 18,
     paddingVertical: 8,
-  },
-  divider: {
-    backgroundColor: colors.whiteTwo,
-    height: 10,
-    width: '100%',
   },
   hisHeader: {
     flexDirection: 'row',
@@ -167,6 +163,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
+  divider: {
+    backgroundColor: colors.whiteTwo,
+    height: 10,
+    width: '100%',
+  },
 });
 
 type CashHistoryScreenProps = {
@@ -202,21 +203,57 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   const [orderType, setOrderType] = useState<OrderType>('latest');
   const [dataFilter, setDataFilter] = useState<string>('A');
   const [showSnackBar, setShowSnackbar] = useState(false);
-  const [isBeginDrag, setIsBeginDrag] = useState(false);
-  const [expirePtmodalPosY, setExpirePtmodalPosY] = useState(56);
+  const [isModalBeginDrag, setIsModalBeginDrag] = useState(false);
+  const [isTop, setIsTop] = useState(true);
 
+  const modalAnimatedValue = useRef(new Animated.Value(0)).current;
   const animatedValue = useRef(new Animated.Value(0)).current;
+  const AnimatedTextHeight = useRef(new Animated.Value(0)).current;
+  const dividerAnimatedHeight = useRef(new Animated.Value(10)).current;
+  const dividerAnimatedMargin = useRef(new Animated.Value(0)).current;
 
   const orderTypeList: OrderType[] = useMemo(() => ['latest', 'old'], []);
   const filterList: string[] = useMemo(() => ['A', 'Y', 'N'], []);
 
   useEffect(() => {
-    Animated.timing(animatedValue, {
-      toValue: isBeginDrag ? 56 : expirePtmodalPosY,
+    Animated.timing(modalAnimatedValue, {
+      toValue: isModalBeginDrag ? 56 : 194, // 56는 헤더 높이값, 168은 캐시잔액 높이값
       duration: 500,
       useNativeDriver: false,
     }).start();
-  }, [animatedValue, expirePtmodalPosY, isBeginDrag]);
+  }, [modalAnimatedValue, isModalBeginDrag]);
+
+  useEffect(() => {
+    Animated.timing(animatedValue, {
+      toValue: isTop ? 160 : 0,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  }, [animatedValue, isTop]);
+
+  useEffect(() => {
+    Animated.timing(AnimatedTextHeight, {
+      toValue: isTop ? 20 : 0,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  }, [AnimatedTextHeight, isTop]);
+
+  useEffect(() => {
+    Animated.timing(dividerAnimatedHeight, {
+      toValue: isTop ? 0 : 1,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  }, [dividerAnimatedHeight, isTop]);
+
+  useEffect(() => {
+    Animated.timing(dividerAnimatedMargin, {
+      toValue: isTop ? 0 : 20,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  }, [dividerAnimatedMargin, isTop]);
 
   const applyFilter = useCallback(
     (arr: any[]) =>
@@ -439,13 +476,13 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         <View style={{flex: 1}}>
           <Animated.ScrollView
             onScrollBeginDrag={() => {
-              setIsBeginDrag(true);
+              setIsModalBeginDrag(true);
             }}
             stickyHeaderIndices={[0]}
             style={{
               flex: 1,
               backgroundColor: colors.white,
-              marginTop: animatedValue,
+              marginTop: modalAnimatedValue,
             }}>
             <LinearGradient
               colors={[colors.white, 'rgba(255, 255, 255, 0.1)']}
@@ -486,7 +523,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
               type="primary"
               onPress={() => {
                 action.modal.closeModal();
-                setIsBeginDrag(false);
+                setIsModalBeginDrag(false);
               }}
             />
           </View>
@@ -494,31 +531,12 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         <SafeAreaView style={{backgroundColor: colors.white}} />
       </View>
     ),
-    [action.modal, animatedValue, cashExpire, expirePt, renderExpireItem],
+    [action.modal, modalAnimatedValue, cashExpire, expirePt, renderExpireItem],
   );
 
   const renderFilter = useCallback(
     () => (
       <View>
-        <View key="header" style={styles.hisHeader}>
-          <AppText
-            style={[appStyles.bold18Text, {color: colors.black, flex: 1}]}>
-            {i18n.t('cashHistory:useHistory')}
-          </AppText>
-          <Pressable
-            style={{flexDirection: 'row', alignItems: 'center'}}
-            onPress={() => action.modal.showModal({content: orderModalBody()})}>
-            <AppText
-              style={[
-                appStyles.medium14,
-                {color: colors.black, marginRight: 8},
-              ]}>
-              {i18n.t(`cashHistory:orderType:${orderType}`)}
-            </AppText>
-            <AppSvgIcon name="sortTriangle" style={{marginRight: 8}} />
-          </Pressable>
-        </View>
-
         <View style={{flexDirection: 'row', marginHorizontal: 20}}>
           {filterList.map((elm) => (
             <Pressable
@@ -543,7 +561,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         </View>
       </View>
     ),
-    [action.modal, dataFilter, filterList, orderModalBody, orderType],
+    [dataFilter, filterList],
   );
 
   const showExpirePt = useCallback(() => {
@@ -563,9 +581,10 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
       </View>
 
       <View style={styles.myRemain}>
-        <AppText style={appStyles.normal14Text}>
+        <Animated.Text
+          style={[appStyles.normal14Text, {height: AnimatedTextHeight}]}>
           {i18n.t('cashHistory:myBalance')}
-        </AppText>
+        </Animated.Text>
         <View style={styles.balanceBox}>
           <AppPrice
             price={utils.toCurrency(balance || 0, esimCurrency)}
@@ -585,34 +604,66 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
       </View>
 
       {/* 30일 이내 소멸예정 캐시 모달  */}
-      <Pressable
-        style={styles.showExpPtBox}
-        onPress={() => showExpirePt()}
-        onLayout={(event) =>
-          setExpirePtmodalPosY(
-            event.nativeEvent.layout.y - event.nativeEvent.layout.height || 165,
-          )
-        }>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <AppText style={appStyles.bold14Text}>
-            {i18n.t('cashHistory:expirePt')}
-          </AppText>
-          <AppText style={appStyles.normal14Text}>
-            {i18n.t('cashHistory:in1Month')}
-          </AppText>
-        </View>
+      <Animated.View
+        style={{
+          overflow: 'hidden',
+          height: animatedValue,
+        }}>
+        <Pressable
+          style={styles.showExpPtBox}
+          onPress={() => showExpirePt()}
+          onLayout={(event) =>
+            console.log('aaaaa height', event.nativeEvent.layout.height)
+          }>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <AppText style={appStyles.bold14Text}>
+              {i18n.t('cashHistory:expirePt')}
+            </AppText>
+            <AppText style={appStyles.normal14Text}>
+              {i18n.t('cashHistory:in1Month')}
+            </AppText>
+          </View>
 
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <AppPrice
-            price={utils.toCurrency(expirePt || 0, esimCurrency)}
-            balanceStyle={[appStyles.bold18Text, {color: colors.redError}]}
-            currencyStyle={[appStyles.bold16Text, {color: colors.redError}]}
-          />
-          <AppSvgIcon name="rightArrow" />
-        </View>
-      </Pressable>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <AppPrice
+              price={utils.toCurrency(expirePt || 0, esimCurrency)}
+              balanceStyle={[appStyles.bold18Text, {color: colors.redError}]}
+              currencyStyle={[appStyles.bold16Text, {color: colors.redError}]}
+            />
+            <AppSvgIcon name="rightArrow" />
+          </View>
+        </Pressable>
 
-      <View style={styles.divider} />
+        <View style={styles.divider} />
+
+        <View key="header" style={styles.hisHeader}>
+          <AppText
+            style={[appStyles.bold18Text, {color: colors.black, flex: 1}]}>
+            {i18n.t('cashHistory:useHistory')}
+          </AppText>
+          <Pressable
+            style={{flexDirection: 'row', alignItems: 'center'}}
+            onPress={() => action.modal.showModal({content: orderModalBody()})}>
+            <AppText
+              style={[
+                appStyles.medium14,
+                {color: colors.black, marginRight: 8},
+              ]}>
+              {i18n.t(`cashHistory:orderType:${orderType}`)}
+            </AppText>
+            <AppSvgIcon name="sortTriangle" style={{marginRight: 8}} />
+          </Pressable>
+        </View>
+      </Animated.View>
+
+      <Animated.View
+        style={{
+          backgroundColor: colors.whiteTwo,
+          height: dividerAnimatedHeight,
+          marginHorizontal: dividerAnimatedMargin,
+          marginBottom: dividerAnimatedMargin,
+        }}
+      />
 
       {renderFilter()}
 
@@ -628,6 +679,14 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           </AppText>
         )}
         ListEmptyComponent={() => renderEmpty()}
+        onScroll={({
+          nativeEvent: {
+            contentOffset: {y},
+          },
+        }) => {
+          if (isTop && y > 50) setIsTop(false);
+          else if (!isTop && y <= 0) setIsTop(true);
+        }}
       />
       <AppSnackBar
         visible={showSnackBar}
