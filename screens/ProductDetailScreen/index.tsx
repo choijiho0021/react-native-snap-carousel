@@ -3,7 +3,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useState, useEffect, useCallback} from 'react';
 import Clipboard from '@react-native-community/clipboard';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
+import {Platform, SafeAreaView, StyleSheet, View} from 'react-native';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -171,7 +171,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           if (value) {
             const moveTo = value.split('/');
             navigation.navigate('Faq', {
-              key: moveTo[0],
+              key: `${moveTo[0]}.${Platform.OS}`,
               num: moveTo[1],
             });
           }

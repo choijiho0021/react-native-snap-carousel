@@ -121,18 +121,17 @@ const FaqScreen: React.FC<FaqScreenProps & DispatchProp> = ({
 
   useEffect(() => {
     const {key, num} = route.params || {};
-
     navigation.setOptions({
       headerShown: false,
     });
 
     const idx = routes.findIndex((item) => item.key === key);
-    if (idx > 0) {
+    if (idx >= 0) {
       setIndex(idx);
       setSelectedTitleNo(num);
     }
 
-    refreshData(idx > 0 ? idx : 0);
+    refreshData(idx >= 0 ? idx : 0);
   }, [navigation, refreshData, route.params, routes]);
 
   return (
