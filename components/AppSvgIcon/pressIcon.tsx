@@ -8,6 +8,7 @@ import Svg, {
   LinearGradient,
   Mask,
   Path,
+  RadialGradient,
   Rect,
   Stop,
 } from 'react-native-svg';
@@ -975,7 +976,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         />
       </G>
       <Defs>
-        <radialGradient
+        <RadialGradient
           id="6baev6dpdb"
           cx="0"
           cy="0"
@@ -986,10 +987,10 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           <Stop offset=".6" stop-color="#A033FF" />
           <Stop offset=".9" stop-color="#FF5280" />
           <Stop offset="1" stop-color="#FF7061" />
-        </radialGradient>
-        <clipPath id="810bj2rxba">
-          <path fill="#fff" d="M0 0h24v24H0z" />
-        </clipPath>
+        </RadialGradient>
+        <ClipPath id="810bj2rxba">
+          <Path fill="#fff" d="M0 0h24v24H0z" />
+        </ClipPath>
       </Defs>
     </Svg>,
   ],
