@@ -520,29 +520,29 @@ const slice = createSlice({
     builder.addCase(getCashHistory.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
 
-      const group = objects.reduce((acc, cur) => {
-        const year = cur.create_dt.slice(0, 4);
-        const idx = acc.findIndex((elm) => elm.title === year);
+      if (result === 0 && objects && objects.length > 0) {
+        const group = objects.reduce((acc, cur) => {
+          const year = cur.create_dt.slice(0, 4);
+          const idx = acc.findIndex((elm) => elm.title === year);
 
-        if (idx <= -1) {
-          acc.push({title: year, data: [cur] as CashHistory[]});
-        } else {
-          const orderidx = acc[idx].data.findIndex(
-            (elm) => elm.order_id === cur.order_id,
-          );
-          if (orderidx > -1) {
-            acc[idx].data[orderidx].diff = `${
-              utils.stringToNumber(acc[idx].data[orderidx].diff) +
-              utils.stringToNumber(cur.diff)
-            }`;
+          if (idx <= -1) {
+            acc.push({title: year, data: [cur] as CashHistory[]});
           } else {
-            acc[idx].data?.push(cur);
+            const orderidx = acc[idx].data.findIndex(
+              (elm) => elm.order_id === cur.order_id,
+            );
+            if (orderidx > -1) {
+              acc[idx].data[orderidx].diff = `${
+                (utils.stringToNumber(acc[idx].data[orderidx].diff) || 0) +
+                (utils.stringToNumber(cur.diff) || 0)
+              }`;
+            } else {
+              acc[idx].data?.push(cur);
+            }
           }
-        }
-        return acc;
-      }, [] as SectionData[]);
+          return acc;
+        }, [] as SectionData[]);
 
-      if (result === 0) {
         state.cashHistory = group;
       }
 
@@ -552,7 +552,7 @@ const slice = createSlice({
     builder.addCase(getCashExpire.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
 
-      if (result === 0) {
+      if (result === 0 && objects && objects.length > 0) {
         state.cashExpire = objects;
         state.expirePt = objects.reduce(
           (acc, cur) => acc + Number(cur.point),

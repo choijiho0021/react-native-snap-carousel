@@ -288,12 +288,11 @@ const TabNavigator = ({
       />
       <Tab.Screen
         name="CartStack"
-        component={iccid && loggedIn ? CartStackComponent : AuthStack}
+        component={loggedIn ? CartStackComponent : AuthStack}
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
             display:
-              !!iccid &&
               !!loggedIn &&
               cart?.orderItems?.length === 0 &&
               (getFocusedRouteNameFromRoute(route) || 'Cart') === 'Cart'
@@ -314,12 +313,11 @@ const TabNavigator = ({
       />
       <Tab.Screen
         name="EsimStack"
-        component={iccid && loggedIn ? EsimStackComponent : AuthStack}
+        component={loggedIn ? EsimStackComponent : AuthStack}
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
             display:
-              !!iccid &&
               !!loggedIn &&
               (getFocusedRouteNameFromRoute(route) || 'Esim') === 'Esim'
                 ? 'flex'
@@ -337,12 +335,11 @@ const TabNavigator = ({
       />
       <Tab.Screen
         name="MyPageStack"
-        component={iccid && loggedIn ? MyPageStackComponent : AuthStack}
+        component={loggedIn ? MyPageStackComponent : AuthStack}
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
             display:
-              !!iccid &&
               !!loggedIn &&
               (getFocusedRouteNameFromRoute(route) || 'MyPage') === 'MyPage'
                 ? 'flex'

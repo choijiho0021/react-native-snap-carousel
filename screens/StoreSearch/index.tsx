@@ -36,6 +36,7 @@ import {
 import i18n from '@/utils/i18n';
 import {retrieveData, storeData, utils} from '@/utils/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import ChannelTalk from '@/components/ChannelTalk';
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -442,7 +443,11 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
   const renderStoreList = useCallback(
     (key: string) => {
       const filtered = product.prodByCountry
-        .filter((v) => v.search?.match(key.replace(/[{}()*]/g, '')))
+        .filter((v) =>
+          v.search
+            ?.toLowerCase()
+            ?.match(key?.toLowerCase().replace(/[{}()* ]/g, '')),
+        )
         .map(
           (v) =>
             ({
@@ -488,12 +493,12 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
         <ScrollView
           style={{width: '100%'}}
           onScrollBeginDrag={() => {
-            console.log('aaaaa onScrollBeginDrag');
             Keyboard.dismiss();
           }}>
           {renderSearchWord()}
         </ScrollView>
       )}
+      <ChannelTalk />
     </SafeAreaView>
   );
 };

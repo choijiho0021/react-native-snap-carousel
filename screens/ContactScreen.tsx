@@ -10,7 +10,6 @@ import {
   RouteProp,
 } from '@react-navigation/native';
 import {ChannelIO} from 'react-native-channel-plugin';
-import KakaoSDK from '@/components/NativeModule/KakaoSDK';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
@@ -27,8 +26,9 @@ import {navigate} from '@/navigation/navigation';
 import AppSnackBar from '@/components/AppSnackBar';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {AccountModelState} from '../redux/modules/account';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
-const {channelId, esimGlobal, talkPluginKey} = Env.get();
+const {esimGlobal, talkPluginKey} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -145,7 +145,7 @@ const ContactListItem0 = ({
       }}>
       <View style={styles.contactListItemRow}>
         <View style={{flexDirection: 'row'}}>
-          <AppIcon
+          <AppSvgIcon
             style={{alignSelf: 'center', marginHorizontal: 20}}
             name={item.icon}
           />
@@ -191,9 +191,10 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
             page: 'Open FB Messenger',
           }
         : {
-            key: 'Ktalk',
-            title: i18n.t('contact:ktalkTitle'),
-            icon: 'kakaoChannel',
+            // key: 'Ktalk',
+            key: 'ChatTalk',
+            title: i18n.t('contact:chatTalkTitle'),
+            icon: 'chatTalk',
             page: 'Open Kakao Talk',
           },
     ],
@@ -275,10 +276,11 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
           // );
           break;
 
-        case 'Ktalk':
-          KakaoSDK.KakaoChannel.chat(channelId).catch(() => {
-            setShowSnackbar(true);
-          });
+        case 'ChatTalk':
+          ChannelIO.showMessenger();
+          // KakaoSDK.KakaoChannel.chat(channelId).catch(() => {
+          //   setShowSnackbar(true);
+          // });
           break;
         default:
           break;

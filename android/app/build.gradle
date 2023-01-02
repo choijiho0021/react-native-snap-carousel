@@ -180,8 +180,8 @@ android {
         multiDexEnabled true
         targetSdkVersion rootProject.ext.targetSdkVersion
         vectorDrawables.useSupportLibrary = true
-        versionCode 40
-        versionName "1.2.2"
+        versionCode 41
+        versionName "1.2.3"
         multiDexEnabled true
         resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
@@ -411,7 +411,7 @@ dependencies {
     implementation "androidx.annotation:annotation:1.1.0"
     implementation 'com.facebook.android:facebook-android-sdk:14.1.1'
     implementation project(':@react-native-community-clipboard')
-    implementation platform('com.google.firebase:firebase-bom:30.3.1')
+    implementation platform('com.google.firebase:firebase-bom:31.1.1')
     implementation project(path: ":@react-native-firebase_dynamic-links")
     implementation 'com.google.firebase:firebase-analytics'
     implementation group: 'com.kakao.sdk', name: 'usermgmt', version: '1.27.0'
