@@ -211,7 +211,7 @@
   "set:failedToSendAlimTalk": "Failed to send a KakaoTalk message. Please try again later",
   "set:pushnoti": "Push Notifications",
   "set:accountSettings": "Account Settings",
-  "set:changeMail": "Change Email Address",
+  "set:changeMail": "Change email",
 
   "resign": "Delete Account",
   "resign:why": "Please let us know why you are leaving us.",
@@ -763,15 +763,15 @@
 
   "info:init:err": "Sorry, try again.",
 
-  "changeEmail": "Change Email Address",
-  "changeEmail:using": "Registered Email Address",
-  "changeEmail:new": "New Email Address",
-  "changeEmail:placeholder": "Enter new email address here",
-  "changeEmail:info": "* Activation info for your eSIM product will be sent to this email",
+  "changeEmail": "Change email",
+  "changeEmail:using": "Registered email",
+  "changeEmail:new": "New email",
+  "changeEmail:placeholder": "Enter new email here",
+  "changeEmail:info": "* Activation code for your eSIM product will be sent to this email",
   "changeEmail:save": "Save Changes",
-  "changeEmail:saveInfo": "Email address change is completed.",
-  "changeEmail:duplicate": "Your email address is already in use.",
-  "changeEmail:fail": "Email registration is failed.",
+  "changeEmail:saveInfo": "Email is changed.",
+  "changeEmail:duplicate": "Your email is already in use.",
+  "changeEmail:fail": "Failed to register email.",
 
   "socialLogin:kakao": "Login with Kakao",
   "socialLogin:apple": "Sign in with Apple",
