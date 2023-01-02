@@ -130,9 +130,6 @@ const images: Record<string, any[]> = {
   usageR: [require(`${esimPath}usageR.png`)],
   imgFaq: [require(`${esimPath}imgFaq.png`)],
   imgGuide: [require(`${esimPath}imgGuide.png`)],
-  kakaoChannel: [require(`${esimPath}kakaoChannel.png`)],
-  fbMsg: [require(`${esimPath}fbMsg.png`)],
-  imgBoard: [require(`${esimPath}imgBoard.png`)],
 
   inviteRokebi1: [require(`${invitePath}inviteRokebi1.png`)],
   inviteRokebi2: [require(`${invitePath}inviteRokebi2.png`)],

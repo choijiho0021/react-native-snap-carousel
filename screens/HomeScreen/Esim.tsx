@@ -76,6 +76,7 @@ import AppVerModal from './component/AppVerModal';
 import {isFolderOpen} from '@/constants/SliderEntry.style';
 import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
 import AppStyledText from '@/components/AppStyledText';
+import ChannelTalk from '@/components/ChannelTalk';
 
 const {esimGlobal, isIOS} = Env.get();
 
@@ -678,6 +679,12 @@ const Esim: React.FC<EsimProps> = ({
               initial: false,
             });
             break;
+          case 'INVITE':
+            navigation.navigate('MyPageStack', {
+              screen: 'Invite',
+              initial: false,
+            });
+            break;
           default:
             break;
         }
@@ -844,6 +851,8 @@ const Esim: React.FC<EsimProps> = ({
       )}
 
       {renderModal()}
+
+      <ChannelTalk />
     </SafeAreaView>
   );
 };

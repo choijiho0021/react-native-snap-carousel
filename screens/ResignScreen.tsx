@@ -268,13 +268,13 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
             action.modal.closeModal();
           }}
           cancelButtonTitle={i18n.t('yes')}
-          cancelButtonStyle={{color: colors.black}}
+          cancelButtonStyle={{color: colors.black, marginRight: 60}}
           okButtonTitle={i18n.t('no')}
           okButtonStyle={{color: colors.clearBlue}}
         />
       ),
     });
-  }, [action.modal, resign, resignInfo]);
+  }, [action.modal, navigation, resign, resignInfo]);
 
   return (
     <SafeAreaView style={styles.container}>

@@ -3,7 +3,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useState, useEffect, useCallback} from 'react';
 import Clipboard from '@react-native-community/clipboard';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
+import {Platform, SafeAreaView, StyleSheet, View} from 'react-native';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -36,6 +36,7 @@ import api, {ApiResult} from '@/redux/api/api';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import AppCartButton from '@/components/AppCartButton';
+import ChannelTalk from '../../components/ChannelTalk';
 
 const {esimApp, esimGlobal, webViewHost} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -170,7 +171,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           if (value) {
             const moveTo = value.split('/');
             navigation.navigate('Faq', {
-              key: moveTo[0],
+              key: `${moveTo[0]}.${Platform.OS}`,
               num: moveTo[1],
             });
           }
@@ -360,6 +361,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         </View>
       )}
       <AppActivityIndicator visible={pending} />
+
+      <ChannelTalk />
     </SafeAreaView>
   );
 };

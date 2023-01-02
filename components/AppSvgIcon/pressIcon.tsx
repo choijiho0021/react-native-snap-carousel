@@ -937,6 +937,77 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  imgBoard: [
+    <Svg
+      width="26"
+      height="26"
+      viewBox="0 0 26 26"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M2 10a8 8 0 0 1 8-8h6a8 8 0 0 1 8 8v6a8 8 0 0 1-8 8H3a1 1 0 0 1-1-1V10z"
+        stroke="#2C2C2C"
+        strokeWidth="2"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M8 10a1 1 0 0 1 1-1h8a1 1 0 1 1 0 2H9a1 1 0 0 1-1-1zM8 16a1 1 0 0 1 1-1h5a1 1 0 1 1 0 2H9a1 1 0 0 1-1-1z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
+  fbMsg: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#810bj2rxba)">
+        <Path
+          d="M12 0C5.241 0 0 4.953 0 11.64c0 3.498 1.434 6.522 3.768 8.61.195.174.315.42.321.684l.066 2.136a.96.96 0 0 0 1.347.849l2.382-1.05a.964.964 0 0 1 .642-.048c1.095.3 2.259.462 3.474.462 6.759 0 12-4.953 12-11.64S18.759 0 12 0z"
+          fill="url(#6baev6dpdb)"
+        />
+        <Path
+          d="m4.794 15.045 3.525-5.592a1.8 1.8 0 0 1 2.604-.48l2.805 2.103a.72.72 0 0 0 .867-.003L18.38 8.2c.504-.384 1.164.222.828.76l-3.528 5.588a1.8 1.8 0 0 1-2.604.48l-2.805-2.103a.72.72 0 0 0-.867.003l-3.786 2.874c-.504.384-1.164-.219-.825-.756z"
+          fill="#fff"
+        />
+      </G>
+      <Defs>
+        <radialGradient
+          id="6baev6dpdb"
+          cx="0"
+          cy="0"
+          r="1"
+          gradientUnits="userSpaceOnUse"
+          gradientTransform="matrix(26.4 0 0 26.4 4.02 24)">
+          <Stop stop-color="#09F" />
+          <Stop offset=".6" stop-color="#A033FF" />
+          <Stop offset=".9" stop-color="#FF5280" />
+          <Stop offset="1" stop-color="#FF7061" />
+        </radialGradient>
+        <clipPath id="810bj2rxba">
+          <path fill="#fff" d="M0 0h24v24H0z" />
+        </clipPath>
+      </Defs>
+    </Svg>,
+  ],
+  chatTalk: [
+    <Svg
+      width="26"
+      height="26"
+      viewBox="0 0 26 26"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M13 1a8 8 0 0 0-8 8v.1A5.002 5.002 0 0 0 6 19a1 1 0 0 0 1-1V9a6 6 0 1 1 12 0v9a5 5 0 0 1-5 5 1 1 0 1 0 0 2 7.001 7.001 0 0 0 6.941-6.088A5.002 5.002 0 0 0 21 9.1V9a8 8 0 0 0-8-8zm8 10.17v5.66a3.001 3.001 0 0 0 0-5.66zM3 14c0-1.306.835-2.418 2-2.83v5.66A3.001 3.001 0 0 1 3 14z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;

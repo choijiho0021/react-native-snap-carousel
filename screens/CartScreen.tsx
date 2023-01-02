@@ -36,6 +36,7 @@ import {
   ProductModelState,
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
+import ChannelTalk from '@/components/ChannelTalk';
 
 const {esimCurrency} = Env.get();
 
@@ -348,6 +349,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
           onPress={onPurchase}
         />
       </View>
+      <ChannelTalk />
     </SafeAreaView>
   );
 };
