@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey,
     borderWidth: 1,
     borderRadius: 3,
-    height: esimApp ? 40 : 30,
+    height: 40,
     justifyContent: 'center',
   },
   btnInvite: {

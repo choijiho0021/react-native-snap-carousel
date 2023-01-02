@@ -91,6 +91,7 @@ export const appStyles = StyleSheet.create({
     height: 44,
     justifyContent: 'space-between',
     alignItems: 'center',
+    backgroundColor: 'white',
   },
 
   headerTitle: {

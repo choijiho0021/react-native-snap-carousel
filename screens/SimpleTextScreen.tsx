@@ -48,6 +48,7 @@ const {width} = Dimensions.get('window');
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+    backgroundColor: 'white',
   },
   container: {
     flex: 1,
@@ -261,8 +262,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
     const {params} = route;
 
     navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={params?.title} />,
+      headerShown: false,
     });
 
     if (params.mode) setMode(params.mode);
@@ -293,6 +293,9 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
 
   return (
     <SafeAreaView style={styles.screen}>
+      <View style={appStyles.header}>
+        <AppBackButton title={route.params?.title} />
+      </View>
       {defineSource(mode)}
       <AppActivityIndicator visible={pending || loading} />
       <AppButton
