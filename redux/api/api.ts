@@ -120,7 +120,7 @@ const path = {
   },
 };
 
-const httpUrl = (path0: string, lang: string = i18n.locale) => {
+const httpUrl = (path0: string, lang: string = esimGlobal ? 'en' : 'ko') => {
   return lang == ''
     ? `${scheme}://${apiUrl}/${path0}`
     : `${scheme}://${apiUrl}/${lang}/${path0}`;
