@@ -222,8 +222,6 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         />
       </View>
       <AppActivityIndicator visible={props.pending} />
-
-      <ChannelTalk />
     </SafeAreaView>
   );
 };

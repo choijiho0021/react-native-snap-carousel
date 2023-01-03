@@ -511,7 +511,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         onClose={() => setShowSnackBar(false)}
         textMessage={i18n.t('usim:failSnackBar')}
       />
-      <ChannelTalk />
     </SafeAreaView>
   );
 };

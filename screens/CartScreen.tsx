@@ -349,7 +349,6 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
           onPress={onPurchase}
         />
       </View>
-      <ChannelTalk />
     </SafeAreaView>
   );
 };

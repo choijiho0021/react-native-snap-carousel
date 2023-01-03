@@ -435,7 +435,6 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
         onClose={() => setShowSnackbar(false)}
         textMessage={i18n.t('copyMsg')}
       />
-      <ChannelTalk />
     </View>
   );
 };

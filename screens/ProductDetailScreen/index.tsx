@@ -361,8 +361,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         </View>
       )}
       <AppActivityIndicator visible={pending} />
-
-      <ChannelTalk />
     </SafeAreaView>
   );
 };

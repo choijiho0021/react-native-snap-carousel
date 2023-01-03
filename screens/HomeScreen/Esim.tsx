@@ -851,8 +851,6 @@ const Esim: React.FC<EsimProps> = ({
       )}
 
       {renderModal()}
-
-      <ChannelTalk />
     </SafeAreaView>
   );
 };
