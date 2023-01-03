@@ -329,7 +329,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         textMessage={showSnackBar.text}
         bottom={10}
       />
-      {account.iccid || (esimApp && account.loggedIn) ? (
+      {account.loggedIn ? (
         <View style={styles.buttonBox}>
           <AppButton
             style={styles.btnCart}
