@@ -1,11 +1,9 @@
 import _, {isArray} from 'underscore';
 import i18n from '@/utils/i18n';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
-
 import Env from '@/environment';
-import {promoFlag} from './productApi';
 
-const {isProduction} = Env.get();
+const {isProduction, specialCategories} = Env.get();
 
 const STATUS_ACTIVE = 'A'; // 사용중
 const STATUS_INACTIVE = 'I'; // 미사용
@@ -149,7 +147,7 @@ const toSubscription =
           promoFlag: item.field_special_categories
             ? item.field_special_categories
                 .split(',')
-                .map((v) => promoFlag[v.trim()])
+                .map((v) => specialCategories[v.trim()])
                 .filter((v) => !_.isEmpty(v))
             : [],
           caution: item.field_caution || '',

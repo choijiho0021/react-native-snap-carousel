@@ -8,6 +8,9 @@ import {createFromProduct} from '@/redux/models/purchaseItem';
 import api, {ApiResult} from './api';
 import {RkbPriceInfo} from '../modules/product';
 import {colors} from '@/constants/Colors';
+import Env from '@/environment';
+
+const {specialCategories} = Env.get();
 
 export type TabViewRouteKey = 'asia' | 'europe' | 'usaAu' | 'multi';
 export type TabViewRoute = {
@@ -25,14 +28,6 @@ const category = {
   europe: '69',
   usaAu: '65',
   multi: '67',
-};
-
-type PromoFlag = 'hot' | 'sale' | 'sizeup' | 'doubleSizeup';
-export const promoFlag: Record<string, PromoFlag> = {
-  53: 'hot', // 운용자 추천
-  57: 'sale', // 할인
-  181: 'sizeup', // 사이즈업
-  182: 'doubleSizeup', // 더블 사이즈업
 };
 
 const flagColor = {
@@ -135,7 +130,7 @@ const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
           field_description: item.field_description,
           promoFlag: item.field_special_categories
             .split(',')
-            .map((v) => promoFlag[v.trim()])
+            .map((v) => specialCategories[v.trim()])
             .filter((v) => !_.isEmpty(v)),
           sku: item.sku,
           body: item.body,
