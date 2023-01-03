@@ -112,37 +112,35 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
   return (
     <View style={{marginBottom: 10}}>
       <Profile onChangePhoto={onChangePhoto} />
-      {esimApp && (
-        <Pressable
-          style={styles.rechargeBox}
-          onPress={() => navigation.navigate('CashHistory')}>
-          <ImageBackground
-            source={require('../../../assets/images/esim/card.png')}
-            style={styles.image}>
-            <View style={styles.rechargeText}>
-              <View style={{flexDirection: 'column', flex: 9}}>
-                <AppText style={appStyles.normal14Text}>
-                  {i18n.t('acc:remain')}
+      <Pressable
+        style={styles.rechargeBox}
+        onPress={() => navigation.navigate('CashHistory')}>
+        <ImageBackground
+          source={require('../../../assets/images/esim/card.png')}
+          style={styles.image}>
+          <View style={styles.rechargeText}>
+            <View style={{flexDirection: 'column', flex: 9}}>
+              <AppText style={appStyles.normal14Text}>
+                {i18n.t('acc:remain')}
+              </AppText>
+              <AppText style={[appStyles.bold30Text, {paddingTop: 4}]}>
+                {utils.numberToCommaString(balance || 0)}
+                <AppText
+                  style={[appStyles.normal20Text, {fontWeight: 'normal'}]}>
+                  {i18n.t(esimCurrency)}
                 </AppText>
-                <AppText style={[appStyles.bold30Text, {paddingTop: 4}]}>
-                  {utils.numberToCommaString(balance || 0)}
-                  <AppText
-                    style={[appStyles.normal20Text, {fontWeight: 'normal'}]}>
-                    {i18n.t(esimCurrency)}
-                  </AppText>
-                </AppText>
-              </View>
-              <AppButton
-                title={i18n.t('acc:goRecharge')}
-                titleStyle={[appStyles.normal14Text, {color: colors.white}]}
-                style={styles.rchBtn}
-                onPress={() => navigation.navigate('Recharge')}
-                type="primary"
-              />
+              </AppText>
             </View>
-          </ImageBackground>
-        </Pressable>
-      )}
+            <AppButton
+              title={i18n.t('acc:goRecharge')}
+              titleStyle={[appStyles.normal14Text, {color: colors.white}]}
+              style={styles.rchBtn}
+              onPress={() => navigation.navigate('Recharge')}
+              type="primary"
+            />
+          </View>
+        </ImageBackground>
+      </Pressable>
 
       <View style={styles.rowBtn}>
         <AppButton
