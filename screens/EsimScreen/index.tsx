@@ -499,13 +499,15 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           setCmiPending(false);
         }}
       />
-      <GiftModal
-        visible={showGiftModal}
-        onOkClose={() => {
-          setShowGiftModal(false);
-          setIsPressClose(true);
-        }}
-      />
+      {!esimGlobal && (
+        <GiftModal
+          visible={showGiftModal}
+          onOkClose={() => {
+            setShowGiftModal(false);
+            setIsPressClose(true);
+          }}
+        />
+      )}
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackBar(false)}
