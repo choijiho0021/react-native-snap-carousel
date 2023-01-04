@@ -293,19 +293,13 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
           break;
 
         case 'ChatTalk':
-          // ChannelIO.showMessenger();
-
           openChannelTalk();
-
-          // KakaoSDK.KakaoChannel.chat(channelId).catch(() => {
-          //   setShowSnackbar(true);
-          // });
           break;
         default:
           break;
       }
     },
-    [navigation, route],
+    [navigation, openChannelTalk, route],
   );
 
   return (
