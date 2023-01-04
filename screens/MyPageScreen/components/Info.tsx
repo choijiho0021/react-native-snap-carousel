@@ -114,7 +114,11 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
       <Profile onChangePhoto={onChangePhoto} />
       <Pressable
         style={styles.rechargeBox}
-        onPress={() => navigation.navigate('CashHistory')}>
+        onPress={() =>
+          esimGlobal
+            ? navigation.navigate('Recharge')
+            : navigation.navigate('CashHistory')
+        }>
         <ImageBackground
           source={require('../../../assets/images/esim/card.png')}
           style={styles.image}>
