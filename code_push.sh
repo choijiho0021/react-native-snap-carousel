@@ -17,7 +17,7 @@ if [[ ! "$environment" =~ ^(Staging|Production|Debug)$ ]]; then
  	exit 1
 fi
 
-if [[ ! "$simtype" =~ ^(usim|esim)$ ]]; then
+if [[ ! "$simtype" =~ ^(usim|esim|global)$ ]]; then
  	echo "\033[31m"[Error]"\033[0m" "Please choose Sim Type (ESIM|USIM)"
  	exit 1
 fi
@@ -43,6 +43,14 @@ if [[ "$simtype" = "esim" ]]; then
 	bundle='com.uangel.rokebi-ESIM'
 fi
 
+if [[ "$simtype" = "global" ]]; then
+	appnameios='RokebiGlobal-iOS'
+	appnameandroid='RokebiGlobal-Android'
+	xcodeproj='RokebiESIM.xcodeproj'
+	appname='RokebiGlobal'
+	bundle='com.uangel.rokebi-global'
+fi
+appcenter codepush release-react -a admin-uangel.kr/RokebiGlobal-iOS -d Debug
 echo "\033[32m"[Info]"\033[0m" "Please enter the Android/iOS version manually before executing the command."
 echo "\033[32m"[Info]"\033[0m" "Please check the CodePush Key again before pushing the source into git."
 
