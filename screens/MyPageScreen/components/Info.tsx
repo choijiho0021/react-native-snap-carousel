@@ -17,7 +17,7 @@ import AppIcon from '@/components/AppIcon';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppStyledText from '@/components/AppStyledText';
 
-const {esimApp, esimCurrency} = Env.get();
+const {esimApp, esimCurrency, esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   dividerSmall: {
@@ -169,27 +169,29 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
           type="secondary"
         />
       </View>
-      <Pressable
-        style={styles.btnInvite}
-        onPress={() =>
-          navigate(navigation, route, 'MyPageStack', {
-            tab: 'HomeStack',
-            screen: 'Invite',
-          })
-        }>
-        <AppIcon name="inviteBanner" />
-        <View style={{position: 'absolute', left: 16, bottom: 20}}>
-          <AppText
-            style={{...appStyles.medium13, color: 'white', marginBottom: 3}}>
-            {i18n.t('invite:btn-1')}
-          </AppText>
-          <AppStyledText
-            textStyle={styles.inviteText}
-            text={i18n.t('invite:btn-2')}
-            format={{b: {fontWeight: 'bold'}}}
-          />
-        </View>
-      </Pressable>
+      {!esimGlobal && (
+        <Pressable
+          style={styles.btnInvite}
+          onPress={() =>
+            navigate(navigation, route, 'MyPageStack', {
+              tab: 'HomeStack',
+              screen: 'Invite',
+            })
+          }>
+          <AppIcon name="inviteBanner" />
+          <View style={{position: 'absolute', left: 16, bottom: 20}}>
+            <AppText
+              style={{...appStyles.medium13, color: 'white', marginBottom: 3}}>
+              {i18n.t('invite:btn-1')}
+            </AppText>
+            <AppStyledText
+              textStyle={styles.inviteText}
+              text={i18n.t('invite:btn-2')}
+              format={{b: {fontWeight: 'bold'}}}
+            />
+          </View>
+        </Pressable>
+      )}
       <View style={styles.divider} />
       <AppText style={styles.subTitle}>{i18n.t('acc:purchaseHistory')}</AppText>
       <View style={styles.dividerSmall} />
