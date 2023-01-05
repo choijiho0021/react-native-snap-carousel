@@ -498,7 +498,6 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
           {renderSearchWord()}
         </ScrollView>
       )}
-      <ChannelTalk />
     </SafeAreaView>
   );
 };

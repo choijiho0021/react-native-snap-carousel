@@ -253,66 +253,36 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        {esimApp ? (
-          <View style={styles.rechargeBox}>
-            <ImageBackground
-              source={require('../../assets/images/esim/card.png')}
-              style={styles.image}>
-              <View style={styles.iconWithText}>
-                <View>
-                  <AppIcon
-                    style={{width: '100%', justifyContent: 'flex-end'}}
-                    name="rokIcon"
-                  />
+        <View style={styles.rechargeBox}>
+          <ImageBackground
+            source={require('../../assets/images/esim/card.png')}
+            style={styles.image}>
+            <View style={styles.iconWithText}>
+              <View>
+                <AppIcon
+                  style={{width: '100%', justifyContent: 'flex-end'}}
+                  name="rokIcon"
+                />
+                <AppText
+                  style={[
+                    appStyles.normal14Text,
+                    {textAlign: 'left', marginTop: 12},
+                  ]}>
+                  {i18n.t('acc:remain')}
+                </AppText>
+              </View>
+              <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
+                <AppText style={appStyles.bold30Text}>
+                  {utils.numberToCommaString(balance || 0)}
                   <AppText
-                    style={[
-                      appStyles.normal14Text,
-                      {textAlign: 'left', marginTop: 12},
-                    ]}>
-                    {i18n.t('acc:remain')}
+                    style={[appStyles.normal20Text, {fontWeight: 'normal'}]}>
+                    {i18n.t(esimCurrency)}
                   </AppText>
-                </View>
-                <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
-                  <AppText style={appStyles.bold30Text}>
-                    {utils.numberToCommaString(balance || 0)}
-                    <AppText
-                      style={[appStyles.normal20Text, {fontWeight: 'normal'}]}>
-                      {i18n.t(esimCurrency)}
-                    </AppText>
-                  </AppText>
-                </View>
+                </AppText>
               </View>
-            </ImageBackground>
-          </View>
-        ) : (
-          <View>
-            <Image
-              style={styles.card}
-              source={{uri: API.default.httpImageUrl(simCardImage)}}
-              resizeMode="contain"
-            />
-            <View style={styles.iccidBox}>
-              <AppText style={styles.iccidTitle}>{i18n.t('rch:iccid')}</AppText>
-              <View style={styles.iccidRow}>
-                {seg.map((s, i) => [
-                  <AppText key={utils.generateKey(i)} style={styles.iccid}>
-                    {s}
-                  </AppText>,
-                  i < 3 ? (
-                    <AppText key={utils.generateKey(`${i}-`)}>-</AppText>
-                  ) : null,
-                ])}
-              </View>
-              <LabelText
-                label={i18n.t('sim:remainingBalance')}
-                style={{marginTop: 15}}
-                value={balance}
-                format="price"
-                color={colors.clearBlue}
-              />
             </View>
-          </View>
-        )}
+          </ImageBackground>
+        </View>
 
         <View style={[styles.divider, esimApp && {marginTop: 20}]} />
         <View style={{flex: 1}} />

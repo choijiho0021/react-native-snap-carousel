@@ -294,12 +294,13 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           order.orders.get(Number(item.order_id))?.orderItems || [];
 
         if (orderItems.length === 0) return null;
-
+        if (orderItems.length === 1)
+          return <AppText>{orderItems[0]?.title || ''}</AppText>;
         return (
           <AppText>
             {i18n.t(`cashHistory:detail:etcCnt`, {
               prodName: orderItems[0]?.title || '',
-              cnt: orderItems.length,
+              cnt: orderItems.length - 1,
             })}
           </AppText>
         );

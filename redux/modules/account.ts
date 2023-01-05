@@ -279,7 +279,7 @@ const logInAndGetAccount = createAsyncThunk(
           // get ICCID account info
           if (iccid) {
             getAccountWithDisconnect({iccid, token});
-          } else if (esimApp) {
+          } else {
             await dispatch(
               registerMobile({iccid: 'esim', code: pin, mobile, token}),
             ).then(({payload: resp}) => {
@@ -297,16 +297,6 @@ const logInAndGetAccount = createAsyncThunk(
                 getAccountWithDisconnect({iccid: `00001111${mobile}`, token});
               }
             });
-          } else {
-            // 가장 최근 사용한 SIM 카드 번호를 조회한다.
-            await dispatch(getAccountByUser({mobile, token})).then(
-              ({payload: resp}: {payload: ApiResult<RkbAccount>}) => {
-                const {result: rst, objects: o} = resp;
-                if (rst === 0 && obj && obj[0]?.status === 'A') {
-                  getAccountWithDisconnect({iccid: o[0].iccid, token});
-                }
-              },
-            );
           }
 
           dispatch(getUserId({name: obj.current_user.name, token}));
@@ -558,6 +548,8 @@ const slice = createSlice({
           (acc, cur) => acc + Number(cur.point),
           0,
         );
+      } else {
+        state.expirePt = 0;
       }
 
       return state;

@@ -28,7 +28,7 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {AccountModelState} from '../redux/modules/account';
 import AppSvgIcon from '@/components/AppSvgIcon';
 
-const {esimGlobal, talkPluginKey} = Env.get();
+const {appId, esimGlobal, talkPluginKey} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -183,20 +183,12 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
         icon: 'imgBoard',
         page: 'Contact Board',
       },
-      esimGlobal
-        ? {
-            key: 'FB',
-            title: i18n.t('contact:fbMsg'),
-            icon: 'fbMsg',
-            page: 'Open FB Messenger',
-          }
-        : {
-            // key: 'Ktalk',
-            key: 'ChatTalk',
-            title: i18n.t('contact:chatTalkTitle'),
-            icon: 'chatTalk',
-            page: 'Open Kakao Talk',
-          },
+      {
+        key: 'ChatTalk',
+        title: i18n.t('contact:chatTalkTitle'),
+        icon: 'chatTalk',
+        page: 'Open Kakao Talk',
+      },
     ],
     [],
   );
@@ -249,6 +241,30 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
     if (noti.result) setShowModal(true);
   }, [noti.result]);
 
+  const openChannelTalk = useCallback(() => {
+    const settings = {
+      pluginKey: talkPluginKey,
+      profile: account.loggedIn
+        ? {
+            id: account.userId,
+            name: `${appId} - ${account.mobile}`,
+            mobileNumber: account.mobile,
+            email: 'test@naver.com',
+            mobileStr: account.mobile,
+            orderUrl: `https://esim.rokebi.com/ko/admin/op/order/search?title=${account.mobile}&mail=&items_per_page=10`,
+          }
+        : undefined,
+    };
+
+    if (ChannelIO.isBooted()) {
+      ChannelIO.showMessenger();
+    } else {
+      ChannelIO.boot(settings).then(() => {
+        ChannelIO.showMessenger();
+      });
+    }
+  }, [account.loggedIn, account.mobile, account.userId]);
+
   const onPress = useCallback(
     (key: string) => {
       switch (key) {
@@ -277,16 +293,13 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
           break;
 
         case 'ChatTalk':
-          ChannelIO.showMessenger();
-          // KakaoSDK.KakaoChannel.chat(channelId).catch(() => {
-          //   setShowSnackbar(true);
-          // });
+          openChannelTalk();
           break;
         default:
           break;
       }
     },
-    [navigation, route],
+    [navigation, openChannelTalk, route],
   );
 
   return (

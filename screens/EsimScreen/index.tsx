@@ -271,12 +271,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           const now = moment();
 
           const isExpired = statusCd === 'A' && exp < now;
-          // cancel 된 후, 다른 사용자에게 iccid가 넘어갔을 경우 packageId로 확인
-          const isUsedByOther =
-            userDataBundles[0]?.dataBundleId !== item.packageId;
 
           const tempCmiStatus: StatusObj = {
-            statusCd: isExpired || isUsedByOther ? 'U' : statusCd,
+            statusCd: isExpired ? 'U' : statusCd,
             endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
           };
 
@@ -502,19 +499,20 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           setCmiPending(false);
         }}
       />
-      <GiftModal
-        visible={showGiftModal}
-        onOkClose={() => {
-          setShowGiftModal(false);
-          setIsPressClose(true);
-        }}
-      />
+      {!esimGlobal && (
+        <GiftModal
+          visible={showGiftModal}
+          onOkClose={() => {
+            setShowGiftModal(false);
+            setIsPressClose(true);
+          }}
+        />
+      )}
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackBar(false)}
         textMessage={i18n.t('usim:failSnackBar')}
       />
-      <ChannelTalk />
     </SafeAreaView>
   );
 };
