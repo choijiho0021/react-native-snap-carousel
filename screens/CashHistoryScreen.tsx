@@ -188,7 +188,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   action,
   account,
   order,
-  pending,
+  // pending,
 }) => {
   const {
     iccid,

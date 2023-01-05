@@ -1,8 +1,7 @@
 import React, {useEffect} from 'react';
-import {Image, Pressable, Text, TextStyle, View, ViewStyle} from 'react-native';
+import {Image, Pressable} from 'react-native';
 import {ChannelIO} from 'react-native-channel-plugin';
 import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
 import Env from '@/environment';
 import {RootState} from '@/redux';
 import {AccountModelState} from '@/redux/modules/account';

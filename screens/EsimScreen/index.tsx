@@ -50,7 +50,6 @@ import EsimSubs from './components/EsimSubs';
 import EsimModal from './components/EsimModal';
 import GiftModal from './components/GiftModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import ChannelTalk from '@/components/ChannelTalk';
 
 const {esimGlobal} = Env.get();
 

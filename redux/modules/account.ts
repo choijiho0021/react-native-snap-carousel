@@ -13,15 +13,12 @@ import {batch} from 'react-redux';
 import messaging from '@react-native-firebase/messaging';
 import {API} from '@/redux/api';
 import {removeData, retrieveData, storeData, utils} from '@/utils/utils';
-import Env from '@/environment';
-import {RkbAccount, RkbFile, RkbImage} from '@/redux/api/accountApi';
+import {RkbFile, RkbImage} from '@/redux/api/accountApi';
 import api, {ApiResult} from '@/redux/api/api';
 import {actions as toastActions, reflectWithToast, Toast} from './toast';
 import {actions as orderActions} from './order';
 import {actions as promotionActions} from './promotion';
 import {actions as notiActions} from './noti';
-
-const {esimApp} = Env.get();
 
 const getToken = createAsyncThunk('account/getToken', API.User.getToken);
 const logIn = createAsyncThunk('acccount/logIn', API.User.logIn);
@@ -46,10 +43,6 @@ const getCashExpire = createAsyncThunk(
   API.Account.getCashExpire,
 );
 
-const getAccountByUser = createAsyncThunk(
-  'account/getAccountByUser',
-  API.Account.getByUser,
-);
 const registerMobile = createAsyncThunk(
   'account/registerMobile',
   API.Account.registerMobile,

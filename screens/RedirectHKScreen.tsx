@@ -21,7 +21,7 @@ import {appStyles} from '@/constants/Styles';
 import {navigate} from '@/navigation/navigation';
 import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
-import {sliderWidth} from '@/constants/SliderEntry.style';
+import {sliderWidth, MAX_WIDTH} from '@/constants/SliderEntry.style';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
@@ -29,7 +29,6 @@ import {getImage} from '@/utils/utils';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import {AccountModelState} from '@/redux/modules/account';
 import {API} from '@/redux/api';
-import {MAX_WIDTH} from '@/constants/SliderEntry.style';
 import HkStatusLottie from './EsimScreen/components/HkStatusLottie';
 import AppModal from '@/components/AppModal';
 

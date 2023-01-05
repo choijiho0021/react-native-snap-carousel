@@ -252,11 +252,9 @@ const Tab = createBottomTabNavigator();
 // },
 const TabNavigator = ({
   loggedIn,
-  iccid,
   cart,
 }: {
   loggedIn?: boolean;
-  iccid?: string;
   cart: CartModelState;
 }) => {
   return (
@@ -361,6 +359,5 @@ const TabNavigator = ({
 
 export default connect(({account, cart}: RootState) => ({
   loggedIn: account.loggedIn,
-  iccid: account.iccid,
   cart,
 }))(TabNavigator);
