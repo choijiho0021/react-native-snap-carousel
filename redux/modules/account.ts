@@ -548,6 +548,8 @@ const slice = createSlice({
           (acc, cur) => acc + Number(cur.point),
           0,
         );
+      } else {
+        state.expirePt = 0;
       }
 
       return state;
