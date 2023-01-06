@@ -393,11 +393,7 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
         sethkRegStatus('hkCheck');
       }
     }, 20000);
-  }, [
-    reCheckCount,
-    reCheckable,
-    // params.iccid, params.imsi, updateTag
-  ]);
+  }, [reCheckCount, params.iccid, params.imsi, updateTag]);
 
   return (
     <SafeAreaView style={{flex: 1}}>
