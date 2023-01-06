@@ -52,9 +52,9 @@ const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
   if (_.isArray(data)) {
     return api.success(
       data.map((item) => {
-        const rule = parseJson(
-          item.field_promotion_rule?.replace(/&quot;/g, '"'),
-        );
+        const rule =
+          item.field_promotion_rule &&
+          parseJson(item.field_promotion_rule?.replace(/&quot;/g, '"'));
 
         return {
           uuid: item.uuid,
