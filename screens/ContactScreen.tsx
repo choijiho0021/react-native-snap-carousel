@@ -241,7 +241,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
     if (noti.result) setShowModal(true);
   }, [noti.result]);
 
-  const openChannelTalk = useCallback(() => {
+  const openChannelTalk = useCallback(async () => {
     const settings = {
       pluginKey: talkPluginKey,
       profile: account.loggedIn
@@ -256,7 +256,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
         : undefined,
     };
 
-    if (ChannelIO.isBooted()) {
+    if (await ChannelIO.isBooted()) {
       ChannelIO.showMessenger();
     } else {
       ChannelIO.boot(settings).then(() => {
