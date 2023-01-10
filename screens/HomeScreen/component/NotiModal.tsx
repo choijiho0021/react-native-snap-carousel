@@ -10,6 +10,7 @@ import {RkbPromotion} from '@/redux/api/promotionApi';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import {API} from '@/redux/api';
+import ProgressiveImage from '../../../components/ProgressiveImage';
 
 // const styles = StyleSheet.create({
 //   infoModalTitle: {
@@ -84,8 +85,11 @@ const NotiModal: React.FC<NotiModalProps> = ({
               onOkClose?.();
             }
           }}>
-          <Image
+          <ProgressiveImage
             style={{width: '100%', height: iamgeHight}}
+            thumbnailSource={{
+              uri: API.default.httpImageUrl(popUp?.notice?.image?.thumbnail),
+            }}
             source={{uri: API.default.httpImageUrl(popUp?.notice?.image?.noti)}}
             resizeMode="contain"
           />

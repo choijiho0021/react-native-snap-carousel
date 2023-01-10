@@ -22,6 +22,7 @@ export type RkbPromotion = {
       success?: string;
       failure?: string;
       noti?: string;
+      thumbnail?: string;
     };
   };
   langcode?: Langcode;
@@ -71,6 +72,7 @@ const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
                   success: item.field_successful_image,
                   failure: item.field_failure_image,
                   noti: item.field_noti_image,
+                  thumbnail: item.thumbnail_image,
                 },
               }
             : undefined,
