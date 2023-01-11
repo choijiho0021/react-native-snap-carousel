@@ -229,6 +229,7 @@ const ChargeHistoryScreen: React.FC = () => {
   const {mainSubs, chargeablePeriod, chargedSubs, onPressUsage, isChargeable} =
     params || {};
   const [showModal, setShowModal] = useState(false);
+  const [selectedSubs, setSelectedSubs] = useState<RkbSubscription>(mainSubs);
   const [pending, setPending] = useState(false);
   const [usage, setUsage] = useState({});
   const [status, setStatus] = useState({});
@@ -398,6 +399,7 @@ const ChargeHistoryScreen: React.FC = () => {
               style={{flexDirection: 'row', alignItems: 'center'}}
               onPress={() => {
                 setPending(true);
+                setSelectedSubs(item);
                 onPressUsage(item).then((u) => {
                   setUsage(u.usage);
                   setStatus(u.status);
@@ -448,7 +450,7 @@ const ChargeHistoryScreen: React.FC = () => {
 
       <EsimModal
         visible={showModal}
-        subs={mainSubs}
+        subs={selectedSubs}
         cmiPending={pending}
         cmiUsage={usage}
         cmiStatus={status}
