@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState, useEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -52,6 +52,10 @@ const ProgressiveImage = ({
       useNativeDriver: false,
     }).start();
   }, [imageAnimated]);
+
+  useEffect(() => {
+    if (!thumbnailSource.uri) setIsRender(true);
+  }, [thumbnailSource.uri]);
 
   return (
     <View style={styles.container}>
