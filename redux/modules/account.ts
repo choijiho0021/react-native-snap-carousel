@@ -512,7 +512,7 @@ const slice = createSlice({
             acc.push({title: year, data: [cur] as CashHistory[]});
           } else {
             const orderidx = acc[idx].data.findIndex(
-              (elm) => elm.order_id === cur.order_id,
+              (elm) => elm.order_id && elm.order_id === cur.order_id,
             );
             if (orderidx > -1) {
               acc[idx].data[orderidx].diff = `${
