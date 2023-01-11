@@ -680,9 +680,11 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             contentOffset: {y},
           },
         }) => {
-          if (isTop && y > 50) setIsTop(false);
+          if (isTop && y > 170) setIsTop(false);
           else if (!isTop && y <= 0) setIsTop(true);
         }}
+        overScrollMode="never"
+        bounces={false}
       />
       <AppSnackBar
         visible={showSnackBar}
