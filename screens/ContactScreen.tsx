@@ -27,6 +27,7 @@ import AppSnackBar from '@/components/AppSnackBar';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {AccountModelState} from '../redux/modules/account';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
 
 const {appId, esimGlobal, talkPluginKey} = Env.get();
 
@@ -210,6 +211,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
   );
   const [showModal, setShowModal] = useState(false);
   const [showSnackBar, setShowSnackbar] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (esimGlobal) ChannelIO.boot(talkSettings);
@@ -242,6 +244,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
   }, [noti.result]);
 
   const openChannelTalk = useCallback(async () => {
+    setLoading(true);
     const settings = {
       pluginKey: talkPluginKey,
       profile: account.loggedIn
@@ -258,9 +261,15 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
 
     if (await ChannelIO.isBooted()) {
       ChannelIO.showMessenger();
+      setLoading(false);
     } else {
-      ChannelIO.boot(settings).then(() => {
-        ChannelIO.showMessenger();
+      ChannelIO.boot(settings).then((result) => {
+        if (result.status === 'SUCCESS') {
+          ChannelIO.showMessenger();
+        } else {
+          setShowSnackbar(true);
+        }
+        setLoading(false);
       });
     }
   }, [account.loggedIn, account.mobile, account.userId]);
@@ -304,6 +313,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
 
   return (
     <ScrollView style={styles.container}>
+      <AppActivityIndicator visible={loading} />
       <View style={styles.infoContainer}>
         <AppText style={styles.contactInfo}>{i18n.t('contact:info')}</AppText>
         <AppIcon name="imgNotiDokebi" style={{marginRight: 12}} />
@@ -346,7 +356,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackbar(false)}
-        textMessage={i18n.t('contact:kakaoOpenChFail')}
+        textMessage={i18n.t('contact:OpenChFail')}
       />
     </ScrollView>
   );
