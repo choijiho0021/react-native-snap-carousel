@@ -1,23 +1,15 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
 import React, {memo, useCallback, useState, useEffect, useMemo} from 'react';
-import {Image, Pressable, StyleSheet, View, Dimensions} from 'react-native';
+import {Image, Pressable, View, Dimensions} from 'react-native';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
-import {appStyles} from '@/constants/Styles';
 import {RkbPromotion} from '@/redux/api/promotionApi';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import {API} from '@/redux/api';
 import ProgressiveImage from '../../../components/ProgressiveImage';
-
-// const styles = StyleSheet.create({
-//   infoModalTitle: {
-//     ...appStyles.normal20Text,
-//     marginHorizontal: 20,
-//   },
-// });
 
 type NotiModalProps = {
   onOkClose?: () => void;

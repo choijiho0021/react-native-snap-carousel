@@ -4,7 +4,6 @@ import {
   Animated,
   Image,
   Keyboard,
-  LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
   Pressable,

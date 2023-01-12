@@ -1,6 +1,6 @@
-import React, {memo, useState, useEffect, useCallback} from 'react';
+import React, {memo, useState, useEffect} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
-import {useNavigation, useIsFocused} from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RkbInfo} from '@/redux/api/pageApi';
