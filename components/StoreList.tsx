@@ -137,7 +137,7 @@ const CountryItem0 = ({
       style={[styles.productList, {width: width - 40}]}>
       {item.map((elm, idx) => {
         // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
-        const localOp = localOpList && localOpList.get(elm.partner);
+        const localOp = localOpList?.get(elm.partner);
 
         return (
           <View
