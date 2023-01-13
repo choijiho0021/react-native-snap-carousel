@@ -438,7 +438,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         } as PaymentParams;
 
         setClickable(true);
-        navigation.navigate('Payment', params);
+        navigation.navigate('PaymentGateway', params);
       }
     },
     [

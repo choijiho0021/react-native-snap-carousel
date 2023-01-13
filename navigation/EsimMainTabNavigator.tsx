@@ -53,6 +53,7 @@ import QrInfoScreen from '@/screens/QrInfoScreen';
 import UserGuideScreen from '../screens/UserGuideScreen';
 import {CartModelState} from '@/redux/modules/cart';
 import AppText from '@/components/AppText';
+import PaymentGatewayScreen from '@/screens/PaymentGatewayScreen';
 
 const styles = StyleSheet.create({
   tabBarIcon: {
@@ -163,6 +164,10 @@ function HomeStackComponent() {
         })}
       />
       <HomeStack.Screen name="Payment" component={PaymentScreen} />
+      <HomeStack.Screen
+        name="PaymentGateway"
+        component={PaymentGatewayScreen}
+      />
       <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
       <HomeStack.Screen name="PaymentResult" component={PaymentResultScreen} />
       <HomeStack.Screen
@@ -178,6 +183,10 @@ function CartStackComponent() {
     <CartStack.Navigator screenOptions={screenOptions}>
       <CartStack.Screen name="Cart" component={CartScreen} />
       <CartStack.Screen name="Payment" component={PaymentScreen} />
+      <CartStack.Screen
+        name="PaymentGateway"
+        component={PaymentGatewayScreen}
+      />
       <CartStack.Screen name="PymMethod" component={PymMethodScreen} />
       <CartStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <CartStack.Screen name="PaymentResult" component={PaymentResultScreen} />
@@ -203,6 +212,10 @@ function EsimStackComponent() {
       <EsimStack.Screen name="QrInfo" component={QrInfoScreen} />
       <EsimStack.Screen name="UserGuide" component={UserGuideScreen} />
       <EsimStack.Screen name="Payment" component={PaymentScreen} />
+      <EsimStack.Screen
+        name="PaymentGateway"
+        component={PaymentGatewayScreen}
+      />
       <EsimStack.Screen name="PymMethod" component={PymMethodScreen} />
       <EsimStack.Screen name="PaymentResult" component={PaymentResultScreen} />
     </EsimStack.Navigator>
@@ -222,6 +235,10 @@ function MyPageStackComponent() {
       {/* <MyPageStack.Screen name="Pedometer" component={PedometerScreen} /> */}
       <MyPageStack.Screen name="Invite" component={InviteScreen} />
       <MyPageStack.Screen name="Payment" component={PaymentScreen} />
+      <MyPageStack.Screen
+        name="PaymentGateway"
+        component={PaymentGatewayScreen}
+      />
       <MyPageStack.Screen name="PymMethod" component={PymMethodScreen} />
       <MyPageStack.Screen
         name="PaymentResult"
