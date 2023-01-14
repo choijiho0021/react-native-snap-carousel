@@ -68,10 +68,6 @@ type PaymentGatewayScreenProps = {
   navigation: PaymentGatewayScreenNavigationProp;
   route: PaymentGatewayScreenRouteProp;
 
-  clientKey: string;
-  onSuccess: () => void;
-  onError: () => void;
-
   action: {
     cart: CartAction;
   };
@@ -82,9 +78,6 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
   route: {params},
   navigation,
   action,
-  clientKey,
-  onError,
-  onSuccess,
 }) => {
   const pymInfo = useMemo(
     () =>
@@ -191,7 +184,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
     );
   }, []);
 
-  return <AppPaymentGateway />;
+  return <AppPaymentGateway pg="hecto" info={pymInfo} />;
 };
 
 export default connect(undefined, (dispatch) => ({

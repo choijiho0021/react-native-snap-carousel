@@ -2,32 +2,32 @@ import React, {useCallback, useMemo} from 'react';
 import {Linking, Platform} from 'react-native';
 import WebView from 'react-native-webview';
 import {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
+import {PaymentInfo} from '@/redux/api/cartApi';
 import {pgWebViewHtml, pgWebViewScript} from './constant';
 
 type PaymentGatewayScreenProps = {
   pg: 'hecto';
-  onSuccess: () => void;
-  onError: () => void;
+  info: PaymentInfo;
 };
 
 const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
   pg = 'hecto',
-  onError,
-  onSuccess,
+  info,
 }) => {
-  const script = useMemo(() => {
-    if (Platform.OS === 'android')
-      return `window.onload = ${pgWebViewScript(pg)};true;`;
-    return `(${pgWebViewScript(pg)})(); true; `;
-  }, [pg]);
+  const onMessage = useCallback((payload) => {
+    let dataPayload;
+    try {
+      dataPayload = JSON.parse(payload.nativeEvent.data);
+    } catch (e) {}
 
-  const handleMessage = async (event: any) => {
-    const data = JSON.parse(event?.nativeEvent?.data);
-    if (data?.message) {
-      return onError(data);
+    if (dataPayload) {
+      if (dataPayload.type === 'Console') {
+        console.info(`[Console] ${JSON.stringify(dataPayload.data)}`);
+      } else {
+        console.log(dataPayload);
+      }
     }
-    return onSuccess(data);
-  };
+  }, []);
 
   const onShouldStartLoadWithRequest = useCallback(
     (event: ShouldStartLoadRequest): boolean => {
@@ -70,9 +70,9 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
       javaScriptEnabled
       domStorageEnabled
       injectedJavaScriptForMainFrameOnly
-      injectedJavaScript={script}
+      injectedJavaScript={pgWebViewScript(pg, info)}
       mixedContentMode="compatibility"
-      onMessage={handleMessage}
+      onMessage={onMessage}
       originWhitelist={['*']}
       sharedCookiesEnabled
       onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}

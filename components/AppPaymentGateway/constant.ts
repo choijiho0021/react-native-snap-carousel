@@ -1,3 +1,7 @@
+import moment from 'moment';
+import {PaymentInfo} from '@/redux/api/cartApi';
+import {encryptAES256, encryptSHA256} from './crypt';
+
 export type PGType = 'hecto';
 export const config: Record<PGType, any> = {
   hecto: {
@@ -76,38 +80,59 @@ export const pgWebViewHtml = (pg: PGType) => {
 `;
 };
 
-export const pgWebViewScript = () => {
-  return `
-      function() {
-        window.SETTLE_PG.pay(
-            {
-              env: "https://tbnpg.settlebank.co.kr",
-              mchtId: "nxca_jt_il",
-              method: "card",
-              trdDt: "20211231",
-              trdTm: "100000",
-              mchtTrdNo: "ORDER20211231100000",
-              mchtName: "헥토파이낸셜",
-              mchtEName: "Hecto Financial",
-              pmtPrdtNm: "테스트상품",
-              trdAmt: "AntV/eDpxIaKF0hJiePDKA==",
-              mchtCustNm: "홍길동",
-              custAcntSumry: "헥토파이낸셜",
-              notiUrl: "https://example.com/notiUrl",
-              nextUrl: "https://example.com/nextUrl",
-              cancUrl: "https://example.com/cancUrl",
-              mchtParam: "name=HongGilDong&age=25",
-              custIp: "127.0.0.1",
-              pktHash:
-                "f395b6725a9a18f2563ce34f8bc76698051d27c05e5ba815f463f00429061c0c",
-              ui: {
-                type: "self",
-              },
-            },
-            function (rsp) {
-              console.log(rsp);
-            }
-          );
-        }
-          `;
+export const pgWebViewScript = (pg: PGType, info: PaymentInfo) => {
+  const now = moment();
+  const data = {
+    env: config[pg].PAYMENT_SERVER,
+    mchtId: 'nxca_jt_il',
+    method: 'card',
+    trdDt: now.format('YYYYMMDD'),
+    trdTm: now.format('HHmmss'),
+    mchtTrdNo: info.merchant_uid,
+    mchtName: '유엔젤',
+    mchtEName: 'UANGEL',
+    pmtPrdtNm: 'eSIM',
+
+    trdAmt: encryptAES256(info.amount.toString(), config.hecto.AES256_KEY),
+    notiUrl: 'https://example.com/notiUrl',
+    nextUrl: 'https://example.com/nextUrl',
+    cancUrl: 'https://example.com/cancUrl',
+    pktHash: '',
+    ui: {
+      type: 'self',
+    },
+  };
+
+  data.pktHash = encryptSHA256(
+    data.mchtId +
+      data.method +
+      data.mchtTrdNo +
+      data.trdDt +
+      data.trdTm +
+      info.amount.toString() +
+      config.hecto.LICENSE_KEY,
+  );
+
+  const html = `
+    const consoleLog = (type, log) => window.ReactNativeWebView.postMessage(JSON.stringify({'type': 'Console', 'data': {'type': type, 'log': log}}));
+    console = {
+        log: (log) => consoleLog('log', log),
+        debug: (log) => consoleLog('debug', log),
+        info: (log) => consoleLog('info', log),
+        warn: (log) => consoleLog('warn', log),
+        error: (log) => consoleLog('error', log),
+      };
+
+    window.onload = function() {
+      window.SETTLE_PG.pay(
+        ${JSON.stringify(data)},
+        function (rsp) {
+            console.log(rsp);
+          }
+        );
+    };
+    true;
+  `;
+
+  return html;
 };
