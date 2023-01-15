@@ -63,8 +63,17 @@ export const config: Record<PGType, any> = {
     READ_TIMEOUT: 25000,
 
     ROKEBI_HOST_IP: '',
+
+    NEXT_URL: 'https://localhost/next',
+    CANC_URL: 'https://localhost/canc',
   },
 };
+
+export const pgWebViewCancelled = (pg: PGType, url: string) =>
+  url === config[pg].CANC_URL;
+
+export const pgWebViewSuccessful = (pg: PGType, url: string) =>
+  url === config[pg].NEXT_URL;
 
 export const pgWebViewHtml = (pg: PGType) => {
   return `<html>
@@ -95,8 +104,8 @@ export const pgWebViewScript = (pg: PGType, info: PaymentInfo) => {
 
     trdAmt: encryptAES256(info.amount.toString(), config.hecto.AES256_KEY),
     notiUrl: 'https://example.com/notiUrl',
-    nextUrl: 'https://example.com/nextUrl',
-    cancUrl: 'https://example.com/cancUrl',
+    nextUrl: 'https://localhost/next',
+    cancUrl: 'https://localhost/canc',
     pktHash: '',
     ui: {
       type: 'self',
