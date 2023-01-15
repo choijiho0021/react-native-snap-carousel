@@ -2,10 +2,8 @@ import moment from 'moment';
 import {PaymentInfo} from '@/redux/api/cartApi';
 import {encryptAES256, encryptSHA256} from './crypt';
 
-export type PGType = 'hecto';
-export const config: Record<PGType, any> = {
-  hecto: {
-    /**
+const config = {
+  /**
     ===== MID(상점아이디) =====
     상점아이디는 세틀뱅크에서 상점으로 발급하는 상점의 고유한 식별자입니다.
     테스트환경에서의 MID는 다음과 같습니다.
@@ -21,80 +19,89 @@ export const config: Record<PGType, any> = {
         nxpt_kt_il : 포인트 결제
     상용서비스시에는 세틀뱅크에서 발급한 상점 고유 MID를 설정하십시오.
 */
-    PG_MID: 'nx_mid_il',
+  PG_MID: 'nx_mid_il',
 
-    /**
+  /**
     ===== 라이센스키 =====  
     회원사 mid당 하나의 라이센스키가 발급되며 SHA256 해시체크 용도로 사용됩니다. 이 값은 외부에 노출되어서는 안 됩니다.
     테스트환경에서는 ST1009281328226982205 값을 사용하시면 되며,
     상용서비스시에는 세틀뱅크에서 발급한 상점 고유 라이센스키를 설정하십시오.
 */
-    LICENSE_KEY: 'ST1009281328226982205',
+  LICENSE_KEY: 'ST1009281328226982205',
 
-    /**
+  /**
     ===== AES256 암호화 키 =====    
     파라미터 AES256암/복호화에 사용되는 키 입니다. 이 값은 외부에 노출되어서는 안 됩니다.
     테스트환경에서는 pgSettle30y739r82jtd709yOfZ2yK5K를 사용하시면 됩니다.
     상용서비스시에는 세틀뱅크에서 발급한 상점 고유 암호화키를 설정하십시오.
 */
-    AES256_KEY: 'pgSettle30y739r82jtd709yOfZ2yK5K',
+  AES256_KEY: 'pgSettle30y739r82jtd709yOfZ2yK5K',
 
-    /** 
+  /** 
     ===== 결제 서버 URL =====
     세틀뱅크 결제 서버 URL입니다. 이 값은 변경하지 마십시오. 
     필요에 따라 주석 on/off 하여 사용하십시오.
 */
-    PAYMENT_SERVER: 'https://tbnpg.settlebank.co.kr', //테스트서버 url
-    //final String PAYMENT_SERVER = "https://npg.settlebank.co.kr";//운영서버 url
+  PAYMENT_SERVER: 'https://tbnpg.settlebank.co.kr', //테스트서버 url
+  //final String PAYMENT_SERVER = "https://npg.settlebank.co.kr";//운영서버 url
 
-    /**
+  /**
     ===== 취소 서버 URL =====
     세틀뱅크 취소 서버 URL입니다. 이 값은 변경하지 마십시오.
     필요에 따라 주석 on/off 하여 사용하십시오.
     
 */
-    CANCEL_SERVER: 'https://tbgw.settlebank.co.kr', //테스트서버 url
-    //final String CANCEL_SERVER = "https://gw.settlebank.co.kr";//운영서버 url
+  CANCEL_SERVER: 'https://tbgw.settlebank.co.kr', //테스트서버 url
+  //final String CANCEL_SERVER = "https://gw.settlebank.co.kr";//운영서버 url
 
-    /** 세틀뱅크 API통신 Connect Timeout 설정(ms) */
-    CONN_TIMEOUT: 5000,
+  /** 세틀뱅크 API통신 Connect Timeout 설정(ms) */
+  CONN_TIMEOUT: 5000,
 
-    /** 세틀뱅크 API통신 Read Timeout 설정(ms) */
-    READ_TIMEOUT: 25000,
+  /** 세틀뱅크 API통신 Read Timeout 설정(ms) */
+  READ_TIMEOUT: 25000,
 
-    ROKEBI_HOST_IP: '',
+  ROKEBI_HOST_IP: '',
 
-    NEXT_URL: 'https://localhost/next',
-    CANC_URL: 'https://localhost/canc',
-  },
+  NEXT_URL: 'https://localhost/next',
+  CANC_URL: 'https://localhost/canc',
 };
 
-export const pgWebViewCancelled = (pg: PGType, url: string) =>
-  url === config[pg].CANC_URL;
+export const pgWebViewCancelled = (url: string) => url === config.CANC_URL;
 
-export const pgWebViewSuccessful = (pg: PGType, url: string) =>
-  url === config[pg].NEXT_URL;
+export const pgWebViewSuccessful = (url: string) => url === config.NEXT_URL;
 
-export const pgWebViewHtml = (pg: PGType) => {
+export const pgWebViewHtml = () => {
   return `<html>
   <head>
     <meta http-equiv='content-type' content='text/html; charset=utf-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
 
     <script type='text/javascript' src='https://code.jquery.com/jquery-latest.min.js' ></script>
-    <script type="text/javascript" src="${config[pg].PAYMENT_SERVER}/resources/js/v1/SettlePG.js"></script>
+    <script type="text/javascript" src="${config.PAYMENT_SERVER}/resources/js/v1/SettlePG.js"></script>
   </head>
   <body></body>
 </html>
 `;
 };
 
-export const pgWebViewScript = (pg: PGType, info: PaymentInfo) => {
+const pymMethod: Record<string, string[]> = {
+  card: ['card', '', 'nxca_jt_il'],
+  payco: ['corp', 'PAC', 'hecto_test'],
+  kakaopay: ['corp', 'KKP', 'hecto_test'],
+  naverpay: ['corp', 'NVP', 'hecto_test'],
+};
+
+export const pgWebViewScript = (info: PaymentInfo) => {
   const now = moment();
+  const pym = pymMethod[info.payment_type];
+  if (!pym) return '';
+
+  const [method, corpPayCode, mchtId] = pym;
   const data = {
-    env: config[pg].PAYMENT_SERVER,
-    mchtId: 'nxca_jt_il',
-    method: 'card',
+    env: config.PAYMENT_SERVER,
+    method,
+    corpPayCode,
+    mchtId,
     trdDt: now.format('YYYYMMDD'),
     trdTm: now.format('HHmmss'),
     mchtTrdNo: info.merchant_uid,
@@ -102,7 +109,7 @@ export const pgWebViewScript = (pg: PGType, info: PaymentInfo) => {
     mchtEName: 'UANGEL',
     pmtPrdtNm: 'eSIM',
 
-    trdAmt: encryptAES256(info.amount.toString(), config.hecto.AES256_KEY),
+    trdAmt: encryptAES256(info.amount.toString(), config.AES256_KEY),
     notiUrl: 'https://example.com/notiUrl',
     nextUrl: 'https://localhost/next',
     cancUrl: 'https://localhost/canc',
@@ -119,8 +126,10 @@ export const pgWebViewScript = (pg: PGType, info: PaymentInfo) => {
       data.trdDt +
       data.trdTm +
       info.amount.toString() +
-      config.hecto.LICENSE_KEY,
+      config.LICENSE_KEY,
   );
+
+  console.log('@@@ script', data);
 
   const html = `
     const consoleLog = (type, log) => window.ReactNativeWebView.postMessage(JSON.stringify({'type': 'Console', 'data': {'type': type, 'log': log}}));

@@ -9,7 +9,7 @@ import {
   pgWebViewHtml,
   pgWebViewScript,
   pgWebViewSuccessful,
-} from './constant';
+} from './ConfigHecto';
 import {colors} from '@/constants/Colors';
 import AppText from '../AppText';
 import i18n from '@/utils/i18n';
@@ -48,7 +48,6 @@ const styles = StyleSheet.create({
 });
 
 const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
-  pg = 'hecto',
   info,
   callback,
 }) => {
@@ -70,12 +69,14 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
 
   const onShouldStartLoadWithRequest = useCallback(
     (event: ShouldStartLoadRequest): boolean => {
-      if (pgWebViewCancelled(pg, event.url)) {
+      console.log('@@@ result', event);
+
+      if (pgWebViewCancelled(event.url)) {
         callback({success: false});
         return false;
       }
 
-      if (pgWebViewSuccessful(pg, event.url)) {
+      if (pgWebViewSuccessful(event.url)) {
         callback({success: true});
         return false;
       }
@@ -95,7 +96,7 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
       });
       return false;
     },
-    [callback, pg],
+    [callback],
   );
 
   const renderLoading = useCallback(() => {
@@ -113,6 +114,8 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
     );
   }, []);
 
+  console.log('@@@ pym', info);
+
   return (
     <>
       <WebView
@@ -120,18 +123,15 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
         javaScriptEnabled
         domStorageEnabled
         injectedJavaScriptForMainFrameOnly
-        injectedJavaScript={pgWebViewScript(pg, info)}
+        injectedJavaScript={pgWebViewScript(info)}
         mixedContentMode="compatibility"
         onMessage={onMessage}
         originWhitelist={['*']}
         sharedCookiesEnabled
-        shoul
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
-        onLoadEnd={() => {
-          setLoading(false);
-        }}
+        onLoadEnd={() => setLoading(false)}
         source={{
-          html: pgWebViewHtml(pg),
+          html: pgWebViewHtml(),
         }}
       />
       {loading ? renderLoading() : null}

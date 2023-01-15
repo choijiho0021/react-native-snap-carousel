@@ -94,6 +94,7 @@ export type HomeStackParamList = {
   Guide: undefined;
   Country: {partner: string[]};
   Payment: PaymentParams;
+  PaymentGateway: PaymentParams;
   PymMethod: {isPaid?: boolean; pymPrice?: number; mode?: PymMethodScreenMode};
   FindAddress: undefined;
   PaymentResult: {pymResult: boolean; mode?: string};
