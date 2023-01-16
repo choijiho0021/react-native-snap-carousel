@@ -1,7 +1,6 @@
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
-  Image,
   ImageBackground,
   Pressable,
   SafeAreaView,
@@ -17,13 +16,11 @@ import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
 import AppPrice from '@/components/AppPrice';
 import AppText from '@/components/AppText';
-import LabelText from '@/components/LabelText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
-import {API} from '@/redux/api';
 import utils from '@/redux/api/utils';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {AccountModelState} from '@/redux/modules/account';
@@ -244,11 +241,7 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
     [selected],
   );
 
-  const {iccid = '', balance = 0, simCardImage} = account;
-  const seg = useMemo(
-    () => [0, 5, 10, 15].map((v) => iccid.substring(v, v + 5)),
-    [iccid],
-  );
+  const {balance = 0} = account;
 
   return (
     <SafeAreaView style={styles.container}>

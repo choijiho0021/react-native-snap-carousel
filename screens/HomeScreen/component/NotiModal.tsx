@@ -1,29 +1,15 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
-import React, {memo, useCallback, useState} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import React, {memo, useCallback, useState, useEffect, useMemo} from 'react';
+import {Image, Pressable, View, Dimensions} from 'react-native';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
-import AppUserPic from '@/components/AppUserPic';
-import {appStyles} from '@/constants/Styles';
 import {RkbPromotion} from '@/redux/api/promotionApi';
 import i18n from '@/utils/i18n';
-import {isDeviceSize, MAX_WIDTH} from '@/constants/SliderEntry.style';
 import {colors} from '@/constants/Colors';
-
-const styles = StyleSheet.create({
-  infoModalTitle: {
-    ...appStyles.normal20Text,
-    marginHorizontal: 20,
-  },
-  popupImg: {
-    maxWidth: MAX_WIDTH,
-    width: '100%',
-    height: isDeviceSize('medium') ? 446 : 500,
-    marginBottom: 20,
-  },
-});
+import {API} from '@/redux/api';
+import ProgressiveImage from '../../../components/ProgressiveImage';
 
 type NotiModalProps = {
   onOkClose?: () => void;
@@ -39,7 +25,9 @@ const NotiModal: React.FC<NotiModalProps> = ({
   onOkClose,
   onCancelClose,
 }) => {
+  const dimensions = useMemo(() => Dimensions.get('window'), []);
   const [checked, setChecked] = useState(false);
+  const [iamgeHight, setImageHeight] = useState(450);
   const setPopupDisabled = useCallback(() => {
     if (checked)
       AsyncStorage.setItem(
@@ -47,6 +35,16 @@ const NotiModal: React.FC<NotiModalProps> = ({
         moment().format('YYYY-MM-DD HH:mm'),
       );
   }, [checked]);
+
+  useEffect(() => {
+    if (popUp?.notice?.image?.noti)
+      Image.getSize(
+        API.default.httpImageUrl(popUp?.notice?.image?.noti),
+        (width, height) => {
+          setImageHeight(Math.ceil(height * ((dimensions.width - 40) / width)));
+        },
+      );
+  }, [dimensions.width, popUp?.notice?.image?.noti]);
 
   return (
     <AppModal
@@ -57,7 +55,6 @@ const NotiModal: React.FC<NotiModalProps> = ({
         marginTop: 0,
         marginHorizontal: 20,
         backgroundColor: colors.white,
-        maxWidth: MAX_WIDTH,
         width: '100%',
       }}
       titleViewStyle={{marginTop: 20}}
@@ -72,22 +69,30 @@ const NotiModal: React.FC<NotiModalProps> = ({
         setPopupDisabled();
       }}
       visible={visible}>
-      <View>
-        <AppUserPic
-          url={popUp?.notice?.image?.noti}
-          style={styles.popupImg}
-          resizeMode="cover"
+      <View style={{backgroundColor: 'transparent'}}>
+        <Pressable
+          style={{width: '100%', height: iamgeHight, marginBottom: 18}}
           onPress={() => {
             if (closeType === 'redirect') {
               onOkClose?.();
             }
-          }}
-        />
+          }}>
+          <ProgressiveImage
+            style={{width: '100%', height: iamgeHight}}
+            thumbnailSource={{
+              uri: API.default.httpImageUrl(popUp?.notice?.image?.thumbnail),
+            }}
+            source={{uri: API.default.httpImageUrl(popUp?.notice?.image?.noti)}}
+            resizeMode="contain"
+          />
+        </Pressable>
+
         <Pressable
           style={{
             flexDirection: 'row',
             alignItems: 'center',
             marginHorizontal: 20,
+            backgroundColor: 'white',
           }}
           onPress={() => setChecked((prev) => !prev)}>
           <AppButton

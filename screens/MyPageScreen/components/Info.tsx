@@ -17,7 +17,7 @@ import AppIcon from '@/components/AppIcon';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppStyledText from '@/components/AppStyledText';
 
-const {esimApp, esimCurrency, esimGlobal} = Env.get();
+const {esimCurrency, esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   dividerSmall: {

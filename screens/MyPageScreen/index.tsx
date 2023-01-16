@@ -46,7 +46,6 @@ import Info from './components/Info';
 import OrderItem from './components/OrderItem';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppSnackBar from '@/components/AppSnackBar';
-import ChannelTalk from '@/components/ChannelTalk';
 
 const styles = StyleSheet.create({
   title: {

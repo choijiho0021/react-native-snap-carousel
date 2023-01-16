@@ -391,6 +391,10 @@ const EsimSubs = ({
       flatListRef?.current?.scrollToIndex({index, animated: true});
   }, [flatListRef, index, isMoreInfo]);
 
+  useEffect(() => {
+    if (!notCardInfo) setIsMoreInfo(false);
+  }, [notCardInfo]);
+
   const onPressRecharge = useCallback(
     (item: RkbSubscription) => {
       if (isCharged) {
