@@ -76,7 +76,6 @@ import AppVerModal from './component/AppVerModal';
 import {isFolderOpen} from '@/constants/SliderEntry.style';
 import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
 import AppStyledText from '@/components/AppStyledText';
-import ChannelTalk from '@/components/ChannelTalk';
 
 const {esimGlobal, isIOS} = Env.get();
 
@@ -476,7 +475,7 @@ const Esim: React.FC<EsimProps> = ({
           <View>
             <View style={{marginBottom: 10}}>
               <AppStyledText
-                text={i18n.t('home:unsupportedBody1')}
+                text={i18n.t('home:unsupportedBody2')}
                 textStyle={appStyles.normal16Text}
                 format={{b: styles.normal16BlueText}}
               />
@@ -501,16 +500,21 @@ const Esim: React.FC<EsimProps> = ({
               textStyle={appStyles.normal16Text}
               format={{b: styles.normal16BlueText}}
             />
+            <AppStyledText
+              text={i18n.t('home:unsupportedBody2')}
+              textStyle={{...appStyles.normal16Text, marginTop: 30}}
+              format={{b: styles.normal16BlueText}}
+            />
             <AppText style={[appStyles.normal16Text, {marginVertical: 30}]}>
-              {i18n.t('home:unsupportedBody2')}
+              {i18n.t('home:unsupportedBody3')}
             </AppText>
             <AppStyledText
-              text={i18n.t('home:unsupportedBody3')}
+              text={i18n.t('home:unsupportedBody4')}
               textStyle={appStyles.normal16Text}
               format={{b: styles.normal16BlueText}}
             />
             <AppText style={[appStyles.normal16Text, {marginTop: 30}]}>
-              {i18n.t('home:unsupportedBody4')}
+              {i18n.t('home:unsupportedBody5')}
             </AppText>
           </View>
         )}

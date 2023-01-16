@@ -1,5 +1,6 @@
-import React, {memo, useState} from 'react';
+import React, {memo, useState, useEffect} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
+import {useIsFocused} from '@react-navigation/native';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RkbInfo} from '@/redux/api/pageApi';
@@ -40,10 +41,17 @@ const AppFlatListItem = ({
   item: RkbInfo;
   checked?: boolean;
 }) => {
+  const isFocused = useIsFocused();
   const [checkedState, setCheckedState] = useState(checked);
 
+  useEffect(() => {
+    if (isFocused) {
+      setCheckedState(checked);
+    }
+  }, [checked, isFocused]);
+
   return (
-    <Pressable onPress={() => setCheckedState(!checkedState)}>
+    <Pressable onPress={() => setCheckedState((prev) => !prev)}>
       <View>
         <View style={styles.row}>
           <AppText style={styles.title}>{item.title}</AppText>

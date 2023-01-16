@@ -36,7 +36,6 @@ import {
 import i18n from '@/utils/i18n';
 import {retrieveData, storeData, utils} from '@/utils/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import ChannelTalk from '@/components/ChannelTalk';
 
 const styles = StyleSheet.create({
   mainContainer: {

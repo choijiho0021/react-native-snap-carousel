@@ -36,9 +36,8 @@ import api, {ApiResult} from '@/redux/api/api';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import AppCartButton from '@/components/AppCartButton';
-import ChannelTalk from '../../components/ChannelTalk';
 
-const {esimApp, esimGlobal, webViewHost} = Env.get();
+const {esimGlobal, webViewHost} = Env.get();
 const PURCHASE_LIMIT = 10;
 
 const styles = StyleSheet.create({

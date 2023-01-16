@@ -16,13 +16,15 @@ const FaqList = ({data, titleNo}: {data: RkbInfo[]; titleNo?: string}) => {
   return (
     <View style={styles.container}>
       <FlatList
-        renderItem={({item}) => (
-          <AppFlatListItem
-            key={item.key}
-            item={item}
-            checked={!!titleNo && item.title.startsWith(titleNo)}
-          />
-        )}
+        renderItem={({item}) => {
+          const checkNo =
+            titleNo === undefined || titleNo === ''
+              ? false
+              : item.title.startsWith(titleNo);
+          return (
+            <AppFlatListItem key={item.key} item={item} checked={checkNo} />
+          );
+        }}
         data={data}
       />
     </View>

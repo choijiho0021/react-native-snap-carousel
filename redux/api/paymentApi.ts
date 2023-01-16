@@ -18,12 +18,12 @@ export type PaymentMethod = {
 const method = esimGlobal
   ? [
       [
-        // {
-        //   key: 'eximbay',
-        //   method: 'card',
-        //   title: 'pym:ccard',
-        //   language: 'en',
-        // },
+        {
+          key: 'eximbay',
+          method: 'card',
+          title: 'pym:ccard',
+          language: 'en',
+        },
         {
           key: 'paypal',
           method: 'card',

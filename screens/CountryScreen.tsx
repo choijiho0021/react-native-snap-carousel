@@ -19,7 +19,6 @@ import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import {device, windowWidth} from '@/constants/SliderEntry.style';
 import CountryListItem from './HomeScreen/component/CountryListItem';
-import ChannelTalk from '../components/ChannelTalk';
 
 const styles = StyleSheet.create({
   container: {

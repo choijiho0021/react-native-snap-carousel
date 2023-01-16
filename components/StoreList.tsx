@@ -1,5 +1,5 @@
 import {Map as ImmutableMap} from 'immutable';
-import React, {memo, useCallback, useMemo} from 'react';
+import React, {memo, useCallback, useMemo, useState} from 'react';
 import {
   Animated,
   Image,
@@ -34,7 +34,6 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: 110,
-    resizeMode: 'cover',
   },
   productList: {
     // width: windowWidth - 40,
@@ -91,12 +90,16 @@ const CountryItem0 = ({
   onPress,
   columns,
   width,
+  index,
+  showImage = false,
 }: {
   item: RkbPriceInfo[];
   localOpList: ImmutableMap<string, RkbLocalOp>;
   onPress?: (p: RkbPriceInfo) => void;
   columns: number;
   width: number;
+  index: number;
+  showImage?: boolean;
 }) => {
   const renderLowest = useCallback(
     () => (
@@ -144,11 +147,16 @@ const CountryItem0 = ({
             key={elm.country}
             style={{flex: 1, marginLeft: idx >= 1 ? 14 : 0}}>
             <Pressable onPress={() => onPress?.(elm)}>
-              <Image
-                key="img"
-                source={{uri: API.default.httpImageUrl(localOp?.imageUrl)}}
-                style={styles.image}
-              />
+              <View style={styles.image}>
+                {(index <= 4 || showImage) && (
+                  <Image
+                    key="img"
+                    source={{uri: API.default.httpImageUrl(localOp?.imageUrl)}}
+                    style={{flex: 1}}
+                  />
+                )}
+              </View>
+
               <AppText key="cntry" style={styles.cntry}>
                 {API.Product.getTitle(localOp)}
               </AppText>
@@ -199,9 +207,10 @@ const StoreList = ({
   scrollEnabled = true,
   width,
 }: StoreListProps) => {
+  const [showImage, setShowImage] = useState(false);
   const isFolder = useMemo(() => isFolderOpen(width), [width]);
   const renderItem = useCallback(
-    ({item}) => (
+    ({item, index}: {item: RkbPriceInfo[]; index: number; separators: any}) => (
       <CountryItem
         key={item[0]?.country}
         onPress={onPress}
@@ -209,9 +218,11 @@ const StoreList = ({
         localOpList={localOpList}
         width={width}
         columns={isFolder ? 3 : 2}
+        index={index}
+        showImage={showImage}
       />
     ),
-    [isFolder, localOpList, onPress, width],
+    [isFolder, localOpList, onPress, showImage, width],
   );
 
   const list = useMemo(
@@ -245,7 +256,10 @@ const StoreList = ({
         onEndReached={onEndReached}
         scrollEnabled={scrollEnabled}
         showsVerticalScrollIndicator={false}
-        onScrollBeginDrag={() => Keyboard.dismiss()}
+        onScrollBeginDrag={() => {
+          setShowImage(true);
+          Keyboard.dismiss();
+        }}
       />
     </View>
   );

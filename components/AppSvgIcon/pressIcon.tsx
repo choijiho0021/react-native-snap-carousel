@@ -726,7 +726,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Circle cx="48" cy="49" r="45" fill="url(#vide1vqrca)" />
       <Mask
         id="q2ye1kc1tb"
-        style="mask-type:alpha"
+        // style="mask-type:alpha"
         maskUnits="userSpaceOnUse"
         x="4"
         y="4"

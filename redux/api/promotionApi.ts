@@ -22,6 +22,7 @@ export type RkbPromotion = {
       success?: string;
       failure?: string;
       noti?: string;
+      thumbnail?: string;
     };
   };
   langcode?: Langcode;
@@ -52,9 +53,9 @@ const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
   if (_.isArray(data)) {
     return api.success(
       data.map((item) => {
-        const rule = parseJson(
-          item.field_promotion_rule?.replace(/&quot;/g, '"'),
-        );
+        const rule =
+          item.field_promotion_rule &&
+          parseJson(item.field_promotion_rule?.replace(/&quot;/g, '"'));
 
         return {
           uuid: item.uuid,
@@ -71,6 +72,7 @@ const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
                   success: item.field_successful_image,
                   failure: item.field_failure_image,
                   noti: item.field_noti_image,
+                  thumbnail: item.thumbnail_image,
                 },
               }
             : undefined,
