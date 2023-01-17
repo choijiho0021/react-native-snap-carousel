@@ -272,7 +272,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
         setLoading(false);
       });
     }
-  }, [account.loggedIn, account.mobile, account.userId]);
+  }, [account.email, account.loggedIn, account.mobile, account.userId]);
 
   const onPress = useCallback(
     (key: string) => {
