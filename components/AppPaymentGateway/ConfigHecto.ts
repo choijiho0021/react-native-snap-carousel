@@ -1,8 +1,9 @@
 import moment from 'moment';
-import {PaymentInfo} from '@/redux/api/cartApi';
 import {encryptAES256, encryptSHA256} from './crypt';
+import {pgWebViewConfig} from './ConfigInicis';
+import {PaymentParams} from '@/navigation/navigation';
 
-const config = {
+export const configHecto = {
   /**
     ===== MID(상점아이디) =====
     상점아이디는 세틀뱅크에서 상점으로 발급하는 상점의 고유한 식별자입니다.
@@ -61,58 +62,37 @@ const config = {
   READ_TIMEOUT: 25000,
 
   ROKEBI_HOST_IP: '',
-
-  NEXT_URL: 'https://localhost/next',
-  CANC_URL: 'https://localhost/canc',
-};
-
-export const pgWebViewCancelled = (url: string) => url === config.CANC_URL;
-
-export const pgWebViewSuccessful = (url: string) => url === config.NEXT_URL;
-
-export const pgWebViewHtml = () => {
-  return `<html>
-  <head>
-    <meta http-equiv='content-type' content='text/html; charset=utf-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-
-    <script type='text/javascript' src='https://code.jquery.com/jquery-latest.min.js' ></script>
-    <script type="text/javascript" src="${config.PAYMENT_SERVER}/resources/js/v1/SettlePG.js"></script>
-  </head>
-  <body></body>
-</html>
-`;
 };
 
 const pymMethod: Record<string, string[]> = {
   card: ['card', '', 'nxca_jt_il'],
-  payco: ['corp', 'PAC', 'hecto_test'],
-  kakaopay: ['corp', 'KKP', 'hecto_test'],
+  payco: ['corp', 'PAC', 'nxca_payco'],
+  kakaopay: ['corp', 'KKP', 'nxca_kakao'],
   naverpay: ['corp', 'NVP', 'hecto_test'],
 };
 
-export const pgWebViewScript = (info: PaymentInfo) => {
+export const hectoWebViewScript = (info: PaymentParams) => {
   const now = moment();
-  const pym = pymMethod[info.payment_type];
+  const pym = pymMethod[info.pay_method];
   if (!pym) return '';
 
   const [method, corpPayCode, mchtId] = pym;
   const data = {
-    env: config.PAYMENT_SERVER,
+    env: configHecto.PAYMENT_SERVER,
     method,
     corpPayCode,
     mchtId,
     trdDt: now.format('YYYYMMDD'),
     trdTm: now.format('HHmmss'),
     mchtTrdNo: info.merchant_uid,
-    mchtName: '유엔젤',
+    mchtName: info.name,
     mchtEName: 'UANGEL',
-    pmtPrdtNm: 'eSIM',
+    pmtPrdtNm: 'eSIM 상품',
 
-    trdAmt: encryptAES256(info.amount.toString(), config.AES256_KEY),
+    trdAmt: encryptAES256(info.amount.toString(), configHecto.AES256_KEY),
     notiUrl: 'https://example.com/notiUrl',
-    nextUrl: 'https://localhost/next',
-    cancUrl: 'https://localhost/canc',
+    nextUrl: pgWebViewConfig.nextUrl,
+    cancUrl: pgWebViewConfig.cancelUrl,
     pktHash: '',
     ui: {
       type: 'self',
@@ -126,31 +106,18 @@ export const pgWebViewScript = (info: PaymentInfo) => {
       data.trdDt +
       data.trdTm +
       info.amount.toString() +
-      config.LICENSE_KEY,
+      configHecto.LICENSE_KEY,
   );
 
   console.log('@@@ script', data);
 
-  const html = `
-    const consoleLog = (type, log) => window.ReactNativeWebView.postMessage(JSON.stringify({'type': 'Console', 'data': {'type': type, 'log': log}}));
-    console = {
-        log: (log) => consoleLog('log', log),
-        debug: (log) => consoleLog('debug', log),
-        info: (log) => consoleLog('info', log),
-        warn: (log) => consoleLog('warn', log),
-        error: (log) => consoleLog('error', log),
-      };
-
-    window.onload = function() {
-      window.SETTLE_PG.pay(
-        ${JSON.stringify(data)},
-        function (rsp) {
-            console.log(rsp);
-          }
-        );
-    };
-    true;
-  `;
-
-  return html;
+  return pgWebViewConfig.htmlTemplate.replace(
+    '##SCRIPT##',
+    `window.SETTLE_PG.pay(
+      ${JSON.stringify(data)}
+      function (rsp) {
+          console.log(rsp);
+        }
+      );`,
+  );
 };

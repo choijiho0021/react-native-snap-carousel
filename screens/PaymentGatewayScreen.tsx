@@ -96,7 +96,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <AppPaymentGateway pg="hecto" info={pymInfo} callback={callback} />
+      <AppPaymentGateway info={params} callback={callback} />
     </SafeAreaView>
   );
 };
