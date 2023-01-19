@@ -1,5 +1,6 @@
 import moment from 'moment';
-import {encryptAES256, encryptSHA256} from './crypt';
+import CryptoJS from 'crypto-js';
+import {encryptAES256} from './crypt';
 import {pgWebViewConfig} from './ConfigInicis';
 import {PaymentParams} from '@/navigation/navigation';
 
@@ -99,7 +100,7 @@ export const hectoWebViewScript = (info: PaymentParams) => {
     },
   };
 
-  data.pktHash = encryptSHA256(
+  data.pktHash = CryptoJS.SHA256(
     data.mchtId +
       data.method +
       data.mchtTrdNo +
@@ -107,7 +108,7 @@ export const hectoWebViewScript = (info: PaymentParams) => {
       data.trdTm +
       info.amount.toString() +
       configHecto.LICENSE_KEY,
-  );
+  ).toString(CryptoJS.enc.Hex);
 
   console.log('@@@ script', data);
 

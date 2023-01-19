@@ -205,8 +205,15 @@ const toPayCheck = (data) => {
   }));
 };
 
-const toToken = (data) => {
-  return data;
+const getRokebiPayment = ({key, token}: {key: string; token: string}) => {
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.payment, '')}?_format=json`,
+    {
+      method: 'POST',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({check_pym_id: key}),
+    },
+  );
 };
 
 const getImpToken = () => {
@@ -219,15 +226,11 @@ const getImpToken = () => {
     ? impSecret
     : '21d8ef6b4daa18f5b0b305f7087066cd24f429a4f5b77c907bb4d260a03d257bb05219242bddf802';
 
-  return api.callHttp(
-    `https://api.iamport.kr/users/getToken`,
-    {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({imp_key, imp_secret}),
-    },
-    toToken,
-  );
+  return api.callHttp(`https://api.iamport.kr/users/getToken`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({imp_key, imp_secret}),
+  });
 };
 
 const getUid = ({uid, token}: {uid: string; token?: string}) => {
@@ -269,4 +272,5 @@ export default {
   getImpToken,
   getUid,
   getMerchantId,
+  getRokebiPayment,
 };

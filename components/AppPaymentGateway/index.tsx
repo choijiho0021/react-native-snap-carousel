@@ -108,8 +108,6 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
 
   const onShouldStartLoadWithRequest = useCallback(
     (event: ShouldStartLoadRequest): boolean => {
-      console.log('@@@ PG result', event);
-
       if (pgWebViewConfig.cancelUrl === event.url) {
         callback({success: false});
         return false;
@@ -153,8 +151,6 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
     );
   }, []);
 
-  console.log('@@@ pym', info);
-
   return (
     <>
       <WebView
@@ -169,9 +165,7 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
         sharedCookiesEnabled
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         onLoadEnd={() => setLoading(false)}
-        source={{
-          html: pgWebViewHtml(info),
-        }}
+        source={{html: pgWebViewHtml(info)}}
       />
       {loading ? renderLoading() : null}
     </>
