@@ -1,3 +1,5 @@
+import AsyncStorage from '@react-native-community/async-storage';
+import moment from 'moment';
 import analytics from '@react-native-firebase/analytics';
 import dynamicLinks, {
   FirebaseDynamicLinksTypes,
@@ -5,9 +7,20 @@ import dynamicLinks, {
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {memo, useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import SimCardsManagerModule from 'react-native-sim-cards-manager';
 import DeviceInfo from 'react-native-device-info';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import {EnhancedStore} from '@reduxjs/toolkit';
+import {
+  Dimensions,
+  Image,
+  Pressable,
+  SafeAreaView,
+  View,
+  StyleSheet,
+} from 'react-native';
 import Env from '@/environment';
 import {actions as cartActions} from '@/redux/modules/cart';
 import {actions as promotionActions} from '@/redux/modules/promotion';
@@ -19,10 +32,57 @@ import {
   requestPermission,
   checkFistLaunch,
 } from '@/navigation/component/permission';
+import utils from '@/redux/api/utils';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
+import {RootState} from '@/redux';
+import {RkbPromotion} from '@/redux/api/promotionApi';
+import {LinkModelState} from '../redux/modules/link';
+import AppText from '@/components/AppText';
+import AppButton from '@/components/AppButton';
+import {colors} from '@/constants/Colors';
+import {API} from '@/redux/api';
+import ProgressiveImage from '@/components/ProgressiveImage';
+import i18n from '@/utils/i18n';
+import {ModalModelState} from '../redux/modules/modal';
 
 const {isIOS, esimGlobal} = Env.get();
 
+const POPUP_DIS_DAYS = 7;
 const MainStack = createStackNavigator();
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.white,
+  },
+  modalContainer: {
+    flex: 1,
+    marginHorizontal: 20,
+    backgroundColor: 'transparent',
+    justifyContent: 'center',
+  },
+  modalBtnContainer: {
+    flexDirection: 'row',
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
+  btnCancel: {
+    flex: 1,
+    backgroundColor: colors.clearBlue,
+    height: 52,
+  },
+  closeWeek: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 20,
+    marginTop: 18,
+    height: 19,
+    backgroundColor: 'white',
+  },
+});
 
 const getActiveRouteName = (state): string => {
   const route = state.routes[state.index];
@@ -45,19 +105,28 @@ function mainStack() {
   );
 }
 
-const CreateAppContainer = ({store}) => {
-  const navigationRef = React.useRef();
-
-  const getParam = (link: string | undefined): urlParamObj => {
-    if (link) {
-      const url = link.split(/[;?&]/);
-      url.shift();
-      const param = url.map((elm) => `"${elm.replace('=', '":"')}"`);
-      const json = JSON.parse(`{${param.join(',')}}`);
-      return json;
-    }
-    return {};
+type RegisterMobileScreenProps = {
+  store: EnhancedStore;
+  modal: ModalModelState;
+  link: LinkModelState;
+  promotion: RkbPromotion[];
+  actions: {
+    modal: ModalAction;
   };
+};
+
+const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
+  store,
+  modal,
+  link,
+  promotion,
+  actions,
+}) => {
+  const navigationRef = React.useRef();
+  const [iamgeHight, setImageHeight] = useState(450);
+  const [checked, setChecked] = useState(false);
+  const [popUpPromo, setPopUpPromo] = useState<RkbPromotion>();
+  const dimensions = useMemo(() => Dimensions.get('window'), []);
 
   const gift = useCallback(
     (url: string, json: urlParamObj) => {
@@ -188,7 +257,7 @@ const CreateAppContainer = ({store}) => {
   const handleDynamicLink = useCallback(
     async (link: FirebaseDynamicLinksTypes.DynamicLink | null) => {
       const url = link?.url;
-      const urlParams: urlParamObj = getParam(url);
+      const urlParams: urlParamObj = utils.getParam(url);
       const isSupport = await getIsSupport();
 
       DynamicLinkSave(link, urlParams);
@@ -223,11 +292,190 @@ const CreateAppContainer = ({store}) => {
       .then((l) => handleDynamicLink(l));
   }, [handleDynamicLink]);
 
+  const setPopupDisabled = useCallback(
+    (popUp?: RkbPromotion) => {
+      if (checked)
+        AsyncStorage.setItem(
+          `popupDisabled_${popUp?.uuid}`,
+          moment().format('YYYY-MM-DD HH:mm'),
+        );
+    },
+    [checked],
+  );
+
+  const handlePopUp = useCallback(
+    (popUp?: RkbPromotion, isOkClose: boolean = false) => {
+      if (isOkClose && navigationRef?.current) {
+        if (popUp?.rule?.navigate) {
+          if (popUp?.rule?.stack) {
+            navigationRef.current.navigate(popUp?.rule?.stack, {
+              screen: popUp.rule.navigate,
+              initial: false,
+            });
+          } else {
+            navigationRef.current.navigate(popUp.rule.navigate);
+          }
+        } else if (popUp?.notice) {
+          navigationRef.current.navigate('SimpleText', {
+            key: 'noti',
+            title: i18n.t('set:noti'),
+            bodyTitle: popUp.notice.title,
+            body: popUp.notice.body,
+            rule: popUp.rule,
+            nid: popUp.notice.nid,
+            image: popUp.notice.image,
+            mode: 'noti',
+          });
+        }
+      }
+
+      setPopupDisabled(popUp);
+      actions.modal.closeModal();
+    },
+    [actions.modal, setPopupDisabled],
+  );
+
+  const renderCloseWeek = useCallback(() => {
+    return (
+      <Pressable
+        style={styles.closeWeek}
+        onPress={() => setChecked((prev) => !prev)}>
+        <AppButton
+          iconName="btnCheck"
+          style={{marginRight: 10}}
+          checked={checked}
+          onPress={() => setChecked((prev) => !prev)}
+        />
+        <AppText>{i18n.t('close:week')}</AppText>
+      </Pressable>
+    );
+  }, [checked]);
+
+  const renderBtn = useCallback(
+    (popUp: RkbPromotion) => {
+      return (
+        <View style={styles.modalBtnContainer}>
+          {popUp?.rule?.btnCancelTitle && (
+            <AppButton
+              style={{
+                ...styles.btnCancel,
+                marginRight: 10,
+              }}
+              title={popUp?.rule?.btnCancelTitle}
+              onPress={() => handlePopUp(popUp, false)}
+            />
+          )}
+          <AppButton
+            style={styles.btnCancel}
+            title={popUp?.rule?.btnOkTitle}
+            onPress={() => handlePopUp(popUp, true)}
+          />
+        </View>
+      );
+    },
+    [handlePopUp],
+  );
+
+  const popUpModalBody = useCallback(
+    (popUp: RkbPromotion) => {
+      const {rule, notice} = popUp;
+
+      return (
+        <Pressable
+          style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}
+          onPress={() => actions.modal.closeModal()}>
+          <SafeAreaView style={{backgroundColor: 'transparent'}} />
+          <View style={styles.modalContainer}>
+            <View
+              style={{
+                backgroundColor: colors.white,
+                height: iamgeHight + 88 + (rule?.closeWeek ? 37 : 0), // 88 = 52(버튼) + 20 (아래여백) + 16(위 여백)
+              }}>
+              <ProgressiveImage
+                style={{width: '100%', height: iamgeHight}}
+                thumbnailSource={{
+                  uri: API.default.httpImageUrl(notice?.image?.thumbnail),
+                }}
+                source={{
+                  uri: API.default.httpImageUrl(notice?.image?.noti),
+                }}
+                resizeMode="contain"
+              />
+
+              {rule?.closeWeek && renderCloseWeek()}
+
+              {renderBtn(popUp)}
+            </View>
+          </View>
+          <SafeAreaView style={{backgroundColor: colors.white}} />
+        </Pressable>
+      );
+    },
+    [actions.modal, iamgeHight, renderBtn, renderCloseWeek],
+  );
+
+  const showPopUp = useCallback(
+    (routeName: string) => {
+      const popUp = promotion.find((elm) => {
+        const inflowUrlList = elm?.rule?.inflowUrl
+          ? elm?.rule?.inflowUrl.split(',')
+          : [''];
+
+        return (
+          elm.rule?.popUp &&
+          elm.rule?.routeName === routeName &&
+          inflowUrlList.includes(link.url || '')
+        );
+      });
+
+      setPopUpPromo(popUp);
+      if (popUp) {
+        if (popUp.notice?.image?.noti)
+          Image.getSize(
+            API.default.httpImageUrl(popUp?.notice?.image?.noti),
+            (width, height) => {
+              setImageHeight(
+                Math.ceil(height * ((dimensions.width - 40) / width)),
+              );
+            },
+          );
+
+        AsyncStorage.getItem(`popupDisabled_${popUp?.uuid}`).then((v) => {
+          const now = moment();
+          if (v) {
+            const disabled =
+              moment.duration(now.diff(v)).asDays() <= POPUP_DIS_DAYS;
+            if (!disabled) {
+              actions.modal.showModal({
+                content: popUpModalBody(popUp),
+              });
+              AsyncStorage.removeItem('popupDisabled');
+            }
+          } else {
+            actions.modal.showModal({
+              content: popUpModalBody(popUp),
+            });
+          }
+        });
+      }
+    },
+    [actions.modal, dimensions.width, link.url, popUpModalBody, promotion],
+  );
+
+  useEffect(() => {
+    if (modal.visible && popUpPromo) {
+      actions.modal.showModal({
+        content: popUpModalBody(popUpPromo),
+      });
+    }
+  }, [actions.modal, modal.visible, popUpModalBody, popUpPromo]);
+
   return (
     <NavigationContainer
       ref={navigationRef}
       onStateChange={(state) => {
         const lastTab = getActiveRouteName(state);
+        showPopUp(lastTab);
         Analytics.trackEvent('Page_View_Count', {page: lastTab});
         store.dispatch(cartActions.pushLastTab(lastTab));
       }}>
@@ -236,4 +484,18 @@ const CreateAppContainer = ({store}) => {
   );
 };
 
-export default memo(CreateAppContainer);
+export default connect(
+  ({account, modal, link, promotion}: RootState) => ({
+    account,
+    modal,
+    promotion: promotion.promotion,
+    link,
+  }),
+  (dispatch) => ({
+    actions: {
+      account: bindActionCreators(accountActions, dispatch),
+      cart: bindActionCreators(cartActions, dispatch),
+      modal: bindActionCreators(modalActions, dispatch),
+    },
+  }),
+)(CreateAppContainer);
