@@ -17,6 +17,7 @@ export interface LinkModelState {
   recommender?: string;
   gift?: string;
   utmParameters?: any;
+  deepLinkPath?: string;
   params: urlParamObj;
 }
 
@@ -25,6 +26,7 @@ const initialState: LinkModelState = {
   recommender: undefined,
   gift: undefined,
   utmParameters: undefined,
+  deepLinkPath: undefined,
   params: {},
 };
 
@@ -36,12 +38,13 @@ const slice = createSlice({
       return initialState;
     },
     update: (state, action) => {
-      const {url, recommender, gift, utmParameters, params} =
+      const {url, recommender, gift, utmParameters, deepLinkPath, params} =
         action.payload || {};
       state.url = url;
       state.recommender = recommender;
       state.gift = gift;
       state.utmParameters = utmParameters;
+      state.deepLinkPath = deepLinkPath;
       state.params = params;
     },
   },

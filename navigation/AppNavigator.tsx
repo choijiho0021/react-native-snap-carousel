@@ -4,10 +4,14 @@ import analytics from '@react-native-firebase/analytics';
 import dynamicLinks, {
   FirebaseDynamicLinksTypes,
 } from '@react-native-firebase/dynamic-links';
-import {NavigationContainer} from '@react-navigation/native';
+import {
+  NavigationContainer,
+  NavigationContainerRef,
+  useNavigationContainerRef,
+} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import SimCardsManagerModule from 'react-native-sim-cards-manager';
 import DeviceInfo from 'react-native-device-info';
 import {bindActionCreators} from 'redux';
@@ -20,6 +24,7 @@ import {
   SafeAreaView,
   View,
   StyleSheet,
+  Linking,
 } from 'react-native';
 import Env from '@/environment';
 import {actions as cartActions} from '@/redux/modules/cart';
@@ -44,6 +49,7 @@ import {API} from '@/redux/api';
 import ProgressiveImage from '@/components/ProgressiveImage';
 import i18n from '@/utils/i18n';
 import {ModalModelState} from '../redux/modules/modal';
+import {Adjust} from 'react-native-adjust';
 
 const {isIOS, esimGlobal} = Env.get();
 
@@ -122,7 +128,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   promotion,
   actions,
 }) => {
-  const navigationRef = React.useRef();
+  const navigationRef = useNavigationContainerRef();
   const [iamgeHight, setImageHeight] = useState(450);
   const [checked, setChecked] = useState(false);
   const [popUpPromo, setPopUpPromo] = useState<RkbPromotion>();
@@ -229,24 +235,32 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     return isSupport;
   }, [checkSupportIos, store]);
 
-  const DynamicLinkSave = useCallback(
-    async (
-      l: FirebaseDynamicLinksTypes.DynamicLink | null,
-      params: urlParamObj,
-    ) => {
-      if (l?.url) {
+  const linkSave = useCallback(
+    async ({
+      url,
+      params,
+      utmParameters,
+      deepLinkPath,
+    }: {
+      url?: string;
+      params?: urlParamObj;
+      deepLinkPath?: string;
+      utmParameters?: any;
+    }) => {
+      if (url) {
         store.dispatch(
           linkActions.update({
-            utmParameters: l?.utmParameters,
-            url: l?.url,
+            url,
             params,
+            utmParameters,
+            deepLinkPath,
           }),
         );
       }
 
-      if (l?.utmParameters) {
+      if (utmParameters) {
         analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_dynamic_utm`, {
-          item: l?.utmParameters.utm_source,
+          item: utmParameters?.utm_source,
           count: 1,
         });
       }
@@ -255,29 +269,29 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   );
 
   const handleDynamicLink = useCallback(
-    async (link: FirebaseDynamicLinksTypes.DynamicLink | null) => {
-      const url = link?.url;
-      const urlParams: urlParamObj = utils.getParam(url);
+    async (dLink: FirebaseDynamicLinksTypes.DynamicLink | null) => {
+      const url = dLink?.url;
+      const params: urlParamObj = utils.getParam(url);
       const isSupport = await getIsSupport();
 
-      DynamicLinkSave(link, urlParams);
+      linkSave({url, params, utmParameters: dLink?.utmParameters});
 
       if (
         isSupport &&
         navigationRef?.current &&
-        urlParams.hasOwnProperty('stack') &&
-        urlParams.hasOwnProperty('screen')
+        params.hasOwnProperty('stack') &&
+        params.hasOwnProperty('screen')
       ) {
         // Screen 별 동작 추가 - Home, Cart,Esim, MyPage 이동 가능
-        navigationRef.current.navigate(`${urlParams?.stack}Stack`, {
-          screen: urlParams?.screen,
+        navigationRef.current.navigate(`${params?.stack}Stack`, {
+          screen: params?.screen,
           initial: false,
         });
       } else if (isSupport && url) {
-        gift(url, urlParams);
+        gift(url, params);
       }
     },
-    [DynamicLinkSave, getIsSupport, gift],
+    [linkSave, getIsSupport, gift],
   );
 
   useEffect(() => {
@@ -421,10 +435,20 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
           ? elm?.rule?.inflowUrl.split(',')
           : [''];
 
+        // console.log('aaaaa rule', elm.rule);
+
+        // console.log(
+        //   'aaaaa deeplink',
+        //   elm.rule?.deepLinkPath,
+        //   link.deepLinkPath,
+        //   elm.rule?.deepLinkPath === link.deepLinkPath,
+        // );
+
         return (
           elm.rule?.popUp &&
           elm.rule?.routeName === routeName &&
-          inflowUrlList.includes(link.url || '')
+          (inflowUrlList.includes(link.url || '') ||
+            elm.rule?.deepLinkPath === link.deepLinkPath)
         );
       });
 
@@ -459,7 +483,14 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         });
       }
     },
-    [actions.modal, dimensions.width, link.url, popUpModalBody, promotion],
+    [
+      actions.modal,
+      dimensions.width,
+      link.deepLinkPath,
+      link.url,
+      popUpModalBody,
+      promotion,
+    ],
   );
 
   useEffect(() => {
@@ -469,6 +500,74 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       });
     }
   }, [actions.modal, modal.visible, popUpModalBody, popUpPromo]);
+
+  const deepLinkHandler = useCallback(
+    async (url: string) => {
+      const isSupport = await getIsSupport();
+      const urlSplit = url.split('?');
+
+      if (
+        isSupport &&
+        navigationRef?.current &&
+        urlSplit &&
+        urlSplit.length >= 2
+      ) {
+        const params = utils.getParam(url);
+        const schemeSplit = urlSplit[0].split('/');
+        const deepLinkPath = schemeSplit[schemeSplit.length - 1];
+
+        linkSave({url, params, deepLinkPath});
+
+        switch (deepLinkPath) {
+          case 'PROMOTION':
+            navigationRef.current.navigate('HomeStack', {
+              screen: 'Home',
+              initial: false,
+              params: {clickPromotion: true},
+            });
+            break;
+          case 'HOME':
+            navigationRef.current.navigate('HomeStack', {
+              screen: 'Home',
+              initial: false,
+            });
+            break;
+          case 'INVITE':
+            navigationRef.current.navigate('MyPageStack', {
+              screen: 'Invite',
+              initial: false,
+            });
+            break;
+          default:
+            break;
+        }
+      }
+    },
+    [getIsSupport, linkSave, navigationRef],
+  );
+
+  useEffect(() => {
+    const runDeepLink = async () => {
+      const initialUrl = await Linking.getInitialURL();
+
+      if (initialUrl) {
+        Adjust.appWillOpenUrl(initialUrl);
+        deepLinkHandler(initialUrl);
+      }
+    };
+
+    runDeepLink();
+  }, [deepLinkHandler]);
+
+  useEffect(() => {
+    const addListenerLink = ({url}) => {
+      if (url) deepLinkHandler(url);
+    };
+
+    Linking.addEventListener('url', addListenerLink);
+
+    // return () => Linking.removeAllListeners('url');
+  }, [deepLinkHandler]);
 
   return (
     <NavigationContainer

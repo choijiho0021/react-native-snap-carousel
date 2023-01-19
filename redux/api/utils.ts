@@ -8,6 +8,7 @@ import i18n from '@/utils/i18n';
 import Env from '@/environment';
 import {RkbImage} from './accountApi';
 import {Currency, CurrencyCode} from './productApi';
+import {urlParamObj} from '@/redux/modules/link';
 
 const {esimCurrency} = Env.get();
 const dateTimeFmt = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})*$/;
@@ -263,6 +264,17 @@ const generateKey = (pre: any) => {
   return `${pre || ''}_${new Date().getTime()}`;
 };
 
+const getParam = (link?: string): urlParamObj => {
+  if (link) {
+    const url = link.split(/[;?&]/);
+    url.shift();
+    const param = url.map((elm) => `"${elm.replace('=', '":"')}"`);
+    const json = JSON.parse(`{${param.join(',')}}`);
+    return json;
+  }
+  return {};
+};
+
 export default {
   fontScaling,
   numberToCommaString,
@@ -286,4 +298,5 @@ export default {
   adjustEventadd,
   removeBracketOfName,
   generateKey,
+  getParam,
 };
