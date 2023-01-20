@@ -389,7 +389,6 @@ const Esim: React.FC<EsimProps> = ({
     [navigation, popUp?.notice, popUp?.rule],
   );
 
-  console.log('aaaaa home param', route.params);
   useEffect(() => {
     if (route.params?.showNoti) setNotiModal();
     if (route.params?.clickPromotion) exitApp('redirect');

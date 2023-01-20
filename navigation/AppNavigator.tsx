@@ -435,15 +435,6 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
           ? elm?.rule?.inflowUrl.split(',')
           : [''];
 
-        // console.log('aaaaa rule', elm.rule);
-
-        // console.log(
-        //   'aaaaa deeplink',
-        //   elm.rule?.deepLinkPath,
-        //   link.deepLinkPath,
-        //   elm.rule?.deepLinkPath === link.deepLinkPath,
-        // );
-
         return (
           elm.rule?.popUp &&
           elm.rule?.routeName === routeName &&
