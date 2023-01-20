@@ -19,7 +19,3 @@ export const decryptAES256 = (text: string, keyStr: string) => {
     mode: CryptoJS.mode.ECB,
   }).toString(CryptoJS.enc.Utf8);
 };
-
-export const encryptSHA256 = (text: string) => {
-  return CryptoJS.SHA256(text).toString(CryptoJS.enc.Hex);
-};

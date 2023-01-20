@@ -423,15 +423,13 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   const showReciept = useCallback(
     (id?: string) => {
       async function getReceipt() {
-        const resp = await API.Payment.getImpToken();
-        if (resp.code === 0) {
-          const rsp = await API.Payment.getMerchantId({
-            id,
-            token: resp.response?.access_token,
+        if (id && account.token) {
+          const rsp = await API.Payment.getRokebiPaymentReceipt({
+            key: id,
+            token: account.token,
           });
-
-          if (rsp.code === 0 && rsp.response?.receipt_url) {
-            navigation.navigate('Receipt', {order, receipt: rsp.response});
+          if (rsp.result === 0) {
+            navigation.navigate('Receipt', {order, receipt: rsp.objects[0]});
           } else {
             AppAlert.error(i18n.t('rcpt:fail'));
           }
@@ -439,11 +437,9 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           AppAlert.error(i18n.t('rcpt:fail'));
         }
       }
-      if (id) {
-        getReceipt();
-      }
+      getReceipt();
     },
-    [navigation, order],
+    [account.token, navigation, order],
   );
 
   const headerInfo = useCallback(() => {

@@ -3,6 +3,7 @@ import _ from 'underscore';
 import Env from '@/environment';
 import api, {ApiResult, DrupalNodeJsonApi} from './api';
 import {utils} from '@/utils/utils';
+import {RkbReceipt} from '@/screens/ReceiptScreen';
 
 const {esimGlobal, isProduction, impKey, impSecret} = Env.get();
 
@@ -205,8 +206,49 @@ const toPayCheck = (data) => {
   }));
 };
 
-const toToken = (data) => {
-  return data;
+const getRokebiPayment = ({key, token}: {key: string; token: string}) => {
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.payment, '')}?_format=json`,
+    {
+      method: 'POST',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({pym_id: key}),
+    },
+  );
+};
+
+const getRokebiPaymentReceipt = ({
+  key,
+  token,
+}: {
+  key: string;
+  token: string;
+}) => {
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.payment, '')}?_format=json`,
+    {
+      method: 'POST',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({pym_id: key, receipt: true}),
+    },
+    (rsp) => {
+      if (rsp.result === 0) {
+        if (rsp.objects[0]) {
+          const {amount, card_num, card_name} = rsp.objects[0];
+          return api.success([
+            {
+              amount: parseFloat(amount),
+              card_number: card_num,
+              card_name,
+              name: '',
+            } as RkbReceipt,
+          ]);
+        }
+        return api.failure(-1);
+      }
+      return api.failure(rsp.code);
+    },
+  );
 };
 
 const getImpToken = () => {
@@ -219,15 +261,11 @@ const getImpToken = () => {
     ? impSecret
     : '21d8ef6b4daa18f5b0b305f7087066cd24f429a4f5b77c907bb4d260a03d257bb05219242bddf802';
 
-  return api.callHttp(
-    `https://api.iamport.kr/users/getToken`,
-    {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({imp_key, imp_secret}),
-    },
-    toToken,
-  );
+  return api.callHttp(`https://api.iamport.kr/users/getToken`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({imp_key, imp_secret}),
+  });
 };
 
 const getUid = ({uid, token}: {uid: string; token?: string}) => {
@@ -269,4 +307,6 @@ export default {
   getImpToken,
   getUid,
   getMerchantId,
+  getRokebiPayment,
+  getRokebiPaymentReceipt,
 };

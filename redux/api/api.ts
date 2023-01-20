@@ -109,6 +109,7 @@ const path = {
       account: 'rokebi/account',
       prodByCountry: 'rokebi/prod/bycntry',
       cash: 'rokebi/cash',
+      payment: 'rokebi/payment',
     },
     pv: {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/quota',
@@ -251,7 +252,7 @@ type CallHttpOption = {isJson?: boolean; abortController?: AbortController};
 const callHttp = async <T>(
   url: string,
   param: object,
-  callback?: CallHttpCallback<T> = (a) => a,
+  callback: CallHttpCallback<T> = (a) => a,
   option: CallHttpOption = {isJson: true},
 ): Promise<ApiResult<T>> => {
   const config: RequestInit = {
