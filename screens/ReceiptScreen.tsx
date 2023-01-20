@@ -83,7 +83,7 @@ type ReceiptScreenProps = {
   };
 };
 
-type RkbReceipt = {
+export type RkbReceipt = {
   amount: number;
   card_number: string;
   card_name: string;

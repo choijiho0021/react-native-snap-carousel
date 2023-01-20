@@ -3,6 +3,7 @@ import _ from 'underscore';
 import Env from '@/environment';
 import api, {ApiResult, DrupalNodeJsonApi} from './api';
 import {utils} from '@/utils/utils';
+import {RkbReceipt} from '@/screens/ReceiptScreen';
 
 const {esimGlobal, isProduction, impKey, impSecret} = Env.get();
 
@@ -211,7 +212,41 @@ const getRokebiPayment = ({key, token}: {key: string; token: string}) => {
     {
       method: 'POST',
       headers: api.withToken(token, 'json'),
-      body: JSON.stringify({check_pym_id: key}),
+      body: JSON.stringify({pym_id: key}),
+    },
+  );
+};
+
+const getRokebiPaymentReceipt = ({
+  key,
+  token,
+}: {
+  key: string;
+  token: string;
+}) => {
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.payment, '')}?_format=json`,
+    {
+      method: 'POST',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({pym_id: key, receipt: true}),
+    },
+    (rsp) => {
+      if (rsp.result === 0) {
+        if (rsp.objects[0]) {
+          const {amount, card_num, card_name} = rsp.objects[0];
+          return api.success([
+            {
+              amount: parseFloat(amount),
+              card_number: card_num,
+              card_name,
+              name: '',
+            } as RkbReceipt,
+          ]);
+        }
+        return api.failure(-1);
+      }
+      return api.failure(rsp.code);
     },
   );
 };
@@ -273,4 +308,5 @@ export default {
   getUid,
   getMerchantId,
   getRokebiPayment,
+  getRokebiPaymentReceipt,
 };
