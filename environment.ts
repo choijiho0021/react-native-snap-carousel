@@ -85,6 +85,9 @@ type Env = {
   impSecret: string;
   talkPluginKey: string;
   specialCategories: Record<string, PromoFlag>;
+  payment: {
+    inicis: Record<string, string>;
+  };
 };
 
 const env: Env = {
@@ -109,6 +112,7 @@ const env: Env = {
   impKey: esimGlobal ? secureData.globalImpKey : secureData.esimImpKey,
   impSecret: esimGlobal ? secureData.globalImpSecret : secureData.esimImpSecret,
   talkPluginKey: secureData.talkPluginKey,
+  payment: secureData.payment,
   specialCategories,
 };
 
