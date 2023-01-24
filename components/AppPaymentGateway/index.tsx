@@ -7,6 +7,7 @@ import {configHecto, hectoWebViewScript} from './ConfigHecto';
 import {
   inicisWebviewHtml,
   inicisWebViewScript,
+  injectScript,
   pgWebViewConfig,
 } from './ConfigInicis';
 import {colors} from '@/constants/Colors';
@@ -187,8 +188,15 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
 
   const onLoadEnd = useCallback(({nativeEvent: {url}}) => {
     setLoading(false);
-    if (url.startsWith('https://ansimclick.hyundaicard.com')) {
-      ref.current?.injectJavaScript(pgWebViewConfig.runScript);
+    /*
+    console.log('@@@ url', url);
+    ref.current?.injectJavaScript(
+      'console.log("END" + window.document.documentElement.innerHTML);',
+    );
+    */
+    const script = injectScript(url);
+    if (script) {
+      ref.current?.injectJavaScript(script);
     }
   }, []);
 

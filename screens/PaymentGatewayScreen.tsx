@@ -15,13 +15,17 @@ import AppPaymentGateway, {
 } from '@/components/AppPaymentGateway';
 import {API} from '@/redux/api';
 import {AccountModelState} from '@/redux/modules/account';
+import AppBackButton from '@/components/AppBackButton';
 
 type PaymentGatewayScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
-  'Payment'
+  'PaymentGateway'
 >;
 
-type PaymentGatewayScreenRouteProp = RouteProp<HomeStackParamList, 'Payment'>;
+type PaymentGatewayScreenRouteProp = RouteProp<
+  HomeStackParamList,
+  'PaymentGateway'
+>;
 
 type PaymentGatewayScreenProps = {
   navigation: PaymentGatewayScreenNavigationProp;
@@ -56,9 +60,15 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
 
   useEffect(() => {
     navigation.setOptions({
-      headerShown: false,
+      title: null,
+      headerLeft: () => (
+        <AppBackButton
+          title={i18n.t(params?.isPaid ? 'his:paymentCompleted' : 'payment')}
+          isPaid={params.isPaid}
+        />
+      ),
     });
-  }, [navigation]);
+  }, [navigation, params.isPaid]);
 
   const callback = useCallback(
     async (status: PaymentResultCallbackParam) => {

@@ -24,17 +24,22 @@ export const pgWebViewConfig = {
   nextUrl: 'https://localhost/next',
 
   confirmUrl: 'http://tb-esim.rokebi.com/rokebi/payment/inicis',
-
-  runScript: `
-  if (typeof doSubmitChk === 'function') {
-    doSubmitChk();
-  }
-  else if (typeof onLoadHandler === 'function') {
-    onLoadHandler('2');
-  }
-  `,
 };
 
+export const injectScript = (url: string) => {
+  if (url.includes('hyundaicard')) {
+    return `
+  if (typeof doSubmitChk === 'function') { doSubmitChk(); }
+  else if (typeof onLoadHandler === 'function') { onLoadHandler('2'); }
+  `;
+  }
+
+  if (url.includes('samsungcard')) {
+    return `if (typeof goNext === 'function') { goNext(); }`;
+  }
+
+  return '';
+};
 const {payment} = Env.get();
 
 export const configInicis = {
