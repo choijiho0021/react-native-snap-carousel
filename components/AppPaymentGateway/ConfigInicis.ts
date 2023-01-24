@@ -1,4 +1,5 @@
 import CryptoJS from 'crypto-js';
+import Env from '@/environment';
 import {PaymentParams} from '@/navigation/navigation';
 
 export const pgWebViewConfig = {
@@ -25,14 +26,26 @@ export const pgWebViewConfig = {
   confirmUrl: 'http://tb-esim.rokebi.com/rokebi/payment/inicis',
 };
 
+export const injectScript = (url: string) => {
+  if (url.includes('hyundaicard')) {
+    return `
+  if (typeof doSubmitChk === 'function') { doSubmitChk(); }
+  else if (typeof onLoadHandler === 'function') { onLoadHandler('2'); }
+  `;
+  }
+
+  if (url.includes('samsungcard')) {
+    return `if (typeof goNext === 'function') { goNext(); }`;
+  }
+
+  return '';
+};
+const {payment} = Env.get();
+
 export const configInicis = {
   PAYMENT_SERVER: 'https://stgstdpay.inicis.com',
   // 'https://stdpay.inicis.com'
   WEBVIEW_ENDPOINT: 'https://mobile.inicis.com/smart/payment/',
-
-  MID: 'INIpayTest',
-
-  HASHKEY: '3CB8183A4BE283555ACC8363C0360223',
 };
 
 const opt: Record<string, string> = {
@@ -51,12 +64,12 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
     info.amount.toString() +
       info.merchant_uid +
       timestamp +
-      configInicis.HASHKEY,
+      payment.inicis.HASHKEY,
   ).toString(CryptoJS.enc.Base64);
 
   return `<form name="mobileweb" id="" method="post" accept-charset="euc-kr">
       <input type="hidden" name="P_INI_PAYMENT" value="CARD" />
-      <input type="hidden" name="P_MID" value="${configInicis.MID}" />
+      <input type="hidden" name="P_MID" value="${payment.inicis.MID}" />
       <input type="hidden" name="P_OID" value="${info.merchant_uid}" />
       <input type="hidden" name="P_AMT" value="${info.amount}" />
       <input type="hidden" name="P_CHARSET" value="utf8" />

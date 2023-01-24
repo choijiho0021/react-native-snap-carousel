@@ -1,5 +1,5 @@
-import React, {useCallback, useState} from 'react';
-import {Linking, StyleSheet, View} from 'react-native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {AppState, Linking, StyleSheet, View} from 'react-native';
 import WebView from 'react-native-webview';
 import {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
 import Video from 'react-native-video';
@@ -7,6 +7,7 @@ import {configHecto, hectoWebViewScript} from './ConfigHecto';
 import {
   inicisWebviewHtml,
   inicisWebViewScript,
+  injectScript,
   pgWebViewConfig,
 } from './ConfigInicis';
 import {colors} from '@/constants/Colors';
@@ -14,13 +15,11 @@ import AppText from '../AppText';
 import i18n from '@/utils/i18n';
 import {PaymentParams} from '@/navigation/navigation';
 
-type PaymentResult = {
-  success: boolean;
-};
+export type PaymentResultCallbackParam = 'next' | 'cancel' | 'check';
 
 type PaymentGatewayScreenProps = {
   info: PaymentParams;
-  callback: (result: PaymentResult) => void;
+  callback: (result: PaymentResultCallbackParam) => void;
 };
 
 // const IMP = require('iamport-react-native').default;
@@ -91,6 +90,8 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
   callback,
 }) => {
   const [loading, setLoading] = useState(true);
+  const [checkPayment, setCheckPayment] = useState(false);
+  const ref = useRef<WebView>(null);
   const onMessage = useCallback((payload) => {
     let dataPayload;
     try {
@@ -106,23 +107,57 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
     }
   }, []);
 
+  const appState = useRef(AppState.currentState);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        console.log('App has come to the foreground!');
+        if (info.pg === 'html5_inicis' && checkPayment) {
+          ref.current?.injectJavaScript(pgWebViewConfig.runScript);
+        }
+      }
+
+      appState.current = nextAppState;
+      console.log('AppState', appState.current);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [callback, checkPayment, info]);
+
   const onShouldStartLoadWithRequest = useCallback(
     (event: ShouldStartLoadRequest): boolean => {
+      console.log('@@@ PG ', event);
+
       if (pgWebViewConfig.cancelUrl === event.url) {
-        callback({success: false});
+        callback('cancel');
         return false;
       }
 
       if (pgWebViewConfig.nextUrl === event.url) {
-        callback({success: true});
+        callback('next');
         return false;
       }
+
+      // '쇼핑몰 이동' 버튼
+      /*
+      if (event.url.startsWith('https://ansimclick.hyundaicard.com/mobile3')) {
+        callback('check');
+        return true;
+      }
+      */
 
       if (
         event.url.startsWith('http://') ||
         event.url.startsWith('https://') ||
         event.url.startsWith('about:blank')
       ) {
+        setCheckPayment(true);
         return true;
       }
 
@@ -151,10 +186,25 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
     );
   }, []);
 
+  const onLoadEnd = useCallback(({nativeEvent: {url}}) => {
+    setLoading(false);
+    /*
+    console.log('@@@ url', url);
+    ref.current?.injectJavaScript(
+      'console.log("END" + window.document.documentElement.innerHTML);',
+    );
+    */
+    const script = injectScript(url);
+    if (script) {
+      ref.current?.injectJavaScript(script);
+    }
+  }, []);
+
   return (
     <>
       <WebView
         style={{flex: 1}}
+        ref={ref}
         javaScriptEnabled
         domStorageEnabled
         injectedJavaScriptForMainFrameOnly
@@ -164,7 +214,7 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
         originWhitelist={['*']}
         sharedCookiesEnabled
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
-        onLoadEnd={() => setLoading(false)}
+        onLoadEnd={onLoadEnd}
         source={{html: pgWebViewHtml(info)}}
       />
       {loading ? renderLoading() : null}
