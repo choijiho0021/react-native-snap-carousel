@@ -10,7 +10,9 @@ import api from '@/redux/api/api';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
 import {PaymentInfo} from '@/redux/api/cartApi';
-import AppPaymentGateway from '@/components/AppPaymentGateway';
+import AppPaymentGateway, {
+  PaymentResultCallbackParam,
+} from '@/components/AppPaymentGateway';
 import {API} from '@/redux/api';
 import {AccountModelState} from '@/redux/modules/account';
 
@@ -59,16 +61,16 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
   }, [navigation]);
 
   const callback = useCallback(
-    async ({success}: {success: boolean}) => {
+    async (status: PaymentResultCallbackParam) => {
       let pymResult = false;
 
-      if (success) {
+      if (status !== 'cancel') {
         const resp = await API.Payment.getRokebiPayment({
           key: pymInfo.merchant_uid,
           token: account.token,
         });
 
-        if (resp.result === 0 && resp.objects[0]?.status === '00')
+        if (resp.result === 0 && resp.objects?.[0]?.status === '00')
           pymResult = true;
       }
 
@@ -77,7 +79,10 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
         action.cart.updateOrder(pymInfo);
       }
 
-      navigation.replace('PaymentResult', {pymResult});
+      if (status !== 'check' || pymResult) {
+        // status = 'next', 'cancel' 이거나, pymResult = true인 경우 다음 페이지로 이동
+        navigation.replace('PaymentResult', {pymResult});
+      }
     },
     [account, action.cart, navigation, pymInfo],
   );
