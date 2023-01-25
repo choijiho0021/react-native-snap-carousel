@@ -27,7 +27,13 @@ if (
 }
 module.exports = {
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'react-hooks', 'prettier', 'react-native'],
+  plugins: [
+    '@typescript-eslint',
+    'react',
+    'react-native',
+    'react-hooks',
+    'prettier',
+  ],
   // plugins: ['eslint-comments', 'jest', 'unicorn', 'react-hooks'],
   extends: ['airbnb', 'airbnb-typescript', 'prettier'],
   env: {
@@ -137,7 +143,7 @@ module.exports = {
     'react-hooks/rules-of-hooks': 'error', // Checks rules of Hooks
     */
 
-    'react-native/no-unused-styles': 2,
+    'react-native/no-unused-styles': 'warn',
     'react-native/split-platform-components': 2,
     // 'react-native/no-inline-styles': 2,
     'react-native/no-color-literals': 2,

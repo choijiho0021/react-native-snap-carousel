@@ -2,18 +2,11 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {SetStateAction, useCallback, useEffect, useState} from 'react';
-import {
-  Platform,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Video from 'react-native-video';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -79,78 +72,6 @@ const styles = StyleSheet.create({
     height: 10,
     backgroundColor: colors.whiteTwo,
   },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-  },
-  buttonStyle: {
-    flex: 1,
-    height: 62,
-    backgroundColor: colors.white,
-    borderStyle: 'solid' as const,
-    borderLeftWidth: 1,
-    borderTopWidth: 1,
-  },
-  buttonText: {
-    ...appStyles.normal14Text,
-    textAlign: 'center',
-    color: colors.warmGrey,
-  },
-  addrCardText: {
-    ...appStyles.normal14Text,
-    color: colors.black,
-    lineHeight: 24,
-  },
-  addrBtn: {
-    height: 48,
-    borderRadius: 3,
-    // marginHorizontal: 20,
-    marginTop: 0,
-  },
-  profileTitle: {
-    marginBottom: 6,
-    flex: 1,
-    flexDirection: 'row',
-  },
-  profileTitleText: {
-    color: colors.black,
-    alignItems: 'flex-start',
-    marginRight: 20,
-    marginVertical: 10,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  chgButtonText: {
-    ...appStyles.normal12Text,
-    color: colors.white,
-  },
-  chgButton: {
-    width: 50,
-    height: 36,
-    borderRadius: 3,
-    backgroundColor: colors.warmGrey,
-    marginLeft: 20,
-  },
-  basicAddr: {
-    ...appStyles.normal12Text,
-    width: 52,
-    height: Platform.OS === 'android' ? 15 : 12,
-    lineHeight: Platform.OS === 'android' ? 15 : 12,
-    fontSize: Platform.OS === 'android' ? 11 : 12,
-    color: colors.clearBlue,
-    alignSelf: 'center',
-  },
-  basicAddrBox: {
-    width: 68,
-    height: 22,
-    borderRadius: 10,
-    backgroundColor: colors.white,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: colors.clearBlue,
-    justifyContent: 'center',
-    alignSelf: 'center',
-  },
   result: {
     justifyContent: 'center',
     height: isDeviceSize('small') ? 200 : 255,
@@ -186,24 +107,6 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.black,
     borderBottomWidth: 1,
     marginBottom: 30,
-  },
-  pickerWrapper: {
-    ...appStyles.borderWrapper,
-    height: 40,
-    borderColor: colors.lightGrey,
-    paddingLeft: 20,
-    alignContent: 'center',
-    justifyContent: 'center',
-  },
-  textField: {
-    borderRadius: 3,
-    borderColor: colors.lightGrey,
-    borderWidth: 1,
-    paddingHorizontal: 20,
-    paddingTop: 15,
-    marginTop: 15,
-    height: 100,
-    alignItems: 'flex-start',
   },
   alignCenter: {
     alignSelf: 'center',
