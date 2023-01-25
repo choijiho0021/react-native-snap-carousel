@@ -27,6 +27,7 @@ import CartScreen from '@/screens/CartScreen';
 import MyPageScreen from '@/screens/MyPageScreen/index';
 import InviteScreen from '@/screens/InviteScreen/index';
 import NotiScreen from '@/screens/NotiScreen';
+import PaymentScreen from '@/screens/PaymentScreen';
 import PaymentResultScreen from '@/screens/PaymentResultScreen';
 import PurchaseDetailScreen from '@/screens/PurchaseDetailScreen';
 import ContactScreen from '@/screens/ContactScreen';
@@ -162,6 +163,7 @@ function HomeStackComponent() {
           headerShown: false,
         })}
       />
+      <HomeStack.Screen name="Payment" component={PaymentScreen} />
       <HomeStack.Screen
         name="PaymentGateway"
         component={PaymentGatewayScreen}
@@ -180,6 +182,7 @@ function CartStackComponent() {
   return (
     <CartStack.Navigator screenOptions={screenOptions}>
       <CartStack.Screen name="Cart" component={CartScreen} />
+      <CartStack.Screen name="Payment" component={PaymentScreen} />
       <CartStack.Screen
         name="PaymentGateway"
         component={PaymentGatewayScreen}
@@ -208,6 +211,7 @@ function EsimStackComponent() {
       <EsimStack.Screen name="ChargeDetail" component={ChargeDetailScreen} />
       <EsimStack.Screen name="QrInfo" component={QrInfoScreen} />
       <EsimStack.Screen name="UserGuide" component={UserGuideScreen} />
+      <EsimStack.Screen name="Payment" component={PaymentScreen} />
       <EsimStack.Screen
         name="PaymentGateway"
         component={PaymentGatewayScreen}
@@ -230,6 +234,7 @@ function MyPageStackComponent() {
       <MyPageStack.Screen name="Recharge" component={RechargeScreen} />
       {/* <MyPageStack.Screen name="Pedometer" component={PedometerScreen} /> */}
       <MyPageStack.Screen name="Invite" component={InviteScreen} />
+      <MyPageStack.Screen name="Payment" component={PaymentScreen} />
       <MyPageStack.Screen
         name="PaymentGateway"
         component={PaymentGatewayScreen}
