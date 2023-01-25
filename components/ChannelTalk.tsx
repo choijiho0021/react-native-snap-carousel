@@ -26,7 +26,7 @@ const ChannelTalk: React.FC<ChannelTalkProps> = ({account}) => {
             id: account.userId,
             name: `${appId} - ${account.mobile}`,
             mobileNumber: account.mobile,
-            email: 'test@naver.com',
+            email: account.email,
             mobileStr: account.mobile,
             orderUrl: `https://esim.rokebi.com/ko/admin/op/order/search?title=${account.mobile}&mail=&items_per_page=10`,
           }
@@ -34,7 +34,7 @@ const ChannelTalk: React.FC<ChannelTalkProps> = ({account}) => {
     };
 
     ChannelIO.boot(settings);
-  }, [account.loggedIn, account.mobile, account.userId]);
+  }, [account.email, account.loggedIn, account.mobile, account.userId]);
 
   return (
     <Pressable

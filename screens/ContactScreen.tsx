@@ -252,7 +252,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
             id: account.userId,
             name: `${appId} - ${account.mobile}`,
             mobileNumber: account.mobile,
-            email: 'test@naver.com',
+            email: account.email,
             mobileStr: account.mobile,
             orderUrl: `https://esim.rokebi.com/ko/admin/op/order/search?title=${account.mobile}&mail=&items_per_page=10`,
           }
@@ -272,7 +272,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
         setLoading(false);
       });
     }
-  }, [account.loggedIn, account.mobile, account.userId]);
+  }, [account.email, account.loggedIn, account.mobile, account.userId]);
 
   const onPress = useCallback(
     (key: string) => {

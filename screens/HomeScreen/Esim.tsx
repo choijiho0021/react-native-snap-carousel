@@ -33,7 +33,7 @@ import {bindActionCreators} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
 import {RouteProp} from '@react-navigation/native';
 import VersionCheck from 'react-native-version-check';
-import {Adjust} from 'react-native-adjust';
+
 import {StackNavigationProp} from '@react-navigation/stack';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
@@ -285,7 +285,7 @@ const Esim: React.FC<EsimProps> = ({
   }, []);
 
   useEffect(() => {
-    if (promotion.length > 0) {
+    if (promotion.length > 0 && promotion[0].imageUrl) {
       Image.getSize(
         API.default.httpImageUrl(promotion[0].imageUrl),
         (width, height) => {
@@ -315,10 +315,6 @@ const Esim: React.FC<EsimProps> = ({
       setPopUpVisible(true);
     }
   }, [promotion]);
-
-  useEffect(() => {
-    if (route.params?.showNoti) setNotiModal();
-  }, [route.params?.showNoti, setNotiModal]);
 
   const onPressItem = useCallback(
     (info: RkbPriceInfo) => {
@@ -392,6 +388,16 @@ const Esim: React.FC<EsimProps> = ({
     },
     [navigation, popUp?.notice, popUp?.rule],
   );
+
+  useEffect(() => {
+    if (route.params?.showNoti) setNotiModal();
+    if (route.params?.clickPromotion) exitApp('redirect');
+  }, [
+    exitApp,
+    route.params?.clickPromotion,
+    route.params?.showNoti,
+    setNotiModal,
+  ]);
 
   const folderOpened = useMemo(
     () => isFolderOpen(dimensions.width),
@@ -663,62 +669,6 @@ const Esim: React.FC<EsimProps> = ({
       pushNoti.add(notification);
     }
   }, [isSupport, notification]);
-
-  const deepLinkHandler = useCallback(
-    (url: string) => {
-      const urlSplit = url.split('?');
-
-      if (isSupport && urlSplit && urlSplit.length >= 2) {
-        const schemeSplit = urlSplit[0].split('/');
-        const deepLinkPath = schemeSplit[schemeSplit.length - 1];
-
-        switch (deepLinkPath) {
-          case 'PROMOTION':
-            setPopupDisabled(true);
-            exitApp('redirect');
-            break;
-          case 'HOME':
-            navigation.navigate('HomeStack', {
-              screen: 'Home',
-              initial: false,
-            });
-            break;
-          case 'INVITE':
-            navigation.navigate('MyPageStack', {
-              screen: 'Invite',
-              initial: false,
-            });
-            break;
-          default:
-            break;
-        }
-      }
-    },
-    [exitApp, isSupport, navigation],
-  );
-
-  useEffect(() => {
-    const runDeepLink = async () => {
-      const initialUrl = await Linking.getInitialURL();
-
-      if (initialUrl) {
-        Adjust.appWillOpenUrl(initialUrl);
-        deepLinkHandler(initialUrl);
-      }
-    };
-
-    runDeepLink();
-  }, [deepLinkHandler]);
-
-  useEffect(() => {
-    const addListenerLink = ({url}) => {
-      if (url) deepLinkHandler(url);
-    };
-
-    Linking.addEventListener('url', addListenerLink);
-
-    return () => Linking.removeAllListeners('url');
-  }, [deepLinkHandler]);
 
   useEffect(() => {
     if (

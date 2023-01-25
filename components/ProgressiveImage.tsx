@@ -25,11 +25,13 @@ const ProgressiveImage = ({
   thumbnailSource,
   source,
   style,
+  resizeMode,
   props,
 }: {
   thumbnailSource: ImageURISource;
   source: ImageURISource;
   style?: ImageStyle;
+  resizeMode?: 'cover' | 'contain' | 'stretch' | 'repeat' | 'center';
   props?: ImageProps;
 }) => {
   const [isRender, setIsRender] = useState(false);
@@ -61,6 +63,7 @@ const ProgressiveImage = ({
     <View style={styles.container}>
       <Animated.Image
         {...props}
+        resizeMode={resizeMode}
         source={thumbnailSource}
         style={[style, {opacity: thumbnailAnimated}]}
         onLoad={handleThumbnailLoad}
@@ -69,6 +72,7 @@ const ProgressiveImage = ({
       {isRender && (
         <Animated.Image
           {...props}
+          resizeMode={resizeMode}
           source={source}
           style={[styles.imageOverlay, {opacity: imageAnimated}, style]}
           onLoad={onImageLoad}

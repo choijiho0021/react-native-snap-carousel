@@ -107,7 +107,7 @@ export type HomeStackParamList = {
   Settings: undefined;
   Auth: {screen: string};
   HeaderTitle: undefined;
-  Esim: {showNoti?: boolean};
+  Esim: {showNoti?: boolean; clickPromotion?: boolean};
   SubsDetail: {detail?: RkbSubscription};
 
   MyPage: undefined;
