@@ -6,12 +6,11 @@ import dynamicLinks, {
 } from '@react-native-firebase/dynamic-links';
 import {
   NavigationContainer,
-  NavigationContainerRef,
   useNavigationContainerRef,
 } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import SimCardsManagerModule from 'react-native-sim-cards-manager';
 import DeviceInfo from 'react-native-device-info';
 import {bindActionCreators} from 'redux';
@@ -26,6 +25,7 @@ import {
   StyleSheet,
   Linking,
 } from 'react-native';
+import {Adjust} from 'react-native-adjust';
 import Env from '@/environment';
 import {actions as cartActions} from '@/redux/modules/cart';
 import {actions as promotionActions} from '@/redux/modules/promotion';
@@ -49,7 +49,6 @@ import {API} from '@/redux/api';
 import ProgressiveImage from '@/components/ProgressiveImage';
 import i18n from '@/utils/i18n';
 import {ModalModelState} from '../redux/modules/modal';
-import {Adjust} from 'react-native-adjust';
 
 const {isIOS, esimGlobal} = Env.get();
 
@@ -291,7 +290,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         gift(url, params);
       }
     },
-    [linkSave, getIsSupport, gift],
+    [getIsSupport, linkSave, navigationRef, gift],
   );
 
   useEffect(() => {
@@ -346,7 +345,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       setPopupDisabled(popUp);
       actions.modal.closeModal();
     },
-    [actions.modal, setPopupDisabled],
+    [actions.modal, navigationRef, setPopupDisabled],
   );
 
   const renderCloseWeek = useCallback(() => {

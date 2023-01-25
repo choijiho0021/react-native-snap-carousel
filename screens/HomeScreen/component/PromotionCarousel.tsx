@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {memo, useCallback, useState} from 'react';
+import React, {memo, useCallback, useState, useMemo} from 'react';
 import {Animated, Image, Pressable, StyleSheet, View} from 'react-native';
 import {Pagination} from 'react-native-snap-carousel';
 import {connect} from 'react-redux';
@@ -98,13 +98,18 @@ type PromotionCarouselProps = {
 };
 
 const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
-  promotion,
+  promotion: reduxPromotion = [],
   product,
   action,
   width,
 }) => {
   const navigation = useNavigation();
   const [activeSlide, setActiveSlide] = useState(0);
+  const promotion = useMemo(
+    () => reduxPromotion.filter((elm) => elm.imageUrl && elm?.rule?.banner),
+    [reduxPromotion],
+  );
+
   const onPress = useCallback(
     (item: RkbPromotion) => {
       if (item.product_uuid) {
