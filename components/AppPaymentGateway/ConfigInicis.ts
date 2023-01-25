@@ -58,18 +58,24 @@ const opt: Record<string, string> = {
 };
 
 export const inicisWebviewHtml = (info: PaymentParams) => {
+  // const inicis = {
+  //   MID: 'INIpayTest', // inicis test key
+  //   HASHKEY: '3CB8183A4BE283555ACC8363C0360223',
+  // };
+  const {inicis} = payment;
   const reserved = opt[info.pay_method] || '';
   const timestamp = Date.now();
   const hash = CryptoJS.SHA512(
-    info.amount.toString() +
-      info.merchant_uid +
-      timestamp +
-      payment.inicis.HASHKEY,
+    info.amount.toString() + info.merchant_uid + timestamp + inicis.HASHKEY,
   ).toString(CryptoJS.enc.Base64);
 
+  console.log('@@@ inicis', info);
+
   return `<form name="mobileweb" id="" method="post" accept-charset="euc-kr">
-      <input type="hidden" name="P_INI_PAYMENT" value="CARD" />
-      <input type="hidden" name="P_MID" value="${payment.inicis.MID}" />
+      <input type="hidden" name="P_INI_PAYMENT" value="${
+        info.pay_method === 'trans' ? 'VBANK' : 'CARD'
+      }" />
+      <input type="hidden" name="P_MID" value="${inicis.MID}" />
       <input type="hidden" name="P_OID" value="${info.merchant_uid}" />
       <input type="hidden" name="P_AMT" value="${info.amount}" />
       <input type="hidden" name="P_CHARSET" value="utf8" />
@@ -77,11 +83,18 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
       <input type="hidden" name="P_UMANE" value="${info.buyer_name}" />
       <input type="hidden" name="P_MOBILE" value="${info.buyer_tel}" />
       <input type="hidden" name="P_EMAIL" value="${info.buyer_email}" />
-      <input type="hidden" name="P_NEXT_URL" value="${pgWebViewConfig.confirmUrl}" />
+      <input type="hidden" name="P_NOTI_URL" value="${
+        pgWebViewConfig.confirmUrl
+      }" />
+      <input type="hidden" name="P_NEXT_URL" value="${
+        pgWebViewConfig.confirmUrl
+      }" />
       <input type="hidden" name="P_CHARSET" value="utf8" />
       <input type="hidden" name="P_TIMESTAMP" value="${timestamp}" />
       <input type="hidden" name="P_CHKFAKE" value="${hash}" />
-      <input type="hidden" name="P_RESERVED" value="amt_hash=Y&below1000=Y${reserved}&app_scheme=${info.app_scheme}://" />
+      <input type="hidden" name="P_RESERVED" value="amt_hash=Y&below1000=Y${reserved}&app_scheme=${
+    info.app_scheme
+  }://" />
     </form>`;
 };
 
