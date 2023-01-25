@@ -112,7 +112,12 @@ const env: Env = {
   impKey: esimGlobal ? secureData.globalImpKey : secureData.esimImpKey,
   impSecret: esimGlobal ? secureData.globalImpSecret : secureData.esimImpSecret,
   talkPluginKey: secureData.talkPluginKey,
-  payment: secureData.payment,
+  payment: secureData.payment || {
+    inicis: {
+      MID: 'INIpayTest', // inicis test key
+      HASHKEY: '3CB8183A4BE283555ACC8363C0360223',
+    },
+  },
   specialCategories,
 };
 
