@@ -1,15 +1,9 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {AppState, Linking, StyleSheet, View} from 'react-native';
+import React, {useCallback, useRef, useState} from 'react';
+import {Linking, StyleSheet, View} from 'react-native';
 import WebView from 'react-native-webview';
 import {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
 import Video from 'react-native-video';
-import {configHecto, hectoWebViewScript} from './ConfigHecto';
-import {
-  inicisWebviewHtml,
-  inicisWebViewScript,
-  injectScript,
-  pgWebViewConfig,
-} from './ConfigInicis';
+import {inicisWebviewHtml, pgWebViewConfig} from './ConfigInicis';
 import {colors} from '@/constants/Colors';
 import AppText from '../AppText';
 import i18n from '@/utils/i18n';
@@ -22,38 +16,10 @@ type PaymentGatewayScreenProps = {
   callback: (result: PaymentResultCallbackParam) => void;
 };
 
-// const IMP = require('iamport-react-native').default;
 const loadingImg = require('../../assets/images/loading_1.mp4');
 
 const pgWebViewHtml = (info: PaymentParams) => {
-  const script =
-    info.pg === 'hecto'
-      ? `<script type="text/javascript" src="${configHecto.PAYMENT_SERVER}/resources/js/v1/SettlePG.js"></script>`
-      : '';
-
-  //    <form name="mobileweb" id="" method="post" acceptCharset="euc-kr"></form>
-  let html = '';
-  if (info.pg !== 'hecto') {
-    html = inicisWebviewHtml(info);
-  }
-
-  return `<html>
-  <head>
-    <meta http-equiv='content-type' content='text/html; charset=utf-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-
-    <script type='text/javascript' src='https://code.jquery.com/jquery-latest.min.js' ></script>
-    ${script}
-  </head>
-  <body>${html}</body>
-</html>
-`;
-};
-
-const pgWebViewScript = (info: PaymentParams) => {
-  return info.pg === 'hecto'
-    ? hectoWebViewScript(info)
-    : inicisWebViewScript(info);
+  return inicisWebviewHtml(info);
 };
 
 const styles = StyleSheet.create({
@@ -90,13 +56,14 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
   callback,
 }) => {
   const [loading, setLoading] = useState(true);
-  const [checkPayment, setCheckPayment] = useState(false);
   const ref = useRef<WebView>(null);
   const onMessage = useCallback((payload) => {
     let dataPayload;
     try {
       dataPayload = JSON.parse(payload.nativeEvent.data);
-    } catch (e) {}
+    } catch (e) {
+      console.log('[Console] ', e);
+    }
 
     if (dataPayload) {
       if (dataPayload.type === 'Console') {
@@ -107,32 +74,9 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
     }
   }, []);
 
-  const appState = useRef(AppState.currentState);
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', (nextAppState) => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === 'active'
-      ) {
-        console.log('App has come to the foreground!');
-        if (info.pg === 'html5_inicis' && checkPayment) {
-          ref.current?.injectJavaScript(pgWebViewConfig.runScript);
-        }
-      }
-
-      appState.current = nextAppState;
-      console.log('AppState', appState.current);
-    });
-
-    return () => {
-      subscription.remove();
-    };
-  }, [callback, checkPayment, info]);
-
   const onShouldStartLoadWithRequest = useCallback(
     (event: ShouldStartLoadRequest): boolean => {
-      console.log('@@@ PG ', event);
+      console.log('@@@ PG ', event.url);
 
       if (pgWebViewConfig.cancelUrl === event.url) {
         callback('cancel');
@@ -144,20 +88,11 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
         return false;
       }
 
-      // '쇼핑몰 이동' 버튼
-      /*
-      if (event.url.startsWith('https://ansimclick.hyundaicard.com/mobile3')) {
-        callback('check');
-        return true;
-      }
-      */
-
       if (
         event.url.startsWith('http://') ||
         event.url.startsWith('https://') ||
         event.url.startsWith('about:blank')
       ) {
-        setCheckPayment(true);
         return true;
       }
 
@@ -188,16 +123,15 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
 
   const onLoadEnd = useCallback(({nativeEvent: {url}}) => {
     setLoading(false);
-    /*
-    console.log('@@@ url', url);
-    ref.current?.injectJavaScript(
-      'console.log("END" + window.document.documentElement.innerHTML);',
-    );
-    */
-    const script = injectScript(url);
-    if (script) {
-      ref.current?.injectJavaScript(script);
-    }
+    // console.log('@@@ url', url);
+    // ref.current?.injectJavaScript(
+    //   'console.log("END" + window.document.documentElement.innerHTML);' +
+    //     'console.log("LOAD:" + document.body.onload);',
+    // );
+    // const script = injectScript(url);
+    // if (script) {
+    //   ref.current?.injectJavaScript(script);
+    // }
   }, []);
 
   return (
@@ -208,11 +142,11 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
         javaScriptEnabled
         domStorageEnabled
         injectedJavaScriptForMainFrameOnly
-        injectedJavaScript={pgWebViewScript(info)}
         mixedContentMode="compatibility"
         onMessage={onMessage}
         originWhitelist={['*']}
         sharedCookiesEnabled
+        javaScriptCanOpenWindowsAutomatically
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         onLoadEnd={onLoadEnd}
         source={{html: pgWebViewHtml(info)}}

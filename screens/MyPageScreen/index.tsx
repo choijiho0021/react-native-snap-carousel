@@ -114,11 +114,6 @@ const styles = StyleSheet.create({
     color: colors.clearBlue,
     marginLeft: 20,
   },
-  email: {
-    marginHorizontal: 20,
-    paddingVertical: 25,
-    backgroundColor: 'white',
-  },
 });
 
 type MyPageScreenNavigationProp = StackNavigationProp<

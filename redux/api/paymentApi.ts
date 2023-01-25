@@ -1,4 +1,3 @@
-import {Platform} from 'react-native';
 import _ from 'underscore';
 import Env from '@/environment';
 import api, {ApiResult, DrupalNodeJsonApi} from './api';
@@ -12,101 +11,70 @@ const PAGE_SIZE = 10;
 export type PaymentMethod = {
   key: string;
   method: string;
-  title: string;
   icon?: string;
   language?: string;
 };
-const method = esimGlobal
-  ? [
-      [
-        {
-          key: 'eximbay',
-          method: 'card',
-          title: 'pym:ccard',
-          language: 'en',
-        },
-        {
-          key: 'paypal',
-          method: 'card',
-          title: 'pym:paypal',
-          language: 'en',
-          icon: 'paypal',
-        },
-      ],
-    ]
-  : [
-      [
-        {
-          key: 'html5_inicis',
-          method: 'card',
-          title: 'pym:ccard',
-        },
-      ] as PaymentMethod[],
-      [
-        {
-          key: 'html5_inicis',
-          method: 'kakaopay',
-          title: 'pym:kakao',
-          icon: 'kakao',
-        },
-        {
-          key: 'html5_inicis',
-          method: 'tosspay',
-          title: 'pym:toss',
-          icon: 'toss',
-        },
-        {
-          key: 'html5_inicis',
-          method: 'payco',
-          title: 'pym:payco',
-          icon: 'payco',
-        },
-      ] as PaymentMethod[],
-      [
-        {
-          key: 'html5_inicis',
-          method: 'naverpay',
-          title: 'pym:naver',
-          icon: 'naver',
-          // language: 'ko',
-        },
-        {
-          key: 'html5_inicis',
-          method: 'ssgpay',
-          title: 'pym:ssgpay',
-          icon: 'ssgpay',
-        },
-        {
-          key: 'html5_inicis',
-          method: 'lpay',
-          title: 'pym:lpay',
-          icon: 'lpay',
-        },
-        // {
-        //   // method 확인
-        //   key: 'html5_inicis',
-        //   method: 'trans',
-        //   title: 'pym:bank',
-        // },
-        // !esimApp
-        //   ? {
-        //       key: 'danal',
-        //       method: 'phone',
-        //       title: 'pym:mobile',
-        //     }
-        //   : undefined,
-      ] as PaymentMethod[],
-      Platform.OS === 'android'
-        ? [
-            {
-              key: 'html5_inicis',
-              method: 'samsung',
-              title: 'pym:samsung',
-              icon: 'samsung',
-            },
-          ]
-        : [],
-    ];
+const method: Record<string, PaymentMethod> = esimGlobal
+  ? {
+      'pym:ccard': {
+        key: 'eximbay',
+        method: 'card',
+        language: 'en',
+      },
+      'pym:paypal': {
+        key: 'paypal',
+        method: 'card',
+        language: 'en',
+        icon: 'paypal',
+      },
+    }
+  : {
+      'pym:ccard': {
+        key: 'html5_inicis',
+        method: 'card',
+      },
+      'pym:trans': {
+        // method 확인
+        key: 'html5_inicis',
+        method: 'trans',
+      },
+      'pym:kakao': {
+        key: 'html5_inicis',
+        method: 'kakaopay',
+        icon: 'kakao',
+      },
+      'pym:toss': {
+        key: 'html5_inicis',
+        method: 'tosspay',
+        icon: 'toss',
+      },
+      'pym:payco': {
+        key: 'html5_inicis',
+        method: 'payco',
+        icon: 'payco',
+      },
+      'pym:naver': {
+        key: 'html5_inicis',
+        method: 'naverpay',
+        icon: 'naver',
+        // language: 'ko',
+      },
+      'pym:ssgpay': {
+        key: 'html5_inicis',
+        method: 'ssgpay',
+        icon: 'ssgpay',
+      },
+      'pym:lpay': {
+        key: 'html5_inicis',
+        method: 'lpay',
+        icon: 'lpay',
+      },
+      'pym:samsung': {
+        key: 'html5_inicis',
+        method: 'samsung',
+        icon: 'samsung',
+      },
+    };
 
 type RkbPayment = {
   type?: string;

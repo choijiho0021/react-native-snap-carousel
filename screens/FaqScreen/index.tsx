@@ -27,11 +27,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'stretch',
   },
-  tabBar: {
-    shadowColor: 'transparent',
-    shadowOpacity: 0,
-    elevation: 0,
-  },
 });
 
 type FaqScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Faq'>;

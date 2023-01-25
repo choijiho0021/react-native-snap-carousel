@@ -2,18 +2,11 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {SetStateAction, useCallback, useEffect, useState} from 'react';
-import {
-  Platform,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Video from 'react-native-video';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -32,7 +25,6 @@ import {
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import api from '@/redux/api/api';
-import {PaymentMethod} from '@/redux/api/paymentApi';
 import {Currency} from '@/redux/api/productApi';
 import utils from '@/redux/api/utils';
 import {createPaymentInfoForRokebiCash} from '@/redux/models/paymentResult';
@@ -58,6 +50,7 @@ import {
 import i18n from '@/utils/i18n';
 import AppModal from '@/components/AppModal';
 import AppStyledText from '@/components/AppStyledText';
+import PymButtonList from '@/components/AppPaymentGateway/PymButtonList';
 
 const {esimApp} = Env.get();
 const infoKey = 'pym:benefit';
@@ -78,78 +71,6 @@ const styles = StyleSheet.create({
   divider: {
     height: 10,
     backgroundColor: colors.whiteTwo,
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-  },
-  buttonStyle: {
-    flex: 1,
-    height: 62,
-    backgroundColor: colors.white,
-    borderStyle: 'solid' as const,
-    borderLeftWidth: 1,
-    borderTopWidth: 1,
-  },
-  buttonText: {
-    ...appStyles.normal14Text,
-    textAlign: 'center',
-    color: colors.warmGrey,
-  },
-  addrCardText: {
-    ...appStyles.normal14Text,
-    color: colors.black,
-    lineHeight: 24,
-  },
-  addrBtn: {
-    height: 48,
-    borderRadius: 3,
-    // marginHorizontal: 20,
-    marginTop: 0,
-  },
-  profileTitle: {
-    marginBottom: 6,
-    flex: 1,
-    flexDirection: 'row',
-  },
-  profileTitleText: {
-    color: colors.black,
-    alignItems: 'flex-start',
-    marginRight: 20,
-    marginVertical: 10,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  chgButtonText: {
-    ...appStyles.normal12Text,
-    color: colors.white,
-  },
-  chgButton: {
-    width: 50,
-    height: 36,
-    borderRadius: 3,
-    backgroundColor: colors.warmGrey,
-    marginLeft: 20,
-  },
-  basicAddr: {
-    ...appStyles.normal12Text,
-    width: 52,
-    height: Platform.OS === 'android' ? 15 : 12,
-    lineHeight: Platform.OS === 'android' ? 15 : 12,
-    fontSize: Platform.OS === 'android' ? 11 : 12,
-    color: colors.clearBlue,
-    alignSelf: 'center',
-  },
-  basicAddrBox: {
-    width: 68,
-    height: 22,
-    borderRadius: 10,
-    backgroundColor: colors.white,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: colors.clearBlue,
-    justifyContent: 'center',
-    alignSelf: 'center',
   },
   result: {
     justifyContent: 'center',
@@ -186,24 +107,6 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.black,
     borderBottomWidth: 1,
     marginBottom: 30,
-  },
-  pickerWrapper: {
-    ...appStyles.borderWrapper,
-    height: 40,
-    borderColor: colors.lightGrey,
-    paddingLeft: 20,
-    alignContent: 'center',
-    justifyContent: 'center',
-  },
-  textField: {
-    borderRadius: 3,
-    borderColor: colors.lightGrey,
-    borderWidth: 1,
-    paddingHorizontal: 20,
-    paddingTop: 15,
-    marginTop: 15,
-    height: 100,
-    alignItems: 'flex-start',
   },
   alignCenter: {
     alignSelf: 'center',
@@ -292,11 +195,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [mode, setMode] = useState<PymMethodScreenMode>();
   const [pymPrice, setPymPrice] = useState<Currency>();
   const [deduct, setDeduct] = useState<Currency>();
-  const [selected, setSelected] = useState<PaymentMethod>(
-    API.Payment.method[0][0],
-  );
-  const [row, setRow] = useState(0);
-  const [column, setColumn] = useState(0);
+  const [selected, setSelected] = useState('pym:ccard');
   const [clickable, setClickable] = useState(true);
   const [loading, setLoading] = useState(false);
   const [showModalMethod, setShowModalMethod] = useState(true);
@@ -366,7 +265,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
       setClickable(false);
 
-      if (_.isEmpty(selected) && pymPrice?.value !== 0) return;
+      const payMethod = API.Payment.method[selected];
+      if (!payMethod && pymPrice?.value !== 0) return;
 
       const {mobile, email} = account;
       const profileId =
@@ -419,9 +319,9 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       } else {
         // if the payment amount is not zero, make order first
         const params = {
-          pg: selected?.key,
-          pay_method: selected?.method,
-          merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
+          pg: payMethod?.key,
+          pay_method: payMethod?.method,
+          merchant_uid: `${mobile}_${new Date().getTime()}`,
           name: i18n.t('appTitle'),
           amount: pymPrice?.value, // 실제 결제 금액 (로깨비캐시 제외)
           rokebi_cash: deduct?.value, // balance 차감 금액
@@ -432,7 +332,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           app_scheme: scheme,
           profile_uuid: profileId,
           dlvCost: dlvCost.value,
-          language: selected?.language || i18n.locale,
+          language: payMethod?.language || i18n.locale,
           digital: true,
           // mode: 'test'
         } as PaymentParams;
@@ -453,61 +353,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       pymPrice,
       selected,
     ],
-  );
-
-  const button = useCallback(
-    () =>
-      API.Payment.method
-        .filter((m) => m.length > 0)
-        .map((value, rowIdx, arr) => (
-          <View
-            key={utils.generateKey(rowIdx.toString())}
-            style={styles.buttonRow}>
-            {
-              // key: row, idx: column
-              value.map((v, idx) => (
-                <AppButton
-                  key={v.key + v.method}
-                  title={!v.icon ? i18n.t(v.title) : undefined}
-                  style={[
-                    styles.buttonStyle,
-                    {
-                      borderRightWidth: idx === value.length - 1 ? 1 : 0,
-                      borderBottomWidth: rowIdx === arr.length - 1 ? 1 : 0,
-                      borderLeftColor:
-                        (idx === column || idx === column + 1) && rowIdx === row
-                          ? colors.clearBlue
-                          : colors.lightGrey,
-                      borderTopColor:
-                        (idx === column ||
-                          (rowIdx - 1 === row && !arr[rowIdx - 1][idx])) &&
-                        (rowIdx === row || rowIdx - 1 === row)
-                          ? colors.clearBlue
-                          : colors.lightGrey,
-                      borderRightColor:
-                        idx === column && rowIdx === row
-                          ? colors.clearBlue
-                          : colors.lightGrey,
-                      borderBottomColor:
-                        idx === column && rowIdx === row
-                          ? colors.clearBlue
-                          : colors.lightGrey,
-                    },
-                  ]}
-                  iconName={v.icon}
-                  checked={v.title === selected.title}
-                  onPress={() => {
-                    setSelected(v);
-                    setRow(rowIdx);
-                    setColumn(idx);
-                  }}
-                  titleStyle={styles.buttonText}
-                />
-              ))
-            }
-          </View>
-        )),
-    [column, row, selected.title],
   );
 
   const dropDownHeader = useCallback(
@@ -544,7 +389,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     const benefit = selected
       ? info.infoMap
           .get(infoKey)
-          ?.find((item) => item.title.indexOf(selected.title) >= 0)
+          ?.find((item) => item.title.indexOf(selected) >= 0)
       : undefined;
 
     return (
@@ -553,12 +398,12 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           showModalMethod,
           setShowModalMethod,
           i18n.t('pym:method'),
-          selected?.title ? i18n.t(selected?.title) : '',
+          selected ? i18n.t(selected) : '',
         )}
         {showModalMethod && (
           <View style={styles.beforeDrop}>
             <View style={styles.thickBar} />
-            {button()}
+            <PymButtonList selected={selected} onPress={setSelected} />
             {
               //
               /* 토스 간편결제 추가로 현재 불필요
@@ -583,7 +428,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         <View style={styles.divider} />
       </View>
     );
-  }, [button, dropDownHeader, info.infoMap, selected, showModalMethod]);
+  }, [dropDownHeader, info.infoMap, selected, showModalMethod]);
 
   const move = useCallback(
     (key: '1' | '2') => {
@@ -635,7 +480,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
             {i18n.t('pym:consentEssential')}
           </AppText>
         </Pressable>
-        <Pressable style={[styles.spaceBetweenBox]} onPress={() => move('1')}>
+        <Pressable style={styles.spaceBetweenBox} onPress={() => move('1')}>
           <AppText
             style={[
               appStyles.normal14Text,
@@ -694,7 +539,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         <AppButton
           title={i18n.t('payment')}
           titleStyle={appStyles.medium18}
-          disabled={(pymPrice?.value !== 0 && _.isEmpty(selected)) || !consent}
+          disabled={(pymPrice?.value !== 0 && !selected) || !consent}
           key={i18n.t('payment')}
           onPress={() => onSubmit(false)}
           style={appStyles.confirm}

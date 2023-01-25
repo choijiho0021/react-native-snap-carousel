@@ -20,11 +20,20 @@ if (
      * See the project section above for more information.projecttsconfig.json
      */
     createDefaultProgram: true,
+    ecmaFeatures: {
+      jsx: true,
+    },
   };
 }
 module.exports = {
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'react-hooks', 'prettier'],
+  plugins: [
+    '@typescript-eslint',
+    'react',
+    'react-native',
+    'react-hooks',
+    'prettier',
+  ],
   // plugins: ['eslint-comments', 'jest', 'unicorn', 'react-hooks'],
   extends: ['airbnb', 'airbnb-typescript', 'prettier'],
   env: {
@@ -34,6 +43,7 @@ module.exports = {
     mocha: true,
     jest: true,
     jasmine: true,
+    'react-native/react-native': true,
   },
   rules: {
     'no-use-before-define': 0,
@@ -132,6 +142,13 @@ module.exports = {
     'react/jsx-filename-extension': [1, {extensions: ['.tsx', '.jsx']}],
     'react-hooks/rules-of-hooks': 'error', // Checks rules of Hooks
     */
+
+    'react-native/no-unused-styles': 'warn',
+    'react-native/split-platform-components': 2,
+    // 'react-native/no-inline-styles': 2,
+    // 'react-native/no-color-literals': 2,
+    'react-native/no-raw-text': 2,
+    'react-native/no-single-element-style-arrays': 2,
   },
   settings: {
     'import/resolver': {
