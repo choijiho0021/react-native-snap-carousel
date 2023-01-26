@@ -442,9 +442,7 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
                   {i18n.t(`redirectHK:${elm}`)}
                 </AppText>
                 <View style={styles.textUnderLine}>
-                  <AppText style={[appStyles.bold16Text]}>
-                    {params[elm]}
-                  </AppText>
+                  <AppText style={appStyles.bold16Text}>{params[elm]}</AppText>
                 </View>
               </View>
               <AppButton

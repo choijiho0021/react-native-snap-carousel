@@ -166,7 +166,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#ffffff',
   },
-  currencystyle: {},
 });
 
 type PurchaseDetailScreenNavigationProp = StackNavigationProp<

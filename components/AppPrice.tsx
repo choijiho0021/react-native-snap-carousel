@@ -19,10 +19,6 @@ const styles = StyleSheet.create({
     ...appStyles.price,
     textAlign: 'left',
   },
-  won: {
-    ...appStyles.normal14Text,
-    marginLeft: 0,
-  },
 });
 
 const AppPrice = ({

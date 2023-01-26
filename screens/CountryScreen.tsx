@@ -17,7 +17,6 @@ import {RkbProduct} from '@/redux/api/productApi';
 import {actions as cartActions} from '@/redux/modules/cart';
 import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
-import {device, windowWidth} from '@/constants/SliderEntry.style';
 import CountryListItem from './HomeScreen/component/CountryListItem';
 
 const styles = StyleSheet.create({
@@ -36,29 +35,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteTwo,
     marginTop: 32,
   },
-  textView: {
-    flex: 1,
-    alignItems: 'flex-start',
-  },
   sectionHeader: {
     paddingTop: 32,
     paddingBottom: 20,
     marginHorizontal: 20,
     backgroundColor: colors.white,
-  },
-  detail: {
-    height: windowWidth > device.small.window.width ? 48 : 36,
-    borderRadius: 3,
-    backgroundColor: colors.white,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: colors.black,
-    marginTop: 20,
-    marginHorizontal: 20,
-    alignItems: 'center',
-    paddingLeft: 20,
-    justifyContent: 'space-between',
-    flexDirection: 'row',
   },
   header: {
     flexDirection: 'row',
@@ -78,7 +59,7 @@ export const makeProdData = (
 
   const list: RkbProduct[][] = prodByPartners
     ?.reduce((acc, cur) => (cur ? acc.concat(cur.filter((c) => !!c)) : acc), [])
-    .reduce(
+    ?.reduce(
       (acc, cur) =>
         cur?.field_daily === 'daily'
           ? [acc[0].concat(cur), acc[1]]
@@ -202,10 +183,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           renderSectionHeader={({section: {title, data}}) =>
             data.length >= 1 ? (
               <View style={styles.sectionHeader}>
-                <AppText
-                  style={{
-                    ...appStyles.bold20Text,
-                  }}>
+                <AppText style={appStyles.bold20Text}>
                   {i18n.t(`country:${title}`)}
                 </AppText>
               </View>

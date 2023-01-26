@@ -32,11 +32,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'stretch',
   },
-  title: {
-    ...appStyles.bold18Text,
-    fontSize: isDeviceSize('medium') ? 18 : 20,
-    color: colors.clearBlue,
-  },
   tab: {
     backgroundColor: colors.white,
     height: 60,

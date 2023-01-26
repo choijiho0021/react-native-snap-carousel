@@ -1,9 +1,12 @@
 import React, {useMemo} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {Platform, StyleSheet, View} from 'react-native';
 import i18n from '@/utils/i18n';
+import Env from '@/environment';
 import AppButton from '../AppButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
+
+const {esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   buttonStyle: {
@@ -30,6 +33,7 @@ const PymButton = ({
   btnKey,
   icon,
   selected,
+  left = true,
   right,
   bottom,
   topColor,
@@ -38,21 +42,23 @@ const PymButton = ({
 }: {
   btnKey: string;
   icon?: string;
-  selected: string;
+  selected?: string;
+  left?: boolean;
   right?: boolean;
   bottom?: boolean;
   topColor?: boolean;
   leftColor?: boolean;
-  onPress: (k: string) => void;
+  onPress?: (k: string) => void;
 }) => {
   const sel = useMemo(() => btnKey === selected, [btnKey, selected]);
 
   return (
     <AppButton
-      title={icon ? undefined : i18n.t(btnKey)}
+      title={icon || btnKey === 'pym:null' ? undefined : i18n.t(btnKey)}
       style={[
         styles.buttonStyle,
         {
+          borderLeftWidth: left ? 1 : 0,
           borderRightWidth: right ? 1 : 0,
           borderBottomWidth: bottom ? 1 : 0,
           borderLeftColor:
@@ -65,7 +71,7 @@ const PymButton = ({
       ]}
       titleStyle={styles.buttonText}
       iconName={icon}
-      onPress={() => onPress(btnKey)}
+      onPress={() => onPress?.(btnKey)}
     />
   );
 };
@@ -75,6 +81,27 @@ type PymButtonListParams = {
   onPress: (k: string) => void;
 };
 const PymButtonList: React.FC<PymButtonListParams> = ({selected, onPress}) => {
+  if (esimGlobal)
+    return (
+      <View style={styles.buttonRow}>
+        <PymButton
+          selected={selected}
+          btnKey="pym:ccard"
+          bottom
+          onPress={onPress}
+        />
+        <PymButton
+          selected={selected}
+          btnKey="pym:paypal"
+          icon="paypal"
+          right
+          bottom
+          onPress={onPress}
+          leftColor={selected === 'pym:ccard'}
+        />
+      </View>
+    );
+
   return (
     <View>
       <PymButton
@@ -114,7 +141,6 @@ const PymButtonList: React.FC<PymButtonListParams> = ({selected, onPress}) => {
           icon="naver"
           btnKey="pym:naver"
           selected={selected}
-          bottom
           topColor={selected === 'pym:kakao'}
           onPress={onPress}
         />
@@ -122,7 +148,6 @@ const PymButtonList: React.FC<PymButtonListParams> = ({selected, onPress}) => {
           icon="ssgpay"
           btnKey="pym:ssgpay"
           selected={selected}
-          bottom
           topColor={selected === 'pym:toss'}
           onPress={onPress}
           leftColor={selected === 'pym:naver'}
@@ -134,8 +159,40 @@ const PymButtonList: React.FC<PymButtonListParams> = ({selected, onPress}) => {
           topColor={selected === 'pym:payco'}
           leftColor={selected === 'pym:ssgpay'}
           onPress={onPress}
-          bottom
           right
+        />
+      </View>
+      <View key="row2" style={styles.buttonRow}>
+        <PymButton
+          btnKey="pym:bank"
+          selected={selected}
+          bottom
+          topColor={selected === 'pym:naver'}
+          onPress={onPress}
+        />
+        {Platform.OS === 'android' ? (
+          <PymButton
+            icon="samsung"
+            btnKey="pym:samsung"
+            selected={selected}
+            bottom
+            right
+            onPress={onPress}
+            topColor={selected === 'pym:ssgpay'}
+            leftColor={selected === 'pym:bank'}
+          />
+        ) : (
+          <PymButton
+            btnKey="pym:null"
+            topColor={selected === 'pym:ssgpay'}
+            leftColor={selected === 'pym:bank'}
+          />
+        )}
+        <PymButton
+          btnKey="pym:null"
+          left={Platform.OS === 'android'}
+          topColor={selected === 'pym:lpay'}
+          leftColor={Platform.OS === 'android' && selected === 'pym:samsung'}
         />
       </View>
     </View>

@@ -16,11 +16,6 @@ const styles = StyleSheet.create({
     marginTop: 13,
     marginLeft: 30,
   },
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignContent: 'stretch',
-  },
   text: {
     ...appStyles.normal12Text,
     color: '#ffffff',

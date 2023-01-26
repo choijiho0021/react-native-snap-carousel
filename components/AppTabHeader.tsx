@@ -13,10 +13,6 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     color: colors.warmGrey,
   },
-  boldClearBlue: {
-    color: colors.clearBlue,
-    fontWeight: 'bold',
-  },
   tabView: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -34,11 +34,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     width: '100%',
   },
-  buttonTitle: {
-    ...appStyles.normal18Text,
-    textAlign: 'right',
-    width: '100%',
-  },
   normalBtnTitle: {
     ...appStyles.normal16Text,
     textAlign: 'right',

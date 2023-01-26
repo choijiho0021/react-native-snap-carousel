@@ -48,12 +48,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  itemRch: {
-    ...appStyles.normal12Text,
-  },
-  balance: {
-    marginTop: 12,
-  },
   touch: {
     flexDirection: 'row',
     alignItems: 'center',

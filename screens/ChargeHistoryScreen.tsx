@@ -51,25 +51,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     width: '100%',
   },
-  activeBottomBox: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  btn: {
-    width: '30%',
-    paddingTop: 19,
-  },
-  btnDis: {
-    width: '30%',
-    paddingTop: 19,
-    opacity: 0.6,
-  },
-  btnTitle: {
-    ...appStyles.normal14Text,
-    textAlign: 'center',
-    marginTop: 10,
-  },
   normal14Gray: {
     ...appStyles.normal14Text,
     color: colors.warmGrey,
@@ -158,10 +139,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
-  },
-  promoFlag: {
-    alignItems: 'center',
-    flexDirection: 'row',
   },
   tooltipContainer: {
     zIndex: 100,
