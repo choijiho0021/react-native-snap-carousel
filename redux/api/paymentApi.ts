@@ -33,8 +33,7 @@ const method: Record<string, PaymentMethod> = esimGlobal
         key: 'html5_inicis',
         method: 'card',
       },
-      'pym:trans': {
-        // method 확인
+      'pym:bank': {
         key: 'html5_inicis',
         method: 'trans',
       },
