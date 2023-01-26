@@ -1,5 +1,5 @@
 import React, {useCallback, useRef, useState} from 'react';
-import {Linking, StyleSheet, View} from 'react-native';
+import {Linking, StyleSheet, View, Platform} from 'react-native';
 import WebView from 'react-native-webview';
 import {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
 import Video from 'react-native-video';
@@ -96,11 +96,27 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
         return true;
       }
 
-      Linking.openURL(event.url).catch((err) => {
-        console.log(
-          '앱 실행에 실패했습니다. 설치가 되어있지 않은 경우 설치하기 버튼을 눌러주세요.',
-        );
-      });
+      if (Platform.OS === 'android') {
+        const SendIntentAndroid = require('react-native-send-intent');
+        SendIntentAndroid.openChromeIntent(event.url)
+          .then((isOpened: boolean) => {
+            if (!isOpened) {
+              alert('앱 실행이 실패했습니다');
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            callback('cancel');
+          });
+      } else {
+        Linking.openURL(event.url).catch((err) => {
+          console.log(
+            '앱 실행에 실패했습니다. 설치가 되어있지 않은 경우 설치하기 버튼을 눌러주세요.',
+          );
+          callback('cancel');
+        });
+      }
+
       return false;
     },
     [callback],
