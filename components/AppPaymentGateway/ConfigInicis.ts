@@ -11,7 +11,7 @@ export const pgWebViewConfig = {
 
   confirmUrl: `${scheme}://${apiUrl}/rokebi/payment/inicis`,
 
-  bankTransUrl: `${scheme}://${apiUrl}/rokebi/payment?_format=json`,
+  notiUrl: `${scheme}://${apiUrl}/rokebi/payment/inicis?noti`,
 };
 
 export const configInicis = {
@@ -79,7 +79,7 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
       <input type="hidden" name="P_MOBILE" value="${info.buyer_tel}" />
       <input type="hidden" name="P_EMAIL" value="${info.buyer_email}" />
       <input type="hidden" name="P_NOTI_URL" value="${
-        pgWebViewConfig.bankTransUrl
+        pgWebViewConfig.notiUrl
       }" />
       <input type="hidden" name="P_NEXT_URL" value="${
         pgWebViewConfig.confirmUrl
