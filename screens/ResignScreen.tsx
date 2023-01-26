@@ -50,10 +50,6 @@ const radioButtons = [
 ];
 
 const styles = StyleSheet.create({
-  title: {
-    ...appStyles.title,
-    marginLeft: 20,
-  },
   container: {
     flex: 1,
     backgroundColor: colors.white,
@@ -87,11 +83,6 @@ const styles = StyleSheet.create({
   resignWhy: {
     ...appStyles.bold16Text,
     marginBottom: 4,
-  },
-  image: {
-    marginTop: 52,
-    marginRight: 32,
-    justifyContent: 'flex-end',
   },
   confirmResign: {
     backgroundColor: colors.whiteTwo,

@@ -66,26 +66,10 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: colors.white,
   },
-  container: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    flexDirection: 'column',
-    width: '100%',
-    height: 'auto',
-  },
   image: {
     width: '100%',
     maxWidth: MAX_WIDTH,
     height: '100%',
-  },
-  text: {
-    ...appStyles.bold18Text,
-    color: colors.white,
-    marginTop: 40,
-  },
-  divider: {
-    height: 10,
-    backgroundColor: colors.whiteTwo,
   },
   bottomText: {
     ...appStyles.normal16Text,

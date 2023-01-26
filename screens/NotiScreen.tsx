@@ -59,10 +59,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'row',
   },
-  created: {
-    ...appStyles.normal12Text,
-    textAlign: 'left',
-  },
   title: {
     marginBottom: 11,
     marginTop: 5,

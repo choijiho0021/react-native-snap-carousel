@@ -41,30 +41,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  card: {
-    height: 168,
-    // borderWidth: 1,
-    // borderColor: colors.lightGrey,
-    marginHorizontal: 47,
-    marginTop: 20,
-  },
-  iccidTitle: {
-    ...appStyles.bold12Text,
-    color: colors.clearBlue,
-  },
-  iccidRow: {
-    marginTop: 5,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  iccid: {
-    ...appStyles.roboto16Text,
-    color: colors.black,
-  },
-  iccidBox: {
-    marginHorizontal: 47,
-    marginTop: 15,
-  },
   divider: {
     marginTop: 30,
     marginBottom: 5,
@@ -107,13 +83,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     flexDirection: 'row',
-    alignItems: 'center',
-  },
-  rchTextBox: {
-    width: '100%',
-    marginTop: 5,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
   },
   iconWithText: {

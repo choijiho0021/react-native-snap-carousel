@@ -126,13 +126,6 @@ const styles = StyleSheet.create({
     marginBottom: 25,
     alignItems: 'center',
   },
-  autoList: {
-    marginVertical: 23,
-    marginLeft: 60,
-  },
-  autoText: {
-    ...appStyles.normal16Text,
-  },
   emptyPage: {
     marginTop: 60,
     textAlign: 'center',
@@ -160,12 +153,6 @@ const styles = StyleSheet.create({
   showSearchBar: {
     paddingRight: 10,
     justifyContent: 'flex-end',
-  },
-  titleBottom: {
-    height: 1,
-    marginHorizontal: 20,
-    marginTop: 10,
-    backgroundColor: colors.black,
   },
   divider: {
     borderRightWidth: 1,

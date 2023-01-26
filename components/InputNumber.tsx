@@ -36,12 +36,6 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     textAlign: 'center',
   },
-  centerBox: {
-    borderLeftColor: colors.lightGrey,
-    borderLeftWidth: 1,
-    borderRightColor: colors.lightGrey,
-    borderRightWidth: 1,
-  },
 });
 
 const InputNumber = ({

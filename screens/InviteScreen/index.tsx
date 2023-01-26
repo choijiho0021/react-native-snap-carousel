@@ -66,10 +66,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: colors.blue,
   },
-  cashText: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-  },
   rowCenter: {
     flex: 1,
     flexDirection: 'row',

@@ -97,12 +97,6 @@ const styles = StyleSheet.create({
     height: 10,
     backgroundColor: '#f5f5f5',
   },
-  field: {
-    width: '100%',
-  },
-  button: {
-    width: '70%',
-  },
   text: {
     ...appStyles.normal18Text,
     textAlign: 'center',
@@ -115,19 +109,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: colors.white,
   },
-  smsButtonText: {
-    ...appStyles.normal14Text,
-    textAlign: 'center',
-    color: colors.white,
-  },
-  inputStyle: {
-    flex: 1,
-    marginRight: 10,
-    paddingBottom: 9,
-  },
-  emptyInput: {
-    borderBottomColor: colors.lightGrey,
-  },
   confirmItem: {
     ...appStyles.normal14Text,
     textAlignVertical: 'bottom',
@@ -135,14 +116,6 @@ const styles = StyleSheet.create({
   },
   rowStyle: {
     flexDirection: 'row',
-    flex: 1,
-  },
-  id: {
-    ...appStyles.normal22Text,
-    marginTop: 30,
-    paddingHorizontal: 20,
-  },
-  flexStyle: {
     flex: 1,
   },
 });

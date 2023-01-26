@@ -8,13 +8,6 @@ import LabelText from './LabelText';
 import utils from '../redux/api/utils';
 
 const styles = StyleSheet.create({
-  container: {
-    width: 96,
-    height: 32,
-    backgroundColor: 'transparent',
-    flexDirection: 'row',
-    alignItems: 'stretch',
-  },
   price: {
     marginHorizontal: 20,
     paddingVertical: 20,

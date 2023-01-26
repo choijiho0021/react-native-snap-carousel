@@ -32,27 +32,10 @@ import AppModalContent from '@/components/ModalContent/AppModalContent';
 const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
-  title: {
-    ...appStyles.title,
-    marginLeft: 20,
-  },
   container: {
     flex: 1,
     alignItems: 'stretch',
     backgroundColor: colors.white,
-  },
-  cancelButton: {
-    width: 20,
-    height: 20,
-    backgroundColor: colors.white,
-  },
-  inputBox: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
-    borderBottomColor: colors.black,
-    borderBottomWidth: 1,
-    alignItems: 'center',
   },
   textInput: {
     marginTop: 10,
@@ -61,17 +44,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     paddingVertical: 12,
     paddingHorizontal: 15,
-  },
-  label: {
-    ...appStyles.normal14Text,
-    marginTop: 14,
-    color: colors.clearBlue,
-  },
-  error: {
-    ...appStyles.normal14Text,
-    color: colors.tomato,
-    marginHorizontal: 30,
-    marginTop: 10,
   },
   oldEmail: {
     height: 46,
@@ -86,12 +58,6 @@ const styles = StyleSheet.create({
     color: colors.clearBlue,
     marginTop: 13,
     marginLeft: 10,
-  },
-  divider: {
-    marginTop: 30,
-    width: '100%',
-    height: 10,
-    backgroundColor: '#f5f5f5',
   },
   button: {
     ...appStyles.normal16Text,

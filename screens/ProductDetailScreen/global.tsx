@@ -55,12 +55,6 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
   },
-  container: {
-    flex: 1,
-    alignItems: 'stretch',
-    paddingTop: 40,
-    paddingHorizontal: 20,
-  },
   tabView: {
     height: 60,
     flexDirection: 'row',
@@ -83,7 +77,6 @@ const styles = StyleSheet.create({
     marginBottom: 14,
     marginTop: 45,
   },
-  kakaoImage: {},
   kakaoContainer: {
     alignItems: 'center',
     backgroundColor: colors.whiteTwo,

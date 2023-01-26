@@ -158,11 +158,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginVertical: 15,
   },
-  tabView: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
   remainUnderLine: {
     flex: 1,
     height: '100%',

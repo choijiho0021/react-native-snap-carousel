@@ -38,11 +38,6 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     width: '100%',
   },
-  image: {
-    width: '100%',
-    height: '100%',
-    // flex: 1,
-  },
   modalHeader: {
     width: '100%',
     flexDirection: 'row',

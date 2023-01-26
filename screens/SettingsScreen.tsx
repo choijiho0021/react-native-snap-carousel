@@ -36,10 +36,6 @@ import i18n from '@/utils/i18n';
 const {isProduction} = Env.get();
 const PUSH_ENABLED = 0;
 const styles = StyleSheet.create({
-  title: {
-    ...appStyles.title,
-    marginLeft: 20,
-  },
   container: {
     flex: 1,
     alignItems: 'stretch',
@@ -61,9 +57,6 @@ const styles = StyleSheet.create({
   itemDesc: {
     ...appStyles.normal12Text,
     color: colors.warmGrey,
-  },
-  switch: {
-    transform: [{scaleX: 1}, {scaleY: 0.7}],
   },
 });
 

@@ -39,11 +39,6 @@ const styles = StyleSheet.create({
     color: colors.black,
     marginRight: 20,
   },
-  icon: {
-    bottom: 20,
-    right: -29,
-    alignSelf: 'center',
-  },
   userPicture: {
     width: 76,
     height: 76,
