@@ -40,19 +40,23 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
     info.amount.toString() + info.merchant_uid + timestamp + inicis.HASHKEY,
   ).toString(CryptoJS.enc.Base64);
 
-  return `<html>
-  <head>
-    <meta http-equiv='content-type' content='text/html; charset=utf-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <script type='text/javascript'>
-    const consoleLog = (type, log) => window.ReactNativeWebView.postMessage(JSON.stringify({'type': 'Console', 'data': {'type': type, 'log': log}}));
+  const debugScript = isProduction
+    ? ''
+    : `const consoleLog = (type, log) => window.ReactNativeWebView.postMessage(JSON.stringify({'type': 'Console', 'data': {'type': type, 'log': log}}));
     console = {
         log: (log) => consoleLog('log', log),
         debug: (log) => consoleLog('debug', log),
         info: (log) => consoleLog('info', log),
         warn: (log) => consoleLog('warn', log),
         error: (log) => consoleLog('error', log),
-      };
+      };`;
+
+  return `<html>
+  <head>
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <script type='text/javascript'>
+    ${debugScript}
     function submit() {
       const myform = document.mobileweb;
       myform.action = "https://mobile.inicis.com/smart/payment/";
