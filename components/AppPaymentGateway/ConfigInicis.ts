@@ -2,19 +2,19 @@ import CryptoJS from 'crypto-js';
 import Env from '@/environment';
 import {PaymentParams} from '@/navigation/navigation';
 
+const {payment, isProduction, scheme, apiUrl} = Env.get();
+
 export const pgWebViewConfig = {
   cancelUrl: 'https://localhost/canc',
 
   nextUrl: 'https://localhost/next',
 
-  confirmUrl: 'http://tb-esim.rokebi.com/rokebi/payment/inicis',
+  confirmUrl: `${scheme}://${apiUrl}/rokebi/payment/inicis`,
+
+  bankTransUrl: `${scheme}://${apiUrl}/rokebi/payment?_format=json`,
 };
 
-const {payment} = Env.get();
-
 export const configInicis = {
-  PAYMENT_SERVER: 'https://stgstdpay.inicis.com',
-  // 'https://stdpay.inicis.com'
   WEBVIEW_ENDPOINT: 'https://mobile.inicis.com/smart/payment/',
 };
 
@@ -28,11 +28,12 @@ const opt: Record<string, string> = {
 };
 
 export const inicisWebviewHtml = (info: PaymentParams) => {
-  const inicis = {
-    MID: 'INIpayTest', // inicis test key
-    HASHKEY: '3CB8183A4BE283555ACC8363C0360223',
-  };
-  // const {inicis} = payment;
+  const inicis = isProduction
+    ? payment.inicis
+    : {
+        MID: 'INIpayTest', // inicis test key
+        HASHKEY: '3CB8183A4BE283555ACC8363C0360223',
+      };
   const reserved = opt[info.pay_method] || '';
   const timestamp = Date.now();
   const hash = CryptoJS.SHA512(
@@ -74,7 +75,7 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
       <input type="hidden" name="P_MOBILE" value="${info.buyer_tel}" />
       <input type="hidden" name="P_EMAIL" value="${info.buyer_email}" />
       <input type="hidden" name="P_NOTI_URL" value="${
-        pgWebViewConfig.confirmUrl
+        pgWebViewConfig.bankTransUrl
       }" />
       <input type="hidden" name="P_NEXT_URL" value="${
         pgWebViewConfig.confirmUrl
