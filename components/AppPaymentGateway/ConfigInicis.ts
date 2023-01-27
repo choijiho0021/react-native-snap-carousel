@@ -11,7 +11,7 @@ export const pgWebViewConfig = {
 
   confirmUrl: `${scheme}://${apiUrl}/rokebi/payment/inicis`,
 
-  bankTransUrl: `${scheme}://${apiUrl}/rokebi/payment?_format=json`,
+  notiUrl: `${scheme}://${apiUrl}/rokebi/payment/inicis?noti`,
 };
 
 export const configInicis = {
@@ -40,19 +40,23 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
     info.amount.toString() + info.merchant_uid + timestamp + inicis.HASHKEY,
   ).toString(CryptoJS.enc.Base64);
 
-  return `<html>
-  <head>
-    <meta http-equiv='content-type' content='text/html; charset=utf-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <script type='text/javascript'>
-    const consoleLog = (type, log) => window.ReactNativeWebView.postMessage(JSON.stringify({'type': 'Console', 'data': {'type': type, 'log': log}}));
+  const debugScript = isProduction
+    ? ''
+    : `const consoleLog = (type, log) => window.ReactNativeWebView.postMessage(JSON.stringify({'type': 'Console', 'data': {'type': type, 'log': log}}));
     console = {
         log: (log) => consoleLog('log', log),
         debug: (log) => consoleLog('debug', log),
         info: (log) => consoleLog('info', log),
         warn: (log) => consoleLog('warn', log),
         error: (log) => consoleLog('error', log),
-      };
+      };`;
+
+  return `<html>
+  <head>
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <script type='text/javascript'>
+    ${debugScript}
     function submit() {
       const myform = document.mobileweb;
       myform.action = "https://mobile.inicis.com/smart/payment/";
@@ -75,7 +79,7 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
       <input type="hidden" name="P_MOBILE" value="${info.buyer_tel}" />
       <input type="hidden" name="P_EMAIL" value="${info.buyer_email}" />
       <input type="hidden" name="P_NOTI_URL" value="${
-        pgWebViewConfig.bankTransUrl
+        pgWebViewConfig.notiUrl
       }" />
       <input type="hidden" name="P_NEXT_URL" value="${
         pgWebViewConfig.confirmUrl

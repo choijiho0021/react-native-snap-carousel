@@ -162,7 +162,7 @@ const PymButtonList: React.FC<PymButtonListParams> = ({selected, onPress}) => {
           right
         />
       </View>
-      <View key="row2" style={styles.buttonRow}>
+      <View key="row3" style={styles.buttonRow}>
         <PymButton
           btnKey="pym:bank"
           selected={selected}
