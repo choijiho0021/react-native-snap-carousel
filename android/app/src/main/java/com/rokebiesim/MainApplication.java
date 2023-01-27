@@ -14,7 +14,6 @@ import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactApplication;
-import com.burnweb.rnsendintent.RNSendIntentPackage;
 import com.airbnb.android.react.lottie.LottiePackage;
 // import com.horcrux.svg.SvgPackage;
 import com.adjust.nativemodule.AdjustPackage;
@@ -158,7 +157,6 @@ public class MainApplication extends Application implements ReactApplication {
                 protected List<ReactPackage> getPackages() {
                     return Arrays.<ReactPackage>asList(
                             new MainReactPackage(),
-            new RNSendIntentPackage(),
             new LottiePackage(),
             new RNChannelIOPackage(),
             // new GoogleFitPackage(BuildConfig.APPLICATION_ID),

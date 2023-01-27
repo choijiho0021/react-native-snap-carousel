@@ -1,6 +1,4 @@
 rootProject.name = 'RokebiESIM'
-include ':react-native-send-intent'
-project(':react-native-send-intent').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-send-intent/android')
 include ':lottie-react-native'
 project(':lottie-react-native').projectDir = new File(rootProject.projectDir, '../node_modules/lottie-react-native/src/android')
 include ':react-native-channel-plugin'
@@ -79,8 +77,6 @@ include ':@react-native-firebase_dynamic-links'
 project(':@react-native-firebase_dynamic-links').projectDir = new File(rootProject.projectDir, './../node_modules/@react-native-firebase/dynamic-links/android')
 include ':react-native-pager-view'
 project(':react-native-pager-view').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-pager-view/android')
-include ':RNSendIntentModule', ':app'
-project(':RNSendIntentModule').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-send-intent/android')
 
 include ':app'
 includeBuild('../node_modules/react-native-gradle-plugin')

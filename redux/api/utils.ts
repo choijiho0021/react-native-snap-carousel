@@ -1,5 +1,5 @@
 import moment from 'moment-with-locales-es6';
-import {Image} from 'react-native';
+import {Image, Platform} from 'react-native';
 import {getFontScale} from 'react-native-device-info';
 import RNFetchBlob from 'rn-fetch-blob';
 import _ from 'underscore';
@@ -275,6 +275,36 @@ const getParam = (link?: string): urlParamObj => {
   return {};
 };
 
+const intentToUrl = (url: string): string => {
+  const scheme = url.split('://', 1)[0];
+  const splittedUrl = [scheme, url.slice(scheme.length + 3)];
+
+  if (Platform.OS === 'ios') {
+    return scheme === 'itmss' ? `https://${splittedUrl[1]}` : url;
+  }
+
+  if (
+    Platform.OS === 'android' &&
+    !['http', 'https', 'about:blank'].includes(scheme) &&
+    scheme.includes('intent')
+  ) {
+    const intentUrl = splittedUrl[1].split('#Intent;');
+    const host = intentUrl[0];
+    const args = intentUrl[1].split(';');
+
+    if (scheme !== 'intent') {
+      return `${scheme.split(':')[1]}://${host}`;
+    }
+
+    const argsScheme = args.find((elm) => elm.startsWith('scheme'));
+
+    if (argsScheme) {
+      return `${argsScheme.split('=')[1]}://${host}`;
+    }
+  }
+  return url;
+};
+
 export default {
   fontScaling,
   numberToCommaString,
@@ -299,4 +329,5 @@ export default {
   removeBracketOfName,
   generateKey,
   getParam,
+  intentToUrl,
 };
