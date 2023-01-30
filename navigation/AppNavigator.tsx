@@ -49,17 +49,12 @@ import {API} from '@/redux/api';
 import ProgressiveImage from '@/components/ProgressiveImage';
 import i18n from '@/utils/i18n';
 import {ModalModelState} from '../redux/modules/modal';
+import {PromotionModelState} from '../redux/modules/promotion';
 
 const {isIOS, esimGlobal} = Env.get();
-
-const POPUP_DIS_DAYS = 7;
 const MainStack = createStackNavigator();
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-  },
   modalContainer: {
     flex: 1,
     marginHorizontal: 20,
@@ -114,7 +109,7 @@ type RegisterMobileScreenProps = {
   store: EnhancedStore;
   modal: ModalModelState;
   link: LinkModelState;
-  promotion: RkbPromotion[];
+  promotion: PromotionModelState;
   actions: {
     modal: ModalAction;
   };
@@ -168,7 +163,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         }
       }
     },
-    [store],
+    [navigationRef, store],
   );
 
   const checkSupportIos = useCallback(() => {
@@ -211,7 +206,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     } else {
       isSupport = await SimCardsManagerModule.isEsimSupported();
     }
-
+    isSupport = true;
     if (isSupport) {
       requestPermission();
     }
@@ -429,67 +424,46 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
 
   const showPopUp = useCallback(
     (routeName: string) => {
-      const popUp = promotion.find((elm) => {
-        const inflowUrlList = elm?.rule?.inflowUrl
-          ? elm?.rule?.inflowUrl.split(',')
-          : [''];
+      const popUpList = promotion?.popUpPromotionMap?.get(routeName);
 
-        return (
-          elm.rule?.popUp &&
-          elm.rule?.routeName === routeName &&
-          (inflowUrlList.includes(link.url || '') ||
-            elm.rule?.deepLinkPath === link.deepLinkPath)
-        );
-      });
+      if (popUpList) {
+        const {url, deepLinkPath} = link;
 
-      setPopUpPromo(popUp);
-      if (popUp) {
-        if (popUp.notice?.image?.noti)
-          Image.getSize(
-            API.default.httpImageUrl(popUp?.notice?.image?.noti),
-            (width, height) => {
-              setImageHeight(
-                Math.ceil(height * ((dimensions.width - 40) / width)),
-              );
-            },
-          );
+        const popUp = url
+          ? popUpList?.find(
+              (elm) =>
+                elm?.rule?.inflowUrl?.includes(url) ||
+                elm.rule?.deepLinkPath === deepLinkPath,
+            ) || popUpList[0]
+          : popUpList.find(
+              (elm) => !elm.rule?.inflowUrl && !elm.rule?.deepLinkPath,
+            );
 
-        AsyncStorage.getItem(`popupDisabled_${popUp?.uuid}`).then((v) => {
-          const now = moment();
-          if (v) {
-            const disabled =
-              moment.duration(now.diff(v)).asDays() <= POPUP_DIS_DAYS;
-            if (!disabled) {
-              actions.modal.showModal({
-                content: popUpModalBody(popUp),
-              });
-              AsyncStorage.removeItem('popupDisabled');
-            }
-          } else {
-            actions.modal.showModal({
-              content: popUpModalBody(popUp),
-            });
+        if (popUp) {
+          if (popUp.notice?.image?.noti) {
+            setPopUpPromo(popUp);
+            Image.getSize(
+              API.default.httpImageUrl(popUp?.notice?.image?.noti),
+              (width, height) => {
+                setImageHeight(
+                  Math.ceil(height * ((dimensions.width - 40) / width)),
+                );
+              },
+            );
           }
-        });
+        }
       }
     },
-    [
-      actions.modal,
-      dimensions.width,
-      link.deepLinkPath,
-      link.url,
-      popUpModalBody,
-      promotion,
-    ],
+    [dimensions.width, link, promotion?.popUpPromotionMap],
   );
 
   useEffect(() => {
-    if (modal.visible && popUpPromo) {
+    if (popUpPromo) {
       actions.modal.showModal({
         content: popUpModalBody(popUpPromo),
       });
     }
-  }, [actions.modal, modal.visible, popUpModalBody, popUpPromo]);
+  }, [actions.modal, popUpModalBody, popUpPromo]);
 
   const deepLinkHandler = useCallback(
     async (url: string) => {
@@ -577,7 +551,7 @@ export default connect(
   ({account, modal, link, promotion}: RootState) => ({
     account,
     modal,
-    promotion: promotion.promotion,
+    promotion,
     link,
   }),
   (dispatch) => ({

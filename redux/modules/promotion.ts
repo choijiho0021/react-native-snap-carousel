@@ -3,6 +3,7 @@ import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {Reducer} from 'react';
 import {AnyAction} from 'redux';
 import _ from 'underscore';
+import {Map as ImmutableMap} from 'immutable';
 import {
   RkbGiftImages,
   RkbInviteStatInfo,
@@ -10,6 +11,8 @@ import {
 } from '@/redux/api/promotionApi';
 import {API} from '@/redux/api';
 import {RkbSubscription} from '../api/subscriptionApi';
+import AsyncStorage from '@react-native-community/async-storage';
+import {retrieveData} from '@/utils/utils';
 
 const getPromotion = createAsyncThunk(
   'promotion/getPromotion',
@@ -83,6 +86,7 @@ const makeContentAndLink = createAsyncThunk(
 
 export interface PromotionModelState {
   promotion: RkbPromotion[];
+  popUpPromotionMap?: ImmutableMap<string, RkbPromotion[]>;
   invite?: RkbPromotion;
   stat: RkbInviteStatInfo;
   gift: {
@@ -98,6 +102,7 @@ export interface PromotionModelState {
 
 const initialState: PromotionModelState = {
   promotion: [],
+  popUpPromotionMap: ImmutableMap(),
   invite: undefined,
   stat: {
     inviteCount: '0',
@@ -139,8 +144,23 @@ const slice = createSlice({
       const invite = objects.find((v) => !_.isEmpty(v.rule?.share));
       const giftImage = invite?.rule?.gift;
 
-      if (result === 0 || result?.code === 0) {
+      const popUpPromotionMap = objects.reduce((acc, cur) => {
+        if (cur.rule?.routeName && cur.rule?.popUp && !cur.popUpDisabled) {
+          if (acc.has(cur.rule?.routeName)) {
+            acc.set(
+              cur.rule?.routeName,
+              (acc.get(cur.rule?.routeName) || []).concat(cur),
+            );
+          } else {
+            acc.set(cur.rule?.routeName, [cur]);
+          }
+        }
+        return acc;
+      }, new Map<string, RkbPromotion[]>());
+
+      if (result === 0) {
         state.promotion = objects || [];
+        state.popUpPromotionMap = ImmutableMap(popUpPromotionMap);
         state.invite = invite;
         state.gift.imageUrl = giftImage || '';
       }
@@ -149,7 +169,7 @@ const slice = createSlice({
     builder.addCase(getPromotionStat.fulfilled, (state, {payload}) => {
       const {result, objects} = payload;
 
-      if (result === 0 || result?.code === 0) {
+      if (result === 0) {
         state.stat = objects[0];
       }
     });

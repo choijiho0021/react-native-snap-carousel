@@ -302,7 +302,9 @@ const Esim: React.FC<EsimProps> = ({
   }, [animatedValue, bannerHeight, isTop]);
 
   const setNotiModal = useCallback(() => {
-    const popUpPromo = promotion?.find((v) => v?.notice?.image?.noti);
+    const popUpPromo = promotion?.find(
+      (v) => v.rule?.routeName === 'Home' && v?.notice?.image?.noti,
+    );
 
     if (popUpPromo) {
       setPopUp(popUpPromo);
