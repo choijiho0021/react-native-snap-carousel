@@ -52,7 +52,6 @@ import AppModal from '@/components/AppModal';
 import AppStyledText from '@/components/AppStyledText';
 import PymButtonList from '@/components/AppPaymentGateway/PymButtonList';
 
-const {esimApp} = Env.get();
 const infoKey = 'pym:benefit';
 const loadingImg = require('../assets/images/loading_1.mp4');
 
@@ -181,7 +180,7 @@ type PymMethodScreenProps = {
   };
 };
 
-const {esimGlobal} = Env.get();
+const {esimGlobal, impId} = Env.get();
 
 const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   navigation,
@@ -203,6 +202,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [isRecharge, setIsRecharge] = useState<boolean>();
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
   const [showChargeAlert, setShowChargeAlert] = useState(false);
+  const [inicisEnabled, setInicisEnabled] = useState(false);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -243,16 +243,15 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   }, [navigation, route.params]);
 
   useEffect(() => {
-    if (!esimApp) {
-      const {uid, token} = account;
-      // ESIM이 아닌 경우에만 주소 정보가 필요하다.
-      action.profile.getCustomerProfile({uid, token});
-    }
-  }, [account, action.profile]);
-
-  useEffect(() => {
     setValues();
   }, [setValues]);
+
+  useEffect(() => {
+    const {token} = account;
+    API.Payment.getRokebiPaymentRule({token}).then((rsp) => {
+      setInicisEnabled(rsp.inicis_enabled === '1');
+    });
+  }, [account]);
 
   const onSubmit = useCallback(
     (passingAlert: boolean) => {
@@ -272,18 +271,13 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       const profileId =
         profile.selectedAddr ||
         profile.profile.find((item) => item.isBasicAddr)?.uuid;
-      const dlvCost =
-        cart.pymReq?.find((item) => item.key === 'dlvCost')?.amount ||
-        utils.toCurrency(0, pymPrice?.currency);
-
-      let scheme = 'RokebiUsim';
-      if (esimApp) scheme = esimGlobal ? 'RokebiGlobal' : 'RokebiEsim';
+      const dlvCost = utils.toCurrency(0, pymPrice?.currency);
+      const scheme = esimGlobal ? 'RokebiGlobal' : 'RokebiEsim';
 
       // 로깨비캐시 결제
       if (pymPrice?.value === 0) {
         // if the payment amount is zero, call the old API payNorder
         setLoading(true);
-        const {impId} = Env.get();
 
         const pymInfo = createPaymentInfoForRokebiCash({
           impId,
@@ -338,15 +332,18 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         } as PaymentParams;
 
         setClickable(true);
-        navigation.navigate('PaymentGateway', params);
+        navigation.navigate(
+          inicisEnabled ? 'PaymentGateway' : 'Payment',
+          params,
+        );
       }
     },
     [
       account,
       action.cart,
-      cart.pymReq,
       clickable,
       deduct,
+      inicisEnabled,
       mode,
       navigation,
       profile,

@@ -110,6 +110,7 @@ const path = {
       prodByCountry: 'rokebi/prod/bycntry',
       cash: 'rokebi/cash',
       payment: 'rokebi/payment',
+      paymentRule: 'rokebi/payment/rule',
     },
     pv: {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/quota',
