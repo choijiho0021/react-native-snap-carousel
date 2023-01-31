@@ -70,7 +70,10 @@ class AppSnackBar extends PureComponent<AppSnackBarProps> {
               <AppText style={[appStyles.normal14Text, {color: colors.white}]}>
                 {this.props.textMessage}
               </AppText>
-              <AppSvgIcon name="closeSnackBar" />
+              <AppSvgIcon
+                name="closeSnackBar"
+                onPress={() => this.props.onClose()}
+              />
             </View>
           )}
         />
