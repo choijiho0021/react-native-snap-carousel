@@ -431,6 +431,64 @@ const Esim: React.FC<EsimProps> = ({
     ],
   );
 
+  const renderSearch = useCallback(
+    () => (
+      <AppButton
+        key="search"
+        title={i18n.t('home:searchPlaceholder')}
+        style={styles.showSearchBar}
+        titleStyle={[appStyles.normal16Text, {color: colors.clearBlue}]}
+        direction="row"
+        onPress={() => navigation.navigate('StoreSearch')}
+        iconName="btnSearchBlue"
+        iconStyle={{marginHorizontal: 24}}
+      />
+    ),
+    [navigation],
+  );
+
+  const renderCarousel = useCallback(() => {
+    const promotionBanner = promotion.filter(
+      (elm) => elm.imageUrl && elm?.rule?.banner,
+    );
+    if (promotionBanner.length > 0) {
+      return (
+        <View>
+          {folderOpened ? (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginTop: 15,
+              }}>
+              <View style={{flex: 1}} collapsable={false}>
+                <PromotionCarousel
+                  width={dimensions.width / 2}
+                  promotion={promotionBanner}
+                />
+              </View>
+              <View style={{flex: 1}}>{renderSearch()}</View>
+            </View>
+          ) : (
+            <View>
+              <Animated.View
+                collapsable={false}
+                style={{height: animatedValue, marginTop: 15}}>
+                <PromotionCarousel
+                  width={dimensions.width}
+                  promotion={promotionBanner}
+                />
+              </Animated.View>
+              {renderSearch()}
+            </View>
+          )}
+        </View>
+      );
+    }
+
+    return renderSearch();
+  }, [animatedValue, dimensions.width, folderOpened, promotion, renderSearch]);
+
   const renderTabHeader = useCallback(() => {
     return (
       <View style={styles.tabHeaderContinaer}>
@@ -716,22 +774,6 @@ const Esim: React.FC<EsimProps> = ({
       .catch(() => setAppUpdateVisible(false));
   }, []);
 
-  const renderSearch = useCallback(
-    () => (
-      <AppButton
-        key="search"
-        title={i18n.t('home:searchPlaceholder')}
-        style={styles.showSearchBar}
-        titleStyle={[appStyles.normal16Text, {color: colors.clearBlue}]}
-        direction="row"
-        onPress={() => navigation.navigate('StoreSearch')}
-        iconName="btnSearchBlue"
-        iconStyle={{marginHorizontal: 24}}
-      />
-    ),
-    [navigation],
-  );
-
   const renderModal = useCallback(
     () => (
       <>
@@ -764,24 +806,7 @@ const Esim: React.FC<EsimProps> = ({
   return (
     <SafeAreaView style={[styles.container]}>
       <StatusBar barStyle="dark-content" />
-      {folderOpened ? (
-        <View
-          style={{flexDirection: 'row', alignItems: 'center', marginTop: 15}}>
-          <View style={{flex: 1}} collapsable={false}>
-            <PromotionCarousel width={dimensions.width / 2} />
-          </View>
-          <View style={{flex: 1}}>{renderSearch()}</View>
-        </View>
-      ) : (
-        <View>
-          <Animated.View
-            collapsable={false}
-            style={{height: animatedValue, marginTop: 15}}>
-            <PromotionCarousel width={dimensions.width} />
-          </Animated.View>
-          {renderSearch()}
-        </View>
-      )}
+      {renderCarousel()}
 
       {renderTabHeader()}
 

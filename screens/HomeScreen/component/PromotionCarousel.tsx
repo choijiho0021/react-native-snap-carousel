@@ -98,17 +98,13 @@ type PromotionCarouselProps = {
 };
 
 const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
-  promotion: reduxPromotion = [],
+  promotion,
   product,
   action,
   width,
 }) => {
   const navigation = useNavigation();
   const [activeSlide, setActiveSlide] = useState(0);
-  const promotion = useMemo(
-    () => reduxPromotion.filter((elm) => elm.imageUrl && elm?.rule?.banner),
-    [reduxPromotion],
-  );
 
   const onPress = useCallback(
     (item: RkbPromotion) => {
@@ -230,9 +226,8 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
 };
 
 export default connect(
-  ({promotion, product}: RootState) => ({
+  ({product}: RootState) => ({
     product,
-    promotion: promotion.promotion,
   }),
   (dispatch) => ({
     action: {
