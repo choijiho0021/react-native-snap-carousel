@@ -48,7 +48,6 @@ import {colors} from '@/constants/Colors';
 import {API} from '@/redux/api';
 import ProgressiveImage from '@/components/ProgressiveImage';
 import i18n from '@/utils/i18n';
-import {ModalModelState} from '../redux/modules/modal';
 import {PromotionModelState} from '../redux/modules/promotion';
 
 const {isIOS, esimGlobal} = Env.get();
@@ -128,6 +127,31 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   const [lastRouteName, setLastRouteName] = useState<string>();
   const dimensions = useMemo(() => Dimensions.get('window'), []);
 
+  const refNavigate = useCallback(
+    ({
+      stack,
+      screen,
+      initial,
+      params,
+    }: {
+      stack: string;
+      screen?: string;
+      initial?: boolean;
+      params?: object;
+    }) => {
+      if (navigationRef?.current) {
+        if (screen)
+          navigationRef.current.navigate(stack, {
+            screen,
+            initial,
+            params,
+          });
+        else navigationRef.current.navigate(stack);
+      }
+    },
+    [navigationRef],
+  );
+
   const gift = useCallback(
     (url: string, json: urlParamObj) => {
       // gift 금액은 서버에서 처리
@@ -153,17 +177,13 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         }
 
         if (url.includes('gift')) {
-          navigationRef.current.navigate('EsimStack', {
-            screen: 'Esim',
-          });
+          refNavigate({stack: 'EsimStack', screen: 'Esim'});
         } else {
-          navigationRef.current.navigate('MyPageStack', {
-            screen: 'MyPage',
-          });
+          refNavigate({stack: 'MyPageStack', screen: 'MyPage'});
         }
       }
     },
-    [navigationRef, store],
+    [navigationRef, refNavigate, store],
   );
 
   const checkSupportIos = useCallback(() => {
@@ -206,7 +226,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     } else {
       isSupport = await SimCardsManagerModule.isEsimSupported();
     }
-    isSupport = true;
+
     if (isSupport) {
       requestPermission();
     }
@@ -277,7 +297,8 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         params.hasOwnProperty('screen')
       ) {
         // Screen 별 동작 추가 - Home, Cart,Esim, MyPage 이동 가능
-        navigationRef.current.navigate(`${params?.stack}Stack`, {
+        refNavigate({
+          stack: `${params?.stack}Stack`,
           screen: params?.screen,
           initial: false,
         });
@@ -285,7 +306,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         gift(url, params);
       }
     },
-    [getIsSupport, linkSave, navigationRef, gift],
+    [getIsSupport, gift, linkSave, navigationRef, refNavigate],
   );
 
   useEffect(() => {
@@ -316,7 +337,8 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       if (isOkClose && navigationRef?.current) {
         if (popUp?.rule?.navigate) {
           if (popUp?.rule?.stack) {
-            navigationRef.current.navigate(popUp?.rule?.stack, {
+            refNavigate({
+              stack: popUp?.rule?.stack,
               screen: popUp.rule.navigate,
               initial: false,
             });
@@ -332,7 +354,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
               mode: 'noti',
             });
           } else {
-            navigationRef.current.navigate(popUp.rule.navigate);
+            refNavigate({stack: popUp.rule.navigate});
           }
         }
       }
@@ -342,7 +364,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       setPopUpPromo(undefined);
       actions.modal.closeModal();
     },
-    [actions.modal, navigationRef, setPopupDisabled],
+    [actions.modal, navigationRef, refNavigate, setPopupDisabled],
   );
 
   const renderCloseWeek = useCallback(() => {
@@ -424,6 +446,24 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     [actions.modal, iamgeHight, renderBtn, renderCloseWeek],
   );
 
+  const checkLink = useCallback(
+    ({
+      popUp,
+      url,
+      deepLinkPath,
+    }: {
+      popUp: RkbPromotion;
+      url: string;
+      deepLinkPath: string;
+    }) => {
+      return (
+        popUp?.rule?.inflowUrl?.includes(url) ||
+        popUp.rule?.deepLinkPath === deepLinkPath
+      );
+    },
+    [],
+  );
+
   const showPopUp = useCallback(
     (routeName: string) => {
       const popUpList = promotion?.popUpPromotionMap?.get(routeName);
@@ -431,15 +471,18 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       if (popUpList) {
         const {url, deepLinkPath} = link;
 
-        const popUp = url
-          ? popUpList?.find(
+        let popUp = popUpList.find(
+          (elm) => !elm.rule?.inflowUrl && !elm.rule?.deepLinkPath,
+        );
+
+        if (url) {
+          popUp =
+            popUpList?.find(
               (elm) =>
                 elm?.rule?.inflowUrl?.includes(url) ||
                 elm.rule?.deepLinkPath === deepLinkPath,
-            ) || popUpList[0]
-          : popUpList.find(
-              (elm) => !elm.rule?.inflowUrl && !elm.rule?.deepLinkPath,
-            );
+            ) || popUp;
+        }
 
         if (popUp) {
           if (popUp.notice?.image?.noti) {
@@ -489,20 +532,30 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
 
         switch (deepLinkPath) {
           case 'PROMOTION':
-            navigationRef.current.navigate('HomeStack', {
+            refNavigate({
+              stack: 'HomeStack',
               screen: 'Home',
               initial: false,
               params: {clickPromotion: true},
             });
             break;
           case 'HOME':
-            navigationRef.current.navigate('HomeStack', {
+            refNavigate({
+              stack: 'HomeStack',
               screen: 'Home',
               initial: false,
             });
             break;
+          case 'MYPAGE':
+            refNavigate({
+              stack: 'MyPageStack',
+              screen: 'Mypage',
+              initial: false,
+            });
+            break;
           case 'INVITE':
-            navigationRef.current.navigate('MyPageStack', {
+            refNavigate({
+              stack: 'MyPageStack',
               screen: 'Invite',
               initial: false,
             });
@@ -512,7 +565,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         }
       }
     },
-    [getIsSupport, linkSave, navigationRef],
+    [getIsSupport, linkSave, navigationRef, refNavigate],
   );
 
   useEffect(() => {
