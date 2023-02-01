@@ -184,6 +184,14 @@ const getRokebiPayment = ({key, token}: {key: string; token: string}) => {
   );
 };
 
+const getRokebiPaymentRule = ({token}: {token: string}) => {
+  return api.callHttpGet(
+    `${api.httpUrl(api.path.rokApi.rokebi.paymentRule, '')}?_format=json`,
+    (v) => v,
+    api.withToken(token, 'json'),
+  );
+};
+
 const getRokebiPaymentReceipt = ({
   key,
   token,
@@ -275,5 +283,6 @@ export default {
   getUid,
   getMerchantId,
   getRokebiPayment,
+  getRokebiPaymentRule,
   getRokebiPaymentReceipt,
 };
