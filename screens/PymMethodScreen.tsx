@@ -202,7 +202,9 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [isRecharge, setIsRecharge] = useState<boolean>();
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
   const [showChargeAlert, setShowChargeAlert] = useState(false);
-  const [inicisEnabled, setInicisEnabled] = useState(false);
+  const [inicisEnabled, setInicisEnabled] = useState<boolean | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -248,10 +250,12 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
   useEffect(() => {
     const {token} = account;
-    API.Payment.getRokebiPaymentRule({token}).then((rsp) => {
-      setInicisEnabled(rsp.inicis_enabled === '1');
-    });
-  }, [account]);
+    if (inicisEnabled === undefined) {
+      API.Payment.getRokebiPaymentRule({token}).then((rsp) => {
+        setInicisEnabled(rsp.inicis_enabled === '1');
+      });
+    }
+  }, [account, inicisEnabled]);
 
   const onSubmit = useCallback(
     (passingAlert: boolean) => {

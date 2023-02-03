@@ -1,9 +1,9 @@
-import React, {useCallback, useRef, useState} from 'react';
-import {Linking, StyleSheet, View, Platform, Alert} from 'react-native';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
+import {Linking, StyleSheet, View} from 'react-native';
 import WebView from 'react-native-webview';
 import {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
 import Video from 'react-native-video';
-import {inicisWebviewHtml, pgWebViewConfig} from './ConfigInicis';
+import {inicisScript, inicisWebviewHtml, pgWebViewConfig} from './ConfigInicis';
 import {colors} from '@/constants/Colors';
 import AppText from '../AppText';
 import i18n from '@/utils/i18n';
@@ -58,7 +58,9 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
   callback,
 }) => {
   const [loading, setLoading] = useState(true);
+  const injected = useRef(false);
   const ref = useRef<WebView>(null);
+  const html = useMemo(() => pgWebViewHtml(info), [info]);
   const onMessage = useCallback((payload) => {
     let dataPayload;
     try {
@@ -127,16 +129,16 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
   }, []);
 
   const onLoadEnd = useCallback(({nativeEvent: {url}}) => {
-    setLoading(false);
-    // console.log('@@@ url', url);
+    // console.log('@@@ onLoadEnd url', url, injected.current);
     // ref.current?.injectJavaScript(
     //   'console.log("END" + window.document.documentElement.innerHTML);' +
     //     'console.log("LOAD:" + document.body.onload);',
     // );
-    // const script = injectScript(url);
-    // if (script) {
-    //   ref.current?.injectJavaScript(script);
-    // }
+    setLoading(false);
+    if (url.startsWith('about') && !injected.current) {
+      ref.current?.injectJavaScript(inicisScript());
+      injected.current = true;
+    }
   }, []);
 
   return (
@@ -145,8 +147,6 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
         style={{flex: 1}}
         ref={ref}
         javaScriptEnabled
-        domStorageEnabled
-        injectedJavaScriptForMainFrameOnly
         mixedContentMode="compatibility"
         onMessage={onMessage}
         originWhitelist={['*']}
@@ -154,7 +154,7 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
         javaScriptCanOpenWindowsAutomatically
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         onLoadEnd={onLoadEnd}
-        source={{html: pgWebViewHtml(info)}}
+        source={{html}}
       />
       {loading ? renderLoading() : null}
     </>

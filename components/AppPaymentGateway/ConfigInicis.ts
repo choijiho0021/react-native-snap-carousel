@@ -57,7 +57,7 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <script type='text/javascript'>
     ${debugScript}
-    function submit() {
+    function goto_inicis() {
       const myform = document.mobileweb;
       myform.action = "https://mobile.inicis.com/smart/payment/";
       myform.target = "_self";
@@ -65,7 +65,7 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
       }
     </script>
   </head>
-  <body onload="submit();">
+  <body>
       <form name="mobileweb" id="" method="post" accept-charset="euc-kr">
       <input type="hidden" name="P_INI_PAYMENT" value="${
         info.pay_method === 'trans' ? 'VBANK' : 'CARD'
@@ -93,4 +93,8 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
     </form>
   </body>
 </html>`;
+};
+
+export const inicisScript = () => {
+  return 'goto_inicis();';
 };
