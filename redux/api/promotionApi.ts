@@ -1,11 +1,13 @@
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import Share from 'react-native-share';
 import _ from 'underscore';
+import moment from 'moment';
 import api, {ApiResult, DrupalNode, Langcode} from './api';
 import Env from '@/environment';
 import i18n from '@/utils/i18n';
-import {parseJson, utils} from '@/utils/utils';
+import {parseJson, retrieveData, utils} from '@/utils/utils';
 
+const POPUP_DIS_DAYS = 7;
 const {bundleId, appStoreId, dynamicLink, webViewHost} = Env.get();
 
 export type RkbPromotion = {
@@ -26,6 +28,7 @@ export type RkbPromotion = {
     };
   };
   langcode?: Langcode;
+  popUpDisabled?: boolean;
 };
 
 // Promotion 참여 상품에 대한 정보
@@ -139,11 +142,26 @@ const toGiftBgImages = (data: []): ApiResult<RkbGiftImages> => {
   // return api.failure(api.FAILED, data.result?.error);
 };
 
-const getPromotion = () => {
-  return api.callHttpGet<RkbPromotion>(
+const getPromotion = async () => {
+  const now = moment();
+
+  const apiResp = await api.callHttpGet<RkbPromotion>(
     `${api.httpUrl(api.path.promotion)}?_format=hal_json`,
     toPromotion,
   );
+
+  const objects = await Promise.all(
+    apiResp.objects.map(async (elm) => {
+      const lastPopUpDate = await retrieveData(`popupDisabled_${elm?.uuid}`);
+      const popUpDisabled = lastPopUpDate
+        ? moment.duration(now.diff(lastPopUpDate)).asDays() <= POPUP_DIS_DAYS
+        : false;
+
+      return {...elm, popUpDisabled};
+    }),
+  );
+
+  return {...apiResp, objects};
 };
 
 const getStat = () => {

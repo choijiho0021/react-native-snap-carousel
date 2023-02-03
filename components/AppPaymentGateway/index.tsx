@@ -1,5 +1,5 @@
 import React, {useCallback, useRef, useState} from 'react';
-import {Linking, StyleSheet, View} from 'react-native';
+import {Linking, StyleSheet, View, Platform, Alert} from 'react-native';
 import WebView from 'react-native-webview';
 import {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
 import Video from 'react-native-video';
@@ -8,6 +8,8 @@ import {colors} from '@/constants/Colors';
 import AppText from '../AppText';
 import i18n from '@/utils/i18n';
 import {PaymentParams} from '@/navigation/navigation';
+import utils from '@/redux/api/utils';
+import AppAlert from '@/components/AppAlert';
 
 export type PaymentResultCallbackParam = 'next' | 'cancel' | 'check';
 
@@ -96,11 +98,14 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
         return true;
       }
 
-      Linking.openURL(event.url).catch((err) => {
-        console.log(
+      Linking.openURL(utils.intentToUrl(event.url)).catch((err) => {
+        AppAlert.info(
           '앱 실행에 실패했습니다. 설치가 되어있지 않은 경우 설치하기 버튼을 눌러주세요.',
+          i18n.t('ok'),
+          () => callback('cancel'),
         );
       });
+
       return false;
     },
     [callback],

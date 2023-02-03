@@ -248,6 +248,21 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
     [showTip],
   );
 
+  useEffect(() => {
+    navigation.setOptions({
+      title: null,
+      headerLeft: () => (
+        <View style={styles.header}>
+          <AppBackButton
+            title={i18n.t('esim:charge')}
+            style={styles.headerTitle}
+          />
+          {renderToolTip()}
+        </View>
+      ),
+    });
+  }, [navigation, renderToolTip, showTip]);
+
   const onIndexChange = useCallback((idx: number) => {
     setIndex(idx);
   }, []);
@@ -314,14 +329,6 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <AppBackButton
-          title={i18n.t('esim:charge')}
-          style={styles.headerTitle}
-        />
-        {renderToolTip()}
-      </View>
-
       <View style={{flex: 1}}>
         <AppTabHeader
           index={index}
