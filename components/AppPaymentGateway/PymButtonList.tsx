@@ -14,7 +14,6 @@ const styles = StyleSheet.create({
     height: 62,
     backgroundColor: colors.white,
     borderStyle: 'solid' as const,
-    borderColor: colors.lightGrey,
     borderLeftWidth: 1,
     borderTopWidth: 1,
   },
@@ -176,7 +175,6 @@ const PymButtonList: React.FC<PymButtonListParams> = ({selected, onPress}) => {
             btnKey="pym:samsung"
             selected={selected}
             bottom
-            right
             onPress={onPress}
             topColor={selected === 'pym:ssgpay'}
             leftColor={selected === 'pym:bank'}
