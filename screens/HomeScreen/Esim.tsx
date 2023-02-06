@@ -804,7 +804,7 @@ const Esim: React.FC<EsimProps> = ({
   );
 
   return (
-    <SafeAreaView style={[styles.container]}>
+    <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       {renderCarousel()}
 
