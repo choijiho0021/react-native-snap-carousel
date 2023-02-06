@@ -387,19 +387,19 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     (popUp: RkbPromotion) => {
       return (
         <View style={styles.modalBtnContainer}>
-          {popUp?.rule?.btnCancelTitle && (
+          {popUp?.rule?.display?.btnCancelTitle && (
             <AppButton
               style={{
                 ...styles.btnCancel,
                 marginRight: 10,
               }}
-              title={popUp?.rule?.btnCancelTitle}
+              title={popUp?.rule?.display?.btnCancelTitle}
               onPress={() => handlePopUp(popUp, false)}
             />
           )}
           <AppButton
             style={styles.btnCancel}
-            title={popUp?.rule?.btnOkTitle || i18n.t('ok')}
+            title={popUp?.rule?.display?.btnOkTitle || i18n.t('ok')}
             onPress={() => handlePopUp(popUp, true)}
           />
         </View>
@@ -421,7 +421,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
             <View
               style={{
                 backgroundColor: colors.white,
-                height: iamgeHight + 88 + (rule?.closeWeek ? 37 : 0), // 88 = 52(버튼) + 20 (아래여백) + 16(위 여백)
+                height: iamgeHight + 88 + (rule?.display?.closeWeek ? 37 : 0), // 88 = 52(버튼) + 20 (아래여백) + 16(위 여백)
               }}>
               <ProgressiveImage
                 style={{width: '100%', height: iamgeHight}}
@@ -446,24 +446,6 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     [actions.modal, iamgeHight, renderBtn, renderCloseWeek],
   );
 
-  const checkLink = useCallback(
-    ({
-      popUp,
-      url,
-      deepLinkPath,
-    }: {
-      popUp: RkbPromotion;
-      url: string;
-      deepLinkPath: string;
-    }) => {
-      return (
-        popUp?.rule?.inflowUrl?.includes(url) ||
-        popUp.rule?.deepLinkPath === deepLinkPath
-      );
-    },
-    [],
-  );
-
   const showPopUp = useCallback(
     (routeName: string) => {
       const popUpList = promotion?.popUpPromotionMap?.get(routeName);
@@ -472,15 +454,15 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         const {url, deepLinkPath} = link;
 
         let popUp = popUpList.find(
-          (elm) => !elm.rule?.inflowUrl && !elm.rule?.deepLinkPath,
+          (elm) => !elm.rule?.cond?.inflowUrl && !elm.rule?.cond?.deepLinkPath,
         );
 
         if (url) {
           popUp =
             popUpList?.find(
               (elm) =>
-                elm?.rule?.inflowUrl?.includes(url) ||
-                elm.rule?.deepLinkPath === deepLinkPath,
+                elm?.rule?.cond?.inflowUrl?.includes(url) ||
+                elm.rule?.cond?.deepLinkPath === deepLinkPath,
             ) || popUp;
         }
 
@@ -505,7 +487,8 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   useEffect(() => {
     if (
       popUpPromo &&
-      (!closedPopUp.includes(popUpPromo?.uuid) || popUpPromo.rule?.repeat)
+      (!closedPopUp.includes(popUpPromo?.uuid) ||
+        popUpPromo.rule?.display?.repeat)
     ) {
       actions.modal.showModal({
         content: popUpModalBody(popUpPromo),
@@ -596,6 +579,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       ref={navigationRef}
       onStateChange={(state) => {
         const lastTab = getActiveRouteName(state);
+        console.log('aaaa lastTab', lastTab);
         setLastRouteName(lastTab);
         if (lastRouteName !== lastTab && lastTab !== 'Home') showPopUp(lastTab);
         Analytics.trackEvent('Page_View_Count', {page: lastTab});

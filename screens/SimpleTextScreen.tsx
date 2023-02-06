@@ -188,7 +188,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
             : 'promo:join:fail',
         );
       }
-    } else if (rule?.openLink) {
+    } else if (rule?.navigate?.startsWith('http')) {
       Linking.openURL(rule.openLink);
     } else if (eventStatus === 'unknown' && !loggedIn) {
       // 로그인 화면으로 이동
