@@ -47,31 +47,16 @@ import BadgedIcon from './component/BadgedIcon';
 import RedirectHKScreen from '@/screens/RedirectHKScreen';
 import ChargeScreen from '@/screens/ChargeScreen';
 import ChargeHistoryScreen from '@/screens/ChargeHistoryScreen';
-// import PedometerScreen from '@/screens/PedometerScreen';
 import ChargeDetailScreen from '@/screens/ChargeDetailScreen';
 import QrInfoScreen from '@/screens/QrInfoScreen';
-import UserGuideScreen from '../screens/UserGuideScreen';
+import UserGuideScreen from '@/screens/UserGuideScreen';
+import PaymentGatewayScreen from '@/screens/PaymentGatewayScreen';
 import {CartModelState} from '@/redux/modules/cart';
 import AppText from '@/components/AppText';
-import PaymentGatewayScreen from '@/screens/PaymentGatewayScreen';
 
 const styles = StyleSheet.create({
   tabBarIcon: {
     marginTop: 5,
-  },
-  title: {
-    ...appStyles.title,
-    marginLeft: 20,
-  },
-  btnAlarm: {
-    width: 40,
-    height: 40,
-    marginRight: 10,
-  },
-  btnCnter: {
-    width: 40,
-    height: 40,
-    marginHorizontal: 18,
   },
 });
 

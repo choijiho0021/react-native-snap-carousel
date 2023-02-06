@@ -1,7 +1,7 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {SetStateAction, useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Video from 'react-native-video';
@@ -51,6 +51,7 @@ import i18n from '@/utils/i18n';
 import AppModal from '@/components/AppModal';
 import AppStyledText from '@/components/AppStyledText';
 import PymButtonList from '@/components/AppPaymentGateway/PymButtonList';
+import DropDownHeader from './DropDownHeader';
 
 const infoKey = 'pym:benefit';
 const loadingImg = require('../assets/images/loading_1.mp4');
@@ -92,30 +93,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  boldTitle: {
-    ...appStyles.bold18Text,
-    color: colors.black,
-    lineHeight: 22,
-    alignSelf: 'center',
-  },
-  dropDownIcon: {
-    flexDirection: 'column',
-    alignSelf: 'flex-end',
-  },
   thickBar: {
     borderBottomColor: colors.black,
     borderBottomWidth: 1,
     marginBottom: 30,
-  },
-  alignCenter: {
-    alignSelf: 'center',
-    marginRight: 15,
-  },
-  normal16BlueTxt: {
-    ...appStyles.normal16Text,
-    color: colors.clearBlue,
-    lineHeight: 24,
-    letterSpacing: 0.24,
   },
   normal12TxtLeft: {
     ...appStyles.normal12Text,
@@ -356,36 +337,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     ],
   );
 
-  const dropDownHeader = useCallback(
-    (
-      showModal: boolean,
-      setShowModal: React.Dispatch<SetStateAction<boolean>>,
-      title: string,
-      alias?: string,
-    ) => {
-      return (
-        <Pressable
-          style={styles.spaceBetweenBox}
-          onPress={() => setShowModal((prev) => !prev)}>
-          <AppText style={styles.boldTitle}>{title}</AppText>
-          <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
-            {!showModal && (
-              <AppText style={[styles.alignCenter, styles.normal16BlueTxt]}>
-                {alias}
-              </AppText>
-            )}
-            <AppButton
-              style={{backgroundColor: colors.white, height: 70}}
-              iconName={showModal ? 'iconArrowUp' : 'iconArrowDown'}
-              iconStyle={styles.dropDownIcon}
-            />
-          </View>
-        </Pressable>
-      );
-    },
-    [],
-  );
-
   const method = useCallback(() => {
     const benefit = selected
       ? info.infoMap
@@ -395,24 +346,16 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
     return (
       <View>
-        {dropDownHeader(
-          showModalMethod,
-          setShowModalMethod,
-          i18n.t('pym:method'),
-          selected ? i18n.t(selected) : '',
-        )}
+        <DropDownHeader
+          showModal={showModalMethod}
+          onPress={() => setShowModalMethod((prev) => !prev)}
+          title={i18n.t('pym:method')}
+          alias={selected ? i18n.t(selected) : ''}
+        />
         {showModalMethod && (
           <View style={styles.beforeDrop}>
             <View style={styles.thickBar} />
             <PymButtonList selected={selected} onPress={setSelected} />
-            {
-              //
-              /* 토스 간편결제 추가로 현재 불필요
-            <AppText style={{marginVertical: 20, color: colors.clearBlue}}>
-              {i18n.t('pym:tossInfo')}
-            </AppText> 
-            */
-            }
             {benefit && (
               <View style={styles.benefit}>
                 <AppText style={[styles.normal12TxtLeft, {marginBottom: 5}]}>
@@ -429,7 +372,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         <View style={styles.divider} />
       </View>
     );
-  }, [dropDownHeader, info.infoMap, selected, showModalMethod]);
+  }, [info.infoMap, selected, showModalMethod]);
 
   const move = useCallback(
     (key: '1' | '2') => {
