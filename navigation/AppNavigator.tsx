@@ -434,7 +434,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
                 resizeMode="contain"
               />
 
-              {rule?.closeWeek && renderCloseWeek()}
+              {rule?.display?.closeWeek && renderCloseWeek()}
 
               {renderBtn(popUp)}
             </View>
