@@ -303,7 +303,7 @@ const Esim: React.FC<EsimProps> = ({
 
   const setNotiModal = useCallback(() => {
     const popUpPromo = promotion?.find(
-      (v) => v.rule?.routeName === 'Home' && v?.notice?.image?.noti,
+      (v) => v.rule?.display?.routeName === 'Home' && v?.notice?.image?.noti,
     );
 
     if (popUpPromo) {
@@ -353,7 +353,9 @@ const Esim: React.FC<EsimProps> = ({
       switch (v) {
         case 'redirect':
           if (popUp?.rule?.navigate) {
-            if (popUp?.rule?.stack) {
+            if (popUp?.rule?.navigate?.startsWith('http')) {
+              Linking.openURL(popUp?.rule?.navigate);
+            } else if (popUp?.rule?.stack) {
               navigation.navigate(popUp?.rule?.stack, {
                 screen: popUp.rule.navigate,
                 initial: false,
@@ -449,7 +451,7 @@ const Esim: React.FC<EsimProps> = ({
 
   const renderCarousel = useCallback(() => {
     const promotionBanner = promotion.filter(
-      (elm) => elm.imageUrl && elm?.rule?.banner,
+      (elm) => elm.imageUrl && elm?.rule?.type !== 'popUp',
     );
     if (promotionBanner.length > 0) {
       return (

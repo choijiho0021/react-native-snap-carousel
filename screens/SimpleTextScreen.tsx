@@ -357,14 +357,18 @@ const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
         const {nid, rule} = props.route.params;
         if (rule?.sku) {
           setIsProdEvent(true);
-          const resp = await API.Promotion.check(nid);
-          // available 값이 0보다 크면 프로모션 참여 가능하다.
-          if (resp.result === 0) {
-            if (resp.objects[0]?.hold > 0) setEventStatus('joined');
-            else if (resp.objects[0]?.available > 0) setEventStatus('open');
-            else setEventStatus('closed');
+          if (rule?.sku.includes('cpn-')) {
+            setEventStatus('open');
           } else {
-            setEventStatus(resp.status === 403 ? 'unknown' : 'invalid');
+            const resp = await API.Promotion.check(nid);
+            // available 값이 0보다 크면 프로모션 참여 가능하다.
+            if (resp.result === 0) {
+              if (resp.objects[0]?.hold > 0) setEventStatus('joined');
+              else if (resp.objects[0]?.available > 0) setEventStatus('open');
+              else setEventStatus('closed');
+            } else {
+              setEventStatus(resp.status === 403 ? 'unknown' : 'invalid');
+            }
           }
         }
       };
