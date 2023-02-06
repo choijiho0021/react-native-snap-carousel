@@ -9,7 +9,6 @@ export const createPaymentInfo = ({
   profileId,
   deduct,
   memo,
-  dlvCost,
   digital,
   amount,
   currency_code,
@@ -21,12 +20,11 @@ export const createPaymentInfo = ({
   profileId?: string;
   deduct?: number;
   memo?: string;
-  dlvCost: number;
   digital: boolean;
   amount?: number;
   currency_code?: CurrencyCode;
 }) => {
-  if ((amount || dlvCost) && !currency_code) {
+  if (amount && !currency_code) {
     // amount, dlvCost 값이 있는데 currency_code가 없으면 에러 처리한다.
     throw Error('Invalid currency code');
   }
@@ -34,11 +32,10 @@ export const createPaymentInfo = ({
   return {
     captured,
     imp_uid: impId,
-    merchant_uid: `mid_${mobile}_${new Date().getTime()}`,
+    merchant_uid: `${mobile}_${new Date().getTime()}`,
     profile_uuid: profileId,
     amount: amount || 0,
     rokebi_cash: deduct,
-    dlvCost,
     digital,
     memo,
     payment_type: paymentType,
@@ -51,7 +48,6 @@ export const createPaymentInfoForRokebiCash = ({
   mobile,
   profileId,
   deduct,
-  dlvCost,
   digital,
   memo,
 }: {
@@ -59,7 +55,6 @@ export const createPaymentInfoForRokebiCash = ({
   mobile?: string;
   profileId?: string;
   deduct?: Currency;
-  dlvCost: Currency;
   digital: boolean;
   memo?: string;
 }) =>
@@ -68,7 +63,6 @@ export const createPaymentInfoForRokebiCash = ({
     mobile,
     profileId,
     deduct: deduct?.value,
-    dlvCost: dlvCost?.value,
     currency_code: deduct?.currency,
     digital,
     memo,

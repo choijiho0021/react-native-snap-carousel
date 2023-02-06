@@ -111,6 +111,7 @@ const path = {
       cash: 'rokebi/cash',
       payment: 'rokebi/payment',
       paymentRule: 'rokebi/payment/rule',
+      calculateTotal: 'rokebi/order/calc',
     },
     pv: {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/quota',
