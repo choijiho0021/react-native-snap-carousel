@@ -88,7 +88,7 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
       <input type="hidden" name="P_CHARSET" value="utf8" />
       <input type="hidden" name="P_TIMESTAMP" value="${timestamp}" />
       <input type="hidden" name="P_CHKFAKE" value="${hash}" />
-      <input type="hidden" name="P_RESERVED" value="amt_hash=Y&below1000=Y${reserved}&app_scheme=${
+      <input type="hidden" name="P_RESERVED" value="noeasypay=Y&amt_hash=Y&below1000=Y${reserved}&app_scheme=${
     info.app_scheme
   }://" />
     </form>
