@@ -26,6 +26,7 @@ const opt: Record<string, string> = {
   ssgpay: '&d_ssgpay=Y',
   lpay: '&d_lpay=Y',
   samsung: '&d_samsungpay=Y',
+  card: '&noeasypay=Y',
 };
 
 export const inicisWebviewHtml = (info: PaymentParams) => {
@@ -35,7 +36,7 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
         MID: 'INIpayTest', // inicis test key
         HASHKEY: '3CB8183A4BE283555ACC8363C0360223',
       };
-  const reserved = opt[info.pay_method] || '&noeasypay=Y';
+  const reserved = opt[info.pay_method] || '';
   const timestamp = Date.now();
   const hash = CryptoJS.SHA512(
     info.amount.toString() + info.merchant_uid + timestamp + inicis.HASHKEY,
