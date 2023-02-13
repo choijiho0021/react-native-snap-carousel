@@ -461,7 +461,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
           popUp =
             popUpList?.find(
               (elm) =>
-                elm?.rule?.cond?.inflowUrl?.includes(url) ||
+                url.includes(elm?.rule?.cond?.inflowUrl) ||
                 elm.rule?.cond?.deepLinkPath === deepLinkPath,
             ) || popUp;
         }
