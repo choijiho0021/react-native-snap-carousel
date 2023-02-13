@@ -254,11 +254,11 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       url,
       params,
       utmParameters,
-      deepLinkPath,
+      linkPath,
     }: {
       url?: string;
       params?: urlParamObj;
-      deepLinkPath?: string;
+      linkPath?: string;
       utmParameters?: any;
     }) => {
       if (url) {
@@ -267,7 +267,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
             url,
             params,
             utmParameters,
-            deepLinkPath,
+            linkPath,
           }),
         );
       }
@@ -288,7 +288,12 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       const params: urlParamObj = utils.getParam(url);
       const isSupport = await getIsSupport();
 
-      linkSave({url, params, utmParameters: dLink?.utmParameters});
+      linkSave({
+        url,
+        params,
+        utmParameters: dLink?.utmParameters,
+        linkPath: params?.linkPath,
+      });
 
       if (
         isSupport &&
@@ -451,18 +456,14 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       const popUpList = promotion?.popUpPromotionMap?.get(routeName);
 
       if (popUpList) {
-        const {url, deepLinkPath} = link;
+        const {url, linkPath} = link;
 
-        let popUp = popUpList.find(
-          (elm) => !elm.rule?.cond?.inflowUrl && !elm.rule?.cond?.deepLinkPath,
-        );
+        let popUp = popUpList.find((elm) => !elm.rule?.cond?.linkPath);
 
         if (url) {
           popUp =
-            popUpList?.find(
-              (elm) =>
-                url.includes(elm?.rule?.cond?.inflowUrl) ||
-                elm.rule?.cond?.deepLinkPath === deepLinkPath,
+            popUpList?.find((elm) =>
+              elm.rule?.cond?.linkPath?.includes(linkPath),
             ) || popUp;
         }
 
@@ -509,11 +510,11 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       ) {
         const params = utils.getParam(url);
         const schemeSplit = urlSplit[0].split('/');
-        const deepLinkPath = schemeSplit[schemeSplit.length - 1];
+        const linkPath = schemeSplit[schemeSplit.length - 1];
 
-        linkSave({url, params, deepLinkPath});
+        linkSave({url, params, linkPath});
 
-        switch (deepLinkPath) {
+        switch (linkPath) {
           case 'PROMOTION':
             refNavigate({
               stack: 'HomeStack',
