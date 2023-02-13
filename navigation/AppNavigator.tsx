@@ -579,7 +579,6 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       ref={navigationRef}
       onStateChange={(state) => {
         const lastTab = getActiveRouteName(state);
-        console.log('aaaa lastTab', lastTab);
         setLastRouteName(lastTab);
         if (lastRouteName !== lastTab && lastTab !== 'Home') showPopUp(lastTab);
         Analytics.trackEvent('Page_View_Count', {page: lastTab});
