@@ -31,7 +31,7 @@ import {getTrackingStatus} from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
-import {RouteProp} from '@react-navigation/native';
+import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import VersionCheck from 'react-native-version-check';
 
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -230,6 +230,7 @@ const Esim: React.FC<EsimProps> = ({
     [],
   );
   const [popUpVisible, setPopUpVisible] = useState();
+  const [isClosedPopUp, setIsClosedPopUp] = useState<boolean>(false);
   const [popupDisabled, setPopupDisabled] = useState(true);
   const [appUpdate, setAppUpdate] = useState('');
   const [appUpdateVisible, setAppUpdateVisible] = useState<boolean>();
@@ -264,11 +265,6 @@ const Esim: React.FC<EsimProps> = ({
     popUpVisible,
     popupDisabled,
   ]);
-
-  const isFirst = useMemo(
-    () => (account.isFirst === undefined ? false : account.isFirst),
-    [account.isFirst],
-  );
 
   const animatedValue = useRef(new Animated.Value(0)).current;
 
@@ -377,8 +373,10 @@ const Esim: React.FC<EsimProps> = ({
           }
           break;
         case 'exit':
-          if (isIOS) setIsDevModalVisible(false);
-          else {
+          if (isIOS) {
+            setIsClosedPopUp(true);
+            setIsDevModalVisible(false);
+          } else {
             Linking.openURL('https://www.rokebi.com');
           }
           break;
@@ -389,14 +387,12 @@ const Esim: React.FC<EsimProps> = ({
   );
 
   useEffect(() => {
-    if (route.params?.showNoti) setNotiModal();
     if (route.params?.clickPromotion) exitApp('redirect');
-  }, [
-    exitApp,
-    route.params?.clickPromotion,
-    route.params?.showNoti,
-    setNotiModal,
-  ]);
+  }, [exitApp, route.params?.clickPromotion]);
+
+  useFocusEffect(() => {
+    if (!isClosedPopUp && promotion) setNotiModal();
+  });
 
   const folderOpened = useMemo(
     () => isFolderOpen(dimensions.width),
@@ -685,12 +681,6 @@ const Esim: React.FC<EsimProps> = ({
   }, []);
 
   useEffect(() => {
-    // 앱 첫 실행 여부 확인
-    if (isFirst && isSupport) navigation.navigate('Tutorial');
-    else if (promotion) setNotiModal();
-  }, [isFirst, isSupport, navigation, promotion, setNotiModal]);
-
-  useEffect(() => {
     async function getDevList() {
       if (isIOS) {
         const resp = await API.Device.getDevList();
@@ -765,16 +755,18 @@ const Esim: React.FC<EsimProps> = ({
   }, [account, action.cart, action.noti, action.order]);
 
   useEffect(() => {
-    const ver = VersionCheck.getCurrentVersion();
-    API.AppVersion.getAppVersion(`${Platform.OS}:${ver}`)
-      .then((rsp) => {
-        if (rsp.result === 0 && rsp.objects.length > 0) {
-          setAppUpdate(rsp.objects[0].updateOption);
-          setAppUpdateVisible(true);
-        } else setAppUpdateVisible(false);
-      })
-      .catch(() => setAppUpdateVisible(false));
-  }, []);
+    if (appUpdateVisible === undefined) {
+      const ver = VersionCheck.getCurrentVersion();
+      API.AppVersion.getAppVersion(`${Platform.OS}:${ver}`)
+        .then((rsp) => {
+          if (rsp.result === 0 && rsp.objects.length > 0) {
+            setAppUpdate(rsp.objects[0].updateOption);
+            setAppUpdateVisible(true);
+          } else setAppUpdateVisible(false);
+        })
+        .catch(() => setAppUpdateVisible(false));
+    }
+  }, [appUpdateVisible]);
 
   const renderModal = useCallback(
     () => (
@@ -784,7 +776,10 @@ const Esim: React.FC<EsimProps> = ({
           popUp={popUp}
           closeType={closeType}
           onOkClose={() => exitApp(closeType)}
-          onCancelClose={() => setPopUpVisible(false)}
+          onCancelClose={() => {
+            setIsClosedPopUp(true);
+            setPopUpVisible(false);
+          }}
         />
         <AppModal
           title={i18n.t('home:unsupportedTitle')}

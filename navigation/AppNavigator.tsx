@@ -49,6 +49,7 @@ import {API} from '@/redux/api';
 import ProgressiveImage from '@/components/ProgressiveImage';
 import i18n from '@/utils/i18n';
 import {PromotionModelState} from '../redux/modules/promotion';
+import {Platform} from 'react-native';
 
 const {isIOS, esimGlobal} = Env.get();
 const MainStack = createStackNavigator();
@@ -226,13 +227,12 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     } else {
       isSupport = await SimCardsManagerModule.isEsimSupported();
     }
-
+    isSupport = false;
     if (isSupport) {
       requestPermission();
     }
 
     const deviceModel = DeviceInfo.getModel();
-    const isFirst = await checkFistLaunch();
 
     DeviceInfo.getDeviceName().then((name) => {
       const deviceFullName = `${deviceModel},${name}`;
@@ -241,7 +241,6 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         accountActions.updateAccount({
           isSupportDev: isSupport,
           deviceModel: deviceFullName,
-          isFirst,
         }),
       );
     });
@@ -286,7 +285,10 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     async (dLink: FirebaseDynamicLinksTypes.DynamicLink | null) => {
       const url = dLink?.url;
       const params: urlParamObj = utils.getParam(url);
+      const canNavigate =
+        params.hasOwnProperty('stack') && params.hasOwnProperty('screen');
       const isSupport = await getIsSupport();
+      const isFirst = await checkFistLaunch();
 
       linkSave({
         url,
@@ -295,20 +297,25 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         linkPath: params?.linkPath,
       });
 
-      if (
-        isSupport &&
-        navigationRef?.current &&
-        params.hasOwnProperty('stack') &&
-        params.hasOwnProperty('screen')
-      ) {
-        // Screen 별 동작 추가 - Home, Cart,Esim, MyPage 이동 가능
-        refNavigate({
-          stack: `${params?.stack}Stack`,
-          screen: params?.screen,
-          initial: false,
-        });
-      } else if (isSupport && url) {
-        gift(url, params);
+      if (isSupport || Platform.OS === 'ios') {
+        if (isFirst) {
+          refNavigate({
+            stack: `HomeStack`,
+            screen: 'Tutorial',
+            initial: false,
+            params: canNavigate
+              ? {stack: `${params?.stack}Stack`, screen: params?.screen}
+              : undefined,
+          });
+        } else if (canNavigate && navigationRef?.current) {
+          refNavigate({
+            stack: `${params?.stack}Stack`,
+            screen: params?.screen,
+            initial: false,
+          });
+        } else if (url) {
+          gift(url, params);
+        }
       }
     },
     [getIsSupport, gift, linkSave, navigationRef, refNavigate],
@@ -581,6 +588,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       onStateChange={(state) => {
         const lastTab = getActiveRouteName(state);
         setLastRouteName(lastTab);
+        console.log('aaaaa lastTab', lastRouteName, lastTab);
         if (lastRouteName !== lastTab && lastTab !== 'Home') showPopUp(lastTab);
         Analytics.trackEvent('Page_View_Count', {page: lastTab});
         store.dispatch(cartActions.pushLastTab(lastTab));
