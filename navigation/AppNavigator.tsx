@@ -227,7 +227,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     } else {
       isSupport = await SimCardsManagerModule.isEsimSupported();
     }
-    isSupport = false;
+
     if (isSupport) {
       requestPermission();
     }
