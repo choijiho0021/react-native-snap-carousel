@@ -15,7 +15,7 @@ export type RkbPromotion = {
   title: string;
   imageUrl?: string;
   product_uuid?: string;
-  rule?: Record<string, string>;
+  rule?: Record<string, any>;
   notice?: {
     title?: string;
     body?: string;

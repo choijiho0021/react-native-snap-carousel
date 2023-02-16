@@ -79,7 +79,7 @@
   "home:supportedDevice": "서비스 이용 가능 단말",
   "home:supportedDeviceBody": "이외 해외 구매한 eSIM 사용가능 단말",
   "home:unsupportedBody1": "<b>고객님의 단말은 eSIM을 지원하지 않습니다.</b>",
-  "home:unsupportedBody2": "로밍도깨비 eSIM 서비스는 <b>eSIM 모듈이 탑재된 eSIM 지원 단말에서 이용 가능</b>합니다",
+  "home:unsupportedBody2": "로밍도깨비 eSIM 서비스는 <b>eSIM 모듈이 탑재된 eSIM 지원 단말에서 이용 가능</b>합니다.",
   "home:unsupportedBody3": "eSIM 이용 가능 단말에서 로밍도깨비 eSIM 앱에 접속해주세요.",
   "home:unsupportedBody4": "로밍도깨비 <b>서비스 소개와 간단한 상품 정보는 웹페이지에서 확인</b>하실 수 있습니다.",
   "home:unsupportedBody5": "감사합니다.",
@@ -602,6 +602,7 @@
   "pym:chargeInfo": "충전 상품은 <b>기존 상품 사용 종료 후 이어서</b> 사용되며, <b>교환 환불이 불가</b>합니다.\n<c>기존 상품의 데이터 증액 용도와는 맞지 않습니다.</c>",
   "pym:purchaseInfo": "eSIM 상품은 <b>결제와 동시에 상품 정보가 발송</b>되는 관계로 <b>교환·환불이 불가</b>합니다.",
   "pym:receipt": "영수증",
+  "pym:noAppScheme": "앱 실행에 실패했습니다. 설치가 되어있지 않은 경우 설치하기 버튼을 눌러주세요.",
 
   "err:login": "로그인 후 상품 구매하기",
   "err:body": "본문이 없습니다",
