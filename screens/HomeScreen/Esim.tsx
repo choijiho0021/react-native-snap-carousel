@@ -419,7 +419,7 @@ const Esim: React.FC<EsimProps> = ({
         </SafeAreaView>
       );
     },
-    [actions.modal],
+    [actions.modal, navToCountry],
   );
 
   const onPressItem = useCallback(
@@ -433,7 +433,7 @@ const Esim: React.FC<EsimProps> = ({
         navToCountry(info);
       }
     },
-    [product.localOpList, actions.modal],
+    [product.localOpList, actions.modal, localModal, navToCountry],
   );
 
   const onIndexChange = useCallback((idx: number) => setIndex(idx), []);
