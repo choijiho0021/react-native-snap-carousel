@@ -47,6 +47,23 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: colors.white,
   },
+  localNoticeBox: {
+    marginTop: 16,
+    marginBottom: 8,
+    padding: 20,
+    backgroundColor: colors.backGrey,
+    marginHorizontal: 20,
+  },
+  localNoticeTitle: {
+    ...appStyles.bold18Text,
+    lineHeight: 22,
+    marginBottom: 8,
+  },
+  localNoticeBody: {
+    ...appStyles.semiBold14Text,
+    lineHeight: 20,
+    color: colors.warmGrey,
+  },
 });
 
 export const makeProdData = (
@@ -172,6 +189,17 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           style={styles.box}
           source={{uri: API.default.httpImageUrl(imageUrl)}}
         />
+      )}
+
+      {headerTitle.includes('로컬망') && (
+        <View style={styles.localNoticeBox}>
+          <AppText style={styles.localNoticeTitle}>
+            {i18n.t('local:noticeBox:title')}
+          </AppText>
+          <AppText style={styles.localNoticeBody}>
+            {i18n.t('local:noticeBox:body')}
+          </AppText>
+        </View>
       )}
 
       <View style={{flex: 1}}>

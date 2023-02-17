@@ -904,5 +904,8 @@
   "local:modal:notice1:title": "Product registration is possible only once!",
   "local:modal:notice1:body": "Please do not delete the eSIM until usage ends.",
   "local:modal:notice2:title": "Real-time usage check not supported",
-  "local:modal:notice2:body": "We will try to support as soon as possible."
+  "local:modal:notice2:body": "We will try to support as soon as possible.",
+
+  "local:noticeBox:title": "What is a local network product?",
+  "local:noticeBox:body": "As a product that is directly connected to the local network of a local telecommunications company, you can use the data service more reliably."
 }
