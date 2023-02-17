@@ -357,64 +357,70 @@ const Esim: React.FC<EsimProps> = ({
     }
   }, [promotion]);
 
-  const navToCountry = useCallback((info: RkbPriceInfo) => {
-    action.product.getProdOfPartner(info.partnerList);
-    navigation.navigate('Country', {partner: info.partnerList});
-  }, []);
+  const navToCountry = useCallback(
+    (info: RkbPriceInfo) => {
+      action.product.getProdOfPartner(info.partnerList);
+      navigation.navigate('Country', {partner: info.partnerList});
+    },
+    [action.product, navigation],
+  );
 
-  const localModal = useCallback((info: RkbPriceInfo) => {
-    return (
-      <SafeAreaView style={{flex: 1}}>
-        <Pressable
-          style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}
-          onPress={() => actions.modal.closeModal()}>
+  const localModal = useCallback(
+    (info: RkbPriceInfo) => {
+      return (
+        <SafeAreaView style={{flex: 1}}>
           <Pressable
-            onPress={() => {}}
-            style={{
-              marginTop: 'auto',
-              paddingTop: 32,
-              paddingHorizontal: 20,
-              backgroundColor: 'white',
-              borderTopLeftRadius: 8,
-              borderTopRightRadius: 8,
-            }}>
-            <View style={styles.localModalTitle}>
-              <AppText style={styles.localModalTitleText}>
-                {i18n.t('local:modal:title')}
-              </AppText>
-            </View>
-            {[1, 2].map((k) => (
-              <View style={styles.localModalBody}>
-                <AppSvgIcon
-                  style={styles.localModalBodyIcon}
-                  name={k === 1 ? 'localNotice1' : 'localNotice2'}
-                />
-                <View style={{flex: 1}}>
-                  <AppText style={styles.localModalBodyTitle}>
-                    {i18n.t(`local:modal:notice${k}:title`)}
-                  </AppText>
-                  <AppText style={styles.localModalBodyText}>
-                    {i18n.t(`local:modal:notice${k}:body`)}
-                  </AppText>
-                </View>
+            style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}
+            onPress={() => actions.modal.closeModal()}>
+            <Pressable
+              onPress={() => {}}
+              style={{
+                marginTop: 'auto',
+                paddingTop: 32,
+                paddingHorizontal: 20,
+                backgroundColor: 'white',
+                borderTopLeftRadius: 8,
+                borderTopRightRadius: 8,
+              }}>
+              <View style={styles.localModalTitle}>
+                <AppText style={styles.localModalTitleText}>
+                  {i18n.t('local:modal:title')}
+                </AppText>
               </View>
-            ))}
-            <View style={styles.okBtnContainer}>
-              <AppButton
-                style={styles.okButton}
-                title={i18n.t('local:ok')}
-                type="primary"
-                onPress={() => {
-                  actions.modal.closeModal();
-                  navToCountry(info);
-                }}
-              />
-            </View>
+              {[1, 2].map((k) => (
+                <View style={styles.localModalBody}>
+                  <AppSvgIcon
+                    style={styles.localModalBodyIcon}
+                    name={k === 1 ? 'localNotice1' : 'localNotice2'}
+                  />
+                  <View style={{flex: 1}}>
+                    <AppText style={styles.localModalBodyTitle}>
+                      {i18n.t(`local:modal:notice${k}:title`)}
+                    </AppText>
+                    <AppText style={styles.localModalBodyText}>
+                      {i18n.t(`local:modal:notice${k}:body`)}
+                    </AppText>
+                  </View>
+                </View>
+              ))}
+              <View style={styles.okBtnContainer}>
+                <AppButton
+                  style={styles.okButton}
+                  title={i18n.t('local:ok')}
+                  type="primary"
+                  onPress={() => {
+                    actions.modal.closeModal();
+                    navToCountry(info);
+                  }}
+                />
+              </View>
+            </Pressable>
           </Pressable>
-        </Pressable>
-      </SafeAreaView>
-    );
-  }, []);
+        </SafeAreaView>
+      );
+    },
+    [actions.modal],
+  );
 
   const onPressItem = useCallback(
     (info: RkbPriceInfo) => {
@@ -427,7 +433,7 @@ const Esim: React.FC<EsimProps> = ({
         navToCountry(info);
       }
     },
-    [action.product, navigation],
+    [product.localOpList, actions.modal],
   );
 
   const onIndexChange = useCallback((idx: number) => setIndex(idx), []);
