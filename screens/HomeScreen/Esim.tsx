@@ -427,7 +427,7 @@ const Esim: React.FC<EsimProps> = ({
       const localOp = product.localOpList.get(info?.partner || '');
       const prodName = API.Product.getTitle(localOp);
 
-      if (prodName.includes('로컬망'))
+      if (prodName.includes('(로컬망)') || prodName.includes('(local)'))
         actions.modal.showModal({content: localModal(info)});
       else {
         navToCountry(info);

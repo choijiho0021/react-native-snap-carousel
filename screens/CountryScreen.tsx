@@ -191,7 +191,8 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         />
       )}
 
-      {headerTitle.includes('로컬망') && (
+      {(headerTitle.includes('(로컬망)') ||
+        headerTitle.includes('(local)')) && (
         <View style={styles.localNoticeBox}>
           <AppText style={styles.localNoticeTitle}>
             {i18n.t('local:noticeBox:title')}
