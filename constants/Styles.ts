@@ -240,6 +240,17 @@ export const appStyles = StyleSheet.create({
     padding: 0,
     margin: 0,
   },
+  semiBold14Text: {
+    //        fontFamily: "AppleSDGothicNeo",
+    fontSize: 14,
+    fontWeight: '600',
+    fontStyle: 'normal',
+    lineHeight: 16,
+    letterSpacing: 0,
+    color: colors.black,
+    padding: 0,
+    margin: 0,
+  },
   bold14Text: {
     //        fontFamily: "AppleSDGothicNeo",
     fontSize: 14,
