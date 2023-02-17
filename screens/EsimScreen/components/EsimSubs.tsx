@@ -23,6 +23,7 @@ import SplitText from '@/components/SplitText';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
 import AppStyledText from '@/components/AppStyledText';
 import AppModal from '@/components/AppModal';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -367,7 +368,10 @@ const EsimSubs = ({
   );
   const [isMoreInfo, setIsMoreInfo] = useState(false);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
-
+  const isBc = useMemo(
+    () => mainSubs.partner === 'BillionConnect',
+    [mainSubs.partner],
+  );
   const notCardInfo = useMemo(
     () =>
       !expired &&
@@ -528,12 +532,12 @@ const EsimSubs = ({
         />
 
         <AppSvgIcon
-          style={styles.btn}
+          style={[styles.btn, {opacity: isBc ? 0.3 : 1}]}
           onPress={() => {
             if (isCharged) {
               onPressRecharge(mainSubs);
             } else {
-              setShowModal(true);
+              if (!isBc) setShowModal(true);
               onPressUsage(mainSubs);
             }
           }}
@@ -565,6 +569,7 @@ const EsimSubs = ({
       </View>
     );
   }, [
+    isBc,
     isChargeExpired,
     isChargeable,
     isCharged,

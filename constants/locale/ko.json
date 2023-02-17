@@ -897,5 +897,7 @@
   "promo:join:invalid": "이벤트 대상이 아닙니다.",
   "promo:join:fail": "이벤트 참여 실패",
   "promo:join:ing": "시도중 ...",
-  "promo:login": "로그인 후 이벤트 참여하기"
+  "promo:login": "로그인 후 이벤트 참여하기",
+
+  "service:ready": "준비 중인 서비스입니다."
 }

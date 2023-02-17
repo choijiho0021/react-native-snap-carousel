@@ -897,5 +897,7 @@
   "promo:join:invalid": "Not eligible for this promotion",
   "promo:join:fail": "Sorry, try again.",
   "promo:join:ing": "Participating ...",
-  "promo:login": "Login to participate"
+  "promo:login": "Login to participate",
+
+  "service:ready": "This is a service in preparation."
 }

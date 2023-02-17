@@ -408,9 +408,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           expired={moment(item[item.length - 1].expireDate).isBefore(moment())}
           isChargeExpired={moment(item[0].expireDate).isBefore(moment())}
           isCharged={item.length > 1}
-          onPressUsage={(subscription: RkbSubscription) =>
-            onPressUsage(subscription)
-          }
+          onPressUsage={(subscription: RkbSubscription) => {
+            if (item[0].partner === 'BillionConnect') {
+              setShowSnackBar(true);
+            } else {
+              onPressUsage(subscription);
+            }
+          }}
           setShowModal={(visible: boolean) => setShowModal(visible)}
         />
       );
@@ -510,7 +514,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackBar(false)}
-        textMessage={i18n.t('usim:failSnackBar')}
+        textMessage={i18n.t('service:ready')}
+        bottom={10}
       />
     </SafeAreaView>
   );
