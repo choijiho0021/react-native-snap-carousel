@@ -897,5 +897,12 @@
   "promo:join:invalid": "Not eligible for this promotion",
   "promo:join:fail": "Sorry, try again.",
   "promo:join:ing": "Participating ...",
-  "promo:login": "Login to participate"
+  "promo:login": "Login to participate",
+
+  "local:ok": "Ok! I got it",
+  "local:modal:title": "Before purchasing Japanese\n(local network) products\nPlease check!",
+  "local:modal:notice1:title": "Product registration is possible only once!",
+  "local:modal:notice1:body": "Please do not delete the eSIM until usage ends.",
+  "local:modal:notice2:title": "Real-time usage check not supported",
+  "local:modal:notice2:body": "We will try to support as soon as possible."
 }

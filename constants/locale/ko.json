@@ -897,5 +897,12 @@
   "promo:join:invalid": "이벤트 대상이 아닙니다.",
   "promo:join:fail": "이벤트 참여 실패",
   "promo:join:ing": "시도중 ...",
-  "promo:login": "로그인 후 이벤트 참여하기"
+  "promo:login": "로그인 후 이벤트 참여하기",
+
+  "local:ok": "네! 확인했어요",
+  "local:modal:title": "일본(로컬망) 상품 구매 전\n꼭 확인해주세요!",
+  "local:modal:notice1:title": "상품 등록은 1번만 가능!",
+  "local:modal:notice1:body": "이용이 종료될 때까지 eSIM을 삭제하지 말아주세요.",
+  "local:modal:notice2:title": "실시간 사용량 확인 미지원",
+  "local:modal:notice2:body": "빠른 시간 내에 지원하도록 노력하겠습니다."
 }

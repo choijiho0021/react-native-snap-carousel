@@ -53,6 +53,7 @@ import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import {
   actions as notiActions,
@@ -168,6 +169,49 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 2,
   },
+  localModal: {
+    backgroundColor: 'white',
+  },
+  okBtnContainer: {
+    backgroundColor: colors.white,
+    paddingBottom: 20,
+    marginTop: 20,
+  },
+  okButton: {
+    ...appStyles.normal16Text,
+    height: 52,
+    backgroundColor: colors.clearBlue,
+    textAlign: 'center',
+    color: '#ffffff',
+  },
+  localModalTitle: {
+    marginBottom: 24,
+  },
+  localModalTitleText: {
+    ...appStyles.bold24Text,
+    lineHeight: 34,
+  },
+  localModalBody: {
+    paddingHorizontal: 24,
+    paddingVertical: 20,
+    backgroundColor: colors.backGrey,
+    marginBottom: 12,
+    flexDirection: 'row',
+  },
+  localModalBodyIcon: {
+    marginRight: 16,
+    alignSelf: 'center',
+  },
+  localModalBodyTitle: {
+    ...appStyles.bold18Text,
+    lineHeight: 22,
+    marginBottom: 2,
+  },
+  localModalBodyText: {
+    ...appStyles.medium16,
+    lineHeight: 22,
+    color: colors.warmGrey,
+  },
 });
 
 type EsimScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Esim'>;
@@ -188,6 +232,9 @@ type EsimProps = {
     noti: NotiAction;
     cart: CartAction;
   };
+  actions: {
+    modal: ModalAction;
+  };
 };
 
 const POPUP_DIS_DAYS = 7;
@@ -199,6 +246,7 @@ const Esim: React.FC<EsimProps> = ({
   product,
   account,
   noti,
+  actions,
 }) => {
   const [isDevModalVisible, setIsDevModalVisible] = useState<boolean>(true);
   const [index, setIndex] = useState(0);
@@ -309,10 +357,75 @@ const Esim: React.FC<EsimProps> = ({
     }
   }, [promotion]);
 
+  const navToCountry = useCallback((info: RkbPriceInfo) => {
+    action.product.getProdOfPartner(info.partnerList);
+    navigation.navigate('Country', {partner: info.partnerList});
+  }, []);
+
+  const localModal = useCallback((info: RkbPriceInfo) => {
+    return (
+      <SafeAreaView style={{flex: 1}}>
+        <Pressable
+          style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}
+          onPress={() => actions.modal.closeModal()}>
+          <Pressable
+            onPress={() => {}}
+            style={{
+              marginTop: 'auto',
+              paddingTop: 32,
+              paddingHorizontal: 20,
+              backgroundColor: 'white',
+              borderTopLeftRadius: 8,
+              borderTopRightRadius: 8,
+            }}>
+            <View style={styles.localModalTitle}>
+              <AppText style={styles.localModalTitleText}>
+                {i18n.t('local:modal:title')}
+              </AppText>
+            </View>
+            {[1, 2].map((k) => (
+              <View style={styles.localModalBody}>
+                <AppSvgIcon
+                  style={styles.localModalBodyIcon}
+                  name={k === 1 ? 'localNotice1' : 'localNotice2'}
+                />
+                <View style={{flex: 1}}>
+                  <AppText style={styles.localModalBodyTitle}>
+                    {i18n.t(`local:modal:notice${k}:title`)}
+                  </AppText>
+                  <AppText style={styles.localModalBodyText}>
+                    {i18n.t(`local:modal:notice${k}:body`)}
+                  </AppText>
+                </View>
+              </View>
+            ))}
+            <View style={styles.okBtnContainer}>
+              <AppButton
+                style={styles.okButton}
+                title={i18n.t('local:ok')}
+                type="primary"
+                onPress={() => {
+                  actions.modal.closeModal();
+                  navToCountry(info);
+                }}
+              />
+            </View>
+          </Pressable>
+        </Pressable>
+      </SafeAreaView>
+    );
+  }, []);
+
   const onPressItem = useCallback(
     (info: RkbPriceInfo) => {
-      action.product.getProdOfPartner(info.partnerList);
-      navigation.navigate('Country', {partner: info.partnerList});
+      const localOp = product.localOpList.get(info?.partner || '');
+      const prodName = API.Product.getTitle(localOp);
+
+      if (prodName.includes('로컬망'))
+        actions.modal.showModal({content: localModal(info)});
+      else {
+        navToCountry(info);
+      }
     },
     [action.product, navigation],
   );
@@ -842,6 +955,9 @@ export default connect(
       noti: bindActionCreators(notiActions, dispatch),
       order: bindActionCreators(orderActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
+    },
+    actions: {
+      modal: bindActionCreators(modalActions, dispatch),
     },
   }),
 )(Esim);
