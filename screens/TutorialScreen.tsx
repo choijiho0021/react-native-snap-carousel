@@ -17,6 +17,7 @@ import {
 } from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';
 import {bindActionCreators, RootState} from 'redux';
+import {RouteProp} from '@react-navigation/native';
 import i18n from '@/utils/i18n';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -31,6 +32,7 @@ import {AccountModelState} from '@/redux/modules/account';
 import {LinkModelState} from '../redux/modules/link';
 import AppCarousel, {AppCarouselRef} from '@/components/AppCarousel';
 import {MAX_WIDTH} from '@/constants/SliderEntry.style';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 
 const {esimGlobal} = Env.get();
 
@@ -93,13 +95,16 @@ type TutorialScreenNavigationProp = StackNavigationProp<
   'Tutorial'
 >;
 
-type TutorialScreenProps = {
-  navigation: TutorialScreenNavigationProp;
+type EsimScreenRouteProp = RouteProp<HomeStackParamList, 'Tutorial'>;
 
+type TutorialScreenProps = {
+  route: EsimScreenRouteProp;
+  navigation: TutorialScreenNavigationProp;
   account: AccountModelState;
   link: LinkModelState;
   action: {
     promotion: PromotionAction;
+    modal: ModalAction;
   };
 };
 
@@ -148,10 +153,22 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
     [],
   );
 
+  const move = useCallback(() => {
+    const {params} = props?.route;
+    const {stack, screen} = params || {};
+
+    if (stack && screen) {
+      navigation.popToTop();
+      navigation.navigate(stack, {screen});
+    } else {
+      navigation.navigate('Home');
+    }
+  }, [navigation, props]);
+
   const skip = useCallback(() => {
     if (status === 'authorized') AppEventsLogger.logEvent('튜토리얼 SKIP');
-    navigation.navigate('Home', {showNoti: true});
-  }, [navigation, status]);
+    move();
+  }, [move, status]);
 
   const completed = useCallback(() => {
     if (status === 'authorized') {
@@ -160,8 +177,8 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
         `${esimGlobal ? 'global' : 'esim'}_tutorial_complete`,
       );
     }
-    navigation.navigate('Home', {showNoti: true});
-  }, [navigation, status]);
+    move();
+  }, [move, status]);
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({window}) => {
@@ -233,7 +250,11 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
 };
 
 export default connect(
-  ({account, link, promotion}: RootState) => ({account, link, promotion}),
+  ({account, link, promotion}: RootState) => ({
+    account,
+    link,
+    promotion,
+  }),
   (dispatch) => ({
     action: {
       promotion: bindActionCreators(promotionActions, dispatch),

@@ -57,7 +57,7 @@ type PurchaseDetailParams = {detail?: RkbOrder};
 
 export type HomeStackParamList = {
   Home: undefined;
-  Tutorial: undefined;
+  Tutorial: {stack: string; screen: string};
   StoreSearch: undefined;
   Store: undefined;
   Cart: undefined;
@@ -107,7 +107,7 @@ export type HomeStackParamList = {
   Settings: undefined;
   Auth: {screen: string};
   HeaderTitle: undefined;
-  Esim: {showNoti?: boolean; clickPromotion?: boolean};
+  Esim: {clickPromotion?: boolean};
 
   MyPage: undefined;
   Recharge: {mode: string};

@@ -14,7 +14,6 @@ const styles = StyleSheet.create({
     height: 62,
     backgroundColor: colors.white,
     borderStyle: 'solid' as const,
-    borderColor: colors.lightGrey,
     borderLeftWidth: 1,
     borderTopWidth: 1,
   },
@@ -143,6 +142,7 @@ const PymButtonList: React.FC<PymButtonListParams> = ({selected, onPress}) => {
           selected={selected}
           topColor={selected === 'pym:kakao'}
           onPress={onPress}
+          bottom={Platform.OS !== 'android'}
         />
         <PymButton
           icon="ssgpay"
@@ -151,6 +151,7 @@ const PymButtonList: React.FC<PymButtonListParams> = ({selected, onPress}) => {
           topColor={selected === 'pym:toss'}
           onPress={onPress}
           leftColor={selected === 'pym:naver'}
+          bottom={Platform.OS !== 'android'}
         />
         <PymButton
           icon="lpay"
@@ -160,41 +161,32 @@ const PymButtonList: React.FC<PymButtonListParams> = ({selected, onPress}) => {
           leftColor={selected === 'pym:ssgpay'}
           onPress={onPress}
           right
+          bottom={Platform.OS !== 'android'}
         />
       </View>
-      <View key="row3" style={styles.buttonRow}>
-        <PymButton
-          btnKey="pym:bank"
-          selected={selected}
-          bottom
-          topColor={selected === 'pym:naver'}
-          onPress={onPress}
-        />
-        {Platform.OS === 'android' ? (
+      {Platform.OS === 'android' && (
+        <View key="row3" style={styles.buttonRow}>
           <PymButton
             icon="samsung"
             btnKey="pym:samsung"
             selected={selected}
             bottom
-            right
             onPress={onPress}
-            topColor={selected === 'pym:ssgpay'}
+            topColor={selected === 'pym:naver'}
             leftColor={selected === 'pym:bank'}
           />
-        ) : (
           <PymButton
             btnKey="pym:null"
             topColor={selected === 'pym:ssgpay'}
-            leftColor={selected === 'pym:bank'}
+            leftColor={Platform.OS === 'android' && selected === 'pym:samsung'}
           />
-        )}
-        <PymButton
-          btnKey="pym:null"
-          left={Platform.OS === 'android'}
-          topColor={selected === 'pym:lpay'}
-          leftColor={Platform.OS === 'android' && selected === 'pym:samsung'}
-        />
-      </View>
+          <PymButton
+            btnKey="pym:null"
+            topColor={selected === 'pym:lpay'}
+            left={false}
+          />
+        </View>
+      )}
     </View>
   );
 };

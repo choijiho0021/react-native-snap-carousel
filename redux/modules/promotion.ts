@@ -145,14 +145,14 @@ const slice = createSlice({
       const giftImage = invite?.rule?.gift;
 
       const popUpPromotionMap = objects.reduce((acc, cur) => {
-        if (cur.rule?.routeName && cur.rule?.popUp && !cur.popUpDisabled) {
-          if (acc.has(cur.rule?.routeName)) {
+        if (cur.rule?.display?.type !== 'banner' && !cur.popUpDisabled) {
+          if (acc.has(cur.rule?.display?.routeName)) {
             acc.set(
-              cur.rule?.routeName,
-              (acc.get(cur.rule?.routeName) || []).concat(cur),
+              cur.rule?.display?.routeName,
+              (acc.get(cur.rule?.display?.routeName) || []).concat(cur),
             );
           } else {
-            acc.set(cur.rule?.routeName, [cur]);
+            acc.set(cur.rule?.display?.routeName, [cur]);
           }
         }
         return acc;

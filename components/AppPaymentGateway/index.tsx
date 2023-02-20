@@ -101,10 +101,8 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
       }
 
       Linking.openURL(utils.intentToUrl(event.url)).catch((err) => {
-        AppAlert.info(
-          '앱 실행에 실패했습니다. 설치가 되어있지 않은 경우 설치하기 버튼을 눌러주세요.',
-          i18n.t('ok'),
-          () => callback('cancel'),
+        AppAlert.info(i18n.t('pym:noAppScheme'), i18n.t('ok'), () =>
+          callback('cancel'),
         );
       });
 

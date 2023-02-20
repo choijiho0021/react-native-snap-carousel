@@ -31,7 +31,7 @@ import {getTrackingStatus} from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
-import {RouteProp} from '@react-navigation/native';
+import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import VersionCheck from 'react-native-version-check';
 
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -53,6 +53,7 @@ import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import {
   actions as notiActions,
@@ -168,6 +169,49 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 2,
   },
+  localModal: {
+    backgroundColor: 'white',
+  },
+  okBtnContainer: {
+    backgroundColor: colors.white,
+    paddingBottom: 20,
+    marginTop: 20,
+  },
+  okButton: {
+    ...appStyles.normal16Text,
+    height: 52,
+    backgroundColor: colors.clearBlue,
+    textAlign: 'center',
+    color: '#ffffff',
+  },
+  localModalTitle: {
+    marginBottom: 24,
+  },
+  localModalTitleText: {
+    ...appStyles.bold24Text,
+    lineHeight: 34,
+  },
+  localModalBody: {
+    paddingHorizontal: 24,
+    paddingVertical: 20,
+    backgroundColor: colors.backGrey,
+    marginBottom: 12,
+    flexDirection: 'row',
+  },
+  localModalBodyIcon: {
+    marginRight: 16,
+    alignSelf: 'center',
+  },
+  localModalBodyTitle: {
+    ...appStyles.bold18Text,
+    lineHeight: 22,
+    marginBottom: 2,
+  },
+  localModalBodyText: {
+    ...appStyles.medium16,
+    lineHeight: 22,
+    color: colors.warmGrey,
+  },
 });
 
 type EsimScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Esim'>;
@@ -188,6 +232,9 @@ type EsimProps = {
     noti: NotiAction;
     cart: CartAction;
   };
+  actions: {
+    modal: ModalAction;
+  };
 };
 
 const POPUP_DIS_DAYS = 7;
@@ -199,6 +246,7 @@ const Esim: React.FC<EsimProps> = ({
   product,
   account,
   noti,
+  actions,
 }) => {
   const [isDevModalVisible, setIsDevModalVisible] = useState<boolean>(true);
   const [index, setIndex] = useState(0);
@@ -230,6 +278,7 @@ const Esim: React.FC<EsimProps> = ({
     [],
   );
   const [popUpVisible, setPopUpVisible] = useState();
+  const [isClosedPopUp, setIsClosedPopUp] = useState<boolean>(false);
   const [popupDisabled, setPopupDisabled] = useState(true);
   const [appUpdate, setAppUpdate] = useState('');
   const [appUpdateVisible, setAppUpdateVisible] = useState<boolean>();
@@ -265,11 +314,6 @@ const Esim: React.FC<EsimProps> = ({
     popupDisabled,
   ]);
 
-  const isFirst = useMemo(
-    () => (account.isFirst === undefined ? false : account.isFirst),
-    [account.isFirst],
-  );
-
   const animatedValue = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -303,7 +347,7 @@ const Esim: React.FC<EsimProps> = ({
 
   const setNotiModal = useCallback(() => {
     const popUpPromo = promotion?.find(
-      (v) => v.rule?.routeName === 'Home' && v?.notice?.image?.noti,
+      (v) => v.rule?.display?.routeName === 'Home' && v?.notice?.image?.noti,
     );
 
     if (popUpPromo) {
@@ -313,12 +357,83 @@ const Esim: React.FC<EsimProps> = ({
     }
   }, [promotion]);
 
-  const onPressItem = useCallback(
+  const navToCountry = useCallback(
     (info: RkbPriceInfo) => {
       action.product.getProdOfPartner(info.partnerList);
       navigation.navigate('Country', {partner: info.partnerList});
     },
     [action.product, navigation],
+  );
+
+  const localModal = useCallback(
+    (info: RkbPriceInfo) => {
+      return (
+        <SafeAreaView style={{flex: 1}}>
+          <Pressable
+            style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}
+            onPress={() => actions.modal.closeModal()}>
+            <Pressable
+              onPress={() => {}}
+              style={{
+                marginTop: 'auto',
+                paddingTop: 32,
+                paddingHorizontal: 20,
+                backgroundColor: 'white',
+                borderTopLeftRadius: 8,
+                borderTopRightRadius: 8,
+              }}>
+              <View style={styles.localModalTitle}>
+                <AppText style={styles.localModalTitleText}>
+                  {i18n.t('local:modal:title')}
+                </AppText>
+              </View>
+              {[1, 2].map((k) => (
+                <View style={styles.localModalBody}>
+                  <AppSvgIcon
+                    style={styles.localModalBodyIcon}
+                    name={k === 1 ? 'localNotice1' : 'localNotice2'}
+                  />
+                  <View style={{flex: 1}}>
+                    <AppText style={styles.localModalBodyTitle}>
+                      {i18n.t(`local:modal:notice${k}:title`)}
+                    </AppText>
+                    <AppText style={styles.localModalBodyText}>
+                      {i18n.t(`local:modal:notice${k}:body`)}
+                    </AppText>
+                  </View>
+                </View>
+              ))}
+              <View style={styles.okBtnContainer}>
+                <AppButton
+                  style={styles.okButton}
+                  title={i18n.t('local:ok')}
+                  type="primary"
+                  onPress={() => {
+                    actions.modal.closeModal();
+                    navToCountry(info);
+                  }}
+                />
+              </View>
+            </Pressable>
+          </Pressable>
+        </SafeAreaView>
+      );
+    },
+    [actions.modal],
+  );
+
+  const onPressItem = useCallback(
+    (info: RkbPriceInfo) => {
+      const localOp = product.localOpList.get(info?.partner || '');
+      const prodName = API.Product.getTitle(localOp);
+
+      if (prodName.includes('(로컬망)') || prodName.includes('(local)'))
+        actions.modal.showModal({content: localModal(info)});
+      else {
+        navToCountry(info);
+      }
+    },
+    [product.localOpList, actions.modal],
   );
 
   const onIndexChange = useCallback((idx: number) => setIndex(idx), []);
@@ -353,7 +468,9 @@ const Esim: React.FC<EsimProps> = ({
       switch (v) {
         case 'redirect':
           if (popUp?.rule?.navigate) {
-            if (popUp?.rule?.stack) {
+            if (popUp?.rule?.navigate?.startsWith('http')) {
+              Linking.openURL(popUp?.rule?.navigate);
+            } else if (popUp?.rule?.stack) {
               navigation.navigate(popUp?.rule?.stack, {
                 screen: popUp.rule.navigate,
                 initial: false,
@@ -375,8 +492,10 @@ const Esim: React.FC<EsimProps> = ({
           }
           break;
         case 'exit':
-          if (isIOS) setIsDevModalVisible(false);
-          else {
+          if (isIOS) {
+            setIsClosedPopUp(true);
+            setIsDevModalVisible(false);
+          } else {
             Linking.openURL('https://www.rokebi.com');
           }
           break;
@@ -387,14 +506,12 @@ const Esim: React.FC<EsimProps> = ({
   );
 
   useEffect(() => {
-    if (route.params?.showNoti) setNotiModal();
     if (route.params?.clickPromotion) exitApp('redirect');
-  }, [
-    exitApp,
-    route.params?.clickPromotion,
-    route.params?.showNoti,
-    setNotiModal,
-  ]);
+  }, [exitApp, route.params?.clickPromotion]);
+
+  useFocusEffect(() => {
+    if (!isClosedPopUp && promotion) setNotiModal();
+  });
 
   const folderOpened = useMemo(
     () => isFolderOpen(dimensions.width),
@@ -449,7 +566,7 @@ const Esim: React.FC<EsimProps> = ({
 
   const renderCarousel = useCallback(() => {
     const promotionBanner = promotion.filter(
-      (elm) => elm.imageUrl && elm?.rule?.banner,
+      (elm) => elm.imageUrl && elm?.rule?.type !== 'popUp',
     );
     if (promotionBanner.length > 0) {
       return (
@@ -683,12 +800,6 @@ const Esim: React.FC<EsimProps> = ({
   }, []);
 
   useEffect(() => {
-    // 앱 첫 실행 여부 확인
-    if (isFirst && isSupport) navigation.navigate('Tutorial');
-    else if (promotion) setNotiModal();
-  }, [isFirst, isSupport, navigation, promotion, setNotiModal]);
-
-  useEffect(() => {
     async function getDevList() {
       if (isIOS) {
         const resp = await API.Device.getDevList();
@@ -763,16 +874,18 @@ const Esim: React.FC<EsimProps> = ({
   }, [account, action.cart, action.noti, action.order]);
 
   useEffect(() => {
-    const ver = VersionCheck.getCurrentVersion();
-    API.AppVersion.getAppVersion(`${Platform.OS}:${ver}`)
-      .then((rsp) => {
-        if (rsp.result === 0 && rsp.objects.length > 0) {
-          setAppUpdate(rsp.objects[0].updateOption);
-          setAppUpdateVisible(true);
-        } else setAppUpdateVisible(false);
-      })
-      .catch(() => setAppUpdateVisible(false));
-  }, []);
+    if (appUpdateVisible === undefined) {
+      const ver = VersionCheck.getCurrentVersion();
+      API.AppVersion.getAppVersion(`${Platform.OS}:${ver}`)
+        .then((rsp) => {
+          if (rsp.result === 0 && rsp.objects.length > 0) {
+            setAppUpdate(rsp.objects[0].updateOption);
+            setAppUpdateVisible(true);
+          } else setAppUpdateVisible(false);
+        })
+        .catch(() => setAppUpdateVisible(false));
+    }
+  }, [appUpdateVisible]);
 
   const renderModal = useCallback(
     () => (
@@ -782,7 +895,10 @@ const Esim: React.FC<EsimProps> = ({
           popUp={popUp}
           closeType={closeType}
           onOkClose={() => exitApp(closeType)}
-          onCancelClose={() => setPopUpVisible(false)}
+          onCancelClose={() => {
+            setIsClosedPopUp(true);
+            setPopUpVisible(false);
+          }}
         />
         <AppModal
           title={i18n.t('home:unsupportedTitle')}
@@ -845,6 +961,9 @@ export default connect(
       noti: bindActionCreators(notiActions, dispatch),
       order: bindActionCreators(orderActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
+    },
+    actions: {
+      modal: bindActionCreators(modalActions, dispatch),
     },
   }),
 )(Esim);

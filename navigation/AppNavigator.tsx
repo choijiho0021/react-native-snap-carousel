@@ -49,6 +49,7 @@ import {API} from '@/redux/api';
 import ProgressiveImage from '@/components/ProgressiveImage';
 import i18n from '@/utils/i18n';
 import {PromotionModelState} from '../redux/modules/promotion';
+import {Platform} from 'react-native';
 
 const {isIOS, esimGlobal} = Env.get();
 const MainStack = createStackNavigator();
@@ -232,7 +233,6 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     }
 
     const deviceModel = DeviceInfo.getModel();
-    const isFirst = await checkFistLaunch();
 
     DeviceInfo.getDeviceName().then((name) => {
       const deviceFullName = `${deviceModel},${name}`;
@@ -241,7 +241,6 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         accountActions.updateAccount({
           isSupportDev: isSupport,
           deviceModel: deviceFullName,
-          isFirst,
         }),
       );
     });
@@ -254,11 +253,11 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       url,
       params,
       utmParameters,
-      deepLinkPath,
+      linkPath,
     }: {
       url?: string;
       params?: urlParamObj;
-      deepLinkPath?: string;
+      linkPath?: string;
       utmParameters?: any;
     }) => {
       if (url) {
@@ -267,7 +266,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
             url,
             params,
             utmParameters,
-            deepLinkPath,
+            linkPath,
           }),
         );
       }
@@ -286,24 +285,37 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     async (dLink: FirebaseDynamicLinksTypes.DynamicLink | null) => {
       const url = dLink?.url;
       const params: urlParamObj = utils.getParam(url);
+      const canNavigate =
+        params.hasOwnProperty('stack') && params.hasOwnProperty('screen');
       const isSupport = await getIsSupport();
+      const isFirst = await checkFistLaunch();
 
-      linkSave({url, params, utmParameters: dLink?.utmParameters});
+      linkSave({
+        url,
+        params,
+        utmParameters: dLink?.utmParameters,
+        linkPath: params?.linkPath,
+      });
 
-      if (
-        isSupport &&
-        navigationRef?.current &&
-        params.hasOwnProperty('stack') &&
-        params.hasOwnProperty('screen')
-      ) {
-        // Screen 별 동작 추가 - Home, Cart,Esim, MyPage 이동 가능
-        refNavigate({
-          stack: `${params?.stack}Stack`,
-          screen: params?.screen,
-          initial: false,
-        });
-      } else if (isSupport && url) {
-        gift(url, params);
+      if (isSupport || Platform.OS === 'ios') {
+        if (isFirst) {
+          refNavigate({
+            stack: `HomeStack`,
+            screen: 'Tutorial',
+            initial: false,
+            params: canNavigate
+              ? {stack: `${params?.stack}Stack`, screen: params?.screen}
+              : undefined,
+          });
+        } else if (canNavigate && navigationRef?.current) {
+          refNavigate({
+            stack: `${params?.stack}Stack`,
+            screen: params?.screen,
+            initial: false,
+          });
+        } else if (url) {
+          gift(url, params);
+        }
       }
     },
     [getIsSupport, gift, linkSave, navigationRef, refNavigate],
@@ -387,19 +399,19 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     (popUp: RkbPromotion) => {
       return (
         <View style={styles.modalBtnContainer}>
-          {popUp?.rule?.btnCancelTitle && (
+          {popUp?.rule?.display?.btnCancelTitle && (
             <AppButton
               style={{
                 ...styles.btnCancel,
                 marginRight: 10,
               }}
-              title={popUp?.rule?.btnCancelTitle}
+              title={popUp?.rule?.display?.btnCancelTitle}
               onPress={() => handlePopUp(popUp, false)}
             />
           )}
           <AppButton
             style={styles.btnCancel}
-            title={popUp?.rule?.btnOkTitle || i18n.t('ok')}
+            title={popUp?.rule?.display?.btnOkTitle || i18n.t('ok')}
             onPress={() => handlePopUp(popUp, true)}
           />
         </View>
@@ -421,7 +433,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
             <View
               style={{
                 backgroundColor: colors.white,
-                height: iamgeHight + 88 + (rule?.closeWeek ? 37 : 0), // 88 = 52(버튼) + 20 (아래여백) + 16(위 여백)
+                height: iamgeHight + 88 + (rule?.display?.closeWeek ? 37 : 0), // 88 = 52(버튼) + 20 (아래여백) + 16(위 여백)
               }}>
               <ProgressiveImage
                 style={{width: '100%', height: iamgeHight}}
@@ -434,7 +446,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
                 resizeMode="contain"
               />
 
-              {rule?.closeWeek && renderCloseWeek()}
+              {rule?.display?.closeWeek && renderCloseWeek()}
 
               {renderBtn(popUp)}
             </View>
@@ -446,41 +458,19 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     [actions.modal, iamgeHight, renderBtn, renderCloseWeek],
   );
 
-  const checkLink = useCallback(
-    ({
-      popUp,
-      url,
-      deepLinkPath,
-    }: {
-      popUp: RkbPromotion;
-      url: string;
-      deepLinkPath: string;
-    }) => {
-      return (
-        popUp?.rule?.inflowUrl?.includes(url) ||
-        popUp.rule?.deepLinkPath === deepLinkPath
-      );
-    },
-    [],
-  );
-
   const showPopUp = useCallback(
     (routeName: string) => {
       const popUpList = promotion?.popUpPromotionMap?.get(routeName);
 
       if (popUpList) {
-        const {url, deepLinkPath} = link;
+        const {url, linkPath} = link;
 
-        let popUp = popUpList.find(
-          (elm) => !elm.rule?.inflowUrl && !elm.rule?.deepLinkPath,
-        );
+        let popUp = popUpList.find((elm) => !elm.rule?.cond?.linkPath);
 
         if (url) {
           popUp =
-            popUpList?.find(
-              (elm) =>
-                elm?.rule?.inflowUrl?.includes(url) ||
-                elm.rule?.deepLinkPath === deepLinkPath,
+            popUpList?.find((elm) =>
+              elm.rule?.cond?.linkPath?.includes(linkPath),
             ) || popUp;
         }
 
@@ -505,7 +495,8 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   useEffect(() => {
     if (
       popUpPromo &&
-      (!closedPopUp.includes(popUpPromo?.uuid) || popUpPromo.rule?.repeat)
+      (!closedPopUp.includes(popUpPromo?.uuid) ||
+        popUpPromo.rule?.display?.repeat)
     ) {
       actions.modal.showModal({
         content: popUpModalBody(popUpPromo),
@@ -526,11 +517,11 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       ) {
         const params = utils.getParam(url);
         const schemeSplit = urlSplit[0].split('/');
-        const deepLinkPath = schemeSplit[schemeSplit.length - 1];
+        const linkPath = schemeSplit[schemeSplit.length - 1];
 
-        linkSave({url, params, deepLinkPath});
+        linkSave({url, params, linkPath});
 
-        switch (deepLinkPath) {
+        switch (linkPath) {
           case 'PROMOTION':
             refNavigate({
               stack: 'HomeStack',
@@ -597,6 +588,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       onStateChange={(state) => {
         const lastTab = getActiveRouteName(state);
         setLastRouteName(lastTab);
+        console.log('aaaaa lastTab', lastRouteName, lastTab);
         if (lastRouteName !== lastTab && lastTab !== 'Home') showPopUp(lastTab);
         Analytics.trackEvent('Page_View_Count', {page: lastTab});
         store.dispatch(cartActions.pushLastTab(lastTab));
