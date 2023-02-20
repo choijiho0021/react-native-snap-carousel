@@ -51,7 +51,7 @@
 
 # 1.2.4
 
-- Progressive Image ㅂ완
+- Progressive Image 보완
 - 딥링크 동작 위치 수정 (Home -> AppNavigator)
 - 이니시스 영수증 조회 처리
 - 이니시스 설정 추가
@@ -116,7 +116,7 @@
 # 1.5.5
 
 - 채널톡 이메일 버그 수정
-- Progressive Image ㅂ완
+- Progressive Image 보완
 - 딥링크 동작 위치 수정 (Home -> AppNavigator)
 - 이니시스 영수증 조회 처리
 - 이니시스 설정 추가
