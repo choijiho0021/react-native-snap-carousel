@@ -542,7 +542,7 @@ const EsimSubs = ({
             }
           }}
           title={i18n.t('esim:checkUsage')}
-          titleStyle={styles.btnTitle}
+          titleStyle={[styles.btnTitle, {opacity: isBc ? 0.6 : 1}]}
           name="btnUsage"
         />
 
@@ -560,7 +560,7 @@ const EsimSubs = ({
             title={i18n.t(
               isChargeExpired ? 'esim:rechargeExpired' : 'esim:notrechargeable',
             )}
-            titleStyle={styles.btnTitle}
+            titleStyle={[styles.btnTitle, {opacity: isChargeExpired ? 1 : 0.6}]}
             onPress={() => isChargeExpired && setExpiredModalVisible(true)}
             name={isChargeExpired ? 'btnChargeExpired' : 'btnNonChargeable'}
           />
