@@ -174,14 +174,13 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
           if (cmd.value) {
             const partnerList = cmd.value.split(',');
             action.product.getProdOfPartner(partnerList);
-            console.log('@@@ partnerList', partnerList);
             navigation.navigate('Country', {partner: partnerList});
           }
           break;
         default:
       }
     },
-    [action.info, navigation],
+    [action.info, action.product, navigation],
   );
 
   const onPress = useCallback(async () => {
