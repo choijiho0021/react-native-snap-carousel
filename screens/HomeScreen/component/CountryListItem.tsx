@@ -8,6 +8,7 @@ import {getPromoFlagColor, RkbProduct} from '@/redux/api/productApi';
 import i18n from '@/utils/i18n';
 import AppPrice from '@/components/AppPrice';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
 
 const styles = StyleSheet.create({
   card: {
@@ -165,30 +166,7 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
                 ]}>
                 {title}
               </AppText>
-              {!_.isEmpty(item.promoFlag) &&
-                item.promoFlag.map((elm) => {
-                  const badgeColor = getPromoFlagColor(elm);
-                  return (
-                    <View
-                      key={elm}
-                      style={[
-                        styles.badge,
-                        {
-                          backgroundColor: badgeColor.backgroundColor,
-                        },
-                      ]}>
-                      <AppText
-                        key="name"
-                        style={[
-                          styles.badgeText,
-
-                          {color: badgeColor.fontColor},
-                        ]}>
-                        {i18n.t(elm)}
-                      </AppText>
-                    </View>
-                  );
-                })}
+              {renderPromoFlag(item.promoFlag || [], false)}
             </View>
             <AppPrice
               price={item.price}
