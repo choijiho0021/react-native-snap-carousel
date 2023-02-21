@@ -366,7 +366,7 @@ const Esim: React.FC<EsimProps> = ({
   );
 
   const localModal = useCallback(
-    (info: RkbPriceInfo) => {
+    (info: RkbPriceInfo, localOpName: string) => {
       return (
         <SafeAreaView style={{flex: 1}}>
           <Pressable
@@ -384,7 +384,9 @@ const Esim: React.FC<EsimProps> = ({
               }}>
               <View style={styles.localModalTitle}>
                 <AppText style={styles.localModalTitleText}>
-                  {i18n.t('local:modal:title')}
+                  {i18n.t('local:modal:title', {
+                    localOpName,
+                  })}
                 </AppText>
               </View>
               {[1, 2].map((k) => (
@@ -425,10 +427,10 @@ const Esim: React.FC<EsimProps> = ({
   const onPressItem = useCallback(
     (info: RkbPriceInfo) => {
       const localOp = product.localOpList.get(info?.partner || '');
-      const prodName = API.Product.getTitle(localOp);
+      const localOpName = API.Product.getTitle(localOp);
 
-      if (prodName.includes('(로컬망)') || prodName.includes('(local)'))
-        actions.modal.showModal({content: localModal(info)});
+      if (localOpName.includes('(로컬망)') || localOpName.includes('(local)'))
+        actions.modal.showModal({content: localModal(info, localOpName)});
       else {
         navToCountry(info);
       }
