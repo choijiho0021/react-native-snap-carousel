@@ -6,7 +6,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import React, {memo} from 'react';
+import React, {memo, useMemo} from 'react';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
@@ -170,7 +170,6 @@ const PaymentItemInfo = ({
   pymReq = [],
   deduct,
   pymPrice,
-  isRecharge,
   screen,
   mode = 'method',
 }: {
@@ -178,10 +177,14 @@ const PaymentItemInfo = ({
   pymReq?: PaymentReq[];
   deduct?: Currency;
   pymPrice?: Currency;
-  isRecharge?: boolean;
   screen?: string;
   mode?: PaymentItemMode;
 }) => {
+  const isRecharge = useMemo(
+    () => cart.findIndex((item) => item.type === 'rch') >= 0,
+    [cart],
+  );
+
   return (
     <View>
       <AppText style={[styles.title, styles.mrgBottom0]}>

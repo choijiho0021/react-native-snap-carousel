@@ -345,7 +345,7 @@ export type PaymentInfo = {
   merchant_uid: string;
   amount: number;
   rokebi_cash: number;
-  dlvCost: number;
+  dlvCost?: number;
   currency_code?: CurrencyCode;
   captured: boolean;
 };
@@ -451,6 +451,41 @@ const makeOrder = ({
   );
 };
 
+const calculateTotal = ({
+  items,
+  coupons,
+  token,
+}: {
+  items: PurchaseItem[];
+  coupons: string[];
+  token?: string;
+}) => {
+  if (!token)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
+
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.calculateTotal, '')}?_format=json`,
+    {
+      method: 'POST',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({
+        coupons,
+        order_items: items.map((item) => ({
+          quantity: item.qty,
+          purchased_entity_id: item.variationId,
+        })),
+      }),
+    },
+    (resp) => {
+      if (resp.order_id.length > 0) {
+        // order_id 값이 있으면 성공한 것으로 간주한다.
+        return api.success([resp]);
+      }
+      return api.failure<PurchaseItem>(-1, 'no result');
+    },
+  );
+};
+
 export default {
   toCart,
   getStockTitle,
@@ -461,5 +496,6 @@ export default {
   updateQty,
   makeOrder,
   lock,
+  calculateTotal,
   KEY_INIT_CART,
 };

@@ -21,6 +21,7 @@ const initCart = createAsyncThunk('cart/initCart', async () => {
   return oldData;
 });
 
+const calculateTotal = createAsyncThunk('cart/calc', API.Cart.calculateTotal);
 const cartFetch = createAsyncThunk('cart/fetch', API.Cart.get);
 const cartAdd = createAsyncThunk('cart/add', API.Cart.add);
 const cartRemove = createAsyncThunk('cart/remove', API.Cart.remove);
@@ -443,6 +444,7 @@ export const actions = {
   checkStockAndMakeOrder,
   updateOrder,
   makeEmpty,
+  calculateTotal,
 };
 export type CartAction = typeof actions;
 

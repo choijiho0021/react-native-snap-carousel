@@ -120,7 +120,6 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   action,
 }) => {
   const [oldCart, setOldCart] = useState<Partial<CartModelState>>();
-  const [isRecharge, setIsRecharge] = useState(false);
   const isSuccess = useMemo(() => params?.pymResult || false, [params]);
 
   useEffect(() => {
@@ -156,9 +155,6 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
     const {token} = account;
     if (purchaseItems.length > 0) {
       setOldCart({pymReq, purchaseItems, pymPrice, deduct});
-      setIsRecharge(
-        purchaseItems.findIndex((item) => item.type === 'rch') >= 0,
-      );
       // 카트를 비운다.
       action.cart.makeEmpty({orderId, token});
     }
@@ -216,7 +212,6 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
             deduct={
               isSuccess ? oldCart?.deduct : utils.toCurrency(0, esimCurrency)
             }
-            isRecharge={isRecharge}
             screen={screen}
           />
           {screen === 'PaymentResult' && (

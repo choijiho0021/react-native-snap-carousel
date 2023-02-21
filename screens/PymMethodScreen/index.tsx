@@ -1,7 +1,7 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Video from 'react-native-video';
@@ -17,16 +17,10 @@ import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {
-  HomeStackParamList,
-  PaymentParams,
-  PymMethodScreenMode,
-} from '@/navigation/navigation';
+import {HomeStackParamList, PaymentParams} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import api from '@/redux/api/api';
-import {Currency} from '@/redux/api/productApi';
-import utils from '@/redux/api/utils';
 import {createPaymentInfoForRokebiCash} from '@/redux/models/paymentResult';
 import {
   AccountModelState,
@@ -170,22 +164,20 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   cart,
   action,
   info,
-  profile,
 }) => {
-  const [mode, setMode] = useState<PymMethodScreenMode>();
-  const [pymPrice, setPymPrice] = useState<Currency>();
-  const [deduct, setDeduct] = useState<Currency>();
   const [selected, setSelected] = useState('pym:ccard');
   const [clickable, setClickable] = useState(true);
   const [loading, setLoading] = useState(false);
   const [showModalMethod, setShowModalMethod] = useState(true);
   const [consent, setConsent] = useState<boolean>();
-  const [isRecharge, setIsRecharge] = useState<boolean>();
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
   const [showChargeAlert, setShowChargeAlert] = useState(false);
   const [inicisEnabled, setInicisEnabled] = useState<boolean | undefined>(
     undefined,
   );
+  const {pymPrice, deduct} = useMemo(() => cart, [cart]);
+  const mode = useMemo(() => route.params.mode, [route.params.mode]);
+  const [coupon, setCoupon] = useState('');
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -195,14 +187,16 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     return unsubscribe;
   }, [cart.esimIccid, navigation, showChargeAlert]);
 
-  const setValues = useCallback(() => {
-    setPymPrice(cart.pymPrice);
-    setDeduct(cart.deduct);
-    setMode(route.params.mode);
-    setIsRecharge(
-      cart.purchaseItems.findIndex((item) => item.type === 'rch') >= 0,
-    );
-  }, [cart.deduct, cart.purchaseItems, cart.pymPrice, route.params.mode]);
+  useEffect(() => {
+    if (!coupon) {
+      setCoupon('1-0000111101059119737');
+      action.cart.calculateTotal({
+        items: cart.purchaseItems,
+        coupons: ['1-0000111101059119737'],
+        token: account.token,
+      });
+    }
+  }, [account.token, action.cart, cart.purchaseItems, coupon]);
 
   useEffect(() => {
     if (!info.infoMap.has(infoKey)) {
@@ -224,10 +218,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       page: `Payment - ${route.params?.mode}`,
     });
   }, [navigation, route.params]);
-
-  useEffect(() => {
-    setValues();
-  }, [setValues]);
 
   useEffect(() => {
     const {token} = account;
@@ -253,10 +243,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       if (!payMethod && pymPrice?.value !== 0) return;
 
       const {mobile, email} = account;
-      const profileId =
-        profile.selectedAddr ||
-        profile.profile.find((item) => item.isBasicAddr)?.uuid;
-      const dlvCost = utils.toCurrency(0, pymPrice?.currency);
       const scheme = esimGlobal ? 'RokebiGlobal' : 'RokebiEsim';
 
       // 로깨비캐시 결제
@@ -267,9 +253,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         const pymInfo = createPaymentInfoForRokebiCash({
           impId,
           mobile,
-          profileId,
           deduct,
-          dlvCost,
           digital: true,
         });
 
@@ -309,11 +293,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           buyer_email: email,
           escrow: false,
           app_scheme: scheme,
-          profile_uuid: profileId,
-          dlvCost: dlvCost.value,
           language: payMethod?.language || i18n.locale,
           digital: true,
-          // mode: 'test'
         } as PaymentParams;
 
         setClickable(true);
@@ -331,7 +312,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       inicisEnabled,
       mode,
       navigation,
-      profile,
       pymPrice,
       selected,
     ],
@@ -452,22 +432,17 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     );
   }, [consent, move]);
 
-  const {purchaseItems = [], pymReq} = cart;
-
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView
         enableOnAndroid
-        enableResetScrollToCoords={false}
-        // resetScrollToCoords={{x: 0, y: 0}}
-      >
+        enableResetScrollToCoords={false}>
         <PaymentItemInfo
-          cart={purchaseItems}
-          pymReq={pymReq}
+          cart={cart.purchaseItems}
+          pymReq={cart.pymReq}
           mode="method"
           pymPrice={pymPrice}
           deduct={deduct}
-          isRecharge={isRecharge}
         />
 
         {pymPrice?.value !== 0 ? (
