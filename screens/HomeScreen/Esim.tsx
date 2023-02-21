@@ -469,6 +469,7 @@ const Esim: React.FC<EsimProps> = ({
 
       switch (v) {
         case 'redirect':
+          setIsClosedPopUp(true);
           if (popUp?.rule?.navigate) {
             if (popUp?.rule?.navigate?.startsWith('http')) {
               Linking.openURL(popUp?.rule?.navigate);
