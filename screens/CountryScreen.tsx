@@ -181,7 +181,13 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <AppBackButton title={headerTitle} style={{width: '70%', height: 56}} />
+        <AppBackButton
+          title={headerTitle}
+          style={{width: '70%', height: 56}}
+          onPress={() => {
+            navigation.navigate('Home');
+          }}
+        />
       </View>
 
       {imageUrl && (

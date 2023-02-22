@@ -34,6 +34,12 @@ import {
   actions as accountActions,
 } from '@/redux/modules/account';
 import {
+  actions as productActions,
+  ProductAction,
+  ProductModelState,
+  RkbPriceInfo,
+} from '@/redux/modules/product';
+import {
   actions as infoActions,
   InfoAction,
   InfoModelState,
@@ -99,6 +105,7 @@ type SimpleTextScreenProps = {
   action: {
     info: InfoAction;
     account: AccountAction;
+    product: ProductAction;
   };
 };
 
@@ -163,10 +170,17 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
             Linking.openURL(cmd.value);
           }
           break;
+        case 'moveToCountry':
+          if (cmd.value) {
+            const partnerList = cmd.value.split(',');
+            action.product.getProdOfPartner(partnerList);
+            navigation.navigate('Country', {partner: partnerList});
+          }
+          break;
         default:
       }
     },
-    [action.info, navigation],
+    [action.info, action.product, navigation],
   );
 
   const onPress = useCallback(async () => {
@@ -398,6 +412,7 @@ export default connect(
   (dispatch) => ({
     action: {
       info: bindActionCreators(infoActions, dispatch),
+      product: bindActionCreators(productActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
     },
   }),
