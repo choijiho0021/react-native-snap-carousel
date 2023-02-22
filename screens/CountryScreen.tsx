@@ -1,8 +1,15 @@
 /* eslint-disable consistent-return */
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useState, useMemo} from 'react';
-import {Image, SafeAreaView, SectionList, StyleSheet, View} from 'react-native';
+import React, {useCallback, useEffect, useState, useMemo, useRef} from 'react';
+import {
+  Animated,
+  Image,
+  SafeAreaView,
+  SectionList,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {Map as ImmutableMap} from 'immutable';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
@@ -130,10 +137,12 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const [imageUrl, setImageUrl] = useState<string>();
   const [localOpDetails, setLocalOpDetails] = useState<string>();
   const [partnerId, setPartnerId] = useState<string>();
+  const [isTop, setIsTop] = useState(true);
   const headerTitle = useMemo(
     () => API.Product.getTitle(localOpList.get(route.params?.partner[0])),
     [localOpList, route.params?.partner],
   );
+  const animatedValue = useRef(new Animated.Value(0)).current;
   // prodByPartner
 
   useEffect(() => {
@@ -155,6 +164,14 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     prodList,
     route.params.partner,
   ]);
+
+  useEffect(() => {
+    Animated.timing(animatedValue, {
+      toValue: isTop ? 134 : 0,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  }, [animatedValue, isTop]);
 
   const renderItem = useCallback(
     ({item, index, section}) => (
@@ -197,17 +214,19 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         />
       )}
 
-      {(headerTitle.includes('(로컬망)') ||
-        headerTitle.includes('(local)')) && (
-        <View style={styles.localNoticeBox}>
-          <AppText style={styles.localNoticeTitle}>
-            {i18n.t('local:noticeBox:title')}
-          </AppText>
-          <AppText style={styles.localNoticeBody}>
-            {i18n.t('local:noticeBox:body')}
-          </AppText>
-        </View>
-      )}
+      {headerTitle.includes('(로컬망)') ||
+        (headerTitle.includes('(local)') && (
+          <Animated.View style={{height: animatedValue}}>
+            <View style={styles.localNoticeBox}>
+              <AppText style={styles.localNoticeTitle}>
+                {i18n.t('local:noticeBox:title')}
+              </AppText>
+              <AppText style={styles.localNoticeBody}>
+                {i18n.t('local:noticeBox:body')}
+              </AppText>
+            </View>
+          </Animated.View>
+        ))}
 
       <View style={{flex: 1}}>
         <SectionList
@@ -231,6 +250,14 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
               <View style={{width: '100%', height: 20}} />
             )
           }
+          onScroll={({
+            nativeEvent: {
+              contentOffset: {y},
+            },
+          }) => {
+            if (isTop && y > 134) setIsTop(false);
+            else if (!isTop && y <= 0) setIsTop(true);
+          }}
         />
       </View>
       <AppActivityIndicator visible={props.pending} />
