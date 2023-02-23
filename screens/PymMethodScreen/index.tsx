@@ -301,7 +301,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           pg: payMethod?.key,
           pay_method: payMethod?.method,
           merchant_uid: `${
-            inicisEnabled ? 'r_' : ''
+            inicisEnabled ? 'r_' : 'i_'
           }${mobile}_${new Date().getTime()}`,
           name: i18n.t('appTitle'),
           amount: pymPrice?.value, // 실제 결제 금액 (로깨비캐시 제외)
