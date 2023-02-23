@@ -384,6 +384,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         case 'Quadcell':
           result = await checkQuadcellData(item);
           break;
+        case 'BillionConnect': // 사용량 조회 미지원
+          setShowSnackBar(true);
+          result = {
+            status: {statusCd: undefined, endTime: undefined},
+            usage: {quota: undefined, used: undefined},
+          };
+          break;
         default:
           result = await checkCmiData(item);
           break;
@@ -408,13 +415,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           expired={moment(item[item.length - 1].expireDate).isBefore(moment())}
           isChargeExpired={moment(item[0].expireDate).isBefore(moment())}
           isCharged={item.length > 1}
-          onPressUsage={(subscription: RkbSubscription) => {
-            if (item[0].partner === 'BillionConnect') {
-              setShowSnackBar(true);
-            } else {
-              onPressUsage(subscription);
-            }
-          }}
+          onPressUsage={(subscription: RkbSubscription) =>
+            onPressUsage(subscription)
+          }
           setShowModal={(visible: boolean) => setShowModal(visible)}
         />
       );
