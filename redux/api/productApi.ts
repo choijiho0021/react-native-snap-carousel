@@ -304,6 +304,7 @@ export type RkbProdByCountry = {
   country: string;
   price: string;
   partner: string;
+  max_discount: string;
   search?: string;
 };
 const productByCountry = () => {

@@ -21,6 +21,7 @@ import AppText from './AppText';
 import {RkbPriceInfo} from '@/redux/modules/product';
 import {isFolderOpen} from '../constants/SliderEntry.style';
 import utils from '@/redux/api/utils';
+import ProductImg from '@/components/ProductImg';
 
 const styles = StyleSheet.create({
   text: {
@@ -149,10 +150,12 @@ const CountryItem0 = ({
             <Pressable onPress={() => onPress?.(elm)}>
               <View style={styles.image}>
                 {(index <= 4 || showImage) && (
-                  <Image
+                  <ProductImg
                     key="img"
                     source={{uri: API.default.httpImageUrl(localOp?.imageUrl)}}
                     style={{flex: 1}}
+                    imageStyle={{flex: 1}}
+                    maxDiscount={Math.floor(Number(elm.max_discount) * 100)}
                   />
                 )}
               </View>
@@ -172,9 +175,9 @@ const CountryItem0 = ({
       {item.length < columns
         ? Array(columns - item.length)
             .fill(1)
-            .map(() => (
+            .map((elm, idx) => (
               <View
-                key={utils.generateKey()}
+                key={utils.generateKey(idx)}
                 style={{flex: 1, marginLeft: 14}}
               />
             ))

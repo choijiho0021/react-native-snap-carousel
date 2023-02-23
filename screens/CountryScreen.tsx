@@ -4,7 +4,6 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useState, useMemo, useRef} from 'react';
 import {
   Animated,
-  Image,
   SafeAreaView,
   SectionList,
   StyleSheet,
@@ -25,6 +24,7 @@ import {actions as cartActions} from '@/redux/modules/cart';
 import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import CountryListItem from './HomeScreen/component/CountryListItem';
+import ProductImg from '@/components/ProductImg';
 
 const styles = StyleSheet.create({
   container: {
@@ -142,7 +142,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     () => API.Product.getTitle(localOpList.get(route.params?.partner[0])),
     [localOpList, route.params?.partner],
   );
-  const animatedValue = useRef(new Animated.Value(0)).current;
+  const animatedValue = useRef(new Animated.Value(134)).current;
   // prodByPartner
 
   useEffect(() => {
@@ -174,7 +174,15 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   }, [animatedValue, isTop]);
 
   const renderItem = useCallback(
-    ({item, index, section}) => (
+    ({
+      item,
+      index,
+      section,
+    }: {
+      item: RkbProduct;
+      index: number;
+      section: any;
+    }) => (
       <CountryListItem
         key={item.sku}
         item={item}
@@ -195,6 +203,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     [imageUrl, localOpDetails, navigation, partnerId],
   );
 
+  console.log('aaaaa headertitle', headerTitle);
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -208,25 +217,26 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
       </View>
 
       {imageUrl && (
-        <Image
-          style={styles.box}
+        <ProductImg
+          imageStyle={styles.box}
           source={{uri: API.default.httpImageUrl(imageUrl)}}
+          // maxDiscount={} 상품 리스트 화면의 이미지에는 일단 할인 태그 붙이지 않음 추후 반영 예정
         />
       )}
 
-      {headerTitle.includes('(로컬망)') ||
-        (headerTitle.includes('(local)') && (
-          <Animated.View style={{height: animatedValue}}>
-            <View style={styles.localNoticeBox}>
-              <AppText style={styles.localNoticeTitle}>
-                {i18n.t('local:noticeBox:title')}
-              </AppText>
-              <AppText style={styles.localNoticeBody}>
-                {i18n.t('local:noticeBox:body')}
-              </AppText>
-            </View>
-          </Animated.View>
-        ))}
+      {(headerTitle.includes('(로컬망)') ||
+        headerTitle.includes('(local)')) && (
+        <Animated.View style={{height: animatedValue}}>
+          <View style={styles.localNoticeBox}>
+            <AppText style={styles.localNoticeTitle}>
+              {i18n.t('local:noticeBox:title')}
+            </AppText>
+            <AppText style={styles.localNoticeBody}>
+              {i18n.t('local:noticeBox:body')}
+            </AppText>
+          </View>
+        </Animated.View>
+      )}
 
       <View style={{flex: 1}}>
         <SectionList
@@ -234,6 +244,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           stickySectionHeadersEnabled
           // keyExtractor={(item, index) => item + index}
           renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
           renderSectionHeader={({section: {title, data}}) =>
             data.length >= 1 ? (
               <View style={styles.sectionHeader}>

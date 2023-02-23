@@ -34,28 +34,27 @@ const styles = StyleSheet.create({
     lineHeight: isDeviceSize('medium') ? 22 : 24,
   },
   wonStyleCharge: {
-    fontSize: 14,
+    fontSize: isDeviceSize('medium') ? 22 : 24,
     fontWeight: '600',
     lineHeight: isDeviceSize('medium') ? 22 : 24,
     color: colors.black,
   },
+  disBalanceStyle: {
+    fontSize: isDeviceSize('medium') ? 16 : 18,
+    color: colors.greyish,
+    fontWeight: 'bold',
+    textAlign: 'right',
+    lineHeight: 20,
+  },
+  disWonStyleCharge: {
+    fontSize: isDeviceSize('medium') ? 16 : 18,
+    fontWeight: '600',
+    lineHeight: 20,
+    color: colors.greyish,
+  },
   textView: {
     flex: 1,
     alignItems: 'flex-start',
-  },
-  badge: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: 8,
-    height: 20,
-    alignSelf: 'center',
-  },
-
-  badgeText: {
-    ...appStyles.extraBold12,
   },
   itemDivider: {
     marginHorizontal: 20,
@@ -87,7 +86,7 @@ type CountryListItemProps = {
   item: RkbProduct;
   position?: string;
   onPress: () => void;
-  isCharge: boolean;
+  isCharge?: boolean;
 };
 
 const CountryListItem: React.FC<CountryListItemProps> = ({
@@ -175,14 +174,41 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
             />
           </View>
 
-          <AppText
-            key="desc"
-            style={[
-              appStyles.normal13,
-              {marginTop: 5, fontSize: isDeviceSize('medium') ? 13 : 15},
-            ]}>
-            {item.field_description}
-          </AppText>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'baseline',
+              width: '100%',
+            }}>
+            <AppText
+              key="desc"
+              style={[
+                appStyles.normal13,
+                {marginTop: 5, fontSize: isDeviceSize('medium') ? 13 : 15},
+              ]}>
+              {item.field_description}
+            </AppText>
+
+            {item.listPrice.value > item.price.value && (
+              <View style={{flexDirection: 'row'}}>
+                <AppPrice
+                  price={item.listPrice}
+                  balanceStyle={styles.disBalanceStyle}
+                  currencyStyle={styles.disWonStyleCharge}
+                  isDiscounted
+                />
+                <AppText
+                  style={{
+                    ...appStyles.bold14Text,
+                    marginLeft: 4,
+                    color: colors.redError,
+                  }}>
+                  {Math.floor((item.price.value / item.listPrice.value) * 100)}%
+                </AppText>
+              </View>
+            )}
+          </View>
         </View>
       </View>
       {position !== 'tail' && position !== 'onlyOne' && !isCharge && (

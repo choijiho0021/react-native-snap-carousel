@@ -92,7 +92,7 @@ export type HomeStackParamList = {
   BoardMsgAdd: {key: string; status: BoardMsgStatus};
   Faq: FaqRouteParam;
   Guide: undefined;
-  Country: {partner: string[]};
+  Country: {partner: string[]; maxDiscount: number};
   Payment: PaymentParams;
   PaymentGateway: PaymentParams;
   PymMethod: {isPaid?: boolean; pymPrice?: number; mode?: PymMethodScreenMode};

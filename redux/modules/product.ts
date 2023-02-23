@@ -82,6 +82,7 @@ export type RkbPriceInfo = Partial<RkbProdByCountry> & {
   minPrice: Currency;
   partnerList: string[];
   weight: number;
+  maxDiscount: number;
 };
 
 export type ProdDataType = {title: string; data: RkbProduct[]};
@@ -144,6 +145,7 @@ const slice = createSlice({
             )},${Country.getName(country, 'en', state.prodCountry)}`,
             partnerList: [cur.partner],
             minPrice: utils.stringToCurrency(cur.price),
+            maxDiscount: Number(cur.max_discount),
           } as RkbPriceInfo;
           return acc.update(cur.category, (prev) =>
             prev ? prev.concat(elm) : [elm],
@@ -243,6 +245,7 @@ const slice = createSlice({
               'ko',
               state.prodCountry,
             )},${Country.getName(country, 'en', state.prodCountry)}`,
+            maxDiscount: Number(o.max_discount),
           };
         });
       }
