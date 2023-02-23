@@ -155,7 +155,7 @@ const CountryItem0 = ({
                     source={{uri: API.default.httpImageUrl(localOp?.imageUrl)}}
                     style={{flex: 1}}
                     imageStyle={{flex: 1}}
-                    maxDiscount={Math.floor(Number(elm.max_discount) * 100)}
+                    maxDiscount={Math.floor(Number(elm.maxDiscount) * 100)}
                   />
                 )}
               </View>
