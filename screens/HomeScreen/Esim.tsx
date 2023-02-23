@@ -354,6 +354,8 @@ const Esim: React.FC<EsimProps> = ({
       setPopUp(popUpPromo);
       setCloseType(popUpPromo.rule ? 'redirect' : 'close');
       setPopUpVisible(true);
+    } else {
+      setPopUpVisible(false);
     }
   }, [promotion]);
 
