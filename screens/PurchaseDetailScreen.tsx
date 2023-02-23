@@ -422,21 +422,40 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   const showReciept = useCallback(
     (id?: string) => {
       async function getReceipt() {
-        if (id && account.token) {
-          const rsp = await API.Payment.getRokebiPaymentReceipt({
-            key: id,
-            token: account.token,
-          });
-          if (rsp.result === 0) {
-            navigation.navigate('Receipt', {order, receipt: rsp.objects[0]});
-          } else {
-            AppAlert.error(i18n.t('rcpt:fail'));
+        let receipt = null;
+        if (id?.startsWith('r_')) {
+          // rokebi receipt
+          if (id && account.token) {
+            const rsp = await API.Payment.getRokebiPaymentReceipt({
+              key: id,
+              token: account.token,
+            });
+            if (rsp.result === 0 && rsp.objects[0]) {
+              receipt = rsp.objects[0];
+            }
           }
-        } else {
-          AppAlert.error(i18n.t('rcpt:fail'));
+        } else if (id) {
+          // iamport receipt
+          const resp = await API.Payment.getImpToken();
+          if (resp.code === 0) {
+            const rsp = await API.Payment.getMerchantId({
+              id,
+              token: resp.response?.access_token,
+            });
+
+            if (rsp.code === 0 && rsp.response?.receipt_url) {
+              receipt = rsp.response;
+            }
+          }
         }
+
+        if (receipt) navigation.navigate('Receipt', {order, receipt});
+        else AppAlert.error(i18n.t('rcpt:fail'));
       }
-      getReceipt();
+
+      if (id) {
+        getReceipt();
+      }
     },
     [account.token, navigation, order],
   );
