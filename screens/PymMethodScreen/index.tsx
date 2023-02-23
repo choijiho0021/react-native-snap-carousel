@@ -284,7 +284,9 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         const params = {
           pg: payMethod?.key,
           pay_method: payMethod?.method,
-          merchant_uid: `${mobile}_${new Date().getTime()}`,
+          merchant_uid: `${
+            inicisEnabled ? 'r_' : 'i_'
+          }${mobile}_${new Date().getTime()}`,
           name: i18n.t('appTitle'),
           amount: pymPrice?.value, // 실제 결제 금액 (로깨비캐시 제외)
           rokebi_cash: deduct?.value, // balance 차감 금액
