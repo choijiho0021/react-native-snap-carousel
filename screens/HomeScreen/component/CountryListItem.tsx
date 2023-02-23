@@ -194,7 +194,6 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
               ]}>
               {item.field_description}
             </AppText>
-
             {item.listPrice.value > item.price.value && (
               <View
                 style={{
@@ -213,7 +212,12 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
                     marginLeft: 4,
                     color: colors.redError,
                   }}>
-                  {Math.floor((item.price.value / item.listPrice.value) * 100)}%
+                  {Math.floor(
+                    ((item.listPrice.value - item.price.value) /
+                      item.listPrice.value) *
+                      100,
+                  )}
+                  %
                 </AppText>
               </View>
             )}
