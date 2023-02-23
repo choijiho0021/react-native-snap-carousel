@@ -203,7 +203,6 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     [imageUrl, localOpDetails, navigation, partnerId],
   );
 
-  console.log('aaaaa headertitle', headerTitle);
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
