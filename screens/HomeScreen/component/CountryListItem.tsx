@@ -75,6 +75,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  descRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 5,
+    width: '100%',
+  },
 });
 
 const toVolumeStr = (volume: number) => {
@@ -174,24 +180,27 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
             />
           </View>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'baseline',
-              width: '100%',
-            }}>
+          <View style={styles.descRow}>
             <AppText
               key="desc"
+              numberOfLines={2}
+              ellipsizeMode="tail"
               style={[
                 appStyles.normal13,
-                {marginTop: 5, fontSize: isDeviceSize('medium') ? 13 : 15},
+                {
+                  flex: 1,
+                  fontSize: isDeviceSize('medium') ? 13 : 15,
+                },
               ]}>
               {item.field_description}
             </AppText>
 
             {item.listPrice.value > item.price.value && (
-              <View style={{flexDirection: 'row'}}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  marginLeft: 10,
+                }}>
                 <AppPrice
                   price={item.listPrice}
                   balanceStyle={styles.disBalanceStyle}
