@@ -588,7 +588,6 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       onStateChange={(state) => {
         const lastTab = getActiveRouteName(state);
         setLastRouteName(lastTab);
-        console.log('aaaaa lastTab', lastRouteName, lastTab);
         if (lastRouteName !== lastTab && lastTab !== 'Home') showPopUp(lastTab);
         Analytics.trackEvent('Page_View_Count', {page: lastTab});
         store.dispatch(cartActions.pushLastTab(lastTab));
