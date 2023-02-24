@@ -3,7 +3,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useState, useMemo, useRef} from 'react';
 import {
-  Animated,
+  Pressable,
   SafeAreaView,
   SectionList,
   StyleSheet,
@@ -25,6 +25,7 @@ import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import CountryListItem from './HomeScreen/component/CountryListItem';
 import ProductImg from '@/components/ProductImg';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const styles = StyleSheet.create({
   container: {
@@ -56,7 +57,7 @@ const styles = StyleSheet.create({
   },
   localNoticeBox: {
     marginTop: 16,
-    marginBottom: 8,
+    marginBottom: 24,
     padding: 20,
     backgroundColor: colors.backGrey,
     marginHorizontal: 20,
@@ -68,6 +69,7 @@ const styles = StyleSheet.create({
   },
   localNoticeBody: {
     ...appStyles.semiBold14Text,
+    marginTop: 8,
     lineHeight: 20,
     color: colors.warmGrey,
   },
@@ -137,12 +139,11 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const [imageUrl, setImageUrl] = useState<string>();
   const [localOpDetails, setLocalOpDetails] = useState<string>();
   const [partnerId, setPartnerId] = useState<string>();
-  const [isTop, setIsTop] = useState(true);
+  const [showMoreInfo, setShowMoreInfo] = useState<boolean>();
   const headerTitle = useMemo(
     () => API.Product.getTitle(localOpList.get(route.params?.partner[0])),
     [localOpList, route.params?.partner],
   );
-  const animatedValue = useRef(new Animated.Value(134)).current;
   // prodByPartner
 
   useEffect(() => {
@@ -164,14 +165,6 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     prodList,
     route.params.partner,
   ]);
-
-  useEffect(() => {
-    Animated.timing(animatedValue, {
-      toValue: isTop ? 134 : 0,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-  }, [animatedValue, isTop]);
 
   const renderItem = useCallback(
     ({
@@ -225,16 +218,24 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
 
       {(headerTitle.includes('(로컬망)') ||
         headerTitle.includes('(local)')) && (
-        <Animated.View style={{height: animatedValue}}>
-          <View style={styles.localNoticeBox}>
+        <Pressable
+          style={styles.localNoticeBox}
+          onPress={() => setShowMoreInfo((pre) => !pre)}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <AppText style={styles.localNoticeTitle}>
               {i18n.t('local:noticeBox:title')}
             </AppText>
+            <AppSvgIcon
+              name={showMoreInfo ? 'upArrow' : 'downArrow'}
+              style={{alignItems: 'center', justifyContent: 'center'}}
+            />
+          </View>
+          {showMoreInfo && (
             <AppText style={styles.localNoticeBody}>
               {i18n.t('local:noticeBox:body')}
             </AppText>
-          </View>
-        </Animated.View>
+          )}
+        </Pressable>
       )}
 
       <View style={{flex: 1}}>
@@ -260,14 +261,6 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
               <View style={{width: '100%', height: 20}} />
             )
           }
-          onScroll={({
-            nativeEvent: {
-              contentOffset: {y},
-            },
-          }) => {
-            if (isTop && y > 134) setIsTop(false);
-            else if (!isTop && y <= 0) setIsTop(true);
-          }}
         />
       </View>
       <AppActivityIndicator visible={props.pending} />
