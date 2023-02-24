@@ -26,6 +26,12 @@ import i18n from '@/utils/i18n';
 import CountryListItem from './HomeScreen/component/CountryListItem';
 import ProductImg from '@/components/ProductImg';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import AppTabHeader from '@/components/AppTabHeader';
+import {TabView} from 'react-native-tab-view';
+import {ScrollView} from 'react-native-gesture-handler';
+import Tooltip from 'react-native-walkthrough-tooltip';
+import AppButton from '@/components/AppButton';
+import {retrieveData, storeData} from '@/utils/utils';
 
 const styles = StyleSheet.create({
   container: {
@@ -52,8 +58,8 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     width: '100%',
-    justifyContent: 'space-between',
     backgroundColor: colors.white,
+    alignItems: 'center',
   },
   localNoticeBox: {
     marginTop: 16,
@@ -72,6 +78,90 @@ const styles = StyleSheet.create({
     marginTop: 8,
     lineHeight: 20,
     color: colors.warmGrey,
+  },
+  tab: {
+    backgroundColor: colors.white,
+    height: 60,
+    paddingHorizontal: 25,
+  },
+  tabTitle: {
+    fontSize: 16,
+    lineHeight: 20,
+  },
+  emptyImage: {
+    marginBottom: 21,
+  },
+  emptyData: {
+    alignItems: 'center',
+    marginTop: '45%',
+  },
+  emptyText1: {
+    ...appStyles.medium14,
+    color: colors.clearBlue,
+    lineHeight: 20,
+  },
+  emptyText2: {
+    ...appStyles.normal14Text,
+    lineHeight: 20,
+  },
+  toolTipBox: {
+    backgroundColor: colors.backGrey,
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 20,
+    height: '100%',
+  },
+  toolTipTitleFrame: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: 36,
+    marginBottom: 12,
+  },
+  toolTipTitleText: {
+    ...appStyles.bold14Text,
+    lineHeight: 20,
+  },
+  btnCancel: {
+    width: 12,
+    height: 12,
+    padding: 8,
+    marginRight: 8,
+  },
+  toolTipBody: {
+    paddingRight: 30,
+  },
+
+  toolTipBodyText: {
+    ...appStyles.normal14Text,
+    lineHeight: 20,
+  },
+  cautionBtn: {
+    width: 24,
+    height: 24,
+    marginTop: 2,
+  },
+  toolTipStyle: {
+    borderRadius: 5,
+  },
+  arrowStyle: {
+    borderTopColor: colors.lightGrey,
+    zIndex: 10,
+  },
+  triangle: {
+    position: 'absolute',
+    top: 32,
+    backgroundColor: 'transparent',
+    borderBottomWidth: 8,
+    borderBottomColor: colors.backGrey,
+    borderRightWidth: 8,
+    borderRightColor: 'transparent',
+    borderLeftWidth: 8,
+    borderLeftColor: 'transparent',
+    width: 0,
+    height: 0,
   },
 });
 
@@ -94,15 +184,20 @@ export const makeProdData = (
     ) || [[], []];
 
   return [
-    {
-      title: 'daily',
-      data: list[0].sort((a, b) => b.weight - a.weight) || [],
-    },
-    {
-      title: 'total',
-      data: list[1].sort((a, b) => b.weight - a.weight) || [],
-    },
+    list[0].sort((a, b) => b.weight - a.weight) || [],
+    list[1].sort((a, b) => b.weight - a.weight) || [],
   ];
+
+  // return [
+  //   {
+  //     title: 'daily',
+  //     data: list[0].sort((a, b) => b.weight - a.weight) || [],
+  //   },
+  //   {
+  //     title: 'total',
+  //     data: list[1].sort((a, b) => b.weight - a.weight) || [],
+  //   },
+  // ];
 };
 
 const position = (idx, arr) => {
@@ -129,22 +224,47 @@ type CountryScreenProps = {
   pending: boolean;
 };
 
-type ProdDataType = {title: string; data: RkbProduct[]};
+// type ProdDataType = {title: string; data: RkbProduct[]};
+
+type TabRouteKey = 'daily' | 'total';
+type TabRoute = {
+  key: TabRouteKey;
+  title: string;
+};
 
 const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const {navigation, route, product} = props;
   const {localOpList, prodByLocalOp, prodList, prodByPartner} = product;
 
-  const [prodData, setProdData] = useState<ProdDataType[]>([]);
+  const [prodData, setProdData] = useState<RkbProduct[][]>([[]]);
   const [imageUrl, setImageUrl] = useState<string>();
   const [localOpDetails, setLocalOpDetails] = useState<string>();
   const [partnerId, setPartnerId] = useState<string>();
-  const [showMoreInfo, setShowMoreInfo] = useState<boolean>();
+  const [index, setIndex] = useState(0);
+  const [showTip, setTip] = useState(false);
   const headerTitle = useMemo(
     () => API.Product.getTitle(localOpList.get(route.params?.partner[0])),
     [localOpList, route.params?.partner],
   );
-  // prodByPartner
+
+  const routes = useMemo(
+    () =>
+      [
+        {
+          key: 'daily',
+          title: i18n.t('country:daily'),
+        },
+        {
+          key: 'total',
+          title: i18n.t('country:total'),
+        },
+      ] as TabRoute[],
+    [],
+  );
+
+  useEffect(() => {
+    retrieveData('LocalProdTooltip').then((elm) => setTip(elm !== 'closed'));
+  }, []);
 
   useEffect(() => {
     if (route.params?.partner) {
@@ -166,34 +286,110 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     route.params.partner,
   ]);
 
-  const renderItem = useCallback(
-    ({
-      item,
-      index,
-      section,
-    }: {
-      item: RkbProduct;
-      index: number;
-      section: any;
-    }) => (
-      <CountryListItem
-        key={item.sku}
-        item={item}
-        onPress={() =>
-          navigation.navigate('ProductDetail', {
-            title: item.name,
-            item: API.Product.toPurchaseItem(item),
-            img: imageUrl,
-            uuid: item.uuid,
-            desc: item.desc,
-            localOpDetails,
-            partnerId,
-          })
+  const onIndexChange = useCallback((idx: number) => {
+    setIndex(idx);
+  }, []);
+
+  const renderScene = useCallback(
+    ({route: sceneRoute}: {route: TabRoute}) => {
+      const prodDataC = prodData[sceneRoute.key === 'daily' ? 0 : 1];
+
+      return (
+        <ScrollView>
+          {prodDataC.length > 0 ? (
+            prodDataC.map((data) => (
+              <CountryListItem
+                key={data.sku}
+                item={data}
+                onPress={() =>
+                  navigation.navigate('ProductDetail', {
+                    title: data.name,
+                    item: API.Product.toPurchaseItem(data),
+                    img: imageUrl,
+                    uuid: data.uuid,
+                    desc: data.desc,
+                    localOpDetails,
+                    partnerId,
+                  })
+                }
+                isCharge
+              />
+            ))
+          ) : (
+            <View style={styles.emptyData}>
+              <AppSvgIcon name="threeDots" style={styles.emptyImage} />
+
+              <AppText style={styles.emptyText1}>
+                {i18n.t('esim:charge:noProd1')}
+              </AppText>
+              <AppText style={styles.emptyText2}>
+                {i18n.t('esim:charge:noProd2')}
+              </AppText>
+            </View>
+          )}
+        </ScrollView>
+      );
+    },
+    [imageUrl, localOpDetails, navigation, partnerId, prodData],
+  );
+
+  const renderToolTip = useCallback(
+    () => (
+      <Tooltip
+        isVisible={showTip}
+        backgroundColor="rgba(0,0,0,0)"
+        contentStyle={styles.toolTipBox}
+        tooltipStyle={styles.toolTipStyle}
+        arrowStyle={styles.arrowStyle}
+        disableShadow
+        arrowSize={{width: 16, height: 8}}
+        content={
+          <View>
+            <View style={styles.toolTipTitleFrame}>
+              <AppText style={styles.toolTipTitleText}>
+                {i18n.t('local:noticeBox:title')}
+              </AppText>
+              <AppButton
+                style={styles.btnCancel}
+                iconName="btnCancel"
+                onPress={() => setTip(false)}
+              />
+            </View>
+            <View style={styles.toolTipBody}>
+              {[1, 2].map((k) => (
+                <View key={k} style={{flexDirection: 'row'}}>
+                  <AppText
+                    style={[
+                      appStyles.normal14Text,
+                      {marginHorizontal: 5, marginTop: 3},
+                    ]}>
+                    •
+                  </AppText>
+                  <AppText style={styles.toolTipBodyText}>
+                    {i18n.t(`local:noticeBox:body${k}`)}
+                  </AppText>
+                </View>
+              ))}
+            </View>
+          </View>
         }
-        position={position(index, section.data)}
-      />
+        onClose={() => {
+          setTip(false);
+          storeData('LocalProdTooltip', 'closed');
+        }}
+        placement="bottom">
+        <AppSvgIcon
+          style={styles.cautionBtn}
+          onPress={() => {
+            storeData('LocalProdTooltip', 'closed');
+            setTip(true);
+          }}
+          name="btnChargeCaution"
+        />
+        {showTip && <View style={styles.triangle} />}
+      </Tooltip>
     ),
-    [imageUrl, localOpDetails, navigation, partnerId],
+    [showTip],
   );
 
   return (
@@ -201,11 +397,14 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
       <View style={styles.header}>
         <AppBackButton
           title={headerTitle}
-          style={{width: '70%', height: 56}}
+          style={{marginRight: 10, height: 56}}
           onPress={() => {
             navigation.navigate('Home');
           }}
         />
+        {(headerTitle.includes('(로컬망)') ||
+          headerTitle.includes('(local)')) &&
+          renderToolTip()}
       </View>
 
       {imageUrl && (
@@ -216,7 +415,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         />
       )}
 
-      {(headerTitle.includes('(로컬망)') ||
+      {/* {(headerTitle.includes('(로컬망)') ||
         headerTitle.includes('(local)')) && (
         <Pressable
           style={styles.localNoticeBox}
@@ -236,33 +435,24 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
             </AppText>
           )}
         </Pressable>
-      )}
+      )} */}
 
-      <View style={{flex: 1}}>
-        <SectionList
-          sections={prodData}
-          stickySectionHeadersEnabled
-          // keyExtractor={(item, index) => item + index}
-          renderItem={renderItem}
-          showsVerticalScrollIndicator={false}
-          renderSectionHeader={({section: {title, data}}) =>
-            data.length >= 1 ? (
-              <View style={styles.sectionHeader}>
-                <AppText style={appStyles.bold20Text}>
-                  {i18n.t(`country:${title}`)}
-                </AppText>
-              </View>
-            ) : null
-          }
-          renderSectionFooter={({section: {title}}) =>
-            title === 'daily' && prodData[1].data.length > 0 ? (
-              prodData[0].data.length > 0 && <View style={styles.divider} />
-            ) : (
-              <View style={{width: '100%', height: 20}} />
-            )
-          }
-        />
-      </View>
+      <AppTabHeader
+        index={index}
+        routes={routes}
+        onIndexChange={onIndexChange}
+        style={styles.tab}
+        tintColor={colors.black}
+        titleStyle={styles.tabTitle}
+      />
+
+      <TabView
+        sceneContainerStyle={{flex: 1}}
+        navigationState={{index, routes}}
+        renderScene={renderScene}
+        onIndexChange={onIndexChange}
+        renderTabBar={() => null}
+      />
       <AppActivityIndicator visible={props.pending} />
     </SafeAreaView>
   );
