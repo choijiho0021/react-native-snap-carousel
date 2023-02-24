@@ -35,8 +35,8 @@ const KakaoLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
         const profile = await KakaoSDK.RNKakaoLogins.getProfile();
         const {phoneNumber, email, id, profileImageUrl} = profile;
         const mobile = phoneNumber
-          .replace(/^\+[\d]+/, '0')
-          .replace(/[ -]+/g, ''); // phoneNumber : '{국가코드} + ' ' + {번호}'
+          ?.replace(/^\+[\d]+/, '0')
+          ?.replace(/[ -]+/g, ''); // phoneNumber : '{국가코드} + ' ' + {번호}'
         const user = id.toString();
 
         await AsyncStorage.setItem('login.kakao.user', user);
