@@ -3,6 +3,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useState, useMemo, useRef} from 'react';
 import {
+  Animated,
   Pressable,
   SafeAreaView,
   SectionList,
@@ -187,17 +188,6 @@ export const makeProdData = (
     list[0].sort((a, b) => b.weight - a.weight) || [],
     list[1].sort((a, b) => b.weight - a.weight) || [],
   ];
-
-  // return [
-  //   {
-  //     title: 'daily',
-  //     data: list[0].sort((a, b) => b.weight - a.weight) || [],
-  //   },
-  //   {
-  //     title: 'total',
-  //     data: list[1].sort((a, b) => b.weight - a.weight) || [],
-  //   },
-  // ];
 };
 
 const position = (idx, arr) => {
@@ -242,10 +232,12 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const [partnerId, setPartnerId] = useState<string>();
   const [index, setIndex] = useState(0);
   const [showTip, setTip] = useState(false);
+  const [isTop, setIsTop] = useState(true);
   const headerTitle = useMemo(
     () => API.Product.getTitle(localOpList.get(route.params?.partner[0])),
     [localOpList, route.params?.partner],
   );
+  const animatedValue = useRef(new Animated.Value(150)).current;
 
   const routes = useMemo(
     () =>
@@ -265,6 +257,14 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   useEffect(() => {
     retrieveData('LocalProdTooltip').then((elm) => setTip(elm !== 'closed'));
   }, []);
+
+  useEffect(() => {
+    Animated.timing(animatedValue, {
+      toValue: isTop ? 150 : 0,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  }, [animatedValue, isTop]);
 
   useEffect(() => {
     if (route.params?.partner) {
@@ -295,7 +295,15 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
       const prodDataC = prodData[sceneRoute.key === 'daily' ? 0 : 1];
 
       return (
-        <ScrollView>
+        <ScrollView
+          onScroll={({
+            nativeEvent: {
+              contentOffset: {y},
+            },
+          }) => {
+            if (isTop && y > 150) setIsTop(false);
+            else if (!isTop && y <= 0) setIsTop(true);
+          }}>
           {prodDataC.length > 0 ? (
             prodDataC.map((data) => (
               <CountryListItem
@@ -330,7 +338,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         </ScrollView>
       );
     },
-    [imageUrl, localOpDetails, navigation, partnerId, prodData],
+    [imageUrl, isTop, localOpDetails, navigation, partnerId, prodData],
   );
 
   const renderToolTip = useCallback(
@@ -408,34 +416,14 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
       </View>
 
       {imageUrl && (
-        <ProductImg
-          imageStyle={styles.box}
-          source={{uri: API.default.httpImageUrl(imageUrl)}}
-          // maxDiscount={} 상품 리스트 화면의 이미지에는 일단 할인 태그 붙이지 않음 추후 반영 예정
-        />
+        <Animated.View style={{height: animatedValue}}>
+          <ProductImg
+            imageStyle={styles.box}
+            source={{uri: API.default.httpImageUrl(imageUrl)}}
+            // maxDiscount={} 상품 리스트 화면의 이미지에는 일단 할인 태그 붙이지 않음 추후 반영 예정
+          />
+        </Animated.View>
       )}
-
-      {/* {(headerTitle.includes('(로컬망)') ||
-        headerTitle.includes('(local)')) && (
-        <Pressable
-          style={styles.localNoticeBox}
-          onPress={() => setShowMoreInfo((pre) => !pre)}>
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-            <AppText style={styles.localNoticeTitle}>
-              {i18n.t('local:noticeBox:title')}
-            </AppText>
-            <AppSvgIcon
-              name={showMoreInfo ? 'upArrow' : 'downArrow'}
-              style={{alignItems: 'center', justifyContent: 'center'}}
-            />
-          </View>
-          {showMoreInfo && (
-            <AppText style={styles.localNoticeBody}>
-              {i18n.t('local:noticeBox:body')}
-            </AppText>
-          )}
-        </Pressable>
-      )} */}
 
       <AppTabHeader
         index={index}
