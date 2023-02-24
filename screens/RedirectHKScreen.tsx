@@ -18,7 +18,7 @@ import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {navigate} from '@/navigation/navigation';
+import {HomeStackParamList, navigate} from '@/navigation/navigation';
 import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
 import {sliderWidth, MAX_WIDTH} from '@/constants/SliderEntry.style';
@@ -31,6 +31,7 @@ import {AccountModelState} from '@/redux/modules/account';
 import {API} from '@/redux/api';
 import HkStatusLottie from './EsimScreen/components/HkStatusLottie';
 import AppModal from '@/components/AppModal';
+import {StackNavigationProp} from '@react-navigation/stack';
 
 const {width} = Dimensions.get('window');
 
@@ -247,16 +248,14 @@ const styles = StyleSheet.create({
 
 type CarouselIndex = 'step1' | 'step2' | 'step3' | 'step4';
 
-type ParamList = {
-  RedirectHKScreen: {
-    iccid: string;
-    orderNo: string;
-    uuid: string;
-    imsi: string;
-  };
-};
+type ChargeScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'RedirectHK'
+>;
 
 type RedirectHKScreenProps = {
+  navigation: ChargeScreenNavigationProp;
+  route: RouteProp<HomeStackParamList, 'RedirectHK'>;
   account: AccountModelState;
   action: {
     order: OrderAction;
@@ -270,12 +269,11 @@ type hkRegStatusType =
   | 'hkRegistered';
 
 const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
+  navigation,
+  route,
   account,
   action,
 }) => {
-  const navigation = useNavigation();
-  const route = useRoute<RouteProp<ParamList, 'RedirectHKScreen'>>();
-
   const [activeSlide, setActiveSlide] = useState(0);
   const [showSnackBar, setShowSnackBar] = useState(false);
   const [copyString, setCopyString] = useState('');
@@ -284,7 +282,7 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
   const [reCheckable, setReCheckable] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
   const images = useMemo(() => Object.keys(guideImage), []);
-  const params = useMemo(() => route?.params, [route?.params]);
+  const params = useMemo(() => route?.params || {}, [route?.params]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -332,19 +330,19 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
       const {token} = account;
 
       action.order.updateSubsAndOrderTag({
-        uuid: params.uuid,
+        uuid: params?.uuid,
         tag,
         token: token || '',
       });
     },
-    [account, action.order, params.uuid],
+    [account, action.order, params?.uuid],
   );
 
   const checkAndUpdateTag = useCallback(async () => {
     let isRegsiting = false;
     const rsp = await API.Subscription.getHkRegStatus({
-      iccid: params.iccid,
-      imsi: params.imsi,
+      iccid: params?.iccid,
+      imsi: params?.imsi,
     });
 
     // 테스트용 -> 실패
@@ -392,7 +390,7 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
         sethkRegStatus('hkCheck');
       }
     }, 20000);
-  }, [reCheckCount, params.iccid, params.imsi, updateTag]);
+  }, [reCheckCount, params?.iccid, params?.imsi, updateTag]);
 
   return (
     <SafeAreaView style={{flex: 1}}>
