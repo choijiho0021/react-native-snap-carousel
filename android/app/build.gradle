@@ -180,8 +180,8 @@ android {
         multiDexEnabled true
         targetSdkVersion rootProject.ext.targetSdkVersion
         vectorDrawables.useSupportLibrary = true
-        versionCode 43
-        versionName "1.2.5"
+        versionCode 45
+        versionName "1.2.7"
         multiDexEnabled true
         resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
