@@ -906,7 +906,6 @@
   "local:modal:notice2:title": "실시간 사용량 확인 미지원",
   "local:modal:notice2:body": "빠른 시간 내에 지원하도록 노력하겠습니다.",
   "local:noticeBox:title": "로컬망 상품이란?",
-  "local:noticeBox:body": "현지 통신사의 로컬망과 직접 연결된 상품으로, 데이터 서비스를 보다 안정적으로 이용하실 수 있습니다.",
-
+  "local:noticeBox:body": "로컬망을 통해 현지 통신사에서 직접 서비스를 제공하는 상품입니다.\n현지인과 동일한 속도로 안정적인 데이터 서비스를 이용하실 수 있습니다.",
   "service:ready": "준비 중인 서비스입니다."
 }
