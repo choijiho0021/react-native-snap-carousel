@@ -358,6 +358,14 @@ export const appStyles = StyleSheet.create({
     padding: 0,
     margin: 0,
   },
+  medium20: {
+    // fontFamily: "AppleSDGothicNeo",
+    fontSize: 20,
+    fontWeight: '500',
+    fontStyle: 'normal',
+    lineHeight: 22,
+    letterSpacing: 0,
+  },
   normal22Text: {
     // fontFamily: "Roboto",
     fontSize: 22,
