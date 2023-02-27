@@ -1,4 +1,4 @@
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {RouteProp} from '@react-navigation/native';
 import {bindActionCreators} from 'redux';
 import React, {memo, useCallback, useEffect, useRef, useState} from 'react';
 import {
@@ -14,6 +14,7 @@ import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import ViewShot from 'react-native-view-shot';
 import CameraRoll from '@react-native-community/cameraroll';
+import {StackNavigationProp} from '@react-navigation/stack';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
 import i18n from '@/utils/i18n';
@@ -26,6 +27,7 @@ import AppStyledText from '@/components/AppStyledText';
 import AppButton from '@/components/AppButton';
 import {AccountModelState} from '@/redux/modules/account';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const styles = StyleSheet.create({
   container: {
@@ -76,7 +78,14 @@ const styles = StyleSheet.create({
   },
 });
 
+type ReceiptScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'Receipt'
+>;
+
 type ReceiptScreenProps = {
+  navigation: ReceiptScreenNavigationProp;
+  route: RouteProp<HomeStackParamList, 'Receipt'>;
   account: AccountModelState;
   action: {
     toast: ToastAction;
@@ -91,11 +100,11 @@ export type RkbReceipt = {
 };
 
 const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
+  navigation,
+  route: {params},
   account: {mobile},
   action,
 }) => {
-  const navigation = useNavigation();
-  const route = useRoute();
   const [order, setOrder] = useState<RkbOrder>();
   const [receipt, setReceipt] = useState<RkbReceipt>();
   const ref = useRef<ViewShot>();
@@ -106,9 +115,9 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
       headerLeft: () => <AppBackButton title={i18n.t('pym:receipt')} />,
     });
 
-    setOrder(route.params?.order);
-    setReceipt(route.params?.receipt);
-  }, [navigation, route.params]);
+    setOrder(params?.order);
+    setReceipt(params?.receipt);
+  }, [navigation, params?.order, params?.receipt]);
 
   const hasAndroidPermission = useCallback(async () => {
     const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;

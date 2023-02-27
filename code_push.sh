@@ -41,6 +41,7 @@ if [[ "$simtype" = "esim" ]]; then
 	xcodeproj='RokebiESIM.xcodeproj'
 	appname='RokebiESIM'
 	bundle='com.uangel.rokebi-ESIM'
+	appcenter codepush release-react -a admin-uangel.kr/RokebiGlobal-iOS -d Debug --plist-file ios/Configurations/Esim/Info.plist
 fi
 
 if [[ "$simtype" = "global" ]]; then
@@ -49,8 +50,14 @@ if [[ "$simtype" = "global" ]]; then
 	xcodeproj='RokebiESIM.xcodeproj'
 	appname='RokebiGlobal'
 	bundle='com.uangel.rokebi-global'
+appcenter codepush release-react -a admin-uangel.kr/RokebiGlobal-iOS -d Debug --plist-file ios/Configurations/global/Info.plist
 fi
-appcenter codepush release-react -a admin-uangel.kr/RokebiGlobal-iOS -d Debug
+
+# 상용 예제
+# appcenter codepush release-react -a admin-uangel.kr/RokebiGlobal-iOS -d Debug --plist-file ios/Configurations/Esim/Info.plist
+# TB 예제
+# appcenter codepush release-react -a admin-uangel.kr/RokebiGlobal-iOS -d Debug
+
 echo "\033[32m"[Info]"\033[0m" "Please enter the Android/iOS version manually before executing the command."
 echo "\033[32m"[Info]"\033[0m" "Please check the CodePush Key again before pushing the source into git."
 

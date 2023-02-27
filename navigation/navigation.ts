@@ -8,6 +8,8 @@ import {RkbInfo} from '@/redux/api/pageApi';
 import {BoardMsgStatus} from '@/redux/api/boardApi';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
+import {RkbProduct} from '@/redux/api/productApi';
+import {RkbReceipt} from '../screens/ReceiptScreen';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti';
 export type PymMethodScreenMode =
@@ -92,7 +94,7 @@ export type HomeStackParamList = {
   BoardMsgAdd: {key: string; status: BoardMsgStatus};
   Faq: FaqRouteParam;
   Guide: undefined;
-  Country: {partner: string[]};
+  Country: {partner: string[]; maxDiscount: number};
   Payment: PaymentParams;
   PaymentGateway: PaymentParams;
   PymMethod: {isPaid?: boolean; pymPrice?: number; mode?: PymMethodScreenMode};
@@ -115,6 +117,33 @@ export type HomeStackParamList = {
   GiftGuide: undefined;
 
   Gift: {mainSubs: RkbSubscription};
+  ChargeHistory: {
+    mainSubs: RkbSubscription;
+    chargedSubs: RkbSubscription[];
+    onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
+    chargeablePeriod: string;
+    isChargeable: boolean;
+  };
+  ChargeDetail: {
+    data: RkbProduct;
+    prodname: string;
+    chargeablePeriod: string;
+    subsIccid: string;
+  };
+  Charge: {
+    mainSubs: RkbSubscription;
+    chargeablePeriod: string;
+  };
+  Receipt: {
+    order: RkbOrder;
+    receipt: RkbReceipt;
+  };
+  RedirectHK: {
+    iccid: string;
+    orderNo: string;
+    uuid: string;
+    imsi: string;
+  };
 };
 
 export const navigate = (

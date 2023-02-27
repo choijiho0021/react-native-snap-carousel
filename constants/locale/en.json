@@ -58,6 +58,7 @@
   "copy": "Copy",
   "close": "Close",
   "close:week": "Don't show for Week",
+  "close:day": "Don't show for a Day",
   "redirect": "Visit now",
   "KRW": "KRW",
   "USD": "USD",
@@ -899,13 +900,19 @@
   "promo:join:ing": "Participating ...",
   "promo:login": "Login to participate",
 
-  "local:ok": "Ok! I got it",
-  "local:modal:title": "Before purchasing Japanese\n(local network) products\nPlease check!",
+  "local:ok": "Okay! I checked",
+  "local:modal:title": "Before purchasing {{localOpName}}\nPlease check!",
   "local:modal:notice1:title": "Product registration is possible only once!",
-  "local:modal:notice1:body": "Please do not delete the eSIM until usage ends.",
-  "local:modal:notice2:title": "Real-time usage check not supported",
-  "local:modal:notice2:body": "We will try to support as soon as possible.",
+  "local:modal:notice1:body": "<b>Please do not delete the eSIM</b> until the usage ends.",
+  "local:modal:notice2:title": "When registering in your country",
+  "local:modal:notice2:body": "An activation failure pop-up may appear.\nThis is a phenomenon that occurs because there is no local network in your country.\n<b>This is normal.</b>",
+  "local:modal:notice2:th:title": "Register your product locally!",
+  "local:modal:notice2:th:body": "This product <b>expires from the date of product registration</b>. Do not register in Korea, but register before use locally.",
+  "local:modal:popup:notice": "(It takes 10~30 minutes on average)",
 
   "local:noticeBox:title": "What is a local network product?",
-  "local:noticeBox:body": "As a product that is directly connected to the local network of a local telecommunications company, you can use the data service more reliably."
+  "local:noticeBox:body1": "This product is directly connected to the local network of a local telecommunications company",
+  "local:noticeBox:body2": "You can use the data service more reliably.",
+
+  "service:ready": "This is a service in preparation."
 }
