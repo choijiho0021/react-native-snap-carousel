@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 import {colors} from '@/constants/Colors';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {isDeviceSize, isFolderOpen} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {API} from '@/redux/api';
 import {Currency, RkbLocalOp} from '@/redux/api/productApi';
@@ -19,8 +19,6 @@ import i18n from '@/utils/i18n';
 import AppPrice from './AppPrice';
 import AppText from './AppText';
 import {RkbPriceInfo} from '@/redux/modules/product';
-import {isFolderOpen} from '../constants/SliderEntry.style';
-import utils from '@/redux/api/utils';
 
 const styles = StyleSheet.create({
   text: {
@@ -172,11 +170,8 @@ const CountryItem0 = ({
       {item.length < columns
         ? Array(columns - item.length)
             .fill(1)
-            .map(() => (
-              <View
-                key={utils.generateKey()}
-                style={{flex: 1, marginLeft: 14}}
-              />
+            .map((e, i) => (
+              <View key={`empty${i}`} style={{flex: 1, marginLeft: 14}} />
             ))
         : null}
     </View>
