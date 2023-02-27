@@ -33,8 +33,8 @@ import {bindActionCreators} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
 import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import VersionCheck from 'react-native-version-check';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {isDeviceSize, isFolderOpen} from '@/constants/SliderEntry.style';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -74,7 +74,6 @@ import {useInterval} from '@/utils/useInterval';
 import NotiModal from './component/NotiModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppVerModal from './component/AppVerModal';
-import {isFolderOpen} from '@/constants/SliderEntry.style';
 import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
 import AppStyledText from '@/components/AppStyledText';
 
@@ -438,14 +437,6 @@ const Esim: React.FC<EsimProps> = ({
     }
   }, [promotion]);
 
-  const okHandler = useCallback(
-    (info: RkbPriceInfo) => {
-      actions.modal.closeModal();
-      navToCountry(info);
-    },
-    [actions.modal],
-  );
-
   const navToCountry = useCallback(
     (info: RkbPriceInfo) => {
       action.product.getProdOfPartner(info.partnerList);
@@ -455,6 +446,14 @@ const Esim: React.FC<EsimProps> = ({
       });
     },
     [action.product, navigation],
+  );
+
+  const okHandler = useCallback(
+    (info: RkbPriceInfo) => {
+      actions.modal.closeModal();
+      navToCountry(info);
+    },
+    [actions.modal, navToCountry],
   );
 
   const localModal = useCallback(
@@ -556,7 +555,7 @@ const Esim: React.FC<EsimProps> = ({
         </SafeAreaView>
       );
     },
-    [actions.modal, navToCountry],
+    [actions.modal, okHandler],
   );
 
   const onPressItem = useCallback(
