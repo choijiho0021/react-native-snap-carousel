@@ -43,25 +43,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     marginHorizontal: 20,
   },
-  lowPrice: {
-    ...appStyles.normal12Text,
-    fontSize: isDeviceSize('small') ? 10 : 12,
-    color: colors.black,
-  },
-  lowPriceView: {
-    width: isDeviceSize('small') ? 30 : 41,
-    height: 22,
-    borderRadius: 1,
-    backgroundColor: colors.whiteTwo,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  priceRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignContent: 'center',
-    alignItems: 'center',
-  },
   price: {
     flexDirection: 'row',
     alignItems: 'baseline',
@@ -102,15 +83,6 @@ const CountryItem0 = ({
   index: number;
   showImage?: boolean;
 }) => {
-  const renderLowest = useCallback(
-    () => (
-      <View key="lowest" style={styles.lowPriceView}>
-        <AppText style={styles.lowPrice}>{i18n.t('lowest')}</AppText>
-      </View>
-    ),
-    [],
-  );
-
   const renderPrice = useCallback(
     (bestPrice: Currency) => (
       <View key="price" style={styles.price}>
@@ -163,11 +135,7 @@ const CountryItem0 = ({
               <AppText key="cntry" style={styles.cntry}>
                 {API.Product.getTitle(localOp)}
               </AppText>
-              <View style={styles.priceRow}>
-                {i18n.locale === 'ko'
-                  ? [renderPrice(elm.minPrice), renderLowest()]
-                  : [renderLowest(), renderPrice(elm.minPrice)]}
-              </View>
+              {renderPrice(elm.minPrice)}
             </Pressable>
           </View>
         );

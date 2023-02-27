@@ -33,7 +33,7 @@ import {bindActionCreators} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
 import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import VersionCheck from 'react-native-version-check';
-
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {StackNavigationProp} from '@react-navigation/stack';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
@@ -84,6 +84,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
+  },
+  row: {
+    display: 'flex',
+    flexDirection: 'row',
   },
   title: {
     ...appStyles.title,
@@ -174,8 +178,8 @@ const styles = StyleSheet.create({
   },
   okBtnContainer: {
     backgroundColor: colors.white,
-    paddingBottom: 20,
-    marginTop: 20,
+    marginBottom: 16,
+    marginTop: 12,
   },
   okButton: {
     ...appStyles.normal16Text,
@@ -192,25 +196,90 @@ const styles = StyleSheet.create({
     lineHeight: 34,
   },
   localModalBody: {
-    paddingHorizontal: 24,
-    paddingVertical: 20,
+    padding: 20,
     backgroundColor: colors.backGrey,
     marginBottom: 12,
     flexDirection: 'row',
+    borderRadius: 3,
   },
   localModalBodyIcon: {
-    marginRight: 16,
-    alignSelf: 'center',
+    marginRight: 6,
+    marginTop: 2,
   },
   localModalBodyTitle: {
-    ...appStyles.bold18Text,
-    lineHeight: 22,
-    marginBottom: 2,
+    ...appStyles.bold20Text,
+    color: colors.clearBlue,
+    lineHeight: 24,
+    marginBottom: 4,
   },
   localModalBodyText: {
     ...appStyles.medium16,
-    lineHeight: 22,
+    fontSize: isDeviceSize('medium', true) ? 14 : 16,
+    letterSpacing: isDeviceSize('medium', true) ? 0 : -0.48,
+    lineHeight: isDeviceSize('medium', true) ? 20 : 22,
+    color: colors.black,
+  },
+  localModalBodyTextBold: {
+    ...appStyles.medium16,
+    fontSize: isDeviceSize('medium', true) ? 14 : 16,
+    letterSpacing: isDeviceSize('medium', true) ? 0 : -0.48,
+    lineHeight: isDeviceSize('medium', true) ? 20 : 22,
+    color: colors.black,
+    fontWeight: 'bold',
+  },
+  bottom: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingBottom: 10,
+  },
+  underLine: {
+    borderBottomWidth: 1,
+    borderBottomColor: colors.lightGrey,
+  },
+  bottomText: {
+    ...appStyles.medium14,
+    lineHeight: 20,
     color: colors.warmGrey,
+  },
+  popupNotice: {
+    marginTop: 16,
+  },
+  popupNoticeTitle: {
+    ...appStyles.bold16Text,
+    lineHeight: 24,
+    color: colors.darkBlue,
+    marginBottom: 2,
+  },
+  localNoticePopupIcon: {
+    alignSelf: 'center',
+    marginTop: 6,
+    marginBottom: 5,
+    borderWidth: 1,
+    borderColor: colors.whiteFive,
+    borderRadius: 10,
+
+    ...Platform.select({
+      ios: {
+        shadowColor: 'rgb(52, 62, 95)',
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        shadowOffset: {
+          height: 1,
+          width: 1,
+        },
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
+  },
+  localNoticePopupText: {
+    ...appStyles.semiBold14Text,
+    lineHeight: 20,
+    color: colors.warmGrey,
+    alignSelf: 'center',
+    marginBottom: 2,
   },
 });
 
@@ -290,6 +359,7 @@ const Esim: React.FC<EsimProps> = ({
   const initNoti = useRef(false);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const [bannerHeight, setBannerHeight] = useState<number>(150);
+  const [showLocalModal, setShowLocalModal] = useState(true);
 
   const isSupport = useMemo(() => account.isSupportDev, [account.isSupportDev]);
 
@@ -345,6 +415,15 @@ const Esim: React.FC<EsimProps> = ({
     }).start();
   }, [animatedValue, bannerHeight, isTop]);
 
+  useEffect(() => {
+    async function checkShowModal() {
+      const item = await AsyncStorage.getItem('esim.show.local.modal');
+      const tm = moment(item, 'YYYY-MM-DD HH:mm:ss');
+      setShowLocalModal(!tm.isValid() || tm.add(1, 'day').isBefore(moment()));
+    }
+    checkShowModal();
+  }, []);
+
   const setNotiModal = useCallback(() => {
     const popUpPromo = promotion?.find(
       (v) => v.rule?.display?.routeName === 'Home' && v?.notice?.image?.noti,
@@ -359,6 +438,14 @@ const Esim: React.FC<EsimProps> = ({
     }
   }, [promotion]);
 
+  const okHandler = useCallback(
+    (info: RkbPriceInfo) => {
+      actions.modal.closeModal();
+      navToCountry(info);
+    },
+    [actions.modal],
+  );
+
   const navToCountry = useCallback(
     (info: RkbPriceInfo) => {
       action.product.getProdOfPartner(info.partnerList);
@@ -371,7 +458,7 @@ const Esim: React.FC<EsimProps> = ({
   );
 
   const localModal = useCallback(
-    (info: RkbPriceInfo, localOpName: string) => {
+    (info: RkbPriceInfo, localOpName: string, ccode: string[]) => {
       return (
         <SafeAreaView style={{flex: 1}}>
           <Pressable
@@ -394,19 +481,47 @@ const Esim: React.FC<EsimProps> = ({
                   })}
                 </AppText>
               </View>
-              {[1, 2].map((k) => (
-                <View style={styles.localModalBody}>
-                  <AppSvgIcon
-                    style={styles.localModalBodyIcon}
-                    name={k === 1 ? 'localNotice1' : 'localNotice2'}
-                  />
+              {(ccode.includes('TH') ? [1, 2] : [1]).map((k) => (
+                <View style={styles.localModalBody} key={k}>
                   <View style={{flex: 1}}>
-                    <AppText style={styles.localModalBodyTitle}>
-                      {i18n.t(`local:modal:notice${k}:title`)}
-                    </AppText>
-                    <AppText style={styles.localModalBodyText}>
-                      {i18n.t(`local:modal:notice${k}:body`)}
-                    </AppText>
+                    <View style={styles.row}>
+                      <AppSvgIcon
+                        style={styles.localModalBodyIcon}
+                        name={k === 1 ? 'localNotice1' : 'localNotice2'}
+                      />
+                      <AppText style={styles.localModalBodyTitle}>
+                        {i18n.t(
+                          `local:modal:notice${k}${k === 2 ? ':th' : ''}:title`,
+                        )}
+                      </AppText>
+                    </View>
+                    <AppStyledText
+                      text={i18n.t(
+                        `local:modal:notice${k}${k === 2 ? ':th' : ''}:body`,
+                      )}
+                      textStyle={styles.localModalBodyText}
+                      format={{b: styles.localModalBodyTextBold}}
+                    />
+                    {!ccode.includes('TH') && (
+                      <View style={styles.popupNotice}>
+                        <AppText style={styles.popupNoticeTitle}>
+                          {i18n.t('local:modal:notice2:title')}
+                        </AppText>
+                        <AppStyledText
+                          text={i18n.t('local:modal:notice2:body')}
+                          textStyle={styles.localModalBodyText}
+                          format={{b: styles.localModalBodyTextBold}}
+                        />
+
+                        <View style={styles.localNoticePopupIcon}>
+                          <AppSvgIcon name={'localNoticePopup'} />
+                        </View>
+
+                        <AppText style={styles.localNoticePopupText}>
+                          {i18n.t('local:modal:popup:notice')}
+                        </AppText>
+                      </View>
+                    )}
                   </View>
                 </View>
               ))}
@@ -416,11 +531,26 @@ const Esim: React.FC<EsimProps> = ({
                   title={i18n.t('local:ok')}
                   type="primary"
                   onPress={() => {
-                    actions.modal.closeModal();
-                    navToCountry(info);
+                    okHandler(info);
                   }}
                 />
               </View>
+              <Pressable
+                style={styles.bottom}
+                onPress={() => {
+                  AsyncStorage.setItem(
+                    'esim.show.local.modal',
+                    moment().format('YYYY-MM-DD HH:mm:ss'),
+                  );
+                  setShowLocalModal(false);
+                  okHandler(info);
+                }}>
+                <View style={styles.underLine}>
+                  <AppText style={styles.bottomText}>
+                    {i18n.t('close:day')}
+                  </AppText>
+                </View>
+              </Pressable>
             </Pressable>
           </Pressable>
         </SafeAreaView>
@@ -434,13 +564,24 @@ const Esim: React.FC<EsimProps> = ({
       const localOp = product.localOpList.get(info?.partner || '');
       const localOpName = API.Product.getTitle(localOp);
 
-      if (localOpName.includes('(로컬망)') || localOpName.includes('(local)'))
-        actions.modal.showModal({content: localModal(info, localOpName)});
+      if (
+        showLocalModal &&
+        (localOpName.includes('(로컬망)') || localOpName.includes('(local)'))
+      )
+        actions.modal.showModal({
+          content: localModal(info, localOpName, localOp?.ccode || []),
+        });
       else {
         navToCountry(info);
       }
     },
-    [product.localOpList, actions.modal, localModal, navToCountry],
+    [
+      actions.modal,
+      localModal,
+      navToCountry,
+      product.localOpList,
+      showLocalModal,
+    ],
   );
 
   const onIndexChange = useCallback((idx: number) => setIndex(idx), []);

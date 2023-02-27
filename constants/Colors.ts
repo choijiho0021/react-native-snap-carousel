@@ -46,10 +46,11 @@ export const colors = {
   iceBlue: '#ECF5FF',
   veryLightPink: '#FFE3DD', // rgb 255 227 221
   shamrock: '#00AD50', // rgb 0 173 80
-  lightSage: '#D6F3E3', // rgb 214 243 227
+  lightSage: '#D6F3E3', // rgb 214 243ㄴㄴ 227
   veryLightBlue: '#DAEEFF', // rgb 218 238 255
   greyishBrown: '#575757',
   redError: '#ee4423',
   shadow1: '#a6a8ac',
   gray2: '#979797',
+  darkBlue: '#194c94',
 };
