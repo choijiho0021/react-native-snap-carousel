@@ -58,8 +58,14 @@ export const device = {
   },
 } as const;
 
-export const isDeviceSize = (size: keyof typeof device) => {
+export const isDeviceSize = (
+  size: keyof typeof device,
+  byWidth: boolean = false,
+) => {
   if (_.isEmpty(device[size])) return false;
+  if (byWidth) {
+    return windowWidth <= device[size].window.width;
+  }
   return windowHeight <= device[size].window.height;
 };
 
