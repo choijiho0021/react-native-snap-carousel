@@ -210,7 +210,6 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   );
   const animatedValue = useRef(new Animated.Value(150)).current;
 
-  console.log('aaaaa prodData', prodData);
   const routes = useMemo(
     () =>
       [
@@ -231,7 +230,10 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   );
 
   useEffect(() => {
-    retrieveData('LocalProdTooltip').then((elm) => setTip(elm !== 'closed'));
+    retrieveData('LocalProdTooltip').then((elm) => {
+      setTip(elm !== 'closed');
+      storeData('LocalProdTooltip', 'closed');
+    });
   }, []);
 
   useEffect(() => {
@@ -364,7 +366,6 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         }
         onClose={() => {
           setTip(false);
-          storeData('LocalProdTooltip', 'closed');
         }}
         placement="bottom">
         <AppSvgIcon
