@@ -12,6 +12,9 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {Map as ImmutableMap} from 'immutable';
+import {TabView} from 'react-native-tab-view';
+import {ScrollView} from 'react-native-gesture-handler';
+import Tooltip from 'react-native-walkthrough-tooltip';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
@@ -28,9 +31,6 @@ import CountryListItem from './HomeScreen/component/CountryListItem';
 import ProductImg from '@/components/ProductImg';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppTabHeader from '@/components/AppTabHeader';
-import {TabView} from 'react-native-tab-view';
-import {ScrollView} from 'react-native-gesture-handler';
-import Tooltip from 'react-native-walkthrough-tooltip';
 import AppButton from '@/components/AppButton';
 import {retrieveData, storeData} from '@/utils/utils';
 
@@ -43,18 +43,6 @@ const styles = StyleSheet.create({
   box: {
     height: 150,
     marginBottom: 8,
-    // resizeMode: 'cover'
-  },
-  divider: {
-    height: 10,
-    backgroundColor: colors.whiteTwo,
-    marginTop: 32,
-  },
-  sectionHeader: {
-    paddingTop: 32,
-    paddingBottom: 20,
-    marginHorizontal: 20,
-    backgroundColor: colors.white,
   },
   header: {
     flexDirection: 'row',
@@ -62,32 +50,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     alignItems: 'center',
   },
-  localNoticeBox: {
-    marginTop: 16,
-    marginBottom: 24,
-    padding: 20,
-    backgroundColor: colors.backGrey,
-    marginHorizontal: 20,
-  },
-  localNoticeTitle: {
-    ...appStyles.bold18Text,
-    lineHeight: 22,
-    marginBottom: 8,
-  },
-  localNoticeBody: {
-    ...appStyles.semiBold14Text,
-    marginTop: 8,
-    lineHeight: 20,
-    color: colors.warmGrey,
-  },
   tab: {
     backgroundColor: colors.white,
-    height: 60,
+    height: 84,
     paddingHorizontal: 25,
+    paddingBottom: 24,
   },
   tabTitle: {
-    fontSize: 16,
+    fontSize: 18,
     lineHeight: 20,
+    color: colors.gray2,
   },
   emptyImage: {
     marginBottom: 21,
@@ -134,7 +106,6 @@ const styles = StyleSheet.create({
   toolTipBody: {
     paddingRight: 30,
   },
-
   toolTipBodyText: {
     ...appStyles.normal14Text,
     lineHeight: 20,
@@ -190,7 +161,7 @@ export const makeProdData = (
   ];
 };
 
-const position = (idx, arr) => {
+const position = (idx: number, arr: RkbProduct[]) => {
   if (arr.length > 1) {
     if (idx === 0) return 'head';
     if (idx === arr.length - 1) return 'tail';
@@ -226,7 +197,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const {navigation, route, product} = props;
   const {localOpList, prodByLocalOp, prodList, prodByPartner} = product;
 
-  const [prodData, setProdData] = useState<RkbProduct[][]>([[]]);
+  const [prodData, setProdData] = useState<RkbProduct[][]>([[], []]);
   const [imageUrl, setImageUrl] = useState<string>();
   const [localOpDetails, setLocalOpDetails] = useState<string>();
   const [partnerId, setPartnerId] = useState<string>();
@@ -239,19 +210,24 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   );
   const animatedValue = useRef(new Animated.Value(150)).current;
 
+  console.log('aaaaa prodData', prodData);
   const routes = useMemo(
     () =>
       [
-        {
-          key: 'daily',
-          title: i18n.t('country:daily'),
-        },
-        {
-          key: 'total',
-          title: i18n.t('country:total'),
-        },
-      ] as TabRoute[],
-    [],
+        prodData[0].length > 0
+          ? {
+              key: 'daily',
+              title: i18n.t('country:daily'),
+            }
+          : undefined,
+        prodData[1].length > 0
+          ? {
+              key: 'total',
+              title: i18n.t('country:total'),
+            }
+          : undefined,
+      ].filter((elm) => elm !== undefined) as TabRoute[],
+    [prodData],
   );
 
   useEffect(() => {
@@ -296,16 +272,21 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
 
       return (
         <ScrollView
+          style={{backgroundColor: colors.white}}
+          onScrollBeginDrag={() => {
+            setIsTop(false);
+          }}
           onScroll={({
             nativeEvent: {
               contentOffset: {y},
             },
           }) => {
-            if (isTop && y > 150) setIsTop(false);
-            else if (!isTop && y <= 0) setIsTop(true);
+            // if (isTop && y > 150) setIsTop(false);
+            // else
+            if (!isTop && y <= -5) setIsTop(true);
           }}>
           {prodDataC.length > 0 ? (
-            prodDataC.map((data) => (
+            prodDataC.map((data, idx) => (
               <CountryListItem
                 key={data.sku}
                 item={data}
@@ -320,7 +301,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
                     partnerId,
                   })
                 }
-                isCharge
+                position={position(idx, prodDataC)}
               />
             ))
           ) : (

@@ -51,4 +51,5 @@ export const colors = {
   greyishBrown: '#575757',
   redError: '#ee4423',
   shadow1: '#a6a8ac',
+  gray2: '#979797',
 };
