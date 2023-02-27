@@ -269,7 +269,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           const exp = moment(userDataBundles[0]?.expireTime).add(9, 'h');
           const now = moment();
 
-          const isExpired = statusCd === 'A' && exp < now;
+          const isExpired = statusCd === 'C' || (statusCd === 'A' && exp < now);
 
           const tempCmiStatus: StatusObj = {
             statusCd: isExpired ? 'U' : statusCd,
